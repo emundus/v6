@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -11,7 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 <form action="<?php echo hikashop_completeLink('badge'); ?>" method="post"  name="adminForm" id="adminForm">
 
 <div class="hk-row">
-	<div class="hkc-md-5"><?php echo $this->loadHkLayout('search', array()); ?></div>
+	<div class="hkc-md-5 hika_j4_search"><?php echo $this->loadHkLayout('search', array()); ?></div>
 	<div class="hkc-md-7"></div>
 </div>
 
@@ -34,8 +34,17 @@ defined('_JEXEC') or die('Restricted access');
 					echo JHTML::_('grid.sort', JText::_('POSITION'), 'a.badge_position', $this->pageInfo->filter->order->dir, $this->pageInfo->filter->order->value );
 				?></th>
 				<th class="title titleorder"><?php
-					if($this->order->ordering)
-						echo JHTML::_('grid.order', $this->rows);
+					if ($this->order->ordering) {
+						$keys = array_keys($this->rows);  
+						$rows_nb = end($keys);
+						$href = "javascript:saveorder(".$rows_nb.", 'saveorder')";
+						?><a href="<?php echo $href; ?>" rel="tooltip" class="saveorder btn btn-sm btn-secondary float-end" title="Save Order">
+							<button class="button-apply btn btn-success" type="button">
+<!--							<span class="icon-apply" aria-hidden="true"></span> -->
+								<i class="fas fa-save"></i>
+							</button>
+						</a><?php
+					}
 					echo JHTML::_('grid.sort', JText::_('HIKA_ORDER'), 'a.badge_ordering',$this->pageInfo->filter->order->dir, $this->pageInfo->filter->order->value );
 				?></th>
 				<th class="title titletoggle"><?php
@@ -53,7 +62,6 @@ defined('_JEXEC') or die('Restricted access');
 			<tr>
 				<td colspan="9">
 					<?php echo $this->pagination->getListFooter(); ?>
-					<?php echo $this->pagination->getResultsCounter(); ?>
 				</td>
 			</tr>
 		</tfoot>
@@ -73,7 +81,11 @@ defined('_JEXEC') or die('Restricted access');
 					echo JHTML::_('grid.id', $i, $row->badge_id);
 				?></td>
 				<td><?php
-					echo $this->image->display(@$row->badge_image, true, '', '', '', 100, 100);
+					$image_options = array('default' => true,'forcesize'=>true,'scale'=>$this->config->get('image_scale_mode','inside'));
+					$img = $this->image->getThumbnail(@$row->badge_image, array('width' => 100, 'height' => 100), $image_options);
+					if($img->success) {
+						echo '<img class="hikashop_category_listing_image" title="'.$this->escape(@$row->badge_name).'" alt="'.$this->escape(@$row->badge_name).'" src="'.$img->url.'"/>';
+					}
 				?></td>
 				<td>
 <?php if($this->manage) { ?>

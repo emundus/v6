@@ -1,0 +1,38 @@
+The FPDI PDF-Parser is an extension of the PDF parser that is shipped with FPDI by default.
+
+Just extract the content of this package to a folder of your choice and add the /src folder
+to your PSR-4 autoload implementation:
+
+    $loader = new \Example\Psr4AutoloaderClass;
+    $loader->register();
+    $loader->addNamespace('setasign\FpdiPdfParser', 'path/to/src/');
+
+If you do not have a PSR-4 autoloader class in use, just require the
+autoload file manually:
+
+    require_once('path/to/src/autoload.php');
+
+!! Always use the latest versions of both FPDI and the FPDI PDF-Parser !!
+!! and make sure that you do not mix the contents of both src/ folders !!
+
+
+FOR EVALUATION VERSIONS ONLY
+++++++++++++++++++++++++++++
+An evaluation package is encoded with Ioncube.
+This requires a loader to be installed on your server.
+
+An evaluation version is separated into two parts: The PHP files and a license file.
+
+License files are named .htFPDI_PDF-Parser.icl
+
+	NOTICE THE DOT AT THE BEGINNING OF THE FILENAME!
+	SOME SYSTEMS (MAC) AUTOMATICALLY HIDE SUCH FILES!
+
+The needed loaders and installation instruction for the Ioncube Loader are available at:
+
+    http://www.ioncube.com/loaders.php
+
+We reccomend to use the "Loader Wizard" for installation (see instructions on the top of the page).
+
+After the installation of the Ioncube Loader, place the license file into the /src directory
+or an upper folder of the FPDI PDF-Parser and follow the default installation instructions.

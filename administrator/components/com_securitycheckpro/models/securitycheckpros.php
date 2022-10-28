@@ -71,7 +71,7 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
     protected function populateState()
     {
         // Inicializamos las variables
-        $app        = JFactory::getApplication();
+        $app = JFactory::getApplication();
     
         $extension_type = $app->getUserStateFromRequest('filter.extension_type', 'filter_extension_type');
         $this->setState('filter.extension_type', $extension_type);
@@ -88,7 +88,7 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
     {
         // Cargamos el contenido si es que no existe todavía
         if (empty($this->_total)) {
-            $query = $this->_buildQuery();
+            $query = $this->_buildQuery();			
             $this->_total = $this->_getListCount($query);    
         }
         return $this->_total;
@@ -136,9 +136,7 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
     */
     function _buildQuery()
     {
-        $query = ' SELECT * '
-        . ' FROM #__securitycheckpro '
-        ;
+        $query = 'SELECT * FROM #__securitycheckpro as a ORDER BY a.id ASC';
         return $query;
     }
 
@@ -147,6 +145,9 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
     */
     function _buildFilterQuery()
     {
+		$config = JFactory::getConfig();
+		$dbtype = $config->get('dbtype');
+		
         // Creamos el nuevo objeto query
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -156,17 +157,22 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
     
         // Filtramos el tipo
         if ($extension_type = $this->getState('filter.extension_type')) {
-            $query->where('a.sc_type = '.$db->quote($extension_type));
+            $query->where('a.sc_type = '.$db->quote(strtolower($extension_type)));
         }
     
         // Filtramos si el componente es vulnerable
         if ($vulnerable = $this->getState('filter.vulnerable')) {
-            $query->where('a.vulnerable = '.$db->quote($vulnerable));
+			if (strstr($dbtype,"mysql")) {
+				$query->where('a.Vulnerable = '.$db->quote($vulnerable));
+			} else if (strstr($dbtype,"pgsql")) {
+				$query->where('a."Vulnerable" = '.$db->quote($vulnerable));
+			}
+            
         }
         
         // Ordenamos el resultado
         $query = $query . ' ORDER BY a.id ASC';
-        
+		
         return $query;
     }
 
@@ -192,9 +198,16 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
         $query->select('Installedversion');
         $query->from('#__' .$database);
         $query->where($campo .'=' .$nombre);
+		
+		try {
+			$db->setQuery($query);
+			$result = $db->loadResult();
+		} catch (Exception $e)
+        {    			
+            $result = "0.0.0";
+        }     
 
-        $db->setQuery($query);
-        $result = $db->loadResult();
+        
         return $result;
     }
 
@@ -219,9 +232,10 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
         $components = $db->loadAssocList();
         /* Extraemos los componentes vulnerables de 'securitycheck_db'*/
         $db = JFactory::getDBO();
-        $query = 'SELECT * FROM #__securitycheckpro_db';
+        $query = "SELECT * FROM #__securitycheckpro_db";
         $db->setQuery($query);
-        $vuln_components = $db->loadAssocList();    
+        $vuln_components = $db->loadAssocList();   
+		
         $i = 0;
         foreach ($components as $indice)
         {
@@ -244,7 +258,7 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
                     // Usamos la funcion 'version_compare' de php para comparar las versiones del producto instalado y la del componente vulnerable
                     $version_compare = version_compare($db_version, $vuln_version, $modvulnversion);
                     if ($version_compare) {
-                               $componente_vulnerable = true;                    
+                        $componente_vulnerable = true;                    
                     } else if ($vuln_version == '---') { //No conocemos la versión del producto vulnerable
                         $componente_vulnerable = true;                        
                     }
@@ -301,30 +315,39 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
                                     } else 
                                      {
                                         $actualizar_campo_vulnerable = false;
-                                        $valor_campo_vulnerable = "Indefinido";
-                                        $global_vulnerable = "Indefinido";
+                                        $valor_campo_vulnerable = "No";
+                                        $global_vulnerable = "No";
                                     }
                                 } else 
                                 {
-                                                                   // No sabemos qué versión del componente es vulnerable, aunque sí que es para esta rama de Joomla
-                                                                   $global_vulnerable = "Indefinido";
-                                                                   $valor_campo_vulnerable = "Indefinido";
+                                    // No sabemos qué versión del componente es vulnerable, aunque sí que es para esta rama de Joomla
+                                    $global_vulnerable = "Indefinido";
+                                    $valor_campo_vulnerable = "Indefinido";
                                 }
                             } else
                             {
                                  $global_vulnerable = "No";
                                  /* Borramos las entradas del producto 'no vulnerable' en la tabla 'securitycheck_vuln_components' */
                                  $db = JFactory::getDBO();
-                                 $query = 'DELETE FROM #__securitycheckpro_vuln_components WHERE Product=' .'"' .$nombre .'" and vuln_id=' .($j+1);
+								 $query = $db->getQuery(true);
+
+								$conditions = array(
+									$db->quoteName('Product') . ' = ' . $db->quote($nombre), 
+									$db->quoteName('vuln_id') . ' = ' . $db->quote($j+1)
+								);
+
+								$query->delete($db->quoteName('#__securitycheckpro_vuln_components'));
+								$query->where($conditions);
+                                // $query = 'DELETE FROM #__securitycheckpro_vuln_components WHERE Product=' .'"' .$nombre .'" and vuln_id=' .($j+1);
                                  $db->setQuery($query);
-                                 $db->execute(); 
+                                 $db->execute();
                             }
                         }
                                     
                         if ($actualizar_campo_vulnerable) {                        
                             /* Chequeamos si existe el componente en la BBDD de componentes vulnerables; si no existe, lo insertamos */
-                            $buscar_componente = $this->buscar_registro($j+1, 'securitycheckpro_vuln_components', 'vuln_id');
-                            if (!($buscar_componente)) {
+							$buscar_componente = $this->buscar_registro($j+1, 'securitycheckpro_vuln_components', 'vuln_id');
+                            if (!($buscar_componente)) {								
                                 /* Actualizamos la tabla 'securitycheck_vuln_components' */
                                 $valor = (object) array(
                                 'Product' => $nombre,
@@ -332,9 +355,8 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
                                 );
                                 $db = JFactory::getDBO();
                                 $result = $db->insertObject('#__securitycheckpro_vuln_components', $valor, 'id');                            
-                            }                        
-                        
-                            $res_actualizar = $this->actualizar_registro($nombre_vuln, 'securitycheckpro', 'Product', $valor_campo_vulnerable, 'Vulnerable');
+                            }                    
+							$res_actualizar = $this->actualizar_registro($nombre_vuln, 'securitycheckpro', 'Product', $valor_campo_vulnerable, 'Vulnerable');
                             if ($res_actualizar) { // Se ha actualizado la BBDD correctamente                            
                             } else {                            
                                 JFactory::getApplication()->enqueueMessage('COM_SECURITYCHECKPRO_UPDATE_VULNERABLE_FAILED' ."'" .$nombre_vuln ."'", 'error');
@@ -344,9 +366,19 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
                     {
                         /* Borramos las entradas del producto 'no vulnerable' en la tabla 'securitycheck_vuln_components' */
                         $db = JFactory::getDBO();
-                        $query = 'DELETE FROM #__securitycheckpro_vuln_components WHERE Product=' .'"' .$nombre .'" and vuln_id=' .($j+1);
-                        $db->setQuery($query);
-                        $db->execute(); 
+						$query = $db->getQuery(true);
+
+						$conditions = array(
+							$db->quoteName('Product') . ' = ' . $db->quote($nombre), 
+							$db->quoteName('vuln_id') . ' = ' . $db->quote($j+1)
+						);
+
+						$query->delete($db->quoteName('#__securitycheckpro_vuln_components'));
+						$query->where($conditions);
+						
+                        //$query = 'DELETE FROM #__securitycheckpro_vuln_components WHERE "Product"=' .'"' .$nombre .'" and "vuln_id"=' .($j+1);
+                        $db->setQuery($query);						
+                        $db->execute();
                         /* Nos aseguramos que el componente tiene el valor "No" en el campo "Vulnerable". Esto es útil cuando se cambia la versión    del componente y pasa de 'vulnerable' o 'Notdefined' a 'no vulnerable' */
                         $valor_campo_vulnerable = "No";
                         $res_actualizar = $this->actualizar_registro($nombre, 'securitycheckpro', 'Product', $valor_campo_vulnerable, 'Vulnerable');                
@@ -375,19 +407,21 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
         $campo = $db->quoteName($campo);
         $nuevo_valor = $db->Quote($nuevo_valor);
         $campo_set = $db->quoteName($campo_set);
+		$product = $db->quoteName("Product");
         if (!is_null($tipo)) {
             $tipo = $db->Quote($tipo);
+			$sc_type = $db->quoteName("sc_type");
         }
 
         // Construimos la consulta
         if (is_null($tipo)) {
-            $query = 'UPDATE #__' .$database . ' SET ' . $campo_set .'=' .$nuevo_valor .' WHERE Product=' . $nombre;    
+            $query = 'UPDATE #__' .$database . ' SET ' . $campo_set .'=' .$nuevo_valor .' WHERE ' . $product . '=' . $nombre;    
         } else 
         {
-            $query = 'UPDATE #__' .$database . ' SET ' . $campo_set .'=' .$nuevo_valor .' WHERE Product=' . $nombre . ' and sc_type=' . $tipo;    
+			$query = 'UPDATE #__' .$database . ' SET ' . $campo_set .'=' .$nuevo_valor .' WHERE ' . $product . '=' . $nombre . ' and ' . $sc_type .'=' . $tipo;    
         }
-
-        $db->setQuery($query);
+				
+		$db->setQuery($query);
         $result = $db->execute();
         return $result;
 
@@ -414,9 +448,15 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
         $query->select('*');
         $query->from('#__' .$database);
         $query->where($campo .'=' .$nombre);
-
-        $db->setQuery($query);
-        $result = $db->loadAssocList();
+		
+		try {
+			$db->setQuery($query);
+			$result = $db->loadAssocList();
+		} catch (Exception $e)
+        {    
+			$result = false;
+            $encontrado = false;
+        }             
 
         if ($result) {
             $encontrado = true;
@@ -457,7 +497,7 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
         $jinput = $mainframe->input;
         
         $db = JFactory::getDBO();
-        $query = 'SELECT * FROM #__securitycheckpro';
+        $query = "SELECT * FROM #__securitycheckpro";
         $db->setQuery($query);
         $db->execute();
         $regs_securitycheck = $db->loadAssocList();
@@ -500,81 +540,83 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
     */
     function actualizarbbdd($registros)
     {
-        $i = 0;
-        /* Obtenemos y guardamos la versión de Joomla */
-        $jversion = new JVersion();
-        $joomla_version = $jversion->getShortVersion();
-        $buscar_componente = $this->buscar_registro('Joomla!', 'securitycheckpro', 'Product');
-        if ($buscar_componente) { 
-            $version_componente = $this->version_componente('Joomla!', 'securitycheckpro', 'Product');    
-            if ($joomla_version <> $version_componente) {
-                  /* Si la versión instalada en el sistema es distinta de la de la bbdd, actualizamos la bbdd. Esto sucede cuando se actualiza la versión de Joomla */
-                  $resultado_update = $this->actualizar_registro('Joomla!', 'securitycheckpro', 'Product', $joomla_version, 'InstalledVersion');
-                  $mensaje_actualizados = JText::_('COM_SECURITYCHECKPRO_CORE_UPDATED');     
-                  $jinput = JFactory::getApplication()->set('core_actualizado', $mensaje_actualizados);     
-            }
-        } else
-        {  /* Hacemos un insert en la base de datos con el nombre y la versión del componente */
-            $resultado_insert = $this->insertar_registro('Joomla!', $joomla_version, 'core');
+		$db = JFactory::getDBO();
+		
+		$scan_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR;
+		
+		$query = "SELECT COUNT(*) FROM #__securitycheckpro";
+		try {
+			$db->setQuery($query);
+			$db->execute();
+			$vulnerabilities_table_entries = $db->loadResult();
+		} catch (Exception $e)
+        {    			
+            $vulnerabilities_table_entries = '0';
         } 
-        $componentes_actualizados = 0;
-        foreach ($registros as $extension)
-        {    
-            $decode = json_decode($extension->manifest_cache);
-            $nombre = $extension->element;        
-            // Algunos componentes devuelve un valor nulo en el manifest_cache, así que hemos de controlar esto
-            if (is_object($decode)) {
-                if (property_exists($decode, 'version')) {
-                    $version = $decode->version;
-                } else 
-                {
-                    $version = '0.0.0';
-                }
-                if (property_exists($decode, 'type')) {
-                    $tipo = $decode->type;
-                } else 
-                {
-                    $tipo = 'Notdefined';
-                }
-            
-            }     
-            $buscar_componente = $this->buscar_registro($nombre, 'securitycheckpro', 'Product');
-            if ($buscar_componente) { /* El componente existe en la BBD; hacemos un update de la versión  */
-                $version_componente = $this->version_componente($nombre, 'securitycheckpro', 'Product');        
-                if ($version <> $version_componente) {            
-                    /* Si la versión instalada en el sistema es distinta de la de la bbdd, actualizamos la bbdd. Esto sucede cuando se actualiza el componente */
-                    $resultado_update = $this->actualizar_registro($nombre, 'securitycheckpro', 'Product', $version, 'InstalledVersion', $tipo);
-                    $componentes_actualizados++;
-                }
-            } else
-            {  /* Hacemos un insert en la base de datos con el nombre y la versión del componente */
-                $resultado_insert = $this->insertar_registro($nombre, $version, $tipo);    
-                $componentes_actualizados++;
-            } 
-            $i++;    
-        }
+		
+		// Sólo actualizamos la bbdd si se ha instalado/desinstalado/actualizado una extensión, se ha añadido una nueva entrada a la bbdd de vulnerabilidades por el plugin 'database update' o estamos en una instalación nueva de nuestra extensión
+		if ( (file_exists($scan_path."update_vuln_table.php")) || ($vulnerabilities_table_entries == '0') ) {
+			
+			$config = JFactory::getConfig();
+			$dbtype = $config->get('dbtype');
+									
+			$registros_map = array_map(function ($element) {
+				$new_array = array();
+				$tipo = 'Notdefined';
+				$version = '0.0.0';
+				$decode = json_decode($element->manifest_cache);
+				// Algunos componentes devuelven un valor nulo en el manifest_cache, así que hemos de controlar esto
+				if (is_object($decode)) {
+					if (property_exists($decode, 'version')) {
+						$version = $decode->version;
+					}
+					if (property_exists($decode, 'type')) {
+						$tipo = $decode->type;
+					} 
+				
+				}    
+				$new_array['Product'] = $element->element;
+				$new_array['Installedversion'] = $version;
+				$new_array['sc_type'] = $tipo;
+				return $new_array;
+			}, $registros);
+			
+			
+			if (strstr($dbtype,"mysql")) {
+				$query = "TRUNCATE TABLE #__securitycheckpro";
+			} else if (strstr($dbtype,"pgsql")) {
+				$query = "TRUNCATE TABLE #__securitycheckpro RESTART IDENTITY";
+			}
+			$db->setQuery($query);
+			$db->execute();
+			
+			/* Obtenemos y guardamos la versión de Joomla */
+			$jversion = new JVersion();
+			$joomla_version = $jversion->getShortVersion();
+			
+			$object = new StdClass();                    
+			$object->Product = 'Joomla!';
+			$object->Installedversion = $joomla_version;
+			$object->sc_type = 'core';
+			$db->insertObject('#__securitycheckpro', $object);
+			
+			foreach ($registros_map as $extension)
+			{
+				$object = new StdClass();                    
+				$object->Product = $extension['Product'];
+				$object->Installedversion = $extension['Installedversion'];
+				$object->sc_type = $extension['sc_type'];
+				$db->insertObject('#__securitycheckpro', $object);
+			}	
 
-        if ($componentes_actualizados > 0) {
-            $mensaje_actualizados = JText::_('COM_SECURITYCHECKPRO_COMPONENTS_UPDATED');
-            
-            $jinput = JFactory::getApplication()->input;
-            $jinput->set('componentes_actualizados', $mensaje_actualizados .$componentes_actualizados);
-        }
-
-        /* Chequeamos si existe algún componente el la BBDD que haya sido desinstalado. Esto se comprueba comparando el número de registros en #_securitycheckpro ($dbrows) y el de #_extensions  ($registros)*/
-        $query = $this->_buildQuery();
-        $this->_dbrows = $this->_getListCount($query);
-        $registros_long = count($registros);
-
-        if ($this->_dbrows == $registros_long + 1)  /* $dbrows siempre contiene un elemento más que $registros_long porque incluye el core de Joomla */
-        {
-        } else 
-        {
-            $this->eliminar_componentes_desinstalados();
-        }
-
-        /* Chequeamos los componentes instalados con la lista de vulnerabilidades conocidas y actualizamos los componentes vulnerables */
-        $this->chequear_vulnerabilidades();
+			// Chequeamos los componentes instalados con la lista de vulnerabilidades conocidas y actualizamos los componentes vulnerables 
+			$this->chequear_vulnerabilidades();
+			
+			// Delete the file used as witness
+			if (file_exists($scan_path."update_vuln_table.php")) {				
+				JFile::delete($scan_path."update_vuln_table.php");
+			}
+		}
     }
 
     /*
@@ -585,11 +627,12 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
         $jinput = JFactory::getApplication()->input;
 
         $db = JFactory::getDBO();
-        $query = 'SELECT * FROM #__extensions WHERE (state=0) AND ((type="component") OR (type="module") OR (type="plugin"))' ;
+        $query = "SELECT * FROM #__extensions WHERE (state=0) AND ((type='component') OR (type='module') OR (type='plugin'))";
         $db->setQuery($query);
         $db->execute();
         $num_rows = $db->getNumRows();
-        $result = $db->loadObjectList();
+        $result = $db->loadObjectList();	
+		       		
         $this->actualizarbbdd($result);
         $eliminados = $jinput->get('comp_eliminados', 0, 'int');
         $jinput->set('eliminados', $eliminados);
@@ -609,7 +652,7 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
     {
         // Cargamos el contenido si es que no existe todavía
         if (empty($this->_data)) {
-            $this-> buscar();
+			$this-> buscar();			
             $query = $this->_buildQuery();
             $this->_data = $this->_getList($query, $this->getState('limitstart'), $this->getState('limit'));
         }
@@ -623,7 +666,7 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
     {
         // Cargamos los datos
         if (empty($this->_data)) {
-            $this-> buscar();
+            $this-> buscar();			
             $query = $this->_buildFilterQuery();
             $this->_data = $this->_getList($query, $this->getState('limitstart'), $this->getState('limit'));
         }
@@ -636,12 +679,21 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
     {
 
         $db = JFactory::getDBO();
+		$query = $db->getQuery(true);
         if ($opcion == 1) {
-            $query = 'SELECT extension_id FROM #__extensions WHERE name="System - Securitycheck Pro Update Database" and type="plugin"';
+			$query->select($db->quoteName('extension_id'));
+            $query->from($db->quoteName('#extension_id'));
+            $query->where($db->quoteName('name').' = '.$db->quote('System - Securitycheck Pro Update Database'));
+			$query->where($db->quoteName('type').' = '.$db->quote('plugin'));
         } 
-        $db->setQuery($query);
-        $db->execute();
-        $id = $db->loadResult();
+		try {			
+			$db->setQuery($query);
+			$db->execute();
+			$id = $db->loadResult();
+		} catch (Exception $e)
+		{    
+			$id = 0;
+		}	
     
         return $id;
     }
@@ -650,10 +702,15 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
     function get_last_update()
     {
         $db = JFactory::getDBO();
-        $query = 'SELECT published FROM #__securitycheckpro_db ORDER BY id DESC LIMIT 1';
-        $db->setQuery($query);
-        $db->execute();
-        $last_date = $db->loadResult();
+		try {
+			$query = 'SELECT published FROM #__securitycheckpro_db ORDER BY id DESC LIMIT 1';
+			$db->setQuery($query);
+			$db->execute();
+			$last_date = $db->loadResult();
+		} catch (Exception $e)
+		{    
+			$last_date = "";
+		}		       
     
         return $last_date;
     }
@@ -667,11 +724,11 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
     
         // Cargamos los datos
         if (empty($data)) {
-            $product = filter_var($product, FILTER_SANITIZE_STRING);
-            $query = ' SELECT * FROM #__securitycheckpro_db '.
-            '  WHERE id IN (SELECT vuln_id FROM #__securitycheckpro_vuln_components WHERE Product = "'.$product .'")';            
-            $db->setQuery($query);
-            $data = $db->loadAssocList();            
+            $product = $db->Quote(filter_var($product, FILTER_SANITIZE_STRING));
+			$product_query = $db->quoteName("Product");
+            $query = 'SELECT * FROM #__securitycheckpro_db  WHERE id IN (SELECT vuln_id FROM #__securitycheckpro_vuln_components WHERE ' . $product_query .' = '.$product .')';
+			$db->setQuery($query);
+            $data = $db->loadAssocList();			
         }    
     
         $content = '<table class="table table-bordered table-hover">

@@ -75,9 +75,9 @@ $form_id = $form->id;
         <div class="em-navbar w-container">
             <div class="em-wrappermenu"><a href="../index.html" class="em-logonavbar w-inline-block w--current"><img src="../projet/images/custom/Groupe_VYV_Q.png" alt="Logo Groupe VYV"></a>
                 <div class="em-miniwrappermenu">
-                    <div class="em-wrapperitemmenu"><a href="/index.html" class="em-itemmenu w--current">LE challenge</a><a href="../projet/index.php?option=com_fabrik&view=list&listid=349" class="em-itemmenu">Projets</a><a href="/reglement.html" class="em-itemmenu">règlement</a><a href="/a-propos.html" class="em-itemmenu">à propos</a></div>
+                    <div class="em-wrapperitemmenu"><a href="/index.html" class="em-itemmenu w--current">LE challenge</a><a href="../projet/index.php?option=com_fabrik&view=list&listid=359" class="em-itemmenu">Projets</a><a href="/reglement.html" class="em-itemmenu">règlement</a><a href="/a-propos.html" class="em-itemmenu">à propos</a></div>
                 </div>
-                <a href="../projet/index.php?option=com_fabrik&view=list&listid=349" class="em-button-nav w-inline-block" data-ix="arrowcta-menu">
+                <a href="../projet/index.php?option=com_fabrik&view=list&listid=359" class="em-button-nav w-inline-block" data-ix="arrowcta-menu">
                     <div class="em-containerarrow"><img src="/projet/images/custom/5e049464ed2a2711565ccae1_arrow.svg" alt="" class="em-arrowcta-purple"><img src="/projet/images/custom/arrow.svg" alt="" class="em-arrowcta-white"></div>
                     <div class="em-textcta2">VOTER</div>
                     <div class="em-overlay"></div>
@@ -100,7 +100,7 @@ $form_id = $form->id;
         <?php
         $thematiques_name = $m_award->GetThematique($current_user->id);
         $project_name = $m_award->GetProjet($current_user->id);
-        
+
         $countByThematique1 = $m_award->CountByThematique(1);
         $countByThematique2 = $m_award->CountByThematique(2);
         $countByThematique3 = $m_award->CountByThematique(3);
@@ -108,34 +108,34 @@ $form_id = $form->id;
         $countByThematique5 = $m_award->CountByThematique(5);
         $countByThematique6 = $m_award->CountByThematique(6);
         $countByThematique7 = $m_award->CountByThematique(7);
-        
+
         $theme = '';
         $nbVote = $m_award->CountVotes($current_user->id);
         $totalVote = $m_award->TotalVotes(); ?>
-        <p class="em-paragrapheprojet-explain">Un total de <?= $totalVote ?> projets a été déposés sur la plateforme de la manière suivante:</p>
+        <p class="em-paragrapheprojet-explain">Un total de <span style="font-weight:600;color:#82358b;"><?= $totalVote ?></span> projets a été déposé sur la plateforme de la manière suivante :</p>
         <ul class="em-ulprojet-explain">
-            <li>Bien-être (sport, alimentation & santé): <?= $countByThematique1 ?></li>
-            <li>Education et accès à la culture pour tous: <?= $countByThematique2 ?></li>
-            <li>Amélioration du cadre de vie et de l’habitat: <?= $countByThematique3 ?></li>
-            <li>Maitrise des avancées technologiques: <?= $countByThematique4 ?></li>
-            <li>Eco responsabilité individuelle et collective: <?= $countByThematique5 ?></li>
-            <li>Respect des diversités et de l’inclusion: <?= $countByThematique6 ?></li>
-            <li>Autres: <?= $countByThematique7 ?></li>
+            <li>Bien-être (sport, alimentation & santé) : <span style="font-weight:600;color:#82358b;"><?= $countByThematique1 ?></span></li>
+            <li>Education et accès à la culture pour tous : <span style="font-weight:600;color:#82358b;"><?= $countByThematique2 ?></span></li>
+            <li>Amélioration du cadre de vie et de l’habitat : <span style="font-weight:600;color:#82358b;"><?= $countByThematique3 ?></span></li>
+            <li>Maitrise des avancées technologiques : <span style="font-weight:600;color:#82358b;"><?= $countByThematique4 ?></span></li>
+            <li>Eco responsabilité individuelle et collective : <span style="font-weight:600;color:#82358b;"><?= $countByThematique5 ?></span></li>
+            <li>Respect des diversités et de l’inclusion : <span style="font-weight:600;color:#82358b;"><?= $countByThematique6 ?></span></li>
+            <li>Autres : <span style="font-weight:600;color:#82358b;"><?= $countByThematique7 ?></span></li>
         </ul>
-            <?php
+        <?php
         if ($this->showFilters && $this->bootShowFilters) :
             echo $this->loadTemplate('filter');
         endif; ?>
-        
+
         <?php if($current_user->guest == 1 && $nbVote == 0 || $current_user->guest == 0 && $nbVote == 0){ ?>
-            <p class="em-divprojet-explain">Pour pouvoir voter, vous devez cliquer sur le bouton "> VOIR CE PROJET ET VOTER" puis vous connecter à votre compte. Attention, vous ne pourrez voter qu'une seule fois pour un projet, dans une limite de six projets.</p>
+            <p class="em-divprojet-explain">Pour pouvoir voter, vous devez cliquer sur le bouton "> VOIR CE PROJET ET VOTER" puis vous connecter à votre compte. Attention, vous ne pourrez voter qu'une seule fois pour un projet, dans une limite de 6 projets.</p>
         <?php } ?>
         <?php if($nbVote == 1 && $current_user->guest == 0){ ?>
             <p class="em-paragrapheprojet-explain">Vous ne pouvez voter qu'une seule fois dans chaque thématique, dans une limite de six projets.
                 Vous avez déjà voté pour un projet <span class="em-thematique-deja-votee"><?= $project_name[0] ?></span>. Donc vous ne pourrez plus voter pour ce projet, c'est pourquoi ce projet est désormais grisé.</p>
         <?php } ?>
         <?php if($nbVote > 1 && $current_user->guest == 0){ ?>
-            <div class="em-divprojet-explain">Vous ne pouvez voter qu'une seule fois dans chaque thématique, dans une limite de six projets.
+            <div class="em-divprojet-explain">Vous ne pouvez voter qu'une seule fois dans chaque thématique, dans une limite de 6 projets.
                 Vous avez déjà voté pour plusieurs projets : <?php for($i=0; $i < $nbVote; $i++){ echo '<p class="em-thematique-deja-votee">'.  $project_name[$i]. '</p>'; }?><p class="em-paragrapheprojet-explain"> Donc vous ne pourrez plus voter pour un autre projet appartenant à l'une de ces thématiques, c'est pourquoi tous les autres projets rattachés à ces thématiques seront désormais grisés.</p></div>
         <?php } ?>
 
@@ -221,8 +221,8 @@ $form_id = $form->id;
                 if (($i % 2) == 0 ) {
                     ?>
                     <div class="em-wrapper-project-row">
-                        <?php if ($countVote == 1 || $nbVote >= 6) { ?>
-                        <div class="overlay"></div>
+                        <?php if ($countVote == 1 || $nbVote == 1) { ?>
+                            <div class="overlay"></div>
                         <?php } ?>
                         <div class="em-rowproject rowinvert w-row">
                             <div class="w-col w-col-6">
@@ -246,13 +246,13 @@ $form_id = $form->id;
 
 
                                     <?php
-                                    if($current_user->id == 0){
+                                    if($current_user->guest){
 
-                                        $url = 'index.php?option=com_users&view=login&return=' . base64_encode($url_detail);
+                                        $url = JRoute::_('index.php?option=com_users&view=login&Itemid=1135&return=' . base64_encode($url_detail));
                                     }
                                     else{
 
-                                        $url = $url_detail;
+                                        $url = JRoute::_($url_detail);
                                     }
 
                                     ?>
@@ -277,7 +277,7 @@ $form_id = $form->id;
                 if (($i % 2) == 1) {
                     ?>
                     <div class="em-wrapper-project-row">
-                        <?php if ($countVote == 1 || $nbVote <= 6) { ?>
+                        <?php if ($countVote == 1 || $nbVote == 1) { ?>
                             <div class="overlay"></div>
                         <?php } ?>
                         <div class="em-rowproject w-row">
@@ -302,11 +302,11 @@ $form_id = $form->id;
 
 
                                     <?php
-                                    if($current_user->id == 0){
-                                        $url = 'index.php?option=com_users&view=login&return=' . base64_encode($url_detail);
+                                    if($current_user->guest){
+                                        $url = JRoute::_('index.php?option=com_users&view=login&Itemid=1135&return=' . base64_encode($url_detail));
                                     }
                                     else{
-                                        $url = $url_detail;
+                                        $url = JRoute::_($url_detail);
                                     } ?>
 
                                     <a href="<?= $url; ?>" class="em-button-vyv-projet w-inline-block" data-ix="arrowcta">
@@ -331,7 +331,7 @@ $form_id = $form->id;
             <div class="em-divcontainerfooter">
                 <div class="em-rowfooter"><a href="/protections-des-donnees.html" class="em-protections-des-donnees">Protection des données</a><a href="/mentions-legales.html" class="em-mentionslegales">Mentions légales</a>
                     <div class="div-block-2">
-                        <div class="em-wrappermenufooter"><a href="/index.html" class="em-menufooter">Le challenge</a><a href="/projet/index.php?option=com_fabrik&view=list&listid=349" class="em-menufooter">PROJETS</a><a href="/reglement.html" class="em-menufooter">règlement</a><a href="/a-propos.html" class="em-menufooter">à propos</a></div>
+                        <div class="em-wrappermenufooter"><a href="/index.html" class="em-menufooter">Le challenge</a><a href="/projet/index.php?option=com_fabrik&view=list&listid=359" class="em-menufooter">PROJETS</a><a href="/reglement.html" class="em-menufooter">règlement</a><a href="/a-propos.html" class="em-menufooter">à propos</a></div>
                     </div>
                     <div><img src="/projet/images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF.jpg" alt="VYV groupe logo" srcset="/projet/images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF-p-500.jpeg 500w, /projet/images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF-p-800.jpeg 800w, /projet/images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF.jpg 1000w" sizes="(max-width: 479px) 94vw, (max-width: 767px) 81vw, (max-width: 991px) 58vw, 63vw" class="em-logofooter"></div>
                 </div>
@@ -393,5 +393,3 @@ $form_id = $form->id;
         });
     }
 </script>
-
-

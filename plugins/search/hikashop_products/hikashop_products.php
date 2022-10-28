@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -74,7 +74,7 @@ class plgSearchHikashop_products extends JPlugin{
 				break;
 		}
 		$trans=hikashop_get('helper.translation');
-		$multi=$trans->isMulti() && $trans->falang;;
+		$multi=$trans->isMulti() && $trans->falang;
 		$trans_table = 'falang_content';
 
 		$rows = array();
@@ -125,7 +125,7 @@ class plgSearchHikashop_products extends JPlugin{
 		$fields = $this->params->get('fields','');
 		if(empty($fields)){
 			$fields = array('product_name','product_description');
-		}else{
+		}elseif(!is_array($fields)){
 			$fields = explode(',',$fields);
 		}
 
@@ -222,6 +222,9 @@ class plgSearchHikashop_products extends JPlugin{
 				$ids = array_keys($rows);
 				hikashop_toInteger($ids);
 				$query = ' SELECT * FROM '.hikashop_table($trans_table,false) . ' WHERE reference_table=\'hikashop_product\' AND language_id=\''.$lg.'\' AND published=1 AND reference_id IN ('.implode(',', $ids).')';
+				if($multi){
+					$query .= " AND reference_field IN (" . implode(',', $reference_fields) . ")";
+				}
 				$db->setQuery($query);
 				$trans = $db->loadObjectList();
 				foreach($trans as $item){
@@ -234,7 +237,7 @@ class plgSearchHikashop_products extends JPlugin{
 								$row->product_description=$item->value;
 								break;
 							}else{
-								$row->product_name=$item->value;
+								$row->product_description .= ' ' . $item->value;
 							}
 						}
 					}
@@ -276,8 +279,8 @@ class plgSearchHikashop_products extends JPlugin{
 					if(!$this->params->get('item_id','')) $item_id = '';
 				}
 				$class->addAlias($row);
-				$row->title=hikashop_translate($row->product_name);
-				$row->text=hikashop_translate($row->product_description);
+				$rows[$k]->title=hikashop_translate($row->product_name);
+				$rows[$k]->text=hikashop_translate($row->product_description);
 				if($variants && $row->product_type=='variant'){
 					$ids[(int)$row->product_parent_id]=(int)$row->product_parent_id;
 					static $mains = array();

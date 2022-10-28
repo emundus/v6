@@ -112,12 +112,12 @@ class DropfilesControllerConfig extends JControllerForm
             return false;
         }
         $recordId = $app->input->getInt($urlVar);
-        $text_prefix = $this->text_prefix . ($recordId === 0 && $app->isSite() ? '_SUBMIT' : '') . '_SAVE_SUCCESS';
+        $text_prefix = $this->text_prefix . ($recordId === 0 && $app->isClient('site') ? '_SUBMIT' : '') . '_SAVE_SUCCESS';
         $this->setMessage(
             JText::_(
                 ($lang->hasKey($text_prefix)
                     ? $this->text_prefix
-                    : 'JLIB_APPLICATION') . ($recordId === 0 && $app->isSite() ? '_SUBMIT' : '') . '_SAVE_SUCCESS'
+                    : 'JLIB_APPLICATION') . ($recordId === 0 && $app->isClient('site') ? '_SUBMIT' : '') . '_SAVE_SUCCESS'
             )
         );
 
@@ -168,6 +168,7 @@ class DropfilesControllerConfig extends JControllerForm
         $theme = $app->input->get('theme');
         $id = $app->input->getInt('id');
 
+
         $canDo = DropfilesHelper::getActions();
         if (!$canDo->get('core.edit')) {
             if ($canDo->get('core.edit.own')) {
@@ -181,10 +182,7 @@ class DropfilesControllerConfig extends JControllerForm
             }
         }
 
-        JPluginHelper::importPlugin('dropfilesthemes');
-        $dispatcher = JDispatcher::getInstance();
-        $themesObj = $dispatcher->trigger('getThemeName');
-
+        $themesObj = DropfilesBase::getDropfilesThemes();
         $themes = array();
         foreach ($themesObj as $value) {
             $themes[] = $value['id'];
@@ -194,8 +192,20 @@ class DropfilesControllerConfig extends JControllerForm
             $theme = 'default';
         }
 
-        $model = $this->getModel();
-        if ($model->setTheme($theme, $id)) {
+        $model   = $this->getModel();
+        $params  = $model->getParams($id);
+        $params  = (isset($params)) ? (array)$params : array();
+        $keep = array('group', 'access', 'refToFile', 'ordering', 'orderingdir');
+        foreach ($params as $k => $v) {
+            if (!in_array($k, $keep)) {
+                unset($params[$k]);
+            }
+        }
+        if (!empty($params)) {
+            $params['setTheme'] = true;
+        }
+        $refToFile = (!empty($params)) ? json_encode($params) : '';
+        if ($model->setTheme($theme, $id, $refToFile)) {
             $result = true;
         } else {
             $result = false;
@@ -262,7 +272,7 @@ class DropfilesControllerConfig extends JControllerForm
         $canDo = DropfilesHelper::getActions();
 
         if (!$canDo->get('core.edit')) {
-            $url_redirect = 'index.php?option=com_config&view=component&component=com_dropfiles';
+            $url_redirect = 'index.php?option=com_dropfiles&task=configuration.display';
             $this->setRedirect(JRoute::_($url_redirect, false), JText::_('JLIB_APPLICATION_ERROR_SAVE_NOT_PERMITTED'));
             $this->redirect();
         }
@@ -270,7 +280,7 @@ class DropfilesControllerConfig extends JControllerForm
         $Dropbox = new DropfilesDropbox();
         $Dropbox->logout();
 
-        $this->setRedirect(JRoute::_('index.php?option=com_config&view=component&component=com_dropfiles', false));
+        $this->setRedirect(JRoute::_('index.php?option=com_dropfiles&task=configuration.display', false));
         $this->redirect();
     }
 
@@ -659,6 +669,9 @@ class DropfilesControllerConfig extends JControllerForm
             $parent_id = 1;
             $mapping = array(); //doc cat => dropfiles cat
             $app = JFactory::getApplication();
+            $config = KObjectManager::getInstance()->getObject('com://admin/docman.model.entity.config');
+            $docmandir = JPATH_ROOT . '/' . $config->document_path . '/' ;
+
             foreach ($cats as $catid) {
                 $model = KObjectManager::getInstance()->getObject('com://admin/docman.model.documents')
                     ->enabled(1)
@@ -701,8 +714,6 @@ class DropfilesControllerConfig extends JControllerForm
                     $newId = $catcontroller->savedId;
                     $mapping[$catid] = $newId;
                     $parent_id = $newId;
-
-                    $docmandir = JPATH_ROOT . '/joomlatools-files/docman-files/';
 
                     $file_dir = DropfilesBase::getFilesPath($newId);
                     if (!file_exists($file_dir)) {

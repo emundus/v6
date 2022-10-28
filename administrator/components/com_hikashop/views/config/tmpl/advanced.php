@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -43,7 +43,7 @@ echo $this->leftmenu(
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('cart_retaining_period_check_frequency');?>><?php echo JText::_('CART_RETAINING_PERIOD_CHECK_FREQUENCY'); ?></td>
 		<td><?php
-			echo $this->delayTypeCarts->display('config[cart_retaining_period_check_frequency]', $this->config->get('cart_retaining_period_check_frequency', 86400));
+			echo $this->delayTypeCarts->display('config[cart_retaining_period_check_frequency]', $this->config->get('cart_retaining_period_check_frequency', 1200));
 			?><br/><?php
 			echo JText::sprintf('LAST_CHECK', hikashop_getDate($this->config->get('cart_retaining_period_checked')));
 		?></td>
@@ -128,29 +128,19 @@ echo $this->leftmenu(
 		?></td>
 	</tr>
 	<tr>
-		<td class="hk_tbl_key"<?php echo $this->docTip('checkout_legacy_mode');?>><?php echo JText::_('CHECKOUT_LEGACY_MODE'); ?></td>
-		<td><?php
-			echo JHTML::_('hikaselect.booleanlist', 'config[checkout_legacy]', '', $this->config->get('checkout_legacy', 0));
-		?></td>
-	</tr>
-	<tr>
-		<td class="hk_tbl_key"<?php echo $this->docTip('cart_legacy_mode');?>><?php echo JText::_('OPTION_ADD_TO_CART_LEGACY'); ?></td>
-		<td><?php
-			echo JHTML::_('hikaselect.booleanlist', 'config[add_to_cart_legacy]', '', $this->config->get('add_to_cart_legacy', 1));
-		?></td>
-	</tr>
-	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('dashboard_legacy_mode');?>><?php echo JText::_('DASHBOARD_LEGACY'); ?></td>
 		<td><?php
 			echo JHTML::_('hikaselect.booleanlist', 'config[legacy_widgets]', '', $this->config->get('legacy_widgets', 1));
 		?></td>
 	</tr>
+<?php if(!HIKASHOP_J40) { ?>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('carousel_legacy_mode');?>><?php echo JText::_('CAROUSEL_LEGACY'); ?></td>
 		<td><?php
 			echo JHTML::_('hikaselect.booleanlist', 'config[carousel_legacy]', '', $this->config->get('carousel_legacy', 1));
 		?></td>
 	</tr>
+<?php } ?>
 <?php if($this->config->get('server_current_url_mode', '0') != '0'){ ?>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('server_current_url_mode');?>><?php echo JText::_('SERVER_CURRENT_URL_MODE'); ?></td>
@@ -214,39 +204,6 @@ echo $this->leftmenu(
 			echo JHTML::_('hikaselect.booleanlist', 'config[checkout_convert_cart]', '', $this->config->get('checkout_convert_cart', 1));
 		?></td>
 	</tr>
-<?php } ?>
-<?php if($this->config->get('add_to_cart_legacy', 1)){ ?>
-	<tr>
-		<td colspan="2"><h4><?php echo JText::_('OPTION_ADD_TO_CART_LEGACY'); ?></h4></td>
-	</tr>
-	<tr>
-		<td class="hk_tbl_key"<?php echo $this->docTip('redirect_url_after_add_cart');?>><?php echo JText::_('AFTER_ADD_TO_CART'); ?></td>
-		<td><?php
-			echo $this->cart_redirect->display('config[redirect_url_after_add_cart]',$this->config->get('redirect_url_after_add_cart'));
-		?></td>
-	</tr>
-	<tr>
-		<td class="hk_tbl_key"<?php echo $this->docTip('ajax_add_to_cart');?>><?php echo JText::_('USE_AJAX_WHEN_POSSIBLE_FOR_ADD_TO_CART'); ?></td>
-		<td><?php
-			echo JHTML::_('hikaselect.booleanlist', 'config[ajax_add_to_cart]', '', $this->config->get('ajax_add_to_cart', 0));
-		?></td>
-	</tr>
-	<?php if($this->config->get('redirect_url_after_add_cart') == 'ask_user'){ ?>
-	<tr>
-		<td class="hk_tbl_key"<?php echo $this->docTip('popup_display_time');?>><?php echo JText::_('NOTICE_POPUP_DISPLAY_TIME'); ?></td>
-		<td>
-			<input type="text" class="inputbox" size="10" name="config[popup_display_time]" value="<?php echo (int)$this->config->get('popup_display_time',2000);?>"/>ms
-		</td>
-	</tr>
-	<tr>
-		<td class="hk_tbl_key"<?php echo $this->docTip('add_to_cart_popup_xy');?>><?php echo JText::_('ADD_TO_CART_POPUP_SIZE'); ?></td>
-		<td>
-			<input type="text" style="width:50px;" class="inputbox" name="config[add_to_cart_popup_width]" value="<?php echo $this->escape($this->config->get('add_to_cart_popup_width','480'));?>"/>
-			x
-			<input type="text" style="width:50px;" class="inputbox" name="config[add_to_cart_popup_height]" value="<?php echo $this->escape($this->config->get('add_to_cart_popup_height','140'));?>"/>
-		</td>
-	</tr>
-	<?php } ?>
 <?php } ?>
 </table>
 	</div></div>

@@ -2,20 +2,21 @@
 <extension version="3.0" type="plugin" group="system" method="upgrade">
     <name>plg_system_falangdriver</name>
     <author>Stéphane Bouey</author>
-    <creationDate>23 march 2020</creationDate>
-    <copyright>2011-2020, Faboba</copyright>
+    <creationDate>14 February 2022</creationDate>
+    <copyright>2011-2022, Faboba</copyright>
     <license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
     <authorEmail>stephane.bouey@faboba.com</authorEmail>
     <authorUrl>www.faboba.com</authorUrl>
-    <version>3.3.0</version>
+    <version>3.10.4</version>
     <description>PLG_SYSTEM_FALANGDRIVER_XML_DESCRIPTION</description>
 	<files>
 		<filename plugin="falangdriver">index.html</filename>
 		<filename plugin="falangdriver">falangdriver.php</filename>
         <filename plugin="falangdriver">falang_database.php</filename>
+        <folder>drivers</folder>
 		<folder>language</folder>
         <folder>menu</folder>
-        <folder>drivers</folder>
+        <folder>overrides</folder>
         <folder>routers</folder>
 	</files>
 	<languages>

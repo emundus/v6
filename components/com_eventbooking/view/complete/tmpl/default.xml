@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="Registration Complete">
+		<message>
+			Display registration complete page to registrant. You should only create a menu item to link to this view if you want to use auto return feature of Paypal
+		</message>
+	</layout>
+	<state>
+		<name>Registration Complete</name>
+		<description>Display registration complete page to registrant. You should only create a menu item to link to this view if you want to use auto return feature of Paypal</description>
+	</state>
+</metadata>

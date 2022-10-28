@@ -1,4 +1,11 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+
 /************ HOME ***************/
+body{
+    font-family: 'Material Icons';
+}
+
 @media (min-width: 768px) {
     .position-me {
         position: absolute;
@@ -85,7 +92,7 @@
     }
 
     .campaingapply.blue {
-        background-color: #ECECEC;
+        background-color: transparent;
         color: #000;
         border-color: #19B5FE;
     }
@@ -129,7 +136,7 @@
 
     .campaingapply {
         float: right !important;
-        background-color: #e1edfa;
+        background-color: transparent;
         color: #000;
         border: 1px #5476a4;
     }
@@ -141,7 +148,6 @@
     }
 
     .campaingapply.blue {
-        background-color: #e1edfa;
         color: #000;
         border: #5476a4;
     }
@@ -187,6 +193,9 @@
 .campaigntext.blue {
     background-color: #FFFFFF;
     border-color: #002F6B;
+    border: none !important;
+    padding: 10px;
+    min-height: unset !important;
 }
 
 .campaigntext.orange {
@@ -502,17 +511,20 @@ button.btn.btn-default.sch {
     overflow: hidden;
 }
 
+.campaign-month-campaigns{
+    background: transparent;
+}
+
 .campaign-month-campaigns .campaign-content:last-child {
     margin: 0 !important;
 }
 
 .campaign-content {
     overflow: visible;
-    border-right: 1px solid #d5d5d5;
-    border-left: 1px solid #d5d5d5;
-    box-shadow: 1px 0 10px 0 #d5d5d5;
-    border-bottom: 1px solid #d5d5d5;
     margin: 0 0 10px 0 !important;
+    background: #fff;
+    border-radius: 8px;
+    border: solid 1px #dedede;
 }
 
 .campaigns-list .campaignbymonth .campaign-month-label .position-me {
@@ -611,14 +623,15 @@ button.btn.btn-default.sch {
 }
 
 .left-side {
-    width: 70%;
+    width: 60%;
+    border-top-left-radius: 8px;
 }
 
 .right-side {
     overflow: hidden;
     float: left;
-    width: 30%;
-    background-color: #fff !important;
+    width: 40%;
+    background-color: transparent !important;
     border-radius: 0 !important;
     border-left: 1px solid #d5d5d5 !important;
     padding-left: 10px !important;
@@ -673,9 +686,9 @@ button.btn.btn-default.sch {
     }
 
     .campaigns-list .campaignbymonth .campaign-month-label .position-me .rotate-me.blue,   .campaigns-list .campaignbymonth .campaign-month-label .position-me .rotate-me.orange {
-        transform: rotate(180deg) !important;
-        padding-left: 60px !important;
+        transform: rotate(0deg) !important;
         margin: 0 auto;
+        float: right;
     }
 
     .campaign-content .left-side,

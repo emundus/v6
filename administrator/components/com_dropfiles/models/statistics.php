@@ -122,6 +122,7 @@ class DropfilesModelStatistics extends JModelList
         $options = array();
 // Get a db connection.
         $db = JFactory::getDbo();
+        $params = JComponentHelper::getParams('com_dropfiles');
 
         if (!empty($selection)) {
             if ($selection === 'category') {
@@ -149,6 +150,30 @@ class DropfilesModelStatistics extends JModelList
                         $options[$cat->id] = $cat->title;
                     }
                 }
+            } elseif ($selection === 'users' && (int) $params->get('track_user_download', 0) === 1) {
+                $list = (int) $this->getRegularUserDownloadCount();
+                if ($list !== 0) {
+                    $query = $db->getQuery(true);
+                    $query->select('dl.related_users')->from('#__dropfiles_statistics AS dl')->where('dl.related_users !=0');
+                    $db->setQuery($query);
+                    $users = $db->loadObjectList();
+                    $result = array();
+                    if (!empty($users)) {
+                        foreach ($users as $key => $value) {
+                            array_push($result, $value->related_users);
+                            $result = array_unique($result);
+                        }
+                    }
+                    $query = 'SELECT u.* FROM #__users AS u WHERE u.id IN ('. implode(',', $result) .')';
+
+                    $db->setQuery($query);
+                    $cats = $db->loadObjectList();
+                    if ($cats) {
+                        foreach ($cats as $cat) {
+                            $options[$cat->id] = $cat->name;
+                        }
+                    }
+                }
             }
         }
         return $options;
@@ -167,6 +192,7 @@ class DropfilesModelStatistics extends JModelList
         $db = $this->getDbo();
         $query = $db->getQuery(true);
         $app = JFactory::getApplication();
+        $params = JComponentHelper::getParams('com_dropfiles');
 
         // Select the required fields from the table.
         $query->select(
@@ -181,7 +207,7 @@ class DropfilesModelStatistics extends JModelList
         $query->select('c.title AS cattitle')
             ->join('INNER', '#__categories AS c ON c.id = a.catid');
 
-        $query->select('SUM(ch.count) AS count_hits')
+        $query->select('SUM(ch.count) AS count_hits, ch.related_users AS user_download')
             ->join('INNER', '#__dropfiles_statistics AS ch ON ch.related_id = a.id');
         $date_from = $this->getState('filter.from');
         $date_to = $this->getState('filter.to');
@@ -214,11 +240,14 @@ class DropfilesModelStatistics extends JModelList
                 foreach ($selection_value as $value) {
                     $values_clean[] = $filter->clean($value, 'int');
                 }
-                JArrayHelper::toInteger($values_clean);
+                Joomla\Utilities\ArrayHelper::toInteger($values_clean);
                 if ($selection === 'files') {
                     $query->where('a.id IN (' . implode(',', $values_clean) . ')');
                 } elseif ($selection === 'category') {
                     $query->where('c.id IN (' . implode(',', $values_clean) . ')');
+                } elseif ($selection === 'users' && (int) $params->get('track_user_download', 0) === 1) {
+                    $query->where('ch.related_users IN (' . implode(',', $values_clean) . ')');
+                    $query->group('ch.related_users');
                 }
             }
         }
@@ -247,24 +276,40 @@ class DropfilesModelStatistics extends JModelList
         $db = JFactory::getDbo();
         $filter = JFilterInput::getInstance();
         $files_clean = array();
+        $app = JFactory::getApplication();
+        $users = $app->input->get('selection_value', array(), 'array');
         foreach ($fids as $value) {
             $files_clean[] = $filter->clean($value, 'int');
         }
-        JArrayHelper::toInteger($files_clean);
+        Joomla\Utilities\ArrayHelper::toInteger($files_clean);
         $query = $db->getQuery(true);
-        $query->select('f.id, ch.date, ch.count')
-            ->from('#__dropfiles_files AS f')
-            ->join('INNER', ' #__dropfiles_statistics AS ch ON ch.related_id = f.id')
-            ->where('f.id IN (' . implode(',', $files_clean) . ')')
-            ->order('ch.date');
+        if ($this->getState('filter.selection') ==='users' && !empty($users)) {
+            Joomla\Utilities\ArrayHelper::toInteger($users);
+            $query->select('f.id, ch.date, ch.count')
+                ->from('#__dropfiles_files AS f')
+                ->join('INNER', ' #__dropfiles_statistics AS ch ON ch.related_id = f.id')
+                ->where('f.id IN (' . implode(',', $files_clean) . ') AND ch.related_users IN (' . implode(',', $users) . ')')
+                ->order('ch.date');
+        } else {
+            $query->select('f.id, ch.date, ch.count')
+                ->from('#__dropfiles_files AS f')
+                ->join('INNER', ' #__dropfiles_statistics AS ch ON ch.related_id = f.id')
+                ->where('f.id IN (' . implode(',', $files_clean) . ')')
+                ->order('ch.date');
+        }
 
         $db->setQuery($query);
+
         $results = $db->loadObjectList();
 
         $rows = array();
         if (count($results)) {
-            foreach ($results as $result) {
-                $rows[$result->date][$result->id] = $result->count;
+            foreach ($results as $key => $result) {
+                if (!isset($rows[$result->date][$result->id])) {
+                    $rows[$result->date][$result->id] = $result->count;
+                } else {
+                    $rows[$result->date][$result->id] += $result->count;
+                }
             }
         }
 
@@ -292,5 +337,41 @@ class DropfilesModelStatistics extends JModelList
         $results = $db->loadObjectList();
 
         return $results;
+    }
+
+    /**
+     * Get User download
+     *
+     * @param integer|string $id User id
+     *
+     * @return object
+     *
+     * @since version
+     */
+    public function getUserDownload($id)
+    {
+        $dbo = JFactory::getDbo();
+        $query = 'SELECT u.name FROM #__users AS u WHERE u.id='. (int)$id;
+        $dbo->setQuery($query);
+        $result = $dbo->loadObject();
+
+        return $result;
+    }
+
+    /**
+     * Get the number of files downloaded by regular users
+     *
+     * @return object List
+     *
+     * @since version
+     */
+    public function getRegularUserDownloadCount()
+    {
+        $dbo = JFactory::getDbo();
+        $query = 'SELECT Count(*) AS total FROM #__dropfiles_statistics AS dl WHERE dl.related_users !=0';
+        $dbo->setQuery($query);
+        $result = $dbo->loadObject();
+
+        return $result->total;
     }
 }

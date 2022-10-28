@@ -116,10 +116,6 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 		$recipients[] = array('attachment_id' => $jinput->get('jos_emundus_references___attachment_id_4', 19), 'email' => $jinput->getString('jos_emundus_references___Email_4', ''),'name'=>$jinput->getString('jos_emundus_references___Last_Name_4', JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS')),'firstname'=>$jinput->getString('jos_emundus_references___First_Name_1', ''));
 
 		$student = JFactory::getUser($student_id);
-		$current_user = JFactory::getSession()->get('emundusUser');
-		if (empty($current_user->fnum) || !isset($current_user->fnum)) {
-			$current_user->fnum = $fnum;
-		}
 
 		$url = $this->getParam('url');
 		$sef_url = $this->getParam('sef_url', false);
@@ -130,24 +126,23 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
                 FROM #__emundus_setup_emails
                 WHERE lbl="'.$email_tmpl.'"';
 		$db->setQuery($query);
-		$db->execute();
 		$obj = $db->loadObjectList();
 
 		// Récupération de la pièce jointe : modele de lettre
 		$query = 'SELECT esp.reference_letter
                 FROM #__emundus_setup_profiles as esp
-                WHERE esp.id = '.$current_user->profile;
+                LEFT JOIN #__emundus_setup_campaigns as esc on esc.profile_id = esp.id 
+                LEFT JOIN #__emundus_campaign_candidature as ecc on ecc.campaign_id = esc.id 
+                WHERE ecc.fnum LIKE '. $db->quote($fnum);
 		$db->setQuery($query);
-		$db->execute();
 		$obj_letter = $db->loadRowList();
 
 		//////////////////////////  SET FILES REQUEST  /////////////////////////////
 		//
 		// Génération de l'id du prochain fichier qui devra être ajouté par le referent
 		$m_files = new EmundusModelFiles;
+        $fnum_detail = $m_files->getFnumInfos($fnum);
 		$m_emails = new EmundusModelEmails;
-
-		$fnum_detail = $m_files->getFnumInfos($current_user->fnum);
 
 		// setup mail
 		$email_from_sys = $app->getCfg('mailfrom');
@@ -166,11 +161,11 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 
 		foreach ($recipients as $recipient) {
 			if (isset($recipient['email']) && !empty($recipient['email'])) {
-				
+
 				$attachment_id = $recipient['attachment_id']; //ID provenant de la table emundus_attachments
-				
+
 				$query = 'SELECT count(id) as cpt FROM #__emundus_files_request 
-							WHERE student_id='.$student->id.' AND attachment_id='.$attachment_id.' AND uploaded=1 AND fnum like '.$db->Quote($current_user->fnum);
+							WHERE student_id='.$student->id.' AND attachment_id='.$attachment_id.' AND uploaded=1 AND fnum like '.$db->Quote($fnum);
 
 				$db->setQuery($query);
 				$db->execute();
@@ -180,7 +175,7 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 					$key = md5(date('Y-m-d h:m:i').'::'.$fnum.'::'.$student_id.'::'.$attachment_id.'::'.rand());
 					// 2. MAJ de la table emundus_files_request
 					$query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, campaign_id, fnum, email) 
-                          VALUES ('.$db->Quote($now).', '.$student->id.', '.$db->Quote($key).', '.$attachment_id.', '.$fnum_detail['id'].', '.$db->Quote($current_user->fnum).', '.$db->Quote($recipient['email']).')';
+                          VALUES ('.$db->Quote($now).', '.$student->id.', '.$db->Quote($key).', '.$attachment_id.', '.$fnum_detail['id'].', '.$db->Quote($fnum).', '.$db->Quote($recipient['email']).')';
 
 					$db->setQuery($query);
 					$db->execute();
@@ -207,7 +202,7 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
                         'REFERENT_NAME'  => $recipient['name'],
                         'REFERENT_FIRST_NAME'  => $recipient['firstname']
 					];
-					$tags = $m_emails->setTags($fnum_detail['applicant_id'], $post, $fnum);
+					$tags = $m_emails->setTags($fnum_detail['applicant_id'], $post, $fnum, '', $obj[0]->subject.$obj[0]->message);
 					$subject = preg_replace($tags['patterns'], $tags['replacements'], $obj[0]->subject);
 					$body = preg_replace($tags['patterns'], $tags['replacements'], $obj[0]->message);
 
@@ -230,7 +225,7 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 					if ($send !== true) {
 
 						JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_NOT_SENT').' : '.$recipient['email'], 'error');
-						JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                        JLog::add($send, JLog::ERROR, 'com_emundus');
 
 					} else {
 

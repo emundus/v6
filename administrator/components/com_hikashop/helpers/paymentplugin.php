@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -17,6 +17,7 @@ class hikashopPaymentPlugin extends hikashopPlugin {
 		'recurring' => false,
 		'refund' => false
 	);
+	var $needCallbackFile = false;
 
 	function onPaymentDisplay(&$order, &$methods, &$usable_methods) {
 		if(empty($methods) || empty($this->name))
@@ -88,7 +89,7 @@ class hikashopPaymentPlugin extends hikashopPlugin {
 			if(!empty($method->payment_params->payment_max_volume) && bccomp((float)@$method->payment_params->payment_max_volume, 0, 3)) {
 				$method->payment_params->payment_max_volume_orig = $method->payment_params->payment_max_volume;
 				$method->payment_params->payment_max_volume = $volumeHelper->convert($method->payment_params->payment_max_volume, @$method->payment_params->payment_size_unit);
-				if(bccomp((float)$method->payment_params->payment_max_volume, (float)$order->volume, 3) == -1){
+				if(bccomp(sprintf('%.10F',$method->payment_params->payment_max_volume), sprintf('%.10F',$order->volume), 10) == -1){
 					$method->errors['max_volume'] = ($method->payment_params->payment_max_volume - $order->volume);
 					continue;
 				}
@@ -96,7 +97,7 @@ class hikashopPaymentPlugin extends hikashopPlugin {
 			if(!empty($method->payment_params->payment_min_volume) && bccomp((float)@$method->payment_params->payment_min_volume, 0, 3)) {
 				$method->payment_params->payment_min_volume_orig = $method->payment_params->payment_min_volume;
 				$method->payment_params->payment_min_volume = $volumeHelper->convert($method->payment_params->payment_min_volume, @$method->payment_params->payment_size_unit);
-				if(bccomp((float)$method->payment_params->payment_min_volume, (float)$order->volume, 3) == 1){
+				if(bccomp(sprintf('%.10F',$method->payment_params->payment_min_volume), sprintf('%.10F',$order->volume), 10) == 1){
 					$method->errors['min_volume'] = ($order->volume - $method->payment_params->payment_min_volume);
 					continue;
 				}
@@ -105,7 +106,7 @@ class hikashopPaymentPlugin extends hikashopPlugin {
 			if(!empty($method->payment_params->payment_max_weight) && bccomp((float)@$method->payment_params->payment_max_weight, 0, 3)) {
 				$method->payment_params->payment_max_weight_orig = $method->payment_params->payment_max_weight;
 				$method->payment_params->payment_max_weight = $weightHelper->convert($method->payment_params->payment_max_weight, @$method->payment_params->payment_weight_unit);
-				if(bccomp((float)$method->payment_params->payment_max_weight, (float)$order->weight, 3) == -1){
+				if(bccomp(sprintf('%.5F',$method->payment_params->payment_max_weight), sprintf('%.5F',$order->weight), 5) == -1){
 					$method->errors['max_weight'] = ($method->payment_params->payment_max_weight - $order->weight);
 					continue;
 				}
@@ -113,7 +114,7 @@ class hikashopPaymentPlugin extends hikashopPlugin {
 			if(!empty($method->payment_params->payment_min_weight) && bccomp((float)@$method->payment_params->payment_min_weight,0,3)){
 				$method->payment_params->payment_min_weight_orig = $method->payment_params->payment_min_weight;
 				$method->payment_params->payment_min_weight = $weightHelper->convert($method->payment_params->payment_min_weight, @$method->payment_params->payment_weight_unit);
-				if(bccomp((float)$method->payment_params->payment_min_weight, (float)$order->weight, 3) == 1){
+				if(bccomp(sprintf('%.5F',$method->payment_params->payment_min_weight), sprintf('%.5F',$order->weight), 5) == 1){
 					$method->errors['min_weight'] = ($order->weight - $method->payment_params->payment_min_weight);
 					continue;
 				}
@@ -219,6 +220,60 @@ class hikashopPaymentPlugin extends hikashopPlugin {
 			return true;
 		}
 	}
+	function onAfterHikaPluginUpdate($type, &$element) {
+		$this->createCallbackFile($type, $element);
+	}
+	function onAfterHikaPluginCreate($type, &$element) {
+		$this->createCallbackFile($type, $element);
+	}
+
+	function createCallbackFile($type, &$element) {
+		if($type != 'payment' || $element->payment_type != $this->pluginName)
+			return true;
+		if(!$this->needCallbackFile)
+			return true;
+
+		$path = JPATH_ROOT.DS.$this->getCallbackFilename($element);
+		if(file_exists($path))
+			return true;
+		jimport('joomla.filesystem.file');
+		jimport('joomla.filesystem.path');
+		$content = $this->getCallbackContent($element);
+		$result = JFile::write($path, $content);
+		if(!$result) {
+			$app = JFactory::getApplication();
+			$app->enqueueMessage(JText::sprintf('CALLBACK_FILE_COULD_NOT_BE_ADDED', $path), 'error');
+		}
+		return $result;
+	}
+
+	function getCallbackFilename(&$element) {
+		return $this->pluginName.'_'.$element->payment_id.'.php';
+	}
+	function getCallbackContent(&$element) {
+		$lang = JFactory::getLanguage();
+		$locale = strtolower(substr($lang->get('tag'),0,2));
+		$content = '<?php
+$_GET[\'option\']=\'com_hikashop\';
+$_GET[\'tmpl\']=\'component\';
+$_GET[\'ctrl\']=\'checkout\';
+$_GET[\'task\']=\'notify\';
+$_GET[\'notif_payment\']=\''.$this->pluginName.'\';
+$_GET[\'format\']=\'html\';
+$_GET[\'lang\']=\''.$locale.'\';
+$_GET[\'notif_id\']=\''.$element->payment_id.'\';
+$_REQUEST[\'option\']=\'com_hikashop\';
+$_REQUEST[\'tmpl\']=\'component\';
+$_REQUEST[\'ctrl\']=\'checkout\';
+$_REQUEST[\'task\']=\'notify\';
+$_REQUEST[\'notif_payment\']=\''.$this->pluginName.'\';
+$_REQUEST[\'format\']=\'html\';
+$_REQUEST[\'lang\']=\''.$locale.'\';
+$_REQUEST[\'notif_id\']=\''.$element->payment_id.'\';
+include(\'index.php\');
+';
+		return $content;
+	}
 
 	function onAfterOrderConfirm(&$order, &$methods, $method_id) {
 		$this->payment = $methods[$method_id];
@@ -323,16 +378,25 @@ class hikashopPaymentPlugin extends hikashopPlugin {
 			$id = $order_id;
 
 		if(!empty($id)) {
+			$mailClass = hikashop_get('class.mail');
 			$dbOrder = $orderClass->get($id);
 			$message = str_replace('<br/>', "\r\n", JText::sprintf('PAYMENT_NOTIFICATION_STATUS', $this->name, $payment_status)) . ' ' .
 				JText::sprintf('ORDER_STATUS_CHANGED', $mail_status) .
 				"\r\n".JText::sprintf('NOTIFICATION_OF_ORDER_ON_WEBSITE', $dbOrder->order_number, HIKASHOP_LIVE);
+			if(is_string($email))
+				$message.= "\r\n\r\n" . $email;
 			$orderMail = $orderClass->loadNotification((int)$id, 'payment_notification', $message);
 			if(empty($orderMail->mail->subject))
-				$orderMail->mail->subject = JText::sprintf('PAYMENT_NOTIFICATION_FOR_ORDER', $this->name, $payment_status, $dbOrder->order_number);
-			$orderMail->mail->dst_email = $recipients;
+				$orderMail->mail->subject = JText::sprintf('PAYMENT_NOTIFICATION_FOR_ORDER', $this->name, $payment_status, $dbOrder->order_number);		
 
-			$mailClass = hikashop_get('class.mail');
+			if(HIKASHOP_J30) {
+				$mailClass->mailer->addReplyTo($orderMail->mail->dst_email, $orderMail->mail->dst_name);
+			} else {
+				$mailClass->mailer->addReplyTo(array($orderMail->mail->dst_email, $orderMail->mail->dst_name));
+			}
+			$orderMail->mail->dst_email = $recipients;
+			$orderMail->mail->dst_name = '';
+
 			$mailClass->sendMail($orderMail->mail);
 			return;
 		}

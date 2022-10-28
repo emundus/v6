@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="Submit Event - Simple Layout">
+		<message>
+			Display form which allow users to submit event using Simple layout
+		</message>
+	</layout>
+	<state>
+		<name>Submit Event - Simple Layout</name>
+		<description>Display form which allow users to submit event using Simple layout</description>
+		<fields name="params" addfieldpath="/administrator/components/com_eventbooking/elements">
+			<fieldset name="basic">
+				<field name="default_category_id" type="ebcategory" label="Default Category" />
+			</fieldset>
+		</fields>
+	</state>
+</metadata>

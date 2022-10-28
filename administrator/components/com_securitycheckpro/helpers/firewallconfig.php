@@ -6,100 +6,66 @@ defined('_JEXEC') or die();
     var textdecoded = "no";
 
     jQuery(document).ready(function() {        
-        Disable();    
-        
-        jQuery( "#li_europe_tab" ).click(function() {
-            SetActiveTabContinent('europe');
-        });
-        jQuery( "#li_northAmerica_tab" ).click(function() {
-            SetActiveTabContinent('northAmerica');
-        });
-        jQuery( "#li_southAmerica_tab" ).click(function() {
-            SetActiveTabContinent('southAmerica');
-        });
-        jQuery( "#africa" ).click(function() {
-            SetActiveTabContinent('africa');
-        });
-        jQuery( "#asia" ).click(function() {
-            SetActiveTabContinent('asia');
-        });
-        jQuery( "#oceania" ).click(function() {
-            SetActiveTabContinent('oceania');
-        });
-        jQuery( "#enable_url_inspector_button" ).click(function() {
+        Disable();
+		
+		jQuery( "#enable_url_inspector_button" ).click(function() {
             Joomla.submitbutton('enable_url_inspector');
         });
-        jQuery( "#li_lists_tab" ).click(function() {
-            SetActiveTab('lists');
-        });
-        jQuery( "#li_methods_tab" ).click(function() {
-            SetActiveTab('methods');
-        });
-        jQuery( "#li_mode_tab" ).click(function() {
-            SetActiveTab('mode');
-        });
-        jQuery( "#li_logs_tab" ).click(function() {
-            SetActiveTab('logs');
-        });
-        jQuery( "#li_redirection_tab" ).click(function() {
-            SetActiveTab('redirection');
-        });
-        jQuery( "#li_second_tab" ).click(function() {
-            SetActiveTab('second');                
-        });
-        jQuery( "#li_email_notifications_tab" ).click(function() {
-            SetActiveTab('email_notifications');
-        });
-        jQuery( "#li_exceptions_tab" ).click(function() {
-            SetActiveTab('exceptions');
-        });
-        jQuery( "#li_session_protection_tab" ).click(function() {
-            SetActiveTab('session_protection');
-        });
-        jQuery( "#li_geoblock_tab" ).click(function() {
-            SetActiveTab('geoblock');
-        });
-        jQuery( "#li_upload_scanner_tab" ).click(function() {
-            SetActiveTab('upload_scanner');
-        });
-        jQuery( "#li_spam_protection_tab" ).click(function() {
-            SetActiveTab('spam_protection');
-        });
-        jQuery( "#li_url_inspector_tab" ).click(function() {
-            SetActiveTab('url_inspector');
-        });
-        jQuery( "#li_track_actions_tab" ).click(function() {
-            SetActiveTab('track_actions');
-        });
+
+		var triggerWafConfigurationTabs = [].slice.call(document.querySelectorAll('#WafConfigurationTabsTabs a'))
+		triggerWafConfigurationTabs.forEach(function (triggerEl) {
+		  var WafConfigurationTab = new bootstrap.Tab(triggerEl)
+
+		  triggerEl.addEventListener('click', function (event) {			
+			SetActiveTab(triggerEl.getAttribute('href'));
+		  })
+		})
+		
+		var triggerListsTabs = [].slice.call(document.querySelectorAll('#ListsTabsTabs a'))
+		triggerListsTabs.forEach(function (triggerEl) {
+		  var ListsTab = new bootstrap.Tab(triggerEl)
+
+		  triggerEl.addEventListener('click', function (event) {			
+			SetActiveTabLists(triggerEl.getAttribute('href'));
+		  })
+		})
+		
+		var triggerExceptionsTabs = [].slice.call(document.querySelectorAll('#ExceptionsTabsTabs a'))
+		triggerExceptionsTabs.forEach(function (triggerEl) {
+		  var ExceptionsTab = new bootstrap.Tab(triggerEl)
+
+		  triggerEl.addEventListener('click', function (event) {			
+			SetActiveTabExceptions(triggerEl.getAttribute('href'));
+		  })
+		})
+	       
         jQuery( "#search_button" ).click(function() {
             document.getElementById('filter_search').value='';
             this.form.submit();
         });
-        jQuery( "#li_blacklist_tab" ).click(function() {
-            SetActiveTabLists('blacklist');
-        });
-        jQuery( "#li_dynamic_blacklist_tab" ).click(function() {
-            SetActiveTabLists('dynamic_blacklist_tab');
-        });
-        jQuery( "#li_whitelist_tab" ).click(function() {
-            SetActiveTabLists('whitelist');
-        });
+        
         jQuery( "#upload_import_button" ).click(function() {
-            Joomla.submitbutton('import_blacklist');
+            Joomla.submitbutton('import_list');
         });
-        jQuery( "#add_ip_whitelist_button" ).click(function() {
-            setOwnIP(); 
-            Joomla.submitbutton('addip_whitelist');
+        jQuery( "#add_ip_whitelist_button" ).click(function() {			
+            setOwnIP();
+			Joomla.submitbutton('addip_whitelist');
         });
         jQuery( "#add_ip_whitelist_button2" ).click(function() {
-            setOwnIP(); 
-            Joomla.submitbutton('addip_whitelist');
+			setOwnIP(); 
+			Joomla.submitbutton('addip_whitelist');
         });
-        jQuery( "#add_ip_blacklist_button" ).click(function() {
-            Joomla.submitbutton('addip_blacklist'); 
+        jQuery( "#add_ip_blacklist_button" ).click(function() {				
+			var el = '<input type="hidden" name="task" value="addip_blacklist"></input>';
+			jQuery('#adminForm').append(el);
+			adminForm.submit();
+            //Joomla.submitbutton('addip_blacklist'); 
         });
         jQuery( "#export_blacklist_button" ).click(function() {
-            Joomla.submitbutton('Export_blacklist');
+			var el = '<input type="hidden" name="export" value="blacklist"></input>';
+			jQuery('#adminForm').append(el);
+			adminForm.submit();
+            Joomla.submitbutton('export_list');
         });
         jQuery( "#delete_ip_blacklist_button" ).click(function() {
             Joomla.submitbutton('deleteip_blacklist');
@@ -111,13 +77,26 @@ defined('_JEXEC') or die();
             Joomla.checkAll(this);
         });
         jQuery( "#import_whitelist_button" ).click(function() {
-            Joomla.submitbutton('import_whitelist');
+            Joomla.submitbutton('import_list');
         });
         jQuery( "#addip_whitelist_button" ).click(function() {
-            Joomla.submitbutton('addip_whitelist');
+            var el = '<input type="hidden" name="task" value="addip_whitelist"></input>';
+			jQuery('#adminForm').append(el);
+			adminForm.submit();			
         });
-        jQuery( "#export_whitelist_button" ).click(function() {
-            Joomla.submitbutton('Export_whitelist');
+        jQuery( "#select_blacklist_file_to_upload" ).click(function() {
+            var el = '<input type="hidden" id="import" name="import" value="blacklist"></input>';
+			jQuery('#div_boton_subida_blacklist').append(el);
+        });	
+		jQuery( "#select_whitelist_file_to_upload" ).click(function() {
+            var el = '<input type="hidden" id="import" name="import" value="whitelist"></input>';
+			jQuery('#div_boton_subida_whitelist').append(el);
+        });	
+		jQuery( "#export_whitelist_button" ).click(function() {
+            var el = '<input type="hidden" name="export" value="whitelist"></input>';
+			jQuery('#adminForm').append(el);
+			adminForm.submit();
+            Joomla.submitbutton('export_list');
         });
         jQuery( "#deleteip_whitelist_button" ).click(function() {
             Joomla.submitbutton('deleteip_whitelist');
@@ -125,61 +104,7 @@ defined('_JEXEC') or die();
         jQuery( "#boton_test_email" ).click(function() {
             Joomla.submitbutton('send_email_test');
         });
-        jQuery( "#li_header_referer_tab" ).click(function() {
-            SetActiveTabExceptions('header_referer');
-        });
-        jQuery( "#li_base64_tab" ).click(function() {
-            SetActiveTabExceptions('base64');
-        });
-        jQuery( "#li_xss_tab" ).click(function() {
-            SetActiveTabExceptions('xss');
-        });
-        jQuery( "#li_sql_tab" ).click(function() {
-            SetActiveTabExceptions('sql');
-        });
-        jQuery( "#li_lfi_tab" ).click(function() {
-            SetActiveTabExceptions('lfi');
-        });
-        jQuery( "#li_secondlevel_tab" ).click(function() {
-            SetActiveTabExceptions('secondlevel');
-        });
-        jQuery( "#check_all_europe_table_button" ).click(function() {
-            CheckAll('europe_table',true,'continentEU');
-        });
-        jQuery( "#uncheck_all_europe_table_button" ).click(function() {
-            CheckAll('europe_table',false,'continentEU');
-        });
-        jQuery( "#check_all_northamerica_table_button" ).click(function() {
-            CheckAll('northamerica_table',true,'continentNA');
-        });
-        jQuery( "#unccheck_all_northamerica_table_button" ).click(function() {
-            CheckAll('northamerica_table',false,'continentNA');
-        });
-        jQuery( "#check_all_southamerica_table_button" ).click(function() {
-            CheckAll('southamerica_table',true,'continentSA');
-        });
-        jQuery( "#uncheck_all_southamerica_table_button" ).click(function() {
-            CheckAll('southamerica_table',false,'continentSA');
-        });
-        jQuery( "#check_all_africa_table_button" ).click(function() {
-            CheckAll('africa_table',true,'continentAF');
-        });
-        jQuery( "#uncheck_all_africa_table_button" ).click(function() {
-            CheckAll('africa_table',false,'continentAF');
-        });
-        jQuery( "#check_all_asia_table_button" ).click(function() {
-            CheckAll('asia_table',true,'continentAS');
-        });
-        jQuery( "#uncheck_all_asia_table_button" ).click(function() {
-            CheckAll('asia_table',false,'continentAS');
-        });
-        jQuery( "#check_all_oceania_table_button" ).click(function() {
-            CheckAll('oceania_table',true,'continentOC');
-        });
-        jQuery( "#uncheck_all_oceania_table_button" ).click(function() {
-            CheckAll('oceania_table',false,'continentOC');
-        });
-        
+                
         jQuery( "#second_level_words" ).focusin(function() {
             if (textdecoded == "no") {                
                 // Decodificamos el contenido del campo de texto
@@ -333,16 +258,15 @@ defined('_JEXEC') or die();
 
         }
     
-    var ActiveTab = "lists"; 
-    var ActiveTabLists = "blacklist";
-    var ExceptionsActiveTab = "header_referer";
-    var ActiveTabContinent = "europe";    
-    
+    var ActiveTab = "li_lists_tab"; 
+    var ActiveTabLists = "li_blacklist_tab";
+    var ExceptionsActiveTab = "li_header_referer_tab";
+        
     function SetActiveTab($value) {
         ActiveTab = $value;
         storeValue('active', ActiveTab);
 
-        if ($value == "second") {                
+        if ($value == "#li_second_tab") {                
         } else {    
             if (textdecoded == "si") {
                 // Codificamos el contenido del campo de texto
@@ -357,11 +281,6 @@ defined('_JEXEC') or die();
     function SetActiveTabLists($value) {
         ActiveTabLists = $value;
         storeValue('activelists', ActiveTabLists);
-    }
-    
-    function SetActiveTabContinent($value) {
-        ActiveTabContinent = $value;
-        storeValue('activecontinent', ActiveTabContinent);
     }
     
     function SetActiveTabExceptions($value) {
@@ -386,37 +305,34 @@ defined('_JEXEC') or die();
     }
     
     window.onload = function() {
-        ActiveTab = getStoredValue('active');        
-        if (ActiveTab) {
-            $('.nav-tabs a[href="#' + ActiveTab + '"]').parent().addClass('active');
-            $('.nav-tabs a[href="#' + ActiveTab + '"]').tab('show');            
+        ActiveTab = getStoredValue('active');  
+		if (ActiveTab) {
+            $('.nav-item a[href="' + ActiveTab + '"]').parent().addClass('active');
+            $('.nav-item a[href="' + ActiveTab + '"]').tab('show');            
         } else {
-            $('.nav-tabs a[href="#lists"]').parent().addClass('active');
+            $('.nav-item a[href="#li_lists_tab"]').parent().addClass('active');
+			$('.nav-item a[href="#li_lists_tab"]').tab('show');
         }
         
         ActiveTablists = getStoredValue('activelists');
         if (ActiveTablists) {
-            $('.nav-tabs a[href="#' + ActiveTablists + '"]').parent().addClass('active');
-            $('.nav-tabs a[href="#' + ActiveTablists + '"]').tab('show');
+            $('.nav-item a[href="' + ActiveTablists + '"]').parent().addClass('active');
+            $('.nav-item a[href="' + ActiveTablists + '"]').tab('show');
         } else {
-            $('.nav-tabs a[href="#blacklist"]').parent().addClass('active');
+            $('.nav-item a[href="#li_blacklist_tab"]').parent().addClass('active');
+			$('.nav-item a[href="#li_blacklist_tab"]').tab('show');
         }
         
         ExceptionsActiveTab = getStoredValue('exceptions_active');
+		
         if (ExceptionsActiveTab) {
-            $('.nav-tabs a[href="#' + ExceptionsActiveTab + '"]').parent().addClass('active');
-            $('.nav-tabs a[href="#' + ExceptionsActiveTab + '"]').tab('show');
-        } else {
-            $('.nav-tabs a[href="#header_referer"]').parent().addClass('active');
-        }
-        
-        ActiveTabContinent = getStoredValue('activecontinent');        
-        if (ActiveTabContinent) {            
-            $('.nav-tabs a[href="#' + ActiveTabContinent + '"]').parent().addClass('active');
-            $('.nav-tabs a[href="#' + ActiveTabContinent + '"]').tab('show');
-        } else {
-            $('.nav-tabs a[href="#europe"]').parent().addClass('active');
-        }
+            $('.nav-item a[href="' + ExceptionsActiveTab + '"]').parent().addClass('active');
+            $('.nav-item a[href="' + ExceptionsActiveTab + '"]').tab('show');
+        } else {			
+            $('.nav-item a[href="#li_header_referer_tab"]').parent().addClass('active');
+			$('.nav-item a[href="#li_header_referer_tab"]').tab('show');
+        }       
+       
                 
     };
     

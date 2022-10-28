@@ -11,9 +11,14 @@ use Joomla\CMS\MVC\Model\BaseDatabaseModel as JModel;
 use Joomla\CMS\Factory as JFactory;
 use Joomla\CMS\Language\Text as JText;
 
+
 class plgSystemSecuritycheckpro extends JPlugin
 {
     private $pro_plugin = null;
+	
+	private $dbtype = "mysql";
+	
+	private $scan_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR;	
         
     function __construct(&$subject, $config)
     {
@@ -41,7 +46,12 @@ class plgSystemSecuritycheckpro extends JPlugin
         if ($track_actions_delete_period > 0) {
             try
             {
-                $sql = "DELETE FROM `#__securitycheckpro_trackactions` WHERE log_date < NOW() - INTERVAL '{$track_actions_delete_period}' DAY";
+				if (strstr($this->dbtype,"mysql")) {
+					$sql = "DELETE FROM #__securitycheckpro_trackactions WHERE log_date < NOW() - INTERVAL '{$track_actions_delete_period}' DAY";
+				} else if (strstr($this->dbtype,"pgsql")) {
+					$sql = "DELETE FROM #__securitycheckpro_trackactions WHERE log_date < NOW() - INTERVAL '{$track_actions_delete_period} DAY';";					
+				}
+                
                 $db->setQuery($sql);
                 $db->execute();
             }catch (Exception $e)
@@ -54,7 +64,12 @@ class plgSystemSecuritycheckpro extends JPlugin
         if ($scp_delete_period > 0) {
             try
             {
-                $sql = "DELETE FROM `#__securitycheckpro_logs` WHERE time < NOW() - INTERVAL '{$scp_delete_period}' DAY";
+				if (strstr($this->dbtype,"mysql")) {
+					$sql = "DELETE FROM #__securitycheckpro_logs WHERE time < NOW() - INTERVAL '{$scp_delete_period}' DAY";
+				} else if (strstr($this->dbtype,"pgsql")) {
+					$sql = "DELETE FROM #__securitycheckpro_logs WHERE time < NOW() - INTERVAL '{$scp_delete_period} DAY';";					
+				}
+                
                 $db->setQuery($sql);
                 $db->execute();
             }catch (Exception $e)
@@ -98,7 +113,7 @@ class plgSystemSecuritycheckpro extends JPlugin
             $original_string = base64_encode($original_string);
         
             // Consultamos el último log para evitar duplicar entradas
-            $query = "SELECT tag_description,original_string,ip from `#__securitycheckpro_logs` WHERE id=(SELECT MAX(id) from `#__securitycheckpro_logs`)" ;            
+            $query = "SELECT tag_description,original_string,ip from #__securitycheckpro_logs WHERE id=(SELECT MAX(id) from #__securitycheckpro_logs)" ;            
             $db->setQuery($query);
             $row = $db->loadRow();
             
@@ -106,16 +121,16 @@ class plgSystemSecuritycheckpro extends JPlugin
             (int) $logs_per_ip = $this->pro_plugin->getValue('log_limits_per_ip_and_day', 30, 'pro_plugin');
             try
             {
-                $query = "SELECT COUNT(*) from `#__securitycheckpro_logs` WHERE ip='{$ip}' AND (DATE(NOW()) = DATE(`time`))" ;
+                $query = "SELECT COUNT(*) from #__securitycheckpro_logs WHERE ip='{$ip}' AND (DATE(NOW()) = DATE(time))" ;
                 $db->setQuery($query);
                 (int) $logs_recorded = $db->loadResult();
             }catch (Exception $e)
             {
                 $logs_recorded = 0;
             }
-			
+						
 			if (!empty($row))
-			{                                                
+			{      			
 				$result_tag_description = $row['0'];
 				$result_original_string = $row['1'];
 				$result_ip = $row['2'];
@@ -149,7 +164,7 @@ class plgSystemSecuritycheckpro extends JPlugin
                 
                 try
                 {
-                    $sql = "INSERT INTO `#__securitycheckpro_logs` (`ip`, `username`, `time`, `tag_description`, `description`, `type`, `uri`, `component`, `original_string`) VALUES ('{$ip}', '{$username}', '{$timestamp_joomla_timezone}', '{$tag_description}', '{$description}', '{$type}', '{$uri}', '{$component}', '{$original_string}')";
+                    $sql = "INSERT INTO #__securitycheckpro_logs (ip, username, time, tag_description, description, type, uri, component, original_string) VALUES ('{$ip}', '{$username}', '{$timestamp_joomla_timezone}', '{$tag_description}', '{$description}', '{$type}', '{$uri}', '{$component}', '{$original_string}')";
                     $db->setQuery($sql);
                     $db->execute();
                 }catch (Exception $e)
@@ -213,53 +228,20 @@ class plgSystemSecuritycheckpro extends JPlugin
         return $res;
     }
     
-    /* Determina si un string tiene caracteres ascii no válidos */    
-    function is_ascii_valid($string)
-    {
-        $res = true; // Determines if any character of the decoded string is between 32 and 126, which should indicate a non valid european ASCII character
-        
-        // Trim all blank spaces
-        $string = str_replace(' ', '', $string);
-        $string_caracteres = str_split($string);         
-        if (empty($string_caracteres)) {
-            return true;  // There are no chars
-        }else 
-        {
-            foreach ($string_caracteres as $caracter)
-            {
-                if ((empty($caracter)) || (ord($caracter)<32) || (ord($caracter)>126)) { // Non-valid ASCII value                    
-                    return false; // There are non-valid chars
-                }
-            }
-        }
-                        
-        return $res;
-    }
-    
-    /* Función para convertir en string una cadena hexadecimal */
-    function hexToStr($hex)
-    {
-        
-        $hex = trim(preg_replace("/(\%|0x)/", "", $hex));
-                        
-        $string='';
-        for ($i=0; $i < strlen($hex)-1; $i+=2)
-        {
-            $string .= chr(hexdec($hex[$i].$hex[$i+1]));
-        }
-        
-        return $string;         
-    }
-    
     /* Función que realiza la misma función que mysql_real_escape_string() pero sin necesidad de una conexión a la BBDD */
     function escapa_string($value)
     {
     
         $search = array("\x00", "'", "\"", "\x1a");
         $replace = array("\\x00", "\'", "\\\"", "\\\x1a");
-    
-        return str_replace($search, $replace, $value);
+		    
+        return str_ireplace($search, $replace, $value);
     }
+	
+	// Check if a string is html
+	function isHTML($string){
+	 return $string != strip_tags($string) ? true:false;
+	}
     
     // Chequea si la extensión pasada como argumento es vulnerable
     private function check_extension_vulnerable($option)
@@ -276,7 +258,7 @@ class plgSystemSecuritycheckpro extends JPlugin
         $sanitized_option = $db->Quote($db->escape($option));
     
         // Construimos la consulta
-        $query = "SELECT COUNT(*) from `#__securitycheckpro_db` WHERE (vuln_type = {$sanitized_option})" ;        
+        $query = "SELECT COUNT(*) from #__securitycheckpro_db WHERE (vuln_type = {$sanitized_option})" ;        
                 
         $db->setQuery($query);
         $result = $db->loadResult();
@@ -315,8 +297,8 @@ class plgSystemSecuritycheckpro extends JPlugin
         {
             $referer = 'Not set';
         }
-        
-        $app = JFactory::getApplication();
+		
+		$app = JFactory::getApplication();
         $is_admin = $app->isClient('administrator');
         
         $user = JFactory::getUser();
@@ -325,7 +307,7 @@ class plgSystemSecuritycheckpro extends JPlugin
         }
         
         $pageoption = $option;
-                
+		                
         // Chequeamos si hemos de excluir los componentes vulnerables de las excepciones
         $exclude_exceptions_if_vulnerable = $this->pro_plugin->getValue('exclude_exceptions_if_vulnerable', 1, 'pro_plugin');
         
@@ -346,7 +328,7 @@ class plgSystemSecuritycheckpro extends JPlugin
         $lfi_exceptions = $this->pro_plugin->getValue('lfi_exceptions', '', 'pro_plugin');
         $check_header_referer = $this->pro_plugin->getValue('check_header_referer', 1, 'pro_plugin');
         $strip_all_tags = $this->pro_plugin->getValue('strip_all_tags', 1, 'pro_plugin');
-        $tags_to_filter = $this->pro_plugin->getValue('tags_to_filter', 'applet,body,bgsound,base,basefont,embed,frame,frameset,head,html,id,iframe,ilayer,layer,link,meta,name,object,script,style,title,xml,svg,input', 'pro_plugin');
+        $tags_to_filter = $this->pro_plugin->getValue('tags_to_filter', 'applet,body,bgsound,base,basefont,embed,frame,frameset,head,html,id,iframe,ilayer,layer,link,meta,name,object,script,style,title,xml,svg,input,a', 'pro_plugin');
         
         /* Base64 check */
         if ($check) {
@@ -360,20 +342,30 @@ class plgSystemSecuritycheckpro extends JPlugin
                 }
             }
         }
-                        
-        /* Hexadecimal check */
-        if (preg_match("/(\%[a-zA-Z0-9]{2}|0x{4,})/", $string)) {
-            $string = $this->hexToStr($string);            
-            /*$is_valid = $this->is_ascii_valid($string_temp);            
-            if ($is_valid) {  // El string contiene caracteres hexadecimales y su conversión a caracteres ASCII es válida                
-            $string = $string_temp;                    
-            }*/
-        }   
-                                    
+        
+		/* Regex checker: https://regex101.com/
+			https://www.functions-online.com/preg_match.html
+		*/
+                                            
         /* XSS Prevention */
         //Strip html and php tags from string
         if ((!(strstr($strip_tags_exceptions, $pageoption)) || $extension_vulnerable) && !(strstr($strip_tags_exceptions, '*'))) {
             // If we are in backend, we must not filter all tags to avoid false positives even when creating/modifying articles.
+			if (preg_match("/(\%[a-zA-Z0-9]{2}|0x{4,})/", $string)) {
+				// Is this an encoding attack?
+				$encoding_array = array("%3C","%253C","%3E","%253E","%2F","%252F","%2525");
+				foreach($encoding_array as $encoded_word) {
+                    if ((is_string($string)) && (!empty($encoded_word))) {
+                        if (substr_count(strtolower($string), strtolower($encoded_word))) {
+							$this->grabar_log($logs_attacks, $ip, 'TAGS_STRIPPED', '[' .$methods_options .':' .$a .']', 'XSS_BASE64', $request_uri, $string, $username, $pageoption);
+							/* Actualizamos la lista negra dinámica */
+							$this->actualizar_lista_dinamica($ip);
+							$this->redirection(403, "", true);							
+						}
+					}
+				}
+			}
+			
             if ($is_admin) {                
                 $strip_all_tags = 2;
                 $tags_to_filter = 'applet,body,bgsound,base,basefont,embed,frame,frameset,head,html,id,iframe,ilayer,layer,link,meta,name,object,script,xml,svg';
@@ -392,10 +384,23 @@ class plgSystemSecuritycheckpro extends JPlugin
                 {
                     $tags_to_filter_final[] = "<" . $tag;
                     $tags_to_filter_final[] = $tag . "/>";                        
-                }            
+                }
+					
                 
-                $string_sanitized = str_replace($tags_to_filter_final, "", $string);                    
+                $string_sanitized = str_ireplace($tags_to_filter_final, "", $string);                    
             }
+			
+			// Filter string in brackets i.e. [URL=https://www.malicioussite.com]malicious_link[/URL]
+			$brackets_to_filter_final = array();
+			$brackets_to_filter = 'url';
+			$brackets_array = explode(",", $brackets_to_filter);  
+			foreach ($brackets_array as $tag)
+               {
+                $brackets_to_filter_final[] = "[" . $tag;
+                $brackets_to_filter_final[] = "[/" . $tag;                        
+            }
+						
+			$string_sanitized = str_ireplace($brackets_to_filter_final, "", $string_sanitized);
             
             if (strcmp($string_sanitized, $string) !== 0) { //Se han eliminado caracteres; escribimos en el log
                 if ($base64) {
@@ -412,6 +417,8 @@ class plgSystemSecuritycheckpro extends JPlugin
                 $string = $string_sanitized;    
                 $modified = true;
                 /* Hemos de cortar la conexión, independientemente de lo que tengamos configurado en el parámetro "redirect_after_attack". Esto es necesario porque algunos ataques XSS llegan a producirse, aunque sean detectados, al haber una redirección */
+				/* Actualizamos la lista negra dinámica */
+				$this->actualizar_lista_dinamica($ip);
                 $this->redirection(403, "", true);
             } else 
             {
@@ -424,6 +431,8 @@ class plgSystemSecuritycheckpro extends JPlugin
                             $this->grabar_log($logs_attacks, $ip, 'TAGS_STRIPPED', '[' .$methods_options .':' .$a .']', 'XSS', $request_uri, $string, $username, $pageoption);
                             $modified = true;                                                    
                             /* Hemos de cortar la conexión, independientemente de lo que tengamos configurado en el parámetro "redirect_after_attack". Esto es necesario porque algunos ataques XSS llegan a producirse, aunque sean detectados, al haber una redirección */
+							/* Actualizamos la lista negra dinámica */
+							$this->actualizar_lista_dinamica($ip);
                             $this->redirection(403, "", true);
                         }
                     }                    
@@ -432,6 +441,8 @@ class plgSystemSecuritycheckpro extends JPlugin
         }
                         
         /* SQL Injection Prevention */
+		/* https://hackersonlineclub.com/sql-injection-cheatsheet/ */
+		/* https://www.netsparker.com/blog/web-security/sql-injection-cheat-sheet/ */
         if (!$modified) {
             if ($is_admin) {                
                 $duplicate_backslashes_exceptions = "*";
@@ -439,7 +450,8 @@ class plgSystemSecuritycheckpro extends JPlugin
                 $if_statement_exceptions = "*";
                 $using_integers_exceptions = "*";                
             }
-            
+			
+			            
             if (!(strstr($duplicate_backslashes_exceptions, $pageoption)) && !(strstr($duplicate_backslashes_exceptions, '*'))) {
                 // Prevents duplicate backslashes
                 if (PHP_VERSION_ID < 50400 && get_magic_quotes_gpc())
@@ -460,11 +472,11 @@ class plgSystemSecuritycheckpro extends JPlugin
                 }
             }
                             
-            if (!(strstr($line_comments_exceptions, $pageoption)) && !(strstr($line_comments_exceptions, '*')) && ($pageoption != 'com_users')) {
+            if (!(strstr($line_comments_exceptions, $pageoption)) && !(strstr($line_comments_exceptions, '*')) && ($pageoption != 'com_users') && (!$modified)) {
                 // Line Comments
-                $lineComments = array("/--/","/[^\=]#/","/\/\*/","/\*\//");
+                $lineComments = array("/--/","/[^\=]#/","/\/\*/","/\*\//","/(?=(%2f|\/)).+\*\*/i");
                 $string_sanitized = preg_replace($lineComments, "", $string);
-                                                    
+				                                                    
                 if (strcmp($string_sanitized, $string) !== 0) { //Se han eliminado caracteres; escribimos en el log
                     if ($base64) {
                         $this->grabar_log($logs_attacks, $ip, 'LINE_COMMENTS', '[' .$methods_options .':' .$a .']', 'SQL_INJECTION_BASE64', $request_uri, $string, $username, $pageoption);
@@ -477,16 +489,21 @@ class plgSystemSecuritycheckpro extends JPlugin
                     $modified = true;
                 }
             }
-                            
-            $sqlpatterns = array("/delete(?=(\s|\+|%20|%u0020|%uff00)).+(from)(?=(\s|\+|%20|%u0020|%uff00))/i","/update(?=(\s|\+|%20|%u0020|%uff00)).+(set)(?=(\s|\+|%20|%u0020|%uff00))/i",
-            "/drop(?=(\s|\+|%20|%u0020|%uff00)).+(database|user|table|index)(?=(\s|\+|%20|%u0020|%uff00))/i",
-            "/insert(?=(\s|\+|%20|%u0020|%uff00)).+(values|set|select)(?=(\s|\+|%20|%u0020|%uff00))/i", "/union(?=(\s|\+|%20|%u0020|%uff00)).+(select)(?=(\s|\+|%20|%u0020|%uff00))/i",
-            "/select(?=(\s|\+|%20|%u0020|%uff00)).+(from|ascii|char|concat)(?=(\s|\+|%20|%u0020|%uff00))/i","/benchmark\(.*\)/i",
+			                            
+            $sqlpatterns = array("/delete(?=(\s|\+|%20|%u0020|%uff00)).+\b(from)\b(?=(\s|\+|%20|%u0020|%uff00))/i","/update(?=(\s|\+|%20|%u0020|%uff00)).+\b(set)\b(?=(\s|\+|%20|%u0020|%uff00))/i",
+            "/drop(?=(\s|\+|%20|%u0020|%uff00)).+\b(database|user|table|index)\b(?=(\s|\+|%20|%u0020|%uff00))/i",
+            "/insert(?=(\s|\+|%20|%u0020|%uff00)).+\b(values|set|select)\b(?=(\s|\+|%20|%u0020|%uff00))/i", "/union(?=(\s|\+|%20|%u0020|%uff00)).+\b(select)\b(?=(\s|\+|%20|%u0020|%uff00))/i",
+            "/select(?=(\s|\+|%20|%u0020|%uff00)).+\b(from|ascii|char|concat)\b(?=(\s|\+|%20|%u0020|%uff00))/i","/benchmark\(.*\)/i",
             "/md5\(.*\)/i","/sha1\(.*\)/i","/ascii\(.*\)/i","/concat\(.*\)/i","/char\(.*\)/i",
-            "/substring\(.*\)/i","/(\s|\+|%20|%u0020|%uff00)(or|and)(\s|\+|%20|%u0020|%uff00)(\w+)(=|<|>|<=|>=)(\w+)/i");                        
+            "/substring\(.*\)/i","/where(\s|\+|%20|%u0020|%uff00)(or|and)(\s|\+|%20|%u0020|%uff00)(\w+)(=|<|>|<=|>=)(\w+)/i");                        
                                             
-            if ((!(strstr($sql_pattern_exceptions, $pageoption)) || $extension_vulnerable) && !(strstr($sql_pattern_exceptions, '*'))) {                        
-                $string_sanitized = preg_replace($sqlpatterns, "", $string);
+            if ((!(strstr($sql_pattern_exceptions, $pageoption)) || $extension_vulnerable) && !(strstr($sql_pattern_exceptions, '*')) && (!$modified)) { 
+				try {
+				    $string_sanitized = preg_replace($sqlpatterns, "", $string);
+				} catch (Exception $e)
+				{
+					return;
+				}  
                         
                 if (strcmp($string_sanitized, $string) !== 0) { //Se han eliminado caracteres; escribimos en el log    
                     if ($base64) {
@@ -504,8 +521,14 @@ class plgSystemSecuritycheckpro extends JPlugin
             //IF Statements
             $ifStatements = array("/if\(.*,.*,.*\)/i");
                                 
-            if ((!(strstr($if_statement_exceptions, $pageoption)) || $extension_vulnerable) && !(strstr($if_statement_exceptions, '*'))) {    
-                $string_sanitized = preg_replace($ifStatements, "", $string);
+            if ((!(strstr($if_statement_exceptions, $pageoption)) || $extension_vulnerable) && !(strstr($if_statement_exceptions, '*')) && (!$modified)) {  
+				try { 
+				    $string_sanitized = preg_replace($ifStatements, "", $string);
+				} catch (Exception $e)
+				{
+					return;
+				}  	
+                
                         
                 if (strcmp($string_sanitized, $string) <> 0) { //Se han eliminado caracteres; escribimos en el log
                     if ($base64) {
@@ -520,11 +543,17 @@ class plgSystemSecuritycheckpro extends JPlugin
                 }
             }
                             
-            //Using Integers
-            $usingIntegers = array("/0x(?=[0-9])/i");
+            //Using Integers			
+            $usingIntegers = array("/select(?=(\s|\+|%20|%u0020|%uff00)).+(0x)/i","/@@/i","/||/i");
                                 
-            if (!(strstr($using_integers_exceptions, $pageoption)) && !(strstr($using_integers_exceptions, '*'))) {    
-                $string_sanitized = preg_replace($usingIntegers, "", $string);
+            if (!(strstr($using_integers_exceptions, $pageoption)) && !(strstr($using_integers_exceptions, '*')) && (!$modified)) {    
+               
+				try {
+				    $string_sanitized = preg_replace($usingIntegers, "", $string);
+				} catch (Exception $e)
+				{
+					return;
+				}  			  
                                 
                 if (strcmp($string_sanitized, $string) !== 0) { //Se han eliminado caracteres; escribimos en el log
                     if ($base64) {
@@ -538,32 +567,55 @@ class plgSystemSecuritycheckpro extends JPlugin
                         $modified = true;
                 }
             }
-                            
-            if (!(strstr($escape_strings_exceptions, $pageoption)) && !(strstr($escape_strings_exceptions, '*')) && ($modified)) {
-                $string_sanitized = $this->escapa_string($string);
-                            
-                if (strcmp($string_sanitized, $string) !== 0) { //Se han añadido barras invertidas a ciertos caracteres; escribimos en el log                            
-                    if ($base64) {
-                        $this->grabar_log($logs_attacks, $ip, 'BACKSLASHES_ADDED', '[' .$methods_options .':' .$a .']', 'SQL_INJECTION_BASE64', $request_uri, $string, $username, $pageoption);
-                    }else
-                    {
-                        $this->grabar_log($logs_attacks, $ip, 'BACKSLASHES_ADDED', '[' .$methods_options .':' .$a .']', 'SQL_INJECTION', $request_uri, $string, $username, $pageoption);
-                    }
-                                    
-                    if (strlen($string_sanitized)>0) {
-                        $string = $string_sanitized;
-                    }
-                }
-            }
+			
+			$is_html = $this->isHTML($string);
+			$is_json = 1;
+			
+			try {
+				$obj = json_decode($string);				
+				if (empty($obj) ) {					
+					$is_json = 0;
+				}				
+			} catch (Exception $e)
+			{				
+				$is_json = 0;
+			}  
+						            
+			if ( (!$is_html) && (!$is_json) ) {
+				if (!(strstr($escape_strings_exceptions, $pageoption)) && !(strstr($escape_strings_exceptions, '*')) && (!$modified)) {				
+									
+					try {
+						$string_sanitized = $this->escapa_string($string);
+					} catch (Exception $e)
+					{
+						return;
+					}  
+				   
+								
+					if (strcmp($string_sanitized, $string) !== 0) { //Se han añadido barras invertidas a ciertos caracteres; escribimos en el log                            
+						if ($base64) {
+							$this->grabar_log($logs_attacks, $ip, 'BACKSLASHES_ADDED', '[' .$methods_options .':' .$a .']', 'SQL_INJECTION_BASE64', $request_uri, $string, $username, $pageoption);
+						}else
+						{
+							$this->grabar_log($logs_attacks, $ip, 'BACKSLASHES_ADDED', '[' .$methods_options .':' .$a .']', 'SQL_INJECTION', $request_uri, $string, $username, $pageoption);
+						}
+										
+						if (strlen($string_sanitized)>0) {
+							$string = $string_sanitized;
+						}
+						$modified = true;
+					}
+				}
+			}
                                 
         }    
-                        
+		                        
         /* LFI Prevention */
-        $lfiStatements = array("/\.\.\//","/\?\?\?/");
+        $lfiStatements = array("/\.\.\//","/\?\?\?/","/\/\./");
         if ((!(strstr($lfi_exceptions, $pageoption)) || $extension_vulnerable) && !(strstr($lfi_exceptions, '*'))) {
             if (!$modified) {                        
                 $string_sanitized = preg_replace($lfiStatements, '', $string);
-                if (strcmp($string_sanitized, $string) !== 0) { //Se han eliminado caracteres; escribimos en el log
+				if (strcmp($string_sanitized, $string) !== 0) { //Se han eliminado caracteres; escribimos en el log
                     if ($base64) {
                              $this->grabar_log($logs_attacks, $ip, 'LFI', '[' .$methods_options .':' .$a .']', 'LFI_BASE64', $request_uri, $string, $username, $pageoption);
                     }else
@@ -615,10 +667,7 @@ class plgSystemSecuritycheckpro extends JPlugin
         $modified = false; 
         
         if ($user->guest) {
-            /*****
-    
-       * User-agent checks 
-*****/
+            /****** User-agent checks *****/
             if (isset($_SERVER['HTTP_USER_AGENT'])) {
                 /* XSS Prevention in USER_AGENT*/
                 //Strip html and php tags from string
@@ -795,7 +844,7 @@ class plgSystemSecuritycheckpro extends JPlugin
             // Construimos la consulta
             try 
             {
-                $query = "SELECT COUNT(*) from `#__securitycheckpro_dynamic_blacklist` WHERE (`ip` = '{$ip}' AND `counter` >= {$blacklist_counter})" ;                
+                $query = "SELECT COUNT(*) from #__securitycheckpro_dynamic_blacklist WHERE (ip = '{$ip}' AND counter >= {$blacklist_counter})" ; 								
                 $db->setQuery($query);
                 $result = $db->loadResult();                
             } catch (Exception $e)
@@ -811,7 +860,7 @@ class plgSystemSecuritycheckpro extends JPlugin
             }
         } else {
             return false;
-        }
+        }	
         
     }
     
@@ -826,21 +875,22 @@ class plgSystemSecuritycheckpro extends JPlugin
         // Sanitizamos la entrada
         (int) $counter_time = $db->escape($counter_time);
         
-        if (is_numeric($counter_time)) {
-            $query = "DELETE FROM `#__securitycheckpro_dynamic_blacklist` WHERE (DATE_ADD(`timeattempt`, INTERVAL {$counter_time} SECOND)) < NOW();";
-            $db->setQuery($query);
-            $db->execute();            
-        }
-
-        
+        if (is_numeric($counter_time)) {			
+			if (strstr($this->dbtype,"mysql")) {
+				$query = "DELETE FROM #__securitycheckpro_dynamic_blacklist WHERE (DATE_ADD(timeattempt, INTERVAL {$counter_time} SECOND)) < NOW();";
+			} else if (strstr($this->dbtype,"pgsql")) {
+				$query = "DELETE FROM #__securitycheckpro_dynamic_blacklist WHERE timeattempt < NOW() - INTERVAL '{$counter_time} second';";
+			}			
+			$db->setQuery($query);
+            $db->execute();   
+        }       
         
     }
     
     /* Función que añade una IP a la lista negra dinámica */
     function actualizar_lista_dinamica($attack_ip)
     {
-    
-        // Creamos el nuevo objeto query
+		// Creamos el nuevo objeto query
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
         
@@ -855,8 +905,12 @@ class plgSystemSecuritycheckpro extends JPlugin
         // Validamos si el valor devuelto es una dirección IP válida y la lista negra dinámica está habilitada
         if ((!empty($attack_ip)) && ($ip_valid) && ($dynamic_blacklist)) {
             try 
-            {                
-                $query = "INSERT INTO `#__securitycheckpro_dynamic_blacklist` (`ip`, `timeattempt`) VALUES ('{$attack_ip}', NOW()) ON DUPLICATE KEY UPDATE `timeattempt` = NOW(), `counter` = `counter` + 1;";
+            {     
+				if (strstr($this->dbtype,"mysql")) {
+					 $query = "INSERT INTO #__securitycheckpro_dynamic_blacklist (ip, timeattempt) VALUES ('{$attack_ip}', NOW()) ON DUPLICATE KEY UPDATE timeattempt = NOW(), counter = counter + 1;";
+				} else if (strstr($this->dbtype,"pgsql")) {
+					$query = "INSERT INTO #__securitycheckpro_dynamic_blacklist (ip, timeattempt) VALUES ('{$attack_ip}', NOW()) ON CONFLICT (ip) DO UPDATE SET timeattempt = NOW(), counter = #__securitycheckpro_dynamic_blacklist.counter + 1;";
+				}              
                 
                 $db->setQuery($query);        
                 $result = $db->execute();
@@ -1082,9 +1136,9 @@ class plgSystemSecuritycheckpro extends JPlugin
                                 
                 // Redirección a nuestra página de "Prohibido" 
                 $error_403 = $lang->_('COM_SECURITYCHECKPRO_403_ERROR');
-                $this->redirection(403, $error_403, true);
+                $this->redirection(403, $error_403, true, $attack_ip, $dynamic_blacklist_time);
             }
-        }        
+        }
     }
     
     /* Acciones a realizar si la ip está en la lista negra*/
@@ -1112,17 +1166,30 @@ class plgSystemSecuritycheckpro extends JPlugin
                 
             // Redirección a nuestra página de "Prohibido"
             $error_403 = $lang->_('COM_SECURITYCHECKPRO_403_ERROR');
-            $this->redirection(403, $error_403, true);    
+            $this->redirection(403, $error_403, true, $attack_ip);    
         }
     }
     
     /* Opciones de redirección: página de error (de Joomla o personalizada) o rechazar la conexión. El parámetro blacklist indica si venimos de una lista negra; en ese caso, no podemos hacer la redirección ya que entraríamos en un bucle infinito. Lo que hacemos es mostrar el código que haya establecido el administrador */
-    function redirection($code,$message,$blacklist=false)
+    function redirection($code,$message,$blacklist=false,$ip=null,$time=null)
     {
         $redirect_after_attack = $this->pro_plugin->getValue('redirect_after_attack', 1, 'pro_plugin');
         $redirect_options = $this->pro_plugin->getValue('redirect_options', 1, 'pro_plugin');
         $redirect_url = $this->pro_plugin->getValue('redirect_url', '', 'pro_plugin');
         $custom_code = $this->pro_plugin->getValue('custom_code', 'The webmaster has forbidden your access to this site', 'pro_plugin');
+		
+		$lang = JFactory::getLanguage();
+        $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
+		
+		if (!is_null($ip)) {
+			// Let's add the IP to the message shown
+			$custom_code .= "<br/>" . JText::sprintf($lang->_('COM_SECURITYCHECKPRO_YOUR_IP'),$ip);			
+		}
+		
+		if (!is_null($time)) {
+			// Let's add the time to be unblocked of dynamic blacklist to the message shown
+			$custom_code .= "<br/>" . JText::sprintf($lang->_('COM_SECURITYCHECKPRO_COME_BACK_IN'),$time/60);			
+		}
         
         $app = JFactory::getApplication();
         $is_admin = $app->isClient('administrator');
@@ -1205,16 +1272,16 @@ class plgSystemSecuritycheckpro extends JPlugin
                     $option = $this->get_component();
 
                     $req = $this->cleanQuery($attack_ip, $req, $methods_options, $a, $request_uri, $modified, $check_base_64, $logs_attacks, $option);
-                    
+					                    
                     if ($modified) {
                         /* Actualizamos la lista negra dinámica */
                         $this->actualizar_lista_dinamica($attack_ip);
-                            
+						                            
                         if ($mode) { // Modo estricto: redireccion
                             /* Redirección a nuestra página de "Hacking Attempt" */                            
                             $error_400 = $lang->_('COM_SECURITYCHECKPRO_400_ERROR');
                             $this->redirection(400, $error_400);                                            
-                        } // Modo alerta: no hacemos nada ya que la función 'cleanQuery' sanitiza el string
+                        } // Modo alerta: no hacemos redirección
                     } else if ($secondlevel) {  // Second level protection
                         // Nº máximo de palabras sospechosas
                         $second_level_limit_words = intval($this->pro_plugin->getValue('second_level_limit_words', 3, 'pro_plugin'));
@@ -1253,12 +1320,12 @@ class plgSystemSecuritycheckpro extends JPlugin
         // Consultamos el número de correos mandados
         $db = JFactory::getDBO();
         
-        $query = "UPDATE `#__securitycheckpro_emails` SET envoys=0, send_date='{$today}' WHERE (send_date < '{$today}')";
+        $query = "UPDATE #__securitycheckpro_emails SET envoys=0, send_date='{$today}' WHERE (send_date < '{$today}')";
         $db->setQuery($query);
         $db->execute();
         
         
-        $query = "SELECT envoys FROM `#__securitycheckpro_emails` WHERE (send_date = '{$today}')";
+        $query = "SELECT envoys FROM #__securitycheckpro_emails WHERE (send_date = '{$today}')";
         $db->setQuery($query);
         (int) $envoys = $db->loadResult();
         
@@ -1319,7 +1386,7 @@ class plgSystemSecuritycheckpro extends JPlugin
         $db = JFactory::getDBO();
         
         // Obtenemos el id del usuario logado
-        $query = "SELECT * FROM `#__securitycheckpro_sessions` WHERE (userid = '{$user_id}')";
+        $query = "SELECT * FROM #__securitycheckpro_sessions WHERE (userid = '{$user_id}')";
         $db->setQuery($query);
         $user_data = $db->loadRow();        
                                 
@@ -1355,7 +1422,7 @@ class plgSystemSecuritycheckpro extends JPlugin
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
         
         // Chequeamos si la opción de compartir sesiones está activa; en este caso no aplicaremos esta opción para evitar una denegación de entrada
-        $params          = JFactory::getConfig();        
+        $params = JFactory::getConfig();        
         $shared_session_enabled = $params->get('shared_session');
         
         if ($shared_session_enabled) {
@@ -1364,6 +1431,7 @@ class plgSystemSecuritycheckpro extends JPlugin
         
         // Cargamos los grupos a los que se ha de aplicar la protección; por defecto se aplica al grupo Super Users, con un id igual a 8 (el valor por defecto debe estar en un array)
         $session_protection_groups = $this->pro_plugin->getValue('session_protection_groups', array('0' => '8'), 'pro_plugin');
+		$dynamic_blacklist_on = $this->pro_plugin->getValue('dynamic_blacklist', 1, 'pro_plugin');
                 
         // Variable que indicará si el usuario logado pertenece a un grupo al que haya que aplicar la protección
         $apply_to_user = false;
@@ -1395,7 +1463,7 @@ class plgSystemSecuritycheckpro extends JPlugin
             }
                                     
             // Construimos la consulta
-            $query = "SELECT COUNT(*) from `#__session` WHERE (userid = {$user_id})" ;            
+            $query = "SELECT COUNT(*) from #__session WHERE (userid = {$user_id})" ;            
             $db->setQuery($query);
             $result = $db->loadResult();
                         
@@ -1408,6 +1476,10 @@ class plgSystemSecuritycheckpro extends JPlugin
                     
                     $session_protection_description = $lang->_('COM_SECURITYCHECKPRO_SESSION_PROTECTION_DESCRIPTION');
                     $username = $lang->_('COM_SECURITYCHECKPRO_USERNAME');
+					
+					if ($dynamic_blacklist_on) {
+						 $this->actualizar_lista_dinamica($attack_ip);
+					}
                     
                     // Grabamos el log correspondiente...
                     $this->grabar_log($logs_attacks, $attack_ip, 'SESSION_PROTECTION', $session_protection_description, 'SESSION_PROTECTION', $request_uri, $username .$user->username, $user->username, '---');
@@ -1423,6 +1495,10 @@ class plgSystemSecuritycheckpro extends JPlugin
                     if ($session_hijacked) {                        
                         $session_hijack_attempt_description = $lang->_('COM_SECURITYCHECKPRO_SESSION_HIJACK_ATTEMPT_DESCRIPTION');
                         $username = $lang->_('COM_SECURITYCHECKPRO_USERNAME');
+						
+						if ($dynamic_blacklist_on) {
+							$this->actualizar_lista_dinamica($attack_ip);
+						}
                     
                         // Grabamos el log correspondiente...
                         $this->grabar_log($logs_attacks, $attack_ip, 'SESSION_PROTECTION', $session_hijack_attempt_description, 'SESSION_HIJACK_ATTEMPT', $request_uri, $username .$user->username, $user->username, '---');
@@ -1441,13 +1517,13 @@ class plgSystemSecuritycheckpro extends JPlugin
     {
         // Obtenemos un manejador a la BBDD
         $db = JFactory::getDBO();
-        
-        // Chequeamos los ids de los grupos 'Public' y 'Guest'
-        $query = "SELECT id FROM `#__usergroups` WHERE title='Public'";
+		
+		// Chequeamos los ids de los grupos 'Public' y 'Guest'
+        $query = "SELECT id FROM #__usergroups WHERE title='Public'";
         $db->setQuery($query);
         (int) $public_group_id = $db->loadResult();
         
-        $query = "SELECT id FROM `#__usergroups` WHERE title='Guest'";
+        $query = "SELECT id FROM #__usergroups WHERE title='Guest'";
         $db->setQuery($query);
         (int) $guest_acl_security = $db->loadResult();        
         
@@ -1499,12 +1575,17 @@ class plgSystemSecuritycheckpro extends JPlugin
         $user_agent = $db->Quote($db->escape($_SERVER['HTTP_USER_AGENT']));
         
         // Obtenemos el id del usuario logado
-        $query = "SELECT id FROM `#__users` WHERE (username = {$username})";
+        $query = "SELECT id FROM #__users WHERE (username = {$username})";
         $db->setQuery($query);
         $userid = $db->loadResult();
         
         // Insertamos los datos en la tabla 'securitycheckpro_sessions' ignorando los errores de entradas duplicadas
-        $query = "INSERT IGNORE INTO `#__securitycheckpro_sessions` (`userid`,  `session_id`, `username`, `ip`, `user_agent`) VALUES ('{$userid}', {$session_id}, {$username}, '{$ip}', {$user_agent})";
+		if (strstr($this->dbtype,"mysql")) {
+			$query = "INSERT IGNORE INTO #__securitycheckpro_sessions (userid,  session_id, username, ip, user_agent) VALUES ('{$userid}', {$session_id}, {$username}, '{$ip}', {$user_agent})";
+		} else if (strstr($this->dbtype,"pgsql")) {
+			$query = "INSERT INTO #__securitycheckpro_sessions (userid,  session_id, username, ip, user_agent) VALUES ('{$userid}', {$session_id}, {$username}, '{$ip}', {$user_agent}) ON CONFLICT DO NOTHING";
+		}
+        
         $db->setQuery($query);
         $db->execute();
         
@@ -1524,17 +1605,12 @@ class plgSystemSecuritycheckpro extends JPlugin
             // Borramos los logs no necesarios
             $this->delete_logs();
             
-            // Chequeamos el estado de las subscripciones
-            include_once JPATH_ROOT.'/administrator/components/com_securitycheckpro/library/model.php';
-            $model = new SecuritycheckproModel();
-            $model->get_subscriptions_status();
-                        
             if ($email_on_admin_login) {            
                 // Extraemos los datos que se mandarán por correo
                 $ip = $this->get_ip();                               
                 $email_subject = $lang->_('COM_SECURITYCHECKPRO_RULE') . $lang->_('COM_SECURITYCHECKPRO_ADMIN_LOGIN_TO_BACKEND') . "<br />" . $lang->_('COM_SECURITYCHECKPRO_USERNAME') . $username . "<br />" . "IP: " . $ip;
                 $this->mandar_correo($email_subject);                                        
-            }            
+            }        
         } else 
         {
             // Controlamos el acceso al frontend de los Super usuarios
@@ -1593,7 +1669,7 @@ class plgSystemSecuritycheckpro extends JPlugin
         $username = $db->Quote($db->escape($user['username']));
                                     
         // Borramos el usuario de la tabla
-        $query = "DELETE FROM `#__securitycheckpro_sessions` WHERE (username = {$username})";
+        $query = "DELETE FROM #__securitycheckpro_sessions WHERE (username = {$username})";
         $db->setQuery($query);
         $db->execute();
         
@@ -1614,13 +1690,18 @@ class plgSystemSecuritycheckpro extends JPlugin
             $session_id = $db->Quote($db->escape($_COOKIE[session_name()]));
                             
             // Consultamos si existe alguna sesión en `#__session` con el mismo 'session_id' que las de la cookie. Eso significa que la sesión está activa
-            $query = "SELECT session_id FROM `#__session` WHERE (session_id = {$session_id})";
+            $query = "SELECT session_id FROM #__session WHERE (session_id = {$session_id})";
             $db->setQuery($query);
             $result = $db->loadResult();
                         
             // Si la cookie ya no existe en la tabla  `#__session, significa que no es válida. Borramos la entrada en la tabla `#__securitycheckpro_sessions`
             if (is_null($result)) {
-                $query = "DELETE IGNORE FROM `#__securitycheckpro_sessions` WHERE (session_id = {$session_id})";
+				if (strstr($this->dbtype,"mysql")) {
+					$query = "DELETE IGNORE FROM #__securitycheckpro_sessions WHERE (session_id = {$session_id})";
+				} else if (strstr($this->dbtype,"pgsql")) {
+					$query = "DELETE FROM #__securitycheckpro_sessions WHERE (session_id = {$session_id})";					
+				}
+                
                 $db->setQuery($query);
                 $db->execute();
             } else
@@ -1632,7 +1713,7 @@ class plgSystemSecuritycheckpro extends JPlugin
         
         /* Sessions garbage collector */
         // Consultamos todas las sesiones creadas por el plugin.
-        $query = "SELECT userid FROM `#__securitycheckpro_sessions`";
+        $query = "SELECT userid FROM #__securitycheckpro_sessions";
         $db->setQuery($query);
         $userids_array = $db->loadColumn();
         
@@ -1641,12 +1722,17 @@ class plgSystemSecuritycheckpro extends JPlugin
             foreach ($userids_array as $id)
             {
                 // Consultamos si existe alguna sesión del usuario activa en `#__session`.
-                $query = "SELECT session_id FROM `#__session` WHERE (userid = {$id})";
+                $query = "SELECT session_id FROM #__session WHERE (userid = {$id})";
                 $db->setQuery($query);
                 $result = $db->loadResult();
                 // Si no existen sesiones, significa que las existentes en la tabla `#__securitycheckpro_sessions` no son válidas. Las borramos.
                 if (is_null($result)) {
-                    $query = "DELETE IGNORE FROM `#__securitycheckpro_sessions` WHERE (userid = {$id})";
+					if (strstr($this->dbtype,"mysql")) {
+						$query = "DELETE IGNORE FROM #__securitycheckpro_sessions WHERE (userid = {$id})";
+					} else if (strstr($this->dbtype,"pgsql")) {
+						$query = "DELETE FROM #__securitycheckpro_sessions WHERE (userid = {$id})";					
+					}
+                    
                     $db->setQuery($query);
                     $db->execute();
                 }                
@@ -1705,7 +1791,7 @@ class plgSystemSecuritycheckpro extends JPlugin
         foreach ($user->groups as $grupo)
         {
             // Consultamos si hay que aplicar la regla al grupo
-            $query = "SELECT rules_applied FROM `#__securitycheckpro_rules` WHERE (group_id = {$grupo})";
+            $query = "SELECT rules_applied FROM #__securitycheckpro_rules WHERE (group_id = {$grupo})";
             $db->setQuery($query);
             $apply_rule_to_group = $db->loadResult();
                                     
@@ -1733,7 +1819,7 @@ class plgSystemSecuritycheckpro extends JPlugin
         $query = $db->getQuery(true);
         
         // Obtenemos el título del grupo al que se le aplica la excepción
-        $query = "SELECT title FROM `#__usergroups` WHERE (id = {$grupo})";
+        $query = "SELECT title FROM #__usergroups WHERE (id = {$grupo})";
         $db->setQuery($query);
         $group_title = $db->loadResult();
         
@@ -1753,24 +1839,28 @@ class plgSystemSecuritycheckpro extends JPlugin
         $insert_result = $db->insertObject('#__securitycheckpro_rules_logs', $valor, 'id');
         
         // Borramos las entradas con más de un mes de antigüedad
-        $sql = "DELETE FROM `#__securitycheckpro_rules_logs` WHERE (DATE_ADD(`last_entry`, INTERVAL 1 MONTH)) < NOW();";
+		if (strstr($this->dbtype,"mysql")) {
+			$sql = "DELETE FROM #__securitycheckpro_rules_logs WHERE (DATE_ADD(last_entry, INTERVAL 1 MONTH)) < NOW();";
+		} else if (strstr($this->dbtype,"pgsql")) {
+			$sql = "DELETE FROM #__securitycheckpro_rules_logs WHERE last_entry < NOW() - INTERVAL '1 MONTH';";
+		}	
+        
         $db->setQuery($sql);
         $db->execute();
         
     }
-    
+	   
         
     function onAfterInitialise()
     {
-        
-        $plugin_enabled = false;
+		$plugin_enabled = false;
         $tables_locked = false;
         
         $db = JFactory::getDBO();
         
         try 
         {
-            $query = "SELECT enabled from `#__extensions` WHERE element='securitycheckpro' and type='plugin'" ;            
+            $query = "SELECT enabled from #__extensions WHERE element='securitycheckpro' and type='plugin'" ;            
             $db->setQuery($query);
             $plugin_enabled= $db->loadResult();
         } catch (Exception $e)
@@ -1780,7 +1870,7 @@ class plgSystemSecuritycheckpro extends JPlugin
 
         try 
         {
-            $query = "SELECT storage_value from `#__securitycheckpro_storage` WHERE storage_key = 'locked'";        
+            $query = "SELECT storage_value from #__securitycheckpro_storage WHERE storage_key = 'locked'";        
             $db->setQuery($query);
             $tables_locked= $db->loadResult();
         } catch (Exception $e)
@@ -1791,7 +1881,7 @@ class plgSystemSecuritycheckpro extends JPlugin
         // Is the plugin enabled?
         if ($plugin_enabled) {
     
-            /* Cargamos el lenguaje del sitio */
+            // Cargamos el lenguaje del sitio
             $lang = JFactory::getLanguage();
             $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
             $not_applicable = $lang->_('COM_SECURITYCHECKPRO_NOT_APPLICABLE');
@@ -1810,6 +1900,9 @@ class plgSystemSecuritycheckpro extends JPlugin
             $priority1 = $this->pro_plugin->getValue('priority1', 'Whitelist', 'pro_plugin');
             $priority2 = $this->pro_plugin->getValue('priority2', 'Blacklist', 'pro_plugin');
             $priority3 = $this->pro_plugin->getValue('priority3', 'DynamicBlacklist', 'pro_plugin');
+			// Get database type
+			$config = JFactory::getConfig();
+			$this->dbtype = $config->get('dbtype');
            
             
             $attack_ip = $this->get_ip();        
@@ -1821,9 +1914,10 @@ class plgSystemSecuritycheckpro extends JPlugin
             // Cargamos las librerias necesarias para realizar comprobaciones
             include_once JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/library/model.php';
             $model = new SecuritycheckproModel;
-            
-            $aparece_lista_negra = $model->chequear_ip_en_lista($attack_ip, $blacklist_ips);
-            $aparece_lista_blanca = $model->chequear_ip_en_lista($attack_ip, $whitelist_ips);
+			
+          
+			$aparece_lista_negra = $model->chequear_ip_en_lista($attack_ip, "blacklist");
+			$aparece_lista_blanca = $model->chequear_ip_en_lista($attack_ip, "whitelist");
                     
             // If priority1 was set to "geoblock" we must set it to other value (i.e Whitelist) or no actions will be taken
 			if ($priority1 == "Geoblock") {		
@@ -1884,7 +1978,7 @@ class plgSystemSecuritycheckpro extends JPlugin
             if (!$aparece_lista_blanca) {
                 // La IP no se encuentra en ninguna lista
                 $this->acciones_no_listas($methods, $attack_ip, $methods, $request_uri, $check_base_64, $logs_attacks, $secondlevel, $mode);
-            }            
+            }       
         }
         // Si las tablas están bloqueadas prohibimos el acceso a 'com_installer'
         if ($tables_locked) {
@@ -1902,6 +1996,16 @@ class plgSystemSecuritycheckpro extends JPlugin
             }
             
         }
+		// Are we updating Joomla?
+		$object = JFactory::getApplication()->input;
+		$option = $object->getString('option');
+		$task = $object->getString('task');
+		if ($option == "com_joomlaupdate") {
+			if ($task == "update.install") {				
+				// Let's write a file to tell securitycheck that Joomla core has been updated. This is needed by /com_securitycheckpro/backend/models/securitycheckpros.php		
+				$this->write_file(); 
+			}
+		}
     } 
 
     
@@ -1915,6 +2019,7 @@ class plgSystemSecuritycheckpro extends JPlugin
         if ($remove_meta_tag) {
             $code->setGenerator('');
         }
+		
     }
     
     // Obtiene el componente de Joomla implicado en una petición al servidor
@@ -1979,21 +2084,60 @@ class plgSystemSecuritycheckpro extends JPlugin
         $malware_type = '';
         $malware_description = '';
         $logs_attacks = $this->pro_plugin->getValue('logs_attacks', 1, 'pro_plugin');
+		$mimetypes_blacklist = $this->pro_plugin->getValue('mimetypes_blacklist','application/x-dosexec,application/x-msdownload ,text/x-php,application/x-php,application/x-httpd-php,application/x-httpd-php-source,application/javascript,application/xml', 'pro_plugin');
         $attack_ip = $this->get_ip();
         $request_uri = $_SERVER['REQUEST_URI'];
         $tag_description = '';
-                
-        /* Cargamos el lenguaje del sitio */
+		
+		/* Cargamos el lenguaje del sitio */
         $lang = JFactory::getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
         $not_applicable = $lang->_('COM_SECURITYCHECKPRO_NOT_APPLICABLE');
         $access_attempt = $lang->_('COM_SECURITYCHECKPRO_ACCESS_ATTEMPT');
         $action = $lang->_('COM_SECURITYCHECKPRO_FILE_DELETED');
 		$custom_code = $this->pro_plugin->getValue('custom_code', 'The webmaster has forbidden your access to this site', 'pro_plugin');
+		
+		// Check file properties. If it's an array, let's convert it.
+		$tmp_name = $file['tmp_name'];
+		$file_name = $file['name'];
+		$file_size = $file['size'];
+		
+		if (is_array($file['tmp_name'])) {
+			$tmp_name = $file['tmp_name'][0];
+		} 
+		
+		if (is_array($file['name'])) {
+			$file_name = $file['name'][0];
+		} 
+		
+		if (is_array($file['size'])) {
+			$file_size = $file['size'][0];
+		} 
+		
+		// Obtenemos el mime-type del archivo temporal
+		if ( (function_exists('mime_content_type')) && (file_exists($tmp_name)) )  {
+			$mime_type = strtolower(mime_content_type($tmp_name));
+		} else {
+			$mime_type = false;
+		}		
+		
+		if ($mime_type) {
+			$mimetypes_blacklist_array = explode(",",$mimetypes_blacklist);
+			// Convertimos los valores del array a minúsculas para hacer la comparación 'in_array'
+			$mimetypes_blacklist_array = array_map('strtolower', $mimetypes_blacklist_array);			
+			
+			if ( in_array($mime_type,$mimetypes_blacklist_array) ) {
+				$malware_description = $lang->_('COM_SECURITYCHECKPRO_FILE_MIMETYPE_NOT_ALLOWED') . $mime_type;
+				$this->grabar_log($logs_attacks, $attack_ip, 'UPLOAD_SCANNER', $action, $type, $request_uri, $file_name . PHP_EOL . $malware_description, $user->username, $component);
+				$error_403 = $lang->_('COM_SECURITYCHECKPRO_403_ERROR');
+				header('HTTP/1.1 403 Forbidden');
+				die($custom_code);
+			}
+		}		       
                 
         // Extensiones de ficheros que serán analizadas
         // Eliminamos los espacios en blanco
-        $extensions_blacklist = str_replace(' ', '', $extensions_blacklist);
+        $extensions_blacklist = str_ireplace(' ', '', $extensions_blacklist);
         $ext = explode(',', $extensions_blacklist);
         
         // Obtenemos el usuario
@@ -2002,13 +2146,13 @@ class plgSystemSecuritycheckpro extends JPlugin
         // Obtenemos el componente de la petición
         $component = $this->get_component();
             
-        if ((!empty($file['name'])) && (is_string($file['name']))) {
+        if ((!empty($file_name)) && (is_string($file_name))) {
             
             // Buscamos extensiones múltiples
             if ($check_multiple_extensions) {        
                 
                 // Buscamos la verdadera extensión del fichero (esto es, buscamos archivos tipo .php.xxx o .php.xxx.yyy)
-                $explodedName = explode('.', $file['name']);
+                $explodedName = explode('.', $file_name);
                 array_reverse($explodedName);
                                                 
                 if((count($explodedName) > 3) && (strtolower($explodedName[1]) == 'php')) {  // Archivo tipo .php.xxx.yyy
@@ -2025,7 +2169,7 @@ class plgSystemSecuritycheckpro extends JPlugin
             // Buscamos si la extensión está en la lista de las extensiones prohibidas
             if ((!empty($extensions_blacklist)) && ($safe)) {
                             
-                if (in_array(pathinfo($file['name'], PATHINFO_EXTENSION), $ext) && ($file['size'] > 0)) {
+                if (in_array(pathinfo($file_name, PATHINFO_EXTENSION), $ext) && ($file_size > 0)) {
                     // Archivo en la lista de extensiones prohibidas
                     $type = 'FORBIDDEN_EXTENSION';
                     $malware_description = $lang->_('COM_SECURITYCHECKPRO_TITLE_FORBIDDEN_EXTENSION');
@@ -2036,7 +2180,7 @@ class plgSystemSecuritycheckpro extends JPlugin
             // Si alguna de las dos comprobaciones es positiva, borramos el fichero subido (si así está marcado)
             if (!$safe) {
                 if ($delete_files) {                    
-                    @unlink($file['tmp_name']);                    
+                    @unlink($tmp_name);                    
                 } else {
                     $action = $lang->_('COM_SECURITYCHECKPRO_FILE_NOT_DELETED');
                 }
@@ -2046,7 +2190,7 @@ class plgSystemSecuritycheckpro extends JPlugin
                     $this->actualizar_lista_dinamica($attack_ip);                    
                 }
                         
-                $this->grabar_log($logs_attacks, $attack_ip, 'UPLOAD_SCANNER', $action, $type, $request_uri, $file['name'] . PHP_EOL . $malware_description, $user->username, $component);
+                $this->grabar_log($logs_attacks, $attack_ip, 'UPLOAD_SCANNER', $action, $type, $request_uri, $file_name . PHP_EOL . $malware_description, $user->username, $component);
                 $error_403 = $lang->_('COM_SECURITYCHECKPRO_403_ERROR');
                 header('HTTP/1.1 403 Forbidden');
 				die($custom_code);     
@@ -2118,7 +2262,7 @@ class plgSystemSecuritycheckpro extends JPlugin
                 }                                        
             } else
             {
-                // Escribimos en log si se produce un intento de acceso fallido    al frontend
+                // Escribimos en log si se produce un intento de acceso fallido al frontend
                 if ($logins_to_monitorize != 2) {
                     $description = $lang->_('COM_SECURITYCHECKPRO_USERNAME') . $login_info[0];                    
                     if($write_log) {
@@ -2141,7 +2285,8 @@ class plgSystemSecuritycheckpro extends JPlugin
     private function trackFailedLogin()
     {
             
-        $user = JRequest::getCmd('username', null);
+        $input = JFactory::getApplication()->input;
+		$user = $input->get('username', null);	
         
         $extraInfo = array();
         if(!empty($user)) {    
@@ -2268,7 +2413,7 @@ class plgSystemSecuritycheckpro extends JPlugin
             // Consultamos el número actual de usuarios con permisos de administración
 			try 
             {
-				$query = "SELECT COUNT(*) from `#__user_usergroup_map` WHERE group_id IN (" . implode(',', array_map('intval', $admin_groups)) . ")" ;
+				$query = "SELECT COUNT(*) from #__user_usergroup_map WHERE group_id IN (" . implode(',', array_map('intval', $admin_groups)) . ")" ;
 				$db->setQuery($query);
 				(int) $actual_admins = $db->loadResult();
 			}catch (Exception $e)
@@ -2279,7 +2424,7 @@ class plgSystemSecuritycheckpro extends JPlugin
             // Consultamos el número previo de usuarios pertenencientes al grupo super-users
             try
             {
-                $query = "SELECT contador from `#__securitycheckpro_users_control` WHERE id='1'" ;
+                $query = "SELECT contador from #__securitycheckpro_users_control WHERE id='1'" ;
                 $db->setQuery($query);
                 (int) $previous_admins = $db->loadResult();
             } catch (Exception $e)
@@ -2293,7 +2438,7 @@ class plgSystemSecuritycheckpro extends JPlugin
                 // Extraemos los ids de los usuarios con permisos de administración
 				try 
 				{
-					$query = "SELECT user_id from `#__user_usergroup_map` WHERE group_id IN (" . implode(',', array_map('intval', $admin_groups)) . ")" ;
+					$query = "SELECT user_id from #__user_usergroup_map WHERE group_id IN (" . implode(',', array_map('intval', $admin_groups)) . ")" ;
 					$db->setQuery($query);
 					$actual_admins = $db->loadColumn();
 				}catch (Exception $e)
@@ -2325,7 +2470,7 @@ class plgSystemSecuritycheckpro extends JPlugin
                 // Extraemos los ids de los usuarios con permisos de administración anteriores
                 try
                 {
-                    $query = "SELECT users from `#__securitycheckpro_users_control`" ;
+                    $query = "SELECT users from #__securitycheckpro_users_control" ;
                     $db->setQuery($query);
                     $previous_admins = $db->loadResult();
                 } catch (Exception $e)
@@ -2336,12 +2481,31 @@ class plgSystemSecuritycheckpro extends JPlugin
                     }
                 }
                 
-                // Decodificamos el array, que vendrá en formato json_decode
+                // Decodificamos el array, que vendrá en formato json
                 $previous_admins = json_decode($previous_admins, true);
-            
-                // Extraemos el id del nuevo usuario creado
-                $new_user_added = array_diff($actual_admins, $previous_admins);
-                                
+				
+				if (!is_null($previous_admins)) {
+					// Extraemos el id del nuevo usuario creado
+					$new_user_added = array_diff($actual_admins, $previous_admins);
+				} else {
+					// Something went wrong decoding the json to extract previous admins. Let's create an empty array
+					$new_user_added = array();
+					// Instanciamos un objeto para almacenar los datos que serán sobreescritos
+					$object = new StdClass();                    
+					$object->id = 1;
+					$object->users = json_encode($actual_admins);
+					$object->contador = count($actual_admins);
+					
+					try 
+					{
+						// Añadimos los datos a la BBDD
+						$db->updateObject('#__securitycheckpro_users_control', $object, 'id');    
+							
+					} catch (Exception $e) {    
+						return;
+					}
+				}
+                                            
                 foreach ($new_user_added as $new_user)
                 {                        
                     // Creamos una instancia del usuario
@@ -2369,7 +2533,7 @@ class plgSystemSecuritycheckpro extends JPlugin
             // Consultamos el número de logs para ver si se supera el límite establecido en el apartado 'log_limits_per_ip_and_day'
             try 
             {
-                $query = "DELETE from `#__securitycheckpro_users_control` WHERE id='1'" ;
+                $query = "DELETE from #__securitycheckpro_users_control WHERE id='1'" ;
                 $db->setQuery($query);
                 $db->execute();
             } catch (Exception $e)
@@ -2392,8 +2556,6 @@ class plgSystemSecuritycheckpro extends JPlugin
     *
     * $files    array  array de los ficheros incluidos en el paquete (i.e [string] 1 = "plg_quickicon_akeebabackup.zip" [string] 2 = "plg_system_akeebaupdatecheck.zip")
     *
-    *
-    * $description    string  Descripción incluida por el desarrollador (i.e J!Dump Plugin -- This plugin requires the J!Dump component to function. )
     *
     */
     function onExtensionAfterInstall($installer, $eid)
@@ -2457,9 +2619,37 @@ class plgSystemSecuritycheckpro extends JPlugin
             } else {
                 $res = $db->updateObject('#__securitycheckpro_storage', $object, 'storage_key');
             }
+			
+			// Let's write a file to tell securitycheck that a new extension has been installed. This is needed by /com_securitycheckpro/backend/models/securitycheckpros.php		
+			$this->write_file(); 
         } catch (Exception $e) {                
             return false;
         }
     }
+	
+	// Writes a file into the scan folder to know that we must update the vulnerabilities database
+	function write_file()
+    {
+				
+		$file_manag = @fopen($this->scan_path."update_vuln_table.php", 'ab');		
+		
+		if (empty($file_manag)) {
+            return;
+        }
+	
+		@fclose($file_manag);
+    }
+	
+	function onExtensionAfterUninstall($installer, $eid)
+    {		
+		// Let's write a file to tell securitycheck that a new extension has been uninstalled. This is needed by /com_securitycheckpro/backend/models/securitycheckpros.php		
+		$this->write_file();
+	}
+	
+	function onExtensionAfterUpdate($installer, $eid)
+    {		
+		// Let's write a file to tell securitycheck that a new extension has been updated. This is needed by /com_securitycheckpro/backend/models/securitycheckpros.php		
+		$this->write_file(); 
+	}
         
 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="hikashopshipping">
 	<name>Hikashop FedEx Shipping Plugin</name>
-	<creationDate>10 août 2020</creationDate>
-	<version>4.3.0</version>
+	<creationDate>25 septembre 2022</creationDate>
+	<version>4.6.2</version>
 	<author>Rich S Wyatt - D3 Web Creations / OBSIDEV</author>
 	<authorEmail>info@dcubedweb.com / contact@obsidev.com</authorEmail>
 	<authorUrl>http://www.dcubedweb.com / http://www.obsidev.com</authorUrl>
@@ -13,6 +13,7 @@
 		<filename plugin="fedex">fedex.php</filename>
 		<filename plugin="fedex">fedex_configuration.php</filename>
 		<filename>fedex_rate.wsdl</filename>
+		<filename>fedex_rate_test.wsdl</filename>
 	</files>
 	<params addpath="/components/com_hikashop/params">
 	</params>

@@ -155,12 +155,8 @@ class PlgK2dropfiles extends JPlugin
             }
         }
 
-        JPluginHelper::importPlugin('dropfilesthemes');
-        $dispatcher = JDispatcher::getInstance();
-
         // Check theme exists or fallback to default theme
-        $availableThemes = $dispatcher->trigger('getThemeName');
-
+        $availableThemes = DropfilesBase::getDropfilesThemes();
         $themeExists = false;
         foreach ($availableThemes as $t) {
             if (strtolower($t['id']) === strtolower($theme)) {
@@ -178,8 +174,7 @@ class PlgK2dropfiles extends JPlugin
                 'theme' => $themeExists ? $theme : 'default'
             )
         );
-
-        $result = $dispatcher->trigger('onShowFrontCategory', $params_arr);
+        $result = $app->triggerEvent('onShowFrontCategory', $params_arr);
 
         if (!empty($result[0])) {
             $componentParams = JComponentHelper::getParams('com_dropfiles');
@@ -266,17 +261,17 @@ class PlgK2dropfiles extends JPlugin
         }
 
         JPluginHelper::importPlugin('dropfilesthemes');
-        $dispatcher = JDispatcher::getInstance();
         $params_arr = array(array('file' => $file,
             'category' => $category,
             'params' => $params->params,
             'theme' => $theme));
-        $result = $dispatcher->trigger('onShowFrontFile', $params_arr);
+        $app = JFactory::getApplication();
+        $result = $app->triggerEvent('onShowFrontFile', $params_arr);
 
         if (!empty($result[0])) {
             $componentParams = JComponentHelper::getParams('com_dropfiles');
             $doc = JFactory::getDocument();
-            $doc->addStyleSheet(JURI::base('true') . '/components/com_dropfiles/assets/css/front.css');
+            $doc->addStyleSheet(JURI::base('true') . '/components/com_dropfiles/assets/css/front_ver5.4.css');
             if ((int) $componentParams->get('usegoogleviewer', 1) === 1) {
                 $path_dropfilesbase = JPATH_ADMINISTRATOR . '/components/com_droppics/classes/dropfilesBase.php';
                 JLoader::register('DropfilesBase', $path_dropfilesbase);

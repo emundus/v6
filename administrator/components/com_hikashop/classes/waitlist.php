@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -31,7 +31,7 @@ class hikashopWaitlistClass extends hikashopClass{
 		$element->waitlist_id = hikashop_getCID('waitlist_id');
 		$formData = hikaInput::get()->get('data', array(), 'array');
 		jimport('joomla.filter.filterinput');
-		$safeHtmlFilter = & JFilterInput::getInstance(null, null, 1, 1);
+		$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 		foreach($formData['waitlist'] as $column => $value){
 			hikashop_secureField($column);
 			$element->$column = $safeHtmlFilter->clean(strip_tags($value), 'string');
@@ -44,10 +44,47 @@ class hikashopWaitlistClass extends hikashopClass{
 	}
 
 	function save(&$element){
-		if(empty($element->waitlist_id) && empty($element->date)){
+		$new = empty($element->waitlist_id);
+		if($new && empty($element->date)){
 			$element->date = time();
 		}
+
+		$do = true;
+		JPluginHelper::importPlugin('hikashop');
+		$app = JFactory::getApplication();
+		if($new) {
+			$app->triggerEvent('onBeforeWaitlistCreate', array( &$element, &$do ));
+		} else {
+			$app->triggerEvent('onBeforeWaitlistUpdate', array( &$element, &$do ));
+		}
+
+		if(!$do)
+			return false;
+
 		$status = parent::save($element);
+		if(!$status)
+			return $status;
+
+		if($new) {
+			$app->triggerEvent('onAfterWaitlistCreate', array( &$element ));
+		} else {
+			$app->triggerEvent('onAfterWaitlistUpdate', array( &$element ));
+		}
+		return $status;
+	}
+	public function delete(&$elements) {
+		$do = true;
+		JPluginHelper::importPlugin('hikashop');
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onBeforeWaitlistDelete', array(&$elements, &$do));
+
+		if(!$do)
+			return false;
+
+		$status = parent::delete($elements);
+		if($status) {
+			$app->triggerEvent('onAfterWaitlistDelete', array(&$elements));
+		}
 		return $status;
 	}
 }

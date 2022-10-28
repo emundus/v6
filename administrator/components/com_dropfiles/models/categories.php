@@ -14,18 +14,10 @@
 
 defined('_JEXEC') || die;
 
-//jimport('joomla.application.component.modeladmin');
-//jimport('joomla.access.access');
-$path_admin_categories = JPATH_ROOT . DIRECTORY_SEPARATOR . 'administrator' . DIRECTORY_SEPARATOR . 'components';
-$path_admin_categories .= DIRECTORY_SEPARATOR . 'com_categories' . DIRECTORY_SEPARATOR . 'models';
-$path_admin_categories .= DIRECTORY_SEPARATOR . 'categories.php';
-
-require_once($path_admin_categories);
-
 /**
  * Class DropfilesModelCategories
  */
-class DropfilesModelCategories extends CategoriesModelCategories
+class DropfilesModelCategories extends JModelList
 {
     /**
      * Can do
@@ -82,7 +74,6 @@ class DropfilesModelCategories extends CategoriesModelCategories
 
         $query = $db->getQuery(true);
 
-
         // Select the required fields from the table.
         $query->select(
             $this->getState(
@@ -104,7 +95,7 @@ class DropfilesModelCategories extends CategoriesModelCategories
             ->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
 
         //Join over the dropfiles categories
-        $query->select('d.type AS type')
+        $query->select('d.type AS type, d.params')
             ->join('LEFT', '#__dropfiles AS d ON d.id=a.id');
 
         // Filter by extension
@@ -139,6 +130,12 @@ class DropfilesModelCategories extends CategoriesModelCategories
         if ($dropfiles_params->get('dropbox_token', '') !== '') {
             $catType[] = $db->quote('dropbox');
         }
+        if ($dropfiles_params->get('onedriveBusinessKey', '') !== '' &&
+            $dropfiles_params->get('onedriveBusinessSecret', '') !== '' &&
+                isset($dropfiles_params['onedriveBusinessConnected']) &&
+                (int) $dropfiles_params['onedriveBusinessConnected'] === 1) {
+            $catType[] = $db->quote('onedrivebusiness');
+        }
         $getType = implode(',', $catType);
         $query->where('d.type IN (' . $getType . ')');
 
@@ -146,7 +143,7 @@ class DropfilesModelCategories extends CategoriesModelCategories
         if ($catid !== null) {
             $subQuery = 'SELECT rgt,lft FROM #__categories WHERE id=' . (int)$catid . " AND extension='com_dropfiles'";
             $db->setQuery($subQuery);
-            if (!$db->query()) {
+            if (!$db->execute()) {
                 return false;
             }
             $parent = $db->loadObject();
@@ -159,8 +156,9 @@ class DropfilesModelCategories extends CategoriesModelCategories
             }
         }
 
-        $query->select('COUNT(f.id) as files');
-        $query->join('LEFT', '#__dropfiles_files AS f ON a.id = f.catid');
+//        $query->join('LEFT', '#__dropfiles_files AS f ON a.id = f.catid');
+
+        $query->select('d.count as files');
 //        $query->where('a.id IS NOT null');
         $query->group('a.id');
 
@@ -171,11 +169,271 @@ class DropfilesModelCategories extends CategoriesModelCategories
                 $query->where('created_user_id=' . (int)JFactory::getUser()->id);
             }
         }
+        // Get display empty folder option
+        $params = JComponentHelper::getParams('com_dropfiles');
+        $showEmptyCategory = $params->get('show_empty_folder', 1);
+        $app = JFactory::getApplication();
+        $isAdmin = $app->isClient('administrator');
+
+        if (!$isAdmin && !$showEmptyCategory) {
+            // Check current page is front-end file manager
+
+            // Front file manager
+            $option = ($app->input->get('option') === 'com_dropfiles') ? true : false;
+            $view = ($app->input->get('view') === 'manage') ? true : false;
+            $task = ($app->input->get('task') === 'site_manage') ? true : false;
+            $tmpl = ($app->input->get('tmpl') === 'dropfilesfrontend') ? true : false;
+
+            // Editor iframe file manager
+            $view2 = ($app->input->get('view') === 'dropfiles') ? true : false;
+            $tmpl2 = ($app->input->get('tmpl') === 'component') ? true : false;
+
+            if (!($option && $view) && !($option && $view && $task && $tmpl) && !($option && $view2 && $tmpl2)) {
+                $query->where('(d.count > 0 OR (select ed.count from #__dropfiles as ed left join #__categories as ec on ec.id = ed.id where ed.count > 0 and ec.parent_id = a.id) > 0)');
+            }
+        }
         $query->order('a.lft ASC');
 
         return $query;
     }
 
+    /**
+     * Assign our access to category access
+     *
+     * @return mixed
+     */
+    public function getItems()
+    {
+        $items = parent::getItems();
+        $dropfiles_params = JComponentHelper::getParams('com_dropfiles');
+        foreach ($items as &$item) {
+            $params = json_decode($item->params);
+            if ($dropfiles_params->get('categoryrestriction', 'accesslevel') === 'accesslevel') {
+                if (isset($params->access) && intval($params->access) === -1) {
+                    // Get parent access
+                    $item->access = $this->getTopParentAccess($item);
+                }
+            } else {
+                $item->params = $this->getTopParentGroup($item);
+            }
+        }
+        return $items;
+    }
+
+    /**
+     * Get top parent group
+     *
+     * @param object $category Category object
+     *
+     * @return array
+     *
+     * @since 5.5
+     */
+    public function getTopParentGroup($category)
+    {
+        $usergroup = isset($category->params->usergroup) ? $category->params->usergroup : array();
+        if (isset($category->level) && intval($category->level) === 1) {
+            $usergroup = array_diff($usergroup, array('-1'));
+            if (empty($usergroup)) {
+                return array('1'); // Return default public usergroup
+            }
+        }
+        if (!in_array('-1', $usergroup)) {
+            if (empty($usergroup)) {
+                return array('1'); // Return default public usergroup
+            }
+            return $usergroup;
+        }
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+        $this->setState('filter.access', null);
+        // Filter by extension
+        $extension = $this->getState('filter.extension');
+        if ($extension) {
+            $query->where('c.extension = ' . $db->quote($extension));
+        }
+
+        $query->select('d.params, c.level, c.parent_id');
+        $query->from('#__categories as c');
+        $query->leftJoin('#__dropfiles as d on d.id = c.id');
+        $query->where('c.id = ' . (int) $category->parent_id);
+        $db->setQuery($query);
+        if ($db->execute()) {
+            $parent = $db->loadObject();
+            $parent->params = (isset($parent->params) && !empty($parent->params)) ? json_decode($parent->params) : false;
+            if (isset($parent->params->usergroup) && is_array($parent->params->usergroup) && in_array('-1', $parent->params->usergroup)) {
+                $usergroup = $this->getTopParentGroup($parent);
+                if (empty($usergroup)) {
+                    return array('1'); // Return default public usergroup
+                }
+                return $usergroup;
+            } else {
+                $usergroup = isset($parent->params->usergroup) ? $parent->params->usergroup : array('1');
+                if (empty($usergroup)) {
+                    return array('1'); // Return default public usergroup
+                }
+                return $usergroup;
+            }
+        }
+
+        $usergroup = array_diff($usergroup, array('-1'));
+        if (empty($usergroup)) {
+            return array('1'); // Return default public usergroup
+        }
+        return $usergroup;
+    }
+
+    /**
+     * Update files count
+     *
+     * @return boolean
+     */
+    public function updateFilesCount()
+    {
+        $dbo = JFactory::getDbo();
+        $query = $dbo->getQuery(true);
+        $query->update('#__dropfiles as a');
+
+        $query->set('count = (case
+                    when a.type = \'default\' then (select count(*) from #__dropfiles_files as f where f.catid = a.id)
+                    when a.type = \'googledrive\' then (select count(*) from #__dropfiles_google_files as gf where gf.catid = a.cloud_id)
+                    when a.type = \'onedrive\' then (select count(*) from #__dropfiles_onedrive_files as odf where odf.catid = a.cloud_id)
+                    when a.type = \'onedrivebusiness\' then (select count(*) from #__dropfiles_onedrive_business_files as odbf where odbf.catid = a.cloud_id)
+                    when a.type = \'dropbox\' then (select count(*) from #__dropfiles_dropbox_files as df where df.catid = a.cloud_id)
+                    end
+                    )');
+        $query->where('1=1');
+
+        try {
+            $dbo->setQuery($query);
+            if ($dbo->execute()) {
+                return true;
+            }
+        } catch (RuntimeException $e) {
+            return false;
+        }
+
+        return false;
+    }
+
+    /**
+     * Get top parent access
+     *
+     * @param object $category Category object
+     *
+     * @return array
+     *
+     * @since 5.5
+     */
+    public function getTopParentAccess($category)
+    {
+        $access = isset($category->access) ? $category->access : 1;
+        // Always return top category access
+        if (isset($category->level) && intval($category->level) === 1) {
+            return (string) $access;
+        }
+
+        if (intval($category->level) > 1) {
+            $db = $this->getDbo();
+            $query = $db->getQuery(true);
+            $this->setState('filter.access', null);
+            // Filter by extension
+            $extension = $this->getState('filter.extension');
+            if ($extension) {
+                $query->where('c.extension = ' . $db->quote($extension));
+            }
+
+            $query->select('c.access, d.params, c.level, c.parent_id');
+            $query->from('#__categories as c');
+            $query->leftJoin('#__dropfiles as d on d.id = c.id');
+            $query->where('c.id = ' . (int) $category->parent_id);
+            $db->setQuery($query);
+            if ($db->execute()) {
+                $parent = $db->loadObject();
+                $params = isset($parent->params) ? json_decode($parent->params) : false;
+                unset($parent->params);
+                $pAccess = ($params && isset($params->access)) ? intval($params->access) : -1;
+                if ($pAccess === -1) {
+                    $access = $this->getTopParentAccess($parent);
+                } else {
+                    return (string) $parent->access;
+                }
+            }
+        }
+
+        return (string) $access;
+    }
+
+    /**
+     * Get category children (1 level)
+     *
+     * @param integer $cid Category ID
+     *
+     * @return mixed
+     * @since  version
+     */
+    public function childrenCloudInDropfiles($cid)
+    {
+        $results = array();
+        $categories = JCategories::getInstance('dropfiles');
+        $cat = $categories->get($cid);
+        $children = $cat->getChildren(false);
+        if (!empty($children)) {
+            // restructure data
+            foreach ($children as $child) {
+                $childCat = $this->getOneCatByLocalId($child->id);
+                if (isset($childCat->cloud_id)) {
+                    $results[$childCat->cloud_id] = array('id' => $child->id, 'title' => $child->title, 'cloud_id' => $childCat->cloud_id);
+                }
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Get all categories
+     *
+     * @return mixed
+     * @since  version
+     */
+    public function getTopGoogleCategories()
+    {
+        // Get a db connection.
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query
+            ->select('*')
+            ->from('#__categories AS c, #__dropfiles AS d')
+            ->where($db->quoteName('c.id') . ' = ' . $db->quoteName('d.id') .
+                ' AND c.parent_id = 1 AND d.type=' . $db->quote('googledrive'));
+
+        $db->setQuery($query);
+        $children = $db->loadObjectList();
+
+        $catCloud = array();
+        if (!empty($children)) {
+            foreach ($children as $child) {
+                $childCat = $this->getOneCatByLocalId($child->id);
+                if (isset($childCat->cloud_id)) {
+                    $results[$child->id] = array('id' => $child->id, 'title' => $child->title, 'parent_id' => $child->parent_id, 'cloud_id' => $childCat->cloud_id);
+                }
+            }
+
+            // restructure data
+            foreach ($results as $id => $catData) {
+                if (isset($results[$catData['parent_id']])) {
+                    $catData['parent_cloud_id'] = $results[$catData['parent_id']]['cloud_id'];
+                } else {
+                    $catData['parent_cloud_id'] = '';
+                }
+
+                $catCloud[$catData['cloud_id']] =  $catData;
+            }
+        }
+
+        return $catCloud;
+    }
 
     /**
      * Get all categories for module latest files setting
@@ -200,8 +458,12 @@ class DropfilesModelCategories extends CategoriesModelCategories
         if ($dropfiles_params->get('dropbox_token', '') !== '') {
             $catType[] = $dbo->quote('dropbox');
         }
+        if ($dropfiles_params->get('onedriveBusinessKey', '') !== '' && $dropfiles_params->get('onedriveBusinessSecret', '') !== '' &&
+            isset($dropfiles_params['onedriveBusinessConnected']) && (int) $dropfiles_params['onedriveBusinessConnected'] === 1) {
+            $catType[] = $dbo->quote('onedrivebusiness');
+        }
 
-        $query = 'SELECT d.type, d.cloud_id, c.* FROM #__categories as c,#__dropfiles as d';
+        $query = 'SELECT d.type, d.cloud_id, d.params, c.* FROM #__categories as c,#__dropfiles as d';
         $query .= " WHERE c.id=d.id AND c.extension='com_dropfiles'";
         $getType = implode(',', $catType);
         $query .= ' AND ' . $dbo->quoteName('d.type') . ' IN (' . $getType . ')';
@@ -211,7 +473,7 @@ class DropfilesModelCategories extends CategoriesModelCategories
 
         if ($replaceCloudId) {
             foreach ($listCat as $key => $value) {
-                if ($value->cloud_id !== '') {
+                if (!empty($value->cloud_id)) {
                     $value->id = $value->cloud_id;
                 }
             }
@@ -293,6 +555,29 @@ class DropfilesModelCategories extends CategoriesModelCategories
     }
 
     /**
+     * Get all OneDrive Business categories
+     *
+     * @return mixed
+     * @since  version
+     */
+    public function getAllOneDriveBusinessCat()
+    {
+        // Get a db connection.
+        $db = JFactory::getDbo();
+
+        $query = $db->getQuery(true);
+        $query
+            ->select('*')
+            ->from('#__categories AS c, #__dropfiles AS d')
+            ->where($db->quoteName('c.id') . ' = ' . $db->quoteName('d.id') . ' AND d.type=' . $db->quote('onedrivebusiness'));
+
+        $db->setQuery($query);
+        $results = $db->loadObjectList();
+
+        return $results;
+    }
+
+    /**
      * Get id last on categories
      *
      * @return mixed
@@ -302,7 +587,6 @@ class DropfilesModelCategories extends CategoriesModelCategories
     {
         // Get a db connection.
         $db = $this->getDbo();
-
         $query = $db->getQuery(true);
         $query
             ->select('id')
@@ -354,6 +638,25 @@ class DropfilesModelCategories extends CategoriesModelCategories
     }
 
     /**
+     * List OneDrive Business on dropfiles
+     *
+     * @return mixed
+     * @since  version
+     */
+    public function arrayOneDriveBusinessIdDropfiles()
+    {
+        $db     = $this->getDbo();
+        $query  = $db->getQuery(true);
+        $query->select('cloud_id')
+            ->from($db->quoteName('#__dropfiles'))
+            ->where($db->quoteName('type') . ' = ' . $db->quote('onedrivebusiness'));
+        $db->setQuery($query);
+        $result = $db->loadColumn();
+
+        return $result;
+    }
+
+    /**
      * Get one cat by cloudId
      *
      * @param string $cloud_id Cloud id
@@ -394,9 +697,9 @@ class DropfilesModelCategories extends CategoriesModelCategories
         $db = $this->getDbo();
         $query = $db->getQuery(true);
         // Insert columns.
-        $columns = array('id', 'type', 'cloud_id', 'path');
+        $columns = array('id', 'type', 'cloud_id','path','params','theme');
         // Insert values.
-        $values = array($db->quote($id), $db->quote($type), $db->quote($cloud_id), $db->quote($path));
+        $values = array($id, $db->quote($type), $db->quote($cloud_id), $db->quote($path), $db->quote(''), $db->quote(''));
         $query->insert($db->quoteName('#__dropfiles'))
             ->columns($db->quoteName($columns))
             ->values(implode(',', $values));
@@ -463,13 +766,14 @@ class DropfilesModelCategories extends CategoriesModelCategories
         $db = $this->getDbo();
         $query = $db->getQuery(true);
         // Insert columns.
-        $columns = array('id', 'type', 'cloud_id');
+        $columns = array('id', 'type', 'cloud_id','path','params','theme');
         // Insert values.
-        $values = array($id, $db->quote($type), $db->quote($cloud_id));
+        $values = array($id, $db->quote($type), $db->quote($cloud_id), $db->quote(''), $db->quote(''), $db->quote(''));
         $query->insert($db->quoteName('#__dropfiles'))
             ->columns($db->quoteName($columns))
             ->values(implode(',', $values));
         $db->setQuery($query);
+
         $db->execute();
     }
 
@@ -485,22 +789,17 @@ class DropfilesModelCategories extends CategoriesModelCategories
      */
     public function createOnCategories($title, $parent_id, $level)
     {
-        $basePath = JPATH_ADMINISTRATOR . '/components/com_categories';
+        $basePath = JPATH_ADMINISTRATOR . '/components/com_dropfiles';
         require_once $basePath . '/models/category.php';
-        $config = array('table_path' => $basePath . '/tables');
-        $catmodel = new CategoriesModelCategory($config);
+        $catmodel = new DropfilesModelCategory();
 
         $catData = array(
             'id' => 0, 'parent_id' => $parent_id, 'level' => $level, 'extension' => 'com_dropfiles',
-            'title' => $title, 'alias' => JString::increment($title) . '-' . uniqid(),
+            'title' => $title, 'alias' => Joomla\String\StringHelper::increment($title) . '-' . uniqid(),
             'published' => 1, 'language' => '*', 'associations' => array()
         );
-        $result = $catmodel->save($catData);
-        if ($result) {
-            $newCatId = $this->getIdLastOnCategories();
-            return $newCatId;
-        }
-        return $result;
+        $newCatId = $catmodel->createJoomlaCategory($catData);
+        return $newCatId;
     }
 
     /**
@@ -574,7 +873,7 @@ class DropfilesModelCategories extends CategoriesModelCategories
                 foreach ($children as $child) {
                     // Remove parents
                     $childCat = $this->getOneCatByLocalId($child->id);
-                    $folderToDelete[] = $cid;
+                    $folderToDelete[] = $child->id;
                     $cloudFolderToDelete[] = $dbo->quote($childCat->cloud_id);
                 }
             }
@@ -583,7 +882,7 @@ class DropfilesModelCategories extends CategoriesModelCategories
             $dbo->setQuery($query);
             $dbo->execute();
 
-            $query = 'DELETE FROM #__dropfiles WHERE BINARY `cloud_id` IN (' . implode(',', $cloudFolderToDelete) . ')';
+            $query = 'DELETE FROM #__dropfiles WHERE type= '. $dbo->quote($type) .' AND BINARY `cloud_id` IN (' . implode(',', $cloudFolderToDelete) . ')';
             $dbo->setQuery($query);
             $dbo->execute();
 
@@ -802,5 +1101,23 @@ class DropfilesModelCategories extends CategoriesModelCategories
                 $this->getParentCat($cat->parent_id, $results, $displaycat);
             }
         }
+    }
+
+    /**
+     * Returns a Table object, always creating it.
+     *
+     * @param string $name    The table type to instantiate
+     * @param string $prefix  A prefix for the table class name. Optional.
+     * @param array  $options Configuration array for model. Optional.
+     *
+     * @return JTable    A database object
+     * @since  version
+     */
+    public function getTable($name = '', $prefix = '', $options = array())
+    {
+        $dbo   = $this->getDbo();
+        $table =  new Joomla\CMS\Table\Category($dbo);
+        $table->extension = 'com_dropfiles';
+        return $table;
     }
 }

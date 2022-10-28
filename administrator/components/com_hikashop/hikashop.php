@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -32,7 +32,10 @@ elseif(!empty($ctrl) && !$view) {
 
 $taskGroup = hikaInput::get()->getCmd('ctrl','dashboard');
 $config =& hikashop_config();
-JHTML::_('behavior.tooltip');
+if(HIKASHOP_J40)
+	JHtml::_('bootstrap.tooltip', '.hasTooltip', array('placement' => 'left'));
+else
+	JHTML::_('behavior.tooltip');
 $bar = JToolBar::getInstance('toolbar');
 $bar->addButtonPath(HIKASHOP_BUTTON);
 
@@ -43,8 +46,6 @@ if($taskGroup != 'update' && !$config->get('installcomplete')){
 	echo '<a href="'.$url.'">Please click here if you are not automatically redirected within 3 seconds</a>';
 	return;
 }
-
-$className = ucfirst($taskGroup).'Controller';
 
 $currentuser = JFactory::getUser();
 if($taskGroup != 'update' && !$currentuser->authorise('core.manage', 'com_hikashop')) {
@@ -58,16 +59,16 @@ if($taskGroup == 'config' && !$currentuser->authorise('core.admin', 'com_hikasho
 	return;
 }
 
-if(!class_exists($className) && (!file_exists(HIKASHOP_CONTROLLER.$taskGroup.'.php') || !include_once(HIKASHOP_CONTROLLER.$taskGroup.'.php'))) {
-	if(!hikashop_getPluginController($taskGroup)) {
-		$app = JFactory::getApplication();
-		$app->enqueueMessage('Page not found : '.$taskGroup, 'warning');
-		return;
-	}
-}
 ob_start();
 
-$classGroup = new $className();
+$classGroup = hikashop_get('controller.'.$taskGroup);
+
+if(empty($classGroup)) {
+	$app = JFactory::getApplication();
+	$app->enqueueMessage('Page not found : '.$taskGroup, 'warning');
+	return;
+}
+
 hikaInput::get()->set('view', $classGroup->getName() );
 $classGroup->execute( hikaInput::get()->getCmd('task','listing'));
 $classGroup->redirect();

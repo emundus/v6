@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -29,8 +29,12 @@ class CategoryViewCategory  extends HikaShopView {
 		}
 		$myItem = empty($Itemid) ? '' : '&Itemid='.$Itemid;
 		if (is_object( $menu )) {
-			jimport('joomla.html.parameter');
-			$menuparams = new HikaParameter( $menu->params );
+			if(HIKASHOP_J30) {
+				$menuparams = $menu->getParams();
+			} else {
+				jimport('joomla.html.parameter');
+				$menuparams = new HikaParameter($menu->params);
+			}
 		}
 		$cid = hikashop_getCID('category_id');
 		if(empty($cid)){
@@ -166,8 +170,8 @@ class CategoryViewCategory  extends HikaShopView {
 		$doc_description = $config->get('hikarss_description','');
 		$doc_title = $config->get('hikarss_name','');
 
-		$doc->title = $doc_title;
-		$doc->description = $doc_description;
+		$doc->title = hikashop_translate($doc_title);
+		$doc->description = hikashop_translate($doc_description);
 		$imageHelper = hikashop_get('helper.image');
 		foreach ( $products as $product ){
 			if($product->category_id == $cid && empty($doc_description)){

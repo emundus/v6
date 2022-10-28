@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="Export Registrants">
+		<message>
+			Allow users has permission to export all registrants in the system
+		</message>
+	</layout>
+    <fields name="request">
+        <fieldset name="request" addfieldpath="/administrator/components/com_eventbooking/elements">
+            <field name="event_id" type="ebevent" size="3" required="true" default="0" label="Select Event" description="Select Event which you want to export registrants. If you leave it empty, registrants from all events will be exported" />
+            <field
+                    name="task"
+                    type="hidden"
+                    default="registrant.export"
+                    />
+        </fieldset>
+    </fields>
+</metadata>

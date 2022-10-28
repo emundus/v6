@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -15,8 +15,10 @@ class UserViewUser extends hikashopView {
 	var $nameForm = 'CUSTOMER';
 	var $icon = 'user';
 	var $triggerView = true;
+	var $extraData = null;
 
 	public function display($tpl = null) {
+		$this->extraData = new stdClass();
 
 		if(!empty($_REQUEST['filter_partner']))
 			$this->nameListing = 'PARTNERS';
@@ -112,12 +114,18 @@ class UserViewUser extends hikashopView {
 		$acl = ($pageInfo->filter->filter_partner == 1) ? 'acl_affiliates_delete' : 'acl_user_delete';
 
 		$this->toolbar = array(
+			array('name' => 'popup', 'icon' => 'cogs', 'title' => JText::_('HIKASHOP_ACTIONS'), 'alt' => JText::_('HIKASHOP_ACTIONS'), 'url' => hikashop_completeLink('user&task=batch&tmpl=component'), 'width' => $config->get('actions_popup_width','1024'), 'height' => $config->get('actions_popup_height','520'), 'check' => true, 'display' => $manage),
 			array('name' => 'editList', 'display' => $manage),
 			array('name' => 'deleteList', 'check' => JText::_('HIKA_VALIDDELETEITEMS'), 'display' => hikashop_isAllowed($config->get($acl,'all'))),
 			'|',
 			array('name' => 'pophelp', 'target' => $this->ctrl.'-listing'),
 			'dashboard'
 		);
+
+		if($this->manage) {
+			$massactionClass = hikashop_get('class.massaction');
+			$massactionClass->addActionButtons($this->toolbar, 'user');
+		}
 		return true;
 	}
 
@@ -143,58 +151,61 @@ class UserViewUser extends hikashopView {
 
 		$db = JFactory::getDBO();
 		$config = hikashop_config();
+		try {
+			$db->setQuery('DROP TABLE IF EXISTS '.hikashop_table('click_view').', '.hikashop_table('sale_view').', '.hikashop_table('lead_view'));
+			$db->execute();
 
-		$db->setQuery('DROP TABLE IF EXISTS '.hikashop_table('click_view').', '.hikashop_table('sale_view').', '.hikashop_table('lead_view'));
-		$db->execute();
+			$query = 'CREATE OR REPLACE VIEW '.hikashop_table('click_view').' AS SELECT a.user_id, SUM(b.click_partner_price) AS click_price FROM '.hikashop_table('user').' AS a LEFT JOIN '.hikashop_table('click').' AS b ON a.user_id=b.click_partner_id AND (CASE WHEN a.user_currency_id=0 THEN '.hikashop_getCurrency().' ELSE a.user_currency_id END)=b.click_partner_currency_id WHERE a.user_partner_activated=1 AND b.click_partner_paid=0 GROUP BY b.click_partner_id;';
+			$db->setQuery($query);
+			$db->execute();
 
-		$query = 'CREATE OR REPLACE VIEW '.hikashop_table('click_view').' AS SELECT a.user_id, SUM(b.click_partner_price) AS click_price FROM '.hikashop_table('user').' AS a LEFT JOIN '.hikashop_table('click').' AS b ON a.user_id=b.click_partner_id AND (CASE WHEN a.user_currency_id=0 THEN '.hikashop_getCurrency().' ELSE a.user_currency_id END)=b.click_partner_currency_id WHERE a.user_partner_activated=1 AND b.click_partner_paid=0 GROUP BY b.click_partner_id;';
-		$db->setQuery($query);
-		$db->execute();
+			$partner_valid_status_list = explode(',', $config->get('partner_valid_status','confirmed,shipped'));
+			foreach($partner_valid_status_list as $k => $partner_valid_status) {
+				$partner_valid_status_list[$k] = $db->Quote($partner_valid_status);
+			}
+			$query = 'CREATE OR REPLACE VIEW '.hikashop_table('sale_view').' AS '.
+				' SELECT a.user_id, SUM(b.order_partner_price) AS sale_price '.
+				' FROM '.hikashop_table('user').' AS a '.
+				' LEFT JOIN '.hikashop_table('order').' AS b ON a.user_id=b.order_partner_id AND (CASE WHEN a.user_currency_id=0 THEN '.hikashop_getCurrency().' ELSE a.user_currency_id END)=b.order_partner_currency_id '.
+				' WHERE a.user_partner_activated=1 AND b.order_partner_paid=0 AND b.order_type=\'sale\' AND b.order_status IN ('.implode(',',$partner_valid_status_list).')'.
+				' GROUP BY b.order_partner_id;';
+			$db->setQuery($query);
+			$db->execute();
 
-		$partner_valid_status_list = explode(',', $config->get('partner_valid_status','confirmed,shipped'));
-		foreach($partner_valid_status_list as $k => $partner_valid_status) {
-			$partner_valid_status_list[$k] = $db->Quote($partner_valid_status);
+			$query = 'CREATE OR REPLACE VIEW '.hikashop_table('lead_view').' AS SELECT a.user_id, SUM(b.user_partner_price) AS lead_price '.
+				' FROM '.hikashop_table('user').' AS a '.
+				' LEFT JOIN '.hikashop_table('user').' AS b ON a.user_id=b.user_partner_id AND (CASE WHEN a.user_currency_id=0 THEN '.hikashop_getCurrency().' ELSE a.user_currency_id END)=b.user_partner_currency_id '.
+				' WHERE a.user_partner_activated=1 AND b.user_partner_paid=0 '.
+				' GROUP BY b.user_partner_id;';
+			$db->setQuery($query);
+			$db->execute();
+
+			$db->setQuery('UPDATE '.hikashop_table('user').' SET user_unpaid_amount=0');
+			$db->execute();
+
+			$query = 'UPDATE '.hikashop_table('user').' AS a JOIN '.hikashop_table('click_view').' AS b ON a.user_id=b.user_id '.
+				' SET a.user_unpaid_amount=b.click_price '.
+				' WHERE a.user_partner_activated=1';
+			$db->setQuery($query);
+			$db->execute();
+
+			$query = 'UPDATE '.hikashop_table('user').' AS a JOIN '.hikashop_table('sale_view').' AS b ON a.user_id=b.user_id '.
+				' SET a.user_unpaid_amount=a.user_unpaid_amount+b.sale_price '.
+				' WHERE a.user_partner_activated=1';
+			$db->setQuery($query);
+			$db->execute();
+
+			$query = 'UPDATE '.hikashop_table('user').' AS a JOIN '.hikashop_table('lead_view').' AS b ON a.user_id=b.user_id '.
+				' SET a.user_unpaid_amount=a.user_unpaid_amount+b.lead_price '.
+				' WHERE a.user_partner_activated=1';
+			$db->setQuery($query);
+			$db->execute();
+
+			$db->setQuery('DROP VIEW IF EXISTS '.hikashop_table('click_view').', '.hikashop_table('sale_view').', '.hikashop_table('lead_view'));
+			$db->execute();
+		} catch(Exception $e) {
+
 		}
-		$query = 'CREATE OR REPLACE VIEW '.hikashop_table('sale_view').' AS '.
-			' SELECT a.user_id, SUM(b.order_partner_price) AS sale_price '.
-			' FROM '.hikashop_table('user').' AS a '.
-			' LEFT JOIN '.hikashop_table('order').' AS b ON a.user_id=b.order_partner_id AND (CASE WHEN a.user_currency_id=0 THEN '.hikashop_getCurrency().' ELSE a.user_currency_id END)=b.order_partner_currency_id '.
-			' WHERE a.user_partner_activated=1 AND b.order_partner_paid=0 AND b.order_type=\'sale\' AND b.order_status IN ('.implode(',',$partner_valid_status_list).')'.
-			' GROUP BY b.order_partner_id;';
-		$db->setQuery($query);
-		$db->execute();
-
-		$query = 'CREATE OR REPLACE VIEW '.hikashop_table('lead_view').' AS SELECT a.user_id, SUM(b.user_partner_price) AS lead_price '.
-			' FROM '.hikashop_table('user').' AS a '.
-			' LEFT JOIN '.hikashop_table('user').' AS b ON a.user_id=b.user_partner_id AND (CASE WHEN a.user_currency_id=0 THEN '.hikashop_getCurrency().' ELSE a.user_currency_id END)=b.user_partner_currency_id '.
-			' WHERE a.user_partner_activated=1 AND b.user_partner_paid=0 '.
-			' GROUP BY b.user_partner_id;';
-		$db->setQuery($query);
-		$db->execute();
-
-		$db->setQuery('UPDATE '.hikashop_table('user').' SET user_unpaid_amount=0');
-		$db->execute();
-
-		$query = 'UPDATE '.hikashop_table('user').' AS a JOIN '.hikashop_table('click_view').' AS b ON a.user_id=b.user_id '.
-			' SET a.user_unpaid_amount=b.click_price '.
-			' WHERE a.user_partner_activated=1';
-		$db->setQuery($query);
-		$db->execute();
-
-		$query = 'UPDATE '.hikashop_table('user').' AS a JOIN '.hikashop_table('sale_view').' AS b ON a.user_id=b.user_id '.
-			' SET a.user_unpaid_amount=a.user_unpaid_amount+b.sale_price '.
-			' WHERE a.user_partner_activated=1';
-		$db->setQuery($query);
-		$db->execute();
-
-		$query = 'UPDATE '.hikashop_table('user').' AS a JOIN '.hikashop_table('lead_view').' AS b ON a.user_id=b.user_id '.
-			' SET a.user_unpaid_amount=a.user_unpaid_amount+b.lead_price '.
-			' WHERE a.user_partner_activated=1';
-		$db->setQuery($query);
-		$db->execute();
-
-		$db->setQuery('DROP VIEW IF EXISTS '.hikashop_table('click_view').', '.hikashop_table('sale_view').', '.hikashop_table('lead_view'));
-		$db->execute();
 
 		$currencyClass = hikashop_get('class.currency');
 		$this->assignRef('currencyHelper', $currencyClass);
@@ -411,7 +422,9 @@ class UserViewUser extends hikashopView {
 			'addressClass' => 'class.address',
 			'currencyClass' => 'class.currency',
 			'popup' => 'helper.popup',
+			'nameboxType' => 'type.namebox',
 		));
+
 
 		$addresses = array();
 		$fields = null;

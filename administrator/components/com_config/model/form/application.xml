@@ -68,7 +68,7 @@
 			label="COM_CONFIG_FIELD_MEMCACHE_PORT_LABEL"
 			description="COM_CONFIG_FIELD_MEMCACHE_PORT_DESC"
 			showon="cache_handler:memcache"
-			min="1"
+			min="0"
 			max="65535"
 			default="11211"
 			filter="integer"
@@ -121,7 +121,7 @@
 			label="COM_CONFIG_FIELD_MEMCACHE_PORT_LABEL"
 			description="COM_CONFIG_FIELD_MEMCACHE_PORT_DESC"
 			showon="cache_handler:memcached"
-			min="1"
+			min="0"
 			max="65535"
 			default="11211"
 			filter="integer"
@@ -426,6 +426,19 @@
 	<fieldset
 		name="proxy"
 		label="CONFIG_PROXY_SETTINGS_LABEL">
+
+		<field
+			name="behind_loadbalancer"
+			type="radio"
+			label="COM_CONFIG_FIELD_LOADBALANCER_ENABLE_LABEL"
+			description="COM_CONFIG_FIELD_LOADBALANCER_ENABLE_DESC"
+			class="btn-group btn-group-yesno"
+			default="0"
+			filter="integer"
+			>
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 
 		<field
 			name="proxy_enable"

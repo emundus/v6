@@ -223,7 +223,8 @@ class SecuritycheckprosModelTrackActions_Logs extends JModelList
     /* Función para borrar un array de logs */
     function delete()
     {
-        $uids = JRequest::getVar('cid', null, '', 'array');
+       	$input = JFactory::getApplication()->input;
+		$uids = $input->get('cid', null, 'array');
     
         JArrayHelper::toInteger($uids, array());
     
@@ -236,7 +237,7 @@ class SecuritycheckprosModelTrackActions_Logs extends JModelList
         $db = $this->getDbo();
         foreach($uids as $uid)
         {
-            $sql = "DELETE FROM `#__securitycheckpro_trackactions` WHERE id='{$uid}'";
+            $sql = "DELETE FROM #__securitycheckpro_trackactions WHERE id='{$uid}'";
             $db->setQuery($sql);
             $db->execute();    
         }
@@ -247,7 +248,7 @@ class SecuritycheckprosModelTrackActions_Logs extends JModelList
     {
         $db = $this->getDbo();
     
-        $sql = "TRUNCATE table `#__securitycheckpro_trackactions`";
+        $sql = "TRUNCATE table #__securitycheckpro_trackactions";
         $db->setQuery($sql);
         $db->execute();        
     }

@@ -25,7 +25,10 @@ $params = JComponentHelper::getParams('com_falang');
 
 //if no translator selected.
 $translate_button_available = false;
-if (!empty($params->get('translator')) && (!empty($params->get('translator_bingkey')) || !empty($params->get('translator_yandexkey')) ) ){
+if (!empty($params->get('translator')) && (!empty($params->get('translator_bingkey')) ||
+                                    		!empty($params->get('translator_googlekey'))  ||
+                                            !empty($params->get('translator_yandexkey'))  ||
+                                            !empty($params->get('translator_lingvanex')) )){
 	require_once __DIR__ .'/../../../classes/translator.php';
 	translatorFactory::getTranslator($this->select_language_id);
 	$translate_button_available = true;
@@ -34,6 +37,10 @@ if (!empty($params->get('translator')) && (!empty($params->get('translator_bingk
 $act=$this->act;
 $task=$this->task;
 $select_language_id = $this->select_language_id;
+
+$jfmanager = FalangManager::getInstance();
+$active_language = $jfmanager->getLanguageByID($select_language_id);
+
 $user = JFactory::getUser();
 $db = JFactory::getDBO();
 $elementTable = $this->actContentObject->getTable();
@@ -41,6 +48,7 @@ $input = JFactory::getApplication()->input;
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_falang/assets/js/mambojavascript.js');
+
 //use for images type
 Jhtml::_('behavior.modal');
 
@@ -96,7 +104,7 @@ $editor = $conf->get('editor');
 $conf->set('falang.elementTable',$elementTable);
 
 
-echo "\n<!-- editor is $editor //-->\n";
+echo "\n<!-- editor is $editor // -->\n";
 $editorFile = FALANG_ADMINPATH."/editors/".strtolower($editor).".php";
 if (file_exists($editorFile)){
 	require_once($editorFile);
@@ -172,279 +180,364 @@ else {
 	}
     </script>
 
-
-<form action="index.php" method="post" name="adminForm" id="<?php echo $idForm; ?>" class="form-validate">
-    <div class="span9 form-horizontal">
-            <legend><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_TRANSLATION')?></legend>
-
-            <table width="90%" border="0" cellpadding="2" cellspacing="2" class="adminform table table-striped">
-			<?php
-			foreach ($elementTable->Fields as $field) {
-
-				$field->preHandle($elementTable);
-				$originalValue = $field->originalValue;
-
-				// if we supress blank originals
-				if ($field->ignoreifblank && $field->originalValue==="") continue;
-
-				if( $field->Translate ) {
-					$translationContent = $field->translationContent;
-
-					// This causes problems in Japanese/Russian etc. ??
-					//jimport('joomla.filter.output');
-					//JFilterOutput::objectHTMLSafe( $translationContent );
-
-
-					if( strtolower($field->Type)=='hiddentext') {
-							?>
-							<tr style="display: none"><td colspan="3">
-							<input type="hidden" name="id_<?php echo $field->Name;?>" value="<?php echo $translationContent->id;?>" />
-							<input type="hidden" name="origValue_<?php echo $field->Name;?>" value='<?php echo md5( $field->originalValue );?>' />
-							<textarea  name="origText_<?php echo $field->Name;?>" style="display:none"><?php echo $field->originalValue;?></textarea>
-							<textarea name="refField_<?php echo $field->Name;?>"  style="display:none"><?php echo $translationContent->value; ?></textarea>
-							</td></tr>
-							<?php
-					}
-					else {
-				?>
-		    <tr>
-		      <th colspan="3" align="left" class="falang">
-
-
-                  <div class="falang_field_lable">
-                  <?php echo JText::_('COM_FALANG_DBFIELDLABLE') .': '. $field->Lable;?>
-                  </div>
-                  <div class="falang_field_action">
-                      <!-- add hidden use for translate/copy -->
-                      <input type="hidden" name="origValue_<?php echo $field->Name;?>" value='<?php echo md5( $field->originalValue );?>' />
-                      <textarea  name="origText_<?php echo $field->Name;?>" style="display:none"><?php echo $field->originalValue;?></textarea>
-                      <?php
-						if ( strtolower($field->Type)=='params'){
-						    //no action on params field
-						} else if ( strtolower($field->Type)=='readonlytext'){
-                          //specific case for menutype link
-                          if ($elementTable->Name == 'menu' && $field->Name == 'link') { ?>
-                              <a class="button btn" onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = document.adminForm.origText_<?php echo $field->Name;?>.value;"><i class="icon-copy"></i><?php echo JText::_('COM_FALANG_BTN_COPY'); ?></a>
-                          <?php } ?>
-
-                      <?php } else if( strtolower($field->Type)!='htmltext' ) {?>
-                          <!-- Translate button -->
-
-                          <a class="button btn" <?php echo $translate_button_available ? '': 'disabled="disabled"';?> onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = translateService(document.adminForm.origText_<?php echo $field->Name;?>.value);"><i class="icon-shuffle"></i><?php echo JText::_('COM_FALANG_BTN_TRANSLATE'); ?></a>
-                          <!-- Copy button -->
-                          <a class="button btn" onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = document.adminForm.origText_<?php echo $field->Name;?>.value;"><i class="icon-copy"></i><?php echo JText::_('COM_FALANG_BTN_COPY'); ?></a>
-                          <!-- Delete button -->
-                          <a class="button btn" onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = '';"><i class="icon-delete"></i><?php echo JText::_('Delete'); ?></a>
-                      <?php }	else { ?>
-                          <!-- Translate button -->
-                          <a class="button btn" <?php echo $translate_button_available ? '': 'disabled="disabled"';?>  onclick="copyToClipboard('<?php echo $field->Name;?>','translate');"><i class="icon-shuffle"></i><?php echo JText::_('COM_FALANG_BTN_TRANSLATE'); ?></a>
-                          <!-- Copy button -->
-                          <a class="button btn" onclick="copyToClipboard('<?php echo $field->Name;?>','copy');"><i class="icon-copy"></i><?php echo JText::_('COM_FALANG_BTN_COPY'); ?></a>
-                          <!-- Delete button -->
-                          <a class="button btn" onclick="copyToClipboard('<?php echo $field->Name;?>','clear');"><i class="icon-delete"></i><?php echo JText::_('Delete'); ?></a>
-                      <?php }?>
-                  </div>
-              </th>
-		    </tr>
-	      	<?php
-	      	if (strtolower($field->Type)!='params'){
-	      	?>
-		    <tr  class="row_original">
-		      <td align="left" valign="top"><?php echo JText::_('COM_FALANG_ORIGINAL');?></td>
-				<?php
-				// Hrvoje -
-				// if text is introtext than remove id from td.
-				// instead copyfunction will use text from collapsible div
-				if ($field->Name =="introtext") : ?>
-				<td align="left" valign="top">
-					<?php
-					// Hrvoje - use original table code
-					else : ?>
-				<td align="left" valign="top" id="original_value_<?php echo $field->Name?>" name="original_value_<?php echo $field->Name ?>">
-					<?php endif; ?>
-
-
-
-
-					<?php
-					// Hrvoje - Text Toggler part 1 Start - adds my code to introtext only
-					if ($field->Name =="introtext") : ?>
-						<div id="ToggleButton" class="btn btn-small">Toggle Text</div>
-						<div id="original_value_<?php echo $field->Name?>">
-					<?php endif;?>
-
-		      <?php
-		      if (preg_match("/<form/i",$field->originalValue)){
-		      	$ovhref = JRoute::_("index.php?option=com_falang&task=translate.originalvalue&field=".$field->Name."&cid=".$this->actContentObject->id."&lang=".$select_language_id);
-		      	echo '<a class="modal" rel="{handler: \'iframe\', size: {x: 700, y: 500}}" href="'.$ovhref.'" >'.JText::_("Content contains form - click here to view in popup window").'</a>';
-		      }
-		      else {
-		      	echo $field->originalValue;
-		      }
-		      ?>
-
-		<?php // Hrvoje - Text Toggler - part 2 Start
-		if ($field->Name =="introtext") : ?>
-
+<!-- Panel Header -->
+<form action="index.php" method="post" name="adminForm" id="<?php echo $idForm; ?>" class="form-validate form-falang">
+    <div class="container-fluid ">
+        <div class="row falang-controls">
+            <div class="left form-horizontal">
+                <button id="toogle-source-panel" class="btn btn-small"
+                        data-show-reference="<?php echo JText::_('COM_FALANG_EDIT_SHOW_REFERENCE');?>"
+                        data-hide-reference="<?php echo JText::_('COM_FALANG_EDIT_HIDE_REFERENCE');?>"><?php echo JText::_('COM_FALANG_EDIT_HIDE_REFERENCE');?>
+                </button>            </div>
+            <div class="right form-horizontal ">
+                    <div class="alert alert-info span12">
+                        <div class="span4">
+                            <div class="control-group">
+                                <div class="control-label"><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_PUBLISHED')?></div>
+                                <div class="btn-group btn-group-yesno radio falang_publish_btn">
+                                    <?php echo JHtml::_('select.booleanlist','published','class="inputbox"',$this->actContentObject->published);?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="span6">
+                            <div class="control-group">
+                                <div class="control-label"><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_DATECHANGED').': ';?><?php echo  $this->actContentObject->lastchanged ? JHTML::_('date',  $this->actContentObject->lastchanged, JText::_('DATE_FORMAT_LC2')):JText::_('new');?></div>
+                            </div>
+                        </div>
+                        <div class="span2">
+                            <div class="control-group">
+                                <div class="control-label"><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_STATE').': ';?><?php echo $this->actContentObject->state > 0 ? JText::_('COM_FALANG_STATE_OK') : ($this->actContentObject->state < 0 ? JText::_('COM_FALANG_STATE_NOTEXISTING') : JText::_('COM_FALANG_STATE_CHANGED'));?></div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
         </div>
-        <script type="text/javascript">
-        jQuery(document).ready(function(){
-            // FOTTState = Falang Original Text Toggle State Cookie
-            // Reads FOTTState cookie
-            var ToggleState = jQuery.cookie('FOTTState');
+    </div>
+    <div class="container-fluid ">
+        <div class="row falang-headers">
+            <div class="left form-horizontal">
+                <h3><?php echo JText::_('COM_FALANG_EDIT_REFERENCE_TITLE');?></h3>
+            </div>
+            <div class="right form-horizontal ">
+                <h3><?php echo JText::_('COM_FALANG_EDIT_TARGET_TITLE').' : '.$active_language->title;?><span id="flag">
+							<?php echo JHtml::_('image', 'mod_languages/' .$active_language->image  . '.gif', $active_language->title , null, true); ?>
+						</span>
+                </h3>
+            </div>
+        </div>
+    </div>
 
 
-            // if FOTTState cookie exists and if its value is 0 it hides layer
-            // else it shows it. It also shows it by default if FOTTState is not defined yet
-            if(ToggleState == '0'){
-                    jQuery("#original_value_<?php echo $field->Name?>").hide();
-					jQuery("#CopyButton").hide();
-            }
+    <div class="falang-sidebyside">
+            <?php
+                foreach ($elementTable->Fields as $field) { ?>
 
 
-			jQuery("#ToggleButton").click(function(){
+                    <?php
+                    //field params is not sidebyside field
+                    if (strtolower($field->Type)=='params'){continue;}
 
-				jQuery("#original_value_<?php echo $field->Name?>").slideToggle(500);
-				jQuery("#CopyButton").slideToggle(500);
+	                $field->preHandle($elementTable);
 
-                // click on toggle button also creates FOTTState cookie or updates its value+
-                if(ToggleState == '1' || !ToggleState){
-					jQuery.cookie('FOTTState', '0');
-                } else {
-					jQuery.cookie('FOTTState', '1');
-                }
-                // FOTTState cookie exipres at end of session
-            });
-        });
-        </script>
+	                // if we supress blank originals
+	                if ($field->ignoreifblank && $field->originalValue==="") continue;
 
-		<?php endif; // Hrvoje - Text Toggler - part 2 End ?>
+	                //display translatable field only
+                    if( $field->Translate )
+                    {
+                        $translationContent = $field->translationContent;
 
-		      </td>
-			  <td valign="top" class="button">
-			  </td>
-		    </tr>
-		    <tr>
-		      <td align="left" valign="top"><?php echo JText::_('COM_FALANG_TRANSLATION');?></td>
-		      <td align="left" valign="top">
-					  <input type="hidden" name="id_<?php echo $field->Name;?>" value="<?php echo $translationContent->id;?>" />
-						<?php
-						if( strtolower($field->Type)=='text' || strtolower($field->Type)=='titletext' ) {
-							$length = ($field->Length>0)?$field->Length:60;
-							$maxLength = ($field->MaxLength>0) ? "maxlength=".$field->MaxLength:"";
-							?>
-							<input class="inputbox" type="text" name="refField_<?php echo $field->Name;?>" size="<?php echo $length;?>" value="<?php echo htmlspecialchars($translationContent->value); ?>" "<?php echo $maxLength;?>"/>
+                        //dispay title and alias
+                        ?>
+                        <!-- ************************* Field Translation <?php echo $field->Name;?>  *************************-->
 
-							<?php
-						} else if( strtolower($field->Type)=='textarea' ) {
-							$ta_rows = ($field->Rows>0)?$field->Rows:15;
-							$ta_cols = ($field->Columns>0)?$field->Columns:30;
-							?>
-							<textarea name="refField_<?php echo $field->Name;?>"  rows="<?php echo $ta_rows;?>" cols="<?php echo $ta_cols;?>" ><?php echo $translationContent->value; ?></textarea>
-							<?php
-						} else if( strtolower($field->Type)=='htmltext' ) {
-							?>
-							<?php
-							$editorFields[] = array( "editor_".$field->Name, "refField_".$field->Name );
-							// parameters : areaname, content, hidden field, width, height, rows, cols
-							//v2.1 fix html encoding display
-							//v2.1.1 fix extra button due to 2.1 regression
-							echo $wysiwygeditor->display("refField_".$field->Name,htmlspecialchars($translationContent->value, ENT_COMPAT, 'UTF-8'), '100%','300', '70', '15',$field->ebuttons);
-						}  else if( strtolower($field->Type)=='images' ) {
-                            $length = ($field->Length>0)?$field->Length:60;
-                            $maxLength = ($field->MaxLength>0) ? "maxlength=".$field->MaxLength:"";
-                            ?>
-                              <div class="input-prepend input-append">
-                                  <input class="input-large" type="text" name="refField_<?php echo $field->Name;?>" id="refField_<?php echo $field->Name;?>" size="<?php echo $length;?>" value="<?php echo $translationContent->value; ?>" "<?php echo $maxLength;?>"/>
-                                  <a class="modal btn" title="<?php echo JText::_("JSELECT")?>"
-                                     href="index.php?option=com_media&amp;view=images&amp;tmpl=component&amp;fieldid=refField_<?php echo $field->Name;?>"<?php echo $field->Name;?>"
-                                  rel="{handler: 'iframe', size: {x: 800, y: 500}}"><?php echo JText::_("JSELECT")?></a>
-                                  <a class="btn hasTooltip" href="#" onclick="jInsertFieldValue('', 'refField_<?php echo $field->Name;?>');return false;" data-original-title="<?php echo JText::_("JDELETE")?>">
-                                      <i class="icon-remove"></i></a>
-                              </div>
-                           <?php
-                        } else if( strtolower($field->Type)=='readonlytext') {
-							$length = ($field->Length>0)?$field->Length:60;
-							$maxLength = ($field->MaxLength>0)?$field->MaxLength:60;
-							$value =  strlen($translationContent->value)>0? $translationContent->value:$field->originalValue;
-							?>
-							<input class="inputbox" readonly="yes" type="text" name="refField_<?php echo $field->Name;?>" size="<?php echo $length;?>" value="<?php echo $value; ?>" maxlength="<?php echo $maxLength;?>"/>
-							<?php
-						}
-						?>
-				</td>
-				<td valign="top" class="button">
-				</td>
-		    </tr>
-	      	<?php
-	      	}
-	      	// else if params
-	      	else {
-	      		// Special Params handling
-	      		// if translated value is blank then we always copy across the original value
-	      		$falangManager =  FalangManager::getInstance();
-	      		if ($falangManager->getCfg('copyparams',1) &&  $translationContent->value==""){
-		      		$translationContent->value = $field->originalValue;
-	      		}
-	      	?>
-		    <tr class="">
-		      <td colspan="3">
-                      <input type="hidden" name="origValue_<?php echo $field->Name;?>" value='<?php echo md5( $field->originalValue );?>' />
-                      <textarea  name="origText_<?php echo $field->Name;?>" style="display:none"><?php echo $field->originalValue;?></textarea>
-                      <input type="hidden" name="id_<?php echo $field->Name;?>" value="<?php echo $translationContent->id;?>" />
+                        <!-- set id to allow edit or update of the field  -->
+                        <input type="hidden" name="id_<?php echo $field->Name;?>" value="<?php echo $translationContent->id;?>" />
 
-			      <?php
-                  JLoader::import( 'models.TranslateParams',FALANG_ADMINPATH);
-			      $tpclass = "TranslateParams_".$elementTable->Name;
-			      if (!class_exists($tpclass)){
-			      	$tpclass = "TranslateParams";
-			      }
-			      $transparams = new $tpclass($field->originalValue,$translationContent->value, $field->Name,$elementTable->Fields);
-				// TODO sort out default value for author in params when editing new translation
-				$retval = $transparams->editTranslation();
-				if ($retval){
-					$editorFields[] = $retval;
-				}
-				?>
-		      </td>
-		    </tr>
-      	<?php
-	      			}
-				}
-			}
-		}
-		?>
-		</table>
-	  </div>
+                        <!-- hiddentext display only here and loop to the other field -->
 
-	  <div class="span3 form-horizontal alert alert-info">
-        <h4><?php echo JText::_('COM_FALANG_TRANSLATE_PUBLISHING')?></h4>
-          <div class="control-group">
-              <div class="control-label"><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_STATE');?></div>
-              <div class="controls"><?php echo $this->actContentObject->state > 0 ? JText::_('COM_FALANG_STATE_OK') : ($this->actContentObject->state < 0 ? JText::_('COM_FALANG_STATE_NOTEXISTING') : JText::_('COM_FALANG_STATE_CHANGED'));?></div>
-          </div>
-          <div class="control-group">
-              <div class="control-label"><?php echo JText::_('COM_FALANG_LANGUAGE');?></div>
-              <div class="controls"><?php echo $this->langlist;?></div>
-          </div>
-          <div class="control-group">
-              <div class="control-label"><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_PUBLISHED')?></div>
-              <div class="btn-group btn-group-yesno radio falang_publish_btn">
-                     <?php echo JHtml::_('select.booleanlist','published','class="inputbox"',$this->actContentObject->published);?>
-              </div>
-          </div>
-          <div class="control-group">
-              <div class="control-label"><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_DATECHANGED');?></div>
-              <div class="controls"><?php echo  $this->actContentObject->lastchanged ? JHTML::_('date',  $this->actContentObject->lastchanged, JText::_('DATE_FORMAT_LC2')):JText::_('new');?></div>
-          </div>
-              <input type="hidden" name="select_language_id" value="<?php echo $select_language_id;?>" />
-              <input type="hidden" name="reference_id" value="<?php echo $this->actContentObject->id;?>" />
-              <input type="hidden" name="reference_table" value="<?php echo (isset($elementTable->name) ? $elementTable->name : '');?>" />
-              <input type="hidden" name="catid" value="<?php echo $this->catid;?>" />
-		</div>
+                        <?php if( strtolower($field->Type)=='hiddentext') { ?>
+                            <input type="hidden" name="id_<?php echo $field->Name;?>" value="<?php echo $translationContent->id;?>" />
+                            <input type="hidden" name="origValue_<?php echo $field->Name;?>" value='<?php echo md5( $field->originalValue );?>' />
+                            <textarea  name="origText_<?php echo $field->Name;?>" style="display:none"><?php echo $field->originalValue;?></textarea>
+                            <textarea name="refField_<?php echo $field->Name;?>"  style="display:none"><?php echo $translationContent->value; ?></textarea>
+                            <?php
 
-    <!-- v 1.4 : add content for extra plugins k2 ....-->
-    <div class="span9" id="extras"></div>
+                            continue;
+                            }  ?>
+
+                        <!-- ************************* SOURCE   ***************************** -->
+
+                        <div class="outer-panel source-panel form-horizontal">
+
+	                        <?php if ( $field->Name =='title' || $field->Name =='alias' ) { ?>
+                                <div class="form-inline form-inline-header"><!--form-inline form-inline-header -->
+                                    <div class="control-group">
+                                        <div class="control-label">
+                                            <label><?php echo $field->Lable; ?></label>
+                                        </div>
+                                        <div class="controls">
+                                            <input class="form-control" type="text" readonly value="<?php echo htmlspecialchars($field->originalValue);?>" >
+                                        </div>
+                                    </div>
+                                </div>
+	                        <?php }  else { // end if title - label ?>
+
+                            <!-- display other field exept title and alias -->
+                            <div class="control-group">
+                                <!-- display label on htmltext is different  and not display for hiidentext (aka fulltext) -->
+                                    <?php if (strtolower($field->Type)!='htmltext') { ?>
+                                        <div class="control-label">
+                                                <label><?php echo $field->Lable; ?></label>
+                                        </div>
+                                    <?php } else { ?>
+                                        <label><?php echo $field->Lable; ?></label>
+                                    <?php } ?>
+
+                                    <div class="controls <?php echo strtolower($field->Type)=='htmltext'?'controls-htmltext':''; ?>">
+
+                                    <!-- fin display other field exept title and alias -->
+                                    <!-- htmltext,text,textarea,image,param's,readonlytext,hiddentext-->
+                                    <?php if (strtolower($field->Type)=='htmltext') { ?>
+                                        <?php
+                                            $editorFields[] = array( "editor_".$field->Name, "origText_".$field->Name );
+                                            echo $wysiwygeditor->display("origText_".$field->Name,htmlspecialchars($field->originalValue, ENT_COMPAT, 'UTF-8'), '100%','300', '70', '15',$field->ebuttons);
+                                        ?>
+                                    <?php } //end if htmltext?>
+                                    <?php if (strtolower($field->Type)=='titletext') { ?>
+                                        <input class="form-control" type="text"  readonly value="<?php echo $field->originalValue;?>" >
+                                    <?php } //end if text?>
+                                    <?php if (strtolower($field->Type)=='text') { ?>
+                                        <input class="form-control" type="text"  readonly value="<?php echo $field->originalValue;?>" >
+                                    <?php } //end if text?>
+                                    <?php if (strtolower($field->Type)=='textarea') { ?>
+                                        <textarea class="form-control" readonly ><?php echo $field->originalValue; ?></textarea>
+                                    <?php } //end if textarea?>
+
+                                    <?php if (strtolower($field->Type)=='readonlytext') { ?>
+                                        <input class="form-control" type="text" readonly placeholder="<?php echo $field->originalValue;?>">
+                                    <?php } //end if readonlytext ?>
+
+                                    <?php if (strtolower($field->Type)=='images') { ?>
+                                        <input class="form-control" type="text"  readonly value="<?php echo $field->originalValue;?>" >
+                                    <?php } //end if textarea?>
+
+                                    <?php if (strtolower($field->Type)!='htmltext' &&
+	                                    strtolower($field->Type)!='referenceid' &&
+	                                    strtolower($field->Type)!='titletext' &&
+                                        strtolower($field->Type)!='text' &&
+                                        strtolower($field->Type)!='textarea' &&
+                                        strtolower($field->Type)!='readonlytext' &&
+	                                    strtolower($field->Type)!='images' &&
+                                        strtolower($field->Type)!='hiddentext') { ?>
+                                        <?php echo JText::_('COM_FALANG_TRANSATE_TYPE_NOT_EXIST')?>
+                                    <?php } //end if other ?>
+                                </div>
+                            </div>
+                        <?php }//end else title,alias ?>
+                        </div><!-- source panel -->
+
+                        <!-- ************************** ACTION   ******************************* -->
+                        <div class="outer-panel action-panel">
+                            <!-- add hidden use for translate/copy -->
+                            <textarea  name="origText_<?php echo $field->Name;?>" style="display:none"><?php echo $field->originalValue;?></textarea>
+                            <!-- use for html copy/translate htmltext -->
+                            <span style="display:none" id="original_value_<?php echo $field->Name?>" name="original_value_<?php echo $field->Name;?>">
+                                <?php
+                                      if (preg_match("/<form/i",$field->originalValue)){
+                                        $ovhref = JRoute::_("index.php?option=com_falang&task=translate.originalvalue&field=".$field->Name."&cid=".$this->actContentObject->id."&lang=".$select_language_id);
+                                        echo '<a class="modal" rel="{handler: \'iframe\', size: {x: 700, y: 500}}" href="'.$ovhref.'" >'.JText::_("Content contains form - click here to view in popup window").'</a>';
+                                      }
+                                      else {
+                                        echo $field->originalValue;
+                                      }
+                                      ?>
+                            </span>
+                            <!-- use for -->
+                            <input type="hidden" name="origValue_<?php echo $field->Name;?>" value='<?php echo md5( $field->originalValue );?>' />
+
+
+		                    <?php if ( strtolower($field->Type)=='readonlytext'){
+			                    //specific case for menutype link
+			                    if ($elementTable->Name == 'menu' && $field->Name == 'link') { ?>
+                                    <a class="button btn" onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = document.adminForm.origText_<?php echo $field->Name;?>.value;" title="<?php echo JText::_('COM_FALANG_BTN_COPY'); ?>"><i class="icon-copy"></i></a>
+			                    <?php }
+                                    if ($elementTable->Name == 'menu' && $field->Name == 'path') { ?>
+                                        <!-- space need to have a side-->
+                                        &nbsp;
+			                    <?php } ?>
+		                    <?php } ?>
+
+		                    <?php if( strtolower($field->Type)!='htmltext' && strtolower($field->Type)!='readonlytext') {?>
+                                <!-- Translate button -->
+                                <a class="button btn" <?php echo $translate_button_available ? '': 'disabled="disabled"';?> onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = translateService(document.adminForm.origText_<?php echo $field->Name;?>.value);" title="<?php echo JText::_('COM_FALANG_BTN_TRANSLATE'); ?>"><i class="icon-shuffle"></i></a>
+                                <!-- Copy button -->
+                                <a class="button btn" onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = document.adminForm.origText_<?php echo $field->Name;?>.value;" title="<?php echo JText::_('COM_FALANG_BTN_COPY'); ?>"><i class="icon-copy"></i></a>
+                                <!-- Delete button -->
+                                <a class="button btn" onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = '';" title="<?php echo JText::_('Delete'); ?>"><i class="icon-delete"></i></a>
+		                    <?php } ?>
+
+		                    <?php if( strtolower($field->Type)=='htmltext' && strtolower($field->Type)!='readonlytext') {?>
+                                <!-- Translate button -->
+                                <a class="button btn" <?php echo $translate_button_available ? '': 'disabled="disabled"';?>  onclick="copyToClipboard('<?php echo $field->Name;?>','translate');" title="<?php echo JText::_('COM_FALANG_BTN_TRANSLATE'); ?>"><i class="icon-shuffle"></i></a>
+                                <!-- Copy button -->
+                                <a class="button btn" onclick="copyToClipboard('<?php echo $field->Name;?>','copy');" title="<?php echo JText::_('COM_FALANG_BTN_COPY'); ?>"><i class="icon-copy"></i></a>
+                                <!-- Delete button -->
+                                <a class="button btn" onclick="copyToClipboard('<?php echo $field->Name;?>','clear');" title="<?php echo JText::_('Delete'); ?>"><i class="icon-delete"></i></a>
+		                    <?php } ?>
+
+                        </div>
+
+                        <!-- ********************** TARGET   ************************** -->
+                        <!-- display title and alias -->
+                        <div class="outer-panel target-panel form-horizontal">
+                            <?php if ( $field->Name =='title' || $field->Name =='alias' ) { ?>
+                                <div class="form-inline form-inline-header"><!--form-inline form-inline-header -->
+                                    <div class="control-group">
+                                        <div class="control-label">
+                                            <label><?php echo $field->Lable; ?></label>
+                                        </div>
+                                        <div class="controls">
+                                            <input class="form-control" type="text" name="refField_<?php echo $field->Name;?>" id="refField_<?php echo $field->Name;?>" value="<?php echo htmlspecialchars($translationContent->value); ?>" >
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php } else { // end if title - label ?>
+
+                            <!-- display other field exept title and alias -->
+                            <div class="control-group">
+                                <!-- display label on htmltext  -->
+                                <?php if (strtolower($field->Type)!='htmltext') { ?>
+                                    <div class="control-label">
+                                        <label><?php echo $field->Lable; ?></label>
+                                    </div>
+                                <?php } else { ?>
+                                    <label><?php echo $field->Lable; ?></label>
+                                <?php } ?>
+                                <div class="controls <?php echo strtolower($field->Type)=='htmltext'?'controls-htmltext':''; ?>">
+                                    <!-- fin display other field exept title and alias -->
+                                    <!-- htmltext,text,textarea,image,param's,readonly,hiddentext-->
+                                    <?php if (strtolower($field->Type)=='htmltext') { ?>
+                                        <?php $editorFields[] = array( "editor_".$field->Name, "refField_".$field->Name );
+                                        echo $wysiwygeditor->display("refField_".$field->Name,htmlspecialchars($translationContent->value, ENT_COMPAT, 'UTF-8'), '100%','300', '70', '15',$field->ebuttons);
+                                        ?>
+                                    <?php } //end if htmltext?>
+
+	                                <?php if (strtolower($field->Type)=='titletext') { ?>
+		                                <?php
+		                                $length = ($field->Length>0)?$field->Length:60;
+		                                $maxLength = ($field->MaxLength>0) ? "maxlength=".$field->MaxLength:"";?>
+                                        <input class="form-control" type="text" name="refField_<?php echo $field->Name;?>" size="<?php echo $length;?>" value="<?php echo htmlspecialchars($translationContent->value); ?>" "<?php echo $maxLength;?>"/>
+	                                <?php } //end if titletext?>
+
+                                    <?php if (strtolower($field->Type)=='text') { ?>
+                                        <?php
+                                        $length = ($field->Length>0)?$field->Length:60;
+	                                    $maxLength = ($field->MaxLength>0) ? "maxlength=".$field->MaxLength:"";?>
+                                        <input class="form-control" type="text" name="refField_<?php echo $field->Name;?>" size="<?php echo $length;?>" value="<?php echo htmlspecialchars($translationContent->value); ?>" "<?php echo $maxLength;?>"/>
+                                    <?php } //end if text?>
+
+                                    <?php if (strtolower($field->Type)=='textarea') { ?>
+                                        <textarea class="form-control" name="refField_<?php echo $field->Name;?>" ><?php echo $translationContent->value; ?></textarea>
+                                    <?php } //end if textarea?>
+
+                                    <?php if (strtolower($field->Type)=='readonlytext') {
+                                        $value =  strlen($translationContent->value)>0? $translationContent->value:$field->originalValue;
+	                                    $length = ($field->Length>0)?$field->Length:60;
+	                                    $maxLength = ($field->MaxLength>0) ? "maxlength=".$field->MaxLength:"";
+                                        ?>
+                                        <input class="form-control" type="text" name="refField_<?php echo $field->Name;?>" size="<?php echo $length;?>" placeholder="<?php echo $value; ?>" value="<?php echo $value; ?>" maxlength="<?php echo $maxLength;?>" readonly>
+                                    <?php } //end if readonlytext ?>
+
+	                                <?php if (strtolower($field->Type)=='images') {
+                                        $length = ($field->Length>0)?$field->Length:60;
+                                        $maxLength = ($field->MaxLength>0) ? "maxlength=".$field->MaxLength:"";
+                                        ?>
+                                        <div class="input-prepend input-append">
+                                            <input class="input-large" type="text" name="refField_<?php echo $field->Name;?>" id="refField_<?php echo $field->Name;?>" size="<?php echo $length;?>" value="<?php echo $translationContent->value; ?>" "<?php echo $maxLength;?>"/>
+                                            <a class="modal btn" title="<?php echo JText::_("JSELECT")?>"
+                                               href="index.php?option=com_media&amp;view=images&amp;tmpl=component&amp;fieldid=refField_<?php echo $field->Name;?>"<?php echo $field->Name;?>"
+                                            rel="{handler: 'iframe', size: {x: 800, y: 500}}"><?php echo JText::_("JSELECT")?></a>
+                                            <a class="btn hasTooltip" href="#" onclick="jInsertFieldValue('', 'refField_<?php echo $field->Name;?>');return false;" data-original-title="<?php echo JText::_("JDELETE")?>">
+                                                <i class="icon-remove"></i></a>
+                                        </div>
+	                                <?php } //end if images ?>
+
+                                    <?php if (strtolower($field->Type)!='htmltext' &&
+	                                    strtolower($field->Type)!='referenceid' &&
+	                                    strtolower($field->Type)!='titletext' &&
+	                                    strtolower($field->Type)!='text' &&
+	                                    strtolower($field->Type)!='textarea' &&
+	                                    strtolower($field->Type)!='readonlytext' &&
+	                                    strtolower($field->Type)!='images' &&
+	                                    strtolower($field->Type)!='hiddentext') { ?>
+                                        <?php echo JText::_('COM_FALANG_TRANSATE_TYPE_NOT_EXIST').':'.$field->Type; ?>
+                                    <?php } //end if other ?>
+                                </div>
+                        </div>
+                        <?php } //end else title,alias?>
+                    </div><!-- target panel -->
+
+                    <?php } // end if translatable  ?>
+                    <div class="clr"></div>
+                <?php }//end foreach ?>
+
+
+
+    </div> <!-- sidebyside-->
+
+    <!-- ********************  PARAMS   ********************* -->
+
+
+    <h2><?php echo JText::_('COM_FALANG_TRANSLATE_PARAMS')?></h2>
+    <div id="falang-params" class="form-horizontal falang-params">
+        <?php   foreach ($elementTable->Fields as $field)
+        {
+	        //field params is the only filed managed here
+	        //skip other
+	        if (strtolower($field->Type)!='params'){continue;}
+
+	        $field->preHandle($elementTable);
+
+            if( $field->Translate )
+            {
+	            $translationContent = $field->translationContent;
+	            $falangManager =  FalangManager::getInstance();
+	            if ($falangManager->getCfg('copyparams',1) &&  $translationContent->value==""){
+		            $translationContent->value = $field->originalValue;
+	            }
+	            ?>
+
+                <input type="hidden" name="id_<?php echo $field->Name; ?>"
+                       value="<?php echo $translationContent->id; ?>"/>
+                <input type="hidden" name="origValue_<?php echo $field->Name; ?>"
+                       value='<?php echo md5($field->originalValue); ?>'/>
+
+                <textarea name="origText_<?php echo $field->Name; ?>"
+                          style="display:none"><?php echo $field->originalValue; ?></textarea>
+	            <?php
+	            JLoader::import('models.TranslateParams', FALANG_ADMINPATH);
+	            $tpclass = "TranslateParams_" . $elementTable->Name;
+	            if (!class_exists($tpclass))
+	            {
+		            $tpclass = "TranslateParams";
+	            }
+	            $transparams = new $tpclass($field->originalValue, $translationContent->value, $field->Name, $elementTable->Fields);
+	            // TODO sort out default value for author in params when editing new translation
+	            $retval = $transparams->editTranslation();
+	            if ($retval)
+	            {
+		            $editorFields[] = $retval;
+	            }
+            }//if translate
+        }//end foreach
+        ?>
+
+    </div>
+    <!-- ************************ Extra   ************************* -->
+    <!-- extra for k2 items -->
+    <div id="extras"></div>
+
 
 	<!-- v 2.8.1 : submit code put at the end to have the editorFields set-->
 	<script language="javascript" type="text/javascript">
@@ -465,13 +558,43 @@ else {
 				Joomla.submitform( task, document.getElementById('<?php echo $idForm;?>') );
 			}
 		}
+
+        jQuery(document).ready(function($) {
+            // Attach behaviour to toggle button.
+            $(document).on('click', '#toogle-source-panel', function () {
+                var referenceHide = this.getAttribute('data-hide-reference');
+                var referenceShow = this.getAttribute('data-show-reference');
+
+                //trim necessary here but not in the joomla association ??
+                if ($(this).text().trim() === referenceHide.trim()) {
+                    $(this).text(referenceShow);
+                }
+                else {
+                    $(this).text(referenceHide);
+                }
+
+                $('.source-panel').toggle();
+                $('.action-panel').toggle();
+                $('.falang-headers .left').toggle();
+                $('.target-panel').toggleClass('full-width');
+                //return false the toggle button is in the form
+                return false;
+            });
+
+        });
+
+
 	</script>
 
 
-
+    <input type="hidden" name="select_language_id" value="<?php echo $select_language_id;?>" />
+    <input type="hidden" name="reference_id" value="<?php echo $this->actContentObject->id;?>" />
+    <input type="hidden" name="reference_table" value="<?php echo (isset($elementTable->name) ? $elementTable->name : '');?>" />
+    <input type="hidden" name="catid" value="<?php echo $this->catid;?>" />
 	<input type="hidden" name="option" value="com_falang" />
 	<input type="hidden" name="task" value="translate.edit" />
 	<input type="hidden" name="direct" value="<?php echo intval(JRequest::getVar("direct",0));?>" />
 
 	<?php echo JHTML::_( 'form.token' ); ?>
+
 </form>

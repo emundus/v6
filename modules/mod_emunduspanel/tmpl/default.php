@@ -31,8 +31,8 @@ if (!empty($tab)) :?>
                 }
             }
 
-            if (!empty($user->emProfiles) && sizeof($user->emProfiles) > 1 && (($lean_mode && !$only_applicant) || !$lean_mode)) {
-                echo '<p>'.JText::_('SELECT_PROGRAMME').'</p>';
+            /*if (!empty($user->emProfiles) && sizeof($user->emProfiles) > 1 && (($lean_mode && !$only_applicant) || !$lean_mode)) {
+                echo '<p>'.JText::_('MOD_EMUNDUSPANEL_SELECT_PROGRAMME').'</p>';
                 echo '<br/><div class="select">';
                 echo '<legend><select class="form-control form-control-sm" id="profile" name="profiles" onchange="postCProfile()"> ';
                 foreach ($user->emProfiles as $profile) {
@@ -44,7 +44,7 @@ if (!empty($tab)) :?>
                 }
                 echo '</select><div class="select_arrow">
                 </div></legend></div><br/><br/>';
-            }
+            }*/
         }
         if ($show_menu == 'true' && (($lean_mode && !in_array($user->profile, $applicant_profiles)) || !$lean_mode)) :?>
             <div class="ui grid">

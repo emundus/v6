@@ -35,6 +35,7 @@ class DropfilesBase
         JLoader::register('DropfilesFilesHelper', JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/files.php');
         JLoader::register('DropfilesCloudHelper', JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/dropfilescloud.php');
         JLoader::register('DropfilesOneDrive', JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesOneDrive.php');
+        JLoader::register('DropfilesOneDriveBusiness', JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesOneDriveBusiness.php');
         // Register helper class
         JLoader::register('DropfilesComponentHelper', JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/component.php');
         JLoader::register('DropfilesGoogle', JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesGoogle.php');
@@ -42,25 +43,18 @@ class DropfilesBase
         //Load scripts and stylesheets
         $document = JFactory::getDocument();
         $uri_dropfiles_assets = JURI::root() . 'components/com_dropfiles/assets';
-
+        JHtml::_('jquery.framework');
         if (self::isJoomla30()) {
-            JHtml::_('jquery.framework');
-            if (JFactory::getApplication()->isSite()) {
+            if (JFactory::getApplication()->isClient('site')) {
                 $document->addScript($uri_dropfiles_assets . '/js/modal.min.js');
                 $document->addStyleSheet($uri_dropfiles_assets . '/css/modal.min.css');
             }
             $document->addScript($uri_dropfiles_assets . '/js/jquery-ui-1.9.2.custom.min.js');
             $document->addStyleSheet($uri_dropfiles_assets . '/css/ui-lightness/jquery-ui-1.9.2.custom.min.css');
             $document->addStyleSheet($uri_dropfiles_assets . '/css/bootstrap.min.css');
-        } else {
-            $document->addScript($uri_dropfiles_assets . '/js/jquery-1.8.3.js');
-            $document->addScript($uri_dropfiles_assets . '/js/jquery-noconflict.js');
-
+        } else { // Joomla 4
             $document->addScript($uri_dropfiles_assets . '/js/jquery-ui-1.9.2.custom.min.js');
             $document->addStyleSheet($uri_dropfiles_assets . '/css/ui-lightness/jquery-ui-1.9.2.custom.min.css');
-
-            $document->addScript($uri_dropfiles_assets . '/js/bootstrap.min.js');
-            $document->addStyleSheet($uri_dropfiles_assets . '/css/bootstrap.min.css');
         }
         $document->addStyleSheet($uri_dropfiles_assets . '/css/icons.min.css');
         //For touch devices
@@ -68,19 +62,32 @@ class DropfilesBase
 
         $app = JFactory::getApplication();
         $document->addScriptDeclaration('dropfilesRootUrl="' . JURI::root() . '";');
-        if ($app->isSite()) {
+        if ($app->isClient('site')) {
             $document->addStyleSheet($uri_dropfiles_assets . '/css/frontstyle.css');
             if ($app->input->get('view') === 'manage') {
                 $document->addStyleSheet(JURI::root() . 'media/jui/css/icomoon.css');
             }
         } else {
-            $stylebody = 'body {background: #f5f5f5;}';
+            $stylebody = 'body {background: #ffffff;}';
             $document->addStyleDeclaration($stylebody);
+        }
+        if (class_exists('DropfilesOneDriveBusiness')) {
+            $onedriveBusinessObj = new DropfilesOneDriveBusiness();
+            if ($onedriveBusinessObj->hasOneDriveButton()) {
+                if (!$onedriveBusinessObj->checkConnectOnedrive()) {
+                    $connectUrl = $onedriveBusinessObj->getAuthorisationUrl();
+                    if (!isset($connectUrl) || !$connectUrl) {
+                        $connectUrl = '';
+                    }
+                    $document->addScriptDeclaration('dropfilesOnedriveBusinessUrl="' . $connectUrl . '";');
+                }
+            }
         }
 
         $document->addStyleSheet($uri_dropfiles_assets . '/css/jquery.gritter.css');
         $document->addStyleSheet($uri_dropfiles_assets . '/css/upload.min.css');
-        $document->addStyleSheet($uri_dropfiles_assets . '/css/style.css');
+        $document->addStyleSheet($uri_dropfiles_assets . '/ui/css/style.css?v=5.8');
+        $document->addStyleSheet($uri_dropfiles_assets . '/ui/css/statistics.css');
         $document->addStyleSheet($uri_dropfiles_assets . '/css/jaofiletree.css');
         $document->addStyleSheet($uri_dropfiles_assets . '/css/jquery.restable.css');
         $document->addStyleSheet($uri_dropfiles_assets . '/css/jquery.tagit.css');
@@ -89,6 +96,7 @@ class DropfilesBase
 
         $document->addScript($uri_dropfiles_assets . '/js/jquery.gritter.min.js');
         $document->addScript($uri_dropfiles_assets . '/js/dropfiles.js');
+        $document->addScript($uri_dropfiles_assets . '/ui/js/core.js');
         $document->addScript($uri_dropfiles_assets . '/js/jquery.filedrop.min.js');
         $document->addScript($uri_dropfiles_assets . '/js/jquery.textselect.min.js');
         $document->addScript($uri_dropfiles_assets . '/js/jquery.nestable.js');
@@ -99,9 +107,6 @@ class DropfilesBase
         $document->addScript($uri_dropfiles_assets . '/js/resumable.js');
 
         self::setDefine();
-        $listColumns = self::getCookieDropfiles();
-        $easasas = array('listColumns' => $listColumns);
-        $document->addScriptDeclaration('var dropfiles_listColumns =' . json_encode($easasas) . ';');
     }
 
     /**
@@ -114,15 +119,19 @@ class DropfilesBase
         //Load language from non default position
         self::loadLanguage();
         $uri_dropfiles_assets = JURI::root() . 'components/com_dropfiles/assets';
-
-        JHtml::_('behavior.framework');
+        JHtml::_('jquery.framework');
+        if (self::isJoomla40()) {
+            JHtml::_('behavior.core');
+        } else {
+            JHtml::_('behavior.framework', true);
+        }
         // Register helper class
         JLoader::register('DropfilesHelper', JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/dropfiles.php');
         JLoader::register('DropfilesCloudHelper', JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/dropfilesCloud.php');
         // Register helper class
         JLoader::register('DropfilesComponentHelper', JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/component.php');
         $document = JFactory::getDocument();
-        $document->addStyleSheet($uri_dropfiles_assets . '/css/front.css');
+        $document->addStyleSheet($uri_dropfiles_assets . '/css/front_ver5.4.css');
         $document->addStyleSheet($uri_dropfiles_assets . '/css/video-js.css');
         $document->addScript($uri_dropfiles_assets . '/js/video.js');
         $document->addScriptDeclaration('dropfilesBaseUrl="' . JURI::base() . '";');
@@ -227,23 +236,23 @@ class DropfilesBase
      *
      * @return boolean
      */
-    public static function isJoomla30()
+    public static function isJoomla40()
     {
-        if (version_compare(self::getJoomlaVersion(), '3.0') >= 0) {
+        if (version_compare(self::getJoomlaVersion(), '4.0') >= 0) {
             return true;
         }
         return false;
     }
 
     /**
-     * Method to check if current joomla version is 2.5
+     * Method to check if current joomla version is 3.X
      *
      * @return boolean
      */
-    public static function isJoomla25()
+    public static function isJoomla30()
     {
-        if (version_compare(self::getJoomlaVersion(), '2.5', '>=') &&
-            version_compare('3', self::getJoomlaVersion(), '>')) {
+        if (version_compare(self::getJoomlaVersion(), '3.0', '>=') &&
+            version_compare('4', self::getJoomlaVersion(), '>')) {
             return true;
         }
         return false;
@@ -267,7 +276,7 @@ class DropfilesBase
         }
         $query .= ' AND enabled=1';
         $db->setQuery($query);
-        if ($db->query()) {
+        if ($db->execute()) {
             if ($db->getNumRows() > 0) {
                 return true;
             }
@@ -298,6 +307,9 @@ class DropfilesBase
         $lang->load('com_dropfiles', JPATH_ADMINISTRATOR . '/components/com_dropfiles', null, true);
         $lang->load('com_dropfiles.override', JPATH_ADMINISTRATOR . '/components/com_dropfiles', null, true);
         $lang->load('com_dropfiles.sys', JPATH_ADMINISTRATOR . '/components/com_dropfiles', null, true);
+        // load language define for JS
+        JText::script('COM_DROPFILES_DOWNLOAD_ALL');
+        JText::script('COM_DROPFILES_DOWNLOAD_SELECTED');
     }
 
     /**
@@ -381,7 +393,7 @@ class DropfilesBase
             $query .= ' AND type=' . $db->quote($type);
         }
         $db->setQuery($query);
-        if ($db->query()) {
+        if ($db->execute()) {
             $manifest = $db->loadResult();
             $json = json_decode($manifest);
             if (property_exists($json, 'version')) {
@@ -431,7 +443,7 @@ class DropfilesBase
 
         $doc = JFactory::getDocument();
         JHtml::_('jquery.framework');
-        $doc->addStyleSheet(JURI::base('true') . '/plugins/dropfilesthemes/default/style.css');
+        $doc->addStyleSheet(JURI::base('true') . '/plugins/dropfilesthemes/default/style_ver5.4.css');
         $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/colorbox.init.js');
         $options['componentParams'] = JComponentHelper::getParams('com_dropfiles');
         $content = '';
@@ -450,5 +462,18 @@ class DropfilesBase
             $content = $layout->render($options);
         }
         return $content;
+    }
+
+    /**
+     * Get list of available themes
+     *
+     * @return mixed
+     */
+    public static function getDropfilesThemes()
+    {
+        JPluginHelper::importPlugin('dropfilesthemes');
+        $app = JFactory::getApplication();
+        $themes = $app->triggerEvent('onThemeName', array());
+        return $themes;
     }
 }

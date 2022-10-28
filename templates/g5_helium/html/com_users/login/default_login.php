@@ -11,14 +11,15 @@ JHtml::_('behavior.keepalive');
 JHtml::_('behavior.formvalidator');
 $document = JFactory::getDocument();
 $document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_users_login.css");
+$eMConfig = JComponentHelper::getParams('com_emundus');
 ?>
 <div class="login<?php echo $this->pageclass_sfx; ?>">
     <?php if ($this->params->get('show_page_heading')) : ?>
         <div class="page-header">
-            <div class="icon-title loginicon"></div>
             <h1 class="em-titre-connectez-vous">
-                <?php echo $this->escape($this->params->get('page_heading')); ?>
+                <?php echo JText::_('JLOGIN'); ?>
             </h1>
+            <p><?php echo JText::_('JLOGIN_DESC'); ?></p>
         </div>
     <?php endif; ?>
     <?php if (($this->params->get('logindescription_show') == 1 && str_replace(' ', '', $this->params->get('login_description')) != '') || $this->params->get('login_image') != '') : ?>
@@ -37,12 +38,15 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_use
         <fieldset>
             <?php foreach ($this->form->getFieldset('credentials') as $field) : ?>
                 <?php if (!$field->hidden) : ?>
-                    <div class="control-group">
+                    <div class="control-group em-mb-32">
                         <div class="control-label">
                             <?php echo $field->label; ?>
                         </div>
-                        <div class="controls">
+                        <div class="controls" style="<?= $field->type === "Password" ? 'position:relative; ' : '' ?>">
                             <?php echo $field->input; ?>
+                            <?php if ($eMConfig["reveal_password"] && $field->type === "Password"): ?>
+                                <span id="toggle-password-visibility" class="material-icons-outlined em-pointer" style="position: absolute;top: 25px;right: 10px;opacity: 0.3;user-select: none;">visibility_off</span>
+                            <?php endif; ?>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -57,19 +61,28 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_use
                     </div>
                 </div>
             <?php endif; ?>
-            <?php if (JPluginHelper::isEnabled('system', 'remember')) : ?>
-                <div class="control-group">
-                    <div class="control-label">
-                        <label for="remember">
-                            <?php echo JText::_('COM_USERS_LOGIN_REMEMBER_ME'); ?>
-                        </label>
+            <div class="em-w-100 em-flex-row em-flex-end">
+                <?php if (JPluginHelper::isEnabled('system', 'remember')) : ?>
+                    <div class="control-group">
+                        <div class="control-label">
+                            <label for="remember">
+                                <?php echo JText::_('COM_USERS_LOGIN_REMEMBER_ME'); ?>
+                            </label>
+                        </div>
+                        <div class="controls">
+                            <input id="remember" type="checkbox" name="remember" class="inputbox" value="yes" />
+                        </div>
                     </div>
-                    <div class="controls">
-                        <input id="remember" type="checkbox" name="remember" class="inputbox" value="yes" />
+                <?php endif; ?>
+                <div class="control-group em-float-right">
+                    <div class="control-label">
+                        <a class="em-text-underline" href="<?php echo JRoute::_('index.php?option=com_users&view=reset'); ?>">
+                            <?php echo JText::_('COM_USERS_LOGIN_RESET'); ?>
+                        </a>
                     </div>
                 </div>
-            <?php endif; ?>
-            <div class="control-group">
+            </div>
+            <div class="control-group em-w-100">
                 <div class="controls">
                     <button type="submit" class="btn btn-primary">
                         <?php echo JText::_('JLOGIN'); ?>
@@ -81,32 +94,41 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_use
             <?php echo JHtml::_('form.token'); ?>
         </fieldset>
     </form>
+
+    <?php $usersConfig = JComponentHelper::getParams('com_users'); ?>
+    <?php if ($usersConfig->get('allowUserRegistration')) : ?>
+        <div>
+            <?php echo JText::_('COM_USERS_LOGIN_NO_ACCOUNT'); ?>
+            <?php if(!empty($this->campaign) && !empty($this->course)) :?>
+                <a class="em-text-underline" href="<?php echo JRoute::_('index.php?option=com_users&view=registration&course=' . $this->course . '&cid=' . $this->campaign); ?>">
+                    <?php echo JText::_('COM_USERS_LOGIN_REGISTER'); ?>
+                </a>
+            <?php else: ?>
+                <a class="em-text-underline" href="<?php echo JRoute::_('index.php?option=com_users&view=registration'); ?>">
+                    <?php echo JText::_('COM_USERS_LOGIN_REGISTER'); ?>
+                </a>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
 </div>
-<div class="nav link">
-    <ul class="nav nav-tabs nav-stacked">
-        <li>
-            <a href="<?php echo JRoute::_('index.php?option=com_users&view=reset'); ?>">
-                <?php echo JText::_('COM_USERS_LOGIN_RESET'); ?>
-            </a>
-        </li>
-        <li>
-            <a href="<?php echo JRoute::_('index.php?option=com_users&view=remind'); ?>">
-                <?php echo JText::_('COM_USERS_LOGIN_REMIND'); ?>
-            </a>
-        </li>
-        <?php $usersConfig = JComponentHelper::getParams('com_users'); ?>
-        <?php if ($usersConfig->get('allowUserRegistration')) : ?>
-            <li>
-                <?php if(!empty($this->campaign) && !empty($this->course)) :?>
-                    <a href="<?php echo JRoute::_('index.php?option=com_users&view=registration&course=' . $this->course . '&cid=' . $this->cid); ?>">
-                        <?php echo JText::_('COM_USERS_LOGIN_REGISTER'); ?>
-                    </a>
-                <?php else: ?>
-                    <a href="<?php echo JRoute::_('index.php?option=com_users&view=registration'); ?>">
-                        <?php echo JText::_('COM_USERS_LOGIN_REGISTER'); ?>
-                    </a>
-                <?php endif; ?>
-            </li>
-        <?php endif; ?>
-    </ul>
-</div>
+
+<?php if ($eMConfig['reveal_password']): ?>
+<script>
+    const spanVisibility = document.querySelector('#toggle-password-visibility');
+    const inputPassword = document.querySelector('.controls #password');
+
+    if (spanVisibility && inputPassword) {
+        spanVisibility.addEventListener('click', function() {
+            if (spanVisibility && inputPassword) {
+                if (spanVisibility.innerText == "visibility") {
+                    spanVisibility.innerText = "visibility_off";
+                    inputPassword.type = "password";
+                }  else {
+                    spanVisibility.innerText = "visibility";
+                    inputPassword.type = "text";
+                }
+            }
+        });
+    }
+</script>
+<?php endif; ?>

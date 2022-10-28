@@ -27,22 +27,76 @@ class SecuritycheckprosModelSysinfo extends SecuritycheckproModel
      *
      * @return array system information values
      */
-    public function &getInfo()
+    public function getInfo()
     {
         if (is_null($this->info)) {
             $this->info = array();
             $version = new JVersion;
             $db = JFactory::getDBO();
-                        
-            // Obtenemos el tamaño de la variable 'max_allowed_packet' de Mysql
-            $db->setQuery('SHOW VARIABLES LIKE \'max_allowed_packet\'');
-            $keys = $db->loadObjectList();
-            $array_val = get_object_vars($keys[0]);
-            $tamanno_max_allowed_packet = (int) ($array_val["Value"]/1024/1024);
+			
+			$memory_limit = 0;
+            
+			try {
+				// Obtenemos el tamaño de la variable 'max_allowed_packet' de Mysql
+				$db->setQuery('SHOW VARIABLES LIKE \'max_allowed_packet\'');
+				$keys = $db->loadObjectList();
+				$array_val = get_object_vars($keys[0]);
+				$tamanno_max_allowed_packet = (int) ($array_val["Value"]/1024/1024);
+			} catch (Exception $e)
+			{    
+				$tamanno_max_allowed_packet = 0;
+			}			            
                 
             // Obtenemos el tamaño máximo de memoria establecido
-            $params = JComponentHelper::getParams('com_securitycheckpro');
-            $memory_limit = $params->get('memory_limit', '512M');
+			// Based on /administrator/components/com_admin/models/sysinfo.php
+            $phpinfoenabled =  !in_array('phpinfo', explode(',', ini_get('disable_functions')));
+						
+			if ($phpinfoenabled)
+			{			
+				ob_start();
+				phpinfo(INFO_CONFIGURATION);
+				$phpInfo = ob_get_contents();
+				ob_end_clean();
+							
+				$subtring_start = strpos($phpInfo, 'memory_limit');
+				// Get local memory_limit value (the first param in the string - 512M in our case))
+				$substring_with_memory_limit = substr($phpInfo, $subtring_start, 100);
+				// memory_limit</td><td class="v">512M</td><td class="v">128M</td></tr>
+							
+				$first_angle_pos = strpos($substring_with_memory_limit, '>');
+				
+				$substring_with_memory_limit = substr($substring_with_memory_limit, $first_angle_pos+1, 50);
+				//<td class="v">512M</td><td class="v">128M</td></tr>
+				
+				$second_angle_pos = strpos($substring_with_memory_limit, '>');
+				
+				$substring_with_memory_limit = substr($substring_with_memory_limit, $second_angle_pos+1, 50);
+				//512M</td><td class="v">128M</td></tr><tr><td class="e">open_basedir<
+				
+				$opening_angle_pos = strpos($substring_with_memory_limit, '<');			
+				$memory_limit_local = substr($substring_with_memory_limit, 0, $opening_angle_pos);
+				
+				// Get master memory_limit value (the second param in the string - 128M in our case))
+				$first_angle_pos = strpos($substring_with_memory_limit, '>');
+				$substring_with_memory_limit = substr($substring_with_memory_limit, $first_angle_pos+1, 50);
+				//<td class="v">512M</td><td class="v">128M</td></tr>
+				
+				$second_angle_pos = strpos($substring_with_memory_limit, '>');
+				
+				$substring_with_memory_limit = substr($substring_with_memory_limit, $second_angle_pos+1, 50);
+				//512M</td><td class="v">128M</td></tr><tr><td class="e">open_basedir<
+				
+				$opening_angle_pos = strpos($substring_with_memory_limit, '<');			
+				$memory_limit_master = substr($substring_with_memory_limit, 0, $opening_angle_pos);
+				
+				$memory_limit = JText::_('COM_SECURITYCHECKPRO_LOCAL') . $memory_limit_local . "<br/>" . JText::_('COM_SECURITYCHECKPRO_MASTER') . $memory_limit_master;				
+			} else {
+				$params = JComponentHelper::getParams('com_securitycheckpro');
+				$memory_limit = $params->get('memory_limit', '512M');
+				
+				$memory_limit = JText::_('COM_SECURITYCHECKPRO_SET_BY_SCP') . $memory_limit;
+			}
+						
         
             // Obtenemos las opciones de configuración
             include_once JPATH_ROOT.'/components/com_securitycheckpro/models/json.php';
@@ -94,7 +148,7 @@ class SecuritycheckprosModelSysinfo extends SecuritycheckproModel
             $this->info['last_check_integrity']        = $values->data['last_check_integrity'];        
             //Htaccess protection
             $this->info['htaccess_protection']        = $ConfigApplied;
-            $this->info['overall_web_firewall']        = $this->getOverall($this->info, 2);        
+            $this->info['overall_web_firewall']        = $this->getOverall($this->info, 2);   
         
         }
         return $this->info;

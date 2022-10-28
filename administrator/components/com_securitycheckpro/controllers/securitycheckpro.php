@@ -230,11 +230,21 @@ class SecuritycheckprosControllerSecuritycheckpro extends SecuritycheckproContro
     function filter_vulnerable_extension()
     {
         $jinput = JFactory::getApplication()->input;
-        $product = $jinput->get('product', '', 'string');
+        $product = $jinput->get('product', '', 'string');		
         $model = $this->getModel('securitycheckpros');
         $vuln_extensions = $model->filter_vulnerable_extension($product);
         
         echo $vuln_extensions;
+    }
+	
+	/**
+     * Añadir componente como excepcion
+     */
+    function add_exception()
+    {
+        $model = $this->getModel('logs');
+        $model->add_exception();
+        $this->view_logs();
     }
 
 }

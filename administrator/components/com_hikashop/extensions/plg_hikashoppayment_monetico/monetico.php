@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -71,7 +71,7 @@ class plgHikashoppaymentMonetico extends hikashopPaymentPlugin {
 	public function onAfterOrderConfirm(&$order,&$methods,$method_id) {
 		parent::onAfterOrderConfirm($order, $methods, $method_id);
 
-		$return_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment=monetico&tmpl=component&monetico_return=1&orderId='.$order->order_id.'&lang='.$this->locale;
+		$return_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment=monetico&tmpl=component&monetico_return=1&orderId='.$order->order_id.'&lang='.$this->locale. $this->url_itemid;
 
 		if(empty($this->payment_params->locale)) {
 			if( in_array($this->locale, array('fr','en','de','it','es','nl','pt')) ) {
@@ -164,27 +164,25 @@ class plgHikashoppaymentMonetico extends hikashopPaymentPlugin {
 
 		$rawContexteCommand = '{';
 		if (isset($billing)) {
+			$billing_address = array();
+			foreach($billing as $key => $val) {
+				$billing_address[] ='"'.$key.'" : "'.$val.'"';
+			}
 			$rawContexteCommand .= '
                 "billing" :
                 {
-                               "firstName" : "'.$billing['firstName'].'",
-                               "lastName" : "'.$billing['lastName'].'",
-                               "addressLine1" : "'.$billing['addressLine1'].'",
-                               "city" : "'.$billing['city'].'",
-                               "postalCode" : "'.$billing['postalCode'].'",
-                               "country" : "'.$billing['country'].'"
+                               '.implode(",\r\n", $billing_address).'
                 }';
 		}
 		if (isset($shipping)) {
+			$shipping_address = array();
+			foreach($shipping as $key => $val) {
+				$shipping_address[] ='"'.$key.'" : "'.$val.'"';
+			}
 			$rawContexteCommand .= ',
                 "shipping" :
                 {
-                               "firstName" : "'.$shipping['firstName'].'",
-                               "lastName" : "'.$shipping['lastName'].'",
-                               "addressLine1" : "'.$shipping['addressLine1'].'",
-                               "city" : "'.$shipping['city'].'",
-                               "postalCode" : "'.$shipping['postalCode'].'",
-                               "country" : "'.$shipping['country'].'"
+                               '.implode(",\r\n", $shipping_address).'
                 }';
 		}
 		$rawContexteCommand .= '

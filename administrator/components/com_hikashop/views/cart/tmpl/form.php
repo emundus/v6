@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -53,7 +53,13 @@ defined('_JEXEC') or die('Restricted access');
 					<input type="text" name="data[cart][cart_name]" value="<?php echo $this->escape($this->cart->cart_name); ?>" />
 				</dd>
 
-<?php if($this->cart->cart_type == 'cart'){ ?>
+<?php if($this->cart->cart_type == 'cart'){
+		if(empty($this->cart->cart_coupon)) {
+			$this->cart->cart_coupon = '';
+		} elseif(is_array($this->cart->cart_coupon)) {
+			$this->cart->cart_coupon = implode("\r\n", $this->cart->cart_coupon);
+		}
+?>
 				<dt><?php echo JText::_('HIKASHOP_COUPON'); ?></dt>
 				<dd class="input_large">
 					<input type="text" name="data[cart][cart_coupon]" value="<?php echo $this->escape($this->cart->cart_coupon); ?>" />
@@ -233,24 +239,35 @@ window.cartMgr.addProduct = function(el) {
 
 	var product = e.get();
 
-	var url = '<?php echo hikashop_completeLink('cart&task=addproduct&cid='.(int)$this->cart->cart_id.'&tmpl=raw', false, true); ?>',
+	var url = '<?php echo hikashop_completeLink('cart&task=addproduct&cid='.(int)$this->cart->cart_id, 'ajax', true); ?>',
 		params = {mode:'POST', data: o.encodeFormData({'<?php echo hikashop_getFormToken(); ?>':1,'product_id':product.value})};
 	o.xRequest(url, params, function(x,p) {
-		var trLine = document.createElement('tr');
-		trLine.id = 'hikashop_cart_product_n'+(window.cartMgr.cpt++);
+		try {
+			var o = JSON.parse(x.responseText);
 
-		e = d.getElementById('hikashop_cart_product_0');
-		e.parentNode.appendChild(trLine);
-
-		var tr = document.createElement('tr'), cell = null;
-		tr.innerHTML = x.responseText;
-		for(var i = tr.cells.length - 1; i >= 0; i--) {
-			cell = tr.cells[0];
-			tr.removeChild(cell);
-			trLine.appendChild(cell);
-			cell = null;
+			if (o && typeof o === "object") {
+				for(var i = o.length - 1; i >= 0; i--) {
+					alert(o[i].msg);
+				}
+			}
 		}
-		tr = null;
+		catch (e) {
+			var trLine = document.createElement('tr');
+			trLine.id = 'hikashop_cart_product_n'+(window.cartMgr.cpt++);
+
+			e = d.getElementById('hikashop_cart_product_0');
+			e.parentNode.appendChild(trLine);
+
+			var tr = document.createElement('tr'), cell = null;
+			tr.innerHTML = x.responseText;
+			for(var i = tr.cells.length - 1; i >= 0; i--) {
+				cell = tr.cells[0];
+				tr.removeChild(cell);
+				trLine.appendChild(cell);
+				cell = null;
+			}
+			tr = null;
+		}
 	});
 
 	return this.cancelAddProduct(el);

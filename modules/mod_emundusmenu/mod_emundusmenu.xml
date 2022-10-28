@@ -33,11 +33,16 @@
 					<option value="vert_indent">Legacy - Vertical</option>
 					<option value="horiz_flat">Legacy - Horizontal</option>
 					<option value="list_flat">Legacy - Flat List</option>
+					<option value="tchooz_vertical">Tchooz</option>
 				</field>
 				<field name="@spacer" type="spacer" default="" label="" description="" />
 				<field name="startLevel" type="text" default="0" size="5" label="Start Level"		 description="PARAMSTARTLEVEL" />
 				<field name="endLevel" type="text" default="0" size="5" label="End Level" 		description="PARAMSTOPLEVEL" />
 				<field name="showAllChildren" type="radio" default="0" label="Always show 		submenu items" description="PARAMSHOWSUBMENUITEMS">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="displayTchooz" type="radio" default="1" label="Display Tchooz menu" description="Display Tchooz menu for coordinator and sysemundus">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>

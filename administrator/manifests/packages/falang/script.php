@@ -16,14 +16,14 @@ class pkg_falangInstallerScript
 	 *
 	 * @var   string
 	 */
-	protected $minimumPHPVersion = '5.6.0';
+	protected $minimumPHPVersion = '7.0.0';
 	
 	/**
 	 * The minimum Joomla! version required to install this extension
 	 *
 	 * @var   string
 	 */
-	protected $minimumJoomlaVersion = '3.8.0';
+	protected $minimumJoomlaVersion = '3.9.0';
 
 	/**
 	 * The maximum Joomla! version required to install this extension
@@ -36,7 +36,7 @@ class pkg_falangInstallerScript
 	 *
 	 * @var   string
 	 */
-	protected $maximumJoomlaVersion = '3.9.99';
+	protected $maximumJoomlaVersion = '3.10.99';
 	
 	 
     public function install($parent) {}
@@ -174,11 +174,11 @@ class pkg_falangInstallerScript
 <div class="faboba-installation-wrap row-fluid">
 			<div class="span4 faboba-installation-left span2">
                    <!-- image -->   
-				     <img src="../administrator/components/com_falang/assets/images/icon-48-falang.png" alt="Falang" />
+				     <img src="../administrator/components/com_falang/assets/images/logo-80.png" alt="Falang" />
             </div> 
              <div class="faboba-installation-right span8">
                 <div class="faboba-installation-texts">
-	                <h2>Falang basic<span>3.3.0</span></h2>
+	                <h2>Falang basic<span>3.10.4</span></h2>
 	                <p>The easiest way to build a multilanguage site on Joomla</p>
                 </div>
                 <div class="faboba-installation-footer">

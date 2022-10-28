@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -49,7 +49,7 @@ class plgSystemNossloutsidecheckout extends JPlugin
 			$app->setUserState('com_hikashop.ssl_redirect',0);
 			$status = $this->params->get('status','');
 			$status = ($status=='301'?true:false);
-			$app->redirect(str_replace('https://','http://',hikashop_currentURL()),'','message',$status);
+			$app->redirect(str_replace('https://','http://',hikashop_currentURL()));
 		}
 
 		return true;

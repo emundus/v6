@@ -86,7 +86,7 @@ class EmundusModelGroups extends JModelList
 					LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
 					WHERE esg.published=1 AND eg.user_id='.$user;
 		$db->setQuery( $query );
-		$profiles = $db->loadResultArray();
+		$profiles = $db->loadAssocList();
 
 		return $profiles;
 	}
@@ -260,7 +260,7 @@ class EmundusModelGroups extends JModelList
 		$db = JFactory::getDBO();
 		$query = 'SELECT eup.user_id FROM #__emundus_users_profiles eup WHERE eup.profile_id='.$profile;
 		$db->setQuery( $query );
-		return $db->loadResultArray();
+		return $db->loadAssocList();
 	}
 
 	function getGroups()
@@ -295,7 +295,7 @@ class EmundusModelGroups extends JModelList
 		WHERE esg.published=1 AND esgrc.course='.$db->Quote($course).'
 		ORDER BY esg.label';
 		$db->setQuery( $query );
-		return $db->loadResultArray();
+		return $db->loadAssocList();
 	}
 
 	function getGroupsEval()
@@ -323,7 +323,7 @@ class EmundusModelGroups extends JModelList
 		FROM #__emundus_groups eg
 		WHERE eg.group_id='.$gid;
 		$db->setQuery( $query );
-		return $db->loadResultArray();
+		return $db->loadAssocList();
 	}
 
 	function getUsersByGroups($gids)
@@ -333,7 +333,7 @@ class EmundusModelGroups extends JModelList
 		FROM #__emundus_groups eg
 		WHERE eg.group_id IN ('.implode(",", $gids).')';
 		$db->setQuery( $query );
-		return $db->loadResultArray();
+		return $db->loadAssocList();
 	}
 
 	function affectEvaluatorsGroups($groups, $aid) {
@@ -343,7 +343,7 @@ class EmundusModelGroups extends JModelList
 
 			$db->setQuery($query);
 			try {
-				$db->Query();
+				$db->execute();
 			} catch (Exception $e) {
 				// catch any database errors.
 			}
@@ -417,7 +417,7 @@ class EmundusModelGroups extends JModelList
 		WHERE schoolyear is not null AND schoolyear != ""
 		ORDER BY schoolyear';
 		$db->setQuery( $query );
-		return $db->loadResultArray();
+		return $db->loadAssocList();
 	}
 
 	 /**

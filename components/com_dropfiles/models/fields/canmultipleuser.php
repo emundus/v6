@@ -88,10 +88,11 @@ class JFormFieldCanmultipleuser extends JFormField
         }
 
         $link = 'index.php?option=com_dropfiles&amp;view=users&amp;layout=multiplemodal&amp;tmpl=component&amp;required='
-                . ($required ? 1 : 0) . '&amp;field={field-user-id}'
-                . (isset($groups) ? ('&amp;groups=' . base64_encode(json_encode($groups))) : '')
-                . (isset($excluded) ? ('&amp;excluded=' . base64_encode(json_encode($excluded))) : '')
-                . (isset($value) ? ('&amp;selected=' . base64_encode($value)) : '');
+            . ($required ? 1 : 0)
+            . (isset($id) ? ('&amp;field=' . $id) : '')
+            . (isset($groups) ? ('&amp;groups=' . base64_encode(json_encode($groups))) : '')
+            . (isset($excluded) ? ('&amp;excluded=' . base64_encode(json_encode($excluded))) : '')
+            . (isset($value) ? ('&amp;selected=' . base64_encode($value)) : '');
 
         // Invalidate the input value if no user selected
         if (!isset($userName)) {
@@ -120,23 +121,24 @@ class JFormFieldCanmultipleuser extends JFormField
         >
             <div class="input-append">
                 <input
-                    type="text" id="<?php echo $id; ?>"
-                    value="<?php echo htmlspecialchars($userName, ENT_COMPAT, 'UTF-8'); ?>"
-                    placeholder="<?php echo JText::_('JLIB_FORM_SELECT_USER'); ?>"
-                    readonly
-                    class="field-multiple-user-input-name <?php echo isset($class) ? (string)$class : '' ?>"
+                        type="text" id="<?php echo $id; ?>"
+                        value="<?php echo htmlspecialchars($userName, ENT_COMPAT, 'UTF-8'); ?>"
+                        placeholder="<?php echo JText::_('JLIB_FORM_SELECT_USER'); ?>"
+                        readonly
+                        class="field-multiple-user-input-name <?php echo isset($class) ? (string)$class : '' ?>"
                     <?php echo isset($size) ? ' size="' . (int)$size . '"' : ''; ?>
                     <?php echo $required ? 'required' : ''; ?>/>
                 <?php if (!$readonly) : ?>
-                    <a class="btn btn-primary button-select"
+                    <a data-bs-toggle="modal" data-bs-target="#<?php echo 'userModal_' . (isset($id) ? $id : 0);?>" class="btn btn-primary button-select"
                        title="<?php echo JText::_('JLIB_FORM_CHANGE_USER') ?>"><span class="icon-user"></span></a>
                     <?php echo JHtml::_(
                         'bootstrap.renderModal',
                         'userModal_' . $id,
                         array(
+                            'url' => $link,
                             'title' => JText::_('JLIB_FORM_CHANGE_USER'),
                             'closeButton' => true,
-                            'footer' => '<button class="btn" data-dismiss="modal">' . JText::_('COM_DROPFILES_JS_OK') . '</button>'
+                            'footer' => '<button class="btn" data-dismiss="modal" data-bs-dismiss="modal">' . JText::_('COM_DROPFILES_JS_OK') . '</button>'
                         )
                     ); ?>
                     <a class="btn user-clear"><span class="icon-delete"></span></a>

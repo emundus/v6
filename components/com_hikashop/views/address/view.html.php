@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -19,6 +19,13 @@ class addressViewAddress extends HikaShopView {
 		if(method_exists($this, $function))
 			$this->$function();
 		parent::display($tpl);
+	}
+
+	public function address_template() {
+		$this->chosen = false;
+		if(!empty($this->params)) {
+			$this->address = $this->params->get('address');
+		}
 	}
 
 	public function listing() {
@@ -79,7 +86,7 @@ class addressViewAddress extends HikaShopView {
 		}
 
 		$tmpl = hikaInput::get()->getCmd('tmpl', '');
-		$this->ajax = (in_array($tmpl, array('ajax', 'raw')));
+		$this->ajax = (in_array($tmpl, array('ajax', 'raw', 'component')));
 		if($this->ajax)
 			$this->edit = false;
 
@@ -260,7 +267,7 @@ class addressViewAddress extends HikaShopView {
 			}
 		}
 		$tmpl = hikaInput::get()->getCmd('tmpl', '');
-		$this->ajax = (in_array($tmpl, array('ajax', 'raw')));
+		$this->ajax = (in_array($tmpl, array('ajax', 'raw', 'component')));
 
 		global $Itemid;
 		$url_itemid='';

@@ -1,16 +1,16 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><div class="iframedoc" id="iframedoc"></div>
 <form action="<?php echo hikashop_completeLink('limit'); ?>" method="post"  name="adminForm" id="adminForm">
 	<div class="hk-row-fluid">
-		<div class="hkc-md-8">
+		<div class="hkc-md-8 hika_j4_search">
 			<?php echo $this->loadHkLayout('search', array()); ?>
 		</div>
 		<div class="hkc-md-4 hikashop_listing_filters">
@@ -59,7 +59,6 @@ defined('_JEXEC') or die('Restricted access');
 			<tr>
 				<td colspan="11">
 					<?php echo $this->pagination->getListFooter(); ?>
-					<?php echo $this->pagination->getResultsCounter(); ?>
 				</td>
 			</tr>
 		</tfoot>
@@ -70,11 +69,11 @@ defined('_JEXEC') or die('Restricted access');
 					$row =& $this->rows[$i];
 					$publishedid = 'limit_published-'.$row->limit_id;
 			?>
-				<tr class="<?php echo "row$k"; ?>">
-					<td class="hk_center">
+				<tr class="<?php echo "row".$k; ?>">
+					<td>
 					<?php echo $this->pagination->getRowOffset($i); ?>
 					</td>
-					<td class="hk_center">
+					<td>
 						<?php echo JHTML::_('grid.id', $i, $row->limit_id ); ?>
 					</td>
 					<td>
@@ -86,7 +85,7 @@ defined('_JEXEC') or die('Restricted access');
 							</a>
 						<?php } ?>
 					</td>
-					<td class="hk_center">
+					<td>
 						<?php
 							if(empty($row->product_name)) {
 								echo '';
@@ -95,16 +94,27 @@ defined('_JEXEC') or die('Restricted access');
 							}
 						?>
 					</td>
-					<td class="hk_center">
+					<td>
 						<?php
-							if(empty($row->category_name)) {
+							if(empty($row->categories) || count($row->categories)<1) {
 								echo '';
 							} else {
-								echo $row->category_name;
+								$first = true;
+								foreach($row->categories as $category) {
+									if($first)
+										$first = false;
+									else
+										echo ' / ';
+									if($this->manage_category)
+										echo '<a href="'.hikashop_completeLink('category&task=edit&cid[]='.$category->category_id).'">';
+									echo $category->category_name;
+									if($this->manage_category)
+										echo '</a>';
+								}
 							}
 						?>
 					</td>
-					<td class="hk_center">
+					<td>
 						<?php
 							if( $row->limit_type == 'price' ) {
 								echo $this->currencyHelper->displayPrices(array($row),'limit_value','limit_currency_id');
@@ -115,21 +125,21 @@ defined('_JEXEC') or die('Restricted access');
 							}
 						?>
 					</td>
-					<td class="hk_center">
+					<td>
 						<?php echo $row->limit_periodicity; ?>
 					</td>
-					<td class="hk_center">
+					<td>
 						<?php echo hikashop_getDate($row->limit_start); ?>
 					</td>
-					<td class="hk_center">
+					<td>
 						<?php echo hikashop_getDate($row->limit_end); ?>
 					</td>
-					<td class="hk_center">
+					<td>
 						<?php if($this->manage){ ?>
 							<span id="<?php echo $publishedid ?>" class="spanloading"><?php echo $this->toggleClass->toggle($publishedid,(int) $row->limit_published,'limit') ?></span>
 						<?php }else{ echo $this->toggleClass->display('activate',$row->limit_published); } ?>
 					</td>
-					<td width="1%" class="hk_center">
+					<td width="1%">
 						<?php echo $row->limit_id; ?>
 					</td>
 				</tr>

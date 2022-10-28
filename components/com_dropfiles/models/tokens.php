@@ -41,7 +41,7 @@ class DropfilesModelTokens extends JModelLegacy
         $query = 'INSERT INTO #__dropfiles_tokens (id_user,time,token) ';
         $query .= ' values (' . $id_user . ',' . (int)time() . ',' . $dbo->quote($token) . ')';
         $dbo->setQuery($query);
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
 
@@ -61,7 +61,7 @@ class DropfilesModelTokens extends JModelLegacy
         $dbo = $this->getDbo();
         $query = 'SELECT id FROM #__dropfiles_tokens WHERE token=' . $dbo->quote($token);
         $dbo->setQuery($query);
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
         if ($dbo->getNumRows()) {
@@ -83,7 +83,7 @@ class DropfilesModelTokens extends JModelLegacy
         $dbo = $this->getDbo();
         $query = 'UPDATE #__dropfiles_tokens SET time=' . (int)time() . ' WHERE id=' . (int)$id;
         $dbo->setQuery($query);
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
 
@@ -106,7 +106,7 @@ class DropfilesModelTokens extends JModelLegacy
         $dbo = $this->getDbo();
         $query = 'DELETE FROM #__dropfiles_tokens WHERE time < ' . (int)$time;
         $dbo->setQuery($query);
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
 

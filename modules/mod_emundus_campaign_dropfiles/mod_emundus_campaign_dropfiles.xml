@@ -1,24 +1,24 @@
 <?xml version="1.0"?>
-	<extension type="module" version ="2.5.0" method="upgrade">
-		<name>eMundus Campaign Dropfiles</name>
-        <creationDate>JULY 2020</creationDate>
-        <authorUrl>www.emundus.fr</authorUrl>
-        <version>6.0</version>
-		<description>Besoin impératif du composant dropfile. Fonctionne avec le plugin emundus setup_category. Il permet de mettre à disposition les fichiers à télécharger pour la campagne sélectionnée.</description>
-		<files>
-			<filename module="mod_emundus_campaign_dropfiles">helper.php</filename>
-			<filename module="mod_emundus_campaign_dropfiles">mod_emundus_campaign_dropfiles.xml</filename>
-			<filename module="mod_emundus_campaign_dropfiles">mod_emundus_campaign_dropfiles.php</filename>
-			<filename module="mod_emundus_campaign_dropfiles">index.html</filename>
-			<folder>tmpl</folder>
-			<folder>language</folder>
-			<folder>style</folder>
-		</files>
-		<config>
-			<fields name="params">
-				<fieldset name="basic" addfieldpath="/modules/mod_emundus_campaign_dropfiles/tmpl" >
-					
-				</fieldset>
-			</fields>
-		</config>
-	</extension>
+		<extension type="module" version ="2.5.0" method="upgrade">
+			<name>eMundus Campaign Dropfiles</name>
+			<creationDate>JULY 2020</creationDate>
+			<authorUrl>www.emundus.fr</authorUrl>
+			<version>6.0</version>
+			<description>Besoin impératif du composant dropfile. Fonctionne avec le plugin emundus setup_category. Il permet de mettre à disposition les fichiers à télécharger pour la campagne sélectionnée.</description>
+			<files>
+				<filename module="mod_emundus_campaign_dropfiles">helper.php</filename>
+				<filename module="mod_emundus_campaign_dropfiles">mod_emundus_campaign_dropfiles.xml</filename>
+				<filename module="mod_emundus_campaign_dropfiles">mod_emundus_campaign_dropfiles.php</filename>
+				<filename module="mod_emundus_campaign_dropfiles">index.html</filename>
+				<folder>tmpl</folder>
+				<folder>language</folder>
+				<folder>style</folder>
+			</files>
+			<config>
+				<fields name="params">
+					<fieldset name="basic" addfieldpath="/modules/mod_emundus_campaign_dropfiles/tmpl" >
+
+					</fieldset>
+				</fields>
+			</config>
+		</extension>

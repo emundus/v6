@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -563,7 +563,8 @@ class checkoutLegacyController extends hikashopController {
 		$cart = $this->initCart();
 		if(empty($cart->products) || !is_array($cart->products) || !count($cart->products)){
 			$app = JFactory::getApplication();
-			$app->redirect( $this->redirect_url, JText::_('CART_EMPTY'));
+			$app->enqueueMessage(JText::_('CART_EMPTY'));
+			$app->redirect( $this->redirect_url );
 		}
 		return true;
 	}
@@ -1111,7 +1112,8 @@ class checkoutLegacyController extends hikashopController {
 		$cart = $cartClass->getFullCart(0);
 		if(empty($cart->products)) {
 			$app = JFactory::getApplication();
-			$app->redirect( $this->redirect_url, JText::_('CART_EMPTY'));
+			$app->enqueueMessage(JText::_('CART_EMPTY'));
+			$app->redirect( $this->redirect_url );
 		}
 
 		$cart->has_shipping = (!empty($cart->usable_methods->shipping) || !empty($cart->package['weight']['value']) || $config->get('force_shipping', 0));

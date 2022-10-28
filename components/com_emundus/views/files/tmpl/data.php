@@ -24,7 +24,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                 <?= $this->pagination->getResultsCounter(); ?>
             </div>
             <div id="countCheckedCheckbox" class="countCheckedCheckbox"></div>
-
+            <?php echo $this->pageNavigation ?>
         </div>
 		<div class="em-data-container">
 			<table class="table table-striped table-hover" id="em-data">
@@ -48,25 +48,25 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                                     <div class="selectAll" id="selectAll">
                                         <label for="em-check-all">
                                             <input value="-1" id="em-check-all" type="checkbox" class="em-check" />
-                                            <span id="span-check-all"><?= JText::_('COM_EMUNDUS_CHECK_ALL');?></span>
+                                            <span id="span-check-all"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL');?></span>
                                         </label>
                                         <label class="em-check-all-all" for="em-check-all-all">
                                             <input value="all" id="em-check-all-all" type="checkbox" class="em-check-all-all" />
-                                            <span id="span-check-all-all"><?= JText::_('COM_EMUNDUS_CHECK_ALL_ALL'); ?></span>
+                                            <span id="span-check-all-all"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL_ALL'); ?></span>
                                         </label>
                                         <label class="em-check-none" for="em-check-none">
-                                            <span id="span-check-none"><?= JText::_('COM_EMUNDUS_CHECK_NONE'); ?></span>
+                                            <span id="span-check-none"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_NONE'); ?></span>
                                         </label>
                                     </div>
 
 									<!--<label for="em-check-all">
 										<input type="checkbox" value="-1" id="em-check-all" class="em-check" style="width:20px !important;"/>
-										<span><?= JText::_('COM_EMUNDUS_CHECK_ALL');?></span>
+										<span><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL');?></span>
 									</label>
 
 									<label class="em-hide em-check-all-all" for="em-check-all-all">
 										<input class="em-check-all-all em-hide" type="checkbox" name="check-all-all" value="all" id="em-check-all-all" style="width:20px !important;"/>
-										<span class="em-hide em-check-all-all"><?= JText::_('COM_EMUNDUS_CHECK_ALL_ALL');?></span>
+										<span class="em-hide em-check-all-all"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL_ALL');?></span>
 									</label>-->
 								<?php elseif ($this->lists['order'] == $kl): ?>
 									<?php if ($this->lists['order_dir'] == 'desc'): ?>
@@ -90,8 +90,18 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 				<tbody>
 				<?php foreach ($this->datas as $key => $line):?>
 					<?php if ($key != 0): ?>
-						<tr>
+
+                        <?php foreach ($line as $k => $value) :?>
+                            <?php
+                                if($k == 'status') { ?>
+                                    <tr class="label-<?php echo($value->status_class); ?>">
+                                <?php }
+                            ?>
+
+                        <?php endforeach; ?>
+
 							<?php foreach ($line as $k => $value) :?>
+
 								<td <?php if ($k == 'check'&& $value->class != null) { echo 'class="'.$value->class.'"'; } ?>>
 									<div class="em-cell" >
 										<?php if ($k == 'check'): ?>
@@ -103,7 +113,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 												?>
 											</label>
 										<?php elseif ($k == 'status'):?>
-											<span class="label label-<?= $value->status_class; ?>" title="<?= $value->val; ?>"><?= $value->val; ?></span>
+											<span style="width: 100%" class="label label-<?= $value->status_class; ?>" title="<?= $value->val; ?>"><?= $value->val; ?></span>
 										<?php elseif ($k == 'fnum'):?>
 											<a href="#<?= $value->val; ?>|open" id="<?= $value->val; ?>" class="em_file_open">
 												<?php if (isset($value->photo) && !$anonymize_data) :?>
@@ -113,7 +123,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                                                     <?php if ($anonymize_data) :?>
                                                         <div class="em_list_fnum"><?= $value->val; ?></div>
                                                     <?php else :?>
-                                                        <span class="em_list_text" title="<?= $value->val; ?>"> <strong> <?= $value->user->name; ?></strong></span>
+                                                       <span class="em_list_text" title="<?= $value->val; ?>"> <strong> <?= $value->user->name; ?></strong></span>
                                                         <div class="em_list_email"><?= $value->user->email; ?></div>
                                                         <div class="em_list_email"><?= $value->user->id; ?></div>
                                                     <?php endif; ?>
@@ -141,8 +151,8 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 											<?php endif; ?>
 										</strong>
 										<?php else:
-                                            // Do not display the typical PLEASE_SELECT text used for empty dropdowns.
-                                            if ($value->val !== 'PLEASE_SELECT') {
+                                            // Do not display the typical COM_EMUNDUS_PLEASE_SELECT text used for empty dropdowns.
+                                            if ($value->val !== 'COM_EMUNDUS_PLEASE_SELECT') {
                                                 echo JText::_($value->val);
                                             }
 										endif; ?>
@@ -157,62 +167,21 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 			</table>
 		</div>
 		<div class="em-container-pagination">
-			<label for="pager-select" class="em-paginate-label em-container-pagination-label"><?= JText::_('DISPLAY') ?></label>
-			<select name="pager-select" class="chzn-select" id="pager-select">
-				<option value="0" <?php if ($this->pagination->limit == 0) { echo "selected=true"; } ?>><?= JText::_('ALL')?></option>
-				<option value="5" <?php if ($this->pagination->limit == 5) { echo "selected=true"; } ?>>5</option>
-				<option value="10" <?php if ($this->pagination->limit == 10) { echo "selected=true"; } ?>>10</option>
-				<option value="15" <?php if ($this->pagination->limit == 15) { echo "selected=true"; } ?>>15</option>
-				<option value="20" <?php if ($this->pagination->limit == 20) { echo "selected=true"; } ?>>20</option>
-				<option value="25" <?php if ($this->pagination->limit == 25) { echo "selected=true"; } ?>>25</option>
-				<option value="30" <?php if ($this->pagination->limit == 30) { echo "selected=true"; } ?>>30</option>
-				<option value="50" <?php if ($this->pagination->limit == 50) { echo "selected=true"; } ?>>50</option>
-				<option value="100" <?php if ($this->pagination->limit == 100) { echo "selected=true"; } ?>>100</option>
-			</select>
-			<div class="em-container-pagination-selectPage">
-				<ul class="pagination pagination-sm">
-					<li><a href="#em-data" id="<?= $this->pagination->{'pagesStart'} ?>"><<</a></li>
-					<?php if ($this->pagination->{'pagesTotal'} > 15):?>
-
-						<?php for ($i = 1; $i <= 5; $i++ ):?>
-							<li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?= $i ?>" href="#em-data"><?= $i ?></a></li>
-						<?php endfor;?>
-
-						<li class="disabled"><span>...</span></li>
-
-						<?php if ($this->pagination->{'pagesCurrent'} <= 5):?>
-
-							<?php for ($i = 6; $i <= 10; $i++ ):?>
-								<li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?= $i ?>" href="#em-data"><?= $i ?></a></li>
-							<?php endfor;?>
-
-						<?php else:?>
-
-							<?php for ($i = ($this->pagination->{'pagesCurrent'} - 2); $i <= ($this->pagination->{'pagesCurrent'} + 2); $i++ ):?>
-                                <?php if($i <= $this->pagination->{'pagesTotal'}) :?>
-								    <li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?= $i ?>" href="#em-data"><?= $i ?></a></li>
-                                <?php endif; ?>
-							<?php endfor;?>
-
-						<?php endif;?>
-
-						<li class="disabled"><span>...</span></li>
-
-						<?php for ($i = ($this->pagination->{'pagesTotal'} - 4); $i <= $this->pagination->{'pagesTotal'}; $i++ ):?>
-							<li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?= $i ?>" href="#em-data"><?= $i ?></a></li>
-						<?php endfor;?>
-
-					<?php else:?>
-
-						<?php for ($i = 1; $i <= $this->pagination->{'pagesStop'}; $i++ ):?>
-							<li <?php if ($this->pagination->{'pagesCurrent'} == $i) { echo 'class="active"'; } ?>><a id="<?= $i ?>" href="#em-data"><?= $i ?></a></li>
-						<?php endfor;?>
-
-					<?php endif;?>
-
-					<li><a href="#em-data" id="<?= $this->pagination->{'pagesTotal'} ?>">>></a></li>
-				</ul>
-			</div>
+            <div class="em-container-pagination-select">
+                <label for="pager-select" class="em-paginate-label em-container-pagination-label"><?= JText::_('COM_EMUNDUS_DISPLAY') ?></label>
+                <select name="pager-select" class="chzn-select" id="pager-select">
+                    <option value="0" <?php if ($this->pagination->limit == 0) { echo "selected=true"; } ?>><?= JText::_('COM_EMUNDUS_ACTIONS_ALL')?></option>
+                    <option value="5" <?php if ($this->pagination->limit == 5) { echo "selected=true"; } ?>>5</option>
+                    <option value="10" <?php if ($this->pagination->limit == 10) { echo "selected=true"; } ?>>10</option>
+                    <option value="15" <?php if ($this->pagination->limit == 15) { echo "selected=true"; } ?>>15</option>
+                    <option value="20" <?php if ($this->pagination->limit == 20) { echo "selected=true"; } ?>>20</option>
+                    <option value="25" <?php if ($this->pagination->limit == 25) { echo "selected=true"; } ?>>25</option>
+                    <option value="30" <?php if ($this->pagination->limit == 30) { echo "selected=true"; } ?>>30</option>
+                    <option value="50" <?php if ($this->pagination->limit == 50) { echo "selected=true"; } ?>>50</option>
+                    <option value="100" <?php if ($this->pagination->limit == 100) { echo "selected=true"; } ?>>100</option>
+                </select>
+            </div>
+            <?php echo $this->pageNavigation; ?>
 		</div>
 	<?php else:?>
 		<?= $this->datas?>
@@ -222,7 +191,6 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
 <script type="text/javascript">
     function checkurl() {
-
         var url = $(location).attr('href');
         url = url.split("#");
         $('.alert.alert-warning').remove();
@@ -233,7 +201,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
             fnum.fnum = url[0];
 
             if (fnum.fnum != null && fnum.fnum !== "close") {
-                addDimmer();
+                addLoader();
                 $('#'+fnum.fnum+'_check').prop('checked', true);
 
                 $.ajax({
@@ -249,13 +217,13 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                             fnum.label = fnumInfos.label;
                             openFiles(fnum);
                         } else {
-                            $('.em-dimmer').remove();
-                            $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?= JText::_('CANNOT_OPEN_FILE') ?></div>");
+                            removeLoader();
+                            $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?= JText::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE') ?></div>");
                         }
                     },
                     error: function (jqXHR) {
-                        $('.em-dimmer').remove();
-                        $("<div class=\"alert alert-warning\"><?= JText::_('CANNOT_OPEN_FILE') ?></div>").prepend($(".panel.panel-default"));
+                        removeLoader();
+                        $("<div class=\"alert alert-warning\"><?= JText::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE') ?></div>").prepend($(".panel.panel-default"));
                         console.log(jqXHR.responseText);
                     }
                 })
@@ -324,11 +292,11 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
         let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check ').filter(':checked').length;
         let allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');
-        let nbChecked = allCheck == true ? Joomla.JText._('COM_EMUNDUS_SELECT_ALL') : countCheckedCheckbox;
+        let nbChecked = allCheck == true ? Joomla.JText._('COM_EMUNDUS_FILTERS_SELECT_ALL') : countCheckedCheckbox;
 
-        let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILE') : Joomla.JText._('COM_EMUNDUS_FILES');
+        let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILES_FILE') : Joomla.JText._('COM_EMUNDUS_FILES_FILES');
         if (countCheckedCheckbox !== 0) {
-            $('#countCheckedCheckbox').html('<p>'+Joomla.JText._('COM_EMUNDUS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>');
+            $('#countCheckedCheckbox').html('<p>'+Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>');
         } else {
             $('#countCheckedCheckbox').html('');
         }

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -21,6 +21,13 @@ class MassactionViewMassaction extends hikashopView{
 		$function = $this->getLayout();
 		if(method_exists($this,$function)) $this->$function();
 		parent::display($tpl);
+	}
+
+	function output() {
+		$type = $this->params->get('type');
+		$this->toolbar = array(
+			array('name' => 'link', 'icon' => 'cancel', 'alt' => JText::_('HIKA_CANCEL'),'url' => hikashop_completeLink($type.'&task=listing')),
+		);
 	}
 
 	function listing(){
@@ -46,8 +53,11 @@ class MassactionViewMassaction extends hikashopView{
 		$pageInfo->filter->order->dir	= $app->getUserStateFromRequest( $this->paramBase.".filter_order_Dir", 'filter_order_Dir',	'desc',	'word' );
 		$pageInfo->limit->value = $app->getUserStateFromRequest( $this->paramBase.'.list_limit', 'limit', $app->getCfg('list_limit'), 'int' );
 		$pageInfo->limit->start = $app->getUserStateFromRequest( $this->paramBase.'.limitstart', 'limitstart', 0, 'int' );
-		$selectedType = $app->getUserStateFromRequest( $this->paramBase.".massaction_table",'massaction_table','','string');
+		$pageInfo->filter->massaction_table = $selectedType = $app->getUserStateFromRequest( $this->paramBase.".filter_massaction_table",'filter_massaction_table','','string');
 		$database	= JFactory::getDBO();
+
+		$this->searchOptions = array('massaction_table'=> '');
+		$this->openfeatures_class = "hidden-features";
 
 		$filters = array();
 		if(!empty($selectedType)){
@@ -105,6 +115,133 @@ class MassactionViewMassaction extends hikashopView{
 
 
 	}
+
+	function batch() {
+		$table_type = $this->params->get('table');
+
+		$tables = array();
+		JPluginHelper::importPlugin('hikashop');
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onMassactionTableLoad', array( &$tables ) );
+		$tmpl = hikaInput::get()->getVar('tmpl');
+		hikaInput::get()->set('tmpl', 'raw');
+		$found = false;
+		foreach($tables as $k => $t) {
+			if($t->table == $table_type)
+				$found = $k;
+		}
+		if($found === false) {
+			hikashop_display(array(JText::sprintf('BATCH_ONLY_AVAILABLE_IF_MASSACTION_PLUGIN_ENABLED', $table_type)), 'error');
+			return;
+		}
+
+		$loadedData = new stdClass();
+		$loadedData->massaction_table = $table_type;
+		$table = $tables[$found];
+		$table->actions = array();
+		$table->actions_html = array();
+		$app->triggerEvent('onMassactionTableActionsLoad', array( &$table, &$table->actions,&$table->actions_html, &$loadedData) );
+		$table->typevaluesTriggers = array();
+		$table->typevaluesFilters = array();
+		$table->typevaluesActions = array();
+		$table->typevaluesTriggers[] = JHTML::_('select.option', '',JText::_('TRIGGER_SELECT'));
+		$table->typevaluesFilters[] = JHTML::_('select.option', '',JText::_('FILTER_SELECT'));
+		$table->typevaluesActions[] = JHTML::_('select.option', '',JText::_('ACTION_SELECT'));
+		foreach($table->actions as $oneType => $oneName){
+			$table->typevaluesActions[] = JHTML::_('select.option', $oneType,$oneName);
+		}
+		hikaInput::get()->set('tmpl', $tmpl);
+
+		$this->allowInlineJavascript = true;
+
+		$this->table =& $table;
+
+		$chosenUpdate = "
+
+		var newArea = jQuery('#'+table+type+'area_'+filterNum);
+		newArea.find('.chzn-container').remove();
+		newArea.find('.chzn-done').removeClass('chzn-done').chosen();";
+
+		if(HIKASHOP_J40) {
+			$chosenUpdate = '';
+		}
+
+
+		$js = "
+function updateMassAction(type,table,filterNum){
+	var w = window, d = w.document, currentFilterType = d.getElementById(type+table+'type'+filterNum).value;
+	if(!currentFilterType){
+		d.getElementById(table+type+'area_'+filterNum).innerHTML = '';
+		if(type=='filter') d.getElementById(table+'countresult_'+filterNum).innerHTML = '';
+		return;
+	}
+	var filterArea = table+type+'__num__'+currentFilterType;
+
+	if(d.getElementById(filterArea))
+			w.Oby.updateElem( d.getElementById(table+type+'area_'+filterNum), d.getElementById(filterArea).innerHTML.replace(/__num__/g,filterNum));
+	else d.getElementById(table+type+'area_'+filterNum).innerHTML = '';
+	".$chosenUpdate."
+}
+";
+		 $js .="
+var numActions = {};
+var actionId = {};
+numActions['".$table->table."'] = 0;
+actionId['".$table->table."'] = 0;
+";
+
+		$js .= "
+				function addHikaMassAction(table,type){
+					var newdiv = document.createElement('div');
+					if(type=='action'){
+						var count=numActions[table];
+						var theId=actionId[table];
+					}
+					newdiv.id = table+type+theId;
+					newdiv.className = 'plugarea';
+					newdiv.innerHTML = '';
+					if(count > 0) newdiv.innerHTML += '".JText::_('HIKA_AND')."';
+					newdiv.innerHTML += document.getElementById(table+'_'+type+'s_original').innerHTML.replace(/__num__/g, theId);
+					if(document.getElementById('all'+table+type+'s')){
+						document.getElementById('all'+table+type+'s').appendChild(newdiv);
+						updateMassAction(type,table,theId);
+						if(type=='action'){
+							numActions[table]++;
+							actionId[table]++;
+						}
+					}
+				}
+		";
+
+		if(HIKASHOP_J30){
+			$js .= '
+				function refreshSelect(table,type, id){
+					if(type=="action"){
+						var count=actionId[table];
+					}
+					if(id!=-1){
+						var count = id;
+					}else{
+						count=count-1;
+					}
+				}
+			';
+		}else{
+			$js .= 'function refreshSelect(table,type, id){}';
+		}
+
+		$js .= '
+		var currentoption = \''.$table_type.'\';
+		function updateData(newoption){
+			document.getElementById(currentoption).style.display = "none";
+			document.getElementById(newoption).style.display = \'block\';
+			currentoption = newoption;
+		}';
+
+		$this->doc = JFactory::getDocument();
+		$this->doc->addScriptDeclaration($js);
+	}
+
 	function form(){
 		$massaction_id = hikashop_getCID('massaction_id');
 		$class = hikashop_get('class.massaction');
@@ -153,7 +290,8 @@ class MassactionViewMassaction extends hikashopView{
 		$app = JFactory::getApplication();
 		$app->triggerEvent('onMassactionTableLoad', array( &$tables ) );
 		$loadedData = $element;
-
+		$tmpl = hikaInput::get()->getVar('tmpl');
+		hikaInput::get()->set('tmpl', 'raw');
 		foreach($tables as $k => $table) {
 			$tables[$k]->triggers = array();
 			$tables[$k]->triggers_html = array();
@@ -181,6 +319,8 @@ class MassactionViewMassaction extends hikashopView{
 				$table->typevaluesActions[] = JHTML::_('select.option', $oneType,$oneName);
 			}
 		}
+		hikaInput::get()->set('tmpl', $tmpl);
+		$this->allowInlineJavascript = true;
 		$this->assignRef('tables',$tables);
 		$this->assignRef('loadedData',$loadedData);
 
@@ -212,9 +352,7 @@ var actionId = {};
 				$js .="numTriggers['".$table->table."'] = 1;";
 				$js .="triggerId['".$table->table."'] = 1;";
 			}else{
-				$triggerId = max(array_keys($loadedData->massaction_triggers));
-				if(!is_int($triggerId)) $triggerId = 1;
-				else $triggerId++;
+				$triggerId = $this->getNextKey($loadedData->massaction_triggers);
 
 				$countTrigger=1;
 				foreach($loadedData->massaction_triggers as $trigger){
@@ -230,9 +368,7 @@ var actionId = {};
 				$js .="numFilters['".$table->table."'] = 1;";
 				$js .="filterId['".$table->table."'] = 1;";
 			}else{
-				$filterId = max(array_keys($loadedData->massaction_filters));
-				if(!is_int($filterId)) $filterId = 1;
-				else $filterId++;
+				$filterId = $this->getNextKey($loadedData->massaction_filters);
 
 				$countFilter = 1;
 				foreach($loadedData->massaction_filters as $k => $filter){
@@ -248,9 +384,7 @@ var actionId = {};
 				$js .="numActions['".$table->table."'] = 0;";
 				$js .="actionId['".$table->table."'] = 0;";
 			}else{
-				$actionId = max(array_keys($loadedData->massaction_actions));
-				if(!is_int($actionId)) $actionId = 0;
-				else $actionId++;
+				$actionId = $this->getNextKey($loadedData->massaction_actions);
 
 				$countAction = 0;
 				foreach($loadedData->massaction_actions as $k => $action){
@@ -351,6 +485,7 @@ var actionId = {};
 		}';
 
 		$doc = JFactory::getDocument();
+		$this->assignRef('doc',$doc);
 
 
 		if(!empty($_POST['html_results'])){
@@ -358,8 +493,19 @@ var actionId = {};
 		}
 		$this->assignRef('html_results',$html_results);
 		$doc->addScriptDeclaration( $js );
-		hikashop_loadJslib('mootools');
 
+	}
+
+	function getNextKey(&$array) {
+		if(empty($array) || !is_array($array))
+			return 1;
+		$max = 0;
+		foreach($array as $k => $v) {
+			if(!is_numeric($k))
+				continue;
+			$max = max($max, $k);
+		}
+		return $max+1;
 	}
 
 	function export(){

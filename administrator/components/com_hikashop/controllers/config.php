@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -77,6 +77,13 @@ class ConfigController extends hikashopController {
 			}
 		}
 
+		if(!isset($this->wizard)){
+			if($formData['uploadsecurefolder'] == $formData['uploadfolder']){
+				$app->enqueueMessage('The "Upload folder" and "Upload secure folder" settings cannot use the same path.', "error");
+				return false;
+			}
+		}
+
 		$status = $config->save($formData);
 	 	if(!empty($deleteAclCats)) {
 			$db = JFactory::getDBO();
@@ -115,6 +122,7 @@ class ConfigController extends hikashopController {
 				$formData['product_sef_name']='product';
 			}
 		}
+
 
 		if(!empty($formData['weight_symbols'])){
 			$symbols = explode(',',$formData['weight_symbols']);

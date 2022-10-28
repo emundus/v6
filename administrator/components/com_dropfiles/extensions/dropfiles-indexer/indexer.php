@@ -90,7 +90,7 @@ class PlgDropfilesthemesIndexer extends DropfilesPluginBase
      *
      * @return null
      */
-    public function getThemeName()
+    public function onThemeName()
     {
         return null;
     }

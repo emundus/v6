@@ -55,7 +55,7 @@ class PlgDropfilesthemesGgd extends DropfilesPluginBase
         );
 
         $scripts = array(
-            JURI::base('true') . '/components/com_dropfiles/assets/js/handlebars-v4.1.0.js',
+            JURI::base('true') . '/components/com_dropfiles/assets/js/handlebars-v4.7.7.js',
             JURI::base('true') . '/components/com_dropfiles/assets/js/jaofoldertree.js',
             JURI::base('true') . '/components/com_dropfiles/assets/js/colorbox.init.js',
             JURI::base('true') . '/plugins/dropfilesthemes/ggd/js/script.js'
@@ -64,7 +64,7 @@ class PlgDropfilesthemesGgd extends DropfilesPluginBase
         $styles = array(
             JURI::base('true') . '/components/com_dropfiles/assets/css/jaofoldertree.css',
             JURI::base('true') . '/components/com_dropfiles/assets/css/material-design-iconic-font.min.css',
-            JURI::base('true') . '/plugins/dropfilesthemes/ggd/style.css'
+            JURI::base('true') . '/plugins/dropfilesthemes/ggd/style_ver5.4.css'
         );
 
         // Register classes
@@ -108,13 +108,13 @@ class PlgDropfilesthemesGgd extends DropfilesPluginBase
             $this->viewfileanddowload = DropfilesBase::getAuthViewFileAndDownload();
             $this->download_popup = DropfilesBase::loadValue($this->options['params'], 'ggd_download_popup', 1);
 
-            $style = '.dropfiles-file-link, .dropfilescategory.catlink {margin : ';
+            $style = '.dropfiles-content-ggd[data-category="'.$this->category->id.'"] .dropfiles-file-link, .dropfiles-content-ggd[data-category="'.$this->category->id.'"] .dropfilescategory.catlink:not(.backcategory), .dropfiles-content-ggd[data-category="'.$this->category->id.'"] .dropfilescategory_placeholder {margin : ';
             $style .= DropfilesBase::loadValue($this->params, 'ggd_margintop', 10) . 'px ';
             $style .= DropfilesBase::loadValue($this->params, 'ggd_marginright', 10) . 'px ';
             $style .= DropfilesBase::loadValue($this->params, 'ggd_marginbottom', 10) . 'px ';
             $style .= DropfilesBase::loadValue($this->params, 'ggd_marginleft', 10) . 'px !important;}';
 
-            $style .= ' #dropfiles-box-ggd .dropblock .extra-downloadlink a {background-color:';
+            $style .= ' #dropfiles-box-ggd .dropblock .extra-downloadlink a, .dropfiles-content-ggd .download-all, .dropfiles-content-ggd .download-selected {background-color:';
             $style .= DropfilesBase::loadValue($this->params, 'ggd_bgdownloadlink', '#006DCC') . ' !important;color:';
             $style .= DropfilesBase::loadValue($this->params, 'ggd_colordownloadlink', '#fff') . ' !important ;}';
             $doc->addStyleDeclaration($style);

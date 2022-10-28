@@ -1,13 +1,14 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><div class="hikashop_category_image">
+?><!-- IMAGE -->
+<div class="hikashop_category_image">
 	<a href="<?php echo $this->row->link;?>" title="<?php echo $this->escape($this->row->category_name); ?>">
 		<?php
 		$image_options = array('default' => true,'forcesize'=>$this->config->get('image_force_size',true),'scale'=>$this->config->get('image_scale_mode','inside'));
@@ -28,15 +29,15 @@ defined('_JEXEC') or die('Restricted access');
 		?>
 	</a>
 </div>
+<!-- EO IMAGE -->
 <?php
 if($this->rows[0]->category_id == $this->row->category_id){
 	$mainDivName = $this->params->get('main_div_name');
-?>
-<style>
-	#<?php echo $mainDivName; ?> .hikashop_category_image{
-		height:<?php echo $this->image->main_thumbnail_y;?>px;
-		text-align:center;
-		clear:both;
-	}
-</style>
-<?php } ?>
+	$doc = JFactory::getDocument();
+	$doc->addStyleDeclaration('
+#'. $mainDivName.' .hikashop_category_image {
+	height: '. $this->image->main_thumbnail_y.'px;
+	text-align: center;
+	clear: both;
+}');
+}

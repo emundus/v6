@@ -31,7 +31,7 @@ class modemundusApplicationsHelper {
 			}
 		}
 
-        $query = 'SELECT ecc.date_time AS campDateTime, ecc.*, esc.*, ess.step, ess.value, ess.class ';
+        $query = 'SELECT ecc.date_time AS campDateTime, ecc.*, esc.*, ess.step, ess.value, ess.class, ecc.published as published';
 
 		// CCI-RS layout needs to get the start and end date of each application
 		if ($layout == '_:ccirs') {
@@ -64,6 +64,7 @@ class modemundusApplicationsHelper {
 		$result = $db->loadObjectList('fnum');
 		return (array) $result;
 	}
+
     // get State of the files (published, removed, archived)
     static function getStatusFiles(){
         $user = JFactory::getUser();
@@ -155,19 +156,18 @@ class modemundusApplicationsHelper {
 
 		$db = JFactory::getDbo();
 
-		$query = 'SELECT count(c.id)
+		$query = 'SELECT c.id
 					FROM #__emundus_setup_campaigns AS c
 					LEFT JOIN #__emundus_setup_programmes AS p ON p.code LIKE c.training
 					WHERE c.published = 1
 					AND p.apply_online = 1
 					AND c.end_date >= NOW()
-					AND c.start_date <= NOW()';
+					AND c.start_date <= NOW()
+					LIMIT 1';
 
 		try {
-
 			$db->setQuery($query);
-			return $db->loadResult() > 0;
-
+			return !empty($db->loadResult());
 		} catch (Exception $e) {
 			JLog::add("Error at query : ".$query, JLog::ERROR, 'com_emundus');
 			return false;
@@ -286,6 +286,88 @@ class modemundusApplicationsHelper {
         } catch(Exception $e) {
             JLog::add("Error at query : ".preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
             return null;
+        }
+    }
+
+    static function getHikashopOrder($fnumInfos, $cancelled = false) {
+
+
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $em_application_payment = $eMConfig->get('application_payment', 'user');
+
+        if ($cancelled) {
+            $order_status = array('cancelled');
+        } else {
+            $order_status = array('confirmed');
+            switch ($eMConfig->get('accept_other_payments', 0)) {
+                case 1:
+                    array_push($order_status, 'created');
+                    break;
+                case 3:
+                    array_push($order_status, 'pending');
+                    break;
+                case 4:
+                    array_push($order_status, 'created', 'pending');
+                    break;
+                default:
+                    // No need to push to the array
+                    break;
+
+            }
+        }
+
+        $query
+            ->select([$db->quoteName('jhos.orderstatus_namekey'), $db->quoteName('jhos.orderstatus_color'), $db->quoteName('eh.order_id')])
+            ->from($db->quoteName('#__emundus_hikashop', 'eh'))
+            ->leftJoin($db->quoteName('#__hikashop_order','ho').' ON '.$db->quoteName('ho.order_id').' = '.$db->quoteName('eh.order_id'))
+            ->leftJoin($db->quoteName('#__hikashop_orderstatus','jhos').' ON '.$db->quoteName('jhos.orderstatus_namekey').' = '.$db->quoteName('ho.order_status'))
+            ->where($db->quoteName('ho.order_status') . ' IN (' . implode(", ", $db->quote($order_status)) . ')')
+            ->order($db->quoteName('order_created') . ' DESC');
+
+        switch ($em_application_payment) {
+
+            default :
+            case 'fnum' :
+                $query
+                    ->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos->fnum);
+                break;
+
+            case 'user' :
+                $query
+                    ->where($db->quoteName('eh.user') . ' = ' . $fnumInfos->applicant_id);
+                break;
+
+            case 'campaign' :
+                $query
+                    ->where($db->quoteName('eh.campaign_id') . ' = ' . $fnumInfos->id)
+                    ->where($db->quoteName('eh.user') . ' = ' . $fnumInfos->applicant_id);
+                break;
+
+            case 'status' :
+                $em_application_payment_status = $eMConfig->get('application_payment_status', '0');
+                $payment_status = explode(',', $em_application_payment_status);
+
+                if (in_array($fnumInfos->status, $payment_status)) {
+                    $query
+                        ->where($db->quoteName('eh.status') . ' = ' . $fnumInfos->status)
+                        ->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos->fnum);
+                } else{
+                    $query
+                        ->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos->fnum);
+                }
+                break;
+        }
+        try {
+            $db->setQuery($query);
+            return $db->loadObject();
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
         }
     }
 }

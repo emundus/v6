@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -12,10 +12,28 @@ class JFormFieldFilters extends JFormField
 {
 	var $type = 'help';
 	function getInput() {
-		JHTML::_('behavior.modal','a.modal');
-		$link = 'index.php?option=com_hikashop&amp;tmpl=component&amp;ctrl=choose&amp;task=filters&amp;values='.$this->value.'&amp;control=';
-		$text = '<input class="inputbox" id="filters" name="'.$this->name.'" type="text" size="20" value="'.$this->value.'">';
-		$text .= '<a class="modal" id="linkfilters" title="Filters"  href="'.$link.'" rel="{handler: \'iframe\', size: {x: 650, y: 375}}"><button class="btn" onclick="return false">Select</button></a>';
+		if(!defined('DS'))
+			define('DS', DIRECTORY_SEPARATOR);
+		if(!function_exists('hikashop_getCID') && !include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php')){
+			return 'This plugin can not work without the Hikashop Component';
+		}
+		$nameboxType = hikashop_get('type.namebox');
+		if(!is_array($this->value))
+			$this->value = explode(',',$this->value);
+		$text = $nameboxType->display(
+			$this->name,
+			$this->value,
+			hikashopNameboxType::NAMEBOX_MULTIPLE,
+			'filter',
+			array(
+				'delete' => true,
+				'returnOnEmpty' => false,
+				'default_text' => '<em>'.JText::_('HIKA_ALL').'</em>',
+				'url_params' => array(),
+			)
+		);
+		if(empty($text))
+			$text = hikashop_display(JText::_('PLEASE_CREATE_FILTERS_FIRST'), 'error', true);
 		return $text;
 	}
 }

@@ -46,7 +46,7 @@ class EmundusViewProgramme extends JViewLegacy
         $this->com_emundus_programme_candidate_link = $menu_params->get('com_emundus_programme_candidate_link', 'index.php?option=com_fabrik&amp;view=form&amp;formid=307&amp;Itemid=2700');
 
 
-        $idcampaign = $jinput->get('id', 0, 'int');
+        $idcampaign = $jinput->get('id') ? $jinput->get('id',0,'int') : $jinput->get('cid',0,'int');
         $campaign = $model->getCampaign($idcampaign);
 
         // Check for errors.

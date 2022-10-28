@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -78,6 +78,13 @@ foreach($this->cpanel_data->cpanel_orders as $order_id => $order) {
 				'click' => 'return window.localPage.printInvoice('.(int)$order->order_id.');',
 			);
 		}
+		if(!empty($order->show_contact_button)) {
+			$url = hikashop_completeLink('order&task=contact&order_id='.$order->order_id.$url_itemid);
+			$dropData[] = array(
+				'name' => '<i class="far fa-envelope"></i> '. JText::_('CONTACT_US_ABOUT_YOUR_ORDER'),
+				'link' => $url
+			);
+		}
 		if(!empty($order->show_cancel_button)) {
 			$cancel_orders = true;
 			$dropData[] = array(
@@ -86,7 +93,7 @@ foreach($this->cpanel_data->cpanel_orders as $order_id => $order) {
 				'click' => 'return window.localPage.cancelOrder('.(int)$order->order_id.',\''.$order->order_number.'\');',
 			);
 		}
-		if(!empty($order->show_payment_button) && bccomp($order->order_full_price, 0, 5) > 0) {
+		if(!empty($order->show_payment_button) && bccomp(sprintf('%F',$order->order_full_price), 0, 5) > 0) {
 			$url_param = ($this->payment_change) ? '&select_payment=1' : '';
 			$url = hikashop_completeLink('order&task=pay&order_id='.$order->order_id.$url_param.$url_itemid);
 			if($this->config->get('force_ssl',0) && strpos('https://',$url) === false)
@@ -201,7 +208,7 @@ foreach($this->cpanel_data->cpanel_orders as $order_id => $order) {
 ?>
 <?php if(!empty($order->extraData->afterProductsListing)) { echo implode("\r\n", $order->extraData->afterProductsListing); } ?>
 		</div>
-		<div class="hkc-md-4" class="hika_cpanel_methods">
+		<div class="hkc-md-4 hika_cpanel_methods">
 <?php if(!empty($order->extraData->beforeInfo)) { echo implode("\r\n", $order->extraData->beforeInfo); } ?>
 			<dl class="hika_cpanel_order_methods">
 <?php if(!empty($order->payment)) { ?>

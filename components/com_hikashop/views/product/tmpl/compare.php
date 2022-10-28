@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -38,9 +38,10 @@ if(empty($this->elements)) {
 	global $Itemid;
 	$url_itemid = '';
 	if(!empty($Itemid)){
-		$url_itemid = '&Itemid='.$url_itemid;
+		$url_itemid = '&Itemid='.$Itemid;
 	}
 ?>
+<!-- NAME -->
 	<tr id="hikashop_compare_tr_name">
 		<td class="hikashop_compare_title_first_column"></td>
 <?php
@@ -61,6 +62,8 @@ if(empty($this->elements)) {
 	}
 ?>
 	</tr>
+<!-- EO NAME -->
+<!-- IMAGE -->
 	<tr id="hikashop_compare_tr_image">
 		<td class="hikashop_compare_img_first_column"></td>
 <?php
@@ -104,6 +107,8 @@ if(empty($this->elements)) {
 	}
 ?>
 	</tr>
+<!-- EO IMAGE -->
+<!-- PRICE & DIMENSIONS -->
 	<tr id="hikashop_compare_tr_price">
 		<td class="hikashop_compare_details_first_column"></td>
 <?php
@@ -127,28 +132,28 @@ if(empty($this->elements)) {
 		}
 ?>
 <?php
-		if(isset($element->product_weight) && bccomp($element->product_weight,0,3)) {
+		if(isset($element->product_weight) && bccomp(sprintf('%F',$element->product_weight),0,3)) {
 ?>
 			<br/><span id="hikashop_product_weight_main" class="hikashop_product_weight_main"><?php
 				echo JText::_('PRODUCT_WEIGHT').': '.rtrim(rtrim($element->product_weight,'0'),',.').' '.JText::_($element->product_weight_unit);
 			?></span>
 <?php
 		}
-		if($this->config->get('dimensions_display',0) && bccomp($element->product_width,0,3)) {
+		if($this->config->get('dimensions_display',0) && bccomp(sprintf('%F',$element->product_width),0,3)) {
 ?>
 			<br/><span id="hikashop_product_width_main" class="hikashop_product_width_main"><?php
 				echo JText::_('PRODUCT_WIDTH').': '.rtrim(rtrim($element->product_width,'0'),',.').' '.JText::_($element->product_dimension_unit);
 			?></span>
 <?php
 		}
-		if($this->config->get('dimensions_display',0) && bccomp($element->product_length,0,3)) {
+		if($this->config->get('dimensions_display',0) && bccomp(sprintf('%F',$element->product_length),0,3)) {
 ?>
 			<br/><span id="hikashop_product_length_main" class="hikashop_product_length_main"><?php
 				echo JText::_('PRODUCT_LENGTH').': '.rtrim(rtrim($element->product_length,'0'),',.').' '.JText::_($element->product_dimension_unit);
 			?></span>
 <?php
 		}
-		if($this->config->get('dimensions_display',0) && bccomp($element->product_height,0,3)) {
+		if($this->config->get('dimensions_display',0) && bccomp(sprintf('%F',$element->product_height),0,3)) {
 ?>
 			<br/><span id="hikashop_product_height_main" class="hikashop_product_height_main"><?php
 				echo JText::_('PRODUCT_HEIGHT').': '.rtrim(rtrim($element->product_height,'0'),',.').' '.JText::_($element->product_dimension_unit);
@@ -161,6 +166,8 @@ if(empty($this->elements)) {
 	}
 ?>
 	</tr>
+<!-- EO PRICE & DIMENSIONS -->
+<!-- ADD TO CART BUTTON -->
 	<tr id="hikashop_compare_tr_cart">
 		<td class="hikashop_compare_cart_first_column"></td>
 <?php
@@ -185,6 +192,8 @@ if(empty($this->elements)) {
 	}
 ?>
 	</tr>
+<!-- EO ADD TO CART BUTTON -->
+<!-- CUSTOM PRODUCT FIELDS -->
 <?php
 	foreach( $this->fields[0] as $fieldName => $oneExtraField ) {
 		if($oneExtraField->field_type != "customtext") {
@@ -254,5 +263,6 @@ if(empty($this->elements)) {
 		}
 	}
 ?>
+<!-- EO CUSTOM PRODUCT FIELDS -->
 </table>
 </div>

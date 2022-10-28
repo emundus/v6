@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -23,7 +23,7 @@ class hikashopZoneClass extends hikashopClass{
 		$status = false;
 		if(!empty($formData['zone'])){
 			jimport('joomla.filter.filterinput');
-			$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
+			$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 			foreach($formData['zone'] as $column => $value){
 				hikashop_secureField($column);
 				$zone->$column = $safeHtmlFilter->clean(strip_tags($value), 'string');
@@ -40,6 +40,51 @@ class hikashopZoneClass extends hikashopClass{
 		return $status;
 	}
 
+	public function delete(&$elements) {
+		$do = true;
+		JPluginHelper::importPlugin('hikashop');
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onBeforeZoneDelete', array(&$elements, &$do));
+
+		if(!$do)
+			return false;
+
+		$status = parent::delete($elements);
+		if($status) {
+			$app->triggerEvent('onAfterZoneDelete', array(&$elements));
+		}
+		return $status;
+	}
+
+	public function save(&$element) {
+		if(!empty($element->zone_id)) {
+			$element->old = $this->get($element->zone_id);
+		}
+
+		$do = true;
+		JPluginHelper::importPlugin('hikashop');
+		$app = JFactory::getApplication();
+		if(empty($element->zone_id)) {
+			$app->triggerEvent('onBeforeZoneCreate', array( &$element, &$do ));
+		} else {
+			$app->triggerEvent('onBeforeZoneUpdate', array( &$element, &$do ));
+		}
+
+		if(!$do)
+			return false;
+
+		$status = parent::save($element);
+		if(!$status)
+			return $status;
+
+		if(empty($element->zone_id)) {
+			$app->triggerEvent('onAfterZoneCreate', array( &$element ));
+		} else {
+			$app->triggerEvent('onAfterZoneUpdate', array( &$element ));
+		}
+		return $status;
+	}
+
 	function getZones($ids, $columns = '*', $key = 'zone_id', $returnArrayWithOneColumn = false) {
 		if(is_numeric($ids))
 			$ids = array($ids);
@@ -50,6 +95,10 @@ class hikashopZoneClass extends hikashopClass{
 		} else {
 			$key = preg_replace('#[^a-z_]#','',$key);
 			foreach($ids as $k => $id) {
+				if(is_object($id)) {
+					$ids[$k] = $this->database->Quote(@$id->$key);
+					continue;
+				}
 				$ids[$k] = $this->database->Quote($id);
 			}
 		}
@@ -165,11 +214,27 @@ class hikashopZoneClass extends hikashopClass{
 			}
 		}
 
+		if($type == 'shipping_address' && !empty($order->order_shipping_id)) {
+			$shippingClass = hikashop_get('class.shipping');
+			$shipping = $shippingClass->get($order->order_shipping_id);
+			if(!empty($shipping) && !empty($shipping->shipping_params) && !empty($shipping->shipping_params->override_tax_zone)) {
+				$zoneClass = hikashop_get('class.zone');
+				$zone = $zoneClass->get($shipping->shipping_params->override_tax_zone);
+				if(!empty($zone)) {
+					return array($zone->zone_namekey);
+				}
+			}
+		}
+
 		if(empty($order->$type) || empty($order->$type->$field)) {
 			$zone = hikashop_getZone('shipping', array('object' => $order));
 			$zones = $this->getZoneParents($zone);
 		} else {
 			$zones =& $order->$type->$field;
+			$field_namekey = $field . '_orig';
+			if(isset($order->$type->$field_namekey)) {
+				$zones = $order->$type->$field_namekey;
+			}
 			if(!is_array($zones)) {
 				$zones = array($zones);
 			}

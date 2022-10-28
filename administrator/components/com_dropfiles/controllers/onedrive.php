@@ -14,16 +14,13 @@
 
 // no direct access
 defined('_JEXEC') || die;
-$path_admin_categories = JPATH_ROOT . DIRECTORY_SEPARATOR . 'administrator' . DIRECTORY_SEPARATOR . 'components';
-$path_admin_categories .= DIRECTORY_SEPARATOR . 'com_categories' . DIRECTORY_SEPARATOR . 'controllers';
-$path_admin_categories .= DIRECTORY_SEPARATOR . 'categories.php';
-require_once($path_admin_categories);
+
 jimport('joomla.filesystem.folder');
 
 /**
  * Class DropfilesControllerCloud
  */
-class DropfilesControllerOneDrive extends CategoriesControllerCategories
+class DropfilesControllerOneDrive extends JControllerAdmin
 {
 
     /**
@@ -314,7 +311,7 @@ class DropfilesControllerOneDrive extends CategoriesControllerCategories
                             if ($parent_cloud_id_onedrive !== 1) {
                                 $item_parent_id = $folderCloudInDropfiles[$parent_cloud_id_onedrive]['id'];
                             }
-                            $this->order('first-child', $folderCloudInDropfiles[$k]['id'], $item_parent_id);
+                            $this->order('first-child', $folderCloudInDropfiles[$k]['id'], $item_parent_id, false);
                         }
                     }
                 } else {
@@ -390,7 +387,9 @@ class DropfilesControllerOneDrive extends CategoriesControllerCategories
                     }
                 }
             }
-
+            // Update files count
+            $categoriesModel = $this->getModel('Categories', 'DropfilesModel');
+            $categoriesModel->updateFilesCount();
             $path_admin_component = JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/component.php';
             JLoader::register('DropfilesComponentHelper', $path_admin_component);
             $clsDropfilesHelper = new DropfilesComponentHelper();
@@ -406,13 +405,15 @@ class DropfilesControllerOneDrive extends CategoriesControllerCategories
      * @param string  $position Position
      * @param integer $pk       Current category id
      * @param integer $ref      Target category id
+     * @param boolean $return   Return result or not
      *
      * @return void
      * @throws \Exception Throw when application can not start
      * @since  version
      */
-    public function order($position, $pk, $ref)
+    public function order($position, $pk, $ref, $return = true)
     {
+        $status = false;
         $model = $this->getModel();
         $canDo = DropfilesHelper::getActions();
         if (!$canDo->get('core.edit')) {
@@ -435,9 +436,15 @@ class DropfilesControllerOneDrive extends CategoriesControllerCategories
 
         $table = $model->getTable();
         if ($table->moveByReference($ref, $position, $pk)) {
-            $this->exitStatus(true, $pk . ' ' . $position . ' ' . $ref);
+            $status = true;
+            $message = $pk . ' ' . $position . ' ' . $ref;
+        } else {
+            $message = JText::_('COM_DROPFILES_CTRL_MESSAGE_ERROR');
         }
-        $this->exitStatus(JText::_('COM_DROPFILES_CTRL_MESSAGE_ERROR'));
+
+        if ($return) {
+            $this->exitStatus($status, $message);
+        }
     }
 
     /**

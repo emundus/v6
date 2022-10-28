@@ -85,27 +85,29 @@ class EmundusControllerTrombinoscope extends EmundusController {
     }
 
 
-	/**
-	 * Génération du code HTML qui sera envoyé soit pour cosntruire le pdf, soit pour afficher la prévisualisation
-	 *
-	 * @param         $fnums
-	 * @param         $gridL
-	 * @param         $gridH
-	 * @param         $margin
-	 * @param         $template
-	 * @param         $templHeader
-	 * @param         $templFooter
-	 * @param         $generate
-	 * @param   bool  $preview
-	 * @param   bool  $checkHeader
-	 * @param         $border
-	 *
-	 * @return string
-	 *
-	 * @throws Exception
-	 * @since version
-	 */
+    /**
+     * Génération du code HTML qui sera envoyé soit pour cosntruire le pdf, soit pour afficher la prévisualisation
+     *
+     * @param         $fnums
+     * @param         $gridL
+     * @param         $gridH
+     * @param         $margin
+     * @param         $template
+     * @param         $templHeader
+     * @param         $templFooter
+     * @param         $generate
+     * @param   bool  $preview
+     * @param   bool  $checkHeader
+     * @param         $border
+     *
+     * @return string
+     *
+     * @throws Exception
+     * @since version
+     */
     public function generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $templHeader, $templFooter,  $generate, $preview = false, $checkHeader = false, $border, $headerHeight) {
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        $m_files = new EmundusModelFiles();
         // Traitement du nombre de colonnes max par ligne
         $nb_col_max = $gridL;
         $nb_li_max = $gridH;
@@ -128,15 +130,23 @@ class EmundusControllerTrombinoscope extends EmundusController {
             $marge_css_bottom = $tab_margin[0];
         }
         // Génération du HTML
-        include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+        include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
 
         $emails = new EmundusModelEmails();
         $body = '';
         $nb_cell = 0;
         $tab_body = array();
+        $fnumInfo = $m_files->getFnumInfos($fnums[0]['fnum']);
         foreach ($fnums as $fnum) {
-            $post = array('FNUM' => $fnum['fnum']);
-            $tags = $emails->setTags($fnum["applicant_id"], $post, $fnum['fnum']);
+            $post = [
+                'FNUM' => $fnum['fnum'],
+                'CAMPAIGN_LABEL' => $fnumInfo['label'],
+                'CAMPAIGN_YEAR' => $fnumInfo['year'],
+                'CAMPAIGN_START' => $fnumInfo['start_date'],
+                'CAMPAIGN_END' => $fnumInfo['end_date'],
+                'SITE_URL' => JURI::base()
+            ];
+            $tags = $emails->setTags($fnum["applicant_id"], $post, $fnum['fnum'], '', $template);
             $body_tags = preg_replace($tags['patterns'], $tags['replacements'], $template);
             $body_tmp = $emails->setTagsFabrik($body_tags, array($fnum["fnum"]));
             $body .= $body_tmp;
@@ -196,6 +206,10 @@ body {
 
 .div-cell {
     border: '.$borderCSS.';
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    whitespace: no-wrap;
     line-height: 1;
     width: '.$cell_width.'px;
     height: '.$cell_height.'px;
@@ -247,20 +261,22 @@ footer {
             }
         }
         if ($generate == 1) {
+            $header_tags = preg_replace($tags['patterns'], $tags['replacements'], $templHeader);
+            $header_tmp = $emails->setTagsFabrik($header_tags, array($fnum["fnum"]));
             $header = preg_replace_callback('/< *img[^>]*src *= *["\']?([^"\']*)/i', function ($match) {
-            	$src = $match[1];
-	            if (substr($src, 0, 1) === '/') {
-	            	$src = substr($src, 1);
-	            }
+                $src = $match[1];
+                if (substr($src, 0, 1) === '/') {
+                    $src = substr($src, 1);
+                }
                 return '<img src="'.JURI::base().$src;
-            }, $templHeader);
-	        $footer = preg_replace_callback('/< *img[^>]*src *= *["\']?([^"\']*)/i', function ($match) {
-		        $src = $match[1];
-		        if (substr($src, 0, 1) === '/') {
-			        $src = substr($src, 1);
-		        }
-		        return '<img src="'.JURI::base().$src;
-	        }, $templFooter);
+            }, $header_tmp);
+            $footer = preg_replace_callback('/< *img[^>]*src *= *["\']?([^"\']*)/i', function ($match) {
+                $src = $match[1];
+                if (substr($src, 0, 1) === '/') {
+                    $src = substr($src, 1);
+                }
+                return '<img src="'.JURI::base().$src;
+            }, $templFooter);
         }
         if ($checkHeader == 1) {
             return $head.'<body class="em-body"><header>'.$header.'</header><footer>'.$footer.'</footer><main>'.$body.'</main></body></html>';

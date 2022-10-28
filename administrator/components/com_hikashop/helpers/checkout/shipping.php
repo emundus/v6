@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -37,6 +37,17 @@ class hikashopCheckoutShippingHelper extends hikashopCheckoutHelperInterface {
 				'values' => array(0)
 			)
 		),
+		'price_with_tax' => array(
+			'name' => 'PRICE_WITH_TAX',
+			'type' => 'inherit',
+			'default' => -1,
+		),
+		'display_errors' =>  array(
+			'name' => 'DISPLAY_ERRORS',
+			'type' => 'boolean',
+			'default' => 1,
+			'tooltip' => 'shipping_display_errors',
+		),
 	);
 
 	public function getParams() {
@@ -46,6 +57,10 @@ class hikashopCheckoutShippingHelper extends hikashopCheckoutHelperInterface {
 			JHTML::_('select.option', 2, JText::_('HIKASHOP_CHECKOUT_ADDRESS_SELECTOR_DROPDOWN'))
 		);
 		$this->params['shipping_selector']['values'] = $values;
+
+		$this->params['price_with_tax']['values'] = array(
+			JHTML::_('select.option', '2', JText::_('WIZARD_BOTH'))
+		);
 
 		return parent::getParams();
 	}
@@ -89,23 +104,27 @@ class hikashopCheckoutShippingHelper extends hikashopCheckoutHelperInterface {
 			$shipping_ids[$group] = $shipping['id'];
 		}
 
-		if(empty($shipping_ids))
+		if(count($shipping_ids) == 0)
 			return false;
 
 		$checkoutHelper = hikashopCheckoutHelper::get();
 		$cart = $checkoutHelper->getCart();
 		$shipping_price = $this->getShippingPrice($cart);
 
-		foreach($cart->shipping_groups as $group_id => $group_info) {
-			$group_check = false;
-			foreach($shipping_ids as $ship_group_id => $ship_id){
-				if($ship_group_id == $group_id)
-					$group_check = true;
+		if(empty($_POST['selectionOnly'])){
+			foreach($cart->shipping_groups as $group_id => $group_info) {
+				if(empty($group->shippings) && !empty($group_info->no_weight) && empty($group_info->errors)) {
+					continue;
+				}
+				$group_check = false;
+				foreach($shipping_ids as $ship_group_id => $ship_id){
+					if($ship_group_id == $group_id)
+						$group_check = true;
+				}
+				if(!$group_check)
+					return false;
 			}
-			if(!$group_check)
-				return false;
 		}
-
 
 		$selectionOnly = hikaInput::get()->getInt('selectionOnly', 0);
 		if($selectionOnly) {
@@ -150,7 +169,7 @@ class hikashopCheckoutShippingHelper extends hikashopCheckoutHelperInterface {
 		}
 
 		$tmpl = hikaInput::get()->getCmd('tmpl', '');
-		if($selectionOnly && in_array($tmpl, array('ajax', 'raw'))) {
+		if($selectionOnly && in_array($tmpl, array('ajax', 'raw', 'component'))) {
 			$data = array(
 				'ret' => $ret,
 				'events' => array(),
@@ -210,6 +229,16 @@ class hikashopCheckoutShippingHelper extends hikashopCheckoutHelperInterface {
 			$params['shipping_selector'] = 0;
 		if($params['read_only'])
 			$params['shipping_selector'] = 0;
+		if(!isset($params['display_errors']))
+			$params['display_errors'] = true;
+
+
+		if(!isset($params['price_with_tax']))
+			$params['price_with_tax'] = -1;
+		if($params['price_with_tax'] == -1) {
+			$config = hikashop_config();
+			$params['price_with_tax'] = $config->get('price_with_tax', 0);
+		}
 
 		$checkoutHelper = hikashopCheckoutHelper::get();
 		if(!$checkoutHelper->isMessages('shipping')) {
@@ -241,10 +270,7 @@ class hikashopCheckoutShippingHelper extends hikashopCheckoutHelperInterface {
 			if(!empty($group->shippings) || empty($group->errors))
 				continue;
 
-			$name = (!empty($group->name) ? $group->name : $warehouse_order);
-			$msg = JText::sprintf('NO_SHIPPING_METHOD_FOUND_FOR_WAREHOUSE', $name) . '<br/>' .
-				$this->getShippingErrorMessage($group->errors);
-
+			$msg = $this->getShippingErrorMessage($group->errors);
 			$checkoutHelper->addMessage('shipping.warehouse_'.$warehouse_order, array($msg, 'error'));
 		}
 	}

@@ -2,19 +2,18 @@
 <extension version="2.5" type="plugin" group="hikashop" method="upgrade">
 	<name>Hikashop TaxCloud Plugin</name>
 	<creationDate>December 2013</creationDate>
-	<version>4.3.0</version>
+	<version>1.2.3</version>
 	<author>Obsidev</author>
 	<authorEmail>dev@obsidev.com</authorEmail>
 	<authorUrl>http://www.obsidev.com</authorUrl>
-	<copyright>Copyright (C) 2012-2020 OBSIDEV SARL - All rights reserved.</copyright>
+	<copyright>Copyright (C) 2012-2022 OBSIDEV SARL - All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-	<description>This plugin enables you to communication with TaxCloud</description>
+	<description>This plugin enables you to communicate with TaxCloud</description>
 	<files>
 		<filename plugin="taxcloud">taxcloud.php</filename>
-		<filename>taxcloud.js</filename>
+		<filename>taxcloud.wsdl</filename>
 	</files>
 	<params addpath="/components/com_hikashop/params">
-		<param name="pluginoptions" type="pluginoptions" default="plugin" label="HIKA_HIKASHOP" description="HIKASHOP_OPTIONS" />
 		<param type="spacer" label="TAXCLOUD" />
 		<param name="api_id" type="text" default="" label="API_ID" description=""/>
 		<param name="api_key" type="text" default="" label="API_KEY" description=""/>
@@ -35,12 +34,10 @@
 		<param type="spacer" label="TIC" />
 		<param name="default_tic" type="text" default="" label="DEFAULT_TIC_ID" description=""/>
 		<param name="shipping_tic" type="text" default="" label="SHIPPING_TIC_ID" description=""/>
-		<param name="browse_tic" type="plugintrigger" default="browse_tic" label="BROWSE_TIC_CATEGOGIES" description="" />
 	</params>
 	<config>
 		<fields name="params" addfieldpath="/components/com_hikashop/fields">
 			<fieldset name="basic">
-				<field id="pluginoptions" name="pluginoptions" type="pluginoptions" label="HIKA_HIKASHOP" description="HIKASHOP_OPTIONS" />
 				<field type="spacer" label="TAXCLOUD" />
 				<field name="api_id" type="text" default="" label="API_ID" description=""/>
 				<field name="api_key" type="text" default="" label="API_KEY" description=""/>
@@ -61,7 +58,6 @@
 				<field type="spacer" label="TIC" />
 				<field name="default_tic" type="text" default="" label="DEFAULT_TIC_ID" description=""/>
 				<field name="shipping_tic" type="text" default="" label="SHIPPING_TIC_ID" description=""/>
-				<field name="browse_tic" type="plugintrigger" default="browse_tic" label="BROWSE_TIC_CATEGOGIES" description="" />
 			</fieldset>
 		</fields>
 	</config>

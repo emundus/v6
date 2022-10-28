@@ -382,6 +382,33 @@ jQuery(document).ready(function($){
         }
     });
 
+    var eventMethod = window.addEventListener ? 'addEventListener' : 'attachEvent';
+    var eventer = window[eventMethod];
+    var messageEvent = eventMethod == 'attachEvent' ? 'onmessage' : 'message';
+
+    // Listen to message from child window
+    eventer(messageEvent, function (e) {
+        var res = e.data;
+
+        if(typeof res != 'undefined' && typeof res.type != 'undefined' && res.type === 'translation_login'){
+            //Initialize ajax request datas
+            ajax_data = {
+                action : jutranslation_ajax_action,
+                token: res.token,
+            };
+            ajax_data[jutranslation_token] = 1;
+
+            $.ajax({
+                url: jutranslation_base_url + 'task=jutranslation.saveJuToken',
+                type: 'POST',
+                data: ajax_data,
+                success: function () {
+
+                }
+            });
+        }
+    }, false);
+
     function doTable(datas, options) {
         // DOM element containing the generated content
         var $_content;

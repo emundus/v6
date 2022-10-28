@@ -25,15 +25,15 @@ class SecuritycheckprosControllerFirewallConfig extends SecuritycheckproControll
     {
         $model = $this->getModel("firewallconfig");
         $model->manage_list('blacklist', 'delete');
-            
+		            
         parent::display();    
     }
 
     /* Añade un IP a la lista negra */
     function addip_blacklist()
     {
-        $model = $this->getModel("firewallconfig");
-        $model->manage_list('blacklist', 'add');
+        $model = $this->getModel("firewallconfig");	
+		$model->manage_list('blacklist', 'add');
             
         parent::display();    
     }
@@ -51,7 +51,7 @@ class SecuritycheckprosControllerFirewallConfig extends SecuritycheckproControll
     function addip_whitelist()
     {
         $model = $this->getModel("firewallconfig");
-        $model->manage_list('whitelist', 'add');
+		$model->manage_list('whitelist', 'add');
             
         parent::display();    
     }
@@ -68,9 +68,10 @@ class SecuritycheckprosControllerFirewallConfig extends SecuritycheckproControll
     /* Guarda los cambios y redirige al cPanel */
     public function save()
     {
+		
         $model = $this->getModel('firewallconfig');
         $jinput = JFactory::getApplication()->input;
-    
+		    
         //El campo 'custom_code' tendrá un formato raw
         $custom_code = $jinput->get("custom_code", null, 'raw');
     
@@ -90,7 +91,7 @@ class SecuritycheckprosControllerFirewallConfig extends SecuritycheckproControll
         
         // Look for super users groups
         $db = JFactory::getDBO();
-        $query = "SELECT id from `#__usergroups` where `title`='Super Users'" ;            
+        $query = "SELECT id from #__usergroups where title='Super Users'" ;            
         $db->setQuery($query);
         $super_user_group = $db->loadResult();
         
@@ -144,40 +145,40 @@ class SecuritycheckprosControllerFirewallConfig extends SecuritycheckproControll
     }    
 
     /* Importa un fichero de ips a la lista pasada como argumento */
-    public function import_blacklist()
+    public function import_list()
     {
         $model = $this->getModel("firewallconfig");
-        $model->import_blacklist();
+        $model->import_list();
             
         parent::display();    
     }
-
-    /* Acciones al pulsar el botón para exportar las Ips en la lista negra */
-    function Export_blacklist()
+	
+	/* Acciones al pulsar el botón para exportar las Ips en la lista negra */
+    function export_list()
     {
-        $db = JFactory::getDBO();
-        
-        // Obtenemos los valores de las distintas opciones del Firewall Web
-        $query = $db->getQuery(true)
-            ->select(array('*'))
-            ->from($db->quoteName('#__securitycheckpro_storage'))
-            ->where("storage_key = 'pro_plugin'");
-        $db->setQuery($query);
-        $params = $db->loadAssocList();
-    
-        if (empty($params)) {
+		$jinput = JFactory::getApplication()->input;
+		    
+        $lista = $jinput->get("export", null);
+		
+		$db = JFactory::getDBO();
+		$database = "#__securitycheckpro_" . $lista;
+		
+		try{
+			$query = "SELECT * FROM " . $database;
+			$db->setQuery($query);
+			$db->execute();
+			$array_ips = $db->loadColumn();		
+		} catch (Exception $e)
+        {    		
+			JFactory::getApplication()->enqueueMessage($e->getMessage(), error);
+        }
+		
+		if (empty($array_ips)) {
             JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_NO_DATA_TO_EXPORT'), error);
         } else
         {
-            
-            // Extraemos los valores de los array...
-            $json_string = array_values($params);
-            
-            // ... y ahora todos los valores del parámetro como array también
-            $blacklist_array = json_decode($json_string[0]['storage_value'], true);
-        
-            // Extraemos la lista en forma ip,ip,ip (texto plano)
-            $blacklist = $blacklist_array['blacklist'];
+			// Extraemos la lista en forma ip,ip,ip (texto plano)
+            $list = implode(",", $array_ips);
                                     
             // Mandamos el contenido al navegador
             $config = JFactory::getConfig();
@@ -185,72 +186,18 @@ class SecuritycheckprosControllerFirewallConfig extends SecuritycheckproControll
             // Remove whitespaces of sitename
             $sitename = str_replace(' ', '', $sitename);
             $timestamp = date('mdy_his');
-            $filename = "securitycheckpro_blacklist_" . $sitename . "_" . $timestamp . ".txt";
+            $filename = "securitycheckpro_" . $lista . "_" . $sitename . "_" . $timestamp . ".txt";
             @ob_end_clean();    
             ob_start();    
             header('Content-Type: text/plain');
             header('Content-Disposition: attachment;filename=' . $filename);
-            print $blacklist;
+            print $list;
             exit();
-        }
+		}
+		 parent::display(); 
+		
+	}   
     
-        parent::display();    
-    }
-
-    /* Importa un fichero de ips a la lista pasada como argumento */
-    public function import_whitelist()
-    {
-        $model = $this->getModel("firewallconfig");
-        $model->import_whitelist();
-            
-        parent::display();    
-    }
-
-    /* Acciones al pulsar el botón para exportar las Ips en la lista negra */
-    function Export_whitelist()
-    {
-        $db = JFactory::getDBO();
-        
-        // Obtenemos los valores de las distintas opciones del Firewall Web
-        $query = $db->getQuery(true)
-            ->select(array('*'))
-            ->from($db->quoteName('#__securitycheckpro_storage'))
-            ->where("storage_key = 'pro_plugin'");
-        $db->setQuery($query);
-        $params = $db->loadAssocList();
-    
-        if (empty($params)) {
-            JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_NO_DATA_TO_EXPORT'), error);
-        } else
-        {
-            
-            // Extraemos los valores de los array...
-            $json_string = array_values($params);
-            
-            // ... y ahora todos los valores del parámetro como array también
-            $blacklist_array = json_decode($json_string[0]['storage_value'], true);
-        
-            // Extraemos la lista en forma ip,ip,ip (texto plano)
-            $blacklist = $blacklist_array['whitelist'];
-                                    
-            // Mandamos el contenido al navegador
-            $config = JFactory::getConfig();
-            $sitename = $config->get('sitename');
-            // Remove whitespaces of sitename
-            $sitename = str_replace(' ', '', $sitename);
-            $timestamp = date('mdy_his');
-            $filename = "securitycheckpro_whitelist_" . $sitename . "_" . $timestamp . ".txt";
-            @ob_end_clean();    
-            ob_start();    
-            header('Content-Type: text/plain');
-            header('Content-Disposition: attachment;filename=' . $filename);
-            print $blacklist;
-            exit();
-        }
-    
-        parent::display();    
-    }
-
     /* Envía un correo de prueba */
     public function send_email_test()
     {

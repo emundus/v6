@@ -1,19 +1,19 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><div class="iframedoc" id="iframedoc"></div>
 <form action="<?php echo hikashop_completeLink('email_history'); ?>" method="post" name="adminForm" id="adminForm">
 <div class="hk-row-fluid">
-	<div class="hkc-md-5"><?php
+	<div class="hkc-md-5 hika_j4_search"><?php
 		echo $this->loadHkLayout('search', array());
 	?></div>
-	<div class="hkc-md-7" style="text-align: right;">
+	<div id="hikashop_listing_filters_id" class="hkc-md-7 hikashop_listing_filters" style="text-align: right;">
 		<?php echo $this->filter_type->display('filter_type',$this->pageInfo->filter->filter_type) ?>
 	</div>
 </div>

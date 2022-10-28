@@ -5,9 +5,9 @@
  * @copyright   (C) 2016 eMundus LLC. All rights reserved.
  * @license     GNU General Public License
  */
-
+use \setasign\Fpdi\Fpdi;
 // ensure this file is being included by a parent file
-defined( '_JEXEC' ) or die( JText::_('RESTRICTED_ACCESS') );
+defined( '_JEXEC' ) or die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 
@@ -36,7 +36,7 @@ class EmundusControllerApplication extends JControllerLegacy
         $cid = JRequest::getVar('uid', null, 'POST', 'array', 0);
         JArrayHelper::toInteger( $cid, 0 );
         if (count( $cid ) == 0) {
-            JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
+            JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_NO_ITEMS_SELECTED' ) );
             $this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
             exit;
         }
@@ -63,7 +63,7 @@ class EmundusControllerApplication extends JControllerLegacy
         // die(var_dump($attachments));
         JArrayHelper::toInteger($attachments, 0);
         if (count($attachments) == 0) {
-            JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
+            JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_NO_ITEMS_SELECTED' ) );
             //$mainframe->redirect($url);
             exit;
         }
@@ -84,7 +84,7 @@ class EmundusControllerApplication extends JControllerLegacy
 
                     $row['applicant_id'] = $upload['user_id'];
                     $row['user_id'] = $user->id;
-                    $row['reason'] = JText::_('ATTACHMENT_DELETED');
+                    $row['reason'] = JText::_('COM_EMUNDUS_ATTACHMENTS_DELETED');
                     $row['comment_body'] = $attachment['value'].' : '.$upload['filename'];
                     $m_application->addComment($row);
 
@@ -123,7 +123,7 @@ class EmundusControllerApplication extends JControllerLegacy
             } else {
                 $row['applicant_id'] = $upload['user_id'];
                 $row['user_id'] = $user->id;
-                $row['reason'] = JText::_('ATTACHMENT_DELETED');
+                $row['reason'] = JText::_('COM_EMUNDUS_ATTACHMENTS_DELETED');
                 $row['comment_body'] = $attachment['value'].' : '.$upload['filename'];
                 $m_application->addComment($row);
 
@@ -131,9 +131,9 @@ class EmundusControllerApplication extends JControllerLegacy
             }
         }
         else {
-                echo JText::_('ACCESS_DENIED').' : '.$attachment['value'].' : '.$upload['filename'];
+            echo JText::_('ACCESS_DENIED').' : '.$attachment['value'].' : '.$upload['filename'];
         }
-       
+
     }
 
     /**
@@ -188,7 +188,7 @@ class EmundusControllerApplication extends JControllerLegacy
 
                         $id = $m_application->uploadAttachment($attachment);
                     } else {
-                        $msg .= JText::_('COM_EMUNDUS_FILETYPE_INVALIDE');
+                        $msg .= JText::_('COM_EMUNDUS_ATTACHMENTS_FILETYPE_INVALIDE');
                     }
 
                     $data .= '"message":"'.$msg.'",';
@@ -267,9 +267,9 @@ class EmundusControllerApplication extends JControllerLegacy
             $result = $m_application->editComment($comment_id, $comment_title, $comment_text);
 
             if ($result)
-                $msg = JText::_('COMMENT_EDITED');
+                $msg = JText::_('COM_EMUNDUS_COMMENTS_COMMENT_EDITED');
             else
-                $msg = JTEXT::_('COMMENT_EDIT_ERROR');
+                $msg = JTEXT::_('COM_EMUNDUS_ERROR_COMMENT_EDIT');
 
             $tab = array('status' => $result, 'msg' => $msg);
         }
@@ -278,9 +278,9 @@ class EmundusControllerApplication extends JControllerLegacy
                 $result = $m_application->editComment($comment_id, $comment_title, $comment_text);
 
                 if ($result)
-                    $msg = JText::_('COMMENT_EDITED');
+                    $msg = JText::_('COM_EMUNDUS_COMMENTS_COMMENT_EDITED');
                 else
-                    $msg = JTEXT::_('COMMENT_EDIT_ERROR');
+                    $msg = JTEXT::_('COM_EMUNDUS_ERROR_COMMENT_EDIT');
 
                 $tab = array('status' => $result, 'msg' => $msg);
             }
@@ -289,24 +289,6 @@ class EmundusControllerApplication extends JControllerLegacy
             }
         }
 
-        /*if (!EmundusHelperAccess::asAccessAction(10, 'u', $user->id, $comment['fnum'])) {
-
-            echo json_encode((object) array('status' => false, 'msg' => JText::_("ACCESS_DENIED")));
-            exit;
-
-        } else {
-
-            $result = $m_application->editComment($comment_id, $comment_title, $comment_text);
-
-            if ($result)
-                $msg = JText::_('COMMENT_EDITED');
-            else
-                $msg = JTEXT::_('COMMENT_EDIT_ERROR');
-
-            echo json_encode((object) array('status' => $result, 'msg' => $msg));
-            exit;
-
-        }*/
 
         echo json_encode((object)$tab);
         exit;
@@ -327,12 +309,12 @@ class EmundusControllerApplication extends JControllerLegacy
 
         if($uid == $user->id && EmundusHelperAccess::asAccessAction(10, 'c', $user->id, $comment['fnum'])){
             $result = $m_application->deleteComment($comment_id, $comment['fnum']);
-            $tab = array('status' => $result, 'msg' => JText::_('COMMENT_DELETED'));
+            $tab = array('status' => $result, 'msg' => JText::_('COM_EMUNDUS_COMMENTS_DELETED'));
 
         }else{
             if(EmundusHelperAccess::asAccessAction(10, 'd', $user->id, $comment['fnum'])){
                 $result = $m_application->deleteComment($comment_id, $comment['fnum']);
-                $tab = array('status' => $result, 'msg' => JText::_('COMMENT_DELETED'));
+                $tab = array('status' => $result, 'msg' => JText::_('COM_EMUNDUS_COMMENTS_DELETED'));
 
             }else{
                 $tab = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
@@ -358,7 +340,7 @@ class EmundusControllerApplication extends JControllerLegacy
             if($result!=1 && $result!=true)
                 $tab = array('status' => $result, 'msg' => JText::_('TAG_DELETE_ERROR'));
             else
-                $tab = array('status' => $result, 'msg' => JText::_('TAG_DELETED'));
+                $tab = array('status' => $result, 'msg' => JText::_('COM_EMUNDUS_TAGS_DELETED'));
         }else{
             if(EmundusHelperAccess::asAccessAction(14, 'd', $user->id, $fnum))
             {
@@ -366,14 +348,14 @@ class EmundusControllerApplication extends JControllerLegacy
                 if($result!=1 && $result!=true)
                     $tab = array('status' => $result, 'msg' => JText::_('TAG_DELETE_ERROR'));
                 else
-                    $tab = array('status' => $result, 'msg' => JText::_('TAG_DELETED'));
+                    $tab = array('status' => $result, 'msg' => JText::_('COM_EMUNDUS_TAGS_DELETED'));
             } else{
                 $result = 0;
                 $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
             }
         }
-       
-       
+
+
         echo json_encode((object)$tab);
         exit;
     }
@@ -395,8 +377,8 @@ class EmundusControllerApplication extends JControllerLegacy
 
         $row['applicant_id'] = $sid;
         $row['user_id'] = $user->id;
-        $row['reason'] = JText::_('DATA_DELETED');
-        $row['comment_body'] = JText::_('LINE').' '.$id.' '.JText::_('FROM').' '.$table;
+        $row['reason'] = JText::_('COM_EMUNDUS_APPLICATION_DATA_DELETED');
+        $row['comment_body'] = JText::_('COM_EMUNDUS_APPLICATION_LINE').' '.$id.' '.JText::_('COM_EMUNDUS_APPLICATION_FROM').' '.$table;
         $m_application->addComment($row);
 
         echo $result;
@@ -427,10 +409,20 @@ class EmundusControllerApplication extends JControllerLegacy
                 $res = true;
                 $menu_application = array();
                 $i=0;
-                //var_dump($res);
+
                 foreach($menus as $k => $menu) {
                     $action = explode('|', $menu['note']);
                     if (EmundusHelperAccess::asAccessAction($action[0], $action[1], $user->id, $fnum)) {
+                        if($action[0] == 36){
+                            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messenger.php');
+
+                            $messenger = new EmundusModelMessenger;
+                            $notifications = $messenger->getNotificationsByFnum($fnum);
+                            if($notifications > 0) {
+                                $menu['notifications'] = $messenger->getNotificationsByFnum($fnum);
+                            }
+                        }
+
                         $menu_application[] = $menu;
                         if ((intval($menu['rgt']) - intval($menu['lft'])) == 1) {
                             $menu_application[$i++]['hasSons'] = false;
@@ -445,7 +437,7 @@ class EmundusControllerApplication extends JControllerLegacy
             $tab = array('status' => $res, 'menus' => $menu_application);
         }
         else {
-            $tab = array('status' => false, 'msg' => JText::_('RESTRICTED_ACCESS'));
+            $tab = array('status' => false, 'msg' => JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
         }
 
         echo json_encode((object)$tab);
@@ -466,6 +458,20 @@ class EmundusControllerApplication extends JControllerLegacy
             {
                 $m_application->deleteAttachment($id);
             }
+
+            // TRACK THE LOGS
+            # get fnum                  $fnum
+            # get the logged user id    JFactory::getUser()->id
+            # get the applicant id      $applicant_id
+            # $applicant_id = $jinput->getString('student_id', null);
+
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+            $user = JFactory::getSession()->get('emundusUser');     # logged user #
+
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+            $mFile = new EmundusModelFiles();
+            $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
             $res->status = true;
         }
         else
@@ -480,14 +486,52 @@ class EmundusControllerApplication extends JControllerLegacy
     public function exportpdf()
     {
         $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->getString('fnum', null);
-        $ids = $jinput->getString('ids', null);
-        $ids = explode(',', $ids);
-        $sid = $jinput->getInt('student_id', null);
-        $form_post = $jinput->getVar('forms', null);
+        $fnum = $jinput->post->getString('fnum', null);
+        $ids = $jinput->post->getString('ids', null);
+        $sid = $jinput->post->getInt('student_id', null);
+        $form_post = $jinput->post->getVar('forms', null);
 
-        if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $fnum))
-        {
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'form.php');
+        $m_form = new EmundusModelForm;
+        $m_profile = new EmundusModelProfile;
+        $m_files = new EmundusModelFiles;
+
+        $fnumInfos = $m_files->getFnumInfos($fnum);
+        $profile = $m_profile->getProfileByCampaign($fnumInfos['campaign_id']);
+
+        if(empty($form_post)){
+            $form_post = array();
+
+            $forms = $m_form->getFormsByProfileId($profile['profile_id']);
+            foreach ($forms as $form){
+                if(!in_array($form->id,$form_post)){
+                    $form_post[] = $form->id;
+                }
+            }
+        }
+
+        if(empty($ids)){
+            $ids = array();
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+            $m_application = new EmundusModelApplication;
+
+            $profile = $m_profile->getProfileByCampaign($fnumInfos['campaign_id']);
+            $attachments_by_profile = $m_form->getDocumentsByProfile($profile['profile_id']);
+            $aids_allowed = array();
+            foreach($attachments_by_profile as $attachment){
+                $aids_allowed[] =  $attachment->attachment_id;
+            }
+            $attachments = $m_application->getAttachmentsByFnum($fnum);
+            foreach($attachments as $attachment){
+                if(in_array($attachment->attachment_id,$aids_allowed)) {
+                    $ids[] = $attachment->id;
+                }
+            }
+        }
+
+        if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $fnum)) {
             $exports = array();
             $tmpArray = array();
 
@@ -506,7 +550,7 @@ class EmundusControllerApplication extends JControllerLegacy
             if (!$isNotOnlyApplicantionForms) {
 	            $res = new stdClass();
 	            $res->status = false;
-	            $res->msg = JText::_('CANNOT_EXPORT_FILETYPE');
+	            $res->msg = JText::_('COM_EMUNDUS_EXPORTS_CANNOT_EXPORT_FILETYPE');
 	            echo json_encode($res);
 	            exit();
             }
@@ -514,6 +558,7 @@ class EmundusControllerApplication extends JControllerLegacy
 
             if (!empty($exports)) {
                 require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'fpdi.php');
+                require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                 $pdf = new ConcatPdf();
                 $pdf->setFiles($exports);
                 $pdf->concat();
@@ -533,7 +578,7 @@ class EmundusControllerApplication extends JControllerLegacy
             {
                 $res = new stdClass();
                 $res->status = false;
-                $res->msg = JText::_('FILES_NOT_FOUND_IN_SERVER');
+                $res->msg = JText::_('COM_EMUNDUS_ATTACHMENTS_FILES_NOT_FOUND_IN_SERVER');
                 echo json_encode($res);
                 exit();
             }
@@ -631,5 +676,142 @@ class EmundusControllerApplication extends JControllerLegacy
             $res->msg = JText::_('YOU_ARE_NOT_ALLOWED_TO_DO_THAT');
             exit();
         }
+    }
+
+    /////////////////////////////////////////////////////////////
+    // used by VueJS com_emundus Attachments component
+
+    public function getuserattachments()
+    {
+        $m_application = $this->getModel('Application');
+
+        $jinput = JFactory::getApplication()->input;
+
+        $user_id = $jinput->getInt('user_id', null);
+
+        $attachments = $m_application->getUserAttachments($user_id);
+
+        echo json_encode($attachments);
+        exit;
+    }
+
+    public function getattachmentsbyfnum()
+    {
+        $m_application = $this->getModel('Application');
+        $jinput = JFactory::getApplication()->input;
+        $fnum = $jinput->getVar('fnum', null);
+
+        $attachments = $m_application->getUserAttachmentsByFnum($fnum, NULL);
+
+        echo json_encode(['status' => $attachments !== false ? true : false, 'attachments' => $attachments]);
+        exit;
+    }
+
+    public function updateattachment()
+    {
+        $update = false;
+        $msg = '';
+
+        // get post data
+        $jinput = JFactory::getApplication()->input;
+        $data = $jinput->post->getArray();
+
+        if (EmundusHelperAccess::asAccessAction(4, 'u', JFactory::getUser()->id, $data['fnum'])) {
+            $m_application = $this->getModel('Application');
+
+            if ($jinput->files->get('file')) {
+                $data['file'] = $jinput->files->get('file');
+            }
+
+            if ($data['fnum'] && $data['user']) {
+                $update = $m_application->updateAttachment($data);
+
+                # get logged user id
+                # get application id
+                # get fnum
+
+                # GET FNUM INFO
+                require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+                $mFile = new EmundusModelFiles();
+                $applicant_id = ($mFile->getFnumInfos($data['fnum']))['applicant_id'];
+
+            } else {
+                $msg = JText::_('INVALID_PARAMETERS');
+            }
+        } else {
+           $msg = JText::_('ACCESS_DENIED');
+        }
+
+        echo json_encode(array('status' => $update, 'msg' => $msg));
+        exit;
+    }
+
+    public function getform() {
+        $jinput = JFactory::getApplication()->input;
+        $current_user = JFactory::getUser();
+
+        $profile = $jinput->getInt('profile', null);
+        $user = $jinput->getInt('user', null);
+        $fnum = $jinput->getString('fnum', null);
+
+        if(EmundusHelperAccess::asAccessAction(1, 'r', $current_user->id, $fnum)) {
+            require_once(JPATH_COMPONENT . DS . 'models' . DS . 'application.php');
+            $m_application = new EmundusModelApplication;
+
+            $form = $m_application->getForms($user, $fnum, $profile);
+            if (!empty($form)) {
+                $tab = array('status' => true, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $form);
+            } else {
+                $tab = array('status' => false, 'msg' => JText::_('FORM_NOT_RETRIEVED'), 'data' => null);
+            }
+        } else {
+            $tab = array('status' => false, 'msg' => JText::_('RESTRICTED_ACCESS'));
+        }
+
+        echo json_encode($tab);
+        exit;
+    }
+
+
+    public function getattachmentpreview()
+    {
+        $m_application = $this->getModel('Application');
+
+        $jinput = JFactory::getApplication()->input;
+        $user = $jinput->getVar('user', null);
+        $filename = $jinput->getVar('filename', null);
+
+        $preview = $m_application->getAttachmentPreview($user, $filename);
+
+        echo json_encode($preview);
+        exit;
+    }
+
+    public function getfilters()
+    {
+        $filters = [];
+        $jinput = JFactory::getApplication()->input;
+        $type = $jinput->getS('type', null);
+        $id = $jinput->getVar('id', null);
+
+        $m_application = $this->getModel('Application');
+        $filters = $m_application->getFilters($type, $id);
+
+        echo json_encode(array('status' => true, 'filters' => $filters));
+        exit;
+    }
+
+    public function mountquery()
+    {
+        $jinput = JFactory::getApplication()->input;
+        $filters = $jinput->getVar('filters', null);
+        $listId = $jinput->getVar('id', null);
+        $filters = json_decode($filters, true);
+
+        $m_application = $this->getModel('Application');
+        $res = $m_application->mountQuery($listId, $filters);
+
+        echo json_encode($res);
+        exit;
     }
 }

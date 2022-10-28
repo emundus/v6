@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -44,6 +44,22 @@ defined('_JEXEC') or die('Restricted access');
 		?></label></dt>
 		<dd><?php
 			echo JHTML::_('hikaselect.booleanlist', 'data[user][user_params][user_custom_fee]', 'onchange="updateCustomFeesPanel(this.value);return false;"', @$this->user->user_params->user_custom_fee);
+		?></dd>
+
+		<dt><label><?php
+			echo JText::_('PARTNER');
+		?></label></dt>
+		<dd><?php
+			echo $this->nameboxType->display(
+				'data[user][user_partner_id]',
+				@$this->user->user_partner_id,
+				hikashopNameboxType::NAMEBOX_SINGLE,
+				'user',
+				array(
+					'delete' => true,
+					'default_text' => '<em>'.JText::_('HIKA_NONE').'</em>',
+				)
+			);
 		?></dd>
 
 	</dl>

@@ -32,11 +32,16 @@ function xframeoptions( $name, $attribs = null, $selected = null, $id=false )
 
 // Cargamos los archivos javascript necesarios
 $document = JFactory::getDocument();
-$document->addScript(JURI::root().'media/system/js/core.js');
+if ( version_compare(JVERSION, '3.20', 'lt') )
+{	
+	$document->addScript(JURI::root().'media/system/js/core.js');
+}
 
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
 // Bootstrap core JavaScript
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
+// Inline javascript to avoid deferring in Joomla 4
+echo '<script src="' . JURI::root(). '/media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>';
+//$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
 
 
 // Add style declaration
@@ -266,17 +271,17 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/protection
                         <blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_REFERRER_POLICY_EXPLAIN') ?></footer></blockquote>
 						
 						<div class="control-group">
-                            <label for="feature_policy" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_FEATURE_POLICY_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_FEATURE_POLICY_TEXT'); ?></label>
+                            <label for="permissions_policy" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_PERMISSIONS_POLICY_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_PERMISSIONS_POLICY_TEXT'); ?></label>
                             <div class="controls controls-row">
-                                <input type="text" class="form-control width_560" id="feature_policy" name="feature_policy" aria-describedby="feture_policy" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_ENTER_POLICY') ?>" value="<?php echo htmlentities($this->protection_config['feature_policy']); ?>">            
-                                <?php if ($this->config_applied['feature_policy'] ) {?>
+                                <input type="text" class="form-control width_560" id="permissions_policy" name="permissions_policy" aria-describedby="feture_policy" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_ENTER_POLICY') ?>" value="<?php echo htmlentities($this->protection_config['permissions_policy']); ?>">            
+                                <?php if ($this->config_applied['permissions_policy'] ) {?>
                                     <span class="help-inline">
                                         <span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
                                     </span>
                                 <?php } ?>
                             </div>
                         </div>
-                        <blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_FEATURE_POLICY_EXPLAIN') ?></footer></blockquote>
+                        <blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_PERMISSIONS_POLICY_EXPLAIN') ?></footer></blockquote>
                     <!-- headers_protection tab end -->
                     </div>
                         
@@ -473,7 +478,7 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/protection
                                 <div class="col-lg-3">
                                     <textarea readonly rows="5" cols="30" name="backend_exceptions" id="backend_exceptions"><?php echo $this->protection_config['backend_exceptions'] ?></textarea>                            
                                 </div>
-                                <div class="col-lg-3" class="margin-left-60 margin-top-50">
+                                <div class="col-lg-6 margin-left-60 margin-top-50">
                                     <div class="input-group">
             <?php 
             if (version_compare(JVERSION, '3.20', 'lt') ) {
@@ -506,7 +511,7 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/protection
                                                     <div class="input-group margin-left-60">
                                                         <input type="text" class="form-control span8" aria-label="exception" name="exception" id="exception" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_YOUR_EXCEPTION_HERE') ?>">
                                                         <div class="input-group-append">
-                                                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo JText::_('COM_SECURITYCHECKPRO_ACTIONS') ?></button>
+                                                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo JText::_('COM_SECURITYCHECKPRO_ACTIONS') ?></button>
                                                             <div class="dropdown-menu">
                                                                 <a class="dropdown-item" id="add_exception_button" href="#backend_exceptions"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_ADD_EXCEPTION_TEXT') ?></a>
                                                                 <a class="dropdown-item" id="delete_exception_button" href="#backend_exceptions"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_DELETE_EXCEPTION_TEXT') ?></a>

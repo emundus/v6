@@ -1,10 +1,58 @@
 # Change Log
 
+## 1.14.1 - 2021-09-18
+
+- [#199](https://github.com/php-http/discovery/pull/199) - Fixes message factory discovery for `laminas-diactoros ^2.7` 
+
+## 1.14.0 - 2021-06-21
+
+- Deprecate puli as it has been unmaintained for a long time and is not compatible with composer 2 https://github.com/php-http/discovery/pull/195
+
+## 1.13.0 - 2020-11-27
+
+- Support discovering PSR-17 factories of `slim/psr7` package https://github.com/php-http/discovery/pull/192
+
+## 1.12.0 - 2020-09-22
+
+- Support discovering HttpClient of `php-http/guzzle7-adapter` https://github.com/php-http/discovery/pull/189
+
+## 1.11.0 - 2020-09-22
+
+- Use correct method name to find Uri Factory in PSR17 https://github.com/php-http/discovery/pull/181
+
+## 1.10.0 - 2020-09-04
+
+- Discover PSR-18 implementation of phalcon
+
+## 1.9.1 - 2020-07-13
+
+### Fixed
+
+- Support PHP 7.4 and 8.0
+
+## 1.9.0 - 2020-07-02
+
+### Added
+
+- Support discovering PSR-18 factories of `guzzlehttp/guzzle` 7+
+
+## 1.8.0 - 2020-06-14
+
+### Added
+
+- Support discovering PSR-17 factories of `guzzlehttp/psr7` package
+- Support discovering PSR-17 factories of `laminas/laminas-diactoros` package
+- `ClassDiscovery::getStrategies()` to retrieve the list of current strategies.
+
+### Fixed
+
+- Ignore exception during discovery when Symfony HttplugClient checks if HTTPlug is available.
+
 ## 1.7.4 - 2020-01-03
 
 ### Fixed
 
-- Improve conditions on Symfony's async HTTPlug client. 
+- Improve conditions on Symfony's async HTTPlug client.
 
 ## 1.7.3 - 2019-12-27
 

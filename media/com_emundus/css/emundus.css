@@ -171,11 +171,6 @@ p.description {
 	height: 100%;
 }*/
 
-#attachment_list fieldset {
-	padding: 5px;
-	margin-top: 5px;
-}
-
 #info_checklist {
 	margin: auto;
 	width: 90%;
@@ -1196,4 +1191,17 @@ fieldset {
 footer#g-footer {
 	background: transparent;
 	border-top: 1px solid #bbb;
+}
+
+@media all and (max-width:  767px) {
+		.view-featured #em-panel .ui.grid {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.view-featured #em-panel .ui.grid .column.element_home_emundus {
+			width: 100%;
+		}
 }

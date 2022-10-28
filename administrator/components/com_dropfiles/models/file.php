@@ -106,6 +106,18 @@ class DropfilesModelFile extends JModelAdmin
             }
 
             return $modelOnedrive->save($data);
+        } elseif ($category->type === 'onedrivebusiness') {
+            $modelOnedriveBusiness = $this->getInstance('onedrivebusinessfiles', 'DropfilesModel');
+            $file                  = $modelOnedriveBusiness->getFile($data['id']);
+            if ($file) {
+                $data['file_id']   = $file->file_id;
+                $data['id']        = $file->id;
+
+                $onedrivebusiness  = new DropfilesOneDriveBusiness();
+                $onedrivebusiness->saveOnDriveBusinessFileInfos($data);
+            }
+
+            return $modelOnedriveBusiness->save($data);
         } else {
             return parent::save($data);
         }
@@ -134,8 +146,12 @@ class DropfilesModelFile extends JModelAdmin
         } elseif ($type === 'onedrive') {
             $modelOnedrive = $this->getInstance('onedrivefiles', 'DropfilesModel');
             $data          = $modelOnedrive->getFile($app->input->getString('id'));
+        } elseif ($type === 'onedrivebusiness') {
+            $modelOnedriveBusiness = $this->getInstance('onedrivebusinessfiles', 'DropfilesModel');
+            $data          = $modelOnedriveBusiness->getFile($app->input->getString('id'));
         } else {
-            // Check the session for previously entered form data.
+            // Check the session for previously entered form data
+
             $data = $this->getItem();
         }
 
@@ -158,7 +174,7 @@ class DropfilesModelFile extends JModelAdmin
         if (!$dbo->setQuery($query)) {
             return false;
         }
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
         return $dbo->loadObject();
@@ -183,7 +199,7 @@ class DropfilesModelFile extends JModelAdmin
         if (!$dbo->setQuery($query)) {
             return false;
         }
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
         return true;

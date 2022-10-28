@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.3.0
+ * @version    4.6.2
  * @author     hikashop.com
- * @copyright  (C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 (function() {
@@ -46,7 +46,7 @@ var hikashopCheckout = {
 		o.xRequest(url, params, function(x,p) {
 			el = d.getElementById("hikashop_checkout_" + type_clean + "_" + step + "_" + id);
 			t.setLoading(el, false);
-			o.updateElem(el, x.responseText);
+			window.hikashop.updateElem(el, x.responseText);
 			t.handleEnter(type_clean, step, id);
 			t.checkScroll();
 			o.fireAjax('checkoutBlockRefresh', {'type': type_clean, 'cid': step, 'pos': id});
@@ -114,7 +114,7 @@ var hikashopCheckout = {
 			}
 			el = d.getElementById("hikashop_checkout_" + type_clean + "_" + step + "_" + id);
 			t.setLoading(el, false);
-			o.updateElem(el, x.responseText);
+			window.hikashop.updateElem(el, x.responseText);
 			t.handleEnter(type_clean, step, id);
 			t.checkScroll();
 			o.fireAjax('checkoutBlockRefresh', {'type': type_clean, 'cid': step, 'pos': id});

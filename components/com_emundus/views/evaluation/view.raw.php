@@ -138,9 +138,9 @@ class EmundusViewEvaluation extends JViewLegacy
 
 				// Columns
 				$defaultElements = $this->get('DefaultElements');
-				$datas = array(array('check' => '#', 'name' => JText::_('APPLICATION_FILES'), 'c.status' => JText::_('STATUS')));
+				$datas = array(array('check' => '#', 'name' => JText::_('COM_EMUNDUS_FILES_APPLICATION_FILES'), 'c.status' => JText::_('COM_EMUNDUS_STATUS')));
 				$fl = array();
-                $fl['jos_emundus_evaluations.user'] = JText::_('EVALUATOR');
+                $fl['jos_emundus_evaluations.user'] = JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR');
 			    // Get eval crieterion
 				if (count($defaultElements) > 0) {
 					foreach ($defaultElements as $key => $elt) {
@@ -162,16 +162,16 @@ class EmundusViewEvaluation extends JViewLegacy
 						$col = explode('.', $col);
 						switch ($col[0]) {
 							case 'evaluators':
-								$datas[0]['EVALUATORS'] = JText::_('EVALUATORS');
+								$datas[0]['EVALUATORS'] = JText::_('COM_EMUNDUS_EVALUATION_EVALUATORS');
 								$colsSup['evaluators'] = $h_files->createEvaluatorList($col[1], $m_evaluation);
 								break;
 							case 'overall':
-								$datas[0]['overall'] = JText::_('EVALUATION_OVERALL');
+								$datas[0]['overall'] = JText::_('COM_EMUNDUS_EVALUATIONS_OVERALL');
 								$colsSup['overall'] = array();
 								break;
 							case 'tags':
 								$taggedFile = $m_evaluation->getTaggedFile();
-								$datas[0]['eta.id_tag'] = JText::_('TAGS');
+								$datas[0]['eta.id_tag'] = JText::_('COM_EMUNDUS_TAGS');
 								$colsSup['id_tag'] = array();
 								break;
 							case 'access':
@@ -243,11 +243,11 @@ class EmundusViewEvaluation extends JViewLegacy
 								if ($formid > 0 && !empty($value)) {
 
 									if ($evaluators_can_see_other_eval || EmundusHelperAccess::asAccessAction(5,'r',$this->_user->id)) {
-										$link_view = '<a href="'.$form_url_view.$user['evaluation_id'].'" target="_blank" data-remote="'.$form_url_view.$user['evaluation_id'].'" id="em_form_eval_'.$i.'-'.$user['evaluation_id'].'"><span class="glyphicon icon-eye-open" title="'.JText::_('DETAILS').'">  </span></a>';
+										$link_view = '<a href="'.$form_url_view.$user['evaluation_id'].'" target="_blank" data-remote="'.$form_url_view.$user['evaluation_id'].'" id="em_form_eval_'.$i.'-'.$user['evaluation_id'].'"><span class="glyphicon icon-eye-open" title="'.JText::_('COM_EMUNDUS_DETAILS').'">  </span></a>';
 									}
 
 									if (EmundusHelperAccess::asAccessAction(5,'u',$this->_user->id)) {
-										$link_edit = '<a href="'.$form_url_edit.$user['evaluation_id'].'" target="_blank"><span class="glyphicon icon-edit" title="'.JText::_('EDIT').'"> </span></a>';
+										$link_edit = '<a href="'.$form_url_edit.$user['evaluation_id'].'" target="_blank"><span class="glyphicon icon-edit" title="'.JText::_('COM_EMUNDUS_ACTIONS_EDIT').'"> </span></a>';
 									}
 
 									$userObj->val = @$link_view.' '.@$link_edit.' '.$value;
@@ -330,7 +330,7 @@ class EmundusViewEvaluation extends JViewLegacy
 					}
 
 				} else {
-					$datas = JText::_('NO_RESULT');
+					$datas = JText::_('COM_EMUNDUS_NO_RESULT');
 				}
 
 				/* Get the values from the state object that were inserted in the model's construct function */
@@ -339,6 +339,8 @@ class EmundusViewEvaluation extends JViewLegacy
 			    $this->assignRef('lists', $lists);
 			    $pagination = $this->get('Pagination');
 			    $this->assignRef('pagination', $pagination);
+			    $pageNavigation = $this->get('PageNavigation');
+			    $this->assignRef('pageNavigation', $pageNavigation);
 				$this->assignRef('accessObj', $objAccess);
 				$this->assignRef('colsSup', $colsSup);
 				$this->assignRef('users', $users);

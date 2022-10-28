@@ -260,13 +260,17 @@ body.sidenav2-toggled .navbar2-sidenav2-tooltip.show {
   color: #868e96; }
 
 #mainNav.navbar2-dark .navbar2-collapse2 .navbar2-sidenav > .nav2-item > .nav2-link {
-  color: #868e96; }
+  color: #868e96;
+text-decoration: none !important;
+  }
   #mainNav.navbar2-dark .navbar2-collapse2 .navbar2-sidenav > .nav2-item > .nav2-link:hover {
     color: #adb5bd; }
 
 #mainNav.navbar2-dark .navbar2-collapse2 .navbar2-sidenav > .nav2-item .sidenav2-second-level > li > a,
 #mainNav.navbar2-dark .navbar2-collapse2 .navbar2-sidenav > .nav2-item .sidenav2-third-level > li > a {
-  color: #868e96; }
+  color: #868e96;
+text-decoration: none !important;
+  }
   #mainNav.navbar2-dark .navbar2-collapse2 .navbar2-sidenav > .nav2-item .sidenav2-second-level > li > a:focus, #mainNav.navbar2-dark .navbar2-collapse2 .navbar2-sidenav > .nav2-item .sidenav2-second-level > li > a:hover,
   #mainNav.navbar2-dark .navbar2-collapse2 .navbar2-sidenav > .nav2-item .sidenav2-third-level > li > a:focus,
   #mainNav.navbar2-dark .navbar2-collapse2 .navbar2-sidenav > .nav2-item .sidenav2-third-level > li > a:hover {

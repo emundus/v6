@@ -95,6 +95,10 @@ if (!$can_edit_until_deadline) {
     }
 
 }
+JPluginHelper::importPlugin('emundus');
+$dispatcher = JEventDispatcher::getInstance();
+$dispatcher->trigger('onBeforeSubmitFile', [$student->id, $student->fnum]);
+$dispatcher->trigger('callEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
 $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted="'.$now.'", status=1 WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
 $db->setQuery($query);
@@ -113,6 +117,10 @@ try {
 } catch (Exception $e) {
     JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 }
+
+$dispatcher->trigger('onAfterSubmitFile', [$student->id, $student->fnum]);
+$dispatcher->trigger('callEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
+
 $student->candidature_posted = 1;
 
 // Send emails defined in trigger
@@ -170,7 +178,7 @@ if ($export_pdf == 1) {
 
         // Build filename from tags, we are using helper functions found in the email model, not sending emails ;)
         $post = array('FNUM' => $fnum, 'CAMPAIGN_YEAR' => $fnumInfo['year'], 'PROGRAMME_CODE' => $fnumInfo['training']);
-        $tags = $m_emails->setTags($student->id, $post);
+        $tags = $m_emails->setTags($student->id, $post, $fnum, '', $application_form_name.$export_path);
         $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
         $application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
 

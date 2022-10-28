@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -11,7 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 <form action="<?php echo hikashop_completeLink('user'); ?>" method="post" name="adminForm" id="adminForm">
 
 <div class="hk-row-fluid">
-	<div class="hkc-md-5"><?php
+	<div class="hkc-md-5 hika_j4_search"><?php
 		echo $this->loadHkLayout('search', array());
 	?></div>
 	<div class="hkc-md-7 hikashop_listing_filters"><?php
@@ -74,7 +74,6 @@ $count = 7 + count($this->fields);
 		<tr>
 			<td colspan="<?php echo $count; ?>">
 				<?php echo $this->pagination->getListFooter(); ?>
-				<?php echo $this->pagination->getResultsCounter(); ?>
 			</td>
 		</tr>
 	</tfoot>
@@ -85,13 +84,13 @@ $count = 7 + count($this->fields);
 	foreach($this->rows as &$row) {
 ?>
 		<tr class="row<?php echo $k; ?>">
-			<td class="hk_center"><?php
+			<td><?php
 				echo $this->pagination->getRowOffset($i);
 			?></td>
-			<td class="hk_center"><?php
+			<td><?php
 				echo JHTML::_('grid.id', $i, (int)$row->user_id);
 			?></td>
-			<td class="hk_center">
+			<td>
 <?php if($this->manage){ ?>
 				<a href="<?php echo hikashop_completeLink('user&task=edit&cid='.(int)$row->user_id); ?>" title="<?php echo JText::_('HIKA_EDIT'); ?>">
 					<i class="fas fa-pen"></i>
@@ -117,9 +116,9 @@ $count = 7 + count($this->fields);
 
 		if($this->pageInfo->filter->filter_partner == 1) {
 ?>
-			<td class="hk_center">
+			<td>
 				<?php
-				if(bccomp($row->user_unpaid_amount,0,5)){
+				if(bccomp(sprintf('%F',$row->user_unpaid_amount),0,5)){
 					$config =& hikashop_config();
 					if(!$config->get('allow_currency_selection',0) || empty($row->user_currency_id)){
 						$row->user_currency_id =  $config->get('partner_currency',1);
@@ -129,7 +128,7 @@ $count = 7 + count($this->fields);
 				?>
 			</td>
 <?php }?>
-			<td width="1%" class="hk_center"><?php
+			<td width="1%"><?php
 				echo (int)$row->user_id;
 			?></td>
 		</tr>

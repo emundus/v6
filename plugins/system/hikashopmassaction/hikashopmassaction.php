@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -333,7 +333,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 		var url = "<?php echo hikashop_completeLink('massaction&task=displayassociate&tmpl=component',false,false,true); ?>";
 		var data = "cid=<?php echo hikashop_getCID(); ?>&current_filter="+k+"&csv_path=" + encodeURIComponent(document.getElementById("productfilter"+k+"csvImport_path_value").value);
 		if(data != ""){
-			window.Oby.xRequest(url, {update: target, mode: "POST", data: data});
+			window.hikashop.xRequest(url, {update: target, mode: "POST", data: data});
 		}
 	}
 	function hikashop_switchmode(el,k) {
@@ -432,6 +432,19 @@ class plgSystemHikashopmassaction extends JPlugin {
 				$actions_html[$value->name] =  $massactionClass->initDefaultDiv($value, $key, $type, $table->table, $loadedData, $output);
 			}
 
+			$actions['phpCode']=JText::_('RUN_PHP_CODE');
+			$loadedData->massaction_actions['__num__'] = new stdClass();
+			$loadedData->massaction_actions['__num__']->type = $table->table;
+			$loadedData->massaction_actions['__num__']->data = array('type' => '','value' => '','operation' => '');
+			$loadedData->massaction_actions['__num__']->name = 'phpCode';
+			$loadedData->massaction_actions['__num__']->html = '';
+			foreach($loadedData->massaction_actions as $key => &$value) {
+				if($value->name != 'phpCode' || ($table->table != $loadedData->massaction_table && is_int($key)))
+					continue;
+				$output = ' <textarea name="action['.$table->table.']['.$key.'][phpCode][code]" rows="15" cols="100">'. htmlspecialchars(@$value->data['code'], ENT_COMPAT, 'UTF-8').'</textarea>';
+				$actions_html[$value->name] =  $massactionClass->initDefaultDiv($value, $key, $type, $table->table, $loadedData, $output);
+			}
+
 		if(is_array($dispTables)){
 
 			$loadedData->massaction_actions['__num__'] = new stdClass();
@@ -480,7 +493,8 @@ class plgSystemHikashopmassaction extends JPlugin {
 							if(isset($value->data[$relatedTable]) && isset($value->data[$relatedTable][$key2])){
 								$checked='checked="checked"';
 							}
-							$output .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_displayResults_'.$relatedTable.'Column_'.$key2.'" name="action['.$table->table.']['.$key.'][displayResults]['.$relatedTable.']['.$key2.']" value="'.$key2.'" /><label style="width: 100%;" for="action_'.$table->table.'_'.$key.'_displayResults_'.$relatedTable.'Column_'.$key2.'">'.$key2.'</label><br/>';
+							$output .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_displayResults_'.$relatedTable.'Column_'.$key2.'" name="action['.$table->table.']['.$key.'][displayResults]['.$relatedTable.']['.$key2.']" value="'.$key2.'" />'.
+							'<label for="action_'.$table->table.'_'.$key.'_displayResults_'.$relatedTable.'Column_'.$key2.'">'.$key2.'</label>';
 						}
 						if($relatedTable == 'order'){
 							$key2 = 'order_tax_amount';
@@ -488,13 +502,15 @@ class plgSystemHikashopmassaction extends JPlugin {
 							if(isset($value->data[$relatedTable]) && isset($value->data[$relatedTable][$key2])){
 								$checked='checked="checked"';
 							}
-							$output .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_displayResults_'.$relatedTable.'Column_'.$key2.'" name="action['.$table->table.']['.$key.'][displayResults]['.$relatedTable.']['.$key2.']" value="'.$key2.'" /><label style="width: 100%;" for="action_'.$table->table.'_'.$key.'_displayResults_'.$relatedTable.'Column_'.$key2.'">'.$key2.'</label><br/>';
+							$output .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_displayResults_'.$relatedTable.'Column_'.$key2.'" name="action['.$table->table.']['.$key.'][displayResults]['.$relatedTable.']['.$key2.']" value="'.$key2.'" />'.
+							'<label for="action_'.$table->table.'_'.$key.'_displayResults_'.$relatedTable.'Column_'.$key2.'">'.$key2.'</label>';
 							$key2 = 'order_tax_namekey';
 							$checked='';
 							if(isset($value->data[$relatedTable]) && isset($value->data[$relatedTable][$key2])){
 								$checked='checked="checked"';
 							}
-							$output .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_displayResults_'.$relatedTable.'Column_'.$key2.'" name="action['.$table->table.']['.$key.'][displayResults]['.$relatedTable.']['.$key2.']" value="'.$key2.'" /><label style="width: 100%;" for="action_'.$table->table.'_'.$key.'_displayResults_'.$relatedTable.'Column_'.$key2.'">'.$key2.'</label><br/>';
+							$output .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_displayResults_'.$relatedTable.'Column_'.$key2.'" name="action['.$table->table.']['.$key.'][displayResults]['.$relatedTable.']['.$key2.']" value="'.$key2.'" />'.
+							'<label for="action_'.$table->table.'_'.$key.'_displayResults_'.$relatedTable.'Column_'.$key2.'">'.$key2.'</label>';
 						}
 						$output .= '</div>';
 						$margin = 'margin-left: 20px;';
@@ -512,7 +528,8 @@ class plgSystemHikashopmassaction extends JPlugin {
 								if(isset($value->data['characteristic'][$characteristic->characteristic_value])){
 									$checked='checked="checked"';
 								}
-								$customCheckboxes .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_displayResults_characteristicColumn_'.$characteristic->characteristic_value.'" name="action['.$table->table.']['.$key.'][displayResults][characteristic]['.$characteristic->characteristic_value.']" value="'.$characteristic->characteristic_value.'" /><label style="width: 100%;" for="action_'.$table->table.'_'.$key.'_displayResults_characteristicColumn_'.$characteristic->characteristic_value.'">'.$characteristic->characteristic_value.'</label><br/>';
+								$customCheckboxes .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_displayResults_characteristicColumn_'.$characteristic->characteristic_value.'" name="action['.$table->table.']['.$key.'][displayResults][characteristic]['.$characteristic->characteristic_value.']" value="'.$characteristic->characteristic_value.'" />'.
+								'<label for="action_'.$table->table.'_'.$key.'_displayResults_characteristicColumn_'.$characteristic->characteristic_value.'">'.$characteristic->characteristic_value.'</label>';
 							}
 							$customCheckboxes .= '</div>';
 						}
@@ -527,7 +544,10 @@ class plgSystemHikashopmassaction extends JPlugin {
 									$checked='checked="checked"';
 								}
 								if(!in_array($related->product_related_type, $displayed))
-									$customCheckboxes .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_displayResults_relatedColumn_'.$related->product_related_type.'" name="action['.$table->table.']['.$key.'][displayResults][related]['.$related->product_related_type.']" value="'.$related->product_related_type.'" /><label style="width: 100%;" for="action_'.$table->table.'_'.$key.'_displayResults_relatedColumn_'.$related->product_related_type.'">'.$related->product_related_type.'</label><br/>';
+									$customCheckboxes .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_displayResults_relatedColumn_'.$related->product_related_type.'" name="action['.$table->table.']['.$key.'][displayResults][related]['.$related->product_related_type.']" value="'.$related->product_related_type.'" />'.
+										'<label for="action_'.$table->table.'_'.$key.'_displayResults_relatedColumn_'.$related->product_related_type.'">'.
+											$related->product_related_type.
+										'</label>';
 								$displayed[] = $related->product_related_type;
 							}
 							$customCheckboxes .= '</div>';
@@ -540,7 +560,9 @@ class plgSystemHikashopmassaction extends JPlugin {
 							$checked='checked="checked"';
 						}
 						$customCheckboxes .= '<div class="hika_massaction_checkbox">';
-						$customCheckboxes .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_displayResults_usergroupsColumn_title" name="action['.$table->table.']['.$key.'][displayResults][usergroups][title]" value="usergroups" /><label style="width: 100%;" for="action_'.$table->table.'_'.$key.'_displayResults_usergroupsColumn_title">'.JText::_('GROUP_NAME').'</label><br/>';
+						$customCheckboxes .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_displayResults_usergroupsColumn_title" name="action['.$table->table.']['.$key.'][displayResults][usergroups][title]" value="usergroups" />'.
+							'<label for="action_'.$table->table.'_'.$key.'_displayResults_usergroupsColumn_title">'.JText::_('GROUP_NAME').
+						'</label>';
 						$customCheckboxes .= '</div>';
 						break;
 				}
@@ -597,23 +619,33 @@ class plgSystemHikashopmassaction extends JPlugin {
 							if(isset($value->data[$relatedTable]) && isset($value->data[$relatedTable][$key2])){
 								$checked='checked="checked"';
 							}
-							$output .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_exportCsv_'.$relatedTable.'Column_'.$key2.'" name="action['.$table->table.']['.$key.'][exportCsv]['.$relatedTable.']['.$key2.']" value="'.$key2.'" /><label style="width: 100%;" for="action_'.$table->table.'_'.$key.'_exportCsv_'.$relatedTable.'Column_'.$key2.'">'.$key2.'</label><br/>';
+							$output .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_exportCsv_'.$relatedTable.'Column_'.$key2.'" name="action['.$table->table.']['.$key.'][exportCsv]['.$relatedTable.']['.$key2.']" value="'.$key2.'" />'.
+								'<label for="action_'.$table->table.'_'.$key.'_exportCsv_'.$relatedTable.'Column_'.$key2.'">'.$key2.'</label>';
 						}
 
 						if($relatedTable == 'order'){
 							$key2 = 'order_full_tax';
+							if(isset($value->data[$relatedTable]) && isset($value->data[$relatedTable][$key2])){
+								$checked='checked="checked"';
+								$output .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_exportCsv_'.$relatedTable.'Column_'.$key2.'" name="action['.$table->table.']['.$key.'][exportCsv]['.$relatedTable.']['.$key2.']" value="'.$key2.'" />'.
+									'<label for="action_'.$table->table.'_'.$key.'_exportCsv_'.$relatedTable.'Column_'.$key2.'">'.$key2.'</label>';
+							}
+
+							$key2 = 'order_tax_amount';
 							$checked='';
 							if(isset($value->data[$relatedTable]) && isset($value->data[$relatedTable][$key2])){
 								$checked='checked="checked"';
 							}
-							$output .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_exportCsv_'.$relatedTable.'Column_'.$key2.'" name="action['.$table->table.']['.$key.'][exportCsv]['.$relatedTable.']['.$key2.']" value="'.$key2.'" /><label style="width: 100%;" for="action_'.$table->table.'_'.$key.'_exportCsv_'.$relatedTable.'Column_'.$key2.'">'.$key2.'</label><br/>';
+							$output .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_exportCsv_'.$relatedTable.'Column_'.$key2.'" name="action['.$table->table.']['.$key.'][exportCsv]['.$relatedTable.']['.$key2.']" value="'.$key2.'" />'.
+								'<label for="action_'.$table->table.'_'.$key.'_exportCsv_'.$relatedTable.'Column_'.$key2.'">'.$key2.'</label>';
 						}
 						if($relatedTable == 'price'){
 							$checked='';
 							if(isset($value->data[$relatedTable]) && !empty($value->data[$relatedTable]['price_value_with_tax'])){
 								$checked='checked="checked"';
 							}
-							$output .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_exportCsv_'.$relatedTable.'Column_price_value_with_tax" name="action['.$table->table.']['.$key.'][exportCsv]['.$relatedTable.'][price_value_with_tax]" value="price_value_with_tax" /><label style="width: 100%;" for="action_'.$table->table.'_'.$key.'_exportCsv_'.$relatedTable.'Column_price_value_with_tax">price_value_with_tax</label><br/>';
+							$output .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_exportCsv_'.$relatedTable.'Column_price_value_with_tax" name="action['.$table->table.']['.$key.'][exportCsv]['.$relatedTable.'][price_value_with_tax]" value="price_value_with_tax" />'.
+								'<label for="action_'.$table->table.'_'.$key.'_exportCsv_'.$relatedTable.'Column_price_value_with_tax">price_value_with_tax</label>';
 						}
 						$output .= '</div>';
 						$margin = 'margin-left: 20px;';
@@ -630,7 +662,8 @@ class plgSystemHikashopmassaction extends JPlugin {
 							if(isset($value->data['files'][$imageColumn->Field])){
 								$checked='checked="checked"';
 							}
-							$customCheckboxes .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_exportCsv_filesColumn_'.$imageColumn->Field.'" name="action['.$table->table.']['.$key.'][exportCsv][files]['.$imageColumn->Field.']" value="'.$imageColumn->Field.'" /><label style="width: 100%;" for="action_'.$table->table.'_'.$key.'_exportCsv_filesColumn_'.$imageColumn->Field.'">'.$imageColumn->Field.'</label><br/>';
+							$customCheckboxes .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_exportCsv_filesColumn_'.$imageColumn->Field.'" name="action['.$table->table.']['.$key.'][exportCsv][files]['.$imageColumn->Field.']" value="'.$imageColumn->Field.'" />'.
+								'<label for="action_'.$table->table.'_'.$key.'_exportCsv_filesColumn_'.$imageColumn->Field.'">'.$imageColumn->Field.'</label>';
 						}
 						$customCheckboxes .= '</div>';
 
@@ -642,7 +675,8 @@ class plgSystemHikashopmassaction extends JPlugin {
 							if(isset($value->data['images'][$imageColumn->Field])){
 								$checked='checked="checked"';
 							}
-							$customCheckboxes .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_exportCsv_imagesColumn_'.$imageColumn->Field.'" name="action['.$table->table.']['.$key.'][exportCsv][images]['.$imageColumn->Field.']" value="'.$imageColumn->Field.'" /><label style="width: 100%;" for="action_'.$table->table.'_'.$key.'_exportCsv_imagesColumn_'.$imageColumn->Field.'">'.$imageColumn->Field.'</label><br/>';
+							$customCheckboxes .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_exportCsv_imagesColumn_'.$imageColumn->Field.'" name="action['.$table->table.']['.$key.'][exportCsv][images]['.$imageColumn->Field.']" value="'.$imageColumn->Field.'" />'.
+								'<label for="action_'.$table->table.'_'.$key.'_exportCsv_imagesColumn_'.$imageColumn->Field.'">'.$imageColumn->Field.'</label>';
 						}
 						$customCheckboxes .= '</div>';
 
@@ -655,7 +689,8 @@ class plgSystemHikashopmassaction extends JPlugin {
 								if(isset($value->data['characteristic'][$characteristic->characteristic_value])){
 									$checked='checked="checked"';
 								}
-								$customCheckboxes .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_exportCsv_characteristicColumn_'.$characteristic->characteristic_value.'" name="action['.$table->table.']['.$key.'][exportCsv][characteristic]['.$characteristic->characteristic_value.']" value="'.$characteristic->characteristic_value.'" /><label style="width: 100%;" for="action_'.$table->table.'_'.$key.'_exportCsv_characteristicColumn_'.$characteristic->characteristic_value.'">'.$characteristic->characteristic_value.'</label><br/>';
+								$customCheckboxes .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_exportCsv_characteristicColumn_'.$characteristic->characteristic_value.'" name="action['.$table->table.']['.$key.'][exportCsv][characteristic]['.$characteristic->characteristic_value.']" value="'.$characteristic->characteristic_value.'" />'.
+									'<label for="action_'.$table->table.'_'.$key.'_exportCsv_characteristicColumn_'.$characteristic->characteristic_value.'">'.$characteristic->characteristic_value.'</label>';
 							}
 							$customCheckboxes .= '</div>';
 						}
@@ -670,7 +705,8 @@ class plgSystemHikashopmassaction extends JPlugin {
 									$checked='checked="checked"';
 								}
 								if(!in_array($related->product_related_type, $displayed))
-									$customCheckboxes .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_exportCsv_relatedColumn_'.$related->product_related_type.'" name="action['.$table->table.']['.$key.'][exportCsv][related]['.$related->product_related_type.']" value="'.$related->product_related_type.'" /><label style="width: 100%;" for="action_'.$table->table.'_'.$key.'_exportCsv_relatedColumn_'.$related->product_related_type.'">'.$related->product_related_type.'</label><br/>';
+									$customCheckboxes .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_exportCsv_relatedColumn_'.$related->product_related_type.'" name="action['.$table->table.']['.$key.'][exportCsv][related]['.$related->product_related_type.']" value="'.$related->product_related_type.'" />'.
+									'<label for="action_'.$table->table.'_'.$key.'_exportCsv_relatedColumn_'.$related->product_related_type.'">'.$related->product_related_type.'</label>';
 								$displayed[] = $related->product_related_type;
 							}
 							$customCheckboxes .= '</div>';
@@ -683,7 +719,8 @@ class plgSystemHikashopmassaction extends JPlugin {
 							$checked='checked="checked"';
 						}
 						$customCheckboxes .= '<div class="hika_massaction_checkbox">';
-						$customCheckboxes .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_exportCsv_usergroupsColumn_title" name="action['.$table->table.']['.$key.'][exportCsv][usergroups][title]" value="usergroups" /><label style="width: 100%;" for="action_'.$table->table.'_'.$key.'_exportCsv_usergroupsColumn_title">'.JText::_('GROUP_NAME').'</label><br/>';
+						$customCheckboxes .= '<input type="checkbox" '.$checked.' id="action_'.$table->table.'_'.$key.'_exportCsv_usergroupsColumn_title" name="action['.$table->table.']['.$key.'][exportCsv][usergroups][title]" value="usergroups" />'.
+						'<label for="action_'.$table->table.'_'.$key.'_exportCsv_usergroupsColumn_title">'.JText::_('GROUP_NAME').'</label>';
 						$customCheckboxes .= '</div>';
 						break;
 				}
@@ -693,7 +730,23 @@ class plgSystemHikashopmassaction extends JPlugin {
 				$checked='';
 				if(isset($value->data['formatExport']['format']) && $value->data['formatExport']['format']=='xls')
 					$checked='checked="checked"';
-				$output .='<input type="radio" id="action'.$table->table.''.$key.'exportCsvformatExportformatcsv" name="action['.$table->table.']['.$key.'][exportCsv][formatExport][format]" checked value="csv"> <label for="action'.$table->table.''.$key.'exportCsvformatExportformatcsv">'.JText::_('CSV').'</label> <input type="radio" id="action'.$table->table.''.$key.'exportCsvformatExportformatxls" name="action['.$table->table.']['.$key.'][exportCsv][formatExport][format]" '.$checked.' value="xls"> <label for="action'.$table->table.''.$key.'exportCsvformatExportformatxls">'.JText::_('XLS').'</label>';
+				$checked2='';
+				if(isset($value->data['formatExport']['format']) && $value->data['formatExport']['format']=='xlsx')
+					$checked2='checked="checked"';
+				$output .='
+				<input type="radio" id="action'.$table->table.''.$key.'exportCsvformatExportformatcsv" name="action['.$table->table.']['.$key.'][exportCsv][formatExport][format]" checked value="csv"> 
+				<label for="action'.$table->table.''.$key.'exportCsvformatExportformatcsv">'.JText::_('CSV').'</label> 
+				<input type="radio" id="action'.$table->table.''.$key.'exportCsvformatExportformatxls" name="action['.$table->table.']['.$key.'][exportCsv][formatExport][format]" '.$checked.' value="xls"> 
+				<label for="action'.$table->table.''.$key.'exportCsvformatExportformatxls">'.JText::_('XLS').'</label> 
+				<input type="radio" id="action'.$table->table.''.$key.'exportCsvformatExportformatxlsx" name="action['.$table->table.']['.$key.'][exportCsv][formatExport][format]" '.$checked2.' value="xlsx"> 
+				<label for="action'.$table->table.''.$key.'exportCsvformatExportformatxlsx">'.JText::_('XLSX').'</label>';
+
+				if($table->table == 'order') {
+					$checked='';
+					if(isset($value->data['formatExport']['oneProductPerRow']))
+						$checked='checked="checked"';
+					$output .= '<br/>'.'<input type="checkbox" id="action'.$table->table.''.$key.'exportCsvOneProductPerRow" name="action['.$table->table.']['.$key.'][exportCsv][formatExport][oneProductPerRow]" '. $checked.' value="1"> <label for="action'.$table->table.''.$key.'exportCsvOneProductPerRow">'.JText::_('ONE_PRODUCT_PER_ROW').'</label>';
+				}
 				$output .= '<br/>'.JText::_('EXPORT_PATH').': <input type="text" name="action['.$table->table.']['.$key.'][exportCsv][formatExport][path]" value="'.$value->data['formatExport']['path'].'" />';
 				$output .= '<br/>'.JText::_('TO_ADDRESS').': <input type="text" name="action['.$table->table.']['.$key.'][exportCsv][formatExport][email]" value="'.$value->data['formatExport']['email'].'" /> '.JText::_('FILL_PATH_TO_USE_EMAIL');
 				$output .= '<div style="clear:both;"></div>';
@@ -803,7 +856,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 
 			}
 
-			if($loadedData->massaction_table == 'order'){
+			if($table->table == 'order'){
 
 				$loadedData->massaction_actions['__num__'] = new stdClass();
 				$loadedData->massaction_actions['__num__']->type = $table->table;
@@ -887,7 +940,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 				}
 			}
 
-			if($loadedData->massaction_table == 'product'){
+			if($table->table == 'product'){
 
 
 				$loadedData->massaction_actions['__num__'] = new stdClass();
@@ -905,7 +958,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 
 					$categories=array();
 					if(!empty($value->data) && !empty($value->data['value'])){
-						$query = 'SELECT category_id, category_name FROM '.hikashop_table('category').' WHERE category_id IN ('.implode($value->data['value'],',').')';
+						$query = 'SELECT category_id, category_name FROM '.hikashop_table('category').' WHERE category_id IN ('.implode(',', $value->data['value']).')';
 						$database->setQuery($query);
 						$categories = $database->loadColumn();
 					}
@@ -1082,7 +1135,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 
 			}
 
-			if($loadedData->massaction_table == 'order' || $loadedData->massaction_table == 'user'){
+			if($table->table == 'order' || $table->table == 'user'){
 				$loadedData->massaction_actions['__num__'] = new stdClass();
 				$loadedData->massaction_actions['__num__']->type = $table->table;
 				$loadedData->massaction_actions['__num__']->name = 'changeGroup';
@@ -1873,6 +1926,41 @@ class plgSystemHikashopmassaction extends JPlugin {
 			$massactionClass->_trigger('onHikashopCronTrigger'.ucfirst($period));
 		}
 		if(count($massactionClass->report)) $messages = array_merge($messages,$massactionClass->report);
+	}
+	function onProcessOrderMassActionphpCode(&$elements,&$action,$k) {
+		$this->_processPHP($elements,$action);
+	}
+	function onProcessProductMassActionphpCode(&$elements,&$action,$k){
+		$this->_processPHP($elements,$action);
+	}
+	function onProcessAddressMassActionphpCode(&$elements,&$action,$k){
+		$this->_processPHP($elements,$action);
+	}
+	function onProcessUserMassActionphpCode(&$elements,&$action,$k){
+		$this->_processPHP($elements,$action);
+	}
+	function onProcessCategoryMassActionphpCode(&$elements,&$action,$k){
+		$this->_processPHP($elements,$action);
+	}
+	function _processPHP(&$elements, &$action) {
+		if(!empty($action['code'])) {
+			$db = JFactory::getDBO();
+			foreach($elements as $e) {
+				$attributes = get_object_vars($e);
+				$code = $action['code'];
+				foreach($attributes as $key => $value) {
+					if(is_object($value) || is_array($value))
+						continue;
+					$code = str_replace('{'.$key.'}', $value, $code);
+				}
+				try {
+					eval($code);
+				} catch (Error $e) {
+					$app = JFactory::getApplication();
+					$app->enqueueMessage(JText::sprintf('ACTION_PHP_CODE_IS_WRONG', $e->getMessage()) , 'error');
+				}
+			}
+		}
 	}
 
 	function onProcessOrderMassActionmysqlQuery(&$elements,&$action,$k) {

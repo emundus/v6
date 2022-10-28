@@ -1,19 +1,19 @@
-<?php 
-JHTML::_('behavior.modal'); 
+<?php
+JHTML::_('behavior.modal');
 JHTML::stylesheet( 'media/com_emundus/css/emundus.css' );
-defined('_JEXEC') or die('Restricted access'); 
+defined('_JEXEC') or die('Restricted access');
 $Itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 ?>
 
 <div id="profilebasics" class="em-container-profiles">
-    <h2><?php echo $this->profile->label; ?> <a href="index.php?option=com_fabrik&view=list&listid=67"><?php echo '['.JText::_('BACK_TO_PROFILE').']';?></a></h2>
+    <h2><?php echo $this->profile->label; ?> <a href="index.php?option=com_fabrik&view=list&listid=67"><?php echo '['.JText::_('COM_EMUNDUS_PROFILES_BACK_TO_PROFILE').']';?></a></h2>
     <table class="table-striped em-container-profiles-table">
         <tr>
-            <th> <?php echo JText::_('PUBLISHED_FOR_APP'); ?> </th>
+            <th> <?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_PUBLISHED_FOR_APP'); ?> </th>
             <td> <?php echo $this->profile->published>0?JText::_('Yes'):JText::_('No'); ?> </td>
         </tr>
         <tr>
-            <th> <?php echo JText::_('DESCRIPTION'); ?> </th>
+            <th> <?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_DESCRIPTION'); ?> </th>
             <td> <?php echo $this->profile->description; ?> </td>
         </tr>
     </table>
@@ -21,22 +21,22 @@ $Itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
         <input type="hidden" name="pid" value="<?php echo $this->profile->id; ?>" />
         <input type="hidden" name="Itemid" value="<?php echo $Itemid; ?>" />
 
-        <h2><?php echo JText::_('ATTACHMENTS'); ?>  <a href="index.php?option=com_fabrik&view=list&listid=36"><?php echo '['.JText::_('SETUP_ATTACHMENTS').']';?></a></h2>
+        <h2><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_ATTACHMENTS'); ?>  <a href="index.php?option=com_fabrik&view=list&listid=36"><?php echo '['.JText::_('COM_EMUNDUS_ATTACHMENTS_SETUP_ATTACHMENTS').']';?></a></h2>
         <div class="table-responsive">
             <table id="attachmentlist" class="table-striped em-form-documents-table">
                 <thead>
                     <tr height="30px">
-                        <th><?php echo JText::_('TITLE'); ?></th>
-                        <th align="center"> <?php echo JText::_('USED'); ?> </th>
-                        <th align="center"> <?php echo JText::_('DISPLAYED'); ?> </th>
-                        <th align="center"> <?php echo JText::_('REQUIRED'); ?> </th>
+                        <th><?php echo JText::_('COM_EMUNDUS_FORM_TITLE'); ?></th>
+                        <th align="center"> <?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_USED'); ?> </th>
+                        <th align="center"> <?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_DISPLAYED'); ?> </th>
+                        <th align="center"> <?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_REQUIRED'); ?> </th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($this->attachments as $attachment) :?>
                         <tr>
                             <td>
-                                <a href="index.php?option=com_fabrik&view=form&formid=34&rowid=<?php echo $attachment->id; ?>&listid=36">[<?php echo JText::_('EDIT'); ?>]</a>
+                                <a href="index.php?option=com_fabrik&view=form&formid=34&rowid=<?php echo $attachment->id; ?>&listid=36">[<?php echo JText::_('COM_EMUNDUS_ACTIONS_EDIT'); ?>]</a>
                                 <?php echo $attachment->value; ?> (<?php echo $attachment->allowed_types; ?>)
                                 <input type="hidden" name="aid[]" value="<?php echo $attachment->id; ?>" />
                             </td>
@@ -49,7 +49,7 @@ $Itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
                         </tr>
                     <?php endforeach; ?>
                     <tr>
-                        <td colspan="5" align="center"><input type="submit" class="btn btn-warning" value="<?php echo JText::_('UPDATE'); ?>" /></td>
+                        <td colspan="5" align="center"><input type="submit" class="btn btn-warning" value="<?php echo JText::_('COM_EMUNDUS_ACCESS_UPDATE'); ?>" /></td>
                     </tr>
                 </tbody>
             </table>

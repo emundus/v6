@@ -29,6 +29,7 @@ class DropfilesViewFrontlist extends JViewLegacy
     public function display($tpl = null)
     {
         JLoader::register('DropfilesFilesHelper', JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/files.php');
+        JLoader::register('DropfilesHelper', JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/dropfiles.php');
         $path_dropfilesgoogle = JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesGoogle.php';
         JLoader::register('DropfilesGoogle', $path_dropfilesgoogle);
 
@@ -39,9 +40,12 @@ class DropfilesViewFrontlist extends JViewLegacy
         }
 
         // Get active menu
+        $this->menuItemParams = null;
         $currentMenuItem = $app->getMenu()->getActive();
-        // Get params for active menu
-        $this->menuItemParams = $currentMenuItem->params;
+        if ($currentMenuItem) {
+            // Get params for active menu
+            $this->menuItemParams = $currentMenuItem->getParams();
+        }
 
         $modelFiles = JModelLegacy::getInstance('Frontfiles', 'dropfilesModel');
         $modelConfig = JModelLegacy::getInstance('Frontconfig', 'dropfilesModel');
@@ -81,7 +85,6 @@ class DropfilesViewFrontlist extends JViewLegacy
 
             $categories = $modelCategories->getItems();
             $params = $modelConfig->getParams($category->id);
-
             if ($dropfiles_params->get('categoryrestriction', 'accesslevel') === 'accesslevel') {
                 $modelFiles->setState('filter.access', true);
                 if (!in_array((int)$category->access, $user->getAuthorisedViewLevels())) {
@@ -160,6 +163,20 @@ class DropfilesViewFrontlist extends JViewLegacy
 
                 $modelOnedrive = JModelLegacy::getInstance('Frontonedrive', 'dropfilesModel');
                 $files = $modelOnedrive->getItems($category->cloud_id, $ordering, $direction);
+            } elseif ($category->type === 'onedrivebusiness') {
+                if (isset($params->params->ordering)) {
+                    $ordering = $params->params->ordering;
+                } else {
+                    $ordering = 'ordering';
+                }
+                if (isset($params->params->orderingdir)) {
+                    $direction = $params->params->orderingdir;
+                } else {
+                    $direction = 'asc';
+                }
+
+                $modelOnedriveBusiness = JModelLegacy::getInstance('Frontonedrivebusiness', 'dropfilesModel');
+                $files = $modelOnedriveBusiness->getItems($category->cloud_id, $ordering, $direction);
             } else {
                 if (isset($params->params->ordering)) {
                     $modelFiles->setState('list.ordering', $params->params->ordering);
@@ -169,12 +186,31 @@ class DropfilesViewFrontlist extends JViewLegacy
                 }
                 //to make storeid different to avoid duplicate results
                 $modelFiles->setState('list.limit', 1000 * $cat);
+
+                $subparams   = (array) $params->params;
+                $lstAllFile  = null;
+                $ordering    = (isset($params->params->ordering)) ? $params->params->ordering : '';
+                $orderingdir = (isset($params->params->orderingdir)) ? $params->params->orderingdir : '';
+                if (!empty($subparams) && isset($subparams['refToFile'])) {
+                    if (isset($subparams['refToFile'])) {
+                        $listCatRef = $subparams['refToFile'];
+                        $lstAllFile = $this->getAllFileRef($modelFiles, $listCatRef, $ordering, $orderingdir);
+                    }
+                }
+
                 $files = $modelFiles->getItems();
+                if (!empty($lstAllFile) && $lstAllFile !== null) {
+                    $files = array_merge($lstAllFile, $files);
+                    if (isset($params->params->ordering) && isset($params->params->orderingdir)) {
+                        $ordering   = $params->params->ordering;
+                        $direction  = $params->params->orderingdir;
+                        $files      = DropfilesHelper::orderingMultiCategoryFiles($files, $ordering, $direction);
+                    }
+                }
             }
             $files = DropfilesFilesHelper::addInfosToFile($files, $category);
 
-
-            if (!empty($params)) {
+            if (!empty($params) && !empty($params->theme)) {
                 $theme = $params->theme;
             } else {
                 $theme = 'default';
@@ -195,8 +231,8 @@ class DropfilesViewFrontlist extends JViewLegacy
                 }
             }
             JPluginHelper::importPlugin('dropfilesthemes');
-            $dispatcher = JDispatcher::getInstance();
-            $result = $dispatcher->trigger('onShowFrontCategory', array(array('files' => $files,
+            $app = JFactory::getApplication();
+            $result = $app->triggerEvent('onShowFrontCategory', array(array('files' => $files,
                 'category' => $category,
                 'categories' => $categories,
                 'params' => is_object($params) ? $params->params : '',
@@ -206,10 +242,14 @@ class DropfilesViewFrontlist extends JViewLegacy
             ));
 
             if (!empty($result[0])) {
-                JHtml::_('behavior.framework');
+                if (DropfilesBase::isJoomla40()) {
+                    JHtml::_('behavior.core');
+                } else {
+                    JHtml::_('behavior.framework', true);
+                }
 
                 $doc = JFactory::getDocument();
-                $doc->addStyleSheet(JURI::base('true') . '/components/com_dropfiles/assets/css/front.css');
+                $doc->addStyleSheet(JURI::base('true') . '/components/com_dropfiles/assets/css/front_ver5.4.css');
                 if ((int) $componentParams->get('usegoogleviewer', 1) === 1) {
                     $path_dropfilesbase = JPATH_ADMINISTRATOR . '/components/com_droppics/classes/dropfilesBase.php';
                     JLoader::register('DropfilesBase', $path_dropfilesbase);
@@ -225,6 +265,13 @@ class DropfilesViewFrontlist extends JViewLegacy
                 $doc->addScriptDeclaration('dropfilesRootUrl="' . JURI::root(true) . '/";');
                 $this->filesHtml .= $result[0];
             }
+        }
+
+        if ($this->menuItemParams && $this->menuItemParams->get('menu-meta_keywords')) {
+            $this->document->setMetadata('keywords', $this->menuItemParams->get('menu-meta_keywords'));
+        }
+        if ($this->menuItemParams && $this->menuItemParams->get('menu-meta_description')) {
+            $this->document->setDescription($this->menuItemParams->get('menu-meta_description'));
         }
 
         parent::display($tpl);
@@ -250,5 +297,27 @@ class DropfilesViewFrontlist extends JViewLegacy
         }
 
         return $ob;
+    }
+
+    /**
+     * Get all file referent
+     *
+     * @param object $model       Files model
+     * @param array  $listCatRef  List category
+     * @param string $ordering    Ordering
+     * @param string $orderingdir Ordering direction
+     *
+     * @return array
+     */
+    private function getAllFileRef($model, $listCatRef, $ordering, $orderingdir)
+    {
+        $lstAllFile = array();
+        foreach ($listCatRef as $key => $value) {
+            if (is_array($value) && !empty($value)) {
+                $lstFile    = $model->getFilesRef($key, $value, $ordering, $orderingdir);
+                $lstAllFile = array_merge($lstFile, $lstAllFile);
+            }
+        }
+        return $lstAllFile;
     }
 }

@@ -46,6 +46,7 @@ echo <<<EOT
 	box-shadow: 0px 0px 5px 0px lightgrey;
 }
 
+
 .tabData thead {
 	background:white!important;
 }
@@ -53,7 +54,7 @@ echo <<<EOT
 #g-container-main {
 	padding-left:5%!important;
 	padding-right:5%!important;
-	background-color:#fff;
+	background-color:#f8f8f8;
 }
 
 .g-content h1::after {
@@ -90,8 +91,8 @@ echo <<<EOT
 }
 
 .fabrikButtonsContainer a .caret {
-	border-top-color: #de6339!important;
-	border-bottom-color: #de6339!important;
+	border-top-color: #de6339;
+	border-bottom-color: #de6339;
 }
 
 .input-prepend.input-append select, .input-prepend.input-append .add-on {

@@ -86,25 +86,25 @@ class EmundusHelperMessages {
         $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
 		if ($captcha !== 1) {
-			JError::raiseWarning( 500, JText::_( 'ERROR_NOT_A_VALID_POST' ) );
+			JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_NOT_A_VALID_POST' ) );
 			$mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
 			return;
 		}
 
 		if (count( $users_id ) == 0) {
-			JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
+			JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_NO_ITEMS_SELECTED' ) );
 			$mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
 			return;
 		}
 
 		if ($subject == '') {
-			JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_SUBJECT' ) );
+			JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_YOU_MUST_PROVIDE_SUBJECT' ) );
 			$mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
 			return;
 		}
 
 		if ($message == '') {
-			JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_A_MESSAGE' ) );
+			JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_YOU_MUST_PROVIDE_A_MESSAGE' ) );
 			$mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
 			return;
 		}
@@ -174,7 +174,7 @@ class EmundusHelperMessages {
                 'SITE_URL' => JURI::base(),
                 'USER_EMAIL' => $user->email
 			];
-            $tags = $m_emails->setTags($user->id, $post);
+            $tags = $m_emails->setTags($user->id, $post, null, '', $from.$fromname.$subject.$message);
 
             $from 		= preg_replace($tags['patterns'], $tags['replacements'], $from);
             $from_id 	= $user->id;
@@ -224,7 +224,7 @@ class EmundusHelperMessages {
                         echo 'Error database: ' . $e;
                         die();
                     }
-                    $info .= "<hr>" . ($i + 1) . " : " . $user->email . " " . JText::_('SENT');
+                    $info .= "<hr>" . ($i + 1) . " : " . $user->email . " " . JText::_('COM_EMUNDUS_APPLICATION_SENT');
                     if ($i % 10 == 0) {
                         @set_time_limit(10800);
                         usleep(1000);
@@ -232,7 +232,7 @@ class EmundusHelperMessages {
                 }
             }
         }
-		$mainframe->redirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent', JText::_('REPORTS_MAILS_SENT').$info, 'message');
+		$mainframe->redirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent', JText::_('COM_EMUNDUS_EMAILS_REPORTS_MAILS_SENT').$info, 'message');
 	}
 }
 ?>

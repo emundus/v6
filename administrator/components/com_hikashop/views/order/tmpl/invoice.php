@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -30,6 +30,19 @@ defined('_JEXEC') or die('Restricted access');
 				<br/>
 			</td>
 		</tr>
+<?php 
+if (!empty($this->image_address_path)) { 
+?>
+		<tr>
+			<td>
+				<div class="hika_invoice_img">
+					<img src="<?php echo $this->image_address_path; ?>" style="<?php echo $this->img_style_css; ?>">
+</div>
+			</td>
+		</tr>
+<?php
+}
+?>
 		<tr>
 			<td>
 				<div style="float:right;width:10em;padding-top:20px">
@@ -122,9 +135,22 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 	$null = null;
 	$type = 'display:back_shipping_invoice=1';
+	$shipping_invoice = 'shipping_';
 	if($this->invoice_type=='full'){
 		$type = 'display:back_invoice=1';
+		$shipping_invoice = '';
 	}
+		$weight = bccomp(sprintf('%F',$this->order->order_weight), 0, 3);
+	$unit_weight = false;
+	if($weight && $this->config->get('show_'.$shipping_invoice.'invoice_unit_weight',0))
+		$unit_weight = true;
+	$total_weight = false;
+	if($weight && $this->config->get('show_'.$shipping_invoice.'invoice_total_weight',0))
+		$total_weight = true;
+	$order_weight = false;
+	if($weight && $this->config->get('show_'.$shipping_invoice.'invoice_weight',0))
+		$order_weight = true;
+
 	if(hikashop_level(1)){
 		$productFields = $this->fieldsClass->getFields($type,$null,'product');
 		if(!empty($productFields)) {
@@ -144,7 +170,7 @@ defined('_JEXEC') or die('Restricted access');
 				foreach($productFields as $field){
 					$colspan++;
 ?>
-								<th class="title" ><?php
+								<th class="hikashop_order_item_name_title title" ><?php
 									echo $this->fieldsClass->getFieldName($field);
 								?></th>
 <?php
@@ -153,19 +179,35 @@ defined('_JEXEC') or die('Restricted access');
 		}
 	}
 ?>
-<?php if($this->invoice_type=='full'){?>
-								<th class="title"><?php
+<?php
+	if($unit_weight) {
+		$colspan++;
+		echo '<th class="hikashop_order_item_unit_weight_title title">' . JText::_('PRODUCT_WEIGHT') . '</th>';
+	}
+	if($this->invoice_type=='full') {
+?>
+								<th class="hikashop_order_item_unit_price_title title"><?php
 									echo JText::_('UNIT_PRICE');
 								?></th>
-<?php } ?>
-								<th class="title titletoggle"><?php
+<?php
+	}
+ ?>
+								<th class="hikashop_order_item_quantity_title title titletoggle"><?php
 									echo JText::_('PRODUCT_QUANTITY');
 									?></th>
-<?php if($this->invoice_type=='full'){?>
-								<th class="title titletoggle"><?php
+<?php
+	if($total_weight) {
+		$colspan++;
+		echo '<th class="hikashop_order_item_total_weight_title title titletoggle">' . JText::_('TOTAL_WEIGHT') . '</th>';
+	}
+	if($this->invoice_type=='full') {
+?>
+								<th class="hikashop_order_item_total_price_title title titletoggle"><?php
 									echo JText::_('PRICE');
 								?></th>
-<?php } ?>
+<?php
+	}
+?>
 							</tr>
 						</thead>
 						<tbody>
@@ -185,7 +227,7 @@ defined('_JEXEC') or die('Restricted access');
 			continue;
 ?>
 							<tr class="row<?php echo $k; ?>">
-								<td>
+								<td class="hikashop_order_item_image_value">
 <?php
 		$image_path = (!empty($product->images) ? @$product->images[0]->file_path : '');
 		$img = $imageHelper->getThumbnail($image_path, array('width' => $width, 'height' => $height), $image_options);
@@ -194,7 +236,7 @@ defined('_JEXEC') or die('Restricted access');
 		}
 ?>
 								</td>
-								<td>
+								<td class="hikashop_order_item_name_value">
 									<?php echo $product->order_product_name; ?>
 									<p class="hikashop_order_product_custom_item_fields">
 <?php
@@ -234,6 +276,7 @@ defined('_JEXEC') or die('Restricted access');
 			foreach($this->order->products as $j => $optionElement) {
 				if($optionElement->order_product_option_parent_id != $product->order_product_id) continue;
 
+				$product->order_product_weight += $optionElement->order_product_weight;
 				$product->order_product_price +=$optionElement->order_product_price;
 				$product->order_product_tax +=$optionElement->order_product_tax;
 				$product->order_product_total_price+=$optionElement->order_product_total_price;
@@ -259,7 +302,7 @@ defined('_JEXEC') or die('Restricted access');
 								</td>
 <?php
 		if($this->config->get('show_code')) {
-			echo '<td><p class="hikashop_product_code_invoice">'.$product->order_product_code.'</p></td>';
+			echo '<td class="hikashop_order_item_code_value"><p class="hikashop_product_code_invoice">'.$product->order_product_code.'</p></td>';
 		}
 
 		if(hikashop_level(1)) {
@@ -276,10 +319,12 @@ defined('_JEXEC') or die('Restricted access');
 				}
 			}
 		}
-
+		if($unit_weight) {
+			echo '<td class="hikashop_order_item_weight_value">' . rtrim(rtrim($product->order_product_weight,'0'),',.').' '.JText::_($product->order_product_weight_unit) . '</td>';
+		}
 		if($this->invoice_type=='full'){
 ?>
-								<td><?php
+								<td class="hikashop_order_item_unit_price_value"><?php
 									if($this->config->get('price_with_tax')){
 										echo $this->currencyHelper->format($product->order_product_price+$product->order_product_tax,$this->order->order_currency_id);
 									}else{
@@ -289,11 +334,16 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 		}
 ?>
-								<td class="hk_center"><?php
+								<td class="hk_center hikashop_order_item_quantity_value"><?php
 									echo $product->order_product_quantity;
 								?></td>
+<?php
+		if($total_weight) {
+			echo '<td class="hikashop_order_item_total_weight_value">' . rtrim(rtrim($product->order_product_weight*$product->order_product_quantity,'0'),',.').' '.JText::_($product->order_product_weight_unit) . '</td>';
+		}
+?>
 <?php if($this->invoice_type=='full') { ?>
-								<td><?php
+								<td class="hikashop_order_item_total_price_value"><?php
 									if($this->config->get('price_with_tax')){
 										echo $this->currencyHelper->format($product->order_product_total_price,$this->order->order_currency_id);
 									}else{
@@ -494,17 +544,20 @@ defined('_JEXEC') or die('Restricted access');
 			<td>
 <?php
 		if(!empty($this->shipping)) {
-			echo JText::_('HIKASHOP_SHIPPING_METHOD').' : ';
+			echo '<p class="hikashpo_order_shipping_method">'.JText::_('HIKASHOP_SHIPPING_METHOD').' : ';
 			if(is_string($this->order->order_shipping_method))
 				echo $this->shipping->getName($this->order->order_shipping_method, $this->order->order_shipping_id);
 			else
 				echo implode(', ', $this->order->order_shipping_method);
-			echo '<br/>';
+			echo '</p>';
 		}
 ?>
 <?php
 		if(!empty($this->payment)) {
-			echo JText::_('HIKASHOP_PAYMENT_METHOD').' : '.$this->payment->getName($this->order->order_payment_method,$this->order->order_payment_id);
+			echo '<p class="hikashpo_order_payment_method">'.JText::_('HIKASHOP_PAYMENT_METHOD').' : '.$this->payment->getName($this->order->order_payment_method,$this->order->order_payment_id).'</p>';
+		}
+		if($order_weight) {
+			echo '<p class="hikashpo_order_total_weight">'.JText::_('HIKASHOP_TOTAL_ORDER_WEIGHT') . ' : ' . rtrim(rtrim($this->order->order_weight,'0'),',.').' '.JText::_($this->order->order_weight_unit).'</p>';
 		}
 ?>
 			</td>
@@ -541,6 +594,10 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 		}
 	}
+
+	if($order_weight) {
+		echo '<tr><td><p class="hikashpo_order_total_weight">'.JText::_('HIKASHOP_TOTAL_ORDER_WEIGHT') . ' : ' . rtrim(rtrim($this->order->order_weight,'0'),',.').' '.JText::_($this->order->order_weight_unit).'</p></td></tr>';
+	}
 ?>
 <?php
 	JPluginHelper::importPlugin('hikashop');
@@ -558,4 +615,10 @@ defined('_JEXEC') or die('Restricted access');
 		</tr>
 	</table>
 </div>
+<?php
+$navigator_check = hikashop_getNavigator();
+if ($navigator_check["name"] != "Apple Safari") {
+?>
 <div style="page-break-after:always"></div>
+<?php
+}

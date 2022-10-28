@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -79,7 +79,7 @@ defined('_JEXEC') or die('Restricted access');
 	echo
 	'<script type="text/javascript">
 		function modifyLinesData(id_replaced,dataid,table,id,tab_id){
-			var t = typeOf(linesData[tab_id][dataid][table]);
+			var t = typeof(linesData[tab_id][dataid][table]);
 			if(t == "array"){
 				for(var i in linesData[tab_id][dataid][table]){
 					if(inArray(id_replaced,linesData[tab_id][dataid][table]) && linesData[tab_id][dataid][table][i] == id_replaced){
@@ -122,7 +122,7 @@ defined('_JEXEC') or die('Restricted access');
 			if(data != "") data += "&";
 			data += columnsData[tab_id][columnname];
 			if(dataid != ""){
-				var t = typeOf(linesData[tab_id][dataid][tablename]);
+				var t = typeof(linesData[tab_id][dataid][tablename]);
 				if(t == "Array" || t == "array"){
 					for(var i = 0; i < linesData[tab_id][dataid][tablename].length; i++){
 						data += "&" + encodeURI("hikashop[ids][]") + "=" + encodeURIComponent(linesData[tab_id][dataid][tablename][i]);
@@ -133,7 +133,7 @@ defined('_JEXEC') or die('Restricted access');
 				data += "&" + encodeURI("hikashop[dataid]") + "=" + encodeURIComponent(dataid);
 				data += "&" + encodeURI("hikashop[tabid]") + "=" + encodeURIComponent(tab_id);
 			}
-			window.Oby.xRequest(url, {update: target, mode: \'POST\', data: data});
+			window.hikashop.xRequest(url, {update: target, mode: \'POST\', data: data});
 		}
 		function onClick(target,columnname,dataid,tablename,tab_id){
 			if(target.rel == \'no edit\'){
@@ -170,7 +170,7 @@ defined('_JEXEC') or die('Restricted access');
 				if(data != "") data += "&";
 				data += columnsData[tab_id][columnname];
 				if(dataid != ""){
-					var t = typeOf(linesData[tab_id][dataid][tablename]);
+					var t = typeof(linesData[tab_id][dataid][tablename]);
 					if(t == "Array" || t == "array"){
 						for(var i = 0; i < linesData[tab_id][dataid][tablename].length; i++){
 							data += "&" + encodeURI("hikashop[ids][]") + "=" + encodeURIComponent(linesData[tab_id][dataid][tablename][i]);
@@ -181,7 +181,7 @@ defined('_JEXEC') or die('Restricted access');
 					data += "&" + encodeURI("hikashop[dataid]") + "=" + encodeURIComponent(dataid);
 					data += "&" + encodeURI("hikashop[tabid]") + "=" + encodeURIComponent(tab_id);
 				}
-				window.Oby.xRequest(url, {update: target, mode: \'POST\', data: data});
+				window.hikashop.xRequest(url, {update: target, mode: \'POST\', data: data});
 			}
 		}
 		function inArray(needle, haystack) {
@@ -198,7 +198,7 @@ defined('_JEXEC') or die('Restricted access');
 			var ids = new Array();
 			for(var i in linesData[tab_id]){
 				ids[i] = new Array();
-				var t = typeOf(linesData[tab_id][i][table]);
+				var t = typeof(linesData[tab_id][i][table]);
 				if(t == "Array" || t == "array"){
 					for(var j = 0; j < linesData[tab_id][i][table].length; j++){
 						if(typeof linesData[tab_id][i][table][j] !== "undefined"){
@@ -241,7 +241,7 @@ defined('_JEXEC') or die('Restricted access');
 					}
 				}
 			}
-			window.Oby.xRequest(url, {update: target, mode: \'POST\', data: data});
+			window.hikashop.xRequest(url, {update: target, mode: \'POST\', data: data});
 		}
 	</script>';
 ?>

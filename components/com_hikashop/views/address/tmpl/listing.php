@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -196,7 +196,7 @@ window.addressMgr.loading = function(load, el) {
 window.addressMgr.get = function(elem, target) {
 	var t = this;
 	t.loading();
-	window.Oby.xRequest(elem.getAttribute('href'), {update: target}, function(){
+	window.hikashop.xRequest(elem.getAttribute('href'), {update: target}, function(){
 		t.loading(false);
 	});
 	document.getElementById('hikashop_address_listing').scrollIntoView();
@@ -205,7 +205,7 @@ window.addressMgr.get = function(elem, target) {
 window.addressMgr.setDefault = function(elem, type) {
 	var t = this;
 	t.loading(true, 'hikashop_user_addresses_default');
-	window.Oby.xRequest('<?php echo hikashop_completeLink('address&task=setdefault', 'ajax'); ?>', {mode: 'POST', data: 'address_default=' + elem.options[elem.selectedIndex].value + '&address_type=' + type + '&<?php echo hikashop_getFormToken(); ?>=1'}, function(){
+	window.hikashop.xRequest('<?php echo hikashop_completeLink('address&task=setdefault', 'ajax'); ?>', {mode: 'POST', data: 'address_default=' + elem.options[elem.selectedIndex].value + '&address_type=' + type + '&<?php echo hikashop_getFormToken(); ?>=1'}, function(){
 		t.loading(false, 'hikashop_user_addresses_default');
 	});
 	return false;
@@ -214,7 +214,7 @@ window.addressMgr.form = function(elem, target) {
 	var t = this;
 	t.loading();
 	var data = window.Oby.getFormData(target);
-	window.Oby.xRequest(elem.getAttribute('href'), {update: target, mode: 'POST', data: data}, function(){
+	window.hikashop.xRequest(elem.getAttribute('href'), {update: target, mode: 'POST', data: data}, function(){
 		t.loading(false);
 	});
 	return false;
@@ -223,7 +223,7 @@ window.addressMgr.new = function(type) {
 	var t = this, w = window, o = w.Oby;
 	t.loading();
 	var data = o.encodeFormData({'address_type': type});
-	o.xRequest('<?php echo hikashop_completeLink('address&task=edit&cid=0', 'ajax'); ?>', {update: 'hikashop_user_addresses_show', mode: 'POST', data: data}, function(){
+	window.hikashop.xRequest('<?php echo hikashop_completeLink('address&task=edit&cid=0', 'ajax'); ?>', {update: 'hikashop_user_addresses_show', mode: 'POST', data: data}, function(){
 		t.loading(false);
 	});
 	document.getElementById('hikashop_address_listing').scrollIntoView();
@@ -235,7 +235,7 @@ window.addressMgr.delete = function(el, cid) {
 	var t = this, w = window, o = w.Oby, d = document;
 	t.loading();
 	var data = o.encodeFormData({'<?php echo hikashop_getFormToken(); ?>': 1});
-	o.xRequest(el.href, {update: 'hikashop_user_addresses_show', mode: 'POST', data: data}, function(xhr) {
+	window.hikashop.xRequest(el.href, {update: 'hikashop_user_addresses_show', mode: 'POST', data: data}, function(xhr) {
 		t.loading(false);
 	});
 	return false;

@@ -60,24 +60,24 @@ if ($application_fee == 1) {
 
     $fnumInfos = $m_files->getFnumInfos($student->fnum);
     if (count($fnumInfos) > 0) {
-        $paid = count($m_application->getHikashopOrder($fnumInfos))>0?1:0;
 
-        if (!$paid) {
+        if (empty($m_application->getHikashopOrder($fnumInfos))) {
 
             if (isset($scholarship_document)) {
 				// See if applicant has uploaded the required scolarship form.
 				try {
 					$query = 'SELECT count(id) FROM #__emundus_uploads
 								WHERE attachment_id = '.$scholarship_document.'
-								AND fnum LIKE '.$db->Quote($user->fnum);
+								AND fnum LIKE '.$db->Quote($student->fnum);
 					$db->setQuery($query);
 					$uploaded_document = $db->loadResult();
 				} catch (Exception $e) {
 					JLog::Add('Error in plugin/isApplicationCompleted at SQL query : '.$query, Jlog::ERROR, 'plugins');
 				}
 				// If he hasn't, no discount for him.
-				if ($uploaded_document == 0)
-					$scholarship_document = NULL;
+				if ($uploaded_document == 0) {
+                    $scholarship_document = NULL;
+                }
 			}
 
             $checkout_url = $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($m_application->getHikashopCheckoutUrl($student->profile.$scholarship_document))).'&usekey=fnum&rowid='.$user->fnum;
@@ -218,7 +218,7 @@ if ($export_pdf == 1) {
 
         // Build filename from tags, we are using helper functions found in the email model, not sending emails ;)
         $post = array('FNUM' => $fnum);
-        $tags = $m_emails->setTags($student->id, $post);
+        $tags = $m_emails->setTags($student->id, $post, $fnum, '', $application_form_name);
         $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
         $application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
 

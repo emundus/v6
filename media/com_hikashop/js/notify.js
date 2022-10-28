@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.3.0
+ * @version    4.6.2
  * @author     hikashop.com
- * @copyright  (C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 /* Notify.js - http://notifyjs.com/ Copyright (c) 2015 MIT */
@@ -477,6 +477,7 @@
 		} else {
 			datas[blankFieldName] = data;
 		}
+
 		for (name in datas) {
 			d = datas[name];
 			type = this.userFields[name];
@@ -580,7 +581,7 @@
 	});
 
 	addStyle("metro", {
-		html: '<div><div class="image" data-notify-html="image"/><div class="text-wrapper"><div class="title" data-notify-html="title"/><div class="text" data-notify-html="text"/></div></div>',
+		html: '<div><div class="image" data-notify-html="image"></div><div class="text-wrapper"><div class="title" data-notify-html="title"></div><div class="text" data-notify-html="text"></div></div></div>',
 		classes: {
 			error: {
 				"color": "#a94442 !important",
@@ -614,7 +615,7 @@
 		}
 	});
 	addStyle("metro-lite", {
-		html: '<div><div class="text-wrapper"><div class="title" data-notify-html="title"/><div class="text" data-notify-html="text"/></div></div>',
+		html: '<div><div class="text-wrapper"><div class="title" data-notify-html="title"></div><div class="text" data-notify-html="text"></div></div></div>',
 		classes: {
 			error: {
 				"color": "#a94442 !important",

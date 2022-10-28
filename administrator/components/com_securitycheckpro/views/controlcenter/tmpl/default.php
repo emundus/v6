@@ -28,11 +28,16 @@ function booleanlist($name, $attribs = null, $selected = null, $id=false)
 
 // Cargamos los archivos javascript necesarios
 $document = JFactory::getDocument();
-$document->addScript(JURI::root().'media/system/js/core.js');
+if ( version_compare(JVERSION, '3.20', 'lt') )
+{	
+	$document->addScript(JURI::root().'media/system/js/core.js');
+}
 
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
 // Bootstrap core JavaScript
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
+// Inline javascript to avoid deferring in Joomla 4
+echo '<script src="' . JURI::root(). '/media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>';
+//$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
 
 $sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
 JHTML::stylesheet($sweet);
@@ -92,7 +97,7 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/controlcen
                                                     
                                     <div class="input-append">
                                         <input type='button' class="btn btn-primary" value='<?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_GENERATE_KEY_TEXT') ?>' onclick='document.getElementById("secret_key").value = Password.generate(32)' />
-                                    </div>
+                                    </div>					
                                 <?php } else {    ?>                                    
                                     <div class="input-group">
                                       <input type="text" class="form-control input-xlarge" name="secret_key" id="secret_key" value="<?php echo $this->secret_key ?>" readonly>
@@ -102,6 +107,37 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/controlcen
                                     </div>                                                                                                
                                 <?php } ?>                                
                                 <blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_SECRET_KEY_EXPLAIN') ?></small></p></blockquote>
+								
+								<h4 class="card-title"><?php echo JText::_('COM_SECURITYCHECKPRO_CONTROLCENTER_URL'); ?></h4>
+								<div class="input-prepend">
+									<input class="input-xxlarge" type="text" name="control_center_url" id="control_center_url" value="<?php echo $this->control_center_url ?>" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_CONTROLCENTER_URL_PLACEHOLDER') ?>">
+                                </div>
+								<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_CONTROLCENTER_URL_EXPLAIN') ?></small></p></blockquote>
+								
+								<?php	 
+									$mainframe = JFactory::getApplication();
+									$cc_status = $mainframe->getUserState('download_controlcenter_log', null);									
+									if ( (!empty($cc_status)) || ($this->error_file_exists == 1) ) { 							
+								?>
+								<div id="button_show_log" class="card-footer">
+									<h4 class="card-title"><?php echo JText::_('COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_LOG_PATH_LABEL'); ?></h4>
+									<blockquote><p class="text-info"><small><?php echo JText::_('COM_SECURITYCHECKPRO_LOG_FILE_EXPLAIN') ?></small></p></blockquote>
+									<?php
+									 if (!empty($cc_status)) {
+									?>
+									<button class="btn btn-success" type="button" onclick="Joomla.submitbutton('download_controlcenter_log');"><i class="fapro fa-fw fa-download"></i><?php echo JText::_('COM_SECURITYCHECKPRO_DOWNLOAD_LOG'); ?></button>
+									<?php
+									}
+									if ($this->error_file_exists == 1) {
+									?>
+									<button class="btn btn-danger" type="button" onclick="add_element_to_form('error_log','1'); Joomla.submitbutton('download_controlcenter_log');"><i class="fapro fa-fw fa-download"></i><?php echo JText::_('COM_SECURITYCHECKPRO_DOWNLOAD_ERROR_LOG'); ?></button>
+									<?php
+									 }
+									 ?>
+									<button class="btn btn-warning" type="button" onclick="Joomla.submitbutton('delete_controlcenter_log');"><i class="fapro fa-fw fa-trash"></i><?php echo JText::_('COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_DELETE_LOG_FILE_LABEL'); ?></button>
+								</div>  
+								<?php }    ?>        							  
+								
                             </div>
                         </div>
                     </div>                    

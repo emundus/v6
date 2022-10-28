@@ -34,10 +34,9 @@ class PlgButtonDropfilesbtn extends JPlugin
      * @param object $subject The object to observe
      * @param array  $config  An array that holds the plugin configuration
      *
-     * @return JPlugin
-     * @since  1.5
+     * @since 1.5
      */
-    public function __construct(& $subject, $config)
+    public function __construct(&$subject, $config)
     {
         parent::__construct($subject, $config);
         JLoader::register('DropfilesBase', JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesBase.php');
@@ -81,10 +80,24 @@ class PlgButtonDropfilesbtn extends JPlugin
             SqueezeBox.close();
         }";
 
+        $style = '[aria-label="'.JText::_('PLG_DROPFILES_BUTTON').'"] .mce-title {
+            visibility: hidden !important;
+        }';
+        $style .= 'body > [aria-label="'.JText::_('PLG_DROPFILES_BUTTON').'"]:not(.mce-btn) {
+            position: fixed !important;
+            width: 95% !important;
+            transform: translateX(-50%) !important;
+            left: 50% !important;
+        }';
+        $style .= 'body > [aria-label="'.JText::_('PLG_DROPFILES_BUTTON').'"]:not(.mce-btn) .mce-container-body {
+            max-width: 100% !important;
+        }';
+
         $doc = JFactory::getDocument();
         $doc->addScriptDeclaration($js);
+        $doc->addStyleDeclaration($style);
 
-        if (JFactory::getApplication()->isAdmin()) {
+        if (JFactory::getApplication()->isClient('administrator')) {
             $path_btn2_dropfiles = JURI::root(true) . '/components/com_dropfiles/assets/images/j_button2_dropfiles.png';
             $doc->addStyleDeclaration('.button2-left .dropfiles {
                         background: url(' . $path_btn2_dropfiles . ') 100% 0 no-repeat;
@@ -92,22 +105,23 @@ class PlgButtonDropfilesbtn extends JPlugin
         }
 
         if (DropfilesBase::isJoomla30()) {
+            JHtml::_('behavior.modal');
             $doc->addStyleDeclaration('.icon-dropfiles:before {
                         content: "\2d";
                     }');
         }
-
-        JHtml::_('behavior.modal');
 
         /*
          * Use the built-in element view to select the article.
          * Currently uses blank class.
          */
         $path = urlencode(JURI::root(true));
-
         $link = 'index.php?option=com_dropfiles&amp;view=dropfiles&amp;tmpl=component&amp;';
-        $link .= JSession::getFormToken() . '=1&caninsert=1&e_name=' . $name . '&template=system&path=' . $path;
-
+        if (JFactory::getApplication()->isClient('site')) {
+            $link .= JSession::getFormToken() . '=1&caninsert=1&e_name=' . $name . '&template=dropfilesfrontend&path=' . $path;
+        } else {
+            $link .= JSession::getFormToken() . '=1&caninsert=1&e_name=' . $name . '&template=system&path=' . $path;
+        }
 
         $button = new JObject();
         $button->set('modal', true);
@@ -115,9 +129,19 @@ class PlgButtonDropfilesbtn extends JPlugin
         $button->set('class', 'btn');
         $button->set('text', JText::_('PLG_DROPFILES_BUTTON'));
         $button->set('name', 'dropfiles');
-        $handler_str = "{handler: 'iframe', size: {x: (window.getSize().x*80/100), y: (window.getSize().y-50)}}";
-        $button->set('options', $handler_str);
-
+        $button->set('icon', 'document-properties');
+        
+        if (DropfilesBase::isJoomla30()) {
+            $btnOptions = "{handler: 'iframe', size: {x: (window.getSize().x*80/100), y: (window.getSize().y-50)}}";
+        } else {
+            $btnOptions = array(
+                'height'      => '600px',
+                'width'       => '800px',
+                'bodyHeight'  => '90',
+                'modalWidth'  => '90',
+            );
+        }
+        $button->set('options', $btnOptions);
         return $button;
     }
 }

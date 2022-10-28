@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -33,7 +33,7 @@ class ZoneViewZone extends hikashopView
 		$pageInfo->filter->order->value = $app->getUserStateFromRequest( $this->paramBase.".filter_order", 'filter_order',	'a.zone_id','cmd' );
 		$pageInfo->filter->order->dir	= $app->getUserStateFromRequest( $this->paramBase.".filter_order_Dir", 'filter_order_Dir',	'asc',	'word' );
 
-		$selectedType = $app->getUserStateFromRequest( $this->paramBase.".filter_type",'filter_type','','string');
+		$pageInfo->filter->type = $selectedType = $app->getUserStateFromRequest( $this->paramBase.".filter_type",'filter_type','','string');
 		$pageInfo->limit->value = $app->getUserStateFromRequest( $this->paramBase.'.list_limit', 'limit', $app->getCfg('list_limit'), 'int' );
 		if(hikaInput::get()->getVar('search')!=$app->getUserState($this->paramBase.".search")){
 			$app->setUserState( $this->paramBase.'.limitstart',0);
@@ -44,6 +44,8 @@ class ZoneViewZone extends hikashopView
 		$pageInfo->search = $app->getUserStateFromRequest( $this->paramBase.".search", 'search', '', 'string' );
 		$pageInfo->search = HikaStringHelper::strtolower(trim($pageInfo->search));
 		if(empty($pageInfo->limit->value)) $pageInfo->limit->value = 500;
+		$this->searchOptions = array('type'=> '', 'country' => 0);
+		$this->openfeatures_class = "hidden-features";
 		$database	= JFactory::getDBO();
 		$searchMap = array('a.zone_code_3','a.zone_code_2','a.zone_name_english','a.zone_name','a.zone_id');
 		$filters = array();

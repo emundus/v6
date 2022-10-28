@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -40,11 +40,11 @@ class hikashopFieldsType {
 			),
 			'radio' => array(
 				'name' => JText::_('FIELD_RADIO'),
-				'options' => array('multivalues','required','default','columnname','attribute','inline')
+				'options' => array('multivalues','required','default','columnname','attribute','inline', 'add')
 			),
 			'checkbox' => array(
 				'name' => JText::_('FIELD_CHECKBOX'),
-				'options' => array('multivalues','required','default','columnname','attribute','inline')
+				'options' => array('multivalues','required','default','columnname','attribute','inline', 'add')
 			),
 			'boolean' => array(
 				'name' => JText::_('FIELD_BOOLEAN'),
@@ -52,11 +52,11 @@ class hikashopFieldsType {
 			),
 			'singledropdown' => array(
 				'name' => JText::_('FIELD_SINGLEDROPDOWN'),
-				'options' => array('multivalues','required','default','columnname','attribute')
+				'options' => array('multivalues','required','default','columnname','attribute', 'add')
 			),
 			'multipledropdown' => array(
 				'name' => JText::_('FIELD_MULTIPLEDROPDOWN'),
-				'options' => array('multivalues','size','default','columnname','attribute')
+				'options' => array('multivalues','size','default','columnname','attribute', 'add')
 			),
 			'date' => array(
 				'name' => JText::_('FIELD_DATE'),
@@ -65,6 +65,10 @@ class hikashopFieldsType {
 			'zone' => array(
 				'name' => JText::_('FIELD_ZONE'),
 				'options' => array('required','zone','default','columnname','pleaseselect','attribute')
+			),
+			'hidden' => array(
+				'name' => JText::_('FIELD_HIDDEN'),
+				'options' => array('required','default','columnname','filtering','attribute','regex')
 			),
 		);
 
@@ -85,11 +89,11 @@ class hikashopFieldsType {
 			);
 			$this->allValues['ajaxfile'] = array(
 				'name' => JText::_('FIELD_AJAX_FILE'),
-				'options' => array('required','default','columnname','allowed_extensions')
+				'options' => array('required','default','columnname','allowed_extensions', 'multiple', 'upload_dir', 'max_filesize', 'delete_files')
 			);
 			$this->allValues['ajaximage'] = array(
 				'name' => JText::_('FIELD_AJAX_IMAGE'),
-				'options' => array('required','default','columnname','imagesize','allowed_extensions')
+				'options' => array('required','default','columnname','imagesize','allowed_extensions', 'multiple', 'upload_dir', 'max_filesize', 'thumbnail', 'max_dimensions', 'delete_files')
 			);
 		}
 		$this->allValues['customtext'] = array(
@@ -226,6 +230,8 @@ window.hikashop.ready(function(){updateFieldType();});
 
 		$this->values = array();
 		foreach($this->allValues as $oneType => $oneVal) {
+			if($value != 'date' && $oneType == 'date')
+				continue;
 			$this->values[] = JHTML::_('select.option', $oneType, $oneVal['name']);
 		}
 

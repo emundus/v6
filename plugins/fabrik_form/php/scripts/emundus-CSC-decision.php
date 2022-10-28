@@ -144,7 +144,7 @@ if (count($trigger_emails) > 0) {
 
             // only for logged user or Theisis director and ED director
             if ($student->id == $recipient['id'] || in_array($recipient['id'], $mail_to)) {
-                $tags = $emails->setTags($recipient['id'], $post);
+                $tags = $emails->setTags($recipient['id'], $post, $student->fnum, '', $trigger_email[$student->training]['tmpl']['emailfrom'].$trigger_email[$student->training]['tmpl']['name'].$trigger_email[$student->training]['tmpl']['subject'].$trigger_email[$student->training]['tmpl']['message']);
 
                 $from = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->training]['tmpl']['emailfrom']);
                 $from_id = 62;

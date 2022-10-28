@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -35,6 +35,7 @@ foreach($this->row->products as $product) {
 		$link = hikashop_contentLink('product&task=show&cid='.$product->product_id.'&name='.@$this->products[$product->product_id]->alias . $url_itemid, $this->products[$product->product_id]);
 ?>
 	<div class="hk-list-group-item hika_order_product">
+<!-- PRODUCT IMAGE -->
 <?php
 	$img = $this->imageHelper->getThumbnail(@$product->images[0]->file_path, array(50, 50), array('default' => true, 'forcesize' => true,  'scale' => 'outside'));
 	if(!empty($img) && $img->success) {
@@ -43,14 +44,21 @@ foreach($this->row->products as $product) {
 <?php
 	}
 ?>
+<!-- EO PRODUCT IMAGE -->
 		<a href="<?php echo $link; ?>">
+<!-- PRODUCT NAME -->
 			<span class="hika_order_product_name"><?php echo $product->order_product_name; ?></span>
+<!-- EO PRODUCT NAME -->
+<!-- PRODUCT CODE -->
 <?php
 	if($this->config->get('show_code')) {
 ?>
 			<span class="hikashop_order_product_code"><?php echo $product->order_product_code; ?></span>
 <?php
 	}
+?>
+<!-- EO PRODUCT CODE -->
+<?php
 	if($group) {
 		foreach($this->row->products as $j => $optionElement) {
 			if($optionElement->order_product_option_parent_id != $product->order_product_id)
@@ -63,6 +71,7 @@ foreach($this->row->products as $product) {
 	}
 ?>
 		</a>
+<!-- PRODUCT PRICE -->
 		<p class="hika_order_product_price">
 			<span class="hika_cpanel_product_price_quantity">
 				<?php echo $product->order_product_quantity; ?>
@@ -73,10 +82,13 @@ foreach($this->row->products as $product) {
 				<?php echo $this->currencyClass->format( $product->order_product_price + $product->order_product_tax, $this->row->order_currency_id ); ?>
 			</span>
 		</p>
+<!-- EO PRODUCT PRICE -->
+<!-- PRODUCT EXTRA DATA -->
 <?php
 	if(!empty($product->extraData))
 		echo '<p class="hikashop_order_product_extra">' . (is_string($product->extraData) ? $product->extraData : implode('<br/>', $product->extraData)) . '</p>';
 ?>
+<!-- EO PRODUCT EXTRA DATA -->
 		<div style="clear:both;"></div>
 	</div>
 <?php

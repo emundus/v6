@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -12,6 +12,15 @@ class plgHikaShopTaxcloud extends JPlugin {
 	protected $soap = null;
 	protected $debug = false;
 	protected $errors = array();
+
+	public function __construct(&$subject, $config) {
+		parent::__construct($subject, $config);
+
+		$app = JFactory::getApplication();
+		$app->setUserState(HIKASHOP_COMPONENT.'.taxcloud.address_hash', '');
+	}
+
+
 	 public function onHikashopBeforeDisplayView(&$view){
 	 	$app = JFactory::getApplication();
 	 	if(!hikashop_isClient('administrator')) return true;
@@ -367,13 +376,6 @@ class plgHikaShopTaxcloud extends JPlugin {
 		}
 	}
 
-	public function __construct(&$subject, $config) {
-		parent::__construct($subject, $config);
-
-		$app = JFactory::getApplication();
-		$app->setUserState(HIKASHOP_COMPONENT.'.taxcloud.address_hash', '');
-	}
-
 	private function init() {
 		static $init = null;
 		if($init !== null)
@@ -547,10 +549,55 @@ class plgHikaShopTaxcloud extends JPlugin {
 		}
 	}
 
-	public function onAfterCartProductsLoad(&$cart) {
-		$verify_address = $this->verifyAddress();
-			$this->lookup($cart);
+	protected function whitelistCheck() {
+		$config = hikashop_config();
+		$whitelist = $config->get('taxcloud_whitelist');
+		if(empty($whitelist))
+			return true;
 
+
+		$debug = $config->get('taxcloud_whitelist_debug', 0);
+
+		$current_url = hikashop_currentURL();
+
+		$allowedURLs = explode(';;', $whitelist);
+		foreach($allowedURLs as $allowed) {
+			$parts = explode('||', $allowed);
+			$url = $parts[0];
+			$url_ok = false;
+			if(strpos($current_url, $url)!== false)
+				$url_ok = true;
+
+			$params_ok = true;
+			if(!empty($parts[1])) {
+				$parameters = explode('&', $parts[1]);
+				foreach($parameters as $parameter) {
+					$param_parts = explode('=', $parameter);
+					if(count($param_parts) == 2) {
+						$name = $param_parts[0];
+						$value = $param_parts[1];
+						if(!isset($_POST[$name]) || $_POST[$name] != $value) {
+							$params_ok = false;
+							break;
+						}
+					}
+				}
+			}
+			if($params_ok && $url_ok) {
+				return true;
+			}
+		}
+		if($debug) {
+			hikashop_writeToLog('TaxCloud request was blocked for URL '.$current_url);
+		}
+		return false;
+	}
+
+	public function onAfterCartProductsLoad(&$cart) {
+		if(!$this->whitelistCheck())
+			return;
+		$verify_address = $this->verifyAddress();
+		$this->lookup($cart);
 	}
 
 	public function onHikashopBeforeCheckDB(&$createTable, &$custom_fields, &$structure, &$helper){
@@ -569,16 +616,6 @@ class plgHikaShopTaxcloud extends JPlugin {
 			$databaseHelper->addColumns('product','`product_taxability_code` INT(10) NOT NULL DEFAULT 0');
 		}
 
-		$doc = JFactory::getDocument();
-		$doc->addScript(HIKASHOP_LIVE.'plugins/hikashop/taxcloud/taxcloud.js');
-		if(!HIKASHOP_J30)
-			JHTML::_('behavior.mootools');
-		else
-			JHTML::_('behavior.framework');
-
-		$doc->addScriptDeclaration('
-window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikashop_data_product_taxability_code"); });
-');
 
 		$html[] = '
 <tr>
@@ -616,6 +653,9 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 	}
 
 	public function onAfterProcessShippings(&$usable_rates) {
+		if(!$this->whitelistCheck())
+			return;
+
 		$verify_address = $this->verifyAddress();
 		if($verify_address == 2 )
 			return;
@@ -866,6 +906,8 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 	}
 
 	protected function verifyAddress() {
+		if(!hikashop_loadUser(false))
+			return false;
 		$app = JFactory::getApplication();
 
 		if(!$this->loadOptions()){
@@ -1034,6 +1076,9 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 	}
 
 	protected function lookup(&$cart) {
+		if(!hikashop_loadUser(false))
+			return false;
+
 		if(!$this->initSoap())
 			return false;
 
@@ -1243,8 +1288,12 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 
 						if($this->debug && empty($useCache))
 							var_dump($product->prices[0]);
-						if(!empty($product->prices[0]->unit_price))
-							$product->prices[0]->unit_price->price_value_with_tax = $product->prices[0]->unit_price->price_value + $item->TaxAmount/$product->cart_product_quantity;
+						if(!empty($product->prices[0]->unit_price)) {
+							$tu = hikashop_copy($t);
+							$tu->tax_amount = $tu->tax_amount/$product->cart_product_quantity;
+							$product->prices[0]->unit_price->taxes[$tu->tax_namekey] = $tu;
+							$product->prices[0]->unit_price->price_value_with_tax = $product->prices[0]->unit_price->price_value + $tu->tax_amount;
+						}
 					}
 				}
 				unset($product);
@@ -1282,7 +1331,7 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 	}
 
 	public function display_errors($error){
-	$app = JFactory::getApplication();
+		$app = JFactory::getApplication();
 		if(!isset($this->errors[$error])){
 			$app->enqueueMessage('TaxCloud error : '.@$error, 'error');
 			$this->errors[$error]=1;
@@ -1364,17 +1413,6 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 
 		$bar = JToolBar::getInstance('toolbar');
 		$bar->appendButton('Link', 'cancel', JText::_('HIKA_CANCEL'), $url);
-
-		$doc = JFactory::getDocument();
-		$doc->addScript(HIKASHOP_LIVE.'plugins/hikashop/taxcloud/taxcloud.js');
-		if(!HIKASHOP_J30)
-			JHTML::_('behavior.mootools');
-		else
-			JHTML::_('behavior.framework');
-
-		$doc->addScriptDeclaration('
-window.addEvent("domready", function(){ var taxcloudField = new taxcloud("taxability_code"); });
-');
 
 		echo '<fieldset><h1>Browse TIC</h1><div><input type="text" value="" id="taxability_code"/></div></fieldset>';
 	}

@@ -40,7 +40,8 @@ class JFormFieldDownimport extends JFormField
 
         if (JComponentHelper::isInstalled('com_jdownloads')) {
             if (file_exists(JPATH_ADMINISTRATOR . '/components/com_jdownloads/models/categories.php')) {
-                $return = '<select name="' . $this->name . '" id="' . $this->id . '" class="' . $class . '">';
+                $return = '<div class="import-name"><label class="ju-setting-label">'. JText::_('COM_DROPFILES_CONFIG_JDOWN_IMPORT_NAME') .'</label></div>';
+                $return .= '<select name="' . $this->name . '" id="' . $this->id . '" class="' . $class . '">';
                 $return .= '<option value="0">' . JText::_('COM_DROPFILES_CONFIG_SELECT_A_CATEGORY') . '</option>';
                 $path_admin_model = JPATH_ADMINISTRATOR . '/components/com_jdownloads/models/';
                 JModelLegacy::addIncludePath($path_admin_model, 'jdownloadsModel');
@@ -60,7 +61,7 @@ class JFormFieldDownimport extends JFormField
                 $return .= JText::_('COM_DROPFILES_CONFIG_IMPORT_AVAILABLE_JDOWNLOADS') . '</span>';
             }
         } else {
-            $return = '<span class="check-import-hidden" >';
+            $return = '<span class="check-import-hidden no-jdownload" >';
             $return .= JText::_('COM_DROPFILES_CONFIG_IMPORT_AVAILABLE_JDOWNLOADS') . '</span>';
         }
         return $return;

@@ -2,7 +2,7 @@
 /**
  * Joomla! Content Management System
  *
- * @copyright  Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
+ * @copyright  (C) 2006 Open Source Matters, Inc. <https://www.joomla.org>
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -147,7 +147,10 @@ abstract class Folder
 
 							if (!$stream->copy($sfid, $dfid))
 							{
-								throw new \RuntimeException('Cannot copy file: ' . $stream->getError(), -1);
+								throw new \RuntimeException(
+									'Cannot copy file: ' . Path::removeRoot($stream->getError()),
+									-1
+								);
 							}
 						}
 						else

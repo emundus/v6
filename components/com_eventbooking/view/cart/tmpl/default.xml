@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="Shopping Cart">
+		<message>
+			Display events which user added to cart
+		</message>
+	</layout>
+	<state>
+		<name>Shopping Cart</name>
+		<description>Display events which user added to cart</description>
+	</state>
+</metadata>

@@ -15,10 +15,11 @@
 defined('_JEXEC') || die;
 
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
-
 JHtml::_('bootstrap.tooltip');
-JHtml::_('formbehavior.chosen', 'select');
 JHtml::_('behavior.multiselect');
+if (DropfilesBase::isJoomla30()) {
+    JHtml::_('formbehavior.chosen', 'select');
+}
 
 $input = JFactory::getApplication()->input;
 $field = $input->getCmd('field');
@@ -40,15 +41,14 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                        data-placement="bottom"/>
             </div>
             <div class="btn-group pull-left">
-                <button type="submit" class="btn hasTooltip"
-                        title="<?php echo JHtml::tooltipText('JSEARCH_FILTER_SUBMIT'); ?>" data-placement="bottom"><span
-                        class="icon-search"></span></button>
-                <button type="button" class="btn hasTooltip"
+                <button type="submit" class="btn hasTooltip search-user-btn"
+                        title="<?php echo JHtml::tooltipText('JSEARCH_FILTER_SUBMIT'); ?>" data-placement="bottom"><?php echo JText::_('COM_DROPFILES_FILTER_SEARCH_USER'); ?></button>
+                <button type="button" class="btn hasTooltip dropfiles-search-filter-clear"
                         title="<?php echo JHtml::tooltipText('JSEARCH_FILTER_CLEAR'); ?>" data-placement="bottom"
                         onclick="document.getElementById('filter_search').value='';this.form.submit();"><span
                         class="icon-remove"></span></button>
                 <?php if ((int) $input->get('required', 0, 'int') !== 1) : ?>
-                    <button type="button" class="btn button-select" data-user-value="0"
+                    <button type="button" class="btn button-select dropfiles-search-filter-select-user" data-user-value="0"
                             data-user-name="<?php echo $this->escape(JText::_('JLIB_FORM_SELECT_USER')); ?>"
                             data-user-field="
                             <?php echo $this->escape($field); ?>">
@@ -73,23 +73,23 @@ $listDirn = $this->escape($this->state->get('list.direction'));
             <?php echo JText::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
         </div>
     <?php else : ?>
-        <table class="table table-striped table-condensed">
+        <table class="table table-striped table-condensed widefat">
             <thead>
             <tr>
-                <th class="left">
+                <th class="left manage-column">
                     <?php echo JHtml::_('grid.sort', 'COM_DROPFILES_HEADING_NAME', 'a.name', $listDirn, $listOrder); ?>
                 </th>
-                <th class="nowrap" width="25%">
+                <th class="nowrap manage-column" width="25%">
                     <?php echo JHtml::_('grid.sort', 'JGLOBAL_USERNAME', 'a.username', $listDirn, $listOrder); ?>
                 </th>
-                <th class="nowrap" width="25%">
+                <th class="nowrap manage-column" width="25%">
                     <?php echo JText::_('COM_DROPFILES_HEADING_GROUPS'); ?>
                 </th>
             </tr>
             </thead>
             <tfoot>
             <tr>
-                <td colspan="15">
+                <td colspan="15" class="user-pagination">
                     <?php echo $this->pagination->getListFooter(); ?>
                 </td>
             </tr>
@@ -100,17 +100,17 @@ $listDirn = $this->escape($this->state->get('list.direction'));
 
             foreach ($this->items as $item) : ?>
                 <tr class="row<?php echo $i % 2; ?>">
-                    <td>
+                    <td class="column-name">
                         <a class="pointer button-select" href="#" data-user-value="<?php echo $item->id; ?>"
                            data-user-name="<?php echo $this->escape($item->name); ?>"
-                           data-user-field="<?php echo $this->escape($field); ?>">
+                           data-user-field="<?php echo $this->escape($field); ?>" onclick="jSelectUser(this)">
                             <?php echo $item->name; ?>
                         </a>
                     </td>
-                    <td align="center">
+                    <td align="center" class="column-username">
                         <?php echo $item->username; ?>
                     </td>
-                    <td align="left">
+                    <td align="left" class="column-role">
                         <?php echo nl2br($item->group_names); ?>
                     </td>
                 </tr>
@@ -127,3 +127,16 @@ $listDirn = $this->escape($this->state->get('list.direction'));
         <?php echo JHtml::_('form.token'); ?>
     </div>
 </form>
+<script>
+    function jSelectUser(e) {
+        var selectedUserID = jQuery(e).data('user-value');
+        var selectedUserName = jQuery(e).data('user-name');
+        var field = jQuery(e).data('user-field');
+        if (window.parent.Joomla )
+        {
+            jQuery("#" + field, window.parent.document).val(selectedUserName);
+            jQuery("#"  + field + "_id", window.parent.document).val(selectedUserID);
+            window.parent.closeModal('userModal_' + field);
+        }
+    }
+</script>

@@ -8,7 +8,7 @@
  *
  * @package   Dropfiles
  * @copyright Copyright (C) 2013 JoomUnited (http://www.joomunited.com). All rights reserved.
- * @copyright Copyright (C) 2013 Damien Barrère (http://www.crac-design.com). All rights reserved.
+ * @copyright Copyright (C) 2013 Damien Barr�re (http://www.crac-design.com). All rights reserved.
  * @license   GNU General Public License version 2 or later; http://www.gnu.org/licenses/gpl-2.0.html
  * @since     1.6
  */
@@ -83,7 +83,7 @@ class DropfilesModelFiles extends JModelList
 
             $dbo = $this->getDbo();
             $dbo->setQuery('SELECT params FROM #__dropfiles WHERE id=' . (int)$category);
-            $dbo->query();
+            $dbo->execute();
             $params = $dbo->loadResult();
             $params = json_decode($params);
 
@@ -165,19 +165,22 @@ class DropfilesModelFiles extends JModelList
         if (!isset($data['description'])) {
             $data['description'] = '';
         }
+        if (!isset($data['file_tags'])) {
+            $data['file_tags'] = '';
+        }
         $created_time  = isset($data['created_time']) ? $data['created_time'] : $date->toSql();
         $modified_time = isset($data['modified_time']) ? $data['modified_time'] : $date->toSql();
         $publish       = isset($data['publish']) ? $data['publish'] : $date->toSql();
 
         $query = 'INSERT INTO #__dropfiles_files (file,catid,state,ordering,title,description,ext,size,created_time,';
-        $query .= ' modified_time,publish,author)VALUES (' . $dbo->quote($data['file']) . ',';
+        $query .= ' modified_time,publish,author,file_tags)VALUES (' . $dbo->quote($data['file']) . ',';
         $query .= intval($data['id_category']) . ',1,' . intval($ordering) . ',' . $dbo->quote($data['title']) . ',';
         $query .= $dbo->quote($data['description']) . ',' . $dbo->quote($data['ext']) . ',' . (int)$data['size'];
         $query .= ',' . $dbo->quote($created_time) . ',' . $dbo->quote($modified_time) . ',';
-        $query .= $dbo->quote($publish) . ',' . $data['author'] . ')';
+        $query .= $dbo->quote($publish) . ',' . $data['author'] . ',' . $dbo->quote($data['file_tags']) . ')';
         $dbo->setQuery($query);
 
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
 
@@ -199,7 +202,7 @@ class DropfilesModelFiles extends JModelList
         $query .= ' ORDER BY ordering DESC LIMIT 0,1';
         $dbo->setQuery($query);
 
-        if ($dbo->query() && $dbo->getNumRows() > 0) {
+        if ($dbo->execute() && $dbo->getNumRows() > 0) {
             return $dbo->loadResult() + 1;
         }
 
@@ -220,7 +223,7 @@ class DropfilesModelFiles extends JModelList
         $query = 'SELECT * FROM #__dropfiles_files WHERE id=' . $dbo->quote($id_file);
         $dbo->setQuery($query);
 
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
 
@@ -242,7 +245,7 @@ class DropfilesModelFiles extends JModelList
             $query = 'UPDATE #__dropfiles_files SET ordering = ' . intval($key) . ' WHERE id=' . intval($file);
             $dbo->setQuery($query);
 
-            if (!$dbo->query()) {
+            if (!$dbo->execute()) {
                 return false;
             }
         }
@@ -264,7 +267,7 @@ class DropfilesModelFiles extends JModelList
         $query = 'DELETE FROM #__dropfiles_files WHERE id=' . $dbo->quote($id_file);
         $dbo->setQuery($query);
 
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
 //            $dbo->getErrorMsg();
             return false;
         }
@@ -284,7 +287,7 @@ class DropfilesModelFiles extends JModelList
         $query = 'SELECT * FROM #__dropfiles_files';
         $dbo->setQuery($query);
 
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
 
@@ -309,7 +312,7 @@ class DropfilesModelFiles extends JModelList
             return false;
         }
 
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
 
@@ -334,7 +337,7 @@ class DropfilesModelFiles extends JModelList
             return false;
         }
 
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
 
@@ -361,7 +364,7 @@ class DropfilesModelFiles extends JModelList
             return false;
         }
 
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
 
@@ -383,7 +386,7 @@ class DropfilesModelFiles extends JModelList
         if (!$dbo->setQuery($query)) {
             return false;
         }
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
 
@@ -405,7 +408,7 @@ class DropfilesModelFiles extends JModelList
         if (!$dbo->setQuery($query)) {
             return false;
         }
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
 
@@ -446,5 +449,135 @@ class DropfilesModelFiles extends JModelList
         }
 
         return true;
+    }
+
+    /**
+     * Get file referent to category
+     *
+     * @param integer|string $id_category   Category id
+     * @param array          $list_id_files List files id
+     * @param string         $ordering      Ordering
+     * @param string         $ordering_dir  Order direction
+     *
+     * @return array
+     */
+    public function getFilesRef($id_category, $list_id_files, $ordering, $ordering_dir)
+    {
+        $modelCate = JModelLegacy::getInstance('Category', 'dropfilesModel');
+        $results = ($this->getListOfCate($id_category)) ? $this->getListOfCate($id_category) : array();
+        $files = array();
+        foreach ($results as $result) {
+            if (!in_array($result->id, $list_id_files)) {
+                continue;
+            }
+            $files[] = $result;
+        }
+
+        return  $files;
+    }
+
+    /**
+     * Get file referent to category
+     *
+     * @param integer|string $id_category Category id
+     *
+     * @return object
+     */
+    public function getListOfCate($id_category)
+    {
+        // Create a new query object.
+        $db    = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        // Select the required fields from the table.
+        $query->select(
+            $this->getState(
+                'list.select',
+                'f.id, f.catid, f.file, f.ordering, f.title, f.description,f.ext as type, f.ext' .
+                ', f.hits, f.state, f.version, f.size, f.created_time, f.modified_time, f.author' .
+                ', f.language'
+            )
+        );
+        $query->from('#__dropfiles_files AS f');
+
+        // Join over the language
+        $query->select('f.title AS language_title');
+        $query->join('LEFT', $db->quoteName('#__languages') . ' AS l ON l.lang_code = f.language');
+
+        // Filter by category
+        $category = $id_category;
+        if ($category) {
+            $query->where('f.catid = ' . $db->quote($category));
+        }
+
+        // Filter on the language.
+        $language = $this->getState('filter.language');
+        if ($language) {
+            $query->where('f.language = ' . $db->quote($language));
+        }
+
+        // Add the list ordering clause.
+        if ($this->getState('ordering')) {
+            $orderCol = $this->state->get('list.ordering', 'ordering');
+            $orderDir = $this->state->get('list.direction', 'asc');
+        } else {
+            $orderCol = 'ordering';
+            $orderDir = 'asc';
+
+            $dbo = $this->getDbo();
+            $dbo->setQuery('SELECT params FROM #__dropfiles WHERE id=' . (int)$category);
+            $dbo->execute();
+            $params = $dbo->loadResult();
+            $params = json_decode($params);
+
+            if (isset($params->ordering)) {
+                if (in_array($params->ordering, $this->allowedOrdering)) {
+                    $orderCol = $this->state->get('list.ordering', $params->ordering);
+                } else {
+                    $orderCol = 'ordering';
+                }
+            }
+
+            if (isset($params->orderingdir)) {
+                if ($params->orderingdir === 'asc' || $params->orderingdir === 'desc') {
+                    $orderDir = $this->state->get('list.direction', $params->orderingdir);
+                }
+            } else {
+                $orderDir = 'asc';
+            }
+        }
+        $this->setState('list.ordering', $orderCol);
+        $this->setState('list.direction', $orderDir);
+
+        $query->order($db->escape($orderCol . ' ' . $orderDir));
+
+        if (!$db->setQuery($query)) {
+            return false;
+        }
+        if (!$db->execute()) {
+            return false;
+        }
+        return $db->loadObjectList();
+    }
+
+    /**
+     * Set Multi file
+     *
+     * @param integer|string $id_file   File id
+     * @param string         $mtf_param File param
+     *
+     * @return boolean
+     */
+    public function setMultiCategoryFile($id_file, $mtf_param)
+    {
+        // Create a new query object.
+        $dbo    = $this->getDbo();
+        $query = 'UPDATE #__dropfiles_files SET file_multi_category=' . $dbo->quote($mtf_param) . ' WHERE id=' . (int)$id_file;
+        $dbo->setQuery($query);
+        if ($dbo->execute()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

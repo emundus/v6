@@ -15,15 +15,10 @@
 // no direct access
 defined('_JEXEC') || die;
 
-$path_admin_category = JPATH_ROOT . DIRECTORY_SEPARATOR . 'administrator' . DIRECTORY_SEPARATOR . 'components';
-$path_admin_category .= DIRECTORY_SEPARATOR . 'com_categories' . DIRECTORY_SEPARATOR . 'controllers';
-$path_admin_category .= DIRECTORY_SEPARATOR . 'category.php';
-require_once($path_admin_category);
-
 /**
  * Class DropfilesControllerCategory
  */
-class DropfilesControllerCategory extends CategoriesControllerCategory
+class DropfilesControllerCategory extends JControllerForm
 {
 
     /**
@@ -50,7 +45,7 @@ class DropfilesControllerCategory extends CategoriesControllerCategory
         if (!$canDo->get('core.edit')) {
             if ($canDo->get('core.edit.own')) {
                 $category = $model->getItem($id_category);
-                if ((int) $category->created_user_id !== (int) JFactory::getUser()->id) {
+                if ((int)$category->created_user_id !== (int)JFactory::getUser()->id) {
                     $this->exitStatus('not permitted');
                 }
             } else {
@@ -89,27 +84,30 @@ class DropfilesControllerCategory extends CategoriesControllerCategory
                 $title = JText::_('COM_DROPFILES_DROPBOX_DEFAULT_NAME');
                 break;
             case 'googledrive':
-                $title = JText::_('COM_DROPFILES_MODEL_CATEGORY_DEFAULT_NAME');
+                $title = JText::_('COM_DROPFILES_GOOGLE_DEFAULT_NAME');
                 break;
             case 'onedrive':
                 $title = JText::_('COM_DROPFILES_ONEDRIVE_CATEGORY_DEFAULT_NAME');
+                break;
+            case 'onedrivebusiness':
+                $title = JText::_('COM_DROPFILES_ONEDRIVE_BUSINESS_CATEGORY_DEFAULT_NAME');
                 break;
             default:
                 $title = JText::_('COM_DROPFILES_MODEL_CATEGORY_DEFAULT_NAME');
         }
 
-        $datas                              = array();
-        $datas['jform']['extension']        = 'com_dropfiles';
-        $datas['jform']['title']            = $title;
-        $datas['jform']['alias']            = $title . '-' . date('dmY-h-m-s', time());
-        $datas['jform']['parent_id']        = 1;
-        $datas['jform']['language']         = '*';
+        $datas = array();
+        $datas['jform']['extension'] = 'com_dropfiles';
+        $datas['jform']['title'] = $title;
+        $datas['jform']['alias'] = $title . '-' . date('dmY-h-m-s', time());
+        $datas['jform']['parent_id'] = 1;
+        $datas['jform']['language'] = '*';
         $datas['jform']['metadata']['tags'] = '';
         // $datas['jform']['published'] = 1;
 
         //Set state value to retreive the correct table
         $model = $this->getModel();
-        $model->setState('category.extension', 'category');
+        $model->setState('category.extension', 'com_dropfiles');
 
         foreach ($datas as $data => $val) {
             $app->input->set($data, $val, 'POST');
@@ -119,23 +117,6 @@ class DropfilesControllerCategory extends CategoriesControllerCategory
             $this->exitStatus(true, array('id_category' => $this->savedId, 'name' => $title));
         }
         $this->exitStatus('error while adding category');
-    }
-
-
-    /**
-     * Method run after save J25
-     *
-     * @param object $model     Model instance
-     * @param array  $validData Data
-     *
-     * @return void
-     * @throws \Exception Throw when Model name not found
-     * @since  1.0
-     */
-    protected function postSaveHookJ25(&$model, $validData = array())
-    {
-        $this->savedId = $model->getState($model->getName() . '.id');
-        parent::postSaveHook($model, $validData);
     }
 
     /**
@@ -165,13 +146,18 @@ class DropfilesControllerCategory extends CategoriesControllerCategory
     {
         $app = JFactory::getApplication();
         $datas = $app->input->get('jform', null, 'default', 'array');
-
-        $model = $this->getModel();
+        if (!$datas) {
+            $this->exitStatus(true);
+        }
         $canDo = DropfilesHelper::getActions();
+        $modelCate = JModelLegacy::getInstance('Category', 'dropfilesModel');
+        $model = $this->getModel();
+        $categoryRef = $modelCate->getCategoryParams((int)$datas['id']);
+        $refToFile = (isset($categoryRef->refToFile)) ? $categoryRef->refToFile : array();
         if (!$canDo->get('core.edit')) {
             if ($canDo->get('core.edit.own')) {
                 $category = $model->getItem((int)$datas['id']);
-                if ((int )$category->created_user_id !== (int) JFactory::getUser()->id) {
+                if ((int )$category->created_user_id !== (int)JFactory::getUser()->id) {
                     $this->exitStatus('not permitted');
                 }
             } else {
@@ -179,6 +165,9 @@ class DropfilesControllerCategory extends CategoriesControllerCategory
             }
         }
         $modelC = $this->getModel('config');
+        // Save access too
+        $datas['params']['access'] = isset($datas['access']) ? intval($datas['access']) : -1;
+        $datas['params']['refToFile'] = $refToFile;
 
         if (!$modelC->save($datas)) {
             $this->exitStatus('error while saving params : ' . $model->getError());
@@ -186,13 +175,12 @@ class DropfilesControllerCategory extends CategoriesControllerCategory
         unset($datas['params']);
 
         $item = get_object_vars($model->getItem((int)$datas['id']));
-        $item['access'] = (int)$datas['access'];
+        $item['access'] = (intval($datas['access']) === -1) ? 1 : intval($datas['access']);
         if (isset($datas['created_user_id']) && (int)$datas['created_user_id'] > 0) {
             $item['created_user_id'] = (int)$datas['created_user_id'];
         } else {
             $item['created_user_id'] = JFactory::getUser()->id;
         }
-
         //Set state value to retreive the correct table
         $model->setState('category.extension', 'categoryparams');
 
@@ -297,13 +285,17 @@ class DropfilesControllerCategory extends CategoriesControllerCategory
      */
     public function save($key = null, $urlVar = null)
     {
+        // echo 'save'; die();
         // Check for request forgeries.
         //JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
         $app = JFactory::getApplication();
         $lang = JFactory::getLanguage();
         $model = $this->getModel();
+
         $table = $model->getTable();
+
         $data = $app->input->get('jform', array(), 'array');
+
         property_exists($table, 'checked_out');
         $context = $this->option . '.edit.' . $this->context;
 
@@ -376,6 +368,10 @@ class DropfilesControllerCategory extends CategoriesControllerCategory
 
         // Attempt to save the data.
         $validData['published'] = 1;
+        if (!isset($validData['parent_id'])) {
+            $validData['parent_id'] = 1;
+        }
+        // var_dump($validData);
         if (!$model->save($validData)) {
             // Save the data in the session.
             $app->setUserState($context . '.data', $validData);
@@ -389,11 +385,11 @@ class DropfilesControllerCategory extends CategoriesControllerCategory
             return false;
         }
 
-        $text_prefix = $this->text_prefix . ($recordId === 0 && $app->isSite() ? '_SUBMIT' : '') . '_SAVE_SUCCESS';
+        $text_prefix = $this->text_prefix . ($recordId === 0 && $app->isClient('site') ? '_SUBMIT' : '') . '_SAVE_SUCCESS';
         $this->setMessage(
             JText::_(
                 ($lang->hasKey($text_prefix) ? $this->text_prefix
-                    : 'JLIB_APPLICATION') . ($recordId === 0 && $app->isSite() ? '_SUBMIT' : '') . '_SAVE_SUCCESS'
+                    : 'JLIB_APPLICATION') . ($recordId === 0 && $app->isClient('site') ? '_SUBMIT' : '') . '_SAVE_SUCCESS'
             )
         );
 
@@ -407,12 +403,35 @@ class DropfilesControllerCategory extends CategoriesControllerCategory
         $this->setRedirect(JRoute::_($redirect_str, false));
 
         // Invoke the postSave method to allow for the child class to access the model.
-        if (DropfilesBase::isJoomla30()) {
-            $this->postSaveHookJ3($model, $validData);
-        } else {
-            $this->postSaveHookJ25($model, $validData);
-        }
+        $this->postSaveHookJ3($model, $validData);
 
         return true;
+    }
+
+    /**
+     * Check is cloud category or not
+     *
+     * @return boolean
+     * @since  1.0
+     *
+     * @throws Exception Message if not start
+     */
+    public function isCloudCategory()
+    {
+        $app        = JFactory::getApplication();
+        $model      = $this->getModel();
+        $categoryId = $app->input->getString('id_category');
+        if (is_null($categoryId) || $categoryId === '') {
+            return false;
+        }
+
+        $isCloud = $model->checkCloudCategory($categoryId);
+        if ($isCloud['status'] === true) {
+            echo json_encode(array('status' => 'true', 'type' => $isCloud['type']));
+            die();
+        } else {
+            echo json_encode(array('status' => 'false', 'type' => $isCloud['type']));
+            die();
+        }
     }
 }

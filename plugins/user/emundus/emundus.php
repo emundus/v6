@@ -21,22 +21,22 @@ jimport('joomla.plugin.plugin');
  */
 class plgUserEmundus extends JPlugin
 {
-	/**
-	 * Remove all sessions for the user name
-	 *
-	 * Method is called after user data is deleted from the database
-	 *
-	 * @param   array    $user    Holds the user data
-	 * @param   boolean  $succes  True if user was succesfully stored in the database
-	 * @param   string   $msg     Message
-	 *
-	 * @return  boolean
-	 * @throws Exception
-	 * @since   1.6
-	 */
+    /**
+     * Remove all sessions for the user name
+     *
+     * Method is called after user data is deleted from the database
+     *
+     * @param   array    $user    Holds the user data
+     * @param   boolean  $succes  True if user was succesfully stored in the database
+     * @param   string   $msg     Message
+     *
+     * @return  boolean
+     * @throws Exception
+     * @since   1.6
+     */
     public function onUserAfterDelete($user, $succes, $msg) {
         if (!$succes) {
-	        return false;
+            return false;
         }
 
         $db = JFactory::getDbo();
@@ -44,13 +44,13 @@ class plgUserEmundus extends JPlugin
             'DELETE FROM '.$db->quoteName('#__session') .
             ' WHERE '.$db->quoteName('userid').' = '.(int) $user['id']
         );
-        $db->Query();
+        $db->execute();
 
         $db->setQuery('SHOW TABLES');
         $tables = $db->loadColumn();
         foreach($tables as $table) {
-            if (strpos($table, '_messages')>0)
-                $db->setQuery('DELETE FROM '.$table.' WHERE user_id_from = '.(int) $user['id'].' OR user_id_to = '.(int) $user['id']);
+            if (strpos($table, '_messages')>0 && !strpos($table, '_eb_'))
+                $query = 'DELETE FROM '.$table.' WHERE user_id_from = '.(int) $user['id'].' OR user_id_to = '.(int) $user['id'];
             if (strpos($table, 'emundus_') === FALSE) continue;
             if (strpos($table, 'emundus_group_assoc')>0) continue;
             if (strpos($table, 'emundus_groups_eval')>0) continue;
@@ -59,12 +59,18 @@ class plgUserEmundus extends JPlugin
             if (strpos($table, '_repeat')>0) continue;
             if (strpos($table, 'setup_')>0 || strpos($table, '_country')>0 || strpos($table, '_users')>0 || strpos($table, '_acl')>0) continue;
             if (strpos($table, '_files_request')>0 || strpos($table, '_evaluations')>0 || strpos($table, '_final_grade')>0)
-                $db->setQuery('DELETE FROM '.$table.' WHERE student_id = '.(int) $user['id']);
+                $query = 'DELETE FROM '.$table.' WHERE student_id = '.(int) $user['id'];
             elseif (strpos($table, '_uploads')>0 || strpos($table, '_groups')>0 || strpos($table, '_emundus_users')>0 || strpos($table, '_emundus_emailalert')>0)
-                $db->setQuery('DELETE FROM '.$table.' WHERE user_id = '.(int) $user['id']);
+                $query = 'DELETE FROM '.$table.' WHERE user_id = '.(int) $user['id'];
             elseif (strpos($table, '_emundus_comments')>0 || strpos($table, '_emundus_campaign_candidature')>0)
-                $db->setQuery('DELETE FROM '.$table.' WHERE applicant_id = '.(int) $user['id']);
-            $db->Query();
+                $query = 'DELETE FROM '.$table.' WHERE applicant_id = '.(int) $user['id'];
+            else continue;
+            try {
+                $db->setQuery($query);
+                $db->execute();
+            } catch (Exception $exception) {
+                continue;
+            }
         }
         $dir = EMUNDUS_PATH_ABS.$user['id'].DS;
         if (!$dh = @opendir($dir))
@@ -79,80 +85,80 @@ class plgUserEmundus extends JPlugin
         return true;
     }
 
-	/**
-	 * @param $user
-	 * @param $isnew
-	 *
-	 * @return bool
-	 *
-	 * @throws Exception
-	 * @since version
-	 */
-	public function onUserBeforeSave($user, $isnew) {
+    /**
+     * @param $user
+     * @param $isnew
+     *
+     * @return bool
+     *
+     * @throws Exception
+     * @since version
+     */
+    public function onUserBeforeSave($user, $isnew) {
 
-		$db = JFactory::getDBO();
-		$app = JFactory::getApplication();
-		$jinput = $app->input;
-		$fabrik = $jinput->post->get('listid', null);
+        $db = JFactory::getDBO();
+        $app = JFactory::getApplication();
+        $jinput = $app->input;
+        $fabrik = $jinput->post->get('listid', null);
 
-		// In case we are signing up a new user via Fabrik, check that the profile ID is either an applicant, or one of the allowed non-applicant profiles.
-		if ($isnew && !empty($fabrik)) {
+        // In case we are signing up a new user via Fabrik, check that the profile ID is either an applicant, or one of the allowed non-applicant profiles.
+        if ($isnew && !empty($fabrik)) {
 
-			$params = JComponentHelper::getParams('com_emundus');
-			$allowed_special_profiles = explode(',', $params->get('allowed_non_applicant_profiles', ''));
+            $params = JComponentHelper::getParams('com_emundus');
+            $allowed_special_profiles = explode(',', $params->get('allowed_non_applicant_profiles', ''));
 
-			$profile = $jinput->post->get('jos_emundus_users___profile');
-			if (is_array($profile)) {
-				$profile = $profile[0];
-			}
+            $profile = $jinput->post->get('jos_emundus_users___profile');
+            if (is_array($profile)) {
+                $profile = $profile[0];
+            }
 
-			$query = $db->getQuery(true);
-			$query->select($db->quoteName('id'))
-				->from($db->quoteName('#__emundus_setup_profiles'))
-				->where($db->quoteName('published').' = 0');
-			$db->setQuery($query);
-			try {
-				$non_applicant_profiles = $db->loadColumn();
-			} catch (Exception $e) {
-				// TODO: Handle error handling in this plugin...
-				return false;
-			}
+            $query = $db->getQuery(true);
+            $query->select($db->quoteName('id'))
+                ->from($db->quoteName('#__emundus_setup_profiles'))
+                ->where($db->quoteName('published').' = 0');
+            $db->setQuery($query);
+            try {
+                $non_applicant_profiles = $db->loadColumn();
+            } catch (Exception $e) {
+                // TODO: Handle error handling in this plugin...
+                return false;
+            }
 
-			// If the user's profile is in the list of special profiles and NOT in the allowed profiles.
-			if (in_array($profile, array_diff($non_applicant_profiles, $allowed_special_profiles))) {
-				$app->enqueueMessage('Restricted profile', 'error');
-				$app->redirect('/index.php');
-				return false;
-			}
-		}
+            // If the user's profile is in the list of special profiles and NOT in the allowed profiles.
+            if (in_array($profile, array_diff($non_applicant_profiles, $allowed_special_profiles))) {
+                $app->enqueueMessage('Restricted profile', 'error');
+                $app->redirect('/index.php');
+                return false;
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * Utility method to act on a user after it has been saved.
-	 *
-	 * This method sends a registration email to new users created in the backend.
-	 *
-	 * @param array   $user    Holds the new user data.
-	 * @param boolean $isnew   True if a new user is stored.
-	 * @param boolean $success True if user was succesfully stored in the database.
-	 * @param string  $msg     Message.
-	 *
-	 * @return  bool
-	 * @throws Exception
-	 * @since   1.6
-	 */
+    /**
+     * Utility method to act on a user after it has been saved.
+     *
+     * This method sends a registration email to new users created in the backend.
+     *
+     * @param array   $user    Holds the new user data.
+     * @param boolean $isnew   True if a new user is stored.
+     * @param boolean $success True if user was succesfully stored in the database.
+     * @param string  $msg     Message.
+     *
+     * @return  bool
+     * @throws Exception
+     * @since   1.6
+     */
     public function onUserAfterSave($user, $isnew, $success, $msg) {
         // Initialise variables.
-	    $db = JFactory::getDBO();
-	    $app = JFactory::getApplication();
+        $db = JFactory::getDBO();
+        $app = JFactory::getApplication();
         $jinput = $app->input;
         $details = $jinput->post->get('jform', null, 'none');
-		$fabrik = $jinput->post->get('listid', null);
-		$option = $jinput->get->get('option', null);
-		$controller = $jinput->get->get('controller', null);
-		$task = $jinput->get->get('task', null);
+        $fabrik = $jinput->post->get('listid', null);
+        $option = $jinput->get->get('option', null);
+        $controller = $jinput->get->get('controller', null);
+        $task = $jinput->get->get('task', null);
 
         // If the details are empty, we are probably signing in via LDAP for the first time.
         if ($isnew && empty($details) && empty($fabrik)) {
@@ -205,21 +211,23 @@ class plgUserEmundus extends JPlugin
                 else{
                     $name= $username[1];
                 }
+
                 $details['name'] = $name;
                 $details['emundus_profile']['lastname'] = $name;
                 $details['firstname'] = $username[0];
             }
         }
 
-	    if (is_array($details) && count($details) > 0) {
+        if (is_array($details) && count($details) > 0) {
             $campaign_id = @isset($details['emundus_profile']['campaign'])?$details['emundus_profile']['campaign']:@$details['campaign'];
             $lastname = @isset($details['emundus_profile']['lastname'])?$details['emundus_profile']['lastname']:@$details['name'];
             $firstname = @isset($details['emundus_profile']['firstname'])?$details['emundus_profile']['firstname']:@$details['firstname'];
+            $email = @isset($details['emundus_profile']['email'])?$details['emundus_profile']['email']:@$details['email'];
 
             if ($isnew) {
 
                 // Update name and firstname from #__users
-                $db->setQuery(' UPDATE #__users SET name="'.ucfirst($firstname).' '.strtoupper($lastname).'",
+                $db->setQuery(' UPDATE #__users SET name='.$db->quote(ucfirst($firstname)).' '.$db->quote(strtoupper($lastname)).',
                                 usertype = (SELECT u.title FROM #__usergroups AS u
                                                 LEFT JOIN #__user_usergroup_map AS uum ON u.id=uum.group_id
                                                 WHERE uum.user_id='.$user['id'].' ORDER BY uum.group_id DESC LIMIT 1) 
@@ -237,7 +245,7 @@ class plgUserEmundus extends JPlugin
 
                     $profile = $campaign[0]['profile_id'];
                 } else {
-	                $profile = 1000;
+                    $profile = 1000;
                 }
 
                 // Insert data in #__emundus_users
@@ -250,7 +258,7 @@ class plgUserEmundus extends JPlugin
 
                 $db->setQuery($query);
                 try {
-                    $db->Query();
+                    $db->execute();
                 } catch (Exception $e) {
                     // catch any database errors.
                 }
@@ -267,7 +275,7 @@ class plgUserEmundus extends JPlugin
 
                 $db->setQuery($query);
                 try {
-                    $db->Query();
+                    $db->execute();
                 } catch (Exception $e) {
                     // catch any database errors.
                 }
@@ -277,43 +285,54 @@ class plgUserEmundus extends JPlugin
                     $query = 'INSERT INTO #__emundus_campaign_candidature (`applicant_id`, `campaign_id`, `fnum`) VALUES ('.$user['id'].','.$campaign_id.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
                     $db->setQuery($query);
                     try {
-                        $db->Query();
+                        $db->execute();
                     } catch (Exception $e) {
                         // catch any database errors.
                     }
                 }
 
-            } elseif (!empty($lastname) && !empty($firstname)) {
-                // Update name and firstname from #__users
-                $db->setQuery('UPDATE #__users SET name="'.ucfirst($firstname).' '.strtoupper($lastname).'" WHERE id='.$user['id']);
-                $db->Query();
+            } else {
+                try {
+                    if(!empty($firstname) && !empty($lastname)) {
+                        // Update name and firstname from #__users
+                        $db->setQuery('UPDATE #__users SET name=' . $db->quote(ucfirst($firstname) . ' ') . ' ' . $db->quote(strtoupper($lastname)) . ' WHERE id=' . $user['id']);
+                        $db->execute();
 
-                $db->setQuery('UPDATE #__emundus_users SET lastname="'.strtoupper($lastname).'", firstname="'.ucfirst($firstname).'" WHERE user_id='.$user['id']);
-                $db->Query();
+                        $db->setQuery('UPDATE #__emundus_users SET lastname='.$db->quote(strtoupper($lastname)).', firstname='.$db->quote(ucfirst($firstname)).' WHERE user_id='.$user['id']);
+                        $db->execute();
 
-                $db->setQuery('UPDATE #__emundus_personal_detail SET last_name="'.strtoupper($lastname).'", first_name="'.ucfirst($firstname).'" WHERE user='.$user['id']);
-                $db->Query();
+                        $db->setQuery('UPDATE #__emundus_personal_detail SET last_name='.$db->quote(strtoupper($lastname)).', first_name='.$db->quote(ucfirst($firstname)).' WHERE user='.$user['id']);
+                        $db->execute();
+                    }
+
+                    if(!empty($email)) {
+                        $db->setQuery('UPDATE #__emundus_users SET email=' . $db->quote($email) . ' WHERE user_id=' . $user['id']);
+                        $db->execute();
+                    }
+                } catch (Exception $e) {
+                    JLog::add('Error at line ' . __LINE__ . ' of file ' . __FILE__ . ' : ' . '. Error is : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
+                }
+
+                if (!in_array($task, ["passrequest", "reset.complete"])) {
+                    JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_USERS_EDIT_PROFILE_SAVE_SUCCESS_TEXT'));
+                }
 
                 $this->onUserLogin($user);
-
-               /* if (!$app->isAdmin()) {
-                    $app->redirect('index.php?option=com_users&view=profile&user_id='.$user['id']);
-                }*/
             }
         }
     }
 
 
-	/**
-	 * This method should handle any login logic and report back to the subject
-	 *
-	 * @param array $user    Holds the user data
-	 * @param array $options Array holding options (remember, autoregister, group)
-	 *
-	 * @return  boolean True on success
-	 * @throws Exception
-	 * @since   1.5
-	 */
+    /**
+     * This method should handle any login logic and report back to the subject
+     *
+     * @param array $user    Holds the user data
+     * @param array $options Array holding options (remember, autoregister, group)
+     *
+     * @return  boolean True on success
+     * @throws Exception
+     * @since   1.5
+     */
     public function onUserLogin($user, $options = array()) {
         // Here you would do whatever you need for a login routine with the credentials
         // Remember, this is not the authentication routine as that is done separately.
@@ -330,102 +349,271 @@ class plgUserEmundus extends JPlugin
             if (empty($previous_url)) {
                 $previous_url = base64_decode($jinput->POST->getVar('return'));
             }
-	        if (empty($previous_url)) {
-		        $previous_url = base64_decode($return_url['redirect']);
-	        }
+            if (empty($previous_url)) {
+                $previous_url = base64_decode($return_url['redirect']);
+            }
         } else {
             $previous_url = base64_decode($redirect);
         }
 
         if (!$app->isAdmin()) {
 
-	        // Users coming from an OAuth system are immediately signed in and thus need to have their data entered in the eMundus table.
-	        if ($user['type'] == 'OAuth2') {
+            // Users coming from an OAuth system are immediately signed in and thus need to have their data entered in the eMundus table.
+            if ($user['type'] == 'OAuth2') {
 
-	        	// Insert the eMundus user info into the DB.
-		        if ($user['isnew']) {
-			        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
-			        $m_users = new EmundusModelUsers();
-			        $user_params = [
-				        'firstname' => $user['firstname'],
-				        'lastname' => $user['lastname'],
-				        'profile' => $user['profile']
-			        ];
-			        $m_users->addEmundusUser(JFactory::getUser()->id, $user_params);
+                // Insert the eMundus user info into the DB.
+                if ($user['isnew']) {
+                    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+                    $m_users = new EmundusModelUsers();
+                    $user_params = [
+                        'firstname' => $user['firstname'],
+                        'lastname' => $user['lastname'],
+                        'profile' => $user['profile']
+                    ];
+                    $m_users->addEmundusUser(JFactory::getUser()->id, $user_params);
 
-			        $o_user = new JUser(JUserHelper::getUserId($user['username']));
-			        $pass = bin2hex(openssl_random_pseudo_bytes(4));
-			        $password = array('password' => $pass, 'password2' => $pass);
-			        $o_user->bind($password);
-			        $o_user->save();
-			        $user['password'] = $pass;
-			        unset($pass, $password);
+                    $o_user = new JUser(JUserHelper::getUserId($user['username']));
+                    $pass = bin2hex(openssl_random_pseudo_bytes(4));
+                    $password = array('password' => $pass, 'password2' => $pass);
+                    $o_user->bind($password);
+                    $o_user->save();
+                    $user['password'] = $pass;
+                    unset($pass, $password);
 
-			        // Set the user table instance to not block the user.
-			        $table = JTable::getInstance('user', 'JTable');
-			        $table->load(JFactory::getUser()->id);
-			        $table->block = 0;
-			        if (!$table->store()) {
-				        throw new RuntimeException($table->getError());
-			        }
+                    // Set the user table instance to not block the user.
+                    $table = JTable::getInstance('user', 'JTable');
+                    $table->load(JFactory::getUser()->id);
+                    $table->block = 0;
+                    if (!$table->store()) {
+                        throw new RuntimeException($table->getError());
+                    }
 
-			        JPluginHelper::importPlugin('authentication');
-			        $dispatcher = JEventDispatcher::getInstance();
-			        $dispatcher->trigger('onOAuthAfterRegister', $user);
-		        }
+                    JPluginHelper::importPlugin('authentication');
+                    $dispatcher = JEventDispatcher::getInstance();
+                    $dispatcher->trigger('onOAuthAfterRegister', $user);
+                }
 
-		        // Add the Oauth provider type to the Joomla user params.
-		        if (!empty($options['provider'])) {
-			        $o_user = new JUser(JUserHelper::getUserId($user['username']));
-			        $o_user->setParam('OAuth2', $options['provider']);
-			        $o_user->setParam('token', json_encode($options['token']));
-			        $o_user->save();
-		        }
+                // Add the Oauth provider type to the Joomla user params.
+                if (!empty($options['provider'])) {
+                    $o_user = new JUser(JUserHelper::getUserId($user['username']));
+                    $o_user->setParam('OAuth2', $options['provider']);
+                    $o_user->setParam('token', json_encode($options['token']));
+                    $o_user->save();
+                }
 
-		        $previous_url = "";
-	        }
+                $previous_url = "";
+                if(!empty($options['redirect'])){
+                    $previous_url = $options['redirect'];
+                }
+
+            }
+
+            if ($user['type'] == 'externallogin') {
+                try {
+                    $db = JFactory::getDbo();
+                    $query = $db->getQuery(true);
+
+                    $user_id = JFactory::getUser()->id;
+
+                    if (isset($user['firstname']) || isset($user['lastname'])) {
+                        $query->clear()
+                            ->update('#__emundus_users');
+
+                        if (isset($user['firstname'])) {
+                            $query->set($db->quoteName('firstname') . ' = ' . $db->quote($user['firstname']));
+                        }
+                        if (isset($user['lastname'])) {
+                            $query->set($db->quoteName('lastname') . ' = ' . $db->quote($user['lastname']));
+                        }
+                        $query->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
+
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+
+
+                    if(isset($user['other_properties'])){
+                        if (!empty($user['other_properties'])) {
+                            foreach ($user['other_properties'] as $key => $other_property) {
+                                if (!empty($other_property->values)) {
+                                    $table = explode('___', $key)[0];
+                                    $column = explode('___', $key)[1];
+
+                                    $query->clear()
+                                        ->select($db->quoteName($column))
+                                        ->from($db->quoteName($table))
+                                        ->where($db->quoteName('user_id') . ' = ' . $user_id);
+                                    if ($other_property->method == 'insert') {
+                                        $query->andWhere($db->quoteName($column) . ' = ' . $other_property->values);
+                                    }
+                                    $db->setQuery($query);
+                                    $result = $db->loadResult();
+
+                                    if (empty($result)) {
+                                        $query->clear();
+                                        if ($other_property->method == 'update') {
+                                            $query->update($db->quoteName($table));
+                                            }
+                                            if ($other_property->method == 'insert') {
+                                                $query->insert($db->quoteName($table));
+                                            }
+                                            $query->set($db->quoteName($column) . ' = ' . $db->quote($other_property->values));
+
+                                            if ($other_property->method == 'update') {
+                                            $query->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
+                                            }
+                                            if ($other_property->method == 'insert') {
+                                            $query->set($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
+                                        }
+                                        $db->setQuery($query);
+                                        $db->execute();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception $e) {
+                    JLog::add('plugins/user/emundus/emundus.php | Error when update some informations on profile with external login : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                }
+
+            }
+
+            // Init first_login parameter
+            $user = JFactory::getUser();
+            $table = JTable::getInstance('user', 'JTable');
+            /*$table->load($user->id);
+
+            $params = $user->getParameters();
+            if (!$params->get('first_login_date')) {
+                $date = \JFactory::getDate();
+                $user->setParam('first_login_date', $date->toSql());
+
+                // Get the raw User Parameters
+                $params = $user->getParameters();
+
+                // Set the user table instance to include the new token.
+                $table->params = $params->toString();
+
+                if (!$table->store()) {
+                    JLog::add('component/com_emundus_onboard/models/settings | Error when create a param in the user ' . $user->id . ' : ' . $table->getError(), JLog::ERROR, 'com_emundus');
+                }
+
+                /*if($user->id == 95) {
+                    // Send an email to Commercial
+                    $db = JFactory::getDBO();
+
+                    $query = 'SELECT se.id, se.subject, se.emailfrom, se.name, se.message, et.Template
+				FROM #__emundus_setup_emails AS se
+				LEFT JOIN #__emundus_email_templates AS et ON se.email_tmpl = et.id
+				WHERE se.lbl LIKE "first_coord_login"';
+                    $db->setQuery($query);
+                    $obj = $db->loadObjectList();
+
+                    $site_url = str_replace('http://', "", JURI::base());
+
+                    $subject = $obj[0]->subject;
+                    $body = $obj[0]->message;
+
+                    if ($obj[0]->Template) {
+                        $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/", "/\[SITE_NAME\]/"], [$subject, $body, JFactory::getConfig()->get('sitename')], $obj[0]->Template);
+                    }
+
+                    $body = preg_replace(["/\[USER_EMAIL\]/", "/\[SITE_URL\]/"], [$user->email, $site_url], $body);
+
+                    $commercial_emails = 'brice.hubinet@emundus.fr,brice.hubinet@emundus.io';
+
+                    $emails = explode(',', $commercial_emails);
+
+                    // setup mail
+                    $email_from_sys = JFactory::getConfig()->get('mailfrom');
+
+                    $from = $obj[0]->emailfrom;
+                    $fromname = $obj[0]->name;
+
+                    $sender = array(
+                        $email_from_sys,
+                        $fromname
+                    );
+
+                    foreach ($emails as $email) {
+                        $to = array($email);
+
+                        $mailer = JFactory::getMailer();
+                        $mailer->setSender($sender);
+                        $mailer->addReplyTo($from, $fromname);
+                        $mailer->addRecipient($to);
+                        $mailer->setSubject($subject);
+                        $mailer->isHTML(true);
+                        $mailer->Encoding = 'base64';
+                        $mailer->setBody($body);
+
+                        $send = $mailer->Send();
+                        if ($send !== true) {
+
+                            JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_NOT_SENT') . ' : ' . $email, 'error');
+                            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+
+                        }
+                    }
+                }
+            }*/
+
+            // Store token in User's Parameters
+
+            //
 
             include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
             $m_profile = new EmundusModelProfile;
             $m_profile->initEmundusSession();
 
-            // Log the action of signing in.
-	        // No id exists in jos_emundus_actions for signin so we use -2 instead.
-            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-	        $user = JFactory::getSession()->get('emundusUser');
-	        EmundusModelLogs::log($user->id, $user->id, null, -2, '', 'COM_EMUNDUS_LOGS_USER_LOGIN');
 
-	        if ($options['redirect'] === 0) {
-	        	$previous_url = '';
-	        }
+            // Log the action of signing in.
+            // No id exists in jos_emundus_actions for signin so we use -2 instead.
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+            $user = JFactory::getSession()->get('emundusUser');
+
+            // if user_id is null -> there is no session data because the account is not activated yet, so don't log
+            if ($user->id) {
+                EmundusModelLogs::log($user->id, $user->id, null, -2, '', 'COM_EMUNDUS_LOGS_USER_LOGIN');
+            }
+
+            $user->just_logged = true;
+            if(empty($user->lastvisitDate)){
+                $user->first_logged = true;
+            }
+            JFactory::getSession()->set('emundusUser', $user);
+
+            if ($options['redirect'] === 0) {
+                $previous_url = '';
+            }
+
+            JPluginHelper::importPlugin('emundus', 'custom_event_handler');
+            $dispatcher = JEventDispatcher::getInstance();
+            $dispatcher->trigger('callEventHandler', ['onUserLogin', ['user_id' => $user->id]]);
 
 	        if (!empty($previous_url)) {
-		        $app->redirect($previous_url);
+                $app->redirect($previous_url);
 	        }
         }
         return true;
     }
 
-	/**
-	 * This method should handle any logout logic and report back to the subject
-	 *
-	 * @param array $user    Holds the user data.
-	 * @param array $options Array holding options (client, ...).
-	 *
-	 * @return  Bool  True on success
-	 * @throws Exception
-	 * @since   1.5
-	 */
+    /**
+     * This method should handle any logout logic and report back to the subject
+     *
+     * @param array $user    Holds the user data.
+     * @param array $options Array holding options (client, ...).
+     *
+     * @return  Bool  True on success
+     * @throws Exception
+     * @since   1.5
+     */
     public function onUserLogout($user, $options = array()) {
         $my         = JFactory::getUser();
         $session    = JFactory::getSession();
         $app        = JFactory::getApplication();
 
         include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
-
-        $m_profile = new EmundusModelProfile;
-
-        $campaign = $m_profile->getCurrentCampaignInfoByApplicant($user['id']);
 
         // Get by position instead of id and type (2 mod_emundus_user_dropdown are present)
         $modules = JModuleHelper::getModules('header-c');
@@ -469,7 +657,7 @@ class plgUserEmundus extends JPlugin
             ' WHERE '.$db->quoteName('userid').' = '.(int) $user['id'] .
             ' AND '.$db->quoteName('client_id').' = '.(int) $options['clientid']
         );
-        $db->query();
+        $db->execute();
 
         $app->redirect($url);
         return true;

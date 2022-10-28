@@ -65,19 +65,19 @@ class EmundusModelCalendar extends JModelLegacy {
         }
 
         $category_data['id'] = 0;
-        $category_data['parent_id'] = $parentId;
-        $category_data['title'] = $title[0];
-        $category_data['alias'] = $alias[0];
-        $category_data['path'] = $parentAlias."/".$alias[0];
+        $category_data['parent_id'] = (int)$parentId;
+        $category_data['title'] = $title;
+        $category_data['alias'] = $alias;
+        $category_data['path'] = $parentAlias."/".$alias;
         $category_data['extension'] = 'com_dpcalendar';
         $category_data['published'] = 1;
         $category_data['language'] = '*';
         $category_data['params'] = array(
             'category_layout' => '',
             'image' => '',
-            'color' => $color[0],
+            'color' => $color,
             'etag' => '1',
-            'program' => $program[0],
+            'program' => $program,
             'googleId' => $googleId
         );
         $category_data['metadata'] = array(
@@ -85,7 +85,7 @@ class EmundusModelCalendar extends JModelLegacy {
             'robots' => ''
         );
 
-        $this->createCategory($category_data);
+        return $this->createCategory($category_data);
 
     }
 
@@ -105,7 +105,7 @@ class EmundusModelCalendar extends JModelLegacy {
         );
 
         // An array containing the tag names is created.
-        $tags = $m_emails->setTags($user->id, $post);
+        $tags = $m_emails->setTags($user->id, $post, null, '', $booked_prefix);
 
         $booked_prefix = preg_replace($tags['patterns'], $tags['replacements'], $booked_prefix);
 
@@ -286,7 +286,7 @@ class EmundusModelCalendar extends JModelLegacy {
         $m_emails = new EmundusModelEmails;
 
         // An array containing the tag names is created.
-        $tags = $m_emails->setTags($user->id, $post);
+        $tags = $m_emails->setTags($user->id, $post, null, '', $booked_prefix);
 
         $booked_prefix = preg_replace($tags['patterns'], $tags['replacements'], $booked_prefix);
 
@@ -409,9 +409,6 @@ class EmundusModelCalendar extends JModelLegacy {
             'PROGRAM'       => $label
         );
 
-        // An array containing the tag names is created.
-        $tags = $m_emails->setTags($user->id, $post, $user->fnum);
-
         $from_id = 62;
 
         if ($booked) {
@@ -419,6 +416,9 @@ class EmundusModelCalendar extends JModelLegacy {
         } else {
             $email = $m_emails->getEmail('booking_deleted_user');
         }
+
+        // An array containing the tag names is created.
+        $tags = $m_emails->setTags($user->id, $post, $user->fnum, '', $email->emailfrom . $email->subject . $email->message);
 
         // Tags are replaced with their corresponding values using the PHP preg_replace function.
         $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
@@ -468,7 +468,7 @@ class EmundusModelCalendar extends JModelLegacy {
                 'user_id_from' => $from_id,
                 'user_id_to' => $user->id,
                 'subject' => $subject,
-                'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$user->email.'</i><br>'.$body
+                'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$user->email.'</i><br>'.$body
             );
             $m_emails->logEmail($message);
         }
@@ -496,7 +496,7 @@ class EmundusModelCalendar extends JModelLegacy {
                 );
 
                 // An array containing the tag names is created.
-                $tags = $m_emails->setTags($recipient->id, $post, $user->fnum);
+                $tags = $m_emails->setTags($recipient->id, $post, $user->fnum, '', $email->emailfrom.$email->subject.$email->message);
 
                 // Tags are replaced with their corresponding values using the PHP preg_replace function.
                 $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
@@ -547,7 +547,7 @@ class EmundusModelCalendar extends JModelLegacy {
                         'user_id_from' => $from_id,
                         'user_id_to' => $recipient->id,
                         'subject' => $subject,
-                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$recipient->email.'</i><br>'.$body
+                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$recipient->email.'</i><br>'.$body
                     );
                     $m_emails->logEmail($message);
                 }
@@ -648,6 +648,8 @@ class EmundusModelCalendar extends JModelLegacy {
 
     // Helper function, creates a category.
     function createCategory($data) {
+        $table = JTable::getInstance('Category');
+
         $data['rules'] = array(
             'core.edit.state' => array(),
             'core.edit.delete' => array(),
@@ -656,18 +658,14 @@ class EmundusModelCalendar extends JModelLegacy {
             'core.edit.own' => array(1 => true)
         );
 
-        $basePath = JPATH_ADMINISTRATOR.'/components/com_categories';
-        require_once $basePath.'/models/category.php';
+        $table->setLocation($data['parent_id'], 'last-child');
 
-        $config  = array('table_path' => $basePath.'/tables');
-        $m_categories = new CategoriesModelCategory($config);
+        $table->bind($data);
 
-        if (!$m_categories->save($data)) {
-            $err_msg = $m_categories->getError();
-            return false;
-        } else {
-            $id = $m_categories->getItem()->id;
+        if ($table->check() && $table->store()) {
             return true;
+        } else {
+            return false;
         }
     }
 
@@ -694,7 +692,7 @@ class EmundusModelCalendar extends JModelLegacy {
             'APPLICATION_PROGRESS' => $fnum
         );
 
-        $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum);
+        $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum, '', $program->synthesis);
 
         $synthesis = new stdClass();
         $synthesis->program = $program;

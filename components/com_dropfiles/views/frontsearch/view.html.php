@@ -46,7 +46,7 @@ class DropfilesViewFrontsearch extends JViewLegacy
 
         $active = $app->getMenu()->getActive();
         if ($active && $active->component === 'com_dropfiles' && $active->query['view'] === 'frontsearch') {
-            $layoutParams = $active->params;
+            $layoutParams = $active->getParams();
             $this->Itemid = $active->id;
             $aTags = $layoutParams->get('atags', array());
             if (!(count($aTags) === 0 || (count($aTags) === 1 && $aTags[0] === ''))) {
@@ -66,6 +66,7 @@ class DropfilesViewFrontsearch extends JViewLegacy
             $filters['catid'] = $catid;
         }
 
+        $filters['cattype'] = '';
         $cat_type = $app->input->getString('cattype', null);
         if (!empty($cat_type)) {
             $filters['cattype'] = $cat_type;
@@ -107,6 +108,7 @@ class DropfilesViewFrontsearch extends JViewLegacy
 
         $this->ordering = $app->input->getString('ordering', '');
         $this->dir = $app->input->getString('dir', 'asc');
+        $this->files = array();
         if (!empty($filters)) {
             $this->doSearch = true;
             $this->files = $model->searchfile($filters);

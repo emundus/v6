@@ -15,22 +15,23 @@ $docObligatoire = $helper->getDocObligatoire();
 $docOptionnel = $helper->getDocOptionnel();
 $docCharge = $helper->getDocCharges();
 
+
 if($params->get('obligatoire') || $params->get('option')) {
 	if(!$params->get('dissocier')	&& (($params->get('obligatoire')	&& trim(strip_tags($docObligatoire)) != "") || ($params->get('option')	&& trim(strip_tags($docOptionnel)) != "")))
-		$docs .= "<".$params->get('header_tag')." class=\"g-title\" title=\"".JText::_($params->get('desc_joindre'))."\">".JText::_($params->get('titre_joindre'))."</".$params->get('header_tag').">";
-	
+		$docs .= "<".$params->get('header_tag')." class=\"g-title\" style=\"margin-top: 20px\" title=\"".JText::_($params->get('desc_joindre'))."\">".JText::_($params->get('titre_joindre'))."</".$params->get('header_tag').">";
+
 	if($params->get('dissocier')	&& $params->get('obligatoire')		&& trim(strip_tags($docObligatoire)) != "")
-		$docs .= "<".$params->get('header_tag')." class=\"g-title\" title=\"".JText::_($params->get('desc_obligatoire'))."\">".JText::_($params->get('titre_obligatoire'))."</".$params->get('header_tag').">";
+		$docs .= "<".$params->get('header_tag')." class=\"g-title\" style=\"margin-top: 20px\" title=\"".JText::_($params->get('desc_obligatoire'))."\">".JText::_($params->get('titre_obligatoire'))."</".$params->get('header_tag').">";
 	if($params->get('obligatoire')		&& trim(strip_tags($docObligatoire)) != "")
 		$docs .= $docObligatoire;
-	
+
 	if($params->get('dissocier')	&& $params->get('option')		&& trim(strip_tags($docOptionnel)) != "")
-		$docs .= "<".$params->get('header_tag')." class=\"g-title\" title=\"".JText::_($params->get('desc_optionnel'))."\">".JText::_($params->get('titre_optionnel'))."</".$params->get('header_tag').">";
+		$docs .= "<".$params->get('header_tag')." class=\"g-title\" style=\"margin-top: 20px\" title=\"".JText::_($params->get('desc_optionnel'))."\">".JText::_($params->get('titre_optionnel'))."</".$params->get('header_tag').">";
 	if($params->get('option')		&& trim(strip_tags($docOptionnel)) != "")
 		$docs .= $docOptionnel;
 }
 if($params->get('charge') && trim(strip_tags($docCharge)) != "") {
-	$docs .= "<".$params->get('header_tag')." class=\"g-title\" title=\"".JText::_($params->get('desc_charge'))."\">".JText::_($params->get('titre_charge'))."</".$params->get('header_tag').">";
+	$docs .= "<".$params->get('header_tag')." class=\"g-title\" style=\"margin-top: 20px\" title=\"".JText::_($params->get('desc_charge'))."\">".JText::_($params->get('titre_charge'))."</".$params->get('header_tag').">";
 	$docs .= $docCharge;
 }
 

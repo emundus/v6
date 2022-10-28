@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -28,7 +28,7 @@ class ProductController extends hikashopController {
 			'form_price_edit','form',
 			'getprice','addimage','selectimage','addfile','selectfile','file_entry',
 			'variant','updatecart','export',
-			'trashlist',
+			'trashlist','batch',
 			'galleryimage','galleryselect',
 			'selection','useselection',
 			'getTree','findTree',''
@@ -61,10 +61,17 @@ class ProductController extends hikashopController {
 		return parent::display();
 	}
 
+	public function batch(){
+		$params = new HikaParameter('');
+		$params->set('table', 'product');
+		$js = '';
+		echo hikashop_getLayout('massaction', 'batch', $params, $js);
+	}
+
+
 	public function form_price_edit(){
 		hikaInput::get()->set('layout', 'form_price_edit');
 		parent::display();
-		exit;
 	}
 
 	public function edit_translation(){
@@ -81,7 +88,7 @@ class ProductController extends hikashopController {
 		if(!empty($element->product_id)){
 			$translationHelper = hikashop_get('helper.translation');
 			$translationHelper->getTranslations($element);
-			$translationHelper->handleTranslations('product',$element->product_id,$element);
+			$translationHelper->handleTranslations('product',$element->product_id,$element, 'hikashop_', null, true);
 		}
 		$document= JFactory::getDocument();
 		$document->addScriptDeclaration('window.top.hikashop.closeBox();');
@@ -109,11 +116,28 @@ class ProductController extends hikashopController {
 	}
 
 	public function save() {
+		$app = JFactory::getApplication();
+		$old_messages = $app->getMessageQueue();
 		$result = parent::store();
-		if(!$result)
-			return $this->edit();
+		$variant = hikaInput::get()->getBool('variant');
+		if(!$result) {
+			if($variant) {
+				$new_messages = $app->getMessageQueue();
+				if(count($old_messages) < count($new_messages)) {
+					$new_messages = array_slice($new_messages, count($old_messages));
+					foreach($new_messages as $i => $msg) {
+						hikashop_display($msg['message'], $msg['type']);
+					}
+				}
+				hikashop_nocache();
+				hikaInput::get()->set('layout', 'variant');
+				return parent::display();
+			} else {
+				return $this->edit();
+			}
+		}
 
-		if(hikaInput::get()->getBool('variant')) {
+		if($variant) {
 			hikaInput::get()->set('cid', hikaInput::get()->getInt('parent_id'));
 			$this->variant();
 		} else {
@@ -131,9 +155,17 @@ class ProductController extends hikashopController {
 	public function copy() {
 		$products = hikaInput::get()->get('cid', array(), 'array');
 		$result = true;
+		$app = JFactory::getApplication();
 		if(!empty($products)) {
+			$productClass = hikashop_get('class.product');
 			$importHelper = hikashop_get('helper.import');
 			foreach($products as $product) {
+				$p = $productClass->get($product);
+				if($p->product_type == 'variant') {
+					$app->enqueueMessage(JText::sprintf( 'X_IS_A_VARIANT_AND_THUS_CANNOT_BE_COPIED', $p->product_code ), 'error');
+					$result = false;
+					continue;
+				}
 				if(!$product) {
 					$result = false;
 					continue;
@@ -143,7 +175,6 @@ class ProductController extends hikashopController {
 			}
 		}
 		if($result) {
-			$app = JFactory::getApplication();
 			if(!HIKASHOP_J30)
 				$app->enqueueMessage(JText::_( 'HIKASHOP_SUCC_SAVED' ), 'success');
 			else
@@ -174,8 +205,6 @@ class ProductController extends hikashopController {
 
 		if(hikaInput::get()->getCmd('tmpl', '') == 'component') {
 			ob_end_clean();
-			parent::display();
-			exit;
 		}
 		return parent::display();
 	}
@@ -246,8 +275,6 @@ class ProductController extends hikashopController {
 
 		if(hikaInput::get()->getCmd('tmpl', '') == 'component') {
 			ob_end_clean();
-			parent::display();
-			exit;
 		}
 		return parent::display();
 	}
@@ -748,6 +775,7 @@ class ProductController extends hikashopController {
 			}
 
 			$fileClass = hikashop_get('class.file');
+			$file->file_free_download = (int)$config->get('default_file_free_download_on_upload', 0);
 			$status = $fileClass->save($file, $file_type);
 
 			$ret->file_id = $status;

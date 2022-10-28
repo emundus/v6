@@ -74,7 +74,9 @@ button#back:hover, button#back:active, button#back:focus,
     display: flex;
     justify-content: center;
 }
-.em_module.need_ok a::before {
+.em_module.need_ok a::before,
+#attachment_list legend .need_ok::before
+{
     font-family: FontAwesome;
     content: "\f058";
     color: #55ce47;
@@ -138,6 +140,15 @@ button#back:hover, button#back:active, button#back:focus,
     justify-content: center;
     align-items: center;
 }
+
+.view-checklist .dropzone .dz-preview  {
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .need_ok {
     background: none;
 }
@@ -162,7 +173,6 @@ button#back:hover, button#back:active, button#back:focus,
     color: #000 !important;
 }
 #attachment_list {
-    margin-bottom: 1em;
     width: 100%;
     margin: 20px 0;
 }
@@ -196,7 +206,7 @@ button#back:hover, button#back:active, button#back:focus,
 #g-sidebar {
     padding: 0;
     margin: 20px 15px;
-    background: transparent;
+    background: transparent !important;
 }
 
 #g-sidebar h3 {
@@ -271,13 +281,11 @@ button#back:hover, button#back:active, button#back:focus,
 
 #attachment_list_mand fieldset,
 #attachment_list_opt fieldset {
-    background-color: #fafafa;
+    background-color: #fff;
     box-shadow: none;
-}
-
-#attachment_list fieldset {
-    padding: 10px;
-    margin: 0 0 40px;
+    margin-bottom: 32px;
+    padding: 32px 24px 32px 24px;
+    border-radius: 16px !important;
     height: auto;
 }
 
@@ -287,12 +295,6 @@ button#back:hover, button#back:active, button#back:focus,
 
 .view-checklist .table-responsive {
     color: #2E2E2E;
-}
-
-#g-sidebar .platform-content a {
-    color: #000;
-    display: flex;
-    align-items: center;
 }
 
 #g-sidebar a:focus {
@@ -316,6 +318,21 @@ button#back:hover, button#back:active, button#back:focus,
     color: #2E2E2E;
 }
 
+
+#attachment_list_mand .em-added-files > td,
+#attachment_list_opt .em-added-files > td {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+
+.view-checklist #attachment_list_mand a.btn ,
+.view-checklist #attachment_list_opt a.btn {
+    display: flex !important;
+    align-items: center !important;
+}
+
 #attachment_list_mand .description,
 #attachment_list_opt .description {
     color: #2E2E2E;
@@ -327,17 +344,13 @@ button#back:hover, button#back:active, button#back:focus,
     white-space: normal;
 }
 
-#attachment_list_mand fieldset:hover, #attachment_list_opt fieldset:hover {
-    background-color: #fcfcfc;
-}
-
 #attachment_list_opt fieldset .description {
     margin-bottom: 0;
     padding-bottom: 0;
 }
 
 #attachment_list_mand form, #attachment_list_opt form {
-    background-color: #fafafa;
+    background-color: #fff;
     border: none;
     padding: 0;
     margin: 0;
@@ -445,10 +458,15 @@ body.view-reset label#jform_username-lbl::after,
     .view-checklist  .fabrikActions.form-actions .span4:not(.offset1){
         justify-content: flex-end;
     }
+
+    .fabrikActions.form-actions .row-fluid .span4 button.btn.save-btn {
+        margin: 0px !important;
+    }
+
     /* save button */
     .gantry.view-form .form-actions .row-fluid {
         flex-direction: column;
-        align-items: flex-end;
+        align-items: center;
     }
     .gantry.view-form .form-actions .row-fluid .btn.goback-btn.button {
         margin-right: 0px !important;
@@ -483,11 +501,19 @@ body.view-reset label#jform_username-lbl::after,
     border-bottom: 1px solid #ccc;
     padding: 10px 0;
     line-height: 1.2rem;
+    color: #000;
+    display: flex;
+    align-items: center;
+}
+
+
+.applicant-form #g-sidebar .platform-content a:hover {
+  text-decoration: none;
 }
 
 .em-print-button, .em-send-button {
     display: block;
-    width: 100%;
+    width: 100% !important;
     padding: 0;
 }
 
@@ -523,6 +549,11 @@ body.view-reset label#jform_username-lbl::after,
 #attachment_list_mand legend a,
 .view-checklist #attachment_list_opt legend a {
     color: #000 !important;
+}
+
+#attachment_list_mand legend a:hover,
+.view-checklist #attachment_list_opt legend a:hover {
+    text-decoration: none;
 }
 
 .need_missing.active a::before {

@@ -1,23 +1,29 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><div class="iframedoc" id="iframedoc"></div>
+<?php
+	if(isset($_COOKIE['product_exploreWidth_cookie']))
+		$cookie_value = $_COOKIE['product_exploreWidth_cookie'];
+	else
+		$cookie_value = 'explorer_open';
+?>
 <?php if($this->config->get('category_explorer')){ ?>
 <div id="page-product" class="hk-row-fluid">
-	<div class="hkc-md-2"><?php
+	<div id ="hikashop_category_explorer_container" class="hkc-md-2 <?php echo $cookie_value; ?>"><?php
 		echo hikashop_setExplorer('product&task=listing',$this->pageInfo->filter->filter_id,false,'product');
 	?></div>
 	<div class="hkc-md-10">
 <?php } ?>
 			<form action="<?php echo hikashop_completeLink('product'); ?>" method="POST" name="adminForm" id="adminForm">
 				<div class="hk-row-fluid">
-					<div class="hkc-md-4">
+					<div class="hkc-md-4 hika_j4_search">
 <?php
 	if(!empty( $this->extrafilters)) {
 		foreach($this->extrafilters as $name => $filterObj) {
@@ -38,8 +44,7 @@ defined('_JEXEC') or die('Restricted access');
 	echo $this->loadHkLayout('search', array());
 ?>
 				</div>
-				<div class="hkc-md-8">
-					<div class="expand-filters hikashop_listing_filters">
+				<div id="hikashop_listing_filters_id" class="hkc-md-7 hikashop_listing_filters <?php echo $this->openfeatures_class; ?>">
 <?php
 	if ( !empty( $this->extrafilters)) {
 		foreach($this->extrafilters as $name => $filterObj) {
@@ -53,13 +58,13 @@ defined('_JEXEC') or die('Restricted access');
 		}
 	}
 ?>
+							<?php echo $this->productWeightType->display('filter_product_weight',$this->pageInfo->filter->filter_product_weight); ?>
 							<?php echo $this->manufacturerDisplay; ?>
 							<?php echo $this->publishDisplay; ?>
 							<?php echo $this->productType->display('filter_product_type',$this->pageInfo->filter->filter_product_type); ?>
 							<?php echo $this->childDisplay; ?>
 						</div>
 						<div style="clear:both"></div>
-					</div>
 				</div>
 				<table id="hikashop_product_listing" class="adminlist table table-striped table-hover" cellpadding="1">
 					<thead>
@@ -101,8 +106,17 @@ defined('_JEXEC') or die('Restricted access');
 ?>
 							<th class="title titleorder"><?php
 								if($this->doOrdering) {
-									if ($this->order->ordering)
-										echo JHTML::_('grid.order', $this->rows);
+									if ($this->order->ordering) {
+										$keys = array_keys($this->rows);
+										$rows_nb = end($keys);
+										$href = "javascript:saveorder(".$rows_nb.", 'saveorder')";
+										?><a href="<?php echo $href; ?>" rel="tooltip" class="saveorder btn btn-sm btn-secondary float-end" title="Save Order">
+											<button class="button-apply btn btn-success" type="button">
+<!--											<span class="icon-apply" aria-hidden="true"></span> -->
+												<i class="fas fa-save"></i>
+											</button>
+										</a><?php
+									}
 									echo JHTML::_('grid.sort', JText::_( 'HIKA_ORDER' ), 'a.ordering',$this->pageInfo->filter->order->dir, $this->pageInfo->filter->order->value );
 								} else {
 									?><a href="#" title="<?php echo $this->noOrderingMessage; ?>"><?php echo JText::_( 'HIKA_ORDER' ); ?></a><?php
@@ -120,7 +134,6 @@ defined('_JEXEC') or die('Restricted access');
 						<tr>
 							<td colspan="<?php echo $count_extrafields; ?>">
 								<?php echo $this->pagination->getListFooter(); ?>
-								<?php echo $this->pagination->getResultsCounter(); ?>
 							</td>
 						</tr>
 					</tfoot>

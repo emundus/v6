@@ -15,6 +15,7 @@
 defined('_JEXEC') || die;
 
 jimport('joomla.filesystem.file');
+JLoader::register('JuupdaterHelper', JPATH_SITE . '/plugins/installer/juupdater/helper.php');
 
 /**
  * Class DropfilesControllerJutranslation
@@ -352,6 +353,7 @@ class DropfilesControllerJutranslation extends JControllerLegacy
         $strings = json_encode($strings);
 
         $version = Jutranslation::getComponentVersion();
+        $user_token = Jutranslation::juGetToken();
 
         //Remove the scripts automatically add by component and keep only jquery
         JFactory::getDocument()->_scripts = array();
@@ -367,6 +369,9 @@ class DropfilesControllerJutranslation extends JControllerLegacy
         $html .= '<input type="hidden" name="extension" value="' . $this->extension_slug . '" />';
         $html .= '<input type="hidden" name="extension_language" value="' . $language . '" />';
         $html .= '<input type="hidden" name="extension_version" value="' . $version . '" />';
+        $html .= '<input type="hidden" name="user_token" value="' . $user_token . '" />';
+        $html .= '<input type="hidden" name="site_url" value="' . JUri::base() . '" />';
+        $html .= '<input type="hidden" name="extension_updated" value="1" />';
         $html .= '<textarea style="display: none" name="strings">' . $strings . '</textarea>';
         $html .= '</form>';
         //Add waiting image
@@ -375,5 +380,28 @@ class DropfilesControllerJutranslation extends JControllerLegacy
         $src_loadder .= '/assets/images/preview_loader.gif';
         $html .= '<img src="' . $src_loadder . '"></div>';
         echo $html;
+    }
+
+    /**
+     * Save Ju Token
+     *
+     * @return void
+     * @throws \Exception Throw when application can not start
+     * @since  version
+     */
+    public function saveJuToken()
+    {
+        //Check if user has permissions
+        $canDo = DropfilesHelper::getActions();
+        if (!$canDo->get('core.admin')) {
+            echo json_encode(array('status' => 'error', 'message' => 'unhautorized'));
+            die();
+        }
+
+        //Security check
+        JSession::checkToken() || die('Invalid Token');
+
+        //Add jutoken into client site
+        JuupdaterHelper::juAddToken();
     }
 }

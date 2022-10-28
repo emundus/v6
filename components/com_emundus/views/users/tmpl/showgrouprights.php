@@ -11,7 +11,7 @@ span:hover {
 }
 </style>
 
-<h3><?= JText::_('SHOW_RIGTH'); ?></h3>
+<h3><?= JText::_('COM_EMUNDUS_GROUPS_SHOW_RIGHTS'); ?></h3>
 <?php foreach($this->groups as $k => $g) :?>
 	<fieldset id="<?= $k; ?>" class="em-showgroupright">
 		<h5>
@@ -19,7 +19,7 @@ span:hover {
 		</h5>
         <?php if (!empty($g['progs'])) :?>
             <ul class="em-showgroupright-program">
-                <strong><?= JText::_('COM_EMUNDUS_GROUP_PROGRAM'); ?></strong>
+                <strong><?= JText::_('COM_EMUNDUS_GROUPS_PROGRAM'); ?></strong>
                 <?php foreach ($g['progs'] as $p) :?>
                     <li><?= $p['label']; ?></li>
                 <?php endforeach;?>
@@ -31,16 +31,16 @@ span:hover {
 				<tr>
 					<th></th>
 					<th>
-						<label for="c-check-all"><?= JText::_('CREATE'); ?></label>
+						<label for="c-check-all"><?= JText::_('COM_EMUNDUS_ACCESS_CREATE'); ?></label>
 					</th>
 					<th>
-						<label for="r-check-all"><?= JText::_('RETRIEVE'); ?></label>
+						<label for="r-check-all"><?= JText::_('COM_EMUNDUS_ACCESS_RETRIEVE'); ?></label>
 					</th>
 					<th>
-						<label for="u-check-all"><?= JText::_('UPDATE'); ?></label>
+						<label for="u-check-all"><?= JText::_('COM_EMUNDUS_ACCESS_UPDATE'); ?></label>
 					</th>
 					<th>
-						<label for="d-check-all"><?= JText::_('DELETE'); ?></label>
+						<label for="d-check-all"><?= JText::_('COM_EMUNDUS_ACTIONS_DELETE'); ?></label>
 					</th>
 				</tr>
 				</thead>
@@ -61,7 +61,7 @@ span:hover {
 						<?php else :?>
                             <td></td>
                         <?php endif; ?>
-							
+
 						<?php if ($action['is_r'] == 1) :?>
 							<td action="r" class="action">
 								<?php if ($action['r'] == 1) :?>
@@ -85,7 +85,7 @@ span:hover {
 						<?php else: ?>
                             <td></td>
                         <?php endif; ?>
-						
+
 						<?php if ($action['is_d'] == 1) :?>
 							<td action="d" class="action">
 								<?php if ($action['d'] == 1) :?>
@@ -112,6 +112,9 @@ span:hover {
 			<?php endforeach;?>
 			</ul>
 		<?php endif;?>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-success" onclick="history.go(-1)"><?php echo JText::_('COM_EMUNDUS_OK');?></button>
+        </div>
 	</fieldset>
 <?php endforeach;?>
 

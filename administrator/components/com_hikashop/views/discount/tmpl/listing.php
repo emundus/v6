@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -11,7 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 <form action="<?php echo hikashop_completeLink('discount'); ?>" method="post" name="adminForm" id="adminForm">
 
 <div class="hk-row-fluid">
-	<div class="hkc-xs-6">
+	<div class="hkc-xs-6 hika_j4_search">
 <?php
 	echo $this->loadHkLayout('search', array());
 ?>
@@ -65,7 +65,6 @@ defined('_JEXEC') or die('Restricted access');
 			<tr>
 				<td colspan="11">
 					<?php echo $this->pagination->getListFooter(); ?>
-					<?php echo $this->pagination->getResultsCounter(); ?>
 				</td>
 			</tr>
 		</tfoot>
@@ -77,10 +76,10 @@ defined('_JEXEC') or die('Restricted access');
 		$publishedid = 'discount_published-'.$row->discount_id;
 ?>
 			<tr class="row<?php echo $k; ?>">
-				<td class="hk_center"><?php
+				<td><?php
 					echo $this->pagination->getRowOffset($i);
 				?></td>
-				<td class="hk_center"><?php
+				<td><?php
 					echo JHTML::_('grid.id', $i, $row->discount_id );
 				?></td>
 				<td>
@@ -100,13 +99,13 @@ defined('_JEXEC') or die('Restricted access');
 					<td><?php
 						echo $this->escape($row->discount_type);
 					?></td>
-					<td class="hk_center"><?php
+					<td><?php
 						echo hikashop_getDate($row->discount_start);
 					?></td>
-					<td class="hk_center"><?php
+					<td><?php
 						echo hikashop_getDate($row->discount_end);
 					?></td>
-					<td class="hk_center"><?php
+					<td><?php
 	if(isset($row->discount_flat_amount) && $row->discount_flat_amount > 0) {
 		echo $this->currencyHelper->displayPrices(array($row),'discount_flat_amount','discount_currency_id');
 	} elseif(isset($row->discount_percent_amount) && $row->discount_percent_amount > 0) {
@@ -114,7 +113,7 @@ defined('_JEXEC') or die('Restricted access');
 	}
 					?></td>
 <?php if(hikashop_level(1)){ ?>
-					<td class="hk_center"><?php
+					<td><?php
 		if(empty($row->discount_quota)) {
 				echo JText::_('UNLIMITED');
 		} else {
@@ -125,7 +124,16 @@ defined('_JEXEC') or die('Restricted access');
 
 		$restrictions = array();
 		if(!empty($row->discount_minimum_order) && (float)$row->discount_minimum_order != 0) {
-			$restrictions[] = '<strong>'.JText::_('MINIMUM_ORDER_VALUE').'</strong>:'.$this->currencyHelper->displayPrices(array($row),'discount_minimum_order','discount_currency_id');
+			$restrictions[] = '<strong>'.JText::_('MINIMUM_ORDER_VALUE').'</strong>: '.$this->currencyHelper->displayPrices(array($row),'discount_minimum_order','discount_currency_id');
+		}
+		if(!empty($row->discount_maximum_order) && (float)$row->discount_maximum_order != 0) {
+			$restrictions[] = '<strong>'.JText::_('MAXIMUM_ORDER_VALUE').'</strong>: '.$this->currencyHelper->displayPrices(array($row),'discount_maximum_order','discount_currency_id');
+		}
+		if(!empty($row->discount_minimum_products) && (float)$row->discount_minimum_products != 0) {
+			$restrictions[] = '<strong>'.JText::_('PRODUCT_MIN_QUANTITY_PER_ORDER').'</strong>: '.$row->discount_minimum_products;
+		}
+		if(!empty($row->discount_maximum_products) && (float)$row->discount_maximum_products != 0) {
+			$restrictions[] = '<strong>'.JText::_('PRODUCT_MAX_QUANTITY_PER_ORDER').'</strong>: '.$row->discount_maximum_products;
 		}
 		if(!empty($row->discount_product_id)) {
 			$restrictions[] = '<strong>'.JText::_('PRODUCT').'</strong>:'.$row->discount_product_id;

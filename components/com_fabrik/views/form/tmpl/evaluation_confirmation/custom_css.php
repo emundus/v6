@@ -84,10 +84,6 @@ echo <<<EOT
     height: 41px;
 }
 
-.view-form main#g-main-mainbody {
-    padding-right: 5%;
-}
-
 .view-form .fabrikForm .fabrikActions.form-actions, .view-checklist .fabrikForm .fabrikActions.form-actions, .view-details .fabrikForm .fabrikActions.form-actions {
     padding: 0;
 }
@@ -335,10 +331,6 @@ form legend a, form legend a:hover, form legend a:focus {
 
 .customsend-application-file a {
     color: #ffffff !important;
-}
-/* Fabrik application WYSIWYG height */
-.view-form iframe {
-    height: 200px !important;
 }
 
 .view-form .mce-tinymce .mce-statusbar .mce-path > .mce-path-item {

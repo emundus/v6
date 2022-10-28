@@ -3,7 +3,7 @@
  * @package     Joomla.Administrator
  * @subpackage  com_admin
  *
- * @copyright   Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
+ * @copyright   (C) 2010 Open Source Matters, Inc. <https://www.joomla.org>
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -58,7 +58,7 @@ $this->ignore_fieldsets = array('user_details');
 		<?php echo $field->renderField(); ?>
 	<?php endforeach; ?>
 	<?php echo JHtml::_('bootstrap.endTab'); ?>
-	<?php if (count($this->twofactormethods) > 1) : ?>
+	<?php if (count($this->twofactormethods) > 1 && !empty($this->twofactorform)) : ?>
 		<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'twofactorauth', JText::_('COM_USERS_USER_TWO_FACTOR_AUTH')); ?>
 		<fieldset>
 			<div class="control-group">

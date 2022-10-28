@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -25,7 +25,8 @@ class hikashopPluginClass extends hikashopClass {
 		JPluginHelper::importPlugin('hikashop');
 		$app = JFactory::getApplication();
 		$do = true;
-		if(empty($element->payment_id))
+		$new = empty($element->payment_id);
+		if($new)
 			$app->triggerEvent('onBeforeHikaPluginCreate', array('plugin', &$element, &$do));
 		else
 			$app->triggerEvent('onBeforeHikaPluginUpdate', array('plugin', &$element, &$do));
@@ -40,15 +41,21 @@ class hikashopPluginClass extends hikashopClass {
 			unset($element->plugin_id);
 
 		$status = parent::save($element);
-		if($status && empty($element->plugin_id)) {
-			$element->plugin_id = $status;
-			if($reorder) {
-				$orderHelper = hikashop_get('helper.order');
-				$orderHelper->pkey = 'plugin_id';
-				$orderHelper->table = 'plugin';
-				$orderHelper->groupVal = $element->plugin_type;
-				$orderHelper->orderingMap = 'plugin_ordering';
-				$orderHelper->reOrder();
+		if($status) {
+			if($new)
+				$app->triggerEvent('onAfterHikaPluginCreate', array('plugin', &$element));
+			else
+				$app->triggerEvent('onAfterHikaPluginUpdate', array('plugin', &$element));
+			if(empty($element->plugin_id)) {
+				$element->plugin_id = $status;
+				if($reorder) {
+					$orderHelper = hikashop_get('helper.order');
+					$orderHelper->pkey = 'plugin_id';
+					$orderHelper->table = 'plugin';
+					$orderHelper->groupVal = $element->plugin_type;
+					$orderHelper->orderingMap = 'plugin_ordering';
+					$orderHelper->reOrder();
+				}
 			}
 		}
 
@@ -61,6 +68,23 @@ class hikashopPluginClass extends hikashopClass {
 			$query = 'UPDATE '.hikashop_table('extensions',false).' SET enabled = 1 WHERE enabled = 0 AND type = ' . $db->Quote('plugin') . ' AND element = ' . $db->Quote($name) . ' AND folder = ' . $db->Quote('hikashop');
 			$db->setQuery($query);
 			$db->execute();
+		}
+		return $status;
+	}
+
+
+	public function delete(&$elements) {
+		$do = true;
+		JPluginHelper::importPlugin('hikashop');
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onBeforeHikaPluginDelete', array('plugin', &$elements, &$do));
+
+		if(!$do)
+			return false;
+
+		$status = parent::delete($elements);
+		if($status) {
+			$app->triggerEvent('onAfterHikaPluginDelete', array('plugin', &$elements));
 		}
 		return $status;
 	}
@@ -94,13 +118,13 @@ class hikashopPluginClass extends hikashopClass {
 			$row->col_display_price = array();
 			$row->col_display_restriction = array();
 
-			if(bccomp($row->{$type.'_price'}, 0, 3)) {
+			if(bccomp(sprintf('%F',$row->{$type.'_price'}), 0, 3)) {
 				if($type == 'shipping')
 					$row->col_display_price['fixed'] = $view->currencyClass->displayPrices(array($row), $type.'_price', $currency_field);
 				else
 					$row->col_display_price['fixed'] = $view->currencyClass->displayPrices(array($row), $type.'_price', array($type.'_params', $currency_field));
 			}
-			if(isset($row->plugin_params->{$type.'_percentage'}) && bccomp($row->plugin_params->{$type.'_percentage'}, 0, 3)) {
+			if(isset($row->plugin_params->{$type.'_percentage'}) && bccomp(sprintf('%F',$row->plugin_params->{$type.'_percentage'}), 0, 3)) {
 				$row->col_display_price['percent'] = $row->plugin_params->{$type.'_percentage'};
 			}
 
@@ -114,11 +138,11 @@ class hikashopPluginClass extends hikashopClass {
 			if(!empty($row->plugin_params->{$type.'_max_weight'}))
 				$row->col_display_restriction['max_weight'] = array('name' => 'SHIPPING_MAX_WEIGHT', 'value' => $row->plugin_params->{$type.'_max_weight'} . $row->plugin_params->{$type.'_weight_unit'});
 
-			if(isset($row->plugin_params->{$type.'_min_price'}) && bccomp($row->plugin_params->{$type.'_min_price'}, 0, 5)) {
+			if(isset($row->plugin_params->{$type.'_min_price'}) && bccomp(sprintf('%F',$row->plugin_params->{$type.'_min_price'}), 0, 5)) {
 				$row->{$type.'_min_price'} = $row->plugin_params->{$type.'_min_price'};
 				$row->col_display_restriction['min_price'] = array('name' => 'SHIPPING_MIN_PRICE', 'value' => $view->currencyClass->displayPrices(array($row), $type.'_min_price', $currency_field));
 			}
-			if(isset($row->plugin_params->{$type.'_max_price'}) && bccomp($row->plugin_params->{$type.'_max_price'}, 0, 5)) {
+			if(isset($row->plugin_params->{$type.'_max_price'}) && bccomp(sprintf('%F',$row->plugin_params->{$type.'_max_price'}), 0, 5)) {
 				$row->{$type.'_max_price'} = $row->plugin_params->{$type.'_max_price'};
 				$row->col_display_restriction['max_price'] = array('name' => 'SHIPPING_MAX_PRICE', 'value' => $view->currencyClass->displayPrices(array($row), $type.'_max_price', $currency_field));
 			}

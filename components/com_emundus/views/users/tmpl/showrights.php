@@ -7,13 +7,13 @@
  */
 ?>
 <form action = "index.php?option=com_emundus&controller=users&task=addgroup" id="em-add-group" class="em-add-group" role="form" method="post">
-	<?php 
+	<?php
 	if(count($this->groups) == 0)
-		echo JText::_('COM_EMUNDUS_NO_GROUP');
+		echo JText::_('COM_EMUNDUS_GROUPS_NO_GROUP');
 	else {
 	?>
 	<h3>
-		<?php echo JText::_('SHOW_RIGTH'); ?>
+		<?php echo JText::_('COM_EMUNDUS_GROUPS_SHOW_RIGHTS'); ?>
 	</h3>
 		<?php foreach($this->groups as $k => $g):?>
 			<fieldset id="<?php echo $k?>" class="em-add-group-right">
@@ -21,7 +21,7 @@
 					<?php echo $g['label']?>
 				</h5>
 				<ul class="em-add-group-program">
-					<strong><?php echo JText::_('COM_EMUNDUS_GROUP_PROGRAM')?></strong>
+					<strong><?php echo JText::_('COM_EMUNDUS_GROUPS_PROGRAM')?></strong>
 					<?php foreach($g['progs'] as $p):?>
 						<li><?php echo $p['label']?></li>
 					<?php endforeach;?>
@@ -32,16 +32,16 @@
 						<tr>
 							<th></th>
 							<th>
-								<label for="c-check-all"><?php echo JText::_('CREATE')?></label>
+								<label for="c-check-all"><?php echo JText::_('COM_EMUNDUS_ACCESS_CREATE')?></label>
 							</th>
 							<th>
-								<label for="r-check-all"><?php echo JText::_('RETRIEVE')?></label>
+								<label for="r-check-all"><?php echo JText::_('COM_EMUNDUS_ACCESS_RETRIEVE')?></label>
 							</th>
 							<th>
-								<label for="u-check-all"><?php echo JText::_('UPDATE')?></label>
+								<label for="u-check-all"><?php echo JText::_('COM_EMUNDUS_ACCESS_UPDATE')?></label>
 							</th>
 							<th>
-								<label for="d-check-all"><?php echo JText::_('DELETE')?></label>
+								<label for="d-check-all"><?php echo JText::_('COM_EMUNDUS_ACTIONS_DELETE')?></label>
 							</th>
 						</tr>
 						</thead>
@@ -87,6 +87,18 @@
 			</fieldset>
 		<?php endforeach;?>
 	<?php };?>
+
+    <?php
+echo '<script type="text/javascript">
+	$(document).ready(function() {
+	    $("#can-val").hide();
+	});
+	
+	$(document).on("click", ".close", function() {
+	    $("#can-val").show();
+	});
+</script>'
+    ?>
 
 </form>
 

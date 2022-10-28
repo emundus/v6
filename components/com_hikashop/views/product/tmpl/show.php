@@ -1,17 +1,19 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 if(!empty($this->canonical)) {
 	$doc = JFactory::getDocument();
-	$doc->addCustomTag('<link rel="canonical" href="'.hikashop_cleanURL($this->canonical).'" />');
+	$doc->addHeadLink(hikashop_cleanURL($this->canonical), 'canonical');
 }
+$css_button = $this->config->get('css_button', 'hikabtn');
+
 $classes = array();
 if(!empty($this->categories)) {
 	foreach($this->categories as $category) {
@@ -34,11 +36,26 @@ if(empty($this->element)) {
 	return;
 }
 
-if(!empty($this->links->previous))
-	echo '<a title="'.JText::_('PREVIOUS_PRODUCT').'" href="'.$this->links->previous.'"><span class="hikashop_previous_product"></span></a>';
-if(!empty($this->links->next))
-	echo '<a title="'.JText::_('NEXT_PRODUCT').'" href="'.$this->links->next.'"><span class="hikashop_next_product"></span></a>';
-
+if(!empty($this->links->previous)) {
+	echo '<div  data-toggle="hk-tooltip" data-original-title="'.JText::_('PREVIOUS_PRODUCT').'" class="hikashop_previous_product_btn">'.
+		'<a href="'.$this->links->previous.'" class="'.$css_button.'">'.
+			'<div class="hikashop_previous_product">'.
+				'<i class="fas fa-caret-left fa-2x"></i>'.
+			'</div>'.
+			'<p>'.JText::_('HIKA_PREVIOUS_PRODUCT_MAIN').'</p>'.
+		'</a>'.
+	'</div>';
+}
+if(!empty($this->links->next)) {
+	echo '<div data-toggle="hk-tooltip" data-original-title="'.JText::_('NEXT_PRODUCT').'" class="hikashop_next_product_btn">'.
+		'<a  href="'.$this->links->next.'" class="'.$css_button.'">'.
+			'<div class="hikashop_next_product">'.
+				'<i class="fas fa-caret-right fa-2x"></i>'.
+			'</div>'.
+			'<p>'.JText::_('HIKA_NEXT_PRODUCT_MAIN').'</p>'.
+		'</a>'.
+	'</div>';
+}
 ?>
 	<div class='clear_both'></div>
 <script type="text/javascript">
@@ -82,7 +99,7 @@ echo $this->loadTemplate();
 if($this->productlayout != 'show_tabular') {
 ?>
 		<input type="hidden" name="cart_type" id="type" value="cart"/>
-		<input type="hidden" name="add" value="1"/>
+		<input type="hidden" name="add" value="<?php echo !$this->config->get('synchronized_add_to_cart', 0); ?>"/>
 		<input type="hidden" name="ctrl" value="product"/>
 		<input type="hidden" name="task" value="updatecart"/>
 		<input type="hidden" name="return_url" value="<?php echo urlencode(base64_encode(urldecode($this->redirect_url))); ?>"/>
@@ -246,12 +263,13 @@ if(empty($this->element->variants) || $this->params->get('characteristic_display
 	?></div>
 	<div id="hikashop_product_contact_<?php echo $variant_name; ?>" style="display:none;"><?php
 		if(hikashop_level(1) && ($contact == 2 || ($contact == 1 && !empty ($this->element->main->product_contact)))) {
-			$css_button = $this->config->get('css_button', 'hikabtn');
-?>
-			<a href="<?php echo hikashop_completeLink('product&task=contact&cid=' . (int)$variant->product_id . $this->url_itemid); ?>" class="<?php echo $css_button; ?>"><?php
-				echo JText::_('CONTACT_US_FOR_INFO');
-			?></a>
-<?php
+	$css_button = $this->config->get('css_button', 'hikabtn');
+			$attributes = 'class="'.$css_button.'"';
+			$fallback_url = hikashop_completeLink('product&task=contact&cid=' . (int)$this->row->product_id . $this->url_itemid);
+			$content = JText::_('CONTACT_US_FOR_INFO');
+
+			echo $this->loadHkLayout('button', array( 'attributes' => $attributes, 'content' => $content, 'fallback_url' => $fallback_url));
+
 		}
 	?></div>
 <?php
@@ -264,7 +282,7 @@ if(empty($this->element->variants) || $this->params->get('characteristic_display
 		}
 
 		if ($this->config->get('weight_display', 0)) {
-			if(!empty($variant->product_weight) && bccomp($variant->product_weight, 0, 3)) {
+			if(!empty($variant->product_weight) && bccomp(sprintf('%F',$variant->product_weight), 0, 3)) {
 ?>
 		<div id="hikashop_product_weight_<?php echo $variant_name; ?>" style="display:none;"><?php
 			echo JText::_('PRODUCT_WEIGHT').': '.rtrim(rtrim($variant->product_weight,'0'),',.').' '.JText::_($variant->product_weight_unit);
@@ -274,7 +292,7 @@ if(empty($this->element->variants) || $this->params->get('characteristic_display
 		}
 
 		if($this->config->get('dimensions_display', 0)) {
-			if(!empty ($variant->product_width) && bccomp($variant->product_width, 0, 3)) {
+			if(!empty ($variant->product_width) && bccomp(sprintf('%F',$variant->product_width), 0, 3)) {
 ?>
 		<div id="hikashop_product_width_<?php echo $variant_name; ?>" style="display:none;"><?php
 			echo JText::_('PRODUCT_WIDTH').': '.rtrim(rtrim($variant->product_width, '0'), ',.').' '.JText::_($variant->product_dimension_unit);
@@ -282,7 +300,7 @@ if(empty($this->element->variants) || $this->params->get('characteristic_display
 <?php
 			}
 
-			if(!empty($variant->product_length) && bccomp($variant->product_length, 0, 3)) {
+			if(!empty($variant->product_length) && bccomp(sprintf('%F',$variant->product_length), 0, 3)) {
 ?>
 		<div id="hikashop_product_length_<?php echo $variant_name; ?>" style="display:none;"><?php
 			echo JText::_('PRODUCT_LENGTH').': '.rtrim(rtrim($variant->product_length, '0'), ',.').' '.JText::_($variant->product_dimension_unit);
@@ -290,7 +308,7 @@ if(empty($this->element->variants) || $this->params->get('characteristic_display
 <?php
 			}
 
-			if(!empty($variant->product_height) && bccomp($variant->product_height, 0, 3)) {
+			if(!empty($variant->product_height) && bccomp(sprintf('%F',$variant->product_height), 0, 3)) {
 ?>
 		<div id="hikashop_product_height_<?php echo $variant_name; ?>" style="display:none;"><?php
 			echo JText::_('PRODUCT_HEIGHT').': '.rtrim(rtrim($variant->product_height, '0'), ',.').' '.JText::_($variant->product_dimension_unit);
@@ -315,7 +333,13 @@ if(empty($this->element->variants) || $this->params->get('characteristic_display
 		if(!empty($this->fields)) {
 ?>
 	<div id="hikashop_product_custom_info_<?php echo $variant_name; ?>" style="display:none;">
-		<h4><?php echo JText::_('SPECIFICATIONS'); ?></h4>
+<?php
+			if($this->productlayout != 'show_tabular') {
+?>
+		<h4><?php echo JText::_('SPECIFICATIONS');?></h4>
+<?php
+			}
+?>
 		<table class="hikashop_product_custom_info_<?php echo $variant_name; ?>">
 <?php
 

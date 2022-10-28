@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -40,7 +40,7 @@ class hikashopNameboxType {
 		'brand' => array(
 			'class' => 'class.category',
 			'name' => 'category_name',
-			'mode' => 'list',
+			'mode' => 'tree',
 			'params' => array(
 				'category_type' => 'manufacturer',
 				'filters' => array(
@@ -48,7 +48,7 @@ class hikashopNameboxType {
 				),
 				'key' => 'category_id',
 			),
-			'url' => 'category&task=findList&category_type=manufacturer',
+			'url' => 'category&task=getTree&category_type=manufacturer',
 			'options' => array(
 				'tree_url' => 'category&task=getTree&category_type=manufacturer&category_id={ID}',
 				'tree_key' => '{ID}',
@@ -103,6 +103,25 @@ class hikashopNameboxType {
 				'add_url' => 'characteristic&task=addcharacteristic_ajax&characteristic_type=value&characteristic_parent_id={ID}&tmpl=json',
 			)
 		),
+		'column' => array(
+			'class' => 'helper.database',
+			'name' => 'column_name',
+			'mode' => 'list',
+			'displayFormat' => '{column_name}',
+			'params' => array(
+				'table' => ''
+			),
+			'url_params' => array('TABLE'),
+			'url' => 'cart&task=findList&table={TABLE}'
+		),
+		'currency' => array(
+			'class' => 'class.currency',
+			'name' => 'name',
+			'mode' => 'list',
+			'params' => array(
+			),
+			'url' => 'currency&task=findList'
+		),
 		'discount' => array(
 			'class' => 'class.discount',
 			'name' => 'discount_code',
@@ -130,6 +149,21 @@ class hikashopNameboxType {
 			),
 			'url_params' => array('TABLE'),
 			'url' => 'cart&task=findList&table={TABLE}'
+		),
+		'filter' => array(
+			'class' => 'class.filter',
+			'name' => 'filter_name',
+			'mode' => 'list',
+			'displayFormat' => '{filter_name} - {filter_namekey} - {filter_type}',
+			'params' => array(
+			),
+			'options' => array(
+				'olist' => array(
+					'table' => array('filter_name' => 'FIELD_LABEL', 'filter_namekey' => 'FIELD_COLUMN', 'filter_type' => 'HIKA_TYPE' ),
+					'displayFormat' => '{filter_name} - {filter_namekey} - {filter_type}',
+				)
+			),
+			'url' => 'filter&task=findList'
 		),
 		'modules' => array(
 			'class' => 'class.modules',
@@ -189,6 +223,15 @@ class hikashopNameboxType {
 			'name' => 'shipping_namekey',
 			'mode' => 'list',
 			'displayFormat' => '{shipping_name}',
+			'params' => array(
+
+			)
+		),
+		'payment_methods' => array(
+			'class' => 'class.payment',
+			'name' => 'payment_namekey',
+			'mode' => 'list',
+			'displayFormat' => '{payment_name}',
 			'params' => array(
 
 			)
@@ -306,6 +349,8 @@ class hikashopNameboxType {
 
 		if(!empty($options['displayFormat']))
 			$options['displayFormat'] = $this->getDisplayFormat($options['displayFormat'], $type);
+		if(empty($options['displayFormat']))
+			$options['displayFormat'] = @$typeConfig['displayFormat'];
 
 		$fullLoad = true;
 		list($elements, $values) = $nameboxClass->getNameboxData($typeConfig, $fullLoad, hikashopNameboxType::NAMEBOX_MULTIPLE, null, $search, $options);
@@ -313,7 +358,7 @@ class hikashopNameboxType {
 		if((!empty($typeConfig['mode']) && $typeConfig['mode'] == 'list') && empty($typeConfig['options']['olist']['table']) && !is_string(reset($elements))) {
 			$n = $typeConfig['name'];
 			foreach($elements as &$element) {
-				if(!empty($displayFormat))
+				if(!empty($options['displayFormat']))
 					$element = $this->getDisplayValue($element, $typeConfig, $options);
 				else
 					$element = $element->$n;
@@ -518,7 +563,7 @@ class hikashopNameboxType {
 				}
 			}
 			if(strpos($url, '{displayFormat}') !== false)
-				$url = str_replace('{displayFormat}', $this->getDisplayFormatId($type, $displayFormat), $url);
+				$url = str_replace('{displayFormat}', $this->getDisplayFormatId($displayFormat, $type), $url);
 			$url .= '&search=HIKASEARCH';
 
 			if(empty($typeConfig['mode']) || $typeConfig['mode'] == 'list') {
@@ -538,7 +583,7 @@ class hikashopNameboxType {
 
 		if(isset($namebox_options['tree_url'])) {
 			if(strpos($namebox_options['tree_url'], '{displayFormat}') !== false)
-				$namebox_options['tree_url'] = str_replace('{displayFormat}', $this->getDisplayFormatId($type, $displayFormat), $namebox_options['tree_url']);
+				$namebox_options['tree_url'] = str_replace('{displayFormat}', $this->getDisplayFormatId($displayFormat, $type), $namebox_options['tree_url']);
 
 			if(substr($namebox_options['tree_url'], 0, 10) == 'index.php?')
 				$namebox_options['tree_url'] = str_replace('&amp;', '&', JRoute::_($namebox_options['tree_url']));
@@ -552,14 +597,14 @@ class hikashopNameboxType {
 	<div style="display:none;" data-oresize="'.$id.'" class="namebox-popup-resize namebox-popup-container">
 		<div id="'.$id.'_otree" class="oTree namebox-popup-content"></div>
 	</div>
-</div>
-<script type="text/javascript">
+</div>';
+			$js = '
+
 new window.oNamebox(
 	\''.$id.'\',
 	'.json_encode($elements).',
 	'.json_encode($namebox_options).'
-);
-</script>';
+);';
 		}
 		else {
 			$ret .= '
@@ -567,8 +612,8 @@ new window.oNamebox(
 	<div style="display:none;" data-oresize="'.$id.'" class="namebox-popup-resize namebox-popup-container">
 		<div id="'.$id.'_olist" class="oList namebox-popup-content"></div>
 	</div>
-</div>
-<script type="text/javascript">
+</div>';
+			$js = '
 new window.oNamebox(
 	\''.$id.'\',
 	'.json_encode($elements).',
@@ -579,14 +624,21 @@ new window.oNamebox(
 				foreach($values as $key => $name) {
 					$b[] = $key;
 				}
-				$ret .= '
+				$js .= '
 try{
 	window.oNameboxes[\''.$id.'\'].content.block('.json_encode($b).');
 }catch(e){}';
 			}
-
-			$ret .= '
-</script>';
+		}
+		$js = 'window.hikashop.ready( function(){
+			'.$js.'
+		});';
+		$tmpl = hikaInput::get()->getVar('tmpl');
+		if(in_array($tmpl, array('ajax', 'raw', 'component'))) {
+			$ret .= '<script type="text/javascript">'.$js.'</script>';
+		} else {
+			$doc = JFactory::getDocument();
+			$doc->addScriptDeclaration($js);
 		}
 
 		return $ret;

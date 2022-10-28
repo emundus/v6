@@ -46,7 +46,9 @@ class SecuritycheckprosModelCpanel extends SecuritycheckproModel
      @var integer
      */
     var $_dbrows = null;
-
+	
+	var $dbtype = "mysql";
+	
     private $defaultConfig = array(
     'blacklist'            => '',
     'whitelist'        => '',
@@ -97,6 +99,8 @@ class SecuritycheckprosModelCpanel extends SecuritycheckproModel
     
         // Initialize variables
         $server = 'unknow';
+		$config = JFactory::getConfig();
+		$this->dbtype = $config->get('dbtype');
     
         $mainframe = JFactory::getApplication();
     
@@ -128,14 +132,16 @@ class SecuritycheckprosModelCpanel extends SecuritycheckproModel
         $query = $db->getQuery(true);
         $query->select($db->quoteName(array('element', 'manifest_cache')))
             ->from($db->quoteName('#__extensions'))
-            ->where(($db->quoteName('type') . ' = ' . $db->quote('component')) or ($db->quoteName('type') . ' = ' . $db->quote('module')) or ($db->quoteName('type') . ' = ' . $db->quote('plugin')));      
-        $db->setQuery($query);
-        $result = $db->loadObjectList();
+			->where($db->quoteName('type') . " = " . $db->quote('component'), 'OR')
+			->where($db->quoteName('type') . " = " . $db->quote('module'), 'OR')
+			->where($db->quoteName('type') . " = " . $db->quote('plugin'));              
+        $db->setQuery($query);		
+		$result = $db->loadObjectList();
 
         // Importamos el modelo Securitycheckpros
         JLoader::import('joomla.application.component.model');
         JLoader::import('securitycheckpros', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR. 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
-        $securitycheckpro_model = JModelLegacy::getInstance('securitycheckpros', 'SecuritycheckprosModel');
+        $securitycheckpro_model = \Joomla\CMS\MVC\Model\BaseDatabaseModel::getInstance('securitycheckpros', 'SecuritycheckprosModel');
         $securitycheckpro_model->actualizarbbdd($result);
         $logs_pending = $this->LogsPending();
     }
@@ -145,18 +151,34 @@ class SecuritycheckprosModelCpanel extends SecuritycheckproModel
     {
 
         $db = JFactory::getDBO();
+		$query = $db->getQuery(true);
         if ($opcion == 1) {
-            $query = 'SELECT extension_id FROM #__extensions WHERE name="System - Securitycheck Pro" and type="plugin"';
+			$query->select($db->quoteName('extension_id'));
+			$query->from($db->quoteName('#__extensions'));
+			$query->where($db->quoteName('name') . ' = ' . $db->quote('System - Securitycheck Pro')); 
+			$query->where($db->quoteName('type') . ' = ' . $db->quote('plugin'));             
         } else if ($opcion == 2) {
-            $query = 'SELECT extension_id FROM #__extensions WHERE name="System - Securitycheck Pro Cron" and type="plugin"';
+			$query->select($db->quoteName('extension_id'));
+			$query->from($db->quoteName('#__extensions'));
+			$query->where($db->quoteName('name') . ' = ' . $db->quote('System - Securitycheck Pro Cron')); 
+			$query->where($db->quoteName('type') . ' = ' . $db->quote('plugin'));            
         } else if ($opcion == 3) {
-            $query = 'SELECT extension_id FROM #__extensions WHERE name="System - Securitycheck Pro Update Database" and type="plugin"';
+			$query->select($db->quoteName('extension_id'));
+			$query->from($db->quoteName('#__extensions'));
+			$query->where($db->quoteName('name') . ' = ' . $db->quote('System - Securitycheck Pro Update Database')); 
+			$query->where($db->quoteName('type') . ' = ' . $db->quote('plugin'));             
         } else if ($opcion == 4) {
-            $query = 'SELECT extension_id FROM #__extensions WHERE name="System - Securitycheck Spam Protection" and type="plugin"';
+			$query->select($db->quoteName('extension_id'));
+			$query->from($db->quoteName('#__extensions'));
+			$query->where($db->quoteName('name') . ' = ' . $db->quote('System - Securitycheck Spam Protection')); 
+			$query->where($db->quoteName('type') . ' = ' . $db->quote('plugin'));               
         } else if ($opcion == 5) {
-            $query = 'SELECT extension_id FROM #__extensions WHERE name="System - url inspector" and type="plugin"';
+			$query->select($db->quoteName('extension_id'));
+			$query->from($db->quoteName('#__extensions'));
+			$query->where($db->quoteName('name') . ' = ' . $db->quote('System - url Inspector')); 
+			$query->where($db->quoteName('type') . ' = ' . $db->quote('plugin'));
         }
-    
+				
         $db->setQuery($query);
         $db->execute();
         $id = $db->loadResult();
@@ -174,32 +196,66 @@ class SecuritycheckprosModelCpanel extends SecuritycheckproModel
         $db = JFactory::getDBO();
         switch ($opcion)
         {
-        case 'last_year':
-            $query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE YEAR(`time`) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 YEAR))';
+        case 'last_year':		
+			if (strstr($this->dbtype,"mysql")) {
+				$query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE YEAR(time) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 YEAR))';
+			} else if (strstr($this->dbtype,"pgsql")) {
+				$query = "SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE EXTRACT(YEAR FROM time) = EXTRACT(YEAR FROM NOW() - INTERVAL '1 YEAR');";
+			}            
             break;
         case 'this_year':
-            $query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE YEAR(`time`) = YEAR(CURDATE())';
+			if (strstr($this->dbtype,"mysql")) {
+				$query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE YEAR(time) = YEAR(CURDATE())';
+			} else if (strstr($this->dbtype,"pgsql")) {
+				$query = "SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE EXTRACT(YEAR FROM time) = EXTRACT(YEAR FROM NOW());";
+			}             
             break;
         case 'last_month':
-            $query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE (MONTH(`time`) = MONTH(CURDATE())-1) AND (YEAR(`time`) = YEAR(CURDATE()))';
+			if (strstr($this->dbtype,"mysql")) {
+				$query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE (MONTH(time) = MONTH(CURDATE())-1) AND (YEAR(`time`) = YEAR(CURDATE()))';
+			} else if (strstr($this->dbtype,"pgsql")) {
+				$query = "SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE EXTRACT(MONTH FROM time) = EXTRACT(MONTH FROM NOW() - INTERVAL '1 MONTH') AND EXTRACT(YEAR FROM time) = EXTRACT(YEAR FROM NOW());";
+			}              
             break;
         case 'this_month':
-            $query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE (MONTH(`time`) = MONTH(CURDATE())) AND (YEAR(`time`) = YEAR(CURDATE()))';
+			if (strstr($this->dbtype,"mysql")) {
+				$query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE (MONTH(time) = MONTH(CURDATE())) AND (YEAR(`time`) = YEAR(CURDATE()))';
+			} else if (strstr($this->dbtype,"pgsql")) {
+				$query = "SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE EXTRACT(MONTH FROM time) = EXTRACT(MONTH FROM NOW()) AND EXTRACT(YEAR FROM time) = EXTRACT(YEAR FROM NOW());";
+			}              
             break;
         case 'last_7_days':
-            $query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE `time` BETWEEN DATE_SUB(NOW(),INTERVAL 1 WEEK) AND NOW()';
+			if (strstr($this->dbtype,"mysql")) {
+				 $query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE time BETWEEN DATE_SUB(NOW(),INTERVAL 1 WEEK) AND NOW()';
+			} else if (strstr($this->dbtype,"pgsql")) {
+				$query = "SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE time BETWEEN (NOW() - INTERVAL '1 WEEK') AND NOW();";
+			}               
             break;
         case 'yesterday':
-            $query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE (DAYOFMONTH(`time`) = DAYOFMONTH(CURDATE())-1) AND (MONTH(`time`) = MONTH(CURDATE())) AND (YEAR(`time`) = YEAR(CURDATE())) ';
+			if (strstr($this->dbtype,"mysql")) {
+				$query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE (DAYOFMONTH(time) = DAYOFMONTH(CURDATE())-1) AND (MONTH(time) = MONTH(CURDATE())) AND (YEAR(time) = YEAR(CURDATE())) ';
+			} else if (strstr($this->dbtype,"pgsql")) {
+				$query = "SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE EXTRACT(DAY FROM time) =  EXTRACT(DAY FROM NOW() - INTERVAL '1 DAY') AND EXTRACT(MONTH FROM time) =  EXTRACT(MONTH FROM NOW()) AND EXTRACT(YEAR FROM time) =  EXTRACT(YEAR FROM NOW());";
+			}             
             break;
         case 'today':
-            $query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE `time` > DATE_SUB(NOW(), INTERVAL 1 DAY)';
+			if (strstr($this->dbtype,"mysql")) {
+				$query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE time > DATE_SUB(NOW(), INTERVAL 1 DAY)';
+			} else if (strstr($this->dbtype,"pgsql")) {
+				$query = "SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE time > (NOW() - INTERVAL '1 DAY') AND NOW();";
+			}              
             break;
         }
     
-        $db->setQuery($query);
-        $db->execute();
-        $result = $db->loadResult();
+		try {
+			$db->setQuery($query);
+			$db->execute();
+			$result = $db->loadResult();
+		} catch (Exception $e)
+        {    			
+            $result = 0;
+        }
+        
     
         return $result;
     }
@@ -215,20 +271,37 @@ class SecuritycheckprosModelCpanel extends SecuritycheckproModel
         switch ($opcion)
         {
         case 'total_firewall_rules':
-            $query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE (`type` = "XSS" OR `type` = "SQL_INJECTION" OR `type` = "LFI" OR `type` = "SECOND_LEVEL" OR `type` LIKE \'%_BASE64\')';
+			if (strstr($this->dbtype,"mysql")) {
+				$query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE (`type` = "XSS" OR `type` = "SQL_INJECTION" OR `type` = "LFI" OR `type` = "SECOND_LEVEL" OR `type` LIKE \'%_BASE64\')';
+			} else if (strstr($this->dbtype,"pgsql")) {
+				$query = "SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE (type = 'XSS' OR type = 'SQL_INJECTION' OR type = 'LFI' OR type = 'SECOND_LEVEL' OR type LIKE '%_BASE64');";
+			}            
             break;
         case 'total_blocked_access':
-            $query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE (`type` = "IP_BLOCKED" OR `type` = "IP_BLOCKED_DINAMIC")';
+			if (strstr($this->dbtype,"mysql")) {
+				$query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE (`type` = "IP_BLOCKED" OR `type` = "IP_BLOCKED_DINAMIC")';
+			} else if (strstr($this->dbtype,"pgsql")) {
+				$query = "SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE (type = 'IP_BLOCKED' OR type = 'IP_BLOCKED_DINAMIC');";
+			}               
             break;
         case 'total_user_session_protection':
-            $query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE (`type` = "USER_AGENT_MODIFICATION" OR `type` = "REFERER_MODIFICATION" OR `type` = "SESSION_PROTECTION" OR `type` = "SESSION_HIJACK_ATTEMPT")';
+			if (strstr($this->dbtype,"mysql")) {
+				$query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE (`type` = "USER_AGENT_MODIFICATION" OR `type` = "REFERER_MODIFICATION" OR `type` = "SESSION_PROTECTION" OR `type` = "SESSION_HIJACK_ATTEMPT")';
+			} else if (strstr($this->dbtype,"pgsql")) {
+				$query = "SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE (type = 'USER_AGENT_MODIFICATION' OR type = 'REFERER_MODIFICATION' OR type = 'SESSION_PROTECTION' OR type = 'SESSION_HIJACK_ATTEMPT');";
+			}            
             break;
         
         }
-    
-        $db->setQuery($query);
-        $db->execute();
-        $result = $db->loadResult();
+		
+		try {
+			$db->setQuery($query);
+			$db->execute();
+			$result = $db->loadResult();
+		} catch (Exception $e)
+        {    
+			$result = 0;
+        }
     
         return $result;
     }
@@ -480,7 +553,7 @@ class SecuritycheckprosModelCpanel extends SecuritycheckproModel
     {
         (int) $plugin_id = 0;
     
-        // Obtenemos el id del plugin a deshabilitar
+        // Obtenemos el id del plugin a habilitar
         if ($plugin == 'firewall') {
             $plugin_id = $this->get_plugin_id(1);
         } else if ($plugin == 'cron') {
@@ -499,37 +572,8 @@ class SecuritycheckprosModelCpanel extends SecuritycheckproModel
             ->update($db->quoteName('#__extensions'))
             ->set('enabled = 1')
             ->where('extension_id = '.$db->quote($plugin_id));
-        $db->setQuery($query);    
+        $db->setQuery($query); 		
         $db->execute();        
-    }
-
-    /* Función que establece las actualizaciones automáticas de Geolite2 */
-    function enable_automatic_updates()
-    {
-    
-        // Get the params and set the new values
-        $params = JComponentHelper::getParams('com_securitycheckpro');
-        $params->set('geoip_automatic_updates', 1);
-            
-        $componentid = JComponentHelper::getComponent('com_securitycheckpro')->id;
-        $table = JTable::getInstance('extension');
-        $table->load($componentid);
-        $table->bind(array('params' => $params->toString()));
-            
-        // check for error
-        if (!$table->check()) {
-            JFactory::getApplication()->enqueueMessage($table->getError(), 'error');
-            return false;
-        }
-        // Save to database
-        if (!$table->store()) {
-            JFactory::getApplication()->enqueueMessage($table->getError(), 'error');
-            return false;
-        }
-            
-        // Clean the component cache. Without these lines changes will not be reflected until cache expired.
-        parent::cleanCache('_system', 0);
-        parent::cleanCache('_system', 1);
     }
 
     /* Función que obtiene la versión del componente pasado como argumento */
@@ -539,18 +583,27 @@ class SecuritycheckprosModelCpanel extends SecuritycheckproModel
         $version = '0.0.0';
     
         $db = JFactory::getDBO();
+		$query = $db->getQuery(true);
         if ($extension == 'securitycheckpro') {
-            $query = 'SELECT manifest_cache FROM #__extensions WHERE name="Securitycheck Pro"';
+			$query->select($db->quoteName('manifest_cache'));
+			$query->from($db->quoteName('#__extensions'));
+			$query->where($db->quoteName('name') . ' = ' . $db->quote('Securitycheck Pro'));            
         } else if ($extension == 'databaseupdate') {
-            $query = 'SELECT manifest_cache FROM #__extensions WHERE name="System - Securitycheck Pro Update Database" and type="plugin"';
+			$query->select($db->quoteName('manifest_cache'));
+			$query->from($db->quoteName('#__extensions'));
+			$query->where($db->quoteName('name') . ' = ' . $db->quote('System - Securitycheck Pro Update Database'));
+			$query->where($db->quoteName('type') . ' = ' . $db->quote('plugin'));            
         } else if ($extension == 'trackactions') {
-            $query = 'SELECT manifest_cache FROM #__extensions WHERE name="Track Actions Package" and type="package"';
-        } 
-    
+			$query->select($db->quoteName('manifest_cache'));
+			$query->from($db->quoteName('#__extensions'));
+			$query->where($db->quoteName('name') . ' = ' . $db->quote('Track Actions Package'));
+			$query->where($db->quoteName('type') . ' = ' . $db->quote('package'));
+        }
+		    
         $db->setQuery($query);
         $db->execute();
         $manifest_json = $db->loadResult();
-    
+		    
         if (!empty($manifest_json)) {
             $manifest_decoded = json_decode($manifest_json);
             $version = $manifest_decoded->version;
@@ -624,31 +677,54 @@ class SecuritycheckprosModelCpanel extends SecuritycheckproModel
             $message = JText::_('COM_SECURITYCHECKPRO_LOCKED_MESSAGE');
             $trigger_name = $component_name . "_" . $option . "_trigger";
             $table_name_joomla_format = "#__" . $table_name;
-                
-            if ($option == "delete") {            
-                  $query = "CREATE TRIGGER {$trigger_name}
-			BEFORE DELETE ON {$table_name_joomla_format}
-			FOR EACH ROW
-			BEGIN
-			IF OLD.storage_key = 'locked' THEN 
-				SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
-			END IF;
-			END;";    
+			              
+            if ($option == "delete") {    
+				if (strstr($this->dbtype,"mysql")) {
+					$query = "CREATE TRIGGER {$trigger_name}
+						BEFORE DELETE ON {$table_name_joomla_format}
+						FOR EACH ROW
+						BEGIN
+						IF OLD.storage_key = 'locked' THEN 
+							SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
+						END IF;
+						END;";   
+				} else if (strstr($this->dbtype,"pgsql")) {
+					$query = "CREATE FUNCTION scp_delete_trigger() RETURNS trigger AS \$scp_delete_trigger\$ BEGIN IF OLD.\"storage_key\" = 'locked' THEN RAISE EXCEPTION '{$message}'; END IF; END; \$scp_delete_trigger\$ LANGUAGE plpgsql;";					
+					try{
+						$db->setQuery($query);
+						$db->execute();
+					} catch (Exception $e)
+					{   						
+					}
+					$query = "CREATE TRIGGER {$trigger_name} BEFORE DELETE ON {$table_name_joomla_format} FOR EACH ROW EXECUTE PROCEDURE scp_delete_trigger();";					
+				}
+                   
             } else 
             {
-                $query = "CREATE TRIGGER {$trigger_name}
-			BEFORE {$option} ON {$table_name_joomla_format}
-			FOR EACH ROW
-			BEGIN
-			IF NEW.storage_key = 'locked' THEN 
-				SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
-			END IF;
-			END;";    
+				if (strstr($this->dbtype,"mysql")) {
+					$query = "CREATE TRIGGER {$trigger_name}
+				BEFORE {$option} ON {$table_name_joomla_format}
+				FOR EACH ROW
+				BEGIN
+				IF NEW.storage_key = 'locked' THEN 
+					SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
+				END IF;
+				END;";  
+				} else if (strstr($this->dbtype,"pgsql")) {
+					$query = "CREATE FUNCTION scp_{$option}_trigger() RETURNS trigger AS \$scp_{$option}_trigger\$ BEGIN IF NEW.\"storage_key\" = 'locked' THEN RAISE EXCEPTION '{$message}'; END IF; END; \$scp_{$option}_trigger\$ LANGUAGE plpgsql;";					
+					try{
+						$db->setQuery($query);
+						$db->execute();
+					} catch (Exception $e)
+					{   						
+					}
+					$query = "CREATE TRIGGER {$trigger_name} BEFORE {$option} ON {$table_name_joomla_format} FOR EACH ROW EXECUTE PROCEDURE scp_{$option}_trigger();";					
+				}
             }
             $db->setQuery($query);
             $db->execute();
         } catch (Exception $e)
-        {                        
+        {              			
         }    
     }
 
@@ -664,71 +740,160 @@ class SecuritycheckprosModelCpanel extends SecuritycheckproModel
         
             if ($table_name == "users") {
                 if ($option == "update") {
-                    $query = "CREATE TRIGGER {$trigger_name}
-					BEFORE {$option} ON {$table_name_joomla_format}
-					FOR EACH ROW
-					BEGIN
-					DECLARE locked integer;
-					SET @locked=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked');
-							
-					IF @locked = 1 and ((OLD.name != NEW.name) OR (OLD.username != NEW.username) OR (OLD.email != NEW.email) OR (OLD.password != NEW.password) OR (OLD.block != NEW.block) OR (OLD.otpKey != NEW.otpKey) OR (OLD.otep != NEW.otep)) THEN 
-						SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
-					END IF;
-					END;";    
+					if (strstr($this->dbtype,"mysql")) {
+						$query = "CREATE TRIGGER {$trigger_name}
+						BEFORE {$option} ON {$table_name_joomla_format}
+						FOR EACH ROW
+						BEGIN
+						DECLARE locked integer;
+						SET @locked=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked');
+								
+						IF @locked = 1 and ((OLD.name != NEW.name) OR (OLD.username != NEW.username) OR (OLD.email != NEW.email) OR (OLD.password != NEW.password) OR (OLD.block != NEW.block) OR (OLD.otpKey != NEW.otpKey) OR (OLD.otep != NEW.otep)) THEN 
+							SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
+						END IF;
+						END;";    
+					} else if (strstr($this->dbtype,"pgsql")) {
+						$query = "CREATE FUNCTION {$trigger_name}() RETURNS trigger AS \${$trigger_name}\$ DECLARE locked integer; BEGIN locked:=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked'); IF (locked = 1 and ((OLD.name != NEW.name) OR (OLD.username != NEW.username) OR (OLD.email != NEW.email) OR (OLD.password != NEW.password) OR (OLD.block != NEW.block))) THEN RAISE EXCEPTION '{$message}'; END IF; END; \${$trigger_name}\$ LANGUAGE plpgsql;";
+						try{
+							$db->setQuery($query);
+							$db->execute();
+						} catch (Exception $e)
+						{  							
+						}
+						$query = "CREATE TRIGGER {$trigger_name} BEFORE {$option} ON {$table_name_joomla_format} FOR EACH ROW EXECUTE PROCEDURE {$trigger_name}();";
+					}
+                    
                 } else {
-                    $query = "CREATE TRIGGER {$trigger_name}
-					BEFORE {$option} ON {$table_name_joomla_format}
-					FOR EACH ROW
-					BEGIN
-					DECLARE locked integer;
-					SET @locked=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked');
-							
-					IF @locked = 1 THEN 
-						SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
-					END IF;
-					END;";    
+					if (strstr($this->dbtype,"mysql")) {
+						$query = "CREATE TRIGGER {$trigger_name}
+						BEFORE {$option} ON {$table_name_joomla_format}
+						FOR EACH ROW
+						BEGIN
+						DECLARE locked integer;
+						SET @locked=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked');
+								
+						IF @locked = 1 THEN 
+							SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
+						END IF;
+						END;";
+					} else if (strstr($this->dbtype,"pgsql")) {
+						$query = "CREATE FUNCTION {$trigger_name}() RETURNS trigger AS \${$trigger_name}\$ DECLARE locked integer; BEGIN locked:=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked'); IF locked = 1 THEN RAISE EXCEPTION '{$message}'; END IF; END; \${$trigger_name}\$ LANGUAGE plpgsql;";
+						
+						try{
+							$db->setQuery($query);
+							$db->execute();
+						} catch (Exception $e)
+						{  							
+						}
+						$query = "CREATE TRIGGER {$trigger_name} BEFORE {$option} ON {$table_name_joomla_format} FOR EACH ROW EXECUTE PROCEDURE {$trigger_name}();";
+					}
+                    
                 }
             } else if ($table_name == "content") {
                 if ($option == "update") {
-                    $query = "CREATE TRIGGER {$trigger_name}
-					BEFORE {$option} ON {$table_name_joomla_format}
-					FOR EACH ROW
-					BEGIN
-					DECLARE locked integer;
-					SET @locked=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked');
-							
-					IF @locked = 1 and ((OLD.introtext != NEW.introtext) OR (OLD.fulltext != NEW.fulltext)) THEN 
-						SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
-					END IF;
-					END;";    
+					if (strstr($this->dbtype,"mysql")) {
+						$query = "CREATE TRIGGER {$trigger_name}
+						BEFORE {$option} ON {$table_name_joomla_format}
+						FOR EACH ROW
+						BEGIN
+						DECLARE locked integer;
+						SET @locked=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked');
+								
+						IF @locked = 1 and ((OLD.introtext != NEW.introtext) OR (OLD.fulltext != NEW.fulltext)) THEN 
+							SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
+						END IF;
+						END;";   
+					} else if (strstr($this->dbtype,"pgsql")) {
+						$query = "CREATE FUNCTION {$trigger_name}() RETURNS trigger AS \${$trigger_name}\$ DECLARE locked integer; BEGIN locked:=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked'); IF (locked = 1 and (OLD.introtext != NEW.introtext OR OLD.fulltext != NEW.fulltext)) THEN RAISE SQLSTATE '02000' USING MESSAGE='{$message}'; END IF; RETURN NULL; END; \${$trigger_name}\$ LANGUAGE plpgsql;";						
+						
+						try{
+							$db->setQuery($query);
+							$db->execute();
+						} catch (Exception $e)
+						{  							
+						}
+						$query = "CREATE TRIGGER {$trigger_name} BEFORE {$option} ON {$table_name_joomla_format} FOR EACH ROW EXECUTE PROCEDURE {$trigger_name}();";
+					}
                 } else {
-                    $query = "CREATE TRIGGER {$trigger_name}
-					BEFORE {$option} ON {$table_name_joomla_format}
-					FOR EACH ROW
-					BEGIN
-					DECLARE locked integer;
-					SET @locked=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked');
-							
-					IF @locked = 1 THEN 
-						SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
-					END IF;
-					END;";    
+					if (strstr($this->dbtype,"mysql")) {
+						$query = "CREATE TRIGGER {$trigger_name}
+						BEFORE {$option} ON {$table_name_joomla_format}
+						FOR EACH ROW
+						BEGIN
+						DECLARE locked integer;
+						SET @locked=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked');
+								
+						IF @locked = 1 THEN 
+							SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
+						END IF;
+						END;";    
+					} else if (strstr($this->dbtype,"pgsql")) {
+						$query = "CREATE FUNCTION {$trigger_name}() RETURNS trigger AS \${$trigger_name}\$ DECLARE locked integer; BEGIN locked:=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked'); IF (locked = 1) THEN RAISE SQLSTATE '02000' USING MESSAGE='{$message}'; END IF; RETURN NULL; END; \${$trigger_name}\$ LANGUAGE plpgsql;";						
+						
+						try{
+							$db->setQuery($query);
+							$db->execute();
+						} catch (Exception $e)
+						{  							
+						}
+						$query = "CREATE TRIGGER {$trigger_name} BEFORE {$option} ON {$table_name_joomla_format} FOR EACH ROW EXECUTE PROCEDURE {$trigger_name}();";
+					}
+                    
                 }
             } else if ($table_name == "extensions") {
                 if ($option == "update") {
-                    $query = "CREATE TRIGGER {$trigger_name}
-					BEFORE {$option} ON {$table_name_joomla_format}
-					FOR EACH ROW
-					BEGIN
-					DECLARE locked integer;
-					SET @locked=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked');
-							
-					IF @locked = 1 and ((OLD.extension_id != NEW.extension_id) OR (OLD.name != NEW.name) OR (OLD.element != NEW.element) OR (OLD.folder != NEW.folder) OR (OLD.access != NEW.access) OR (OLD.protected != NEW.protected) OR (OLD.state != NEW.state)) THEN 
-						SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
-					END IF;
-					END;";    
+					if (strstr($this->dbtype,"mysql")) {
+						$query = "CREATE TRIGGER {$trigger_name}
+						BEFORE {$option} ON {$table_name_joomla_format}
+						FOR EACH ROW
+						BEGIN
+						DECLARE locked integer;
+						SET @locked=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked');
+								
+						IF @locked = 1 and ((OLD.extension_id != NEW.extension_id) OR (OLD.name != NEW.name) OR (OLD.element != NEW.element) OR (OLD.folder != NEW.folder) OR (OLD.access != NEW.access) OR (OLD.protected != NEW.protected) OR (OLD.state != NEW.state)) THEN 
+							SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
+						END IF;
+						END;";   
+					} else if (strstr($this->dbtype,"pgsql")) {
+						$query = "CREATE FUNCTION {$trigger_name}() RETURNS trigger AS \${$trigger_name}\$ DECLARE locked integer; BEGIN locked:=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked'); IF locked = 1 and ((OLD.extension_id != NEW.extension_id) OR (OLD.name != NEW.name) OR (OLD.element != NEW.element) OR (OLD.folder != NEW.folder) OR (OLD.access != NEW.access) OR (OLD.protected != NEW.protected) OR (OLD.state != NEW.state)) THEN RAISE SQLSTATE '02000' USING MESSAGE='{$message}'; END IF; RETURN NULL; END; \${$trigger_name}\$ LANGUAGE plpgsql;";						
+						
+						try{
+							$db->setQuery($query);
+							$db->execute();
+						} catch (Exception $e)
+						{  							
+						}
+						$query = "CREATE TRIGGER {$trigger_name} BEFORE {$option} ON {$table_name_joomla_format} FOR EACH ROW EXECUTE PROCEDURE {$trigger_name}();";
+					}
                 } else {
-                    $query = "CREATE TRIGGER {$trigger_name}
+					if (strstr($this->dbtype,"mysql")) {
+						$query = "CREATE TRIGGER {$trigger_name}
+						BEFORE {$option} ON {$table_name_joomla_format}
+						FOR EACH ROW
+						BEGIN
+						DECLARE locked integer;
+						SET @locked=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked');
+								
+						IF @locked = 1 THEN 
+							SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
+						END IF;
+						END;"; 
+					} else if (strstr($this->dbtype,"pgsql")) {
+						$query = "CREATE FUNCTION {$trigger_name}() RETURNS trigger AS \${$trigger_name}\$ DECLARE locked integer; BEGIN locked:=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked'); IF locked = 1 THEN RAISE SQLSTATE '02000' USING MESSAGE='{$message}'; END IF; RETURN NULL; END; \${$trigger_name}\$ LANGUAGE plpgsql;";						
+						
+						try{
+							$db->setQuery($query);
+							$db->execute();
+						} catch (Exception $e)
+						{  							
+						}
+						$query = "CREATE TRIGGER {$trigger_name} BEFORE {$option} ON {$table_name_joomla_format} FOR EACH ROW EXECUTE PROCEDURE {$trigger_name}();";
+					}
+                }
+            } else 
+            {
+				if (strstr($this->dbtype,"mysql")) {
+					$query = "CREATE TRIGGER {$trigger_name}
 					BEFORE {$option} ON {$table_name_joomla_format}
 					FOR EACH ROW
 					BEGIN
@@ -738,27 +903,23 @@ class SecuritycheckprosModelCpanel extends SecuritycheckproModel
 					IF @locked = 1 THEN 
 						SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
 					END IF;
-					END;";    
-                }
-            } else 
-            {
-                $query = "CREATE TRIGGER {$trigger_name}
-				BEFORE {$option} ON {$table_name_joomla_format}
-				FOR EACH ROW
-				BEGIN
-				DECLARE locked integer;
-				SET @locked=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked');
-						
-				IF @locked = 1 THEN 
-					SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = '{$message}';
-				END IF;
-				END;";    
+					END;"; 
+				} else if (strstr($this->dbtype,"pgsql")) {
+					$query = "CREATE FUNCTION {$trigger_name}() RETURNS trigger AS \${$trigger_name}\$ DECLARE locked integer; BEGIN locked:=(SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key = 'locked'); IF locked = 1 THEN RAISE SQLSTATE '02000' USING MESSAGE='{$message}'; END IF; RETURN NULL; END; \${$trigger_name}\$ LANGUAGE plpgsql;";						
+					try{
+						$db->setQuery($query);
+						$db->execute();
+					} catch (Exception $e)
+					{  							
+						}
+					$query = "CREATE TRIGGER {$trigger_name} BEFORE {$option} ON {$table_name_joomla_format} FOR EACH ROW EXECUTE PROCEDURE {$trigger_name}();";
+				}
             }        
         
             $db->setQuery($query);
             $db->execute();
         } catch (Exception $e)
-        {                    
+        {   			
         }    
     }
 
@@ -791,12 +952,7 @@ class SecuritycheckprosModelCpanel extends SecuritycheckproModel
                     // 'user_usergroup_map' table triggers
                     $this->create_trigger("insert", "user_usergroup_map", "user_usergroup_map");
                     $this->create_trigger("update", "user_usergroup_map", "user_usergroup_map");
-                    $this->create_trigger("delete", "user_usergroup_map", "user_usergroup_map");
-                    
-                    // 'K2' user triggers
-                    /*$this->create_trigger("insert","k2_users","k2_users");
-                    $this->create_trigger("update","k2_users","k2_users");
-                    $this->create_trigger("delete","k2_users","k2_users");*/
+                    $this->create_trigger("delete", "user_usergroup_map", "user_usergroup_map");             
                                         
                     
                 } else if ($table_name == "content") {
@@ -813,12 +969,7 @@ class SecuritycheckprosModelCpanel extends SecuritycheckproModel
                     // 'extensions' table triggers
                     $this->create_trigger("insert", "extensions", "extensions");
                     $this->create_trigger("update", "extensions", "extensions");
-                    $this->create_trigger("delete", "extensions", "extensions");
-                
-                    /*// 'K2' table triggers
-                    $this->create_trigger("insert","k2_items","k2_items");
-                    $this->create_trigger("update","k2_items","k2_items");
-                    $this->create_trigger("delete","k2_items","k2_items");*/
+                    $this->create_trigger("delete", "extensions", "extensions");                
                 }
             }        
         } else {
@@ -840,17 +991,18 @@ class SecuritycheckprosModelCpanel extends SecuritycheckproModel
         // Block scp tables
         try 
         {        
-            $query = "UPDATE #__securitycheckpro_storage SET `storage_value` = '1' WHERE `storage_key` = 'locked'";
+            $query = "UPDATE #__securitycheckpro_storage SET storage_value = '1' WHERE storage_key = 'locked'";
             $db->setQuery($query);
             $db->execute();
         } catch (Exception $e)
-        {            
+        {      
+			
         }
     
         // Securitycheck Pro table triggers
         $this->create_trigger_scp("insert", "scp", "securitycheckpro_storage");
         $this->create_trigger_scp("update", "scp", "securitycheckpro_storage");
-        $this->create_trigger_scp("delete", "scp", "securitycheckpro_storage");    
+        $this->create_trigger_scp("delete", "scp", "securitycheckpro_storage"); 
         
     }
 
@@ -860,8 +1012,13 @@ class SecuritycheckprosModelCpanel extends SecuritycheckproModel
         $db = JFactory::getDBO();
     
         try 
-        {        
-            $query = "DROP TRIGGER {$trigger_name};";    
+        {    
+			if (strstr($this->dbtype,"mysql")) {
+				$query = "DROP TRIGGER {$trigger_name};"; 
+			} else if (strstr($this->dbtype,"pgsql")) {
+				$query = "DROP FUNCTION {$trigger_name}() CASCADE;";
+			}
+            
             $db->setQuery($query);
             $db->execute();
         } catch (Exception $e)
@@ -916,7 +1073,7 @@ class SecuritycheckprosModelCpanel extends SecuritycheckproModel
         $db = JFactory::getDBO();
         try 
         {        
-            $query = "UPDATE #__securitycheckpro_storage SET `storage_value` = '0' WHERE `storage_key` = 'locked'";
+            $query = "UPDATE #__securitycheckpro_storage SET storage_value = '0' WHERE storage_key = 'locked'";
             $db->setQuery($query);
             $db->execute();
         } catch (Exception $e)
@@ -930,9 +1087,12 @@ class SecuritycheckprosModelCpanel extends SecuritycheckproModel
     {
         $locked = 0;
         $db = JFactory::getDBO();    
+		$query = $db->getQuery(true);
         try 
-        {        
-            $query = 'SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key="locked"';
+        {   
+			$query->select($db->quoteName('storage_value'));
+			$query->from($db->quoteName('#__securitycheckpro_storage'));
+			$query->where($db->quoteName('storage_key') . ' = ' . $db->quote('locked'));
             $db->setQuery($query);
             $db->execute();
             $locked = $db->loadResult();
@@ -942,5 +1102,160 @@ class SecuritycheckprosModelCpanel extends SecuritycheckproModel
         }    
         return $locked;
     }
+	
+	/* Función que activa la recogida de estadísiticas */
+    function enable_analytics($website_code,$control_center_url)
+    {
+		$success = 1;
+		
+        // Get the params and set the new values
+		try {
+			$params = JComponentHelper::getParams('com_securitycheckpro');
+			$params->set('enable_analytics', 1);
+			$params->set('website_code', $website_code);
+				
+			$componentid = JComponentHelper::getComponent('com_securitycheckpro')->id;
+			$table = JTable::getInstance('extension');
+			$table->load($componentid);
+			$table->bind(array('params' => $params->toString()));
+				
+			// check for error
+			if (!$table->check()) {
+				JFactory::getApplication()->enqueueMessage($table->getError(), 'error');
+				return false;
+			}
+			// Save to database
+			if (!$table->store()) {
+				JFactory::getApplication()->enqueueMessage($table->getError(), 'error');
+				return false;
+			}
+				
+			// Clean the component cache. Without these lines changes will not be reflected until cache expired.
+			parent::cleanCache('_system', 0);
+			parent::cleanCache('_system', 1); 			
+			
+		} catch (Exception $e)		
+        {
+			return 0;
+		}
+		return $success;
+    }
+	
+	/* Función que desactiva la recogida de estadísiticas */
+    function disable_analytics($website_code,$control_center_url)
+    {
+		$success = 1;
+		
+        // Get the params and set the new values
+		try {
+			$params = JComponentHelper::getParams('com_securitycheckpro');
+			$params->set('enable_analytics', 0);
+							
+			$componentid = JComponentHelper::getComponent('com_securitycheckpro')->id;
+			$table = JTable::getInstance('extension');
+			$table->load($componentid);
+			$table->bind(array('params' => $params->toString()));
+				
+			// check for error
+			if (!$table->check()) {
+				JFactory::getApplication()->enqueueMessage($table->getError(), 'error');
+				return false;
+			}
+			// Save to database
+			if (!$table->store()) {
+				JFactory::getApplication()->enqueueMessage($table->getError(), 'error');
+				return false;
+			}
+				
+			// Clean the component cache. Without these lines changes will not be reflected until cache expired.
+			parent::cleanCache('_system', 0);
+			parent::cleanCache('_system', 1); 
+			
+		} catch (Exception $e)		
+        {
+			return 0;
+		}
+		return $success;
+    }
+	
+	/* Función que obtiene el download id de la tabla update_sites. */
+    function get_extra_query_update_sites_table($element)
+    {
+		$db = JFactory::getDBO();    
+		$query = $db->getQuery(true);
+		
+					
+		try {
+			$query->select($db->quoteName('extension_id'));
+			$query->from($db->quoteName('#__extensions'));
+			$query->where($db->quoteName('element') . ' = ' . $db->quote($element));
+            $db->setQuery($query);
+            $db->execute();
+            $extension_id = $db->loadResult();
+						
+			$query = null;
+			$query = $db->getQuery(true);
+			$query->select($db->quoteName('update_site_id'));
+			$query->from($db->quoteName('#__update_sites_extensions'));
+			$query->where($db->quoteName('extension_id') . ' = ' . $db->quote($extension_id));
+            $db->setQuery($query);
+			$db->execute();
+            $update_site_id = $db->loadResult();
+						
+			$query = null;
+			$query = $db->getQuery(true);
+			$query->select($db->quoteName(array('extra_query', 'update_site_id')));
+			$query->from($db->quoteName('#__update_sites'));
+			$query->where($db->quoteName('update_site_id') . ' = ' . $db->quote($update_site_id));
+            $db->setQuery($query);
+            $db->execute();
+            $update_site_data = $db->loadObject();
+						
+			// Remove the 'dlid=' part of the string
+			if ( !empty($update_site_data) ) {
+				$update_site_data->extra_query = str_replace("dlid=", "",$update_site_data->extra_query);
+			}						
+			
+		} catch (Exception $e)		
+        {
+			JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+			return "error";
+		}	
+		
+		return $update_site_data;
+		
+	}
+	
+	/* Función que actualiza el campo 'extra_query' de la tabla update_sites. */
+    function update_extra_query_update_sites_table($site_id,$dlid)
+    {
+		$db = JFactory::getDBO();    
+		$query = $db->getQuery(true);
+				
+		if ( !is_int($site_id) ) {
+			JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_SITE_ID_NOT_VALID'), 'error');	
+			return;
+		}
+		
+		// Construct the right dlid format
+		$extra_query = "dlid=" . $dlid;	
+					
+		try {
+			$query = $db->getQuery(true)
+				->update($db->quoteName('#__update_sites'))
+				->set('extra_query = '.$db->quote($extra_query))
+				->where('update_site_id = '.$db->quote($site_id));
+			$db->setQuery($query);    
+			$db->execute();        
+		} catch (Exception $e)		
+        {
+			JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');	
+			return;
+		}	
+		
+		JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_DOWNLOAD_ID_UPDATED'));
+	}
+	
+	
 
 }

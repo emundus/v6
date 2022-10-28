@@ -3,7 +3,7 @@
  * @package     Joomla.Administrator
  * @subpackage  com_tags
  *
- * @copyright   Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
+ * @copyright   (C) 2013 Open Source Matters, Inc. <https://www.joomla.org>
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -133,19 +133,8 @@ class TagsModelTag extends JModelAdmin
 			$registry = new Registry($result->urls);
 			$result->urls = $registry->toArray();
 
-			// Convert the created and modified dates to local user time for display in the form.
+			// Convert the modified date to local user time for display in the form.
 			$tz = new DateTimeZone(JFactory::getApplication()->get('offset'));
-
-			if ((int) $result->created_time)
-			{
-				$date = new JDate($result->created_time);
-				$date->setTimezone($tz);
-				$result->created_time = $date->toSql(true);
-			}
-			else
-			{
-				$result->created_time = null;
-			}
 
 			if ((int) $result->modified_time)
 			{
@@ -272,9 +261,21 @@ class TagsModelTag extends JModelAdmin
 		// Alter the title for save as copy
 		if ($input->get('task') == 'save2copy')
 		{
-			list($title, $alias) = $this->generateNewTitle($data['parent_id'], $data['alias'], $data['title']);
-			$data['title']       = $title;
-			$data['alias']       = $alias;
+			$origTable = $this->getTable();
+			$origTable->load($input->getInt('id'));
+
+			if ($data['title'] == $origTable->title)
+			{
+				list($title, $alias) = $this->generateNewTitle($data['parent_id'], $data['alias'], $data['title']);
+				$data['title'] = $title;
+				$data['alias'] = $alias;
+			}
+			elseif ($data['alias'] == $origTable->alias)
+			{
+				$data['alias'] = '';
+			}
+
+			$data['published'] = 0;
 		}
 
 		// Bind the data.

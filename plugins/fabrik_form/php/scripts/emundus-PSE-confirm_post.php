@@ -44,8 +44,9 @@ $post = array(  'DEADLINE' => JHTML::_('date', $campaign['end_date'], JText::_('
 				'CAMPAIGN_END' => JHTML::_('date', $campaign['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
 				'CAMPAIGN_CODE' => $campaign['training']
 			);
-$tags = $emails->setTags($student->id, $post);
+
 $email = $emails->getEmail("confirm_post");
+$tags = $emails->setTags($student->id, $post, $student->fnum, '', $email->message);
 
 // Apllicant cannot delete this attachments now
 $query = 'UPDATE #__emundus_uploads SET can_be_deleted = 0 WHERE user_id = '.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
@@ -83,14 +84,14 @@ try {
 	// catch any database errors.
 }
 
-// Mail
+// Mail 
 $from = $email->emailfrom;
 $from_id = 62;
 $fromname =$email->name;
 $recipient[] = $student->email;
 $subject = $email->subject;
 //$body = preg_replace($patterns, $replacements, $email->message);
-$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
+$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message); 
 $mode = 1;
 
 //$attachment[] = $path_file;
@@ -147,15 +148,15 @@ if ($alert_new_applicant == 1) {
 			$mailer = JFactory::getMailer();
 
 			$eval_user = & JFactory::getUser($evaluator);
-			$tags = $emails->setTags($eval_user->id, $post);
-			// Mail
+			$tags = $emails->setTags($eval_user->id, $post, null, '', $email->message);
+			// Mail 
 			$from = $email->emailfrom;
 			$from_id = 62;
 			$fromname =$email->name;
-			$recipient = $eval_user->email;
+			$recipient = $eval_user->email; 
 			$subject = $email->subject;
 			//$body = preg_replace($patterns, $replacements, $email->message);
-			$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
+			$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message); 
 			$mode = 1;
 
 			//$attachment[] = $path_file;

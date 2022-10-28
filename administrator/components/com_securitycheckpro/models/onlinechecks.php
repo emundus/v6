@@ -102,7 +102,7 @@ class SecuritycheckprosModelOnlineChecks extends SecuritycheckproModel
             {
                   $delete_result = JFile::delete($folder_path.$filename);
                 if ($delete_result) {
-                    $sql = "DELETE FROM `#__securitycheckpro_online_checks` WHERE filename='{$filename}'";
+                    $sql = "DELETE FROM #__securitycheckpro_online_checks WHERE filename='{$filename}'";
                     $db->setQuery($sql);
                     $result = $db->execute();
                 
@@ -132,12 +132,13 @@ class SecuritycheckprosModelOnlineChecks extends SecuritycheckproModel
         $db = JFactory::getDBO();
     
         // Obtenemos los valores de las webs que serán borradas de la BBDD
-        $uids = JRequest::getVar('cid', null, '', 'array');
+		$input = JFactory::getApplication()->input;
+		$uids = $input->get('cid', null, 'array');	
         JArrayHelper::toInteger($uids, array());
     
         foreach($uids as $uid)
         {                
-            $sql = "DELETE FROM `#__securitycheckprocontrolcenter_websites` WHERE id='{$uid}'";
+            $sql = "DELETE FROM #__securitycheckprocontrolcenter_websites WHERE id='{$uid}'";
             $db->setQuery($sql);
             $result = $db->execute();
         

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -28,7 +28,7 @@ class VoteController extends hikashopController {
 		$voteClass = hikashop_get('class.vote');
 		if(!count($_POST)){
 			$app = JFactory::getApplication();
-			$app->redirect(preg_replace('#ctrl=vote&task=save&[0-9a-z=]+#','',preg_replace('#/vote/save/[0-9a-z-]+#','',hikashop_currentURL())),'', 'message', true);
+			$app->redirect(preg_replace('#ctrl=vote&task=save&[0-9a-z=]+#','',preg_replace('#/vote/save/[0-9a-z-]+#','',hikashop_currentURL())));
 		}
 		$hikashop_vote_type = hikaInput::get()->getVar('hikashop_vote_type', 'update', 'default', 'string', 0);
 		$element = new stdClass();
@@ -41,9 +41,10 @@ class VoteController extends hikashopController {
 			$element->vote_ref_id  = hikaInput::get()->getVar('hikashop_vote_ref_id', 0, 'default', 'int');
 			if(empty($element->vote_ref_id) || $element->vote_ref_id == '0')
 				$element->vote_ref_id = hikaInput::get()->getVar('hikashop_vote_product_id', 0, 'default', 'int');
-			$element->vote_user_id = hikaInput::get()->getVar('hikashop_vote_user_id', 0, 'default', 'int');
-			if($element->vote_user_id == '0')
-				$element->vote_user_id = hikashop_loadUser();
+
+			$element->vote_user_id = hikashop_loadUser();
+			if(empty($element->vote_user_id))
+				$element->vote_user_id = hikashop_getIP();
 			$element->vote_pseudo = hikaInput::get()->getVar('pseudo_comment', 0, 'default', 'string', 0);
 			$element->vote_email = hikaInput::get()->getVar('email_comment', 0, 'default', 'string', 0);
 			$element->vote_type	= hikaInput::get()->getVar('vote_type', '', 'default', 'string', 0);

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -28,8 +28,12 @@ class ProductViewProduct  extends HikaShopView
 		}
 		$myItem = empty($Itemid) ? '' : '&Itemid='.$Itemid;
 		if (is_object( $menu )) {
-			jimport('joomla.html.parameter');
-			$menuparams = new HikaParameter( $menu->params );
+			if(HIKASHOP_J30) {
+				$menuparams = $menu->getParams();
+			} else {
+				jimport('joomla.html.parameter');
+				$menuparams = new HikaParameter($menu->params);
+			}
 		}
 		$query = 'SELECT * FROM '.hikashop_table('product').' WHERE product_access=\'all\' AND product_published=1 AND product_type=\'main\' ';
 		if(!$config->get('show_out_of_stock',1)){
@@ -111,10 +115,10 @@ class ProductViewProduct  extends HikaShopView
 		$doc_description = $config->get('hikarss_description','');
 		$doc_title = $config->get('hikarss_name','');
 		if(!empty($doc_title)){
-			$doc->title = $doc_title;
+			$doc->title = hikashop_translate($doc_title);
 		}
 		if(!empty($doc_description)){
-			$doc->description = $doc_description;
+			$doc->description = hikashop_translate($doc_description);
 		}
 
 

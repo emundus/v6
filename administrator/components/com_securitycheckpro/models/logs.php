@@ -23,12 +23,17 @@ class SecuritycheckprosModelLogs extends JModelList
     private $defaultConfig = array(
     'logs_attacks'            => 1,    
     );
+	
+	private $dbtype = "mysql";
 
     public function __construct($config = array())
     {
-        if (empty($config['filter_fields'])) {
+        $scp_config = JFactory::getConfig();
+		$this->dbtype = $scp_config->get('dbtype');
+		
+		if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-            'ip', 'geolocation', 'time', 'description', 'component', 'type', 'marked'
+            'ip', 'time', 'description', 'component', 'type', 'marked'
             );
         }
     
@@ -75,8 +80,12 @@ class SecuritycheckprosModelLogs extends JModelList
         
         $query->select('a.*');
         $query->from('#__securitycheckpro_logs AS a');
-        $query->where('(a.ip LIKE '.$search.' OR a.time LIKE '.$search.' OR a.username LIKE '.$search.' OR a.description LIKE '.$search.' OR a.uri LIKE '.$search.' OR a.geolocation LIKE '.$search.')');
-    
+		if (strstr($this->dbtype,"mysql")) {
+			$query->where('(a.ip LIKE '.$search.' OR a.time LIKE '.$search.' OR a.username LIKE '.$search.' OR a.description LIKE '.$search.' OR a.uri LIKE '.$search.' OR a.geolocation LIKE '.$search.')');
+		} else if (strstr($this->dbtype,"pgsql")) {
+			$query->where('(a.ip LIKE '.$search.' OR CAST(a.time as TEXT) LIKE '.$search.' OR a.username LIKE '.$search.' OR a.description LIKE '.$search.' OR a.uri LIKE '.$search.' OR a.geolocation LIKE '.$search.')');
+		}
+            
         // Filtramos la descripcion
         if ($description = $this->getState('filter.description')) {
             $query->where('a.tag_description = '.$db->quote($description));
@@ -90,7 +99,12 @@ class SecuritycheckprosModelLogs extends JModelList
         // Filtramos leido/no leido
         $leido = $this->getState('filter.leido');
         if (is_numeric($leido)) {
-            $query->where('a.marked = '.(int) $leido);
+			if (strstr($this->dbtype,"mysql")) {
+				 $query->where('a.marked = '.(int) $leido);
+			} else if (strstr($this->dbtype,"pgsql")) {
+				 $query->where("CAST(a.marked as TEXT) = '".(int) $leido . "'");
+			}
+           
         }    
     
     
@@ -101,8 +115,12 @@ class SecuritycheckprosModelLogs extends JModelList
         if (!empty($fltDateFrom)) {
             $is_valid = $this->checkIsAValidDate($fltDateFrom);
             if ($is_valid) {
-                $date = new JDate($fltDateFrom);
-                $query->where($db->quoteName('time').' >= '.$db->Quote($date->toSql()));
+				$date = new JDate($fltDateFrom);
+				if (strstr($this->dbtype,"mysql")) {					
+					$query->where($db->quoteName('time').' >= '.$db->Quote($date->toSql()));
+				} else if (strstr($this->dbtype,"pgsql")) {
+					$query->where($db->quoteName('time').' >= '.$db->Quote($date));
+				}
             } else 
             {
                 if ($fltDateFrom != "0000-00-00 00:00:00") {
@@ -110,12 +128,19 @@ class SecuritycheckprosModelLogs extends JModelList
                 }            
             }    
         }
-    
+		
+		$fltDateTo = $this->getState('dateto', null, 'string');
+		
         if (!empty($fltDateTo)) {
-            $is_valid = $this->checkIsAValidDate($fltDateTo);
+            $is_valid = $this->checkIsAValidDate($fltDateTo);			
             if ($is_valid) {
-                $date = new JDate($fltDateTo);
-                $query->where($db->quoteName('time').' <= '.$db->Quote($date->toSql()));
+				$date = new JDate($fltDateTo);
+				if (strstr($this->dbtype,"mysql")) {
+					$query->where($db->quoteName('time').' <= '.$db->Quote($date->toSql()));
+				} else if (strstr($this->dbtype,"pgsql")) {
+					$query->where($db->quoteName('time').' <= '.$db->Quote($date));
+				}
+                
             } else 
             {
                 if ($fltDateTo != "0000-00-00 00:00:00") {
@@ -126,7 +151,7 @@ class SecuritycheckprosModelLogs extends JModelList
     
         // Add the list ordering clause.
         $query->order($db->escape($this->getState('list.ordering', 'ip')) . ' ' . $db->escape($this->getState('list.direction', 'desc')));
-    
+				    
         return $query;
     }
         
@@ -150,7 +175,7 @@ class SecuritycheckprosModelLogs extends JModelList
     
 			$db = $this->getDbo();
 			foreach($uids as $uid) {
-				$sql = "UPDATE `#__securitycheckpro_logs` SET marked=1 WHERE id='{$uid}'";
+				$sql = "UPDATE #__securitycheckpro_logs SET marked=1 WHERE id='{$uid}'";
 				$db->setQuery($sql);
 				$db->execute();
 			}
@@ -172,7 +197,7 @@ class SecuritycheckprosModelLogs extends JModelList
 			
 			$db = $this->getDbo();
 			foreach($uids as $uid) {
-				$sql = "UPDATE `#__securitycheckpro_logs` SET marked=0 WHERE id='{$uid}'";
+				$sql = "UPDATE #__securitycheckpro_logs SET marked=0 WHERE id='{$uid}'";
 				$db->setQuery($sql);
 				$db->execute();            
 			}
@@ -194,7 +219,7 @@ class SecuritycheckprosModelLogs extends JModelList
 			$db = $this->getDbo();
 			foreach($uids as $uid) 
 			{
-				$sql = "DELETE FROM `#__securitycheckpro_logs` WHERE id='{$uid}'";
+				$sql = "DELETE FROM #__securitycheckpro_logs WHERE id='{$uid}'";
 				$db->setQuery($sql);
 				$db->execute();    
 			}
@@ -203,51 +228,7 @@ class SecuritycheckprosModelLogs extends JModelList
 		}
     }
 
-    /* Función para chequear si una ip pertenece a una lista en la que podemos especificar rangos. Podemos tener una ip del tipo 192.168.*.* y una ip 192.168.1.1 entraría en ese rango */
-    function chequear_ip_en_lista($ip,$lista)
-    {
-        $aparece = false;
-        $array_ip_peticionaria = explode('.', $ip);
-        
-        if (strlen($lista) > 0) {
-            // Eliminamos los caracteres en blanco antes de introducir los valores en el array
-            $lista = str_replace(' ', '', $lista);
-            $array_ips = explode(',', $lista);
-            if (is_int(array_search($ip, $array_ips))) {    // La ip aparece tal cual en la lista
-                  $aparece = true;
-            } else 
-            {
-                foreach ($array_ips as &$indice)
-                {
-                    if (strrchr($indice, '*')) { // Chequeamos si existe el carácter '*' en el string; si no existe podemos ignorar esta ip
-                        $array_ip_lista = explode('.', $indice); // Formato array:  $array_ip_lista[0] = '192' , $array_ip_lista[1] = '168'
-                        $k = 0;
-                        $igual = true;
-                        while (($k <= 3) && ($igual))
-                        {
-                            if ($array_ip_lista[$k] == '*') {
-                                $k++;
-                            }else
-                                 {
-                                if ($array_ip_lista[$k] == $array_ip_peticionaria[$k]) {
-                                               $k++;
-                                } else 
-                                {
-                                    $igual = false;
-                                }
-                            }
-                        }
-                        if ($igual) { // $igual será true cuando hayamos recorrido el array y todas las partes del mismo coincidan con la ip que realiza la petición
-                              $aparece = true;
-                              return $aparece;
-                        }
-                    }
-                }
-            }
-        }
-        return $aparece;
-    }
-
+    
     /* Función que añade un conjunto de Ips a la lista negra */
     function add_to_blacklist()
     {
@@ -256,7 +237,7 @@ class SecuritycheckprosModelLogs extends JModelList
         $query = null;
         $array_size = 0;
         $added_elements = 0;
-        
+		        
         $db = JFactory::getDBO();
     
         // Obtenemos los valores de las IPs que serán introducidas en la lista negra
@@ -267,19 +248,9 @@ class SecuritycheckprosModelLogs extends JModelList
         // Número de elementos del array
         $array_size = count($uids);
         
-        // Obtenemos los valores de las distintas opciones del Firewall Web
-        $db = $this->getDbo();
-        $query = $db->getQuery(true)
-            ->select(array($db->quoteName('storage_value')))
-            ->from($db->quoteName('#__securitycheckpro_storage'))
-            ->where($db->quoteName('storage_key').' = '.$db->quote('pro_plugin'));
-        $db->setQuery($query);
-        $params = $db->loadResult();
-        $params = json_decode($params, true);
-        
         foreach($uids as $uid)
         {
-            $sql = "SELECT ip FROM `#__securitycheckpro_logs` WHERE id='{$uid}'";
+            $sql = "SELECT ip FROM #__securitycheckpro_logs WHERE id='{$uid}'";
             $db->setQuery($sql);
             $db->execute();
             $ip = $db->loadResult();
@@ -313,20 +284,30 @@ class SecuritycheckprosModelLogs extends JModelList
             if ($ip == $client_ip) {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_CANT_ADD_YOUR_OWN_IP'), 'warning');
                 $array_size--;
-                break;
+                return;
             }
-                
-            $aparece_lista_negra = $this->chequear_ip_en_lista($ip, $params['blacklist']);
-            if (!$aparece_lista_negra) {
-                if (!empty($params['blacklist'])) {
-                    $params['blacklist'] .= ',' .$ip;
-                } else 
-                {
-                    $params['blacklist'] = $ip;
-                }            
-                $added_elements++;
+			
+			// Cargamos las librerias necesarias para realizar comprobaciones
+            include_once JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/library/model.php';
+            $model = new SecuritycheckproModel;
+			          
+			$aparece_lista_negra = $model->chequear_ip_en_lista($ip, "blacklist"); 
+			
+			if (!$aparece_lista_negra) {
+				$object = (object)array(
+					'ip'        => $ip
+				);
+				
+				try{
+					$db->insertObject("#__securitycheckpro_blacklist", $object);
+					$added_elements++;
+				} catch (Exception $e)
+				{  				
+					$applied = false;
+				}				
             }
         }
+		
         $not_added = $array_size - $added_elements;
     
         if ($added_elements > 0) {
@@ -335,29 +316,7 @@ class SecuritycheckprosModelLogs extends JModelList
         if ($not_added > 0) {
             JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_IGNORED', $not_added), 'notice');
         }
-    
-        // Codificamos de nuevo los parámetros y los introducimos en la BBDD
-        $params = utf8_encode(json_encode($params));
         
-        $query = $db->getQuery(true)
-            ->delete($db->quoteName('#__securitycheckpro_storage'))
-            ->where($db->quoteName('storage_key').' = '.$db->quote('pro_plugin'));
-        $db->setQuery($query);
-        $db->execute();
-        
-        $object = (object)array(
-        'storage_key'        => 'pro_plugin',
-        'storage_value'        => $params
-        );
-        
-        try
-        {
-            $result = $db->insertObject('#__securitycheckpro_storage', $object);            
-        } catch (Exception $e)
-        {    
-            $applied = false;
-        }
-    
         // Marcamos los elementos como leidos
         $this->mark_read($uids);
         
@@ -404,12 +363,7 @@ class SecuritycheckprosModelLogs extends JModelList
     /* Obtiene la configuración de los parámetros de la opción 'Mode' */
     function getConfig()
     {
-        if (interface_exists('JModel')) {
-            $params = JModelLegacy::getInstance('FirewallConfig', 'SecuritycheckProsModel');
-        } else 
-        {
-            $params = JModel::getInstance('FirewallConfig', 'SecuritycheckProsModel');
-        }
+        $params = \Joomla\CMS\MVC\Model\BaseDatabaseModel::getInstance('FirewallConfig', 'SecuritycheckProsModel');
     
         $config = array();
         foreach($this->defaultConfig as $k => $v)
@@ -424,7 +378,7 @@ class SecuritycheckprosModelLogs extends JModelList
     {
     
         $db = $this->getDbo();
-        $sql = "TRUNCATE `#__securitycheckpro_logs`";
+        $sql = "TRUNCATE #__securitycheckpro_logs";
         $db->setQuery($sql);
         $db->execute();    
     }
@@ -448,33 +402,31 @@ class SecuritycheckprosModelLogs extends JModelList
         // Número de elementos del array
         $array_size = count($uids);
         
-        // Obtenemos los valores de las distintas opciones del Firewall Web
-        $db = $this->getDbo();
-        $query = $db->getQuery(true)
-            ->select(array($db->quoteName('storage_value')))
-            ->from($db->quoteName('#__securitycheckpro_storage'))
-            ->where($db->quoteName('storage_key').' = '.$db->quote('pro_plugin'));
-        $db->setQuery($query);
-        $params = $db->loadResult();
-        $params = json_decode($params, true);
-        
         foreach($uids as $uid)
         {
-            $sql = "SELECT ip FROM `#__securitycheckpro_logs` WHERE id='{$uid}'";
+            $sql = "SELECT ip FROM #__securitycheckpro_logs WHERE id='{$uid}'";
             $db->setQuery($sql);
             $db->execute();
             $ip = $db->loadResult();
+			
+			// Cargamos las librerias necesarias para realizar comprobaciones
+            include_once JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/library/model.php';
+            $model = new SecuritycheckproModel;
+			          
+			$aparece_lista_blanca = $model->chequear_ip_en_lista($ip, "whitelist");
         
-                
-            $aparece_lista_blanca = $this->chequear_ip_en_lista($ip, $params['whitelist']);
             if (!$aparece_lista_blanca) {
-                if (!empty($params['blacklist'])) {
-                    $params['whitelist'] .= ',' .$ip;
-                } else
-                {
-                    $params['whitelist'] = $ip;
-                }                        
-                $added_elements++;
+                $object = (object)array(
+					'ip'        => $ip
+				);
+				
+				try{
+					$db->insertObject("#__securitycheckpro_whitelist", $object);
+					$added_elements++;
+				} catch (Exception $e)
+				{    							
+					$applied = false;
+				}
             }
         }
         $not_added = $array_size - $added_elements;
@@ -486,30 +438,190 @@ class SecuritycheckprosModelLogs extends JModelList
             JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_IGNORED', $not_added), 'notice');
         }
     
-        // Codificamos de nuevo los parámetros y los introducimos en la BBDD
-        $params = utf8_encode(json_encode($params));
-        
-        $query = $db->getQuery(true)
-            ->delete($db->quoteName('#__securitycheckpro_storage'))
-            ->where($db->quoteName('storage_key').' = '.$db->quote('pro_plugin'));
-        $db->setQuery($query);
-        $db->execute();
-        
-        $object = (object)array(
-        'storage_key'        => 'pro_plugin',
-        'storage_value'        => $params
-        );
-        
-        try 
-        {
-            $result = $db->insertObject('#__securitycheckpro_storage', $object);            
-        } catch (Exception $e)
-        {    
-            $applied = false;
-        }
     
         // Marcamos los elementos como leidos
         $this->mark_read($uids);
+        
+    }
+	
+	/* Función para guardar en la tabla securitycheck_storage la configuración pasada como argumento. Se usa para añadir un componente como excepción desde los logs */
+	function save_config($data) {
+		
+		$db = JFactory::getDBO();
+		$query = $db->getQuery(true);
+		$query2 = $db->getQuery(true);
+		
+		$data = json_encode($data);
+		$key_name = 'pro_plugin';
+		
+		if ($data !== false) {
+			//Json is valid			
+			
+			//Get the previous value
+			$query2->select('storage_value');
+            $query2->from('#__securitycheckpro_storage');
+            $query2->where($db->quoteName('storage_key').' = '.$db->quote($key_name));
+			$db->setQuery($query2);
+			$db->execute();
+			$previous_data = $db->loadResult();
+						
+			try {
+				//delete stored value
+				$query
+					->delete($db->quoteName('#__securitycheckpro_storage'))
+					->where($db->quoteName('storage_key').' = '.$db->quote($key_name));
+				$db->setQuery($query);
+				$db->execute();
+				
+				$object = (object)array(
+				'storage_key'        => $key_name,
+				'storage_value'        => $data
+				);
+					
+				$db->insertObject('#__securitycheckpro_storage', $object);
+			
+				JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_CONFIGSAVED'));
+			} catch (Exception $e)
+			{    
+				// Let's restore the previous config
+				$object = (object)array(
+				'storage_key'        => $key_name,
+				'storage_value'        => $previous_data
+				);
+					
+				$db->insertObject('#__securitycheckpro_storage', $object);
+			} 
+		} else {
+			JFactory::getApplication()->enqueueMessage("Error", 'error');
+		}
+	}
+	
+	// Función que añade un elemento nuevo a una lista de elementos separados por comas
+	function add_element($string,$new_element) {
+		
+		// Creamos un array con los elementos...
+		$string_to_array = explode(",",$string);
+		// ... borramos los valores vacíos ...
+		$string_to_array = array_filter($string_to_array);
+				
+		// ... añadimos el elemento nuevo ...
+		$string_to_array[] = filter_var($new_element, FILTER_SANITIZE_STRING);
+		// ... y volvemos a trasnformar el array a string
+		$final_string = implode(",",$string_to_array);
+		return $final_string;		
+		
+	}
+	
+	/* Función que añade un componente como excepción */
+    function add_exception() 
+    {
+    
+        // Inicializamos las variables
+        $query = null;
+        $array_size = 0;
+        $added_elements = 0;
+		$exists = true;
+        
+        $db = JFactory::getDBO();
+    
+        // Obtenemos los valores de las IPs que serán introducidas en la lista negra
+        $jinput = JFactory::getApplication()->input;
+        $uids = $jinput->get('cid', 0, 'array');
+        Joomla\Utilities\ArrayHelper::toInteger($uids, array());
+    
+        // Número de elementos del array
+        $array_size = count($uids);
+        
+        // Obtenemos los valores de las distintas opciones del Firewall Web
+        $db = $this->getDbo();
+        $query = $db->getQuery(true)
+            ->select(array($db->quoteName('storage_value')))
+            ->from($db->quoteName('#__securitycheckpro_storage'))
+            ->where($db->quoteName('storage_key').' = '.$db->quote('pro_plugin'));
+        $db->setQuery($query);
+        $params = $db->loadResult();
+        $params = json_decode($params, true);
+		        
+        foreach($uids as $uid)
+        {
+            $sql = "SELECT component,type,tag_description FROM #__securitycheckpro_logs WHERE id='{$uid}'";
+            $db->setQuery($sql);
+            $db->execute();
+            $result = $db->loadObject();
+			
+			switch ($result->tag_description) {
+				case 'TAGS_STRIPPED':
+					if (stristr($params['strip_tags_exceptions'], $result->component) === FALSE) {
+						$params['strip_tags_exceptions'] = $this->add_element($params['strip_tags_exceptions'],$result->component);
+						$exists = false;
+					} else {						
+						JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_EXCEPTION_ALREADY_EXISTS', $result->component, $result->type), 'notice');
+					}									
+					break;
+				case 'DUPLICATE_BACKSLASHES':
+					if (stristr($params['duplicate_backslashes_exceptions'], $result->component) === FALSE) {
+						$params['duplicate_backslashes_exceptions'] = $this->add_element($params['duplicate_backslashes_exceptions'],$result->component);
+						$exists = false;
+					} else {						
+						JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_EXCEPTION_ALREADY_EXISTS', $result->component, $result->type), 'notice');
+					}						
+					break;
+				case 'LINE_COMMENTS':
+					if (stristr($params['line_comments_exceptions'], $result->component) === FALSE) {
+						$params['line_comments_exceptions'] = $this->add_element($params['line_comments_exceptions'],$result->component);
+						$exists = false;
+					} else {
+						JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_EXCEPTION_ALREADY_EXISTS', $result->component, $result->type), 'notice');
+					}						
+					break;	
+				case 'SQL_PATTERN':
+					if (stristr($params['sql_pattern_exceptions'], $result->component) === FALSE) {
+						$params['sql_pattern_exceptions'] = $this->add_element($params['sql_pattern_exceptions'],$result->component);
+						$exists = false;
+					} else {						
+						JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_EXCEPTION_ALREADY_EXISTS', $result->component, $result->type), 'notice');
+					}						
+					break;	
+				case 'IF_STATEMENT':
+					if (stristr($params['if_statement_exceptions'], $result->component) === FALSE) {
+						$params['if_statement_exceptions'] = $this->add_element($params['if_statement_exceptions'],$result->component);
+						$exists = false;
+					} else {						
+						JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_EXCEPTION_ALREADY_EXISTS', $result->component, $result->type), 'notice');
+					}						
+					break;	
+				case 'INTEGERS':
+					if (stristr($params['using_integers_exceptions'], $result->component) === FALSE) {
+						$params['using_integers_exceptions'] = $this->add_element($params['using_integers_exceptions'],$result->component);
+						$exists = false;
+					} else {						
+						JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_EXCEPTION_ALREADY_EXISTS', $result->component, $result->type), 'notice');
+					}						
+					break;	
+				case 'BACKSLASHES_ADDED':
+					if (stristr($params['escape_strings_exceptions'], $result->component) === FALSE) {
+						$params['escape_strings_exceptions'] = $this->add_element($params['escape_strings_exceptions'],$result->component);
+						$exists = false;
+					} else {						
+						JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_EXCEPTION_ALREADY_EXISTS', $result->component, $result->type), 'notice');
+					}						
+					break;	
+				case 'LFI':
+					if (stristr($params['lfi_exceptions'], $result->component) === FALSE) {
+						$params['lfi_exceptions'] = $this->add_element($params['lfi_exceptions'],$result->component);
+						$exists = false;
+					} else {						
+						JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_EXCEPTION_ALREADY_EXISTS', $result->component, $result->type), 'notice');
+					}						
+					break;	
+				
+			}        
+        }  
+		
+		// Save the new config
+		if (!$exists) {
+			$this->save_config($params);
+		}
         
     }
 

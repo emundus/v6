@@ -12,22 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Language\Text as JText;
 
-if (!class_exists('JoomlaCompatView')) {
-    if (interface_exists('JView')) {
-        abstract class JoomlaCompatView extends JViewLegacy
-        {
-
-        }
-    } else 
-    {
-        class JoomlaCompatView extends JView
-        {
-
-        }
-    }
-}
-
-class SecuritycheckproView extends JoomlaCompatView
+class SecuritycheckproView extends \Joomla\CMS\MVC\View\HtmlView
 {
 
     function __construct()

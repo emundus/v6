@@ -47,6 +47,13 @@ class PlgContentdropfiles extends JPlugin
     public static $OnedriveOnce = 1;
 
     /**
+     * Onedrive Business running progress
+     *
+     * @var integer
+     */
+    public static $OnedriveBusinessOnce = 1;
+
+    /**
      * Before display content method
      * Method is called by the view and the results are imploded and displayed in a placeholder
      *
@@ -70,7 +77,7 @@ class PlgContentdropfiles extends JPlugin
         $replace_category = '@<img[^>]*?data\-dropfilescategory="([0-9]+)".*?>@';
         $article->text = preg_replace_callback($replace_category, array($this, 'replace'), $article->text);
         // Replace single file
-        $replace_single = '@<img[^>]*?data\-dropfilesfile="([0-9A-Za-z:\id_-]*)".*?>@';
+        $replace_single = '@<img[^>]*?data\-dropfilesfile="(.*?)".*?>@';
         $article->text = preg_replace_callback($replace_single, array($this, 'replaceSingle'), $article->text);
 //        }
 
@@ -101,10 +108,7 @@ class PlgContentdropfiles extends JPlugin
                 $doc                = JFactory::getDocument();
                 $path_dropfilesbase = JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesBase.php';
                 JLoader::register('DropfilesBase', $path_dropfilesbase);
-                if (!DropfilesBase::isJoomla30()) {
-                    $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/jquery-1.8.3.js');
-                    $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/jquery-noconflict.js');
-                }
+                JHtml::_('jquery.framework');
                 $script = "jQuery(document).ready(function(){
                             jQuery.ajax({
                                 url:'" . JUri::root() . "index.php?option=com_dropfiles&task=googledrive.googlesync'
@@ -144,10 +148,7 @@ class PlgContentdropfiles extends JPlugin
                 $doc = JFactory::getDocument();
                 $path_dropfilesbase = JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesBase.php';
                 JLoader::register('DropfilesBase', $path_dropfilesbase);
-                if (!DropfilesBase::isJoomla30()) {
-                    $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/jquery-1.8.3.js');
-                    $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/jquery-noconflict.js');
-                }
+                JHtml::_('jquery.framework');
                 $script = "jQuery(document).ready(function(){
                         jQuery.ajax({
                             url:'" . JUri::root() . "index.php?option=com_dropfiles&task=dropbox.sync'
@@ -186,16 +187,51 @@ class PlgContentdropfiles extends JPlugin
                 $doc                = JFactory::getDocument();
                 $path_dropfilesbase = JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesBase.php';
                 JLoader::register('DropfilesBase', $path_dropfilesbase);
-                if (!DropfilesBase::isJoomla30()) {
-                    $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/jquery-1.8.3.js');
-                    $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/jquery-noconflict.js');
-                }
+                JHtml::_('jquery.framework');
                 $script = "jQuery(document).ready(function(){
                         jQuery.ajax({
                             url:'" . JUri::root() . "index.php?option=com_dropfiles&task=onedrive.onedrivesync'
                         }).done(function( data ) {
                              jQuery.ajax({
                                 url:'" . JUri::root() . "index.php?option=com_dropfiles&task=frontonedrive.index'
+                            });
+                        });
+                    });";
+                $doc->addScriptDeclaration($script);
+                self::$OnedriveOnce = 0;
+            }
+        }
+
+        if (!is_null($componentParams['onedriveBusinessConnected']) && (int) $componentParams['onedriveBusinessConnected'] === 1) {
+            $curSyncInterval = $this->curSyncIntervalOnedriveBusiness();
+            $sync_time       = (int) $componentParams->get('onedriveBusinessSyncTime');
+            $sync_method     = $componentParams->get('onedriveBusinessSyncMethod');
+            if ($curSyncInterval >= $sync_time && $sync_method === 'sync_page_curl') {
+                $cUrl                       = curl_init();
+                $onedrivebusinesssync_url   = JUri::root() . 'index.php?option=com_dropfiles&task=onedrivebusiness.oneDriveBusinessSync';
+                curl_setopt($cUrl, CURLOPT_URL, $onedrivebusinesssync_url);
+                curl_setopt($cUrl, CURLOPT_RETURNTRANSFER, 1);
+                curl_exec($cUrl);
+                curl_close($cUrl);
+
+                $cUrl                        = curl_init();
+                $onedrive_business_index_url = JUri::root() . 'index.php?option=com_dropfiles&task=frontonedrivebusiness.index';
+                curl_setopt($cUrl, CURLOPT_URL, $onedrive_business_index_url);
+                curl_setopt($cUrl, CURLOPT_RETURNTRANSFER, 1);
+                curl_exec($cUrl);
+                curl_close($cUrl);
+            }
+            if ($curSyncInterval >= $sync_time && $sync_method === 'sync_page_curl_ajax' && self::$OnedriveBusinessOnce === 1) {
+                $doc                = JFactory::getDocument();
+                $path_dropfilesbase = JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesBase.php';
+                JLoader::register('DropfilesBase', $path_dropfilesbase);
+                JHtml::_('jquery.framework');
+                $script = "jQuery(document).ready(function(){
+                        jQuery.ajax({
+                            url:'" . JUri::root() . "index.php?option=com_dropfiles&task=onedrivebusiness.oneDriveBusinessSync'
+                        }).done(function( data ) {
+                             jQuery.ajax({
+                                url:'" . JUri::root() . "index.php?option=com_dropfiles&task=frontonedrivebusiness.index'
                             });
                         });
                     });";
@@ -236,18 +272,20 @@ class PlgContentdropfiles extends JPlugin
     {
         jimport('joomla.application.component.model');
         JLoader::register('DropfilesBase', JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesBase.php');
+        JLoader::register('DropfilesHelper', JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/dropfiles.php');
         $path_dropfilesGoogle = JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesGoogle.php';
         JLoader::register('DropfilesGoogle', $path_dropfilesGoogle);
         JModelLegacy::addIncludePath(JPATH_ROOT . '/components/com_dropfiles/models/', 'dropfilesModel');
 
         DropfilesBase::loadLanguage();
-        $modelFiles      = JModelLegacy::getInstance('Frontfiles', 'dropfilesModel');
-        $modelConfig     = JModelLegacy::getInstance('Frontconfig', 'dropfilesModel');
-        $modelCategories = JModelLegacy::getInstance('Frontcategories', 'dropfilesModel');
-        $modelCategory   = JModelLegacy::getInstance('Frontcategory', 'dropfilesModel');
-        $modelGoogle     = JModelLegacy::getInstance('Frontgoogle', 'dropfilesModel');
-        $modelDropbox    = JModelLegacy::getInstance('Frontdropbox', 'dropfilesModel');
-        $modelOnedrive   = JModelLegacy::getInstance('Frontonedrive', 'dropfilesModel');
+        $modelFiles             = JModelLegacy::getInstance('Frontfiles', 'dropfilesModel');
+        $modelConfig            = JModelLegacy::getInstance('Frontconfig', 'dropfilesModel');
+        $modelCategories        = JModelLegacy::getInstance('Frontcategories', 'dropfilesModel');
+        $modelCategory          = JModelLegacy::getInstance('Frontcategory', 'dropfilesModel');
+        $modelGoogle            = JModelLegacy::getInstance('Frontgoogle', 'dropfilesModel');
+        $modelDropbox           = JModelLegacy::getInstance('Frontdropbox', 'dropfilesModel');
+        $modelOnedrive          = JModelLegacy::getInstance('Frontonedrive', 'dropfilesModel');
+        $modelOnedriveBusiness  = JModelLegacy::getInstance('Frontonedrivebusiness', 'dropfilesModel');
 
         $categoryId = (int) $match[1];
 
@@ -258,12 +296,14 @@ class PlgContentdropfiles extends JPlugin
 
 
         $category = $modelCategory->getCategory($categoryId);
+
         if (!$category) {
             return '';
         }
         $user             = JFactory::getUser();
         $categories       = $modelCategories->getItems();
         $params           = $modelConfig->getParams($category->id);
+//        $params = isset($category) ? $category : $modelConfig->getParams($category->id);
         $dropfiles_params = JComponentHelper::getParams('com_dropfiles');
         if ($dropfiles_params->get('categoryrestriction', 'accesslevel') === 'accesslevel') {
             if (!in_array($category->access, $user->getAuthorisedViewLevels())) {
@@ -339,15 +379,47 @@ class PlgContentdropfiles extends JPlugin
                 $direction = 'asc';
             }
             $files = $modelOnedrive->getItems($category->cloud_id, $ordering, $direction);
+        } elseif ($category->type === 'onedrivebusiness') {
+            if (isset($params->params->ordering)) {
+                $ordering = $params->params->ordering;
+            } else {
+                $ordering = 'ordering';
+            }
+            if (isset($params->params->orderingdir)) {
+                $direction = $params->params->orderingdir;
+            } else {
+                $direction = 'asc';
+            }
+
+            $files = $modelOnedriveBusiness->getItems($category->cloud_id, $ordering, $direction);
         } else {
+            $subparams   = (array) $params->params;
+            $lstAllFile  = null;
+            $ordering    = (isset($params->params->ordering)) ? $params->params->ordering : '';
+            $orderingdir = (isset($params->params->orderingdir)) ? $params->params->orderingdir : '';
             if (isset($params->params->ordering)) {
                 $modelFiles->setState('list.ordering', $params->params->ordering);
             }
             if (isset($params->params->orderingdir)) {
                 $modelFiles->setState('list.direction', $params->params->orderingdir);
             }
+            if (!empty($subparams) && isset($subparams['refToFile'])) {
+                if (isset($subparams['refToFile'])) {
+                    $listCatRef = $subparams['refToFile'];
+                    $lstAllFile = $this->getAllFileRef($modelFiles, $listCatRef, $ordering, $orderingdir);
+                }
+            }
             $files = $modelFiles->getItems();
+            if (!empty($lstAllFile)) {
+                $files = array_merge($lstAllFile, $files);
+                if (isset($params->params->ordering) && isset($params->params->orderingdir)) {
+                    $ordering = $params->params->ordering;
+                    $direction = $params->params->orderingdir;
+                    $files = DropfilesHelper::orderingMultiCategoryFiles($files, $ordering, $direction);
+                }
+            }
         }
+
         $files = DropfilesFilesHelper::addInfosToFile($files, $category);
 
         if ($this->context === 'com_finder.indexer') {
@@ -364,12 +436,9 @@ class PlgContentdropfiles extends JPlugin
         if ((int) $componentParams->get('loadthemecategory', 1) === 0) {
             $params->params = $this->loadParams($theme, $params->params, $componentParams);
         }
-        JPluginHelper::importPlugin('dropfilesthemes');
-        $dispatcher = JDispatcher::getInstance();
 
         // Check theme exists or fallback to default theme
-        $availableThemes = $dispatcher->trigger('getThemeName');
-
+        $availableThemes = DropfilesBase::getDropfilesThemes();
         $themeExists = false;
         foreach ($availableThemes as $t) {
             if (strtolower($t['id']) === strtolower($theme)) {
@@ -381,7 +450,7 @@ class PlgContentdropfiles extends JPlugin
         $currentTheme = $themeExists ? $theme : 'default';
 
         if ($currentTheme === 'default') {
-            $columns = (int) $params->params->columns;
+            $columns = isset($params->params->columns)? (int)$params->params->columns : 2;
 
             // Check default columns value
             if ($columns === 0) {
@@ -398,13 +467,17 @@ class PlgContentdropfiles extends JPlugin
                 'columns'    => isset($columns) ? $columns : 2,
             )
         );
-
-        $result = $dispatcher->trigger('onShowFrontCategory', $params_arr);
+        $app = JFactory::getApplication();
+        $result = $app->triggerEvent('onShowFrontCategory', $params_arr);
 
         if (!empty($result[0])) {
-            JHtml::_('behavior.framework');
+            if (DropfilesBase::isJoomla40()) {
+                JHtml::_('behavior.core');
+            } else {
+                JHtml::_('behavior.framework', true);
+            }
             $doc = JFactory::getDocument();
-            $doc->addStyleSheet(JURI::base('true') . '/components/com_dropfiles/assets/css/front.css');
+            $doc->addStyleSheet(JURI::base('true') . '/components/com_dropfiles/assets/css/front_ver5.4.css');
 
             if ((int) $componentParams->get('usegoogleviewer', 1) === 1) {
                 $path_dropfilesbase = JPATH_ADMINISTRATOR . '/components/com_droppics/classes/dropfilesBase.php';
@@ -468,11 +541,12 @@ class PlgContentdropfiles extends JPlugin
         JModelLegacy::addIncludePath(JPATH_ROOT . '/components/com_dropfiles/models/', 'DropfilesModelFrontfile');
         JModelLegacy::addIncludePath(JPATH_ROOT . '/components/com_dropfiles/models/', 'DropfilesModelFrontconfig');
         DropfilesBase::loadLanguage();
-        $modelFile     = JModelLegacy::getInstance('Frontfile', 'dropfilesModel');
-        $modelConfig   = JModelLegacy::getInstance('Frontconfig', 'dropfilesModel');
-        $modelCategory = JModelLegacy::getInstance('Frontcategory', 'dropfilesModel');
-        $modelDropbox  = JModelLegacy::getInstance('Frontdropbox', 'dropfilesModel');
-        $modelOnedrive = JModelLegacy::getInstance('Frontonedrive', 'dropfilesModel');
+        $modelFile              = JModelLegacy::getInstance('Frontfile', 'dropfilesModel');
+        $modelConfig            = JModelLegacy::getInstance('Frontconfig', 'dropfilesModel');
+        $modelCategory          = JModelLegacy::getInstance('Frontcategory', 'dropfilesModel');
+        $modelDropbox           = JModelLegacy::getInstance('Frontdropbox', 'dropfilesModel');
+        $modelOnedrive          = JModelLegacy::getInstance('Frontonedrive', 'dropfilesModel');
+        $modelOnedriveBusiness  = JModelLegacy::getInstance('Frontonedrivebusiness', 'dropfilesModel');
         preg_match('@.*data\-dropfilesfilecategory="([0-9]+)".*@', $match[0], $matchCat);
         if (!empty($matchCat)) {
             $category = $modelCategory->getCategory((int)$matchCat[1]);
@@ -489,6 +563,24 @@ class PlgContentdropfiles extends JPlugin
                 return '';
             }
         }
+        // Check access
+        $user             = JFactory::getUser();
+        $params           = $modelConfig->getParams($category->id);
+        $dropfiles_params = JComponentHelper::getParams('com_dropfiles');
+        if ($dropfiles_params->get('categoryrestriction', 'accesslevel') === 'accesslevel') {
+            if (!in_array($category->access, $user->getAuthorisedViewLevels())) {
+                return '';
+            }
+        } else {
+            //check permission by user group
+            $usergroup = isset($params->params->usergroup) ? $params->params->usergroup : array();
+
+            $result = array_intersect($user->getAuthorisedGroups(), $usergroup);
+            if (!count($result)) {
+                return '';
+            }
+        }
+
         if ($category->type === 'googledrive') {
             $modelGoogle = JModelLegacy::getInstance('Frontgoogle', 'dropfilesModel');
             $file        = $modelGoogle->getFile($match[1]);
@@ -498,6 +590,8 @@ class PlgContentdropfiles extends JPlugin
             $file = $modelDropbox->getFile($match[1]);
         } elseif ($category->type === 'onedrive') {
             $file = $modelOnedrive->getFile($match[1]);
+        } elseif ($category->type === 'onedrivebusiness') {
+            $file = $modelOnedriveBusiness->getFile($match[1]);
         } else {
             $file = $modelFile->getFile((int)$match[1]);
         }
@@ -506,16 +600,6 @@ class PlgContentdropfiles extends JPlugin
         if (!DropfilesFilesHelper::isUserCanViewFile($file)) {
             return '';
         }
-
-        //Access check already done in category model
-        $catmod = JCategories::getInstance('Dropfiles');
-        $jcategory = $catmod->get($category->id);
-
-        if (!$jcategory) {
-            return '';
-        }
-
-        $params = $modelConfig->getParams($jcategory->id);
 
         if ($this->context === 'com_finder.indexer') {
             $theme = 'indexer';
@@ -534,7 +618,7 @@ class PlgContentdropfiles extends JPlugin
         if (!empty($result)) {
             $componentParams = JComponentHelper::getParams('com_dropfiles');
             $doc             = JFactory::getDocument();
-            $doc->addStyleSheet(JURI::base('true') . '/components/com_dropfiles/assets/css/front.css');
+            $doc->addStyleSheet(JURI::base('true') . '/components/com_dropfiles/assets/css/front_ver5.4.css');
             if ((int) $componentParams->get('usegoogleviewer', 1) === 1) {
                 $path_dropfilesbase = JPATH_ADMINISTRATOR . '/components/com_droppics/classes/dropfilesBase.php';
                 JLoader::register('DropfilesBase', $path_dropfilesbase);
@@ -656,5 +740,50 @@ class PlgContentdropfiles extends JPlugin
         $curtime      = $timeInterval / 60;
 
         return $curtime;
+    }
+
+    /**
+     * Cur Sync interval OneDrive Business
+     *
+     * @return float|integer
+     * @since  version
+     */
+    private function curSyncIntervalOnedriveBusiness()
+    {
+        //get last_log param
+        $params = JComponentHelper::getParams('com_dropfiles');
+        if ($params->get('onedrive_business_last_log') !== null) {
+            $last_log = $params->get('onedrive_business_last_log');
+            $time_old = (int)strtotime($last_log);
+        } else {
+            $time_old = 0;
+        }
+        $time_new     = (int) strtotime(date('Y-m-d H:i:s'));
+        $timeInterval = $time_new - $time_old;
+        $curtime      = $timeInterval / 60;
+
+        return $curtime;
+    }
+
+    /**
+     * Get all file referent
+     *
+     * @param object $model       Files model
+     * @param array  $listCatRef  List category
+     * @param string $ordering    Ordering
+     * @param string $orderingdir Ordering direction
+     *
+     * @return array
+     */
+    private function getAllFileRef($model, $listCatRef, $ordering, $orderingdir)
+    {
+        $lstAllFile = array();
+        foreach ($listCatRef as $key => $value) {
+            if (is_array($value) && !empty($value)) {
+                $lstFile    = $model->getFilesRef($key, $value, $ordering, $orderingdir);
+                $lstAllFile = array_merge($lstFile, $lstAllFile);
+            }
+        }
+        return $lstAllFile;
     }
 }

@@ -17,29 +17,30 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_use
 
 ?>
 <div class="reset-confirm<?php echo $this->pageclass_sfx; ?>">
-	<?php if ($this->params->get('show_page_heading')) : ?>
+
 		<div class="page-header">
-			<h1>
-				<?php echo $this->escape($this->params->get('page_heading')); ?>
-			</h1>
+               <h1>
+                    <?php echo $this->escape($this->params->get('page_heading')); ?>
+                </h1>
 		</div>
-	<?php endif; ?>
-	<form action="<?php echo JRoute::_('index.php?option=com_users&task=reset.confirm'); ?>" method="post" class="form-validate form-horizontal well">
-		<?php foreach ($this->form->getFieldsets() as $fieldset) : ?>
-			<fieldset>
-				<?php if (isset($fieldset->label)) : ?>
-					<p><?php echo JText::_($fieldset->label); ?></p>
-				<?php endif; ?>
-				<?php echo $this->form->renderFieldset($fieldset->name); ?>
-			</fieldset>
-		<?php endforeach; ?>
-		<div class="control-group">
-			<div class="controls">
-				<button type="submit" class="btn btn-primary validate">
-					<?php echo JText::_('JSUBMIT'); ?>
-				</button>
-			</div>
-		</div>
-		<?php echo JHtml::_('form.token'); ?>
-	</form>
+
+        <form action="<?php echo JRoute::_('index.php?option=com_users&task=reset.confirm'); ?>" method="post" class="form-validate form-horizontal well">
+            <?php foreach ($this->form->getFieldsets() as $fieldset) : ?>
+                <fieldset>
+                    <?php if (isset($fieldset->label)) : ?>
+                        <p><?php echo JText::_($fieldset->label); ?></p>
+                    <?php endif; ?>
+                    <?php echo $this->form->renderFieldset($fieldset->name); ?>
+                </fieldset>
+            <?php endforeach; ?>
+            <div class="control-group">
+                <div class="controls">
+                    <button type="submit" class="btn btn-primary validate">
+                        <?php echo JText::_('JSUBMIT'); ?>
+                    </button>
+                </div>
+            </div>
+            <?php echo JHtml::_('form.token'); ?>
+        </form>
 </div>
+

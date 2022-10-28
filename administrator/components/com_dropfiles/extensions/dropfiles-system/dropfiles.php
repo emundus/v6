@@ -12,9 +12,9 @@
  * @license   GNU General Public License version 2 or later; http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-
 //-- No direct access
 defined('_JEXEC') || die('=;)');
+use Joomla\CMS\Router\Router;
 
 /**
  * Content Plugin.
@@ -33,9 +33,9 @@ class PlgSystemDropfiles extends JPlugin
     {
         $app = JFactory::getApplication();
         // get the router
-        if ($app->isSite()) {
+        if ($app->isClient('site')) {
             $router = $app->getRouter();
-            $router->attachParseRule(array($this, 'replaceRoute'));
+            $router->attachParseRule(array($this, 'replaceRoute'), Router::PROCESS_BEFORE);
         }
     }
 

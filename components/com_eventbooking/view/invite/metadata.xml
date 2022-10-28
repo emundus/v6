@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<view title="invite" hidden="true">
+		<message><![CDATA[Invite view to display invitation form for a specific event]]></message>
+	</view>
+</metadata>

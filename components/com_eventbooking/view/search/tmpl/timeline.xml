@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="Search events result - Timeline layout">
+		<message>
+			Display search result based on the search critical which users entered on search module in timeline layout
+		</message>
+	</layout>
+	<state>
+		<name>Search events result - Timeline layout</name>
+		<description>Display search result based on the search critical which users entered on search module in timeline layout</description>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="hide_children_events" type="list" default="0" label="Hide Children Events"
+					   description="Choose to show/hide children events for this menu item">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+			</fieldset>
+		</fields>
+	</state>
+</metadata>

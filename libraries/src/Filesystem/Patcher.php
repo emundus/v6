@@ -2,7 +2,7 @@
 /**
  * Joomla! Content Management System
  *
- * @copyright  Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
+ * @copyright  (C) 2012 Open Source Matters, Inc. <https://www.joomla.org>
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -445,7 +445,12 @@ class Patcher
 
 					if (!isset($src_lines))
 					{
-						throw new \RuntimeException(Text::sprintf('JLIB_FILESYSTEM_PATCHER_UNEXISING_SOURCE', $src));
+						throw new \RuntimeException(
+							Text::sprintf(
+								'JLIB_FILESYSTEM_PATCHER_UNEXISING_SOURCE',
+								Path::removeRoot($src)
+							)
+						);
 					}
 				}
 
@@ -460,7 +465,13 @@ class Patcher
 						{
 							if ($src_lines[$l] != $source[$l - $srcLine])
 							{
-								throw new \RuntimeException(Text::sprintf('JLIB_FILESYSTEM_PATCHER_FAILED_VERIFY', $src, $l));
+								throw new \RuntimeException(
+									Text::sprintf(
+										'JLIB_FILESYSTEM_PATCHER_FAILED_VERIFY',
+										Path::removeRoot($src),
+										$l
+									)
+								);
 							}
 						}
 

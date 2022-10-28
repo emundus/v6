@@ -6,6 +6,13 @@ button.save-btn, .btn-success, button.save, button.save_continue, button.send, a
     text-transform: none;
     max-height: 38px;
 }
+
+.btn-success:active:hover, .btn-warning:active:hover, .btn-danger:active:hover  {
+    background-color: transparent !important;
+}
+
+
+
 button.save-btn:hover, button.save-btn:active, button.save-btn:focus,
 .btn-success:hover, .btn-success:focus, .btn-success:active,
 button.save:hover, button.save:active, button.save:focus,
@@ -143,8 +150,8 @@ button#back:hover, button#back:active, button#back:focus,
 }
 
 a.btn.btn-success:not(.btn-xs) {
-    width: auto;
-    text-align: initial;
+    width: 100%;
+    text-align: center;
 }
 
 /*** Progression bar percentage ***/
@@ -157,16 +164,40 @@ a.btn.btn-success:not(.btn-xs) {
 .g-block.size-100.content-bottom-a hr:last-child {
     display: none !important;
 }
-
-@media all and (max-width: 767px) {
-    .main-page-application-title {
-        text-align: center;
-    }
-
+@media all and (max-width: 479px) {
     .main-page-file-info a {
         margin-bottom: 4px;
     }
 
+    .view-featured .candidacy-files-list .row {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .view-featured .candidacy-files-list .row .main-page-application-title  {
+        align-self: flex-start;
+        text-align: left;
+    }
+
+    .view-featured .candidacy-files-list .row .main-page-file-info {
+        text-align: left;
+    }
+
+}
+
+@media all and (min-width: 480px) and (max-width: 767px) {
+    .main-page-file-info a {
+        margin-bottom: 4px;
+    }
+
+    .view-featured .candidacy-files-list .row {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
 }
 
 @media all and (min-width: 768px) and (max-width: 959px) {
@@ -195,6 +226,7 @@ a.btn.btn-success:not(.btn-xs) {
 
     .main-page-file-progress {
         width: 50%;
+        margin-top: 10px;
     }
 }
 

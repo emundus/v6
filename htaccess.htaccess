@@ -20,13 +20,33 @@ php_value post_max_size 10M
 php_value upload_max_filesize 10M
 
 ## No directory listings
-<IfModule autoindex>
+<IfModule mod_autoindex.c>
   IndexIgnore *
 </IfModule>
+
+## Suppress mime type detection in browsers for unknown types
+<IfModule mod_headers.c>
+Header always set X-Content-Type-Options "nosniff"
+##
+# Disable Federated Learning of Cohorts (FLoC)
+# If you uncomment the below directive you have to allow this technology in the 
+# Global Configuration of Joomla. Read more about this in the Post-Installation 
+# message in the backend.
+##
+# Header always set Permissions-Policy "interest-cohort=()"
+</IfModule>
+
 
 ## Can be commented out if causes errors, see notes above.
 Options +FollowSymlinks
 Options -Indexes
+
+## Disable inline JavaScript when directly opening SVG files or embedding them with the object-tag
+<FilesMatch "\.svg$">
+  <IfModule mod_headers.c>
+    Header always set Content-Security-Policy "script-src 'none'"
+  </IfModule>
+</FilesMatch>
 
 ## Mod_rewrite in use.
 

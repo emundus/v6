@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -14,6 +14,9 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 		'AUD','BRL','CAD','EUR','GBP','JPY','USD','NZD','CHF','HKD','SGD','SEK',
 		'DKK','PLN','NOK','HUF','CZK','MXN','MYR','PHP','TWD','THB','ILS','TRY'
 	);
+
+
+	var $rounding = array('TWD' => 0, 'MYR' => 0, 'JPY' => 0, 'HUF' => 0);
 
 	var $pluginConfig = array(
 		'apiuser' => array("API_USERNAME",'input'),
@@ -61,7 +64,7 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 	public function getPaymentDefaultValues(&$element) {
 		$element->payment_name = 'PaypalExpress';
 		$element->payment_description = 'You can pay by credit card using this payment method';
-		$element->payment_images = 'MasterCard,VISA,Credit_card,American_Express';
+		$element->payment_images = 'MasterCard,VISA,Credit_card,American_Express,Discover';
 		$element->payment_params->address_type = 'billing';
 		$element->payment_params->apiversion = '109.0';
 		$element->payment_params->landingpage = 1;
@@ -73,9 +76,21 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 	public function onPaymentNotification(&$statuses) {
 		$cartClass = hikashop_get('class.cart');
 		$cart = $cartClass->loadFullCart(true);
+		$hasProducts = !empty($cart->products) && count($cart->products);
+		if(!$hasProducts) {
+			if($this->plugin_params->debug && !empty($cart->cart_id)) {
+				$this->writeToLog('Cart with id '. $cart->cart_id.' was skipped because it doesn\'t have any products');
+			}	
+			return false;
+		}
+
 		$currencyClass = hikashop_get('class.currency');
 		$currency = $currencyClass->get($cart->full_total->prices[0]->price_currency_id);
 		$config = hikashop_config();
+
+		$rounding = 2;
+		if(isset($this->rounding[$currency->currency_code]))
+			$rounding = $this->rounding[$currency->currency_code];
 
 		$this->app = JFactory::getApplication();
 
@@ -95,7 +110,7 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 		$return_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=after_end'.$url_menu_id;
 
 		$amountTheorical = (isset($cart->full_total->prices[0]->price_value_without_payment_with_tax) ) ?
-			round($cart->full_total->prices[0]->price_value_without_payment_with_tax, 2) : round($cart->full_total->prices[0]->price_value_with_tax, 2);
+			round($cart->full_total->prices[0]->price_value_without_payment_with_tax, $rounding) : round($cart->full_total->prices[0]->price_value_with_tax, $rounding);
 
 		$vars = $this->getRequestDatas();
 
@@ -132,9 +147,9 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 							else
 								$unit2 =& $p2->prices[0];
 
-							$productprice += round($unit2->price_value, 2);
-							$tax += (round($unit2->price_value_with_tax, 2) - round($unit2->price_value, 2))*$p->cart_product_quantity;
-							$amountCalculated += $p->cart_product_quantity*round($unit2->price_value, 2);
+							$productprice += round($unit2->price_value, $rounding);
+							$tax += (round($unit2->price_value_with_tax, $rounding) - round($unit2->price_value, $rounding))*$p->cart_product_quantity;
+							$amountCalculated += $p->cart_product_quantity*round($unit2->price_value, $rounding);
 							$optionalProdDesc .= $p2->product_name.',';
 
 							unset($unit2);
@@ -146,9 +161,9 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 					else
 						$unit =& $p->prices[0];
 
-					$tax += (round($unit->price_value_with_tax, 2) - round($unit->price_value, 2)) * $p->cart_product_quantity;
-					$amountCalculated += $p->cart_product_quantity * round($unit->price_value, 2);
-					$productprice += round($unit->price_value, 2);
+					$tax += (round($unit->price_value_with_tax, 2) - round($unit->price_value, $rounding)) * $p->cart_product_quantity;
+					$amountCalculated += $p->cart_product_quantity * round($unit->price_value, $rounding);
+					$productprice += round($unit->price_value, $rounding);
 
 					unset($unit);
 
@@ -172,15 +187,15 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 
 				$shipping = 0;
 				if( !empty($cart->shipping) )
-					$shipping = round($cart->shipping[0]->shipping_price_with_tax, 2);
+					$shipping = round($cart->shipping[0]->shipping_price_with_tax, $rounding);
 
 				$discount = 0;
 				if( !empty($cart->coupon) )
-					$discount = round($cart->coupon->discount_value, 2);
+					$discount = round($cart->coupon->discount_value, $rounding);
 
 				if ($this->plugin_data->payment_price > 0 || $this->plugin_params->payment_percentage > 0) {
 
-					$feesValue = round($this->plugin_data->payment_price + $amountTheorical * $this->plugin_params->payment_percentage / 100, 2);
+					$feesValue = round($this->plugin_data->payment_price + $amountTheorical * $this->plugin_params->payment_percentage / 100, $rounding);
 					$item = array(
 						'L_PAYMENTREQUEST_0_NAME'.$i => JText::_('HIKASHOP_PAYMENT'),
 						'L_PAYMENTREQUEST_0_NUMBER'.$i => 99999, //?
@@ -191,8 +206,8 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 					$items = array_merge($items,$item);
 				}
 
-				$amountTheorical += round($amountTheorical * $this->plugin_params->payment_percentage / 100, 2);
-				$amountTheorical += round($this->plugin_data->payment_price,2);
+				$amountTheorical += round($amountTheorical * $this->plugin_params->payment_percentage / 100, $rounding);
+				$amountTheorical += round($this->plugin_data->payment_price,$rounding);
 
 				$endItem = array(
 					'PAYMENTREQUEST_0_ITEMAMT' => $amountCalculated,
@@ -210,11 +225,13 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 			}
 
 			if($amountTheorical <= 0) {
-				$order = $this->createOrder($cart);
 				$orderClass = hikashop_get('class.order');
-				$order->order_payment_id = $this->plugin_data->payment_id;
-				$order->order_payment_method = $this->name;
-				$order->order_id = $orderClass->save($order);
+				$order = $orderClass->createFromCart($cart->cart_id, array('skipPayment' => true));
+				$updateOrder = new stdClass();
+				$updateOrder->order_id = $order->order_id;
+				$updateOrder->order_payment_id = $this->plugin_data->payment_id;
+				$updateOrder->order_payment_method = $this->name;
+				$orderClass->save($updateOrder);
 				$this->app->setUserState('com_hikashop.order_id', $order->order_id);
 				$this->app->setUserState('com_hikashop.order_token', @$order->order_token);
 				hikaInput::get()->set('order_token', $order->order_token );
@@ -264,12 +281,13 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 					'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token='.$vars['TOKEN'].'&hash='.$datehash
 					: 'https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token='.$vars['TOKEN'].'&hash='.$datehash;
 
-				$order = $this->createOrder($cart);
 				$orderClass = hikashop_get('class.order');
-				$order->order_payment_id = $this->plugin_data->payment_id;
-				$order->order_payment_method = $this->name;
-				$order->history->history_data = $vars['TOKEN'];
-				$order->order_id = $orderClass->save($order);
+				$order = $orderClass->createFromCart($cart->cart_id, array('skipPayment' => true, 'historyData' => $vars['TOKEN']));
+				$updateOrder = new stdClass();
+				$updateOrder->order_id = $order->order_id;
+				$updateOrder->order_payment_id = $this->plugin_data->payment_id;
+				$updateOrder->order_payment_method = $this->name;
+				$orderClass->save($updateOrder);
 
 				$this->app->setUserState('com_hikashop.order_id', $order->order_id);
 				$this->app->setUserState('com_hikashop.order_token', @$order->order_token);
@@ -395,9 +413,9 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 						else
 							$unit2 =& $p2->prices[0];
 
-						$productprice += round($unit2->price_value, 2);
-						$tax += (round($unit2->price_value_with_tax, 2) - round($unit2->price_value, 2)) * $p->cart_product_quantity;
-						$amountCalculated += $p->cart_product_quantity * round($unit2->price_value, 2);
+						$productprice += round($unit2->price_value, $rounding);
+						$tax += (round($unit2->price_value_with_tax, $rounding) - round($unit2->price_value, $rounding)) * $p->cart_product_quantity;
+						$amountCalculated += $p->cart_product_quantity * round($unit2->price_value, $rounding);
 						$optionalProdDesc .= $p2->product_name.',';
 
 						unset($unit2);
@@ -409,9 +427,9 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 				else
 					$unit =& $p->prices[0];
 
-				$tax += (round($unit->price_value_with_tax, 2) - round($unit->price_value, 2))  *$p->cart_product_quantity;
-				$amountCalculated += $p->cart_product_quantity * round($unit->price_value, 2);
-				$productprice += round($unit->price_value, 2);
+				$tax += (round($unit->price_value_with_tax, $rounding) - round($unit->price_value, $rounding))  *$p->cart_product_quantity;
+				$amountCalculated += $p->cart_product_quantity * round($unit->price_value, $rounding);
+				$productprice += round($unit->price_value, $rounding);
 
 				unset($unit);
 
@@ -435,15 +453,15 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 
 			$shipping = 0;
 			if (!empty($cart->shipping) )
-				$shipping = round($cart->shipping[0]->shipping_price_with_tax, 2);
+				$shipping = round($cart->shipping[0]->shipping_price_with_tax, $rounding);
 
 			$discount = 0;
 			if (!empty($cart->coupon) )
-				$discount = round($cart->coupon->discount_value, 2);
+				$discount = round($cart->coupon->discount_value, $rounding);
 
 			if ($this->plugin_data->payment_price > 0 || $this->plugin_params->payment_percentage > 0) {
 
-				$feesValue = round($this->plugin_data->payment_price + $amountTheorical * $this->plugin_params->payment_percentage / 100, 2);
+				$feesValue = round($this->plugin_data->payment_price + $amountTheorical * $this->plugin_params->payment_percentage / 100, $rounding);
 				$item = array(
 					'L_PAYMENTREQUEST_0_NAME'.$i => JText::_('HIKASHOP_PAYMENT'),
 					'L_PAYMENTREQUEST_0_NUMBER'.$i => 99999, //?
@@ -454,8 +472,8 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 				$items = array_merge($items,$item);
 			}
 
-			$amountTheorical += round($amountTheorical * $this->plugin_params->payment_percentage / 100, 2);
-			$amountTheorical += round($this->plugin_data->payment_price, 2);
+			$amountTheorical += round($amountTheorical * $this->plugin_params->payment_percentage / 100, $rounding);
+			$amountTheorical += round($this->plugin_data->payment_price, $rounding);
 
 			$endItem = array(
 				'PAYMENTREQUEST_0_ITEMAMT' => $amountCalculated,
@@ -766,7 +784,7 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 				$orderProduct->product_subscription_id = @$product->product_subscription_id;
 
 				$tax = 0;
-				if(!empty($product->prices[0]->unit_price->price_value_with_tax) && bccomp($product->prices[0]->unit_price->price_value_with_tax,0,5) )
+				if(!empty($product->prices[0]->unit_price->price_value_with_tax) && bccomp(sprintf('%F',$product->prices[0]->unit_price->price_value_with_tax),0,5) )
 					$tax = $product->prices[0]->unit_price->price_value_with_tax-$product->prices[0]->unit_price->price_value;
 
 				$orderProduct->order_product_tax = $tax;

@@ -49,7 +49,7 @@ class Column
     /**
      * Autofilter.
      *
-     * @var AutoFilter
+     * @var null|AutoFilter
      */
     private $parent;
 
@@ -77,14 +77,14 @@ class Column
     /**
      * Autofilter Column Rules.
      *
-     * @var array of Column\Rule
+     * @var Column\Rule[]
      */
     private $ruleset = [];
 
     /**
      * Autofilter Column Dynamic Attributes.
      *
-     * @var array of mixed
+     * @var mixed[]
      */
     private $attributes = [];
 
@@ -94,7 +94,7 @@ class Column
      * @param string $pColumn Column (e.g. A)
      * @param AutoFilter $pParent Autofilter for this column
      */
-    public function __construct($pColumn, AutoFilter $pParent = null)
+    public function __construct($pColumn, ?AutoFilter $pParent = null)
     {
         $this->columnIndex = $pColumn;
         $this->parent = $pParent;
@@ -115,8 +115,6 @@ class Column
      *
      * @param string $pColumn Column (e.g. A)
      *
-     * @throws PhpSpreadsheetException
-     *
      * @return $this
      */
     public function setColumnIndex($pColumn)
@@ -135,7 +133,7 @@ class Column
     /**
      * Get this Column's AutoFilter Parent.
      *
-     * @return AutoFilter
+     * @return null|AutoFilter
      */
     public function getParent()
     {
@@ -149,7 +147,7 @@ class Column
      *
      * @return $this
      */
-    public function setParent(AutoFilter $pParent = null)
+    public function setParent(?AutoFilter $pParent = null)
     {
         $this->parent = $pParent;
 
@@ -170,8 +168,6 @@ class Column
      * Set AutoFilter Type.
      *
      * @param string $pFilterType
-     *
-     * @throws PhpSpreadsheetException
      *
      * @return $this
      */
@@ -200,8 +196,6 @@ class Column
      * Set AutoFilter Multiple Rules And/Or.
      *
      * @param string $pJoin And/Or
-     *
-     * @throws PhpSpreadsheetException
      *
      * @return $this
      */
@@ -262,7 +256,7 @@ class Column
      *
      * @param string $pName Attribute Name
      *
-     * @return string
+     * @return null|string
      */
     public function getAttribute($pName)
     {
@@ -313,8 +307,6 @@ class Column
 
     /**
      * Add a new AutoFilter Column Rule to the ruleset.
-     *
-     * @param Column\Rule $pRule
      *
      * @return $this
      */

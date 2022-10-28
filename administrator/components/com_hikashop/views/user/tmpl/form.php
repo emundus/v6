@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 <div class="hkc-lg-6 hikashop_tile_block hikashop_user_edit_general"><div>
 	<div class="hikashop_tile_title"><?php echo JText::_('MAIN_INFORMATION'); ?></div>
-
+<?php if(!empty($this->extraData->main_top) && !empty($this->extraData->main_top)) { echo implode("\r\n", $this->extraData->main_top); } ?>
 	<dl class="hika_options">
 		<dt><label><?php
 			echo JText::_('HIKA_USER_NAME');
@@ -61,18 +61,22 @@ defined('_JEXEC') or die('Restricted access');
 			}
 		?></dd>
 	</dl>
+<?php } elseif($this->config->get('user_ip', 1) && !empty($this->user->user_created_ip)) { ?>
+	<dl class="hika_options">
+		<dt><label><?php
+			echo JText::_('IP');
+		?></label></dt>
+		<dd><?php
+			echo $this->user->user_created_ip;
+		?></dd>
+	</dl>
 <?php } ?>
 <?php
 	if(!empty($this->fields['user'])) {
+		$after = array();
 		foreach($this->fields['user'] as $fieldName => $oneExtraField) {
 			$onWhat = ($oneExtraField->field_type == 'radio') ? 'onclick' : 'onchange';
-?>
-	<dl id="hikashop_user_<?php echo $fieldName; ?>" class="hika_options">
-		<dt><label><?php
-			echo $this->fieldsClass->getFieldName($oneExtraField);
-		?></label></dt>
-		<dd class="input_large"><?php
-			echo $this->fieldsClass->display(
+			$html = $this->fieldsClass->display(
 				$oneExtraField,
 				$this->user->$fieldName,
 				'data[user]['.$fieldName.']',
@@ -82,12 +86,28 @@ defined('_JEXEC') or die('Restricted access');
 				$this->fields['user'],
 				$this->user
 			);
+			if($oneExtraField->field_type == 'hidden') {
+				$after[] = $html;
+				continue;
+			}
+?>
+	<dl id="hikashop_user_<?php echo $fieldName; ?>" class="hika_options">
+		<dt><label><?php
+			echo $this->fieldsClass->getFieldName($oneExtraField);
+		?></label></dt>
+		<dd class="input_large"><?php
+			echo $html;
 		?></dd>
 	</dl>
 <?php
 		}
+
+		if(count($after)) {
+			echo implode("\r\n", $after);
+		}
 	}
 ?>
+<?php if(!empty($this->extraData->main_bottom) && !empty($this->extraData->main_bottom)) { echo implode("\r\n", $this->extraData->main_bottom); } ?>
 </div></div>
 
 <div class="hkc-lg-6 hikashop_tile_block hikashop_user_addresses_general"><div>
@@ -107,7 +127,7 @@ echo $this->loadTemplate('address');
 		</div>
 	</div>
 </div></div>
-
+<?php if(!empty($this->extraData->after_address) && !empty($this->extraData->after_address)) { echo implode("\r\n", $this->extraData->after_address); } ?>
 <?php
 if(hikashop_level(2) && $this->affiliate_active) {
 	echo $this->loadTemplate('affiliate');
@@ -178,7 +198,7 @@ if(hikashop_level(2) && $this->affiliate_active) {
 	</tbody>
 </table>
 </div></div>
-
+<?php if(!empty($this->extraData->end) && !empty($this->extraData->end)) { echo implode("\r\n", $this->extraData->end); } ?>
 	</div>
 </div>
 	<input type="hidden" name="cancel_redirect" value="<?php echo base64_encode(hikaInput::get()->getString('cancel_redirect')); ?>" />

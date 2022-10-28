@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -159,7 +159,7 @@ class hikashopCategorysubType {
 			$value = (int)$value;
 		}
 		if(strpos($attribute, 'size="') === false) {
-			if($this->multiple && !HIKASHOP_J30) {
+			if($this->multiple && (!HIKASHOP_J30 || $this->type == 'status')) {
 				$attribute .= ' size="3"';
 			} else {
 				$attribute .= ' size="1"';
@@ -179,19 +179,16 @@ window.hikashop.checkOrderStatusSelectChange = function(el) {
 		if (options[i].selected) count++;
 	}
 	if(!count) {
-		el.value = \'\';
+		el.value = \'all\';
 		return;
 	}
-	for (var i=0; i < options.length; i++) {
-		if (options[i].selected && options[i].value==\'\') el.remove(i);
-	}
-
 };
+window.hikashop.ready(function(){ window.hikashop.noChzn(); });
 				';
 				$doc = JFactory::getDocument();
 				$doc->addScriptDeclaration($js);
 			}
-			return $order_statusType->display($map, $value, 'class="custom-select"'.$attribute, $addAll);
+			return $order_statusType->display($map, $value, 'class="no-chzn custom-select"'.$attribute, $addAll);
 		}
 
 		$this->load($form);

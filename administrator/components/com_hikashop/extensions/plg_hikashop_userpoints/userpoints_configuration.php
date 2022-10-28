@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -118,7 +118,7 @@ defined('_JEXEC') or die('Restricted access');
 <fieldset class="adminform">
 	<legend><?php echo JText::_('CATEGORIES_POINTS'); ?></legend>
 	<div style="text-align:right;">
-		<a class="modal" id="hikashop_cat_popup" rel="{handler: 'iframe', size: {x: 760, y: 480}}" href="<?php echo hikashop_completeLink("product&task=selectcategory&control=plugin",true ); ?>">
+		<a id="hikashop_cat_popup" href="#" onclick="return window.hikashop.addCategoryRow();">
 			<span class="hikabtn hikabtn-primary"><i class="fas fa-plus"></i> <?php echo JText::_('ADD');?></span>
 		</a>
 	</div>
@@ -140,22 +140,30 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 	if(!empty($this->data['categories'])){
 		$k = 0;
+		$nameboxType = hikashop_get('type.namebox');
 		for($i = 0,$a = count($this->data['categories']);$i<$a;$i++){
 			$row =& $this->data['categories'][$i];
 			if(!empty($row->category_id)){
 ?>
 			<tr id="category_<?php echo $row->category_id;?>">
 				<td>
-					<a href="<?php echo hikashop_completeLink('category&task=edit&cid='.$row->category_id); ?>"><?php echo $row->category_name; ?></a>
+					<?php echo $nameboxType->display(
+							'category['.$i.']',
+							$row->category_id,
+							hikashopNameboxType::NAMEBOX_SINGLE,
+							'category',
+							array(
+								'delete' => false,
+								'root' => 0,
+								'default_text' => '<em>'.JText::_('HIKA_NONE').'</em>',
+							)
+					); ?>
 				</td>
 				<td class="hk_center">
-					<input type="text" name="category_points[<?php echo $row->category_id;?>]" id="category_points[<?php echo $row->category_id;?>]" value="<?php echo (int)@$row->category_points; ?>" />
+					<input type="text" name="category_points[<?php echo $i;?>]" id="category_points_<?php echo $i;?>" value="<?php echo (int)@$row->category_points; ?>" />
 				</td>
 				<td width="1%" class="hk_center">
 					<?php echo $row->category_id; ?>
-					<div id="category_div_<?php echo $row->category_id;?>">
-						<input type="hidden" name="category[<?php echo $row->category_id;?>]" id="category[<?php echo $row->category_id;?>]" value="<?php echo $row->category_id;?>"/>
-					</div>
 				</td>
 			</tr>
 <?php
@@ -216,3 +224,10 @@ defined('_JEXEC') or die('Restricted access');
 	}
 ?>
 <table>
+<script>
+window.hikashop.addCategoryRow = function() {
+	var target = document.getElementById('category_listing');
+	window.hikashop.xRequest('<?php echo hikashop_completeLink('category&task=points_row&tmpl=component', false, false, true); ?>', {update: target, replace: false});
+	return false;
+};
+</script>

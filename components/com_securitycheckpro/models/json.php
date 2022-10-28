@@ -68,6 +68,10 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	private $info = null;  // Contendrá información sobre el sistema: versión de php, mysql y servidor
 	private $site = null;  // Contendrá la url a la que hemos de devolver el callback
 	private $site_id = null;  // Contendrá la id de la web en Control Center
+	private $log_filename = '';    // Nombre del fichero de logs
+	// Establecemos la ruta donde se almacenarán los escaneos
+    private $folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans';
+	private $array_result = array(); // Contendrá el resultado de las actualizaciones
 	
 	public function register_task($json)
 	{
@@ -102,7 +106,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	public function execute($json)
 	{
 		$db = JFactory::getDBO();
-		$query = 'DELETE FROM #__securitycheckpro_storage WHERE storage_key="remote_task"';
+		$query = "DELETE FROM #__securitycheckpro_storage WHERE storage_key='remote_task'";
 		$db->setQuery($query);
 		$db->execute();
 				
@@ -113,11 +117,9 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		if ((strlen($json_trimmed) < 12) || (substr($json_trimmed, 0, 1) != '{') || (substr($json_trimmed, -1) != '}'))
 		{
 			// El string JSON no es válido, no podemos hacer nada ya que no sabemos a qué dirección devolver la petición
-			/*$this->data = 'JSON decoding error';
-			$this->status = self::STATUS_ERROR;
-			$this->cipher = self::CIPHER_RAW;
-
-			return $this->sendResponse();*/
+			$this->log_filename = "error.php";
+			$message = "Function Execute. JSON not valid.";
+			$this->write_log($message,"ERROR");
 			return;
 		}
 		else
@@ -130,11 +132,9 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		if (is_null($request))
 		{
 			// El string JSON no es válido, no podemos hacer nada ya que no sabemos a qué dirección devolver la petición
-			/*$this->data = 'JSON decoding error';
-			$this->status = self::STATUS_ERROR;
-			$this->cipher = self::CIPHER_RAW;
-
-			return $this->sendResponse();*/
+			$this->log_filename = "error.php";
+			$message = "Function Execute. JSON is null.";
+			$this->write_log($message,"ERROR");
 			return;
 		}
 		
@@ -158,8 +158,12 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			$this->data = "Can't get configuration";
 			$this->status = self::STATUS_ERROR;
 			$this->cipher = self::CIPHER_RAW;
+			
+			$this->log_filename = "error.php";
+			$message = "Function Execute. Can't get configuration.";
+			$this->write_log($message,"ERROR");
 
-			return $this->sendResponse();return;
+			return $this->sendResponse();
 		}
 
 		if (!array_key_exists('control_center_enabled', $config))
@@ -182,6 +186,10 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			$this->data = 'Remote password not configured';
 			$this->status = self::STATUS_NOT_AUTH;
 			$this->cipher = self::CIPHER_RAW;
+			
+			$this->log_filename = "error.php";
+			$message = "Function Execute. Remote password not configured.";
+			$this->write_log($message,"ERROR");
 
 			return $this->sendResponse();
 		}
@@ -194,6 +202,10 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			$this->data = 'Access denied';
 			$this->status = self::STATUS_NOT_AVAILABLE;
 			$this->cipher = self::CIPHER_RAW;
+						
+			$this->log_filename = "error.php";
+			$message = "Function Execute. Frontend disabled.";
+			$this->write_log($message,"ERROR");
 
 			return $this->sendResponse();
 		}
@@ -230,9 +242,15 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			$this->data = 'Error decrypting data. Are both secret keys equals?';
 			$this->status = self::STATUS_ERROR;
 			$this->cipher = self::CIPHER_RAW;
+			
+			$this->log_filename = "error.php";
+			$message = "Function Execute. Error decrypting data. Are both secret keys equals?";
+			$this->write_log($message,"ERROR");
 
 			return $this->sendResponse();
 		}			
+		
+		
 					
 		// Decodificamos el 'body' de la petición
 		if (isset($request['cipher']) && isset($request['body']))
@@ -240,14 +258,13 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			switch ($request['cipher'])
 			{
 				case self::CIPHER_RAW:
-					if (($request['body']['task'] == "getStatus") || ($request['body']['task'] == "checkVuln") || ($request['body']['task'] == "checkLogs") || ($request['body']['task'] == "checkPermissions") || ($request['body']['task'] == "checkIntegrity") || ($request['body']['task'] == "deleteBlocked") || ($request['body']['task'] == "checkmalware") || ($request['body']['task'] == "UpdateExtension") || ($request['body']['task'] == "Backup") || ($request['body']['task'] == "unlocktables") || ($request['body']['task'] == "locktables") || ($request['body']['task'] == "server_statistics"))
+					if (($request['body']['task'] == "getStatus") || ($request['body']['task'] == "checkVuln") || ($request['body']['task'] == "checkLogs") || ($request['body']['task'] == "checkPermissions") || ($request['body']['task'] == "checkIntegrity") || ($request['body']['task'] == "deleteBlocked") || ($request['body']['task'] == "checkmalware") || ($request['body']['task'] == "UpdateExtension") || ($request['body']['task'] == "Backup") || ($request['body']['task'] == "unlocktables") || ($request['body']['task'] == "locktables") || ($request['body']['task'] == "server_statistics") || ($request['body']['task'] == "enable_analytics") || ($request['body']['task'] == "disable_analytics"))
 					{
-						  /*
-                           Los resultados de todas las tareas se devuelven cifrados; si recibimos una petición para devolverlos sin cifrar, la rechazamos
+						/* Los resultados de todas las tareas se devuelven cifrados; si recibimos una petición para devolverlos sin cifrar, la rechazamos
 						porque será fraudulenta */
-						  $this->data = 'Go away, hacker!';
-						  $this->status = self::STATUS_NOT_ALLOWED;
-						  $this->cipher = self::CIPHER_RAW;
+						$this->data = 'Go away, hacker!';
+						$this->status = self::STATUS_NOT_ALLOWED;
+						$this->cipher = self::CIPHER_RAW;
 
 						return $this->sendResponse();
 					}
@@ -259,41 +276,68 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 						// $this->clear_data = $this->mc_decrypt_256($request->body->data, $this->password);
 					}
 				break;
-			}												
+			}	
+				
+			// Let's update the url from which we have received the task and prepare the log file
+			try
+			{
+				$params = JComponentHelper::getParams('com_securitycheckpro');
+				$max_log_size = $params->get('controlcenter_log_size', 2048);
+				$cc_config = $this->Config('controlcenter');
+				$cc_config['control_center_url'] = $this->site;
+				$this->SaveStorageParams($cc_config,'controlcenter');	
+				JLoader::import('filemanager', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
+				$filemanager_model = \Joomla\CMS\MVC\Model\BaseDatabaseModel::getInstance('filemanager', 'SecuritycheckprosModel');
+				$this->log_filename = $filemanager_model->get_log_filename("controlcenter_log", true);
+				if (empty($this->log_filename)) {
+					$this->log_filename = $filemanager_model->prepareLog("controlcenter",true);					
+				} else if ( (file_exists($this->folder_path.DIRECTORY_SEPARATOR.$this->log_filename)) && (filesize($this->folder_path.DIRECTORY_SEPARATOR.$this->log_filename) > ($max_log_size * 1024)) ) {
+					//Rotate log file
+					JFile::delete($this->folder_path.DIRECTORY_SEPARATOR.$this->log_filename);
+					$this->log_filename = $filemanager_model->prepareLog("controlcenter",true);
+				}								
+				
+				
+			} catch (Exception $e)
+			{
+				$this->log_filename = "error.php";
+				$message = "Function Execute. " . $e->getMessage();
+				$this->write_log($message,"ERROR");				
+			} 			
 						
 			switch ($request['body']['task'])
 			{
 				case "getStatus":
 					$this->getStatus();
-							break;
+					break;
 
 				case "checkVuln":
 					$this->checkVuln();
-							break;
+					break;
 
 				case "checkLogs":
 					$this->checkLogs();
-							break;
+					break;
 
 				case "checkPermissions":
 					$this->checkPermissions();
-							break;
+					break;
 
 				case "checkIntegrity":
 					$this->checkIntegrity();
-							break;
+					break;
 
 				case "deleteBlocked":
 					$this->deleteBlocked();
-							break;
+					break;
 
 				case "checkmalware":
 					$this->checkMalware();
-							break;
+					break;
 
 				case "UpdateComponent":
 					$this->UpdateComponent();
-							break;
+					break;
 
 				case "UpdateExtension":
 					$this->UpdateExtension($request['body']['data']);
@@ -316,6 +360,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 					break;
 
 				case "unlocktables":
+					$this->write_log("UNLOCKTABLES task received");
 					$this->unlocktables();
 					break;
 
@@ -325,6 +370,16 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 				case "server_statistics":
 					$this->server_statistics();
+					break;
+					
+				case "enable_analytics":
+					$this->write_log("ENABLE_ANALYTICS task received");
+					$this->enable_analytics($request['body']['data']);
+					break;
+					
+				case "disable_analytics":
+					$this->write_log("DISABLE_ANALYTICS task received");
+					$this->disable_analytics($request['body']['data']);
 					break;
 
 				case self::CIPHER_AESCBC256:
@@ -343,20 +398,24 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 		// Función que empaqueta una respuesta en formato JSON codificado, cifrando los datos si es necesario
 
-	private function sendResponse()
+	public function sendResponse($connect_back_url=null)
 	{
+		
 		// Inicializamos la respuesta
 		$response = array(
 			'cipher'    => $this->cipher,
 			'body'        => array(
-			'status'        => $this->status,
-			'data'            => null,
-			'id'            => $this->site_id
+				'status'        => $this->status,
+				'data'            => null,
+				'id'            => $this->site_id
 			)
 		);
-
+		
+		
 		// Codificamos los datos enviados en formato JSON
-		$data = json_encode($this->data);		
+		$data = json_encode($this->data);
+		
+		$this->write_log("Sending response. Data: " . $data);		
 				
 		// Ciframos o no los datos según el método establecido en la petición
 		switch ($this->cipher)
@@ -372,8 +431,13 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		// Guardamos los datos...
 		$response['body']['data'] = $data;
 		
-		$response = json_encode($response);	
-				
+		$response = json_encode($response);
+		
+		// If 'connect_back_url' is not empty will contain the url to which return the result. Used in the "Connect" task
+		if (!empty($connect_back_url)) {
+			$this->site = $connect_back_url;
+		}
+						
 		// ... y los devolvemos al cliente
 		$ch = curl_init($this->site . "index.php?option=com_securitycheckprocontrolcenter&view=json&format=raw&json=" . urlencode($response));
 		
@@ -382,13 +446,22 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		curl_setopt($ch, CURLOPT_HEADER, true);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);		
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);	
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 			
 		$response = curl_exec($ch);
+		
+		$this->write_log("Response sent to " . $this->site);
+		if ($response === false) {
+			$message = curl_error($ch);
+			$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);		
+			$this->write_log("RESPONSE: Error " . $httpcode . " " . $message);	
+		} else {
+			$this->write_log("Curl reply " . $response);
+		}
 	}
 
 	// Extraemos los parámetros del componente
-
 	private function Config($key_name)
 	{
 		$db = JFactory::getDBO();
@@ -403,9 +476,66 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 		return $res;
 	}
+	
+	// Guardamos los parámetros del componente
+	private function SaveStorageParams($params,$key_name)
+	{
+		$db = JFactory::getDBO();
+		
+		$storage_value = json_encode($params);
+		// Instanciamos un objeto para almacenar los datos que serán sobreescritos/añadidos
+        $object = new StdClass();                    
+        $object->storage_key = $key_name;
+        $object->storage_value = $storage_value;
+		
+		try {
+			$db->updateObject('#__securitycheckpro_storage', $object, 'storage_key');
+		} catch (Exception $e)
+		{
+			$this->log_filename = "error.php";
+			$message = "Function SaveStorageParams. " . $e->getMessage();
+			$this->write_log($message,"ERROR");
+		} 		
+	}
+	
+	/* Devuelve una fecha datetime usando el offset establecido en Joomla */
+	public function get_Joomla_timestamp()
+	{
+		// Obtenemos el timezone de Joomla y sobre esa información calculamos el timestamp
+		$config = JFactory::getConfig();
+		$offset = $config->get('offset');
+						
+		if (empty($offset))
+		{
+			$offset = 'UTC';
+		}
+		
+		$date = new DateTime("now", new DateTimeZone($offset) );
+		$timestamp_joomla_timezone = $date->format('Y-m-d H:i:s');
+			
+		return $timestamp_joomla_timezone;
+	}
+	
+	/* Crea un log de una tarea lanzada */
+    function write_log($message,$level="INFO")
+    {
+				
+		$fp2 = @fopen($this->folder_path.DIRECTORY_SEPARATOR.$this->log_filename, 'ab');		
+		
+		if (empty($fp2)) {
+            return;
+        }
+	
+		$string = $level . "    |   ";
+		$timestamp = $this->get_Joomla_timestamp();
+		$string .= $timestamp . "   |   $message |\r\n";	
 
-		// Función que verifica una fecha
+		@fwrite($fp2, $string);
+		@fclose($fp2);
+    }
+	
 
+	// Función que verifica una fecha
 	public function verifyDate($date, $strict = true)
 	{
 		$dateTime = DateTime::createFromFormat('Y-m-d H:i:s', $date);
@@ -427,7 +557,9 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 	public function getStatus($opcion=true)
 	{
-
+		
+		$this->write_log("Launching GETSTATUS task");
+		
 		// Inicializamos las variables
 		$extension_updates = null;
 		$installed_version = "0.0.0";
@@ -444,48 +576,45 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		$result = $db->loadResult();
 		$manifest = json_decode($result);
 		$installed_version = isset($manifest->version) ? $manifest->version : "0.0.0";
-
+		
+		$this->write_log("Importing models...");
 		// Import Securitycheckpros model
 		JLoader::import('cpanel', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
 		JLoader::import('filemanager', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
 		JLoader::import('databaseupdates', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'helpers');
 
-		if (version_compare(JVERSION, '3.0', 'ge'))
-		{
-			$cpanel_model = JModelLegacy::getInstance('cpanel', 'SecuritycheckprosModel');
-			$filemanager_model = JModelLegacy::getInstance('filemanager', 'SecuritycheckprosModel');
-			$update_model = JModelLegacy::getInstance('databaseupdates', 'SecuritycheckprosModel');
-		}
-		else
-		{
-			$cpanel_model = JModel::getInstance('cpanel', 'SecuritycheckprosModel');
-			$filemanager_model = JModel::getInstance('filemanager', 'SecuritycheckprosModel');
-			$update_model = JModel::getInstance('databaseupdates', 'SecuritycheckprosModel');
-		}
-
+		$cpanel_model = \Joomla\CMS\MVC\Model\BaseDatabaseModel::getInstance('cpanel', 'SecuritycheckprosModel');
+		$filemanager_model = \Joomla\CMS\MVC\Model\BaseDatabaseModel::getInstance('filemanager', 'SecuritycheckprosModel');
+		$update_model = \Joomla\CMS\MVC\Model\BaseDatabaseModel::getInstance('databaseupdates', 'SecuritycheckprosModel');
+		
 		if ((empty($cpanel_model)) || (empty($filemanager_model)) || (empty($update_model)))
 		{
+			$this->write_log("Error retreiving external models","ERROR");
 			return;
 		}
 
+		$this->write_log("Getting update database plugin status...");
 		// Comprobamos el estado del plugin Update Database
-		$update_database_plugin_installed = $update_model-> PluginStatus(4);
+		$update_database_plugin_installed = $update_model->PluginStatus(4);
 		$update_database_plugin_version = $update_model->get_database_version();
 		$update_database_plugin_last_check = $update_model->last_check();
 
 		// Check for vulnerable components
 		// $cpanel_model->buscarQuickIcons();
-
+		
+		$this->write_log("Checking vulnerable extensions...");
 		// Vulnerable components
 		$db = JFactory::getDBO();
-		$query = 'SELECT COUNT(*) FROM #__securitycheckpro WHERE Vulnerable="Si"';
+		$query = "SELECT COUNT(*) FROM #__securitycheckpro WHERE 'Vulnerable'='Si'";
 		$db->setQuery($query);
 		$db->execute();
 		$vuln_extensions = $db->loadResult();
-
+		
+		$this->write_log("Checking unread logs...");
 		// Check for unread logs
 		(int) $logs_pending = $cpanel_model->LogsPending();
-
+		
+		$this->write_log("Getting info from permissions, integrity and malware scan...");
 		// Get files with incorrect permissions from database
 		$files_with_incorrect_permissions = $filemanager_model->loadStack("filemanager_resume", "files_with_incorrect_permissions");
 
@@ -498,7 +627,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		// FileManager last check
 		$last_check = $filemanager_model->loadStack("filemanager_resume", "last_check");
 
-		// Get files with incorrect permissions from database
+		// Get files with incorrect integrity from database
 		$files_with_bad_integrity = $filemanager_model->loadStack("fileintegrity_resume", "files_with_bad_integrity");
 
 		// If permissions task has not been launched, whe set a '0' value.
@@ -524,7 +653,8 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		{
 			$suspicious_files = 0;
 		}
-
+		
+		$this->write_log("Getting backup info...");
 		// Comprobamos el estado del backup
 		$this->getBackupInfo();
 
@@ -536,7 +666,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		}
 		else
 		{
-			include_once JPATH_ROOT . '/administrator/components/com_joomlaupdate/Model/UpdateModel.php';
+			include_once JPATH_ROOT . '/administrator/components/com_joomlaupdate/src/Model/UpdateModel.php';
 			$updatemodel = new UpdateModel;
 		}
 
@@ -552,10 +682,12 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		{
 			$this->update_database_plugin_needs_update = 0;
 		}
-
+		
+		$this->write_log("Getting system info...");
 		// Añadimos la información del sistema
 		$this->getInfo();
-
+		
+		$this->write_log("Getting htaccess protection config...");
 		// Obtenemos las opciones de protección .htaccess
 		include_once JPATH_ROOT . '/administrator/components/com_securitycheckpro/models/protection.php';
 		$ConfigApplied = new SecuritycheckprosModelProtection;
@@ -575,18 +707,22 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		{
 			$ConfigApplied['hide_backend_url'] = '1';
 		}
-
+		
+		$this->write_log("Getting firewall config...");
 		// Obtenemos los parámetros del Firewall
 		include_once JPATH_ROOT . '/administrator/components/com_securitycheckpro/library/model.php';
 		$FirewallOptions = new SecuritycheckproModel;
 		$FirewallOptions = $FirewallOptions->getConfig();
-
+		
+		$this->write_log("Checking if kickstart exists...");
 		// Chequeamos si existe el fichero kickstart
 		$kickstart = $this->check_kickstart();
 
+		$this->write_log("Getting 2FA status...");
 		// Chequeamos si el segundo factor de autenticación está habilitado
 		$two_factor = $this->get_two_factor_status(true);
 
+		$this->write_log("Getting info about outdated extensions...");
 		// Añadimos la información sobre las extensiones no actualizadas. Esta opción no es necesaria cuando escogemos la opción 'System Info'
 		if ($opcion)
 		{
@@ -609,7 +745,8 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		{
 			$this->backupinfo['latest'] = "0000-00-00 00:00:00";
 		}
-
+		
+		$this->write_log("Getting lock tables status...");
 		// Chequeamos si las tablas están bloqueadas
 		$tables_locked = $this->check_locked_tables();
 
@@ -650,6 +787,8 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		// Obtenemos el porcentaje para 'Overall security status'
 		$overall = $this->getOverall($this->data);
 		$this->data['overall'] = $overall;
+		
+		$this->write_log("GETSTATUS task finished");
 
 	}
 
@@ -668,13 +807,16 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		}
 		catch (Exception $e)
 		{
+			$this->log_filename = "error.php";
+			$message = "Function check_locked_tables. " . $e->getMessage();
+			$this->write_log($message,"ERROR");
 			return 0;
 		}
 
-				return $locked;
+		return $locked;
 	}
 
-		// Chequea si el fichero kickstart.php existe en la raíz del sitio. Esto sucede cuando se restaura un sitio y se olvida (junto con algún backup) eliminarlo.
+	// Chequea si el fichero kickstart.php existe en la raíz del sitio. Esto sucede cuando se restaura un sitio y se olvida (junto con algún backup) eliminarlo.
 	function check_kickstart()
 	{
 		$found = false;
@@ -688,16 +830,16 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			}
 		}
 
-				return $found;
+		return $found;
 
 	}
 
-		// Obtiene el estado del segundo factor de autenticación de Joomla (Google y Yubikey)
+	// Obtiene el estado del segundo factor de autenticación de Joomla (Google y Yubikey)
 	function get_two_factor_status($overall=false)
 	{
 		$enabled = 0;
 
-				// Si la variable "overall" es false utilizamos el método getTwoFactorMethods para obtener la información de los plugins; si es true no podemos usar ese método ya que necesitamos que el usuario esté logado
+		// Si la variable "overall" es false utilizamos el método getTwoFactorMethods para obtener la información de los plugins; si es true no podemos usar ese método ya que necesitamos que el usuario esté logado
 
 		if (!$overall)
 		{
@@ -718,6 +860,9 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 				}
 				catch (Exception $e)
 				{
+					$this->log_filename = "error.php";
+					$message = "Function get_two_factor_status. " . $e->getMessage();
+					$this->write_log($message,"ERROR");
 					return 1;
 				}
 
@@ -730,7 +875,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 				}
 				else
 				{
-									$model = new UserModel(array('ignore_request' => true));
+					$model = new UserModel(array('ignore_request' => true));
 				}
 
 				foreach ($super_users_ids as $user_id)
@@ -759,6 +904,9 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			}
 			catch (Exception $e)
 			{
+				$this->log_filename = "error.php";
+				$message = "Function get_two_factor_status - second else condition. " . $e->getMessage();
+				$this->write_log($message,"ERROR");
 			}
 
 			if ($enabled == 0)
@@ -774,11 +922,14 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 				}
 				catch (Exception $e)
 				{
+					$this->log_filename = "error.php";
+					$message = "Function get_two_factor_status - third condition. " . $e->getMessage();
+					$this->write_log($message,"ERROR");
 				}
 			}
 		}
 
-				return $enabled;
+		return $enabled;
 	}
 
 		// Obtiene el porcentaje general de cada una de las barras de progreso
@@ -832,29 +983,24 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			$overall = $overall + 10;
 		}
 
-				return $overall;
+		return $overall;
 	}
 
 		// Función que comprueba si existen extensiones vulnerables
 
 	private function checkVuln()
 	{
-
+		$this->write_log("Launching CHECKVULN task");
+		
+		$this->write_log("Getting models...");
 		// Import Securitycheckpros model
 		JLoader::import('securitycheckpros', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
 		JLoader::import('databaseupdates', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'helpers');
 
-		if (version_compare(JVERSION, '3.0', 'ge'))
-		{
-			$securitycheckpros_model = JModelLegacy::getInstance('securitycheckpros', 'SecuritycheckprosModel');
-			$update_model = JModelLegacy::getInstance('databaseupdates', 'SecuritycheckprosModel');
-		}
-		else
-		{
-			$securitycheckpros_model = JModel::getInstance('securitycheckpros', 'SecuritycheckprosModel');
-			$update_model = JModel::getInstance('databaseupdates', 'SecuritycheckprosModel');
-		}
-
+		$securitycheckpros_model = \Joomla\CMS\MVC\Model\BaseDatabaseModel::getInstance('securitycheckpros', 'SecuritycheckprosModel');
+		$update_model = \Joomla\CMS\MVC\Model\BaseDatabaseModel::getInstance('databaseupdates', 'SecuritycheckprosModel');
+		
+		$this->write_log("Looking for updates...");
 		// Comprobamos si existen nuevas actualizaciones
 		$result = $update_model->tarea_comprobacion();
 
@@ -862,11 +1008,12 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		$update_database_plugin_installed = $update_model-> PluginStatus(4);
 		$update_database_plugin_version = $update_model->get_database_version();
 		$update_database_plugin_last_check = $update_model->last_check();
-
+		
+		$this->write_log("Looking for vulnerable extensions...");
 		// Hacemos una nueva comprobación de extensiones vulnerables
 		$securitycheckpros_model->chequear_vulnerabilidades();
 
-				// Vulnerable components
+		// Vulnerable components
 		$db = JFactory::getDBO();
 		$query = 'SELECT COUNT(*) FROM #__securitycheckpro WHERE Vulnerable="Si"';
 		$db->setQuery($query);
@@ -879,55 +1026,58 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		'update_database_plugin_version'    => $update_database_plugin_version,
 		'update_database_plugin_last_check'    => $update_database_plugin_last_check
 		);
+		
+		$this->write_log("CHECKVULN task finished");
 	}
 
 		// Función que comprueba si existen logs por leer
 
 	private function checkLogs()
 	{
+		$this->write_log("Launching CHECKLOGS task");
+		
+		$this->write_log("Getting models...");
+		
 		// Import Securitycheckpros model
 		JLoader::import('joomla.application.component.model');
 		JLoader::import('cpanel', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
 
-		if (version_compare(JVERSION, '3.0', 'ge'))
-		{
-			$cpanel_model = JModelLegacy::getInstance('cpanel', 'SecuritycheckprosModel');
-		}
-		else
-		{
-			$cpanel_model = JModel::getInstance('cpanel', 'SecuritycheckprosModel');
-		}
-
-				// Check for unread logs
+		$cpanel_model = \Joomla\CMS\MVC\Model\BaseDatabaseModel::getInstance('cpanel', 'SecuritycheckprosModel');
+		
+		$this->write_log("Checking unread logs...");
+		// Check for unread logs
 		(int) $logs_pending = $cpanel_model->LogsPending();
 
 		$this->data = array(
 		'logs_pending'    => $logs_pending
 		);
+		
+		$this->write_log("CHECKLOGS task finished");
 
 	}
 
 	// Función que lanza un chequeo de permisos
 	private function checkPermissions()
 	{
+		$this->write_log("Launching CHECKPERMISSIONS task");
+		
+		$this->write_log("Getting models...");
+		
 		// Import Securitycheckpros model
 		JLoader::import('filemanager', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
 
-		if (version_compare(JVERSION, '3.0', 'ge'))
-		{
-			$filemanager_model = JModelLegacy::getInstance('filemanager', 'SecuritycheckprosModel');
-		}
-		else
-		{
-			$filemanager_model = JModel::getInstance('filemanager', 'SecuritycheckprosModel');
-		}
-
+		$filemanager_model = \Joomla\CMS\MVC\Model\BaseDatabaseModel::getInstance('filemanager', 'SecuritycheckprosModel');
+		
+		$this->write_log("Launching permissions scan...");
+		
 		$filemanager_model->set_campo_filemanager('files_scanned', 0);
 		$timestamp = $this->get_Joomla_timestamp();
 		$filemanager_model->set_campo_filemanager('last_check', $timestamp);
 		$filemanager_model->set_campo_filemanager('estado', 'IN_PROGRESS');
 		$filemanager_model->scan("permissions");
-
+		
+		$this->write_log("Retrieving status...");
+		
 		// Get files with incorrect permissions from database
 		$files_with_incorrect_permissions = $filemanager_model->loadStack("filemanager_resume", "files_with_incorrect_permissions");
 
@@ -944,6 +1094,8 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		'files_with_incorrect_permissions'        => $files_with_incorrect_permissions,
 		'last_check' => $last_check
 		);
+		
+		$this->write_log("CHECKPERMISSIONS task finished");
 
 	}
 
@@ -951,23 +1103,24 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 	private function checkIntegrity()
 	{
+		$this->write_log("Launching CHECKINTEGRITY task");
+		
+		$this->write_log("Getting models...");
+		
 		// Import Securitycheckpros model
 		JLoader::import('filemanager', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
 
-		if (version_compare(JVERSION, '3.0', 'ge'))
-		{
-			$filemanager_model = JModelLegacy::getInstance('filemanager', 'SecuritycheckprosModel');
-		}
-		else
-		{
-			$filemanager_model = JModel::getInstance('filemanager', 'SecuritycheckprosModel');
-		}
+		$filemanager_model = \Joomla\CMS\MVC\Model\BaseDatabaseModel::getInstance('filemanager', 'SecuritycheckprosModel');
+		
+		$this->write_log("Launching integrity scan...");
 
 		$filemanager_model->set_campo_filemanager('files_scanned_integrity', 0);
-		$timestamp = $this->global_model->get_Joomla_timestamp();
+		$timestamp = $this->get_Joomla_timestamp();
 		$filemanager_model->set_campo_filemanager('last_check_integrity', $timestamp);
 		$filemanager_model->set_campo_filemanager('estado_integrity', 'IN_PROGRESS');
 		$filemanager_model->scan("integrity");
+		
+		$this->write_log("Retrieving status...");
 
 		// Get files with incorrect permissions from database
 		$files_with_bad_integrity = $filemanager_model->loadStack("fileintegrity_resume", "files_with_bad_integrity");
@@ -985,36 +1138,37 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		'files_with_bad_integrity'        => $files_with_bad_integrity,
 		'last_check_integrity' => $last_check_integrity
 		);
+		
+		$this->write_log("CHECKINTEGRITY task finished");
 
 	}
 
 	// Borra los logs pertenecientes a intentos de acceso bloqueados
 	private function deleteBlocked()
 	{
+		$this->write_log("Launching DELETEBLOCKED task");
+		
+		$this->write_log("Getting models...");
+		
 		// Import Securitycheckpros model
 		JLoader::import('cpanel', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
 
-		if (version_compare(JVERSION, '3.0', 'ge'))
-		{
-			$cpanel_model = JModelLegacy::getInstance('cpanel', 'SecuritycheckprosModel');
-		}
-		else
-		{
-			$cpanel_model = JModel::getInstance('cpanel', 'SecuritycheckprosModel');
-		}
-
-			// Vulnerable components
+		$cpanel_model = \Joomla\CMS\MVC\Model\BaseDatabaseModel::getInstance('cpanel', 'SecuritycheckprosModel');
+		
+		// Vulnerable components
 		$db = JFactory::getDBO();
 		$query = 'DELETE FROM #__securitycheckpro_logs';
 		$db->setQuery($query);
 		$db->execute();
 
-						// Check for unread logs
+		// Check for unread logs
 		(int) $logs_pending = $cpanel_model->LogsPending();
 
 		$this->data = array(
 			'logs_pending'    => $logs_pending
 		);
+		
+		$this->write_log("DELETEBLOCKED task finished");
 	}
 
 	
@@ -1061,7 +1215,8 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	// Función que actualiza el Core de Joomla a la última versión disponible
 	private function UpdateCore()
 	{
-		
+		$this->write_log("Updating CORE...");
+			
 		// Cargamos el lenguaje del componente 'com_installer'
 		$lang = JFactory::getLanguage();
 		$lang->load('com_installer', JPATH_ADMINISTRATOR);
@@ -1073,24 +1228,25 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		if (version_compare(JVERSION, '3.20', 'lt'))
 		{
 			include_once JPATH_ROOT . '/administrator/components/com_joomlaupdate/models/default.php';
+			// Instanciamos el modelo
+			$model = new JoomlaupdateModelDefault;
 		}
 		else
 		{
-			include_once JPATH_ROOT . '/administrator/components/com_joomlaupdate/Model/UpdateModel.php';
+			include_once JPATH_ROOT . '/administrator/components/com_joomlaupdate/src/Model/UpdateModel.php';
+			// Instanciamos el modelo
+			$model = new UpdateModel;
 		}
-
-		// Instanciamos el modelo de la librería anteriormente cargada
-		$model = new JoomlaupdateModelDefault;
 
 		// Refrescamos la información de las actualizaciones ignorando la caché
 		$model->refreshUpdates(true);
 
 		// Extraemos la url de descarga
 		$coreInformation = $model->getUpdateInformation();
-		
+						
 		try
 		{
-		// Descargamos el archivo
+			// Descargamos el archivo
 			$file = $this->download_core($coreInformation['object']->downloadurl->_data);
 			
 			// Extract the downloaded package file
@@ -1101,49 +1257,62 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			{
 				$msg = JText::sprintf('COM_SECURITYCHECKPRO_MISSING_CLASS', 'ZipArchive');
 				$result[0][1] = $msg;
-				$result[0][0] = false;				
+				$result[0][0] = 2;				
 				return $result;
 			}
 			
-			$zip = new ZipArchive;
-			$res = $zip->open($tmp_dest . DIRECTORY_SEPARATOR . $file);
+			$zip = new ZipArchive;					
+			$res = $zip->open($tmp_dest . DIRECTORY_SEPARATOR . $file);				
 
 			if ($res === true)
 			{
 				$zip->extractTo(JPATH_SITE);
 				$zip->close();
 			}
-
-			// Create restoration file
-			$this->createRestorationFile($file);
 			
-			$install_result = $this->finaliseUpgrade();
-
+			// Cargamos las librerías necesarias
+			if (version_compare(JVERSION, '3.20', 'lt'))
+			{
+				$this->createRestorationFile($file);			
+				$install_result = $this->finaliseUpgrade();
+			}
+			else
+			{
+				$install_result = $model->finaliseUpgrade();
+				\JLoader::register('JNamespacePsr4Map', JPATH_LIBRARIES . '/namespacemap.php');
+				// Re-create namespace map. It is needed when updating to a Joomla! version has new extension added
+				(new \JNamespacePsr4Map)->create();	
+			}
+			
 			if (!$install_result)
 			{
 				$msg = JText::_('COM_INSTALLER_MSG_UPDATE_ERROR');
 				$result[0][1] = $msg;
-				$result[0][0] = false;
+				$result[0][0] = 2;
 			}
 			else
 			{
-				$result[0][1] = '';
-				$result[0][0] = true;
+				$result[0][1] = 'Core updated';
+				$result[0][0] = 1;
 			}
 
 				// Clean the site
-				JFile::delete($tmp_dest . DIRECTORY_SEPARATOR . $file);
+			JFile::delete($tmp_dest . DIRECTORY_SEPARATOR . $file);
 		}
 		catch (Exception $e)
 		{
+			$this->log_filename = "error.php";
+			$message = "Function UpdateCore. " . $e->getMessage();
+			$this->write_log($message,"ERROR");
 			$result[0][1] = $e->getMessage();
-			$result[0][0] = false;
+			$result[0][0] = 2;
 		}
-
+		
 		// Devolvemos el resultado
 		return $result;
 	}
-
+	
+	
 
 	/**
 	 * Install an extension from either folder, url or upload.
@@ -1339,41 +1508,44 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 	private function checkMalware()
 	{
+		$this->write_log("Launching CHECKMALWARE task");
+		
+		$this->write_log("Getting models...");
+		
 		// Import Securitycheckpros model
 		JLoader::import('joomla.application.component.model');
 		JLoader::import('filemanager', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
 
-		if (version_compare(JVERSION, '3.0', 'ge'))
-		{
-			$filemanager_model = JModelLegacy::getInstance('filemanager', 'SecuritycheckprosModel');
-		}
-		else
-		{
-			$filemanager_model = JModel::getInstance('filemanager', 'SecuritycheckprosModel');
-		}
-
+		$filemanager_model = \Joomla\CMS\MVC\Model\BaseDatabaseModel::getInstance('filemanager', 'SecuritycheckprosModel');
+		
+		$this->write_log("Launching malware scan...");
+		
 		$filemanager_model->set_campo_filemanager('files_scanned_malwarescan', 0);
-		$timestamp = $this->global_model->get_Joomla_timestamp();
+		$timestamp = $this->get_Joomla_timestamp();
 		$filemanager_model->set_campo_filemanager('last_check_malwarescan', $timestamp);
 		$filemanager_model->set_campo_filemanager('estado_malwarescan', 'IN_PROGRESS');
 		$filemanager_model->scan("malwarescan");
+		
+		$this->write_log("Retrieving info...");
 
-				// Get suspicious files
+		// Get suspicious files
 		$suspicious_files = $filemanager_model->loadStack("malwarescan_resume", "suspicious_files");
 
-				// If malwarescan task has not been launched, we set a '0' value.
+		// If malwarescan task has not been launched, we set a '0' value.
 		if (is_null($suspicious_files))
 		{
 			$suspicious_files = 0;
 		}
 
-				// Malwarescan last check
+		// Malwarescan last check
 		$last_check_malwarescan = $filemanager_model->loadStack("malwarescan_resume", "last_check_malwarescan");
 
-				$this->data = array(
-		'suspicious_files'        => $suspicious_files,
-		'last_check_malwarescan' => $last_check_malwarescan
+		$this->data = array(
+			'suspicious_files'        => $suspicious_files,
+			'last_check_malwarescan' => $last_check_malwarescan
 		);
+		
+		$this->write_log("CHECKMALWARE task finished");
 
 	}
 
@@ -1384,25 +1556,43 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 		// Instanciamos la consulta
 		$db = JFactory::getDBO();
-
-		// Consultamos si Akeeba Backup está instalado
-		$query = 'SELECT COUNT(*) FROM #__extensions WHERE element="com_akeeba"';
-		$db->setQuery($query);
-		$db->execute();
-		$akeeba_installed = $db->loadResult();
+		
+		$joomla_version = "3";
+		$query = "SELECT COUNT(*) FROM #__extensions WHERE element='com_akeeba'";		
+		if (version_compare(JVERSION, '4.0', 'gt'))
+		{
+			$joomla_version = "4";
+			$query = "SELECT COUNT(*) FROM #__extensions WHERE element='com_akeebabackup'";
+		}		
+		
+		try {
+			// Consultamos si Akeeba Backup está instalado
+			$db->setQuery($query);
+			$db->execute();
+			$akeeba_installed = $db->loadResult();			
+		} catch (Exception $e)
+        {    			
+            $akeeba_installed = 0;
+        }     
+		
 
 		if ($akeeba_installed == 1)
 		{
 			$this->backupinfo['product'] = 'Akeeba Backup';
-			$this->AkeebaBackupInfo();
+			$this->AkeebaBackupInfo($joomla_version);
 		}
 		else
 		{
-			// Consultamos si Xcloner Backup and Restore está instalado
-			$query = 'SELECT COUNT(*) FROM #__extensions WHERE element="com_xcloner-backupandrestore"';
-			$db->setQuery($query);
-			$db->execute();
-			$xcloner_installed = $db->loadResult();
+			try {
+				// Consultamos si Xcloner Backup and Restore está instalado
+				$query = 'SELECT COUNT(*) FROM #__extensions WHERE element="com_xcloner-backupandrestore"';
+				$db->setQuery($query);
+				$db->execute();
+				$xcloner_installed = $db->loadResult();
+			} catch (Exception $e)
+			{    			
+				$xcloner_installed = 0;
+			} 			
 
 			if ($xcloner_installed == 1)
 			{
@@ -1411,8 +1601,8 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			}
 			else
 			{
-							// Consultamos si Easy Joomla Backup está instalado
-				$query = 'SELECT COUNT(*) FROM #__extensions WHERE element="com_easyjoomlabackup"';
+				// Consultamos si Easy Joomla Backup está instalado
+				$query = "SELECT COUNT(*) FROM #__extensions WHERE element='com_easyjoomlabackup'";
 				$db->setQuery($query);
 				$db->execute();
 				$ejb_installed = $db->loadResult();
@@ -1428,33 +1618,51 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	}
 
 	// Función que obtiene información del estado del último backup creado por Akeeba Backup
-	private function AkeebaBackupInfo()
+	private function AkeebaBackupInfo($joomla_version)
 	{
-
+		if ($joomla_version == "3") {
+			$akeeba_database = "#__ak_stats";
+		} else {
+			$akeeba_database = "#__akeebabackup_backups";
+		}
+		
 		// Instanciamos la consulta
 		$db = JFactory::getDBO();
-		$query = $db->getQuery(true)
-			->select('MAX(' . $db->qn('id') . ')')
-			->from($db->qn('#__ak_stats'))
-			->where($db->qn('origin') . ' != ' . $db->q('restorepoint'));
-		$db->setQuery($query);
-		$id = $db->loadResult();
+		try{
+			$query = $db->getQuery(true)
+				->select('MAX(' . $db->qn('id') . ')')
+				->from($db->qn('' . $akeeba_database . ''))
+				->where($db->qn('origin') . ' != ' . $db->q('restorepoint'));
+			$db->setQuery($query);
+			$id = $db->loadResult();
+		} catch (Exception $e)
+		{
+			$this->write_log("Error trying to get Akeeba database id: " . $e->getMessage(),"ERROR");
+		}
+			
 
 		// Hay al menos un backup creado
 		if (!empty($id))
 		{
-			$query = $db->getQuery(true)
-				->select(array('*'))
-				->from($db->quoteName('#__ak_stats'))
-				->where('id = ' . $id);
-			$db->setQuery($query);
-			$backup_statistics = $db->loadAssocList();
+			try{
+				$query = $db->getQuery(true)
+					->select(array('*'))
+					->from($db->quoteName('' . $akeeba_database .''))
+					->where('id = ' . $id);
+				$db->setQuery($query);
+				$backup_statistics = $db->loadAssocList();
+			} catch (Exception $e)
+			{
+				$this->write_log("Error trying to get Akeeba backup statistics: " . $e->getMessage(),"ERROR");
+			}
 
 			// Almacenamos el resultado
 			$this->backupinfo['latest'] = $backup_statistics[0]['backupend'];
 			$this->backupinfo['latest_status'] = $backup_statistics[0]['status'];
 			$this->backupinfo['latest_type'] = $backup_statistics[0]['type'];
 		}
+		
+		
 	}
 
 	// Función que obtiene información del estado del último backup creado por Xcloner - Backup and Restore
@@ -1486,7 +1694,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	private function EjbInfo()
 	{
 
-				// Instanciamos la consulta
+		// Instanciamos la consulta
 		$db = JFactory::getDBO();
 		$query = $db->getQuery(true)
 			->select('MAX(' . $db->qn('id') . ')')
@@ -1494,7 +1702,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		$db->setQuery($query);
 		$id = $db->loadResult();
 
-				// Hay al menos un backup creado
+		// Hay al menos un backup creado
 		if (!empty($id))
 		{
 			$query = $db->getQuery(true)
@@ -1517,7 +1725,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	private function checkforUpdate()
 	{
 
-			// Inicializmaos las variables
+		// Inicializmaos las variables
 		$needs_update = 0;
 
 		$db = JFactory::getDBO();
@@ -1542,16 +1750,19 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			}
 		}
 
-				// Devolvemos el resultado
+		// Devolvemos el resultado
 		return $needs_update;
 
 	}
 
-		// Función que actualiza el plugin 'Update Database'
-
+	// Función que actualiza el plugin 'Update Database'
 	private function UpdateComponent()
 	{
-
+		
+		$this->write_log("Launching UPDATECOMPONENT task");
+		
+		$this->write_log("Getting Securitycheck Pro Update Database update info");
+		
 		// Inicializamos las variables
 		$needs_update = 1;
 		jimport('joomla.updater.update');
@@ -1572,76 +1783,119 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		// Instanciamos el objeto JUpdate y cargamos los detalles de la actualización
 		$update = new JUpdate;
 		$update->loadFromXML($detailsurl);
-
+		
+		$this->write_log("Passing data to the 'install_update method...");
+		
 		// Le pasamos a la función de actualización el objeto con los detalles de la actualización
-		$result = $this->install_update($update);
+		$this->install_update($update);
 
 		// Si la actualización ha tenido éxito, actualizamos la variable 'needs_update', que indica si el plugin necesita actualizarse.
-		if ($result)
+		if ($this->array_result)
 		{
 			$needs_update = 0;
 		}
 
 		// Devolvemos el resultado
 		$this->data = array(
-		'update_plugin_needs_update' => $needs_update
+			'update_plugin_needs_update' => $needs_update
 		);
 	}
 
-	// Función para actualizar los componentes. Extraída del core de Joomla (administrator/components/com_installer/models/update.php)
+	// Función para actualizar los componentes. Extraída del core de Joomla (administrator/components/com_installer/models/update.php | administrator\components\com_installer\src\Model\UpdateModel.php)
 	private function install_update($update,$dlid=false)
 	{
+		$this->write_log("Installing update...");
+		
+								
 		/* Cargamos el lenguaje del componente 'com_installer' */
 		$lang = JFactory::getLanguage();
 		$lang->load('com_installer',JPATH_ADMINISTRATOR);
 				
-		// Inicializamos la variable $result, que será un array con el resultado y el mensaje devuelto en el proceso
-		$result = array();
+					
+		// Inicializamos la variable $update_result, que será un array con el resultado y el mensaje devuelto en el proceso
+		$update_result = array();
+		$extension_name = '';
 		$app = JFactory::getApplication();
-		
-		if (isset($update->get('downloadurl')->_data)) {
+				
+		if (isset($update->get('downloadurl')->_data)) {			
 			$url = trim($update->downloadurl->_data);
+			$extension_name = $update->get('name')->_data;
+					
 			if (!empty($dlid))
 			{
-				$url .= '&amp;dlid=' . $dlid;				
+				if ( is_array($dlid) ) {
+					$this->write_log("Dlid is an array. Extracting values...");
+					foreach($dlid as $key => $value) {
+						$url .= '&amp;' . $key . '=' . $value;
+						$this->write_log("Url: " . $url);
+					}
+				} else {
+					$url .= '&amp;dlid=' . $dlid;
+					$this->write_log("Url: " . $url);
+				}
+								
 			}
+			
 				
 		} else {
-			$result[0][1] = JError::raiseWarning('', JText::_('COM_INSTALLER_INVALID_EXTENSION_UPDATE'));
-			$result[0][0] = false;
-		}		
-
-		$p_file = JInstallerHelper::downloadPackage($url);
-
+			$this->write_log(JText::_('COM_INSTALLER_INVALID_EXTENSION_UPDATE'));
+			$update_result[0][1] = $extension_name . ' ' .  JText::_('COM_INSTALLER_INVALID_EXTENSION_UPDATE');
+			$update_result[0][0] = 2;
+			return $update_result;
+		}
+		
+		try{
+			$p_file = JInstallerHelper::downloadPackage($url);
+		} catch (Exception $e)
+		{
+			$this->write_log("Error downloading package: " . $e->getMessage(),"ERROR");
+		}
+		
 		// Was the package downloaded?
 		if (!$p_file)
 		{
-			$result[0][1] = JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_INSTALLER_PACKAGE_DOWNLOAD_FAILED', $url), 'warning');
-			$result[0][0] = false;
-		}
-
+			$this->write_log(JText::sprintf('COM_INSTALLER_PACKAGE_DOWNLOAD_FAILED', $url),"ERROR");
+			$update_result[0][1] = $extension_name . ' ' . JText::sprintf('COM_INSTALLER_PACKAGE_DOWNLOAD_FAILED', $url);
+			$update_result[0][0] = 2;
+						
+			return $update_result;
+		} 
+						
 		$config        = JFactory::getConfig();
 		$tmp_dest    = $config->get('tmp_path');
-
+		
 		// Unpack the downloaded package file
 		$package    = JInstallerHelper::unpack($tmp_dest . '/' . $p_file);
-
+		
 		// Get an installer instance
 		$installer    = JInstaller::getInstance();
 		$update->set('type', $package['type']);
-
+		
+		// TODO: Checksum validation
+								
+		try {
+			$install_result = $installer->update($package['dir']);
+			
+		} catch (Exception $e)
+		{
+			$this->write_log("Error installing package: " . $e->getMessage(),"ERROR");
+		}
+						
 		// Install the package
-		if (!$installer->update($package['dir']))
+		if (!$install_result)
 		{
 			// There was an error updating the package
 			if (is_null($package['type']))
 			{
 				$package['type'] = "COMPONENT";
 			}
-
-			$msg = JText::sprintf('COM_INSTALLER_MSG_UPDATE_ERROR', JText::_('COM_INSTALLER_TYPE_TYPE_' . strtoupper($package['type'])));
-			$result[0][1] = $msg;
-			$result[0][0] = false;
+			
+			$msg = $extension_name . ' ' . JText::sprintf('COM_INSTALLER_MSG_UPDATE_ERROR', JText::_('COM_INSTALLER_TYPE_TYPE_' . strtoupper($package['type'])));
+			$this->write_log($msg,"ERROR");
+			$update_result = $msg;
+			$update_result = 2;
+			
+			return $update_result;
 		}
 		else
 		{
@@ -1651,17 +1905,18 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 				$package['type'] = "COMPONENT";
 			}
 
-			$msg = JText::sprintf('COM_INSTALLER_MSG_UPDATE_SUCCESS', JText::_('COM_INSTALLER_TYPE_TYPE_' . strtoupper($package['type'])));
-			$result[0][1] = $msg;
-			$result[0][0] = true;
+			$msg = $extension_name . ' ' . JText::sprintf('COM_INSTALLER_MSG_UPDATE_SUCCESS', JText::_('COM_INSTALLER_TYPE_TYPE_' . strtoupper($package['type'])));
+			$this->write_log($msg);
+			$update_result[0][1] = $msg;
+			$update_result[0][0] = 1;			
 		}
-
+		
 		// Quick change
 		$this->type = $package['type'];
-
+		
 		if (array_key_exists('packagefile', $package))
 		{
-						// Cleanup the install files
+			// Cleanup the install files
 			if (!is_file($package['packagefile']))
 			{
 				$config = JFactory::getConfig();
@@ -1670,11 +1925,11 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 			JInstallerHelper::cleanupInstall($package['packagefile'], $package['extractdir']);
 		}
-
-		return $result;
+		
+		return $update_result;
 	}
 
-		// Función que obtiene información del sistema (extraída del core)
+	// Función que obtiene información del sistema (extraída del core)
 	private function getInfo()
 	{
 		if (is_null($this->info))
@@ -1706,19 +1961,19 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		}
 	}
 
-		// Función que devuelve información sobre las extensiones no actualizadas
+	// Función que devuelve información sobre las extensiones no actualizadas
 	private function getNotUpdatedExtensions()
 	{
 
-				// Habilitamos los sitios deshabilitados
-		$enable = $this->enableSites();
+		// Habilitamos los sitios deshabilitados
+		//$enable = $this->enableSites();
 
-				// Purgamos la caché y lanzamos la tarea
+		// Purgamos la caché y lanzamos la tarea
 		$find = $this->findUpdates();
 
-				$db = JFactory::getDBO();
+		$db = JFactory::getDBO();
 
-				// Grab updates ignoring new installs (extraido de \administrator\components\com_installer\models\update.php)
+		// Grab updates ignoring new installs (extraido de \administrator\components\com_installer\models\update.php)
 		$query = $db->getQuery(true)
 			->select('u.update_id,u.extension_id,u.name,u.type,u.version')
 			->select($db->quoteName('e.manifest_cache'))
@@ -1728,7 +1983,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		$db->setQuery($query);
 		$result = $db->loadObjectList();
 
-				// Creamos un nuevo array que contendrá arrays con a información requerida
+		// Creamos un nuevo array que contendrá arrays con a información requerida
 		$extensions = array();
 
 		foreach ($result as $i => $item)
@@ -1745,7 +2000,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			array_push($extensions, $value);
 		}
 
-								// Devolvemos el resultado en formato JSON
+		// Devolvemos el resultado en formato JSON
 		return json_encode($extensions);
 
 	}
@@ -1822,20 +2077,12 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	}
 
 	// Función que busca si una extensión pasada como argumento utiliza el mecanismo de actualización de Akeeba LiveUpdate
-	private function LookForPro($extension_id,$update) {
-	
+	private function LookForPro($extension_id,$extension_name,$update) {
+				
 		// Inicializamos las variables
-		$found = array();
-		$db = JFactory::getDBO();
 		$dlid = '';
 		
-		// Extraemos el nombre de la extensión...
-		$query = "SELECT element FROM #__updates WHERE extension_id={$extension_id}";
-		$db->setQuery($query);
-		$db->execute();
-		$extension_name = $db->loadResult();
-		
-		// ... y según el nombre extraido buscamos el campo 'dlid'
+		// Según el campo buscamos el campo 'dlid'
 		switch($extension_name)
 		{
 			case "pkg_akeeba":
@@ -1856,62 +2103,53 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 					$params = new JRegistry($plugin->params);
 					$dlid = $params->get('key','');
 				}
-				break;	
-		}
-		
+				break;
+			case "com_jch_optimize":
+				$plugin = JPluginHelper::getPlugin('system', 'jch_optimize');
+							
+				if (!empty($plugin)) {					
+					$params = new JRegistry($plugin->params);
+					$dlid = $params->get('pro_downloadid','');
+				}
+				break;
+			case "com_sppagebuilder":
+				$params = JComponentHelper::getParams('com_sppagebuilder');
+							
+				if (!empty($params)) {
+					$dlid = array();
+					$dlid['joomshaper_email'] = $params->get('joomshaper_email','');
+					$dlid['joomshaper_license_key'] = $params->get('joomshaper_license_key','');
+				}
+				break;
+		}		
+				
 		if (!empty($dlid))
 		{
-			$this->install_update($update,$dlid);
+			$msg = "Found Pro version of " . $extension_name . " with a valid dlid.";
+			$this->write_log($msg);
+			$update_result = $this->install_update($update,$dlid);
+			// Guardamos el id de la extensión junto con el resultado
+			array_push($this->array_result, array($extension_id,$extension_name,$update_result));
+		} else {
+			$msg = "Found Pro version of " . $extension_name . " but not a valid dlid. Is the extension/plugin enabled and have a valid download id?";
+			$this->write_log($msg);
+			$update_result = array();
+			$update_result[0][1] = $msg;
+			$update_result[0][0] = 2;
+			// Guardamos el id de la extensión junto con el resultado
+			array_push($this->array_result, array($extension_id,$extension_name,$update_result));			
 		}
+		
 	
 	}	
 
-	// Función que actualiza todas las extensiones desactualizadas
-	private function UpdateAll()
-	{
-
-		$db = JFactory::getDBO();
-
-		// Extraemos el la información de las extensiones que necesitan ser actualizadas, que se caracterizan porque su extension_id es distinto a cero
-		$query = 'SELECT extension_id FROM #__updates WHERE extension_id != 0';
-		$db->setQuery($query);
-		$extension_id_array = $db->loadRowList();
-
-				/*
-         Inicializamos la variable 'data', que contendrán las extensiones a actualizar. Tendrán el formato {"0":"1","1":"43"}, donde el primer número indica
-        el elemento del array y el segundo el id de la extensión */
-		$data = array();
-
-		// Esta variable contendrá el índice del array de extensiones; si no lo usamos, el array json que devolvemos tendría la sintaxis {"0":"1","0":"43"} en lugar de {"0":"1","1":"43"}, por lo que todos los índices del array sería el 0
-
-		$indice = 0;
-
-		foreach ($extension_id_array as $extension_id)
-		{
-			foreach ($extension_id as $key => $value)
-			{
-				// Extraemos el par key:value y lo almacenamos en el array
-				$key = '"' . addslashes($key + $indice) . '"';
-				$value = '"' . addslashes($value) . '"';
-				$data[] = $key . ":" . $value;
-				$indice++;
-			}
-		}
-
-				// Extraemos los datos del array y los codificamos en formato JSON
-		$data_json = "{" . implode(",", $data) . "}";
-
-				// A continuación, llamamos al método UpdateExtension y le pasamos el array en formato json obtenido. Éste se encargará de todo el proceso.
-		$this->UpdateExtension($data_json, true);
-
-	}
-
 	// Función que actualiza un array de extensiones (en formato json) pasado como argumento
-	private function UpdateExtension($extension_id_array,$updateall = false)
+	private function UpdateExtension($extension_id_array)
 	{
-
-			// Inicializamos las variables
-		$array_result = array();
+		$this->write_log("Launching UPDATEEXTENSIONS task");
+				
+		// Inicializamos las variables
+		
 		$db = JFactory::getDBO();
 		jimport('joomla.updater.update');
 
@@ -1922,76 +2160,81 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		{
 			$msg = JText::_('COM_SECURITYCHECKPRO_LOCKED_MESSAGE');
 
-			array_push($array_result, array($msg,$msg));
+			array_push($this->array_result, array($msg,$msg));
 
 			// Devolvemos el resultado
 			$this->data = array(
-				'update_result'        => $array_result
+				'update_result'        => $this->array_result
 			);
 		}
 		else
 		{
-			// Tenemos que actualizar todas las extensiones. En este caso recibimos un string en lugar de un array (en formato json).
-			if ($updateall)
-			{
-				$extension_id_array = json_decode($extension_id_array, true);
-			}
-
 			// Para cada extensión, realizamos su actualización
 			foreach ($extension_id_array as $extension_id)
 			{
-				if ($extension_id == 700)
-				{
-					// Si el id de la extensión es el 700, se trata del core de Joomla. Lo tratamos de forma diferente.
-					$result_core = $this->UpdateCore();
-					array_push($array_result, array('Core',$result_core));
-				}
-				elseif ($extension_id == 0)
-				{
-					// Si el id de la extensión es el 0, significa que queremos actualizar todas las extensiones.
-					$this->UpdateAll();
-
-					// Devolvemos el array que contiene los resultados
-					return $this->data;
-				}
-				else
-				{
-					// Extraemos el nombre de la extensión para mostrarlo en los resultados
-					$query = "SELECT name FROM #__updates WHERE extension_id={$extension_id}";
+				// Extraemos los datos la extensión, que contendrán la información de actualización
+				try{		
+					$query = "SELECT name,detailsurl,element,extra_query FROM #__updates WHERE extension_id={$extension_id}";
 					$db->setQuery($query);
 					$db->execute();
-					$extension_name = $db->loadResult();
-
-					// Extraemos la url de la extensión, que contendrá la información de actualización
-					$query = "SELECT detailsurl FROM #__updates WHERE extension_id={$extension_id}";
-					$db->setQuery($query);
-					$db->execute();
-					$detailsurl = $db->loadResult();
-
-					// Instanciamos el objeto JUpdate y cargamos los detalles de la actualización
-					$update = new JUpdate;
-					$update->loadFromXML($detailsurl);
+					$extension_data = $db->loadAssoc();
+				} catch (Exception $e)
+				{
 					
-
-					// Le pasamos a la función de actualización el objeto con los detalles de la actualización
-					$result = $this->install_update($update);
-
-					if (!$result[0][0])
-					{
-						// Se ha producido un error, ¿es una versión que utiliza algún mecanismo de pago?
-						$result_pro = $this->LookForPro($extension_id,$update);
-					}
-					else
-					{
-						// Guardamos el id de la extensión junto con el resultado
-						array_push($array_result, array($extension_name,$result));
-					}
 				}
-			}
+										
+				if ( is_array($extension_data) ) {					
+					$extension_name = $extension_data['name'];
+					$detailsurl = $extension_data['detailsurl'];
+					$extension_element = $extension_data['element'];
+					$extra_query = $extension_data['extra_query'];
+									
+					if (strtolower($extension_element) == "joomla")
+					{
+						
+						// Core de Joomla. Lo tratamos de forma diferente.
+						$result_core = $this->UpdateCore();
+						array_push($this->array_result, array($extension_id,'Core',$result_core));
+					}else
+					{	
+						// Instanciamos el objeto JUpdate y cargamos los detalles de la actualización
+						$update = new JUpdate;
+						$update->loadFromXML($detailsurl);					
 
+						// Le pasamos a la función de actualización el objeto con los detalles de la actualización
+						if (!empty($extra_query)) {
+							// Quitamos el texto "dlid="
+							$extra_query = str_replace("dlid=", "",$extra_query);
+							$update_result = $this->install_update($update,$extra_query);
+						} else {
+							$update_result = $this->install_update($update);
+						}
+						
+						// Update failed
+						if ( (!$update_result) || ($update_result[0][0] == 2) )
+						{
+							$pro_versions_to_look_for = array('pkg_akeeba','pkg_admintools','com_rstbox','com_jch_optimize','com_sppagebuilder');
+							
+							if (in_array($extension_element, $pro_versions_to_look_for)) {
+								// Se ha producido un error y la extensión puede ser de pago. Intentamos actualizarla buscando su dlid
+								$this->LookForPro($extension_id,$extension_element,$update);
+							}												
+						}
+						else
+						{
+							// Guardamos el id de la extensión junto con el resultado
+							array_push($this->array_result, array($extension_id,$extension_name,$update_result));
+						}
+					}
+				} else {
+					// Guardamos el id de la extensión junto con el resultado
+					array_push($this->array_result, array($extension_id,"","Error retrieving extension data"));
+				}				
+			}
+			
 			// Devolvemos el resultado
 			$this->data = array(
-				'update_result'        => $array_result
+				'update_result'        => $this->array_result
 			);
 		}
 
@@ -2001,9 +2244,12 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 	private function Backup($data)
 	{
-
+		$this->write_log("Launching BACKUP task");
+		
 		// URI del sitio
 		$uri = JURI::root();
+		
+		$this->write_log("Decrypting Akeeba public key...");
 		
 		// Desencriptamos los datos recibidos, que vendrán como un array (véase data[0]) y en formato json
 		$response = $this->decrypt($data, $this->password);
@@ -2015,9 +2261,19 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		// Extraemos el perfil, que por defecto será 1
 		$akeeba_profile = $response['akeeba_profile'];
 		
+		// Componente (com_akeeba para J3 y com_akeebackup para J4)
+		$akeeba_component = "com_akeeba";
+		
+		if (version_compare(JVERSION, '4.0', 'gt'))
+		{
+			$akeeba_component = "com_akeebabackup";
+		}
+		
+		$this->write_log("Launching curl: " . $uri . "?option=" . $akeeba_component . "&view=backup&key=removed_for_security&profile=" . $akeeba_profile);
+		
 		// Inicializamos la tarea
-		$ch = curl_init($uri . "?option=com_akeeba&view=backup&key=" . $akeeba_key . "&profile=" . $akeeba_profile);
-
+		$ch = curl_init($uri . "?option=" . $akeeba_component . "&view=backup&key=" . $akeeba_key . "&profile=" . $akeeba_profile);
+		
 		// Configuración extraída de https://www.akeebabackup.com/documentation/akeeba-backup-documentation/automating-your-backup.html
 		curl_setopt($ch, CURLOPT_HEADER, false);  // Este valor es false para que no incluya en la respuesta la cabecera HTTP
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -2026,6 +2282,8 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 		$response = curl_exec($ch);
 		curl_close($ch);
+		
+		$this->write_log("Akeeba response: " . $response);
 
 		// Devolvemos el resultado
 		$this->data = array(
@@ -2033,11 +2291,11 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		);
 	}
 
-		// Función que instala una extensión desde una url. La ur se pasa como argumento
-
+	// Función que instala una extensión desde una url. La url se pasa como argumento
 	private function Upload_install($data)
 	{
-
+		$this->write_log("Launching UPLOADINSTALL task");
+		
 		// Inicialiamos las variables
 		$result = true;
 		$enqueued_messages = "";
@@ -2046,6 +2304,8 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 		$lang = JFactory::getLanguage();
 		$lang->load('com_installer', JPATH_ADMINISTRATOR);
+		
+		$this->write_log("Decrypting data...");
 
 		// Desencriptamos los datos recibidos, que vendrán como un array (véase data[0]) y en formato json
 		$response = $this->decrypt($data[0], $this->password);
@@ -2054,6 +2314,8 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		// Url del paquete a instalar
 		$url = $response['path_to_file'];
 		
+		$this->write_log("Url: " . $url);
+		
 		$package = null;
 		
 		// Si las tablas están bloqueadas abortamos la instalación
@@ -2061,6 +2323,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 		if ($locked_tables)
 		{
+			$this->write_log("Tables are blocked. Can't install the extension.");
 			$msg = JText::_('COM_SECURITYCHECKPRO_LOCKED_MESSAGE');
 			$result = false;
 		}
@@ -2076,8 +2339,9 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 				{
 					//JInstallerHelper::cleanupInstall($package['packagefile'], $package['extractdir']);
 				}
-
+				
 				$msg = JText::_('COM_INSTALLER_UNABLE_TO_FIND_INSTALL_PACKAGE');
+				$this->write_log($msg);
 
 				return false;
 			}
@@ -2090,12 +2354,14 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			{
 				// There was an error installing the package
 				$msg = JText::sprintf('COM_INSTALLER_INSTALL_ERROR', JText::_('COM_INSTALLER_TYPE_TYPE_' . strtoupper($package['type'])));
+				$this->write_log($msg);
 				$result = false;				
 			}
 			else
 			{
 				// Package installed sucessfully
 				$msg = JText::sprintf('COM_INSTALLER_INSTALL_SUCCESS', JText::_('COM_INSTALLER_TYPE_TYPE_' . strtoupper($package['type'])));
+				$this->write_log($msg);
 			}
 
 			// Cleanup the install files
@@ -2200,7 +2466,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	public function download_core($packageURL)
 	{
 		$basename = basename($packageURL);
-		
+						
 
 		// Find the path to the temp directory and the local package.
 		$config = JFactory::getConfig();
@@ -2243,23 +2509,27 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	protected function downloadPackage($url, $target)
 	{
 			
-		// Get the handler to download the package
-		try
-		{
-			$http = JHttpFactory::getHttp(null, array('curl', 'stream'));
-		}
-		catch (RuntimeException $e)
-		{
-			return false;
-		}	
-
 		// Make sure the target does not exist.
 		if (file_exists($target)) {
 			JFile::delete($target);
 		}
-
+		
 		// Download the package
-		$result = $http->get($url);
+		try
+		{
+			if (version_compare(JVERSION, '3.20', 'lt'))
+			{
+				$result = JHttpFactory::getHttp(null, array('curl', 'stream'))->get($url);
+			}
+			else
+			{
+				$result = JHttpFactory::getHttp([], ['curl', 'stream'])->get($url);
+			}			
+		}
+		catch (\RuntimeException $e)
+		{			
+			return false;
+		}
 
 		if (!$result || ($result->code != 200 && $result->code != 310))
 		{
@@ -2721,11 +2991,13 @@ ENDDATA;
 
 		return true;
 	}
+	
+	
 
-		// Función que devuelve información sobre ips a añadir y ataques detenidos para el plugin "Connect"
-
-	private function Connect()
+	// Función que devuelve información sobre ips a añadir y ataques detenidos para el plugin "Connect"
+	public function Connect($url=null)
 	{
+		
 
 		include_once JPATH_ROOT . DIRECTORY_SEPARATOR . 'administrator' . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'cpanel.php';
 		$cpanel_model = new SecuritycheckprosModelCpanel;
@@ -2771,7 +3043,13 @@ ENDDATA;
 			'ips'        => $ips,
 			'attacks'    => $attacks
 			);
-		}
+		
+		if (!empty($url)) {
+			$this->sendResponse($url);
+		}		
+		
+	}
+	
 
 	// Función que añade una IP a la lista negra dinámica
 	function actualizar_lista_dinamica($attack_ip)
@@ -2794,7 +3072,7 @@ ENDDATA;
 			{
 				$query = "INSERT INTO `#__securitycheckpro_dynamic_blacklist` (`ip`, `timeattempt`) VALUES ('{$attack_ip}', NOW()) ON DUPLICATE KEY UPDATE `timeattempt` = NOW(), `counter` = `counter` + 1;";
 
-								$db->setQuery($query);
+				$db->setQuery($query);
 				$result = $db->execute();
 			}
 			catch (Exception $e)
@@ -2803,8 +3081,7 @@ ENDDATA;
 		}
 		else
 		{
-			return JText::_('COM_SECURITYCHECKPRO_INVALID_FORMAT');
-			;
+			return JText::_('COM_SECURITYCHECKPRO_INVALID_FORMAT');			
 		}
 	}
 
@@ -2819,100 +3096,117 @@ ENDDATA;
 		
 		include_once JPATH_ROOT . DIRECTORY_SEPARATOR . 'administrator' . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'firewallconfig.php';
 		$firewall_config_model = new SecuritycheckprosModelFirewallConfig;
-
-		if ($ips_passed)
-		{
-			if (count($ips_passed['whitelist']))
+		
+		try {
+			if ( is_array($ips_passed) )
 			{
-				$message .= JText::_('COM_SECURITYCHECKPRO_WHITELIST') . " ";
-			}
+				if ( array_key_exists('whitelist', $ips_passed) ) {
+					if (count($ips_passed['whitelist']))
+					{
+						$message .= JText::_('COM_SECURITYCHECKPRO_WHITELIST') . " ";
+					}
 
-			foreach ($ips_passed['whitelist'] as $whitelist)
-			{
-				$returned_message = $firewall_config_model->manage_list('whitelist', 'add', $whitelist, true, true);
+					foreach ($ips_passed['whitelist'] as $whitelist)
+					{
+						$returned_message = $firewall_config_model->manage_list('whitelist', 'add', $whitelist, true, true);
 
-				if (!empty($returned_message))
-				{
-					$message .= $whitelist . ": " . $returned_message . " ";
+						if (!empty($returned_message))
+						{
+							$message .= $whitelist . ": " . $returned_message . " ";
+						}
+						else
+						{
+							$message .= $whitelist . ": OK ";
+						}
+					}
 				}
-				else
-				{
-					$message .= $whitelist . ": OK ";
+				
+				
+				if ( array_key_exists('blacklist', $ips_passed) ) {
+					if (count($ips_passed['blacklist']))
+					{
+						$message .= JText::_('COM_SECURITYCHECKPRO_BLACKLIST') . " ";
+					}
+
+					foreach ($ips_passed['blacklist'] as $blacklist)
+					{
+						$returned_message = $firewall_config_model->manage_list('blacklist', 'add', $blacklist, true, true);
+
+						if (!empty($returned_message))
+						{
+							$message .= $blacklist . ": " . $returned_message . " ";
+						}
+						else
+						{
+							$message .= $blacklist . ": OK ";
+						}
+					}
+				}
+				
+				if ( array_key_exists('dynamic_blacklist', $ips_passed) ) {
+					if (count($ips_passed['dynamic_blacklist']))
+					{
+						$message .= JText::_('COM_SECURITYCHECKPRO_DYNAMIC_BLACKLIST') . " ";
+					}
+
+					foreach ($ips_passed['dynamic_blacklist'] as $dynamic_blacklist)
+					{
+						$returned_message = $this->actualizar_lista_dinamica($dynamic_blacklist);
+
+						if (!empty($returned_message))
+						{
+							$message .= $dynamic_blacklist . ": " . $returned_message . " ";
+						}
+						else
+						{
+							$message .= $dynamic_blacklist . ": OK ";
+						}
+					}
 				}
 			}
-
-			if (count($ips_passed['blacklist']))
-			{
-				$message .= JText::_('COM_SECURITYCHECKPRO_BLACKLIST') . " ";
-			}
-
-			foreach ($ips_passed['blacklist'] as $blacklist)
-			{
-				$returned_message = $firewall_config_model->manage_list('blacklist', 'add', $blacklist, true, true);
-
-				if (!empty($returned_message))
-				{
-					$message .= $blacklist . ": " . $returned_message . " ";
-				}
-				else
-				{
-					$message .= $blacklist . ": OK ";
-				}
-			}
-
-			if (count($ips_passed['dynamic_blacklist']))
-			{
-				$message .= JText::_('COM_SECURITYCHECKPRO_DYNAMIC_BLACKLIST') . " ";
-			}
-
-			foreach ($ips_passed['dynamic_blacklist'] as $dynamic_blacklist)
-			{
-				$returned_message = $this->actualizar_lista_dinamica($dynamic_blacklist);
-
-				if (!empty($returned_message))
-				{
-					$message .= $dynamic_blacklist . ": " . $returned_message . " ";
-				}
-				else
-				{
-					$message .= $dynamic_blacklist . ": OK ";
-				}
-			}
-		}		
-
+			
+		} catch (Exception $e) {					
+			$message = $e->getMessage();
+		} 
+		
 		// Devolvemos el resultado
 		$this->data = array(
 			'UpdateConnect'        => $message
 			);
-		}
+	}		
 
-		// Función para desbloquear las tablas (Lock tables feature)
-
+	// Función para desbloquear las tablas (Lock tables feature)
 	private function unlocktables()
-	{
+	{		
+		$this->write_log("Launching UNLOCKTABLES task");
+		
 		include_once JPATH_ROOT . DIRECTORY_SEPARATOR . 'administrator' . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'cpanel.php';
 		$cpanel_model = new SecuritycheckprosModelCpanel;
 
 		$cpanel_model->unlock_tables();
 
 		$this->data = array(
-		'tables_blocked'        => 0
+			'tables_blocked'        => 0
 		);
+		$this->write_log("UNLOCKTABLES task finished");
 
 	}
 
-		// Función para desbloquear las tablas (Lock tables feature)
-
+	// Función para desbloquear las tablas (Lock tables feature)
 	private function locktables()
 	{
+		$this->write_log("Launching LOCKTABLES task");
+		
 		include_once JPATH_ROOT . DIRECTORY_SEPARATOR . 'administrator' . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'cpanel.php';
 		$cpanel_model = new SecuritycheckprosModelCpanel;
 
-				$cpanel_model->lock_tables();
+		$cpanel_model->lock_tables();
 
-				$this->data = array(
-		'tables_blocked'        => 1
+		$this->data = array(
+			'tables_blocked'        => 1
 		);
+		
+		$this->write_log("LOCKTABLES task finished");
 
 	}
 	
@@ -3073,5 +3367,60 @@ ENDDATA;
 		// Devolvemos el resultado
 		$this->data = $result;
     }
+	
+	// Función para habilitar las estadísticas
+	private function enable_analytics($data)
+	{		
+		$this->write_log("Launching ENABLE_ANALYTICS task");
+		
+		if (!file_exists(JPATH_ROOT . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'system' . DIRECTORY_SEPARATOR . 'securitycheckproanalytics'))
+		{
+			$this->write_log("Analytics is not installed.");
+			$this->data = 'Analytics is not installed';
+			$this->status = self::STATUS_ERROR;
+			$this->cipher = self::CIPHER_RAW;
+		} else {
+			// Desencriptamos los datos recibidos, que vendrán en formato json
+			$response = $this->decrypt($data, $this->password);				
+			$response = json_decode($response, true);
+			
+			// Extraemos el código de la web
+			$website_code = $response['website_code'];
+
+			include_once JPATH_ROOT . DIRECTORY_SEPARATOR . 'administrator' . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'cpanel.php';
+			$cpanel_model = new SecuritycheckprosModelCpanel;
+
+			$success = $cpanel_model->enable_analytics($website_code,$this->site);
+
+			$this->data = array(
+				'analytics_enabled'        => $success
+			);
+			$this->write_log("ENABLE_ANALYTICS task finished");
+		}
+	}
+	
+	// Función para deshabilitar las estadísticas
+	private function disable_analytics($data)
+	{		
+		$this->write_log("Launching DISABLE_ANALYTICS task");
+		
+		// Desencriptamos los datos recibidos, que vendrán en formato json
+		$response = $this->decrypt($data, $this->password);				
+		$response = json_decode($response, true);
+		
+		// Extraemos el código de la web
+		$website_code = $response['website_code'];
+
+		include_once JPATH_ROOT . DIRECTORY_SEPARATOR . 'administrator' . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'cpanel.php';
+		$cpanel_model = new SecuritycheckprosModelCpanel;
+
+		$success = $cpanel_model->disable_analytics($website_code,$this->site);
+
+		$this->data = array(
+			'analytics_disabled'        => $success
+		);
+		$this->write_log("ENABLE_ANALYTICS task finished");
+
+	}
 
 }

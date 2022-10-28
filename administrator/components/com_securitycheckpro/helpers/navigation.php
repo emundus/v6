@@ -54,7 +54,7 @@ use Joomla\CMS\Router\Route as JRoute;
                 </div>
                 <div id="div_loading" style="text-align:center; display:none;">
                     <span class="tammano-18"><?php echo JText::_('COM_SECURITYCHECKPRO_PURGING'); ?></span><br/>
-                    <img src="/media/com_securitycheckpro/images/loading.gif" width="30" height="30" />
+                    <img src="<?php echo JURI::root(); ?>media/com_securitycheckpro/images/loading.gif" width="30" height="30" />
                 </div>        
               </div>
                 <div class="modal-footer" id="div_boton_subida">
@@ -283,8 +283,16 @@ use Joomla\CMS\Router\Route as JRoute;
             <span class="nav2-link-text"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_PERFORMANCE'); ?></span>
           </a>
           <ul class="sidenav2-second-level collapse2" id="performance">
-            <li>             
+            <li>
+				<?php
+					$config = JFactory::getConfig();
+					$dbtype = $config->get('dbtype');
+					if (strstr($dbtype,"mysql")) {
+				?>
               <a href="<?php echo JRoute::_('index.php?option=com_securitycheckpro&controller=dbcheck&view=dbcheck&'. JSession::getFormToken() .'=1');?>"><i class="fapro fa-fw fa-database"></i><?php echo JText::_('COM_SECURITYCHECKPRO_DB_OPTIMIZATION'); ?></a>
+				<?php
+					}
+				?>
             </li>
             <li>
               <a href="#purge_sessions" data-toggle="modal" data-target="#purgesessions"><i class="fapro fa-fw fa-user-times"></i><?php echo JText::_('COM_SECURITYCHECKPRO_PURGE_SESSIONS'); ?></a>

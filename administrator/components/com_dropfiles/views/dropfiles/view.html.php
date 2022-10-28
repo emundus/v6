@@ -73,7 +73,7 @@ class DropfilesViewDropfiles extends JViewLegacy
         parent::display($tpl);
 
         $app = JFactory::getApplication();
-        if ($app->isAdmin()) {
+        if ($app->isClient('administrator')) {
             $this->addToolbar();
         }
     }
@@ -90,23 +90,18 @@ class DropfilesViewDropfiles extends JViewLegacy
 
         JToolBarHelper::title(JText::_('COM_DROPFILES_MAIN_PAGE'), 'dropfiles.png');
         if ($canDo->get('core.admin')) {
-            JToolBarHelper::preferences('com_dropfiles');
             $toolbar = JToolBar::getInstance();
             $toolbar->appendButton(
                 'Link',
-                'options',
-                JText::_('COM_DROPFILES_DOWNLOAD_STATISTICS'),
-                'index.php?option=com_dropfiles&amp;view=statistics'
+                'config-options',
+                '<span class="toolbar-title">' . JText::_('COM_DROPFILES_VIEW_CONFIGURATION') . '</span>',
+                'index.php?option=com_dropfiles&amp;task=configuration.display'
             );
             $toolbar->appendButton(
-                'popup',
-                'help',
-                JText::_('COM_DROPFILES_VIEW_SUPPORT'),
-                'index.php?option=com_dropfiles&view=support&tmpl=component',
-                700,
-                600,
-                0,
-                0
+                'Link',
+                'chart-options',
+                '<span class="toolbar-title">' . JText::_('COM_DROPFILES_DOWNLOAD_STATISTICS') . '</span>',
+                'index.php?option=com_dropfiles&amp;view=statistics'
             );
         }
         JToolBarHelper::divider();

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -42,7 +42,7 @@ if(!isset($this->widget->widget_id)){
 	$id=$this->widget->widget_id;
 }
 $js="
-google.load('visualization', '1', {'packages':['annotatedtimeline']});
+google.load('visualization', '49', {'packages':['annotatedtimeline']});
 			google.setOnLoadCallback(drawChart_".$id.");
 			function drawChart_".$id."() {
 				var data = new google.visualization.DataTable();

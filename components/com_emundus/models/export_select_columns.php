@@ -31,7 +31,8 @@ class EmundusModelExport_select_columns extends JModelList {
 
         $query
             ->select('*')
-            ->from($this->_db->quoteName("#__emundus_setup_tags"));
+            ->from($this->_db->quoteName("#__emundus_setup_tags"))
+            ->where($this->_db->quoteName("published") . ' = 1');
 
         $this->_db->setQuery($query);
 

@@ -41,13 +41,13 @@ class JFormFieldEditordesc extends JFormFieldEditor
         $desc = isset($this->element['desc']) ? $this->element['desc'] : null;
 
         if ($this->value === '') {
-            if ($this->element['name'] === 'add_event_editor') {
+            if ((string)$this->element['name'] === 'add_event_editor') {
                 $this->value = DropfilesHelper::getHTMLEmail('file-added.html');
-            } elseif ($this->element['name'] === 'edit_event_editor') {
+            } elseif ((string)$this->element['name'] === 'edit_event_editor') {
                 $this->value = DropfilesHelper::getHTMLEmail('file-edited.html');
-            } elseif ($this->element['name'] === 'delete_event_editor') {
+            } elseif ((string)$this->element['name'] === 'delete_event_editor') {
                 $this->value = DropfilesHelper::getHTMLEmail('file-deleted.html');
-            } elseif ($this->element['name'] === 'download_event_editor') {
+            } elseif ((string)$this->element['name'] === 'download_event_editor') {
                 $this->value = DropfilesHelper::getHTMLEmail('file-downloaded.html');
             }
         }

@@ -27,11 +27,17 @@ a.btn:hover{
     text-align: left;
 }
 
+
 form#member-profile.well {
-    background: #fafafa;
+    background: #fff;
     border: none;
     margin-top: 50px;
     margin-bottom: 50px;
+    border-radius: 16px;
+    padding: 80px 64px;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 form#member-profile  fieldset .em-heading-form {
@@ -44,53 +50,44 @@ form#member-profile  fieldset .em-heading-form {
     margin-bottom: 1em;
 }
 
-form#member-profile .icon-title.profile {
-    background-image: url(/components/com_emundus_onboard/src/assets/images/gear.svg);
-    background-size: contain;
-    background-repeat: no-repeat;
-}
-
-form#member-profile fieldset:nth-child(2) .icon-title.profile {
-    background-image: url(/components/com_emundus_onboard/src/assets/images/user.svg);
-    background-size: contain;
-}
-
-form#member-profile .icon-title {
-    margin-right: 10px;
-    width: 42px;
-    height: 40px;
-    background-position: 0 0;
-    background-size: contain;
-    -webkit-filter: brightness(.5);
-    filter: brightness(.5);
-    fill: grey;
-}
-
 #member-profile > .control-group .controls {
     margin-left: 0px;
     text-align: center;
-    padding-top: 20px;
+    padding-top: 32px;
     display: flex;
-    justify-content: space-evenly;
+    justify-content: flex-end;
     flex-direction: row;
+}
+
+#member-profile .control-group:last-of-type {
+    margin-bottom: 0px;
 }
 
 form#member-profile.well legend {
     color: #1b1f3c;
-    font-weight: 700;
+    font-weight: 600;
     margin: 0px !important;
 }
 
 form#member-profile.form-validate.form-horizontal.well input {
     border-radius: 4px;
+    width: 100%;
 }
 form#member-profile.form-validate.form-horizontal.well button.btn.btn-primary.validate {
     text-transform: capitalize;
-    margin-right: 10px !important;
     border-radius: 4px;
+    margin-bottom: 0px;
+    height: 38px;
+    display: flex;
+    align-items: center;
 }
 form#member-profile.form-validate.form-horizontal.well a.btn {
     font-weight: 300;
+    margin-right: 16px !important;
+    margin-bottom: 0px;
+    height: 38px;
+    display: flex;
+    align-items: center;
 }
 form#member-profile.form-validate.form-horizontal.well fieldset:nth-child(2) {
     margin-top: 20px;

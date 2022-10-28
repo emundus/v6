@@ -4,7 +4,7 @@
 		version="2.5"
 		client="site"
 		method="upgrade">
-	<name>MOD_EMUNDUS_APPLICATIONS_XML</name>
+	<name>MOD_EMUNDUS_APPLICATIONS_SYS_XML</name>
 	<author>Benjamin Rivalland</author>
 	<creationDate>June 2015</creationDate>
 	<copyright>Copyright (C) 2015 eMundus. All rights reserved.</copyright>
@@ -34,8 +34,8 @@
 						name="description"
 						type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
 						default=""
-						label="MOD_EMUNDUS_DESCRIPTION"
-						description="MOD_EMUNDUS_DESCRIPTION_DESC">
+						label="MOD_EMUNDUS_APPLICATIONS_DESCRIPTION"
+						description="MOD_EMUNDUS_APPLICATIONS_DESCRIPTION_DESC">
 				</field>
 				<field
 						name="show_add_application"
@@ -55,12 +55,33 @@
 						label="MOD_EMUNDUS_BTN_LABEL"
 						description="MOD_EMUNDUS_BTN_DESC">
 					<option
-							value="0">TOP</option>
+							value="0">MOD_EMUNDUS_APPLICATIONS_TOP</option>
 					<option
-							value="1">BOTTOM</option>
+							value="1">MOD_EMUNDUS_APPLICATIONS_BOTTOM</option>
 					<option
-							value="2">BOTH</option>
+							value="2">MOD_EMUNDUS_APPLICATIONS_BOTH</option>
+					<option
+							value="3">MOD_EMUNDUS_APPLICATIONS_TOP_INTRO</option>
+					<option
+							value="4">MOD_EMUNDUS_APPLICATIONS_TOP_INTRO_BOTTOM</option>
 				</field>
+				<field
+						name="show_show_campaigns"
+						type="radio"
+						default="0"
+						label="MOD_EMUNDUS_SHOW_CAMPAIGNS_LABEL"
+						description="MOD_EMUNDUS_SHOW_CAMPAIGNS_DESC">
+					<option
+							value="0">JNo</option>
+					<option
+							value="1">JYes</option>
+				</field>
+				<field
+						name="show_campaigns_url"
+						type="URL"
+						label="MOD_EMUNDUS_SHOW_CAMPAIGNS_URL"
+						description=""
+						default="liste-des-campagnes" />
 				<field
 						name="show_progress"
 						type="radio"
@@ -181,13 +202,46 @@
 					<option
 							value="1">JYes</option>
 				</field>
+
+				<field
+						name="show_payment_status"
+						type="radio"
+						default="0"
+						label="MOD_EMUNDUS_SHOW_PAYMENT_STATUS"
+						description="MOD_EMUNDUS_SHOW_PAYMENT_STATUS_DESC">
+					<option
+							value="0">JNo</option>
+					<option
+							value="1">JYes</option>
+				</field>
+
 				<field
 						name="tags"
 						type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
-						default="N° [FNUM]"
+						default=""
 						label="MOD_EMUNDUS_TAGS"
 						description="MOD_EMUNDUS_TAGS_DESC">
 				</field>
+
+				<field
+						name="visible_status"
+						type="text"
+						label="MOD_EMUNDUS_VISIBLE_STATUS"
+						description=""
+						default="" />
+				<field
+					name="for_specific_profiles"
+					type="text"
+					label="MOD_EMUNDUS_SPECIFIC_PROFILES"
+					description="MOD_EMUNDUS_SPECIFIC_PROFILES_DESC"
+					default=""
+				/>
+				<field
+						name="show_status"
+						type="text"
+						label="MOD_EMUNDUS_SHOW_STATUS"
+						description="MOD_EMUNDUS_SHOW_STATUS_DESC"
+				/>
 			</fieldset>
 			<fieldset
 					name="advanced">
@@ -226,7 +280,7 @@
 					<option
 							value="static"></option>
 				</field>
-				
+
 			</fieldset>
 		</fields>
 	</config>

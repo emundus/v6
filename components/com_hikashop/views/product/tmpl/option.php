@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -241,7 +241,7 @@ var hikaProductOptions = {
 				if(mul == 0)
 					continue;
 			}
-			el = d.getElementById("hikashop_product_option_"+i);
+			el = d.querySelector("select[data-product-option=\""+i+"\"]");
 			if(el) {
 				if(t.values[el.value])
 					total_opt_price += t.values[el.value] * mul;
@@ -272,6 +272,27 @@ var hikaProductOptions = {
 		t.refreshPrice();
 		if(o && o.fireAjax)
 			o.fireAjax("hkContentChanged");
+	},
+	getOptions: function() {
+		var d = document, w = window, o = w.Oby, t = this;
+		var el = null, ret = [];
+		for(var i = 0; i < t.total; i++) {
+			el = d.getElementById("hikashop_product_option_"+i);
+			if(el) {
+				ret.push(parseInt(el.value));
+			}
+			if(!el && !d.querySelectorAll)
+				continue;
+			var els = d.querySelectorAll("[data-product-option=\""+i+"\"]");
+			if(els.length == 0)
+				continue;
+			for(var j = els.length - 1; j >= 0; j--) {
+				if(!els[j].checked)
+					continue;
+				ret.push(parseInt(els[j].value));
+			}
+		}
+		return ret;
 	},
 	refreshPrice: function() {
 		var w = window, o = w.Oby, d = document, inputs = null,

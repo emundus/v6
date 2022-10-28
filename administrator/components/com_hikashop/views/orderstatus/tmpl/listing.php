@@ -1,16 +1,16 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><div class="iframedoc" id="iframedoc"></div>
 <form action="<?php echo hikashop_completeLink('orderstatus'); ?>" method="post" name="adminForm" id="adminForm">
 	<div class="hk-row-fluid">
-		<div class="hkc-md-6">
+		<div class="hkc-md-6 hika_j4_search">
 <?php
 	echo $this->loadHkLayout('search', array());
 ?>
@@ -32,7 +32,9 @@ defined('_JEXEC') or die('Restricted access');
 					echo JText::_('HIKA_NUM');
 				?></th>
 				<th class="title titlebox">
+				<?php if($this->manage) { ?>
 					<input type="checkbox" name="toggle" value="" onclick="hikashop.checkAll(this);" />
+				<?php } ?>
 				</th>
 				<th class="title titlebox"><?php
 					echo JText::_('HIKA_EDIT');
@@ -50,8 +52,17 @@ defined('_JEXEC') or die('Restricted access');
 	}
 ?>
 				<th class="title titleorder"><?php
-					if($this->ordering->ordering)
-						echo JHTML::_('grid.order', $this->rows);
+					if($this->manage && $this->ordering->ordering) {
+						$keys = array_keys($this->rows);  
+						$rows_nb = end($keys);
+						$href = "javascript:saveorder(".$rows_nb.", 'saveorder')";
+						?><a href="<?php echo $href; ?>" rel="tooltip" class="saveorder btn btn-sm btn-secondary float-end" title="Save Order">
+							<button class="button-apply btn btn-success" type="button">
+<!--							<span class="icon-apply" aria-hidden="true"></span> -->
+								<i class="fas fa-save"></i>
+							</button>
+						</a><?php
+					}
 					echo JHTML::_('grid.sort', JText::_( 'HIKA_ORDER' ), 'o.orderstatus_ordering', $this->pageInfo->filter->order->dir, $this->pageInfo->filter->order->value );
 				?></th>
 				<th class="title titletoggle"><?php
@@ -66,7 +77,6 @@ defined('_JEXEC') or die('Restricted access');
 			<tr>
 				<td colspan="<?php echo 7 + count($this->orderstatus_columns); ?>">
 					<?php echo $this->pagination->getListFooter(); ?>
-					<?php echo $this->pagination->getResultsCounter(); ?>
 				</td>
 			</tr>
 		</tfoot>
@@ -82,12 +92,13 @@ defined('_JEXEC') or die('Restricted access');
 			$attributes .= ' style="background-color:'.$this->orderStatuses[$row->orderstatus_namekey]->orderstatus_color.';"';
 ?>
 			<tr class="row<?php echo $k; ?>"<?php echo $attributes; ?>>
-				<td style="text-align:center"><?php
+				<td><?php
 					echo $this->pagination->getRowOffset($i);
 				?></td>
-				<td style="text-align:center"><?php
+				<td>
+				<?php if($this->manage) {
 					echo JHTML::_('grid.id', $i, $row->orderstatus_id);
-				?></td>
+				 } ?></td>
 				<td>
 <?php if($this->manage) { ?>
 					<a href="<?php echo hikashop_completeLink('orderstatus&task=edit&cid='.(int)$row->orderstatus_id); ?>" title="<?php echo JText::_('HIKA_EDIT'); ?>">
@@ -109,20 +120,26 @@ defined('_JEXEC') or die('Restricted access');
 		$publishedid = 'orderstatus_published-'.$row->orderstatus_id;
 ?>
 				<td style="text-align:center" id="<?php echo 'status-'.$key.'-'.$row->orderstatus_namekey; ?>"><?php
+				if($this->manage) {
 					if($column['type'] == 'toggle')
 						echo $this->toggleHelper->toggle('status-'.$key.'-'.$row->orderstatus_namekey, @$row->columns[$key], 'config', array('trigger'=>$column['trigger'], 'key'=>$column['key'], 'type'=>$column['type'], 'default_value'=>$column['default']));
 					if($column['type'] == 'radio')
 						echo $this->toggleHelper->radio('status-'.$key.'-'.$row->orderstatus_namekey, @$row->columns[$key], 'config', array('trigger'=>$column['trigger'], 'key'=>$column['key'], 'type'=>$column['type'], 'default_value'=>$column['default']));
+				} else {
+					echo $this->toggleHelper->display('activate', @$row->columns[$key]);
+				}
 				?></td>
 <?php
 	}
 ?>
 				<td class="order">
+<?php if($this->manage) { ?>
 					<span><?php echo $this->pagination->orderUpIcon($i, $this->ordering->reverse XOR ( $row->orderstatus_ordering >= @$this->rows[$i-1]->orderstatus_ordering ), $this->ordering->orderUp, 'Move Up', $this->ordering->ordering); ?></span>
 					<span><?php echo $this->pagination->orderDownIcon($i, $nbRows, $this->ordering->reverse XOR ( $row->orderstatus_ordering <= @$this->rows[$i+1]->orderstatus_ordering ), $this->ordering->orderDown, 'Move Down', $this->ordering->ordering); ?></span>
 					<input type="text" name="order[]" size="5" <?php if(!$this->ordering->ordering) echo 'disabled="disabled"'?> value="<?php echo $row->orderstatus_ordering; ?>" class="text_area" style="text-align: center" />
+<?php } else { echo $row->orderstatus_ordering; } ?>
 				</td>
-				<td style="text-align:center">
+				<td class="toggle" style="text-align:center">
 <?php
 		if($this->manage) {
 ?>

@@ -75,6 +75,7 @@
 }
 .campaigns-list .campaignbymonth .campaign-month-label .position-me {
     top: 27px;
+    z-index: 9;
 }
 #search_program {
     padding: 0 !important;
@@ -156,7 +157,7 @@
 }
 
 .rotate-me.blue, .rotate-me.orange {
-    width: 100vw;
+    width: 100%;
 }
 
 .navsearch-content {
@@ -170,12 +171,16 @@
 }
 
 #navfilter {
-
     display: flex;
     align-items: center;
     margin-bottom: 0;
     height: auto;
     justify-content: space-between;
+}
+
+#navfilter p {
+    margin-right: 5px;
+    width: fit-content;
 }
 
 #navfilter.navsearch .navsearch-content .input-group-btn button {
@@ -206,7 +211,55 @@
 .single-campaign .below-content {
     text-align: left !important;
 }
-​
+
+/** DROPFILES **/
+.em-campaign-dropfiles {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    font-weight: 300;
+    font-style: normal;
+    line-height: normal;
+}
+
+.em-campaign-dropfiles ul {
+    margin-left:0;
+}
+
+.em-campaign-dropfiles li {
+    padding: 10px 1.5rem;
+}
+
+.em-campaign-dropfiles li {
+    align-self: center;
+    list-style: none;
+}
+
+.em-campaign-dropfiles li span {
+    margin-left: 8px;
+}
+
+.em-campaign-dropfiles ul a:focus {
+    color: green;
+}
+
+.em-campaign-dropfiles .g-title {
+    border:none !important;
+    position:relative;
+}
+
+.em-campaign-dropfiles .g-title::after {
+    content: '';
+    position: absolute;
+    margin-top: 35px;
+    left: 0;
+    width: 2.7rem;
+    height: 0.2rem;
+    background: #de6339;
+}
+
+/** **/
+
 @media all and (max-width: 767px) {
 
     .homepage .campaigns-list .below-content a.btn.btn-primary.btn-plein.btn-blue {
@@ -465,9 +518,6 @@
     .campaign-content .below-content a{
         width: 19.3%;
     }
-    .campaingapplycontent strong {
-        width: 150px;
-    }
 }
 
 @media all and (max-width: 1227px) {
@@ -480,10 +530,6 @@
 @media all and (max-width: 1239px) {
     .left-side {
         width: 65% !important;
-    }
-
-    .right-side {
-        width: 35% !important;
     }
 
     .campaigns-list a {

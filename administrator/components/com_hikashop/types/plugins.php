@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -58,16 +58,30 @@ class hikashopPluginsType{
 		if(!$backend) {
 			if($this->methods[$this->type][(string)@$this->order->order_id]) {
 				$currencyClass = hikashop_get('class.currency');
-				$currencyClass->convertPayments($this->methods[$this->type][(string)@$this->order->order_id], $this->order->order_currency_id);
-
 				$full_price_without_payment = $this->order->order_full_price - $this->order->order_payment_price;
 				foreach( $this->methods[$this->type][(string)@$this->order->order_id] as $k => $method) {
 					if(!empty($method->payment_params->payment_percentage))
 						$method->payment_price_without_percentage = $method->payment_price;
 					$method->payment_price = $currencyClass->round(($full_price_without_payment * (float)@$method->payment_params->payment_percentage / 100) + @$method->payment_price, $currencyClass->getRounding($this->order->order_currency_id, true));
+				}
+				$zoneClass = hikashop_get('class.zone');
+				$config = hikashop_config();
+				$zones = $zoneClass->getOrderZones($this->order);//, $config->get('payment_methods_zone_address_type','billing_address'));
+				$zone = null;
+				if(!empty($zones) && is_array($zones) && count($zones)) {
+					$zone = reset($zones);
+					if(!is_numeric($zone)) {
+						$zoneData = $zoneClass->get($zone);
+						if(!empty($zoneData->zone_id)) {
+							$zone = $zoneData->zone_id;
+						}
+					}
+				}
+				$currencyClass->processPayments($this->methods[$this->type][(string)@$this->order->order_id], $this->order, $zone, $this->order->order_currency_id);
+				foreach( $this->methods[$this->type][(string)@$this->order->order_id] as $k => $method) {
 					if($method->payment_id == $this->order->order_payment_id || (float)$method->payment_price == (float)$this->order->order_payment_price)
 						continue;
-					$diff = $method->payment_price - $this->order->order_payment_price;
+					$diff = $method->payment_price_with_tax - $this->order->order_payment_price;
 					$sign = '';
 					if($diff > 0)
 					 $sign = '+';

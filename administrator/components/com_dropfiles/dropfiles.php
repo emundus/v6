@@ -19,11 +19,13 @@ defined('_JEXEC') || die;
 JLoader::register('DropfilesBase', JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesBase.php');
 JLoader::register('DropfilesDropbox', JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesDropbox.php');
 JLoader::register('DropfilesOneDrive', JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesOneDrive.php');
-DropfilesBase::initComponent();
+JLoader::register('DropfilesOneDriveBusiness', JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesOneDriveBusiness.php');
 
+DropfilesBase::initComponent();
 // Access check.
 if (!JFactory::getUser()->authorise('core.manage', 'com_dropfiles')) {
-    return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
+    $app = JFactory::getApplication();
+    return $app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
 }
 
 // Include dependancies

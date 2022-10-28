@@ -54,11 +54,16 @@ $vulnerable_array = array(JHtml::_('select.option', 'Si', JText::_('COM_SECURITY
 
 // Cargamos los archivos javascript necesarios
 $document = JFactory::getDocument();
-$document->addScript(JURI::root().'media/system/js/core.js');
+if ( version_compare(JVERSION, '3.20', 'lt') )
+{	
+	$document->addScript(JURI::root().'media/system/js/core.js');
+}
 
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
 // Bootstrap core JavaScript
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
+// Inline javascript to avoid deferring in Joomla 4
+echo '<script src="' . JURI::root(). '/media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>';
+//$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
 
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
@@ -220,7 +225,7 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/logs.php';
                                         </td>
                                         <td align="center">
                                         <?php $component_sanitized = htmlentities(filter_var($row->component, FILTER_SANITIZE_STRING));
-                                        echo substr(($component_sanitized), 0, 20);    ?>    
+                                        echo substr(($component_sanitized), 0, 40);    ?>    
                                         </td>
                                         <td align="center">
                                         <?php 

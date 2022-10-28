@@ -1,160 +1,208 @@
 #user-registration fieldset  {
     background: transparent;
 }
-#user-registration fieldset  p {
-    margin-bottom: 20px !important;
+
+#user-registration fieldset p,
+#reset-confirm fieldset p,
+#reset-complete fieldset p {
+    margin-bottom: 16px !important;
     text-align: justify;
+    background: #FFFFFF;
 }
 
-.view-reset #user-registration .controls {
- width: 100%;
+.view-reset #user-registration .controls,
+.view-reset .reset-confirm form .controls,
+.view-reset .reset-complete form .controls{
+    width: 100%;
     margin-left: 0px !important;
+    padding-top: 0px;
 }
 
-.view-reset #user-registration .control-label {
+.view-reset #user-registration .control-label,
+.view-reset .reset-confirm  form .control-label,
+.view-reset .reset-complete  form .control-label{
     width: 100%;
    text-align: left !important;
 }
 
 
-.reset-confirm .form-validate.form-horizontal.well,
-.reset-complete .form-validate.form-horizontal.well
-{
-    width: 60%;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    background: #fafafa;
+form#user-registration.form-validate.form-horizontal.well,
+.view-reset .reset-confirm form.form-validate.form-horizontal.well,
+.view-reset .reset-complete form.form-validate.form-horizontal.well {
+    background: #fff;
     border: none;
-    padding: 50px;
-}
-
-.reset-confirm,
-.reset-complete
-{
-    display: flex !important;
-    flex-direction: column;
-    align-items: center;
-    background: #fafafa;
-    width: 60%;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 50px;
-    margin-bottom: 50px;
-}
-
-
-form#user-registration.form-validate.form-horizontal.well
-{
-    width: 59%;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    padding: 0px;
-}
-
-
-.reset-confirm .form-validate.form-horizontal.well .control-label,
-.reset-complete .form-validate.form-horizontal.well .control-label
-{
-text-align: left;
-}
-
-
-.reset-confirm .form-validate.form-horizontal.well .control-group,
-.reset-complete .form-validate.form-horizontal.well .control-group
-{
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-
-.reset-confirm .form-validate.form-horizontal.well .control-group .controls,
-.reset-complete .form-validate.form-horizontal.well .control-group .controls
-{
-    margin-left: 0px;
-    width: 100%;
-}
-
-form#user-registration.form-validate.form-horizontal.well {
-    background: #fafafa;
-    border: none;
-    margin-top: 20px !important;
+    margin-bottom: 0px;
+    box-shadow: none;
+    border-radius: 0 0 16px 16px;
+    padding: 32px 64px 48px 64px;
+    margin-top: 0px;
+    border-radius: 16px;
 }
 
 form#user-registration.form-validate.form-horizontal.well label,
 .reset-confirm .form-validate.form-horizontal.well label,
-.reset-complete .form-validate.form-horizontal.well  label
-{
-    font-size: 14px;
-    margin-bottom: 5px !important;
-    font-weight: bold;
+.reset-complete .form-validate.form-horizontal.well  label {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 19px;
+    letter-spacing: 0.0015em;
+    text-align: left;
+    margin-bottom: 0px;
+    color: #2B2B2B;
+}
+
+form#user-registration.form-validate.form-horizontal.well label.invalid,
+.reset-confirm .form-validate.form-horizontal.well label.invalid,
+.reset-complete .form-validate.form-horizontal.well  label.invalid {
+    color: #2B2B2B;
 }
 
 form#user-registration.form-validate.form-horizontal.well .control-group .controls button,
-.reset-confirm .form-validate.form-horizontal.well .control-group .controls button,
-.reset-complete .form-validate.form-horizontal.well .control-group .controls button
-{
+.view-reset  .form-validate.form-horizontal.well .control-group .controls button,
+.reset-complete .form-validate.form-horizontal.well .control-group .controls button {
     width: 100%;
-    height: 41px;
-    text-transform: capitalize;
+    height: 48px;
     margin-right:0;
     border-radius: 4px;
     padding: 8px 12px;
-    font-family: "Open Sans";
     line-height: normal;
     font-weight: 300;
     font-size: 14px;
+    margin-bottom: 0px;
+}
+
+
+form#user-registration.form-validate.form-horizontal.well .control-group ,
+.view-reset  .form-validate.form-horizontal.well .control-group,
+.reset-complete .form-validate.form-horizontal.well .control-group  {
+  margin-bottom: 16px;
 }
 
 form#user-registration.form-validate.form-horizontal.well .control-group .controls input,
 .reset-confirm .form-validate.form-horizontal.well .control-group .controls input,
-.reset-complete .form-validate.form-horizontal.well .control-group .controls input
-{
+.reset-complete .form-validate.form-horizontal.well .control-group .controls input {
+    border-radius :4px;
+    width: 100%;
+    height: 48px;
     border-radius: 4px;
+    padding: 0 12px 0 12px;
+    border: 1px solid #E3E3E3;
+    box-shadow: none;
+    margin-top: 12px;
+}
+
+form#user-registration.form-validate.form-horizontal.well .control-group .controls input:focus,
+.reset-confirm .form-validate.form-horizontal.well .control-group .controls input:focus,
+.reset-complete .form-validate.form-horizontal.well .control-group .controls input:focus {
+    border: 1px solid #1C6EF2;
+    box-shadow: none;
+}
+
+form#user-registration.form-validate.form-horizontal.well .control-group .controls input.invalid,
+.reset-confirm .form-validate.form-horizontal.well .control-group .controls input.invalid,
+.reset-complete .form-validate.form-horizontal.well .control-group .controls input.invalid {
+    border: 1px solid #e5283B;
+    box-shadow: none;
+}
+
+
+form#user-registration.form-validate.form-horizontal.well .control-group .controls input:hover,
+.reset-confirm .form-validate.form-horizontal.well .control-group .controls input:hover,
+.reset-complete .form-validate.form-horizontal.well .control-group .controls input:hover {
+    border: 1px solid #727272;
+    box-shadow: none;
 }
 
 .view-reset .reset .page-header,
-.view-reset .reset-complete .page-header{
+.view-reset .reset-complete .page-header,
+.view-reset .reset-confirm .page-header{
     display:flex;
     flex-direction:column;
     justify-content:center;
     align-items:center;
 }
 
-.view-reset .reset {
+.view-reset .reset,
+.view-reset .reset-confirm,
+.view-reset .reset-complete {
     display: flex !important;
     flex-direction: column;
     align-items: center;
-    background: #fafafa;
-    width: 60%;
+    background: #fff;
+    width: 50%;
     margin-left: auto;
     margin-right: auto;
     margin-top: 50px;
     margin-bottom: 50px;
+    border-radius: 16px;
 }
 
+
 #user-registration .required .star,
-.reset-confirm .required .star,
+.view-reset .required .star,
 .reset-complete .required .star
 {
     display:none;
 }
 
-#user-registration .required::after,
-.reset-confirm .required::after,
-.reset-complete .required::after
+#user-registration .required::before,
+.view-reset .required::before,
+.reset-complete .required::before
 {
-    content: "\f005";
-    color: #c30505;
-    padding-left: 2px;
-    top: -10px;
-    position: relative;
+    content: "";
     font-family: FontAwesome;
     font-size: 5px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 19px;
+    letter-spacing: 0;
+    text-align: left;
+    position: relative;
+    top: -5px;
+    margin-right: 5px;
+    color: #e5283B;
 }
+
+.view-reset .reset .page-header h1,
+.view-reset .reset-confirm .page-header h1,
+.view-reset .reset-complete .page-header h1{
+    margin-top: 0px;
+    font-family:'Inter', sans-serif;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 39px;
+    letter-spacing: 0;
+    text-align: center;
+    color: #000;
+}
+
+
+.view-reset .reset .page-header,  .view-reset .reset-confirm .page-header, .view-reset .reset-complete .page-header {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    flex-direction: row;
+    width: 100%;
+    padding: 80px 64px 0px 64px;
+}
+
+
+.view-reset .reset-complete label#jform_password2-lbl.hasPopover.required::after {
+ display: none;
+}
+
+.view-reset .reset-complete label#jform_password2-lbl.hasPopover.required ul  {
+   list-style: none;
+    margin: 10px 0px;
+}
+
+
 @media all and (max-width: 980px) {
     form#user-registration.form-validate.form-horizontal.well,
-    .reset-confirm .form-validate.form-horizontal.well,
+    .view-reset .form-validate.form-horizontal.well,
     .reset-complete .form-validate.form-horizontal.well
     {
         width: 80%;
@@ -162,24 +210,26 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 }
 @media all and (max-width: 767px) {
 
-    .view-reset .reset .page-header {
+    .view-reset .reset .page-header,
+    .view-reset .reset-confirm .page-header,
+    .view-reset .reset-complete .page-header {
         width: 100% !important;
-        padding: 0px 15px;
+        padding: 80px 24px 0px 24px !important;
     }
 
-    .view-reset .reset {
+    .view-reset .reset,
+    .view-reset .reset-confirm,
+    .view-reset .reset-complete {
         width: 100% !important;
         padding-bottom: 0px !important;
     }
 
-    form#user-registration.form-validate.form-horizontal.well,
-    .reset-confirm .form-validate.form-horizontal.well,
-    .reset-complete .form-validate.form-horizontal.well {
-        width: 100%;
-    }
-
-    .view-reset #g-navigation {
-        height: auto !important;
+    .view-reset form#user-registration.form-validate.form-horizontal.well,
+    .view-reset .form-validate.form-horizontal.well,
+    .view-reset .reset-complete .form-validate.form-horizontal.well {
+        width: 100% !important;
+        padding: 32px 24px 80px 24px !important;
+        box-shadow: none;
     }
 
     .view-reset #g-navigation .g-container {
@@ -202,8 +252,10 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 }
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
-    .view-reset .reset .page-header {
-        width: 78% !important;
+    .view-reset .reset,
+    .view-reset .reset-confirm,
+    .view-reset .reset-complete  {
+        width: 65% !important;
     }
 
     form#user-registration.form-validate.form-horizontal.well,
@@ -214,36 +266,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 }
 
 @media screen and (min-width: 960px) and (max-width: 979px) {
-    .view-reset .reset .page-header {
+    .view-reset .reset .page-header,  .view-reset .reset-confirm .page-header, .view-reset .reset-complete .page-header   {
         width: 70% !important;
     }
-}
-
-/* TEST TITRE MDPO */
-
-.view-reset .reset .page-header {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-end;
-    flex-direction: row;
-    width: 60%;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.view-reset .reset .page-header div.icon-title.resetpwd {
-    background-image: url(/components/com_emundus_onboard/src/assets/images/password.svg);
-    background-size: contain;
-    background-repeat: no-repeat;
-}
-
-.view-reset .reset .page-header div.icon-title {
-    margin-right: 10px;
-    width: 33px;
-    height: 35px;
-    background-position: 0 0;
-    background-size: contain;
-    -webkit-filter: brightness(.5);
-    filter: brightness(.5);
-    fill: grey;
 }

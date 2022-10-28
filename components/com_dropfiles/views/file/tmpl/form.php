@@ -32,7 +32,7 @@ if ($this->form) {
         </script>
         <style>
             ul.tagit {
-                background: #f5f5f5 none;
+                background: #fff none;
             }
 
             .tagit-hidden-field {
@@ -40,22 +40,42 @@ if ($this->form) {
             }
 
             ul.tagit input[type="text"] {
-                background-color: #f5f5f5;
+                background-color: #fff;
             }
         </style>
         <form class="dropfilesparams">
-            <fieldset>
+            <div class="fieldset-settings-container">
+                <button class="btn dropfiles-save-submit" type="submit"><?php echo JText::_('COM_DROPFILES_JS_SAVE_SETTINGS'); ?></button>
                 <?php
                 echo $this->form->getInput('id');
 
                 foreach ($fieldSet as $name => $field) : ?>
-                    <?php echo $field->label; ?>
-                    <span class="paraminput"><?php echo $field->input; ?></span>
-                    <!--<span class="help-block"><?php echo $field->description; ?></span>-->
+                    <?php if ($field->id === 'jform_state') : ?>
+                        <div class="ju-container ju-file-status <?php echo $field->id ?>">
+                            <?php echo $field->label; ?>
+                            <div class="ju-switch-button">
+                                <label class="switch">
+                                    <?php $checked = intval($field->value) ? ' checked' : ''; ?>
+                                    <input type="checkbox" name="<?php echo $field->id ?>" id="<?php echo $field->id; ?>"<?php echo $checked; ?>>
+                                    <span class="dropfiles-slider"></span>
+                                </label>
+                                <span class="paraminput input-block-level <?php echo $field->id ?>">
+                                        <?php echo $field->input; ?>
+                                    </span>
+                            </div>
+                            <!--<span class="help-block"><?php echo $field->description; ?></span>-->
+                        </div>
+                    <?php else : ?>
+                        <div class="ju-settings-option file-field-container <?php echo $field->id ?>">
+                            <?php echo $field->label; ?>
+                            <span class="paraminput"><?php echo $field->input; ?></span>
+                            <!--<span class="help-block"><?php echo $field->description; ?></span>-->
+                        </div>
+                    <?php endif;?>
                 <?php endforeach; ?>
                 <span class="paraminput"><?php echo JHtml::_('form.token'); ?></span>
-                <button class="btn" type="submit"><?php echo JText::_('COM_DROPFILES_JS_SAVE'); ?></button>
-            </fieldset>
+                <button class="btn dropfiles-save-submit" type="submit"><?php echo JText::_('COM_DROPFILES_JS_SAVE_SETTINGS'); ?></button>
+            </div>
         </form>
     <?php }
 }

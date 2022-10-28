@@ -39,10 +39,26 @@ class SecuritycheckprosViewControlCenter extends SecuritycheckproView
         $trackactions_plugin_exists = $model->PluginStatus(8);
         $this->logs_pending = $logs_pending;
         $this->trackactions_plugin_exists = $trackactions_plugin_exists;
+		
+		$filemanager_model = \Joomla\CMS\MVC\Model\BaseDatabaseModel::getInstance('filemanager', 'SecuritycheckprosModel');
+		$this->log_filename = $filemanager_model->get_log_filename("controlcenter_log", true);
+		if ( !empty($this->log_filename) ) {
+			JFactory::getApplication()->setUserState('download_controlcenter_log', $this->log_filename);
+		} else {
+			JFactory::getApplication()->setUserState('download_controlcenter_log', null);
+		}
+		
+		// Chequeamos si existe el fichero de error
+		$this->error_file_exists = 0;
+		$folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR;
+		if (file_exists($folder_path . "error.php")) {
+			$this->error_file_exists = 1;
+		}
 
         // Extraemos los elementos que nos interesan...
         $control_center_enabled= null;
         $secret_key= null;
+		$control_center_url = null;
 
 
         if (!is_null($items['control_center_enabled'])) {
@@ -52,10 +68,15 @@ class SecuritycheckprosViewControlCenter extends SecuritycheckproView
         if (!is_null($items['secret_key'])) {
             $secret_key = $items['secret_key'];    
         }
+		
+		if (!is_null($items['control_center_url'])) {
+            $control_center_url = $items['control_center_url'];    
+        }
 
         // ... y los ponemos en el template
         $this->control_center_enabled = $control_center_enabled;
         $this->secret_key = $secret_key;
+		$this->control_center_url = $control_center_url;
 
 
         parent::display($tpl);

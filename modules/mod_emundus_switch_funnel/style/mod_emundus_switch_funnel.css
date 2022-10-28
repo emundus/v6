@@ -30,6 +30,11 @@
     text-decoration: none;
 }
 
+ a.switch-link-setting .setting-switch.setting.open.icon {
+    top: -14px;
+    position: relative;
+}
+
 .switch-link-setting{
     height: 64px;
     display: flex;

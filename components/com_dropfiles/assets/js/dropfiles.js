@@ -24,6 +24,11 @@ jQuery(document).ready(function ($) {
         Dropfiles.selected.ordering = false;
         Dropfiles.selected.orderingdir = false;
         Dropfiles.selected.usergroup = false;
+        Dropfiles.catRefTofileId = false;
+    }
+
+    if (typeof (Joomla) === "undefined") {
+        return;
     }
 
     var leftwidth = parseInt($("#mycategories").width());
@@ -32,23 +37,6 @@ jQuery(document).ready(function ($) {
         return this.style['-webkit-flex-basis'] = (width - leftwidth) + 'px';
     });
 
-    if (typeof $.fn.popover !== 'undefined') {
-        $('#themeselect .themebtn').popover({
-            html: true,
-            trigger: 'hover',
-            placement: 'left',
-            template: '<div class="popover" role="tooltip" style="width: 480px; max-width: 480px;"><div class="arrow"></div><h3' +
-            ' class="popover-title"></h3><div class="popover-content"><div class="data-content"></div></div></div>',
-            content: function () {
-                theme_name = $(this).html().toLowerCase();
-                if ($.inArray(theme_name, ['default', 'ggd', 'tree', 'table']) !== -1) {
-                    return '<img src="' + dropfilesRootUrl + 'components/com_dropfiles/assets/images/theme/' + theme_name + '.png" />';
-                }
-                return '<img src="' + dropfilesRootUrl + 'plugins/dropfilesthemes/' + theme_name + '/' + theme_name +'.png" />';
-            }
-        });
-    }
-    ;
     /**
      * Click to Sync with Google Drive
      */
@@ -59,10 +47,11 @@ jQuery(document).ready(function ($) {
         $btn.html('Syncing');
         $btn.attr('disabled', true);
         $.ajax({
-            url: 'index.php?option=com_dropfiles&task=googledrive.googlesync'
+            url: 'index.php?option=com_dropfiles&task=googledrive.syncRoot'
         }).done(function (data) {
+            console.log(data);
             if(data.status) {
-                syncGoogleFiles();
+                syncGoogleCategories();
             } else {
                 if (data.type === 'confirm') {
                     bootbox.confirm(data.message, function (result) {
@@ -94,20 +83,47 @@ jQuery(document).ready(function ($) {
         });
     });
 
-    //sync google files
-    function syncGoogleFiles(step) {
+    //sync google folders
+    function syncGoogleCategories(step) {
         if (typeof(step) == 'undefined') {
             step = 0;
         } else {
             step = parseInt(step);
         }
         $.ajax({
-            url: Dropfiles.ajaxurl + 'index.php?option=com_dropfiles&task=frontgoogle.syncFiles' + '&step=' + step,
+            url: Dropfiles.ajaxurl + 'index.php?option=com_dropfiles&task=frontgoogle.syncFolders&ran='+ Math.random() + '&step=' + step, // random() to avoid cache in some sever
         }).done(function (data) {
             result = jQuery.parseJSON(data);
             if (result.continue) {
                 step++;
-                syncGoogleFiles(step);
+                syncGoogleCategories(step);
+            } else {
+                console.log("sync folders done");
+                syncGoogleFiles();
+            }
+
+        });
+    }
+
+    //sync google files
+    function syncGoogleFiles(step, category_id) {
+        if (typeof(step) == 'undefined') {
+            step = 0;
+        } else {
+            step = parseInt(step);
+        }
+        if (typeof(category_id) == 'undefined') {
+            category_id = 0;
+        } else {
+            category_id = parseInt(category_id);
+        }
+        $.ajax({
+            url: Dropfiles.ajaxurl + 'index.php?option=com_dropfiles&task=frontgoogle.syncFiles&ran='+ Math.random() + '&step=' + step+'&catid='+category_id,
+        }).done(function (data) {
+            result = jQuery.parseJSON(data);
+            if (result.continue) {
+                step++;
+                syncGoogleFiles(step, category_id);
             } else {
                 // business logic...
                 $('#btn-sync-gg').button('reset');
@@ -122,22 +138,46 @@ jQuery(document).ready(function ($) {
      */
     $('#btn-sync-dropbox').click(function (e) {
         e.preventDefault();
-        var $btn = $(this).html('Syncing');
-        $(this).attr('disabled', true);
+        var $btn = $(this);
+        var syncText = $btn.html();
+
+        $btn.html('Syncing');
+        $btn.attr('disabled', true);
+
         $.ajax({
-            url: 'index.php?option=com_dropfiles&task=dropbox.sync'
+            url: 'index.php?option=com_dropfiles&task=dropbox.sync',
+            dataType: "json"
         }).done(function (data) {
-            $.ajax({
-                url: Dropfiles.ajaxurl + 'index.php?option=com_dropfiles&task=frontdropbox.index',
-                type: 'POST',
-                data: {}
-            }).done(function (data) {
-                window.location.reload();
-            });
-            // business logic...
-            $btn.button('reset');
+            if (data.status) {
+                syncDropboxFiles();
+            } else {
+                $btn.html(syncText);
+                $btn.attr('disabled', false);
+            }
         });
     });
+
+    function syncDropboxFiles(step) {
+        if (typeof(step) == 'undefined') {
+            step = 0;
+        } else {
+            step = parseInt(step);
+        }
+        $.ajax({
+            url: Dropfiles.ajaxurl + 'index.php?option=com_dropfiles&task=frontdropbox.syncFiles' + '&step=' + step,
+        }).done(function (data) {
+            result = jQuery.parseJSON(data);
+            if (result.continue) {
+                step++;
+                syncDropboxFiles(step);
+            } else {
+                // business logic...
+                $('#btn-sync-dropbox').button('reset');
+                window.location.reload();
+            }
+
+        });
+    }
 
     /**
      * Click to Sync with OneDrive
@@ -162,33 +202,57 @@ jQuery(document).ready(function ($) {
     });
 
     /**
+     * Click to Sync with OneDrive Business
+     */
+    $('#btn-sync-onedrive-business').click(function (e) {
+        e.preventDefault();
+        var $btn = $(this).html('Syncing');
+        $(this).attr('disabled', true);
+        $.ajax({
+            url: 'index.php?option=com_dropfiles&task=onedrivebusiness.oneDriveBusinessSync'
+        }).done(function (data) {
+            $.ajax({
+                url: Dropfiles.ajaxurl + 'index.php?option=com_dropfiles&task=frontonedrivebusiness.index',
+                type: 'POST',
+                data: {}
+            }).done(function (data) {
+                window.location.reload();
+            });
+            // business logic...
+            $btn.button('reset');
+        });
+    });
+
+    /**
      * Left side panel show/hide
      */
-    $('#df-panel-toggle').toggle(
-        function (e) {
-            e.preventDefault();
-            $('#mycategories').animate({left: -305}, 300);
-            if ($('#mybootstrap').parent().prop('tagName') === 'DIV') {
-                $('#pwrapper').css({'margin-left': 0});
-            }
-            else {
-                $('#pwrapper').css({'margin-left': 12});
-            }
-            $('#df-panel-toggle span').css({'right': '-25px'}).removeClass('icon-arrow-left-2').addClass('icon-arrow-right-2');
-        },
-        function (e) {
-            e.preventDefault();
-            if ($('#mybootstrap').parent().prop('tagName') === 'DIV') {
-                $('#mycategories').animate({left: 20}, 300);
-            }
-            else {
-                $('#mycategories').animate({left: 0}, 300);
-            }
-            $('#pwrapper').css({'margin-left': 320});
-            $('#df-panel-toggle span').css({'right': '0px'}).removeClass('icon-arrow-right-2').addClass('icon-arrow-left-2');
-        }
-    );
+    // $('#df-panel-toggle').toggle(
+    //     function (e) {
+    //         e.preventDefault();
+    //         $('#mycategories').animate({left: -305}, 300);
+    //         if ($('#mybootstrap').parent().prop('tagName') === 'DIV') {
+    //             $('#pwrapper').css({'margin-left': 0});
+    //         }
+    //         else {
+    //             $('#pwrapper').css({'margin-left': 12});
+    //         }
+    //         $('#df-panel-toggle span').css({'right': '-25px'}).removeClass('icon-arrow-left-2').addClass('icon-arrow-right-2');
+    //     },
+    //     function (e) {
+    //         console.log(e);
+    //         e.preventDefault();
+    //         if ($('#mybootstrap').parent().prop('tagName') === 'DIV') {
+    //             $('#mycategories').animate({left: 20}, 300);
+    //         }
+    //         else {
+    //             $('#mycategories').animate({left: 0}, 300);
+    //         }
+    //         $('#pwrapper').css({'margin-left': 320});
+    //         $('#df-panel-toggle span').css({'right': '0px'}).removeClass('icon-arrow-right-2').addClass('icon-arrow-left-2');
+    //     }
+    // );
 
+    var categoryAjax = null;
     Dropfiles.checkAndUpdatePreview = checkAndUpdatePreview = function () {
         var catsmanage = getUrlParameter('site_catid');
         var tasksmanage = getUrlParameter('task');
@@ -214,11 +278,12 @@ jQuery(document).ready(function ($) {
             cursorAt: {top: 0, left: 0},
             helper: function (e, item) {
                 filename = $(item).find('.title').text() + "." + $(item).find('.type').text();
+                fileext = $(item).find('.type').text();
                 count = $('#preview').find('.file.selected').length;
                 if (count > 1) {
-                    return $("<div id='file-handle' class='ui-widget-header' ><div>" + filename + "</div><span class='fCount'>" + count + "</span></div>");
+                    return $("<div id='file-handle' class='dropfiles_draged_file ui-widget-header' ><div class='ext "+fileext+"'><span class='txt'>"+fileext+"</span></div><div class='filename'>" + filename + "</div><span class='fCount'>" + count + "</span></div>");
                 } else {
-                    return $("<div id='file-handle' class='ui-widget-header' ><div>" + filename + "</div></div>");
+                    return $("<div id='file-handle' class='dropfiles_draged_file ui-widget-header' ><div class='ext "+fileext+"'><span class='txt'>"+fileext+"</span></div><div class='filename'>" + filename + "</div></div>");
                 }
             },
             update: function () {
@@ -235,6 +300,13 @@ jQuery(document).ready(function ($) {
                     url: "index.php?option=com_dropfiles&task=files.reorder&idcat=" + id_category,
                     type: "POST",
                     data: {order: json}
+                }).done(function (data) {
+                    var ismovefile = $('#dropfiles-movefile-container');
+                    if (ismovefile.length > 0) {
+                        ismovefile.remove();
+                    } else {
+                        $.gritter.add({text: Joomla.JText._('COM_DROPFILES_JS_CATEGORY_ORDER', 'File(s) removed with success!')});
+                    }
                 });
             },
             /** Prevent firefox bug positionnement **/
@@ -393,12 +465,18 @@ jQuery(document).ready(function ($) {
   checkCateActive(null);
     if (Dropfiles.can.edit || (Dropfiles.can.editown && Dropfiles.author === $('#categorieslist li.active').data('author'))) {
         $('.nested').nestable({
-            maxDepth: 8,
+            maxDepth: 16,
             effect: {animation: 'fade', time: 'slow'},
             onClick: function(l, e, p) {
                 id_category = $(e).data('id-category');
                 $('input[name=id_category]').val(id_category);
-
+                if (Dropfiles.catRefTofileId) {
+                    updatepreview(id_category, Dropfiles.catRefTofileId);
+                    Dropfiles.catRefTofileId = false;
+                } else {
+                    updatepreview(id_category);
+                    Dropfiles.catRefTofileId = false;
+                }
                 $('#categorieslist li').removeClass('active');
                 $(e).addClass('active');
                 if ($(e).find('.google-drive-icon').length > 0) {
@@ -415,6 +493,7 @@ jQuery(document).ready(function ($) {
                 var isCloudItem = $(e).find('div.dd3-handle i.google-drive-icon-white').length;
                 var isDropboxItem = $(e).find('div.dd3-handle i.dropbox-icon-white').length;
                 var isOnedriveItem = $(e).find('div.dd3-handle i.onedrive-icon-white').length;
+                var isOnedriveBusinessItem = $(e).find('div.dd3-handle i.onedrive-business-icon-white').length;
                 var itemChangeType = 'default';
                 if (isCloudItem > 0) {
                     itemChangeType = 'googledrive';
@@ -422,6 +501,8 @@ jQuery(document).ready(function ($) {
                     itemChangeType = 'dropbox';
                 } else if (isOnedriveItem > 0) {
                     itemChangeType = 'onedrive';
+                } else if (isOnedriveBusinessItem > 0) {
+                    itemChangeType = 'onedrivebusiness';
                 }
                 pk = $(e).data('id-category');
                 if ($(e).prev('li').length === 0) {
@@ -495,6 +576,17 @@ jQuery(document).ready(function ($) {
                                     url: "index.php?option=com_dropfiles&task=files.movefile&id_category=" + cat_target + '&active_category=' + current_cat + '&id_file=' + id_file,
                                     type: "POST",
                                     dataType: "json",
+                                    beforeSend: function () {
+                                        if($('#file-handle').length) {
+                                            $('#file-handle').animate({
+                                                width: '0',
+                                                height: '0',
+                                                opacity: .6
+                                            }, 100, "linear", function () {
+                                                $( this ).hide();
+                                            });
+                                        }
+                                    }
                                 }).done(function (result) {
                                     iFile++;
                                     if (typeof result.datas.id_file != "undefined") {
@@ -502,6 +594,8 @@ jQuery(document).ready(function ($) {
                                     }
                                     if (iFile == count) {
                                         $.gritter.add({text: Joomla.JText._('COM_DROPFILES_JS_FILES_MOVED', 'Files moved with success!')});
+                                        var ismoved = '<div id="dropfiles-movefile-container" style="display: none"></div>';
+                                        $('#mybootstrap').append(ismoved);
                                     }
                                 });
                             }
@@ -519,10 +613,23 @@ jQuery(document).ready(function ($) {
                         } else {
                             $.ajax({
                                 url: "index.php?option=com_dropfiles&task=files.movefile&id_category=" + cat_target + '&active_category=' + current_cat + '&id_file=' + id_file,
-                                type: "POST"
+                                type: "POST",
+                                beforeSend: function () {
+                                    if($('#file-handle').length) {
+                                        $('#file-handle').animate({
+                                            width: '0',
+                                            height: '0',
+                                            opacity: .6
+                                        }, 100, "linear", function () {
+                                            $( this ).hide();
+                                        });
+                                    }
+                                }
                             }).done(function (data) {
                                 $('tr[data-id-file="' + id_file + '"]').remove();
                                 $.gritter.add({text: Joomla.JText._('COM_DROPFILES_JS_FILE_MOVED', 'File moved with success!')});
+                                var ismoved = '<div id="dropfiles-movefile-container" style="display: none"></div>';
+                                $('#mybootstrap').append(ismoved);
                             });
                         }
                     }
@@ -552,7 +659,7 @@ jQuery(document).ready(function ($) {
             selectedFiles = [];
             $('#preview .file.selected').each(function (index) {
                 selectedFiles.push($(this).data('id-file'));
-            })
+            });
             if (lastAction == 'files.copyfile') {
                 //do nothing
             } else {
@@ -606,23 +713,28 @@ jQuery(document).ready(function ($) {
         } else if ($task == 'files.uncheck') {
             selectedFiles = [];
             $('.file').removeClass('selected');
-            $('.dropfiles-btn-toolbar').hide();
+            $('.dropfiles-btn-toolbar').find('#dropfiles-cut, #dropfiles-copy, #dropfiles-paste, #dropfiles-delete, #dropfiles-download, #dropfiles-uncheck').hide();
             $('.dropfiles-number-files').remove();
             showCategory();
         } else if ($task == 'files.delete') {
-            bootbox.confirm(Joomla.JText._('COM_DROPFILES_JS_ARE_YOU_SURE', 'Are you sure') + '?', function (result) {
+            bootbox.confirm(Joomla.JText._('COM_DROPFILES_JS_ARE_YOU_SURE_DELETE', 'Are you sure you want to delete the files you have selected') + '?', function (result) {
                 if (result === true) {
                     sourceCat = $('#categorieslist li.active').data('id-category');
                     selectedFiles = [];
                     $('#preview .file.selected').each(function (index) {
-                        selectedFiles.push($(this).data('id-file'));
+                        selectedFiles.push({
+                            'id_File': $(this).data('id-file'),
+                            'id_CateRef': $(this).data('id-category'),
+                        });
                     })
                     cat_target = $('#categorieslist li.active').data('id-category');
                     if (cat_target == sourceCat) {
                         while (selectedFiles.length > 0) {
-                            id_file = selectedFiles.pop();
+                            selectedFile = selectedFiles.pop();
+                            id_file = selectedFile.id_File;
+                            id_cateRef = selectedFile.id_CateRef;
                             $.ajax({
-                                url: "index.php?option=com_dropfiles&task=files.delete&id_file=" + id_file + "&id_cat=" + sourceCat,
+                                url: "index.php?option=com_dropfiles&task=files.delete&id_file=" + id_file + "&id_cat=" + sourceCat + "&id_cate_ref=" + id_cateRef,
                                 type: "POST"
                             }).done(function (data) {
                                 result = jQuery.parseJSON(data);
@@ -651,6 +763,9 @@ jQuery(document).ready(function ($) {
                 link.click();
                 $(link).remove();
             });
+        } else if($task == 'files.checkall') {
+            $('.file').addClass('selected');
+            $('.dropfiles-btn-toolbar').find('#dropfiles-cut, #dropfiles-copy, #dropfiles-paste, #dropfiles-delete, #dropfiles-download, #dropfiles-uncheck').show();
         }
         else {
             oldJoomlaSubmition($task);
@@ -670,7 +785,7 @@ jQuery(document).ready(function ($) {
 
 
     /* Init version dropbox */
-    initDropboxVersion($('#fileversion'));
+    initDropboxVersion($('#dropbox_version'));
     $('#upload_button_version').on('click', function () {
         $('#upload_input_version').trigger('click');
         return false;
@@ -740,7 +855,6 @@ jQuery(document).ready(function ($) {
         });
     }
 
-
     /**
      * Reload a category preview
      * @param id_category
@@ -768,7 +882,12 @@ jQuery(document).ready(function ($) {
         } else if (order_dir === 'desc') {
             url = url + '&orderDir=asc';
         }
-        $.ajax({
+
+        var oldCategoryAjax = categoryAjax;
+        if (oldCategoryAjax !== null) {
+            oldCategoryAjax.abort();
+        }
+        categoryAjax = $.ajax({
             url: url,
             type: "POST"
         }).done(function (data) {
@@ -776,11 +895,16 @@ jQuery(document).ready(function ($) {
             $(data).hide().appendTo('#preview').fadeIn(200);
             rloading('#wpreview');
             if (selectedFiles.length == 0) {
-                $('.dropfiles-btn-toolbar').hide();
+                $('.dropfiles-btn-toolbar #dropfiles-cut').hide();
+                $('.dropfiles-btn-toolbar #dropfiles-copy').hide();
+                $('.dropfiles-btn-toolbar #dropfiles-paste').hide();
+                $('.dropfiles-btn-toolbar #dropfiles-delete').hide();
+                $('.dropfiles-btn-toolbar #dropfiles-download').hide();
+                $('.dropfiles-btn-toolbar #dropfiles-uncheck').hide();
             }
             if (Dropfiles.can.edit || (Dropfiles.can.editown && Dropfiles.author === $('#categorieslist li.active').data('author'))) {
                 var remote_file = (Dropfiles.addRemoteFile == 1) ? '<a href="" id="add_remote_file" class="btn btn-large btn-primary">' + Joomla.JText._('COM_DROPFILES_JS_ADD_REMOTE_FILE', 'Add remote file') + '</a> ' : '';
-                $('<div id="dropbox"><span class="message">' + Joomla.JText._('COM_DROPFILES_JS_DROP_FILES_HERE', 'Drop files here to upload') + '.<i> ' + Joomla.JText._('COM_DROPFILES_JS_USE_UPLOAD_BUTTON', 'Or use the button below') + '</i></span><input class="hide" type="file" id="upload_input" multiple="">' + remote_file + '<span id="upload_button" class="btn btn-large btn-primary">' + Joomla.JText._('COM_DROPFILES_JS_SELECT_FILES', 'Select files') + '</span></div><div class="clr"></div>').appendTo('#preview');
+                $('<div id="dropbox"><span class="message">' + Joomla.JText._('COM_DROPFILES_JS_DROP_FILES_HERE', 'Drop files here to upload') + '</span><input class="hide" type="file" id="upload_input" multiple="">' + remote_file + '<span id="upload_button" class="btn btn-large btn-primary">' + Joomla.JText._('COM_DROPFILES_JS_SELECT_FILES', 'Select files') + '</span></div><div class="clr"></div>').appendTo('#preview');
 
                 $('#add_remote_file').on('click', function (e) {
                     e.preventDefault();
@@ -792,7 +916,9 @@ jQuery(document).ready(function ($) {
                         allowed_select += '<option value="' + v + '">' + v + '</option>';
                     });
                     allowed_select += '</select>';
-                    bootbox.dialog('<div class="form-horizontal dropfiles-remote-form"> ' +
+
+                    bootbox.dialog({
+                        message: '<div class="form-horizontal dropfiles-remote-form"> ' +
                         '<div class="control-group"> ' +
                         '<label class=" control-label" for="dropfiles-remote-title">' + Joomla.JText._('COM_DROPFILES_JS_REMOTE_FILE_TITLE', 'title') + '</label> ' +
                         '<div class="controls"> ' +
@@ -810,42 +936,45 @@ jQuery(document).ready(function ($) {
                         allowed_select +
                         '</div> </div>' +
                         '</div>',
-                        [{
-                            "label": Joomla.JText._('COM_DROPFILES_JS_SAVE', 'Save'),
-                            "class": "btn-primary",
-                            "callback": function () {
-                                var category_id = $('input[name=id_category]').val();
-                                var remote_title = $('#dropfiles-remote-title');
-                                var remote_url = $('#dropfiles-remote-url');
-                                var remote_type = $('#dropfiles-remote-type');
-                                var ajax_url = "index.php?option=com_dropfiles&task=files.addremoteurl&id_category=" + category_id + '&remote_title=' + remote_title.val() + '&remote_url=' + remote_url.val() + '&remote_type=' + remote_type.val();
+                        buttons: {
+                            save: {
+                                "label": Joomla.JText._('COM_DROPFILES_JS_SAVE', 'Save'),
+                                "className": "btn-primary",
+                                "callback": function () {
+                                    var category_id = $('input[name=id_category]').val();
+                                    var remote_title = $('#dropfiles-remote-title');
+                                    var remote_url = $('#dropfiles-remote-url');
+                                    var remote_type = $('#dropfiles-remote-type');
+                                    var ajax_url = "index.php?option=com_dropfiles&task=files.addremoteurl&id_category=" + category_id + '&remote_title=' + remote_title.val() + '&remote_url=' + remote_url.val() + '&remote_type=' + remote_type.val();
 
-                                $.ajax({
-                                    url: ajax_url,
-                                    type: "POST"
-                                }).done(function (data) {
+                                    $.ajax({
+                                        url: ajax_url,
+                                        type: "POST"
+                                    }).done(function (data) {
 
-                                    result = $.parseJSON(data);
-                                    if (result.response === true) {
-                                        updatepreview();
-                                    } else {
-                                        bootbox.alert(result.response);
-                                    }
+                                        result = $.parseJSON(data);
+                                        if (result.response === true) {
+                                            updatepreview();
+                                        } else {
+                                            bootbox.alert(result.response);
+                                        }
+                                        $('.remote-dialog').remove();
+
+                                    });
+                                }
+                            },
+                            cancel: {
+                                "label": Joomla.JText._('COM_DROPFILES_JS_CANCEL', 'Cancel'),
+                                "className": "s",
+                                "callback": function () {
                                     $('.remote-dialog').remove();
+                                    $('.modal-backdrop').remove();
+                                }
+                            }
+                        },
+                        className: 'remote-dialog'
+                    });
 
-                                });
-                            }
-                        }, {
-                            "label": Joomla.JText._('COM_DROPFILES_JS_CANCEL', 'Cancel'),
-                            "class": "s",
-                            "callback": function () {
-                                $('.remote-dialog').remove();
-                            }
-                        }],
-                        {
-                            classes: 'remote-dialog'
-                        }
-                    );
                     return false;
                 });
             }
@@ -855,7 +984,10 @@ jQuery(document).ready(function ($) {
                 hideColsDefault: [4, 5]
             });
 
+            var filehidecolumns = $.Event('dropfiles_file_hide_column_status');
+            $(document).trigger(filehidecolumns);
             showhidecolumns();
+
             if (Dropfiles.can.edit || (Dropfiles.can.editown && Dropfiles.author === $('#categorieslist li.active').data('author'))) {
                 initSortableFiles();
                 $('#preview').sortable('enable');
@@ -863,9 +995,6 @@ jQuery(document).ready(function ($) {
 
             }
             initDeleteBtn();
-            $('#preview input[name="restable-toggle-cols"]').click(function (e) {
-                setcookie_showcolumns();
-            });
 
             /** Show/hide right colum **/
             $('#preview .dropfiles-flip').click(function (e) {
@@ -874,6 +1003,7 @@ jQuery(document).ready(function ($) {
                 } else {
                     $('#rightcol').addClass('hide').removeClass('show');
                 }
+                $(this).toggleClass('dropfiles-flip-expand');
             });
             if (Dropfiles.can.edit || (Dropfiles.can.editown && Dropfiles.author === $('#categorieslist li.active').data('author'))) {
                 //initUploadBtn();
@@ -924,16 +1054,17 @@ jQuery(document).ready(function ($) {
             }
 
             rloading('#wpreview');
+            $('#mybootstrap #preview').trigger('dropfiles_preview_updated');
         });
-        initEditBtn();
-        initDeleteBtn();
 
+        initDeleteBtn();
     }
 
     $('#wpreview .restablesearch').click(function (e) {
         e.preventDefault();
         $('.dropfiles-search-file').addClass('show').removeClass('hide');
         $('#mycategories').hide();
+        $('.dropfiles-btn-toolbar').hide();
         $(this).hide();
     });
 
@@ -942,7 +1073,12 @@ jQuery(document).ready(function ($) {
         $('.dropfiles-search-file').addClass('hide').removeClass('show');
         $('#mycategories').show();
         $('.dropfiles-iconsearch').show();
-        $('.dropfiles-filter-file').css('right', '58px');
+        $('.dropfiles-btn-toolbar').show();
+        $('.dropfiles-filter-file').css('right', '86px');
+        $('.dropfiles-search-file .dropfiles-search-file-input').val('');
+        $('#dropfiles_filter_catid').val('');
+        $currentcateid = $('#mycategories li.dd-item.active').attr('data-id-category');
+        updatepreview($currentcateid);
     });
 
     $('#dropfiles_filter_catid').change(function (e) {
@@ -1065,7 +1201,7 @@ jQuery(document).ready(function ($) {
 
             rloading('#wpreview');
         });
-        initEditBtn();
+
         initDeleteBtn();
     }
 
@@ -1090,7 +1226,14 @@ jQuery(document).ready(function ($) {
             }
             $('.fileblock #fileparams').empty();
             $('#preview .file').removeClass('selected');
-            $('.dropfiles-btn-toolbar').hide();
+            $('#preview .file').removeClass('first');
+            $('#preview .file').removeClass('second');
+            $('.dropfiles-btn-toolbar #dropfiles-cut').hide();
+            $('.dropfiles-btn-toolbar #dropfiles-copy').hide();
+            $('.dropfiles-btn-toolbar #dropfiles-paste').hide();
+            $('.dropfiles-btn-toolbar #dropfiles-delete').hide();
+            $('.dropfiles-btn-toolbar #dropfiles-download').hide();
+            $('.dropfiles-btn-toolbar #dropfiles-uncheck').hide();
             showCategory();
         });
 
@@ -1098,8 +1241,63 @@ jQuery(document).ready(function ($) {
             iselected = $(this).find('tr.selected').length;
 
             //Allow multiselect
-            if (!e.ctrlKey && !ctrlDown) {
+            if (!e.ctrlKey && !ctrlDown && !e.shiftKey) {
+                $('#preview .file.first').removeClass('first');
+                $('#preview .file.second').removeClass('second');
+                $(this).addClass('first');
                 $('#preview .file.selected').removeClass('selected');
+            } else if(e.shiftKey) {
+                if($('#preview .file.first').length == 0) {
+                    $(this).addClass('first');
+                } else {
+                    $('#preview .file.second').removeClass('second');
+                    $(this).addClass('second');
+                    var index1, index2;
+                    $('#preview .file').each(function(index, elm) {
+                        if ($(elm).hasClass('first')) {
+                            index1 = index;
+                        }
+                        if ($(elm).hasClass('second')) {
+                            index2 = index;
+                        }
+                    });
+                    if (index1 < index2) {
+                        $('#preview .file').each(function(index, elm) {
+                            if (index >= index1 && index <= index2) {
+                                $(elm).addClass('selected');
+                            }
+                        });
+                    } else {
+                        $('#preview .file').each(function(index, elm) {
+                            if (index >= index2 && index <= index1) {
+                                $(elm).addClass('selected');
+                            }
+                        });
+                    }
+                }
+            }
+            if (e.ctrlKey) {
+                $('#preview .file.ctrl').removeClass('ctrl');
+                $(this).addClass('ctrl');
+                var indexctrl, indexcurrent;
+                if($('#preview .file.first').length == 0) {
+                    $(this).addClass('first');
+                }
+                $('#preview .file').each(function(index, elm) {
+                    if ($(elm).hasClass('first')) {
+                        indexctrl = index;
+                    }
+                    if ($(elm).hasClass('ctrl')) {
+                        indexcurrent = index;
+                    }
+                });
+                $('#preview .file').each(function(index, elm) {
+                    if (index == indexcurrent && indexcurrent < indexctrl) {
+                        $('#preview .file.first').removeClass('first');
+                        $(elm).addClass('first');
+                    }
+                });
+
             }
             if (iselected === 0) {
                 $(this).addClass('selected');
@@ -1111,7 +1309,12 @@ jQuery(document).ready(function ($) {
                     loadVersions();
                 }
                 showFile(this);
-                $('.dropfiles-btn-toolbar').show();
+                $('.dropfiles-btn-toolbar #dropfiles-cut').show();
+                $('.dropfiles-btn-toolbar #dropfiles-copy').show();
+                $('.dropfiles-btn-toolbar #dropfiles-paste').show();
+                $('.dropfiles-btn-toolbar #dropfiles-delete').show();
+                $('.dropfiles-btn-toolbar #dropfiles-download').show();
+                $('.dropfiles-btn-toolbar #dropfiles-uncheck').show();
             } else {
                 showCategory();
             }
@@ -1144,22 +1347,31 @@ jQuery(document).ready(function ($) {
 
     //show/hide columns base on cookie
     function showhidecolumns() {
-        if (!dropfiles_listColumns.listColumns.length) {
+        if (!localStorage.getItem('dropfilesFileColumnState')) {
             hideColumns();
             return;
+        } else {
+            $('.restable thead th').hide();
+            $('.restable tbody td').hide();
+            var colList = JSON.parse(localStorage.getItem('dropfilesFileColumnState'));
+            $.each($('input[name="restable-toggle-cols"]'), function () {
+                $(this).prop('checked', false);
+            });
+            $.each(colList, function (index, fieldset) {
+                if (parseInt(fieldset.state) == 1) {
+                    $('#' + fieldset.id).prop('checked', true);
+                }
+            });
+            $.each($('input[name="restable-toggle-cols"]'), function () {
+                if($(this).is(':checked')) {
+                    var col = parseInt($(this).data('col')) + 1;
+                }
+                if (col) {
+                    $('.restable thead th:nth-child(' + col + ')').show();
+                    $('.restable tbody td:nth-child(' + col + ')').show();
+                }
+            });
         }
-        $('.restable thead th').hide();
-        $('.restable tbody td').hide();
-        $('input[name="restable-toggle-cols"]').prop('checked', false);
-        1
-        $.each(dropfiles_listColumns.listColumns, function (i, v) {
-            $('#' + v).prop('checked', true);
-            var col = parseInt($('#' + v).data('col')) + 1;
-            if (col) {
-                $('.restable thead th:nth-child(' + col + ')').show();
-                $('.restable tbody td:nth-child(' + col + ')').show();
-            }
-        });
     }
 
     function setcookie_showcolumns() {
@@ -1209,45 +1421,6 @@ jQuery(document).ready(function ($) {
         });
     }
 
-
-    /**
-     * Init the file edit btn
-     */
-    function initEditBtn() {
-        $('.wbtn a.edit').unbind('click').click(function (e) {
-            that = this;
-            id_file = $(that).parents('.wimg').find('img.img').data('id-file');
-            $.ajax({
-                url: "index.php?option=com_dropfiles&view=file&format=raw&id=" + id_file,
-                type: "POST"
-            }).done(function (data) {
-                bootbox.dialog(data, [{
-                    'label': Joomla.JText._('COM_DROPFILES_JS_SAVE', 'Save'),
-                    'class': 'btn-success',
-                    'callback': function () {
-                        var p = '';
-                        $('#file-form .dropfilesinput').each(function (index) {
-                            p = p + $(this).attr('name') + '=' + $(this).attr('value') + '&';
-                        });
-                        $.ajax({
-                            url: $('#file-form').attr('action'),
-                            type: 'POST',
-                            data: p
-                        }).done(function (data) {
-
-                        });
-                    }
-                }, {
-                    'label': Joomla.JText._('COM_DROPFILES_JS_CANCEL', 'Cancel'),
-                    'class': 'btn-warning'
-                }], {header: Joomla.JText._('COM_DROPFILES_JS_IMAGE_PARAMETERS', 'Image parameters')});
-
-            });
-            return false;
-        });
-    }
-
-
     function loadGalleryParams() {
         if (!Dropfiles.can.edit && !(Dropfiles.can.editown && Dropfiles.author === $('#categorieslist li.active').data('author'))) {
             return;
@@ -1270,7 +1443,9 @@ jQuery(document).ready(function ($) {
                 theme: 'bootstrap'
             });
             if ($('#galleryparams .field-user-wrapper').length > 0) {
-                $('#galleryparams .field-user-wrapper').fieldUser();
+                if ( $.isFunction($.fn.fieldUser) ) {
+                    $('#galleryparams .field-user-wrapper').fieldUser();
+                }
                 $('#galleryparams .user-clear').click(function (e) {
                     e.preventDefault();
                     $('#jform_params_canview').val('');
@@ -1295,11 +1470,35 @@ jQuery(document).ready(function ($) {
                 $('#jform_params_orderingdir').val(Dropfiles.selected.orderingdir);
             }
             if (Dropfiles.selected.usergroup) {
-                for (i = 0; i <= Dropfiles.selected.usergroup.length; i++) {
-                    $('#jform_params_usergroup option[value="' + Dropfiles.selected.usergroup[i] + '"]').attr('selected', "selected");
-                }
+                Dropfiles.selected.usergroup.forEach(function(item, index) {
+                    $('#jform_params_usergroup option[value="' + item + '"]').attr('selected', "selected");
+                });
+
                 $('#jform_params_usergroup').trigger("liszt:updated");
             }
+
+            // Select user for category owner, single user access
+            $("#userModal_jform_created_user_id").on('shown.bs.modal', function(){
+                console.log("show", $('#userModal_jform_created_user_id iframe').length);
+                // Manually attach iframe to modal body
+                if ($('#userModal_jform_created_user_id iframe').length == 0) {
+                    $('#userModal_jform_created_user_id .modal-body').append($('#userModal_jform_created_user_id').attr('data-iframe')) ;
+                }
+            });
+            $("#userModal_jform_params_canview").on('shown.bs.modal', function(){
+                // Manually attach iframe to modal body
+                if ($('#userModal_jform_params_canview iframe').length == 0) {
+                    $('#userModal_jform_params_canview .modal-body').append($('#userModal_jform_params_canview').attr('data-iframe')) ;
+                }
+            });
+
+            if (typeof($.fn.popover) != "undefined") {
+                $('.hasPopover').popover({
+                    trigger: 'hover',
+                    placement: 'top'
+                });
+            }
+
             /*
              * auto save params when user foget save button click
              */
@@ -1328,6 +1527,11 @@ jQuery(document).ready(function ($) {
                 });
                 return false;
             });
+            var fieldState = $.Event('dropfiles_field_settings_status');
+            $(document).trigger(fieldState);
+            mainSettingsToggle();
+            var event = $.Event('dropfiles_category_param_loaded');
+            $(document).trigger(event);
             rloading('#galleryparams');
         });
     }
@@ -1381,33 +1585,61 @@ jQuery(document).ready(function ($) {
         if (!id_category) {
             return;
         }
-        id_file = jQuery('.file.selected').data('id-file');
         is_remoteurl = jQuery('.file.selected').hasClass('is-remote-url');
         var linkdownload = jQuery('.file.selected').data('friendlylinkdownload');
+        id_file = jQuery('.file.selected').data('id-file');
+        catid_file = jQuery('.file.selected').data('id-category');
+        if (id_file && jQuery.isNumeric(id_file)) {
+            if (catid_file.toString() !== id_category) {
+                $('#fileversion').hide();
+                var txt1 = "<p class='original-file-info'>" + Joomla.JText._('COM_DROPFILES_MULTI_CATEGORY_FILE', 'This file is listed in several categories, settings are available in the original version of the file') + "</p>";
+                var btn = "<a class='button button-primary edit-original-file'>" + Joomla.JText._('COM_DROPFILES_MULTI_CATEGORY_EDIT_ORIGINAL_FILE', 'EDIT ORIGINAL FILE') + "</a>";
+                $('#fileparams').html('<div class="original-file-params">'+ txt1 + btn +'</div>');
+                $('#fileparams .edit-original-file').click(function (e) {
+                    Dropfiles.catRefTofileId = id_file;
+                    $('li.dd-item.dd3-item[data-id-category="' + catid_file + '"] >div.dd-content').click();
+                    if ($('.dropfiles-search-file.show')) {
+                        $('#dropfiles_filter_catid').val(catid_file.toString());
+                    }
+                });
+                return true;
+            }
+        }
+        Dropfiles.catRefTofileId = false;
+        $('#fileversion').show();
         loading('#rightcol');
 
         $.ajax({
-            url: "index.php?option=com_dropfiles&task=file.edit&layout=form&id=" + id_file + "&catid=" + id_category
+            url: "index.php?option=com_dropfiles&task=file.edit&layout=form&id=" + id_file + "&catid=" + catid_file
         }).done(function (data) {
             // fix tinymce toolbar wrong position in the file description
-            if (typeof tinymce !== 'undefined' && tinymce.get('jform_description') !== null) {
+            if (typeof tinymce !== 'undefined' && typeof tinymce.get('jform_description') !== 'undefined') {
                 tinymce.get('jform_description').destroy();
             }
             $('#fileparams').html(data);
             if ($('#fileparams .field-multiple-user-wrapper').length > 0) {
-                $('#fileparams .field-multiple-user-wrapper').fieldMultipleUser();
+                if ( $.isFunction($.fn.fieldMultipleUser) ) {
+                    $('#fileparams .field-multiple-user-wrapper').fieldMultipleUser();
+                }
                 $('#fileparams .user-clear').click(function (e) {
                     e.preventDefault();
                     $('#jform_canview').val('');
                     $('#jform_canview_id').val('');
                 })
+
+                $("#userModal_jform_canview").on('shown.bs.modal', function(){
+                    // Manually attach iframe to modal body
+                    if ($('#userModal_jform_canview iframe').length == 0) {
+                        $('#userModal_jform_canview .modal-body').append($('#userModal_jform_canview').attr('data-iframe')) ;
+                    }
+                });
             }
             if (is_remoteurl) {
                 $('.dropfilesparams').find('.dropfiles-hide').removeClass('dropfiles-hide');
             }
             // Set download link to file_direct_link
             $('#jform_file_direct_link').val(linkdownload);
-            $('#jform_file_direct_link + .btn_jform_file_direct_link').unbind('click').on('click', function(e) {
+            $('#jform_file_direct_link + .copy-btn').unbind('click').on('click', function(e) {
               var linkcopy = $('#jform_file_direct_link').val();
               var inputlink = document.createElement("input");
               inputlink.setAttribute("value", linkcopy);
@@ -1439,18 +1671,7 @@ jQuery(document).ready(function ($) {
                     cache: true,
                     singleClick: true
                 });
-                Calendar.setup({
-                    // Id of the input field
-                    inputField: "jform_modified_time",
-                    // Format of the input field
-                    ifFormat: "%Y-%m-%d %H:%M:%S",
-                    // Trigger for the calendar (button ID)
-                    button: "jform_modified_time_img",
-                    // Alignment (defaults to "Bl")
-                    align: "Tl",
-                    cache: true,
-                    singleClick: true
-                });
+
                 Calendar.setup({
                     // Id of the input field
                     inputField: "jform_publish",
@@ -1545,6 +1766,17 @@ jQuery(document).ready(function ($) {
                 });
                 return false;
             });
+            $(".chosen-select").chosen({
+                allow_single_deselect: true,
+                width: '100%',
+                no_results: "No results"
+            });
+            var itemState = $.Event('dropfiles_item_settings_status');
+            $(document).trigger(itemState);
+            if($('.jform_custom_icon .button-clear').length || $('.jform_custom_icon .input-prepend > a:not(.modal)').length) {
+                $('.jform_custom_icon .button-clear').text(Joomla.JText._('COM_DROPFILES_JS_CLEAR', 'Clear'));
+                $('.jform_custom_icon .input-prepend > a:not(.modal)').text(Joomla.JText._('COM_DROPFILES_JS_CLEAR', 'Clear'));
+            }
             rloading('#rightcol');
         });
     }
@@ -1562,7 +1794,7 @@ jQuery(document).ready(function ($) {
             $('#versions_content').html(data);
             $('#versions_content a.trash').click(function () {
                 that = this;
-                bootbox.confirm(Joomla.JText._('COM_DROPFILES_JS_ARE_YOU_SURE', 'Are you sure') + '?', function (result) {
+                bootbox.confirm(Joomla.JText._('COM_DROPFILES_JS_ARE_YOU_SURE_DELETE_FILE_VERSION', 'Are you sure you want to definitively remove this file version') + '?', function (result) {
                     if (result === true) {
                         id = $(that).data('id');
                         vid = $(that).data('vid');
@@ -1587,7 +1819,7 @@ jQuery(document).ready(function ($) {
                 that = this;
                 file_ext = jQuery('.file.selected .txt').text();
                 file_title = jQuery('.file.selected .title').text();
-                bootbox.confirm(Joomla.JText._('COM_DROPFILES_JS_ARE_YOU_SURE_RESTORE_FILE', 'Are you sure you want to restore this file by a previous version?'), function (result) {
+                bootbox.confirm(Joomla.JText._('COM_DROPFILES_JS_ARE_YOU_SURE_RESTORE_FILE', 'Are you sure you want to restore the file: ') + file_title + '?', function (result) {
                     if (result === true) {
                         vid = $(that).data('vid');
                         id = $(that).data('id');
@@ -1638,6 +1870,8 @@ jQuery(document).ready(function ($) {
             type = 'dropbox';
         } else if ($(this).hasClass('onedrivecat')) {
             type = 'onedrive';
+        } else if ($(this).hasClass('onedrivebusinesscat')) {
+            type = 'onedrivebusiness';
         } else {
             type = 'joomla';
         }
@@ -1659,6 +1893,8 @@ jQuery(document).ready(function ($) {
                     icon = '<i class="dropbox-icon-white"></i> ';
                 } else if (type == 'onedrive') {
                     icon = '<i class="onedrive-icon-white"></i> ';
+                } else if (type == 'onedrivebusiness') {
+                    icon = '<i class="onedrive-business-icon-white"></i> ';
                 }
 
                 link = '' +
@@ -1713,8 +1949,8 @@ jQuery(document).ready(function ($) {
         var progressBar = '<div class="dropfiles_progress_block" data-id="' + prgId + '" data-cat-id="' + fileCatId + '">'
             + '<div class="dropfiles_progress_fileinfo">'
             + '<span class="dropfiles_progress_filename">' + fileName + '</span>'
-            + '<span class="dropfiles_progress_cancel">Cancel</span>'
-            + '<span class="dropfiles_progress_pause">Pause</span>'
+            + '<span class="dropfiles_progress_cancel"></span>'
+            + '<span class="dropfiles_progress_pause"></span>'
             + '</div>'
             + '<div class="dropfiles_process_full" style="display: block;">'
             + '<div class="dropfiles_process_run" id="' + prgId + '" data-w="0" style="width: 0%;"></div>'
@@ -1790,7 +2026,7 @@ jQuery(document).ready(function ($) {
                 file.pause(true); // This is very important or paused file will upload after this done
                 // Init play button
                 $this.addClass('paused');
-                $this.text('Continue');
+                $this.text('');
                 $this.css('color', 'green');
                 Dropfiles.progressUpdate(fileId, Math.floor(file.progress() * 100) + '%');
                 $this.unbind('click').on('click', Dropfiles.progressInitContinue);
@@ -1819,7 +2055,7 @@ jQuery(document).ready(function ($) {
 
                 // Init pause button
                 $this.removeClass('paused');
-                $this.text('Pause');
+                $this.text('');
                 $this.css('color', '#ff8000');
                 $this.unbind('click').on('click', Dropfiles.progressInitPause);
             }
@@ -1852,7 +2088,7 @@ jQuery(document).ready(function ($) {
         maxFileSizeErrorCallback: function (file) {
             bootbox.alert(file.name + ' ' + Joomla.JText._('COM_DROPFILES_JS_FILE_TOO_LARGE', 'is too large') + '!');
         },
-        chunkSize: toMB(10),
+        chunkSize: Dropfiles.chunkSize,
         forceChunkSize: true,
         fileType: allowedExt,
         fileTypeErrorCallback: function (file) {
@@ -2009,7 +2245,6 @@ jQuery(document).ready(function ($) {
                 });
                 updatepreview();
 //                    initDeleteBtn();
-//                    initEditBtn();
                 $.gritter.add({text: Joomla.JText._('COM_DROPFILES_CTRL_FILES_UPLOAD_FILE_SUCCESS', 'Upload file successfully!')});
             },
             rename: function (name) {
@@ -2034,6 +2269,7 @@ jQuery(document).ready(function ($) {
         dropbox.filedrop({
             paramname: 'pic',
             fallback_id: 'upload_input_version',
+            fallback_dropzoneClick: true,
             maxfiles: 1,
             maxfilesize: Dropfiles.maxfilesize,
             queuefiles: 1,
@@ -2090,21 +2326,6 @@ jQuery(document).ready(function ($) {
             },
 
             uploadStarted: function (i, file, len) {
-//                        var preview = $('<div class="file well uploadplaceholder">'+
-//                                            '<span class="uploaded"></span>'+
-//                                            '<div class="progress progress-striped active">'+
-//                                                '<div class="bar"></div>'+
-//                                            '</div>'+
-//                                        '</div>');
-
-//                        var reader = new FileReader();
-
-                // Reading the file as a DataURL. When finished,
-                // this will trigger the onload function above:
-//                        reader.readAsDataURL(file);
-
-//                        preview.appendTo('#preview .table');
-//                        $('#dropbox').before(preview);
 
                 // Associating a preview container
                 // with the file, using jQuery's $.data():
@@ -2118,22 +2339,10 @@ jQuery(document).ready(function ($) {
             },
 
             afterAll: function () {
-//                    $('#preview .progress').delay(300).fadeIn(300).hide(300, function(){
-//                      $(this).remove();
-//                    });
-//                    $('#preview .uploaded').delay(300).fadeIn(300).hide(300, function(){
-//                      $(this).remove();
-//                    });
-//                    $('#preview .file').delay(1200).show(1200,function(){
-//                        $(this).removeClass('done placeholder');
-//                    });
                 $('#dropbox_version .progress').addClass('hide');
                 $('#dropbox_version .upload').removeClass('hide');
                 id_file = $('.file.selected').data('id-file');
                 updatepreview(null, id_file);
-//                    initDeleteBtn();
-//                    initEditBtn();
-
             },
             rename: function (name) {
                 ext = name.substr(name.lastIndexOf('.'), name.length);
@@ -2189,13 +2398,38 @@ jQuery(document).ready(function ($) {
             return false;
         });
 
+        $('#categorieslist .dd-content .sync').unbind('click').on('click', function () {
+            $(this).closest('div.dd-content').find('a.t').append('<i class="icon-syncing"></i>');
+            id_category = $(this).closest('li').data('id-category');
+            $.ajax({
+                url: "index.php?option=com_dropfiles&task=googledrive.syncCategory&id_category=" + id_category,
+                type: 'POST',
+                data: $('#categoryToken').attr('name') + '=1'
+            }).done(function (data) {
+                console.log(data);
+                if(data.status) {
+                    syncGoogleFiles(0, id_category);
+                }
+                //result = jQuery.parseJSON(data);
+
+            });
+        });
+
         /* Set the active category on menu click */
         $('#categorieslist .dd-content').unbind('click').click(function (e) {
             id_category = $(this).parent().data('id-category');
             $('input[name=id_category]').val(id_category);
-
+            if (Dropfiles.catRefTofileId) {
+                updatepreview(id_category, Dropfiles.catRefTofileId);
+                Dropfiles.catRefTofileId = false;
+            } else {
+                updatepreview(id_category);
+                Dropfiles.catRefTofileId = false;
+            }
             $('#categorieslist li').removeClass('active');
             $(this).parent().addClass('active');
+            var event = $.Event('dropfiles_category_click');
+            $(this).trigger(event);
             if ($(this).parent().find('.google-drive-icon').length > 0) {
                 $('#rightcol .fileblock').addClass('googleblock');
                 $('#rightcol .categoryblock').addClass('catgoogleblock');
@@ -2203,7 +2437,6 @@ jQuery(document).ready(function ($) {
                 $('#rightcol .fileblock').removeClass('googleblock');
                 $('#rightcol .categoryblock').removeClass('catgoogleblock');
             }
-            updatepreview(id_category);
             return false;
         });
 
@@ -2303,7 +2536,51 @@ jQuery(document).ready(function ($) {
         $(e).removeClass('dploadingcontainer');
         $(e).find('div.dploading').remove();
     }
+
+    function  mainSettingsToggle() {
+        var headdingControll = $('.themesblock .heading-section');
+        if(headdingControll) {
+            headdingControll.each(function () {
+                $(this).on("click", function(e){
+                    e.preventDefault();
+                    $(this).toggleClass('collapsed');
+                    $(this).siblings('.control-group').slideToggle();
+                });
+            });
+        }
+    }
+
+    mainSettingsToggle();
 });
+
+/**
+ * Insert the current category into a content editor
+ */
+function insertCategorytoEditor(editor_name) {
+    var tag =  insertCategory();
+    /** Use the API, if editor supports it **/
+    if (window.parent.Joomla && window.parent.Joomla.editors && window.parent.Joomla.editors.instances && window.parent.Joomla.editors.instances.hasOwnProperty(editor_name))
+    {
+        window.parent.Joomla.editors.instances[editor_name].replaceSelection(tag);
+    }
+    else
+    {
+        window.parent.jInsertEditorText(tag, editor_name);
+    }
+
+    // Close modal
+    if (window.parent.CKEDITOR) { // DropEditor or Ckeditor
+        var ckDialog = window.parent.CKEDITOR.dialog.getCurrent();
+        if(ckDialog) {
+            ckDialog.hide();
+        }
+    } else if (typeof window.parent.Joomla.Modal !== 'undefined') {
+        window.parent.Joomla.Modal.getCurrent().close();
+    }
+    else if (window.parent.SqueezeBox) { // TinyMCE
+        window.parent.SqueezeBox.close();
+    }
+}
 
 /**
  * Insert the current category into a content editor
@@ -2319,6 +2596,36 @@ function insertCategory() {
         'border-radius: 10px;' +
         'width: 99%;" data-category="' + id_category + '" />';
     return code;
+}
+
+
+/**
+ * Insert the current file into a content editor
+ */
+function insertFiletoEditor(editor_name) {
+    var tag =  insertFile();
+    /** Use the API, if editor supports it **/
+    if (window.parent.Joomla && window.parent.Joomla.editors && window.parent.Joomla.editors.instances && window.parent.Joomla.editors.instances.hasOwnProperty(editor_name))
+    {
+        window.parent.Joomla.editors.instances[editor_name].replaceSelection(tag);
+    }
+    else
+    {
+        window.parent.jInsertEditorText(tag, editor_name);
+    }
+
+    // Close modal
+    if (window.parent.CKEDITOR) { // DropEditor or Ckeditor
+        var ckDialog = window.parent.CKEDITOR.dialog.getCurrent();
+        if(ckDialog) {
+            ckDialog.hide();
+        }
+    } else if (typeof window.parent.Joomla.Modal !== 'undefined') {
+        window.parent.Joomla.Modal.getCurrent().close();
+    }
+    else if (window.parent.SqueezeBox) { // TinyMCE
+        window.parent.SqueezeBox.close();
+    }
 }
 
 /**
@@ -2439,3 +2746,78 @@ var getUrlParameter = function getUrlParameter(sParam) {
         }
     }
 };
+
+// Close bootrap modal or manually hide element
+window.closeModal = function(id){
+    var $ = jQuery.noConflict();
+    var wpfdModal;
+    if (typeof bootstrap !== 'undefined') {
+        wpfdModal = bootstrap.Modal.getInstance($('#'+id));
+    }
+    if (wpfdModal) {
+        wpfdModal.hide();
+    } else {
+        if ($('#'+id)) {
+            $('#'+id).hide();
+        }
+        $('.modal-backdrop').remove();
+    }
+};
+
+
+window.multipleUser = {};
+window.multipleUser.setValue = function(value, name) {
+    var $ = jQuery.noConflict();
+    var $input = $("#jform_canview_id");
+    var $inputName = $("#jform_canview");
+    var oldValue = $input.val();
+    var oldName = $inputName.val();
+    if (oldValue === '0' || oldValue === '') {
+        $input.val(value).trigger('change');
+        $inputName.val(name || value).trigger('change');
+    } else {
+        var newValue = oldValue.split(',');
+        var newName = oldName.split(',');
+        newValue.push(value);
+        newName.push(name);
+        $input.val(newValue.unique().join(',')).trigger('change');
+        $inputName.val(newName.unique().join(',')).trigger('change');
+    }
+};
+
+window.multipleUser.unsetValue = function(value, name) {
+    var $ = jQuery.noConflict();
+    var $input = $("#jform_canview_id");
+    var $inputName = $("#jform_canview");
+    var oldValue = $input.val().split(',');
+    var oldName = $inputName.val().split(',');
+
+    if (oldValue.length === 0) {
+        $input.val(0).trigger('change');
+        $inputName.val('').trigger('change');
+    } else {
+        var newValue = $.grep(oldValue, function(item, index) {
+            return item.toString() !== value.toString();
+        });
+        var newName = $.grep(oldName, function(item, index) {
+            return item.toString() !== name.toString();
+        });
+
+        $input.val(newValue.unique().join(',')).trigger('change');
+        $inputName.val(newName.unique().join(',')).trigger('change');
+    }
+};
+
+/**
+ * Array unique function from
+ * Thanks to ShAkKiR from https://stackoverflow.com/a/44376705
+ * @returns {Array}
+ */
+Array.prototype.unique = function() {
+    var a = [];
+    for (i = 0; i < this.length; i++) {
+        var current = this[i];
+        if (a.indexOf(current) < 0) a.push(current);
+    }
+    return a;
+}

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -30,6 +30,9 @@ class JHtmlHikaselect extends JHTMLSelect {
 		reset($data);
 		$app = JFactory::getApplication();
 
+		if(HIKASHOP_J40)
+			$attribs = str_replace('custom-select', '', $attribs);
+
 		if(hikashop_isClient('administrator')) {
 			$yes_text = JText::_('JYES');
 			$no_text = JText::_('JNO');
@@ -47,7 +50,10 @@ class JHtmlHikaselect extends JHTMLSelect {
 		}
 
 		if (is_array($attribs))	{
-			$attribs = JArrayHelper::toString($attribs);
+			if(HIKASHOP_J40)
+				$attribs = ArrayHelper::toString($attribs);
+			else
+				$attribs = JArrayHelper::toString($attribs);
 		}
 
 		$id_text = str_replace(array('[',']'),array('_',''),$idtag ? $idtag : $name);
@@ -125,33 +131,35 @@ class JHtmlHikaselect extends JHTMLSelect {
 			JHtml::_('jquery.framework');
 			$html .= "\r\n" .'
 <script type="text/javascript">
+setTimeout(function(){
 (function($){
-if(!window.hikashopLocal)
-	window.hikashopLocal = {};
-window.hikashopLocal.radioEvent = function(el) {
-	var id = $(el).attr("id"), c = $(el).attr("class"), lbl = $("label[for=\"" + id + "\"]"),
-		v = $(el).val(), target = $(el).parent().find("label[data-default=\"1\"]");
-	if(v == "-1")
-		target.addClass("btn-default");
-	else
-		target.removeClass("btn-default");
-	if(c !== undefined && c.length > 0)
-		lbl.addClass(c);
-	lbl.addClass("active");
-	$("input[name=\"" + $(el).attr("name") + "\"]").each(function() {
-		if($(this).attr("id") != id) {
-			c = $(this).attr("class");
-			lbl = $("label[for=\"" + $(this).attr("id") + "\"]");
-			if(c !== undefined && c.length > 0)
+	if(!window.hikashopLocal)
+		window.hikashopLocal = {};
+	window.hikashopLocal.radioEvent = function(el) {
+		var id = $(el).attr("id"), c = $(el).attr("class"), lbl = $("label[for=\"" + id + "\"]"),
+			v = $(el).val(), target = $(el).parent().find("label[data-default=\"1\"]");
+		if(v == "-1")
+			target.addClass("btn-default");
+		else
+			target.removeClass("btn-default");
+		if(c !== undefined && c.length > 0)
+			lbl.addClass(c);
+		lbl.addClass("active");
+		$("input[name=\"" + $(el).attr("name") + "\"]").each(function() {
+			if($(this).attr("id") != id) {
+				c = $(this).attr("class");
+				lbl = $("label[for=\"" + $(this).attr("id") + "\"]");
+				if(c !== undefined && c.length > 0)
 				lbl.removeClass(c);
-			lbl.removeClass("active");
-		}
+				lbl.removeClass("active");
+			}
+		});
+	}
+	$(document).ready(function() {
+		$(".hikaradios .btn-group label").off("click");
 	});
-}
-$(document).ready(function() {
-	setTimeout(function(){ $(".hikaradios .btn-group label").off("click"); }, 200);
-});
 })(jQuery);
+}, 200);
 </script>';
 		}
 

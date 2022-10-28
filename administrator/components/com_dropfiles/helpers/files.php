@@ -53,13 +53,20 @@ class DropfilesFilesHelper
     {
         $doc = JFactory::getDocument();
         $doc->addScript(JURI::root() . 'components/com_dropfiles/assets/js/helper.js');
-        JHtml::_('behavior.framework');
+        if (DropfilesBase::isJoomla40()) {
+            JHtml::_('behavior.core');
+        } else {
+            JHtml::_('behavior.framework', true);
+        }
         JText::script('COM_DROPFILES_FIELD_FILE_BYTE');
         JText::script('COM_DROPFILES_FIELD_FILE_KILOBYTE');
         JText::script('COM_DROPFILES_FIELD_FILE_MEGABYTE');
         JText::script('COM_DROPFILES_FIELD_FILE_GIGABYTE');
         JText::script('COM_DROPFILES_FIELD_FILE_TERRABYTE');
         JText::script('COM_DROPFILES_FIELD_FILE_PETABYTE');
+        JText::script('COM_DROPFILES_DOWNLOAD_SELECTED');
+        JText::script('COM_DROPFILES_DOWNLOAD_ALL');
+        JText::script('COM_DROPFILES_LIGHT_BOX_LOADING_STATUS');
     }
 
     /**
@@ -277,7 +284,7 @@ class DropfilesFilesHelper
                             $item->title . '.' . $item->ext
                         );
                         $allowedgoogleext = 'pdf,ppt,pptx,doc,docx,xls,xlsx,dxf,ps,eps,xps,psd,tif,tiff,bmp,svg,pages,';
-                        $allowedgoogleext .= 'ai,dxf,ttf,txt';
+                        $allowedgoogleext .= 'ai,dxf,ttf,txt,mp3,mp4,png,gif,ico,jpeg,jpg';
                         if ($params->get('usegoogleviewer', 1) > 0 &&
                             in_array(
                                 $item->ext,
@@ -307,12 +314,16 @@ class DropfilesFilesHelper
                     }
                     $item->versionNumber = $item->version;
                     if ($item->custom_icon) {
-                        $image = new JImage(JPath::clean(JPATH_BASE . '/' . $item->custom_icon));
+                        $pos = strpos($item->custom_icon, '#');
+                        if ($pos !== false) {
+                            $item->custom_icon =  substr($item->custom_icon, 0, $pos);
+                        }
+                        $image = new JImage(JPath::clean(JPATH_SITE . '/' . $item->custom_icon));
                         $result = $image->createThumbs(array('50x70'));
-                        if (JPATH_BASE === '/') {
+                        if (JPATH_SITE === '/') {
                             $item->custom_icon_thumb = JUri::root() . $result[0]->getPath();
                         } else {
-                            $pat_replace = str_replace(JPATH_BASE, JUri::root(), $result[0]->getPath());
+                            $pat_replace = str_replace(JPATH_SITE, JUri::root(), $result[0]->getPath());
                             $item->custom_icon_thumb = str_replace('/\\', '/', $pat_replace);
                         }
                     }
@@ -344,8 +355,8 @@ class DropfilesFilesHelper
                         '',
                         $items->title . '.' . $items->ext
                     );
-                    $allowedgoogleext = 'pdf,ppt,pptx,doc,docx,xls,xlsx,dxf,ps,eps,xps,psd,tif,tiff,bmp,';
-                    $allowedgoogleext .= 'svg,pages,ai,dxf,ttf,txt';
+                    $allowedgoogleext = 'pdf,ppt,pptx,doc,docx,xls,xlsx,dxf,ps,eps,xps,psd,tif,tiff,bmp,svg,pages,';
+                    $allowedgoogleext .= 'ai,dxf,ttf,txt,mp3,mp4,png,gif,ico,jpeg,jpg';
                     if ($params->get('usegoogleviewer', 1) > 0 &&
                         in_array($items->ext, explode(
                             ',',
@@ -376,12 +387,16 @@ class DropfilesFilesHelper
                 $items->versionNumber = $items->version;
 
                 if ($items->custom_icon) {
-                    $image = new JImage(JPath::clean(JPATH_BASE . '/' . $items->custom_icon));
+                    $pos = strpos($items->custom_icon, '#');
+                    if ($pos !== false) {
+                        $items->custom_icon =  substr($items->custom_icon, 0, $pos);
+                    }
+                    $image = new JImage(JPath::clean(JPATH_SITE . '/' . $items->custom_icon));
                     $result = $image->createThumbs(array('50x70'));
-                    if (JPATH_BASE === '/') {
+                    if (JPATH_SITE === '/') {
                         $items->custom_icon_thumb = JUri::root() . $result[0]->getPath();
                     } else {
-                        $path_replace = str_replace(JPATH_BASE, JUri::root(), $result[0]->getPath());
+                        $path_replace = str_replace(JPATH_SITE, JUri::root(), $result[0]->getPath());
                         $items->custom_icon_thumb = str_replace('/\\', '/', $path_replace);
                     }
                 }

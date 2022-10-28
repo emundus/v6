@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -13,6 +13,67 @@ class hikashopMassactionClass extends hikashopClass{
 	var $pkeys = array('massaction_id');
 	var $toggle = array('massaction_published'=>'massaction_id');
 	var $report = array();
+
+	function addActionButtons(&$toolbar, $table) {
+		if(!is_array($toolbar))
+			return;
+		$this->database->setQuery('SELECT * FROM #__hikashop_massaction WHERE massaction_published=1 AND massaction_button=1 AND massaction_table='.$this->database->Quote($table));
+		$massactionsFromDB = $this->database->loadObjectList();
+		if(empty($massactionsFromDB)) {
+			return;
+		}
+		foreach($massactionsFromDB as $action) {
+			if(empty($action->massaction_name))
+				continue;
+			array_unshift($toolbar, array('name' => 'confirm', 'icon' => 'cogs', 'title' => hikashop_translate($action->massaction_name), 'alt' => hikashop_translate($action->massaction_name), 'task' => ('action_'.$action->massaction_id), 'check' => true));
+		}
+	}
+
+	function addActionTasks(&$controller, $table) {
+		if(!is_object($controller))
+			return;
+		$this->database->setQuery('SELECT * FROM #__hikashop_massaction WHERE massaction_published=1 AND massaction_button=1 AND massaction_table='.$this->database->Quote($table));
+		$massactionsFromDB = $this->database->loadObjectList();
+		if(empty($massactionsFromDB)) {
+			return;
+		}
+		foreach($massactionsFromDB as $action) {
+			if(empty($action->massaction_name))
+				continue;
+			$controller->modify[] = 'action_'.$action->massaction_id;
+		}
+	}
+
+	function runActions($massaction_id, $type) {
+		$massaction = $this->get($massaction_id);
+		if(empty($massaction)) {
+			$app = JFactory::getApplication();
+			$app->enqueueMessage('Mass action with the id '.$massaction_id.' not found.', 'error');
+			return true;
+		}
+
+		if($massaction->massaction_table != $type) {
+			$app = JFactory::getApplication();
+			$app->enqueueMessage('Data mismatch. The mass action '.$massaction_id.' is for the data '. $massaction->massaction_table.' and not '.$type, 'error');
+			return true;
+		}
+
+		$elements = hikaInput::get()->get('cid', array(), 'array');
+
+		$massaction->massaction_triggers = array();
+		$massaction->massaction_filters = array();
+
+		ob_start();
+		$this->process($massaction,$elements);
+		$html = ob_get_clean();
+		if(empty($html)) {
+			$app = JFactory::getApplication();
+			$app->enqueueMessage(JText::sprintf('ACTION_SUCCESSFULLY_PROCESSED_ON_X_ELEMENTS', count($elements)), 'success');
+			return true;
+		} else {
+			return $html;
+		}
+	}
 
 	function saveForm(){
 		$element = new stdClass();
@@ -39,10 +100,30 @@ class hikashopMassactionClass extends hikashopClass{
 		return $result;
 	}
 
+	function batch() {
+		$element = new stdClass();
+		$element->massaction_table = hikaInput::get()->getVar('table_type');
+		$this->_retreiveData($element,'action');
+
+		$elements = hikaInput::get()->get('cid', array(), 'array');
+
+		ob_start();
+		$this->process($element,$elements);
+		$html = ob_get_clean();
+		if(empty($html)) {
+			hikashop_display(array(JText::sprintf('ACTION_SUCCESSFULLY_PROCESSED_ON_X_ELEMENTS', count($elements))), 'success');
+		} else {
+			echo $html;
+		}
+	}
+
 	function _retreiveData(&$element, $type='trigger'){
 		$var_name = 'massaction_'.$type.'s';
 		$element->$var_name = '';
 		$formData = hikaInput::get()->get($type, array(), 'array');
+
+		if(empty($formData[$element->massaction_table]))
+			return;
 
 		if(count($formData[$element->massaction_table]) > 0)
 			$element->$var_name = array();
@@ -62,7 +143,11 @@ class hikashopMassactionClass extends hikashopClass{
 		}
 	}
 
-	function organizeExportColumn($data,$table,&$elements,&$action,&$types){
+	function organizeExportColumn(&$params,$table, &$columnsArrays){
+		$data =& $params->table;
+		$elements =& $params->elements;
+		$action =& $params->action;
+		$types =& $params->types;
 		switch($data){
 			case 'product':
 				switch($table){
@@ -143,9 +228,9 @@ class hikashopMassactionClass extends hikashopClass{
 						$database = JFactory::getDBO();
 						$ids = array();
 						foreach($elements as $element){
-							foreach($element as $key=>$data){
+							foreach($element as $key=>$el){
 								if($key == 'category'){
-									foreach($data as $category){
+									foreach($el as $category){
 										if(isset($category->category_id)){
 											$ids[] = (int)$category->category_id;
 										}
@@ -160,9 +245,9 @@ class hikashopMassactionClass extends hikashopClass{
 							$database->setQuery($query);
 							$rows = $database->loadObjectList();
 							foreach($elements as $element){
-								foreach($element as $key=>&$data){
+								foreach($element as $key=>&$el){
 									if($key == 'category'){
-										foreach($data as &$category){
+										foreach($el as &$category){
 											if(isset($category->category_id)){
 												$array = array();
 												foreach($rows as $row){
@@ -179,7 +264,7 @@ class hikashopMassactionClass extends hikashopClass{
 											unset($category);
 										}
 									}
-									unset($data);
+									unset($el);
 								}
 							}
 						}
@@ -189,6 +274,8 @@ class hikashopMassactionClass extends hikashopClass{
 			case 'user':
 				switch($table){
 					case 'address':
+						$columnsArrays['billing_address'] = $columnsArrays['address'];
+						$columnsArrays['shipping_address'] = $columnsArrays['address'];
 						foreach($elements as &$element){
 							$element->shipping_address = array();
 							$element->billing_address = array();
@@ -203,6 +290,8 @@ class hikashopMassactionClass extends hikashopClass{
 												if(!isset($action['address'][$column])){continue;}
 												$shipping_column = 'shipping_'.$column;
 												$action['shipping_address'][$shipping_column] = $shipping_column;
+												if(isset($columnsArrays['address'][$column]))
+													$columnsArrays['shipping_address'][$shipping_column] = $columnsArrays['address'][$column];
 												$object->$shipping_column=$value;
 												if(!isset($types[$shipping_column])) $types[$shipping_column] = new stdClass();
 												$types[$shipping_column]->type = $types[$column]->type;
@@ -214,6 +303,8 @@ class hikashopMassactionClass extends hikashopClass{
 											foreach($address as $column=>$value){
 												if(!isset($action['address'][$column])){continue;}
 												$billing_column = 'billing_'.$column;
+												if(isset($columnsArrays['address'][$column]))
+													$columnsArrays['billing_address'][$billing_column] = $columnsArrays['address'][$column];
 												$action['billing_address'][$billing_column] = $billing_column;
 												$object->$billing_column=$value;
 												if(!isset($types[$billing_column])) $types[$billing_column] = new stdClass();
@@ -279,9 +370,27 @@ class hikashopMassactionClass extends hikashopClass{
 				}
 				break;
 			case 'order':
+				if(!empty($params->oneProductPerRow) && empty($params->splittingDone)) {
+					$els = array();
+					foreach($elements as &$element){
+						if(empty($element->order_product)) {
+							$els[] = $element;
+						} else {
+							foreach($element->order_product as $product){
+								$copy = hikashop_copy($element);
+								$copy->current_product = $product;
+								$els[] = $copy;
+							}
+						}
+					}
+					$elements = $els;
+					$params->splittingDone = true;
+				}
 				switch($table){
 					case 'address':
 						if(isset($action['address'])){
+							$columnsArrays['billing_address'] = $columnsArrays['address'];
+							$columnsArrays['shipping_address'] = $columnsArrays['address'];
 							foreach($elements as &$element){
 								$element->shipping_address = array();
 								$element->billing_address = array();
@@ -298,11 +407,15 @@ class hikashopMassactionClass extends hikashopClass{
 											if(!isset($action['address'][$column])){continue;}
 											$billing_column = 'billing_'.$column;
 											$action['billing_address'][$billing_column] = $billing_column;
+											if(isset($columnsArrays['address'][$column]))
+												$columnsArrays['billing_address'][$billing_column] = $columnsArrays['address'][$column];
 											$object->$billing_column=$value;
 											if(!isset($types[$billing_column])) $types[$billing_column] = new stdClass();
 											$types[$billing_column]->type = $types[$column]->type;
 											$shipping_column = 'shipping_'.$column;
 											$action['shipping_address'][$shipping_column] = $shipping_column;
+											if(isset($columnsArrays['address'][$column]))
+												$columnsArrays['shipping_address'][$shipping_column] = $columnsArrays['address'][$column];
 											$object->$shipping_column=$value;
 											if(!isset($types[$shipping_column])) $types[$shipping_column] = new stdClass();
 											$types[$shipping_column]->type = $types[$column]->type;
@@ -315,6 +428,8 @@ class hikashopMassactionClass extends hikashopClass{
 											if(!isset($action['address'][$column])){continue;}
 											$shipping_column = 'shipping_'.$column;
 											$action['shipping_address'][$shipping_column] = $shipping_column;
+											if(isset($columnsArrays['address'][$column]))
+												$columnsArrays['shipping_address'][$shipping_column] = $columnsArrays['address'][$column];
 											$object->$shipping_column=$value;
 											if(!isset($types[$shipping_column])) $types[$shipping_column] = new stdClass();
 											$types[$shipping_column]->type = $types[$column]->type;
@@ -326,6 +441,8 @@ class hikashopMassactionClass extends hikashopClass{
 											if(!isset($action['address'][$column])){continue;}
 											$billing_column = 'billing_'.$column;
 											$action['billing_address'][$billing_column] = $billing_column;
+											if(isset($columnsArrays['address'][$column]))
+												$columnsArrays['billing_address'][$billing_column] = $columnsArrays['address'][$column];
 											$object->$billing_column = $value;
 											if(!isset($types[$billing_column])) $types[$billing_column] = new stdClass();
 											$types[$billing_column]->type = $types[$column]->type;
@@ -373,29 +490,40 @@ class hikashopMassactionClass extends hikashopClass{
 									if(is_object($element->order_full_tax) && isset($product->order_product_quantity) && isset($product->order_product_tax)){
 										$element->order_full_tax->value+=round($product->order_product_quantity*$product->order_product_tax,2);
 									}
-									$tablename = 'product'.$cpt;
-									$object = new stdClass();
-									foreach($product as $column=>$value){
-										if(!isset($action['order_product'][$column])){continue;}
-										$product_column = 'item'.$cpt.'_'.$column;
-										if(!isset($action[$tablename]))
-											$action[$tablename] = new stdClass();
-										$action[$tablename]->$product_column = $product_column;
-										$object->$product_column = $value;
-										$types[$product_column] = new stdClass();
 
-										if(isset($types[$column]->type)){
-											$types[$product_column]->type = $types[$column]->type;
-										}else{
-											$types[$product_column]->type = '';
+									if(empty($params->oneProductPerRow)) {
+										$tablename = 'product'.$cpt;
+
+										$columnsArrays[$tablename] = $columnsArrays['order_product'];
+										$object = new stdClass();
+										foreach($product as $column=>$value){
+											if(!isset($action['order_product'][$column])){continue;}
+											$product_column = 'item'.$cpt.'_'.$column;
+											$columnsArrays[$tablename][$product_column] = $columnsArrays['order_product'][$column];
+											if(!isset($action[$tablename]))
+												$action[$tablename] = new stdClass();
+											$action[$tablename]->$product_column = $product_column;
+											$object->$product_column = $value;
+											$types[$product_column] = new stdClass();
+
+											if(isset($types[$column]->type)){
+												$types[$product_column]->type = $types[$column]->type;
+											}else{
+												$types[$product_column]->type = '';
+											}
 										}
+										$element->$tablename = array($object);
+										$cpt++;
 									}
-									$element->$tablename = array($object);
-									$cpt++;
+								}
+								if(!empty($params->oneProductPerRow)) {
+									$element->order_product = array($element->current_product);
 								}
 								unset($element);
 							}
-							unset($action['order_product']);
+							if(empty($params->oneProductPerRow)) {
+								unset($action['order_product']);
+							}
 						}
 						break;
 					case 'joomla_users':
@@ -443,6 +571,14 @@ class hikashopMassactionClass extends hikashopClass{
 		$dimensions = array('product_width','product_height','product_length');
 		$yesnos = array('product_published','order_partner_paid','category_published','address_published','address_default','user_partner_paid',array('block','sendEmail'));
 		$jdate = array();
+
+		if(!empty($params->action['order']['order_tax_amount'])) {
+			foreach($params->action['order'] as $column) {
+				if(strpos($column,'order_tax_amount') !== false) {
+					$prices[$column] = 'order_currency_id';
+				}
+			}
+		}
 
 		foreach($params->action as $key=>$table){
 			foreach($table as $action){
@@ -625,14 +761,14 @@ class hikashopMassactionClass extends hikashopClass{
 				if(isset($params->action['order']['order_shipping_id']) && isset($params->action['order']['order_shipping_method'])){
 					$shipping = array();
 					$shipping['shipping']['shipping_name'] = 'shipping_name';
-					$params->action = $this->array_insert($params->action,1,$shipping);
+					$params->action = $this->array_insert($params->action,count($params->action),$shipping);
 					$params->types['shipping_name'] = new stdClass();
 					$params->types['shipping_name']->type = 'method_name';
 				}
 				if(isset($params->action['order']['order_payment_id']) && isset($params->action['order']['order_payment_method'])){
 					$payment = array();
 					$payment['payment']['payment_name'] = 'payment_name';
-					$params->action = $this->array_insert($params->action,2,$payment);
+					$params->action = $this->array_insert($params->action,count($params->action),$payment);
 					$params->types['payment_name'] = new stdClass();
 					$params->types['payment_name']->type = 'method_name';
 				}
@@ -780,15 +916,6 @@ class hikashopMassactionClass extends hikashopClass{
 					$params->types[$yesno]->type = 'yesno';
 				}
 			}
-		}
-
-		if(isset($params->action['shipping']['shipping_name'])){
-			unset($params->action['order']['order_shipping_id']);
-			unset($params->action['order']['order_shipping_method']);
-		}
-		if(isset($params->action['payment']['payment_name'])){
-			unset($params->action['order']['order_payment_id']);
-			unset($params->action['order']['order_payment_method']);
 		}
 		foreach($sub_ids as $sub_id){
 			foreach($params->action as $table){
@@ -1137,12 +1264,14 @@ class hikashopMassactionClass extends hikashopClass{
 					case 'weight_unit':
 					case 'dimension_unit':
 					case 'text':
-						if($export && is_object($element->$column)) {
-							if(isset($element->$column->value)) {
-								$element->$column = $element->$column->value;
+						if(isset($element->$column)) {
+							if($export && is_object($element->$column)) {
+								if(isset($element->$column->value)) {
+									$element->$column = $element->$column->value;
+								}
 							}
+							$square = $element->$column;
 						}
-						$square = $element->$column;
 						break;
 
 					case 'characteristic':
@@ -1165,20 +1294,22 @@ class hikashopMassactionClass extends hikashopClass{
 						break;
 
 					default :
-						if(strpos($type->type,'custom_') === 0) {
-							$class = hikashop_get('class.field');
-							static $fields = null;
-							if(is_null($fields)) {
-								$db	= JFactory::getDBO();
-								$db->setQuery('SELECT * FROM #__hikashop_field');
-								$fields = $db->loadObjectList('field_namekey');
-							}
-							if(!empty($fields[$column]))
-								$square = $class->show($fields[$column], $element->$column);
-							else
+						if(isset($element->$column)) {
+							if(strpos($type->type,'custom_') === 0) {
+								$class = hikashop_get('class.field');
+								static $fields = null;
+								if(is_null($fields)) {
+									$db	= JFactory::getDBO();
+									$db->setQuery('SELECT * FROM #__hikashop_field');
+									$fields = $db->loadObjectList('field_namekey');
+								}
+								if(!empty($fields[$column]))
+									$square = $class->show($fields[$column], $element->$column);
+								else
+									$square = $element->$column;
+							} else {
 								$square = $element->$column;
-						} else {
-							$square = $element->$column;
+							}
 						}
 						break;
 				}
@@ -1255,8 +1386,13 @@ class hikashopMassactionClass extends hikashopClass{
 		if(isset($element->massaction_filters) && empty($element->massaction_filters)) $element->massaction_filters = '';
 		if(isset($element->massaction_actions) && empty($element->massaction_actions)) $element->massaction_actions = '';
 
-		JPluginHelper::importPlugin('hikashop');
 		$app = JFactory::getApplication();
+
+		if(!empty($element->massaction_button) && empty($element->massaction_name)) {
+			$app->enqueueMessage(JText::_('BUTTON_WONT_DISPLAY_IF_NAME_EMPTY'), 'warning');
+		}
+
+		JPluginHelper::importPlugin('hikashop');
 		$app->triggerEvent('onBeforeMassactionCreate',array(&$element));
 		$app->triggerEvent('onBeforeMassactionUpdate',array(&$element));
 		$this->prepare($element,'serialize');
@@ -1293,10 +1429,6 @@ class hikashopMassactionClass extends hikashopClass{
 	function trigger($trigger,$elements=array()){
 		if(empty($trigger)) return false;
 
-		static $done = array();
-		if(isset($done[$trigger])) return true;
-		$done[$trigger]=true;
-
 		static $massactions = null;
 		if(!isset($massactions)){
 			$this->database->setQuery('SELECT * FROM #__hikashop_massaction WHERE massaction_published=1 && massaction_triggers!=\'\'');
@@ -1317,11 +1449,20 @@ class hikashopMassactionClass extends hikashopClass{
 			}
 			$massactions = $ordered;
 		}
+
 		if(empty($massactions[$trigger])){
 			return true;
 		}
+
+		static $done = array();
 		foreach($massactions[$trigger] as $massaction){
+			if(isset($done[$trigger.'_'.$massaction->massaction_id])) continue;
+
+			$done[$trigger.'_'.$massaction->massaction_id] = true;
+
 			$this->process($massaction,$elements);
+
+			unset($done[$trigger.'_'.$massaction->massaction_id]);
 		}
 		return true;
 	}
@@ -1342,6 +1483,15 @@ class hikashopMassactionClass extends hikashopClass{
 			}
 		}
 
+		if(is_array($elements) && count($elements)) {
+			$first = reset($elements);
+			if(is_numeric($first)) {
+				hikashop_toInteger($elements);
+				$query->where[] = $table.'_id IN ('.implode(',', $elements).')';
+				$elements = $oldElement = null;
+			}
+		}
+
 		if((!is_array($elements) || !count($elements)) && empty($oldElement)){
 			$query->select = array($query->select);
 			$elements = $query->execute();
@@ -1352,6 +1502,8 @@ class hikashopMassactionClass extends hikashopClass{
 				$this->report = array_merge($this->report,$app->triggerEvent('onProcess'.ucfirst($massaction->massaction_table).'MassAction'.$action->name,array(&$elements,&$action->data,$k)));
 			}
 		}
+
+		$app->triggerEvent('onAfterMassactionProcess', array(&$massaction, &$elements, $this->report));
 		return true;
 	}
 
@@ -1450,7 +1602,7 @@ class hikashopMassactionClass extends hikashopClass{
 			$filter['operator'] = strip_tags($filter['operator']);
 		if(!empty($prefix)) $prefix = $prefix.'.';
 		if((in_array($filter['operator'],array('<=','>=','<','>')) && !preg_match('/^(?:\d+|\d*\.\d+)$/',$filter['value']))){
-			if(strpos($filter['value'],'{time}') !== false){
+			if(strpos($filter['value'],'{time}') !== false || strpos($filter['value'],'{year}') !== false || strpos($filter['value'],'{month}') !== false || strpos($filter['value'],'{day}') !== false){
 				$query = new HikaShopQuery();
 				$filter['value'] = $query->_replaceDate($filter['value']);
 			} else {
@@ -1516,6 +1668,10 @@ class hikashopMassactionClass extends hikashopClass{
 			return $data;
 		};
 
+		$fileWithBOM = (substr($contentFile,0,3) == pack("CCC",0xef,0xbb,0xbf));
+		if($fileWithBOM)
+			$contentFile = substr($contentFile, 3);
+
 		$contentFile = str_replace(array("\r\n","\r"),"\n",$contentFile);
 		$importLines = explode("\n", $contentFile);
 
@@ -1555,7 +1711,7 @@ class hikashopMassactionClass extends hikashopClass{
 		}
 
 		$db->setQuery('SELECT characteristic_value FROM '.hikashop_table('characteristic').' WHERE characteristic_parent_id = 0');
-		$characteristicColumns = $db->loadResultArray();
+		$characteristicColumns = $db->loadColumn();
 		$categoryColumns = array('categories_ordering','parent_category','categories_image','categories');
 		$otherColumns = array('related','options','price_value_with_tax');
 		if(!is_array($characteristicColumns)) $characteristicColumns = array($characteristicColumns);
@@ -1589,8 +1745,8 @@ class hikashopMassactionClass extends hikashopClass{
 		$pool = array();
 		$missingIds = array();
 		$missingCodes = array();
-		foreach($importLines as $key => $importLine){
-			$product = $this->getProduct($importLines, $key, $numberColumns, $separator);
+		$key = 1;
+		while($product = $this->getProduct($importLines, $key, $numberColumns, $separator)){
 			if(!is_array($product)) continue;
 			$newProduct = new stdClass();
 			foreach($product as $num => $value){
@@ -1637,8 +1793,8 @@ class hikashopMassactionClass extends hikashopClass{
 		$errorcount = 0;
 		$importProducts = array();
 		$toCreateProducts = array();
-		foreach($importLines as $key => $importLine){
-			$product = $this->getProduct($importLines, $key, $numberColumns, $separator);
+		$key = 1;
+		while($product = $this->getProduct($importLines, $key, $numberColumns, $separator)){
 
 			if(!is_array($product)) continue;
 			$newProduct = new stdClass();
@@ -1798,7 +1954,7 @@ class hikashopMassactionClass extends hikashopClass{
 		return $success;
 	}
 
-	function getProduct($importLines, $key, $numberColumns, $separator){
+	function getProduct($importLines, &$key, $numberColumns, $separator){
 		$false = false;
 		if(!isset($importLines[$key])  || empty($importLines[$key])){
 			return $false;
@@ -1808,7 +1964,7 @@ class hikashopMassactionClass extends hikashopClass{
 		$dataPointer=0;
 		$data = array('');
 
-		if($data!==false && isset($importLines[$key]) && (count($data) < $numberColumns||$quoted)){
+		while($data!==false && isset($importLines[$key]) && (count($data) < $numberColumns||$quoted)){
 			$k = 0;
 			$total = strlen($importLines[$key]);
 			while($k < $total){
@@ -1844,13 +2000,14 @@ class hikashopMassactionClass extends hikashopClass{
 			if(count($data) < $numberColumns||$quoted){
 				$data[$dataPointer].="\r\n";
 			}
+			$key++;
 		}
 
-		if($data!=false) $this->_checkLineData($data,true,$numberColumns,$importLines[$key]);
+		if($data!=false) $this->_checkLineData($data,true,$numberColumns,@$importLines[$key]);
 		return $data;
 	}
 
-	function _checkLineData(&$data,$type=true,$numberColumns,$importLine){
+	function _checkLineData(&$data,$type=true,$numberColumns = 0, $importLine = ''){
 		if($type){
 			$not_ok = count($data) > $numberColumns;
 		}else{
@@ -1921,7 +2078,7 @@ class hikashopMassactionClass extends hikashopClass{
 						}
 						break;
 					case 'string':
-						if(!in_array($field,array('varchar','text','char'))){
+						if(!in_array($field,array('varchar','text','char','longtext'))){
 							 $app->enqueueMessage(JText::sprintf( 'WRONG_COLUMN_TYPE', $field));
 							 $queryTables = '';
 						}
@@ -1936,9 +2093,9 @@ class hikashopMassactionClass extends hikashopClass{
 			$strings = array();
 
 			$symbols = array('%','+','-','/','*','(',')',',');
-			$string = str_replace($symbols,'||',$action['value']);
+			$string = preg_replace('/\'(.*)\'/U', '', $action['value']);
+			$string = str_replace($symbols,'||',$string);
 			$entries = explode('||',$string);
-
 			foreach($entries as $entry){
 				$data = explode('.',$entry);
 				if(!isset($data[1]) || (is_numeric($data[0]) && is_numeric($data[1])))
@@ -2336,7 +2493,7 @@ class hikashopMassactionClass extends hikashopClass{
 							$database->setQuery($query);
 							$rows = $database->loadObjectList();
 							foreach($rows as $k => $row){
-								if(isset($productClass->all_products[$row->price_product_id]) && $productClass->all_products[$row->price_product_id]->product_type == 'main')
+								if(isset($productClass->all_products[$row->price_product_id]) && !empty($productClass->all_products[$row->price_product_id]->product_tax_id))
 									$rows[$k]->price_value_with_tax = $currencyHelper->getTaxedPrice($row->price_value,$zone_id,$productClass->all_products[$row->price_product_id]->product_tax_id);
 								elseif(isset($productClass->all_products[$productClass->all_products[$row->price_product_id]->product_parent_id]->product_tax_id))
 									$rows[$k]->price_value_with_tax = $currencyHelper->getTaxedPrice($row->price_value,$zone_id,$productClass->all_products[$productClass->all_products[$row->price_product_id]->product_parent_id]->product_tax_id);
@@ -2541,33 +2698,69 @@ class hikashopMassactionClass extends hikashopClass{
 	function _exportCSV($params){
 		$config =& hikashop_config();
 		$spreadsheetHelper = hikashop_get('helper.spreadsheet');
+		$decimal_separator = $config->get('csv_decimal_separator','.');
 		switch($params->formatExport){
 			case 'csv':
 				$format = $config->get('export_format','csv');
 				$separator = $config->get('csv_separator',';');
 				$force_quote = $config->get('csv_force_quote',1);
-				$decimal_separator = $config->get('csv_decimal_separator','.');
 				$spreadsheetHelper->init($format, 'hikashop_export', $separator, $force_quote, $decimal_separator);
 				break;
 			case 'xls':
-				$format = 'xls';
-				$spreadsheetHelper->init($format, 'hikashop_export',';',true);
+			case 'xlsx':
+				$format = $params->formatExport;
+				$spreadsheetHelper->init($format, 'hikashop_export',';',true, $decimal_separator);
 				break;
 		}
+
 		if(!empty($params->action)){
 			$row = array();
-
+			$columnsArrays = array();
 			foreach($params->action as $keyTable=>$table){
-				$this->organizeExportColumn($params->table,$keyTable,$params->elements,$params->action,$params->types);
+			    $component = true;
+			    $tableName = $keyTable;
+			    if(strpos($keyTable, 'joomla_')!==false) {
+			        $component = false;
+			        $tableName = str_replace('joomla_','',$keyTable);
+			    }
+				if($keyTable == 'files' || $keyTable == 'images')
+					$tableName = 'file';
+				if($keyTable == 'related' || $keyTable == 'options')
+					$tableName = 'product_related';
+			    $db = JFactory::getDBO();
+			    if(!HIKASHOP_J30){
+			        $columnsTable = $db->getTableFields(hikashop_table($tableName, $component));
+			        $columnsArrays[$keyTable] = reset($columnsTable);
+			    } else {
+			        $columnsArrays[$keyTable] = $db->getTableColumns(hikashop_table($tableName, $component));
+			    }
+
+				$this->organizeExportColumn($params,$keyTable, $columnsArrays);
 			}
+
+			$types = array();
 			foreach($params->action as $keyTable=>$table){
 				foreach($table as $column){
 					if($keyTable == 'files' || $keyTable == 'images')
 						$column = str_replace('file',$keyTable,$column);
 					$row[] = $column;
+
+					if(isset($columnsArrays[$keyTable][$column])) {
+						if(!empty($params->types[$column]->type) && $params->types[$column]->type == 'date')
+							$types[] = 'text';
+						elseif(in_array($columnsArrays[$keyTable][$column], array('varchar', 'text', 'longtext', 'datetime')))
+							$types[] = 'text';
+						else
+							$types[] = 'number';
+					} else {
+						$types[] = 'auto';
+					}
 				}
+
 			}
+
 			$spreadsheetHelper->writeLine($row);
+			$spreadsheetHelper->setTypes($types);
 		}
 
 		hikaInput::get()->set('from_task','exportCsv');
@@ -2576,13 +2769,15 @@ class hikashopMassactionClass extends hikashopClass{
 				$params->action['date_format'] = JText::_('HIKASHOP_DATE_FORMAT');
 			foreach($params->elements as $k1=>$element){
 				$row = array();
+				$multi = array();
 				foreach($params->action as $key=>$table){
 					if(!is_array($table) && !is_object($table)) continue;
 					foreach($table as $column){
 						$find = false;
 						$square = '';
-						if(isset($element->$column) && ($key===$k1 || $key===$params->table) && is_string($this->displayByType($params->types,$element,$column,$params->action['date_format'], true ))){
-							$square .= $this->displayByType($params->types,$element,$column,$params->action['date_format'], true);
+						$result = $this->displayByType($params->types,$element,$column,$params->action['date_format'], true );
+						if(isset($element->$column) && ($key===$k1 || $key===$params->table) && (is_string($result) || is_numeric($result))){
+							$square .= $result;
 							$find = true;
 						}else{
 							$r = array();
@@ -2601,6 +2796,7 @@ class hikashopMassactionClass extends hikashopClass{
 									$find = true;
 								}
 							}
+							$multi[] = count($row);
 							$square .= $this->separator($r,$params->table,$key);
 						}
 						if(!$find){
@@ -2610,10 +2806,9 @@ class hikashopMassactionClass extends hikashopClass{
 						}
 					}
 				}
-				$spreadsheetHelper->writeLine($row);
+				$spreadsheetHelper->writeLine($row, $multi);
 			}
 		}
-
 		if(empty($params->path)){
 			hikashop_cleanBuffers();
 			$spreadsheetHelper->send();
@@ -2750,14 +2945,11 @@ class HikaShopQuery {
 			die('Operator not safe : '.$operator);
 		}
 
-		 if(strpos($value,'{time}') !== false){
-			 $value = $this->_replaceDate($value);
-			 $value = strftime('%Y-%m-%d %H:%M:%S',$value);
+		$isUnixTimeStamp = strpos($value,'{time}') !== false;
+		$value = $this->_replaceDate($value);
+		 if($isUnixTimeStamp) {
+			 $value = hikashop_getDate($value);
 		 }
-
-		 $replace = array('{year}','{month}','{day}');
-		 $replaceBy = array(date('Y'),date('m'),date('d'));
-		 $value = str_replace($replace,$replaceBy,$value);
 
 		if(!is_numeric($value) OR in_array($operator,array('REGEXP','NOT REGEXP','NOT LIKE','LIKE'))){
 			$value = $this->db->Quote($value);
@@ -2771,10 +2963,25 @@ class HikaShopQuery {
 	}
 
 	function _replaceDate($mydate) {
-		if(strpos($mydate,'{time}') === false)
+		$tagFound = false;
+		if(strpos($mydate,'{time}') !== false) {
+			$mydate = str_replace('{time}',time(),$mydate);
+			$tagFound = true;
+		}
+		if(strpos($mydate,'{year}') !== false) {
+			$mydate = str_replace('{year}',date('Y'),$mydate);
+			$tagFound = true;
+		}
+		if(strpos($mydate,'{month}') !== false) {
+			$mydate = str_replace('{month}',date('m'),$mydate);
+			$tagFound = true;
+		}
+		if(strpos($mydate,'{day}') !== false) {
+			$mydate = str_replace('{day}',date('d'),$mydate);
+			$tagFound = true;
+		}
+		if(!$tagFound)
 			return $mydate;
-
-		$mydate = str_replace('{time}',time(),$mydate);
 		$operators = array('+','-');
 		foreach($operators as $oneOperator) {
 			if(!strpos($mydate, $oneOperator))

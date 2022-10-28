@@ -41,6 +41,13 @@ if (isset($user->menutype)) {
     $user_menutype = 'mainmenu';
 }
 
+/*
+ * TCHOOZ PARAMETERS
+ */
+$profiles = $params->get('profiles');
+$title = $params->get('title', '');
+$desc_text = $params->get('desc_text', '');
+
 $folder = $params->get('folder', '');
 $show_profile_link = $params->get('show_profile_link', 1);
 $show_start_link = $params->get('show_start_link', 1);
@@ -69,7 +76,7 @@ $link = "index.php";
 if ($lean_mode) {
     $m_profiles = new EmundusModelProfile;
 	$app_prof = $m_profiles->getApplicantsProfilesArray();
-	
+
 	$user_prof = [];
 	foreach ($user->emProfiles as $prof) {
 		$user_prof[] = $prof->id;
@@ -92,7 +99,7 @@ if (is_array($text) && !empty($text)) {
 	$t__ = $text;
 }
 
-$btn_profile = '<a class="circular ui icon button" href="'.JRoute::_('index.php?option=com_users&view=profile&layout=edit').'"><i class="user icon"></i>'.JText::_('PROFILE').'</a>';
+$btn_profile = '<a class="circular ui icon button" href="'.JRoute::_('index.php?option=com_users&view=profile&layout=edit').'"><i class="user icon"></i>'.JText::_('MOD_EMUNDUS_PANEL_PROFILE').'</a>';
 
 if (!empty($t__)) {
 
@@ -204,7 +211,13 @@ if (!empty($fnum)) {
 	$app->redirect( $link );
 }
 
-if (!empty(@$user->fnums) || EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-	require(JModuleHelper::getLayoutPath('mod_emunduspanel'));
+if($params->get('panel_style', 'default') != 'tchooz_dashboard') {
+    if (!empty(@$user->fnums) || EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+        require JModuleHelper::getLayoutPath('mod_emunduspanel', $params->get('panel_style', 'default'));
+    }
+} else {
+    if ((!empty(@$user->fnums) || EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) && in_array(JFactory::getSession()->get('emundusUser')->profile,$profiles)) {
+        require JModuleHelper::getLayoutPath('mod_emunduspanel', 'tchooz_dashboard');
+    }
 }
 

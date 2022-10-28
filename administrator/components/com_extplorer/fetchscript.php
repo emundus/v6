@@ -9,9 +9,8 @@
 * file[INDEX] (filename only)
 * where INDEX is the actual number of the file to be included, so you can include multiple scripts at a time
 * 
-* @version $Id: fetchscript.php 246 2016-02-10 21:21:12Z soeren $
 * @package eXtplorer
-* @copyright Copyright (C) 2006-2007 Soeren Eberhardt. All rights reserved.
+* @copyright Copyright (C) 2006-2022 Soeren Eberhardt. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
 * VirtueMart is free software. This version may have been modified pursuant
 * to the GNU General Public License, and as distributed it includes or
@@ -20,93 +19,6 @@
 *
 * http://virtuemart.net
 */
-
-/**
- * Initialise GZIP
- * @author Mambo / Joomla Project
- */
-function initGzip() {
-	global $do_gzip_compress;
-
-	$gzip = isset( $_GET['gzip'] ) ? (boolean)$_GET['gzip'] : false;
-
-	$do_gzip_compress = FALSE;
-	if ($gzip) {
-		$phpver 	= phpversion();
-		$useragent 	= isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
-		$canZip 	= isset( $_SERVER['HTTP_ACCEPT_ENCODING'] ) ? $_SERVER['HTTP_ACCEPT_ENCODING'] : '';
-
-		$gzip_check 	= 0;
-		$zlib_check 	= 0;
-		$gz_check		= 0;
-		$zlibO_check	= 0;
-		$sid_check		= 0;
-		if ( strpos( $canZip, 'gzip' ) !== false) {
-			$gzip_check = 1;
-		}
-		if ( extension_loaded( 'zlib' ) ) {
-			$zlib_check = 1;
-		}
-		if ( function_exists('ob_gzhandler') ) {
-			$gz_check = 1;
-		}
-		if ( ini_get('zlib.output_compression') ) {
-			$zlibO_check = 1;
-		}
-
-		if ( $phpver >= '4.0.4pl1' && ( strpos($useragent,'compatible') !== false || strpos($useragent,'Gecko')	!== false ) ) {
-			// Check for gzip header or norton internet securities
-			if ( ( $gzip_check || isset( $_SERVER['---------------']) ) && $zlib_check && $gz_check && !$zlibO_check ) {
-				// You cannot specify additional output handlers if
-				// zlib.output_compression is activated here
-				ob_start( 'ob_gzhandler' );
-
-				return;
-			}
-		} else if ( $phpver > '4.0' ) {
-			if ( $gzip_check ) {
-
-				if ( $zlib_check ) {
-					$do_gzip_compress = TRUE;
-					ob_start();
-					ob_implicit_flush(0);
-
-					header( 'Content-Encoding: gzip' );
-					return;
-				}
-			}
-		}
-	}
-	ob_start();
-}
-
-/**
-* Perform GZIP
-* @author Mambo / Joomla! project
-*/
-function doGzip() {
-	global $do_gzip_compress;
-	if ( $do_gzip_compress ) {
-		/**
-		*Borrowed from php.net!
-		*/
-		$gzip_contents = ob_get_contents();
-		ob_end_clean();
-
-		$gzip_size = strlen($gzip_contents);
-		$gzip_crc = crc32($gzip_contents);
-
-		$gzip_contents = gzcompress($gzip_contents, 9);
-		$gzip_contents = substr($gzip_contents, 0, strlen($gzip_contents) - 4);
-
-		echo "\x1f\x8b\x08\x00\x00\x00\x00\x00";
-		echo $gzip_contents;
-		echo pack('V', $gzip_crc);
-		echo pack('V', $gzip_size);
-	} else {
-		ob_end_flush();
-	}
-}
 
 /**
 * This function fixes the URLs used in the CSS file
@@ -168,7 +80,8 @@ function http_conditionalRequest($timestamp){
 	exit;
 }
 
-initGzip();
+
+ob_start('ob_gzhandler') OR ob_start();
 
 $base_dir = dirname( __FILE__ );
 $subdirs = @$_GET['subdir'];
@@ -181,8 +94,7 @@ if( !is_array( $files ) && !empty( $files )) {
 	$files = array( $files );
 }
 if( empty( $files ) || sizeof($files) != sizeof( $subdirs )) {
-	header("HTTP/1.0 400 Bad Request");
-  	echo 'Bad request';
+    header("HTTP/1.0 404 Not Found");
   	exit;
 }
 $countFiles = sizeof($files);
@@ -197,9 +109,8 @@ for( $i = 0; $i < $countFiles; $i++ ) {
 	$file = $dir . '/' . basename( $file );
 
 	if( !file_exists( $file ) || (!stristr( $dir, $base_dir ) && !stristr( $dir, "/usr/share/javascript") && !stristr( $dir, "/usr/share/yui")) ) {
-		if( $countFiles == 1 ) {
-			header("HTTP/1.0 404 Not Found");
-			echo 'Not Found';
+	    if( $countFiles == 1 ) {
+	        header("HTTP/1.0 404 Not Found");
 			exit;
 		}
 		continue;
@@ -222,7 +133,6 @@ for( $i = 0; $i < $countFiles; $i++ ) {
 	if( !file_exists( $file ) || (!stristr( $dir, $base_dir ) && !stristr( $dir, "/usr/share/javascript") && !stristr( $dir, "/usr/share/yui")) || !is_readable( $file )) {
 		continue;
 	}
-	$processed_files++;
 	$fileinfo = pathinfo( $file );
 	switch ( $fileinfo['extension']) {
 		case 'css': 
@@ -232,6 +142,7 @@ for( $i = 0; $i < $countFiles; $i++ ) {
 			$GLOBALS['subdir'] = $subdir;
 			$str_css =	preg_replace_callback("/url\((.+?)\)/i", 'cssUrl', $css);
 			echo $str_css;
+			$processed_files++;
 
 			break;
 
@@ -240,25 +151,17 @@ for( $i = 0; $i < $countFiles; $i++ ) {
 			header( 'Content-Type: '.$mime_type.';');
 
 			readfile( $file );
+			$processed_files++;
 
 			break;
 
 		default: 
-			continue;
 
 	}
 }
 if( $processed_files == 0 ) {
-	if( !file_exists( $file ) ) {
-		header("HTTP/1.0 404 Not Found");
-		echo 'Not Found';
-		exit;
-	}
-	if( !is_readable( $file ) ) {
-		header("HTTP/1.0 500 Internal Server Error");
-		echo "Could not read ".basename($file)." - bad permissions?";
-		exit;
-	}
+	header("HTTP/1.0 404 Not Found");
+	exit;
 }
 // Tell the user agent to cache this script/stylesheet for an hour
 $age = 3600;
@@ -267,7 +170,7 @@ header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s', @filemtime( $file ) ) . ' 
 header( 'Cache-Control: public, max-age='.$age.', must-revalidate, post-check=0, pre-check=0' );
 header( 'Pragma: public' );
 
-doGzip();
+ob_end_flush();
 
 exit;
 

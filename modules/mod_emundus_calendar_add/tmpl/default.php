@@ -78,11 +78,11 @@ defined('_JEXEC') or die;
 
         function postCalendar() {
 
-            var calTitle    = $$("#em-calendar-title").get('value');
-            var calProgram  = $$("#em-calendar-program").get('value');
-            var calColor    = $$("#em-calendar-color").get('value');
+            var calTitle    = document.getElementById('em-calendar-title').value;
+            var calProgram  = document.getElementById('em-calendar-program').value;
+            var calColor    = document.getElementById('em-calendar-color').value
 
-            var ajax = new Request({
+            jQuery.ajax({
                 url: 'index.php?option=com_emundus&controller=calendar&task=createcalendar&format=raw',
                 method: 'post',
                 data: {
@@ -90,26 +90,21 @@ defined('_JEXEC') or die;
                     calProgram: calProgram,
                     calColor: calColor
                 },
-                onRequest: function(){
-                    $$('#btnCal').setStyle('background-color','#4183D7');
-                    $$('#btnCal').set('text','Loading... ');
-                },
-                onSuccess: function(result){
+                success: function(result) {
                     result = JSON.parse(result);
                     if (result.status) {
                         location.reload(true);
                     } else {
-                        $$('#btnCal').setStyle('background-color','#96281B');
-                        $$('#btnCal').set('text','Error!');
+                        document.getElementById('btnCal').style.backgroundColor = '#96281B';
+                        document.getElementById('btnCal').innerText = 'Error!';
                     }
                 },
-                onFailure: function(){
-                    $$('#btnCal').setStyle('background-color','#96281B');
-                    $$('#btnCal').set('text','Error!');
+                error: function(jqXHR, textStatus, errorThrown) {
+                    document.getElementById('btnCal').style.backgroundColor = '#96281B';
+                    document.getElementById('btnCal').innerText = 'Error!';
                 }
             });
 
-            ajax.send();
         }
 
     </script>

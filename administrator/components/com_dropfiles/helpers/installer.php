@@ -50,7 +50,7 @@ class DropfilesInstallerHelper
                 $query = 'UPDATE #__extensions SET enabled=1 WHERE name=' . $dbo->quote($name);
                 $query .= ' AND folder=' . $dbo->quote($group);
                 $dbo->setQuery($query);
-                $dbo->query($query);
+                $dbo->execute();
             }
             // Unset the last plugin message
             $installer->set('message', '');
@@ -80,7 +80,7 @@ class DropfilesInstallerHelper
             $query .= ' AND folder=' . $dbo->quote($folder);
         }
         $dbo->setQuery($query);
-        return $dbo->query($query);
+        return $dbo->execute();
     }
 
     /**

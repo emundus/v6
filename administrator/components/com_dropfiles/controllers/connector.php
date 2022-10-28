@@ -50,7 +50,7 @@ class DropfilesControllerConnector extends JControllerLegacy
         }
 
         $path = JPATH_ROOT . DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR;
-        $dir = JRequest::getString('dir'); //JFolder::makeSafe(JRequest::getString('dir'));
+        $dir = JFactory::getApplication()->input->getString('dir'); //JFolder::makeSafe(JRequest::getString('dir'));
 
         //Prevent  directory traversal
         if (strpos($dir, '..') !== false) {

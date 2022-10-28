@@ -3,7 +3,7 @@
  * @package     Joomla.Administrator
  * @subpackage  com_categories
  *
- * @copyright   Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
+ * @copyright   (C) 2008 Open Source Matters, Inc. <https://www.joomla.org>
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -44,6 +44,14 @@ class CategoriesModelCategory extends JModelAdmin
 	 * @since    3.4.4
 	 */
 	protected $associationsContext = 'com_categories.item';
+
+	/**
+	 * Does an association exist? Caches the result of getAssoc().
+	 *
+	 * @var   boolean|null
+	 * @since 3.10.4
+	 */
+	private $hasAssociation;
 
 	/**
 	 * Override parent constructor.
@@ -185,31 +193,6 @@ class CategoriesModelCategory extends JModelAdmin
 			// Convert the metadata field to an array.
 			$registry = new Registry($result->metadata);
 			$result->metadata = $registry->toArray();
-
-			// Convert the created and modified dates to local user time for display in the form.
-			$tz = new DateTimeZone(JFactory::getApplication()->get('offset'));
-
-			if ((int) $result->created_time)
-			{
-				$date = new JDate($result->created_time);
-				$date->setTimezone($tz);
-				$result->created_time = $date->toSql(true);
-			}
-			else
-			{
-				$result->created_time = null;
-			}
-
-			if ((int) $result->modified_time)
-			{
-				$date = new JDate($result->modified_time);
-				$date->setTimezone($tz);
-				$result->modified_time = $date->toSql(true);
-			}
-			else
-			{
-				$result->modified_time = null;
-			}
 
 			if (!empty($result->id))
 			{
@@ -368,6 +351,15 @@ class CategoriesModelCategory extends JModelAdmin
 	 */
 	public function validate($form, $data, $group = null)
 	{
+		// Don't allow to change the users if not allowed to access com_users.
+		if (!JFactory::getUser()->authorise('core.manage', 'com_users'))
+		{
+			if (isset($data['created_user_id']))
+			{
+				unset($data['created_user_id']);
+			}
+		}
+
 		if (!JFactory::getUser()->authorise('core.admin', $data['extension']))
 		{
 			if (isset($data['rules']))
@@ -1345,32 +1337,30 @@ class CategoriesModelCategory extends JModelAdmin
 	 */
 	public function getAssoc()
 	{
-		static $assoc = null;
-
-		if (!is_null($assoc))
+		if (!is_null($this->hasAssociation))
 		{
-			return $assoc;
+			return $this->hasAssociation;
 		}
 
 		$extension = $this->getState('category.extension');
 
-		$assoc = JLanguageAssociations::isEnabled();
+		$this->hasAssociation = JLanguageAssociations::isEnabled();
 		$extension = explode('.', $extension);
 		$component = array_shift($extension);
 		$cname = str_replace('com_', '', $component);
 
-		if (!$assoc || !$component || !$cname)
+		if (!$this->hasAssociation || !$component || !$cname)
 		{
-			$assoc = false;
+			$this->hasAssociation = false;
 		}
 		else
 		{
 			$hname = $cname . 'HelperAssociation';
 			JLoader::register($hname, JPATH_SITE . '/components/' . $component . '/helpers/association.php');
 
-			$assoc = class_exists($hname) && !empty($hname::$category_association);
+			$this->hasAssociation = class_exists($hname) && !empty($hname::$category_association);
 		}
 
-		return $assoc;
+		return $this->hasAssociation;
 	}
 }

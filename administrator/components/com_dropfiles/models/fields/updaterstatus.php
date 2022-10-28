@@ -42,7 +42,9 @@ class JFormFieldUpdaterstatus extends JFormField
     protected function getInput()
     {
         // Load modal behavior
-        JHtml::_('behavior.modal', 'a.modal');
+        if (!DropfilesBase::isJoomla40()) {
+            JHtml::_('behavior.modal', 'a.modal');
+        }
 
         // Build the script
         $script = array();
@@ -61,7 +63,7 @@ class JFormFieldUpdaterstatus extends JFormField
                                ju_url[aux[0]] = aux[1];
                             }
                         }";
-        $script[] = 'var option = ju_url.component';
+        $script[] = 'var option = ju_url.option';
 
         $script[] = "function ju_disconnect() {;
                                 jQuery.ajax({
@@ -74,7 +76,7 @@ class JFormFieldUpdaterstatus extends JFormField
                             }";
         $script[] = 'jQuery(document).ready(function($){';
 
-        $script[] = "if(typeof ju_url != 'undefined'){
+        $script[] = "if(typeof ju_url != 'undefined') {
                             var eventMethod = window.addEventListener ? 'addEventListener' : 'attachEvent';
                             var eventer = window[eventMethod];
                             var messageEvent = eventMethod == 'attachEvent' ? 'onmessage' : 'message';
@@ -166,9 +168,10 @@ class JFormFieldUpdaterstatus extends JFormField
         $html[] = '  <div class="blank">';
         if ($checklogin === 0) {
             $html[] = '<p>To enable live update please link your joomunited account</p>';
-            $html[] = '<a style="text-decoration:none;" class="btn button modal ju-btn ju-btn-connect"';
-            $html[] = ' title="Link my joomunited account" href="' . $link;
-            $html[] = '" rel="{handler: \'iframe\', size: {x:800, y:450}}">Link my joomunited account</a>';
+            $html[] = '<a style="text-decoration:none;" data-toggle="modal" data-target="#ju-btn-connect" data-bs-toggle="modal" data-bs-target="#ju-btn-connect" class="btn btn-primary" ';
+            $html[] = ' title="Link my joomunited account" ';
+            $html[] = '>Link my joomunited account</a>';
+            $html[] = JHtmlBootstrap::renderModal('ju-btn-connect', array('url' => $link, 'title' => 'Link my joomunited account', 'width' => '800px', 'height' => '450px'));
         } else {
             $html[] = '<p>Live update are enabled click here if you want to disable it</p>';
             $html[] = '<a style="text-decoration:none;" class="btn button ju-btn ju-btn-disconnect"';

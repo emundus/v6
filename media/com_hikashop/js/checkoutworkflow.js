@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.3.0
+ * @version    4.6.2
  * @author     hikashop.com
- * @copyright  (C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 (function(){
@@ -247,6 +247,8 @@ window.checkoutWorkflowEditor = {
 			return {"param": param, "value": val};
 		}
 		if(checkoutType == "namebox") {
+			if(!window.oNameboxes[el.id])
+				return null;
 			var nv = window.oNameboxes[el.id].get();
 			if(nv.value)
 				return {"param": param, "value": nv.value};
@@ -322,7 +324,7 @@ window.checkoutWorkflowEditor = {
 
 		window.Oby.xRequest(window.checkoutWorflowUrls.addblock, {mode:'POST', data:'name='+list.value}, function(xhr){
 			var div = document.createElement('div');
-			scripts = t.updateElem(div, window.Oby.trim(xhr.responseText));
+			scripts = window.hikashop.updateElem(div, window.Oby.trim(xhr.responseText));
 			el.parentNode.insertBefore(div.childNodes[0], el);
 			t.resetConsistency( el.parentNode );
 			t.setShowOn(el);

@@ -1,47 +1,52 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><dl class="hika_options">
-	<dt><?php echo JText::_('PRICE'); ?></dt>
+	<dt><label><?php echo JText::_('PRICE'); ?></label></dt>
 	<dd>
 		<input type="hidden" id="hikashop_<?php echo $this->form_key; ?>_id_edit" name="" value="<?php echo @$this->price->price_id; ?>>"/>
 		<input type="text" size="5" style="width:70px;" onchange="window.productMgr.updatePrice(false, '<?php echo $this->form_key; ?>')" id="hikashop_<?php echo $this->form_key; ?>_edit" name="" value="<?php if($this->config->get('floating_tax_prices',0)){ echo @$this->price->price_value_with_tax; }else{ echo @$this->price->price_value; } ?>"/>
 	</dd>
 <?php
 if(!$this->config->get('floating_tax_prices',0)){ ?>
-	<dt><?php echo JText::_('PRICE_WITH_TAX'); ?></dt>
+	<dt><label><?php echo JText::_('PRICE_WITH_TAX'); ?></label></dt>
 	<dd>
 		<input type="text" size="5" style="width:70px;" onchange="window.productMgr.updatePrice(true, '<?php echo $this->form_key; ?>')" id="hikashop_<?php echo $this->form_key; ?>_with_tax_edit" name="" value="<?php echo @$this->price->price_value_with_tax; ?>"/>
 	</dd>
 <?php } ?>
-	<dt><?php echo JText::_('CURRENCY'); ?></dt>
+	<dt><label><?php echo JText::_('CURRENCY'); ?></label></dt>
+<?php
+$width = '80px';
+if (HIKASHOP_J40) {
+	$width = '110px';
+} ?>
 	<dd>
-		<?php echo $this->currencyType->display('', @$this->price->price_currency_id, 'size="1" style="width:80px"','hikashop_' . $this->form_key . '_currency_edit'); ?>
+		<?php echo $this->currencyType->display('', @$this->price->price_currency_id, 'size="1" style="width:'.$width.'"','hikashop_' . $this->form_key . '_currency_edit'); ?>
 	</dd>
-	<dt><?php echo JText::_('PRODUCT_QUANTITY'); ?></dt>
+	<dt><label><?php echo JText::_('MINIMUM_QUANTITY'); ?></label></dt>
 	<dd>
 		<input type="text" size="5" style="width:70px;" id="hikashop_<?php echo $this->form_key; ?>_qty_edit" name="" value="<?php echo $this->price->price_min_quantity; ?>"/>
 	</dd>
 <?php if(hikashop_level(2)) { ?>
-	<dt><?php echo JText::_('START_DATE'); ?></dt>
+	<dt><label><?php echo JText::_('START_DATE'); ?></label></dt>
 	<dd>
 		<?php echo JHTML::_('calendar', hikashop_getDate((@$this->price->price_start_date?@$this->price->price_start_date:''),'%Y-%m-%d %H:%M'), 'price_start_date', 'hikashop_' . $this->form_key . '_start_date_edit', hikashop_getDateFormat('%d %B %Y %H:%M'), array('size' => '20', 'showTime' => true)); ?>
 	</dd>
-	<dt><?php echo JText::_('END_DATE'); ?></dt>
+	<dt><label><?php echo JText::_('END_DATE'); ?></label></dt>
 	<dd>
 		<?php echo JHTML::_('calendar', hikashop_getDate((@$this->price->price_end_date?@$this->price->price_end_date:''),'%Y-%m-%d %H:%M'), 'price_end_date', 'hikashop_' . $this->form_key . '_end_date_edit', hikashop_getDateFormat('%d %B %Y %H:%M'), array('size' => '20', 'showTime' => true)); ?>
 	</dd>
-	<dt><?php echo JText::_('ACCESS_LEVEL'); ?></dt>
+	<dt><label><?php echo JText::_('ACCESS_LEVEL'); ?></label></dt>
 	<dd>
 		<?php echo $this->joomlaAcl->display('hikashop_' . $this->form_key . '_acl_edit'.$this->price->price_id, @$this->price->price_access, true, true, 'hikashop_' . $this->form_key . '_acl_edit'); ?>
 	</dd>
-	<dt><?php echo JText::_('USERS'); ?></dt>
+	<dt><label><?php echo JText::_('USERS'); ?></label></dt>
 	<dd>
 <?php
 echo $this->nameboxVariantType->display(
@@ -59,7 +64,7 @@ echo $this->nameboxVariantType->display(
 	</dd>
 <?php } ?>
 <?php if($this->jms_integration){ ?>
-	<dt><?php echo JText::_('SITE_ID'); ?></dt>
+	<dt><label><?php echo JText::_('SITE_ID'); ?></label></dt>
 	<dd>
 		<?php echo str_replace('class="custom-select"','class="custom-select no-chzn" style="width:90px;"', MultisitesHelperUtils::getComboSiteIDs( @$this->price->price_site_id, 'hikashop_' . $this->form_key . '_site_edit', JText::_( 'SELECT_A_SITE'))); ?>
 	</dd>

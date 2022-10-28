@@ -48,7 +48,7 @@
                     label="COM_DROPFILES_THEME_DEFAULT_PARAM_COLUMNS_LABEL"
                     description="COM_DROPFILES_THEME_DEFAULT_PARAM_COLUMNS_DESC"
                     default="2"
-                    class="inline hide_on_manage">
+                    class="inline hide_on_manage inputbox dropfilesinput">
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>

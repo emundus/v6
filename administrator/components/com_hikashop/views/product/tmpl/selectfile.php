@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -126,9 +126,61 @@ defined('_JEXEC') or die('Restricted access');
 				?></label>
 			</td>
 			<td>
-				<?php echo JHTML::_('hikaselect.booleanlist', "data[file][file_free_download]" , '', @$this->element->file_free_download); ?>
+				<?php echo JHTML::_('hikaselect.booleanlist', "data[file][file_free_download]" , 'onchange="window.updateAccess(this);"', @$this->element->file_free_download); ?>
 			</td>
 		</tr>
+<?php
+$display = 'style="display:table-row;"';
+if(@$this->element->file_free_download) {
+	$display = 'style="display:none;"';
+}
+
+function secondsToWords($seconds)
+{
+    $days = intval(intval($seconds) / (3600*24));
+    $hours = (intval($seconds) / 3600) % 24;
+    $minutes = (intval($seconds) / 60) % 60;
+    $seconds = intval($seconds) % 60;
+
+    $days = $days ? $days . ' '.JText::_('DAYS') : '';
+    $hours = $hours ? $hours . ' '.JText::_('HOURS') : '';
+    $minutes = $minutes ? $minutes . ' '.JText::_('MINUTES') : '';
+    $seconds = $seconds ? $seconds . ' '.JText::_('SECONDS') : '';
+
+    return $days . $hours . $minutes . $seconds;
+}
+?>
+		<tr id="file_paid_download_only" <?php echo $display; ?>>
+			<td class="key">
+				<label for="file_time_limit"><?php
+					echo JText::_('DOWNLOAD_TIME_LIMIT');
+				?></label>
+			</td>
+			<td>
+				<?php
+				echo $this->delayTypeDownloads->display('config[file_time_limit]',@$this->element->file_time_limit,3);
+				?><br/>
+				0: <?php echo JText::_('DEFAULT_PARAMS_FOR_PRODUCTS');?> (<?php echo secondsToWords($this->config->get('download_time_limit'));?>)
+			</td>
+		</tr>
+<?php
+if(hikashop_level(2)) {
+	$display = 'style="display:none;"';
+	if(@$this->element->file_free_download) {
+		$display = 'style="display:table-row;"';
+	}
+?>
+		<tr id="file_free_download_only" <?php echo $display; ?>>
+			<td class="key">
+				<label for="file_access"><?php
+					echo JText::_('ACCESS_LEVEL');
+				?></label>
+			</td>
+			<td>
+			<?php echo $this->joomlaAcl->display('data[file][file_access]', @$this->element->file_access, true, true); ?>
+			</td>
+		</tr>
+<?php } ?>
 		<tr>
 			<td class="key">
 				<label for="file_description"><?php
@@ -156,3 +208,14 @@ defined('_JEXEC') or die('Restricted access');
 <?php } ?>
 	<?php echo JHTML::_( 'form.token' ); ?>
 </form>
+<script>
+window.updateAccess = function(free_download) {
+	if(free_download.value == '1') {
+		document.getElementById('file_free_download_only').style.display = 'table-row';
+		document.getElementById('file_paid_download_only').style.display = 'none';
+	} else {
+		document.getElementById('file_free_download_only').style.display = 'none';
+		document.getElementById('file_paid_download_only').style.display = 'table-row';
+	}
+}
+</script>

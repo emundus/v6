@@ -2,7 +2,7 @@
 jQuery(document).ready(function($) {
 
     function preloader() {
-        $('.dropfiles-loading').css('background',"url("+dropfilesBaseUrl+ "components/com_dropfiles/assets/images/balls.gif) no-repeat center center");
+        $('.dropfiles-loading').css('background',"url("+dropfilesBaseUrl+ "components/com_dropfiles/assets/images/loadingfile.svg) no-repeat center center");
     }
     function addLoadEvent(func) {
         var oldonload = window.onload;

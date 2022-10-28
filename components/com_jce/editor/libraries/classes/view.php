@@ -1,14 +1,14 @@
 <?php
 
 /**
- * @copyright 	Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
- * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * @copyright     Copyright (c) 2009-2021 Ryan Demmer. All rights reserved
+ * @license       GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses
  */
-defined('_JEXEC') or die('RESTRICTED');
+defined('JPATH_PLATFORM') or die;
 
 final class WFView extends JObject
 {
@@ -33,7 +33,7 @@ final class WFView extends JObject
         if (array_key_exists('template_path', $config)) {
             $this->addTemplatePath($config['template_path']);
         } else {
-            $this->addTemplatePath($this->get('base_path').'/views/'.$this->getName().'/tmpl');
+            $this->addTemplatePath($this->get('base_path') . '/views/' . $this->getName() . '/tmpl');
         }
     }
 
@@ -53,78 +53,11 @@ final class WFView extends JObject
     {
         $result = $this->loadTemplate($tpl);
 
-        if (JError::isError($result)) {
+        if ($result instanceof Exception) {
             return $result;
         }
 
         echo $result;
-    }
-
-    /**
-     * Assigns variables to the view script via differing strategies.
-     *
-     * @return bool True on success, false on failure.
-     *
-     * JView::assign()
-     *
-     * @copyright Copyright Copyright (C) 2005 - 2010 Open Source Matters. All rights reserved
-     * @license GNU/GPL, see LICENSE.php
-     */
-    public function assign()
-    {
-        $arg0 = @func_get_arg(0);
-        $arg1 = @func_get_arg(1);
-
-        if (is_object($arg0)) {
-            // Assign public properties
-            foreach (get_object_vars($key) as $key => $value) {
-                if (substr($key, 0, 1) != '_') {
-                    $this->$key = $value;
-                }
-            }
-
-            return true;
-        }
-
-        if (is_array($arg0)) {
-            foreach ($arg0 as $key => $value) {
-                if (substr($key, 0, 1) != '_') {
-                    $this->$key = $value;
-                }
-            }
-
-            return true;
-        }
-
-        if (is_string($arg0) && substr($arg0, 0, 1) != '_') {
-            $this->$arg0 = $arg1;
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Assign variable for the view (by reference).
-     *
-     * @param string $key  The name for the reference in the view
-     * @param mixed  &$val The referenced variable
-     *
-     * @return bool True on success, false on failure.
-     *
-     * JView::assignRef()
-     *
-     * @copyright Copyright Copyright (C) 2005 - 2010 Open Source Matters. All rights reserved
-     * @license GNU/GPL, see LICENSE.php
-     */
-    public function assignRef($key, &$value)
-    {
-        if (is_string($key) && substr($key, 0, 1) != '_') {
-            $this->$key = $value;
-
-            return true;
-        }
     }
 
     public function getName()
@@ -172,18 +105,21 @@ final class WFView extends JObject
         $template = null;
 
         //create the template file name based on the layout
-        $file = isset($tpl) ? $this->getLayout().'_'.$tpl : $this->getLayout();
+        $file = isset($tpl) ? $this->getLayout() . '_' . $tpl : $this->getLayout();
 
         // clean the file name
         $file = preg_replace('/[^A-Z0-9_\.-]/i', '', $file);
-        $tpl = preg_replace('/[^A-Z0-9_\.-]/i', '', $tpl);
+
+        if (isset($tpl)) {
+            $tpl = preg_replace('/[^A-Z0-9_\.-]/i', '', $tpl);
+        }
 
         // load the template script
         jimport('joomla.filesystem.path');
 
         $path = $this->getTemplatePath();
 
-        $template = JPath::find($path, $file.'.php');
+        $template = JPath::find($path, $file . '.php');
 
         if ($template != false) {
             // unset so as not to introduce into template scope
@@ -208,7 +144,7 @@ final class WFView extends JObject
 
             return $output;
         } else {
-            return JError::raiseError(500, 'Layout "'.$file.'" not found in Paths '.implode(', ', $path));
+            throw new InvalidArgumentException('Layout "' . $file . '" not found in Paths ' . implode(', ', $path));
         }
     }
 }

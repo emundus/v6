@@ -34,16 +34,16 @@ class Google_Service_Drive extends Google_Service
   /** See, edit, create, and delete all of your Google Drive files. */
   const DRIVE =
       "https://www.googleapis.com/auth/drive";
-  /** View and manage its own configuration data in your Google Drive. */
+  /** See, create, and delete its own configuration data in your Google Drive. */
   const DRIVE_APPDATA =
       "https://www.googleapis.com/auth/drive.appdata";
-  /** View and manage Google Drive files and folders that you have opened or created with this app. */
+  /** See, edit, create, and delete only the specific Google Drive files you use with this app. */
   const DRIVE_FILE =
       "https://www.googleapis.com/auth/drive.file";
   /** View and manage metadata of files in your Google Drive. */
   const DRIVE_METADATA =
       "https://www.googleapis.com/auth/drive.metadata";
-  /** View metadata for files in your Google Drive. */
+  /** See information about your Google Drive files. */
   const DRIVE_METADATA_READONLY =
       "https://www.googleapis.com/auth/drive.metadata.readonly";
   /** View the photos, videos and albums in your Google Photos. */
@@ -66,16 +66,17 @@ class Google_Service_Drive extends Google_Service
   public $replies;
   public $revisions;
   public $teamdrives;
-  
+
   /**
    * Constructs the internal representation of the Drive service.
    *
-   * @param Google_Client $client
+   * @param Google_Client $client The client used to deliver requests.
+   * @param string $rootUrl The root URL used for requests to the service.
    */
-  public function __construct(Google_Client $client)
+  public function __construct(Google_Client $client, $rootUrl = null)
   {
     parent::__construct($client);
-    $this->rootUrl = 'https://www.googleapis.com/';
+    $this->rootUrl = $rootUrl ?: 'https://www.googleapis.com/';
     $this->servicePath = 'drive/v3/';
     $this->batchPath = 'batch/drive/v3';
     $this->version = 'v3';
@@ -143,6 +144,10 @@ class Google_Service_Drive extends Google_Service
                   'location' => 'query',
                   'type' => 'boolean',
                 ),
+                'includePermissionsForView' => array(
+                  'location' => 'query',
+                  'type' => 'string',
+                ),
                 'includeRemoved' => array(
                   'location' => 'query',
                   'type' => 'boolean',
@@ -196,6 +201,10 @@ class Google_Service_Drive extends Google_Service
                 'includeItemsFromAllDrives' => array(
                   'location' => 'query',
                   'type' => 'boolean',
+                ),
+                'includePermissionsForView' => array(
+                  'location' => 'query',
+                  'type' => 'string',
                 ),
                 'includeRemoved' => array(
                   'location' => 'query',
@@ -457,9 +466,17 @@ class Google_Service_Drive extends Google_Service
                   'type' => 'string',
                   'required' => true,
                 ),
+                'enforceSingleParent' => array(
+                  'location' => 'query',
+                  'type' => 'boolean',
+                ),
                 'ignoreDefaultVisibility' => array(
                   'location' => 'query',
                   'type' => 'boolean',
+                ),
+                'includePermissionsForView' => array(
+                  'location' => 'query',
+                  'type' => 'string',
                 ),
                 'keepRevisionForever' => array(
                   'location' => 'query',
@@ -482,9 +499,17 @@ class Google_Service_Drive extends Google_Service
               'path' => 'files',
               'httpMethod' => 'POST',
               'parameters' => array(
+                'enforceSingleParent' => array(
+                  'location' => 'query',
+                  'type' => 'boolean',
+                ),
                 'ignoreDefaultVisibility' => array(
                   'location' => 'query',
                   'type' => 'boolean',
+                ),
+                'includePermissionsForView' => array(
+                  'location' => 'query',
+                  'type' => 'string',
                 ),
                 'keepRevisionForever' => array(
                   'location' => 'query',
@@ -516,6 +541,10 @@ class Google_Service_Drive extends Google_Service
                   'type' => 'string',
                   'required' => true,
                 ),
+                'enforceSingleParent' => array(
+                  'location' => 'query',
+                  'type' => 'boolean',
+                ),
                 'supportsAllDrives' => array(
                   'location' => 'query',
                   'type' => 'boolean',
@@ -528,7 +557,12 @@ class Google_Service_Drive extends Google_Service
             ),'emptyTrash' => array(
               'path' => 'files/trash',
               'httpMethod' => 'DELETE',
-              'parameters' => array(),
+              'parameters' => array(
+                'enforceSingleParent' => array(
+                  'location' => 'query',
+                  'type' => 'boolean',
+                ),
+              ),
             ),'export' => array(
               'path' => 'files/{fileId}/export',
               'httpMethod' => 'GET',
@@ -570,6 +604,10 @@ class Google_Service_Drive extends Google_Service
                   'location' => 'query',
                   'type' => 'boolean',
                 ),
+                'includePermissionsForView' => array(
+                  'location' => 'query',
+                  'type' => 'string',
+                ),
                 'supportsAllDrives' => array(
                   'location' => 'query',
                   'type' => 'boolean',
@@ -598,6 +636,10 @@ class Google_Service_Drive extends Google_Service
                 'includeItemsFromAllDrives' => array(
                   'location' => 'query',
                   'type' => 'boolean',
+                ),
+                'includePermissionsForView' => array(
+                  'location' => 'query',
+                  'type' => 'string',
                 ),
                 'includeTeamDriveItems' => array(
                   'location' => 'query',
@@ -649,6 +691,14 @@ class Google_Service_Drive extends Google_Service
                   'location' => 'query',
                   'type' => 'string',
                 ),
+                'enforceSingleParent' => array(
+                  'location' => 'query',
+                  'type' => 'boolean',
+                ),
+                'includePermissionsForView' => array(
+                  'location' => 'query',
+                  'type' => 'string',
+                ),
                 'keepRevisionForever' => array(
                   'location' => 'query',
                   'type' => 'boolean',
@@ -687,6 +737,10 @@ class Google_Service_Drive extends Google_Service
                   'location' => 'query',
                   'type' => 'boolean',
                 ),
+                'includePermissionsForView' => array(
+                  'location' => 'query',
+                  'type' => 'string',
+                ),
                 'supportsAllDrives' => array(
                   'location' => 'query',
                   'type' => 'boolean',
@@ -718,6 +772,14 @@ class Google_Service_Drive extends Google_Service
                 'emailMessage' => array(
                   'location' => 'query',
                   'type' => 'string',
+                ),
+                'enforceSingleParent' => array(
+                  'location' => 'query',
+                  'type' => 'boolean',
+                ),
+                'moveToNewOwnersRoot' => array(
+                  'location' => 'query',
+                  'type' => 'boolean',
                 ),
                 'sendNotificationEmail' => array(
                   'location' => 'query',
@@ -802,6 +864,10 @@ class Google_Service_Drive extends Google_Service
                   'location' => 'path',
                   'type' => 'string',
                   'required' => true,
+                ),
+                'includePermissionsForView' => array(
+                  'location' => 'query',
+                  'type' => 'string',
                 ),
                 'pageSize' => array(
                   'location' => 'query',

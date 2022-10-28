@@ -73,7 +73,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 					//** Delete members of group to add **/
 					$query = 'DELETE FROM #__emundus_groups_eval WHERE applicant_id='.$id.' AND user_id IN (select user_id from #__emundus_groups where group_id='.$ag_id.')';
 					$db->setQuery($query);
-					$db->Query() or die($db->getErrorMsg());
+					$db->execute() or die($db->getErrorMsg());
 
 					if (count($cpt)==0)
 						$db->setQuery('INSERT INTO #__emundus_groups_eval (applicant_id, group_id, user_id) VALUES ('.$id.','.$ag_id.',null)');
@@ -92,13 +92,13 @@ class EmundusControllerGroups extends JControllerLegacy {
 				else {
 					$db->setQuery('DELETE FROM #__emundus_groups_eval WHERE applicant_id='.$id);
 				}
-				$db->Query() or die($db->getErrorMsg());
+				$db->execute() or die($db->getErrorMsg());
 			}
 		}
 		if (count($ids)>1)
-			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('MESSAGE_APPLICANTS_AFFECTED').count($ids), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('COM_EMUNDUS_GROUPS_MESSAGE_APPLICANTS_AFFECTED').count($ids), 'message');
 		elseif (count($ids)==1)
-			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('MESSAGE_APPLICANT_AFFECTED').count($ids), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('COM_EMUNDUS_GROUPS_MESSAGE_APPLICANT_AFFECTED').count($ids), 'message');
 		else
 			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
 	}
@@ -128,19 +128,19 @@ class EmundusControllerGroups extends JControllerLegacy {
 				if(!empty($ag_id) && isset($ag_id)) {
 					$query = 'DELETE FROM #__emundus_groups_eval WHERE applicant_id='.$id.' AND group_id='.$ag_id;
 					$db->setQuery($query);
-					$db->Query() or die($db->getErrorMsg());
+					$db->execute() or die($db->getErrorMsg());
 				}
 				elseif(!empty($au_id) && isset($au_id)) {
 					$query = 'DELETE FROM #__emundus_groups_eval WHERE applicant_id='.$id.' AND user_id='.$au_id;
 					$db->setQuery($query);
-					$db->Query() or die($db->getErrorMsg());
+					$db->execute() or die($db->getErrorMsg());
 				}
 			}
 		}
 		if (count($ids)>1)
-			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('MESSAGE_APPLICANTS_UNAFFECTED').count($ids), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('COM_EMUNDUS_GROUPS_MESSAGE_APPLICANTS_UNAFFECTED').count($ids), 'message');
 		elseif (count($ids)==1)
-			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('MESSAGE_APPLICANT_UNAFFECTED').count($ids), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('COM_EMUNDUS_GROUPS_MESSAGE_APPLICANT_UNAFFECTED').count($ids), 'message');
 		else
 			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
 	}
@@ -166,9 +166,9 @@ class EmundusControllerGroups extends JControllerLegacy {
 			if(!empty($uid) && is_numeric($uid))
 				$query .= ' AND user_id='.$db->Quote($uid);
 			$db->setQuery($query);
-			$db->Query();
+			$db->execute();
 		}
-		$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('ACTION_DONE'), 'message');
+		$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('COM_EMUNDUS_ACTIONS_ACTION_DONE'), 'message');
 	}
 
 	////// EMAIL ASSESSORS WITH DEFAULT MESSAGE///////////////////
@@ -275,7 +275,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 				$db->query();
 				$period=$db->loadRow();
 
-				$period_str = strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[0])).' '.JText::_('TO').' '.strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[1]));
+				$period_str = strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[0])).' '.JText::_('COM_EMUNDUS_TO').' '.strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[1]));
 
 				$replacements = array ($user->id, $user->name, $user->email, $list, JURI::base(), $eval, $period_str, '<br />');
 				// template replacements
@@ -290,7 +290,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 					$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
 						VALUES ('".$from_id."', '".$user->id."', '".$obj[0]->subject."', '".$body."', NOW())";
 					$db->setQuery( $sql );
-					$db->query();
+					$db->execute();
 				} else {
 					$error++;
 				}
@@ -299,7 +299,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 		if ($error>0)
 			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('ACTION_ABORDED'), 'error');
 		else
-			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('ACTION_DONE'), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('COM_EMUNDUS_ACTIONS_ACTION_DONE'), 'message');
 	}
 
 	////// EMAIL GROUP OF ASSESSORS O AN ASSESSOR WITH CUSTOM MESSAGE///////////////////
@@ -321,12 +321,12 @@ class EmundusControllerGroups extends JControllerLegacy {
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
 
 		if ($subject == '') {
-			JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_SUBJECT' ) );
+			JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_YOU_MUST_PROVIDE_SUBJECT' ) );
 			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
 			return;
 		}
 		if ($message == '') {
-			JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_A_MESSAGE' ) );
+			JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_YOU_MUST_PROVIDE_A_MESSAGE' ) );
 			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
 			return;
 		}
@@ -342,7 +342,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 		elseif (isset($ae_id) && $ae_id > 0)
 			$users[] = $ae_id;
 		else {
-			JError::raiseWarning( 500, JText::_('ERROR') );
+			JError::raiseWarning( 500, JText::_('COM_EMUNDUS_ERROR') );
 			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
 			return;
 		}
@@ -410,7 +410,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 			$db->query();
 			$period=$db->loadRow();
 
-			$period_str = strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[0])).' '.JText::_('TO').' '.strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[1]));
+			$period_str = strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[0])).' '.JText::_('COM_EMUNDUS_TO').' '.strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[1]));
 
 			$replacements = array ($user->id, $user->name, $user->email, $list, JURI::base(), $eval, $period_str, '<br />');
 			// template replacements
@@ -422,12 +422,12 @@ class EmundusControllerGroups extends JControllerLegacy {
 			$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
 				VALUES ('".$from_id."', '".$user->id."', '".$subject."', '".$body."', NOW())";
 			$db->setQuery( $sql );
-			$db->query();
+			$db->execute();
 
 			unset($replacements);
 		}
 
-		$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('ACTION_DONE'), 'message');
+		$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('COM_EMUNDUS_ACTIONS_ACTION_DONE'), 'message');
 	}
 
 	public function addgroups() {

@@ -12,6 +12,10 @@ window.Oby.registerAjax(["cart.updated","wishlist.updated"],function(params){
 		class_name = "warning";
 		title = cart ? p.err_title : p.err_wishlist_title;
 		text = cart ? p.err_text : p.err_wishlist_text;
+
+		if(!cart && params.resp.err_wishlist_guest && p.err_wishlist_guest) {
+			p.redirect_url = p.err_wishlist_guest;
+		}
 	}else if(params.product_id == 'list' && !params.resp.product_name){
 		title = cart ? p.list_title : p.list_wishlist_title;
 		text = cart ? p.list_text : p.list_wishlist_text;
@@ -22,6 +26,9 @@ window.Oby.registerAjax(["cart.updated","wishlist.updated"],function(params){
 		title = params.resp.product_name;
 	if(params.resp.message)
 		text = params.resp.message;
+	else if(params.resp.messages && params.resp.messages[0] && params.resp.messages[0].msg) {
+		text = params.resp.messages[0].msg;
+	}
 
 	var content = "";
 	if(img_url == null) {
@@ -38,6 +45,16 @@ window.Oby.registerAjax(["cart.updated","wishlist.updated"],function(params){
 			vex_params = jQuery.extend(true, vex_params, p[params_key]);
 	}
 	vex.dialog.alert(vex_params);
+
+	if(p.redirect_url) {
+		if(!p.redirect_delay)
+			p.redirect_delay = 4000;
+		setTimeout(function(){ window.location = p.redirect_url; }, p.redirect_delay);
+	}
+
+	if(p.hide_delay && p.hide_delay > 0) {
+		setTimeout(function(){ if(window.top.vex.closeAll) window.top.vex.closeAll(); }, p.hide_delay);
+	}
 	return true;
 });
 }

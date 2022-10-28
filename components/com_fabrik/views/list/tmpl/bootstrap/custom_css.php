@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2020  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -34,115 +34,76 @@
 */
 
 header('Content-type: text/css');
-echo <<<EOT
-/* BEGIN - Your CSS styling starts here */
+$c = $_REQUEST['c'];
+echo "
 
-.g-back-office-emundus-tableau.view-list #g-container-main .page-header, 
-.g-back-office-emundus-tableau.view-form #g-container-main .page-header, 
-.g-back-office-emundus-tableau.view-details #g-container-main .page-header {
-    padding-bottom: 30px;
+#listform_$c .fabrikForm {
+	margin-top: 25px !important;
 }
 
-/* PAGINATION */
+/*radius search responsive*/
 
-.list-footer .limit .input-prepend.input-append span.add-on {
-	padding: 9px !important;
-    height: 45px;
+@media only screen and (max-device-width: 499px)
+{
+.fabrikWindow.modal {
+	max-width:100% !important;
+	left:0 !important;
+}
+ 
+.fabrikWindow.modal .contentWrapper {
+	max-width:100% !important;
+} 
+
+.fabrikWindow .radius_search table.radius_table {
+	table-layout:fixed;
+	max-width:100%;
+} 
+
+.fabrikWindow .radius_search table.radius_table td:first-child {
+	width:70px;
 }
 
-.list-footer .limit .input-prepend.input-append select.inputbox.input-mini {
-    padding: 10px !important;
-    width: 80px;
-    height: 45px;
+.radius_search_geocode_map {
+	width:300px;
+	height:275px;
+	margin-top:15px;
+}
 }
 
-.list-footer .pagination ul.pagination-list {
-    box-shadow: none;
+@media only screen and (min-device-width: 500px)
+{
+.radius_search_geocode_map {
+	width:400px;
+	height:275px;
+	margin-top:15px;
+}
 }
 
-ul.pagination.pagination-sm a {
-  color: #4E5B6D;
+.us_cities___city {
+	font-size: 24px;
 }
 
-ul.pagination.pagination-sm a:hover, ul.pagination.pagination-sm a:focus, ul.pagination.pagination-sm a:active {
-    color: #404B5A;
+.us_cities___state_code {
+	font-size: 16px;
 }
 
-.pagination > li.active a {
-  font-weight: bold !important;
+.fab_main_test___yes_no {
+	width: 150px;
 }
 
-table {
-  border-radius: 0 !important;
+a.advanced-search-link-NOT {
+background-color: #4CAF50; /* Green */
+border: none;
+color: white;
+padding: 15px 32px;
+text-align: center;
+text-decoration: none;
+display: inline-block;
+font-size: 16px;
 }
 
-.g-back-office-emundus-tableau.view-list.email-history-indicators-page .fabrikForm form-search .jos_messages___message tbody td {
-    max-width: 30vw; 
+.view-list form.form-search {
+   overflow: auto;  
 }
 
-.view-list .g-container {
-    width: 100vw; 
-}
-
-.fabrik_actions.fabrik_element .btn-group > .btn {
-border-radius: 4px;
-}
-
-@media all and (max-width: 479px) {
- .view-list h1::after {
-       display: none !important;
-  } 
-  
-    .view-list form {
-        overflow: auto;
-    }
-}
-@media all and (max-width: 767px) {
-  #listform_84_com_fabrik_84 {
-    padding: 0 !important;
-  }
-  
-  .view-list form.fabrikForm {
-    overflow: auto;
-  }
-  
-  .view-list form[name="lang"] {
-    overflow: inherit;
-  }
-}
-
-
-@media all and (max-width: 959px) {
-  .email-history-indicators-page form {
-    padding: 0 !important;f
-  }
-}
-
-@media screen and (min-width: 768px) and (max-width: 959px) {
-  .fabrikForm.form-search {
-    overflow: auto;
-  }
-}
-
-@media all and (max-width: 1239px) {
-  .fabrikDataContainer {
-    overflow: auto;
-  }
-}
-
-.view-list form.form-search table thead th.fabrik_actions .btn-group {
-    display: flex; 
-    justify-content: space-evenly; 
-}
-
-.view-list form.form-search table tbody td.fabrik_actions .btn-group {
-    display: flex; 
-    justify-content: space-evenly; 
-}
-
-
-
-/* END - Your CSS styling ends here */  
-
-
-EOT;
+";?>

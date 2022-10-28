@@ -16,8 +16,9 @@
 //-- No direct access
 defined('_JEXEC') || die('=;)');
 DropfilesFilesHelper::includeJSHelper();
-$usegoogleviewer = ((int) $this->componentParams->get('usegoogleviewer', 1) === 1) ? 'dropfileslightbox' : '';
-$target          = ((int) $this->componentParams->get('usegoogleviewer', 1) === 2) ? 'target="_blank"' : '';
+$usegoogleviewer  = ((int) $this->componentParams->get('usegoogleviewer', 1) === 1) ? 'dropfileslightbox' : '';
+$target           = ((int) $this->componentParams->get('usegoogleviewer', 1) === 2) ? 'target="_blank"' : '';
+$showdownloadcate = (int) $this->componentParams->get('download_category', 0);
 
 ?>
 
@@ -112,10 +113,10 @@ $target          = ((int) $this->componentParams->get('usegoogleviewer', 1) === 
         {{#if categories}}
         {{#each categories}}
         <li class="directory collapsed">
-            <a class="dropfilescategory catlink" href="#" data-idcat="{{id}}">
+            <a class="catlink" href="#" data-idcat="{{id}}">
                 <div class="icon-open-close" data-id="{{id}}"></div>
                 <i class="zmdi zmdi-folder dropfiles-folder"></i>
-                {{title}}
+                <span>{{title}}</span>
             </a>
         </li>
         {{/each}}
@@ -129,6 +130,9 @@ $target          = ((int) $this->componentParams->get('usegoogleviewer', 1) === 
 
         {{#if custom_icon}}
         <li class="custom-icon {{ext}}">
+            <?php if ($showdownloadcate === 1) : ?>
+                <label class="dropfiles_checkbox"><input class="cbox_file_download" type="checkbox" data-id="{{id}}" /><span></span></label>
+            <?php endif;?>
             <a class="dropfile-file-link" href="
             <?php
             if (!$this->download_popup) {
@@ -140,6 +144,9 @@ $target          = ((int) $this->componentParams->get('usegoogleviewer', 1) === 
             </a></li>
         {{else}}
         <li class="ext {{ext}}">
+            <?php if ($showdownloadcate === 1) : ?>
+                <label class="dropfiles_checkbox"><input class="cbox_file_download" type="checkbox" data-id="{{id}}" /><span></span></label>
+            <?php endif;?>
             <i class="dropfile-file ext {{ext}}"></i>
             <a class="dropfile-file-link" href="<?php
             if (!$this->download_popup) {
@@ -157,37 +164,54 @@ $target          = ((int) $this->componentParams->get('usegoogleviewer', 1) === 
         </div>
         {{/if}}
     </script>
+
+    <script type="text/x-handlebars-template" id="dropfiles-template-tree-type">
+        {{#if category}}
+            {{#if category.type}}
+                <input type="hidden" id="current-category-type" class="type {{category.type}}" data-category-type="{{category.type}}"/>
+            {{/if}}
+            {{#if category.linkdownload_cat}}
+            <input type="hidden" id="current-category-link" class="link" value="{{category.linkdownload_cat}}"/>
+            {{/if}}
+        {{/if}}
+    </script>
 <?php if ($this->category !== null) : ?>
     <?php if (!empty($this->files) || !empty($this->categories)) : ?>
         <div class="dropfiles-content dropfiles-content-multi dropfiles-files dropfiles-content-tree"
              data-category="<?php echo $this->category->id; ?>" data-current="<?php echo $this->category->id; ?>">
+            <input type="hidden" id="current_category" value="<?php echo $this->category->id; ?>"/>
+            <input type="hidden" id="current_category_slug" value="<?php echo $this->category->alias; ?>"/>
             <div class="categories-head  <?php
             if ($this->user_id) {
                 echo 'manage-files-head';
             } ?>">
                 <?php if ((int) DropfilesBase::loadValue($this->params, 'tree_showcategorytitle', 1) === 1) : ?>
-                    <h2><?php echo $this->category->title; ?></h2>
+                    <li class="active"><?php echo $this->category->title; ?></li>
                 <?php endif; ?>
                 <?php if ($this->user_id) : ?>
                     <a data-id="" data-catid="" data-file-type="" class="openlink-manage-files " target="_blank"
                        href="<?php echo $this->urlmanage ?>" data-urlmanage="<?php echo $this->urlmanage ?>">
-                        <?php echo JText::_('COM_DROPFILES_MANAGE_FILES'); ?><i
-                                class="zmdi zmdi-edit dropfiles-preview"></i>
+                        <?php echo JText::_('COM_DROPFILES_MANAGE_FILES'); ?>
+                        <i class="zmdi zmdi-edit dropfiles-preview"></i>
                     </a>
                 <?php endif; ?>
+                <?php if ($showdownloadcate === 1 && isset($this->category->linkdownload_cat) && !empty($this->files)) : ?>
+                    <a data-catid="" class="tree-download-category download-all" href="<?php echo $this->category->linkdownload_cat; ?>"><?php echo JText::_('COM_DROPFILES_DOWNLOAD_ALL'); ?><i class="zmdi zmdi-check-all"></i></a>
+                <?php endif;?>
             </div>
-            <ul>
+            <?php $titlec = ((int) DropfilesBase::loadValue($this->params, 'tree_showtitle', 1) === 0) ? 'tree-hide-title' : '' ;?>
+            <ul class="tree-list <?php echo  $titlec ;?>">
                 <?php if (is_array($this->categories) && count($this->categories) &&
                           (int) DropfilesBase::loadValue($this->params, 'tree_showsubcategories', 1) === 1) : ?>
-                    <?php foreach ($this->categories as $category) : ?>
+                                        <?php foreach ($this->categories as $category) : ?>
                         <li class="directory collapsed">
-                            <a class="dropfilescategory catlink" href="#" data-idcat="<?php echo $category->id; ?>">
+                            <a class="catlink" href="#" data-idcat="<?php echo $category->id; ?>">
                                 <div class="icon-open-close" data-id="<?php echo $category->id; ?>"></div>
                                 <i class="zmdi zmdi-folder dropfiles-folder"></i>
                                 <span><?php echo $category->title; ?></span>
                             </a>
                         </li>
-                    <?php endforeach; ?>
+                                        <?php endforeach; ?>
                 <?php endif; ?>
                 <?php if (is_array($this->files) && count($this->files)) : ?>
                     <?php foreach ($this->files as $file) : ?>
@@ -195,18 +219,26 @@ $target          = ((int) $this->componentParams->get('usegoogleviewer', 1) === 
                             <?php if ((int) $this->componentParams->get('custom_icon', 1) === 1 &&
                                 $file->custom_icon !== '') : ?>
                                 <li class="custom-icon <?php echo $file->ext; ?>">
+                                    <?php if ($showdownloadcate === 1 && $this->category->type === 'default') : ?>
+                                        <label class="dropfiles_checkbox"><input class="cbox_file_download" type="checkbox" data-id="<?php echo $file->id;?>" /><span></span></label>
+                                    <?php endif;?>
                                     <a class="dropfile-file-link" href="<?php
                                     if (!$this->download_popup) {
                                         echo $file->link_download_popup;
                                     } else {
                                         echo '#';
                                     } ?>" data-id="<?php echo $file->id; ?>">
-                                        <img src="<?php echo $file->custom_icon_thumb; ?>"
-                                             alt=""/><?php echo $file->title; ?>
+                                        <img src="<?php echo $file->custom_icon_thumb; ?>" alt=""/>
+                                        <?php if ((int) DropfilesBase::loadValue($this->params, 'tree_showtitle', 1) === 1) : ?>
+                                            <?php echo $file->title; ?>
+                                        <?php endif;?>
                                     </a>
                                 </li>
                             <?php else : ?>
                                 <li class="ext <?php echo $file->ext; ?>">
+                                    <?php if ($showdownloadcate === 1 && $this->category->type === 'default') : ?>
+                                        <label class="dropfiles_checkbox"><input class="cbox_file_download" type="checkbox" data-id="<?php echo $file->id;?>" /><span></span></label>
+                                    <?php endif;?>
                                     <i class="dropfile-file ext <?php echo $file->ext; ?>"></i>
                                     <a class="dropfile-file-link" href="<?php
                                     if (!$this->download_popup) {
@@ -214,7 +246,9 @@ $target          = ((int) $this->componentParams->get('usegoogleviewer', 1) === 
                                     } else {
                                         echo '#';
                                     } ?>" data-id="<?php echo $file->id; ?>">
-                                        <?php echo $file->title; ?>
+                                        <?php if ((int) DropfilesBase::loadValue($this->params, 'tree_showtitle', 1) === 1) : ?>
+                                            <?php echo $file->title; ?>
+                                        <?php endif;?>
                                     </a>
                                 </li>
                             <?php endif; ?>

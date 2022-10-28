@@ -71,21 +71,19 @@ class EmundusModelActions extends JModelList {
             /** Get all user assoc
              *  When using the $gid param, we only get the files linked to the group we are looking at
              */
-            $query
-                ->clear()
-                ->select([$dbo->quoteName('jeua.fnum'), $dbo->quoteName('jeua.user_id'), $dbo->quoteName('jeua.action_id')])
-                ->from($dbo->quoteName('#__emundus_users_assoc', 'jeua'))
-                ->leftJoin($dbo->quoteName('#__emundus_setup_actions','jesa').' ON '.$dbo->quoteName('jesa.id').' = '.$dbo->quoteName('jeua.action_id'))
-                ->where($dbo->quoteName('jesa.status') . ' = 1');
-
-            if (!empty($gid)) {
+            if (empty($gid)) {
                 $query
-                    ->leftJoin($dbo->quoteName('#__emundus_groups','jeg').' ON '.$dbo->quoteName('jeua.user_id').' = '.$dbo->quoteName('jeg.user_id'))
-                    ->andWhere($dbo->quoteName('jeg.group_id') . ' = ' . $gid);
-            }
+                    ->clear()
+                    ->select([$dbo->quoteName('jeua.fnum'), $dbo->quoteName('jeua.user_id'), $dbo->quoteName('jeua.action_id')])
+                    ->from($dbo->quoteName('#__emundus_users_assoc', 'jeua'))
+                    ->leftJoin($dbo->quoteName('#__emundus_setup_actions','jesa').' ON '.$dbo->quoteName('jesa.id').' = '.$dbo->quoteName('jeua.action_id'))
+                    ->where($dbo->quoteName('jesa.status') . ' = 1');
 
-            $dbo->setQuery($query);
-            $arrayUserAssoc = $dbo->loadAssocList();
+                $dbo->setQuery($query);
+                $arrayUserAssoc = $dbo->loadAssocList();
+            } else {
+                $arrayUserAssoc = [];
+            }
 
             /* Get all actions in acl table */
             $query

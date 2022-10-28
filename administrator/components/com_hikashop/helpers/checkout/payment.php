@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -32,6 +32,11 @@ class hikashopCheckoutPaymentHelper extends hikashopCheckoutHelperInterface {
 				'values' => array(0)
 			)
 		),
+		'price_with_tax' => array(
+			'name' => 'PRICE_WITH_TAX',
+			'type' => 'inherit',
+			'default' => -1,
+		),
 	);
 
 	public function getParams() {
@@ -41,6 +46,10 @@ class hikashopCheckoutPaymentHelper extends hikashopCheckoutHelperInterface {
 			JHTML::_('select.option', 2, JText::_('HIKASHOP_CHECKOUT_ADDRESS_SELECTOR_DROPDOWN'))
 		);
 		$this->params['payment_selector']['values'] = $values;
+
+		$this->params['price_with_tax']['values'] = array(
+			JHTML::_('select.option', '2', JText::_('WIZARD_BOTH'))
+		);
 
 		return parent::getParams();
 	}
@@ -187,7 +196,7 @@ class hikashopCheckoutPaymentHelper extends hikashopCheckoutHelperInterface {
 		}
 
 		$tmpl = hikaInput::get()->getCmd('tmpl', '');
-		if(hikaInput::get()->getInt('selectionOnly', 0) && in_array($tmpl, array('ajax', 'raw'))) {
+		if(hikaInput::get()->getInt('selectionOnly', 0) && in_array($tmpl, array('ajax', 'raw', 'component'))) {
 			$data = array(
 				'ret' => $ret,
 				'events' => array(),
@@ -230,6 +239,13 @@ class hikashopCheckoutPaymentHelper extends hikashopCheckoutHelperInterface {
 			$params['payment_selector'] = 0;
 		if($params['read_only'])
 			$params['payment_selector'] = 0;
+
+		if(!isset($params['price_with_tax']))
+			$params['price_with_tax'] = -1;
+		if($params['price_with_tax'] == -1) {
+			$config = hikashop_config();
+			$params['price_with_tax'] = $config->get('price_with_tax', 0);
+		}
 
 		$checkoutHelper = hikashopCheckoutHelper::get();
 		$cart = $checkoutHelper->getCart();

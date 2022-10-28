@@ -35,16 +35,85 @@ class DropfilesModelFrontconfig extends JModelLegacy
     public function getParams($id)
     {
         $dbo = $this->getDbo();
-        $query = 'SELECT * FROM #__dropfiles WHERE id = ' . (int)$id;
+        $query = 'SELECT d.*, c.parent_id, c.level, c.access FROM #__dropfiles AS d LEFT JOIN #__categories AS c ON c.id = d.id  WHERE d.id = ' . (int)$id;
         $dbo->setQuery($query);
-        if ($dbo->query()) {
+        if ($dbo->execute()) {
             $result = $dbo->loadObject();
             if (!empty($result)) {
+                $dropfiles_params = JComponentHelper::getParams('com_dropfiles');
                 $result->params = json_decode($result->params);
-
+                if (!$result->params || empty($result->params)) {
+                    $result->params = new \stdClass;
+                }
+                if ($dropfiles_params->get('categoryrestriction', 'accesslevel') !== 'accesslevel') {
+                    $result->params->usergroup = $this->getTopParentGroup($result);
+                }
                 return $result;
             }
         }
         return false;
+    }
+
+    /**
+     * Get top parent group
+     *
+     * @param object $category Category object
+     *
+     * @return array
+     *
+     * @since 5.5
+     */
+    public function getTopParentGroup($category)
+    {
+        $usergroup = isset($category->params->usergroup) ? $category->params->usergroup : array();
+        if (isset($category->level) && intval($category->level) === 1) {
+            $usergroup = array_diff($usergroup, array('-1'));
+            if (empty($usergroup)) {
+                return array('1'); // Return default public usergroup
+            }
+        }
+        if (!in_array('-1', $usergroup)) {
+            if (empty($usergroup)) {
+                return array('1'); // Return default public usergroup
+            }
+            return $usergroup;
+        }
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+        $this->setState('filter.access', null);
+        // Filter by extension
+        $extension = $this->getState('filter.extension');
+        if ($extension) {
+            $query->where('c.extension = ' . $db->quote($extension));
+        }
+
+        $query->select('d.params, c.level, c.parent_id');
+        $query->from('#__categories as c');
+        $query->leftJoin('#__dropfiles as d on d.id = c.id');
+        $query->where('c.id = ' . (int) $category->parent_id);
+        $db->setQuery($query);
+        if ($db->execute()) {
+            $parent = $db->loadObject();
+            $parent->params = (isset($parent->params) && !empty($parent->params)) ? json_decode($parent->params) : false;
+            if (isset($parent->params->usergroup) && is_array($parent->params->usergroup) && in_array('-1', $parent->params->usergroup)) {
+                $usergroup = $this->getTopParentGroup($parent);
+                if (empty($usergroup)) {
+                    return array('1'); // Return default public usergroup
+                }
+                return $usergroup;
+            } else {
+                $usergroup = isset($parent->params->usergroup) ? $parent->params->usergroup : array('1');
+                if (empty($usergroup)) {
+                    return array('1'); // Return default public usergroup
+                }
+                return $usergroup;
+            }
+        }
+
+        $usergroup = array_diff($usergroup, array('-1'));
+        if (empty($usergroup)) {
+            return array('1'); // Return default public usergroup
+        }
+        return $usergroup;
     }
 }

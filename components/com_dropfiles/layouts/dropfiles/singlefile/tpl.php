@@ -25,7 +25,7 @@ $target          = ((int) $displayData['componentParams']->get('usegoogleviewer'
             <a class="noLightbox"
                href="<?php echo $displayData['file']->link; ?>"
                data-id="<?php echo $displayData['file']->id; ?>"
-               title="<?php echo $displayData['file']->description; ?>">
+               title="<?php echo $displayData['file']->title; ?>">
                 <span class="droptitle"><?php echo $displayData['file']->title; ?></span><br/>
                 <span class="dropinfos">
                                             <?php if ($showsize === 1) : ?>

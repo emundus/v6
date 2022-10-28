@@ -54,12 +54,12 @@ class PlgDropfilesthemesTree extends DropfilesPluginBase
         JHtml::_('jquery.framework');
         $this->addScriptTagLoading();
 
-        $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/handlebars-v4.1.0.js');
+        $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/handlebars-v4.7.7.js');
         $doc->addScript(JURI::base('true') . '/plugins/dropfilesthemes/tree/js/script.js');
         $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/colorbox.init.js');
         $iconic_font = JURI::base('true') . '/components/com_dropfiles/assets/css/material-design-iconic-font.min.css';
         $doc->addStyleSheet($iconic_font);
-        $doc->addStyleSheet(JURI::base('true') . '/plugins/dropfilesthemes/tree/css/style.css');
+        $doc->addStyleSheet(JURI::base('true') . '/plugins/dropfilesthemes/tree/css/style_ver5.4.css');
 
         $this->componentParams = JComponentHelper::getParams('com_dropfiles');
 
@@ -78,15 +78,14 @@ class PlgDropfilesthemesTree extends DropfilesPluginBase
             (int) DropfilesBase::loadValue($this->params, 'tree_showsubcategories', 1) === 1) {
             $this->files              = $this->options['files'];
             $this->category           = $this->options['category'];
+            if ($this->category) {
+                $this->category->alias = JFilterOutput::stringURLSafe($this->category->title);
+            }
             $this->categories         = $this->options['categories'];
             $this->viewfileanddowload = DropfilesBase::getAuthViewFileAndDownload();
             $this->download_popup     = DropfilesBase::loadValue($this->options['params'], 'tree_download_popup', 1);
             $style                    = '';
-            if ((int) DropfilesBase::loadValue($this->params, 'tree_showbgtitle', 1) === 1) {
-                $style .= '.dropfiles-content h2, #dropfiles-box h2 {border:none;background:none;}';
-            }
-
-            $style .= ' #dropfiles-box-tree .dropblock .extra-downloadlink a {background-color:';
+            $style .= ' #dropfiles-box-tree .dropblock .extra-downloadlink a, .dropfiles-content-tree .download-all, .dropfiles-content-tree .download-selected {background-color:';
             $style .= DropfilesBase::loadValue($this->params, 'tree_bgdownloadlink', '#006DCC') . ' !important;color:';
             $style .= DropfilesBase::loadValue($this->params, 'tree_colordownloadlink', '#fff') . ' !important;}';
 

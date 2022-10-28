@@ -41,7 +41,7 @@ class ModDropfilesLatestHelper
         $doc->addStyleSheet(JUri::base() . 'components/com_dropfiles/assets/css/jquery.tagit.css');
         $doc->addStyleSheet(JUri::base() . 'components/com_dropfiles/assets/css/dropfiles-latest.css');
         $doc->addStyleSheet(JUri::base() . 'components/com_dropfiles/assets/css/material-design-iconic-font.min.css');
-        $doc->addStyleSheet(JUri::base() . 'components/com_dropfiles/assets/css/front.css');
+        $doc->addStyleSheet(JUri::base() . 'components/com_dropfiles/assets/css/front_ver5.4.css');
 
 
         $doc->addScript(JUri::base() . 'components/com_dropfiles/assets/js/jquery-ui-1.9.2.custom.min.js');

@@ -56,7 +56,7 @@
                         ' ORDER BY ordering'
                 );
                 $results = $db->loadRowList();
-                
+
                 // Check for a database error.
                 if ($db->getErrorNum()) {
                         $this->_subject->setError($db->getErrorMsg());
@@ -163,7 +163,7 @@
                 {
                     $db = JFactory::getDbo();
                     $db->setQuery('DELETE FROM #__user_profiles WHERE user_id = '.$userId.' AND profile_key LIKE \'emundus_profile.%\'');
-                    if (!$db->query()) {
+                    if (!$db->execute()) {
                             throw new Exception($db->getErrorMsg());
                     }
 
@@ -174,7 +174,7 @@
                     }
 
                     $db->setQuery('INSERT INTO #__user_profiles VALUES '.implode(', ', $tuples));
-                    if (!$db->query()) {
+                    if (!$db->execute()) {
                             throw new Exception($db->getErrorMsg());
                     }
                 }

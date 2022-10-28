@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="Event Detail">
+		<message>
+			Display a single event
+		</message>
+	</layout>
+	<state>
+		<name>Event Detail</name>
+		<description>Display a single event</description>
+		<fields name="request">			
+			<fieldset name="request"
+				addfieldpath="/administrator/components/com_eventbooking/elements">
+				<field name="id" type="ebevent" size="3" required="true" default="0" label="Select Event" description="Select Event which you want to link to" />
+			</fieldset>	
+		</fields>			
+	</state>
+</metadata>

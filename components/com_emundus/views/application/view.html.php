@@ -40,7 +40,7 @@ class EmundusViewApplication extends JViewLegacy{
     function display($tpl = null){
 
     	if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
-			die( JText::_('RESTRICTED_ACCESS') );
+			die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 
         $document = JFactory::getDocument();
         $document->addStyleSheet("media/com_emundus/css/emundus.css" );
@@ -52,7 +52,7 @@ class EmundusViewApplication extends JViewLegacy{
         $document->addScript("media/com_emundus/lib/semantic/packaged/javascript/semantic.min.js" );
 
 
-       // $menu=JFactory::getApplication()->getMenu()->getActive();
+		// $menu=JFactory::getApplication()->getMenu()->getActive();
         $menu = JFactory::getApplication()->getMenu();
 		$current_menu  = $menu->getActive();
 		$access=!empty($current_menu)?$current_menu->access : 0;

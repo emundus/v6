@@ -49,9 +49,9 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
 	set_time_limit(0);
 	require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
 	require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
-	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
-	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 
 	$user = JFactory::getUser($user_id);
 	$current_user = JFactory::getUser();
@@ -132,7 +132,7 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
 
 			$query = 'DELETE FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter->attachment_id.' AND campaign_id='.$campaign['id']. ' AND fnum like '.$db->Quote($fnum).' AND filename NOT LIKE "%lock%"';
 			$db->setQuery($query);
-			$db->query();
+			$db->execute();
 
 		} catch (Exception $e) {
 			JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
@@ -151,7 +151,7 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
 		'FNUM' 				=> $fnum
 	];
 
-	$tags = $m_emails->setTags($user_id, $post, $fnum);
+	$tags = $m_emails->setTags($user_id, $post, $fnum, '', $letter->body);
 	$htmldata = "";
 	$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
@@ -166,10 +166,10 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
 
 	//get logo
 	preg_match('#src="(.*?)"#i', $letter->header, $tab);
-	$pdf->logo = JPATH_BASE.DS.$tab[1];
+	$pdf->logo = JPATH_SITE.DS.$tab[1];
 
 	preg_match('#src="(.*?)"#i', $letter->footer, $tab);
-	$pdf->logo_footer = JPATH_BASE.DS.@$tab[1];
+	$pdf->logo_footer = JPATH_SITE.DS.@$tab[1];
 
 	unset($logo);
 	unset($logo_footer);
@@ -204,7 +204,7 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
 
 			$query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum) VALUES ('.$user_id.', '.$letter->attachment_id.', "'.$name.'","'.$training.' '.date('Y-m-d H:i:s').'", 0, 1, '.$campaign['id'].', '.$db->Quote($fnum).')';
 			$db->setQuery($query);
-			$db->query();
+			$db->execute();
 
 		} catch (Exception $e) {
 			JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
@@ -230,10 +230,10 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 	set_time_limit(0);
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
-	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
-	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
-	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+	include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+	include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+	include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+	include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 
 	$current_user 	= JFactory::getUser();
 	$db 			= JFactory::getDBO();
@@ -280,7 +280,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 		$ds = !empty($c['date_start']) ? date(JText::_('DATE_FORMAT_LC3'), strtotime($c['date_start'])) : JText::_('NOT_DEFINED');
 		$de = !empty($c['date_end']) ? date(JText::_('DATE_FORMAT_LC3'), strtotime($c['date_end'])) : JText::_('NOT_DEFINED');
 		//$courses_list .= '<li>'.$ds.' - '.$de.'</li>';
-		$courses_list .= '<img src="'.JPATH_BASE.DS."media".DS."com_emundus".DS."images".DS."icones".DS."checkbox-unchecked_16x16.png".'" width="8" height="8" align="left" /> ';
+		$courses_list .= '<img src="'.JPATH_SITE.DS."media".DS."com_emundus".DS."images".DS."icones".DS."checkbox-unchecked_16x16.png".'" width="8" height="8" align="left" /> ';
 		$courses_list .= $ds.' - '.$de.'<br />';
 		$courses_fee  .= 'Euro '.$c['price'].',-- ';
 	}
@@ -343,7 +343,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 			unset($evaluation[0]["reason_other"]);
 		}
 
-		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
+		include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
 		$evaluation_details = @EmundusHelperList::getElementsDetailsByName('"'.implode('","', array_keys($evaluation[0])).'"');
 
 		$result = "";
@@ -409,7 +409,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
 				$query = 'DELETE FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter['attachment_id'].' AND campaign_id='.$campaign_id. ' AND fnum like '.$db->Quote($fnum).' AND filename NOT LIKE "%lock%"';
 				$db->setQuery($query);
-				$db->query();
+				$db->execute();
 
 			} catch (Exception $e) {
 				JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
@@ -424,12 +424,12 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 			$file_type = explode('.', $file_path[count($file_path)-1]);
 			$name = $attachment['lbl'].'_'.date('Y-m-d_H-i-s').'.'.$file_type[1];
 
-			if (file_exists(JPATH_BASE.$letter['file'])) {
+			if (file_exists(JPATH_SITE.$letter['file'])) {
 				$path = EMUNDUS_PATH_ABS.$user_id.DS.$name;
 				$url  = EMUNDUS_PATH_REL.$user_id.'/'.$name;
-				copy(JPATH_BASE.$letter['file'], $path);
+				copy(JPATH_SITE.$letter['file'], $path);
 			} else {
-				$app->enqueueMessage($name.' - '.JText::_("TEMPLATE_FILE_MISSING").' : '.JPATH_BASE.$letter['file'], 'error');
+				$app->enqueueMessage($name.' - '.JText::_("TEMPLATE_FILE_MISSING").' : '.JPATH_SITE.$letter['file'], 'error');
 				$error++;
 			}
 
@@ -442,10 +442,10 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 			$file_type = explode('.', $file_path[count($file_path)-1]);
 			$name = $attachment['lbl'].'_'.date('Y-m-d_H-i-s').'.'.$file_type[1];
 
-			if (file_exists(JPATH_BASE.$letter['file'])) {
+			if (file_exists(JPATH_SITE.$letter['file'])) {
 
 				$PHPWord = new \PhpOffice\PhpWord\PhpWord();
-				$document = $PHPWord->loadTemplate(JPATH_BASE.$letter['file']);
+				$document = $PHPWord->loadTemplate(JPATH_SITE.$letter['file']);
 
 				for ($i = 0; $i < count($tags['patterns']); $i++) {
 					$document->setValue($tags['patterns'][$i], $tags['replacements'][$i]);
@@ -458,23 +458,23 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 				$document->save($path);
 				unset($document);
 			} else {
-				$app->enqueueMessage($name.' - '.JText::_("TEMPLATE_FILE_MISSING").' : '.JPATH_BASE.$letter['file'], 'error');
+				$app->enqueueMessage($name.' - '.JText::_("TEMPLATE_FILE_MISSING").' : '.JPATH_SITE.$letter['file'], 'error');
 				$error++;
 			}
 
 		} elseif ($letter['template_type'] == 4) { // Applicant file
 			$upload_file = $m_application->getAttachmentsByFnum($fnum, $letter['attachment_id']);
 			$name = $upload_file[0]->filename;
-			if (file_exists(JPATH_BASE.$letter['file'])) {
+			if (file_exists(JPATH_SITE.$letter['file'])) {
 				$path = EMUNDUS_PATH_ABS.$user_id.DS.$name;
 				$url  = EMUNDUS_PATH_REL.$user_id.'/'.$name;
 			} else {
-				$app->enqueueMessage($name.' - '.JText::_("TEMPLATE_FILE_MISSING").' : '.JPATH_BASE.$letter['file'], 'error');
+				$app->enqueueMessage($name.' - '.JText::_("TEMPLATE_FILE_MISSING").' : '.JPATH_SITE.$letter['file'], 'error');
 				$error++;
 			}
 
 		} else { // From HTML : $letter['template_type'] == 2
-			$tags = $m_emails->setTags($user_id, $post, $fnum);
+			$tags = $m_emails->setTags($user_id, $post, $fnum, '', $letter["body"]);
 			$htmldata = "";
 			$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
@@ -491,10 +491,10 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
 			//get logo
 			preg_match('#src="(.*?)"#i', $letter['header'], $tab);
-			$pdf->logo = JPATH_BASE.DS.$tab[1];
+			$pdf->logo = JPATH_SITE.DS.$tab[1];
 
 			preg_match('#src="(.*?)"#i', $letter['footer'], $tab);
-			$pdf->logo_footer = JPATH_BASE.DS.@$tab[1];
+			$pdf->logo_footer = JPATH_SITE.DS.@$tab[1];
 
 			//get title
 			//	$config =& JFactory::getConfig();
@@ -551,7 +551,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
 					$query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum) VALUES ('.$user_id.', '.$letter['attachment_id'].', "'.$name.'","'.$training.' '.date('Y-m-d H:i:s').'", 0, 1, '.$campaign_id.', '.$db->Quote($fnum).')';
 					$db->setQuery($query);
-					$db->query();
+					$db->execute();
 					$id = $db->insertid();
 
 				} catch (Exception $e) {
@@ -582,9 +582,9 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 	set_time_limit(0);
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
-	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
-	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+	include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+	include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+	include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 
 	$current_user 	= JFactory::getUser();
 	$db 			= JFactory::getDBO();
@@ -624,7 +624,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 		$ds = !empty($c['date_start']) ? date(JText::_('DATE_FORMAT_LC3'), strtotime($c['date_start'])) : JText::_('NOT_DEFINED');
 		$de = !empty($c['date_end']) ? date(JText::_('DATE_FORMAT_LC3'), strtotime($c['date_end'])) : JText::_('NOT_DEFINED');
 		//$courses_list .= '<li>'.$ds.' - '.$de.'</li>';
-		$courses_list .= '<img src="'.JPATH_BASE.DS."media".DS."com_emundus".DS."images".DS."icones".DS."checkbox-unchecked_16x16.png".'" width="8" height="8" align="left" /> ';
+		$courses_list .= '<img src="'.JPATH_SITE.DS."media".DS."com_emundus".DS."images".DS."icones".DS."checkbox-unchecked_16x16.png".'" width="8" height="8" align="left" /> ';
 		$courses_list .= $ds.' - '.$de.'<br />';
 		$courses_fee  .= 'Euro '.$c['price'].'<br>';
 		$programme = $c['label'];
@@ -684,7 +684,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 			$file_type = explode('.', $file_path[count($file_path)-1]);
 			$name = date('Y-m-d_H-i-s').$attachment['lbl'].'.'.$file_type[1];
 
-			$file = JPATH_BASE.$letter['file'];
+			$file = JPATH_SITE.$letter['file'];
 			if (file_exists($file)) {
 				$mime_type = get_mime_type($file);
 				header('Content-type: application/'.$mime_type);
@@ -717,16 +717,16 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 
 			$PHPWord = new PHPWord();
 
-			$document = $PHPWord->loadTemplate(JPATH_BASE.$letter['file']);
+			$document = $PHPWord->loadTemplate(JPATH_SITE.$letter['file']);
 
 			for ($i = 0; $i < count($tags['patterns']); $i++) {
 				$document->setValue($tags['patterns'][$i], $tags['replacements'][$i]);
 				//echo $tags['patterns'][$i]." - ".$tags['replacements'][$i]."<br>";
 			}
 
-			$document->save(JPATH_BASE.DS.'tmp'.DS.$name);
+			$document->save(JPATH_SITE.DS.'tmp'.DS.$name);
 
-			$file = JPATH_BASE.DS.'tmp'.DS.$name;
+			$file = JPATH_SITE.DS.'tmp'.DS.$name;
 			if (file_exists($file)) {
 				$mime_type = get_mime_type($file);
 				header('Content-type: application/'.$mime_type);
@@ -770,10 +770,10 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 
 			//get logo
 			preg_match('#src="(.*?)"#i', $letter['header'], $tab);
-			$pdf->logo = JPATH_BASE.DS.$tab[1];
+			$pdf->logo = JPATH_SITE.DS.$tab[1];
 
 			preg_match('#src="(.*?)"#i', $letter['footer'], $tab);
-			$pdf->logo_footer = JPATH_BASE.DS.$tab[1];
+			$pdf->logo_footer = JPATH_SITE.DS.$tab[1];
 
 			//get title
 			/*	$config =& JFactory::getConfig();
@@ -830,9 +830,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 
-	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
-	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
 	if (empty($file_lbl)) {
 		$file_lbl = "_application";
@@ -901,7 +901,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	} else {
 		$logo_module = JModuleHelper::getModuleById('90');
 		preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
-		$logo = JPATH_BASE.DS.$tab[1];
+		$logo = JPATH_SITE.DS.$tab[1];
 	}
 
 	// manage logo by programme
@@ -1169,9 +1169,9 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 
-	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
-	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
 	$config = JFactory::getConfig();
 	$offset = $config->get('offset');
@@ -1492,16 +1492,16 @@ function generatePDFfromHTML($html, $path = null, $footer = '') {
 		$path = DS.'images'.DS.'emundus'.DS.'pdf'.substr(md5(microtime()),rand(0,26),5).'.pdf';
 	}
 
-	if (!file_exists(dirname(JPATH_BASE.$path))) {
-		mkdir(dirname(JPATH_BASE.$path), 0755, true);
-		chmod(dirname(JPATH_BASE.$path), 0755);
+	if (!file_exists(dirname(JPATH_SITE.$path))) {
+		mkdir(dirname(JPATH_SITE.$path), 0755, true);
+		chmod(dirname(JPATH_SITE.$path), 0755);
 	}
 
 	$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
 	$pdf->SetCreator(PDF_CREATOR);
 	$pdf->SetAuthor(PDF_AUTHOR);
-	$pdf->SetTitle(basename(JPATH_BASE.$path));
+	$pdf->SetTitle(basename(JPATH_SITE.$path));
 	$pdf->footer = $footer;
 
 	// set margins
@@ -1521,7 +1521,7 @@ function generatePDFfromHTML($html, $path = null, $footer = '') {
 
 	@chdir('tmp');
 
-	$pdf->Output(JPATH_BASE.$path, 'F');
+	$pdf->Output(JPATH_SITE.$path, 'F');
 
 	if ($error == 0) {
 		return $path;

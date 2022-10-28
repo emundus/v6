@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -178,10 +178,12 @@ class hikashopUserClass extends hikashopClass {
 				$userData = $this->get($element->user_id);
 				$element->user_cms_id = $userData->user_cms_id;
 			}
-			$user = JFactory::getUser($element->user_cms_id);
-			if(!empty($user) && $element->user_email!=$user->email){
-				$user->email = $element->user_email;
-				$user->save();
+			if(!empty($element->user_cms_id)) {
+				$user = JFactory::getUser($element->user_cms_id);
+				if(!empty($user) && $element->user_email!=$user->email){
+					$user->email = $element->user_email;
+					$user->save();
+				}
 			}
 		}
 		if(isset($element->user_currency_id)) {
@@ -366,7 +368,7 @@ class hikashopUserClass extends hikashopClass {
 		$db = JFactory::getDBO();
 
 		$user->accumulated['currentclicks']=$user->accumulated['clicks']=$user->accumulated['paidclicks']=0;
-		if(bccomp($user->user_params->user_partner_click_fee,0,5)){
+		if(bccomp(sprintf('%F',$user->user_params->user_partner_click_fee),0,5)){
 			$query='SELECT SUM(click_partner_price) AS clicks_total,click_partner_paid FROM '.hikashop_table('click').' WHERE click_partner_id='.$user->user_id.' GROUP BY click_partner_paid';
 			$db->setQuery($query);
 			$results = $db->loadObjectList('click_partner_paid');
@@ -381,7 +383,7 @@ class hikashopUserClass extends hikashopClass {
 
 		}
 		$user->accumulated['currentleads']=$user->accumulated['leads']=$user->accumulated['paidleads']=0;
-		if(bccomp($user->user_params->user_partner_lead_fee,0,5)){
+		if(bccomp(sprintf('%F',$user->user_params->user_partner_lead_fee),0,5)){
 			$query='SELECT SUM(user_partner_price) AS leads_total,user_partner_paid FROM '.hikashop_table('user').' WHERE user_partner_id='.$user->user_id.' GROUP BY user_partner_paid';
 			$db->setQuery($query);
 			$results = $db->loadObjectList('user_partner_paid');
@@ -395,7 +397,7 @@ class hikashopUserClass extends hikashopClass {
 		}
 
 		$user->accumulated['currentsales'] = $user->accumulated['sales'] = $user->accumulated['paidsales'] = 0;
-		if(bccomp($user->user_params->user_partner_percent_fee,0,5) || bccomp($user->user_params->user_partner_flat_fee,0,5)) {
+		if(bccomp(sprintf('%F',$user->user_params->user_partner_percent_fee),0,5) || bccomp(sprintf('%F',$user->user_params->user_partner_flat_fee),0,5)) {
 			$partner_valid_status_list=explode(',',$config->get('partner_valid_status','confirmed,shipped'));
 			foreach($partner_valid_status_list as $k => $partner_valid_status) {
 				$partner_valid_status_list[$k]= $this->database->Quote($partner_valid_status);
@@ -466,7 +468,13 @@ class hikashopUserClass extends hikashopClass {
 		$messages = array();
 
 		if($registerData === false || $addressData === false || $userData === false  || $shippingAddressData === false) {
-			$messages = $fieldClass->messages;
+			if(!empty($fieldClass->messages) && is_array($fieldClass->messages) && count($fieldClass->messages)) {
+				foreach($fieldClass->messages as $k => $msg) {
+					if(is_array($msg))
+						$msg = $msg[0];
+					$messages[$k] = array($msg, 'error');
+				}
+			}
 			$fieldClass->messages = array();
 			$status = false;
 		}
@@ -520,19 +528,28 @@ class hikashopUserClass extends hikashopClass {
 					$minimumIntegers = (int)$params->get('minimum_integers');
 					$minimumSymbols = (int)$params->get('minimum_symbols');
 					$minimumUppercase = (int)$params->get('minimum_uppercase');
-
-					$language = JFactory::getLanguage();
-					$language->load('com_users', JPATH_SITE, $language->getTag(), true);
+					$minimumLowercase = (int)$params->get('minimum_lowercase');
 
 					if(!empty($minimumLength) && strlen((string)$registerData->password) < $minimumLength) {
 						$status = false;
-						$messages[] = array(JText::plural('COM_USERS_MSG_PASSWORD_TOO_SHORT_N', $minimumLength), 'warning');
+						$messages[] = array($this->error('too_short', $minimumLength), 'error');
+					}
+					if (strlen((string)$registerData->password) > 4096) {
+						$status = false;
+						$messages[] = array($this->error('too_long'), 'error');
+					}
+					$valueTrim = trim((string)$registerData->password);
+
+					if (strlen((string)$registerData->password) != strlen($valueTrim)) {
+						$status = false;
+						$messages[] = array($this->error('space'), 'error');
 					}
 
 					$checks = array(
-						'COM_USERS_MSG_NOT_ENOUGH_INTEGERS_N' => array($minimumIntegers, '/[0-9]/'),
-						'COM_USERS_MSG_NOT_ENOUGH_SYMBOLS_N' => array($minimumSymbols, '[\W]'),
-						'COM_USERS_MSG_NOT_ENOUGH_UPPERCASE_LETTERS_N' => array($minimumUppercase, '/[A-Z]/'),
+						'int' => array($minimumIntegers, '/[0-9]/'),
+						'symbol' => array($minimumSymbols, '[\W]'),
+						'uppercase' => array($minimumUppercase, '/[A-Z]/'),
+						'lowercase' => array($minimumLowercase, '/[a-z]/'),
 					);
 					foreach($checks as $k => $v) {
 						if(empty($v[0]))
@@ -541,7 +558,7 @@ class hikashopUserClass extends hikashopClass {
 						if($n >= $v[0])
 							continue;
 						$status = false;
-						$messages[] = array(JText::plural($k, $v[0]), 'warning');
+						$messages[] = array($this->error($k, $v[0]), 'error');
 					}
 				}
 			}
@@ -669,7 +686,7 @@ class hikashopUserClass extends hikashopClass {
 
 
 			$privacy = $this->getPrivacyConsentSettings();
-			if($privacy && !$registerData->privacy) {
+			if($privacy && !@$registerData->privacy) {
 				$ret['status'] = false;
 				$ret['messages']['PLG_SYSTEM_PRIVACYCONSENT_FIELD_ERROR'] = array(JText::_('PLG_SYSTEM_PRIVACYCONSENT_FIELD_ERROR'), 'error');
 				return $ret;
@@ -692,7 +709,9 @@ class hikashopUserClass extends hikashopClass {
 			$useractivation = $params->get('useractivation');
 			if($useractivation > 0) {
 				jimport('joomla.user.helper');
-				if(HIKASHOP_J30)
+				if(HIKASHOP_J40)
+					$user->set('activation', JApplicationHelper::getHash( JUserHelper::genRandomPassword()) );
+				elseif(HIKASHOP_J30)
 					$user->set('activation', JApplication::getHash( JUserHelper::genRandomPassword()) );
 				else
 					$user->set('activation', JUtility::getHash( JUserHelper::genRandomPassword()) );
@@ -710,11 +729,12 @@ class hikashopUserClass extends hikashopClass {
 			$ret['userActivation'] = $useractivation;
 
 			$this->get(false);
-			$newUser = $this->get($user->id, 'cms');
+			$newUser = $this->get($user->email, 'email');
 
-			if(!empty($newUser))
+			if(!empty($newUser)) {
 				$userData->user_id = $newUser->user_id;
-			else if(!empty($user->id))
+				$userData->user_cms_id = $user->id;
+			} else if(!empty($user->id))
 				$userData->user_cms_id = $user->id;
 			else
 				$userData->user_email = $registerData->email;
@@ -750,7 +770,7 @@ class hikashopUserClass extends hikashopClass {
 			$ret['user_id'] = (isset($userInDB->user_id) ? (int)$userInDB->user_id : 0);
 
 			$app = JFactory::getApplication();
-	    	$old_messages = $app->getMessageQueue();
+			$old_messages = $app->getMessageQueue();
 
 			if(!empty($ret['user_id'])) {
 				if($config->get('user_ip'))
@@ -762,18 +782,18 @@ class hikashopUserClass extends hikashopClass {
 
 			if(empty($ret['user_id'])) {
 				$ret['status'] = false;
-    			$new_messages = $app->getMessageQueue();
+				$new_messages = $app->getMessageQueue();
 
-    			if(count($old_messages) < count($new_messages)) {
-    				$new_messages = array_slice($new_messages, count($old_messages));
+				if(count($old_messages) < count($new_messages)) {
+					$new_messages = array_slice($new_messages, count($old_messages));
 
-    				foreach($new_messages as $msg) {
-    					$ret['messages'][] = array(
-    						$msg['message'],
-    					    $msg['type']
-    					);
-    				}
-    			}
+					foreach($new_messages as $msg) {
+						$ret['messages'][] = array(
+							$msg['message'],
+							$msg['type']
+						);
+					}
+				}
 				return $ret;
 			}
 
@@ -911,6 +931,46 @@ class hikashopUserClass extends hikashopClass {
 		return $ret;
 	}
 
+	private function error($key, $var=null) {
+		$k = 'j3';
+		if(HIKASHOP_J40) {
+			$k = 'j4';
+		} else {
+			static $done = false;
+			if(!$done) {
+				$done = true;
+				$language = JFactory::getLanguage();
+				$language->load('com_users', JPATH_SITE, $language->getTag(), true);
+			}
+		}
+
+		$msg = array(
+			'j4' => array(
+				'too_short' => 'JFIELD_PASSWORD_TOO_SHORT_N',
+				'too_long' => 'JFIELD_PASSWORD_TOO_LONG',
+				'space' => 'JFIELD_PASSWORD_SPACES_IN_PASSWORD',
+				'int' => 'JFIELD_PASSWORD_NOT_ENOUGH_INTEGERS_N',
+				'symbol' => 'JFIELD_PASSWORD_NOT_ENOUGH_SYMBOLS_N',
+				'lowercase' => 'JFIELD_PASSWORD_NOT_ENOUGH_LOWERCASE_LETTERS_N',
+				'uppercase' => 'JFIELD_PASSWORD_NOT_ENOUGH_UPPERCASE_LETTERS_N',
+			),
+
+			'j3' => array(
+				'too_short' => 'COM_USERS_MSG_PASSWORD_TOO_SHORT_N',
+				'too_long' => 'COM_USERS_MSG_PASSWORD_TOO_LONG',
+				'space' => 'COM_USERS_MSG_SPACES_IN_PASSWORD',
+				'int' => 'COM_USERS_MSG_NOT_ENOUGH_INTEGERS_N',
+				'symbol' => 'COM_USERS_MSG_NOT_ENOUGH_SYMBOLS_N',
+				'lowercase' => 'COM_USERS_MSG_NOT_ENOUGH_LOWERCASE_LETTERS_N',
+				'uppercase' => 'COM_USERS_MSG_NOT_ENOUGH_UPPERCASE_LETTERS_N',
+			),
+		);
+		if(is_null($var)) {
+			return JText::_($msg[$k][$key]);
+		}
+		return JText::plural($msg[$k][$key], $var);
+	}
+
 	public function registerGuest($user_id, $registerData) {
 		$user = clone(JFactory::getUser());
 
@@ -960,19 +1020,28 @@ class hikashopUserClass extends hikashopClass {
 			$minimumIntegers = (int)$params->get('minimum_integers');
 			$minimumSymbols = (int)$params->get('minimum_symbols');
 			$minimumUppercase = (int)$params->get('minimum_uppercase');
-
-			$language = JFactory::getLanguage();
-			$language->load('com_users', JPATH_SITE, $language->getTag(), true);
+			$minimumLowercase = (int)$params->get('minimum_lowercase');
 
 			if(!empty($minimumLength) && strlen((string)$registerData->password) < $minimumLength) {
 				$status = false;
-				$messages[] = array(JText::plural('COM_USERS_MSG_PASSWORD_TOO_SHORT_N', $minimumLength), 'warning');
+				$messages[] = array($this->error('too_short', $minimumLength), 'warning');
+			}
+			if (strlen((string)$registerData->password) > 4096) {
+				$status = false;
+				$messages[] = array($this->error('too_long'), 'error');
+			}
+			$valueTrim = trim((string)$registerData->password);
+
+			if (strlen((string)$registerData->password) != strlen($valueTrim)) {
+				$status = false;
+				$messages[] = array($this->error('space'), 'error');
 			}
 
 			$checks = array(
-				'COM_USERS_MSG_NOT_ENOUGH_INTEGERS_N' => array($minimumIntegers, '/[0-9]/'),
-				'COM_USERS_MSG_NOT_ENOUGH_SYMBOLS_N' => array($minimumSymbols, '[\W]'),
-				'COM_USERS_MSG_NOT_ENOUGH_UPPERCASE_LETTERS_N' => array($minimumUppercase, '/[A-Z]/'),
+				'int' => array($minimumIntegers, '/[0-9]/'),
+				'symbol' => array($minimumSymbols, '[\W]'),
+				'uppercase' => array($minimumUppercase, '/[A-Z]/'),
+				'lowercase' => array($minimumLowercase, '/[a-z]/'),
 			);
 			foreach($checks as $k => $v) {
 				if(empty($v[0]))
@@ -981,7 +1050,7 @@ class hikashopUserClass extends hikashopClass {
 				if($n >= $v[0])
 					continue;
 				$status = false;
-				$messages[] = array(JText::plural($k, $v[0]), 'warning');
+				$messages[] = array($this->error($k, $v[0]), 'warning');
 			}
 		}
 
@@ -1036,6 +1105,13 @@ class hikashopUserClass extends hikashopClass {
 		$language = JFactory::getLanguage();
 		$language->load('lib_joomla', JPATH_SITE);
 
+		$privacy = $this->getPrivacyConsentSettings();
+		if($privacy && !@$registerData->privacy) {
+			$ret['status'] = false;
+			$ret['messages']['PLG_SYSTEM_PRIVACYCONSENT_FIELD_ERROR'] = array(JText::_('PLG_SYSTEM_PRIVACYCONSENT_FIELD_ERROR'), 'error');
+			return $ret;
+		}
+
 		if( !$user->bind($data, 'usertype') ) {
 			$ret['status'] = false;
 			$ret['messages'][] = array(JText::_( $user->getError() ), 'error');
@@ -1085,8 +1161,14 @@ class hikashopUserClass extends hikashopClass {
 		if($params->get('mail_to_admin', 0)) {
 			$mail = $mailClass->get('user_account_admin_notification', $registerData);
 			$mail->subject = JText::sprintf($mail->subject, @$registerData->name, HIKASHOP_LIVE);
-			if(empty($mail->dst_email))
-				$mail->dst_email = explode(',', $config->get('from_email'));
+
+			if(empty($mail->dst_email)) {
+				$dst = $config->get('user_account_admin_email');
+				if(empty($dst))
+					$mail->dst_email = array($config->get('from_email'));
+				else
+					$mail->dst_email = explode(',', $dst);
+			}
 			$mailClass->sendMail($mail);
 		}
 
@@ -1109,12 +1191,19 @@ class hikashopUserClass extends hikashopClass {
 		if(empty($pass))
 			$credentials['password'] = hikaInput::get()->request->getRaw('passwd', '');
 
+
 		$app = JFactory::getApplication();
-		$error = $app->login($credentials, $options);
+		try {
+			$error = $app->login($credentials, $options);
+		} catch (Exception $e) {
+			return false;
+		}
+
+		if(!HIKASHOP_J40 && JError::isError($error))
+			return false;
 
 		$user = JFactory::getUser();
-
-		if(JError::isError($error) || $user->guest)
+		if($user->guest)
 			return false;
 
 		$user_id = $this->getID($user->get('id'));
@@ -1185,9 +1274,9 @@ class hikashopUserClass extends hikashopClass {
 
 		if($ret['status'] === false) {
 			if(isset($ret['raise_error']) && $ret['raise_error'] !== null)
-				JError::raiseError($ret['raise_error'], @$ret['raise_error_msg']);
+				$app->enqueueMessage(@$ret['raise_error_msg'], 'error');
 			if(isset($ret['raise_warning']) && $ret['raise_warning'] !== null)
-				JError::raiseWarning($ret['raise_warning'], @$ret['raise_warning_msg']);
+				$app->enqueueMessage(@$ret['raise_warning_msg'], 'warning');
 
 			return false;
 		}
@@ -1268,6 +1357,11 @@ class hikashopUserClass extends hikashopClass {
 		$language = JFactory::getLanguage();
 		$language->load('plg_'.$group.'_'.$name, JPATH_ADMINISTRATOR, $language->getTag(), true);
 
+		$type = 'article';
+		if(!empty($plugin->params['privacy_type'])) {
+			$type = $plugin->params['privacy_type'];
+		}
+
 		$privacyArticleId = @$plugin->params['privacy_article'];
 		$privacyNote = @$plugin->params[$note_name];
 		if(empty($privacyNote))
@@ -1275,7 +1369,36 @@ class hikashopUserClass extends hikashopClass {
 
 		$articleClass = hikashop_get('class.article');
 		$privacyArticleId = $articleClass->getLanguageArticleId($privacyArticleId);
-		return array('id' => $privacyArticleId, 'text' => $privacyNote);
+
+		$privacyMenuItem = @$plugin->params['privacy_menu_item'];
+
+		if(!empty($privacyMenuItem)) {
+			$languageSuffix = '';
+			if(HIKASHOP_J40 && Joomla\CMS\Language\Associations::isEnabled()) {
+				$privacyAssociated = Joomla\CMS\Language\Associations::getAssociations('com_menus', '#__menu', 'com_menus.item', $privacyMenuItem, 'id', '', '');
+				$lang = JFactory::getLanguage();
+				$currentLang = $lang->getTag();
+
+				if (isset($privacyAssociated[$currentLang])) {
+					$privacyMenuItem = $privacyAssociated[$currentLang]->id;
+				}
+				if (Joomla\CMS\Language\Multilanguage::isEnabled()) {
+					$db = JFactory::getDBO();
+					$query = 'SELECT id, language FROM #__menu WHERE id='.(int)$privacyMenuItem;
+					$db->setQuery($query);
+					$menuItem = $db->loadObject();
+					$languageSuffix = '&lang=' . $menuItem->language;
+				}
+			}
+			$privacyMenuItem = JRoute::_('index.php?Itemid=' . (int) $privacyMenuItem . '&tmpl=component' . $languageSuffix);
+		}
+
+		return array(
+			'id' => $privacyArticleId,
+			'text' => $privacyNote,
+			'url' => $privacyMenuItem,
+			'type' => $type,
+		);
 	}
 
 	public function addUserConsent(&$user){
@@ -1297,8 +1420,6 @@ class hikashopUserClass extends hikashopClass {
 		catch (Exception $e)
 		{
 		}
-
-		$userId = JArrayHelper::getValue($data, 'id', 0, 'int');
 
 		$message = array(
 			'action'      => 'consent',

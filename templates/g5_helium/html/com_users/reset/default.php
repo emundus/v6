@@ -19,9 +19,8 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_use
 <div class="reset<?php echo $this->pageclass_sfx; ?>">
 	<?php if ($this->params->get('show_page_heading')) : ?>
 		<div class="page-header">
-            <div class="icon-title resetpwd"></div>
-			<h1>
-				<?php echo $this->escape($this->params->get('page_heading')); ?>
+            <h1>
+                <?php echo JText::_('COM_USERS_LOGIN_RESET'); ?>
 			</h1>
 		</div>
 	<?php endif; ?>
@@ -37,7 +36,7 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_use
 		<div class="control-group">
 			<div class="controls">
 				<button type="submit" class="btn btn-primary validate">
-					<?php echo JText::_('JSUBMIT'); ?>
+					<?php echo JText::_('COM_USERS_SUBMIT_RESET'); ?>
 				</button>
 			</div>
 		</div>

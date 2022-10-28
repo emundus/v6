@@ -1,25 +1,47 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><div class="iframedoc" id="iframedoc"></div>
+<?php
+if ($this->type == 'manufacturer') 
+	$cookie_ref = 'manufacturer_exploreWidth_cookie';
+else
+	$cookie_ref = 'category_exploreWidth_cookie';
 
+	if(isset($_COOKIE[$cookie_ref])) 
+		$cookie_value = $_COOKIE[$cookie_ref];
+	else
+		$cookie_value = 'explorer_close';
+?>
 <?php if($this->config->get('category_explorer')){?>
 <div id="page-categories" class="hk-row-fluid">
-	<div class="hkc-md-2">
+	<div id ="hikashop_category_explorer_container" class="hkc-md-2 <?php echo $cookie_value; ?>">
 		<?php echo hikashop_setExplorer('category&task=listing',$this->pageInfo->filter->filter_id,false,$this->type); ?>
 	</div>
 	<div class="hkc-md-10">
 <?php } ?>
 		<?php $count = 6; ?>
+<?php 
+	$extra_class = "";
+	$extra_id = "";
+	$openfeatures_class = "";
+	$css_float = "float:right;";
+	if (HIKASHOP_J40) {
+		$extra_class = "hika_j4_search";
+		$extra_id = "id='hikashop_listing_filters_id'";
+		$openfeatures_class = "hidden-features";
+		$css_float = "";
+	}
+?>
 			<form action="index.php?option=<?php echo HIKASHOP_COMPONENT ?>&amp;ctrl=category" method="post"  name="adminForm" id="adminForm">
 				<div class="hk-row-fluid">
-					<div class="hkc-md-6">
+					<div class="hkc-md-6 <?php echo $extra_class; ?>">
 							<?php
 								 if ( !empty( $this->extrafilters)) {
 									 foreach($this->extrafilters as $name => $filterObj) {
@@ -41,8 +63,8 @@ defined('_JEXEC') or die('Restricted access');
 	echo $this->loadHkLayout('search', array());
  ?>
 					</div>
-					<div class="hkc-md-6">
-						<div class="expand-filters" style="width:auto;float:right">
+					<div <?php echo $extra_id; ?> class="hkc-md-6 hikashop_listing_filters <?php echo $openfeatures_class; ?>">
+						<div class="expand-filters" style="width:auto; <?php echo $css_float; ?>">
 							<?php
 								if ( !empty( $this->extrafilters)) {
 									foreach($this->extrafilters as $name => $filterObj) {
@@ -93,7 +115,17 @@ defined('_JEXEC') or die('Restricted access');
 							<th class="title titleorder">
 								<?php if(!$this->pageInfo->selectedType){
 									echo JHTML::_('grid.sort', JText::_( 'HIKA_ORDER' ), 'a.category_ordering',$this->pageInfo->filter->order->dir, $this->pageInfo->filter->order->value );
-									if ($this->order->ordering) echo JHTML::_('grid.order',  $this->rows );
+									if ($this->order->ordering) {
+										$keys = array_keys($this->rows);  
+										$rows_nb = end($keys);
+										$href = "javascript:saveorder(".$rows_nb.", 'saveorder')";
+										?><a href="<?php echo $href; ?>" rel="tooltip" class="saveorder btn btn-sm btn-secondary float-end" title="Save Order">
+											<button class="button-apply btn btn-success" type="button">
+<!--											<span class="icon-apply" aria-hidden="true"></span> -->
+												<i class="fas fa-save"></i>
+											</button>
+										</a><?php
+									}
 								}else{ ?>
 									<a href="#" title="<?php echo JText::_('CHANGE_SUB_ELEMENT_FILTER_TO_REORDER_ELEMENTS'); ?>"><?php echo JText::_( 'HIKA_ORDER' ); ?></a>
 								<?php } ?>
@@ -110,7 +142,6 @@ defined('_JEXEC') or die('Restricted access');
 						<tr>
 							<td colspan="<?php echo $count; ?>">
 								<?php echo $this->pagination->getListFooter(); ?>
-								<?php echo $this->pagination->getResultsCounter(); ?>
 							</td>
 						</tr>
 					</tfoot>
@@ -130,7 +161,13 @@ defined('_JEXEC') or die('Restricted access');
 								</td>
 								<?php if($this->category_image){ ?>
 								<td>
-									<?php echo $this->image->display(@$row->file_path,true,"",'','', 100, 100); ?>
+									<?php
+										$image_options = array('default' => true,'forcesize'=>true,'scale'=>$this->config->get('image_scale_mode','inside'));
+										$img = $this->image->getThumbnail(@$row->file_path, array('width' => 100, 'height' => 100), $image_options);
+										if($img->success) {
+											echo '<img class="hikashop_category_listing_image" title="'.$this->escape(@$row->file_description).'" alt="'.$this->escape(@$row->file_name).'" src="'.$img->url.'"/>';
+										}
+									?>
 								</td>
 								<?php } ?>
 								<td>
@@ -143,9 +180,11 @@ defined('_JEXEC') or die('Restricted access');
 										</a>
 									<?php } ?>
 									</div>
+									<?php if($row->category_type != 'manufacturer') { ?>
 									<a href="<?php echo hikashop_completeLink('category&filter_id='.$row->category_id); ?>">
 										<?php echo JText::_('LISTING_OF_SUBCATEGORIES'); ?> <i class="fa fa-chevron-right"></i>
 									</a>
+									<?php } ?>
 								</td>
 								<?php
 								if(!empty($this->fields)){

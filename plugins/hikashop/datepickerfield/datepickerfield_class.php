@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -27,6 +27,10 @@ class fieldOpt_datepicker_options {
 			$months[] = JHTML::_('select.option', $i, $i);
 		}
 
+		$checkDates = array(
+			JHTML::_('select.option', 'all', JText::_('HIKA_EVERYWHERE')),
+			JHTML::_('select.option', 'front', JText::_('HIKA_FRONTEND_ONLY'))
+		);
 		$ret = '
 <table class="table admintable table-stripped">
 	<tr>
@@ -107,6 +111,12 @@ class fieldOpt_datepicker_options {
 		<td>
 			<input type="text" name="field_options[datepicker_options][hour_extra_day]" value="'.@$value['hour_extra_day'].'" />
 		</td>
+	</tr>
+	<tr>
+		<td class="key">'.JText::_('HIKA_CHECK_DATES').'</td>
+		<td>'.
+			JHTML::_('select.genericlist', $checkDates, "field_options[datepicker_options][check_dates]", 'class="custom-select"', 'value', 'text', @$value['check_dates']).
+		'</td>
 	</tr>
 </table>';
 		return $ret;
@@ -263,6 +273,11 @@ window.hikashopDatepicker = function(el) {
 				hkjQuery("#"+e.attr("data-picker")).val("");
 			}
 		}
+		var hidden_input = document.getElementById(e.attr("data-picker"));
+		if(hidden_input) {
+			const event = new Event(\'change\');
+			hidden_input.dispatchEvent(event);
+		}
 	});
 };';
 
@@ -417,7 +432,12 @@ window.hikashopDatepicker = function(el) {
 		if(!empty($datepicker_options['today']) && empty($timestamp)) {
 			$timestamp = time();
 
-			if(empty($field->field_options['allow']) || $field->field_options['allow'] == 'future') {
+			$allow_check = true;
+			if (!empty($datepicker_options['check_dates']) && $datepicker_options['check_dates'] == 'front' && hikashop_isClient('administrator'))
+				$allow_check = false;
+
+			if((empty($field->field_options['allow']) || $field->field_options['allow'] == 'future') && $allow_check) {
+
 				if(!empty($datepicker_options['waiting']))
 					$timestamp += 86400 * (int)$datepicker_options['waiting'];
 
@@ -773,7 +793,11 @@ window.hikashop.ready(function(){ window.hikashopDatepicker("'.$datepicker_id.'"
 					$datepicker_options['waiting'] = (int)$datepicker_options['waiting'] + 1;
 			}
 
-			if(!empty($fullField->field_options['allow'])) {
+			$allow_check = true;
+			if (!empty($datepicker_options['check_dates']) && $datepicker_options['check_dates'] == 'front' && hikashop_isClient('administrator'))
+				$allow_check = false;
+
+			if(!empty($fullField->field_options['allow']) && $allow_check) {
 
 				if($fullField->field_options['allow'] == 'future') {
 					$fullTodayCode += (int)@$datepicker_options['waiting'];
@@ -785,12 +809,12 @@ window.hikashop.ready(function(){ window.hikashopDatepicker("'.$datepicker_id.'"
 				}
 
 				if($fullField->field_options['allow'] == 'future' && $fullDayCode < $fullTodayCode) {
-					$app->enqueueMessage(JText::sprintf('PLEASE_FILL_THE_FIELD', $this->trans($field->field_realname)));
+					$this->_displayMessage(JText::sprintf('PLEASE_FILL_THE_FIELD', $this->trans($field->field_realname)), $field);
 					return false;
 				}
 
 				if($fullField->field_options['allow'] == 'past' && $fullDayCode > $fullTodayCode) {
-					$app->enqueueMessage(JText::sprintf('PLEASE_FILL_THE_FIELD', $this->trans($field->field_realname)));
+					$this->_displayMessage(JText::sprintf('PLEASE_FILL_THE_FIELD', $this->trans($field->field_realname)), $field);
 					return false;
 				}
 			}
@@ -808,7 +832,7 @@ window.hikashop.ready(function(){ window.hikashopDatepicker("'.$datepicker_id.'"
 			$excludeDays = array();
 			for($i = 0; $i <= 6; $i++) {
 				if(!empty($datepicker_options['forbidden_'.$i]) && $i == $wday) {
-					$app->enqueueMessage(JText::sprintf('DATE_PICKER_INCORRECT_DATE_FOR', $this->trans($field->field_realname)));
+					$this->_displayMessage(JText::sprintf('DATE_PICKER_INCORRECT_DATE_FOR', $this->trans($field->field_realname)), $field);
 					return false;
 				}
 			}
@@ -826,11 +850,11 @@ window.hikashop.ready(function(){ window.hikashopDatepicker("'.$datepicker_id.'"
 						$ret = (int)$this->convertDay($day, null, $spe_day_format);
 						if(!empty($ret)) {
 							if(count($day) == 3 && $fullDayCode == $ret) {
-								$app->enqueueMessage(JText::sprintf('DATE_PICKER_INCORRECT_DATE_FOR', $this->trans($field->field_realname)));
+								$this->_displayMessage(JText::sprintf('DATE_PICKER_INCORRECT_DATE_FOR', $this->trans($field->field_realname)), $field);
 								return false;
 							}
 							if(count($day) == 2 && $dayCode == $ret) {
-								$app->enqueueMessage(JText::sprintf('DATE_PICKER_INCORRECT_DATE_FOR', $this->trans($field->field_realname)));
+								$this->_displayMessage(JText::sprintf('DATE_PICKER_INCORRECT_DATE_FOR', $this->trans($field->field_realname)), $field);
 								return false;
 							}
 						}
@@ -843,10 +867,10 @@ window.hikashop.ready(function(){ window.hikashopDatepicker("'.$datepicker_id.'"
 
 						if(!empty($ret1) && !empty($ret2) && count($day1) == count($day2) && $ret1 < $ret2) {
 							if(count($day1) == 3 && $fullDayCode >= $ret1 && $fullDayCode <= $ret2) {
-								$app->enqueueMessage(JText::sprintf('DATE_PICKER_INCORRECT_DATE_FOR', $this->trans($field->field_realname)));
+								$this->_displayMessage(JText::sprintf('DATE_PICKER_INCORRECT_DATE_FOR', $this->trans($field->field_realname)), $field);
 								return false;
 							} else if(count($day1) == 2 && $dayCode >= $ret1 && $dayCode <= $ret2) {
-								$app->enqueueMessage(JText::sprintf('DATE_PICKER_INCORRECT_DATE_FOR', $this->trans($field->field_realname)));
+								$this->_displayMessage(JText::sprintf('DATE_PICKER_INCORRECT_DATE_FOR', $this->trans($field->field_realname)), $field);
 								return false;
 							}
 						}
@@ -858,8 +882,19 @@ window.hikashop.ready(function(){ window.hikashopDatepicker("'.$datepicker_id.'"
 		if(!$field->field_required || strlen($value) || strlen($oldvalue))
 			return true;
 
-		if($this->report)
-			$app->enqueueMessage(JText::sprintf('PLEASE_FILL_THE_FIELD', $this->trans($field->field_realname)));
+
+		if(!empty($fullField->field_options['errormessage']))
+			$this->_displayMessage($this->trans($fullField->field_options['errormessage']), $field);
+		else
+			$this->_displayMessage(JText::sprintf('PLEASE_FILL_THE_FIELD', $this->trans($field->field_realname)), $field);
 		return false;
+	}
+	private function _displayMessage($message, &$field) {
+		if($this->report === true) {
+			$app = JFactory::getApplication();
+			$app->enqueueMessage($message, 'error');
+		} else {
+			$this->parent->messages[$this->prefix.$field->field_namekey] = array($message);
+		}
 	}
 }

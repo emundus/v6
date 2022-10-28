@@ -1,0 +1,31 @@
+{
+    "name": "yinsee/omnipay-billplz",
+    "type": "library",
+    "description": "Billplz support for Omnipay payment processing library",
+    "keywords": [
+        "Billplz",
+        "gateway",
+        "merchant",
+        "omnipay",
+        "pay",
+        "payment",
+        "purchase"
+    ],
+    "homepage": "https://github.com/yinsee/omnipay-billplz",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Yinsee",
+            "email": "yinsee@3b.my"
+        }
+    ],
+    "autoload": {
+        "psr-4": { "Omnipay\\Billplz\\" : "src/" }
+    },
+    "require": {
+        "omnipay/common": "~2.0"
+    },
+    "require-dev": {
+        "omnipay/tests": "~2.0"
+    }
+}

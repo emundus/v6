@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -172,7 +172,7 @@ if($this->params->get('characteristic_display') != 'list') {
 				$selected = (int)@$characteristic->default->characteristic_id;
 
 				$this->values = array();
-				if($characteristics_dynamic_display && $count > 1) {
+				if(($characteristics_dynamic_display && $count > 1) || $characteristics_dynamic_display > 1) {
 					if($characteristic->characteristic_display_method!='radio')
 						$this->values[] = JHTML::_('select.option', '', JText::_('PLEASE_SELECT') );
 					$selected = '';
@@ -185,7 +185,7 @@ if($this->params->get('characteristic_display') != 'list') {
 					if(strpos($val, '<img ') !== false)
 						$val = str_replace('<img ', '<img onclick="return hikashopVariantSelected(\'hikashop_product_characteristic_'.$characteristic_id.$key.'\');" ', $val);
 					$clean = hikashop_translate(strip_tags($val));
-					$optionValue = ($characteristic->characteristic_display_method != 'radio' && !empty($clean) ? $clean : $val);
+					$optionValue = ($characteristic->characteristic_display_method != 'radio' && !empty($clean) ? $clean : hikashop_translate($val));
 
 					$obj = new stdClass;
 					$obj->value  = $key;
@@ -215,14 +215,15 @@ if($this->params->get('characteristic_display') != 'list') {
 			$html = $main_html;
 
 			if($characteristics_dynamic_display) {
-				$matches = $this->getAllValuesMatches($this->characteristics, $this->element->variants);
+				$matches = $this->getAllValuesMatches($this->characteristics, $this->element->variants, $this->element->main);
+				$js.="\r\n".'window.hikashop.availableValues = [';
 				if($matches) {
-					$js.="\r\n".'window.hikashop.availableValues = [';
 					foreach($matches as $value_id => $children) {
 						$js.="\r\n\t"."[".implode(',',$children)."],";
 					}
-					$js.="\r\n".'];';
+
 				}
+				$js.="\r\n".'];';
 			}
 
 			break;
@@ -233,7 +234,7 @@ if($this->params->get('characteristic_display') != 'list') {
 	<script>
 <?php echo $js; ?>
 
-<?php if($characteristics_dynamic_display && $count > 1) { ?>
+<?php if(($characteristics_dynamic_display && $count > 1) || $characteristics_dynamic_display > 1) { ?>
 window.hikashop.ready( function() { initVariants(); });
 <?php } ?>
 function initVariants() {
@@ -257,43 +258,81 @@ function initVariants() {
 	var priceDivs = document.querySelectorAll('#hikashop_product_price_main > .hikashop_product_price_full');
 	priceDivs.forEach(function (sub) { sub.style.display = 'none'; });
 <?php } ?>
+
+<?php if( $characteristics_dynamic_display <= 1) { ?>
+	var firstEl = document.querySelector('[data-characteristic="1"]');
+	var firstRow = document.querySelector('[data-characrow="1"]');
+	var autoSelect = false;
+	if(firstEl.tagName.toLowerCase() == 'select') {
+		if(firstEl.options.length == 2) {
+			autoSelect = true;
+			firstEl.selectedIndex = firstEl.options.length - 1;
+			if(window.jQuery && typeof(jQuery().chosen) == "function") {
+				jQuery( "#hikashop_product_characteristics select" ).chosen('destroy').chosen({disable_search_threshold:10, search_contains: true});
+			}
+		}
+	} else {
+		var inputs = firstRow.querySelectorAll('input');
+		if(inputs.length == 1) {
+			autoSelect = true;
+			inputs[inputs.length-1].checked = true;
+		}
+	}
+
+	if(autoSelect) {
+		if(firstEl.tagName.toLowerCase() == 'select') {
+			hikashopVariantSelected(firstEl);
+		} else {
+			hikashopVariantSelected(inputs[inputs.length-1]);
+		}
+	}
+<?php } ?>
 }
+
+function getValidVariants(pos) {
+	var allInputs = document.querySelectorAll('[data-characteristic]'), selectedElements = [], validVariants = [];
+
+	for (index = 0; index < allInputs.length; ++index) {
+		var input = allInputs[index];
+		if(input.tagName.toLowerCase() == 'select') {
+			if(input.selectedIndex && input.value)
+				selectedElements[selectedElements.length] = parseInt(input.options[input.selectedIndex].value);
+		} else {
+			if(input.checked)
+				selectedElements[selectedElements.length] = parseInt(input.value);
+		}
+		if(selectedElements.length == pos)
+			break;
+	}
+
+	if(!selectedElements.length)
+		return window.hikashop.availableValues;
+
+	for (index = 0; index < window.hikashop.availableValues.length; ++index) {
+		var valid = true;
+		for (index2 = 0; index2 < selectedElements.length; ++index2) {
+			if(selectedElements[index2] != window.hikashop.availableValues[index][index2]) {
+				valid = false;
+				break;
+			}
+		}
+		if(valid){
+			validVariants[validVariants.length] = window.hikashop.availableValues[index];
+		}
+	}
+	return validVariants;
+}
+
 function hikashopVariantSelected(obj) {
-<?php if($characteristics_dynamic_display && $count > 1) { ?>
+<?php if(($characteristics_dynamic_display && $count > 1) || $characteristics_dynamic_display > 1) { ?>
 	if(typeof(obj) == "string")
 		obj = document.getElementById(obj);
 	if(!obj)
 		return true;
 	var pos = obj.getAttribute('data-characteristic'), last = obj.getAttribute('data-last'), otherRow = null,
-	qtyArea = document.getElementById('hikashop_product_quantity_main'), altArea = document.getElementById('hikashop_product_quantity_alt'),
-	allInputs = document.querySelectorAll('[data-characteristic]');
+	qtyArea = document.getElementById('hikashop_product_quantity_main'), altArea = document.getElementById('hikashop_product_quantity_alt');
 	if(!last) {
-		var selectedElements = [];
-		for (index = 0; index < allInputs.length; ++index) {
-			var input = allInputs[index];
-			if(input.tagName.toLowerCase() == 'select') {
-				if(input.selectedIndex && input.value)
-					selectedElements[selectedElements.length] = parseInt(input.options[input.selectedIndex].value);
-			} else {
-				if(input.checked)
-					selectedElements[selectedElements.length] = parseInt(input.value);
-			}
-			if(selectedElements.length == pos)
-				break;
-		}
-		var validVariants = [];
-		for (index = 0; index < window.hikashop.availableValues.length; ++index) {
-			var valid = true;
-			for (index2 = 0; index2 < selectedElements.length; ++index2) {
-				if(selectedElements[index2] != window.hikashop.availableValues[index][index2]) {
-					valid = false;
-					break;
-				}
-			}
-			if(valid){
-				validVariants[validVariants.length] = window.hikashop.availableValues[index];
-			}
-		}
+		validVariants = getValidVariants(pos);
 
 		if(validVariants.length < 1 && obj.value != '') {
 			console.log('characteristic value with id ' + obj.value + ' missing in window.hikashop.availableValues');
@@ -360,12 +399,12 @@ function hikashopVariantSelected(obj) {
 						if(parseInt(inputs[index].value) == currentVariant[pos]) {
 							found = true;
 							lastIndexFound = index;
-							inputs[index].parentNode.style.display = '';
+							inputs[index].parentNode.style.setProperty('display', '', 'important');
 						}
 					}
 
 					if(!found) {
-						inputs[index].parentNode.style.display = 'none';
+						inputs[index].parentNode.style.setProperty('display', 'none', 'important');
 					} else {
 						count++;
 					}
@@ -392,11 +431,20 @@ function hikashopVariantSelected(obj) {
 			return;
 		}
 	}
-	if(qtyArea) {
-		qtyArea.style.display = '';
-	}
-	if(altArea) {
-		altArea.style.display = 'none';
+	if(obj.value != '') {
+		if(qtyArea) {
+			qtyArea.style.display = '';
+		}
+		if(altArea) {
+			altArea.style.display = 'none';
+		}
+	} else {
+		if(qtyArea) {
+			qtyArea.style.display = 'none';
+		}
+		if(altArea) {
+			altArea.style.display = '';
+		}
 	}
 <?php } ?>
 	hikashopUpdateVariant(obj);
@@ -541,7 +589,31 @@ if(!empty($this->element->main->characteristics)) {
 				foreach($variant->images as $image) {
 ?>
 					<div class="hikashop_variants_table_image_thumb"><?php
-						echo $this->image->display($image->file_path, true, $image->file_name, 'style="margin-top:10px;margin-bottom:10px;display:inline-block;vertical-align:middle"', '', $width, $height);
+					if($this->image->override) {
+						echo $this->image->display(@$image->file_path, true, @$image->file_name, 'style="margin-top:10px;margin-bottom:10px;display:inline-block;vertical-align:middle"','', $width, $height);
+					} else {
+						if(empty($this->popup))
+							$this->popup = hikashop_get('helper.popup');
+						$image_options = array('default' => true,'forcesize'=>$this->config->get('image_force_size',true),'scale'=>$this->config->get('image_scale_mode','inside'));
+						$img = $this->image->getThumbnail(@$image->file_path, array('width' => $width, 'height' => $height), $image_options);
+						if(@$img->success) {
+							$attributes = 'style="margin-top:10px;margin-bottom:10px;display:inline-block;vertical-align:middle"';
+							if($img->external && $img->req_width && $img->req_height)
+								$attributes .= ' width="'.$img->req_width.'" height="'.$img->req_height.'"';
+							$html = '<img '.$attributes.' title="'.$this->escape(@$image->file_description).'" alt="'.$this->escape(@$image->file_name).'" src="'.$img->url.'"/>';
+							if($this->config->get('add_webp_images', 1) && function_exists('imagewebp') && !empty($img->webpurl)) {
+								$html = '
+								<picture>
+									<source srcset="'.$img->webpurl.'" type="image/webp">
+									<source srcset="'.$img->url.'" type="image/'.$img->ext.'">
+									'.$html.'
+								</picture>
+								';
+							}
+
+							echo $this->popup->image($html, $img->origin_url, null, 'title="'.$this->escape(@$image->file_description).'"');
+						}
+					}
 					?></div>
 <?php			}
 			}
@@ -605,6 +677,7 @@ if(!empty($this->element->main->characteristics)) {
 			if ($this->config->get('show_quantity_field') < 2) {
 				$this->params->set('main_div_name','variants');
 				$this->params->set('extra_div_name','hikashop_product_form');
+				$this->params->set('product_waitlist', $this->config->get('product_waitlist', 0));
 	 			$this->setLayout('add_to_cart_ajax');
 				echo $this->loadTemplate();
 				$this->params->set('extra_div_name','');

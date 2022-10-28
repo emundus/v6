@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -353,7 +353,10 @@ window.checkoutWorflowUrls = '.json_encode($urls).';
 				$ret .= JHtml::_('hikaselect.booleanlist', $name, 'data-checkout-param="'.$k.'" onchange="window.checkoutWorkflowEditor.onChange(this);"', $v);
 				break;
 			case 'inherit':
-				$ret .= JHtml::_('hikaselect.inheritradiolist', $name, $v, null, 'data-checkout-param="'.$k.'" onchange="window.checkoutWorkflowEditor.onChange(this);"');
+				$extraValues = null;
+				if(isset($s['values']))
+					$extraValues = $s['values'];
+				$ret .= JHtml::_('hikaselect.inheritradiolist', $name, $v, $extraValues, 'data-checkout-param="'.$k.'" onchange="window.checkoutWorkflowEditor.onChange(this);"');
 				break;
 			case 'radio':
 				if(!isset($s['values']))
@@ -363,7 +366,7 @@ window.checkoutWorflowUrls = '.json_encode($urls).';
 			case 'list':
 				if(!isset($s['values']))
 					break;
-				$ret .= JHTML::_('select.genericlist',  $s['values'], $name, 'class="no-chzn" data-checkout-param="'.$k.'" onchange="window.checkoutWorkflowEditor.onChange(this);"', 'value', 'text', $v);
+				$ret .= JHTML::_('select.genericlist',  $s['values'], $name, 'class="inputbox no-chzn" data-checkout-param="'.$k.'" onchange="window.checkoutWorkflowEditor.onChange(this);"', 'value', 'text', $v);
 				break;
 			case 'namebox':
 				if(!isset($s['namebox']))

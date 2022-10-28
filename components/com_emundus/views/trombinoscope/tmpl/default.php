@@ -151,8 +151,12 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
         $('#trombi_header').val(header);
         $('#trombi_footer').val(footer);
 
-        tinyMCE.execCommand("mceSetContent", false, default_tmpl);
-        tinyMCE.execCommand("mceRepaint");
+        tinymce.get('trombi_tmpl').setContent(default_tmpl);
+        tinymce.get('trombi_head').setContent(header);
+        tinymce.get('trombi_foot').setContent(footer);
+
+        //tinyMCE.execCommand("mceSetContent", false, default_tmpl);
+        //tinyMCE.execCommand("mceRepaint");
     });
 
 

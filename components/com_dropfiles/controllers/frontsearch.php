@@ -167,7 +167,7 @@ class DropfilesControllerFrontsearch extends JControllerLegacy
     {
         jimport('joomla.plugin.plugin');
         JLoader::register('PlgContentdropfiles', JPATH_PLUGINS . '/content/dropfiles/dropfiles.php');
-        $catid = JRequest::getInt('catid');
+        $catid = JFactory::getApplication()->input->getInt('catid');
         $match = array('', $catid);
         echo $this->viewfilebycatid($match);
     }
@@ -297,8 +297,8 @@ class DropfilesControllerFrontsearch extends JControllerLegacy
         }
 
         JPluginHelper::importPlugin('dropfilesthemes');
-        $dispatcher = JDispatcher::getInstance();
-        $result = $dispatcher->trigger('onShowFrontCategory', array(array('files' => $files,
+        $app = JFactory::getApplication();
+        $result = $app->triggerEvent('onShowFrontCategory', array(array('files' => $files,
             'category' => $category,
             'categories' => $categories,
             'params' => is_object($params) ? $params->params : '',
@@ -307,7 +307,11 @@ class DropfilesControllerFrontsearch extends JControllerLegacy
         ));
 
         if (!empty($result[0])) {
-            JHtml::_('behavior.framework');
+            if (DropfilesBase::isJoomla40()) {
+                JHtml::_('behavior.core');
+            } else {
+                JHtml::_('behavior.framework', true);
+            }
             $componentParams = JComponentHelper::getParams('com_dropfiles');
             $doc = JFactory::getDocument();
             if ((int) $componentParams->get('usegoogleviewer', 1) === 1) {

@@ -91,6 +91,11 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
         $jinput = $app->input;
         $form_type = $this->getParam('form_type', 'cc');
 
+        $config = JFactory::getConfig();
+
+        $timezone = new DateTimeZone( $config->get('offset') );
+        $now = JFactory::getDate()->setTimezone($timezone);
+
         // This allows the plugin to be run from a different context while retaining the same functionality.
         switch ($form_type) {
 
@@ -135,8 +140,8 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
 
                 $query->clear()
                     ->insert($db->quoteName('#__emundus_campaign_candidature'))
-                    ->columns($db->quoteName(['applicant_id', 'user_id', 'campaign_id', 'fnum']))
-                    ->values($user->id.', '.$user->id.', '.$campaign_id.', '.$db->quote($fnum));
+                    ->columns($db->quoteName(['date_time','applicant_id', 'user_id', 'campaign_id', 'fnum']))
+                    ->values($db->quote($now).', '.$user->id.', '.$user->id.', '.$campaign_id.', '.$db->quote($fnum));
                 break;
 
             case 'cc':
@@ -158,6 +163,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
                 $query = $db->getQuery(true);
                 $query->update($db->quoteName('#__emundus_campaign_candidature'))
                     ->set($db->quoteName('fnum').' = '.$db->Quote($fnum))
+                    ->set($db->quoteName('date_time').' = '.$db->quote($now))
                     ->where($db->quoteName('id').' = '.$id.' AND '.$db->quoteName('fnum').' LIKE '.$db->Quote($fnum_tmp).' AND '.$db->quoteName('campaign_id').'='.$campaign_id);
                 break;
 
@@ -171,6 +177,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
             JPluginHelper::importPlugin('emundus');
             $dispatcher = JEventDispatcher::getInstance();
             $dispatcher->trigger('onCreateNewFile', [$user->id, $fnum, $campaign_id]);
+            $dispatcher->trigger('callEventHandler', ['onCreateNewFile', ['user_id' => $user->id, 'fnum' => $fnum, 'cid' => $campaign_id]]);
 
         } catch (Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
@@ -236,6 +243,14 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
             JError::raiseError(500, $query);
+        }
+
+        // track the LOGS (1 | c | COM_EMUNDUS_ACCESS_FILE_CREATE)
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        $user = JFactory::getSession()->get('emundusUser');
+        // if user_id is null -> there is no session data because the account is not activated yet, so don't log
+        if ($user->id) {
+            EmundusModelLogs::log($user->id, $user->id, $fnum, 1, 'c', 'COM_EMUNDUS_ACCESS_FILE_CREATE');
         }
 
         if ($form_type == 'cc') {

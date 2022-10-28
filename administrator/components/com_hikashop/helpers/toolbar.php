@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -163,14 +163,14 @@ class hikashopToolbarHelper {
 				$bar->appendButton('Link', $tool['icon'], $tool['alt'], $tool['url']);
 				break;
 			case 'popup':
-				$tool = array_merge(array('icon'=>'','url'=>'','alt'=>'','width'=>640,'height'=>480,'top'=>0,'left'=>0,'onClose'=>'','title'=>'','footer'=>''), $tool);
+				$tool = array_merge(array('icon'=>'','url'=>'','alt'=>'','width'=>640,'height'=>480,'top'=>0,'left'=>0,'onClose'=>'','title'=>'','footer'=>'', 'check' => false), $tool);
 				if(HIKASHOP_J30) {
 					if(!empty($tool['id']))
 						$tool['icon'] = $tool['id'] . '#' . $this->translateIcon($tool['icon']);
 					else
 						$tool['icon'] = $tool['icon'] . '#' . $this->translateIcon($tool['icon']);
 				}
-				$bar->appendButton('HikaPopup', $tool['icon'], $tool['alt'], $tool['url'], $tool['width'], $tool['height'], $tool['top'], $tool['left'], $tool['onClose'], $tool['title'], $tool['footer']);
+				$bar->appendButton('HikaPopup', $tool['icon'], $tool['alt'], $tool['url'], $tool['width'], $tool['height'], $tool['top'], $tool['left'], $tool['onClose'], $tool['title'], $tool['footer'], $tool['check']);
 				break;
 			case 'close':
 				$bar->appendButton('Standard', 'cancel', JText::_('HIKA_CLOSE'), 'cancel', false, false);
@@ -194,15 +194,18 @@ class hikashopToolbarHelper {
 					$bar->appendButton('Pophelp', $tool['target']);
 				break;
 			case 'export':
-				$bar->appendButton('Export');
+				$tool = array_merge(array('task'=>'export','text'=>'HIKA_EXPORT', 'icon'=>'icon-upload', 'check' => false), $tool);
+				$bar->appendButton('Export', $tool['task'], $tool['text'], $tool['icon'], $tool['check']);
 				break;
 			case 'dashboard':
 				if(hikashop_isAllowed($config->get('acl_dashboard_view','all')))
 					$bar->appendButton('Link', HIKASHOP_J30 ? 'dashboard' : 'hikashop', JText::_('HIKASHOP_CPANEL'), hikashop_completeLink('dashboard'));
 				break;
 			case 'save-group':
+				$tool['name'] = 'apply';
+				$this->processOneButton($bar, $tool);
 				if(empty($tool['buttons'])){
-					$tool['buttons'] = array('apply', 'save', 'save2new');
+					$tool['buttons'] = array('save', 'save2new');
 				}
 				$tool['name'] = 'group';
 				$tool['alt'] = 'save-group';

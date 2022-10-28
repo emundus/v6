@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-cron-emundusmessengernotify" label="COM_FABRIK_OPTIONS">
+
+			<field name="reminder_mail_id"
+				   type="text"
+				   description="PLG_CRON_EMAIL_TEMPLATE_DESC"
+				   label="PLG_CRON_EMAIL_TEMPLATE"
+				   size="30"
+				   default="78" />
+
+			<field name="reminder_mail_id_coordinator"
+				   type="text"
+				   label="PLG_CRON_EMAIL_TEMPLATE_COORDINATOR"
+				   size="30"
+				   default="80" />
+		</fieldset>
+
+	</fields>
+</form>

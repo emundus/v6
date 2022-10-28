@@ -14,25 +14,10 @@ use Joomla\CMS\MVC\Model\BaseDatabaseModel as JModel;
 use Joomla\CMS\Factory as JFactory;
 use Joomla\CMS\Language\Text as JText;
 
-if (!class_exists('JoomlaCompatModel')) {
-    if(interface_exists('JModel')) {
-        abstract class JoomlaCompatModel extends JModelLegacy
-        {
-
-        }
-    } else 
-    {
-        class JoomlaCompatModel extends JModel
-        {
-
-        }
-    }
-}
-
 /**
  * Modelo Securitycheck
  */
-class SecuritycheckprosModelProtection extends JoomlaCompatModel
+class SecuritycheckprosModelProtection extends \Joomla\CMS\MVC\Model\BaseDatabaseModel
 {
 
     /* Definimos las variables */
@@ -61,7 +46,7 @@ class SecuritycheckprosModelProtection extends JoomlaCompatModel
     'xss_options'    =>    0,
     'csp_policy'    =>    '',
     'referrer_policy'    =>    '',
-	'feature_policy'    =>    ''
+	'permissions_policy'    =>    ''
     );
 
     var $ConfigApplied = array(
@@ -89,7 +74,7 @@ class SecuritycheckprosModelProtection extends JoomlaCompatModel
     'xss_options'    =>    0,
     'csp_policy'    =>    '',
     'referrer_policy'    =>    '',
-	'feature_policy'    =>    ''
+	'permissions_policy'    =>    ''
     );
 
     private $config = null;
@@ -265,8 +250,8 @@ class SecuritycheckprosModelProtection extends JoomlaCompatModel
                 $this->ConfigApplied['referrer_policy'] = 1;
             }
 			/* 'referrer policy' habilitado? */
-            if (stripos($rules_applied, "Feature-Policy")) {
-                $this->ConfigApplied['feature_policy'] = 1;
+            if (stripos($rules_applied, "Permissions-Policy")) {
+                $this->ConfigApplied['permissions_policy'] = 1;
             }
             /* 'prevent_mime_attacks' habilitado? */
             if (stripos($rules_applied, 'set X-Content-Type-Options "nosniff"')) {
@@ -581,16 +566,15 @@ class SecuritycheckprosModelProtection extends JoomlaCompatModel
         
         }
 		
-		/* Comprobamos si hay que establecer protección Feature-Policy */
-        $feature_policy = $this->getValue("feature_policy");
-        $feature_policy = str_replace('"', '', $feature_policy);
-        if (!empty($feature_policy)) {
+		/* Comprobamos si hay que establecer protección Permissions-Policy */
+        $permissions_policy = $this->getValue("permissions_policy");        
+        if (!empty($permissions_policy)) {
         
-            $rules .= PHP_EOL . "## Begin Securitycheck Pro Feature policy protection";
+            $rules .= PHP_EOL . "## Begin Securitycheck Pro Permissions policy (old Feature-Policy) protection";
             $rules .= PHP_EOL . "<IfModule mod_headers.c>";
-            $rules .= PHP_EOL . 'Header always set Feature-Policy "' . $feature_policy . '"';            
+            $rules .= PHP_EOL . "Header always set Permissions-Policy '". $permissions_policy . "'";            
             $rules .= PHP_EOL . "</IfModule>";
-            $rules .= PHP_EOL . "## End Securitycheck Pro Feature policy protection" . PHP_EOL;    
+            $rules .= PHP_EOL . "## End Securitycheck Pro Permissions policy protection" . PHP_EOL;    
         
         }
     
@@ -689,6 +673,8 @@ class SecuritycheckprosModelProtection extends JoomlaCompatModel
             $rules .= PHP_EOL . "RewriteCond %{HTTP_REFERER} !" . $site_url;
             $rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} !" . $this->getValue("hide_backend_url") . "$";
             $rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} !com_securitycheckprocontrolcenter [NC]";
+			// Added to avoid errors in Joomla 4.1
+			$rules .= PHP_EOL . "RewriteCond %{REQUEST_URI} !templates/administrator [NC]";
             if (!is_null($this->getValue("hide_backend_url"))) {
                 $backend_exceptions = explode(",", $this->getValue("backend_exceptions"));
                 foreach ($backend_exceptions as $exception)
@@ -772,7 +758,7 @@ class SecuritycheckprosModelProtection extends JoomlaCompatModel
         }
     
         /* Comprobamos si hay que redirigir las peticiones no www a www */
-        if ($this->getValue("redirect_to_www")) {        
+        if ( ($this->getValue("redirect_to_www")) && (!$this->ConfigApplied['redirect_to_www']) ){        
             $isSecure = false;
             if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
                 $isSecure = true;
@@ -797,7 +783,7 @@ class SecuritycheckprosModelProtection extends JoomlaCompatModel
         }
     
         /* Comprobamos si hay que redirigir las peticiones no www a www */
-        if ($this->getValue("redirect_to_non_www")) {        
+        if ( ($this->getValue("redirect_to_non_www")) && (!$this->ConfigApplied['redirect_to_non_www']) ){        
             $isSecure = false;
             if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
                 $isSecure = true;
@@ -808,7 +794,7 @@ class SecuritycheckprosModelProtection extends JoomlaCompatModel
             $REQUEST_PROTOCOL = $isSecure ? 'https' : 'http';
                 
             $str_to_insert = "RewriteEngine On" . PHP_EOL;
-            $str_to_insert .= PHP_EOL . "## Securitycheck Pro Redirect non-www to www";
+            $str_to_insert .= PHP_EOL . "## Securitycheck Pro Redirect www to non-www";
             $str_to_insert .= PHP_EOL . "RewriteCond %{HTTP_HOST} ^www.(.*)$ [NC]";
             if ($isSecure) {
                 $str_to_insert .= PHP_EOL . "RewriteRule ^(.*)$ https://%1/$1 [R=301,L]";
@@ -816,7 +802,7 @@ class SecuritycheckprosModelProtection extends JoomlaCompatModel
             {
                 $str_to_insert .= PHP_EOL . "RewriteRule ^(.*)$ http://%1/$1 [R=301,L]";
             }
-            $str_to_insert .= PHP_EOL . "## Securitycheck Pro Redirect non-www to www" . PHP_EOL;                                    
+            $str_to_insert .= PHP_EOL . "## Securitycheck Pro Redirect www to non-www" . PHP_EOL;                                    
             $rules = str_replace("RewriteEngine On", $str_to_insert, $rules);
             
         }

@@ -40,8 +40,9 @@ $post = array(  'DEADLINE' => JHTML::_('date', $campaign['end_date'], JText::_('
 				'CAMPAIGN_CODE' => $campaign['training'],
     			'FNUM'          => $student->fnum
 			);
-$tags = $emails->setTags($student->id, $post, $student->fnum);
+
 $email = $emails->getEmail("confirm_post");
+$tags = $emails->setTags($student->id, $post, $student->fnum, '', $email->message);
 
 // Apllicant cannot delete this attachments now
 $query = 'UPDATE #__emundus_uploads SET can_be_deleted = 0 WHERE user_id = '.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
@@ -135,7 +136,7 @@ if ($alert_new_applicant==1) {
 	if (count($evaluators) > 0) {
 		foreach ($evaluators as $evaluator) {
 			$eval_user = &JFactory::getUser($evaluator);
-			$tags = $emails->setTags($eval_user->id, $post);
+			$tags = $emails->setTags($eval_user->id, $post, $student->fnum, '', $email->message);
 			// Mail
 			$from = $email->emailfrom;
 			$from_id = 62;

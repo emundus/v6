@@ -42,7 +42,7 @@ if ($params->get('logoFile')) {
     $logo = '<img src="' . JUri::root() . $params->get('logoFile') . '" alt="' . $sitename . '" />';
 } elseif ($params->get('sitetitle')) {
     $logo = '<span class="site-title" title="' . $sitename . '">';
-    $logo .= htmlspecialchars($params->get('sitetitle')) . '</span>';
+    $logo .= htmlspecialchars($params->get('sitetitle'), ENT_QUOTES, 'UTF-8') . '</span>';
 } else {
     $logo = '<span class="site-title" title="' . $sitename . '">' . $sitename . '</span>';
 }

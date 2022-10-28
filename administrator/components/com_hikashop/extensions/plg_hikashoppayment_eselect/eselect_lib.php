@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -20,7 +20,7 @@ class mpgGlobals {
 		'CLIENT_TIMEOUT' => '60'
 	);
 
-	function mpgGlobals() {}
+	function __construct() {}
 	function getGlobals() {
 		return($this->Globals);
 	}
@@ -33,7 +33,7 @@ class mpgHttpsPost {
 	var $mpgRequest;
 	var $mpgResponse;
 
-	function mpgHttpsPost($store_id, $api_token, $mpgRequestOBJ, $debug = false) {
+	function __construct($store_id, $api_token, $mpgRequestOBJ, $debug = false) {
 
 		$this->store_id=$store_id;
 		$this->api_token= $api_token;
@@ -109,7 +109,7 @@ class mpgHttpsPostStatus {
 	var $mpgRequest;
 	var $mpgResponse;
 
-	function mpgHttpsPostStatus($store_id,$api_token,$status, $mpgRequestOBJ) {
+	function __construct($store_id,$api_token,$status, $mpgRequestOBJ) {
 		$this->store_id=$store_id;
 		$this->api_token= $api_token;
 		$this->status=$status;
@@ -195,7 +195,7 @@ class mpgResponse {
 
 	var $ACSUrl;
 
-	function mpgResponse($xmlString) {
+	function __construct($xmlString) {
 		$this->p = xml_parser_create();
 		xml_parser_set_option($this->p,XML_OPTION_CASE_FOLDING,0);
 		xml_parser_set_option($this->p,XML_OPTION_TARGET_ENCODING,"UTF-8");
@@ -452,7 +452,7 @@ class mpgRequest {
 
 	var $txnArray;
 
-	function mpgRequest($txn) {
+	function __construct($txn) {
 		if(is_array($txn)) {
 			$txn=$txn[0];
 		}
@@ -460,11 +460,7 @@ class mpgRequest {
 	}
 
 	function toXML() {
-		$tmpTxnArray=$this->txnArray;
-
-		$txnArrayLen=count($tmpTxnArray); //total number of transactions
-
-		$txnObj=$tmpTxnArray;
+		$txnObj=$this->txnArray;
 
 		$txn=$txnObj->getTransaction();	//call to a non-member function
 
@@ -522,7 +518,7 @@ class mpgCustInfo {
 	var $email;
 	var $instructions;
 
-	function mpgCustInfo($custinfo=0,$billing=0,$shipping=0,$items=0) {
+	function __construct($custinfo=0,$billing=0,$shipping=0,$items=0) {
 		if($custinfo) {
 			$this->setCustInfo($custinfo);
 		}
@@ -610,7 +606,7 @@ class mpgRecur {
 	var $params;
 	var $recurTemplate = array('recur_unit','start_now','start_date','num_recurs','period','recur_amount');
 
-	function mpgRecur($params)  {
+	function __construct($params)  {
 		$this->params = $params;
 		if( (! $this->params['period']) ) {
 			$this->params['period'] = 1;
@@ -633,7 +629,7 @@ class mpgTransaction {
 	var $cvdInfo = null;
 	var $recur = null;
 
-	function mpgTransaction($txn) {
+	function __construct($txn) {
 		$this->txn=$txn;
 	}
 
@@ -680,7 +676,7 @@ class mpgAvsInfo {
 	var $params;
 	var $avsTemplate = array('avs_street_number','avs_street_name','avs_zipcode','avs_email','avs_hostname','avs_browser','avs_shiptocountry','avs_shipmethod','avs_merchprodsku','avs_custip','avs_custphone');
 
-	function mpgAvsInfo($params) {
+	function __construct($params) {
 		$this->params = $params;
 	}
 
@@ -698,7 +694,7 @@ class mpgCvdInfo {
 	var $params;
 	var $cvdTemplate = array('cvd_indicator','cvd_value');
 
-	function mpgCvdInfo($params) {
+	function __construct($params) {
 		$this->params = $params;
 	}
 

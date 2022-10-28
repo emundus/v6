@@ -15,7 +15,7 @@
     opacity: inherit;
 }
 #g-navigation .g-main-nav .g-sublevel > li > .g-menu-item-container {
-    padding: 10px 15px;
+    padding: 5px 10px;
 }
 
 #g-navigation .g-main-nav .g-toplevel > li {
@@ -76,15 +76,6 @@ ul.g-dropdown.g-dropdown-right.g-fade a {
 
 .add-new-program-page .goback-btn, .add-new-program-page .btn.btn-primary.button.save {
     line-height: normal !important;
-}
-
-.header-c .open > .dropdown-menu {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    left: auto;
-    right: -100%;
-    margin-top: 10px;
 }
 /*LANGAGE*/
 .top-a {
@@ -186,8 +177,41 @@ a {
     align-items: center;
     justify-content: center;
     text-align: center;
+}
 
+/* TCHOOZ MENU */
+.tchooz-vertical-toplevel{
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    width: 55px;
+    transition: width 0.3s ease-in-out;
+}
 
+.grey-navbar-icons{
+    width: 70px;
+    background: #f8f8f8;
+    position: fixed;
+    height: 100%;
+    left: 0;
+    top: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.item > .simple-letter {
+    width: 30px;
+    height: 30px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.g-menu-item-container > .simple-letter {
+    width: auto;
+    height: auto;
+    align-items: center;
+    display: flex;
+    justify-content: flex-start;
 }
 
 
@@ -208,9 +232,9 @@ a {
         display: none !important;
     }
 
-   #g-navigation .g-container .g-grid #header-b {
+   /*#g-navigation .g-container .g-grid #header-b {
         width: 100%;
-    }
+    }*/
 
     #g-navigation .g-container .g-grid {
         flex-direction: column;

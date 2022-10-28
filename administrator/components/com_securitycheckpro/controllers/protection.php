@@ -39,7 +39,7 @@ class SecuritycheckprosControllerProtection extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $csp_policy = $jinput->get("csp_policy", null, 'string');    
         $referrer_policy = $jinput->get("referrer_policy", null, 'string');
-		$feature_policy = $jinput->get("feature_policy", null, 'string');
+		$permissions_policy = $jinput->get("permissions_policy", null, 'string');
         $data = $jinput->getArray(
             array(
             'backend_exceptions'    => '',
@@ -67,7 +67,7 @@ class SecuritycheckprosControllerProtection extends JControllerLegacy
             'xss_options'    =>    0,
             'csp_policy'    =>    $csp_policy,
             'referrer_policy'    =>    $referrer_policy,
-			'feature_policy'    =>    $feature_policy
+			'permissions_policy'    =>    $permissions_policy
             )
         );
     

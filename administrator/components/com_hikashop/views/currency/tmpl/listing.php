@@ -1,16 +1,22 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><div class="iframedoc" id="iframedoc"></div>
+<?php 
+	$extra_class = "";
+	if (HIKASHOP_J40) {
+		$extra_class = "hika_j4_search no_search_features";
+	}
+?>
 <form action="<?php echo hikashop_completeLink('currency'); ?>" method="post"  name="adminForm" id="adminForm">
 	<div class="hk-row-fluid">
-		<div class="hkc-md-8">
+		<div class="hkc-md-8 <?php echo $extra_class; ?>">
 <?php
 	echo $this->loadHkLayout('search', array());
 ?>
@@ -36,10 +42,10 @@ defined('_JEXEC') or die('Restricted access');
 				<th class="title titletoggle">
 					<?php echo JHTML::_('grid.sort', JText::_('CURRENCY_SYMBOL'), 'a.currency_symbol', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value ); ?>
 				</th>
-				<th class="title">
+				<th class="title hk_center">
 					<?php echo JHTML::_('grid.sort', JText::_('RATE'), 'a.currency_rate', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value ); ?>
 				</th>
-				<th class="title">
+				<th class="title hk_center">
 					<?php echo JText::_('CURRENCY_DISPLAY_EXAMPLE'); ?>
 				</th>
 				<th class="title titletoggle">
@@ -57,7 +63,6 @@ defined('_JEXEC') or die('Restricted access');
 			<tr>
 				<td colspan="10">
 					<?php echo $this->pagination->getListFooter(); ?>
-					<?php echo $this->pagination->getResultsCounter(); ?>
 				</td>
 			</tr>
 		</tfoot>

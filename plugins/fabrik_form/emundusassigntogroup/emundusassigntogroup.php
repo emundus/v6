@@ -27,333 +27,340 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  */
 
 class PlgFabrik_FormEmundusassigntogroup extends plgFabrik_Form {
-	/**
-	 * Status field
-	 *
-	 * @var  string
-	 */
-	protected $URLfield = '';
+    /**
+     * Status field
+     *
+     * @var  string
+     */
+    protected $URLfield = '';
 
-	/**
-	 * Get an element name
-	 *
-	 * @param   string  $pname  Params property name to look up
-	 * @param   bool    $short  Short (true) or full (false) element name, default false/full
-	 *
-	 * @return	string	element full name
-	 */
-	public function getFieldName($pname, $short = false) {
-		$params = $this->getParams();
+    /**
+     * Get an element name
+     *
+     * @param   string  $pname  Params property name to look up
+     * @param   bool    $short  Short (true) or full (false) element name, default false/full
+     *
+     * @return	string	element full name
+     */
+    public function getFieldName($pname, $short = false) {
+        $params = $this->getParams();
 
-		if ($params->get($pname) == '')
-			return '';
+        if ($params->get($pname) == '')
+            return '';
 
-		$elementModel = FabrikWorker::getPluginManager()->getElementPlugin($params->get($pname));
+        $elementModel = FabrikWorker::getPluginManager()->getElementPlugin($params->get($pname));
 
-		return $short ? $elementModel->getElement()->name : $elementModel->getFullName();
-	}
+        return $short ? $elementModel->getElement()->name : $elementModel->getFullName();
+    }
 
-	/**
-	 * Get the fields value regardless of whether its in joined data or no
-	 *
-	 * @param   string  $pname    Params property name to get the value for
-	 * @param   array   $data     Posted form data
-	 * @param   mixed   $default  Default value
-	 *
-	 * @return  mixed  value
-	 */
-	public function getParam($pname, $default = '') {
-		$params = $this->getParams();
+    /**
+     * Get the fields value regardless of whether its in joined data or no
+     *
+     * @param   string  $pname    Params property name to get the value for
+     * @param   array   $data     Posted form data
+     * @param   mixed   $default  Default value
+     *
+     * @return  mixed  value
+     */
+    public function getParam($pname, $default = '') {
+        $params = $this->getParams();
 
-		if ($params->get($pname) == '') {
-			return $default;
-		}
+        if ($params->get($pname) == '') {
+            return $default;
+        }
 
-		return $params->get($pname);
-	}
+        return $params->get($pname);
+    }
 
-	/**
-	 * Main script.
-	 *
-	 * @return  bool
-	 * @throws Exception
-	 */
-	public function onBeforeCalculations(): bool {
+    /**
+     * Main script.
+     *
+     * @return  bool
+     * @throws Exception
+     */
+    public function onBeforeCalculations(): bool {
 
-		jimport('joomla.log.log');
-		JLog::addLogger(['text_file' => 'com_emundus.assignToGroup.php'], JLog::ALL, ['com_emundus']);
+        jimport('joomla.log.log');
+        JLog::addLogger(['text_file' => 'com_emundus.assignToGroup.php'], JLog::ALL, ['com_emundus']);
 
-		$db = JFactory::getDBO();
-		$jinput = JFactory::getApplication()->input;
-		$fnum = $jinput->get->get('rowid');
+        $db = JFactory::getDBO();
+        $jinput = JFactory::getApplication()->input;
+        $fnum = $jinput->get->get('rowid');
 
-		$fabrik_elt = str_replace(' ', '', $this->getParam('fabrik_elt'));
-		$value = str_replace(' ', '', $this->getParam('value'));
-		$group_id = str_replace(' ', '', $this->getParam('group_id'));
-		$reset = $this->getParam('reset', 0);
+        $fabrik_elt = str_replace(' ', '', $this->getParam('fabrik_elt'));
+        $value = str_replace(' ', '', $this->getParam('value'));
+        $group_id = str_replace(' ', '', $this->getParam('group_id'));
+        $reset = $this->getParam('reset', 0);
 
-		if (empty($fabrik_elt) || empty($value) || empty($group_id)) {
-			return false;
-		}
+        if (empty($fabrik_elt) || empty($value) || empty($group_id)) {
+            return false;
+        }
 
-		$request = explode('___', $fabrik_elt);
-		$repeated_group = strpos($request[0], '_repeat');
-		$values = explode(',', $value);
-		$groups_id = explode(',', $group_id);
+        $request = explode('___', $fabrik_elt);
+        $repeated_group = strpos($request[0], '_repeat');
+        $values = explode(',', $value);
+        $groups_id = explode(',', $group_id);
 
-		if (!empty($request[0]) && !empty($request[1])) {
-		
-			// get value from application form
-			if ($repeated_group) {
-				$query = 'SELECT join_from_table FROM #__fabrik_joins WHERE table_join LIKE '.$db->Quote($request[0]);
-				try {
+        if (!empty($request[0]) && !empty($request[1])) {
 
-					$db->setQuery($query);
-					$table = $db->loadResult();
+            // get value from application form
+            if ($repeated_group) {
+                $query = 'SELECT join_from_table FROM #__fabrik_joins WHERE table_join LIKE '.$db->Quote($request[0]);
+                try {
 
-				} catch (Exception $e) {
-					JLog::add('Error in script/assign-to-group getting parent table at query: '.$query, JLog::ERROR, 'com_emundus');
-				}
+                    $db->setQuery($query);
+                    $table = $db->loadResult();
 
-				$query = 'SELECT `'.$request[1].'` FROM `'.$request[0].'` AS rt 
+                } catch (Exception $e) {
+                    JLog::add('Error in script/assign-to-group getting parent table at query: '.$query, JLog::ERROR, 'com_emundus');
+                }
+
+                $query = 'SELECT `'.$request[1].'` FROM `'.$request[0].'` AS rt 
 							LEFT JOIN `'.$table.'` AS t ON t.id = rt.parent_id 
 							WHERE `t`.`fnum` LIKE '.$db->Quote($fnum);
 
-				try {
+                try {
 
-					$db->setQuery($query);
-					$columns = $db->loadColumn();
+                    $db->setQuery($query);
+                    $columns = $db->loadColumn();
 
-				} catch (Exception $e) {
-					JLog::add('Error in script/assign-to-group getting application values from repeated_group at query: '.$query, JLog::ERROR, 'com_emundus');
-				}
+                } catch (Exception $e) {
+                    JLog::add('Error in script/assign-to-group getting application values from repeated_group at query: '.$query, JLog::ERROR, 'com_emundus');
+                }
 
-			} else {
-				$query = 'SELECT `'.$request[1].'` FROM `'.$request[0].'` WHERE `fnum` LIKE '.$db->Quote($fnum);
-			}
+            } else {
+                $query = 'SELECT `'.$request[1].'` FROM `'.$request[0].'` WHERE `fnum` LIKE '.$db->Quote($fnum);
+            }
 
-			try {
+            try {
 
-				$db->setQuery($query);
-				$column = str_replace(' ', '', $db->loadResult());
+                $db->setQuery($query);
+                $column = !empty(json_decode(str_replace(' ', '', $db->loadResult()))) ? json_decode(str_replace(' ', '', $db->loadResult())) : str_replace(' ', '', $db->loadResult());
 
-			} catch (Exception $e) {
-				JLog::add('Error in script/assign-to-group getting application value at query: '.$query, JLog::ERROR, 'com_emundus');
-				$column = '';
-			}
+            } catch (Exception $e) {
+                JLog::add('Error in script/assign-to-group getting application value at query: '.$query, JLog::ERROR, 'com_emundus');
+                $column = '';
+            }
 
-			// reset previous associations
-			if ($reset == 1) {
-				$query = 'DELETE FROM `#__emundus_group_assoc` WHERE fnum LIKE '.$db->Quote($fnum);
 
-				try {
+            // reset previous associations
+            if ($reset == 1) {
+                $query = 'DELETE FROM `#__emundus_group_assoc` WHERE fnum LIKE '.$db->Quote($fnum);
 
-					$db->setQuery($query);
-					$db->execute();
+                try {
 
-				} catch (Exception $e) {
-					JLog::add('Error in script/assign-to-group delete groups assignation at query: '.$query, JLog::ERROR, 'com_emundus');
-				}
-			}
-		}
+                    $db->setQuery($query);
+                    $db->execute();
 
-		// for each value compared make the good group_id association 
-		foreach ($values as $key => $value) {
+                } catch (Exception $e) {
+                    JLog::add('Error in script/assign-to-group delete groups assignation at query: '.$query, JLog::ERROR, 'com_emundus');
+                }
+            }
+        }
 
-			if ($repeated_group) {
+        // for each value compared make the good group_id association
+        foreach ($values as $key => $value) {
 
-				// Strip out spaces from results.
-				$columns = array_map(function($value) {
-					return str_replace(' ', '', $value);
-				}, $columns);
+            if ($repeated_group) {
+                $match = in_array($value, $columns);
 
-				$match = in_array($value, $columns);
-			} else {
-				$match = ($column == $value);
-			}
-			 
+            } else if (is_array($column)){
+                $match = false;
+                foreach ($column as $col){
+                    if ($col == $value){
+                        $match = true;
+                        break;
+                    }
+                }
+            }
+            else {
+                $match = ($column == $value);
+            }
 
-			if ($match) {
 
-				$query = 'SELECT COUNT(id) FROM #__emundus_group_assoc
+            if ($match) {
+
+                $query = 'SELECT COUNT(id) FROM #__emundus_group_assoc
 	                WHERE group_id = '.$groups_id[$key].' AND action_id = 1 AND fnum LIKE '.$db->Quote($fnum);
 
-				try {
+                try {
 
-					$db->setQuery($query);
-					$cpt = $db->loadResult();
+                    $db->setQuery($query);
+                    $cpt = $db->loadResult();
 
-				} catch (Exception $e) {
-					JLog::add('Error in script/assign-to-group getting groups at query: '.$query, JLog::ERROR, 'com_emundus');
-					$cpt = 0;
-				}
+                } catch (Exception $e) {
+                    JLog::add('Error in script/assign-to-group getting groups at query: '.$query, JLog::ERROR, 'com_emundus');
+                    $cpt = 0;
+                }
 
-				if ($cpt == 0) {
-					$query = 'INSERT INTO #__emundus_group_assoc (`group_id`, `action_id`, `fnum`, `c`, `r`, `u`, `d`)
+                if ($cpt == 0) {
+                    $query = 'INSERT INTO #__emundus_group_assoc (`group_id`, `action_id`, `fnum`, `c`, `r`, `u`, `d`)
 	                    VALUES ('.$groups_id[$key].', 1, '.$db->Quote($fnum).', 0, 1, 0, 0)';
 
-					try {
+                    try {
 
-						$db->setQuery($query);
-						$db->execute();
+                        $db->setQuery($query);
+                        $db->execute();
 
-					} catch (Exception $e) {
-						JLog::add('Error in script/assign-to-group setting rights to groups at query: '.$query, JLog::ERROR, 'com_emundus');
-					}
-				} 
-			}
-		}
-		
-		$this->syncAllActions();
-		return true;
-	}
+                    } catch (Exception $e) {
+                        JLog::add('Error in script/assign-to-group setting rights to groups at query: '.$query, JLog::ERROR, 'com_emundus');
+                    }
+                }
+            }
+        }
 
-	public function syncAllActions() {
-		try {
-			$dbo = JFactory::getDBO();
-			$queryGetMissingGroups = 'SELECT id FROM jos_emundus_setup_groups WHERE id NOT IN (SELECT group_id FROM jos_emundus_acl)';
-			$queryActionID = "SELECT id FROM jos_emundus_setup_actions WHERE status >= 1";
-			$groupAssocQuery = "select jega.fnum, jega.group_id, jega.action_id from jos_emundus_group_assoc as jega left join jos_emundus_setup_actions as jesa on jesa.id = jega.action_id where jesa.status = 1";
-			$userAssocQuery = "select jega.fnum, jega.user_id, jega.action_id from jos_emundus_users_assoc as jega left join jos_emundus_setup_actions as jesa on jesa.id = jega.action_id where jesa.status = 1";
-			$queryAcl = "select action_id, group_id from jos_emundus_acl";
+        $this->syncAllActions($fnum);
+        return true;
+    }
 
-			$dbo->setQuery($queryGetMissingGroups);
-			$missingGroups = $dbo->loadColumn();
-			if (!empty($missingGroups)) {
-				$queryInsertMissingGroups = 'INSERT INTO `jos_emundus_acl` (`group_id`, `action_id`, `c`, `r`, `u`, `d`) VALUES ('.implode(',1,0,1,0,0),(',$missingGroups).',1,0,1,0,0)';
-				$dbo->setQuery($queryInsertMissingGroups);
-				$dbo->execute();
-			}
+    public function syncAllActions($fnum) {
+        try {
+            $dbo = JFactory::getDBO();
+            $select_fnum = empty($fnum) ?: ' AND fnum LIKE ' . $dbo->quote($fnum);
 
-			$dbo->setQuery($queryActionID);
-			$actionsId = $dbo->loadColumn();
-			$dbo->setQuery($queryAcl);
-			$aclAction = $dbo->loadAssocList();
-			$dbo->setQuery($groupAssocQuery);
-			$arrayGroupAssoc = $dbo->loadAssocList();
-			$dbo->setQuery($userAssocQuery);
-			$arrayUserAssoc = $dbo->loadAssocList();
-			$acl = array();
-			$aclGroupAssoc = array();
-			$aclUserAssoc = array();
+            $queryGetMissingGroups = 'SELECT id FROM jos_emundus_setup_groups WHERE id NOT IN (SELECT group_id FROM jos_emundus_acl)';
+            $queryActionID = "SELECT id FROM jos_emundus_setup_actions WHERE status >= 1";
+            $groupAssocQuery = "select jega.fnum, jega.group_id, jega.action_id from jos_emundus_group_assoc as jega left join jos_emundus_setup_actions as jesa on jesa.id = jega.action_id where jesa.status = 1" .$select_fnum;
+            $userAssocQuery = "select jega.fnum, jega.user_id, jega.action_id from jos_emundus_users_assoc as jega left join jos_emundus_setup_actions as jesa on jesa.id = jega.action_id where jesa.status = 1" . $select_fnum;
+            $queryAcl = "select action_id, group_id from jos_emundus_acl";
 
-			foreach ($aclAction as $action) {
-				$acl[$action['group_id']][] = $action['action_id'];
-			}
-			foreach ($arrayGroupAssoc as $aga) {
-				$aclGroupAssoc[$aga['fnum']][$aga['group_id']][] = $aga['action_id'];
-			}
-			foreach ($arrayUserAssoc as $aua) {
-				$aclUserAssoc[$aua['fnum']][$aua['user_id']][] = $aua['action_id'];
-			}
-			foreach ($acl as $gId => $groupAction) {
-				$acl[$gId] = array_diff($actionsId, $groupAction);
-			}
-			$queryActionID = "SELECT id FROM jos_emundus_setup_actions WHERE status = 1";
-			$dbo->setQuery($queryActionID);
-			$actionsId = $dbo->loadColumn();
+            $dbo->setQuery($queryGetMissingGroups);
+            $missingGroups = $dbo->loadColumn();
+            if (!empty($missingGroups)) {
+                $queryInsertMissingGroups = 'INSERT INTO `jos_emundus_acl` (`group_id`, `action_id`, `c`, `r`, `u`, `d`) VALUES ('.implode(',1,0,1,0,0),(',$missingGroups).',1,0,1,0,0)';
+                $dbo->setQuery($queryInsertMissingGroups);
+                $dbo->execute();
+            }
 
-			foreach ($aclGroupAssoc as $fnum => $groups) {
-				foreach ($groups as $gid => $action) {
-					$aclGroupAssoc[$fnum][$gid] = array_diff($actionsId, $action);
-				}
-			}
-			foreach ($aclUserAssoc as $fnum => $users) {
-				foreach ($users as $uid => $action) {
-					$aclUserAssoc[$fnum][$uid] = array_diff($actionsId, $action);
-				}
-			}
+            $dbo->setQuery($queryActionID);
+            $actionsId = $dbo->loadColumn();
+            $dbo->setQuery($queryAcl);
+            $aclAction = $dbo->loadAssocList();
+            $dbo->setQuery($groupAssocQuery);
+            $arrayGroupAssoc = $dbo->loadAssocList();
+            $dbo->setQuery($userAssocQuery);
+            $arrayUserAssoc = $dbo->loadAssocList();
+            $acl = array();
+            $aclGroupAssoc = array();
+            $aclUserAssoc = array();
 
-			$canInsert = false;
-			$insert = "INSERT INTO jos_emundus_acl (action_id, group_id, c, r, u, d) values ";
-			$overload = array();
-			foreach ($acl as $gid => $actions) {
-				if (!empty($actions)) {
-					if (count($actions) > count($overload)) {
-						$overload = $actions;
-					}
-					$canInsert = true;
-					foreach ($actions as $aid) {
-						$insert .= "({$aid}, {$gid}, 0, 0, 0, 0),";
-					}
-				}
-			}
+            foreach ($aclAction as $action) {
+                $acl[$action['group_id']][] = $action['action_id'];
+            }
+            foreach ($arrayGroupAssoc as $aga) {
+                $aclGroupAssoc[$aga['fnum']][$aga['group_id']][] = $aga['action_id'];
+            }
+            foreach ($arrayUserAssoc as $aua) {
+                $aclUserAssoc[$aua['fnum']][$aua['user_id']][] = $aua['action_id'];
+            }
+            foreach ($acl as $gId => $groupAction) {
+                $acl[$gId] = array_diff($actionsId, $groupAction);
+            }
+            $queryActionID = "SELECT id FROM jos_emundus_setup_actions WHERE status = 1";
+            $dbo->setQuery($queryActionID);
+            $actionsId = $dbo->loadColumn();
 
-			if ($canInsert) {
-				$insert = rtrim($insert, ",");
-				$dbo->setQuery($insert);
+            foreach ($aclGroupAssoc as $fnum => $groups) {
+                foreach ($groups as $gid => $action) {
+                    $aclGroupAssoc[$fnum][$gid] = array_diff($actionsId, $action);
+                }
+            }
+            foreach ($aclUserAssoc as $fnum => $users) {
+                foreach ($users as $uid => $action) {
+                    $aclUserAssoc[$fnum][$uid] = array_diff($actionsId, $action);
+                }
+            }
 
-				$dbo->execute();
-			}
-			$canInsert = false;
-			$insert = "INSERT INTO jos_emundus_group_assoc (fnum, action_id, group_id, c, r, u, d) values ";
+            $canInsert = false;
+            $insert = "INSERT INTO jos_emundus_acl (action_id, group_id, c, r, u, d) values ";
+            $overload = array();
+            foreach ($acl as $gid => $actions) {
+                if (!empty($actions)) {
+                    if (count($actions) > count($overload)) {
+                        $overload = $actions;
+                    }
+                    $canInsert = true;
+                    foreach ($actions as $aid) {
+                        $insert .= "({$aid}, {$gid}, 0, 0, 0, 0),";
+                    }
+                }
+            }
 
-			foreach ($aclGroupAssoc as $fnum => $groups) {
-				foreach ($groups as $gid => $assocActions) {
-					if (!empty($assocActions)) {
-						$canInsert = true;
-						foreach ($assocActions as $aid) {
-							$insert .= "({$fnum}, {$aid}, {$gid}, 0, 0, 0, 0),";
-						}
-					}
-				}
-			}
-			if ($canInsert) {
-				$insert = rtrim($insert, ",");
-				$dbo->setQuery($insert);
+            if ($canInsert) {
+                $insert = rtrim($insert, ",");
+                $dbo->setQuery($insert);
 
-				$dbo->execute();
-			}
-			$canInsert = false;
-			$insert = "INSERT INTO jos_emundus_users_assoc (fnum, action_id, user_id, c, r, u, d) values ";
+                $dbo->execute();
+            }
+            $canInsert = false;
+            $insert = "INSERT INTO jos_emundus_group_assoc (fnum, action_id, group_id, c, r, u, d) values ";
 
-			foreach ($aclUserAssoc as $fnum => $users) {
-				foreach ($users as $uid => $assocActions) {
-					if (!empty($assocActions)) {
-						foreach ($assocActions as $aid) {
-							$user = JFactory::getUser($uid);
-							if ($user->id > 0) {
-								$canInsert = true;
-								$insert .= "({$fnum}, {$aid}, {$uid}, 0, 0, 0, 0),";
-							} 
-						}
-					}
-				}
-			}
+            foreach ($aclGroupAssoc as $fnum => $groups) {
+                foreach ($groups as $gid => $assocActions) {
+                    if (!empty($assocActions)) {
+                        $canInsert = true;
+                        foreach ($assocActions as $aid) {
+                            $insert .= "({$fnum}, {$aid}, {$gid}, 0, 0, 0, 0),";
+                        }
+                    }
+                }
+            }
+            if ($canInsert) {
+                $insert = rtrim($insert, ",");
+                $dbo->setQuery($insert);
 
-			if ($canInsert) {
-				$insert = rtrim($insert, ",");
-				$dbo->setQuery($insert);
+                $dbo->execute();
+            }
+            $canInsert = false;
+            $insert = "INSERT INTO jos_emundus_users_assoc (fnum, action_id, user_id, c, r, u, d) values ";
 
-				$dbo->execute();
-			}
+            foreach ($aclUserAssoc as $fnum => $users) {
+                foreach ($users as $uid => $assocActions) {
+                    if (!empty($assocActions)) {
+                        foreach ($assocActions as $aid) {
+                            $user = JFactory::getUser($uid);
+                            if ($user->id > 0) {
+                                $canInsert = true;
+                                $insert .= "({$fnum}, {$aid}, {$uid}, 0, 0, 0, 0),";
+                            }
+                        }
+                    }
+                }
+            }
 
-		} catch (Exception $e) {
-			JLog::add('Error in script/assign-to-group setting default rights to groups at query: '.$insert, JLog::ERROR, 'com_emundus');
-		}
-	}
+            if ($canInsert) {
+                $insert = rtrim($insert, ",");
+                $dbo->setQuery($insert);
 
-	/**
-	 * Raise an error - depends on whether you are in admin or not as to what to do
-	 *
-	 * @param   array   &$err   Form models error array
-	 * @param   string  $field  Name
-	 * @param   string  $msg    Message
-	 *
-	 * @return  void
-	 */
+                $dbo->execute();
+            }
 
-	protected function raiseError(&$err, $field, $msg)
-	{
-		$app = JFactory::getApplication();
+        } catch (Exception $e) {
+            JLog::add('Error in script/assign-to-group setting default rights to groups at query: '.$insert, JLog::ERROR, 'com_emundus');
+        }
+    }
 
-		if ($app->isAdmin())
-		{
-			$app->enqueueMessage($msg, 'notice');
-		}
-		else
-		{
-			$err[$field][0][] = $msg;
-		}
-	}
+    /**
+     * Raise an error - depends on whether you are in admin or not as to what to do
+     *
+     * @param   array   &$err   Form models error array
+     * @param   string  $field  Name
+     * @param   string  $msg    Message
+     *
+     * @return  void
+     */
+
+    protected function raiseError(&$err, $field, $msg)
+    {
+        $app = JFactory::getApplication();
+
+        if ($app->isAdmin())
+        {
+            $app->enqueueMessage($msg, 'notice');
+        }
+        else
+        {
+            $err[$field][0][] = $msg;
+        }
+    }
 }

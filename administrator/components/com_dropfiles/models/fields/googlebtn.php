@@ -115,21 +115,18 @@ class JFormFieldGooglebtn extends JFormField
         if (!$google->checkAuth()) {
             $url = $google->getAuthorisationUrl();
             if ($url) : ?>
-        <p><?php echo JText::_('COM_DROPFILES_GOOGLEDRIVE_CONNECT_PART2'); ?></p>
-        <p>
-            <a id="ggconnect" class="btn btn-primary btn-google" href="#"
-               onclick="window.open('<?php echo $url; ?>','foo','width=600,height=600');return false;"><img
-                        src="<?php echo JURI::root(); ?>/components/com_dropfiles/assets/images/drive-icon-white.png"
-                        alt="" width="13"/> <?php echo JText::_('COM_DROPFILES_GOOGLEDRIVE_CONNECT_PART2_CONNECT'); ?>
-            </a>
-
-        </p>
+        <a id="ggconnect" class="btn btn-primary btn-google" href="#"
+           onclick="window.open('<?php echo $url; ?>','foo','width=600,height=600');return false;"><img
+                src="<?php echo JURI::root(); ?>/components/com_dropfiles/assets/images/drive-icon-colored.png"
+                alt="" width="13"/> <?php echo JText::_('COM_DROPFILES_GOOGLEDRIVE_CONNECT_PART2_CONNECT'); ?>
+        </a>
                 <?php
             endif;
         } else { ?>
                 <?php echo JText::_('COM_DROPFILES_GOOGLEDRIVE_CONNECT_PART3'); ?>
             <a class="btn btn-primary btn-google"
                href="index.php?option=com_dropfiles&task=googledrive.logout">
+                <img src="<?php echo JURI::root(); ?>/components/com_dropfiles/assets/images/drive-icon-colored.png" alt="" width="13"/>
                 <?php echo JText::_('COM_DROPFILES_GOOGLEDRIVE_CONNECT_PART3_DISCONNECT'); ?></a>
             <?php
             $errorBgColor = '';
@@ -152,7 +149,7 @@ class JFormFieldGooglebtn extends JFormField
                     <?php echo $text; ?>
             </a>
                 <?php if ($errorMessage !== '') : ?>
-            <div style="padding:0;margin-top:20px;min-height: 0;">
+            <div style="padding:0;margin-top:0;min-height: 0;">
                 <div class="alert alert-error">
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     <div class="alert-message"><strong>Error: </strong><?php echo $errorMessage; ?></div>
@@ -160,26 +157,13 @@ class JFormFieldGooglebtn extends JFormField
             </div>
                 <?php endif; ?>
         <?php } ?>
-        <div style="margin-top: 20px;">
-            <?php JText::printf(
-                'COM_DROPFILES_GOOGLEDRIVE_CONNECT_PART1_1',
-                'href="https://www.joomunited.com/documentation/dropfiles-documentation#toc-vi-google-drive-integration" 
-                target="__blank"'
-            ); ?>
-
+        <p><?php echo JText::_('COM_DROPFILES_GOOGLEDRIVE_CONNECT_PART2_FIRST'); ?></p>
+        <div>
             <?php JText::printf(
                 'COM_DROPFILES_GOOGLEDRIVE_CONNECT_PART1_2',
                 JURI::root(),
                 JURI::root() . 'administrator/index.php?option=com_dropfiles&task=googledrive.authenticate'
             ); ?>
-
-            <?php
-            JText::printf(
-                'COM_DROPFILES_GOOGLEDRIVE_CONNECT_PART1_3',
-                'href="#" onclick="window.parent.open(\'index.php?option=com_config&view=component&component=
-                com_dropfiles&path=\',\'_self\');return false;"'
-            );
-            ?>
         </div>
         <?php
         return ob_get_clean();

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -49,8 +49,9 @@ class addressController extends hikashopController
 					hikashop_display($message['message'],'error');
 				}
 			}
-
-			parent::display();
+			echo hikashop_getHTML(function() {
+				parent::display();
+			});
 			exit;
 		}
 		parent::edit();
@@ -60,7 +61,7 @@ class addressController extends hikashopController
 		$user = JFactory::getUser();
 		if(!$user->guest) {
 			$tmpl = hikaInput::get()->getCmd('tmpl', '');
-			if(in_array($tmpl, array('ajax', 'raw'))) {
+			if(in_array($tmpl, array('ajax', 'raw', 'component'))) {
 				hikashop_cleanBuffers();
 				parent::listing();
 				exit;
@@ -107,7 +108,7 @@ class addressController extends hikashopController
 			$ret = $addressClass->delete($cid);
 		}
 
-		if(in_array($tmpl, array('ajax', 'raw'))) {
+		if(in_array($tmpl, array('ajax', 'raw', 'component'))) {
 			if($ret)
 				hikaRegistry::set('address_deleted_id', $cid);
 			return $this->listing();
@@ -142,7 +143,7 @@ class addressController extends hikashopController
 			$status = $addressClass->save($oldData, 0, $type);
 		}
 
-		if(in_array($tmpl, array('ajax', 'raw'))) {
+		if(in_array($tmpl, array('ajax', 'raw', 'component'))) {
 			hikashop_cleanBuffers();
 			echo '{ret:'.(int)$status.'}';
 			exit;

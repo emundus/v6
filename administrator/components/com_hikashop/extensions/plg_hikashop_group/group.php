@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -63,6 +63,10 @@ class plgHikashopGroup extends JPlugin
 		if(empty($user->guest))
 			return true;
 
+		$hkUser = hikashop_loadUser();
+		if(empty($hkUser))
+			return;
+
 		if($this->checkGuest($order))
 			return true;
 
@@ -82,7 +86,7 @@ class plgHikashopGroup extends JPlugin
 		$simplified_registration =  explode(',', $config->get('simplified_registration'));
 		if(array_search(2, $simplified_registration) === false)
 			return;
-		if(!empty($element->product_group_after_purchase) && $element->product_group_after_purchase != 'all' && $element->product_group_after_purchase != '') {
+		if(!empty($element->product_group_after_purchase) && !in_array($element->product_group_after_purchase, array('all', '', 'none', 'NONE'))) {
 			$app = JFactory::getApplication();
 			$app->enqueueMessage(JText::_('GUEST_CHECKOUT_NOT_POSSIBLE_WITH_USER_GROUP_AFTER_PURCHASE_FOR_CUSTOMERS'), 'warning');
 		}
@@ -127,7 +131,7 @@ class plgHikashopGroup extends JPlugin
 		if(!isset($obj->products) || !is_array($obj->products))
 			return true;
 		foreach($obj->products as $product){
-			if(!empty($product->product_group_after_purchase) && $product->product_group_after_purchase != 'all' && $product->product_group_after_purchase != '') {
+			if(!empty($element->product_group_after_purchase) && !in_array($element->product_group_after_purchase, array('all', '', 'none', 'NONE'))) {
 				$app = JFactory::getApplication();
 				$app->enqueueMessage(JText::_('GUEST_CHECKOUT_NOT_POSSIBLE_WITH_USER_GROUP_AFTER_PURCHASE'));
 				return false;
@@ -204,6 +208,8 @@ class plgHikashopGroup extends JPlugin
 		}else{
 			$pluginsClass = hikashop_get('class.plugins');
 			$plugin = $pluginsClass->getByName('hikashop','group');
+			if(empty($plugin->params) || !is_array($plugin->params))
+				return true;
 			$force_logout = @$plugin->params['force_logout'];
 			if( empty($force_logout) ){
 				return true;

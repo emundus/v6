@@ -418,7 +418,7 @@ if (!empty($fnums)) {
 							'DE' => $usr->de_number,
 							'OPCO' => $usr->opco
 						];
-						$tags = $m_emails->setTags($file['applicant_id'], $post, $file['fnum']);
+						$tags = $m_emails->setTags($file['applicant_id'], $post, $file['fnum'], '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
 
 						$from = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
 						$from_id = 62;

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -38,12 +38,12 @@ defined('_JEXEC') or die('Restricted access');
 	}
 ?>
 	</div>
-<div id="hikashop_product_backend_page_edition">
+<div id="hikashop_product_backend_page_edition" class="hikashop_customize_area">
 
 	<!-- Product edition : main tab -->
 	<div id="hikashop_product_edition_tab_1"><div class="hk-container-fluid">
 
-	<div class="hkc-xl-4 hkc-lg-6 hikashop_product_block hikashop_product_edit_general"><div>
+	<div class="hkc-xl-4 hkc-lg-6 hikashop_product_block hikashop_product_edit_general" data-id="general"><div>
 		<div class="hikashop_product_part_title hikashop_product_edit_general_title"><?php
 			echo JText::_('MAIN_OPTIONS');
 		?></div>
@@ -82,6 +82,7 @@ defined('_JEXEC') or die('Restricted access');
 			'category',
 			array(
 				'delete' => true,
+				'brand' => false,
 				'sort' => true,
 				'default_text' => '<em>'.JText::_('HIKA_NONE').'</em>',
 				'tooltip' => true,
@@ -128,12 +129,12 @@ defined('_JEXEC') or die('Restricted access');
 			<dd class="hikashop_product_translations"><?php
 		foreach($this->product->translations as $language_id => $translation){
 			$lngName = $this->translationHelper->getFlag($language_id);
-			echo '<div class="hikashop_multilang_button">' .
+			echo '<div class="hikashop_multilang_button hikashop_language_'.$language_id.'"">' .
 				$this->popup->display(
 					$lngName, strip_tags($lngName),
 					hikashop_completeLink('product&task=edit_translation&product_id=' . @$this->product->product_id.'&language_id='.$language_id, true),
 					'hikashop_product_translation_'.$language_id,
-					760, 480, '', '', 'link'
+					(int)$this->config->get('multi_language_edit_x', 760), (int)$this->config->get('multi_language_edit_y', 480), '', '', 'link'
 				).
 				'</div>';
 		}
@@ -148,7 +149,7 @@ defined('_JEXEC') or die('Restricted access');
 	<?php
 	if(hikashop_acl('product/edit/images') || hikashop_acl('product/edit/files')) {
 ?>
-	<div class="hkc-xl-4 hkc-lg-6 hikashop_product_block hikashop_product_edit_images"><div>
+	<div class="hkc-xl-4 hkc-lg-6 hikashop_product_block hikashop_product_edit_images" data-id="images"><div>
 		<div class="hikashop_product_part_title hikashop_product_upload_title"><?php
 			echo JText::_('IMAGES_AND_FILES');
 		?></div>
@@ -165,13 +166,13 @@ defined('_JEXEC') or die('Restricted access');
 ?>
 	<div class="hkc-lg-clear"></div>
 
-	<div class="hkc-xl-4 hkc-lg-6 hikashop_product_block hikashop_product_edit_price"><div>
+	<div class="hkc-xl-4 hkc-lg-6 hikashop_product_block hikashop_product_edit_price" data-id="prices"><div>
 		<div class="hikashop_product_part_title hikashop_product_edit_price_title">
 			<?php echo JText::_('PRICES_AND_TAXES'); ?>
 		</div>
 		<dl class="hika_options">
 <?php
-		if((!isset($this->product->product_type) || $this->product->product_type != 'variant') && hikashop_acl('product/edit/tax')) {
+		if(hikashop_acl('product/edit/tax')) {
 ?>
 			<dt class="hikashop_product_tax"><label for="dataproductproduct_tax_id"><?php echo JText::_('PRODUCT_TAXATION_CATEGORY'); ?></label></dt>
 			<dd class="hikashop_product_tax"><?php
@@ -200,14 +201,68 @@ defined('_JEXEC') or die('Restricted access');
 	</div></div>
 	<div class="hkc-xl-clear"></div>
 
-<?php if(hikashop_acl('product/edit/description')) { ?>
-	<div class="hkc-xl-4 hkc-lg-6 hikashop_product_block hikashop_product_edit_description"><div>
+<?php 
+	if(isset($_COOKIE['hikashop_descWidth_cookie'])) {
+		switch ($_COOKIE['hikashop_descWidth_cookie']) {	
+			case 'desc_width_small':
+			case 'desc_width_mid':
+			case 'desc_width_max':
+				$cookie_value = $_COOKIE['hikashop_descWidth_cookie'];
+			break;
+			default;
+				$cookie_value = 'desc_width_small';
+			break;
+		}	
+	} else {
+		$cookie_value = 'desc_width_small';
+	}
+	$config = hikashop_config();
+	$delay = (int)$config->get('switcher_cookie_retaining_period', 31557600);
+	setcookie('hikashop_descWidth_cookie', $cookie_value, time() + $delay, "/");
+
+	if(hikashop_acl('product/edit/description')) { ?>
+	<div class="hkc-xl-4 hkc-lg-6 hikashop_product_block hikashop_product_edit_description <?php echo $cookie_value; ?>" data-id="description"><div>
 		<div class="hikashop_product_part_title hikashop_product_edit_description_title"><?php
 			echo JText::_('HIKA_DESCRIPTION');
-		?></div>
+?>			<span onclick="descWidth('<?php echo $delay; ?>'); return false;" class="hikashop_desc_width hikabtn hikabtn-primary" style="display:inline-block;"
+			 data-toggle="hk-tooltip" data-title="<?php echo JText::_('HIKA_DESC_WIDTH'); ?>">
+				<i class="fas fa-chevron-left fa-2x"></i>
+				<i class="fas fa-chevron-right fa-2x"></i>
+			</span>
+		</div>
 		<?php echo $this->editor->display(); ?>
 <script type="text/javascript">
 window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsCode(); ?> };
+
+if(!window.localPage) window.localPage = {};
+function descWidth(delay) {
+	var desc = document.querySelector('.hikashop_product_edit_description');
+
+	if (desc.classList.contains("desc_width_small")) {
+		desc.classList.remove("desc_width_small");
+		desc.classList.add("desc_width_mid");
+
+		window.localPage.setCookie('hikashop_descWidth_cookie','desc_width_mid',delay);
+		return;
+	}
+	if (desc.classList.contains("desc_width_mid")) {
+		desc.classList.remove("desc_width_mid");
+		desc.classList.add("desc_width_max");
+
+		window.localPage.setCookie('hikashop_descWidth_cookie','desc_width_max',delay);
+		return;
+	}
+	if (desc.classList.contains("desc_width_max")) {
+		desc.classList.remove("desc_width_max");
+		desc.classList.add("desc_width_small");
+
+		window.localPage.setCookie('hikashop_descWidth_cookie','desc_width_small',delay);
+		return;
+	}
+}
+window.localPage.setCookie = function (name,value,delay) {
+	document.cookie = name + "=" + (value || "")  +  "; expires=" + delay + "; path=/";
+}
 </script>
 		<div style="clear:both"></div>
 	</div></div>
@@ -216,7 +271,7 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 <?php
 	if(!isset($this->product->product_type) || $this->product->product_type != 'variant') {
 ?>
-	<div class="hkc-xl-4 hkc-lg-6 hikashop_product_block hikashop_product_edit_meta"><div>
+	<div class="hkc-xl-4 hkc-lg-6 hikashop_product_block hikashop_product_edit_meta" data-id="meta"><div>
 		<div class="hikashop_product_part_title hikashop_product_edit_meta_title"><?php
 			echo JText::_('SEO');
 		?></div>
@@ -279,7 +334,7 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 	}
 ?>
 
-	<div class="hkc-xl-4 hkc-lg-6 hikashop_product_block hikashop_product_edit_restrictions"><div>
+	<div class="hkc-xl-4 hkc-lg-6 hikashop_product_block hikashop_product_edit_restrictions" data-id="restrictions"><div>
 		<div class="hikashop_product_part_title hikashop_product_edit_restrictions_title"><?php
 			echo JText::_('RESTRICTIONS_AND_DIMENSIONS');
 		?></div>
@@ -385,7 +440,7 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 	</div></div>
 	<div class="hkc-xl-clear"></div>
 
-	<div class="hkc-xl-4 hkc-lg-6 hikashop_product_block hikashop_product_edit_specifications"><div>
+	<div class="hkc-xl-4 hkc-lg-6 hikashop_product_block hikashop_product_edit_specifications" data-id="specifications"><div>
 		<div class="hikashop_product_part_title hikashop_product_edit_specifications_title"><?php
 			echo JText::_('SPECIFICATIONS');
 		?></div>
@@ -452,7 +507,7 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 		</dl>
 	</div></div>
 
-	<div class="hkc-xl-4 hkc-lg-6 hikashop_product_block hikashop_product_edit_display"><div>
+	<div class="hkc-xl-4 hkc-lg-6 hikashop_product_block hikashop_product_edit_display" data-id="display"><div>
 		<div class="hikashop_product_part_title hikashop_product_edit_display_title"><?php
 			echo JText::_('DISPLAY');
 		?></div>
@@ -509,26 +564,36 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 	$html = array();
 	$app->triggerEvent('onProductFormDisplay', array( &$this->product, &$html ));
 
-	if((!empty($this->fields) && hikashop_acl('product/edit/customfields')) || !empty($html)) {
+	if((!empty($this->fields) && hikashop_level(1) && hikashop_acl('product/edit/customfields')) || !empty($html)) {
 ?>
-	<div class="hkc-xl-4 hkc-lg-6 hikashop_product_block hikashop_product_edit_fields"><div>
+	<div class="hkc-xl-4 hkc-lg-6 hikashop_product_block hikashop_product_edit_fields" data-id="fields"><div>
 		<div class="hikashop_product_part_title hikashop_product_edit_fields_title"><?php
 			echo JText::_('FIELDS');
 		?></div>
 <?php
-		if(!empty($this->fields) && hikashop_acl('product/edit/customfields')) {
+		if(hikashop_level(1) && !empty($this->fields) && hikashop_acl('product/edit/customfields')) {
+			$after = array();
 			foreach($this->fields as $fieldName => $oneExtraField) {
+				$onWhat = 'onchange';
+				if($oneExtraField->field_type == 'radio')
+					$onWhat = 'onclick';
+				$txt = $this->fieldsClass->display($oneExtraField, @$this->product->$fieldName, 'data[product]['.$fieldName.']', false, ' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'product\',0);"');
+
+				if($oneExtraField->field_type == 'hidden') {
+					$after[] = $txt;
+					continue;
+				}
 ?>
 		<dl id="hikashop_product_<?php echo $fieldName; ?>" class="hika_options">
 			<dt class="hikashop_product_<?php echo $fieldName; ?>"><label><?php echo $this->fieldsClass->getFieldName($oneExtraField); ?></label></dt>
 			<dd class="hikashop_product_<?php echo $fieldName; ?>"><?php
-				$onWhat = 'onchange';
-				if($oneExtraField->field_type == 'radio')
-					$onWhat = 'onclick';
-				echo $this->fieldsClass->display($oneExtraField, @$this->product->$fieldName, 'data[product]['.$fieldName.']', false, ' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'product\',0);"');
+				echo $txt;
 			?></dd>
 		</dl>
 <?php
+			}
+			if(count($after)) {
+				echo implode("\r\n", $after);
 			}
 		}
 
@@ -536,7 +601,6 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 			foreach($html as $k => $h) {
 				if(is_string($h) && strtolower(substr(trim($h), 0, 4)) == '<tr>')
 					continue;
-
 				if(is_string($h)) {
 					echo $h;
 				} else {
@@ -588,7 +652,32 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 		}
 	}
 ?>
+	</div>
+
+<?php if($this->customize) { ?>
+	<div class="hkc-xl-4 hkc-lg-6 hikashop_product_block hikashop_product_new_block"><div>
+		<div class="hikashop_product_part_title hikashop_product_edit_new_block_title"><?php
+			echo JText::_('FORM_CUSTOMIZATION');
+		?></div>
+		<dl class="hika_options">
+			<dt class="hikashop_product_new_view_name"><label for="data_product__product_new_view_name"><?php echo JText::_('NEW_BLOCK_NAME'); ?></label></dt>
+			<dd class="hikashop_product_new_view_name"><input id="product_new_view_name" type="text" style="width:100%" size="45" name="" value=""/></dd>
+		</dl>
+		<div class="new_block_button">
+			<a href="#" class="btn btn-primary" onclick="window.formCustom.addNewBlock('product_new_view_name', window.productDragOptionsKey); return false;"><?php
+					echo JText::_('ADD_NEW_BLOCK');
+				?></a>
+		</div>
+		<div class="reset_block_button">
+			<a href="#" class="btn btn-danger" onclick="window.formCustom.reset(window.productDragOptionsKey); return false;"><i class="fa fa-trash"></i> <?php
+					echo JText::_('RESET_TO_DEFAULT_VIEW');
+				?></a>
+			<p><?php echo JText::_('BLOCK_HIDDEN_ACCESS_LEVEL'); ?></p>
+		</div>
 	</div></div>
+<?php } ?>
+
+	</div>
 
 	<div id="hikashop_product_edition_tab_2" style="display:none;">
 		<div id="hikashop_product_variant_list"><?php
@@ -609,6 +698,9 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>"/>
 	<input type="hidden" name="task" value=""/>
 	<input type="hidden" name="ctrl" value="product"/>
+	<input type="hidden" name="product_reset_custom"  id="product_reset_custom" value="0"/>
+	<input type="hidden" name="product_areas_order"  id="product_areas_order" value="<?php echo $this->escape($this->config->get('product_areas_order')); ?>"/>
+	<input type="hidden" name="product_areas_fields"  id="product_areas_fields" value="<?php echo $this->escape($this->config->get('product_areas_fields')); ?>"/>
 	<?php echo JHTML::_('form.token'); ?>
 </form>
 <script type="text/javascript">
@@ -622,4 +714,13 @@ window.productMgr.prepare = function() {
 	}
 	o.fireAjax("syncWysiwygEditors", null);
 };
+</script>
+<?php hikashop_loadJslib('formCustom'); ?>
+<script type="text/javascript">
+window.hikashop.ready( function() {
+	window.productDragOptionsKey = window.formCustom.initDragAndDrop({
+		customize: <?php echo (int)$this->customize; ?>,
+		hide: <?php echo (int)hikashop_level(2); ?>,
+	});
+});
 </script>

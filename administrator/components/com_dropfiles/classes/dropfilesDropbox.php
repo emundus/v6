@@ -182,8 +182,6 @@ class DropfilesDropbox
      */
     public function logout()
     {
-        $this->params->dropboxKey = '';
-        $this->params->dropboxSecret = '';
         $this->params->dropboxCode = '';
         $this->params->dropboxToken = '';
         $this->saveParams();

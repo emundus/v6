@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -68,8 +68,9 @@ class hikashopPlg_email_historyClass extends hikashopClass {
 
 	public function beforeCheckDb(&$createTable, &$custom_fields, &$structure, &$helper) {
 		$createTable['#__hikashop_email_log'] = $this->getDBCreateQuery('hikashop_email_log');
-		if(!isset($structure['']))
+		if(!isset($structure['#__hikashop_email_log']))
 			$structure['#__hikashop_email_log'] = $this->dbStructure['hikashop_email_log']['fields'];
+
 	}
 
 	private function getDBCreateQuery($name) {
@@ -166,6 +167,7 @@ class hikashopPlg_email_historyClass extends hikashopClass {
 		if(!empty($email_log->email_log_params) && !is_string($email_log->email_log_params))
 			$email_log->email_log_params = json_encode($email_log->email_log_params);
 
+		$new = empty($email_log->email_log_id);
 		$do = true;
 		$app = JFactory::getApplication();
 		if(!empty($new)) {
@@ -182,6 +184,7 @@ class hikashopPlg_email_historyClass extends hikashopClass {
 			return $status;
 
 		if(!empty($new)) {
+			$email_log->email_log_id = $status;
 			$app->triggerEvent('onAfterEmail_logCreate', array( &$email_log ));
 		} else {
 			$app->triggerEvent('onAfterEmail_logUpdate', array( &$email_log ));
@@ -253,9 +256,9 @@ class hikashopPlg_email_historyClass extends hikashopClass {
 		if(!empty($mail->name_info) && $mail->name_info != $mail->mail_name)
 			$data->email_log_name = $mail->name_info;
 
+
+		$data->email_log_params = array();
 		if(!empty($mail->attachments)) {
-			if(!isset($data->email_log_params))
-				$data->email_log_params = array();
 			$data->email_log_params['attachments'] = $mail->attachments;
 		}
 
@@ -273,7 +276,13 @@ class hikashopPlg_email_historyClass extends hikashopClass {
 				$data->email_log_ref_id = $mail->data->order_id;
 				break;
 			case 'contact_request':
-				$data->email_log_ref_id = @$mail->data->product->product_id;
+				if(!empty($mail->data->order->order_id)) {
+					$data->email_log_params['contact_type'] = 'order';
+					$data->email_log_ref_id = $mail->data->order->order_id;
+				} elseif(!empty($mail->data->product->product_id)) {
+					$data->email_log_params['contact_type'] = 'product';
+					$data->email_log_ref_id = $mail->data->product->product_id;
+				}
 				break;
 			case 'new_comment':
 				$data->email_log_ref_id = $mail->data->type->product_id;

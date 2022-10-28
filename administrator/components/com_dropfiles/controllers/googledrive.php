@@ -14,17 +14,13 @@
 
 // no direct access
 defined('_JEXEC') || die;
-$path_admin_categories = JPATH_ROOT . DIRECTORY_SEPARATOR . 'administrator' . DIRECTORY_SEPARATOR . 'components';
-$path_admin_categories .= DIRECTORY_SEPARATOR . 'com_categories' . DIRECTORY_SEPARATOR . 'controllers';
-$path_admin_categories .= DIRECTORY_SEPARATOR . 'categories.php';
-require_once($path_admin_categories);
 
 jimport('joomla.filesystem.folder');
 
 /**
  * Class DropfilesControllerGoogledrive
  */
-class DropfilesControllerGoogledrive extends CategoriesControllerCategories
+class DropfilesControllerGoogledrive extends JControllerAdmin
 {
     /**
      * Proxy for getModel
@@ -151,18 +147,42 @@ class DropfilesControllerGoogledrive extends CategoriesControllerCategories
     {
         $catCloud = array();
         if (isset($categories)) {
+            $thisModel = $this->getModel('categories');
             foreach ($categories as $category) {
-                $thisModel = $this->getModel('categories');
-                $oneCat = $thisModel->getOneCatByLocalId($category->parent_id);
-                $parent_cloud_id = 1;
+                    $oneCat = $thisModel->getOneCatByLocalId($category->parent_id);
+                    $parent_cloud_id = 1;
                 if (isset($oneCat->cloud_id)) {
                     $parent_cloud_id = $oneCat->cloud_id;
                 }
-                $catCloud[$category->cloud_id] = array('id' => $category->id, 'title' => $category->title,
-                    'parent_id' => $category->parent_id, 'parent_cloud_id' => $parent_cloud_id);
+                    $catCloud[$category->cloud_id] = array('id' => $category->id, 'title' => $category->title,
+                        'parent_id' => $category->parent_id, 'parent_cloud_id' => $parent_cloud_id);
             }
         }
         return $catCloud;
+    }
+
+    /**
+     * List sub folders under a folder in Google drive
+     *
+     * @param string $cloud_id Cloud folder id
+     *
+     * @return array|boolean
+     * @since  version
+     */
+    public function getChildrenOfCloudFolder($cloud_id)
+    {
+        $params = JComponentHelper::getParams('com_dropfiles');
+        $dropfilesGoogle = new DropfilesGoogle();
+        try {
+            $lstFolder = $dropfilesGoogle->getSubFolders($cloud_id);
+        } catch (Exception $e) {
+            if ($params->get('sync_log_option') === 1) {
+                $erros = $e->getMessage() . $e->getTraceAsString() . PHP_EOL;
+                JLog::add($erros, JLog::ERROR, 'com_dropfiles');
+            }
+            $lstFolder = false;
+        }
+        return $lstFolder;
     }
 
     /**
@@ -202,8 +222,11 @@ class DropfilesControllerGoogledrive extends CategoriesControllerCategories
         header('Content-Type: application/json');
         if ($SID !== '' && isset($SID->running) && $SID->running === 1) {
             $SID->abort = 1;
+            $SID->running = 0;
             $this->updateSID($SID);
-
+            // Update files count
+            $categoriesModel = $this->getModel('Categories', 'DropfilesModel');
+            $categoriesModel->updateFilesCount();
             echo json_encode(array('status'  => true));
             JFactory::getApplication()->close();
             exit();
@@ -234,6 +257,161 @@ class DropfilesControllerGoogledrive extends CategoriesControllerCategories
 
         echo json_encode(array('status'  => false));
         JFactory::getApplication()->close();
+    }
+
+    /**
+     * Sync one Google Drive category
+     *
+     * @return void
+     * @throws \Exception Throw when application can not start
+     * @since  version
+     */
+    public function syncCategory()
+    {
+        $app = JFactory::getApplication();
+        $cid = $app->input->getInt('id_category', 0);
+        $params = JComponentHelper::getParams('com_dropfiles');
+        if ($params->get('google_credentials') !== null) {
+            $thisModel = $this->getModel('categories');
+            $cloudCategory = $thisModel->getOneCatByLocalId($cid);
+            //cloud folders in Dropfiles
+            $folderCloudInDropfiles = $thisModel->childrenCloudInDropfiles($cid);
+            $this->syncOneCategory($cloudCategory, $folderCloudInDropfiles);
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode(array('status' => true));
+        JFactory::getApplication()->close();
+    }
+
+    /**
+     * Sync Google Drive base folder
+     *
+     * @return void
+     * @throws \Exception Throw when application can not start
+     * @since  version
+     */
+    public function syncRoot()
+    {
+        $app = JFactory::getApplication();
+        $params = JComponentHelper::getParams('com_dropfiles');
+        $rootFolder = $params->get('google_base_folder', null);
+
+        if ($params->get('google_credentials') !== null) {
+            $thisModel = $this->getModel('categories');
+
+            $cloudCategory = new stdClass();
+            $cloudCategory->id = 1; // System root ID
+            $cloudCategory->level = 0;
+            $cloudCategory->cloud_id = $rootFolder;
+
+            //cloud folders in Dropfiles
+            $folderCloudInDropfiles = $thisModel->getTopGoogleCategories();
+            $this->syncOneCategory($cloudCategory, $folderCloudInDropfiles);
+        }
+
+
+        header('Content-Type: application/json');
+        echo json_encode(array('status' => true));
+        $app->close();
+    }
+
+
+    /**
+     * Sync one Google Drive category
+     *
+     * @param object $cloudCategory          Cloud category to sync
+     * @param array  $folderCloudInDropfiles Cloud folders in Dropfiles
+     *
+     * @return void
+     * @throws \Exception Throw when application can not start
+     * @since  version
+     */
+    public function syncOneCategory($cloudCategory, $folderCloudInDropfiles)
+    {
+        $params = JComponentHelper::getParams('com_dropfiles');
+
+        if (!class_exists('DropfilesComponentHelper')) {
+            JLoader::register(
+                'DropfilesComponentHelper',
+                JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/component.php'
+            );
+        }
+        $clsDropfilesHelper = new DropfilesComponentHelper();
+        if ($params->get('google_credentials') !== null) {
+            $thisModel = $this->getModel('categories');
+            //folders in Google Drive
+            $folderCloudInGoogleDrive = $this->getChildrenOfCloudFolder($cloudCategory->cloud_id);
+
+            $folders_diff = array();
+            $folders_diff_del = array();
+            if ($folderCloudInGoogleDrive !== false) {  //to ensure there isn't error when connect with GD
+                if (count($folderCloudInDropfiles) > 0) {
+                    $folders_diff = array_diff_key($folderCloudInGoogleDrive, $folderCloudInDropfiles);
+                    $folders_diff_del = array_diff_key($folderCloudInDropfiles, $folderCloudInGoogleDrive);
+
+                    foreach ($folderCloudInDropfiles as $k => $v) {
+                        $objectCurrent = $thisModel->getOneCatByCloudId($k);
+                        // case: rename folder on Google Drive
+                        if ((!empty($folderCloudInGoogleDrive) && isset($folderCloudInGoogleDrive[$k])) &&
+                            $folderCloudInDropfiles[$k]['title'] !== $folderCloudInGoogleDrive[$k]['title']) {
+                            try {
+                                $thisModel->updateTitleById($objectCurrent->id, $folderCloudInGoogleDrive[$k]['title']);
+                            } catch (Exception $e) {
+                                $erros = 'updateTitleById-Exception: ' . $e->getMessage();
+                                JLog::add($erros, JLog::ERROR, 'com_dropfiles');
+                            }
+                        }
+                    }
+                } else {
+                    $folders_diff = $folderCloudInGoogleDrive;
+                }
+            }
+
+            if (count($folders_diff_del) > 0) {
+                foreach ($folders_diff_del as $CloudIdDel => $folderDataDel) {
+                    $catInfoLocal = $thisModel->getOneCatByCloudId($CloudIdDel);
+                    $thisModel->deleteOnDropfiles($CloudIdDel);
+                    $thisModel->deleteOnCategories($catInfoLocal->id);
+                }
+            }
+
+            //if exists diff key array
+            if (count($folders_diff) > 0) {
+                foreach ($folders_diff as $CloudId => $folderData) {
+                    try {
+                        //check if this cloud folder is existed, it's maybe in under other category
+                        $objectCurrent = $thisModel->getOneCatByCloudId($CloudId);
+                        if ($objectCurrent) {
+                            // Update parent ID
+                            $this->order('first-child', $objectCurrent->id, $cloudCategory->id, false);
+                        } else {
+                            //create new cloud folder in dropfiles
+                            $newCatId = $thisModel->createOnCategories(
+                                $folderData['title'],
+                                $cloudCategory->id,
+                                (int)$cloudCategory->level + 1
+                            );
+                            if ($newCatId) {
+                                $thisModel->createOnDropfiles(
+                                    $newCatId,
+                                    'googledrive',
+                                    $CloudId
+                                );
+                            }
+                        }
+                    } catch (Exception $e) {
+                        echo $e->getMessage();
+                        $clsDropfilesHelper->setParams(array('dropfiles_google_last_sync_time' => time()));
+                        break;
+                    }
+                }
+            }
+
+            // Update files count
+            $categoriesModel = $this->getModel('Categories', 'DropfilesModel');
+            $categoriesModel->updateFilesCount();
+        }
     }
 
     /**
@@ -351,7 +529,7 @@ class DropfilesControllerGoogledrive extends CategoriesControllerCategories
 
                                 if ($localParentId !== $googleLocalParentId) {
                                     try {
-                                        $this->order('first-child', $objectCurrent->id, $googleLocalParentId);
+                                        $this->order('first-child', $objectCurrent->id, $googleLocalParentId, false);
                                     } catch (Exception $e) {
                                         $erros = 'ChangeLocalParentFromCloud-Exception: ' . $e->getMessage();
 
@@ -460,7 +638,9 @@ class DropfilesControllerGoogledrive extends CategoriesControllerCategories
             if ((int) $params->get('google_watch_changes', 1) === 1) {
                 DropfilesCloudHelper::watchChanges();
             }
-
+            // Update files count
+            $categoriesModel = $this->getModel('Categories', 'DropfilesModel');
+            $categoriesModel->updateFilesCount();
             if (!$cron) {
                 header('Content-Type: application/json');
                 echo json_encode(array('status' => true));
@@ -499,23 +679,26 @@ class DropfilesControllerGoogledrive extends CategoriesControllerCategories
      * @param string  $position Position
      * @param integer $pk       Current Category id
      * @param integer $ref      Ref category id
+     * @param boolean $return   Return result or not
      *
      * @return void
      * @throws \Exception Throw when application can not start
      * @since  version
      */
-    public function order($position, $pk, $ref)
+    public function order($position, $pk, $ref, $return = true)
     {
+        $status = false;
+        $message = '';
         $model = $this->getModel();
         $canDo = DropfilesHelper::getActions();
         if (!$canDo->get('core.edit')) {
             if ($canDo->get('core.edit.own')) {
                 $category = $model->getItem($pk);
                 if ($category->created_user_id !== JFactory::getUser()->id) {
-                    $this->exitStatus('not permitted');
+                    $message = 'not permitted';
                 }
             } else {
-                $this->exitStatus('not permitted');
+                $message = 'not permitted';
             }
         }
 
@@ -528,9 +711,15 @@ class DropfilesControllerGoogledrive extends CategoriesControllerCategories
 
         $table = $model->getTable();
         if ($table->moveByReference($ref, $position, $pk)) {
-            $this->exitStatus(true, $pk . ' ' . $position . ' ' . $ref);
+            $status = true;
+            $message = $pk . ' ' . $position . ' ' . $ref;
+        } else {
+            $message = JText::_('COM_DROPFILES_CTRL_MESSAGE_ERROR');
         }
-        $this->exitStatus(JText::_('COM_DROPFILES_CTRL_MESSAGE_ERROR'));
+
+        if ($return) {
+            $this->exitStatus($status, $message);
+        }
     }
 
     /**

@@ -20,7 +20,7 @@ class plgEmundusAurion_sync_setup_campaigns_excelia extends JPlugin {
 		$this->query = $this->db->getQuery(true);
 
 		jimport('joomla.log.log');
-		JLog::addLogger(array('text_file' => 'com_emundus.syncSetupCampaigns.php'), JLog::ALL, array('com_emundus'));
+        JLog::addLogger(array('text_file' => 'com_emundus.syncSetupCampaigns.php'), JLog::ALL, array('com_emundus_syncSetupCampaigns'));
 	}
 
 	/**
@@ -73,7 +73,7 @@ class plgEmundusAurion_sync_setup_campaigns_excelia extends JPlugin {
 				try {
 					$db_au_camp_data = $this->db->loadAssocList($camp_aurion_id);
 				} catch (Exception $e) {
-					JLog::add('Could not get the campaign info from the Aurion campaign table. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+					JLog::add('Could not get the campaign info from the Aurion campaign table. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_syncSetupCampaigns');
 					return false;
 				}
 
@@ -86,7 +86,7 @@ class plgEmundusAurion_sync_setup_campaigns_excelia extends JPlugin {
 				try {
 					$db_em_prog_code_id = $this->db->loadAssocList('id');
 				} catch (Exception $e) {
-					JLog::add('Could not get the program Codes from the prog table by ID in order to feed the campaign table. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+					JLog::add('Could not get the program Codes from the prog table by ID in order to feed the campaign table. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_syncSetupCampaigns');
 					return false;
 				}
 
@@ -105,7 +105,7 @@ class plgEmundusAurion_sync_setup_campaigns_excelia extends JPlugin {
 				try {
 					$db_em_camp_aurion_ids = array_unique($this->db->loadColumn());
 				} catch (Exception $e) {
-					JLog::add('Could not get aurion ID from the campaigns table. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+					JLog::add('Could not get aurion ID from the campaigns table. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_syncSetupCampaigns');
 					return false;
 				}
 
@@ -169,7 +169,7 @@ class plgEmundusAurion_sync_setup_campaigns_excelia extends JPlugin {
 						try {
 							$this->db->execute();
 						} catch (Exception $e) {
-							JLog::add('Could not INSERT data into jos_emundus_setup_teaching_unity. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+							JLog::add('Could not INSERT data into jos_emundus_setup_teaching_unity. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_syncSetupCampaigns');
 							return false;
 						}
 					}
@@ -203,7 +203,7 @@ class plgEmundusAurion_sync_setup_campaigns_excelia extends JPlugin {
 							try {
 								$this->db->execute();
 							} catch (Exception $e) {
-								JLog::add('Could not UPDATE data into jos_emundus_setup_campaign. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+								JLog::add('Could not UPDATE data into jos_emundus_setup_campaign. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_syncSetupCampaigns');
 								return false;
 							}
 						}
@@ -221,7 +221,7 @@ class plgEmundusAurion_sync_setup_campaigns_excelia extends JPlugin {
 							try {
 								$this->db->execute();
 							} catch (Exception $e) {
-								JLog::add('Could not UPDATE data into jos_emundus_setup_campaign. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+								JLog::add('Could not UPDATE data into jos_emundus_setup_campaign. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_syncSetupCampaigns');
 								return false;
 							}
 						}

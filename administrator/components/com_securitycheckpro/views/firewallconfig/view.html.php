@@ -46,24 +46,28 @@ class SecuritycheckprosViewFirewallConfig extends SecuritycheckproView
 
         //  Parámetros del plugin
         $items= $model->getConfig();
-
-        // Pestaña Lists
-        $blacklist_elements= array();
+				
+		// Lista negra
+		$blacklist_elements = $model->getTableData("blacklist");        
         $pagination_blacklist = null;
-        if ((!is_null($items['blacklist'])) && ($items['blacklist'] != '')) {
-            $items['blacklist'] = str_replace(' ', '', $items['blacklist']);
-            $blacklist_elements = explode(',', trim($items['blacklist']));
+		
+        if ( !is_null($blacklist_elements) ) {            
             $blacklist_elements = $model->filter_data($blacklist_elements, $pagination_blacklist);
         }
+		
+		// Lista negra dinámica
+		$dynamic_blacklist_elements = $model->getTableData("dynamic_blacklist");        
+        $pagination_dynamic_blacklist = null;
+		
+        if ( !is_null($dynamic_blacklist_elements) ) {            
+            $dynamic_blacklist_elements = $model->filter_data($dynamic_blacklist_elements, $pagination_dynamic_blacklist);
+        }
 
-        $dynamic_blacklist_elements= $model->get_dynamic_blacklist_ips();
+        // Lista blanca
+		$whitelist_elements = $model->getTableData("whitelist");		
+		$pagination_whitelist = null;
 
-        $whitelist_elements= array();
-        $pagination_whitelist = null;
-
-        if ((!is_null($items['whitelist'])) && ($items['whitelist'] != '')) {    
-            $items['whitelist'] = str_replace(' ', '', $items['whitelist']);
-            $whitelist_elements = explode(',', trim($items['whitelist']));
+        if ( !is_null($whitelist_elements) ) {                
             $whitelist_elements = $model->filter_data($whitelist_elements, $pagination_whitelist);
         }
 
@@ -75,8 +79,8 @@ class SecuritycheckprosViewFirewallConfig extends SecuritycheckproView
 
         $this->blacklist_elements = $blacklist_elements;
         $this->dynamic_blacklist_elements = $dynamic_blacklist_elements;
-        $this->whitelist_elements = $whitelist_elements;
-        $this->dynamic_blacklist = $items['dynamic_blacklist'];
+        $this->whitelist_elements = $whitelist_elements; 
+		$this->dynamic_blacklist = $items['dynamic_blacklist'];
         $this->dynamic_blacklist_time = $items['dynamic_blacklist_time'];
         $this->dynamic_blacklist_counter = $items['dynamic_blacklist_counter'];
         $this->blacklist_email = $items['blacklist_email'];
@@ -309,6 +313,10 @@ class SecuritycheckprosViewFirewallConfig extends SecuritycheckproView
         if (!is_null($items['tags_to_filter'])) {
             $tags_to_filter = $items['tags_to_filter'];    
         }
+		
+		if (!is_null($items['exclude_exceptions_if_vulnerable'])) {
+            $exclude_exceptions_if_vulnerable = $items['exclude_exceptions_if_vulnerable'];    
+        }
                 
         $this->check_header_referer = $check_header_referer;
         $this->check_base_64 = $check_base_64;
@@ -398,18 +406,21 @@ class SecuritycheckprosViewFirewallConfig extends SecuritycheckproView
         $upload_scanner_enabled = 0;
         $check_multiple_extensions = 0;
         $extensions_blacklist  = "php,js,exe,xml";
+		$mimetype_blacklist  = "application/x-dosexec,application/x-msdownload ,text/x-php,application/x-php,application/x-httpd-php,application/x-httpd-php-source,application/javascript,application/xml";
         $delete_files = 0;
         $actions_upload_scanner = 0;
 
         $upload_scanner_enabled = $items['upload_scanner_enabled'];    
         $check_multiple_extensions = $items['check_multiple_extensions'];    
         $extensions_blacklist = $items['extensions_blacklist'];
+		$mimetypes_blacklist = $items['mimetypes_blacklist'];
         $delete_files = $items['delete_files'];
         $actions_upload_scanner = $items['actions_upload_scanner'];
 
         $this->upload_scanner_enabled = $upload_scanner_enabled;
         $this->check_multiple_extensions = $check_multiple_extensions;
-        $this->extensions_blacklist = $extensions_blacklist;
+		$this->extensions_blacklist = $extensions_blacklist;
+        $this->mimetypes_blacklist = $mimetypes_blacklist;
         $this->delete_files = $delete_files;
         $this->actions_upload_scanner = $actions_upload_scanner;
 
@@ -519,6 +530,10 @@ class SecuritycheckprosViewFirewallConfig extends SecuritycheckproView
         } else if (!is_null($pagination_whitelist)) {
             $this->pagination = $pagination_whitelist;    
         }
+		
+		if (version_compare(JVERSION, '3.220', 'lt')) {
+			$this->setLayout('j3_default'); // Set the old_layout style for J3
+		}	
 
         parent::display($tpl);
     }

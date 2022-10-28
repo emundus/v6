@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<fields name="params">
+		<fieldset name="basic">
+			<field name="field_speaker" type="text" label="Speaker" size="50" description=""></field>			
+			<field name="field_hours" type="text" label="Number Hours" size="50" description=""></field>	
+		</fieldset>			
+	</fields>	
+</config>

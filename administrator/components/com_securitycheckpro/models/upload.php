@@ -16,7 +16,7 @@ use Joomla\CMS\Language\Text as JText;
 /**
  * Modelo Securitycheck
  */
-class SecuritycheckprosModelUpload extends JModelLegacy
+class SecuritycheckprosModelUpload extends \Joomla\CMS\MVC\Model\BaseDatabaseModel
 {
 
     /* Función que sube un fichero de configuración de la extensión Securitycheck Pro (previamente exportado) y establece esa configuración sobreescribiendo la actual */

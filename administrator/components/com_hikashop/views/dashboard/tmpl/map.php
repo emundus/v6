@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -22,8 +22,7 @@ if(empty($this->widget->elements)){
 }else{
 	foreach($this->widget->elements as $element){
 		$data[] = 'data.setValue('.$i.', 0, \''.str_replace("'","\'",$element->zone_code_2).'\');
-					data.setValue('.$i.', 1, '.(int)$element->total.');
-					data.setValue('.$i.', 2, \''.str_replace("'","\'",$element->zone_name_english).'\');';
+					data.setValue('.$i.', 1, '.(int)$element->total.');';
 		$i++;
 	}
 }
@@ -38,22 +37,19 @@ if(isset($this->edit) && $this->edit){
 }
 
 $js="
-google.load('visualization', '1', {'packages':['geomap']});
+google.load('visualization', '49', {'packages':['geochart']});
 			google.setOnLoadCallback(drawChart_".$this->widget->widget_id.");
 			function drawChart_".$this->widget->widget_id."() {
 				var data = new google.visualization.DataTable();
 				data.addColumn('string', 'Code');
 				data.addColumn('number', '".JText::_(strtoupper($this->widget->widget_params->content))."');
-				data.addColumn('string', 'Country');
 				data.addRows(".count($data).");
 				".implode("\n",$data)."
 		var options = {};
-				options['dataMode'] = 'regions';
 				".$size."
-				options['colors'] = [ 0xFFB581, 0xc06000]; //orange colors
 				options['showLegend'] = ".$showLegend.";
 				options['region']='".$this->widget->widget_params->region."';
-				var chart = new google.visualization.GeoMap(document.getElementById('graph_".$this->widget->widget_id."'));
+				var chart = new google.visualization.GeoChart(document.getElementById('graph_".$this->widget->widget_id."'));
 				chart.draw(data, options);
 			}";
 $doc = JFactory::getDocument();

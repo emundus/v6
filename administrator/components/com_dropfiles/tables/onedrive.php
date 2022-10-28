@@ -25,8 +25,6 @@ class DropfilesTableOnedrive extends JTable
      * Constructor
      *
      * @param JDatabase $db A database connector object
-     *
-     * @return DropfilesTableOnedrive
      */
     public function __construct(&$db)
     {

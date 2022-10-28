@@ -2,7 +2,10 @@
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ url('gantry-admin://assets/css-compiled/g-admin.css') }}" type="text/css" />
-    <link rel="stylesheet" href="{{ url('gantry-admin://assets/css/font-awesome.min.css') }}" type="text/css" />
+    {% if not gantry.platform.has('fontawesome') %}
+    <link rel="stylesheet" href="{{ url('gantry-admin://assets/css/font-awesome5-all.min.css') }}" type="text/css" />
+    {% endif %}
+    <link rel="stylesheet" href="{{ url('gantry-admin://assets/css/font-awesome5-shim.min.css') }}" type="text/css" />
     {{ parent() }}
 {% endblock %}
 
@@ -19,13 +22,13 @@
             <div data-g5-content-wrapper="">
                 <div class="g-grid">
                     <div class="g-block main-block">
-                        <section id="g-main">
+                        <div id="g-main">
                             <div class="g-content" data-g5-content="">
                                 {% block gantry %}
                                     {{ content|raw }}
                                 {% endblock %}
                             </div>
-                        </section>
+                        </div>
                     </div>
                 </div>
             </div>

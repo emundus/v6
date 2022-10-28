@@ -31,7 +31,7 @@ defined('_JEXEC') or die;
 
                     <?php if (sizeof($contact_info) > 0) :?>
 
-                        <h4 class="modal-title"><?php echo JText::_('VIDEO_CALLING'); ?></h4>
+                        <h4 class="modal-title"><?php echo JText::_('MOD_EM_BOOK_INTERVIEW_VIDEO_CALLING'); ?></h4>
 
                         <?php foreach ($contact_info as $type => $text) :?>
                             <div class="form-group">
@@ -54,45 +54,48 @@ defined('_JEXEC') or die;
 
     function bookInterview() {
 
-        var eventId = $$("#em-book-interview").get("value"),
+        var eventId = document.getElementById('em-book-interview').value,
             userId = <?php echo $user->id; ?>,
             fnum = <?php echo $user->fnum; ?>;
+
+        var bookBtn = document.getElementById('btnBook');
 
         var contactInfo = new Object();
 
         <?php foreach ($contact_info as $type => $text) :?>
-            contactInfo.<?php echo $type; ?> = $$("#<?php echo $type.'-input'; ?>").get("value")[0];
+        contactInfo.<?php echo $type; ?> = document.getElementById('<?php echo $type.'-input'; ?>').value;
         <?php endforeach; ?>
 
-        $$("#btnBook").setStyle('background-color','#4183D7');
-        $$("#btnBook").set('text','Loading... ');
-        $$("#btnBook").removeProperty("onclick");
-
-        var ajax = new Request({
+        jQuery.ajax({
             url: 'index.php?option=com_emundus&controller=calendar&task=bookinterview&format=raw',
             method: 'POST',
             data: {
-                eventId: eventId[0],
+                eventId: eventId,
                 userId: userId,
                 fnum: fnum,
                 contactInfo: contactInfo,
             },
-            onSuccess: function(result) {
+            success: function(result) {
                 result = JSON.parse(result);
                 if (result.status) {
                     location.reload(true);
                 } else {
-                    $$('#btnBook').setStyle('background-color','#96281B');
-                    $$('#btnBook').set('text','Error!');
+                    bookBtn.style.backgroundColor = '#96281B';
+
+                    if (typeof result.message != 'undefined') {
+                        bookBtn.innerText = result.message;
+                    }
+                    else {
+                        bookBtn.innerText = 'Error!';
+                    }
                 }
             },
-            onFailure: function(jqXHR, textStatus, errorThrown) {
-                $$('#btnBook').setStyle('background-color','#96281B');
-                $$('#btnBook').set('text','Error!');
+            error: function(jqXHR, textStatus, errorThrown) {
+                bookBtn.style.backgroundColor = '#96281B';
+                bookBtn.innerText = 'Error!';
             }
         });
 
-        ajax.send();
-
     }
+
 </script>

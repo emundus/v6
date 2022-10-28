@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -37,10 +37,10 @@ class ProductViewProduct extends hikashopView
 		$pageInfo->filter = new stdClass();
 		$pageInfo->filter->order = new stdClass();
 		$pageInfo->limit = new stdClass();
-		$config =& hikashop_config();
+		$config = hikashop_config();
 
-		$pageInfo->filter->order->value = $app->getUserStateFromRequest($this->paramBase.".filter_order", 'filter_order', 'a.ordering', 'cmd');
-		$pageInfo->filter->order->dir	= $app->getUserStateFromRequest($this->paramBase.".filter_order_Dir", 'filter_order_Dir', 'asc', 'word');
+		$pageInfo->filter->order->value = $app->getUserStateFromRequest($this->paramBase.".filter_order", 'filter_order', $config->get('default_order_column_on_product_listing', 'a.ordering'), 'cmd');
+		$pageInfo->filter->order->dir	= $app->getUserStateFromRequest($this->paramBase.".filter_order_Dir", 'filter_order_Dir', $config->get('default_order_direction_on_product_listing', 'asc'), 'word');
 		$newFilterId = hikaInput::get()->getVar('filter_id');
 		$newSearch = hikaInput::get()->getVar('search');
 
@@ -64,6 +64,10 @@ class ProductViewProduct extends hikashopView
 		$pageInfo->filter->filter_product_type = $app->getUserStateFromRequest( $this->paramBase.".filter_product_type", 'filter_product_type', 'main', 'word');
 		$pageInfo->filter->filter_published = $app->getUserStateFromRequest( $this->paramBase.".filter_published", 'filter_published', 0, 'int');
 		$pageInfo->filter->filter_manufacturer = $app->getUserStateFromRequest( $this->paramBase.".filter_manufacturer", 'filter_manufacturer', '', 'string');
+		$pageInfo->filter->filter_product_weight = $app->getUserStateFromRequest( $this->paramBase.".filter_product_weight", 'filter_product_weight', 'all', 'string');
+
+		$this->searchOptions = array('product_type' => 'main', 'published' => 0, 'manufacturer' => '', 'product_weight' => 'all');
+		$this->openfeatures_class = "hidden-features";
 
 		$database = JFactory::getDBO();
 		$filters = array('product_type' => 'b.product_type != '.$database->Quote('trash'));
@@ -79,6 +83,20 @@ class ProductViewProduct extends hikashopView
 			$class = hikashop_get('class.category');
 			$class->getMainElement($pageInfo->filter->filter_id);
 		}
+
+		switch($pageInfo->filter->filter_product_weight) {
+			case 'virtual':
+				$filters[]='b.product_weight < 0.0001';
+				break;
+			case 'shippable':
+				$filters[]='b.product_weight > 0';
+				break;
+			case '':
+			case 'all':
+			default:
+				break;
+		}
+		$this->productWeightType = hikashop_get('type.productweight');
 
 		$manufacturerDisplay = hikashop_get('type.manufacturer');
 		$manufacturer = $manufacturerDisplay->display('filter_manufacturer',$pageInfo->filter->filter_manufacturer);
@@ -105,7 +123,7 @@ class ProductViewProduct extends hikashopView
 			$this->noOrderingMessage = JText::_('CHANGE_PRODUCT_TYPE_FILTER_TO_REORDER_ELEMENTS');
 		} elseif(!$doOrdering && is_numeric($pageInfo->filter->filter_id)) {
 			$category = $categoryClass->get($pageInfo->filter->filter_id);
-			if($category->category_left + 1 == $category->category_right) {
+			if(!empty($category) && $category->category_left + 1 == $category->category_right) {
 				$doOrdering = true;
 			}
 		}
@@ -224,6 +242,7 @@ class ProductViewProduct extends hikashopView
 		$this->assignRef('manage',$manage);
 		$this->toolbar = array(
 			array('name' => 'export'),
+			array('name' => 'popup', 'icon' => 'cogs', 'title' => JText::_('HIKASHOP_ACTIONS'), 'alt' => JText::_('HIKASHOP_ACTIONS'), 'url' => hikashop_completeLink('product&task=batch&tmpl=component'), $config->get('actions_popup_width','1024'), 'height' => $config->get('actions_popup_height','520'), 'check' => true, 'display' => $manage),
 			array('name' => 'publishList', 'display' => $manage),
 			array('name' => 'unpublishList', 'display' => $manage),
 			array('name' => 'custom', 'icon' => 'copy', 'alt' => JText::_('HIKA_COPY'), 'task' => 'copy', 'display' => $manage),
@@ -235,6 +254,11 @@ class ProductViewProduct extends hikashopView
 			array('name' => 'pophelp', 'target' => $this->ctrl.'-listing'),
 			'dashboard'
 		);
+
+		if($this->manage) {
+			$massactionClass = hikashop_get('class.massaction');
+			$massactionClass->addActionButtons($this->toolbar, 'product');
+		}
 
 		if(!empty($rows)){
 			$ids = array();
@@ -268,6 +292,10 @@ class ProductViewProduct extends hikashopView
 		$this->assignRef('image',$image);
 		$toggleClass = hikashop_get('helper.toggle');
 		$this->assignRef('toggleClass',$toggleClass);
+		$showpopupoption = hikashop_get('type.showpopupoption');
+		$this->assignRef('showpopupoptionType',$showpopupoption);
+		$popup_mode=$showpopupoption->display('product_popup_mode',$selectedType,false);
+		$this->assignRef('showPopupOption',$popup_mode);
 		$childClass = hikashop_get('type.childdisplay');
 		$this->assignRef('childDisplayType',$childClass);
 		$filter_type=$childClass->display('filter_type',$selectedType,false);
@@ -585,7 +613,6 @@ class ProductViewProduct extends hikashopView
 
 		$this->assignRef('element',$element);
 
-		JHTML::_('behavior.modal');
 		$type = 'tabs';
 		if($config->get('multilang_display','tabs')!='popups'){
 			$type = $config->get('multilang_display','tabs');
@@ -796,7 +823,7 @@ class ProductViewProduct extends hikashopView
 				if(!isset($row->prices))
 					$row->prices=array();
 				$rows[$k]->prices[$price->price_min_quantity.'_'.$price->price_access.'_'.$price->price_users.'_'.$price->price_currency_id] = $price;
-				if(!empty($row->product_parent_id))
+				if(empty($row->product_tax_id) && !empty($row->product_parent_id))
 					$row->product_tax_id = @$parents_tax_id[$row->product_parent_id]->product_tax_id;
 				$rows[$k]->prices[$price->price_min_quantity.'_'.$price->price_access.'_'.$price->price_users.'_'.$price->price_currency_id]->price_value_with_tax = $currencyClass->getTaxedPrice($price->price_value,$zone_id,$row->product_tax_id);
 			}
@@ -1236,6 +1263,14 @@ class ProductViewProduct extends hikashopView
 		$this->assignRef('editor',$editor);
 		$config =& hikashop_config();
 		$this->assignRef('config',$config);
+
+		if(hikashop_level(2)) {
+			hikashop_loadJslib('otree');
+			$joomlaAcl = hikashop_get('type.joomla_acl');
+			$this->assignRef('joomlaAcl', $joomlaAcl);
+		}
+
+		$this->delayTypeDownloads = hikashop_get('type.delay');
 	}
 
 	public function addfile(){
@@ -1386,7 +1421,8 @@ class ProductViewProduct extends hikashopView
 		}
 		JPluginHelper::importPlugin( 'hikashop' );
 		$app = JFactory::getApplication();
-		$app->triggerEvent( 'onBeforeProductExport', array( & $products, &$categories, &$this) );
+		$obj =& $this;
+		$app->triggerEvent( 'onBeforeProductExport', array( & $products, &$categories, &$obj) );
 		$this->assignRef('categories',$categories);
 		$this->assignRef('brands',$brands);
 		$this->assignRef('products',$products);
@@ -1431,12 +1467,7 @@ class ProductViewProduct extends hikashopView
 			$cid = 0;
 		$this->assignRef('cid', $cid);
 		hikaInput::get()->set('filter_id', $cid);
-
-		$this->listing();
-
-		$cid = $this->pageInfo->filter->filter_id;
-		$shopCategoryType = hikashop_get('type.categorysub');
-		$this->assignRef('shopCategoryType', $shopCategoryType);
+		$this->nameboxType = hikashop_get('type.namebox');
 	}
 
 	public function useselection() {
@@ -1477,10 +1508,13 @@ class ProductViewProduct extends hikashopView
 		$this->paramBase = HIKASHOP_COMPONENT.'.'.$this->getName().'.edit';
 		$task = 'add';
 
-		if(HIKASHOP_J30)
+		if(HIKASHOP_J30 && !HIKASHOP_J40)
 			JHtml::_('jquery.ui');
 
-		JHTML::_('behavior.tooltip');
+		if(HIKASHOP_J40)
+			JHtml::_('bootstrap.tooltip', '.hasTooltip', array('placement' => 'left'));
+		else
+			JHTML::_('behavior.tooltip');
 		hikashop_loadJsLib('tooltip');
 
 		$config = hikashop_config();
@@ -1619,7 +1653,9 @@ class ProductViewProduct extends hikashopView
 					} elseif(isset($product->variants[$ppid])) {
 						if(empty($product->variants[$ppid]->prices))
 							$product->variants[$ppid]->prices = array();
-						$price->price_value_with_tax = $this->currencyClass->getTaxedPrice($price->price_value,hikashop_getZone(),$product->product_tax_id);
+						if(empty($product->variants[$ppid]->product_tax_id))
+							$product->variants[$ppid]->product_tax_id = $product->product_tax_id;
+						$price->price_value_with_tax = $this->currencyClass->getTaxedPrice($price->price_value,hikashop_getZone(),$product->variants[$ppid]->product_tax_id);
 						$product->variants[$ppid]->prices[] = $price;
 					}
 				}
@@ -1735,7 +1771,7 @@ class ProductViewProduct extends hikashopView
 			$product = new stdClass();
 			$product->product_published = 1;
 			$product->product_type = 'main';
-			$product->product_quantity = -1;
+			$product->product_quantity = $config->get('default_stock_for_new_products', -1);
 			$product->product_description = '';
 			$product->product_condition = $config->get('product_default_condition', 'newCondition');
 
@@ -1904,6 +1940,9 @@ class ProductViewProduct extends hikashopView
 		$this->assignRef('cancel_action', $cancel_action);
 		$cancel_url = hikaInput::get()->getCmd('cancel_url', '');
 		$this->assignRef('cancel_url', $cancel_url);
+
+		$customize = hikashop_isAllowed($config->get('acl_product_customize','all'));
+		$this->assignRef('customize',$customize);
 	}
 
 	public function variantSortingCallback($a, $b) {
@@ -1966,7 +2005,9 @@ class ProductViewProduct extends hikashopView
 					if(isset($product->variants[$ppid])) {
 						if(empty($product->variants[$ppid]->prices))
 							$product->variants[$ppid]->prices = array();
-						$price->price_value_with_tax = $this->currencyClass->getTaxedPrice($price->price_value,$zone_id,$product->product_tax_id);
+						if(empty($product->variants[$ppid]->product_tax_id))
+							$product->variants[$ppid]->product_tax_id = $product->product_tax_id;
+						$price->price_value_with_tax = $this->currencyClass->getTaxedPrice($price->price_value,$zone_id,$product->variants[$ppid]->product_tax_id);
 						$product->variants[$ppid]->prices[] = $price;
 					}
 				}
@@ -2028,8 +2069,6 @@ class ProductViewProduct extends hikashopView
 		$ctrl = '';
 		$this->paramBase = HIKASHOP_COMPONENT.'.'.$this->getName().'.edit';
 
-		JHTML::_('behavior.tooltip');
-
 		$config = hikashop_config();
 		$this->assignRef('config', $config);
 
@@ -2057,6 +2096,12 @@ class ProductViewProduct extends hikashopView
 			'characteristicType' => 'type.characteristic'
 		));
 
+
+		$categoryType = hikashop_get('type.categorysub');
+		$categoryType->type='tax';
+		$categoryType->field='category_id';
+		$this->assignRef('categoryType',$categoryType);
+
 		if(!empty($product_id)) {
 			$product = $productClass->getRaw($product_id, true);
 
@@ -2064,7 +2109,12 @@ class ProductViewProduct extends hikashopView
 				return false;
 
 			$product->main = $productClass->get($product_parent_id);
-			$product->product_tax_id = $product->main->product_tax_id;
+			if(empty($product->product_tax_id)) {
+				$product->product_tax_id = $product->main->product_tax_id;
+				$product->product_tax_id_orig = 0;
+			} else {
+				$product->product_tax_id_orig = $product->product_tax_id;
+			}
 
 			$query = 'SELECT * FROM '.hikashop_table('file').' WHERE file_ref_id = '.(int)$product_id.' AND file_type=\'product\' ORDER BY file_ordering, file_id';
 			$db->setQuery($query);
@@ -2208,6 +2258,9 @@ class ProductViewProduct extends hikashopView
 		$fieldsClass->jsToggle($fields, $product, 0, $fieldsClass->prefix);
 		$this->assignRef('fieldsClass', $fieldsClass);
 		$this->assignRef('fields', $fields);
+
+		$customize = hikashop_isAllowed($config->get('acl_product_customize','all'));
+		$this->assignRef('customize',$customize);
 
 		return true;
 	}

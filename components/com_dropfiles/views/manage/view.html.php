@@ -35,7 +35,15 @@ class DropfilesViewManage extends JViewLegacy
         $user = JFactory::getUser();
         $loginUserId = (int)$user->get('id');
         if (!$loginUserId) {
-            $app->redirect(JRoute::_('index.php?option=com_users&view=login'));
+            $uri = JUri::getInstance();
+            $return = base64_encode($uri->toString());
+            $loginUrl = JRoute::_('index.php?option=com_users&view=login');
+            if (strpos($loginUrl, '?') === false) {
+                $loginUrl = $loginUrl . '?return='. $return;
+            } else {
+                $loginUrl = $loginUrl . '&return='. $return;
+            }
+            $app->redirect($loginUrl);
         }
         $catsmanage = JFactory::getApplication()->input->getInt('site_catid', 0);
         $tasksmanage = JFactory::getApplication()->input->get('task', '');
@@ -57,7 +65,7 @@ class DropfilesViewManage extends JViewLegacy
 
         $user = JFactory::getUser();
         $params = JComponentHelper::getParams('com_dropfiles');
-        if ($params->get('import') && !JRequest::getBool('caninsert', 0) &&
+        if ($params->get('import') && !JFactory::getApplication()->input->getBool('caninsert', 0) &&
             $user->authorise('core.admin')) {
             $this->importFiles = true;
         } else {

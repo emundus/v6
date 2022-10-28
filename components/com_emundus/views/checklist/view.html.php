@@ -60,20 +60,11 @@ class EmundusViewChecklist extends JViewLegacy {
                 // 1. if application form not sent yet, send it // 2. trigger emails // 3. display reminder list
                 $m_application 	= new EmundusModelApplication;
                 $m_files = new EmundusModelFiles;
-                
-                $accept_created_payments = $eMConfig->get('accept_created_payments', 0);
+
+                $accept_other_payments = $eMConfig->get('accept_other_payments', 0);
                 $fnumInfos = $m_files->getFnumInfos($this->_user->fnum);
 
-                $paid = (!(array)$m_application->getHikashopOrder($fnumInfos)) ? 0 : 1;
-
-                // If created payments aren't accepted then we don't need to check.
-                if ($accept_created_payments) {
-                    $payment_created_offline = (!(array)$m_application->getHikashopOrder($fnumInfos, true)) ? 0 : 1;
-                } else {
-                    $payment_created_offline = false;
-                }
-
-                if ($accept_created_payments == 2 || $paid || $payment_created_offline) {
+                if ($accept_other_payments == 2 || !empty($m_application->getHikashopOrder($fnumInfos))) {
 
                     switch ($eMConfig->get('redirect_after_payment')) {
 
@@ -99,6 +90,9 @@ class EmundusViewChecklist extends JViewLegacy {
                 break;
 
             default :
+                require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
+                $m_users = new EmundusModelUsers;
+
                 $document = JFactory::getDocument();
                 $document->addScript("media/jui/js/jquery.min.js" );
                 $document->addScript("media/com_emundus/lib/dropzone/js/dropzone.min.js" );
@@ -127,21 +121,69 @@ class EmundusViewChecklist extends JViewLegacy {
                 $is_other_campaign 	= $this->get('isOtherActiveCampaign');
 
                 if ($need == 0) {
-                    $title = JText::_('APPLICATION_COMPLETED_TITLE');
-                    $text = JText::_('APPLICATION_COMPLETED_TEXT');
+                    $title = JText::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_COMPLETED_TITLE');
+                    $text = JText::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_COMPLETED_TEXT');
                 } else {
-                    $title = JText::_('APPLICATION_INCOMPLETED_TITLE');
-                    $text = JText::_('APPLICATION_INCOMPLETED_TEXT');
+                    $title = JText::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_INCOMPLETED_TITLE');
+                    $text = JText::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_INCOMPLETED_TEXT');
                 }
 
+                require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+                $m_application = new EmundusModelApplication;
+                $attachments_prog = $m_application->getAttachmentsProgress($this->_user->fnum);
+                $this->assignRef('attachments_prog', $attachments_prog);
+
                 if ($notify_complete_file) {
-	                require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
-	                $m_application = new EmundusModelApplication;
-	                $attachments_prog = $m_application->getAttachmentsProgress($this->_user->fnum);
 	                $forms_prog = $m_application->getFormsProgress($this->_user->fnum);
-	                $this->assignRef('attachments_prog', $attachments_prog);
 	                $this->assignRef('forms_prog', $forms_prog);
                 }
+
+                $profile_attachments_ids = array();
+                $all_profile_attachments_ids = array();
+                $attachments_to_upload = array();
+                $profile_attachments_not_uploaded_ids = array();
+
+                $profile_attachments = $m_users->getProfileAttachments($this->_user->id,$this->_user->fnum);
+                $all_profile_attachments = $m_users->getProfileAttachments($this->_user->id);
+                $profile_attachments_not_uploaded = $m_users->getProfileAttachmentsAllowed();
+
+                foreach ($profile_attachments_not_uploaded as $key => $profile_attachment_not_uploaded) {
+                    $profile_attachments_not_uploaded_ids[] = $profile_attachment_not_uploaded->id;
+                }
+
+                if(!empty($all_profile_attachments)){
+                    foreach ($all_profile_attachments as $key => $all_profile_attachment) {
+                        $all_profile_attachments_ids[] = $all_profile_attachment->id;
+                    }
+
+                    foreach ($profile_attachments_not_uploaded_ids as $key => $profile_attachment_not_uploaded_id) {
+                        $neededObject = array_filter(
+                            $attachments,
+                            function ($e) use ($profile_attachment_not_uploaded_id) {
+                                return $e->id == $profile_attachment_not_uploaded_id;
+                            }
+                        );
+
+                        if (in_array($profile_attachment_not_uploaded_id, $all_profile_attachments_ids) || (int)$neededObject[0]->nb > 0) {
+                            unset($profile_attachments_not_uploaded_ids[$key]);
+                        }
+                    }
+                }
+
+                if(!empty($profile_attachments)){
+                    foreach ($profile_attachments as $profile_attachment) {
+                        $profile_attachments_ids[] = $profile_attachment->id;
+                    }
+
+                    foreach ($attachments as $attachment){
+                        if(in_array($attachment->id, $profile_attachments_ids)){
+                            //$m_users->uploadProfileAttachmentToFile($this->_user->fnum, $attachment->id, $this->_user->id);
+                            $attachments_to_upload[] = $attachment->id;
+                        }
+                    }
+                }
+
+                $profile_attachments_not_uploaded_ids = implode(',', $profile_attachments_not_uploaded_ids);
 
 
                 $end_date = !empty($is_admission) ? $this->_user->fnums[$this->_user->fnum]->admission_end_date : $this->_user->fnums[$this->_user->fnum]->end_date;
@@ -150,12 +192,23 @@ class EmundusViewChecklist extends JViewLegacy {
                 $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
                 $now = $dateTime->setTimezone(new DateTimeZone($offset))->format("Y-m-d");
 
-                $is_dead_line_passed = $end_date < $now;
-
                 // Check campaign limit, if the limit is obtained, then we set the deadline to true
                 $m_campaign = new EmundusModelCampaign;
+                $current_phase = $m_campaign->getCurrentCampaignWorkflow($this->_user);
+
+                if (!empty($current_phase) && !empty($current_phase->end_date)) {
+                    $current_end_date = $current_phase->end_date;
+                    $current_start_date = $current_phase->start_date;
+                }  else if (!empty($is_admission)) {
+                    $current_end_date = $this->_user->fnums[$this->_user->fnum]->admission_end_date;
+                    $current_start_date = $this->_user->fnums[$this->_user->fnum]->admission_start_date;
+                } else {
+                    $current_end_date = !empty($this->_user->fnums[$this->_user->fnum]->end_date) ? $this->_user->fnums[$this->_user->fnum]->end_date : $this->_user->end_date;
+                    $current_start_date = $this->_user->fnums[$this->_user->fnum]->start_date;
+                }
 
                 $isLimitObtained = $m_campaign->isLimitObtained($this->_user->fnums[$this->_user->fnum]->campaign_id);
+                $is_dead_line_passed = $current_end_date < $now;
 
                 if (($is_dead_line_passed || $isLimitObtained === true) && $eMConfig->get('can_edit_after_deadline', 0) == 0) {
                     $m_checklist->setDelete(0, $this->_user);
@@ -163,6 +216,7 @@ class EmundusViewChecklist extends JViewLegacy {
                     $m_checklist->setDelete(1, $this->_user);
                 }
 
+                $this->assignRef('current_phase', $current_phase);
                 $this->assignRef('is_dead_line_passed', $is_dead_line_passed);
                 $this->assignRef('isLimitObtained', $isLimitObtained);
                 $this->assignRef('user', $this->_user);
@@ -183,6 +237,8 @@ class EmundusViewChecklist extends JViewLegacy {
                 $this->assignRef('is_admission', $is_admission);
                 $this->assignRef('required_desc', $required_desc);
                 $this->assignRef('notify_complete_file', $notify_complete_file);
+                $this->assignRef('attachments_to_upload', $attachments_to_upload);
+                $this->assignRef('profile_attachments_not_uploaded_ids', $profile_attachments_not_uploaded_ids);
 
                 $result = $this->get('Result');
                 $this->assignRef('result', $result);

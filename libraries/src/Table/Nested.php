@@ -2,7 +2,7 @@
 /**
  * Joomla! Content Management System
  *
- * @copyright  Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
+ * @copyright  (C) 2009 Open Source Matters, Inc. <https://www.joomla.org>
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -52,7 +52,7 @@ class Nested extends Table
 	public $rgt;
 
 	/**
-	 * Object property holding the alias of this node used to constuct the full text path, forward-slash delimited.
+	 * Object property holding the alias of this node used to construct the full text path, forward-slash delimited.
 	 *
 	 * @var    string
 	 * @since  1.7.0

@@ -22,7 +22,7 @@ class modEmundusMenuHelper
 	 * @return	array
 	 * @since	1.5
 	 */
-	static function getList(&$params)
+	static function getList(&$params,$default_menutype = null)
 	{
 		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
@@ -36,8 +36,13 @@ class modEmundusMenuHelper
 		$user = JFactory::getSession()->get('emundusUser');
 		asort($levels);
 		$key = 'menu_items'.$params.implode(',', $levels).'.'.$active->id;
-		$cache = JFactory::getCache('mod_emundusmenu', '');
-		if (!($items = $cache->get($key)) && isset($user->menutype)) {
+		$caching = $params->get('cache', 0);
+		$items = [];
+		if($caching) {
+			$cache = JFactory::getCache('mod_emundusmenu', '');
+			$items = $cache->get($key);
+		}
+		if (isset($user->menutype) && empty($items)) {
 			// Initialise variables.
 			$list		= array();
 			$db			= JFactory::getDbo();
@@ -46,7 +51,11 @@ class modEmundusMenuHelper
 			$start		= (int) $params->get('startLevel');
 			$end		= (int) $params->get('endLevel');
 			$showAll	= $params->get('showAllChildren');
-			$items 		= $menu->getItems('menutype', $user->menutype);
+			if($default_menutype != null){
+				$items 		= $menu->getItems('menutype', $default_menutype);
+			} else {
+				$items 		= $menu->getItems('menutype', $user->menutype);
+			}
 
 			$lastitem	= 0;
 
@@ -114,7 +123,7 @@ class modEmundusMenuHelper
 					else {
 						$item->flink = JRoute::_($item->flink);
 					}
-				
+
 					$item->title        = htmlspecialchars($item->title, ENT_COMPAT, 'UTF-8', false);
 					$item->anchor_css   = htmlspecialchars($item->params->get('menu-anchor_css', ''), ENT_COMPAT, 'UTF-8', false);
 					$item->anchor_title = htmlspecialchars($item->params->get('menu-anchor_title', ''), ENT_COMPAT, 'UTF-8', false);
@@ -130,7 +139,9 @@ class modEmundusMenuHelper
 				}
 			}
 
-			$cache->store($items, $key);
+			if($caching) {
+				$cache->store($items, $key);
+			}
 		}
 		return $items;
 	}

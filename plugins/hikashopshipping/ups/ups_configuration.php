@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -33,7 +33,23 @@ function ups_addRow() {
 #warehouse_listing .row0 input, #warehouse_listing .row0 a, #warehouse_listing .row0 select {
     width: 100px;
 }
+<?php 
+	if (HIKASHOP_J40) { 
+?>
+	div#hikashop_main_content.hika_j4 #warehouse_listing_table select.custom-select, 
+	div#hikashop_main_content.hika_j4 #warehouse_listing_table input[type="text"] {
+	    width: 100px;
+	}
+<?php	
+	}
+?>
 </style>
+<?php
+	$extra_css = "";
+	if (HIKASHOP_J40) { 
+		$extra_css = "font-size: 1.1em; font-weight: bold;";
+	}
+?>
 	<tr>
 		<td class="key">
 			<label for="data[shipping][shipping_params][access_code]"><?php
@@ -76,6 +92,22 @@ function ups_addRow() {
 	</tr>
 	<tr>
 		<td class="key">
+			<label for="data[shipping][shipping_params][environment]"><?php
+				echo JText::_( 'ENVIRONMENT' );
+			?></label>
+		</td>
+		<td><?php
+			$arr = array(
+				JHTML::_('select.option', 'production', JText::_('Production') ),
+				JHTML::_('select.option', 'test', JText::_('Testing and integration') ),
+			);
+			if(empty($this->element->shipping_params->environment))
+				$this->element->shipping_params->environment = 'production';
+			echo JHTML::_('hikaselect.genericlist', $arr, "data[shipping][shipping_params][environment]", 'class="custom-select" size="1"', 'value', 'text', $this->element->shipping_params->environment);
+		?></td>
+	</tr>
+	<tr>
+		<td class="key">
 			<label for="data[shipping][shipping_params][pickup_type]"><?php
 				echo JText::_( 'PICKUP_TYPE' );
 			?></label>
@@ -109,8 +141,8 @@ function ups_addRow() {
 	</tr>
 </table>
 </fieldset>
-<fieldset>
-	<legend><?php echo JText::_( 'WAREHOUSE' ); ?></legend>
+<fieldset style="border:none;">
+	<legend style="padding-left: 15px;     border: 0px; <?php echo $extra_css; ?>"><?php echo JText::_( 'WAREHOUSE' ); ?></legend>
 	<table class="adminlist table table-striped" cellpadding="1" width="100%" id="warehouse_listing_table">
 		<thead>
 			<tr>
@@ -126,10 +158,15 @@ function ups_addRow() {
 		<tbody id="warehouse_listing">
 <?php
 	$country=hikashop_get('type.country');
-	$a = @count($this->element->shipping_params->warehouse);
-	if(!$a){ $a++; }
-	for($i = 0; $i < $a; $i++) {
-		$row = @$this->element->shipping_params->warehouse[$i];
+	$row = new stdClass();
+	$a = 0;
+	if(!empty($this->element->shipping_params->warehouse))
+		$a = count($this->element->shipping_params->warehouse);
+	else
+		$a = 1;
+	for($i = 0;$i<$a;$i++){
+		if(!empty($this->element->shipping_params->warehouse))
+			$row = @$this->element->shipping_params->warehouse[$i];
 ?>
 			<tr class="row0" id="warehouse_<?php echo $i;?>">
 				<td>
@@ -225,7 +262,7 @@ function ups_addRow() {
 				$i++;
 				$varName=strtolower($method['name']);
 				$varName=str_replace(' ','_', $varName);
-			?><input id="data_shipping_ups_<?php echo $varName;?>" name="data[shipping_methods][<?php echo $varName;?>][name]" type="checkbox" value="<?php echo $varName;?>" <?php echo (!empty($this->element->shipping_params->methods[$varName])?'checked="checked"':''); ?>/><label for="data_shipping_ups_<?php echo $varName;?>"><?php echo $method['name'].' ('.$method['countries'].')'; ?></label><br/>
+			?><label for="data_shipping_ups_<?php echo $varName;?>"><input id="data_shipping_ups_<?php echo $varName;?>" name="data[shipping_methods][<?php echo $varName;?>][name]" type="checkbox" value="<?php echo $varName;?>" <?php echo (!empty($this->element->shipping_params->methods[$varName])?'checked="checked"':''); ?>/> <?php echo $method['name'].' ('.$method['countries'].')'; ?></label><br/>
 <?php
 			}
 ?>
@@ -239,6 +276,16 @@ function ups_addRow() {
 		</td>
 		<td><?php
 			echo JHTML::_('hikaselect.booleanlist', "data[shipping][shipping_params][negotiated_rate]" , '', @$this->element->shipping_params->negotiated_rate);
+		?></td>
+	</tr>
+	<tr>
+		<td class="key">
+			<label for="data[shipping][shipping_params][saturday_shipping]"><?php
+				echo JText::_('SATURDAY_SHIPPING');
+			?></label>
+		</td>
+		<td><?php
+			echo JHTML::_('hikaselect.booleanlist', "data[shipping][shipping_params][saturday_shipping]" , '', @$this->element->shipping_params->saturday_shipping);
 		?></td>
 	</tr>
 	<tr>

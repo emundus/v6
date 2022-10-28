@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -97,39 +97,111 @@ class hikashopBridgePaginationHelper extends JPagination {
 	}
 
 	function _list_render($list){
-		$html = null;
-		if(isset($list['start']['base']))
-			$html .= "<a href=\"".$this->_link($list['start']['base'])."\" class=\"pagenav_start_chevron\"> &lt;&lt; </a>";
-		else
-			$html .= '<span class="pagenav_start_chevron">&lt;&lt; </span>';
+		if (HIKASHOP_J40) {
+			$html = '<ul class="pagination hikashop_pagination">';
+			$start_class = '';
+			if (!$list['start']['active'])
+			$start_class = 'disabled ';
+			$html .= '<li class="'.$start_class.'page-item">';
+			if(isset($list['start']['base']))
+			$html .= "<a href=\"".$this->_link($list['start']['base'])."\" class=\"pagenav_previous_chevron page-link\">".
+				'<span class="fas fa-angle-double-left" aria-hidden="true"></span>'.
+			'</a>';
+			else
+			$html .= '<span class="page-link" aria-hidden="true">'.
+				'<span class="fas fa-angle-double-left" aria-hidden="true"></span>'.
+			'</span>';
+			$html .= '</li>';
 
-		$html .= $list['start']['data'];
+			$prev_class = '';
+			if (!$list['previous']['active'])
+				$prev_class = 'disabled ';
 
-		if(isset($list['previous']['base']))
-			$html .= "<a href=\"".$this->_link($list['previous']['base'])."\" class=\"pagenav_previous_chevron\"> &lt; </a>";
-		else
-			$html .= '<span class="pagenav_previous_chevron"> &lt; </span>';
+			$html .= '<li class="'.$prev_class.'page-item">';
+			if(isset($list['previous']['base']))
+				$html .= "<a href=\"".$this->_link($list['previous']['base'])."\" class=\"pagenav_previous_chevron page-link\">".
+					'<span class="fas fa-angle-left" aria-hidden="true"></span>'.
+				'</a>';
+			else
+				$html .= '<span class="page-link" aria-hidden="true">'.
+					'<span class="fas fa-angle-left" aria-hidden="true"></span>'.
+				'</span>';
+			$html .= '</li>';
 
-		$html .= $list['previous']['data'];
+			foreach( $list['pages'] as $page ) {
+				$page_class = '';
+				if (!$page['active'])
+					$page_class = 'active ';
 
-		foreach( $list['pages'] as $page ) {
-			$html .= ' '.$page['data'];
+				$html .= '<li class="'.$page_class.'page-item">';
+				$html .= $page['data'];
+				$html .= '</li>';
+			}
+
+			$next_class = '';
+			if (!$list['next']['active'])
+				$next_class = 'disabled ';
+			$html .= '<li class="'.$next_class.'page-item">';
+			if(isset($list['next']['base']))
+				$html .= "<a href=\"".$this->_link($list['next']['base'])."\" class=\"pagenav_next_chevron page-link\">".
+					'<span class="fas fa-angle-right" aria-hidden="true"></span>'.
+				'</a>';
+			else
+				$html .= '<span class="page-link" aria-hidden="true">'.
+					'<span class="fas fa-angle-right" aria-hidden="true"></span>'.
+				'</span>';
+			$html .= '</li>';
+
+			$end_class = '';
+			if (!$list['end']['active'])
+				$end_class = 'disabled ';
+
+			$html .= '<li class="'.$end_class.'page-item">';
+			if(isset($list['end']['base']))
+				$html .= "<a href=\"".$this->_link($list['end']['base'])."\" class=\"pagenav_end_chevron page-link\">".
+					'<span class="fas fa-angle-double-right" aria-hidden="true"></span>'.
+				'</a>';
+			else
+				$html .= '<span class="page-link" aria-hidden="true">'.
+					'<span class="fas fa-angle-double-right" aria-hidden="true"></span>'.
+				'</span>';
+			$html .= '</li>
+				</ul>';
 		}
+		else {
+			$html = null;
+			if(isset($list['start']['base']))
+				$html .= "<a href=\"".$this->_link($list['start']['base'])."\" class=\"pagenav_start_chevron\"> &lt;&lt; </a>";
+			else
+				$html .= '<span class="pagenav_start_chevron">&lt;&lt; </span>';
 
-		$html .= ' '. $list['next']['data'];
+			$html .= $list['start']['data'];
 
-		if(isset($list['next']['base']))
-			$html .= "<a href=\"".$this->_link($list['next']['base'])."\" class=\"pagenav_next_chevron\"> &gt; </a>";
-		else
-			$html .= '<span class="pagenav_next_chevron"> &gt;</span>';
+			if(isset($list['previous']['base']))
+				$html .= "<a href=\"".$this->_link($list['previous']['base'])."\" class=\"pagenav_previous_chevron\"> &lt; </a>";
+			else
+				$html .= '<span class="pagenav_previous_chevron"> &lt; </span>';
 
-		$html .= ' '. $list['end']['data'];
+			$html .= $list['previous']['data'];
 
-		if(isset($list['end']['base']))
-			$html .= "<a href=\"".$this->_link($list['end']['base'])."\" class=\"pagenav_end_chevron\"> &gt;&gt; </a>";
-		else
-			$html .= '<span class="pagenav_end_chevron"> &gt;&gt;</span>';
+			foreach( $list['pages'] as $page ) {
+				$html .= ' '.$page['data'];
+			}
 
+			$html .= ' '. $list['next']['data'];
+
+			if(isset($list['next']['base']))
+				$html .= "<a href=\"".$this->_link($list['next']['base'])."\" class=\"pagenav_next_chevron\"> &gt; </a>";
+			else
+				$html .= '<span class="pagenav_next_chevron"> &gt;</span>';
+
+			$html .= ' '. $list['end']['data'];
+
+			if(isset($list['end']['base']))
+				$html .= "<a href=\"".$this->_link($list['end']['base'])."\" class=\"pagenav_end_chevron\"> &gt;&gt; </a>";
+			else
+				$html .= '<span class="pagenav_end_chevron"> &gt;&gt;</span>';
+		}
 		return $html;
 	}
 
@@ -263,7 +335,7 @@ class hikashopBridgePaginationHelper extends JPagination {
 			return $html;
 		}
 
-		$class = 'pagenav';
+		$class = 'pagenav page-link';
 		$specials = array('start','end','previous','next');
 		foreach($specials as $special) {
 			if(!empty($item->$special)) {
@@ -281,9 +353,9 @@ class hikashopBridgePaginationHelper extends JPagination {
 
 		$app = JFactory::getApplication();
 		if (hikashop_isClient('administrator'))
-			return "<span>".$item->text."</span>";
+			return '<span class="page-link">'.$item->text.'</span>';
 
-		$class = 'pagenav';
+		$class = 'pagenav page-link';
 		if(!is_numeric($item->text)){
 			$class .= ' pagenav_text';
 		}

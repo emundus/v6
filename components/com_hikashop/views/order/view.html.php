@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -95,7 +95,7 @@ class OrderViewOrder extends hikashopView {
 			'hk_order.order_user_id = ' . (int)$user_id
 		);
 
-		if(!empty($pageInfo->filter->order_status)) {
+		if(!empty($pageInfo->filter->order_status) && $pageInfo->filter->order_status != 'all') {
 			$filters['hk_order.order_status'] = 'hk_order.order_status = '.$db->Quote($pageInfo->filter->order_status);
 		}
 
@@ -140,6 +140,8 @@ class OrderViewOrder extends hikashopView {
 		$orderingAccept = array(
 			'hk_order.'
 		);
+		JPluginHelper::importPlugin('hikashop');
+		$app->triggerEvent('onBeforeFrontendOrderListing', array($this->paramBase, &$pageInfo, &$filters, &$searchMap));
 		$this->processFilters($filters, $order, $searchMap, $orderingAccept);
 
 		if(!empty($pageInfo->search)) {
@@ -214,6 +216,16 @@ class OrderViewOrder extends hikashopView {
 			foreach($rows as &$order) {
 				if(in_array($order->order_status, $print_statuses)) {
 					$order->show_print_button = true;
+					$this->action_column = true;
+				}
+			}
+			unset($order);
+		}
+		$contact_statuses = explode(',', trim($config->get('contact_button_orders', 'created,confirmed,shipped,refunded,pending,cancelled'), ', '));
+		if(hikashop_level(1) && !empty($rows)) {
+			foreach($rows as &$order) {
+				if(in_array($order->order_status, $contact_statuses)) {
+					$order->show_contact_button = true;
 					$this->action_column = true;
 				}
 			}
@@ -364,7 +376,7 @@ class OrderViewOrder extends hikashopView {
 		$toolbar_array = array();
 
 		$unpaid_statuses = explode(',', $config->get('order_unpaid_statuses', 'created'));
-		if(hikashop_level(1) && $config->get('allow_payment_button', 1) && in_array($this->element->order_status, $unpaid_statuses) && bccomp($this->element->order_full_price, 0, 5) > 0) {
+		if(hikashop_level(1) && $config->get('allow_payment_button', 1) && in_array($this->element->order_status, $unpaid_statuses) && bccomp(sprintf('%F',$this->element->order_full_price), 0, 5) > 0) {
 			$url = 'order&task=pay&order_id='.$this->element->order_id.$url_itemid;
 			$url .= ($config->get('allow_payment_change', 1)) ? '&select_payment=1' : '';
 			$token = hikaInput::get()->getVar('order_token');
@@ -400,6 +412,20 @@ class OrderViewOrder extends hikashopView {
 					'fa' => array('html' => '<i class="fas fa-print"></i>')
 				);
 			}
+			$contact_statuses = explode(',', trim($config->get('contact_button_orders', 'created,confirmed,shipped,refunded,pending,cancelled'), ','));
+			if(hikashop_level(1) && in_array($this->element->order_status, $contact_statuses)) {
+				$url = 'order&task=contact&order_id='.$this->element->order_id.$url_itemid;
+				$token = hikaInput::get()->getVar('order_token');
+				if(!empty($token))
+					$url .= '&order_token='.urlencode($token);
+				$toolbar_array['contact'] = array(
+					'icon' => 'email',
+					'name' => JText::_('CONTACT_US_ABOUT_YOUR_ORDER'),
+					'url' => hikashop_completeLink($url),
+					'fa' => array('html' => '<i class="fas fa-envelope"></i>')
+				);
+			}
+
 			$user = JFactory::getUser();
 			if(!$user->guest) {
 				$redirect = hikaInput::get()->getString('cancel_redirect');
@@ -433,6 +459,146 @@ class OrderViewOrder extends hikashopView {
 			$this->title = JText::_('HIKASHOP_ORDER').': '.$this->element->order_number;
 		else
 			$this->title = JText::_('INVOICE').': '.$this->element->order_invoice_number;
+	}
+
+
+	public function contact() {
+		$user = hikashop_loadUser(true);
+		$this->assignRef('element',$user);
+		if(empty($user->id)) {
+			$userClass = hikashop_get('class.user');
+			$this->privacy = $userClass->getPrivacyConsentSettings('contact');
+		}
+
+		$doc = JFactory::getDocument();
+		$app = JFactory::getApplication();
+		$order_id = (int)hikashop_getCID('order_id');
+		$config =& hikashop_config();
+		$this->assignRef('config',$config);
+
+		$menu = $app->getMenu()->getActive();
+		if(!empty($menu) && method_exists($menu, 'getParams') && $menu->getParams()->get('show_page_heading'))
+			$this->title = $menu->getParams()->get('page_heading');
+
+		$element = null;
+		if(!empty($order_id)) {
+			$orderClass = hikashop_get('class.order');
+			$element = $orderClass->loadFullOrder($order_id);
+		}
+
+		if(hikashop_level(1)){
+			$fieldsClass = hikashop_get('class.field');
+			$this->assignRef('fieldsClass',$fieldsClass);
+			$contactFields = $fieldsClass->getFields('frontcomp',$element,'contact','checkout&task=state');
+			$null=array();
+			$fieldsClass->addJS($null,$null,$null);
+			$fieldsClass->jsToggle($contactFields,$element,0);
+			$extraFields = array('contact'=>&$contactFields);
+			$requiredFields = array();
+			$validMessages = array();
+			$values = array('contact'=>$element);
+			$fieldsClass->checkFieldsForJS($extraFields,$requiredFields,$validMessages,$values);
+			$fieldsClass->addJS($requiredFields,$validMessages,array('contact'));
+			$this->assignRef('contactFields',$contactFields);
+		}
+
+		$this->assignRef('order',$element);
+
+		$js = "
+function checkFields(){
+	var send = true;
+	var name = document.getElementById('hikashop_contact_name');
+	var fields = [];
+	if(name != null){
+		if(name.value == ''){
+			name.className = name.className.replace('invalid','') + ' invalid';
+			send = false;
+			fields.push('".JText::_('HIKA_USER_NAME',true)."');
+		}else{
+			name.className=name.className.replace('invalid','');
+		}
+	}
+	var email = document.getElementById('hikashop_contact_email');
+	if(email != null){
+		if(email.value == ''){
+			email.className = email.className.replace('invalid','') + ' invalid';
+			send = false;
+			fields.push('".JText::_('HIKA_EMAIL',true)."');
+		}else{
+			email.value = email.value.replace(/ /g,\"\");
+			var filter = /^([a-z0-9_'&\.\-\+])+\@(([a-z0-9\-])+\.)+([a-z0-9]{2,14})+$/i;
+			if(!email || !filter.test(email.value)){
+				email.className = email.className.replace('invalid','') + ' invalid';
+				send = false;
+				fields.push('".JText::_('HIKA_EMAIL',true)."');
+			}else{
+				email.className=email.className.replace('invalid','');
+			}
+		}
+	}
+	var altbody = document.getElementById('hikashop_contact_altbody');
+	if(altbody != null){
+		if(altbody.value == ''){
+			altbody.className = altbody.className.replace('invalid','') + ' invalid';
+			send = false;
+			fields.push('".JText::_('ADDITIONAL_INFORMATION',true)."');
+		}else{
+			altbody.className = altbody.className.replace('invalid','');
+		}
+	}
+
+
+	var consent = document.getElementById('hikashop_contact_consent');
+	if(consent != null){
+		var consentarea = document.getElementById('hikashop_contact_value_consent');
+		if(!consent.checked){
+			consentarea.className = name.className.replace('invalid','') + ' invalid';
+			send = false;
+			fields.push('".JText::_('PLG_CONTENT_CONFIRMCONSENT_CONSENTBOX_LABEL',true)."');
+		}else{
+			consentarea.className=name.className.replace('invalid','');
+		}
+	}
+
+	if(!hikashopCheckChangeForm('contact','hikashop_order_contact_form')){
+		send = false;
+	}
+
+	if(send == true){
+		document.getElementById('toolbar').innerHTML='<img src=\"".HIKASHOP_IMAGES."spinner.gif\"/>';
+		return true;
+	}
+	alert('".addslashes(JText::sprintf('PLEASE_FILL_THE_FIELDS',''))."'+ fields.join(', '));
+	return false;
+}
+window.hikashop.ready(function(){
+	var name = document.getElementById('hikashop_contact_name');
+	if(name != null){
+		name.onclick=function(){
+			name.className=name.className.replace('invalid','');
+		}
+	}
+	var email = document.getElementById('hikashop_contact_email');
+	if(email != null){
+		email.onclick=function(){
+			email.className=email.className.replace('invalid','');
+		}
+	}
+	var altbody = document.getElementById('hikashop_contact_altbody');
+	if(altbody != null){
+		altbody.onclick=function(){
+			altbody.className=altbody.className.replace('invalid','');
+		}
+	}
+	var consent = document.getElementById('hikashop_contact_value_consent');
+	if(consent != null){
+		consent.onclick=function(){
+			consent.className=altbody.className.replace('invalid','');
+		}
+	}
+});
+		";
+		$doc->addScriptDeclaration($js);
 	}
 
 	public function invoice() {
@@ -591,8 +757,12 @@ class OrderViewOrder extends hikashopView {
 				unset($product);
 			}
 		}
-		$this->assignRef('products', $products);
+		$image_address_path = hikashop_cleanURL(trim((string)$config->get('image_address_path')));
+		$img_style_css = strip_tags(trim((string)$config->get('img_style_css')));
 
+		$this->assignRef('image_address_path',$image_address_path);
+		$this->assignRef('img_style_css',$img_style_css);
+		$this->assignRef('products', $products);
 		$this->assignRef('store_address',$store);
 		$this->assignRef('element',$order);
 		$this->assignRef('order',$order);

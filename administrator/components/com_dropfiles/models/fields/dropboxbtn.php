@@ -77,12 +77,14 @@ class JFormFieldDropboxbtn extends JFormField
             $url = $dropbox->getAuthorizeDropboxUrl();
             $html .= '<p><a id="ggconnect" class="btn btn-primary btn-dropbox" href="#" ';
             $html .= ' onclick="window.open(\'' . $url . '\',\'foo\',\'width=600,height=600\');return false;">';
-            $html .= ' <img src="' . JURI::root() . '/components/com_dropfiles/assets/images/dropbox_icon_white.png';
+            $html .= ' <img src="' . JURI::root() . '/components/com_dropfiles/assets/images/dropbox_icon_colored.png';
             $html .= '" alt="" /> ' . JText::_('COM_DROPFILES_CONNECT_DROPBOX') . '</a></p>';
         } else {
             $html .= '<a class="btn btn-primary btn-dropbox" ';
             $html .= ' href="index.php?option=com_dropfiles&task=config.logoutDropbox">';
-            $html .= JText::_('COM_DROPFILES_GOOGLEDRIVE_CONNECT_PART3_DISCONNECT') . '</a>';
+            $html .= ' <img src="' . JURI::root() . '/components/com_dropfiles/assets/images/dropbox_icon_colored.png';
+            $html .= '" alt="" /> ';
+            $html .= JText::_('COM_DROPFILES_DISCONNECT_CONNECT_DROPBOX') . '</a>';
         }
         return $html;
     }

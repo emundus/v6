@@ -1,20 +1,28 @@
 function translateService(sourceText){
 	var translatedText;
 
-    var data = {
-            appId: 'Bearer ' + AzureToken,
-            from: translator.from,
-            to: translator.to,
-            contentType: 'text/html',
-            text: sourceText
-        };
+	//https://docs.microsoft.com/fr-fr/azure/cognitive-services/translator/language-support
+    var data = [{
+		    text:sourceText
+     }];
+
+    var endpoint = "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0";
+    endpoint = endpoint + '&from='+translator.from;
+    endpoint = endpoint + '&to='+translator.to;
+    endpoint = endpoint + '&textType=html';
 
 	jQuery.ajax({
-        url: "https://api.microsofttranslator.com/V2/Ajax.svc/Translate",
+        url: endpoint,
         dataType: 'json',
-        data: data,
-		success: function (result) {
-			translatedText = result;
+        headers:  {
+            'Ocp-Apim-Subscription-Key': azureKey,
+            'Content-Type':'application/json; charset=UTF-8'
+        },
+        data: JSON.stringify(data),
+        type: 'POST',
+        success: function (result) {
+            console.log(result);
+			translatedText = result[0]['translations'][0].text;
 		},
 		error: function (xhr, textStatus, errorThrown) {
 			translatedText = "ERROR : "+errorThrown;
@@ -24,5 +32,6 @@ function translateService(sourceText){
       
 	return translatedText;
 }
+
 
 

@@ -38,7 +38,7 @@ class JFormRuleIntegernotnull extends JFormRule
      * @since  1.6
      * @throws JException On invalid rule.
      */
-    public function test(& $element, $value, $group = null, & $input = null, & $form = null)
+    public function test(&$element, $value, $group = null, &$input = null, &$form = null)
     {
         $value = (int)$value;
         if (is_int($value) && $value > 0) {

@@ -37,7 +37,7 @@ JHtmlBootstrap::loadCss($includeMaincss, $this->direction);
     <script src="<?php echo JUri::root(true); ?>/media/jui/js/html5.js"></script>
     <![endif]-->
 </head>
-<body class="contentpane modal">
+<body class="contentpane component">
 <jdoc:include type="message"/>
 <jdoc:include type="component"/>
 </body>

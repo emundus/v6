@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -54,7 +54,17 @@ function _HikashopBuildRoute( &$query, $separator = '-' )
 					unset( $query['ctrl'] );
 					unset( $query['task'] );
 				}
+			} else if(!empty($query['Itemid']) && isset($query['cid']) && isset($query['name'])){
+				$menuClass = hikashop_get('class.menus');
+				$menu = $menuClass->get($query['Itemid']);
+				if(!empty($menu) && !empty($menu->link)) {
+					if($menu->link =='index.php?option=com_hikashop&view=category&layout=listing') {
+						$segments[] = $categorySef;
+					}
+				}
+
 			}
+
 			if( ( isset($query['ctrl']) && $query['ctrl']=='checkout' || isset($query['view']) && $query['view']=='checkout' ) && !empty($query['Itemid']) && ( !isset($query['task']) && !isset($query['layout']) || @$query['task']=='step' || @$query['task']=='show' || @$query['layout']=='step' || @$query['layout']=='show' ) ) {
 				if(empty($checkoutSef)){
 					$menuClass = hikashop_get('class.menus');
@@ -128,7 +138,7 @@ function _HikashopBuildRoute( &$query, $separator = '-' )
 
 	if(!empty($query)){
 		foreach($query as $name => $value){
-			if(!in_array($name,array('option','Itemid','start','format','limitstart','lang'))){
+			if(!in_array($name,array('option','Itemid','start','format','limitstart','lang','cart_id'))){
 					if(is_array($value)) $value = implode('-',$value);
 					$segments[] = $name.$separator.$value;
 				unset($query[$name]);
@@ -224,7 +234,11 @@ function _HikashopParseRoute( &$segments, $separator = '-' )
 					$vars['step'] = $val;
 				}else{
 					if(hikashop_retrieve_url_id($vars,$name)) continue;
-					$vars[$arg] = $val;
+					if($arg == 'triggerplug') {
+						$vars['task'] = $arg.'-'.$val;
+					} else {
+						$vars[$arg] = $val;
+					}
 				}
 			}else if($name==$productSef){
 				$vars['ctrl']='product';
@@ -294,16 +308,13 @@ function hikashop_retrieve_url_id(&$vars,$name){
 		}
 
 		$db = JFactory::getDBO();
-		$config =& hikashop_config();
+		$config = hikashop_config();
 		$translationHelper = hikashop_get('helper.translation');
 		$lang = JFactory::getLanguage();
 
-		if($translationHelper->isMulti() && $translationHelper->falang){
-			$lang_id = $translationHelper->getId($lang->getTag());
-			$trans_table = 'falang_content';
-			$db->setQuery('SELECT reference_id FROM '.hikashop_table($trans_table,false).' WHERE language_id='.(int)$lang_id.' AND reference_table='.$db->Quote('hikashop_'.$type).' AND reference_field='.$db->Quote($type.'_alias').' AND value = '.$db->Quote(str_replace(':','-',$name)));
-			$retrieved_id = $db->loadResult();
-			if($retrieved_id){
+		if($config->get('translated_aliases', 0) && $translationHelper->isMulti(true, false)) {
+			$retrieved_id = $translationHelper->getOriginalId($type, $name);
+			if(!empty($retrieved_id)){
 				$vars['cid'] = $retrieved_id;
 				$vars['name'] = $name;
 				return true;
@@ -317,19 +328,15 @@ function hikashop_retrieve_url_id(&$vars,$name){
 			return true;
 		}
 
-		$name_regex = '^ *p?'.str_replace(array('-',':'),'.+',$name).' *$';
-		if($translationHelper->isMulti() && $translationHelper->falang){
-			$lang_id = $translationHelper->getId($lang->getTag());
-			$trans_table = 'falang_content';
-			$db->setQuery('SELECT reference_id FROM '.hikashop_table($trans_table,false).' WHERE language_id='.(int)$lang_id.' AND reference_table='.$db->Quote('hikashop_'.$type).' AND ((reference_field='.$db->Quote($type.'_alias').' AND (value = '.$db->Quote(str_replace(':','-',$name)).' OR value REGEXP '.$db->Quote($name_regex).')) OR (reference_field='.$db->Quote($type.'_name').' AND value REGEXP '.$db->Quote($name_regex).'))');
-			$retrieved_id = $db->loadResult();
-			if($retrieved_id){
+		if($config->get('translated_aliases', 0) && $translationHelper->isMulti(true, false)) {
+			$retrieved_id = $translationHelper->getOriginalId($type, $name, true);
+			if(!empty($retrieved_id)){
 				$vars['cid'] = $retrieved_id;
 				$vars['name'] = $name;
 				return true;
 			}
 		}
-
+		$name_regex = '^ *p?'.str_replace(array('-',':'),'.+',str_replace(array('*', '+', '(', ')', '?', '='), '', $name)).' *$';
 		$db->setQuery('SELECT * FROM '.hikashop_table($type).' WHERE '.$type.'_alias REGEXP '.$db->Quote($name_regex).' OR '.$type.'_name REGEXP '.$db->Quote($name_regex));
 		$retrieved = $db->loadObject();
 

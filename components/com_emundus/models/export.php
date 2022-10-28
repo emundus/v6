@@ -54,6 +54,7 @@ class EmundusModelExport extends JModelList {
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
         $gotenberg_url = $eMConfig->get('gotenberg_url', 'http://localhost:3000');
+        $gotenberg_ssl = (bool)$eMConfig->get('gotenberg_ssl', 1);        // using SSL certificate or not
 
         $res = new stdClass();
 
@@ -69,34 +70,16 @@ class EmundusModelExport extends JModelList {
         {
             require JPATH_LIBRARIES . '/emundus/vendor/autoload.php';
 
-            # create the client.
-            //$client = new Client($gotenberg_url, new \Http\Adapter\Guzzle6\Client());
-            # ... or the following if you want the client to discover automatically an installed implementation of the PSR7 `HttpClient`.
-            //$client = new Client($gotenberg_url);
-
-            # prepare the files required for your conversion.
-            # from a path.
-            //$index = DocumentFactory::makeFromPath('index.html', '/path/to/file');
-            # ... or from your own stream.
-            //$stream = new LazyOpenStream('/path/to/file', 'r');
-            //$index = DocumentFactory::makeFromStream('Template.doc', $stream);
-            // ... or from a string.
-            //$index = DocumentFactory::makeFromString('test.html', '<html>Foo</html>');
-/*
-            $header = DocumentFactory::makeFromPath('header.html', '/path/to/file');
-            $footer = DocumentFactory::makeFromPath('footer.html', '/path/to/file');
-            $assets = [
-                DocumentFactory::makeFromPath('style.css', '/path/to/file'),
-                DocumentFactory::makeFromPath('img.png', '/path/to/file'),
-            ];
-*/
             ///
             $src = $file_src;
+            $file = end(explode('/',$file_src));
             $dest = $file_dest;
 
-            $client = new Client($gotenberg_url, new \Http\Adapter\Guzzle6\Client());
+            //TODO: parse URL to make it cleaner
+            $ssl = new \GuzzleHttp\Client(['verify' => $gotenberg_ssl]);
+            $client = new Client($gotenberg_url, new \Http\Adapter\Guzzle6\Client($ssl));
             $files = [
-                DocumentFactory::makeFromPath($file_src, $src),
+                DocumentFactory::makeFromPath($file, $src),
             ];
 
             try {
@@ -138,7 +121,7 @@ class EmundusModelExport extends JModelList {
             }
 
             $res->status = true;
-            $res->msg = '<a href="'.$dest.'" target="_blank">'.$dest.'</a>';
+            //$res->msg = '<a href="'.$dest.'" target="_blank">'.$dest.'</a>';
             return $res;
         }
         else

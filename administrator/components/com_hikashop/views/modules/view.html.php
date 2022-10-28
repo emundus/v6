@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -68,6 +68,8 @@ class ModulesViewModules extends hikashopView{
 			$element->hikashop_params['price_display_type'] = 'inherit';
 			$element->hikashop_params['display_custom_item_fields'] = '-1';
 			$element->hikashop_params['display_badges'] = '-1';
+			$element->hikashop_params['product_popup_mode'] = 'inherit';
+			$element->hikashop_params['zoom_on_hover'] = '-1';
 			$element->hikashop_params['category_order'] = 'inherit';
 			$element->hikashop_params['child_display_type'] = 'inherit';
 			$element->hikashop_params['child_limit'] = '';
@@ -116,6 +118,7 @@ class ModulesViewModules extends hikashopView{
 		JPluginHelper::importPlugin('hikashop');
 		$app = JFactory::getApplication();
 		$app->triggerEvent('onHkContentParamsDisplay', array('module', $control, &$element, &$extra_blocks));
+		JHtmlHikaselect::$event = false;
 		$this->assignRef('extra_blocks', $extra_blocks);
 
 		$this->type = 'cart';
@@ -310,7 +313,7 @@ class ModulesViewModules extends hikashopView{
 		";
 		$document= JFactory::getDocument();
 		$document->addScriptDeclaration($js);
-		JHTML::_('behavior.modal');
+
 		$popup = hikashop_get('helper.popup');
 		$this->assignRef('popup',$popup);
 		$colorType = hikashop_get('type.color');
@@ -340,6 +343,10 @@ class ModulesViewModules extends hikashopView{
 		$this->assignRef('positionType',$positionType);
 		$childdisplayType = hikashop_get('type.childdisplay');
 		$this->assignRef('childdisplayType',$childdisplayType);
+		$showpopupoptionType = hikashop_get('type.showpopupoption');
+		$this->assignRef('showpopupoptionType',$showpopupoptionType);
+		$zoomonhoverType = hikashop_get('type.zoomonhover');
+		$this->assignRef('zoomonhoverType',$zoomonhoverType);
 		$pricetaxType = hikashop_get('type.pricetax');
 		$this->assignRef('pricetaxType',$pricetaxType);
 		$priceDisplayType = hikashop_get('type.pricedisplay');
@@ -514,6 +521,8 @@ class ModulesViewModules extends hikashopView{
 		$this->element = $params->get('value');
 		$this->layoutType = hikashop_get('type.layout');
 		$this->orderdirType = hikashop_get('type.orderdir');
+		$this->showpopupoptionType = hikashop_get('type.showpopupoption');
+		$this->zoomonhoverType = hikashop_get('type.zoomonhover');
 		$this->childdisplayType = hikashop_get('type.childdisplay');
 		$this->orderType = hikashop_get('type.order');
 		$this->listType = hikashop_get('type.list');
@@ -589,6 +598,7 @@ class ModulesViewModules extends hikashopView{
 		JPluginHelper::importPlugin('hikashop');
 		$app = JFactory::getApplication();
 		$app->triggerEvent('onHkContentParamsDisplay', array('module', $this->name, &$element, &$extra_blocks));
+		JHtmlHikaselect::$event = false;
 		$this->assignRef('extra_blocks', $extra_blocks);
 	}
 
@@ -603,6 +613,10 @@ class ModulesViewModules extends hikashopView{
 				$app->redirect($url);
 			}
 		}
+		if(empty($element))
+			$element = new stdClass();
+		if(!isset($element->hikashop_params))
+			$element->hikashop_params = array();
 		if(!isset($element->hikashop_params['layout_type']))
 			$element->hikashop_params['layout_type'] = 'div';
 

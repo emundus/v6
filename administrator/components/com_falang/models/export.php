@@ -265,6 +265,11 @@ class ExportModelExport extends JModelForm
 		$version = new FalangVersion();
 		$sversion = $version->getVersionShort();
 
+        $falangManager = FalangManager::getInstance();
+        $contentElement = $falangManager->getContentElement($exporttables);
+        JLoader::import( 'models.ContentObject',FALANG_ADMINPATH);
+        $targetlanguageId = $falangManager->getLanguageID($targetlanguage);
+
 		$output = array();
 		$output[] = "<xml version='1.2'>";
 		$deoutput = array();
@@ -273,6 +278,11 @@ class ExportModelExport extends JModelForm
 		foreach ($data as $row) {
 			$falangkey = $row['KEY'];
 			$sourcehash = $row['SOURCEHASH'];
+
+            $actContentObject = new ContentObject( $targetlanguageId, $contentElement );
+            $actContentObject->loadFromContentID( $falangkey );
+            $elementTable = $actContentObject->getTable();
+
 			$output[] = "<file original='".$sourcehash."' source-language='".$sourcelanguage."' target-language='".$targetlanguage."' datatype='htmlbody' product-name='falang' product-version='".$sversion."'>";
 			$output[] = "<body>";
 			foreach ($row as $key=>$value) {
@@ -283,10 +293,22 @@ class ExportModelExport extends JModelForm
 				if (trim($value) == '') {
 					continue;
 				}
+				//get transalted value
+                $translated_value = $value;
+                if ($actContentObject->state >= 0) {
+                    $field = str_replace($exporttables . '.', '', $key);
+                    foreach ($elementTable->Fields as $elt ){
+                        if ($elt->Name == $field){
+                            $translated_value = $elt->translationContent->value;
+                            break;//exit for each
+                        }
+                    }
+                }
+
 				$dedup[(string)$value] = $falangkey.'.'.$key;
 				$output[] = "<trans-unit id='".$falangkey.'.'.$key."'>";
 				$output[] = "<source><![CDATA[".$value."]]></source>";
-				$output[] = "<target><![CDATA[".$value."]]></target>";
+				$output[] = "<target><![CDATA[".$translated_value."]]></target>";
 				$output[] = "</trans-unit>";
 
 			}

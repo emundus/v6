@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-cron-emundusevaluatorrecall" label="COM_FABRIK_OPTIONS">
+
+			<field name="reminder_mail_id"
+				   type="text"
+				   description="PLG_CRON_EMAIL_TEMPLATE_DESC"
+				   label="PLG_CRON_EMAIL_TEMPLATE"
+				   size="30"
+				   default="share_with_evaluator" />
+
+			<field name="acl_aro_groups"
+				   type="text"
+				   description="PLG_CRON_ACL_ARO_GROUPS_DESC"
+				   label="PLG_CRON_ACL_ARO_GROUPS"
+				   size="50"
+				   default="" />
+
+			<field name="reminder_profile"
+				   type="text"
+				   description="PLG_CRON_REMINDER_PROFILE_DESC"
+				   label="PLG_CRON_REMINDER_PROFILE"
+				   size="50"
+				   default="" />
+
+			<field name="reminder_tags"
+				   type="text"
+				   cols="60"
+				   description="PLG_CRON_REMINDER_TAGS_DESC"
+				   label="PLG_CRON_REMINDER_TAGS"
+				   size="30"
+				   default="" />
+
+			<field name="remider_interval"
+				   type="number"
+				   cols="60"
+				   description="PLG_CRON_EVAL_REMINDER_INTERVAL_DESC"
+				   label="PLG_CRON_EVAL_REMINDER_INTERVAL"
+				   size="30"
+				   default=""/>
+
+			<field name="remider_elements"
+				   type="text"
+				   description="PLG_CRON_EVAL_REMINDER_ELEMENTS_DESC"
+				   label="PLG_CRON_EVAL_REMINDER_ELEMENTS"
+				   size="30"
+				   default=""/>
+
+		</fieldset>
+
+	</fields>
+</form>

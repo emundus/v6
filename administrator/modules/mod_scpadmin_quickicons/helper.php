@@ -98,21 +98,21 @@ abstract class modScpadminQuickIconsHelper
             }
             // Array is empty because we will add icons later
             self::$buttons[$key] = array();
-
-            if($params->get('check_vulnerable_extensions', 1) == 1) {    
-        
-                // Check for vulnerable components
+			
+			if($params->get('check_vulnerable_extensions', 1) == 1) {    
+			
+				// Check for vulnerable components
                 $cpanel_model->buscarQuickIcons();
             
                 // Vulnerable components
                 $db = JFactory::getDBO();
-                $query = 'SELECT COUNT(*) FROM #__securitycheckpro WHERE Vulnerable="Si"';
+                $query = "SELECT COUNT(*) FROM #__securitycheckpro WHERE Vulnerable='Si'";
                 $db->setQuery($query);
                 $db->execute();    
                 $vuln_extensions = $db->loadResult();
-            
+				            
                 // Undefined vulnerable components
-                $query = 'SELECT COUNT(*) FROM #__securitycheckpro WHERE Vulnerable="Indefinido"';
+                $query = "SELECT COUNT(*) FROM #__securitycheckpro WHERE Vulnerable='Indefinido'";
                 $db->setQuery($query);
                 $db->execute();    
                 $undefined_vuln_extensions = $db->loadResult();
@@ -205,7 +205,7 @@ abstract class modScpadminQuickIconsHelper
             
                 // Check for unread logs
                 (int) $logs_pending = $cpanel_model->LogsPending();
-                
+				                
                 if ($logs_pending == 0) {
                     if (version_compare(JVERSION, '3.20', 'lt')) {
                           $check_not_readed_logs_image = 'drawer';
@@ -273,8 +273,8 @@ abstract class modScpadminQuickIconsHelper
             
                 // Get files with incorrect permissions from database
                 $files_with_incorrect_permissions = $filemanager_model->loadStack("filemanager_resume", "files_with_incorrect_permissions");
-                
-                if ($files_with_incorrect_permissions == 0) {
+				
+				if ($files_with_incorrect_permissions == 0) {
                     if (version_compare(JVERSION, '3.20', 'lt')) {
                           $check_file_permissions_image = 'checkbox';
                     } else 
@@ -338,7 +338,7 @@ abstract class modScpadminQuickIconsHelper
             
                 // Get files with incorrect permissions from database
                 $files_with_bad_integrity = $filemanager_model->loadStack("fileintegrity_resume", "files_with_bad_integrity");
-                
+				                
                 if ($files_with_bad_integrity == 0) {
                     if (version_compare(JVERSION, '3.20', 'lt')) {
                           $check_file_integrity_image = 'locked';
@@ -403,7 +403,7 @@ abstract class modScpadminQuickIconsHelper
             
                 // Get suspicious files from database
                 $suspicious_files = $filemanager_model->loadStack("malwarescan_resume", "suspicious_files");
-                
+				
                 if ($suspicious_files == 0) {
                     if (version_compare(JVERSION, '3.20', 'lt')) {
                           $check_malwarescan_image = 'thumbs-up';

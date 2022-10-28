@@ -1057,9 +1057,9 @@ class FabrikFEModelList extends JModelForm
 			foreach ($elementModels as $elementModel)
 			{
 				$elementModel->setContext($groupModel, $form, $this);
-				$col = $elementModel->getFullName(false, true, false);
+				$col = $elementModel->getFullName(true, true);
 
-				if (!empty($data) && array_key_exists($col, $data[0]))
+				if (!empty($data) && isset($data[0]->{$col}))
 				{
 					for ($i = 0; $i < $ec; $i++)
 					{
@@ -1238,7 +1238,7 @@ class FabrikFEModelList extends JModelForm
 
 				// Check if there is  a custom out put handler for the tables format
 				// Currently supports "renderListData_csv", "renderListData_rss", "renderListData_html", "renderListData_json"
-				if (!empty($data) && array_key_exists($col, $data[0]))
+				if (!empty($data) && property_exists($data[0], $col))
 				{
 					if (method_exists($elementModel, $method))
 					{
@@ -1277,7 +1277,7 @@ class FabrikFEModelList extends JModelForm
 							* the _raw entry in $thisRow.  I guess it could simply unset the _raw in $thisRow and
 							* then implement a renderRawListData.  Anyway, just sayin'.
 							*/
-							if (!array_key_exists($rawCol, $thisRow))
+							if (!isset($thisRow->{$rawCol}))
 							{
 								$data[$i]->$rawCol = $elementModel->renderRawListData($colData, $thisRow);
 								$data[$i]->$rawCol = htmlspecialchars_decode(htmlentities($data[$i]->$rawCol, ENT_NOQUOTES, 'UTF-8'), ENT_NOQUOTES);
@@ -1462,7 +1462,7 @@ class FabrikFEModelList extends JModelForm
 				$canEdit = $this->canEdit($row);
 				$canView = $this->canView($row);
 				$canDelete = $this->canDelete($row);
-				$pKeyVal = array_key_exists($tmpKey, $row) ? $row->$tmpKey : '';
+				$pKeyVal = isset($row->{$tmpKey}) ? $row->$tmpKey : '';
 				$pkCheck = array();
 				$pkCheck[] = '<div style="display:none">';
 
@@ -1580,8 +1580,8 @@ class FabrikFEModelList extends JModelForm
 				}
 				else
 				{
-					$img = FabrikHelperHTML::image('search.png', 'list', '', array('alt' => $viewLabel));
-					$viewLink = '<a data-loadmethod="' . $loadMethod . '" class="' . $class . '" ' . $detailsAttribs
+                    $img = FabrikHelperHTML::image('search.png', 'list', '', array('alt' => $viewLabel));
+                    $viewLink = '<a data-loadmethod="' . $loadMethod . '" class="' . $class . '" ' . $detailsAttribs
 						. 'data-list="' . $dataList . '" href="' . $link . '" title="' . $viewLabel . '" target="' . $viewLinkTarget . '">' . $img
 						. ' ' . $viewText . '</a>';
 				}
@@ -2344,7 +2344,7 @@ class FabrikFEModelList extends JModelForm
 		$isAjax = $this->isAjaxLinks() ? '1' : '0';
 		$isCustom = $customLink !== '';
 		$isIcon = false;
-		
+
 		/* Check if the data component is html, if it is an icon lnk and image parse it out */
 		$html = FabrikHelperHTML::loadDOMDocument($data);
 		$a   = $html->getElementsByTagName('a')->item(0);
@@ -2382,7 +2382,7 @@ class FabrikFEModelList extends JModelForm
 		} else {
 			$displayData->data = $data;
 		}
-		
+
 		$data = $layout->render($displayData);
 
 		return $data;
@@ -2692,7 +2692,7 @@ class FabrikFEModelList extends JModelForm
 
 				if ($lookUpNames[$lookupC] !== $table->db_primary_key)
 				{
-					$query->where($lookUpNames[$lookupC] . ' IN (' . implode(array_unique($ids), ',') . ')');
+					$query->where($lookUpNames[$lookupC] . ' IN (' . implode(',', array_unique($ids)) . ')');
 				}
 
 				/*
@@ -2711,7 +2711,7 @@ class FabrikFEModelList extends JModelForm
 				if (!empty($mainKeys))
 				{
 					// Limit to the current page
-					$query->where($table->db_primary_key . ' IN (' . implode($mainKeys, ',') . ')');
+					$query->where($table->db_primary_key . ' IN (' . implode(',', $mainKeys) . ')');
 				}
 				else
 				{
@@ -3612,8 +3612,8 @@ class FabrikFEModelList extends JModelForm
 			array_unshift($prefilters, 'WHERE');
 		}
 
-		$sql = implode($sql, ' ');
-		$prefilters = implode($prefilters, ' ');
+		$sql = implode(' ', $sql);
+		$prefilters = implode(' ', $prefilters);
 
 		return array($prefilters, $sql);
 	}
@@ -4124,7 +4124,7 @@ class FabrikFEModelList extends JModelForm
 	 */
 	public function canEmpty()
 	{
-		if (!array_key_exists('allow_drop', $this->access))
+		if (!isset($this->access->allow_drop))
 		{
 			$groups = $this->user->getAuthorisedViewLevels();
 			$this->access->allow_drop = in_array($this->getParams()->get('allow_drop'), $groups);
@@ -4241,7 +4241,7 @@ class FabrikFEModelList extends JModelForm
 			}
 
 			// no plugin preference, so use normal ACL
-			if (!array_key_exists('viewdetails', $this->access))
+			if (!isset($this->access->viewdetails))
 			{
 				$groups                    = $this->user->getAuthorisedViewLevels();
 				$this->access->viewdetails = in_array($this->getParams()->get('allow_view_details'), $groups);
@@ -4303,7 +4303,7 @@ class FabrikFEModelList extends JModelForm
 		}
 
 		// no user preference, so use normal ACL
-		if (!array_key_exists('edit', $this->access))
+		if (!isset($this->access->edit))
 		{
 			$groups = $this->user->getAuthorisedViewLevels();
 			$this->access->edit = in_array($this->getParams()->get('allow_edit_details'), $groups);
@@ -4398,7 +4398,7 @@ class FabrikFEModelList extends JModelForm
 		}
 
 		// no preference from user check, so use main ACL
-		if (!array_key_exists('delete', $this->access))
+		if (!isset($this->access->delete))
 		{
 			$groups = $this->user->getAuthorisedViewLevels();
 			$this->access->delete = in_array($this->getParams()->get('allow_delete'), $groups);
@@ -4443,7 +4443,7 @@ class FabrikFEModelList extends JModelForm
 	 */
 	public function canCSVImport()
 	{
-		if (!array_key_exists('csvimport', $this->access))
+		if (!isset($this->access->csvimport))
 		{
 			$groups = $this->user->getAuthorisedViewLevels();
 			$this->access->csvimport = in_array($this->getParams()->get('csv_import_frontend'), $groups);
@@ -4459,7 +4459,7 @@ class FabrikFEModelList extends JModelForm
 	 */
 	public function canCSVExport()
 	{
-		if (!array_key_exists('csvexport', $this->access))
+		if (!isset($this->access->csvexport))
 		{
 			$groups = $this->user->getAuthorisedViewLevels();
 			$this->access->csvexport = in_array($this->getParams()->get('csv_export_frontend'), $groups);
@@ -4475,7 +4475,7 @@ class FabrikFEModelList extends JModelForm
 	 */
 	public function canGroupBy()
 	{
-		if (!array_key_exists('groupby', $this->access))
+		if (!isset($this->access->groupby))
 		{
 			$groups = $this->user->getAuthorisedViewLevels();
 			$this->access->groupby = in_array($this->getParams()->get('group_by_access'), $groups);
@@ -4491,7 +4491,7 @@ class FabrikFEModelList extends JModelForm
 	 */
 	public function canAdd()
 	{
-		if (!array_key_exists('add', $this->access))
+		if (!isset($this->access->add))
 		{
 			$pluginCanAdd = FabrikWorker::getPluginManager()->runPlugins('onCanAdd', $this, 'list');
 
@@ -4531,7 +4531,7 @@ class FabrikFEModelList extends JModelForm
 
 	protected function checkMenuAccess()
 	{
-		if (!array_key_exists('menu_access', $this->access))
+		if (!isset($this->access->menu_access))
 		{
 			$this->access->menu_access = true;
 
@@ -4587,7 +4587,7 @@ class FabrikFEModelList extends JModelForm
 			return false;
 		}
 
-		if (!array_key_exists('view', $this->access))
+		if (!isset($this->access->view))
 		{
 			$groups = $this->user->getAuthorisedViewLevels();
 			$this->access->view = in_array($this->getTable()->access, $groups);
@@ -6659,7 +6659,7 @@ class FabrikFEModelList extends JModelForm
 					$f->label = $filter->label;
 					$f->id = isset($filter->id) ? $filter->id : '';
 					$f->element = $filter->filter;
-					$f->required = array_key_exists('required', $filter) ? $filter->required : '';
+					$f->required = isset($filter->required) ? $filter->required : '';
 					$f->displayValue = is_array($filter->displayValue) ? implode(', ', $filter->displayValue) :
 							$filter->displayValue;
 					$this->viewfilters[$filter->name] = $f;
@@ -7770,6 +7770,7 @@ class FabrikFEModelList extends JModelForm
 								}
 
 								// Test for backslashed quotes
+								/* Always false since php5.4, deprecated in php7.4
 								if (get_magic_quotes_gpc())
 								{
 									if (!$elementModel->isUpload())
@@ -7777,6 +7778,7 @@ class FabrikFEModelList extends JModelForm
 										$val = stripslashes($val);
 									}
 								}
+								*/
 
 								if ($elementModel->dataIsNull($data, $val))
 								{
@@ -7884,6 +7886,18 @@ class FabrikFEModelList extends JModelForm
 
 			// $$$ rob new as if you update a record the insertid() returns 0
 			$this->lastInsertId = ($rowId == '') ? $fabrikDb->insertid() : $rowId;
+
+			// $$$ hugh - if insertid() returned 0, probably means auto-inc is turned off, so see if PK was set in data
+			if (empty($this->lastInsertId))
+			{
+				if (empty($table->auto_inc))
+				{
+					if (isset($oRecord->$primaryKey))
+					{
+						$this->lastInsertId = $oRecord->$primaryKey;
+					}
+				}
+			}
 
 			return $this->lastInsertId;
 		}
@@ -10761,7 +10775,7 @@ class FabrikFEModelList extends JModelForm
 			{
 				$col = $elementModel->getFullName(true, false);
 
-				if (!empty($data) && array_key_exists($col, $data[0]))
+				if (!empty($data) && property_exists($data[0], $col))
 				{
 					for ($i = 0; $i < $ec; $i++)
 					{
@@ -11354,6 +11368,7 @@ class FabrikFEModelList extends JModelForm
 	public function resetQuery()
 	{
 		unset($this->_whereSQL);
+		unset($this->orderBy);
 		unset($this->data);
 	}
 
@@ -12141,7 +12156,7 @@ class FabrikFEModelList extends JModelForm
 				return strcmp($a[0], $b[0]);
 			});
 		}
-		
+
 		/**
 		 * We consolidate by finding the two consecutive rows with the smallest total and merging them.
 		 * To avoid excessive looping if user tabField is too fragmented, we should skip tabs if
@@ -12225,7 +12240,7 @@ class FabrikFEModelList extends JModelForm
 	 * @return  array  Tabs
 	 */
 	public function loadTabs()
-	{ 
+	{
 		$this->tabs = array();
 		$tabs = $this->getTabCategories();
 
@@ -12267,7 +12282,7 @@ class FabrikFEModelList extends JModelForm
 		}
 
 		/* Null to indicate that the limitstart is not set in the url due to direct menu access) */
-		$ActiveTabLimitStart = FArrayHelper::getValue($inputArray, 'limitstart'.$listId, $uri->getVar('limitstart' . $listId, null));	
+		$ActiveTabLimitStart = FArrayHelper::getValue($inputArray, 'limitstart'.$listId, $uri->getVar('limitstart' . $listId, null));
 		$ActiveTabLimit = FArrayHelper::getValue($inputArray, 'limit'.$listId, $uri->getVar('limit' . $listId, null));
 
 		/* Get the cached tabs */
@@ -12283,7 +12298,7 @@ class FabrikFEModelList extends JModelForm
 				list($label, $range) = $tabArray;
 				$row->label = $label;
 				$row->isAllTab = ($label == FText::_('COM_FABRIK_LIST_TABS_ALL'));
-				
+
 				if (is_null($range) || $row->isAllTab)
 				{
 					$originalUri->delVar($tabsField);
@@ -12298,7 +12313,7 @@ class FabrikFEModelList extends JModelForm
 					$row->mergeArray = array('value'=>array(urlencode($low), urlencode($high)), 'condition' => 'BETWEEN');
 					$originalUri->setVar($tabsField, $row->mergeArray);
 				}
-			
+
 				$row->id = 'list_tabs_' . $this->getId() . '_' . $i;
 				$row->js = false;
 				$originalUri->setVar('limit'.$listId, is_null($ActiveTabLimit) ? $defaultRowsPerPage : $ActiveTabLimit);
@@ -12308,7 +12323,7 @@ class FabrikFEModelList extends JModelForm
 					$row->class='active';
 				}
 				$cachedTabs[$label] = $row;
-			} 
+			}
 		}
 		/* Find which tab was last active */
 		foreach($cachedTabs as $key => $data) {
@@ -12330,10 +12345,10 @@ class FabrikFEModelList extends JModelForm
 		}
 		/* Force a filter reset */
 		$uri->setVar('resetfilters', 1);
-		
+
 		/* Clear this if we just processed a delete */
 		$uri->setVar('fabrik_show_in_list', null);
-		
+
 		/* if we still do not have an active tab this must be the first call from the menu, default to the first tab */
 		if (is_null($uriActiveTab)) {
 			$uriActiveTab = FArrayHelper::firstKey($cachedTabs);
@@ -12341,7 +12356,7 @@ class FabrikFEModelList extends JModelForm
 
 		/* If we have changed tabs, clear the last active tabs active class */
 		if ($lastActiveTab != $uriActiveTab) {
-				unset($cachedTabs[$lastActiveTab]->class); 
+				unset($cachedTabs[$lastActiveTab]->class);
 		}
 
 		/* If the active tab is not the All tab, set the tabField to filter on */
@@ -12361,12 +12376,12 @@ class FabrikFEModelList extends JModelForm
 		 * so all the records are in the list. This is OK when there is an All tab as it
 		 * wants all the list data, but when no All tab we need to filter on the tab field
 		 * name of the first tab, so now that we have the href for the first tab all set
-		 * we will simply do a redirect to it and all should be well 
+		 * we will simply do a redirect to it and all should be well
 		 */
 		if (is_null($ActiveTabLimitStart) && is_null($ActiveTabLimit)) {
 			$this->app->redirect($cachedTabs[$uriActiveTab]->href);
 		}
-		
+
 		$this->app->setUserState($context.'tabs', serialize($cachedTabs));
 
 		return $this->tabs = $cachedTabs;

@@ -42,129 +42,169 @@ class Com_DropfilesInstallerScript
         $query = "CREATE TABLE IF NOT EXISTS `#__dropfiles_files` (
                         `id` int(11) NOT NULL AUTO_INCREMENT,
                         `catid` int(11) NOT NULL,
-                        `file` varchar(100) NOT NULL,
+                        `file` varchar(255) NOT NULL,
                         `state` int(11) NOT NULL,
                         `ordering` int(11) NOT NULL,
-                        `title` varchar(200) NOT NULL,
-                        `description` text NOT NULL,
+                        `title` varchar(255) NOT NULL,
+                        `description` text NULL,
                         `ext` varchar(20) NOT NULL,
-                        `remoteurl` varchar(200) DEFAULT '',
+                        `remoteurl` varchar(255) NOT NULL DEFAULT '',
                         `size` int(11) NOT NULL,
-                        `hits` int(11) NOT NULL,
-                        `version` varchar(20) NOT NULL,
+                        `hits` int(11) NOT NULL DEFAULT '0',
+                        `version` varchar(20) NOT NULL DEFAULT '',
+                        `file_multi_category` varchar(255) NOT NULL DEFAULT '',
                         `canview` varchar(255) NOT NULL DEFAULT '0',
                         `created_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
                         `modified_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
                         `publish` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
                         `publish_down` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-                        `author` varchar(100) NOT NULL,
-                        `language` char(7) NOT NULL,
+                        `author` varchar(100) NOT NULL DEFAULT '',
+                        `language` char(7) NOT NULL DEFAULT '',
                         `file_tags` varchar(255) NOT NULL DEFAULT '',
                         `custom_icon` VARCHAR(255) NOT NULL DEFAULT '',
                         PRIMARY KEY (`id`),
                         KEY `id_gallery` (`catid`)
-                    ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;";
         $dbo->setQuery($query);
-        $dbo->execute();
+       // $dbo->execute();
+        try {
+            $dbo->execute();
+        } catch (\RuntimeException $e) {
+            echo $e->getMessage();
+            die();
+        }
 
         $query = "CREATE TABLE IF NOT EXISTS `#__dropfiles` (
                         `id` int(11) NOT NULL,
                         `type` VARCHAR( 20 ) NOT NULL,
-                        `cloud_id` VARCHAR( 200 ) NOT NULL,
-                        `path` varchar(200) DEFAULT '',
+                        `cloud_id` VARCHAR( 100 ) NULL COLLATE utf8mb4_bin,
+                        `path` varchar(200) NOT NULL DEFAULT '',
                         `params` text NOT NULL,
                         `theme` varchar(20) NOT NULL,
-                        UNIQUE KEY `id` (`id`)
-                      ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+                        `count` int(11) NOT NULL DEFAULT '0',
+                        UNIQUE KEY `id` (`id`),
+                        UNIQUE KEY `cloud_id` (`cloud_id`)
+                      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;";
         $dbo->setQuery($query);
         $dbo->execute();
 
 
         $query = "CREATE TABLE IF NOT EXISTS `#__dropfiles_google_files` (
                       `id` int(11) NOT NULL AUTO_INCREMENT,
-                      `file_id` varchar(220) NOT NULL,
+                      `file_id` varchar(220) NOT NULL COLLATE utf8mb4_bin,
                       `state` int(11) NOT NULL DEFAULT '1',
                       `ordering` int(11) NOT NULL DEFAULT '0',
                       `title` varchar(200) NOT NULL,
                       `ext` varchar(20) NOT NULL,
                       `size` int(11) NOT NULL,
-                      `description` varchar(220) NOT NULL,
-                      `catid` varchar(200) NOT NULL,
+                      `description` varchar(220) NOT NULL DEFAULT '',
+                      `catid` varchar(200) NOT NULL COLLATE utf8mb4_bin,
                       `hits` int(11) NOT NULL DEFAULT '0',
-                      `version` varchar(20) NOT NULL,
+                      `version` varchar(20) NOT NULL DEFAULT '',
                       `canview` varchar(255) NOT NULL DEFAULT '0',
                       `created_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
                       `modified_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
                       `publish` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
                       `publish_down` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-                      `file_tags` varchar(255) NOT NULL,
-                      `author` VARCHAR(100) NOT NULL,
+                      `file_tags` varchar(255) NOT NULL DEFAULT '',
+                      `author` VARCHAR(100) NOT NULL DEFAULT '',
                       `custom_icon` VARCHAR(255) NOT NULL DEFAULT '',
-                      PRIMARY KEY (`id`)
-                    ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+                      PRIMARY KEY (`id`),
+                      CONSTRAINT DF_googledriveFiles UNIQUE(`file_id`(100), `catid`(100))
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;";
         $dbo->setQuery($query);
         $dbo->execute();
 
         $query = "CREATE TABLE IF NOT EXISTS `#__dropfiles_dropbox_files` (
                           `id` int(11) NOT NULL AUTO_INCREMENT,
-                          `file_id` varchar(220) NOT NULL,
+                          `file_id` varchar(220) NOT NULL COLLATE utf8mb4_bin,
                           `state` int(11) NOT NULL DEFAULT '1',
                           `ordering` int(11) NOT NULL DEFAULT '0',
                           `title` varchar(200) NOT NULL,
                           `ext` varchar(20) NOT NULL,
                           `size` int(11) NOT NULL,
-                          `description` varchar(220) NOT NULL,
-                          `catid` varchar(200) NOT NULL,
-                          `path` varchar(255) NOT NULL,
+                          `description` varchar(220) NOT NULL DEFAULT '',
+                          `catid` varchar(200) NOT NULL COLLATE utf8mb4_bin,
+                          `path` varchar(255) NOT NULL COLLATE utf8mb4_bin,
                           `hits` int(11) NOT NULL DEFAULT '0',
-                          `version` varchar(20) NOT NULL,
+                          `version` varchar(20) NOT NULL DEFAULT '',
                           `canview` varchar(255) NOT NULL DEFAULT '0',
                           `created_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
                           `modified_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
                           `publish` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
                           `publish_down` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-                          `file_tags` varchar(255) NOT NULL,
-                          `author` VARCHAR(100) NOT NULL,
+                          `file_tags` varchar(255) NOT NULL DEFAULT '',
+                          `author` VARCHAR(100) NOT NULL DEFAULT '',
                           `custom_icon` VARCHAR(255) NOT NULL DEFAULT '',
-                          PRIMARY KEY (`id`)
-                        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+                          PRIMARY KEY (`id`),
+                          CONSTRAINT DF_dropboxFiles UNIQUE(`file_id`(100), `catid`(100))
+                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;";
         $dbo->setQuery($query);
         $dbo->execute();
 
         $query = "CREATE TABLE IF NOT EXISTS `#__dropfiles_onedrive_files` (
                           `id` int(11) NOT NULL AUTO_INCREMENT,
-                          `file_id` varchar(220) NOT NULL,
+                          `file_id` varchar(220) NOT NULL COLLATE utf8mb4_bin,
                           `state` int(11) NOT NULL DEFAULT '1',
                           `ordering` int(11) NOT NULL DEFAULT '0',
                           `title` varchar(200) NOT NULL,
                           `ext` varchar(20) NOT NULL,
                           `size` int(11) NOT NULL,
-                          `description` varchar(220) NOT NULL,
-                          `catid` varchar(200) NOT NULL,
+                          `description` varchar(220) NOT NULL DEFAULT '',
+                          `catid` varchar(200) NOT NULL COLLATE utf8mb4_bin,
                           `path` varchar(255) NOT NULL,
                           `hits` int(11) NOT NULL DEFAULT '0',
-                          `version` varchar(20) NOT NULL,
+                          `version` varchar(20) NOT NULL DEFAULT '',
                           `canview` varchar(255) NOT NULL DEFAULT '0',
                           `created_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
                           `modified_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
                           `publish` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
                           `publish_down` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-                          `file_tags` varchar(255) NOT NULL,
-                          `author` VARCHAR(100) NOT NULL,
+                          `file_tags` varchar(255) NOT NULL DEFAULT '',
+                          `author` VARCHAR(100) NOT NULL DEFAULT '',
                           `custom_icon` VARCHAR(255) NOT NULL DEFAULT '',
-                          PRIMARY KEY (`id`)
-                        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+                          PRIMARY KEY (`id`),
+                          CONSTRAINT DF_onedriveFiles UNIQUE(`file_id`(100), `catid`(100))
+                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;";
+        $dbo->setQuery($query);
+        $dbo->execute();
+
+        $query = "CREATE TABLE IF NOT EXISTS `#__dropfiles_onedrive_business_files` (
+                          `id` int(11) NOT NULL AUTO_INCREMENT,
+                          `file_id` varchar(220) NOT NULL COLLATE utf8mb4_bin,
+                          `state` int(11) NOT NULL DEFAULT '1',
+                          `ordering` int(11) NOT NULL DEFAULT '0',
+                          `title` varchar(200) NOT NULL,
+                          `ext` varchar(20) NOT NULL,
+                          `size` int(11) NOT NULL,
+                          `description` varchar(220) NOT NULL DEFAULT '',
+                          `catid` varchar(200) NOT NULL COLLATE utf8mb4_bin,
+                          `path` varchar(255) NOT NULL,
+                          `hits` int(11) NOT NULL DEFAULT '0',
+                          `version` varchar(20) NOT NULL DEFAULT '',
+                          `canview` varchar(255) NOT NULL DEFAULT '0',
+                          `created_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+                          `modified_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+                          `publish` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+                          `publish_down` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+                          `file_tags` varchar(255) NOT NULL DEFAULT '',
+                          `author` VARCHAR(100) NOT NULL DEFAULT '',
+                          `custom_icon` VARCHAR(255) NOT NULL DEFAULT '',
+                          PRIMARY KEY (`id`),
+                          CONSTRAINT DF_onedrivebusinessFiles UNIQUE(`file_id`(100), `catid`(100))
+                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;";
         $dbo->setQuery($query);
         $dbo->execute();
 
         $query = "CREATE TABLE IF NOT EXISTS `#__dropfiles_statistics` (
                       `id` int(11) NOT NULL AUTO_INCREMENT,
-                      `related_id` varchar(200) NOT NULL,
+                      `related_id` varchar(200) NOT NULL COLLATE utf8mb4_bin,
+                      `related_users` int(11) NOT NULL DEFAULT '0',
                       `type` varchar(200) NOT NULL,
                       `date` date NOT NULL DEFAULT '0000-00-00',
                       `count` int(11) NOT NULL DEFAULT '0',
                       PRIMARY KEY (`id`)
-                    ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;";
         $dbo->setQuery($query);
         $dbo->execute();
 
@@ -174,7 +214,7 @@ class Com_DropfilesInstallerScript
                         `time` varchar(15) NOT NULL,
                         `token` varchar(32) NOT NULL,
                         PRIMARY KEY (`id`)
-                      ) ENGINE=MyISAM DEFAULT CHARSET=utf8;';
+                      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;';
         $dbo->setQuery($query);
         $dbo->execute();
 
@@ -187,7 +227,7 @@ class Com_DropfilesInstallerScript
                         `created_time` datetime NOT NULL,
                         PRIMARY KEY (`id`),
                         KEY `id_file` (`id_file`)
-                      ) ENGINE=MyISAM DEFAULT CHARSET=utf8;';
+                      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;';
         $dbo->setQuery($query);
         $dbo->execute();
     }
@@ -218,6 +258,7 @@ class Com_DropfilesInstallerScript
         $queries[] = 'DROP TABLE IF EXISTS `#__dropfiles_google_files`';
         $queries[] = 'DROP TABLE IF EXISTS `#__dropfiles_dropbox_files`';
         $queries[] = 'DROP TABLE IF EXISTS `#__dropfiles_onedrive_files`';
+        $queries[] = 'DROP TABLE IF EXISTS `#__dropfiles_onedrive_business_files`';
         $queries[] = 'DROP TABLE IF EXISTS `#__dropfiles_tokens`';
         $queries[] = 'DROP TABLE IF EXISTS `#__dropfiles_versions`';
 
@@ -237,63 +278,9 @@ class Com_DropfilesInstallerScript
     {
         $dbo = JFactory::getDbo();
         // $parent is the class calling this method
-        if (version_compare($this->oldRelease, '2.0.0', 'lt')) {
-            $query = 'SELECT * FROM #__dropfiles LIMIT 0, 1';
-            $dbo->setQuery($query);
-            $current = $dbo->loadObject();
-
-            $query = 'DELETE FROM  `#__dropfiles`';
-            $dbo->setQuery($query);
-            $dbo->execute();
-
-            $query = 'ALTER IGNORE TABLE  `#__dropfiles` ADD `id` INT NOT NULL FIRST;';
-            $dbo->setQuery($query);
-            $dbo->execute();
-
-            $query = 'ALTER IGNORE TABLE  `#__dropfiles` ADD PRIMARY KEY (`id`);';
-            $dbo->setQuery($query);
-            $dbo->execute();
-
-            $query = 'ALTER TABLE  `#__dropfiles` ADD  `type` VARCHAR( 20 ) NOT NULL AFTER  `id` ;';
-            $dbo->setQuery($query);
-            $dbo->execute();
-
-            $query = 'ALTER TABLE  `#__dropfiles` ADD  `cloud_id` VARCHAR( 200 ) NOT NULL AFTER  `type` ;';
-            $dbo->setQuery($query);
-            $dbo->execute();
-
-            $query = 'INSERT INTO `#__dropfiles` (`id`,`theme`,`params`) SELECT id,';
-            $query .= $dbo->quote($current->theme) . ',' . $dbo->quote($current->params);
-            $query .= ' FROM `#__categories` WHERE extension="com_dropfiles";';
-            $dbo->setQuery($query);
-            $dbo->execute();
-
-            $query = 'CREATE TABLE IF NOT EXISTS `#__dropfiles_tokens` (
-                        `id` int(11) NOT NULL AUTO_INCREMENT,
-                            `id_user` int(11) NOT NULL,
-                            `time` varchar(15) NOT NULL,
-                            `token` varchar(32) NOT NULL,
-                            PRIMARY KEY (`id`)
-                          ) ENGINE=MyISAM DEFAULT CHARSET=utf8;';
-            $dbo->setQuery($query);
-            $dbo->execute();
-
-            $query = 'CREATE TABLE IF NOT EXISTS `#__dropfiles_versions` (
-                        `id` int(11) NOT NULL AUTO_INCREMENT,
-                        `id_file` int(11) NOT NULL,
-                        `file` varchar(100) NOT NULL,
-                        `ext` varchar(100) NOT NULL,
-                        `size` int(11) NOT NULL,
-                        `created_time` datetime NOT NULL,
-                        PRIMARY KEY (`id`),
-                        KEY `id_file` (`id_file`)
-                      ) ENGINE=MyISAM DEFAULT CHARSET=utf8;';
-            $dbo->setQuery($query);
-            $dbo->execute();
-        }
 
         if (version_compare($this->oldRelease, '2.2.0', 'lt')) {
-            $query = 'ALTER TABLE  `#__dropfiles_files` ADD `file_tags` VARCHAR( 255 ) NOT NULL AFTER `language`; ';
+            $query = 'ALTER TABLE  `#__dropfiles_files` ADD `file_tags` VARCHAR( 255 ) NOT NULL DEFAULT "" AFTER `language`; ';
             $dbo->setQuery($query);
             $dbo->execute();
         }
@@ -319,15 +306,15 @@ class Com_DropfilesInstallerScript
                       `description` varchar(220) NOT NULL,
                       `catid` varchar(200) NOT NULL,
                       `hits` int(11) NOT NULL DEFAULT '0',
-                      `version` varchar(20) NOT NULL,
+                      `version` varchar(20) NOT NULL DEFAULT '',
                       `canview` int(11) NOT NULL,
                       `created_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
                       `modified_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
                       `publish` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
                       `publish_down` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-                      `file_tags` varchar(255) NOT NULL,
+                      `file_tags` varchar(255) NOT NULL DEFAULT '', 
                       PRIMARY KEY (`id`)
-                    ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;";
             $dbo->setQuery($query);
             $dbo->execute();
 
@@ -339,7 +326,7 @@ class Com_DropfilesInstallerScript
                       `date` date NOT NULL DEFAULT '0000-00-00',
                       `count` int(11) NOT NULL DEFAULT '0',
                       PRIMARY KEY (`id`)
-                    ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;";
             $dbo->setQuery($query);
             $dbo->execute();
 
@@ -377,58 +364,28 @@ class Com_DropfilesInstallerScript
 
             $query = "CREATE TABLE IF NOT EXISTS `#__dropfiles_dropbox_files` (
                               `id` int(11) NOT NULL AUTO_INCREMENT,
-                              `file_id` varchar(220) NOT NULL,
+                              `file_id` varchar(220) NOT NULL COLLATE utf8mb4_bin,
                               `state` int(11) NOT NULL DEFAULT '1',
                               `ordering` int(11) NOT NULL DEFAULT '0',
                               `title` varchar(200) NOT NULL,
                               `ext` varchar(20) NOT NULL,
                               `size` int(11) NOT NULL,
-                              `description` varchar(220) NOT NULL,
+                              `description` varchar(220) NOT NULL DEFAULT '',
                               `catid` varchar(200) NOT NULL,
                               `path` varchar(255) NOT NULL,
                               `hits` int(11) NOT NULL DEFAULT '0',
-                              `version` varchar(20) NOT NULL,
+                              `version` varchar(20) NOT NULL DEFAULT '',
                               `canview` int(11) NOT NULL,
                               `created_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
                               `modified_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
                               `publish` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
                               `publish_down` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-                              `file_tags` varchar(255) NOT NULL,
+                              `file_tags` varchar(255) NOT NULL DEFAULT '',
                               PRIMARY KEY (`id`)
-                            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+                            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;";
             $dbo->setQuery($query);
             $dbo->execute();
         }
-
-
-        if (version_compare($this->oldRelease, '5.0.0', 'lt')) {
-            $query = "CREATE TABLE IF NOT EXISTS `#__dropfiles_onedrive_files` (
-                              `id` int(11) NOT NULL AUTO_INCREMENT,
-                              `file_id` varchar(220) NOT NULL,
-                              `state` int(11) NOT NULL DEFAULT '1',
-                              `ordering` int(11) NOT NULL DEFAULT '0',
-                              `title` varchar(200) NOT NULL,
-                              `ext` varchar(20) NOT NULL,
-                              `size` int(11) NOT NULL,
-                              `description` varchar(220) NOT NULL,
-                              `catid` varchar(200) NOT NULL,
-                              `path` varchar(255) NOT NULL,
-                              `hits` int(11) NOT NULL DEFAULT '0',
-                              `version` varchar(20) NOT NULL,
-                              `canview` int(11) NOT NULL,
-                              `created_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-                              `modified_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-                              `publish` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-                              `publish_down` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-                              `file_tags` varchar(255) NOT NULL,
-                              `author` varchar(100) NOT NULL,
-                              `custom_icon` varchar(255) NOT NULL DEFAULT '',
-                              PRIMARY KEY (`id`)
-                            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
-            $dbo->setQuery($query);
-            $dbo->execute();
-        }
-
 
         if (version_compare($this->oldRelease, '4.1.0', 'lt')) {
             $query = 'ALTER TABLE `#__dropfiles_google_files` ADD `author` VARCHAR(100) NOT NULL AFTER `file_tags`;';
@@ -451,6 +408,35 @@ class Com_DropfilesInstallerScript
 
             $query = 'ALTER TABLE `#__dropfiles_dropbox_files` ADD `custom_icon` VARCHAR(255) ';
             $query .= ' NOT NULL DEFAULT "" AFTER `file_tags`;';
+            $dbo->setQuery($query);
+            $dbo->execute();
+        }
+
+
+        if (version_compare($this->oldRelease, '5.0.0', 'lt')) {
+            $query = "CREATE TABLE IF NOT EXISTS `#__dropfiles_onedrive_files` (
+                              `id` int(11) NOT NULL AUTO_INCREMENT,
+                              `file_id` varchar(220) NOT NULL,
+                              `state` int(11) NOT NULL DEFAULT '1',
+                              `ordering` int(11) NOT NULL DEFAULT '0',
+                              `title` varchar(200) NOT NULL,
+                              `ext` varchar(20) NOT NULL,
+                              `size` int(11) NOT NULL,
+                              `description` varchar(220) NOT NULL DEFAULT '',
+                              `catid` varchar(200) NOT NULL,
+                              `path` varchar(255) NOT NULL,
+                              `hits` int(11) NOT NULL DEFAULT '0',
+                              `version` varchar(20) NOT NULL DEFAULT '',
+                              `canview` int(11) NOT NULL,
+                              `created_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+                              `modified_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+                              `publish` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+                              `publish_down` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+                              `file_tags` varchar(255) NOT NULL DEFAULT '',
+                              `author` varchar(100) NOT NULL,
+                              `custom_icon` varchar(255) NOT NULL DEFAULT '',
+                              PRIMARY KEY (`id`)
+                            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;";
             $dbo->setQuery($query);
             $dbo->execute();
         }
@@ -480,6 +466,131 @@ class Com_DropfilesInstallerScript
             $dbo->setQuery($query);
             $dbo->execute();
         }
+
+        // Insert count column to dropfiles
+        if (version_compare($this->oldRelease, '5.3.3', 'lt')) {
+            $query = "ALTER TABLE `#__dropfiles` ADD `count` int(11) NOT NULL DEFAULT '0';";
+            $dbo->setQuery($query);
+            $dbo->execute();
+        }
+
+        // Alter #__dropfiles table to make cloud_id column nullale and unique
+        if (version_compare($this->oldRelease, '5.3.4', 'lt')) {
+            $query = 'ALTER TABLE `#__dropfiles` MODIFY `cloud_id` VARCHAR(100) NULL COLLATE utf8mb4_bin;';
+            $dbo->setQuery($query);
+            $dbo->execute();
+
+            // Fix for old version which cloud_id not null
+            $query = "UPDATE `#__dropfiles` SET `cloud_id`= NULL WHERE `cloud_id` = '';";
+            $dbo->setQuery($query);
+            $dbo->execute();
+
+            $query = 'ALTER TABLE `#__dropfiles` ADD CONSTRAINT cloud_id UNIQUE (`cloud_id`);';
+            $dbo->setQuery($query);
+            $dbo->execute();
+        }
+
+        // Insert file_multi_category column to dropfiles
+        if (version_compare($this->oldRelease, '5.5.0', 'lt')) {
+            $query = 'ALTER TABLE  `#__dropfiles_files` ADD `file_multi_category` VARCHAR( 255 ) NOT NULL AFTER `version`; ';
+            $dbo->setQuery($query);
+            $dbo->execute();
+
+            $query = "ALTER TABLE `#__dropfiles_files` MODIFY `remoteurl` VARCHAR(255) DEFAULT '';";
+            $dbo->setQuery($query);
+            $dbo->execute();
+        }
+
+        // Alter #__dropfiles_files table
+        if (version_compare($this->oldRelease, '5.5.1', 'lt')) {
+            $query = 'ALTER TABLE `#__dropfiles_files` MODIFY `file` VARCHAR(255) NOT NULL;';
+            $dbo->setQuery($query);
+            $dbo->execute();
+        }
+
+        // Insert related_users column to dropfiles_statistics
+        if (version_compare($this->oldRelease, '5.6.0', 'lt')) {
+            $query = "ALTER TABLE  `#__dropfiles_statistics` ADD `related_users` int(11) NOT NULL DEFAULT '0';";
+            $dbo->setQuery($query);
+            $dbo->execute();
+        }
+
+        if (version_compare($this->oldRelease, '5.7.4', 'lt') && version_compare($this->oldRelease, '5.7.1', 'gt')) {
+            $query = 'ALTER TABLE `#__dropfiles` MODIFY `cloud_id` VARCHAR(100) NULL COLLATE utf8mb4_bin;';
+            $dbo->setQuery($query);
+            $dbo->execute();
+
+            $query = 'ALTER TABLE `#__dropfiles_google_files` MODIFY `file_id` VARCHAR(220) NOT NULL COLLATE utf8mb4_bin, MODIFY `catid` VARCHAR(200) NOT NULL COLLATE utf8mb4_bin;';
+            $dbo->setQuery($query);
+            $dbo->execute();
+
+            $query = 'ALTER TABLE `#__dropfiles_dropbox_files` MODIFY `file_id` VARCHAR(220) NOT NULL COLLATE utf8mb4_bin, MODIFY `catid` VARCHAR(200) NOT NULL COLLATE utf8mb4_bin;';
+            $dbo->setQuery($query);
+            $dbo->execute();
+
+            $query = 'ALTER TABLE `#__dropfiles_onedrive_files` MODIFY `file_id` VARCHAR(220) NOT NULL COLLATE utf8mb4_bin, MODIFY `catid` VARCHAR(200) NOT NULL COLLATE utf8mb4_bin;';
+            $dbo->setQuery($query);
+            $dbo->execute();
+        }
+
+        if (version_compare($this->oldRelease, '5.8.0', 'lt')) {
+            $query = "CREATE TABLE IF NOT EXISTS `#__dropfiles_onedrive_business_files` (
+                              `id` int(11) NOT NULL AUTO_INCREMENT,
+                              `file_id` varchar(220) NOT NULL COLLATE utf8mb4_bin,
+                              `state` int(11) NOT NULL DEFAULT '1',
+                              `ordering` int(11) NOT NULL DEFAULT '0',
+                              `title` varchar(200) NOT NULL,
+                              `ext` varchar(20) NOT NULL,
+                              `size` int(11) NOT NULL,
+                              `description` varchar(220) NOT NULL DEFAULT '',
+                              `catid` varchar(200) NOT NULL COLLATE utf8mb4_bin,
+                              `path` varchar(255) NOT NULL,
+                              `hits` int(11) NOT NULL DEFAULT '0',
+                              `version` varchar(20) NOT NULL DEFAULT '',
+                              `canview` varchar(255) NOT NULL DEFAULT '0',
+                              `created_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+                              `modified_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+                              `publish` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+                              `publish_down` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+                              `file_tags` varchar(255) NOT NULL DEFAULT '',
+                              `author` VARCHAR(100) NOT NULL DEFAULT '',
+                              `custom_icon` VARCHAR(255) NOT NULL DEFAULT '',
+                              PRIMARY KEY (`id`)
+                            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;";
+            $dbo->setQuery($query);
+            $dbo->execute();
+        }
+
+        if (version_compare($this->oldRelease, '5.8.4', 'lt')) {
+            $query = 'ALTER TABLE `#__dropfiles_files` MODIFY `hits` int(11) NOT NULL DEFAULT "0", 
+                        MODIFY `version` varchar(20) NOT NULL DEFAULT "",
+                        MODIFY `file_multi_category` varchar(255) NOT NULL DEFAULT "",
+                        MODIFY `author` varchar(100) NOT NULL DEFAULT "",
+                        MODIFY `language` char(7) NOT NULL DEFAULT "" ';
+            $dbo->setQuery($query);
+            $dbo->execute();
+
+            $query = 'ALTER TABLE `#__dropfiles_google_files` MODIFY `description` varchar(220) NOT NULL DEFAULT "", 
+                        MODIFY `version` varchar(20) NOT NULL DEFAULT "",
+                        MODIFY `file_tags` varchar(255) NOT NULL DEFAULT "",
+                        MODIFY `author` varchar(100) NOT NULL DEFAULT "" ';
+            $dbo->setQuery($query);
+            $dbo->execute();
+
+            $query = 'ALTER TABLE `#__dropfiles_dropbox_files` MODIFY `description` varchar(220) NOT NULL DEFAULT "", 
+                        MODIFY `version` varchar(20) NOT NULL DEFAULT "",
+                        MODIFY `file_tags` varchar(255) NOT NULL DEFAULT "",
+                        MODIFY `author` varchar(100) NOT NULL DEFAULT "" ';
+            $dbo->setQuery($query);
+            $dbo->execute();
+
+            $query = 'ALTER TABLE `#__dropfiles_onedrive_files` MODIFY `description` varchar(220) NOT NULL DEFAULT "", 
+                        MODIFY `version` varchar(20) NOT NULL DEFAULT "",
+                        MODIFY `file_tags` varchar(255) NOT NULL DEFAULT "",
+                        MODIFY `author` varchar(100) NOT NULL DEFAULT "" ';
+            $dbo->setQuery($query);
+            $dbo->execute();
+        }
     }
 
 
@@ -493,9 +604,10 @@ class Com_DropfilesInstallerScript
      */
     public function preflight($type, $parent)
     {
+        $app = JFactory::getApplication();
         if ($type === 'update') {
-            if (version_compare($this->oldRelease, $parent->get('manifest')->version, 'gt')) {
-                Jerror::raiseWarning(null, 'You already have a newer version of Dropfiles');
+            if (version_compare($this->oldRelease, $parent->getManifest()->version, 'gt')) { //$parent->get('manifest')->version
+                $app->enqueueMessage('You already have a newer version of Dropfiles', 'warning');
                 JLoader::register('JControllerLegacy', JPATH_LIBRARIES . 'legacy/controller/legacy.php');
                 $controller = new JControllerLegacy();
                 $controller->setRedirect('index.php?option=com_installer&view=install');
@@ -505,11 +617,11 @@ class Com_DropfilesInstallerScript
         } else {
             // $parent is the class calling this method
             // $type is the type of change (install, update or discover_install)
-            $this->release = $parent->get('manifest')->version;
+            $this->release = $parent->getManifest()->version ; //$parent->get('manifest')->version;
             $jversion = new JVersion();
             // abort if the current Joomla release is older
-            if (version_compare($jversion->getShortVersion(), '2.5.6', 'lt')) {
-                Jerror::raiseWarning(null, 'Cannot install Dropfiles component in a Joomla release prior to 2.5.6');
+            if (version_compare($jversion->getShortVersion(), '3.7.0', 'lt')) {
+                $app->enqueueMessage('Cannot install Dropfiles component in a Joomla release prior to 3.7.0', 'warning');
                 JLoader::register('JControllerLegacy', JPATH_LIBRARIES . 'legacy/controller/legacy.php');
                 $controller = new JControllerLegacy();
                 $controller->setRedirect('index.php?option=com_installer&view=install');
@@ -532,12 +644,12 @@ class Com_DropfilesInstallerScript
     public function postflight($type, $parent)
     {
         if ($type === 'install') {
-            $basePath = JPATH_ADMINISTRATOR . '/components/com_categories';
+            $basePath = JPATH_ADMINISTRATOR . '/components/com_dropfiles';
             require_once $basePath . '/models/category.php';
             $config = array(
                 'table_path' => $basePath . '/tables'
             );
-            $catmodel = new CategoriesModelCategory($config);
+            $catmodel = new DropfilesModelCategory($config);
             $catData = array(
                 'id' => 0,
                 'parent_id' => 1,
@@ -550,30 +662,20 @@ class Com_DropfilesInstallerScript
                 'associations' => array()
             );
             $status = $catmodel->save($catData);
-
             if (!$status) {
-                JError::raiseWarning(500, JText::_('Unable to create default content category!'));
-            } else {
-                $dbo = JFactory::getDbo();
-                //get category id recent create
-                $query = "SELECT id FROM `#__categories` WHERE extension='com_dropfiles' ORDER BY created_time DESC";
-                $dbo->setQuery($query);
-                $IdInsert = (int)$dbo->loadResult();
-                if ($IdInsert !== 0 || $IdInsert !== null) {
-                    $query = 'INSERT INTO `#__dropfiles` (`id`,`type`,`theme`) ';
-                    $query .= ' VALUES (' . $IdInsert . ",'default','default'); ";
-                    $dbo->setQuery($query);
-                    $dbo->execute();
-                }
+                $app = JFactory::getApplication();
+                $app->enqueueMessage('Unable to create default content category!', 'warning');
             }
         }
+
         if ($type === 'install' || $type === 'update') {
             // $parent is the class calling this method
             // $type is the type of change (install, update or discover_install)
             $lang = JFactory::getLanguage();
             $lang->load('com_dropfiles.sys', JPATH_BASE . '/components/com_dropfiles', null, true);
 
-            $manifest = $parent->get('manifest');
+            $manifest = $parent->getManifest(); //$parent->get('manifest');
+
             $path_installer = JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/installer.php';
             JLoader::register('DropfilesInstallerHelper', $path_installer);
             echo '<h2>' . JText::_('COM_DROPFILES_INSTALLER_TITLE') . '</h2>';
@@ -581,7 +683,6 @@ class Com_DropfilesInstallerScript
 
 
             $extensions = $manifest->extensions;
-
             foreach ($extensions->children() as $extension) {
                 $folder = $extension->attributes()->folder;
                 $enable = $extension->attributes()->enable;
@@ -671,6 +772,28 @@ class Com_DropfilesInstallerScript
             }
         }
 
+        // Fix wrong 'cloud_id' column
+        if ($type === 'update') {
+            $dbo = JFactory::getDbo();
+            $checkIndexSql = "SHOW INDEX FROM `#__dropfiles` WHERE Key_name = 'cloud_id'";
+            $dbo->setQuery($checkIndexSql);
+            $result = $dbo->loadResult();
+            if (empty($result)) {
+                $query = 'ALTER TABLE `#__dropfiles` MODIFY `cloud_id` VARCHAR(100) NULL;';
+                $dbo->setQuery($query);
+                $dbo->execute();
+
+                // Fix for old version which cloud_id not null
+                $query = "UPDATE `#__dropfiles` SET `cloud_id`= NULL WHERE `cloud_id` = '';";
+                $dbo->setQuery($query);
+                $dbo->execute();
+
+                $query = 'ALTER TABLE `#__dropfiles` ADD CONSTRAINT cloud_id UNIQUE (`cloud_id`);';
+                $dbo->setQuery($query);
+                $dbo->execute();
+            }
+        }
+
         // add a menu type
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -681,14 +804,24 @@ class Com_DropfilesInstallerScript
         $menuTypeId = $db->loadResult();
 
         if (empty($menuTypeId)) {
-            include_once JPATH_ADMINISTRATOR . '/components/com_menus/models/menu.php';
-            $menuType = array(
-                'menutype' => 'dropfiles',
-                'title' => 'Dropfiles menu',
-                'description' => 'Dropfiles menu'
-            );
-            $model = new MenusModelMenu();
-            $saved = $model->save($menuType);
+            if (version_compare(JVERSION, '4.0.0', 'ge')) {
+                $model = new Joomla\Component\Menus\Administrator\Model\MenuModel();
+                $menuType = array(
+                    'menutype' => 'dropfiles',
+                    'title' => 'Dropfiles menu',
+                    'description' => 'Dropfiles menu'
+                );
+                $saved = $model->save($menuType);
+            } else {
+                include_once JPATH_ADMINISTRATOR . '/components/com_menus/models/menu.php';
+                $menuType = array(
+                    'menutype' => 'dropfiles',
+                    'title' => 'Dropfiles menu',
+                    'description' => 'Dropfiles menu'
+                );
+                $model = new MenusModelMenu();
+                $saved = $model->save($menuType);
+            }
 
             // need to check errors and display message
             if (!$saved) {
@@ -724,42 +857,64 @@ class Com_DropfilesInstallerScript
                 . '=' . $db->Quote('dropfilesfrontend'));
             $templateStyleId = $db->setQuery($query)->loadResult();
 
-            $error = $db->getErrorMsg();
-            if (empty($templateStyleId) || !empty($error)) {
-                echo 'Error reading template style: ' . $error . '<br />';
-            } else {
-                // now we can create the menu item. We can't use directly Joomla item model
-                // has it has an hardcoded JPATH_COMPONENT require_once that fails if used
-                // from another extension than com_menus
-                include_once JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/item.php';
 
+            if (empty($templateStyleId)) {
+                echo 'Error reading template style';
+            } else {
+                // now we can create the menu item.
                 // fetch installed Josetta extension id, as menu item needs that
                 $query = $db->getQuery(true);
                 $query->select('extension_id')->from('#__extensions')->where($db->quoteName('type') . '='
                     . $db->Quote('component'))->where($db->quoteName('element') . '=' . $db->Quote('com_dropfiles'));
                 $componentId = $db->setQuery($query)->loadResult();
-                $error = $db->getErrorMsg();
-                if (!empty($error)) {
-                    echo 'Error reading just installed com_dropfiles extension id, cannot create front end menu item: 
-                    ' . $error . '<br />';
+
+                if (empty($componentId)) {
+                    echo 'Error reading just installed com_dropfiles extension id, cannot create front end menu item';
                 } else {
-                    // prepare menu item record
-                    $menuItem = array(
-                        'id' => 0,
-                        'menutype' => 'dropfiles',
-                        'title' => 'Manage Files',
-                        'link' => 'index.php?option=com_dropfiles&view=manage',
-                        'type' => 'component',
-                        'component_id' => $componentId,
-                        'published' => 1,
-                        'parent_id' => 1,
-                        'level' => 1,
-                        'language' => '*',
-                        'template_style_id' => $templateStyleId
-                    );
-                    $model = new MenusModelItem();
-                    $saved = $model->save($menuItem);
-                    $model->getState('item.id');
+                    if (version_compare(JVERSION, '4.0.0', 'ge')) {
+                        $model = new Joomla\Component\Menus\Administrator\Model\ItemModel();
+                        // prepare menu item record
+                        $menuItem = array(
+                            'id' => 0,
+                            'menutype' => 'dropfiles',
+                            'title' => 'Manage Files',
+                            'path' => 'manage-files',
+                            'link' => 'index.php?option=com_dropfiles&view=manage',
+                            'type' => 'component',
+                            'component_id' => $componentId,
+                            'published' => 1,
+                            'parent_id' => 1,
+                            'level' => 1,
+                            'language' => '*',
+                            'template_style_id' => $templateStyleId
+                        );
+                        $saved = $model->save($menuItem);
+                    } else {
+                       // We can't use directly Joomla item model
+                        // has it has an hardcoded JPATH_COMPONENT require_once that fails if used
+                        // from another extension than com_menus
+                        include_once JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/item.php';
+                        // prepare menu item record
+                        $menuItem = array(
+                            'id' => 0,
+                            'menutype' => 'dropfiles',
+                            'title' => 'Manage Files',
+                            'path' => 'manage-files',
+                            'link' => 'index.php?option=com_dropfiles&view=manage',
+                            'type' => 'component',
+                            'component_id' => $componentId,
+                            'published' => 1,
+                            'parent_id' => 1,
+                            'level' => 1,
+                            'language' => '*',
+                            'template_style_id' => $templateStyleId
+                        );
+                        $model = new MenusModelItem();
+                        $saved = $model->save($menuItem);
+                        $model->getState('item.id');
+                    }
+
+
                     if (!$saved) {
                         echo 'Error creating Dropfiles menu item: ' . $model->getError() . '<br />';
                     }
@@ -782,7 +937,7 @@ class Com_DropfilesInstallerScript
                 $token = $results->value;
                 if (!empty($token)) {
                     $token = str_replace('token=', '', $token);
-                    $com_name = $parent->get('element');
+                    $com_name = $parent->getElement();
                     $script = '<script type="text/javascript">';
                     $script .= 'jQuery(document).ready(function($){';
                     $script .= 'jQuery.ajax({
@@ -802,61 +957,6 @@ class Com_DropfilesInstallerScript
             }
         }
 
-        if ($type === 'update') {
-            if (function_exists('curl_version')) {
-                $cUrl = curl_init();
-                $uri_googledrive = JUri::root() . 'index.php?option=com_dropfiles&task=googledrive.googlesync';
-                curl_setopt($cUrl, CURLOPT_URL, $uri_googledrive);
-                curl_setopt($cUrl, CURLOPT_RETURNTRANSFER, 1);
-                curl_exec($cUrl);
-                curl_close($cUrl);
-
-                $cUrl = curl_init();
-                curl_setopt($cUrl, CURLOPT_URL, JUri::root() . 'index.php?option=com_dropfiles&task=frontgoogle.index');
-                curl_setopt($cUrl, CURLOPT_RETURNTRANSFER, 1);
-                curl_exec($cUrl);
-                curl_close($cUrl);
-
-                $cUrl = curl_init();
-                curl_setopt($cUrl, CURLOPT_URL, JUri::root() . 'index.php?option=com_dropfiles&task=dropbox.sync');
-                curl_setopt($cUrl, CURLOPT_RETURNTRANSFER, 1);
-                curl_exec($cUrl);
-                curl_close($cUrl);
-
-                $cUrl = curl_init();
-                $uri_dropbox = JUri::root() . 'index.php?option=com_dropfiles&task=frontdropbox.index';
-                curl_setopt($cUrl, CURLOPT_URL, $uri_dropbox);
-                curl_setopt($cUrl, CURLOPT_RETURNTRANSFER, 1);
-                curl_exec($cUrl);
-                curl_close($cUrl);
-            } else {
-                $script = '<script type="text/javascript">';
-                $script .= "jQuery(document).ready(function(){
-                            jQuery.ajax({
-                                url:'index.php?option=com_dropfiles&task=googledrive.googlesync'
-                            }).done(function (data) {
-                                jQuery.ajax({
-                                    url:'index.php?option=com_dropfiles&task=frontgoogle.index'
-                                });
-                            });
-
-                        });";
-
-                $script .= "jQuery(document).ready(function(){
-                            jQuery.ajax({
-                                url:'index.php?option=com_dropfiles&task=dropbox.sync'
-                            }).done(function (data) {
-                                jQuery.ajax({
-                                    url:'index.php?option=com_dropfiles&task=frontdropbox.index'
-                                });
-                            });
-
-                        });";
-
-                $script .= '</script>';
-                echo $script;
-            }
-        }
 
         if ($type === 'install') {
             //Add the translation tool
@@ -922,7 +1022,7 @@ class Com_DropfilesInstallerScript
         if (!$dbo->setQuery($query)) {
             return false;
         }
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
         $component = $dbo->loadResult();

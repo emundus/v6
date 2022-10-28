@@ -1485,7 +1485,7 @@ class PlgFabrik_ElementJdate extends PlgFabrik_ElementList
 		foreach ($joins as $aJoin)
 		{
 			// Not sure why the group id key wasn't found - but put here to remove error
-			if (array_key_exists('group_id', $aJoin))
+			if (property_exists($aJoin, 'group_id'))
 			{
 				if ($aJoin->group_id == $element->group_id && $aJoin->element_id == 0)
 				{
@@ -2644,7 +2644,7 @@ class PlgFabrik_ElementJdate extends PlgFabrik_ElementList
 		$deps   = array_key_exists($key, $shim) ? $shim[$key]->deps : array();
 		$params = $this->getParams();
 
-		if (!in_array('lib/datejs/date', $deps))
+		if (empty($deps))
 		{
 			$deps[] = 'lib/datejs/globalization/' . JFactory::getLanguage()->getTag();
 			$deps[] = 'lib/datejs/core';

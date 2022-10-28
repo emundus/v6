@@ -1,0 +1,2 @@
+INSERT INTO `#__eb_themes` (`id`, `name`, `title`, `author`, `creation_date`, `copyright`, `license`, `author_email`, `author_url`, `version`, `description`, `params`, `ordering`, `published`) VALUES
+(1, 'default', 'Default Theme', 'Tuan Pham Ngoc', '08-06-2018', 'Copyright 2010-2018 Ossolution Team', 'http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU/GPL version 2', 'tuanpn@joomdonation.com', 'www.joomdonation.com', '1.0', 'Default Theme For Events Booking Extension', '', 1, 1);

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -30,6 +30,11 @@ class CategoryViewCategory extends hikashopView
 			parent::display($tpl);
 	}
 
+	function points_row() {
+		$this->namebox = hikashop_get('type.namebox');
+		$this->id = time();
+	}
+
 	function listing(){
 		$app = JFactory::getApplication();
 		$pageInfo = new stdClass();
@@ -51,7 +56,7 @@ class CategoryViewCategory extends hikashopView
 
 		$pageInfo->selectedType = $app->getUserStateFromRequest( $this->paramBase.".filter_type",'filter_type',0,'int');
 		jimport('joomla.filter.filterinput');
-		$safeHtmlFilter = & JFilterInput::getInstance(null, null, 1, 1);
+		$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 		$pageInfo->filter->filter_id = $safeHtmlFilter->clean(strip_tags($app->getUserStateFromRequest( $this->paramBase.".filter_id",'filter_id',0,'string')));
 
 		$database = JFactory::getDBO();
@@ -170,6 +175,7 @@ class CategoryViewCategory extends hikashopView
 		}
 		$this->toolbar = array(
 			array('name' => 'custom', 'icon' => $importIcon, 'alt' => JText::_('REBUILD'), 'task' => 'rebuild', 'check' => false, 'display'=>$manage),
+			array('name' => 'popup', 'icon' => 'cogs', 'title' => JText::_('HIKASHOP_ACTIONS'), 'alt' => JText::_('HIKASHOP_ACTIONS'), 'url' => hikashop_completeLink('category&task=batch&tmpl=component'), 'width' => $config->get('actions_popup_width','1024'), 'height' => $config->get('actions_popup_height','520'), 'check' => true, 'display' => $manage),
 			array('name' => 'addNew', 'display' => $manage),
 			array('name' => 'editList', 'display' => $manage),
 			array('name' => 'deleteList', 'display' => hikashop_isAllowed($config->get('acl_category_delete','all'))),
@@ -177,6 +183,10 @@ class CategoryViewCategory extends hikashopView
 			array('name' => 'pophelp', 'target' => $this->ctrl.'-listing'),
 			'dashboard'
 		);
+		if($this->manage) {
+			$massactionClass = hikashop_get('class.massaction');
+			$massactionClass->addActionButtons($this->toolbar, 'category');
+		}
 	}
 
 	function selectstatus(){
@@ -239,7 +249,7 @@ class CategoryViewCategory extends hikashopView
 		$category_id = hikashop_getCID('category_id');
 		$class = hikashop_get('class.category');
 		if(!empty($category_id)){
-			$element = $class->get($category_id,true);
+			$element = $class->get($category_id,true, false);
 			$task='edit';
 		}else{
 			$element = hikaInput::get()->getVar('fail');
@@ -278,7 +288,6 @@ class CategoryViewCategory extends hikashopView
 		$this->assignRef('categoryType',$categoryType);
 		$mainCategory = !empty($element->category_parent_id)?0:1;
 		$this->assignRef('mainCategory',$mainCategory);
-		JHTML::_('behavior.modal');
 		$config =& hikashop_config();
 		$translation = false;
 		$transHelper = hikashop_get('helper.translation');

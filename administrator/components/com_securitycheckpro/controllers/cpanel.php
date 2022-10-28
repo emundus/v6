@@ -202,27 +202,16 @@ class SecuritycheckprosControllerCpanel extends SecuritycheckproController
 
     /* Función para ir al menú de malware. Usada desde el submenú */
     function go_to_malware()
-    {
-        
+    {        
         $this->setRedirect('index.php?option=com_securitycheckpro&controller=filemanager&view=malwarescan&'. JSession::getFormToken() .'=1');        
     }
-
-    /* Redirecciona las peticiones a Geoblock */
-    function go_to_geoblock()
-    {
-        $this->setRedirect('index.php?option=com_securitycheckpro&controller=firewallconfig&view=firewallconfig&'. JSession::getFormToken() .'=1');
+	
+	 function go_to_system_info()
+    {        
+        $this->setRedirect('index.php?option=com_securitycheckpro&controller=filemanager&view=sysinfo&'. JSession::getFormToken() .'=1');        
     }
 
-    /* Función que establece las actualizaciones automáticas de Geolite2 */
-    function automatic_updates_geoblock()
-    {
-        $model = $this->getModel("cpanel");
-        $model->enable_automatic_updates();
-        
-        $this->setRedirect('index.php?option=com_securitycheckpro');
     
-    }
-
     /* Función que bloquea las tablas importantes */
     function lock_tables()
     {

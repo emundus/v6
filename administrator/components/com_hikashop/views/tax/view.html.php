@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -41,6 +41,9 @@ class TaxViewTax extends hikashopView{
 		$database	= JFactory::getDBO();
 		$searchMap = array('a.tax_namekey','a.tax_rate');
 
+		$this->searchOptions = array('order'=> '', 'order_Dir'=> '', 'status'=> '', 'end'=> '', 'start'=> '');
+		$this->openfeatures_class = "hidden-features";
+
 		$filters = array();
 		if(!empty($pageInfo->search)){
 			$searchVal = '\'%'.hikashop_getEscaped($pageInfo->search,true).'%\'';
@@ -76,6 +79,7 @@ class TaxViewTax extends hikashopView{
 		}
 		switch($pageInfo->filter->filter_status){
 			case '':
+			case 'all':
 				break;
 			default:
 				if(!is_array($pageInfo->filter->filter_status)) {
@@ -132,7 +136,7 @@ class TaxViewTax extends hikashopView{
 			$filters_txt = '';
 		}
 
-		$database->setQuery('SELECT order_tax_info, order_currency_id, order_discount_price, order_discount_tax FROM '.hikashop_table('order').$filters_txt);
+		$database->setQuery('SELECT order_tax_info, order_currency_id, order_discount_price, order_discount_tax, order_full_price, order_number FROM '.hikashop_table('order').$filters_txt);
 		$orders_taxes = $database->loadObjectList();
 
 		$config = hikashop_config();
@@ -153,13 +157,27 @@ class TaxViewTax extends hikashopView{
 				$orders_taxes[$k]->order_tax_info = hikashop_unserialize($v->order_tax_info);
 				$info =& $orders_taxes[$k]->order_tax_info;
 				if(!$info) continue;
+
 				foreach($info as $k2 => $taxes_info){
 					$tax_amount = $taxes_info->tax_amount;
-					if(!isset($taxes_info->tax_rate)) $taxes_info->tax_rate = $rows[$taxes_info->tax_namekey]->tax_rate;
-					if($taxes_info->tax_rate != 0)
-						$info[$k2]->amount = $currencyClass->round($tax_amount/$taxes_info->tax_rate,$currencyClass->getRounding($v->order_currency_id));
-					else
-						$info[$k2]->amount = 0;
+					if(!isset($taxes_info->tax_rate)) {
+						if(!isset($rows[$taxes_info->tax_namekey])) {
+							if(!empty($taxes_info->tax_namekey))
+								$app->enqueueMessage(JText::sprintf('THE_ORDER_X_HAS_A_TAX_RATE_WHICH_COULD_NOT_BE_FOUND', $v->order_number, $taxes_info->tax_namekey));
+							continue;
+						}
+						$taxes_info->tax_rate = $rows[$taxes_info->tax_namekey]->tax_rate;
+					}
+					if(isset($taxes_info->amount)) {
+						$info[$k2]->amount = $taxes_info->amount;
+					} else {
+						if($taxes_info->tax_rate != 0)
+							$info[$k2]->amount = $currencyClass->round($tax_amount/$taxes_info->tax_rate,$currencyClass->getRounding($v->order_currency_id));
+						elseif(count($info) == 1)
+							$info[$k2]->amount = $v->order_full_price;
+						else
+							$info[$k2]->amount = 0;
+					}
 					$info[$k2]->tax_amount = $currencyClass->round($tax_amount,$currencyClass->getRounding($v->order_currency_id));
 					if($main_currency!=$v->order_currency_id){
 						$info[$k2]->tax_amount_main_currency = $currencyClass->convertUniquePrice($info[$k2]->tax_amount,$v->order_currency_id,$main_currency);
@@ -169,7 +187,6 @@ class TaxViewTax extends hikashopView{
 						$info[$k2]->amount_main_currency = $info[$k2]->amount;
 					}
 				}
-
 			}
 		}
 
@@ -265,7 +282,6 @@ class TaxViewTax extends hikashopView{
 			'country_Slovenia_190' => 'SI',
 			'country_Spain_195' => 'ES',
 			'country_Sweden_203' => 'SE',
-			'country_United_Kingdom_222' => 'GB',
 		);
 		$data_title = new stdClass();
 		$data_title->tr_type = 'title';

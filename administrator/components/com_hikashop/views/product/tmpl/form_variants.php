@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -121,7 +121,7 @@ window.productMgr.variantEdition = {
 window.productMgr.refreshVariantList = function() {
 	var w = window, d = document, o = w.Oby, t = this,
 		url_list = '<?php echo hikashop_completeLink('product&task=variants&product_id='.$this->product->product_id.'&'.hikashop_getFormToken().'=1',true,false,true); ?>';
-	o.xRequest(url_list, {update:'hikashop_product_variant_list'}, function(x,p) {
+	window.hikashop.xRequest(url_list, {update:'hikashop_product_variant_list'}, function(x,p) {
 		setTimeout(function(){
 			var message = d.getElementById('hikashop_variants_missing_error'), tr_found = d.querySelector('[id^="hikashop_product_variant_line_"]');
 			if(message){
@@ -140,7 +140,7 @@ window.productMgr.refreshVariantList = function() {
 window.productMgr.editVariant = function(id) {
 	var w = window, o = w.Oby, d = document, t = this, l = null,
 		el = d.getElementById('hikashop_product_variant_edition'),
-		url = '<?php echo hikashop_completeLink('product&task=variant&product_id='.$this->product->product_id.'&cid={CID}',true,false,true); ?>';
+		url = '<?php echo hikashop_completeLink('product&task=variant&product_id='.$this->product->product_id.'&cid={CID}','ajax',false,true); ?>';
 
 	id = parseInt(id);
 	if(isNaN(id) || id === 0)
@@ -162,7 +162,7 @@ window.productMgr.editVariant = function(id) {
 	w.productMgr.variantEdition.current = id;
 	var url = url.replace('{CID}',id);
 	o.addClass(el, 'ajax_loading');
-	o.xRequest(url,{update:el},function(x,p){
+	window.hikashop.xRequest(url,{update:el},function(x,p){
 		o.removeClass(el, 'ajax_loading');
 		w.productMgr.variantEdition.loading = false;
 		setTimeout(function(){
@@ -228,7 +228,7 @@ window.productMgr.saveVariant = function(id) {
 	o.fireAjax("syncWysiwygEditors", null);
 
 	var formData = o.getFormData(el);
-	o.xRequest(url, {update:el, mode: 'POST', data:formData}, function(x,p) {
+	window.hikashop.xRequest(url, {update:el, mode: 'POST', data:formData}, function(x,p) {
 		o.removeClass(el, 'ajax_loading');
 		w.productMgr.variantEdition.loading = false;
 		w.productMgr.refreshVariantList();
@@ -243,7 +243,7 @@ window.productMgr.publishVariant = function(ev, id) {
 	var w = window, o = w.Oby, d = document,
 		url = '<?php echo hikashop_completeLink('product&task=variants&subtask=publish&product_id='.$this->product->product_id.'&variant_id={CID}&'.hikashop_getFormToken().'=1',true,false,true); ?>';
 	url = url.replace('{CID}', id);
-	o.xRequest(url, {update:'hikashop_product_variant_list'});
+	window.hikashop.xRequest(url, {update:'hikashop_product_variant_list'});
 	return false;
 };
 window.productMgr.setDefaultVariant = function(ev, id) {
@@ -254,7 +254,7 @@ window.productMgr.setDefaultVariant = function(ev, id) {
 	var w = window, o = w.Oby, d = document,
 		url = '<?php echo hikashop_completeLink('product&task=variants&subtask=setdefault&product_id='.$this->product->product_id.'&variant_id={CID}&'.hikashop_getFormToken().'=1',true,false,true); ?>';
 	url = url.replace('{CID}', id);
-	o.xRequest(url, {update:'hikashop_product_variant_list'});
+	window.hikashop.xRequest(url, {update:'hikashop_product_variant_list'});
 	return false;
 };
 window.productMgr.checkVariant = function(el, id) {
@@ -285,7 +285,7 @@ window.productMgr.checkVariant = function(el, id) {
 window.productMgr.addVariants = function(el, id) {
 	if(this.cancelVariantEdition && !this.cancelVariantEdition())
 		return false;
-	window.Oby.xRequest('<?php echo hikashop_completeLink('product&task=variants&subtask=add&product_id='.$this->product->product_id.'&'.hikashop_getFormToken().'=1',true,false,true); ?>', {update:'hikashop_product_variant_creation_container'});
+	window.hikashop.xRequest('<?php echo hikashop_completeLink('product&task=variants&subtask=add&product_id='.$this->product->product_id.'&'.hikashop_getFormToken().'=1',true,false,true); ?>', {update:'hikashop_product_variant_creation_container'});
 	return false;
 };
 window.productMgr.populateVariants = function(mode) {
@@ -325,7 +325,7 @@ window.productMgr.populateVariants = function(mode) {
 		{mode: 'POST', data: data},
 		function(x,p) {
 			if(x.responseText != '1')
-				o.updateElem(el, x.responseText);
+				window.hikashop.updateElem(el, x.responseText);
 			window.productMgr.refreshVariantList();
 		}
 	);
@@ -340,7 +340,7 @@ window.productMgr.cancelPopulateVariants = function() {
 window.productMgr.duplicateVariants = function(el, id) {
 	var ve = window.productMgr.variantEdition, d = document;
 	if(ve.checked.length > 0) {
-		window.Oby.xRequest('<?php echo hikashop_completeLink('product&task=variants&subtask=duplicate&product_id='.$this->product->product_id.'&'.hikashop_getFormToken().'=1',true,false,true); ?>', {update:'hikashop_product_variant_creation_container'});
+		window.hikashop.xRequest('<?php echo hikashop_completeLink('product&task=variants&subtask=duplicate&product_id='.$this->product->product_id.'&'.hikashop_getFormToken().'=1',true,false,true); ?>', {update:'hikashop_product_variant_creation_container'});
 	} else {
 		var el = d.getElementById('hikashop_product_variant_creation_container');
 		if(el) el.innerHTML = '';

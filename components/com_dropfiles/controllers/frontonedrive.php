@@ -96,6 +96,7 @@ class DropfilesControllerFrontonedrive extends JControllerLegacy
                         $data['path']          = '';
                         $data['created_time']  = $file->created_time;
                         $data['modified_time'] = $file->modified_time;
+                        $data['author'] = ''; // sync
                         $model->save($data);
                     }
                 }
@@ -103,13 +104,26 @@ class DropfilesControllerFrontonedrive extends JControllerLegacy
                 if (!empty($files_diff_del)) {
                     $files_del = array_merge($files_del, array_keys($files_diff_del));
                 }
+
+                if (isset($gFilesInDb[$onedrivecat->cloud_id])) {
+                    unset($gFilesInDb[$onedrivecat->cloud_id]);
+                }
+            }
+
+            // delete files from old categories
+            if (!empty($gFilesInDb)) {
+                foreach ($gFilesInDb as $lstFiles) {
+                    $files_del = array_merge($files_del, array_keys($lstFiles));
+                }
             }
 
             if (!empty($files_del)) {
                 $model->deleteFiles($files_del);
             }
         }
-
+        // Update files count
+        $categoriesModel = $this->getModel('Categories', 'DropfilesModel');
+        $categoriesModel->updateFilesCount();
         die();
     }
 

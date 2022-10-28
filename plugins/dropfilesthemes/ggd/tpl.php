@@ -16,15 +16,18 @@
 //-- No direct access
 defined('_JEXEC') || die('=;)');
 DropfilesFilesHelper::includeJSHelper();
-$usegoogleviewer = ((int) $this->componentParams->get('usegoogleviewer', 1) === 1) ? 'dropfileslightbox' : '';
-$target          = ((int) $this->componentParams->get('usegoogleviewer', 1) === 2) ? 'target="_blank"' : '';
-
+$usegoogleviewer  = ((int) $this->componentParams->get('usegoogleviewer', 1) === 1) ? 'dropfileslightbox' : '';
+$target           = ((int) $this->componentParams->get('usegoogleviewer', 1) === 2) ? 'target="_blank"' : '';
+$showdownloadcate = (int) $this->componentParams->get('download_category', 0);
 $link_download_popup = '#';
-$allowedgoogleext    = 'pdf,ppt,pptx,doc,docx,xls,xlsx,dxf,ps,eps,xps,psd,tif,tiff,bmp,svg,pages,ai,dxf,ttf';
+$allowedgoogleext    = 'pdf,ppt,doc,xls,dxf,ps,eps,xps,psd,tif,tiff,bmp,svg,pages,ai,dxf,ttf,txt,mp3,mp4,png,gif,ico,jpeg,jpg';
 
 ?>
     <script type="text/javascript">
         dropfilesGVExt = ["<?php echo implode('","', explode(',', DropfilesBase::loadValue($this->params, 'allowedgoogleext', $allowedgoogleext))); ?>"];
+        function checkBoxSelectFileInit(event) {
+            event.stopPropagation();
+        }
     </script>
 
     <script type="text/x-handlebars-template" id="dropfiles-template-ggd-box">
@@ -130,7 +133,7 @@ $allowedgoogleext    = 'pdf,ppt,pptx,doc,docx,xls,xlsx,dxf,ps,eps,xps,psd,tif,ti
 
 
 <?php if ((int) DropfilesBase::loadValue($this->params, 'ggd_showsubcategories', 1) === 1) : ?>
-    <script type="text/x-handlebars-template" id="dropfiles-template-ggd-categories">
+    <script type="text/x-handlebars-template" id="dropfiles-template-ggd-categories-<?php echo $this->category->id; ?>">
         <div class="dropfiles-categories">
             <?php if ((int) DropfilesBase::loadValue($this->params, 'ggd_showcategorytitle', 1) === 1) : ?>
                 {{#with category}}
@@ -154,11 +157,27 @@ $allowedgoogleext    = 'pdf,ppt,pptx,doc,docx,xls,xlsx,dxf,ps,eps,xps,psd,tif,ti
             </a>
             {{/each}}
             {{/if}}
+            <div class="dropfilescategory_placeholder" style="margin-top: 0 !important; margin-bottom: 0 !important;"></div>
+            <div class="dropfilescategory_placeholder" style="margin-top: 0 !important; margin-bottom: 0 !important;"></div>
+            <div class="dropfilescategory_placeholder" style="margin-top: 0 !important; margin-bottom: 0 !important;"></div>
+            <div class="dropfilescategory_placeholder" style="margin-top: 0 !important; margin-bottom: 0 !important;"></div>
+            <div class="dropfilescategory_placeholder" style="margin-top: 0 !important; margin-bottom: 0 !important;"></div>
+            <div class="dropfilescategory_placeholder" style="margin-top: 0 !important; margin-bottom: 0 !important;"></div>
+            <div class="dropfilescategory_placeholder" style="margin-top: 0 !important; margin-bottom: 0 !important;"></div>
         </div>
     </script>
 <?php endif; ?>
 
-    <script type="text/x-handlebars-template" id="dropfiles-template-ggd-files">
+    <script type="text/x-handlebars-template" id="dropfiles-template-ggd-files-<?php echo $this->category->id; ?>">
+        {{#if category}}
+            {{#if category.type}}
+                <input type="hidden" id="current-category-type" class="type {{category.type}}" data-category-type="{{category.type}}"/>
+            {{/if}}
+            {{#if category.linkdownload_cat}}
+            <input type="hidden" id="current-category-link" class="link" value="{{category.linkdownload_cat}}"/>
+            {{/if}}
+        {{/if}}
+
         {{#if files}}
         <div class="dropfiles_list">
             {{#each files}}{{#if ext}}
@@ -172,6 +191,9 @@ $allowedgoogleext    = 'pdf,ppt,pptx,doc,docx,xls,xlsx,dxf,ps,eps,xps,psd,tif,ti
                         echo '#';
                     } ?>"
                     data-id="{{id}}">
+                <?php if ($showdownloadcate === 1) : ?>
+                    <label class="dropfiles_checkbox" onclick="checkBoxSelectFileInit(event)"><input class="cbox_file_download" type="checkbox" data-id="{{id}}" /><span></span></label>
+                <?php endif;?>
                 <div class="dropblock">
                     {{#if custom_icon}}
                     <div class="custom-icon {{ext}}"><img src="{{custom_icon_thumb}}" alt=""></div>
@@ -205,7 +227,23 @@ $allowedgoogleext    = 'pdf,ppt,pptx,doc,docx,xls,xlsx,dxf,ps,eps,xps,psd,tif,ti
                                 class="zmdi zmdi-edit dropfiles-preview"></i>
                     </a>
                 <?php endif; ?>
+                <?php if ($showdownloadcate === 1 && isset($this->category->linkdownload_cat) && !empty($this->files)) : ?>
+                    <a data-catid="" class="ggd-download-category download-all" href="<?php echo $this->category->linkdownload_cat; ?>"><?php echo JText::_('COM_DROPFILES_DOWNLOAD_ALL'); ?><i class="zmdi zmdi-check-all"></i></a>
+                <?php endif;?>
             </ul>
+        <?php else : ?>
+            <?php if ($this->user_id) : ?>
+                <div class="dropfiles-manage-files">
+                    <a data-id="" data-catid="" data-file-type="" class="openlink-manage-files " target="_blank"
+                       href="<?php echo $this->urlmanage ?>" data-urlmanage="<?php echo $this->urlmanage ?>">
+                        <?php echo JText::_('COM_DROPFILES_MANAGE_FILES'); ?>
+                        <i class="zmdi zmdi-edit dropfiles-preview"></i>
+                    </a>
+                </div>
+            <?php endif; ?>
+            <?php if ($showdownloadcate === 1 && isset($this->category->linkdownload_cat) && !empty($this->files)) : ?>
+                <a data-catid="" class="ggd-download-category download-all" href="<?php echo $this->category->linkdownload_cat; ?>"><?php echo JText::_('COM_DROPFILES_DOWNLOAD_ALL'); ?><i class="zmdi zmdi-check-all"></i></a>
+            <?php endif;?>
         <?php endif; ?>
         <div class="dropfiles-container">
             <?php if ((int) DropfilesBase::loadValue($this->params, 'ggd_showfoldertree', 0) === 1) : ?>
@@ -233,6 +271,13 @@ $allowedgoogleext    = 'pdf,ppt,pptx,doc,docx,xls,xlsx,dxf,ps,eps,xps,psd,tif,ti
                                 <i class="zmdi zmdi-folder dropfiles-folder"></i>
                             </a>
                         <?php endforeach; ?>
+                        <div class="dropfilescategory_placeholder" style="margin-top: 0 !important; margin-bottom: 0 !important;"></div>
+                        <div class="dropfilescategory_placeholder" style="margin-top: 0 !important; margin-bottom: 0 !important;"></div>
+                        <div class="dropfilescategory_placeholder" style="margin-top: 0 !important; margin-bottom: 0 !important;"></div>
+                        <div class="dropfilescategory_placeholder" style="margin-top: 0 !important; margin-bottom: 0 !important;"></div>
+                        <div class="dropfilescategory_placeholder" style="margin-top: 0 !important; margin-bottom: 0 !important;"></div>
+                        <div class="dropfilescategory_placeholder" style="margin-top: 0 !important; margin-bottom: 0 !important;"></div>
+                        <div class="dropfilescategory_placeholder" style="margin-top: 0 !important; margin-bottom: 0 !important;"></div>
                     <?php endif; ?>
                 </div>
                 <?php if (is_array($this->files) && count($this->files)) : ?>
@@ -244,6 +289,9 @@ $allowedgoogleext    = 'pdf,ppt,pptx,doc,docx,xls,xlsx,dxf,ps,eps,xps,psd,tif,ti
                                        ? $link_download_popup : $file->link_download_popup; ?>"
                                    title="<?php echo $file->title; ?>" data-id="<?php echo $file->id; ?>">
                                     <div class="dropblock">
+                                        <?php if ($showdownloadcate === 1 && $this->category->type === 'default') : ?>
+                                            <label class="dropfiles_checkbox" onclick="checkBoxSelectFileInit(event)"><input class="cbox_file_download" type="checkbox" data-id="<?php echo $file->id;?>" /><span></span></label>
+                                        <?php endif;?>
                                         <?php
                                         if ((int) $this->componentParams->get('custom_icon', 1) === 1 &&
                                             $file->custom_icon !== '') :

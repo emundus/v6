@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -47,6 +47,15 @@ class hikashopFieldClass extends hikashopClass {
 		}
 		if(!empty($categories['ids'])){
 			$key.='_'.implode('/',$categories['ids']);
+		}
+		if(!empty($categories['payment'])){
+			$key.='_'.$categories['payment'];
+		}
+		if(!empty($categories['shipping'])){
+			if(is_array($categories['shipping']))
+				$key.='_'.implode('/',$categories['shipping']);
+			else
+				$key.='_'.$categories['shipping'];
 		}
 		if(isset($data[$key]))
 			return $data[$key];
@@ -104,8 +113,25 @@ class hikashopFieldClass extends hikashopClass {
 			$this->where[] =  'a.field_id IN ('.implode(',', $categories['ids']).')';
 		}
 
+		if(!empty($categories['shipping']) && is_array($categories['shipping']) && count($categories['shipping'])){
+			hikashop_toInteger($categories['shipping']);
+			$shipping_filter = array('a.field_shipping_id = ""');
+			foreach($categories['shipping'] as $shipping_id) {
+				$shipping_filter[] = 'a.field_shipping_id LIKE \'%,'.$shipping_id.',%\'';
+			}
+			$this->where[] = '('.implode(' OR ', $shipping_filter).')';
+
+		} elseif(@$categories['shipping'] === true){
+			$this->where[] = 'a.field_shipping_id = ""';
+		}
+		if(!empty($categories['payment']) && $categories['payment'] !== true){
+			$this->where[] = '( a.field_payment_id = "" OR a.field_payment_id LIKE \'%,'.$categories['payment'].',%\' )';
+		} elseif(@$categories['payment'] === true){
+			$this->where[] = 'a.field_payment_id = ""';
+		}
+
 		$filters = '';
-		if(!empty($categories)) {
+		if(!empty($categories) && (!empty($categories['originals']) || !empty($categories['parents']))) {
 			$categories_filter = array('((field_with_sub_categories = 0 AND (field_categories = "all" OR field_categories = ""');
 			if(!empty($categories['originals'])) {
 				foreach($categories['originals'] as $cat) {
@@ -150,6 +176,8 @@ class hikashopFieldClass extends hikashopClass {
 			$this->database->setQuery('SELECT * FROM '.hikashop_table('field').' WHERE field_table='.$this->database->Quote($type).' AND field_namekey='.$this->database->Quote($fieldid));
 			$element = $this->database->loadObject();
 		}
+		if(empty($element))
+			return false;
 		$fields = array($element);
 		$data = null;
 		$this->prepareFields($fields,$data,$fields[0]->field_type,'',true);
@@ -372,62 +400,107 @@ class hikashopFieldClass extends hikashopClass {
 			$allCat =& $categories[$id];
 		}
 
-		if($type == 'order' && !empty($data->products) && is_array($data->products) && count($data->products)) {
-			$allCat = array(
-				'originals' => array(),
-				'parents' => array()
-			);
-			$categoryClass = hikashop_get('class.category');
-			$productClass = hikashop_get('class.product');
+		if($type == 'order') {
+			$allCat = array();
 
-			foreach($data->products as $k => $p) {
-				if(!isset($p->product_type)) {
-					$prodData = $productClass->get($p->product_id);
-					if(!empty($prodData->product_type)){
-						$data->products[$k]->product_type = $prodData->product_type;
-						$data->products[$k]->product_parent_id = $prodData->product_parent_id;
+			$shipping_ids = null;
+			if(!empty($data->cart_shipping_ids))
+				$shipping_ids = $data->cart_shipping_ids;
+			if(!empty($data->order_shipping_id))
+				$shipping_ids = $data->order_shipping_id;
+			if(!empty($shipping_ids)) {
+				if(!is_array($shipping_ids))
+					$shipping_ids = explode(',', $shipping_ids);
+				foreach($shipping_ids as $k => $id) {
+					$parts = explode('@',$id,2);
+					$shipping_ids[$k] = reset($parts);
+				}
+				$allCat['shipping'] = $shipping_ids;
+			}
+
+			if(empty($allCat['shipping'])) {
+				$allCat['shipping'] = true;
+			}
+
+			if(!empty($data->cart_payment_id)) {
+				$allCat['payment'] = $data->cart_payment_id;
+			}
+			if(!empty($data->order_payment_id)) {
+				$allCat['payment'] = $data->order_payment_id;
+			}
+
+			if(empty($allCat['payment'])) {
+				$allCat['payment'] = true;
+			}
+
+			if(!empty($data->products) && is_array($data->products) && count($data->products)) {
+				$allCat['originals'] = array();
+				$allCat['parents'] = array();
+
+				$categoryClass = hikashop_get('class.category');
+				$productClass = hikashop_get('class.product');
+
+				foreach($data->products as $k => $p) {
+					if(!isset($p->product_type)) {
+						$prodData = $productClass->get($p->product_id);
+						if(!empty($prodData->product_type)){
+							$data->products[$k]->product_type = $prodData->product_type;
+							$data->products[$k]->product_parent_id = $prodData->product_parent_id;
+						}
+					}
+				}
+
+				$ids = array();
+				foreach($data->products as $p) {
+					if(isset($p->product_type) && $p->product_type == 'variant') {
+						$ids[] = (int)$p->product_parent_id;
+					} else {
+						$ids[] = (int)$p->product_id;
+					}
+				}
+
+				$allCat['products'] = $ids;
+				$loadedCategories = $productClass->getCategories($ids);
+				if(!empty($loadedCategories)) {
+					foreach($loadedCategories as $cat) {
+						$allCat['originals'][$cat]=$cat;
+					}
+				}
+				$parents = $categoryClass->getParents($loadedCategories);
+
+				if(!empty($parents) && is_array($parents)) {
+					foreach($parents as $parent) {
+						$allCat['parents'][$parent->category_id] = $parent->category_id;
 					}
 				}
 			}
-
-			$ids = array();
-			foreach($data->products as $p) {
-				if(isset($p->product_type) && $p->product_type == 'variant') {
-					$ids[] = (int)$p->product_parent_id;
-				} else {
-					$ids[] = (int)$p->product_id;
-				}
-			}
-
-			$allCat['products'] = $ids;
-			$loadedCategories = $productClass->getCategories($ids);
-			if(!empty($loadedCategories)) {
-				foreach($loadedCategories as $cat) {
-					$allCat['originals'][$cat]=$cat;
-				}
-			}
-			$parents = $categoryClass->getParents($loadedCategories);
-
-			if(!empty($parents) && is_array($parents)) {
-				foreach($parents as $parent) {
-					$allCat['parents'][$parent->category_id] = $parent->category_id;
-				}
-			}
+			if(count($allCat)<1)
+				$allCat = null;
 		}
 
-		if($type == 'category' && !empty($data->category_id)) {
-			static $categories2 = array();
-			if(!isset($categories2[$data->category_id])) {
-				$categories2[$data->category_id]['originals'][$data->category_id] = $data->category_id;
-				$categoryClass = hikashop_get('class.category');
-				$parents = $categoryClass->getParents($data->category_id);
-				if(!empty($parents)) {
-					foreach($parents as $parent) {
-						$categories2[$data->category_id]['parents'][$parent->category_id] = $parent->category_id;
+		if($type == 'category') {
+			$id = null;
+			if(empty($data->category_id)) {
+				if(!empty($data->category_parent_id)) {
+					$id = $data->category_parent_id;
+				}
+			} else {
+				$id = $data->category_id;
+			}
+			if(!empty($id)) {
+				static $categories2 = array();
+				if(!isset($categories2[$id])) {
+					$categories2[$id]['originals'][$id] = $id;
+					$categoryClass = hikashop_get('class.category');
+					$parents = $categoryClass->getParents($id);
+					if(!empty($parents)) {
+						foreach($parents as $parent) {
+							$categories2[$id]['parents'][$parent->category_id] = $parent->category_id;
+						}
 					}
 				}
+				$allCat =& $categories2[$id];
 			}
-			$allCat =& $categories2[$data->category_id];
 		}
 
 		return $allCat;
@@ -480,7 +553,7 @@ foreach($results as $i => $oneResult){
 			};
 			vis.draw(dataTable, options);
 		}
-		google.load("visualization", "1", {packages:["corechart"]});
+		google.load("visualization", "49", {packages:["corechart"]});
 		google.setOnLoadCallback(drawChart<?php echo $namekey; ?>);
 		</script>
 
@@ -526,13 +599,15 @@ foreach($results as $i => $oneResult){
 		}
 
 		foreach($fields as $namekey => $field) {
+			if(empty($field))
+				continue;
 			$fields[$namekey]->guest_mode = $guest;
 			if(!empty($fields[$namekey]->field_options) && is_string($fields[$namekey]->field_options)) {
 				$fields[$namekey]->field_options = hikashop_unserialize($fields[$namekey]->field_options);
 			}
-			if(!empty($field->field_value) && is_string($fields[$namekey]->field_value)) {
-				$fields[$namekey]->field_value = $this->explodeValues($fields[$namekey]->field_value);
-			}
+
+			$this->loadValues($fields[$namekey]);
+
 			if(!is_array($data) && ($data == null || empty($data)))
 				$data = new stdClass();
 			if(is_object($data) && empty($data->$id) && !empty($namekey) && empty($data->$namekey)) {
@@ -541,7 +616,7 @@ foreach($results as $i => $oneResult){
 				} else {
 					$data->$namekey = '';
 				}
-			} else if(is_array($data) && !empty($namekey)) {
+			} else if(is_array($data) && !empty($namekey) && !isset($data['originals'])) {
 				$v = (empty($fields[$namekey]->field_options['pleaseselect'])) ? $field->field_default : '';
 				if(count($data)) {
 					foreach($data as &$d) {
@@ -570,7 +645,36 @@ foreach($results as $i => $oneResult){
 		$this->handleZone($fields, $test, $data);
 	}
 
-	function handleZone(&$fields, $test = false, $data) {
+	function loadValues(&$field) {
+		if(!empty($field->field_options['mysql_query'])) {
+			if(!empty($field->field_value)) {
+				if(is_string($field->field_value))
+					$field->field_value = $this->explodeValues($field->field_value);
+				$field->field_value_old = $field->field_value;
+			}
+			$this->database->setQuery($field->field_options['mysql_query']);
+			$values = $this->database->loadObjectList();
+			$field->field_value = array();
+			if(!empty($values)) {
+				foreach($values as $v) {
+					if(!isset($v->value))
+						continue;
+					$value = $v->value;
+					if(isset($v->title)) {
+						$v->value = $v->title;
+					}
+					if(!isset($v->disabled)) {
+						$v->disabled = 0;
+					}
+					$field->field_value[$value] = $v;
+				}
+			}
+		} elseif(!empty($field->field_value) && is_string($field->field_value)) {
+			$field->field_value = $this->explodeValues($field->field_value);
+		}
+	}
+
+	function handleZone(&$fields, $test = false, $data = null) {
 		$types = array();
 		foreach($fields as $k => $field){
 			if($field->field_type != 'zone' || empty($field->field_options['zone_type']))
@@ -773,14 +877,6 @@ foreach($results as $i => $oneResult){
 
 		$fields =& $this->getData($area, $type, false, $allCat);
 
-		if(!empty($fields)) {
-			foreach($fields as $namekey => $field){
-				if(!empty($fields[$namekey]->field_options) && is_string($fields[$namekey]->field_options)) {
-					$fields[$namekey]->field_options = hikashop_unserialize($fields[$namekey]->field_options);
-				}
-			}
-		}
-
 		if($type == 'entry' && $area == 'frontcomp') {
 			$ok = true;
 			$data = array();
@@ -863,6 +959,16 @@ foreach($results as $i => $oneResult){
 	}
 
 	function _checkOneInput(&$fields, &$formData, &$data, $type, &$oldData) {
+		if(!empty($fields)) {
+			foreach($fields as $namekey => $field){
+				if(!empty($fields[$namekey]->field_options) && is_string($fields[$namekey]->field_options)) {
+					$fields[$namekey]->field_options = hikashop_unserialize($fields[$namekey]->field_options);
+				} elseif(empty($fields[$namekey]->field_options)) {
+					$fields[$namekey]->field_options = array();
+				}
+			}
+		}
+
 		$ok = true;
 		$this->error_fields = array();
 		if(empty($fields)) {
@@ -940,6 +1046,8 @@ foreach($results as $i => $oneResult){
 			}
 
 			$val = @$formData[$namekey];
+			$class->formData = $formData;
+			$class->formFields = $fields;
 			if(!$class->check($fields[$k], $val, @$oldData->$namekey)) {
 				$ok = false;
 				$this->error_fields[] = $fields[$k];
@@ -976,7 +1084,7 @@ foreach($results as $i => $oneResult){
 			$object = new stdClass();
 		if(is_null($safeHtmlFilter)) {
 			jimport('joomla.filter.filterinput');
-			$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
+			$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 		}
 		$noFilter = array();
 		if(!empty($fields)) {
@@ -1260,11 +1368,11 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 		foreach($allValues as $id => $oneVal){
 			$line = explode('::',trim($oneVal));
 			$var = $line[0];
-			$val = $line[1];
+			$val = !empty($line[1]) ? $line[1] : '';
 			if(count($line)==2){
 				$disable = '0';
 			}else{
-				$disable = $line[2];
+				$disable = !empty($line[2]) ? $line[2] : '0';
 			}
 			if(strlen($val)>0){
 				$obj = new stdClass();
@@ -1319,19 +1427,55 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 		return $field;
 	}
 
+	function addValue($id, $title, $value, $disabled) {
+		$field = parent::get($id);
+		if(!$field)
+			return false;
+
+		if(!empty($field->field_value) && is_string($field->field_value)) {
+			$field->field_value = $this->explodeValues($field->field_value);
+		}
+
+		jimport('joomla.filter.filterinput');
+		$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
+
+		if(strlen($title) < 1 && strlen($value) < 1)
+			return false;
+
+		$value = (strlen($value) < 1) ? $title : $value;
+		$disabled = strlen($disabled < 1) ? '0' : $disabled;
+		$obj = new stdClass();
+		$obj->value = $safeHtmlFilter->clean($value,'raw');
+		$obj->disabled = $safeHtmlFilter->clean($disabled,'string');
+		$field->field_value[$safeHtmlFilter->clean($title,'raw')] = $obj;
+		$values = array();
+		foreach($field->field_value as $k => $v) {
+			$values[] = $k . '::' . $v->value . '::' . $v->disabled;
+		}
+
+		$field->field_value = implode("\n", $values);
+
+		$update = new stdClass();
+		$update->field_id = $field->field_id;
+		$update->field_value = $field->field_value;
+		return $this->save($update);
+	}
+
 	function saveForm() {
 		$field = new stdClass();
 		$field->field_id = hikashop_getCID('field_id');
 		$field->field_products = '';
+		$field->field_payment_id = '';
+		$field->field_shipping_id = '';
 
 		$formData = hikaInput::get()->get('data', array(), 'array');
 		jimport('joomla.filter.filterinput');
-		$safeHtmlFilter = & JFilterInput::getInstance(null, null, 1, 1);
+		$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 		foreach($formData['field'] as $column => $value) {
 			hikashop_secureField($column);
 			if($column == 'field_default')
 				continue;
-			if($column=='field_products'){
+			if(in_array($column, array('field_products', 'field_payment_id', 'field_shipping_id'))){
 				hikashop_toInteger($value);
 				$value = ','.implode(',',$value).',';
 			}elseif(is_array($value))
@@ -1339,19 +1483,19 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 			$field->$column = $safeHtmlFilter->clean(strip_tags($value), 'string');
 		}
 
-		$fields = array( &$field );
-		if(isset($field->field_namekey))
-			$namekey = $field->field_namekey;
-		$field->field_namekey = 'field_default';
 
 		$fieldOptions = hikaInput::get()->get('field_options', array(), 'array');
 		foreach($fieldOptions as $column => $value) {
 			if($value === '')
 				continue;
 
+			if($column == 'mysql_query') {
+				$value = trim($value);
+			}
+
 			if(is_array($value)) {
 				foreach($value as $id => $val) {
-					if($column != 'parent_value')
+					if(!in_array($column, array('product_value','parent_value')))
 						hikashop_secureField($id);
 					if($val === '')
 						continue;
@@ -1361,37 +1505,6 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 				$fieldOptions[$column] = $safeHtmlFilter->clean($value, 'string');
 			}
 		}
-
-		$field_required = $field->field_required;
-		$field->field_required = false;
-		$data = null;
-		$oldData = null;
-		if($this->_checkOneInput($fields, $formData['field'], $data, '', $oldData)) {
-			if(isset($formData['field']['field_default']) && is_array($formData['field']['field_default'])){
-				$defaultValue = '';
-				foreach($formData['field']['field_default'] as $value) {
-					if(empty($defaultValue)) {
-						$defaultValue .= $value;
-					} else {
-						$defaultValue .= ',' . $value;
-					}
-				}
-			} else {
-				$defaultValue = @$formData['field']['field_default'];
-			}
-
-			if(isset($fieldOptions['filtering']) && $fieldOptions['filtering']) {
-				$field->field_default = strip_tags($defaultValue);
-			} else {
-				jimport('joomla.filter.filterinput');
-				$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
-				$field->field_default = $safeHtmlFilter->clean($defaultValue,'string');
-			}
-		}
-		$field->field_required = $field_required;
-		unset($field->field_namekey);
-		if(isset($namekey))
-			$field->field_namekey = $namekey;
 
 		$fieldsType = hikashop_get('type.fields');
 		$fieldsType->load($field->field_table);
@@ -1419,8 +1532,46 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 					$field->field_type = $oldField->field_type;
 			}
 		}
+		$field->field_options = $fieldOptions;
 
-		$field->field_options = serialize($fieldOptions);
+		$fields = array( &$field );
+		if(isset($field->field_namekey))
+			$namekey = $field->field_namekey;
+		$field->field_namekey = 'field_default';
+
+		$field_required = $field->field_required;
+		$field->field_required = false;
+		$data = null;
+		$oldData = null;
+		if($this->_checkOneInput($fields, $formData['field'], $data, '', $oldData)) {
+			if(isset($formData['field']['field_default']) && is_array($formData['field']['field_default'])){
+				$defaultValue = '';
+				foreach($formData['field']['field_default'] as $value) {
+					if(empty($defaultValue)) {
+						$defaultValue .= $value;
+					} else {
+						$defaultValue .= ',' . $value;
+					}
+				}
+			} else {
+				$defaultValue = @$formData['field']['field_default'];
+			}
+
+			if(isset($fieldOptions['filtering']) && $fieldOptions['filtering']) {
+				$field->field_default = strip_tags($defaultValue);
+			} else {
+				jimport('joomla.filter.filterinput');
+				$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
+				$field->field_default = $safeHtmlFilter->clean($defaultValue,'string');
+			}
+		}
+		$field->field_required = $field_required;
+		unset($field->field_namekey);
+		if(isset($namekey))
+			$field->field_namekey = $namekey;
+
+
+		$field->field_options = serialize($field->field_options);
 
 		$fieldDisplay = hikaInput::get()->get('field_display', array(), 'array');
 		if(!empty($fieldDisplay)) {
@@ -1430,15 +1581,16 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 			}
 		}
 
-		if(in_array($field->field_table, array('order', 'product'))) {
+		if(in_array($field->field_table, array('product'))) {
 			$field->field_backend = 1;
 		}
 
 		$fieldValues = hikaInput::get()->get('field_values', array(), 'array' );
+
 		if(!empty($fieldValues)) {
 			$field->field_value = array();
 			jimport('joomla.filter.filterinput');
-			$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
+			$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 
 			foreach($fieldValues['title'] as $i => $title) {
 				if(strlen($title) < 1 && strlen($fieldValues['value'][$i]) < 1)
@@ -1446,14 +1598,14 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 
 				$value = (strlen($fieldValues['value'][$i]) < 1) ? $title : $fieldValues['value'][$i];
 				$disabled = (strlen($fieldValues['disabled'][$i]) < 1) ? '0' : $fieldValues['disabled'][$i];
-				$field->field_value[] = $safeHtmlFilter->clean($title,'string'). '::' .  $safeHtmlFilter->clean($value,'string') . '::' .  $safeHtmlFilter->clean($disabled,'string');
+				$field->field_value[] = $safeHtmlFilter->clean($title,'raw'). '::' .  $safeHtmlFilter->clean($value,'raw') . '::' .  $safeHtmlFilter->clean($disabled,'string');
 			}
 			$field->field_value = implode("\n", $field->field_value);
 		}
 
 
 
-		if(!preg_match('#^([a-z0-9_-]+ *= *"[\p{L}\p{N}\p{Z} :\-;\(\)]+" *)* *$#i', $fieldOptions['attribute'])){
+		if(!preg_match('#^([a-z0-9_-]+ *= *"[\p{L}\p{N}\p{Z}\p{S}\p{M} \+\*:\-;\(\)\{\}\[\]\']+" *)* *$#i', $fieldOptions['attribute'])){
 			$this->errors[] = 'Please specify a correct attribute';
 			return false;
 		}
@@ -1470,7 +1622,7 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 				return false;
 			}
 
-			if($field->field_namekey > 50) {
+			if(strlen($field->field_namekey) > 50) {
 				$this->errors[] = 'Please specify a shorter column name';
 				return false;
 			}
@@ -1514,7 +1666,8 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 					'MASTER_HEARTBEAT_PERIOD', 'MAXVALUE', 'RESIGNAL', 'SIGNAL', 'SLOW', 'ALIAS', 'OPTIONS',
 					'RELATED', 'IMAGES', 'FILES', 'CATEGORIES', 'PRICES', 'VARIANTS', 'CHARACTERISTICS', 'TAGS',
 					'ID', 'USERNAME', 'PASSWORD', 'CATEGORY', 'PRICE', 'CHARACTERISTIC', 'RELATED', 'SHIPPING',
-					'PAYMENT', 'ORDER_FULL_TAX', 'ORDER_PRODUCT', 'ADDRESS', 'USER', 'JOOMLA_USERS', 'USERGROUPS')
+					'PAYMENT', 'ORDER_FULL_TAX', 'ORDER_PRODUCT', 'ADDRESS', 'USER', 'JOOMLA_USERS', 'USERGROUPS',
+					'PRODUCT_FILES', 'PRODUCT_IMAGES')
 				)) {
 					$this->errors[] = 'The column name "'.$field->field_namekey.'" is reserved. Please use another one.';
 					return false;
@@ -1524,15 +1677,11 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 				if($field->field_table == 'item')
 					$tables = array('cart_product', 'order_product', 'product');
 
-				foreach($tables as $table_name) {
-					if(!HIKASHOP_J30) {
-						$columnsTable = $this->database->getTableFields($this->fieldTable($table_name));
-						$columns = reset($columnsTable);
-					} else {
-						$columns = $this->database->getTableColumns($this->fieldTable($table_name));
-					}
+				$databaseHelper = hikashop_get('helper.database');
+				$databaseHelper->loadStructure();
 
-					if(isset($columns[$field->field_namekey])) {
+				foreach($tables as $table_name) {
+					if(isset($databaseHelper->structure['#__hikashop_'.$table_name][$field->field_namekey])) {
 						$this->errors[] = 'The field "'.$field->field_namekey.'" already exists in the table "'.$table_name.'"';
 						return false;
 					}
@@ -1592,6 +1741,10 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 			unset($field->guest_mode);
 		}
 
+		if(isset($field->field_value_old)) {
+			unset($field->field_value_old);
+		}
+
 		$status = parent::save($field);
 		if(empty($status))
 			return $status;
@@ -1606,9 +1759,12 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 			foreach($tables as $table_name) {
 				if(in_array($table_name, array('contact')))
 					continue;
-				$query = 'ALTER TABLE '.$this->fieldTable($table_name).' ADD `'.$field->field_namekey.'` TEXT NULL';
+				$query = 'ALTER TABLE '.$this->fieldTable($table_name).' ADD `'.$field->field_namekey.'` LONGTEXT NULL';
 				$this->database->setQuery($query);
-				$this->database->execute();
+				try {
+					$this->database->execute();
+				}catch(Exception $e) {
+				}
 			}
 		}
 
@@ -1619,6 +1775,68 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 			$app->triggerEvent( 'onAfterFieldUpdate', array( & $field ) );
 
 		return $status;
+	}
+
+	function handleBeforeDelete(&$ids, $table) {
+		if(empty($ids) || !is_array($ids) || !count($ids))
+			return;
+
+		if(!isset($this->fieldsForDelete)) {
+			$this->fieldsForDelete = array();
+		}
+
+		$this->fieldsForDelete[$table] = $this->getData('all', $table);
+
+		if(empty($this->fieldsForDelete[$table])) {
+			return;
+		}
+
+		$found = false;
+		foreach($this->fieldsForDelete[$table] as $field) {
+			$obj = $this->_getFieldTypeClass($field);
+			if(get_class($obj) == 'hikashopFieldItem')
+				continue;
+			if(method_exists($obj, 'handleDelete')) {
+				$found = true;
+				break;
+			}
+		}
+
+		if(!$found) {
+			return;
+		}
+
+		if($table == 'item')
+			return;
+
+		if(!isset($this->elementsForDelete)) {
+			$this->elementsForDelete = array();
+		}
+
+		$class = hikashop_get('class.'.$table);
+		foreach($ids as $id) {
+			$this->elementsForDelete[$id] = $class->get($id);
+		}
+	}
+
+	function handleAfterDelete(&$ids, $table) {
+		if(empty($this->fieldsForDelete[$table])) {
+			return;
+		}
+
+		foreach($this->fieldsForDelete[$table] as $field) {
+			$obj = $this->_getFieldTypeClass($field);
+			if(get_class($obj) == 'hikashopFieldItem')
+				continue;
+			if(!method_exists($obj, 'handleDelete')) {
+				continue;
+			}
+			foreach($ids as $id) {
+				if(!isset($this->elementsForDelete[$id]) || empty($this->elementsForDelete[$id]))
+					continue;
+				$obj->handleDelete($field, $this->elementsForDelete[$id]);
+			}
+		}
 	}
 
 	function delete(&$elements, $keepdata = true){
@@ -1719,10 +1937,13 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 		if(substr($field->field_type,0,7) == 'joomla.') {
 			$classType = 'hikashopFieldJoomla';
 		}
+
+		JPluginHelper::importPlugin('hikashop');
+
 		if(substr($field->field_type,0,4) == 'plg.') {
 			$field_type = substr($field->field_type, 4);
 			$plg = hikashop_import('hikashop', $field_type);
-			if(method_exists($plg, 'initFieldClass'))
+			if(is_object($plg) && method_exists($plg, 'initFieldClass'))
 				$plg->initFieldClass();
 
 			$classType = 'hikashopField'.ucfirst($field_type);
@@ -1731,9 +1952,14 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 		} else if(!class_exists($classType))
 			$classType = 'hikashop'.ucfirst($field_type);
 		if(!class_exists($classType))
-			return new hikashopFieldItem($this);
+			$obj = new hikashopFieldItem($this);
+		else
+			$obj = new $classType($this);
 
-		return new $classType($this);
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onAfterFieldInit', array(&$obj, &$field));
+
+		return $obj;
 	}
 
 	function fieldTable($table_name) {
@@ -1801,13 +2027,36 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 			$fullLoad = true;
 
 		if(!empty($value)) {
-			if($mode == hikashopNameboxType::NAMEBOX_SINGLE && isset($ret[0][$value])) {
-				$ret[1][$value] = $ret[0][$value];
-			} elseif($mode == hikashopNameboxType::NAMEBOX_MULTIPLE && is_array($value)) {
-				foreach($value as $v) {
-					if(isset($ret[0][$v])) {
-						$ret[1][$v] = $ret[0][$v];
-					}
+			if(is_array($value)) {
+				hikashop_toInteger($value);
+				$where = ' WHERE f.field_id IN ('. implode(',', $value).')';
+			}else {
+				$where = ' WHERE f.field_id = '. (int)$value;
+			}
+			$query = 'SELECT '.implode(', ', $select) . ' FROM ' . hikashop_table('field').' AS f' . $where;
+			$this->db->setQuery($query, $page, $limit);
+			$ret[1] = $this->db->loadObjectList('field_id');
+			foreach($ret[1] as $k => $v) {
+				if(!isset($ret[0][$k]))
+					$ret[0][$k] = $v;
+			}
+
+		}
+
+		$unset = array('field_options', 'field_display', 'field_default', 'field_value');
+		if(!empty($ret[0])) {
+			foreach($ret[0] as $k => $v) {
+				foreach($unset as $u) {
+					if(isset($v->$u))
+						unset($ret[0][$k]->$u);
+				}
+			}
+		}
+		if(!empty($ret[1])) {
+			foreach($ret[1] as $k => $v) {
+				foreach($unset as $u) {
+					if(isset($v->$u))
+						unset($ret[1][$k]->$u);
 				}
 			}
 		}
@@ -1816,12 +2065,12 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 }
 
 class hikashopFieldItem {
-	var $prefix;
-	var $suffix;
-	var $excludeValue;
-	var $report;
-	var $parent;
-	var $displayFor = false;
+	public $prefix;
+	public $suffix;
+	public $excludeValue;
+	public $report;
+	public $parent;
+	public $displayFor = false;
 
 	function __construct(&$obj) {
 		$this->prefix = $obj->prefix;
@@ -1849,11 +2098,25 @@ class hikashopFieldItem {
 	function trans($name) {
 		$val = preg_replace('#[^a-z0-9]#i','_',strtoupper($name));
 
-		$app = JFactory::getApplication();
-		if(hikashop_isClient('administrator') && strcmp(JText::_($val), strip_tags(JText::_($val))) !== 0)
+		$trans_value = JText::_($val);
+
+		$trans_not_found = strcmp($trans_value, $val) === 0;
+		if($trans_not_found) {
+			$val = preg_replace('#[^A-Z_0-9]#','',strtoupper($name));
+			$config = hikashop_config();
+			if((empty($val) || $config->get('non_latin_translation_keys', 0)) && !empty($name)) {
+				$val = 'T'.strtoupper(sha1($name));
+			}
+			$trans_value = JText::_($val);
+		}
+
+		$config = hikashop_config();
+		$translate = hikashop_isClient('administrator') && !$config->get('translate_HTML_value_in_backend_for_fields', 0);
+		$HTML_tags_found = strcmp($trans_value, strip_tags($trans_value)) !== 0;
+		if($translate && $HTML_tags_found)
 			$trans = $val;
 		else
-			$trans = JText::_($val);
+			$trans = $trans_value;
 
 		if($val == $trans)
 			$trans = $name;
@@ -1942,6 +2205,25 @@ class hikashopFieldItem {
 
 	function display($field, $value, $map, $inside, $options = '', $test = false, $allFields = null, $allValues = null) { return $value; }
 
+	function addButton($field, $test = false) {
+		if(empty($field->field_options['allow_add']))
+			return '';
+		if(!empty($field->field_options['mysql_query']))
+			return '';
+
+		if($test)
+			return '';
+
+		$popupHelper = hikashop_get('helper.popup');
+		$html = $popupHelper->display(
+			'<i class="fas fa-plus"></i> '.JText::_('ADD'),
+			'ADD',
+			hikashop_completeLink("field&task=add_value&field_id=".$field->field_id,true),
+			'field_'.$field->field_namekey.'_add_button',
+			520, 360, 'class="hikabtn btn-primary" onclick="window.hikashop.currentFieldParent = this.parentNode.parentNode; return window.hikashop.openBox(this);"', '', 'link'
+		);
+		return '<div class="field_add_button">'.$html.'</div>';
+	}
 	function showfield($viewObj, $namekey, $row) {
 		if( isset( $row->$namekey)) { return $row->$namekey; }
 		return '';
@@ -1950,9 +2232,17 @@ class hikashopFieldItem {
 
 class hikashopFieldCustomtext extends hikashopFieldItem {
 	function display($field, $value, $map, $inside, $options = '', $test = false, $allFields = null, $allValues = null) {
+		if(empty($field->field_options))
+			return '';
+		if(is_string($field->field_options))
+			$field->field_options = hikashop_unserialize($field->field_options);
 		return $this->trans(@$field->field_options['customtext']);
 	}
 	function show(&$field, $value) {
+		if(empty($field->field_options))
+			return '';
+		if(is_string($field->field_options))
+			$field->field_options = hikashop_unserialize($field->field_options);
 		return $this->trans(@$field->field_options['customtext']);
 	}
 }
@@ -1965,6 +2255,15 @@ class hikashopFieldText extends hikashopFieldItem {
 	function check(&$field, &$value, $oldvalue) {
 		$status = parent::check($field, $value, $oldvalue);
 
+		if($status && !$field->field_required  && !empty($field->field_options['regex']) && !empty($field->field_value)) {
+			$config = hikashop_config();
+			if($config->get('check_regex_if_not_required', 0) && !preg_match('/'.str_replace('/','\/',$field->field_options['regex']).'/',$value)) {
+				$this->_displayError($field);
+				return false;
+			}
+			return true;
+		}
+
 		if (!$status || !$field->field_required || empty($field->field_options['regex']))
 			return $status;
 
@@ -1974,6 +2273,15 @@ class hikashopFieldText extends hikashopFieldItem {
 		$status = false;
 		if (empty($this->report))
 			return $status;
+
+		$this->_displayError($field);
+
+		return $status;
+	}
+
+	function _displayError(&$field) {
+		if (empty($this->report))
+			return;
 
 		if (!empty($field->field_options['errormessage'])) {
 			$message = $this->trans($field->field_options['errormessage']);
@@ -1991,7 +2299,6 @@ class hikashopFieldText extends hikashopFieldItem {
 			);
 		}
 
-		return $status;
 	}
 
 	function display($field, $value, $map, $inside, $options = '', $test = false, $allFields = null, $allValues = null) {
@@ -2006,7 +2313,8 @@ class hikashopFieldText extends hikashopFieldItem {
 			$size .= ' placeholder="'.JText::_($field->field_options['placeholder']).'"';
 		if(!empty($field->field_options['attribute']))
 			$size .= $field->field_options['attribute'];
-
+		if(is_null($value))
+			$value = '';
 		$js = '';
 		if(strlen(trim($value)) < 1) {
 			if(!empty($field->field_default))
@@ -2041,9 +2349,21 @@ class hikashopFieldText extends hikashopFieldItem {
 
 class hikashopFieldLink extends hikashopFieldText {
 	var $displayFor = false;
-	function check(&$field,&$value,$oldvalue) {
-		if(is_string($value))
-			$value = trim($value,':');
+	function check(&$field,&$value,$oldvalue) { 
+		if(is_string($value)) {
+			$value = explode(':', $value, 2);
+			if(!empty($value[1]))
+				$value[1] = trim($value[1], ':');
+		}
+		if(is_array($value)) {
+			$return = '';
+			if(!empty($value[0]))
+				$value[0] = '"'.$value[0].'"';
+			if(!empty($value[0]) && !empty($value[1]))
+				$return = $value[0].':'.$value[1];
+			$value = $return;
+		}
+
 		return parent::check($field, $value, $oldvalue);
 	}
 	function show(&$field,$value) {
@@ -2052,26 +2372,23 @@ class hikashopFieldLink extends hikashopFieldText {
 			$target = ' target="_blank"';
 		$link = $value;
 		$text = $value;
-		if(preg_match('#"?(.*)"?:(https?:\/\/.*)#i', $value, $m)) {
+		if(preg_match('#^"?(.*)"?:(.*)$#iU', $value, $m)) {
 			$link = $m[2];
-			$text = $m[1];
-		} else if(preg_match('#"([^"]+)":(.*)#iU', $value, $m)) {
-			$link = $m[2];
-			$text = $m[1];
+			$text = trim($m[1], '"');
 		}
-		return '<a'.$target.' href="'.$this->trans($link).'">'.$this->trans($text).'</a>';
+		return '<a'.$target.' href="' .$this->trans($link).'">'.$this->trans($text).'</a>';
 	}
 
 	function display($field, $value, $map, $inside, $options = '', $test = false, $allFields = null, $allValues = null) {
 		$namekey = $field->field_namekey;
+
+		if(strlen(trim($value)) < 1 && !empty($field->field_default))
+			$value = $field->field_default;
 		$link = $value;
 		$text = $value;
-		if(preg_match('#(?:"?([^"]+)"?:)?(https?:\/\/.*)#i', $value, $m)) {
+		if(preg_match('#^"?(.*)"?:(.*)$#iU', $value, $m)) {
 			$link = $m[2];
-			$text = $m[1];
-		} else if(preg_match('#"([^"]+)":(.*)#iU', $value, $m)) {
-			$link = $m[2];
-			$text = $m[1];
+			$text = trim(str_replace('&quot;', '"',$m[1]), '"');
 		}else{
 			@list($text, $link) = explode(':',$value,2);
 		}
@@ -2136,7 +2453,7 @@ class hikashopFieldFile extends hikashopFieldText {
 		if(empty($field->field_options['file_type']))
 			$field->field_options['file_type'] = 'file';
 
-		$file = $fileClass->saveFile($map, $field->field_options['file_type'], $this->allowedFiles());
+		$file = $fileClass->saveFile($map, $field->field_options['file_type'], $this->allowedFiles(), $field);
 
 		if(!empty($file)) {
 			$value = $file;
@@ -2181,6 +2498,8 @@ class hikashopFieldAjaxfile extends hikashopFieldItem {
 		$uploaderType = hikashop_get('type.uploader');
 
 		$id = $this->prefix.@$field->field_namekey.$this->suffix;
+		if(!empty($field->field_options['multiple']))
+			$map .= '[]';
 		$options = array(
 			'upload' => true,
 			'tooltip' => true,
@@ -2194,6 +2513,40 @@ class hikashopFieldAjaxfile extends hikashopFieldItem {
 			)
 		);
 
+		$value = trim($value, '|');
+
+		if(!empty($value)) {
+			if(empty($field->field_options['multiple'])) {
+				$content = $this->_displayOne($value, $map, $id, $field);
+			} else {
+				$files = explode('|', $value);
+				$content = '';
+				foreach($files as $file) {
+					if(empty($file))
+						continue;
+					$content .= $this->_displayOne($file, $map, $id, $field);
+				}
+			}
+		} else {
+			$content = '<input type="hidden" name="'.$map.'" value=""/>';
+			$options['empty'] = true;
+		}
+
+		$function = 'display';
+		if($this->mode == 'image')
+			$function .= 'Image';
+		else
+			$function .= 'File';
+
+		if(!empty($field->field_options['multiple']))
+			$function .= 'Multiple';
+		else
+			$function .= 'Single';
+
+		return $uploaderType->$function($id, $content, $options);
+	}
+
+	function _displayOne($value, $map, $id, &$field) {
 		$params = new stdClass();
 		$params->file_name = $value;
 		$params->file_path = $value;
@@ -2205,7 +2558,7 @@ class hikashopFieldAjaxfile extends hikashopFieldItem {
 		if(!empty($value)) {
 
 			$fileClass = hikashop_get('class.file');
-			$path = $fileClass->getPath('file');
+			$path = $fileClass->getPath('file', '', $field);
 			$v = '';
 			if(JFile::exists($path . $value)) {
 				$v = md5_file($path . $value);
@@ -2230,24 +2583,40 @@ class hikashopFieldAjaxfile extends hikashopFieldItem {
 
 			$params->thumbnail_url = hikashop_completeLink('order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($value)).$thumbnails_params);
 		}
-
 		$js = '';
-		$content = '';
-		if(!empty($value)) {
-			$content = hikashop_getLayout($this->layoutName, $this->viewName, $params, $js);
-		} else {
-			$content = '<input type="hidden" name="'.$map.'" value=""/>';
-			$options[ 'empty'] = true;
-		}
-
-		if($this->mode == 'image')
-			return $uploaderType->displayImageSingle($id, $content, $options);
-		return $uploaderType->displayFileSingle($id, $content, $options);
+		$content = hikashop_getLayout($this->layoutName, $this->viewName, $params, $js);
+		return $content;
 	}
 
 	function show(&$field, $value, $class = 'hikashop_custom_file_link') {
+		if(!is_array($field->field_options)) {
+			$field->field_options = hikashop_unserialize($field->field_options);
+		}
+		if(empty($field->field_options['multiple'])) {
+			if(empty($value))
+				return;
+			return '<p class="hikashop_custom_file_area">'.$this->_showOne($field, $value, $class).'</p>';
+		}
+
+		$html = '';
+		if(!empty($value)) {
+			$value = trim($value, '|');
+			$files = explode('|', $value);
+			$html = array();
+			foreach($files as $file) {
+				if(empty($file))
+					continue;
+				$html[] = '<p class="hikashop_custom_file_area">'.$this->_showOne($field, $file, $class).'</p>';
+			}
+			$html = implode('', $html);
+		}
+		return $html;
+	}
+
+	function _showOne(&$field, $value, $class = 'hikashop_custom_file_link') {
+		$download_link = 'order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($value));
 		if($class == 'admin_email')
-			return '<a target="_blank" class="'.$class.'" href="'.HIKASHOP_LIVE.'administrator/index.php?option=com_hikashop&ctrl=order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($value)).'">'.$value.'</a>';
+			return '<a target="_blank" class="'.$class.'" href="'.HIKASHOP_LIVE.'administrator/index.php?option=com_hikashop&ctrl='.$download_link.'">'.$value.'</a>';
 
 		if($class == 'user_email') {
 			if(@$field->guest_mode)
@@ -2255,41 +2624,153 @@ class hikashopFieldAjaxfile extends hikashopFieldItem {
 
 			$app = JFactory::getApplication();
 			if(!hikashop_isClient('administrator'))
-				return '<a target="_blank" class="'.$class.'" href="'.hikashop_completeLink('order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($value))).'">'.$value.'</a>';
-			return '<a target="_blank" class="'.$class.'" href="'.HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($value)).'">'.$value.'</a>';
+				return '<a target="_blank" class="'.$class.'" href="'.hikashop_completeLink($download_link).'">'.$value.'</a>';
+			return '<a target="_blank" class="'.$class.'" href="'.HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl='.$download_link.'">'.$value.'</a>';
 		}
 
 		hikashop_loadJslib('opload');
 		if($this->mode == 'image') {
 			$thumbnail_x = 100;
 			$thumbnail_y = 100;
-			$thumbnails_params = '&thumbnail_x='.$thumbnail_x.'&thumbnail_y='.$thumbnail_y;
-			return '<img class="'.$class.'" src="'.hikashop_completeLink('order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($value)).$thumbnails_params).'" alt="'.htmlspecialchars($value, ENT_COMPAT, 'UTF-8').'" />';
+			if(!empty($field->field_options['thumbnail_x'])) {
+				$thumbnail_x = $field->field_options['thumbnail_x'];
+			}
+			if(!empty($field->field_options['thumbnail_y'])) {
+				$thumbnail_y = $field->field_options['thumbnail_y'];
+			}
+			$thumbnail_link = hikashop_completeLink($download_link.'&thumbnail_x='.$thumbnail_x.'&thumbnail_y='.$thumbnail_y);
+			$main_link = hikashop_completeLink($download_link.'&thumbnail_x=0&thumbnail_y=0');
+			return '<a target="_blank" class="'.$class.'" href="'.$main_link.'"><img class="'.$class.'" src="'.$thumbnail_link.'" alt="'.htmlspecialchars($value, ENT_COMPAT, 'UTF-8').'" /></a>';
 		}
-		return '<a target="_blank" class="'.$class.'" href="'.hikashop_completeLink('order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($value))).'">'.$value.'</a>';
+		return '<a target="_blank" class="'.$class.'" href="'.hikashop_completeLink($download_link).'">'.$value.'</a>';
 	}
 
-	function check(&$field,&$value,$oldvalue) {
+	function check(&$field,&$value, $oldvalue) {
 		if(!empty($value) && !is_array($value))
 			return false;
-
 		if(is_array($value)) {
-			$fileClass = hikashop_get('class.file');
-			$path = $fileClass->getPath('file');
-			$hash = '';
-			if(!empty($value['name']) && file_exists($path . $value['name']))
-				$hash = md5_file($path . $value['name']);
-			if(!empty($value['name']) && (empty($value['sec']) || $hash != $value['sec'])) {
-				$value = $oldvalue;
-				return false;
+			if(!empty($field->field_options['multiple'])) {
+				$tmp_array = array();
+				foreach($value as $k => $element) {
+					if(empty($element)) {
+						continue;
+					}
+					$tmp_array[$k] = $element;
+				}
+				$value = $tmp_array;
+
+				$newvalue = array();
+				$error = false;
+				$sec_start = count($value)/2;
+				$mode = null;
+				foreach($value as $k => $element) {
+					if(empty($element['name']))
+						continue;
+
+					if(is_null($mode)) {
+						if(!empty($value[$k+1]['sec']))
+							$mode = 'no_sec_start';
+						elseif(!empty($value[$sec_start+$k]['sec']))
+							$mode = 'sec_start';
+					}
+					if($mode == 'sec_start') {
+						if(!empty($value[$sec_start+$k]['sec']))
+							$sec = $value[$sec_start+$k]['sec'];
+						elseif(!empty($value[$k+1]['sec']))
+							$sec = $value[$k+1]['sec'];
+						else
+							continue;
+					} else {
+						if(!empty($value[$k+1]['sec']))
+							$sec = $value[$k+1]['sec'];
+						elseif(!empty($value[$sec_start+$k]['sec']))
+							$sec = $value[$sec_start+$k]['sec'];
+						else
+							continue;
+
+					}
+					$file = array('name' => $element['name'], 'sec' => $sec);
+					$ok = $this->_checkOneFile($file, '', $field);
+					if($ok) {
+						$newvalue[] = $file;
+					} else {
+						$error = true;
+					}
+				}
+				if($error) {
+					$value = $oldvalue;
+					return false;
+				} else {
+					if(is_string($oldvalue))
+						$oldfiles = explode('|',$oldvalue);
+					else
+						$oldfiles = $oldvalue;
+					foreach($oldfiles as $oldfile) {
+						if(!in_array($oldfile, $newvalue)) {
+							$this->_handleDelete($field, $oldfile);
+						}
+					}
+
+					$value = implode('|', $newvalue);
+				}
+			} else {
+				$return = $this->_checkOneFile($value, $oldvalue, $field);
+				if(!$return)
+					return $return;
 			}
-			$value = $value['name'];
 		} else if($value != $oldvalue) {
+			$this->_handleDelete($field, $oldvalue);
 			$value = $oldvalue;
 			return false;
 		}
-
 		return parent::check($field,$value,$oldvalue);
+	}
+
+	function _checkOneFile(&$value, $oldValue, $field) {
+		$fileClass = hikashop_get('class.file');
+		$path = $fileClass->getPath('file', '', $field);
+		$hash = '';
+
+		if(!empty($value['name']) && file_exists($path . $value['name']))
+			$hash = md5_file($path . $value['name']);
+		if(!empty($value['name']) && (empty($value['sec']) || $hash != $value['sec'])) {
+			$value = $oldValue;
+			return false;
+		}
+		if(!empty($value['name'])) {
+			$value = $value['name'];
+
+			if(!empty($field->field_options['max_filesize']) && filesize($path.$value) > $field->field_options['max_filesize']) {
+				$this->reportError($field, JText::sprintf('UPLOADED_FILE_IS_BIGGER_THAN_LIMIT', $value, hikashop_human_readable_bytes(filesize($path.$value)), hikashop_human_readable_bytes($field->field_options['max_filesize'])));
+				$value = $oldValue;
+				return false;
+			}
+
+			if($this->mode == 'image' && (!empty($field->field_options['max_width']) || !empty($field->field_options['max_height']))) {
+				$imageHelper = hikashop_get('helper.image');
+				$imageHelper->uploadFolder = $path;
+				$imageHelper->autoRotate($value);
+				$imageHelper->resizeImage($value,'field', array(
+					'image_x' => $field->field_options['max_width'],
+					'image_y' => $field->field_options['max_height'],
+					'watermark' => false,
+				));
+			}
+		} else {
+			$value = '';
+		}
+		return true;
+	}
+
+	function reportError(&$field, $message) {
+		if(!empty($this->report)) {
+			if($this->report === true) {
+				$app = JFactory::getApplication();
+				$app->enqueueMessage($message, 'error');
+			} else {
+				$this->parent->messages[$this->prefix.$field->field_namekey] = array($message);
+			}
+		}
 	}
 
 	function _manageUpload($field, &$ret, $map, $uploadConfig, $caller) {
@@ -2297,7 +2778,7 @@ class hikashopFieldAjaxfile extends hikashopFieldItem {
 			return;
 
 		$fileClass = hikashop_get('class.file');
-		$path = $fileClass->getPath('file');
+		$path = $fileClass->getPath('file', '', $field);
 
 		$ret->params->file_name = $ret->params->file_path;
 		$ret->params->field_name = $map.'[name]';
@@ -2320,6 +2801,55 @@ class hikashopFieldAjaxfile extends hikashopFieldItem {
 			$ret->params->thumbnail_url = hikashop_completeLink('order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($ret->params->file_path)).$thumbnails_params);
 		}
 	}
+
+	private function _handleDelete(&$field, $value) {
+		if(!is_array($field->field_options)) {
+			$field->field_options = hikashop_unserialize($field->field_options);
+		}
+
+		if(empty($field->field_options['delete_files']))
+			return;
+
+		$fileClass = hikashop_get('class.file');
+		$path = $fileClass->getPath('file', '', $field);
+
+		if(!is_array($value)) {
+			$value = trim($value, '|');
+			$files = explode('|', $value);
+		} else {
+			$files = $value;
+		}
+
+		jimport('joomla.filesystem.folder');
+		$thumbnail_folders = JFolder::folders($uploadPath);
+		if(JFolder::exists($uploadPath.'thumbnails')) {
+			$other_thumbnail_folders = JFolder::folders($uploadPath.'thumbnails');
+			foreach($other_thumbnail_folders as $other_thumbnail_folder) {
+				$thumbnail_folders[] = 'thumbnails'.DS.$other_thumbnail_folder;
+			}
+		}
+
+		foreach($files as $file) {
+			if(JFile::exists($path . $file)) {
+				JFile::delete( $path . $file);
+				foreach($thumbnail_folders as $thumbnail_folder) {
+					if($thumbnail_folder != 'thumbnail' && substr($thumbnail_folder, 0, 9) != 'thumbnail' && substr($thumbnail_folder, 0, 11) != ('thumbnails'.DS))
+						continue;
+					if(JFile::exists($path.$thumbnail_folder.DS.$file)) {
+						JFile::delete( $path .$thumbnail_folder.DS. $file );
+					}
+				}
+			}
+		}
+	}
+
+	public function handleDelete(&$field, &$element) {
+		$namekey = $field->field_namekey;
+		if(empty($element->$namekey))
+			return;
+
+		return $this->_handleDelete($field, $element->$namekey);
+	}
 }
 
 class hikashopFieldAjaximage extends hikashopFieldAjaxfile {
@@ -2327,6 +2857,15 @@ class hikashopFieldAjaximage extends hikashopFieldAjaxfile {
 	var $mode = 'image';
 	var $viewName = 'image_entry';
 	var $defaultText = 'HIKA_DEFAULT_IMAGE_EMPTY_UPLOAD';
+}
+class hikashopFieldHidden extends hikashopFieldText {
+	var $type = 'hidden';
+	function display($field, $value, $map, $inside, $options = '', $test = false, $allFields = null, $allValues = null) {
+		if($test) {
+			$this->type = 'text';
+		}
+		return parent::display($field, $value, $map, $inside, $options, $test, $allFields, $allValues);
+	}
 }
 
 class hikashopFieldCoupon extends hikashopFieldText {
@@ -2438,7 +2977,12 @@ class hikashopFieldTextarea extends hikashopFieldItem {
 		$options .= empty($field->field_options['readonly']) ? '' : ' readonly="readonly"';
 		$options .= empty($field->field_options['placeholder']) ? '' : ' placeholder="'.JText::_($field->field_options['placeholder']).'"';
 		$options .= empty($field->field_options['attribute']) ? '' : $field->field_options['attribute'];
-		return '<textarea class="inputbox" id="'.$this->prefix.@$field->field_namekey.$this->suffix.'" name="'.$map.'" '.$cols.' '.$rows.' '.$js.' '.$options.'>'.$value.'</textarea>'.$html;
+		if(strpos($options, 'class="') === false) {
+			$options .= ' class="inputbox"';
+		} else {
+			$options = str_replace('class="', 'class="inputbox ', $options);
+		}
+		return '<textarea id="'.$this->prefix.@$field->field_namekey.$this->suffix.'" name="'.$map.'" '.$cols.' '.$rows.' '.$js.' '.$options.'>'.$value.'</textarea>'.$html;
 	}
 
 	function check(&$field, &$value, $oldvalue) {
@@ -2530,52 +3074,58 @@ class hikashopFieldDropdown extends hikashopFieldItem {
 		}
 		$options .= empty($field->field_options['attribute']) ? '' : ' '.$field->field_options['attribute'];
 		$string .= '<select id="'.$this->prefix.$field->field_namekey.$this->suffix.'" name="'.$map.'" '.$arg.$options.'>';
-		if(empty($field->field_value))
-			return $string.'</select>';
+		if(!empty($field->field_value)) {
 
-		$app = JFactory::getApplication();
-		$admin = hikashop_isClient('administrator');
+			$app = JFactory::getApplication();
+			$admin = hikashop_isClient('administrator');
 
-		$values = array();
-		foreach($field->field_value as $oneValue => $title) {
-			$oneValue = htmlentities($oneValue, ENT_COMPAT, 'UTF-8');
-			$values[$oneValue] = $title;
-		}
-		if(is_array($value)) {
-			$tmp = array();
-			foreach($value as $k => $v) {
-				$k = htmlentities($k, ENT_COMPAT, 'UTF-8');
-				$tmp[$k] = $v;
+			$values = array();
+			foreach($field->field_value as $oneValue => $title) {
+				$oneValue = htmlentities($oneValue, ENT_COMPAT, 'UTF-8');
+				$values[$oneValue] = $title;
 			}
-			$value = $tmp;
-			$keys = array_keys($values);
-			$isValue = array_intersect($value, $keys);
-			$isValue = !empty($isValue);
-		} else {
-			$value = htmlentities($value, ENT_COMPAT, 'UTF-8');
-			$isValue = !empty($value) && isset($values[$value]);
-		}
-		$selected = '';
-		if(!empty($field->field_default))
-			$field->field_default = htmlentities($field->field_default, ENT_COMPAT, 'UTF-8');
-		foreach($values as $oneValue => $title) {
-			if(isset($field->field_default) && !$isValue) {
-				if(array_key_exists($field->field_default, $values)) {
-					$defaultValueEqualToCurrentValue = (is_numeric($field->field_default) && is_numeric($oneValue) && $oneValue == $field->field_default) || (is_string($field->field_default) && $oneValue === $field->field_default);
-					if($defaultValueEqualToCurrentValue){
-						$selected = ($defaultValueEqualToCurrentValue || is_array($field->field_default) && in_array($oneValue,$field->field_default)) ? 'selected="selected" ' : '';
-					}else{
-						$selected = ((int)$title->disabled && !$admin) ? 'disabled="disabled" ' : '';
-					}
+			if(is_array($value)) {
+				$tmp = array();
+				foreach($value as $k => $v) {
+					$k = htmlentities($k, ENT_COMPAT, 'UTF-8');
+					$tmp[$k] = $v;
 				}
+				$value = $tmp;
+				$keys = array_keys($values);
+				$isValue = array_intersect($value, $keys);
+				$isValue = !empty($isValue);
 			} else {
-				$selected = ((int)$title->disabled && !$admin) ? 'disabled="disabled" ' : '';
-				$selected .= ((is_numeric($value) && is_numeric($oneValue) && $oneValue == $value) || (is_string($value) && $oneValue === $value) || is_array($value) && in_array($oneValue,$value)) ? 'selected="selected" ' : '';
+				$value = htmlentities($value, ENT_COMPAT, 'UTF-8');
+				$isValue = !empty($value) && isset($values[$value]);
 			}
-			$id = $this->prefix.$field->field_namekey.$this->suffix.'_'.$oneValue;
-			$string .= '<option value="'.$oneValue.'" id="'.$id.'" '.$selected.'>'.$this->trans($title->value).'</option>';
+			$selected = '';
+			if(!empty($field->field_default))
+				$field->field_default = htmlentities($field->field_default, ENT_COMPAT, 'UTF-8');
+			$config = hikashop_config();
+			foreach($values as $oneValue => $title) {
+				if(isset($field->field_default) && !$isValue) {
+					if(array_key_exists($field->field_default, $values)) {
+						$defaultValueEqualToCurrentValue = (is_numeric($field->field_default) && is_numeric($oneValue) && $oneValue == $field->field_default) || (is_string($field->field_default) && $oneValue === $field->field_default);
+						if($defaultValueEqualToCurrentValue){
+							$selected = ($defaultValueEqualToCurrentValue || is_array($field->field_default) && in_array($oneValue,$field->field_default)) ? 'selected="selected" ' : '';
+						}else{
+							$selected = ((int)$title->disabled && !$admin) ? 'disabled="disabled" ' : '';
+						}
+					}
+				} else {
+					$selected = ((int)$title->disabled && !$admin) ? 'disabled="disabled" ' : '';
+					if(empty($selected) || $config->get('allow_disabled_selected_values_in_fields', 0))
+						$selected .= ((is_numeric($value) && is_numeric($oneValue) && $oneValue == $value) || (is_string($value) && $oneValue === $value) || is_array($value) && in_array($oneValue,$value)) ? 'selected="selected" ' : '';
+				}
+				$id = $this->prefix.$field->field_namekey.$this->suffix.'_'.$oneValue;
+				$string .= '<option value="'.$oneValue.'" id="'.$id.'" '.$selected.'>'.$this->trans($title->value).'</option>';
+			}
 		}
+
 		$string .= '</select>';
+
+
+		$string .= $this->addButton($field, $test);
 
 		return $string;
 	}
@@ -2610,7 +3160,7 @@ class hikashopFieldZone extends hikashopFieldSingledropdown {
 		if($field->field_options['zone_type'] != 'country' || empty($field->field_options['pleaseselect'])) {
 			$app = JFactory::getApplication();
 			$currentZoneId = (int)$app->getUserState(HIKASHOP_COMPONENT.'.geoloc_zone_id', 0);
-			if(!empty($currentZoneId) && $app->isSite()) {
+			if(!empty($currentZoneId) && !hikashop_isClient('administrator')) {
 				$zoneClass = hikashop_get('class.zone');
 				$currentZone = $zoneClass->getZoneParents($currentZoneId);
 				foreach($currentZone as $currentZoneInfos){
@@ -2720,21 +3270,53 @@ class hikashopFieldZone extends hikashopFieldSingledropdown {
 	function check(&$field,&$value,$oldvalue){
 		if(is_string($value))
 			$value = trim($value);
+		$error_msg = '';
+
 		if(!$field->field_required || is_array($value) || strlen($value) || ($value === null && strlen($oldvalue))) {
+			if($field->field_type == 'zone' && $field->field_options['zone_type'] == 'state') {
+				$country_field = 'address_country';
+				if(!empty($this->formFields)) {
+					foreach($this->formFields as $f) {
+						if($f->field_type == 'zone' && !empty($f->field_options['zone_type']) && $f->field_options['zone_type'] == 'country') {
+							$country_field = $f->field_namekey;
+						}
+					}
+				}
+				if(isset($this->formData[$country_field])) {
+					$countryType = hikashop_get('type.country');
+					$countryType->type = 'state';
+					$countryType->published = true;
+					$countryType->country_name = $this->formData[$country_field];
+					$states = $countryType->load();
+					if(!empty($field->field_options['pleaseselect'])) {
+						$states[''] = '';
+					}
+					if(empty($states)) {
+						$value == 'no_state_found';
+					}elseif(!isset($states[$value])) {
+						$error_msg = JText::sprintf('PLEASE_FILL_THE_FIELD', $this->trans($field->field_realname));
+					}
+				}
+			}
+
 			if($value == 'no_state_found')
 				$value = '';
-			return true;
+		} else {
+			$error_msg = JText::sprintf('PLEASE_FILL_THE_FIELD', $this->trans($field->field_realname));
 		}
 
-		if(!empty($this->report)) {
-			if($this->report === true) {
-				$app = JFactory::getApplication();
-				$app->enqueueMessage(JText::sprintf('PLEASE_FILL_THE_FIELD', $this->trans($field->field_realname)));
-			} else {
-				$this->parent->messages[] = JText::sprintf('PLEASE_FILL_THE_FIELD', $this->trans($field->field_realname));
+		if(!empty($error_msg)) {
+			if(!empty($this->report)) {
+				if($this->report === true) {
+					$app = JFactory::getApplication();
+					$app->enqueueMessage($error_msg);
+				} else {
+					$this->parent->messages[] = $error_msg;
+				}
 			}
+			return false;
 		}
-		return false;
+		return true;
 	}
 }
 
@@ -2756,7 +3338,8 @@ class hikashopFieldMultipledropdown extends hikashopFieldDropdown{
 			if(isset($field->field_value[$val])) $val = $field->field_value[$val]->value;
 			$results[]= parent::show($field,$val);
 		}
-		return implode(', ',$results);
+		$config = hikashop_config();
+		return implode($config->get('fields_multiple_values_separator',', '),$results);
 	}
 }
 
@@ -2811,11 +3394,14 @@ class hikashopFieldRadioCheck extends hikashopFieldItem {
 			$id = $this->prefix.$field->field_namekey.$this->suffix.'_'.$oneValue;
 			$options .= empty($field->field_options['attribute']) ? '' : $field->field_options['attribute'];
 
-			if(!$use_bootstrap)
+			if(!$use_bootstrap) {
 				$string .= '<div class="'.$class.'"><label for="'.$id.'"><input type="'.$type.'" name="'.$map.'" value="'.$oneValue.'" id="'.$id.'" '.$checked.' '.$options.' /><span>'.$this->trans($title->value).'</span></label></div>';
-			else
-				$string .= '<label><input type="'.$type.'" name="'.$map.'" value="'.$oneValue.'" id="'.$id.'" '.$checked.' '.$options.' /> <span>'.$this->trans($title->value).'</span></label>';
+			} else {
+				$string .= '<label class="'.$class.'"><input type="'.$type.'" name="'.$map.'" value="'.$oneValue.'" id="'.$id.'" '.$checked.' '.$options.' /> <span>'.$this->trans($title->value).'</span></label>';
+			}
 		}
+
+		$string .= $this->addButton($field, $test);
 		return $string;
 	}
 }
@@ -2836,7 +3422,7 @@ class hikashopFieldBoolean extends hikashopFieldItem {
 		if(is_null($value))
 			$value = $field->field_default;
 		$radioType = hikashop_get('type.radio');
-		return $radioType->booleanlist($map, null, !!$value);
+		return $radioType->booleanlist($map, $options, !!$value);
 	}
 }
 
@@ -2861,7 +3447,8 @@ class hikashopFieldCheckbox extends hikashopFieldRadioCheck {
 				$val = $field->field_value[$val]->value;
 			$results[] = parent::show($field,$val);
 		}
-		return implode(', ',$results);
+		$config = hikashop_config();
+		return implode($config->get('fields_multiple_values_separator',', '),$results);
 	}
 }
 
@@ -2874,7 +3461,7 @@ class hikashopFieldDate extends hikashopFieldItem {
 
 		if(!HIKASHOP_J30)
 			JHTML::_('behavior.mootools');
-		else
+		elseif(!HIKASHOP_J40)
 			JHTML::_('behavior.framework');
 		$processing='';
 		$message='';

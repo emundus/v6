@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="hikashop">
 	<name>Hikashop UserPoints Plugin</name>
-	<creationDate>10 août 2020</creationDate>
-	<version>4.3.0</version>
+	<creationDate>25 septembre 2022</creationDate>
+	<version>4.6.2</version>
 	<author>Obsidev</author>
 	<authorEmail>contact@obsidev.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2011-2020 OBSIDEV. All rights reserved.</copyright>
+	<copyright>(C) 2011-2022 OBSIDEV. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>This plugin enables you to configure a User Points system</description>
 	<files>
@@ -30,6 +30,7 @@
 		<param name="default_no_use" type="radio" default="0" label="DO_NOT_USE_POINT_BY_DEFAULT" description=""><option value="0">No</option><option value="1">Yes</option></param>
 		<param name="show_earn_points" type="radio" default="1" label="SHOW_EARN_POINTS" description=""><option value="0">No</option><option value="1">Yes</option></param>
 		<param name="control_panel" type="radio" default="0" label="DISPLAY_ON_CONTROL_PANEL" description=""><option value="0">No</option><option value="1">Yes</option></param>
+		<param name="order_listing_points" type="radio" default="1" label="DISPLAY_ON_ORDERS_LISTING" description=""><option value="0">No</option><option value="1">Yes</option></param>
 	</params>
 	<config>
 		<fields name="params" addfieldpath="/components/com_hikashop/fields">
@@ -48,6 +49,7 @@
 				<field name="default_no_use" type="radio" default="0" label="DO_NOT_USE_POINT_BY_DEFAULT" description="" class="btn-group btn-group-yesno"><option value="0">No</option><option value="1">Yes</option></field>
 				<field name="show_earn_points" type="radio" default="0" label="SHOW_EARN_POINTS" description="" class="btn-group btn-group-yesno"><option value="0">No</option><option value="1">Yes</option></field>
 				<field name="control_panel" type="radio" default="0" label="DISPLAY_ON_CONTROL_PANEL" description="" class="btn-group btn-group-yesno"><option value="0">No</option><option value="1">Yes</option></field>
+				<field name="order_listing_points" type="radio" default="1" label="DISPLAY_ON_ORDERS_LISTING" description="" class="btn-group btn-group-yesno"><option value="0">No</option><option value="1">Yes</option></field>
 			</fieldset>
 		</fields>
 	</config>

@@ -108,7 +108,7 @@ class DropfilesModelOneDrivefiles extends JModelLegacy
         $dbo = $this->getDbo();
         $query = 'SELECT * FROM #__dropfiles_onedrive_files WHERE file_id LIKE BINARY ' . $dbo->quote($id_file);
         $dbo->setQuery($query);
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
         return $dbo->loadObject();
@@ -129,7 +129,7 @@ class DropfilesModelOneDrivefiles extends JModelLegacy
             $query = 'UPDATE #__dropfiles_onedrive_files SET ordering = ' . intval($key);
             $query .= ' WHERE file_id LIKE BINARY ' . $dbo->quote($file);
             $dbo->setQuery($query);
-            if (!$dbo->query()) {
+            if (!$dbo->execute()) {
                 return false;
             }
         }
@@ -153,7 +153,7 @@ class DropfilesModelOneDrivefiles extends JModelLegacy
         $query .= ' FROM #__dropfiles_onedrive_files WHERE catid=' . $dbo->quote($catid);
         $query .= ' Order By ' . $dbo->escape($ordering . ' ' . $dir);
         $dbo->setQuery($query);
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
         return $dbo->loadObjectList();
@@ -172,6 +172,6 @@ class DropfilesModelOneDrivefiles extends JModelLegacy
         $dbo = $this->getDbo();
         $query = 'DELETE From #__dropfiles_onedrive_files WHERE file_id LIKE BINARY ' . $dbo->quote($id_file);
         $dbo->setQuery($query);
-        $dbo->query();
+        $dbo->execute();
     }
 }

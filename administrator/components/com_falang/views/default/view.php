@@ -44,7 +44,8 @@ class FalangViewDefault extends JViewLegacy {
 	{
 		$document = JFactory::getDocument();
 		$document->addStyleSheet(JURI::base().'components/com_falang/assets/css/falang.css');
-		
+		$document->addStyleSheet(JURI::base().'components/com_falang/assets/css/toastr.css');
+
 		// Get data from the model
 		$this->state		= $this->get('State');
 		// Are there messages to display ?
@@ -94,7 +95,7 @@ class FalangViewDefault extends JViewLegacy {
 				</a>
 			</div>
 			<br />
-			&copy; 2020 - Faboba.com All right Reserved
+			&copy; 2022 - Faboba.com All right Reserved
 			<p></p>
 		</div>
 		<?php

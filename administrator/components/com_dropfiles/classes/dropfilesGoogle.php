@@ -36,6 +36,14 @@ class DropfilesGoogle
     protected $lastError;
 
     /**
+     * Full file resources params
+     *
+     * @var string $fullFileParams
+     */
+    protected $fullFileParams = 'id,name,size,fileExtension,description,originalFilename,createdTime,modifiedTime,appProperties,exportLinks,webContentLink';
+
+
+    /**
      * DropfilesGoogle constructor.
      */
     public function __construct()
@@ -680,7 +688,128 @@ class DropfilesGoogle
         }
         return true;
     }
+    /**
+     * Download large file by chunks
+     *
+     * @param object         $file        File object
+     * @param string         $contentType Content type
+     * @param string         $disposition Content Disposition
+     * @param boolean|string $saveToFile  File path
+     *
+     * @return void
+     */
+    public function downloadLargeFile($file, $contentType, $disposition = 'attachment', $saveToFile = false)
+    {
+        $chunkSizeBytes = 5*1024*1024;
 
+        if ($saveToFile === false) {
+            while (ob_get_level()) {
+                ob_end_clean();
+            }
+            ob_start();
+            header('Content-Type: ' . $contentType);
+            header('Content-Disposition: ' . $disposition . '; filename="'.$file->title . '.' . $file->ext . '"');
+            header('Expires: 0');
+            header('Pragma: public');
+            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+            header('Content-Description: File Transfer');
+            header('Content-Length: ' . $file->size);
+
+
+            header('Content-Transfer-Encoding: chunked');
+            header('Connection: keep-alive');
+            ob_clean();
+            flush();
+        }
+
+        $client = new Google_Client();
+        $client->setClientId($this->params->google_client_id);
+        $client->setClientSecret($this->params->google_client_secret);
+        $client->setAccessToken($this->params->google_credentials);
+
+        try {
+            // Begin Use of MediaFileDownload
+            // Call the API with the media download, defer so it doesn't immediately return.
+            $client->setDefer(true);
+            $service = new Google_Service_Drive($client);
+
+            $request = $service->files->get($file->id, array('alt' => 'media'));
+
+            $media = new Google_Http_MediaFileDownload(
+                $client,
+                $request,
+                $file->mimeType,
+                null,
+                true,
+                $chunkSizeBytes
+            );
+
+            $media->setFileSize($file->size);
+
+            $status = true;
+            $progress = 0;
+            $previousprogress = 0;
+
+            if ($saveToFile !== false) {
+                $saveToFileHandler = fopen($saveToFile, 'w+');
+            }
+            while ($status) {
+                $status = $media->nextChunk();
+
+                if (!$status) {
+                    break;
+                }
+
+                $response = $status;
+                $range = explode('-', $response->getHeaderLine('content-range'));
+                $range = explode('/', $range[1]);
+                $progress = $range[0];
+                $mediaSize = $range[1];
+
+                if ($progress > $previousprogress) {
+                    if ($saveToFile === false) {
+                        // Clean buffer and end buffering
+                        while (ob_get_level()) {
+                            ob_end_clean();
+                        }
+                        // Start buffering
+                        if (!ob_get_level()) {
+                            ob_start();
+                        }
+                        // Flush the content
+                        $contentbody = $response->getBody();
+                        echo $contentbody;
+                        ob_flush();
+                        flush();
+                    } elseif (isset($saveToFileHandler)) {
+                        // Flush the content
+                        $contentbody = $response->getBody();
+                        fwrite($saveToFileHandler, $contentbody);
+                    }
+
+                    $previousprogress = $progress;
+                    usleep(200);
+                }
+                if (((int) $mediaSize - 1) === (int) $progress) {
+                    ob_end_flush();
+                    $client->setDefer(false);
+                    $status = false;
+                    return;
+                }
+            }
+
+            if ($saveToFile !== false && isset($saveToFileHandler)) {
+                fclose($saveToFileHandler);
+            }
+        } catch (Google_Service_Exception $e) {
+            JLog::add('mediadownloadfromgoogledriveincurrentfolder error Google_Service_Exception' . $e->getMessage(), JLog::ERROR, 'dropfiles');
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export -- debug
+            JLog::add('mediadownloadfromgoogledriveincurrentfolder error Google_Service_Exception errors ' . var_export($e->getErrors(), true), JLog::ERROR, 'dropfiles');
+        } catch (Exception $e) {
+            JLog::add('mediadownloadfromgoogledriveincurrentfolder error ' . $e->getMessage(), JLog::ERROR, 'dropfiles');
+        }
+        $client->setDefer(false);
+    }
     /**
      * Download file
      *
@@ -688,87 +817,117 @@ class DropfilesGoogle
      * @param null    $cloud_id Cloud id
      * @param null    $version  Version
      * @param integer $preview  Preview
+     * @param boolean $getDatas Download data of file
      *
      * @return boolean|stdClass
      */
-    public function download($id, $cloud_id = null, $version = false, $preview = 0)
+    public function download($id, $cloud_id = null, $version = false, $preview = 0, $getDatas = false)
     {
-        $service = $this->getGoogleService();
-
         try {
-            $file = $service->files->get($id, array(
-                'fields' => 'id,name,size,parents,exportLinks,webContentLink,fileExtension,originalFilename'
-            ));
-
-            if (!$this->checkParents($file, $cloud_id)) {
-                return false;
-            }
-
+            $service = $this->getGoogleService();
+            $file    = $service->files->get($id, array('fields' => $this->fullFileParams . ',parents,mimeType'));
 
             $downloadUrl = $file->getWebContentLink();
-            $mineType = $file->getMimeType();
-            if ($file->getWebContentLink() === null && $file->getSize() === null && $file->getId() !== null) {
+            $mineType    = $file->getMimeType();
+
+            if ($downloadUrl === null && $file->getSize() === null && $file->getId() !== '') {
                 $ExportLinks = $file->getExportLinks();
                 if ($ExportLinks !== null) {
-                    if ($preview && isset($ExportLinks['application/pdf'])
-                        && strpos($mineType, 'vnd.google-apps') !== false) {
+                    if ($preview && isset($ExportLinks['application/pdf']) &&
+                        strpos($mineType, 'vnd.google-apps') !== false) {
                         $downloadUrl = $ExportLinks['application/pdf'];
                     } else {
                         uksort($ExportLinks, function ($a, $b) {
                             return strlen($a) < strlen($b);
                         });
-                        $ext_tmp = explode('=', reset($ExportLinks));
+                        $ext_tmp     = explode('=', reset($ExportLinks));
+                        $exportMineTypeKeys = array_keys($ExportLinks);
                         $downloadUrl = reset($ExportLinks);
                     }
                 }
             }
 
             if ($downloadUrl) {
-                if ($version !== false) {
-                    $revision = $service->revisions->get($id, $version, array('fields' => 'id,name,originalFilename'));
-                    $fileRequest = $service->revisions->get($id, $version, array('alt' => 'media'));
+                $ret        = new stdClass();
+                $ret->id = $file->getId();
+                $ret->description = $file->getDescription();
+                $ret->mimeType = $file->getMimeType();
+                if (isset($exportMineTypeKeys)) {
+                    $ret->exportMineType = reset($exportMineTypeKeys);
+                }
+                if ($getDatas) {
+                    if ($version !== false) {
+                        $revision = $service->revisions->get($id, $version, array('fields' => 'id,name,originalFilename'));
+                        $fileRequest = $service->revisions->get($id, $version, array('alt' => 'media'));
+                    } else {
+                        $fileRequest = $service->files->get($id, array('alt' => 'media'));
+                    }
+                    if ($fileRequest->getStatusCode() === 200) {
+                        $ret->datas = $fileRequest->getBody();
+                    }
                 } else {
-                    $fileRequest = $service->files->get($id, array(
-                        'alt' => 'media'
-                    ));
+                    if ($version !== false) {
+                        $revision = $service->revisions->get($id, $version, array('fields' => 'id,name,originalFilename'));
+                    }
+                    $ret->downloadUrl = $downloadUrl;
                 }
 
-                if ($fileRequest->getStatusCode() === 200) {
-                    $ret = new stdClass();
-                    $ret->datas = $fileRequest->getBody();
-
-                    if ($file->getName()) {
-                        $ret->title = $file->getOriginalFilename() ? JFile::stripExt($file->getName()) : $file->getName();
-                    } else {
-                        $ret->title = JFile::stripExt($file->getOriginalFilename());
-                        $ret->title = JFile::stripExt($ret->title);
-                    }
-                    $ext_file_name = JFile::getExt($file->getOriginalFilename());
-                    $ret->ext = $file->getFileExtension() ? $file->getFileExtension() : $ext_file_name;
-                    if (isset($revision) && $revision->getOriginalFilename() !== null) {
-                        $ret->size = $revision->getSize();
-                    } else {
-                        $ret->size = $file->getSize();
-                    }
-                    if ($file->getFileExtension() === null && isset($ext_tmp)) {
-                        $ret->ext = end($ext_tmp);
-                    }
-
-                    if ($preview && strpos($mineType, 'vnd.google-apps') !== false) {
-                        $ret->ext = 'pdf';
-                    }
-                    return $ret;
+                if ($file->getName()) {
+                    $ret->title = $file->getOriginalFilename() ? JFile::stripExt($file->getName()) : $file->getName();
                 } else {
-                    // An error occurred.
-                    return false;
+                    $ret->title = JFile::stripExt($file->getOriginalFilename());
+                    $ret->title = JFile::stripExt($ret->title);
                 }
+
+                $properties = (object) $file->getAppProperties();
+                $version = isset($properties->versionNumber) ? $properties->versionNumber : (isset($properties->version) ? $properties->version : '');
+                $ret->versionNumber = $version;
+                $ret->version       = $version;
+                $ret->mimeType = $mineType;
+                $ret->file_tags = isset($properties->file_tags) ? $properties->file_tags : '';
+                $ext_file_name = JFile::getExt($file->getOriginalFilename());
+                $ret->ext = $file->getFileExtension() ? $file->getFileExtension() : $ext_file_name;
+                if (isset($revision) && $revision->getOriginalFilename() !== null) {
+                    $ret->size = $revision->getSize();
+                } else {
+                    $ret->size = $file->getSize();
+                }
+                if ($file->getFileExtension() === null && isset($ext_tmp)) {
+                    $ret->ext = end($ext_tmp);
+                }
+                if ($preview && strpos($mineType, 'vnd.google-apps') !== false) {
+                    $ret->ext = 'pdf';
+                }
+
+                return $ret;
             } else {
                 // The file doesn't have any content stored on Drive.
                 return false;
             }
         } catch (Exception $e) {
             $this->lastError = $e->getMessage();
-            return $this->lastError;
+            return false;
+        }
+    }
+
+    /**
+     * Download google documents
+     *
+     * @param string $id       Google document file id
+     * @param string $fileMine Google document mine type
+     *
+     * @return boolean|expectedClass|WPFDGoogle_Http_Request
+     */
+    public function downloadGoogleDocument($id, $fileMine)
+    {
+        try {
+            $service = $this->getGoogleService();
+
+            return $service->files->export($id, $fileMine);
+        } catch (Exception $e) {
+            $this->lastError = $e->getMessage();
+
+            return false;
         }
     }
 
@@ -909,6 +1068,67 @@ class DropfilesGoogle
             $this->lastError = $e->getMessage();
             return $this->lastError;
         }
+    }
+
+    /**
+     * Get sub folders in folder
+     *
+     * @param string $folderId Folder id
+     *
+     * @throws Exception Throw when application can not start
+     * @return array
+     */
+    public function getSubFolders($folderId)
+    {
+        $service = $this->getGoogleService();
+        $params      = JComponentHelper::getParams('com_dropfiles');
+        $base_folder = $params->get('google_base_folder');
+        $pageToken = null;
+        $datas = array();
+        do {
+            try {
+                $parameters = array();
+                $parameters['q'] = 'trashed=false';
+                if ($pageToken) {
+                    $parameters['pageToken'] = $pageToken;
+                }
+                $q = "'" . $folderId;
+                $q .= "' in parents and trashed=false and mimeType = 'application/vnd.google-apps.folder' ";
+                $fs = $service->files->listfiles(array('q' => $q, 'fields' => 'files/id,files/name', 'pageSize' => 1000));
+                $files = $fs->getFiles();
+
+                if ($params->get('sync_log_option') === 1) {
+                    $erros = 'folderId - ' . $folderId . PHP_EOL;
+                    JLog::add($erros, JLog::INFO, 'com_dropfiles');
+                }
+                foreach ($files as $f) {
+                    if ($f instanceof Google_Service_Drive_DriveFile) {
+                        $idFile = $f->getId();
+                        if ($folderId !== $base_folder) {
+                            $datas[$idFile] = array('title' => $f->getName(), 'parent_id' => $folderId);
+                        } else {
+                            $datas[$idFile] = array('title' => $f->getName(), 'parent_id' => 1);
+                        }
+                        if ($params->get('sync_log_option') === 1) {
+                            $erros = 'Child - ' . $idFile . ': ' . json_encode($datas[$idFile]) . PHP_EOL;
+                            JLog::add($erros, JLog::INFO, 'com_dropfiles');
+                        }
+                    }
+                }
+                // $pageToken = $children->getNextPageToken();
+            } catch (Exception $e) {
+                print 'An error occurred: ' . $e->getMessage() . $e->getTraceAsString();
+                if ($params->get('sync_log_option') === 1) {
+                    $erros = $e->getMessage() . $e->getTraceAsString() . PHP_EOL;
+                    JLog::add($erros, JLog::ERROR, 'com_dropfiles');
+                }
+                $datas = false;
+                $pageToken = null;
+                throw new Exception('getFilesInFolder - Google_Http_REST error ' . $e->getCode());
+            }
+        } while ($pageToken);
+
+        return $datas;
     }
 
     /**

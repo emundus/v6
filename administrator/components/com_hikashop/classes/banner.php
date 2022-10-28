@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -18,7 +18,7 @@ class hikashopBannerClass extends hikashopClass{
 		$element->banner_id = hikashop_getCID('banner_id');
 		$formData = hikaInput::get()->get('data', array(), 'array');
 		jimport('joomla.filter.filterinput');
-		$safeHtmlFilter = & JFilterInput::getInstance(null, null, 1, 1);
+		$safeHtmlFilter = & JFilterInput::getInstance(array(), array(), 1, 1);
 		foreach($formData['banner'] as $column => $value){
 			hikashop_secureField($column);
 			$element->$column = $safeHtmlFilter->clean($value);
@@ -36,12 +36,33 @@ class hikashopBannerClass extends hikashopClass{
 	}
 
 	function save(&$element){
+		$do = true;
+		JPluginHelper::importPlugin('hikashop');
+		$app = JFactory::getApplication();
+		$new = empty($element->banner_id);
+		if($new) {
+			$app->triggerEvent('onBeforeBannerCreate', array( &$element, &$do ));
+		} else {
+			$app->triggerEvent('onBeforeBannerUpdate', array( &$element, &$do ));
+		}
+
+		if(!$do)
+			return false;
+
 		$status = parent::save($element);
+		if(!$status)
+			return $status;
+
+		if($new) {
+			$app->triggerEvent('onAfterBannerCreate', array( &$element ));
+		} else {
+			$app->triggerEvent('onAfterBannerUpdate', array( &$element ));
+		}
 
 		if(!$status){
 			return false;
 		}
-		if(empty($element->banner_id)){
+		if($new){
 			$element->banner_id = $status;
 			$orderHelper = hikashop_get('helper.order');
 			$orderHelper->pkey = 'banner_id';
@@ -51,4 +72,20 @@ class hikashopBannerClass extends hikashopClass{
 		}
 		return $status;
 	}
+	public function delete(&$elements) {
+		$do = true;
+		JPluginHelper::importPlugin('hikashop');
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onBeforeBannerDelete', array(&$elements, &$do));
+
+		if(!$do)
+			return false;
+
+		$status = parent::delete($elements);
+		if($status) {
+			$app->triggerEvent('onAfterBannerDelete', array(&$elements));
+		}
+		return $status;
+	}
+
 }

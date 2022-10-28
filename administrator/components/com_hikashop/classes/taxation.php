@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -24,7 +24,7 @@ class hikashopTaxationClass extends hikashopClass{
 		$taxation->taxation_id = hikashop_getCID('taxation_id');
 		$formData = hikaInput::get()->get('data', array(), 'array');
 		jimport('joomla.filter.filterinput');
-		$safeHtmlFilter = & JFilterInput::getInstance(null, null, 1, 1);
+		$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 		foreach($formData['taxation'] as $column => $value){
 			hikashop_secureField($column);
 			if(in_array($column,array('zone_namekey','taxation_type'))){
@@ -58,10 +58,10 @@ class hikashopTaxationClass extends hikashopClass{
 		$do = true;
 		$new = true;
 		if(!empty($element->taxation_id)){
-			$app->triggerEvent('onBeforeTaxUpdate', array( &$element, &$do) );
+			$app->triggerEvent('onBeforeTaxationUpdate', array( &$element, &$do) );
 			$new = false;
 		}else{
-			$app->triggerEvent('onBeforeTaxCreate', array( &$element, &$do) );
+			$app->triggerEvent('onBeforeTaxationCreate', array( &$element, &$do) );
 		}
 		if(!$do){
 			return false;
@@ -70,10 +70,28 @@ class hikashopTaxationClass extends hikashopClass{
 		$result = parent::save($element);
 
 		if(!$new){
-			$app->triggerEvent('onAfterTaxUpdate', array( &$element) );
+			$app->triggerEvent('onAfterTaxationUpdate', array( &$element) );
 		}else{
-			$app->triggerEvent('onAfterTaxCreate', array( &$element) );
+			$app->triggerEvent('onAfterTaxationCreate', array( &$element) );
 		}
 		return $result;
+	}
+
+	function delete(&$elements) {
+
+		JPluginHelper::importPlugin( 'hikashop' );
+		$app = JFactory::getApplication();
+		$do=true;
+		$app->triggerEvent( 'onBeforeTaxationDelete', array( & $elements, & $do) );
+		if(!$do){
+			return false;
+		}
+
+		$status = parent::delete($elements);
+
+		if($status){
+			$app->triggerEvent( 'onAfterTaxationDelete', array( & $elements ) );
+		}
+		return $status;
 	}
 }

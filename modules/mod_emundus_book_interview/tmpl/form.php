@@ -1,6 +1,5 @@
 <?php
 defined('_JEXEC') or die;
-
 ?>
 
 <form class="alert alert-info">
@@ -15,20 +14,20 @@ defined('_JEXEC') or die;
         </select>
         <small id="bookHelp" class="form-text text-muted"><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_SELECT_HELP"); ?></small>
 
-    <?php if (sizeof($contact_info) > 0) :?>
+        <?php if (sizeof($contact_info) > 0) :?>
 
-        <div class="panel-heading"><?php echo JText::_('VIDEO_CALLING'); ?></div>
+            <div class="panel-heading"><?php echo JText::_('MOD_EM_BOOK_INTERVIEW_VIDEO_CALLING'); ?></div>
 
-        <?php foreach ($contact_info as $type => $text) :?>
-            <div class="form-group">
-                <label for="<?php echo $type.'-input'; ?>"><?php echo $text; ?></label>
-                <input type="text" class="form-control" name="<?php echo $type.'-input'; ?>" id="<?php echo $type.'-input'; ?>">
-            </div>
-        <?php endforeach; ?>
+            <?php foreach ($contact_info as $type => $text) :?>
+                <div class="form-group">
+                    <label for="<?php echo $type.'-input'; ?>"><?php echo $text; ?></label>
+                    <input type="text" class="form-control" name="<?php echo $type.'-input'; ?>" id="<?php echo $type.'-input'; ?>">
+                </div>
+            <?php endforeach; ?>
 
-    <?php endif; ?>
+        <?php endif; ?>
 
-    <button type="button" onclick="bookInterview()" class="btn btn-primary" id="btnBook" name="btnBookInterview"><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_SUBMIT"); ?></button>
+        <button type="button" onclick="bookInterview()" class="btn btn-primary" id="btnBook" name="btnBookInterview"><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_SUBMIT"); ?></button>
     </div>
 </form>
 
@@ -36,49 +35,47 @@ defined('_JEXEC') or die;
 
     function bookInterview() {
 
-        var eventId = $$("#em-book-interview").get("value"),
+        var eventId = document.getElementById('em-book-interview').value,
             userId = <?php echo $user->id; ?>,
             fnum = <?php echo $user->fnum; ?>;
+
+        var bookBtn = document.getElementById('btnBook');
 
         var contactInfo = new Object();
 
         <?php foreach ($contact_info as $type => $text) :?>
-            contactInfo.<?php echo $type; ?> = $$("#<?php echo $type.'-input'; ?>").get("value")[0];
+        contactInfo.<?php echo $type; ?> = document.getElementById('<?php echo $type.'-input'; ?>').value;
         <?php endforeach; ?>
 
-        $$("#btnBook").setStyle('background-color','#4183D7');
-        $$("#btnBook").set('text','Loading... ');
-        $$("#btnBook").removeProperty("onclick");
-
-        var ajax = new Request({
+        jQuery.ajax({
             url: 'index.php?option=com_emundus&controller=calendar&task=bookinterview&format=raw',
             method: 'POST',
             data: {
-                eventId: eventId[0],
+                eventId: eventId,
                 userId: userId,
                 fnum: fnum,
                 contactInfo: contactInfo,
             },
-            onSuccess: function(result) {
+            success: function(result) {
                 result = JSON.parse(result);
                 if (result.status) {
                     location.reload(true);
                 } else {
-                    $$('#btnBook').setStyle('background-color','#96281B');
+                    bookBtn.style.backgroundColor = '#96281B';
 
-                    if (typeof result.message != 'undefined')
-                        $$('#btnBook').set('text',result.message);
-                    else
-                        $$('#btnBook').set('text','Error!');
+                    if (typeof result.message != 'undefined') {
+                        bookBtn.innerText = result.message;
+                    }
+                    else {
+                        bookBtn.innerText = 'Error!';
+                    }
                 }
             },
-            onFailure: function(jqXHR, textStatus, errorThrown) {
-                $$('#btnBook').setStyle('background-color','#96281B');
-                $$('#btnBook').set('text','Error!');
+            error: function(jqXHR, textStatus, errorThrown) {
+                bookBtn.style.backgroundColor = '#96281B';
+                bookBtn.innerText = 'Error!';
             }
         });
-
-        ajax.send();
 
     }
 </script>

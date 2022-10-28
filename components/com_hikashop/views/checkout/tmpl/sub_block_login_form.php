@@ -1,13 +1,14 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
+
 if(JPluginHelper::isEnabled('authentication', 'openid')) {
 	$lang = JFactory::getLanguage();
 	$lang->load('plg_authentication_openid', JPATH_ADMINISTRATOR);
@@ -29,21 +30,28 @@ if(!HIKASHOP_RESPONSIVE) {
 	$inputcolumnclass = 'hkc-sm-8';
 ?>
 <fieldset class="hkform-horizontal">
+<!-- TOP OLD EXTRA DATA -->
 <?php
 if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$this->module_position]->loginTop)) { echo implode("\r\n", $this->extraData[$this->module_position]->loginTop); }
 ?>
+<!-- EO OLD TOP EXTRA DATA -->
+<!-- OLD USERNAME -->
 	<div class="hkform-group control-group hikashop_login_username_line">
 		<label for="username" class="<?php echo $labelcolumnclass;?> hkcontrol-label"><?php echo JText::_('HIKA_USERNAME') ?></label>
 		<div class="<?php echo $inputcolumnclass;?>">
 			<input type="text" id="username" name="login[username]" class="inputbox" alt="<?php echo JText::_('HIKA_USERNAME') ?>" size="18" />
 		</div>
 	</div>
+<!-- EO OLD USERNAME -->
+<!-- OLD PASSWORD -->
 	<div class="hkform-group control-group hikashop_login_password_line">
 		<label for="passwd" class="<?php echo $labelcolumnclass;?> hkcontrol-label"><?php echo JText::_('HIKA_PASSWORD') ?></label>
 		<div class="<?php echo $inputcolumnclass;?>">
 			<input type="password" id="passwd" name="login[passwd]" class="inputbox" size="18" alt="<?php echo JText::_('HIKA_PASSWORD') ?>" />
 		</div>
 	</div>
+<!-- EO OLD PASSWORD -->
+<!-- OLD REMEMBER ME -->
 <?php
 	if(JPluginHelper::isEnabled('system', 'remember')) {
 ?>
@@ -61,6 +69,14 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 <?php
 	}
 ?>
+<!-- EO OLD REMEMBER ME -->
+<!-- OLD SOCIAL BUTTONS -->
+<?php
+	$this->setLayout('sub_block_login_social');
+	echo $this->loadTemplate();
+?>
+<!-- EO OLD SOCIAL BUTTONS -->
+<!-- OLD LOGIN BUTTON -->
 	<div class="hkform-group control-group hikashop_login_button_line">
 		<div class="<?php echo $labelcolumnclass;?> hkcontrol-label"></div>
 		<div class=" <?php echo $inputcolumnclass;?>">
@@ -69,6 +85,8 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 			</button>
 		</div>
 	</div>
+<!-- EO OLD LOGIN BUTTON -->
+<!-- OLD FORGOT PASSWORD -->
 	<div class="hkform-group control-group hikashop_login_forgot_password_line">
 		<div class="<?php echo $labelcolumnclass;?> hkcontrol-label"></div>
 		<div class=" <?php echo $inputcolumnclass;?>">
@@ -77,6 +95,8 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 			</a>
 		</div>
 	</div>
+<!-- EO OLD FORGOT PASSWORD -->
+<!-- OLD FORGOT USERNAME -->
 	<div class="hkform-group control-group hikashop_login_forgot_username_line">
 		<div class="<?php echo $labelcolumnclass;?> hkcontrol-label"></div>
 		<div class=" <?php echo $inputcolumnclass;?>">
@@ -85,9 +105,12 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 			</a>
 		</div>
 	</div>
+<!-- EO OLD FORGOT USERNAME -->
+<!-- OLD BOTTOM EXTRA DATA -->
 <?php
 if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$this->module_position]->loginBottom)) { echo implode("\r\n", $this->extraData[$this->module_position]->loginBottom); }
 ?>
+<!-- EO OLD BOTTOM EXTRA DATA -->
 </fieldset>
 <?php
 
@@ -95,9 +118,12 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 
 ?>
 <div class="userdata form-inline">
+<!-- TOP EXTRA DATA -->
 <?php
 if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$this->module_position]->loginTop)) { echo implode("\r\n", $this->extraData[$this->module_position]->loginTop); }
 ?>
+<!-- EO TOP EXTRA DATA -->
+<!-- USERNAME -->
 	<div id="form-login-username" class="control-group">
 		<div class="controls">
 			<div class="input-prepend input-append">
@@ -110,6 +136,8 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 			</div>
 		</div>
 	</div>
+<!-- EO USERNAME -->
+<!-- PASSWORD -->
 	<div id="form-login-password" class="control-group">
 		<div class="controls">
 			<div class="input-prepend input-append">
@@ -122,6 +150,8 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 			</div>
 		</div>
 	</div>
+<!-- EO PASSWORD -->
+<!-- REMEMBER ME -->
 <?php
 	if(JPluginHelper::isEnabled('system', 'remember')) {
 ?>
@@ -132,6 +162,14 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 <?php
 	}
 ?>
+<!-- EO REMEMBER ME -->
+<!-- SOCIAL BUTTONS -->
+<?php
+	$this->setLayout('sub_block_login_social');
+	echo $this->loadTemplate();
+?>
+<!-- EO SOCIAL BUTTONS -->
+<!-- LOGIN BUTTON -->
 	<div id="form-login-submit" class="control-group">
 		<div class="controls">
 			<button type="submit" onclick="window.checkout.submitLogin(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>, 'login'); return false;" class="<?php echo $this->config->get('css_button','hikabtn'); ?> hikabtn_checkout_login_form"><?php
@@ -139,6 +177,8 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 			?></button>
 		</div>
 	</div>
+<!-- EO LOGIN BUTTON -->
+<!-- FORGOT PASSWORD -->
 	<div class="control-group hikashop_login_forgot_password_line">
 		<div class="controls">
 			<a href="<?php echo JRoute::_( $reset_url ); ?>">
@@ -146,6 +186,8 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 			</a>
 		</div>
 	</div>
+<!-- EO FORGOT PASSWORD -->
+<!-- FORGOT USERNAME -->
 	<div class="control-group hikashop_login_forgot_username_line">
 		<div class="controls">
 			<a href="<?php echo JRoute::_( $remind_url ); ?>">
@@ -153,9 +195,12 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 			</a>
 		</div>
 	</div>
+<!-- EO FORGOT USERNAME -->
+<!-- BOTTOM EXTRA DATA -->
 <?php
 if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$this->module_position]->loginBottom)) { echo implode("\r\n", $this->extraData[$this->module_position]->loginBottom); }
 ?>
+<!-- EO BOTTOM EXTRA DATA -->
 </div>
 <?php
 	}

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -14,6 +14,7 @@ class CurrencyController extends hikashopController{
 	function __construct(){
 		parent::__construct();
 		$this->modify[]='update';
+		$this->display[]='findList';
 	}
 
 	function update(){
@@ -37,5 +38,23 @@ class CurrencyController extends hikashopController{
 			$app->enqueueMessage('Currencies rates auto update plugin not found !','error');
 		}
 		$this->listing();
+	}
+
+	public function findList() {
+		$search = hikaInput::get()->getVar('search', '');
+		$start = hikaInput::get()->getInt('start', 0);
+		$displayFormat = hikaInput::get()->getVar('displayFormat', '');
+
+		$options = array();
+
+		if(!empty($displayFormat))
+			$options['displayFormat'] = $displayFormat;
+		if($start > 0)
+			$options['page'] = $start;
+
+		$nameboxType = hikashop_get('type.namebox');
+		$elements = $nameboxType->getValues($search, 'currency', $options);
+		echo json_encode($elements);
+		exit;
 	}
 }

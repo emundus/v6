@@ -145,7 +145,7 @@ class PlgFabrik_FormEmundussetstatus extends plgFabrik_Form {
 									$mailer = JFactory::getMailer();
 
 									$post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['label'], 'CAMPAIGN_END' => JHTML::_('date', $file['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null));
-									$tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum']);
+									$tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum'], '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
 
 									$from = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
 									$from_id = 62;
@@ -205,7 +205,7 @@ class PlgFabrik_FormEmundussetstatus extends plgFabrik_Form {
 								$mailer = JFactory::getMailer();
 
 								$post = array();
-								$tags = $m_email->setTags($recipient['id'], $post);
+								$tags = $m_email->setTags($recipient['id'], $post, $fnum, '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
 
 								$from = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
 								$from_id = 62;

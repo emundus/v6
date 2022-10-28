@@ -1,14 +1,13 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-
 hikashop_loadJslib('jquery');
 $js = '';
 $params = null;
@@ -22,6 +21,7 @@ $this->params->set('vote_ref_id',$product_id);
 $this->params->set('productlayout','show_tabular');
 $layout_vote_mini = hikashop_getLayout('vote', 'mini', $this->params, $js);
 $layout_vote_listing = hikashop_getLayout('vote', 'listing', $this->params, $js);
+$comments_count = $this->params->get('comments_count', -1);
 $layout_vote_form = hikashop_getLayout('vote', 'form', $this->params, $js);
 $config =& hikashop_config();
 $status_vote = $config->get('enable_status_vote');
@@ -34,37 +34,55 @@ if(!empty($this->fields)){
 
 ?>
 <div id="hikashop_product_top_part" class="hikashop_product_top_part">
+<!-- TOP BEGIN EXTRA DATA -->
 <?php if(!empty($this->element->extraData->topBegin)) { echo implode("\r\n", $this->element->extraData->topBegin); } ?>
+<!-- EO TOP BEGIN EXTRA DATA -->
 	<h1>
+<!-- PRODUCT NAME -->
 		<span id="hikashop_product_name_main" class="hikashop_product_name_main" itemprop="name"><?php
 			if (hikashop_getCID('product_id')!=$this->element->product_id && isset ($this->element->main->product_name))
 				echo $this->element->main->product_name;
 			else
 				echo $this->element->product_name;
 		?></span>
+<!-- EO PRODUCT NAME -->
+<!-- PRODUCT CODE -->
 <?php if ($this->config->get('show_code')) { ?>
-		<span id="hikashop_product_code_main" class="hikashop_product_code_main" itemprop="sku">
+		<span id="hikashop_product_code_main" class="hikashop_product_code_main">
 			<?php
 				echo $this->element->product_code;
 			?>
 		</span>
 <?php } ?>
+<!-- EO PRODUCT CODE -->
+		<meta itemprop="sku" content="<?php echo $this->element->product_code; ?>">
+		<meta itemprop="productID" content="<?php echo $this->element->product_code; ?>">
 	</h1>
+<!-- TOP END EXTRA DATA -->
 <?php if(!empty($this->element->extraData->topEnd)) { echo implode("\r\n", $this->element->extraData->topEnd); } ?>
+<!-- EO TOP END EXTRA DATA -->
+<!-- SOCIAL NETWORKS BUTTONS -->
 <?php
 	$this->setLayout('show_block_social');
 	echo $this->loadTemplate();
 ?>
+<!-- EO SOCIAL NETWORKS BUTTONS -->
 </div>
 <div class="hk-row-fluid">
 <div id="hikashop_product_left_part" class="hikashop_product_left_part hkc-md-6">
+<!-- LEFT BEGIN EXTRA DATA -->
 <?php
 	if(!empty($this->element->extraData->leftBegin)) { echo implode("\r\n", $this->element->extraData->leftBegin); }
-
+?>
+<!-- EO LEFT BEGIN EXTRA DATA -->
+<!-- IMAGES -->
+<?php
 	$this->row =& $this->element;
 	$this->setLayout('show_block_img');
 	echo $this->loadTemplate();
 ?>
+<!-- EO IMAGES -->
+<!-- MINI DESCRIPTION -->
 	<div id="hikashop_product_description_main_mini" class="hikashop_product_description_main_mini"><?php
 		if(!empty($this->element->product_description)) {
 			$function = 'mb_substr';
@@ -76,20 +94,31 @@ if(!empty($this->fields)){
 			echo JHTML::_('content.prepare',$resume);
 		}
 	?></div>
+<!-- EO MINI DESCRIPTION -->
+<!-- LEFT END EXTRA DATA -->
 <?php
 	if(!empty($this->element->extraData->leftEnd))
 		echo implode("\r\n",$this->element->extraData->leftEnd);
 ?>
+<!-- EO LEFT END EXTRA DATA -->
 </div>
 <div id="hikashop_product_right_part" class="hikashop_product_right_part hkc-md-6">
 <?php
-	if(!empty($this->element->extraData->rightBegin))
-		echo implode("\r\n",$this->element->extraData->rightBegin);
-
 	$itemprop_offer = '';
 	if (!empty($this->element->prices))
 		$itemprop_offer = 'itemprop="offers" itemscope itemtype="https://schema.org/Offer"';
+	$form = ',0';
+	if(!$this->config->get('ajax_add_to_cart', 1)) {
+		$form = ',\'hikashop_product_form\'';
+	}
 ?>
+<!-- RIGHT BEGIN EXTRA DATA -->
+<?php
+	if(!empty($this->element->extraData->rightBegin))
+		echo implode("\r\n",$this->element->extraData->rightBegin);
+?>
+<!-- EO RIGHT BEGIN EXTRA DATA -->
+<!-- PRICES -->
 	<span id="hikashop_product_price_main" class="hikashop_product_price_main" <?php echo $itemprop_offer; ?>>
 <?php
 	if($this->params->get('show_price') && (empty($this->displayVariants['prices']) || $this->params->get('characteristic_display') != 'list')) {
@@ -97,20 +126,24 @@ if(!empty($this->fields)){
 		$this->setLayout('listing_price');
 		echo $this->loadTemplate();
 
-		if (!empty($this->element->prices)) {
-?>			<meta itemprop="availability" content="https://schema.org/<?php echo ($this->row->product_quantity != 0) ? 'InStock' : 'OutOfstock' ;?>" />
-<?php	}
 
 		$CurrId = hikashop_getCurrency();
 		$null = null;
 		$currency = $this->currencyHelper->getCurrencies($CurrId, $null);
 		$CurrCode = $currency[$CurrId]->currency_code;
-		if (!empty($this->element->prices)) {
-?>			<meta itemprop="priceCurrency" content="<?php echo $CurrCode; ?>" />
-<?php	}
+	if (!empty($this->element->prices)) {
+?>
+		<meta itemprop="price" content="<?php echo $this->itemprop_price; ?>" />
+		<meta itemprop="availability" content="https://schema.org/<?php echo ($this->row->product_quantity != 0) ? 'InStock' : 'OutOfstock' ;?>" />
+		<meta itemprop="priceCurrency" content="<?php echo $CurrCode; ?>" />
+<?php
+		}
 	}
 ?>
-	</span><br />
+	</span>
+<!-- EO PRICES -->
+	<br />
+<!-- VOTE MINI -->
 	<div id="hikashop_product_vote_mini" class="hikashop_product_vote_mini">
 <?php
 	if($this->params->get('show_vote_product') == '-1') {
@@ -121,6 +154,8 @@ if(!empty($this->fields)){
 	}
 ?>
 	</div>
+<!-- EO VOTE MINI -->
+<!-- CHARACTERISTICS -->
 <?php
 	if($this->params->get('characteristic_display') != 'list') {
 		$this->setLayout('show_block_characteristic');
@@ -129,11 +164,10 @@ if(!empty($this->fields)){
 		<br />
 <?php
 	}
-
-	$form = ',0';
-	if(!$this->config->get('ajax_add_to_cart', 1)) {
-		$form = ',\'hikashop_product_form\'';
-	}
+?>
+<!-- EO CHARACTERISTICS -->
+<!-- OPTIONS -->
+<?php
 	if(hikashop_level(1) && !empty ($this->element->options)) {
 ?>
 		<div id="hikashop_product_options" class="hikashop_product_options"><?php
@@ -149,6 +183,10 @@ if(!empty($this->fields)){
 <?php
 		}
 	}
+?>
+<!-- EO OPTIONS -->
+<!-- CUSTOM ITEM FIELDS -->
+<?php
 	if (!$this->params->get('catalogue') && ($this->config->get('display_add_to_cart_for_free_products') ||  ($this->config->get('display_add_to_wishlist_for_free_products', 1) && hikashop_level(1) && $this->params->get('add_to_wishlist') && $config->get('enable_wishlist', 1)) || !empty ($this->element->prices))) {
 		if (!empty ($this->itemFields)) {
 			$form = ',\'hikashop_product_form\'';
@@ -161,34 +199,46 @@ if(!empty($this->fields)){
 			echo $this->loadTemplate();
 		}
 	}
-	$this->formName = $form;
+?>
+<!-- EO CUSTOM ITEM FIELDS -->
+<!-- TOTAL PRICE WITH OPTIONS -->
+<?php
 	if($this->params->get('show_price')) {
 ?>
 		<span id="hikashop_product_price_with_options_main" class="hikashop_product_price_with_options_main"></span>
 <?php
 	}
 ?>
+<!-- EO TOTAL PRICE WITH OPTIONS -->
+<!-- CONTACT BUTTON -->
 	<div id="hikashop_product_contact_main" class="hikashop_product_contact_main">
 <?php
 	$contact = $this->config->get('product_contact', 0);
 	if(hikashop_level(1) && ($contact == 2 || ($contact == 1 && !empty($this->element->product_contact)))) {
 		$css_button = $this->config->get('css_button', 'hikabtn');
-?>
-			<a href="<?php echo hikashop_completeLink('product&task=contact&cid=' . (int)$this->element->product_id . $this->url_itemid); ?>" class="<?php echo $css_button; ?>"><?php
-				echo JText::_('CONTACT_US_FOR_INFO');
-			?></a>
-<?php
+		$attributes = 'class="'.$css_button.'"';
+		$fallback_url = hikashop_completeLink('product&task=contact&cid=' . (int)$this->element->product_id . $this->url_itemid);
+		$content = JText::_('CONTACT_US_FOR_INFO');
+
+		echo $this->loadHkLayout('button', array( 'attributes' => $attributes, 'content' => $content, 'fallback_url' => $fallback_url));
 	}
 ?>
 	</div>
+<!-- EO CONTACT BUTTON -->
+<!-- RIGHT MIDDLE EXTRA DATA -->
 <?php
 	if(!empty($this->element->extraData->rightMiddle))
 		echo implode("\r\n",$this->element->extraData->rightMiddle);
+?>
+<!-- EO RIGHT MIDDLE EXTRA DATA -->
+<?php
+	$this->formName = $form;
 ?>
 	<span id="hikashop_product_id_main" class="hikashop_product_id_main">
 		<input type="hidden" name="product_id" value="<?php echo $this->element->product_id; ?>" />
 	</span>
 	<br />
+<!-- ADD TO CART -->
 <?php if(empty ($this->element->characteristics) || $this->params->get('characteristic_display') != 'list') { ?>
 		<div id="hikashop_product_quantity_main" class="hikashop_product_quantity_main"><?php
 			$this->row = & $this->element;
@@ -201,22 +251,32 @@ if(!empty($this->fields)){
 		</div>
 <?php
 	}
-
+?>
+<!-- EO ADD TO CART -->
+<!-- FILES -->
+<?php
 	$this->setLayout('show_block_product_files');
 	echo $this->loadTemplate();
-
+?>
+<!-- EO FILES -->
+<!-- TAGS -->
+<?php
 	if(HIKASHOP_J30) {
 		$this->setLayout('show_block_tags');
 		echo $this->loadTemplate();
 	}
-
+?>
+<!-- EO TAGS -->
+<!-- RIGHT END EXTRA DATA -->
+<?php
 	if(!empty($this->element->extraData->rightEnd))
 		echo implode("\r\n",$this->element->extraData->rightEnd);
 ?>
+<!-- EO RIGHT END EXTRA DATA -->
 </div>
 </div>
 	<input type="hidden" name="cart_type" id="type" value="cart"/>
-	<input type="hidden" name="add" value="1"/>
+	<input type="hidden" name="add" value="<?php echo !$this->config->get('synchronized_add_to_cart', 0); ?>"/>
 	<input type="hidden" name="ctrl" value="product"/>
 	<input type="hidden" name="task" value="updatecart"/>
 	<input type="hidden" name="return_url" value="<?php echo urlencode(base64_encode(urldecode($this->redirect_url)));?>"/>
@@ -225,57 +285,85 @@ if(!empty($this->fields)){
 	$description = trim(JHTML::_('content.prepare',preg_replace('#<hr *id="system-readmore" */>#i','',$this->element->product_description)));
 	$selected = '';
 ?>
+<!-- END GRID -->
 <div id="hikashop_product_bottom_part" class="hikashop_product_bottom_part show_tabular">
-	<div id="hikashop_tabs_div">
-		<ul class="hikashop_tabs_ul">
-<?php if(!empty($description) || !empty ($this->element->product_url)) {
-		if(empty($selected)) $selected = 'hikashop_show_tabular_description'; ?>
-			<li id="hikashop_show_tabular_description_li" class="hikashop_tabs_li ui-corner-top"><?php echo JText::_('PRODUCT_DESCRIPTION');?></li>
-<?php } ?>
-<?php if(!empty($specif_tab_content)) {
-		if(empty($selected)) $selected = 'hikashop_show_tabular_specification'; ?>
-			<li id="hikashop_show_tabular_specification_li" class="hikashop_tabs_li ui-corner-top"><?php echo JText::_('SPECIFICATIONS');?></li>
-<?php } ?>
-<?php if(in_array($status_vote, array('comment', 'two', 'both'))) {
-		if(empty($selected)) $selected = 'hikashop_show_tabular_comment'; ?>
-			<li id="hikashop_show_tabular_comment_li" class="hikashop_tabs_li ui-corner-top"><?php echo JText::_('PRODUCT_COMMENT');?></li>
-			<li id="hikashop_show_tabular_new_comment_li" class="hikashop_tabs_li ui-corner-top"><?php echo JText::_('PRODUCT_NEW_COMMENT');?></li>
-<?php } ?>
-		</ul>
+<!-- BOTTOM BEGIN EXTRA DATA -->
 <?php
 	if(!empty($this->element->extraData->bottomBegin))
 		echo implode("\r\n",$this->element->extraData->bottomBegin);
 ?>
+<!-- EO BOTTOM BEGIN EXTRA DATA -->
+	<div id="hikashop_tabs_div">
+		<ul class="hikashop_tabs_ul">
+<!-- DESCRIPTION TAB TITLE -->
+<?php if(!empty($description) || !empty ($this->element->product_url)) {
+		if(empty($selected)) $selected = 'hikashop_show_tabular_description'; ?>
+			<li id="hikashop_show_tabular_description_li" class="hikashop_tabs_li ui-corner-top"><?php echo JText::_('PRODUCT_DESCRIPTION');?></li>
+<?php } ?>
+<!-- EO DESCRIPTION TAB TITLE -->
+<!-- SPECIFICATION TAB TITLE -->
+<?php if(!empty($specif_tab_content)) {
+		if(empty($selected)) $selected = 'hikashop_show_tabular_specification'; ?>
+			<li id="hikashop_show_tabular_specification_li" class="hikashop_tabs_li ui-corner-top"><?php echo JText::_('SPECIFICATIONS');?></li>
+<?php } ?>
+<!-- EO SPECIFICATION TAB TITLE -->
+<!-- VOTE TAB TITLE -->
+<?php if(in_array($status_vote, array('comment', 'two', 'both'))) {
+		if(empty($selected)) $selected = 'hikashop_show_tabular_comment';
+		if($comments_count != 0) { ?>
+			<li id="hikashop_show_tabular_comment_li" class="hikashop_tabs_li ui-corner-top"><?php echo JText::_('PRODUCT_COMMENT');?><?php if($comments_count>0) echo ' ('.$comments_count.')'; ?></li>
+<?php } ?>
+			<li id="hikashop_show_tabular_new_comment_li" class="hikashop_tabs_li ui-corner-top"><?php echo JText::_('PRODUCT_NEW_COMMENT');?></li>
+<?php } ?>
+<!-- EO VOTE TAB TITLE -->
+		</ul>
 <?php if(!empty($description) || !empty ($this->element->product_url)) { ?>
 		<div class="hikashop_tabs_content" id="hikashop_show_tabular_description">
+<!-- DESCRIPTION -->
 <?php if(!empty($description)) { ?>
 			<div id="hikashop_product_description_main" class="hikashop_product_description_main" itemprop="description"><?php
 				echo $description;
 			?></div>
 <?php } ?>
+<!-- EO DESCRIPTION -->
+<!-- MANUFACTURER URL -->
 			<span id="hikashop_product_url_main" class="hikashop_product_url_main"><?php
 				if (!empty ($this->element->product_url)) {
 					echo JText::sprintf('MANUFACTURER_URL', '<a href="' . $this->element->product_url . '" target="_blank">' . $this->element->product_url . '</a>');
 				}
 			?></span>
-		</div>
-<?php } ?>
-<?php if(!empty($specif_tab_content)) { ?>
-		<div class="hikashop_tabs_content" id="hikashop_show_tabular_specification"><?php
-				echo $specif_tab_content;
-		?></div>
-<?php }
-	if($status_vote == "comment" || $status_vote == "two" || $status_vote == "both" ) { ?>
-		<form action="<?php echo hikashop_currentURL() ?>" method="post" name="adminForm_hikashop_comment_form" id="hikashop_comment_form">
+<!-- EO MANUFACTURER URL -->
+<!-- BOTTOM MIDDLE EXTRA DATA -->
 <?php
 			if(!empty($this->element->extraData->bottomMiddle))
 				echo implode("\r\n",$this->element->extraData->bottomMiddle);
+?>
+<!-- EO BOTTOM MIDDLE EXTRA DATA -->
+		</div>
+<?php } ?>
+<?php if(!empty($specif_tab_content)) { ?>
+		<div class="hikashop_tabs_content" id="hikashop_show_tabular_specification">
+<!-- SPECIFICATIONS -->
+		<?php
+				echo $specif_tab_content;
+		?>
+<!-- EO SPECIFICATIONS -->
+		</div>
+<?php }
+?>
+<!-- VOTE TAB -->
+<?php
+	if($status_vote == "comment" || $status_vote == "two" || $status_vote == "both" ) { ?>
+		<form action="<?php echo hikashop_currentURL() ?>" method="post" name="adminForm_hikashop_comment_form" id="hikashop_comment_form">
+<?php
+			if($comments_count != 0) {
 ?>
 			<div class="hikashop_tabs_content" id="hikashop_show_tabular_comment">
 				<div id="hikashop_vote_listing" data-votetype="product" class="hikashop_product_vote_listing"><?php
 					echo $layout_vote_listing;
 				?></div>
 			</div>
+<?php } ?>
 			<div class="hikashop_tabs_content" id="hikashop_show_tabular_new_comment">
 				<div id="hikashop_vote_form" data-votetype="product" class="hikashop_product_vote_form"><?php
 					echo $layout_vote_form;
@@ -283,11 +371,14 @@ if(!empty($this->fields)){
 			</div>
 		</form>
 <?php } ?>
-<input type="hidden" name="selected_tab" id="selected_tab" value="<?php echo $selected; ?>"/>
+<!-- EO VOTE TAB -->
+<!-- BOTTOM END EXTRA DATA -->
 <?php
 	if(!empty($this->element->extraData->bottomEnd))
 		echo implode("\r\n",$this->element->extraData->bottomEnd);
 ?>
+<!-- EO BOTTOM END EXTRA DATA -->
+<input type="hidden" name="selected_tab" id="selected_tab" value="<?php echo $selected; ?>"/>
 	</div>
 </div>
 <script type="text/javascript">

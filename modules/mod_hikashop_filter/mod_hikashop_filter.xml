@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="2.5" method="upgrade">
 	<name>Hikashop Filtering Module</name>
-	<creationDate>10 août 2020</creationDate>
-	<version>4.3.0</version>
+	<creationDate>25 septembre 2022</creationDate>
+	<version>4.6.2</version>
 	<author>Hikari Software</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<copyright>(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>Content display for Hikashop</description>
 	<files>
@@ -33,7 +33,7 @@
 			<option value="inside">Inside</option>
 		</param>
 		<param name="filters" type="filters" default="" label="Filters" description="Select the filters you want to be displayed in that module" />
-		<param name="itemid" type="text" default="2882" label="Menu" description="The id of the hikashop products listing menu where to redirect" />
+		<param name="itemid" type="text" default="2985" label="Menu" description="The id of the hikashop products listing menu where to redirect" />
 		<param name="force_redirect" type="radio" default="1" label="Force redirect" description="Force the redirection to the menu specified above when the filters of the module are used">
 			<option value="0">No</option>
 			<option value="1">Yes</option>
@@ -101,7 +101,7 @@
 					<option value="inside">Inside</option>
 				</field>
 				<field name="filters" type="filters" default="" label="Filters" description="Select the filters you want to be displayed in that module" />
-				<field name="itemid" type="text" default="2882" label="Menu" description="The id of the hikashop products listing menu where to redirect" />
+				<field name="itemid" type="text" default="2985" label="Menu" description="The id of the hikashop products listing menu where to redirect" />
 				<field name="force_redirect" type="radio" default="1" label="Force redirect" description="Force the redirection to the menu specified above when the filters of the module are used" class="btn-group btn-group-yesno">
 					<option value="0">No</option>
 					<option value="1">Yes</option>

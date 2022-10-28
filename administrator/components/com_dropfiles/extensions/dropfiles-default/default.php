@@ -54,7 +54,7 @@ class PlgDropfilesthemesDefault extends DropfilesPluginBase
         );
 
         $scripts = array(
-            JURI::base('true') . '/components/com_dropfiles/assets/js/handlebars-v4.1.0.js',
+            JURI::base('true') . '/components/com_dropfiles/assets/js/handlebars-v4.7.7.js',
             JURI::base('true') . '/components/com_dropfiles/assets/js/jaofoldertree.js',
             JURI::base('true') . '/components/com_dropfiles/assets/js/colorbox.init.js',
             JURI::base('true') . '/plugins/dropfilesthemes/default/js/script.js'
@@ -63,7 +63,7 @@ class PlgDropfilesthemesDefault extends DropfilesPluginBase
         $styles = array(
             JURI::base('true') . '/components/com_dropfiles/assets/css/jaofoldertree.css',
             JURI::base('true') . '/components/com_dropfiles/assets/css/material-design-iconic-font.min.css',
-            JURI::base('true') . '/plugins/dropfilesthemes/default/style.css'
+            JURI::base('true') . '/plugins/dropfilesthemes/default/style_ver5.4.css'
         );
 
         // Register classes
@@ -95,7 +95,11 @@ class PlgDropfilesthemesDefault extends DropfilesPluginBase
             $this->categories = $this->options['categories'];
 
             if (!in_array($this->name, parent::getDropfilesThemes())) {
-                $this->params = $this->params->toObject();
+                if (is_array($this->params)) {
+                    $this->params = (object) $this->params;
+                } elseif ($this->params instanceof Joomla\Registry\Registry) {
+                    $this->params = $this->params->toObject();
+                }
             } else {
                 $this->params = $this->options['params'];
             }
@@ -116,8 +120,9 @@ class PlgDropfilesthemesDefault extends DropfilesPluginBase
             $marginLeft = (int) DropfilesBase::loadValue($this->params, 'marginleft', 10);
 
             $columnPercent = 50;
-            if ($options['columns'] > 0) {
-                switch ($options['columns']) {
+            $columns = (int) DropfilesBase::loadValue($this->params, 'columns', 2);
+            if ($columns > 0) {
+                switch ($columns) {
                     case 1:
                         $columnPercent = 100;
                         break;
@@ -125,26 +130,25 @@ class PlgDropfilesthemesDefault extends DropfilesPluginBase
                         $columnPercent = 100 / 3 ;
                         break;
                     case 2:
-                    default:
                         break;
                 }
             }
 
-            $columnStyle = 'flex-basis: calc(' . $columnPercent . '% - ' . (20 + $marginRight + $marginLeft) . 'px);';
-            $columnStyle .= 'max-width: calc(' . $columnPercent . '% - ' . (20 + $marginRight + $marginLeft) . 'px);';
-            $style = '.dropfiles-content-default .dropfiles_list .file,.dropfiles-content.dropfiles-content-default .dropfilescategory {margin : ';
+            $columnStyle = 'flex-basis: calc(' . $columnPercent . '% - ' . ($marginRight + $marginLeft) . 'px);';
+            $columnStyle .= 'max-width: calc(' . $columnPercent . '% - ' . ($marginRight + $marginLeft) . 'px);';
+            $style = '.dropfiles-content-default[data-category="'.$this->category->id.'"] .dropfiles_list .file,.dropfiles-content.dropfiles-content-default[data-category="'.$this->category->id.'"] .dropfilescategory:not(.backcategory), .dropfiles-content.dropfiles-content-default[data-category="'.$this->category->id.'"] .dropfilescategory_placeholder {margin : ';
             $style .= DropfilesBase::loadValue($this->params, 'margintop', 10) . 'px ';
             $style .= $marginRight . 'px ';
             $style .= DropfilesBase::loadValue($this->params, 'marginbottom', 10) . 'px ';
             $style .= $marginLeft . 'px !important;';
             $style .= '}';
-            $style .= '.dropfiles-content-default .dropfiles_list .file {' . $columnStyle . '}';
-            $oneColumnStyle = 'flex-basis: calc(100% - ' . (20 + $marginRight + $marginLeft) . 'px);';
-            $oneColumnStyle .= 'max-width: calc(100% - ' . (20 + $marginRight + $marginLeft) . 'px);';
+            $style .= '.dropfiles-content-default[data-category="'.$this->category->id.'"] .dropfiles_list .file {' . $columnStyle . '}';
+            $oneColumnStyle = 'flex-basis: calc(100% - ' . ($marginRight + $marginLeft) . 'px);';
+            $oneColumnStyle .= 'max-width: calc(100% - ' . ($marginRight + $marginLeft) . 'px);';
             $style .= '@media only screen and (max-width: 900px) {';
-            $style .= '.dropfiles-content-default .dropfiles_list .file {' .$oneColumnStyle.'}';
+            $style .= '.dropfiles-content-default[data-category="'.$this->category->id.'"] .dropfiles_list .file {' .$oneColumnStyle.'}';
             $style .= '}';
-            $style .= ' .dropfiles-content-default .file .downloadlink {background-color:';
+            $style .= ' .dropfiles-content-default[data-category="'.$this->category->id.'"] .file .downloadlink, .dropfiles-content-default[data-category="'.$this->category->id.'"] .download-all, .dropfiles-content-default[data-category="'.$this->category->id.'"] .download-selected {background-color:';
             $style .= DropfilesBase::loadValue($this->params, 'bgdownloadlink', '#76bc58') . ' !important;color:';
             $style .= DropfilesBase::loadValue($this->params, 'colordownloadlink', '#fff') . ' !important;}';
             $doc->addStyleDeclaration($style);

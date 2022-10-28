@@ -20,13 +20,15 @@ defined('_JEXEC') || die;
                  class="btn-group button-primary btn-categories
                  <?php echo $this->params->get('google_credentials', '') ? '' : 'centpc' ?>">
                 <a class="btn btn-default" href="">
-                    <i class="material-icons material-icons-new_folder">create_new_folder</i>
+                    <i class="material-icons material-icons-new_folder plus-icons">add</i>
                     <?php echo JText::_('COM_DROPFILES_LAYOUT_DROPFILES_NEW_CATEGORY'); ?>
                 </a>
                 <?php if (($this->params->get('google_credentials', '') !== '') ||
                     ($this->params->get('dropbox_token', '') !== '') ||
-                    ($this->params->get('onedriveCredentials', '') !== '')) : ?>
-                    <a class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
+                    ($this->params->get('onedriveCredentials', '') !== '') ||
+                    ($this->params->get('onedriveBusinessKey', '') !== '' && $this->params->get('onedriveBusinessSecret', '') !== '' &&
+                    isset($this->params['onedriveBusinessConnected']) && (int) $this->params['onedriveBusinessConnected'] === 1)
+                ) : ?>
                     <ul class="dropdown-menu pull-right">
                         <?php if ($this->params->get('google_credentials', '')) { ?>
                             <li><a href="#" class="googleCat">
@@ -39,7 +41,7 @@ defined('_JEXEC') || die;
                             <li>
                                 <a href="#" class="dropboxcat">
                                     <i class="dropbox-icon"></i>
-                                    <?php echo JText::_('New Dropbox Folder'); ?>
+                                    <?php echo JText::_('Dropbox'); ?>
                                 </a>
                             </li>
                         <?php } ?>
@@ -47,32 +49,54 @@ defined('_JEXEC') || die;
                             <li>
                                 <a href="#" class="onedrivecat">
                                     <i class="onedrive-icon"></i>
-                                    <?php echo JText::_('New OneDrive Folder'); ?>
+                                    <?php echo JText::_('OneDrive'); ?>
+                                </a>
+                            </li>
+                        <?php } ?>
+                        <?php if ($this->params->get('onedriveBusinessKey', '') !== '' && $this->params->get('onedriveBusinessSecret', '') !== '' &&
+                            isset($this->params['onedriveBusinessConnected']) && (int) $this->params['onedriveBusinessConnected'] === 1) { ?>
+                            <li><a href="#" class="onedrivebusinesscat">
+                                    <i class="onedrivebusiness-icon"></i>
+                                    <?php echo JText::_('COM_DROPFILES_ONEDRIVE_BUSINESS_NEW_ONEDRIVE_BUSINESS'); ?>
                                 </a>
                             </li>
                         <?php } ?>
                     </ul>
                 <?php endif; ?>
             </div>
-            <?php if ($this->params->get('google_credentials') !== null) : ?>
-                <button href="#" id="btn-sync-gg" data-loading-text="Syncing with Google Drive"
-                        class="btn btn-default btn-sync-google">
-                    <i class="icon-refresh"></i>&nbsp;
-                    <?php echo JText::_('COM_DROPFILES_LAYOUT_SYNC_WITH_GOOGLE_DRIVE'); ?>
-                </button>
+
+            <?php if ($this->params->get('google_credentials') !== null || $this->params->get('dropbox_token', '') !== '' || $this->params->get('onedriveCredentials', '') !== '' ||
+                ($this->params->get('onedriveBusinessKey', '') !== '' && $this->params->get('onedriveBusinessSecret', '') !== '' &&
+                    isset($this->params['onedriveBusinessConnected']) && (int) $this->params['onedriveBusinessConnected'] === 1)) : ?>
+            <div class="dropfiles-sync-buttons">
+                <?php if ($this->params->get('google_credentials') !== null) : ?>
+                    <button href="#" id="btn-sync-gg" data-loading-text="Syncing with Google Drive"
+                            class="btn btn-default btn-sync-google">
+                        <i class="dropfiles-cloud-icon dropfiles-svg-icon-sync-googledrive"></i>
+                    </button>
+                <?php endif; ?>
+                <?php if ($this->params->get('dropbox_token', '') !== '') { ?>
+                    <button href="#" id="btn-sync-dropbox" data-loading-text="Syncing with Dropbox"
+                            class="btn btn-default btn-sync-dropbox">
+                        <i class="dropfiles-cloud-icon dropfiles-svg-icon-sync-dropbox"></i>
+                    </button>
+                <?php } ?>
+                <?php if ($this->params->get('onedriveCredentials', '') !== '') { ?>
+                    <button href="#" id="btn-sync-onedrive" data-loading-text="Syncing with OneDrive"
+                            class="btn btn-onedrive btn-sync-onedrive">
+                        <i class="dropfiles-cloud-icon dropfiles-svg-icon-sync-onedrive"></i>
+                    </button>
+                <?php } ?>
+                <?php if ($this->params->get('onedriveBusinessKey', '') !== '' && $this->params->get('onedriveBusinessSecret', '') !== '' &&
+                    isset($this->params['onedriveBusinessConnected']) && (int) $this->params['onedriveBusinessConnected'] === 1) { ?>
+                    <button href="#" id="btn-sync-onedrive-business" title="Syncing with OneDrive Business" data-loading-text="Syncing with OneDrive Business"
+                            class="btn btn-onedrive-business btn-sync-onedrive-business">
+                        <i class="dropfiles-cloud-icon dropfiles-svg-icon-sync-onedrive"></i>
+                    </button>
+                <?php } ?>
+            </div>
             <?php endif; ?>
-            <?php if ($this->params->get('dropbox_token', '') !== '') { ?>
-                <button href="#" id="btn-sync-dropbox" data-loading-text="Syncing with Dropbox"
-                        class="btn btn-default btn-sync-dropbox">
-                    <i class="icon-refresh"></i>&nbsp;<?php echo JText::_('COM_DROPFILES_LAYOUT_SYNC_WITH_DROPBOX'); ?>
-                </button>
-            <?php } ?>
-            <?php if ($this->params->get('onedriveCredentials', '') !== '') { ?>
-                <button href="#" id="btn-sync-onedrive" data-loading-text="Syncing with OneDrive"
-                        class="btn btn-onedrive btn-sync-onedrive">
-                    <i class="icon-refresh"></i>&nbsp;<?php echo JText::_('COM_DROPFILES_LAYOUT_SYNC_WITH_ONEDRIVE'); ?>
-                </button>
-            <?php } ?>
+
         <?php endif; ?>
 
         <div class="nested dd">
@@ -113,6 +137,10 @@ defined('_JEXEC') || die;
             </ol>
             <input type="hidden" id="categoryToken" name="<?php echo JSession::getFormToken(); ?>"/>
         </div>
+        <div id="dropfiles-hamburger">
+            <div class="material-leftright"></div>
+            <span><?php echo JText::_('COM_DROPFILES_LAYOUT_DROPFILES_CATEGORY'); ?></span>
+        </div>
 
     </div>
 
@@ -139,6 +167,9 @@ function openItem($category, $key, $canDo)
         case 'onedrive':
             $icon = '<i class="onedrive-icon-white"></i> ';
             break;
+        case 'onedrivebusiness':
+            $icon = '<i class="onedrive-business-icon-white"></i> ';
+            break;
         default:
             $icon = '<i class="zmdi zmdi-folder dropfiles-folder"></i>';
             break;
@@ -161,10 +192,13 @@ function openItem($category, $key, $canDo)
         <div class="' . $disable . $dd_handle . ' dd3-handle">' . $icon . '</div>
         <div class="dd-content dd3-content' . $dd_handle . $disable . '">';
     if ($canDo->get('core.delete') && !isset($category->disable)) {
-        $return .= '<a class="trash"><i class="icon-trash"></i></a>';
+        $return .= '<a class="trash" title="Delete"><i class="icon-trash"></i></a>';
     }
     if ($canDo->get('core.edit') || $canDo->get('core.edit.own') && !isset($category->disable)) {
-        $return .= '<a class="edit"><i class="icon-edit"></i></a>';
+        $return .= '<a class="edit" title="Edit"><i class="icon-edit"></i></a>';
+        if ($category->type === 'googledrive') {
+            $return .= '<a class="sync" title="Sync"><i class="icon-sync"></i></a>';
+        }
     }
     $return .= '<a href="" class="t' . $disable . '">
                 <span class="title">' . $category->title . '</span>
@@ -203,8 +237,8 @@ function itemContent($category)
         <i class="zmdi zmdi-folder dropfiles-folder"></i></div>
         <div class="dd-content dd3-content dd-handle">
             <i class="icon-chevron-right"></i>
-            <a class="trash"><i class="icon-trash"></i></a>
-            <a class="edit"><i class="icon-edit"></i></a>
+            <a class="trash"><i class="icon-trash" title="Delete"></i></a>
+            <a class="edit"><i class="icon-edit" title="Edit"></i></a>
             <a href="" class="t">
                 <span class="title">' . $category->title . '</span>
             </a>

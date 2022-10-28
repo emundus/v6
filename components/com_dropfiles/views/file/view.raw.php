@@ -61,7 +61,7 @@ class DropfilesViewFile extends JViewLegacy
         $allTagsFiles = array();
         if ($tags) {
             foreach ($tags as $tag) {
-                $allTagsFiles[] = '' . htmlentities(stripslashes($tag->text));
+                $allTagsFiles[] = '' . htmlentities(stripslashes($tag->text), ENT_QUOTES, 'UTF-8');
             }
             $this->allTagsFiles = '["' . implode('","', $allTagsFiles) . '"]';
         } else {

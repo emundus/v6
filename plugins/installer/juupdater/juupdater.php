@@ -40,9 +40,9 @@ class PlgInstallerJuupdater extends JPlugin
             $res_body = json_decode($response->body);
             if ($res_body->status === false) {
                 if ($res_body->linkdownload !== '') {
-                    JError::raiseError('', $res_body->linkdownload);
+                    $app->enqueueMessage($res_body->linkdownload, 'error');
                 } else {
-                    JError::raiseError('', $res_body->datas);
+                    $app->enqueueMessage($res_body->datas, 'error');
                 }
                 $app->redirect(JUri::base() . 'index.php?option=com_installer&view=update');
             }

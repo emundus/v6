@@ -41,22 +41,21 @@ class EmundusModelChecklist extends JModelList
 		} else {
 			$this->_user = JFactory::getSession()->get('emundusUser');
 		}
-		//echo $this->_user->usertype;
 	}
 
-	function getGreeting(){
+	function getGreeting() {
 		$query = 'SELECT id, title, text FROM #__emundus_setup_checklist WHERE page = "checklist" ';
-		$note = 0;//$this->getResult();
-		if($note && is_numeric($note) && $note>1) $this->_need = $note;
+		$note = 0;
+		if ($note && is_numeric($note) && $note>1) {
+            $this->_need = $note;
+        }
 		$query .= 'AND (whenneed = '.$this->_need . ' OR whenneed='.$this->_user->status.')';
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObject();
 	}
 
-	function getInstructions()
-	{
+	function getInstructions() {
 		$query = 'SELECT id, title, text FROM #__emundus_setup_checklist WHERE page = "instructions"';
-		//$query.= $this->_need?'1':'0';
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObject();
 	}
@@ -78,32 +77,19 @@ class EmundusModelChecklist extends JModelList
 
 	function getAttachmentsList() {
 
-        // Check if column campaign_id exist in emundus_setup_attachment_profiles
-        $config = new JConfig();
-        $db_name = $config->db;
-
-        $query = $this->_db->getQuery(true);
-        $query->select('COUNT(*)')
-            ->from($this->_db->quoteName('information_schema.columns'))
-            ->where($this->_db->quoteName('table_schema') . ' = ' . $this->_db->quote($db_name))
-            ->andWhere($this->_db->quoteName('table_name') . ' = ' . $this->_db->quote('jos_emundus_setup_attachment_profiles'))
-            ->andWhere($this->_db->quoteName('column_name') . ' = ' . $this->_db->quote('campaign_id'));
-        $this->_db->setQuery($query);
-        $exist = $this->_db->loadResult();
-
-        if (intval($exist) > 0 && !empty($this->_user->campaign_id)) {
+        if (!empty($this->_user->campaign_id)) {
 			$query = 'SELECT attachments.*, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, profiles.mandatory as mandatory, profiles.duplicate as duplicate
 					FROM #__emundus_setup_attachments AS attachments
 						INNER JOIN #__emundus_setup_attachment_profiles AS profiles ON attachments.id = profiles.attachment_id
 						LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.user_id = '.$this->_user->id.'  AND fnum like '.$this->_db->Quote($this->_user->fnum).'
-					WHERE profiles.campaign_id = '.$this->_user->campaign_id.' AND profiles.displayed = 1
+					WHERE (profiles.campaign_id = '.$this->_user->campaign_id.' OR profiles.profile_id ='.$this->_user->profile.') AND profiles.displayed = 1
 					GROUP BY attachments.id
 					ORDER BY profiles.mandatory DESC, profiles.ordering ASC';
             $this->_db->setQuery($query);
             $attachments = $this->_db->loadObjectList();
         }
 
-        if (intval($exist) == 0 || empty($attachments)) {
+        if (empty($attachments)) {
             $query = 'SELECT attachments.id, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, attachments.nbmax, attachments.value, attachments.lbl, attachments.description, attachments.allowed_types, profiles.mandatory, profiles.duplicate
 					FROM #__emundus_setup_attachments AS attachments
 						INNER JOIN #__emundus_setup_attachment_profiles AS profiles ON attachments.id = profiles.attachment_id
@@ -152,7 +138,9 @@ class EmundusModelChecklist extends JModelList
 	function getApplicant(){
 		$query = 'SELECT profile FROM #__emundus_users WHERE user_id = '.$this->_user->id;
 		$this->_db->setQuery( $query );
-		if($this->_db->loadResult() == 8) return false;
+		if ($this->_db->loadResult() == 8) {
+            return false;
+        }
 		return true;
 	}
 
@@ -188,11 +176,13 @@ class EmundusModelChecklist extends JModelList
 
 		$db = JFactory::getDBO();
 
-		if (!isset($student) && empty($student))
-			$student = JFactory::getSession()->get('emundusUser');
+		if (!isset($student) && empty($student)) {
+            $student = JFactory::getSession()->get('emundusUser');
+        }
 
-		if ($status > 1)
-			$status = 1;
+		if ($status > 1) {
+            $status = 1;
+        }
 
 		$query = 'UPDATE #__emundus_uploads SET can_be_deleted = '.$status.' WHERE user_id = '.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
 		$db->setQuery($query);
@@ -211,14 +201,51 @@ class EmundusModelChecklist extends JModelList
      * @param array $fnumInfos infos from fnum
      * @return string
      */
-	function setAttachmentName($file, $lbl, $fnumInfos) {
+	function setAttachmentName(string $file, string $lbl, array $fnumInfos): string {
 
-		//$filename = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($user->lastname.'_'.$user->firstname,ENT_NOQUOTES,'UTF-8'))));
+		$file_array = explode(".", $file);
 
-        $file_array = explode(".", $file);
-        $filename = $fnumInfos['applicant_id'].'-'.$fnumInfos['id'].'-'.trim($lbl, ' _').'-'.rand().'.'.end($file_array);
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$applicant_file_name = $eMConfig->get('applicant_file_name', null);
 
-        return $filename;
+		if (!empty($applicant_file_name)) {
+
+			require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+			$m_emails = new EmundusModelEmails;
+
+			$tags = $m_emails->setTags($fnumInfos['applicant_id'], null, $fnumInfos['fnum'], '', $applicant_file_name);
+			$application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $applicant_file_name);
+			$application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnumInfos['fnum']));
+
+			// Format filename
+			$application_form_name = $m_emails->stripAccents($application_form_name);
+			$application_form_name = preg_replace('/[^A-Za-z0-9 _.-]/','', $application_form_name);
+			$application_form_name = preg_replace('/\s/', '_', $application_form_name);
+			$application_form_name = strtolower($application_form_name);
+			$filename = $application_form_name.'_'.trim($lbl, ' _').'-'.rand().'.'.end($file_array);
+
+		} else {
+			$filename = $fnumInfos['applicant_id'].'-'.$fnumInfos['id'].'-'.trim($lbl, ' _').'-'.rand().'.'.end($file_array);
+		}
+
+		return $filename;
 	}
+
+
+    public function formatFileName(String $file, String $fnum, Array $post= []): string {
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+        $m_emails = new EmundusModelEmails;
+
+        $aid = intval(substr($fnum, 21, 7));
+        $tags = $m_emails->setTags($aid, $post, $fnum, '', $file);
+        $formatted_file = preg_replace($tags['patterns'], $tags['replacements'], $file);
+        $formatted_file = $m_emails->setTagsFabrik($formatted_file, array($fnum));
+
+        // Format filename
+        $formatted_file = $m_emails->stripAccents($formatted_file);
+        $formatted_file = preg_replace('/[^A-Za-z0-9 _.-]/','', $formatted_file);
+        $formatted_file = preg_replace('/\s/', '', $formatted_file);
+        return strtolower($formatted_file);
+    }
 }
-?>
+

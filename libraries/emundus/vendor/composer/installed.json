@@ -1,26 +1,26 @@
 [
     {
         "name": "clue/stream-filter",
-        "version": "v1.4.1",
-        "version_normalized": "1.4.1.0",
+        "version": "v1.5.0",
+        "version_normalized": "1.5.0.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/clue/php-stream-filter.git",
-            "reference": "5a58cc30a8bd6a4eb8f856adf61dd3e013f53f71"
+            "url": "https://github.com/clue/stream-filter.git",
+            "reference": "aeb7d8ea49c7963d3b581378955dbf5bc49aa320"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/clue/php-stream-filter/zipball/5a58cc30a8bd6a4eb8f856adf61dd3e013f53f71",
-            "reference": "5a58cc30a8bd6a4eb8f856adf61dd3e013f53f71",
+            "url": "https://api.github.com/repos/clue/stream-filter/zipball/aeb7d8ea49c7963d3b581378955dbf5bc49aa320",
+            "reference": "aeb7d8ea49c7963d3b581378955dbf5bc49aa320",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3"
         },
         "require-dev": {
-            "phpunit/phpunit": "^5.0 || ^4.8"
+            "phpunit/phpunit": "^9.3 || ^5.7 || ^4.8.36"
         },
-        "time": "2019-04-09T12:31:48+00:00",
+        "time": "2020-10-02T12:38:20+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -38,7 +38,7 @@
         "authors": [
             {
                 "name": "Christian Lück",
-                "email": "christian@lueck.tv"
+                "email": "christian@clue.engineering"
             }
         ],
         "description": "A simple and modern approach to stream filtering in PHP",
@@ -51,21 +51,91 @@
             "stream",
             "stream_filter_append",
             "stream_filter_register"
+        ],
+        "support": {
+            "issues": "https://github.com/clue/stream-filter/issues",
+            "source": "https://github.com/clue/stream-filter/tree/v1.5.0"
+        },
+        "funding": [
+            {
+                "url": "https://clue.engineering/support",
+                "type": "custom"
+            },
+            {
+                "url": "https://github.com/clue",
+                "type": "github"
+            }
         ]
     },
     {
-        "name": "guzzlehttp/guzzle",
-        "version": "6.5.3",
-        "version_normalized": "6.5.3.0",
+        "name": "ezyang/htmlpurifier",
+        "version": "v4.13.0",
+        "version_normalized": "4.13.0.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/guzzle/guzzle.git",
-            "reference": "aab4ebd862aa7d04f01a4b51849d657db56d882e"
+            "url": "https://github.com/ezyang/htmlpurifier.git",
+            "reference": "08e27c97e4c6ed02f37c5b2b20488046c8d90d75"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/guzzle/guzzle/zipball/aab4ebd862aa7d04f01a4b51849d657db56d882e",
-            "reference": "aab4ebd862aa7d04f01a4b51849d657db56d882e",
+            "url": "https://api.github.com/repos/ezyang/htmlpurifier/zipball/08e27c97e4c6ed02f37c5b2b20488046c8d90d75",
+            "reference": "08e27c97e4c6ed02f37c5b2b20488046c8d90d75",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.2"
+        },
+        "require-dev": {
+            "simpletest/simpletest": "dev-master#72de02a7b80c6bb8864ef9bf66d41d2f58f826bd"
+        },
+        "time": "2020-06-29T00:56:53+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "HTMLPurifier": "library/"
+            },
+            "files": [
+                "library/HTMLPurifier.composer.php"
+            ],
+            "exclude-from-classmap": [
+                "/library/HTMLPurifier/Language/"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "LGPL-2.1-or-later"
+        ],
+        "authors": [
+            {
+                "name": "Edward Z. Yang",
+                "email": "admin@htmlpurifier.org",
+                "homepage": "http://ezyang.com"
+            }
+        ],
+        "description": "Standards compliant HTML filter written in PHP",
+        "homepage": "http://htmlpurifier.org/",
+        "keywords": [
+            "html"
+        ],
+        "support": {
+            "issues": "https://github.com/ezyang/htmlpurifier/issues",
+            "source": "https://github.com/ezyang/htmlpurifier/tree/master"
+        }
+    },
+    {
+        "name": "guzzlehttp/guzzle",
+        "version": "6.5.5",
+        "version_normalized": "6.5.5.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/guzzle/guzzle.git",
+            "reference": "9d4290de1cfd701f38099ef7e183b64b4b7b0c5e"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/guzzle/guzzle/zipball/9d4290de1cfd701f38099ef7e183b64b4b7b0c5e",
+            "reference": "9d4290de1cfd701f38099ef7e183b64b4b7b0c5e",
             "shasum": ""
         },
         "require": {
@@ -73,7 +143,7 @@
             "guzzlehttp/promises": "^1.0",
             "guzzlehttp/psr7": "^1.6.1",
             "php": ">=5.5",
-            "symfony/polyfill-intl-idn": "^1.11"
+            "symfony/polyfill-intl-idn": "^1.17.0"
         },
         "require-dev": {
             "ext-curl": "*",
@@ -83,7 +153,7 @@
         "suggest": {
             "psr/log": "Required for using the Log middleware"
         },
-        "time": "2020-04-18T10:38:46+00:00",
+        "time": "2020-06-16T21:01:06+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -120,34 +190,38 @@
             "http client",
             "rest",
             "web service"
-        ]
+        ],
+        "support": {
+            "issues": "https://github.com/guzzle/guzzle/issues",
+            "source": "https://github.com/guzzle/guzzle/tree/6.5"
+        }
     },
     {
         "name": "guzzlehttp/promises",
-        "version": "v1.3.1",
-        "version_normalized": "1.3.1.0",
+        "version": "1.5.0",
+        "version_normalized": "1.5.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/guzzle/promises.git",
-            "reference": "a59da6cf61d80060647ff4d3eb2c03a2bc694646"
+            "reference": "136a635e2b4a49b9d79e9c8fee267ffb257fdba0"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/guzzle/promises/zipball/a59da6cf61d80060647ff4d3eb2c03a2bc694646",
-            "reference": "a59da6cf61d80060647ff4d3eb2c03a2bc694646",
+            "url": "https://api.github.com/repos/guzzle/promises/zipball/136a635e2b4a49b9d79e9c8fee267ffb257fdba0",
+            "reference": "136a635e2b4a49b9d79e9c8fee267ffb257fdba0",
             "shasum": ""
         },
         "require": {
-            "php": ">=5.5.0"
+            "php": ">=5.5"
         },
         "require-dev": {
-            "phpunit/phpunit": "^4.0"
+            "symfony/phpunit-bridge": "^4.4 || ^5.1"
         },
-        "time": "2016-12-20T10:07:11+00:00",
+        "time": "2021-10-07T13:05:22+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.4-dev"
+                "dev-master": "1.5-dev"
             }
         },
         "installation-source": "dist",
@@ -165,29 +239,58 @@
         ],
         "authors": [
             {
+                "name": "Graham Campbell",
+                "email": "hello@gjcampbell.co.uk",
+                "homepage": "https://github.com/GrahamCampbell"
+            },
+            {
                 "name": "Michael Dowling",
                 "email": "mtdowling@gmail.com",
                 "homepage": "https://github.com/mtdowling"
+            },
+            {
+                "name": "Tobias Nyholm",
+                "email": "tobias.nyholm@gmail.com",
+                "homepage": "https://github.com/Nyholm"
+            },
+            {
+                "name": "Tobias Schultze",
+                "email": "webmaster@tubo-world.de",
+                "homepage": "https://github.com/Tobion"
             }
         ],
         "description": "Guzzle promises library",
         "keywords": [
             "promise"
+        ],
+        "funding": [
+            {
+                "url": "https://github.com/GrahamCampbell",
+                "type": "github"
+            },
+            {
+                "url": "https://github.com/Nyholm",
+                "type": "github"
+            },
+            {
+                "url": "https://tidelift.com/funding/github/packagist/guzzlehttp/promises",
+                "type": "tidelift"
+            }
         ]
     },
     {
         "name": "guzzlehttp/psr7",
-        "version": "1.6.1",
-        "version_normalized": "1.6.1.0",
+        "version": "1.8.3",
+        "version_normalized": "1.8.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/guzzle/psr7.git",
-            "reference": "239400de7a173fe9901b9ac7c06497751f00727a"
+            "reference": "1afdd860a2566ed3c2b0b4a3de6e23434a79ec85"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/guzzle/psr7/zipball/239400de7a173fe9901b9ac7c06497751f00727a",
-            "reference": "239400de7a173fe9901b9ac7c06497751f00727a",
+            "url": "https://api.github.com/repos/guzzle/psr7/zipball/1afdd860a2566ed3c2b0b4a3de6e23434a79ec85",
+            "reference": "1afdd860a2566ed3c2b0b4a3de6e23434a79ec85",
             "shasum": ""
         },
         "require": {
@@ -200,16 +303,16 @@
         },
         "require-dev": {
             "ext-zlib": "*",
-            "phpunit/phpunit": "~4.8.36 || ^5.7.27 || ^6.5.8"
+            "phpunit/phpunit": "~4.8.36 || ^5.7.27 || ^6.5.14 || ^7.5.20 || ^8.5.8 || ^9.3.10"
         },
         "suggest": {
-            "zendframework/zend-httphandlerrunner": "Emit PSR-7 responses"
+            "laminas/laminas-httphandlerrunner": "Emit PSR-7 responses"
         },
-        "time": "2019-07-01T23:21:34+00:00",
+        "time": "2021-10-05T13:56:00+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.6-dev"
+                "dev-master": "1.7-dev"
             }
         },
         "installation-source": "dist",
@@ -227,12 +330,33 @@
         ],
         "authors": [
             {
+                "name": "Graham Campbell",
+                "email": "hello@gjcampbell.co.uk",
+                "homepage": "https://github.com/GrahamCampbell"
+            },
+            {
                 "name": "Michael Dowling",
                 "email": "mtdowling@gmail.com",
                 "homepage": "https://github.com/mtdowling"
             },
             {
+                "name": "George Mponos",
+                "email": "gmponos@gmail.com",
+                "homepage": "https://github.com/gmponos"
+            },
+            {
+                "name": "Tobias Nyholm",
+                "email": "tobias.nyholm@gmail.com",
+                "homepage": "https://github.com/Nyholm"
+            },
+            {
+                "name": "Márk Sági-Kazár",
+                "email": "mark.sagikazar@gmail.com",
+                "homepage": "https://github.com/sagikazarmark"
+            },
+            {
                 "name": "Tobias Schultze",
+                "email": "webmaster@tubo-world.de",
                 "homepage": "https://github.com/Tobion"
             }
         ],
@@ -246,37 +370,120 @@
             "stream",
             "uri",
             "url"
+        ],
+        "funding": [
+            {
+                "url": "https://github.com/GrahamCampbell",
+                "type": "github"
+            },
+            {
+                "url": "https://github.com/Nyholm",
+                "type": "github"
+            },
+            {
+                "url": "https://tidelift.com/funding/github/packagist/guzzlehttp/psr7",
+                "type": "tidelift"
+            }
+        ]
+    },
+    {
+        "name": "maennchen/zipstream-php",
+        "version": "2.1.0",
+        "version_normalized": "2.1.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/maennchen/ZipStream-PHP.git",
+            "reference": "c4c5803cc1f93df3d2448478ef79394a5981cc58"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/maennchen/ZipStream-PHP/zipball/c4c5803cc1f93df3d2448478ef79394a5981cc58",
+            "reference": "c4c5803cc1f93df3d2448478ef79394a5981cc58",
+            "shasum": ""
+        },
+        "require": {
+            "myclabs/php-enum": "^1.5",
+            "php": ">= 7.1",
+            "psr/http-message": "^1.0",
+            "symfony/polyfill-mbstring": "^1.0"
+        },
+        "require-dev": {
+            "ext-zip": "*",
+            "guzzlehttp/guzzle": ">= 6.3",
+            "mikey179/vfsstream": "^1.6",
+            "phpunit/phpunit": ">= 7.5"
+        },
+        "time": "2020-05-30T13:11:16+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "ZipStream\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Paul Duncan",
+                "email": "pabs@pablotron.org"
+            },
+            {
+                "name": "Jonatan Männchen",
+                "email": "jonatan@maennchen.ch"
+            },
+            {
+                "name": "Jesse Donat",
+                "email": "donatj@gmail.com"
+            },
+            {
+                "name": "András Kolesár",
+                "email": "kolesar@kolesar.hu"
+            }
+        ],
+        "description": "ZipStream is a library for dynamically streaming dynamic zip files from PHP without writing to the disk at all on the server.",
+        "keywords": [
+            "stream",
+            "zip"
+        ],
+        "support": {
+            "issues": "https://github.com/maennchen/ZipStream-PHP/issues",
+            "source": "https://github.com/maennchen/ZipStream-PHP/tree/master"
+        },
+        "funding": [
+            {
+                "url": "https://opencollective.com/zipstream",
+                "type": "open_collective"
+            }
         ]
     },
     {
         "name": "markbaker/complex",
-        "version": "1.4.8",
-        "version_normalized": "1.4.8.0",
+        "version": "2.0.3",
+        "version_normalized": "2.0.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/MarkBaker/PHPComplex.git",
-            "reference": "8eaa40cceec7bf0518187530b2e63871be661b72"
+            "reference": "6f724d7e04606fd8adaa4e3bb381c3e9db09c946"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/MarkBaker/PHPComplex/zipball/8eaa40cceec7bf0518187530b2e63871be661b72",
-            "reference": "8eaa40cceec7bf0518187530b2e63871be661b72",
+            "url": "https://api.github.com/repos/MarkBaker/PHPComplex/zipball/6f724d7e04606fd8adaa4e3bb381c3e9db09c946",
+            "reference": "6f724d7e04606fd8adaa4e3bb381c3e9db09c946",
             "shasum": ""
         },
         "require": {
-            "php": "^5.6.0|^7.0.0"
+            "php": "^7.2 || ^8.0"
         },
         "require-dev": {
-            "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
+            "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
             "phpcompatibility/php-compatibility": "^9.0",
-            "phpdocumentor/phpdocumentor": "2.*",
-            "phploc/phploc": "2.*",
-            "phpmd/phpmd": "2.*",
-            "phpunit/phpunit": "^4.8.35|^5.4.0",
-            "sebastian/phpcpd": "2.*",
-            "squizlabs/php_codesniffer": "^3.4.0"
+            "phpunit/phpunit": "^7.0 || ^8.0 || ^9.3",
+            "squizlabs/php_codesniffer": "^3.4"
         },
-        "time": "2020-03-11T20:15:49+00:00",
+        "time": "2021-06-02T09:44:11+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -347,32 +554,33 @@
     },
     {
         "name": "markbaker/matrix",
-        "version": "1.2.0",
-        "version_normalized": "1.2.0.0",
+        "version": "2.1.3",
+        "version_normalized": "2.1.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/MarkBaker/PHPMatrix.git",
-            "reference": "5348c5a67e3b75cd209d70103f916a93b1f1ed21"
+            "reference": "174395a901b5ba0925f1d790fa91bab531074b61"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/MarkBaker/PHPMatrix/zipball/5348c5a67e3b75cd209d70103f916a93b1f1ed21",
-            "reference": "5348c5a67e3b75cd209d70103f916a93b1f1ed21",
+            "url": "https://api.github.com/repos/MarkBaker/PHPMatrix/zipball/174395a901b5ba0925f1d790fa91bab531074b61",
+            "reference": "174395a901b5ba0925f1d790fa91bab531074b61",
             "shasum": ""
         },
         "require": {
-            "php": "^5.6.0|^7.0.0"
+            "php": "^7.1 || ^8.0"
         },
         "require-dev": {
-            "dealerdirect/phpcodesniffer-composer-installer": "dev-master",
-            "phpcompatibility/php-compatibility": "dev-master",
-            "phploc/phploc": "^4",
-            "phpmd/phpmd": "dev-master",
-            "phpunit/phpunit": "^5.7",
-            "sebastian/phpcpd": "^3.0",
-            "squizlabs/php_codesniffer": "^3.0@dev"
+            "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
+            "phpcompatibility/php-compatibility": "^9.0",
+            "phpdocumentor/phpdocumentor": "2.*",
+            "phploc/phploc": "^4.0",
+            "phpmd/phpmd": "2.*",
+            "phpunit/phpunit": "^7.0 || ^8.0 || ^9.3",
+            "sebastian/phpcpd": "^4.0",
+            "squizlabs/php_codesniffer": "^3.4"
         },
-        "time": "2019-10-06T11:29:25+00:00",
+        "time": "2021-05-25T15:42:17+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -380,22 +588,22 @@
                 "Matrix\\": "classes/src/"
             },
             "files": [
-                "classes/src/functions/adjoint.php",
-                "classes/src/functions/antidiagonal.php",
-                "classes/src/functions/cofactors.php",
-                "classes/src/functions/determinant.php",
-                "classes/src/functions/diagonal.php",
-                "classes/src/functions/identity.php",
-                "classes/src/functions/inverse.php",
-                "classes/src/functions/minors.php",
-                "classes/src/functions/trace.php",
-                "classes/src/functions/transpose.php",
-                "classes/src/operations/add.php",
-                "classes/src/operations/directsum.php",
-                "classes/src/operations/subtract.php",
-                "classes/src/operations/multiply.php",
-                "classes/src/operations/divideby.php",
-                "classes/src/operations/divideinto.php"
+                "classes/src/Functions/adjoint.php",
+                "classes/src/Functions/antidiagonal.php",
+                "classes/src/Functions/cofactors.php",
+                "classes/src/Functions/determinant.php",
+                "classes/src/Functions/diagonal.php",
+                "classes/src/Functions/identity.php",
+                "classes/src/Functions/inverse.php",
+                "classes/src/Functions/minors.php",
+                "classes/src/Functions/trace.php",
+                "classes/src/Functions/transpose.php",
+                "classes/src/Operations/add.php",
+                "classes/src/Operations/directsum.php",
+                "classes/src/Operations/subtract.php",
+                "classes/src/Operations/multiply.php",
+                "classes/src/Operations/divideby.php",
+                "classes/src/Operations/divideinto.php"
             ]
         },
         "notification-url": "https://packagist.org/downloads/",
@@ -405,7 +613,7 @@
         "authors": [
             {
                 "name": "Mark Baker",
-                "email": "mark@lange.demon.co.uk"
+                "email": "mark@demon-angel.eu"
             }
         ],
         "description": "PHP Class for working with matrices",
@@ -414,6 +622,64 @@
             "mathematics",
             "matrix",
             "vector"
+        ]
+    },
+    {
+        "name": "myclabs/php-enum",
+        "version": "1.8.3",
+        "version_normalized": "1.8.3.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/myclabs/php-enum.git",
+            "reference": "b942d263c641ddb5190929ff840c68f78713e937"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/myclabs/php-enum/zipball/b942d263c641ddb5190929ff840c68f78713e937",
+            "reference": "b942d263c641ddb5190929ff840c68f78713e937",
+            "shasum": ""
+        },
+        "require": {
+            "ext-json": "*",
+            "php": "^7.3 || ^8.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "^9.5",
+            "squizlabs/php_codesniffer": "1.*",
+            "vimeo/psalm": "^4.6.2"
+        },
+        "time": "2021-07-05T08:18:36+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "MyCLabs\\Enum\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "PHP Enum contributors",
+                "homepage": "https://github.com/myclabs/php-enum/graphs/contributors"
+            }
+        ],
+        "description": "PHP Enum implementation",
+        "homepage": "http://github.com/myclabs/php-enum",
+        "keywords": [
+            "enum"
+        ],
+        "funding": [
+            {
+                "url": "https://github.com/mnapoli",
+                "type": "github"
+            },
+            {
+                "url": "https://tidelift.com/funding/github/packagist/myclabs/php-enum",
+                "type": "tidelift"
+            }
         ]
     },
     {
@@ -457,41 +723,40 @@
     },
     {
         "name": "php-http/discovery",
-        "version": "1.7.4",
-        "version_normalized": "1.7.4.0",
+        "version": "1.14.1",
+        "version_normalized": "1.14.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/php-http/discovery.git",
-            "reference": "82dbef649ccffd8e4f22e1953c3a5265992b83c0"
+            "reference": "de90ab2b41d7d61609f504e031339776bc8c7223"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/php-http/discovery/zipball/82dbef649ccffd8e4f22e1953c3a5265992b83c0",
-            "reference": "82dbef649ccffd8e4f22e1953c3a5265992b83c0",
+            "url": "https://api.github.com/repos/php-http/discovery/zipball/de90ab2b41d7d61609f504e031339776bc8c7223",
+            "reference": "de90ab2b41d7d61609f504e031339776bc8c7223",
             "shasum": ""
         },
         "require": {
-            "php": "^7.1"
+            "php": "^7.1 || ^8.0"
         },
         "conflict": {
             "nyholm/psr7": "<1.0"
         },
         "require-dev": {
-            "akeneo/phpspec-skip-example-extension": "^4.0",
+            "graham-campbell/phpspec-skip-example-extension": "^5.0",
             "php-http/httplug": "^1.0 || ^2.0",
             "php-http/message-factory": "^1.0",
-            "phpspec/phpspec": "^5.1",
+            "phpspec/phpspec": "^5.1 || ^6.1",
             "puli/composer-plugin": "1.0.0-beta10"
         },
         "suggest": {
-            "php-http/message": "Allow to use Guzzle, Diactoros or Slim Framework factories",
-            "puli/composer-plugin": "Sets up Puli which is recommended for Discovery to work. Check http://docs.php-http.org/en/latest/discovery.html for more details."
+            "php-http/message": "Allow to use Guzzle, Diactoros or Slim Framework factories"
         },
-        "time": "2020-01-03T11:25:47+00:00",
+        "time": "2021-09-18T07:57:46+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.7-dev"
+                "dev-master": "1.9-dev"
             }
         },
         "installation-source": "dist",
@@ -524,22 +789,22 @@
     },
     {
         "name": "php-http/guzzle6-adapter",
-        "version": "v2.0.1",
-        "version_normalized": "2.0.1.0",
+        "version": "v2.0.2",
+        "version_normalized": "2.0.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/php-http/guzzle6-adapter.git",
-            "reference": "6074a4b1f4d5c21061b70bab3b8ad484282fe31f"
+            "reference": "9d1a45eb1c59f12574552e81fb295e9e53430a56"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/php-http/guzzle6-adapter/zipball/6074a4b1f4d5c21061b70bab3b8ad484282fe31f",
-            "reference": "6074a4b1f4d5c21061b70bab3b8ad484282fe31f",
+            "url": "https://api.github.com/repos/php-http/guzzle6-adapter/zipball/9d1a45eb1c59f12574552e81fb295e9e53430a56",
+            "reference": "9d1a45eb1c59f12574552e81fb295e9e53430a56",
             "shasum": ""
         },
         "require": {
             "guzzlehttp/guzzle": "^6.0",
-            "php": "^7.1",
+            "php": "^7.1 || ^8.0",
             "php-http/httplug": "^2.0",
             "psr/http-client": "^1.0"
         },
@@ -550,10 +815,10 @@
         },
         "require-dev": {
             "ext-curl": "*",
-            "php-http/client-integration-tests": "^2.0",
-            "phpunit/phpunit": "^7.4"
+            "php-http/client-integration-tests": "^2.0 || ^3.0",
+            "phpunit/phpunit": "^7.4 || ^8.4"
         },
-        "time": "2018-12-16T14:44:03+00:00",
+        "time": "2021-03-02T10:52:33+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -572,12 +837,12 @@
         ],
         "authors": [
             {
-                "name": "Márk Sági-Kazár",
-                "email": "mark.sagikazar@gmail.com"
-            },
-            {
                 "name": "David de Boer",
                 "email": "david@ddeboer.nl"
+            },
+            {
+                "name": "Márk Sági-Kazár",
+                "email": "mark.sagikazar@gmail.com"
             }
         ],
         "description": "Guzzle 6 HTTP Adapter",
@@ -585,34 +850,38 @@
         "keywords": [
             "Guzzle",
             "http"
-        ]
+        ],
+        "support": {
+            "issues": "https://github.com/php-http/guzzle6-adapter/issues",
+            "source": "https://github.com/php-http/guzzle6-adapter/tree/v2.0.2"
+        }
     },
     {
         "name": "php-http/httplug",
-        "version": "2.1.0",
-        "version_normalized": "2.1.0.0",
+        "version": "2.2.0",
+        "version_normalized": "2.2.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/php-http/httplug.git",
-            "reference": "72d2b129a48f0490d55b7f89be0d6aa0597ffb06"
+            "reference": "191a0a1b41ed026b717421931f8d3bd2514ffbf9"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/php-http/httplug/zipball/72d2b129a48f0490d55b7f89be0d6aa0597ffb06",
-            "reference": "72d2b129a48f0490d55b7f89be0d6aa0597ffb06",
+            "url": "https://api.github.com/repos/php-http/httplug/zipball/191a0a1b41ed026b717421931f8d3bd2514ffbf9",
+            "reference": "191a0a1b41ed026b717421931f8d3bd2514ffbf9",
             "shasum": ""
         },
         "require": {
-            "php": "^7.0",
-            "php-http/promise": "^1.0",
+            "php": "^7.1 || ^8.0",
+            "php-http/promise": "^1.1",
             "psr/http-client": "^1.0",
             "psr/http-message": "^1.0"
         },
         "require-dev": {
             "friends-of-phpspec/phpspec-code-coverage": "^4.1",
-            "phpspec/phpspec": "^4.3.4|^5.0|^6.0"
+            "phpspec/phpspec": "^5.1 || ^6.0"
         },
-        "time": "2019-12-27T10:07:11+00:00",
+        "time": "2020-07-13T15:43:23+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -636,7 +905,8 @@
             },
             {
                 "name": "Márk Sági-Kazár",
-                "email": "mark.sagikazar@gmail.com"
+                "email": "mark.sagikazar@gmail.com",
+                "homepage": "https://sagikazarmark.hu"
             }
         ],
         "description": "HTTPlug, the HTTP client abstraction for PHP",
@@ -644,26 +914,30 @@
         "keywords": [
             "client",
             "http"
-        ]
+        ],
+        "support": {
+            "issues": "https://github.com/php-http/httplug/issues",
+            "source": "https://github.com/php-http/httplug/tree/master"
+        }
     },
     {
         "name": "php-http/message",
-        "version": "1.8.0",
-        "version_normalized": "1.8.0.0",
+        "version": "1.12.0",
+        "version_normalized": "1.12.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/php-http/message.git",
-            "reference": "ce8f43ac1e294b54aabf5808515c3554a19c1e1c"
+            "reference": "39eb7548be982a81085fe5a6e2a44268cd586291"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/php-http/message/zipball/ce8f43ac1e294b54aabf5808515c3554a19c1e1c",
-            "reference": "ce8f43ac1e294b54aabf5808515c3554a19c1e1c",
+            "url": "https://api.github.com/repos/php-http/message/zipball/39eb7548be982a81085fe5a6e2a44268cd586291",
+            "reference": "39eb7548be982a81085fe5a6e2a44268cd586291",
             "shasum": ""
         },
         "require": {
-            "clue/stream-filter": "^1.4",
-            "php": "^7.1",
+            "clue/stream-filter": "^1.5",
+            "php": "^7.1 || ^8.0",
             "php-http/message-factory": "^1.0.2",
             "psr/http-message": "^1.0"
         },
@@ -671,26 +945,24 @@
             "php-http/message-factory-implementation": "1.0"
         },
         "require-dev": {
-            "akeneo/phpspec-skip-example-extension": "^1.0",
-            "coduo/phpspec-data-provider-extension": "^1.0",
+            "ergebnis/composer-normalize": "^2.6",
             "ext-zlib": "*",
             "guzzlehttp/psr7": "^1.0",
-            "henrikbjorn/phpspec-code-coverage": "^1.0",
-            "phpspec/phpspec": "^2.4",
-            "slim/slim": "^3.0",
-            "zendframework/zend-diactoros": "^1.0"
+            "laminas/laminas-diactoros": "^2.0",
+            "phpspec/phpspec": "^5.1 || ^6.3",
+            "slim/slim": "^3.0"
         },
         "suggest": {
             "ext-zlib": "Used with compressor/decompressor streams",
             "guzzlehttp/psr7": "Used with Guzzle PSR-7 Factories",
-            "slim/slim": "Used with Slim Framework PSR-7 implementation",
-            "zendframework/zend-diactoros": "Used with Diactoros Factories"
+            "laminas/laminas-diactoros": "Used with Diactoros Factories",
+            "slim/slim": "Used with Slim Framework PSR-7 implementation"
         },
-        "time": "2019-08-05T06:55:08+00:00",
+        "time": "2021-08-29T09:13:12+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.8-dev"
+                "dev-master": "1.10-dev"
             }
         },
         "installation-source": "dist",
@@ -774,24 +1046,27 @@
     },
     {
         "name": "php-http/promise",
-        "version": "v1.0.0",
-        "version_normalized": "1.0.0.0",
+        "version": "1.1.0",
+        "version_normalized": "1.1.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/php-http/promise.git",
-            "reference": "dc494cdc9d7160b9a09bd5573272195242ce7980"
+            "reference": "4c4c1f9b7289a2ec57cde7f1e9762a5789506f88"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/php-http/promise/zipball/dc494cdc9d7160b9a09bd5573272195242ce7980",
-            "reference": "dc494cdc9d7160b9a09bd5573272195242ce7980",
+            "url": "https://api.github.com/repos/php-http/promise/zipball/4c4c1f9b7289a2ec57cde7f1e9762a5789506f88",
+            "reference": "4c4c1f9b7289a2ec57cde7f1e9762a5789506f88",
             "shasum": ""
         },
-        "require-dev": {
-            "henrikbjorn/phpspec-code-coverage": "^1.0",
-            "phpspec/phpspec": "^2.4"
+        "require": {
+            "php": "^7.1 || ^8.0"
         },
-        "time": "2016-01-26T13:27:02+00:00",
+        "require-dev": {
+            "friends-of-phpspec/phpspec-code-coverage": "^4.3.2",
+            "phpspec/phpspec": "^5.1.2 || ^6.2"
+        },
+        "time": "2020-07-07T09:29:14+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -810,19 +1085,23 @@
         ],
         "authors": [
             {
-                "name": "Márk Sági-Kazár",
-                "email": "mark.sagikazar@gmail.com"
-            },
-            {
                 "name": "Joel Wurtz",
                 "email": "joel.wurtz@gmail.com"
+            },
+            {
+                "name": "Márk Sági-Kazár",
+                "email": "mark.sagikazar@gmail.com"
             }
         ],
         "description": "Promise used for asynchronous HTTP requests",
         "homepage": "http://httplug.io",
         "keywords": [
             "promise"
-        ]
+        ],
+        "support": {
+            "issues": "https://github.com/php-http/promise/issues",
+            "source": "https://github.com/php-http/promise/tree/1.1.0"
+        }
     },
     {
         "name": "phpoffice/common",
@@ -883,17 +1162,17 @@
     },
     {
         "name": "phpoffice/phpspreadsheet",
-        "version": "1.12.0",
-        "version_normalized": "1.12.0.0",
+        "version": "1.18.0",
+        "version_normalized": "1.18.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-            "reference": "f79611d6dc1f6b7e8e30b738fc371b392001dbfd"
+            "reference": "418cd304e8e6b417ea79c3b29126a25dc4b1170c"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/f79611d6dc1f6b7e8e30b738fc371b392001dbfd",
-            "reference": "f79611d6dc1f6b7e8e30b738fc371b392001dbfd",
+            "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/418cd304e8e6b417ea79c3b29126a25dc4b1170c",
+            "reference": "418cd304e8e6b417ea79c3b29126a25dc4b1170c",
             "shasum": ""
         },
         "require": {
@@ -910,28 +1189,35 @@
             "ext-xmlwriter": "*",
             "ext-zip": "*",
             "ext-zlib": "*",
-            "markbaker/complex": "^1.4",
-            "markbaker/matrix": "^1.2",
-            "php": "^7.1",
+            "ezyang/htmlpurifier": "^4.13",
+            "maennchen/zipstream-php": "^2.1",
+            "markbaker/complex": "^2.0",
+            "markbaker/matrix": "^2.0",
+            "php": "^7.2 || ^8.0",
+            "psr/http-client": "^1.0",
+            "psr/http-factory": "^1.0",
             "psr/simple-cache": "^1.0"
         },
         "require-dev": {
-            "dompdf/dompdf": "^0.8.3",
-            "friendsofphp/php-cs-fixer": "^2.16",
+            "dealerdirect/phpcodesniffer-composer-installer": "dev-master",
+            "dompdf/dompdf": "^1.0",
+            "friendsofphp/php-cs-fixer": "^2.18",
             "jpgraph/jpgraph": "^4.0",
             "mpdf/mpdf": "^8.0",
             "phpcompatibility/php-compatibility": "^9.3",
-            "phpunit/phpunit": "^7.5",
+            "phpstan/phpstan": "^0.12.82",
+            "phpstan/phpstan-phpunit": "^0.12.18",
+            "phpunit/phpunit": "^8.5",
             "squizlabs/php_codesniffer": "^3.5",
             "tecnickcom/tcpdf": "^6.3"
         },
         "suggest": {
-            "dompdf/dompdf": "Option for rendering PDF with PDF Writer",
+            "dompdf/dompdf": "Option for rendering PDF with PDF Writer (doesn't yet support PHP8)",
             "jpgraph/jpgraph": "Option for rendering charts, or including charts with PDF or HTML Writers",
             "mpdf/mpdf": "Option for rendering PDF with PDF Writer",
-            "tecnickcom/tcpdf": "Option for rendering PDF with PDF Writer"
+            "tecnickcom/tcpdf": "Option for rendering PDF with PDF Writer (doesn't yet support PHP8)"
         },
-        "time": "2020-04-27T08:12:48+00:00",
+        "time": "2021-05-31T18:21:15+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -1089,24 +1375,24 @@
     },
     {
         "name": "psr/http-client",
-        "version": "1.0.0",
-        "version_normalized": "1.0.0.0",
+        "version": "1.0.1",
+        "version_normalized": "1.0.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/php-fig/http-client.git",
-            "reference": "496a823ef742b632934724bf769560c2a5c7c44e"
+            "reference": "2dfb5f6c5eff0e91e20e913f8c5452ed95b86621"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/php-fig/http-client/zipball/496a823ef742b632934724bf769560c2a5c7c44e",
-            "reference": "496a823ef742b632934724bf769560c2a5c7c44e",
+            "url": "https://api.github.com/repos/php-fig/http-client/zipball/2dfb5f6c5eff0e91e20e913f8c5452ed95b86621",
+            "reference": "2dfb5f6c5eff0e91e20e913f8c5452ed95b86621",
             "shasum": ""
         },
         "require": {
-            "php": "^7.0",
+            "php": "^7.0 || ^8.0",
             "psr/http-message": "^1.0"
         },
-        "time": "2018-10-30T23:29:13+00:00",
+        "time": "2020-06-29T06:28:15+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -1136,7 +1422,67 @@
             "http-client",
             "psr",
             "psr-18"
-        ]
+        ],
+        "support": {
+            "source": "https://github.com/php-fig/http-client/tree/master"
+        }
+    },
+    {
+        "name": "psr/http-factory",
+        "version": "1.0.1",
+        "version_normalized": "1.0.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/php-fig/http-factory.git",
+            "reference": "12ac7fcd07e5b077433f5f2bee95b3a771bf61be"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/php-fig/http-factory/zipball/12ac7fcd07e5b077433f5f2bee95b3a771bf61be",
+            "reference": "12ac7fcd07e5b077433f5f2bee95b3a771bf61be",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=7.0.0",
+            "psr/http-message": "^1.0"
+        },
+        "time": "2019-04-30T12:38:16+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Psr\\Http\\Message\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "PHP-FIG",
+                "homepage": "http://www.php-fig.org/"
+            }
+        ],
+        "description": "Common interfaces for PSR-7 HTTP message factories",
+        "keywords": [
+            "factory",
+            "http",
+            "message",
+            "psr",
+            "psr-17",
+            "psr-7",
+            "request",
+            "response"
+        ],
+        "support": {
+            "source": "https://github.com/php-fig/http-factory/tree/master"
+        }
     },
     {
         "name": "psr/http-message",
@@ -1283,33 +1629,182 @@
         "description": "A polyfill for getallheaders."
     },
     {
-        "name": "symfony/polyfill-intl-idn",
-        "version": "v1.15.0",
-        "version_normalized": "1.15.0.0",
+        "name": "setasign/fpdf",
+        "version": "1.8.4",
+        "version_normalized": "1.8.4.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/symfony/polyfill-intl-idn.git",
-            "reference": "47bd6aa45beb1cd7c6a16b7d1810133b728bdfcf"
+            "url": "https://github.com/Setasign/FPDF.git",
+            "reference": "b0ddd9c5b98ced8230ef38534f6f3c17308a7974"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/polyfill-intl-idn/zipball/47bd6aa45beb1cd7c6a16b7d1810133b728bdfcf",
-            "reference": "47bd6aa45beb1cd7c6a16b7d1810133b728bdfcf",
+            "url": "https://api.github.com/repos/Setasign/FPDF/zipball/b0ddd9c5b98ced8230ef38534f6f3c17308a7974",
+            "reference": "b0ddd9c5b98ced8230ef38534f6f3c17308a7974",
             "shasum": ""
         },
         "require": {
-            "php": ">=5.3.3",
-            "symfony/polyfill-mbstring": "^1.3",
+            "ext-gd": "*",
+            "ext-zlib": "*"
+        },
+        "time": "2021-08-30T07:50:06+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "fpdf.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Olivier Plathey",
+                "email": "oliver@fpdf.org",
+                "homepage": "http://fpdf.org/"
+            }
+        ],
+        "description": "FPDF is a PHP class which allows to generate PDF files with pure PHP. F from FPDF stands for Free: you may use it for any kind of usage and modify it to suit your needs.",
+        "homepage": "http://www.fpdf.org",
+        "keywords": [
+            "fpdf",
+            "pdf"
+        ]
+    },
+    {
+        "name": "setasign/fpdi",
+        "version": "v2.3.6",
+        "version_normalized": "2.3.6.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Setasign/FPDI.git",
+            "reference": "6231e315f73e4f62d72b73f3d6d78ff0eed93c31"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/Setasign/FPDI/zipball/6231e315f73e4f62d72b73f3d6d78ff0eed93c31",
+            "reference": "6231e315f73e4f62d72b73f3d6d78ff0eed93c31",
+            "shasum": ""
+        },
+        "require": {
+            "ext-zlib": "*",
+            "php": "^5.6 || ^7.0 || ^8.0"
+        },
+        "conflict": {
+            "setasign/tfpdf": "<1.31"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "~5.7",
+            "setasign/fpdf": "~1.8",
+            "setasign/tfpdf": "1.31",
+            "squizlabs/php_codesniffer": "^3.5",
+            "tecnickcom/tcpdf": "~6.2"
+        },
+        "suggest": {
+            "setasign/fpdf": "FPDI will extend this class but as it is also possible to use TCPDF or tFPDF as an alternative. There's no fixed dependency configured."
+        },
+        "time": "2021-02-11T11:37:01+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "setasign\\Fpdi\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Jan Slabon",
+                "email": "jan.slabon@setasign.com",
+                "homepage": "https://www.setasign.com"
+            },
+            {
+                "name": "Maximilian Kresse",
+                "email": "maximilian.kresse@setasign.com",
+                "homepage": "https://www.setasign.com"
+            }
+        ],
+        "description": "FPDI is a collection of PHP classes facilitating developers to read pages from existing PDF documents and use them as templates in FPDF. Because it is also possible to use FPDI with TCPDF, there are no fixed dependencies defined. Please see suggestions for packages which evaluates the dependencies automatically.",
+        "homepage": "https://www.setasign.com/fpdi",
+        "keywords": [
+            "fpdf",
+            "fpdi",
+            "pdf"
+        ],
+        "support": {
+            "issues": "https://github.com/Setasign/FPDI/issues",
+            "source": "https://github.com/Setasign/FPDI/tree/v2.3.6"
+        },
+        "funding": [
+            {
+                "url": "https://tidelift.com/funding/github/packagist/setasign/fpdi",
+                "type": "tidelift"
+            }
+        ]
+    },
+    {
+        "name": "setasign/fpdi_pdf-parser",
+        "version": "2.0.6",
+        "version_normalized": "2.0.6.0",
+        "dist": {
+            "type": "zip",
+            "url": "https://www.setasign.com/downloads/2828331/FPDI_PDF-Parser-2.0.6.zip"
+        },
+        "require": {
+            "setasign/fpdi": "^2.0"
+        },
+        "time": "2020-12-04T00:00:00+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "setasign\\FpdiPdfParser\\": "src/"
+            }
+        },
+        "license": [
+            "proprietary"
+        ],
+        "support": {
+            "email": "support@setasign.com"
+        }
+    },
+    {
+        "name": "symfony/polyfill-intl-idn",
+        "version": "v1.23.0",
+        "version_normalized": "1.23.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/polyfill-intl-idn.git",
+            "reference": "65bd267525e82759e7d8c4e8ceea44f398838e65"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/polyfill-intl-idn/zipball/65bd267525e82759e7d8c4e8ceea44f398838e65",
+            "reference": "65bd267525e82759e7d8c4e8ceea44f398838e65",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=7.1",
+            "symfony/polyfill-intl-normalizer": "^1.10",
             "symfony/polyfill-php72": "^1.10"
         },
         "suggest": {
             "ext-intl": "For best performance"
         },
-        "time": "2020-03-09T19:04:49+00:00",
+        "time": "2021-05-27T09:27:20+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.15-dev"
+                "dev-main": "1.23-dev"
+            },
+            "thanks": {
+                "name": "symfony/polyfill",
+                "url": "https://github.com/symfony/polyfill"
             }
         },
         "installation-source": "dist",
@@ -1329,6 +1824,10 @@
             {
                 "name": "Laurent Bassin",
                 "email": "laurent@bassin.info"
+            },
+            {
+                "name": "Trevor Rowbotham",
+                "email": "trevor.rowbotham@pm.me"
             },
             {
                 "name": "Symfony Community",
@@ -1361,31 +1860,118 @@
         ]
     },
     {
-        "name": "symfony/polyfill-mbstring",
-        "version": "v1.15.0",
-        "version_normalized": "1.15.0.0",
+        "name": "symfony/polyfill-intl-normalizer",
+        "version": "v1.23.0",
+        "version_normalized": "1.23.0.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/symfony/polyfill-mbstring.git",
-            "reference": "81ffd3a9c6d707be22e3012b827de1c9775fc5ac"
+            "url": "https://github.com/symfony/polyfill-intl-normalizer.git",
+            "reference": "8590a5f561694770bdcd3f9b5c69dde6945028e8"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/81ffd3a9c6d707be22e3012b827de1c9775fc5ac",
-            "reference": "81ffd3a9c6d707be22e3012b827de1c9775fc5ac",
+            "url": "https://api.github.com/repos/symfony/polyfill-intl-normalizer/zipball/8590a5f561694770bdcd3f9b5c69dde6945028e8",
+            "reference": "8590a5f561694770bdcd3f9b5c69dde6945028e8",
             "shasum": ""
         },
         "require": {
-            "php": ">=5.3.3"
+            "php": ">=7.1"
+        },
+        "suggest": {
+            "ext-intl": "For best performance"
+        },
+        "time": "2021-02-19T12:13:01+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-main": "1.23-dev"
+            },
+            "thanks": {
+                "name": "symfony/polyfill",
+                "url": "https://github.com/symfony/polyfill"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Symfony\\Polyfill\\Intl\\Normalizer\\": ""
+            },
+            "files": [
+                "bootstrap.php"
+            ],
+            "classmap": [
+                "Resources/stubs"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Nicolas Grekas",
+                "email": "p@tchwork.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
+            }
+        ],
+        "description": "Symfony polyfill for intl's Normalizer class and related functions",
+        "homepage": "https://symfony.com",
+        "keywords": [
+            "compatibility",
+            "intl",
+            "normalizer",
+            "polyfill",
+            "portable",
+            "shim"
+        ],
+        "funding": [
+            {
+                "url": "https://symfony.com/sponsor",
+                "type": "custom"
+            },
+            {
+                "url": "https://github.com/fabpot",
+                "type": "github"
+            },
+            {
+                "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                "type": "tidelift"
+            }
+        ]
+    },
+    {
+        "name": "symfony/polyfill-mbstring",
+        "version": "v1.23.1",
+        "version_normalized": "1.23.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/polyfill-mbstring.git",
+            "reference": "9174a3d80210dca8daa7f31fec659150bbeabfc6"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/9174a3d80210dca8daa7f31fec659150bbeabfc6",
+            "reference": "9174a3d80210dca8daa7f31fec659150bbeabfc6",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=7.1"
         },
         "suggest": {
             "ext-mbstring": "For best performance"
         },
-        "time": "2020-03-09T19:04:49+00:00",
+        "time": "2021-05-27T12:26:48+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.15-dev"
+                "dev-main": "1.23-dev"
+            },
+            "thanks": {
+                "name": "symfony/polyfill",
+                "url": "https://github.com/symfony/polyfill"
             }
         },
         "installation-source": "dist",
@@ -1437,27 +2023,31 @@
     },
     {
         "name": "symfony/polyfill-php72",
-        "version": "v1.15.0",
-        "version_normalized": "1.15.0.0",
+        "version": "v1.23.0",
+        "version_normalized": "1.23.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/polyfill-php72.git",
-            "reference": "37b0976c78b94856543260ce09b460a7bc852747"
+            "reference": "9a142215a36a3888e30d0a9eeea9766764e96976"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/polyfill-php72/zipball/37b0976c78b94856543260ce09b460a7bc852747",
-            "reference": "37b0976c78b94856543260ce09b460a7bc852747",
+            "url": "https://api.github.com/repos/symfony/polyfill-php72/zipball/9a142215a36a3888e30d0a9eeea9766764e96976",
+            "reference": "9a142215a36a3888e30d0a9eeea9766764e96976",
             "shasum": ""
         },
         "require": {
-            "php": ">=5.3.3"
+            "php": ">=7.1"
         },
-        "time": "2020-02-27T09:26:54+00:00",
+        "time": "2021-05-27T09:17:38+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.15-dev"
+                "dev-main": "1.23-dev"
+            },
+            "thanks": {
+                "name": "symfony/polyfill",
+                "url": "https://github.com/symfony/polyfill"
             }
         },
         "installation-source": "dist",
@@ -1507,18 +2097,85 @@
         ]
     },
     {
-        "name": "thecodingmachine/gotenberg-php-client",
-        "version": "6.2.0",
-        "version_normalized": "6.2.0.0",
+        "name": "tecnickcom/tcpdf",
+        "version": "6.2.26",
+        "version_normalized": "6.2.26.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/thecodingmachine/gotenberg-php-client.git",
-            "reference": "120fc00e4af078a4ec5206aa7f376d1a2b4b7835"
+            "url": "https://github.com/tecnickcom/TCPDF.git",
+            "reference": "367241059ca166e3a76490f4448c284e0a161f15"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/thecodingmachine/gotenberg-php-client/zipball/120fc00e4af078a4ec5206aa7f376d1a2b4b7835",
-            "reference": "120fc00e4af078a4ec5206aa7f376d1a2b4b7835",
+            "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/367241059ca166e3a76490f4448c284e0a161f15",
+            "reference": "367241059ca166e3a76490f4448c284e0a161f15",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "time": "2018-10-16T17:24:05+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "config",
+                "include",
+                "tcpdf.php",
+                "tcpdf_parser.php",
+                "tcpdf_import.php",
+                "tcpdf_barcodes_1d.php",
+                "tcpdf_barcodes_2d.php",
+                "include/tcpdf_colors.php",
+                "include/tcpdf_filters.php",
+                "include/tcpdf_font_data.php",
+                "include/tcpdf_fonts.php",
+                "include/tcpdf_images.php",
+                "include/tcpdf_static.php",
+                "include/barcodes/datamatrix.php",
+                "include/barcodes/pdf417.php",
+                "include/barcodes/qrcode.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "LGPL-3.0"
+        ],
+        "authors": [
+            {
+                "name": "Nicola Asuni",
+                "email": "info@tecnick.com",
+                "role": "lead"
+            }
+        ],
+        "description": "TCPDF is a PHP class for generating PDF documents and barcodes.",
+        "homepage": "http://www.tcpdf.org/",
+        "keywords": [
+            "PDFD32000-2008",
+            "TCPDF",
+            "barcodes",
+            "datamatrix",
+            "pdf",
+            "pdf417",
+            "qrcode"
+        ],
+        "support": {
+            "source": "https://github.com/tecnickcom/TCPDF/tree/master"
+        }
+    },
+    {
+        "name": "thecodingmachine/gotenberg-php-client",
+        "version": "6.3.0",
+        "version_normalized": "6.3.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/thecodingmachine/gotenberg-php-client.git",
+            "reference": "7bfaaa790d54d6f72de749198bd784882f8c2b36"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/thecodingmachine/gotenberg-php-client/zipball/7bfaaa790d54d6f72de749198bd784882f8c2b36",
+            "reference": "7bfaaa790d54d6f72de749198bd784882f8c2b36",
             "shasum": ""
         },
         "require": {
@@ -1528,8 +2185,7 @@
             "php-http/discovery": "^1.0",
             "php-http/httplug": ">=1.0",
             "php-http/message": "^1.0",
-            "psr/http-message": "^1.0",
-            "thecodingmachine/safe": "^1.0"
+            "psr/http-message": "^1.0"
         },
         "require-dev": {
             "doctrine/coding-standard": "^6.0",
@@ -1538,10 +2194,9 @@
             "phpstan/phpstan": "^0.12.7",
             "phpunit/phpunit": "^7",
             "squizlabs/php_codesniffer": "^3.2",
-            "thecodingmachine/phpstan-safe-rule": "^1.0",
             "thecodingmachine/phpstan-strict-rules": "^0.12.0"
         },
-        "time": "2020-02-10T09:03:36+00:00",
+        "time": "2021-01-04T10:06:18+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -1577,141 +2232,11 @@
             "office",
             "pdf",
             "word"
-        ]
-    },
-    {
-        "name": "thecodingmachine/safe",
-        "version": "v1.1",
-        "version_normalized": "1.1.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/thecodingmachine/safe.git",
-            "reference": "f440677bad66c0ef42fa3f875bf05718028af5d3"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/thecodingmachine/safe/zipball/f440677bad66c0ef42fa3f875bf05718028af5d3",
-            "reference": "f440677bad66c0ef42fa3f875bf05718028af5d3",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=7.2"
-        },
-        "require-dev": {
-            "phpstan/phpstan": "^0.12",
-            "squizlabs/php_codesniffer": "^3.2",
-            "thecodingmachine/phpstan-strict-rules": "^0.12"
-        },
-        "time": "2020-03-24T13:59:42+00:00",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "0.1-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Safe\\": [
-                    "lib/",
-                    "generated/"
-                ]
-            },
-            "files": [
-                "generated/apache.php",
-                "generated/apc.php",
-                "generated/apcu.php",
-                "generated/array.php",
-                "generated/bzip2.php",
-                "generated/classobj.php",
-                "generated/com.php",
-                "generated/cubrid.php",
-                "generated/curl.php",
-                "generated/datetime.php",
-                "generated/dir.php",
-                "generated/eio.php",
-                "generated/errorfunc.php",
-                "generated/exec.php",
-                "generated/fileinfo.php",
-                "generated/filesystem.php",
-                "generated/filter.php",
-                "generated/fpm.php",
-                "generated/ftp.php",
-                "generated/funchand.php",
-                "generated/gmp.php",
-                "generated/gnupg.php",
-                "generated/hash.php",
-                "generated/ibase.php",
-                "generated/ibmDb2.php",
-                "generated/iconv.php",
-                "generated/image.php",
-                "generated/imap.php",
-                "generated/info.php",
-                "generated/ingres-ii.php",
-                "generated/inotify.php",
-                "generated/json.php",
-                "generated/ldap.php",
-                "generated/libevent.php",
-                "generated/libxml.php",
-                "generated/lzf.php",
-                "generated/mailparse.php",
-                "generated/mbstring.php",
-                "generated/misc.php",
-                "generated/msql.php",
-                "generated/mssql.php",
-                "generated/mysql.php",
-                "generated/mysqli.php",
-                "generated/mysqlndMs.php",
-                "generated/mysqlndQc.php",
-                "generated/network.php",
-                "generated/oci8.php",
-                "generated/opcache.php",
-                "generated/openssl.php",
-                "generated/outcontrol.php",
-                "generated/password.php",
-                "generated/pcntl.php",
-                "generated/pcre.php",
-                "generated/pdf.php",
-                "generated/pgsql.php",
-                "generated/posix.php",
-                "generated/ps.php",
-                "generated/pspell.php",
-                "generated/readline.php",
-                "generated/rrd.php",
-                "generated/sem.php",
-                "generated/session.php",
-                "generated/shmop.php",
-                "generated/simplexml.php",
-                "generated/sockets.php",
-                "generated/sodium.php",
-                "generated/solr.php",
-                "generated/spl.php",
-                "generated/sqlsrv.php",
-                "generated/ssdeep.php",
-                "generated/ssh2.php",
-                "generated/stats.php",
-                "generated/stream.php",
-                "generated/strings.php",
-                "generated/swoole.php",
-                "generated/uodbc.php",
-                "generated/uopz.php",
-                "generated/url.php",
-                "generated/var.php",
-                "generated/xdiff.php",
-                "generated/xml.php",
-                "generated/xmlrpc.php",
-                "generated/yaml.php",
-                "generated/yaz.php",
-                "generated/zip.php",
-                "generated/zlib.php",
-                "lib/special_cases.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
         ],
-        "description": "PHP core functions that throw exceptions instead of returning FALSE on error"
+        "support": {
+            "issues": "https://github.com/thecodingmachine/gotenberg-php-client/issues",
+            "source": "https://github.com/thecodingmachine/gotenberg-php-client/tree/6.3.0"
+        }
     },
     {
         "name": "zendframework/zend-escaper",

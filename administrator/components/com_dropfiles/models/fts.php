@@ -280,7 +280,7 @@ class DropfilesModelFts extends JModelLegacy
         $stops = array();
 
         foreach ($words as $word) {
-            $stops[mb_strtolower($word)] = 1;
+            $stops[mb_strtolower($word, 'UTF-8')] = 1;
         }
         $this->stops = $stops;
     }
@@ -425,7 +425,7 @@ class DropfilesModelFts extends JModelLegacy
         $docLists  = array();
 
         foreach ($docs as $id => $doc) {
-            if (!isset($doc) || (mb_strlen($doc) < 1)) {
+            if (!isset($doc) || (mb_strlen($doc, 'UTF-8') < 1)) {
                 continue;
             }
 
@@ -437,8 +437,8 @@ class DropfilesModelFts extends JModelLegacy
             $word2 = array();
 
             foreach ($words as $word) {
-                $len = mb_strlen($word);
-                $lv = mb_strtolower($word);
+                $len = mb_strlen($word, 'UTF-8');
+                $lv = mb_strtolower($word, 'UTF-8');
 
                 if (($len > 1) && ($len <= $this->maxWordLength) && (!isset($this->stops[$lv]))) {
                     if (!isset($word2[$lv])) {

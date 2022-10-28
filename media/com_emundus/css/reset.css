@@ -145,7 +145,7 @@ h1 {
     position: relative;
 }
 
-h1::after, .swal2-title:after {
+/*h1::after, .swal2-title:after {
     content: '';
     position: absolute;
     margin-top: 45px;
@@ -154,7 +154,7 @@ h1::after, .swal2-title:after {
     background: #e5283b;
     left: 0;
     display: block !important;
-}
+}*/
 
 .swal2-title {
     margin: 10px 0 20px 0 !important;
@@ -170,7 +170,7 @@ body {
 }
 
 body p {
-    margin: 0 !important;
+    margin: 0;
 }
 
 body p a:hover {

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <field
+        name="image"
+        type="media"
+        label="Image"
+        preview="tooltip"
+        directory="com_eventbooking"
+        class="readonly input-large"
+    />
+</form>

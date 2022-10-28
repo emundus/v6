@@ -43,12 +43,12 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
             </div>
         </div>
         <?php if($show_document_step == 1){ ?>
-        <div class="<?php echo ($view=="checklist")?"active":""; ?> <?php echo $step_attachment; ?> step">
-            <i class="large attach outline icon"></i>
-            <div class="content">
-                <div class="description"><?php echo JText::sprintf('ATTACHMENT_SENT', $attachments); ?></div>
+            <div class="<?php echo ($view=="checklist")?"active":""; ?> <?php echo $step_attachment; ?> step">
+                <i class="large attach outline icon"></i>
+                <div class="content">
+                    <div class="description"><?php echo JText::sprintf('ATTACHMENT_SENT', $attachments); ?></div>
+                </div>
             </div>
-        </div>
         <?php } ?>
         <?php if ($application_fee == 1) { ?>
             <div class="<?php echo ($option=="com_hikashop")?"active":""; ?> <?php echo $step_paiement; ?> step">
@@ -63,14 +63,14 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
                 <?php elseif (isset($scholarship) && $scholarship) :?>
                     <i class="large student icon"></i>
                 <?php else: ?>
-                    <i class="large add to cart icon"></i>
+                    <i class="large add to cart icon <?php echo ($paid==0 && $forms<100 && $attachments<100)?'not-paid':''; ?>"></i>
                 <?php endif; ?>
                 <div class="content">
                     <?php if (!isset($sentOrder) || $sentOrder->order_payment_method == 'banktransfer' || $sentOrder->order_payment_method == 'check') :?>
                         <?php if (isset($scholarship) && $scholarship) :?>
                             <div class="description <?php echo ($admission)?'admission':''; ?>"> <?php echo ($admission)?'':JText::_('HAS_SCHOLARSHIP'); ?> </div>
                         <?php else: ?>
-                            <div class="description <?php echo ($paid>0)?'paid':'not-paid'; echo ($admission)?'admission':''; ?>"> <?php echo ($paid>0)?JText::_('APPLICATION_PAID'):JText::_('APPLICATION_NOT_PAID'); ?> </div>
+                            <div class="description <?php echo ($paid>0)?'paid':'not-paid'; echo ($admission)?'admission':''; echo ($paid==0 && $forms<100 && $attachments<100)?' gray-text':''; ?>"> <?php echo ($paid>0)?JText::_('APPLICATION_PAID'):JText::_('APPLICATION_NOT_PAID'); ?> </div>
                         <?php endif; ?>
                     <?php else :?>
                         <div class="description <?php echo ($paid>0)?'paid':'paid-card'; echo ($admission)?'admission':'';?>"> <?php echo  ($paid>0)?JText::_('APPLICATION_PAID'):JText::_('PAID_VIA_CARD'); ?> </div>
@@ -78,7 +78,7 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
                     <div class="description"> <?php echo  ($paid==0 && !empty($sentOrder) && ($sentOrder->order_payment_method == 'banktransfer' || $sentOrder->order_payment_method == 'check'))?JText::_('AWAITING_PAYMENT'):'' ?> </div>
                     <div class="description">
                         <?php echo  ($paid==0 && !empty($sentOrder))?'<a href="'.$checkout_url.'" title="'.JText::_('RETRY_PAYMENT').'">'.JText::_('RETRY_PAYMENT').'</a>':''; ?>
-                        <?php echo  ($paid==0 && !empty($sentOrder)==0 && $forms>=100 && $attachments>=100 && !$orderCancelled)?'<a href="'.$checkout_url.'" class="order-now" title="'.JText::_('ORDER_NOW').'">'.JText::_('ORDER_NOW').'</a>':''; ?>
+                        <?php echo  ($paid==0 && !empty($sentOrder)==0 && $forms>=100 && $attachments>=100 && !$orderCancelled && (!$is_dead_line_passed || !$deadline))?'<a href="'.$checkout_url.'" class="order-now" title="'.JText::_('ORDER_NOW').'">'.JText::_('ORDER_NOW').'</a>':''; ?>
                         <?php echo  ($paid==0 && !empty($sentOrder)==0 && $forms>=100 && $attachments>=100 && $orderCancelled)?'<a href="'.$checkout_url.'" class="payment-declined" title="'.JText::_('PAYMENT_DECLINED').'">'.JText::_('PAYMENT_DECLINED').'</a>':''; ?>
                     </div>
                 </div>

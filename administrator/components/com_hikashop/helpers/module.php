@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -150,6 +150,14 @@ class hikashopModuleHelper {
 		$app = JFactory::getApplication();
 		$menus	= $app->getMenu();
 		$menu	= $menus->getActive();
+		$menuParams = null;
+
+		if(!empty($menu)) {
+			if(HIKASHOP_J30)
+				$menuParams = $menu->getParams();
+			else
+				$menuParams = @$menu->params;
+		}
 
 		if(!empty($obj->params)) {
 			$obj->module = true;
@@ -157,10 +165,10 @@ class hikashopModuleHelper {
 			if($obj->params->get('content_synchronize')){
 				$id = null;
 				if(HIKASHOP_J30 && isset($menu)) {
-					$productParams = $menu->params->get('hk_product',false);
+					$productParams = $menuParams->get('hk_product',false);
 					if($productParams && isset($productParams->category))
 						$id = $productParams->category;
-					$categoryParams = $menu->params->get('hk_category', false);
+					$categoryParams = $menuParams->get('hk_category', false);
 					if($categoryParams && isset($categoryParams->category))
 						$id = $categoryParams->category;
 				}
@@ -188,37 +196,31 @@ class hikashopModuleHelper {
 		}
 
 		jimport('joomla.html.parameter');
-		if (is_object( $menu )) {
-			if(HIKASHOP_J30 && (($menu->query['view'] == 'category' && (!$menu->params->get('hk_category',false) || !$menu->params->get('hk_product',false))) || ($menu->query['view'] == 'product' && !$menu->params->get('hk_product',false)))){
+		if (is_object( $menuParams )) {
+			if(HIKASHOP_J30 && (($menu->query['view'] == 'category' && (!$menuParams->get('hk_category',false) || !$menuParams->get('hk_product',false))) || ($menu->query['view'] == 'product' && !$menuParams->get('hk_product',false)))){
 				$db = JFactory::getDBO();
 				$query = 'SELECT params FROM '.hikashop_table('menu', false).' WHERE id = '.(int)$menu->id;
 				$db->setQuery($query);
 				$itemData = json_decode($db->loadResult());
 				if(isset($itemData->hk_category))
-					$menu->params->set('hk_category', $itemData->hk_category);
+					$menuParams->set('hk_category', $itemData->hk_category);
 				if(isset($itemData->hk_product))
-					$menu->params->set('hk_product', $itemData->hk_product);
+					$menuParams->set('hk_product', $itemData->hk_product);
 			}
 
-			$obj->params = new HikaParameter( $menu->params );
+			$obj->params = new HikaParameter( $menuParams );
 			$obj->params->set('id',$menu->id);
 			$obj->params->set('title',$menu->title);
 
 			if(HIKASHOP_J30) {
-				$productParams = $menu->params->get('hk_product',false);
+				$productParams = $menuParams->get('hk_product',false);
 				if($productParams && !isset($productParams->selectparentlisting) && isset($productParams->category)) {
 					$productParams->selectparentlisting = $productParams->category;
-					$menu->params->set('hk_product', $productParams);
-					$menu->params->set('selectparentlisting', $productParams->selectparentlisting);
-					$menu->params->set('content_type', 'product');
 				}
 
-				$categoryParams = $menu->params->get('hk_category', false);
+				$categoryParams = $menuParams->get('hk_category', false);
 				if($categoryParams && !isset($categoryParams->selectparentlisting) && isset($categoryParams->category)) {
 					$categoryParams->selectparentlisting = $categoryParams->category;
-					$menu->params->set('hk_category', $categoryParams);
-					$menu->params->set('selectparentlisting', $categoryParams->selectparentlisting);
-					$menu->params->set('content_type', 'category');
 				}
 			}
 		} else {

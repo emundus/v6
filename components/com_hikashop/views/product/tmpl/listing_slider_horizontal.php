@@ -1,16 +1,16 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 $height = $this->newSizes->height;
 $width = $this->newSizes->width;
-
+$this->type = '';
 $mainDivName = $this->params->get('main_div_name', '');
 $duration = round(((int)$this->params->get('product_effect_duration', 400)) / 1000, 3);
 
@@ -32,11 +32,11 @@ if(!isset($transitions[$transition_mode]))
 $productTransition = $transitions[$transition_mode];
 
 $link = hikashop_contentLink('product&task=show&cid=' . (int)$this->row->product_id . '&name=' . $this->row->alias . $this->itemid . $this->category_pathway, $this->row);
-$haveLink = (int)$this->params->get('link_to_product_page', 1);
+$this->haveLink = (int)$this->params->get('link_to_product_page', 1);
 
 $htmlLink = "";
 $cursor = "";
-if($haveLink && !$this->params->get('add_to_cart') && !$this->params->get('add_to_wishlist')) {
+if($this->haveLink && !$this->params->get('add_to_cart') && !$this->params->get('add_to_wishlist')) {
 	$htmlLink = ' onclick="window.location.href=\''.$link.'\'';
 	$cursor = "cursor:pointer;";
 }
@@ -52,7 +52,7 @@ if(!empty($this->row->extraData->top)) { echo implode("\r\n",$this->row->extraDa
 				<!-- PRODUCT IMG -->
 				<div class="hikashop_product_image">
 					<div class="hikashop_product_image_subdiv">
-<?php if($haveLink) { ?>
+<?php if($this->haveLink) { ?>
 						<a href="<?php echo $link;?>" title="<?php echo $this->escape($this->row->product_name); ?>">
 <?php } ?>
 <?php
@@ -73,15 +73,15 @@ if(!empty($this->row->extraData->top)) { echo implode("\r\n",$this->row->extraDa
 			';
 		}
 		echo $html;
-?>		<meta itemprop="image" content=<?php echo $img->url; ?>/>
+?>		<meta itemprop="image" content="<?php echo $img->url; ?>"/>
 <?php
 	}
 
 	if($this->params->get('display_badges', 1)) {
-		$this->classbadge->placeBadges($this->image, $this->row->badges, -10, 0);
+		$this->classbadge->placeBadges($this->image, $this->row->badges, array('vertical' => -10, 'horizontal' => 0, 'thumbnail' => $img));
 	}
 ?>
-<?php if($haveLink) { ?>
+<?php if($this->haveLink) { ?>
 						</a>
 <?php } ?>
 					</div>
@@ -90,11 +90,11 @@ if(!empty($this->row->extraData->top)) { echo implode("\r\n",$this->row->extraDa
 				<div class="hikashop_img_pane_panel">
 					<!-- PRODUCT NAME -->
 					<span class="hikashop_product_name">
-<?php if($haveLink) { ?>
+<?php if($this->haveLink) { ?>
 						<a href="<?php echo $link;?>">
 <?php } ?>
 							<?php echo $this->row->product_name; ?>
-<?php if($haveLink) { ?>
+<?php if($this->haveLink) { ?>
 						</a>
 <?php } ?>
 					</span>
@@ -103,11 +103,11 @@ if(!empty($this->row->extraData->top)) { echo implode("\r\n",$this->row->extraDa
 					<!-- PRODUCT CODE -->
 					<span class='hikashop_product_code_list'>
 <?php if($this->config->get('show_code')) { ?>
-<?php if($haveLink) { ?>
+<?php if($this->haveLink) { ?>
 						<a href="<?php echo $link;?>">
 <?php } ?>
 							<?php echo $this->row->product_code; ?>
-<?php if($haveLink) { ?>
+<?php if($this->haveLink) { ?>
 						</a>
 <?php } ?>
 <?php } ?>
@@ -130,11 +130,11 @@ if($this->params->get('show_price')) {
 			<td valign="top" height="<?php echo $height; ?>" width="<?php echo $width; ?>" >
 				<!-- PRODUCT NAME -->
 				<span class="hikashop_product_name">
-<?php if($haveLink) { ?>
+<?php if($this->haveLink) { ?>
 					<a href="<?php echo $link;?>">
 <?php } ?>
 						<?php echo $this->row->product_name; ?>
-<?php if($haveLink) { ?>
+<?php if($this->haveLink) { ?>
 					</a>
 <?php } ?>
 				</span>
@@ -176,6 +176,33 @@ if(!empty($this->productFields)) {
 ?>
 				<!-- EO PRODUCT CUSTOM FIELDS -->
 
+				<!-- CHARACTERISTIC AVAILABLE VALUES -->
+<?php
+if(!empty($this->row->characteristics)) {
+	foreach($this->row->characteristics as $characteristic) {
+		if(!empty($characteristic->availableValues)) {
+?>
+	<div class="hikashop_product_characteristic_on_listing hikashop_product_characteristic_on_listing_<?php echo $characteristic->characteristic_id; ?>">
+		<div class="hikashop_product_characteristic_name_on_listing"><?php echo $characteristic->characteristic_value; ?></div>
+		<div class="hikashop_product_characteristic_values_on_listing">
+<?php
+			foreach($characteristic->availableValues as $value) {
+?>
+			<span class="hikashop_product_characteristic_value_on_listing hikashop_product_characteristic_value_on_listing_<?php echo $value->characteristic_id; ?>">
+				<?php echo $value->characteristic_value; ?>
+			</span>
+<?php
+			}
+?>
+		</div>
+	</div>
+<?php		
+		}
+	}
+}
+?>
+				<!-- EO CHARACTERISTIC AVAILABLE VALUES -->
+
 				<!-- ADD TO CART BUTTON AREA -->
 <?php
 if($this->params->get('add_to_cart') || $this->params->get('add_to_wishlist')) {
@@ -189,11 +216,11 @@ if($this->params->get('add_to_cart') || $this->params->get('add_to_wishlist')) {
 	$contact = (int)$this->config->get('product_contact', 0);
 	if(hikashop_level(1) && $this->params->get('product_contact_button', 0) && ($contact == 2 || ($contact == 1 && !empty($this->row->product_contact)))) {
 		$css_button = $this->config->get('css_button', 'hikabtn');
-?>
-	<a href="<?php echo hikashop_completeLink('product&task=contact&cid=' . (int)$this->row->product_id . $this->itemid); ?>" class="<?php echo $css_button; ?>"><?php
-		echo JText::_('CONTACT_US_FOR_INFO');
-	?></a>
-<?php
+		$attributes = 'class="'.$css_button.'"';
+		$fallback_url = hikashop_completeLink('product&task=contact&cid=' . (int)$this->row->product_id . $this->itemid);
+		$content = JText::_('CONTACT_US_FOR_INFO');
+
+		echo $this->loadHkLayout('button', array( 'attributes' => $attributes, 'content' => $content, 'fallback_url' => $fallback_url));
 	}
 ?>
 
@@ -203,12 +230,11 @@ if($this->params->get('add_to_cart') || $this->params->get('add_to_wishlist')) {
 <?php
 	$details_button = (int)$this->params->get('details_button', 0);
 	if($details_button) {
-		$css_button = $this->config->get('css_button', 'hikabtn');
-?>
-	<a href="<?php echo $link; ?>" class="<?php echo $css_button; ?>"><?php
-		echo JText::_('PRODUCT_DETAILS');
-	?></a>
-<?php
+		$this->link_content = JText::_('PRODUCT_DETAILS');
+		$this->css_button = $this->config->get('css_button', 'hikabtn');
+		$this->type = 'detail';
+		$this->setLayout('show_popup');
+		echo $this->loadTemplate();
 	}
 ?>
 

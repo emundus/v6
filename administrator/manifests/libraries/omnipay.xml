@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="library" version="3.0" method="upgrade">
+	<name>Omnipay</name>
+	<libraryname>omnipay</libraryname>
+	<description>Omnipay - a framework agnostic, multi-gateway payment processing library for PHP 5.3+ </description>
+	<creationDate>01-01-2016</creationDate>
+	<author>Tuan Pham Ngoc</author>
+	<authorEmail>tuanpn@joomdonation.com</authorEmail>
+	<authorUrl>http://www.joomdonation.com</authorUrl>
+	<copyright>(C) 2016 Ossolution Team</copyright>
+	<license>GNU GPLv2 or later</license>
+	<version>1.1.0</version>
+	<files>
+		<folder>vendor</folder>		
+	</files>
+	<files target="administrator/manifests/libraries">
+		<file>omnipay.xml</file>
+	</files>
+</extension>

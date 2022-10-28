@@ -3,12 +3,13 @@
  * @package     Joomla.Site
  * @subpackage  com_users
  *
- * @copyright   Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
+ * @copyright   (C) 2009 Open Source Matters, Inc. <https://www.joomla.org>
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\User\UserHelper;
 use Joomla\Registry\Registry;
 
 /**
@@ -391,6 +392,12 @@ class UsersModelProfile extends JModelForm
 			return false;
 		}
 
+		// Destroy all active sessions for the user after changing the password
+		if ($data['password'])
+		{
+			UserHelper::destroyUserSessions($user->id, true);
+		}
+
 		return $user->id;
 	}
 
@@ -407,7 +414,6 @@ class UsersModelProfile extends JModelForm
 	public function getTwofactorform($userId = null)
 	{
 		$userId = (!empty($userId)) ? $userId : (int) $this->getState('user.id');
-
 		$model = new UsersModelUser;
 
 		$otpConfig = $model->getOtpConfig($userId);

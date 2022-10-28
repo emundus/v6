@@ -88,9 +88,7 @@ class SecuritycheckprosModelVulninfo extends SecuritycheckproModel
     */
     function _buildQuery()
     {
-        $query = ' SELECT * '
-        . ' FROM #__securitycheckpro_db ORDER BY id DESC '
-        ;
+        $query = 'SELECT * FROM #__securitycheckpro_db ORDER BY id DESC';
         return $query;
     }
 

@@ -121,15 +121,15 @@
 	margin-right:1%;
 }
 .btnExport, .btnQueryBuilder:hover, .swal2-confirm:hover, .swal2-cancel {
-	border-radius:4px;
+	border-radius: 4px;
 	background:transparent;
-	padding:4px 12px;
+	padding: 8px 12px;
 	white-space: normal;
 }
 .btnExport:hover, .btnQueryBuilder, .swal2-confirm, .swal2-cancel:hover {
-	border-radius:4px;
+	border-radius: 4px;
 	color:white;
-	padding:4px 12px;
+	padding: 8px 12px;
 	white-space: normal;
 }
 .btnExport:focus, .btnQueryBuilder:focus, .queryBuilder input[type="button"]:focus, .queryBuilder input[type="submit"]:focus, .swal2-confirm:focus, .swal2-cancel:focus {
@@ -153,7 +153,7 @@
 	margin:0!important;
 	background-color:white;
 	padding:2%;
-	box-shadow: 0px 0px 47px -13px rgba(163,163,163,1);
+	box-shadow: 0 1px 2px 0 hsla(0,0%,41.2%,.19);
 }
 .etiquette label {
 	font-weight:normal!important;
@@ -163,7 +163,9 @@
 }
 .etiquette select {
 	border-radius:4px!important;
+	color: #353544;
 }
+
 .etiquette select:focus {
 	outline: 2px solid -webkit-focus-ring-color;
 }
@@ -180,7 +182,7 @@
 	color:white!important;
 }
 .informationStatistique h4 {
-	color:white!important;
+	color:#000!important;
 }
 .closeButtonWelcomeStat {
 	float:right;

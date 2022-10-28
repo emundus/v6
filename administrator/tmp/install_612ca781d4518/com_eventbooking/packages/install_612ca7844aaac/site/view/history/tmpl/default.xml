@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="Registration History">
+		<message>
+			Display List Of events which the current user registered
+		</message>
+	</layout>
+	<state>
+		<name>Registration History</name>
+		<description>Display List Of Events which the current user registered</description>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="display_num" type="text" default="0" label="Number Records" description="Number of records which will be displayed per page" />
+			</fieldset>
+		</fields>
+	</state>
+</metadata>

@@ -1,0 +1,28 @@
+{
+  "name": "mono/omnipay-payu-latam",
+  "description": "PayU Latam provider for Omnipay",
+  "type": "library",
+  "require": {
+    "omnipay/common": "~2.0"
+  },
+  "require-dev": {
+    "omnipay/tests": "~2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Omnipay\\PayU\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Omnipay\\PayU\\": "tests/"
+    }
+  },
+  "license": "GPL",
+  "authors": [
+    {
+      "name": "Thomas Faurbye Nielsen",
+      "email": "tfn@monosolutions.com"
+    }
+  ]
+}

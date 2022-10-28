@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -15,10 +15,10 @@ defined('_JEXEC') or die('Restricted access');
 <form action="<?php echo hikashop_completeLink('plugins&plugin_type='.$this->plugin_type); ?>" method="post" name="adminForm" id="adminForm" enctype="multipart/form-data">
 
 <div class="hk-row">
-	<div class="hkc-md-5">
+	<div class="hkc-md-5 hika_j4_search">
 		<?php echo $this->loadHkLayout('search', array()); ?>
 	</div>
-	<div class="hkc-md-7 hikashop_listing_filters"><?php
+	<div id="hikashop_listing_filters_id" class="hkc-md-7 hikashop_listing_filters <?php echo $this->openfeatures_class; ?>"><?php
 		if(!empty($this->extrafilters)) {
 			foreach($this->extrafilters as $name => $filterObj) {
 				echo $filterObj->displayFilter($name, $this->pageInfo->filter);
@@ -49,8 +49,17 @@ defined('_JEXEC') or die('Restricted access');
 ?>
 			<th class="title"><?php echo JText::_('HIKA_TYPE');?></th>
 			<th class="title titleorder" style="width:10%;"><?php
-				if($this->ordering->ordering)
-					echo JHTML::_('grid.order', $this->rows);
+				if ($this->ordering->ordering) {
+					$keys = array_keys($this->rows);  
+					$rows_nb = end($keys);
+					$href = "javascript:saveorder(".$rows_nb.", 'saveorder')";
+					?><a href="<?php echo $href; ?>" rel="tooltip" class="saveorder btn btn-sm btn-secondary float-end" title="Save Order">
+						<button class="button-apply btn btn-success" type="button">
+<!--						<span class="icon-apply" aria-hidden="true"></span> -->
+							<i class="fas fa-save"></i>
+						</button>
+					</a><?php
+				}
 				echo JText::_('HIKA_ORDER');
 			?></th>
 			<th class="title" style="width:2%;"><?php echo JText::_('HIKA_DELETE');?></th>
@@ -61,7 +70,6 @@ defined('_JEXEC') or die('Restricted access');
 		<tr>
 			<td colspan="<?php echo $cols; ?>">
 				<?php echo $this->pagination->getListFooter(); ?>
-				<?php echo $this->pagination->getResultsCounter(); ?>
 			</td>
 		</tr>
 	</tfoot>

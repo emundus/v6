@@ -15,6 +15,7 @@ use Joomla\CMS\Language\Text as JText;
 use Joomla\CMS\Uri\Uri as JUri;
 use Joomla\CMS\Router\Route as JRoute;
 use Joomla\Input\Input;
+use Joomla\CMS\HTML\HTMLHelper as JHtml;
 
 // Load language
 $lang = JFactory::getLanguage();
@@ -36,23 +37,28 @@ $translator_url = $lang2->_('COM_SECURITYCHECKPRO_TRANSLATOR_URL');
 
 // Cargamos los archivos javascript necesarios
 $document = JFactory::getDocument();
-$document->addScript(JURI::root().'media/system/js/core.js');
+if ( version_compare(JVERSION, '3.20', 'lt') )
+{	
+	$document->addScript(JURI::root().'media/system/js/core.js');
+} 
 
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
 // Bootstrap core JavaScript
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
+// Inline javascript to avoid deferring in Joomla 4
+echo '<script src="' . JURI::root(). '/media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>';
+//$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
 
 $opa_icons = "media/com_securitycheckpro/stylesheets/opa-icons.css";
-JHTML::stylesheet($opa_icons);
+JHtml::stylesheet($opa_icons);
 
 $media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
-JHTML::stylesheet($media_url);
+JHtml::stylesheet($media_url);
 
 // Css circle
-JHTML::stylesheet('media/com_securitycheckpro/new/css/circle.css');
+JHtml::stylesheet('media/com_securitycheckpro/new/css/circle.css');
 
 $sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
-JHTML::stylesheet($sweet);
+JHtml::stylesheet($sweet);
 
 // Url to be used on statistics
 $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&view=logs&datefrom=%s&dateto=%s';
@@ -141,10 +147,8 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
           </ol>
 		  
 	  
-    <?php
-                $app = JComponentHelper::getParams('com_securitycheckpro');
-                $downloadid = $app->get('downloadid');
-    if (empty($downloadid) ) {
+    <?php                
+    if (empty($this->downloadid) ) {
         ?>        
             <div class="card text-center mb-3">
                 <div class="card-header">
@@ -825,7 +829,7 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
     </div>
     
     <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#isisJsData">
+    <a class="scroll-to-top rounded" href="#mainNav">
       <i class="fapro fa-angle-up"></i>
     </a>
     

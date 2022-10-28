@@ -8,7 +8,7 @@
  */
 
 // ensure this file is being included by a parent file
-defined( '_JEXEC' ) or die( JText::_('RESTRICTED_ACCESS') );
+defined( '_JEXEC' ) or die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'calendar.php');
@@ -56,9 +56,7 @@ class EmundusControllerCalendar extends JControllerLegacy {
             $google_calendar_id = '';
         }
 
-        $m_calendar->dpcalendar_add_calendar($calendar_title, $calendar_alias, $calendar_color, $google_calendar_id, $dpcalendar_parent_id, $calendar_program);
-
-        echo json_encode(['status' => true]);
+        echo json_encode(['status' => $m_calendar->dpcalendar_add_calendar($calendar_title, $calendar_alias, $calendar_color, $google_calendar_id, $dpcalendar_parent_id, $calendar_program)]);
 
     }
 
@@ -252,7 +250,7 @@ class EmundusControllerCalendar extends JControllerLegacy {
      * Used for first activation with the calendar.
      */
     public function authenticateclient() {
-    	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'calendar.php');
+    	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'calendar.php');
     	$m_calendar = new EmundusModelCalendar();
 		$m_calendar->authenticateClient();
 		JFactory::getApplication()->redirect('/index.php');

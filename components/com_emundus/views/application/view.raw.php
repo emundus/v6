@@ -26,7 +26,7 @@ require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'interview.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
-
+require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
 
 class EmundusViewApplication extends JViewLegacy {
     protected $_user = null;
@@ -50,7 +50,7 @@ class EmundusViewApplication extends JViewLegacy {
 
     function display($tpl = null) {
         if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-            die(JText::_('RESTRICTED_ACCESS'));
+            die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
         }
 
         $app = JFactory::getApplication();
@@ -72,31 +72,27 @@ class EmundusViewApplication extends JViewLegacy {
         if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
             switch ($layout) {
                 case "synthesis":
-                    $program = $m_application->getProgramSynthesis($fnumInfos['campaign_id']);
-                    $campaignInfo = $m_application->getUserCampaigns($fnumInfos['applicant_id'], $fnumInfos['campaign_id']);
-                    $m_email = new EmundusModelEmails();
-                    $tag = array(
-                        'FNUM' => $fnum,
-                        'CAMPAIGN_NAME' => $fnum,
-                        'APPLICATION_STATUS' => $fnum,
-                        'APPLICATION_TAGS' => $fnum,
-                        'APPLICATION_PROGRESS' => $fnum
-                    );
-
-                    $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum);
                     $synthesis = new stdClass();
-                    $synthesis->program = $program;
-                    $synthesis->camp = $campaignInfo;
-                    $synthesis->fnum = $fnum;
-                    $synthesis->block = preg_replace($tags['patterns'], $tags['replacements'], $program->synthesis);
-                    // replace {fabrik_element_ids} in body
+                    $program = $m_application->getProgramSynthesis($fnumInfos['campaign_id']);
+                    if (!empty($program->synthesis)) {
+                        $campaignInfo = $m_application->getUserCampaigns($fnumInfos['applicant_id'], $fnumInfos['campaign_id']);
+                        $m_email = new EmundusModelEmails();
+                        $tag = array(
+                            'FNUM' => $fnum,
+                            'CAMPAIGN_NAME' => $fnum,
+                            'APPLICATION_STATUS' => $fnum,
+                            'APPLICATION_TAGS' => $fnum,
+                            'APPLICATION_PROGRESS' => $fnum
+                        );
 
-                    $element_ids = $m_email->getFabrikElementIDs($synthesis->block);
-                    if (count(@$element_ids[0]) > 0) {
-                        $element_values = $m_email->getFabrikElementValues($fnum, $element_ids[1]);
-                        $synthesis->block = $m_email->setElementValues($synthesis->block, $element_values);
+                        $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum, '', $program->synthesis);
+
+                        $synthesis->program = $program;
+                        $synthesis->camp = $campaignInfo;
+                        $synthesis->fnum = $fnum;
+                        $synthesis->block = preg_replace($tags['patterns'], $tags['replacements'], $program->synthesis);
+                        $synthesis->block = $m_email->setTagsFabrik($synthesis->block, array($fnum));
                     }
-
                     $this->assignRef('synthesis', $synthesis);
                     break;
 
@@ -109,15 +105,17 @@ class EmundusViewApplication extends JViewLegacy {
                         $campaignInfo = $m_application->getCampaignByFnum($fnum);
                     }
 
-                    $this->synthesis = new stdClass();
-                    $this->synthesis->camps = $campaignInfo;
-                    $this->synthesis->fnumInfos = $fnumInfos;
-                    $this->synthesis->fnum = $fnum;
+                    $assoc_files = new stdClass();
+                    $assoc_files->camps = $campaignInfo;
+                    $assoc_files->fnumInfos = $fnumInfos;
+                    $assoc_files->fnum = $fnum;
+                    $this->assignRef('assoc_files', $assoc_files);
+
                     break;
 
                 case 'attachment':
                     if (EmundusHelperAccess::asAccessAction(4, 'r', $this->_user->id, $fnum)) {
-                        EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 4, 'r', 'COM_EMUNDUS_LOGS_ATTACHMENTS_BACKOFFICE');
+                        EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 4, 'r', 'COM_EMUNDUS_ACCESS_ATTACHMENT_READ');
                         $expert_document_id = $params->get('expert_document_id', '36');
 
                         $app = JFactory::getApplication();
@@ -137,7 +135,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->assignRef('nameCategory', $nameCategory);
 
                     } else {
-                        echo JText::_("RESTRICTED_ACCESS");
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
                     }
                     break;
@@ -148,7 +146,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->assignRef('campaign_id', $fnumInfos['campaign_id']);
                         $this->assignRef('student', $student);
                     } else {
-                        echo JText::_("RESTRICTED_ACCESS");
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
                     }
                     break;
@@ -233,15 +231,25 @@ class EmundusViewApplication extends JViewLegacy {
                                 $this->assignRef('evaluation_select', $evals);
 
                             } else {
-                                echo JText::_("RESTRICTED_ACCESS");
+                                echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                                 exit();
                             }
                         }
 
                         $this->campaign_id = $fnumInfos['campaign_id'];
                         $this->assignRef('fnum', $fnum);
+
+                        # ADD 5R HERE
+                        # get FNUM INFO
+                        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+                        $mFile = new EmundusModelFiles();
+                        $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+                        // TRACK THE LOGS
+                        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+                        EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 5, 'r', 'COM_EMUNDUS_ACCESS_EVALUATION_READ');
                     } else {
-                        echo JText::_("RESTRICTED_ACCESS");
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
                     }
                     break;
@@ -289,8 +297,18 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->assignRef('url_form', $url_form);
                         $this->assignRef('$formid', $formid);
 
+                        # ADD 29R HERE
+                        # get FNUM INFO
+                        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+                        $mFile = new EmundusModelFiles();
+                        $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+                        // TRACK THE LOGS
+                        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+                        EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 29, 'r', 'COM_EMUNDUS_DECISION_READ');
+
                     } else {
-                        echo JText::_("RESTRICTED_ACCESS");
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
                     }
                     break;
@@ -298,14 +316,12 @@ class EmundusViewApplication extends JViewLegacy {
                 case 'comment':
                     if (EmundusHelperAccess::asAccessAction(10, 'r', $this->_user->id, $fnum)) {
 
-                        EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 10, 'r', 'COM_EMUNDUS_LOGS_TAGS_BACKOFFICE');
+                        EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 10, 'r', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_READ');
 
                         $userComments = $m_application->getFileComments($fnum);
 
-                        $offset = $app->get('offset', 'UTC');
                         foreach ($userComments as $key => $comment) {
-                            $dateTime = new DateTime($comment->date, new DateTimeZone($offset));
-                            $userComments[$key]->date = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
+                            $comment->date = EmundusHelperDate::displayDate($comment->date, 'DATE_FORMAT_LC2', 0);
                         }
 
                         $this->assignRef('userComments', $userComments);
@@ -313,18 +329,35 @@ class EmundusViewApplication extends JViewLegacy {
 
                     } elseif (EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $fnum)) {
 
-                        EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 10, 'c', 'COM_EMUNDUS_LOGS_TAGS_BACKOFFICE');
+                        EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE');
 
                         $userComments = $m_application->getFileOwnComments($fnum,$this->_user->id);
 
-                        $offset = $app->get('offset', 'UTC');
                         foreach ($userComments as $key => $comment) {
-                            $dateTime = new DateTime($comment->date, new DateTimeZone($offset));
-                            $userComments[$key]->date = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
+                            $comment->date = EmundusHelperDate::displayDate($comment->date, 'DATE_FORMAT_LC2', 0);
                         }
 
                         $this->assignRef('userComments', $userComments);
                         $this->assignRef('fnum', $fnum);
+                    } else{
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
+                        exit();
+                    }
+                    break;
+
+                case 'logs':
+                    if (EmundusHelperAccess::asAccessAction(37, 'r', $this->_user->id, $fnum)) {
+                        EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 37, 'r', 'COM_EMUNDUS_ACCESS_LOGS_READ');
+
+                        $fileLogs = EmundusModelLogs::getActionsOnFnum($fnum);
+
+                        foreach ($fileLogs as $key => $log) {
+                            $log->details = EmundusModelLogs::setActionDetails($log->action_id, $log->verb, $log->params);
+                        }
+
+                        $this->assignRef('fileLogs', $fileLogs);
+                        $this->assignRef('fnum', $fnum);
+
                     } else{
                         echo JText::_("RESTRICTED_ACCESS");
                         exit();
@@ -334,17 +367,22 @@ class EmundusViewApplication extends JViewLegacy {
                 case 'tag':
                     if (EmundusHelperAccess::asAccessAction(14, 'r', $this->_user->id, $fnum)) {
 
-                        EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 14, 'r', 'COM_EMUNDUS_LOGS_TAGS_BACKOFFICE');
+                        EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 14, 'r', 'COM_EMUNDUS_ACCESS_TAGS_READ');
 
                         $m_files = new EmundusModelFiles();
                         $tags = $m_files->getTagsByFnum(array($fnum));
                         $alltags = $m_files->getAllTags();
+                        $groupedTags = [];
+                        foreach ($alltags as $tag) {
+                            $groupedTags[$tag["category"]][] = ["id" => $tag["id"],"label" => $tag["label"]];
+                        }
+
                         $this->assignRef('tags', $tags);
-                        $this->assignRef('alltags', $alltags);
+                        $this->assignRef('groupedTags', $groupedTags);
                         $this->assignRef('fnum', $fnum);
 
                     } else {
-                        echo JText::_("RESTRICTED_ACCESS");
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
                     }
                     break;
@@ -352,8 +390,59 @@ class EmundusViewApplication extends JViewLegacy {
                 case 'form':
                     if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
 
-                        EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 1, 'r', 'COM_EMUNDUS_LOGS_FORM_BACKOFFICE');
+                        //$step = $jinput->getString('step', 0);
+
+                        EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 1, 'r', 'COM_EMUNDUS_ACCESS_FORM_READ');
+
+                        $m_user = new EmundusModelUsers;
+                        $m_campaign = new EmundusModelCampaign;
+
+                        /* detect user_id from fnum */
+                        $userId = $fnumInfos['applicant_id'];
                         $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
+
+                        $this->assignRef('userid', $userId);
+
+                        /* get all campaigns by user */
+                        $campaignsRaw = $m_campaign->getCampaignByFnum($fnum);
+
+                        /* get all profiles (order by step) by campaign */
+                        $pidsRaw = $m_profiles->getProfilesIDByCampaign([$campaignsRaw->id],'object');
+
+                        $noPhasePids = array();
+                        $hasPhasePids = array();
+
+                        foreach($pidsRaw as $pidRaw) {
+                            if($pidRaw->pid === $pid) {
+                                $dpid = $pidRaw;
+                            }
+
+                            if($pidRaw->phase === null) {
+                                if($pidRaw->pid !== $pid) {
+                                    $noPhasePids['no_step']['lbl'] = JText::_('COM_EMUNDUS_VIEW_FORM_OTHER_PROFILES');
+                                    $noPhasePids['no_step']['data'][] = $pidRaw;
+                                }
+                            } else {
+                                $hasPhasePids[] = $pidRaw;
+                            }
+                        }
+
+                        $profiles_by_phase = array();
+
+                        /* group profiles by phase */
+                        foreach($hasPhasePids as $ppid) {
+                            $profiles_by_phase['step_' . $ppid->phase]['lbl'] = $ppid->lbl;
+                            $profiles_by_phase['step_' . $ppid->phase]['data'][] = $ppid;
+                        }
+
+                        $pids = array_merge($profiles_by_phase, $noPhasePids);
+
+
+                        /* serialize $pids to json format */
+                        $json = json_encode($pids);
+                        $this->assignRef('pids', $json);
+
+                        $this->assignRef('defaultpid', $dpid);
 
                         $formsProgress = $m_application->getFormsProgress($fnum);
                         $this->assignRef('formsProgress', $formsProgress);
@@ -362,7 +451,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->assignRef('forms', $forms);
 
                     } else {
-                        echo JText::_("RESTRICTED_ACCESS");
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
                     }
                     break;
@@ -378,7 +467,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->assignRef('defaultActions', $defaultActions);
 
                     } else {
-                        echo JText::_("RESTRICTED_ACCESS");
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
                     }
                     break;
@@ -387,14 +476,14 @@ class EmundusViewApplication extends JViewLegacy {
                     // This view gets a recap of all the emails sent to the User by the platform, requires applicant_email read rights.
                     if (EmundusHelperAccess::asAccessAction(9, 'r', $this->_user->id, $fnum)) {
 
-                        EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 9, 'r', 'COM_EMUNDUS_LOGS_EMAIL_BACKOFFICE');
+                        EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 9, 'r', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_READ');
 
                         $m_emails = new EmundusModelEmails();
                         $messages = $m_emails->get_messages_to_from_user(intval($fnumInfos['applicant_id']));
                         $this->assignRef('messages', $messages);
 
                     } else {
-                        echo JText::_("RESTRICTED_ACCESS");
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
                     }
                     break;
@@ -442,8 +531,18 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->assignRef('url_form', $url_form);
                         $this->assignRef('$formid', $admission_form->form_id);
 
+                        # ADD 32R HERE
+                        # get FNUM INFO
+                        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+                        $mFile = new EmundusModelFiles();
+                        $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+                        // TRACK THE LOGS
+                        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+                        EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 32, 'r', 'COM_EMUNDUS_ADMISSION_READ');
+
                     } else {
-                        echo JText::_("RESTRICTED_ACCESS");
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
                     }
                     break;
@@ -503,7 +602,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->campaign_id = $fnumInfos['campaign_id'];
                         $this->assignRef('fnum', $fnum);
                     } else {
-                        echo JText::_("RESTRICTED_ACCESS");
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
                     }
                     break;
@@ -516,6 +615,6 @@ class EmundusViewApplication extends JViewLegacy {
 
             parent::display($tpl);
 
-        } else echo JText::_("RESTRICTED_ACCESS");
+        } else echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
     }
 }

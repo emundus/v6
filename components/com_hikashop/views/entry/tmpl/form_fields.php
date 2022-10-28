@@ -1,29 +1,49 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?>		<fieldset class="input">
 			<legend><?php echo JText::_('HIKASHOP_ENTRY');?></legend>
-			<?php if($this->id>1){?>
+<?php
+	if($this->id>1){
+?>
 				<div class="hikashop_delete_entry_button"><a href="#" onClick="hikashopRemoveEntryHTML(<?php echo $this->id;?>);return false;"><?php echo JText::_('REMOVE_ENTRY');?></a></div>
-			<?php } ?>
+<?php
+	}
+?>
 			<table cellpadding="0" cellspacing="0" border="0" class="hikashop_contentpane">
-		<?php foreach($this->extraFields['entry'] as $fieldName => $oneExtraField) { ?>
+<?php 
+	$after = array();
+	foreach($this->extraFields['entry'] as $fieldName => $oneExtraField) {
+		$onWhat='onchange';
+		if($oneExtraField->field_type=='radio')
+			$onWhat='onclick';
+		$html = $this->fieldsClass->display($oneExtraField,$this->entry->$fieldName,'data[entry][entry_'.$this->id.']['.$fieldName.']',false,' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'entry\','.$this->id.');"');
+		if($oneExtraField->field_type=='hidden') {
+			$after[] = $html;
+			continue;
+		}
+?>
 			<tr id="hikashop_entry_<?php echo $fieldName.'_'.$this->id;?>" class="hikashop_entry_<?php echo $fieldName;?>">
 				<td class="key">
 					<?php echo $this->fieldsClass->getFieldName($oneExtraField);?>
 				</td>
 				<td>
-					<?php
-					 $onWhat='onchange'; if($oneExtraField->field_type=='radio') $onWhat='onclick';
-					 echo $this->fieldsClass->display($oneExtraField,$this->entry->$fieldName,'data[entry][entry_'.$this->id.']['.$fieldName.']',false,' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'entry\','.$this->id.');"'); ?>
+					<?php echo $html; ?>
 				</td>
 			</tr>
-		<?php }?>
+<?php
+	}
+?>
 			</table>
+<?php
+	if(count($after)) {
+		echo implode("\r\n", $after);
+	}
+?>
 		</fieldset>

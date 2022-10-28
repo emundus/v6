@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<view title="map" hidden="true">
+		<message><![CDATA[Display Location Map of an event]]></message>
+	</view>
+</metadata>

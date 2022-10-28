@@ -21,6 +21,17 @@ class SecuritycheckProsViewCpanel extends JViewLegacy
     {
         JToolBarHelper::title(JText::_('Securitycheck Pro').' | ' .JText::_('COM_SECURITYCHECKPRO_CONTROLPANEL'), 'securitycheckpro');
         
+		$mainframe = JFactory::getApplication();		
+		$subscription_status_checked = $mainframe->getUserState("subscription_status_checked", 0);
+		
+		if (!$subscription_status_checked) {
+			// Chequeamos el estado de las subscripciones
+			include_once JPATH_ROOT.'/administrator/components/com_securitycheckpro/library/model.php';
+			$scp_model = new SecuritycheckproModel();
+			$scp_model->get_subscriptions_status();
+			$mainframe->setUserState("subscription_status_checked", 1);
+		}
+		
         
         // Obtenemos los datos del modelo...
         $model = $this->getModel();
@@ -28,23 +39,16 @@ class SecuritycheckProsViewCpanel extends JViewLegacy
         //  Parámetros del plugin
         $items= $model->getConfig();
                                 
-        // Extraemos los elementos de las distintas listas...
-        $blacklist_elements= array();
+        // Lista negra
+		$blacklist_elements = $model->getTableData("blacklist");        
         $pagination_blacklist = null;
-        if ((!is_null($items['blacklist'])) && ($items['blacklist'] != '')) {
-            $items['blacklist'] = str_replace(' ', '', $items['blacklist']);
-            $blacklist_elements = explode(',', trim($items['blacklist']));
-        }
 
         $dynamic_blacklist_elements= $model->get_dynamic_blacklist_ips();
 
-        $whitelist_elements= array();
-        $pagination_whitelist = null;
+        // Lista blanca
+		$whitelist_elements = $model->getTableData("whitelist");		
+		$pagination_whitelist = null;
 
-        if ((!is_null($items['whitelist'])) && ($items['whitelist'] != '')) {    
-            $items['whitelist'] = str_replace(' ', '', $items['whitelist']);
-            $whitelist_elements = explode(',', trim($items['whitelist']));
-        }
         
         $firewall_plugin_enabled = $model->PluginStatus(1);
         $cron_plugin_enabled = $model->PluginStatus(2);
@@ -58,7 +62,6 @@ class SecuritycheckProsViewCpanel extends JViewLegacy
         $scprocron_plugin_id = $model->get_plugin_id(2);
         $params = JComponentHelper::getParams('com_securitycheckpro');
         // ... y el tipo de servidor web
-        $mainframe = JFactory::getApplication();
         $server = $mainframe->getUserState("server", 'apache');
         // ... y las estadísticas de los logs
         $last_year_logs = $model->LogsByDate('last_year');
@@ -88,6 +91,20 @@ class SecuritycheckProsViewCpanel extends JViewLegacy
         $overall = new SecuritycheckprosModelSysinfo();
         $overall = $overall->getInfo();        
         $overall = $overall['overall_joomla_configuration'];
+		
+		// Download id 
+		// Get download id stored in component
+		$app = JComponentHelper::getParams('com_securitycheckpro');
+		$this->downloadid = $app->get('downloadid');
+		
+		$downloadid_core_data = $model->get_extra_query_update_sites_table('com_securitycheckpro');
+				
+		if ( !empty($this->downloadid) ) {
+			if ( ($downloadid_core_data <> "error") && ($this->downloadid <> $downloadid_core_data->extra_query) ) {
+				// Downloads id are different. Let's update the 'update_sites_table' with the one set into the component
+				$model->update_extra_query_update_sites_table((int)$downloadid_core_data->update_site_id,$this->downloadid);
+			}
+		}
         
                
         // Ponemos los datos en el template

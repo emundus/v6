@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -27,40 +27,43 @@ if(!empty($this->product->translations)) {
 		<dd class="hikashop_product_name"><?php echo @$this->product->product_name; ?></dd>
 <?php }
 
-		if(hikashop_acl('product/edit/pagetitle')) { ?>
+		if($this->product->product_type == 'main') {
+			if(hikashop_acl('product/edit/pagetitle')) { ?>
 		<dt class="hikashop_product_pagetitle"><label><?php echo JText::_('PAGE_TITLE'); ?></label></dt>
 		<dd class="hikashop_product_pagetitle"><input type="text" size="45" name="translation[product_page_title][<?php echo $language_id; ?>]" value="<?php echo $this->escape(@$translation->product_page_title->value); ?>" /></dd>
 <?php
-		}
+			}
 
-		if(hikashop_acl('product/edit/url')) { ?>
+			if(hikashop_acl('product/edit/url')) { ?>
 		<dt class="hikashop_product_url"><label><?php echo JText::_('URL'); ?></label></dt>
 		<dd class="hikashop_product_url"><input type="text" size="45" name="translation[product_url][<?php echo $language_id; ?>]" value="<?php echo $this->escape(@$translation->product_url->value); ?>" /></dd>
 <?php
-		}
+			}
 
-		if(hikashop_acl('product/edit/metadescription')) { ?>
+			if(hikashop_acl('product/edit/metadescription')) { ?>
 		<dt class="hikashop_product_metadescription"><label><?php echo JText::_('PRODUCT_META_DESCRIPTION'); ?></label></dt>
 		<dd class="hikashop_product_metadescription"><textarea id="product_meta_description" cols="35" rows="2" name="translation[product_meta_description][<?php echo $language_id; ?>]"><?php echo $this->escape(@$translation->product_meta_description->value); ?></textarea></dd>
 <?php
-		}
+			}
 
-		if(hikashop_acl('product/edit/keywords')) { ?>
+			if(hikashop_acl('product/edit/keywords')) { ?>
 		<dt class="hikashop_product_keywords"><label><?php echo JText::_('PRODUCT_KEYWORDS'); ?></label></dt>
 		<dd class="hikashop_product_keywords"><textarea id="product_keywords" cols="35" rows="2" name="translation[product_keywords][<?php echo $language_id; ?>]"><?php echo $this->escape(@$translation->product_keywords->value); ?></textarea></dd>
 <?php
-		}
+			}
 
-		if(hikashop_acl('product/edit/alias')) { ?>
+			if(hikashop_acl('product/edit/alias')) { ?>
 		<dt class="hikashop_product_alias"><label><?php echo JText::_('HIKA_ALIAS'); ?></label></dt>
 		<dd class="hikashop_product_alias"><input type="text" size="45" name="translation[product_alias][<?php echo $language_id; ?>]" value="<?php echo $this->escape(@$translation->product_alias->value); ?>" /></dd>
 <?php
-		}
+			}
 
-		if(hikashop_acl('product/edit/canonical')) { ?>
+			if(hikashop_acl('product/edit/canonical')) { ?>
 		<dt class="hikashop_product_canonical"><label><?php echo JText::_('PRODUCT_CANONICAL'); ?></label></dt>
 		<dd class="hikashop_product_canonical"><input type="text" size="45" name="translation[product_canonical][<?php echo $language_id; ?>]" value="<?php echo $this->escape(@$translation->product_canonical->value); ?>" /></dd>
 <?php
+			}
+
 		}
 
 		if(!empty($this->fields) && hikashop_acl('product/edit/customfields')) {

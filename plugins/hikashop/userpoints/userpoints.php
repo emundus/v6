@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -85,6 +85,23 @@ class plgHikashopUserpoints extends hikashopPlugin {
 		$groups = hikaInput::get()->get('groups', array(), 'array');
 		hikashop_toInteger($groups);
 		$element->plugin_params->groups = serialize($groups);
+
+
+		if($element->plugin_params->points_mode == 'hk') {
+			$user = hikashop_loadUser(true);
+			if(!isset($user->user_points)) {
+				$field = new stdClass();
+				$field->field_table = 'user';
+				$field->field_realname = Jtext::_('HIKASHOP_USER_POINTS');
+				$field->field_namekey = 'user_points';
+				$field->field_type = 'text';
+				$field->field_published = 1;
+				$field->field_default = 0;
+
+				$fieldClass = hikashop_get('class.field');
+				$fieldClass->save($field);
+			}
+		}
 	}
 
 	public function _readOptions() {
@@ -124,6 +141,12 @@ class plgHikashopUserpoints extends hikashopPlugin {
 			$this->plugin_options['show_earn_points'] = false;
 			if(isset($plugin->params['show_earn_points']))
 				$this->plugin_options['show_earn_points'] = (int)$plugin->params['show_earn_points'];
+
+
+			$this->plugin_options['order_listing_points'] = true;
+			if(isset($plugin->params['order_listing_points']))
+				$this->plugin_options['order_listing_points'] = (int)$plugin->params['order_listing_points'];
+
 		} else {
 			$this->plugin_options['checkout_step'] = (int)$this->params->get('checkout_step', '1');
 			$this->plugin_options['hide_when_no_points'] = (int)$this->params->get('hide_when_no_points', '1');
@@ -132,6 +155,7 @@ class plgHikashopUserpoints extends hikashopPlugin {
 			$this->plugin_options['show_points'] = $this->params->get('show_points', 'hk');
 			$this->plugin_options['show_earn_points'] = (int)$this->params->get('show_earn_points', '0');
 			$this->plugin_options['control_panel'] = (int)$this->params->get('control_panel', '1');
+			$this->plugin_options['order_listing_points'] = (int)$this->params->get('order_listing_points', '1');
 		}
 
 		if(!in_array($this->plugin_options['show_points'], array('hk','aup','esp','*')))
@@ -314,7 +338,12 @@ class plgHikashopUserpoints extends hikashopPlugin {
 		$user->user_points = (int)$oldUser->user_points + $points;
 		if($user->user_points < 0) {
 			$app = JFactory::getApplication();
-			$app->enqueueMessage(JText::sprintf('HIKAPOINTS_USE_X_POINTS', -$points), 'error');
+			if($user->user_id == hikashop_loadUser(false) && !hikashop_isClient('administrator')) {
+				$app->enqueueMessage(JText::sprintf('HIKAPOINTS_USE_X_POINTS', -$points), 'error');
+			} else {
+				$app->enqueueMessage(JText::sprintf('HIKAPOINTS_USER_REMOVED_X_POINTS', $oldUser->user_email, -$points, $oldUser->user_points), 'error');
+			}
+
 			$points = -$oldUser->user_points;
 			$user->user_points = 0;
 			$ret = false;
@@ -591,12 +620,24 @@ class plgHikashopUserpoints extends hikashopPlugin {
 
 		unset($cart);
 
-		if($this->plugin_params->currency_rate != 0) {
-			$points += $calculatedPrice / $this->plugin_params->currency_rate;
+		if(!empty($this->plugin_params->currency_rate) && $this->plugin_params->currency_rate != 0) {
+			$points += $calculatedPrice / (float)$this->plugin_params->currency_rate;
 		}
 
 		if($this->plugin_params->limittype == 1) {
+			$accountedForProducts = array();
 			foreach($products as $k => $product) {
+				$id = $product->product_id;
+				if(!isset($product->product_type)) {
+					$class = hikashop_get('class.product');
+					$p = $class->get($id);
+					if(!empty($p->product_parent_id))
+						$id = $p->product_parent_id;
+				} elseif(!empty($product->product_parent_id))
+					$id = $product->product_parent_id;
+				if(isset($accountedForProducts[$id]))
+					continue;
+				$accountedForProducts[$id] = $id;
 				if(empty($this->plugin_params->product_categories) || isset($included_products[$k])) {
 					$points += (int)$this->plugin_params->productpoints;
 				}
@@ -759,16 +800,20 @@ class plgHikashopUserpoints extends hikashopPlugin {
 	}
 
 	public function onHikashopBeforeDisplayView(&$view) {
-
-		$app = JFactory::getApplication();
-		if(hikashop_isClient('administrator'))
-			return true;
-
+		$admin = hikashop_isClient('administrator');
 		$viewName = $view->getName();
 	 	$layoutName = $view->getLayout();
-		if($viewName != 'user' || $layoutName != 'cpanel')
-			return true;
+		if(!$admin && $viewName == 'user' && $layoutName == 'cpanel')
+			$this->_userCpanelDisplay($view);
 
+
+		if($admin && $viewName == 'order' && $layoutName == 'listing')
+			$this->_orderListingDisplay($view);
+		return true;
+
+	}
+
+	private function _userCpanelDisplay(&$view) {
 		$this->_readOptions();
 		if(empty($this->plugin_options['control_panel']))
 			return;
@@ -795,6 +840,50 @@ class plgHikashopUserpoints extends hikashopPlugin {
 			$view->extraData->topMain[] =  '<div class="hk-well hikashop_user_points_cpanel"><i class="fas fa-2x fa-coins" style="margin-right: 10px;"></i> '. JText::sprintf('USERPOINTS_HAVE_X_POINTS', $points) . '</div>';
 		} else {
 			$view->extraData->topMain[] = '<div class="hk-well hikashop_user_points_cpanel"><i class="fas fa-2x fa-coins" style="margin-right: 10px;"></i> '.  JText::_('USERPOINTS_NO_POINTS') . '</div>';
+		}
+	}
+
+	private function _orderListingDisplay(&$view) {
+
+		$this->_readOptions();
+		if(empty($this->plugin_options['order_listing_points']))
+			return;
+
+		if(empty($view->extrafields))
+			$view->extrafields = array();
+		$column = new stdClass();
+		$column->name = JText::_('USERPOINTS_USE_POINTS');
+		$column->value = 'points_used';
+		$view->extrafields['points_used'] = $column;
+		if(!empty($view->rows)) {
+			foreach($view->rows as $k => $v) {
+				$view->rows[$k]->points_used = '';
+				if(empty($v->order_payment_params)) {
+					continue;
+				}
+				if(is_string($v->order_payment_params))
+					$v->order_payment_params = hikashop_unserialize($v->order_payment_params);
+				if(!empty($v->order_payment_params->userpoints->use_points))
+					$view->rows[$k]->points_used = $v->order_payment_params->userpoints->use_points;
+			}
+		}
+		$column = new stdClass();
+		$column->name = JText::_('BASIC_POINTS_RULES');
+		$column->value = 'points_earned';
+		$view->extrafields['points_earned'] = $column;
+		$config = hikashop_config();
+		if(!empty($view->rows)) {
+			foreach($view->rows as $k => $v) {
+				$view->rows[$k]->points_earned = '';
+				if(empty($v->order_payment_params)) {
+					continue;
+				}
+				if(is_string($v->order_payment_params))
+					$v->order_payment_params = hikashop_unserialize($v->order_payment_params);
+				if(!empty($v->order_payment_params->userpoints->earn_points) && !empty($v->order_payment_params->userpoints->use_mode) && !empty($v->order_payment_params->userpoints->earn_points[$v->order_payment_params->userpoints->use_mode])) {
+					$view->rows[$k]->points_earned = $v->order_payment_params->userpoints->earn_points[$v->order_payment_params->userpoints->use_mode];
+				}
+			}
 		}
 
 	}

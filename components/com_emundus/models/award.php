@@ -21,8 +21,8 @@ class EmundusModelAward extends JModelList
     public function __construct() {
         parent::__construct();
         global $option;
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
         $this->_mainframe = JFactory::getApplication();
 
@@ -56,26 +56,26 @@ class EmundusModelAward extends JModelList
         return $db->loadResult();
     }
 
-   public function updatePlusNbVote($fnum,$user,$thematique,$engagement,$student_id, $campaign_id){
+    public function updatePlusNbVote($fnum,$user,$thematique,$engagement,$student_id, $campaign_id){
 
-       $db = JFactory::getDbo();
-       $date_time = new DateTime('NOW');
-       $date = $date_time->format('Y-m-d h:i:s');
+        $db = JFactory::getDbo();
+        $date_time = new DateTime('NOW');
+        $date = $date_time->format('Y-m-d h:i:s');
 
-       $query = $db->getQuery(true);
+        $query = $db->getQuery(true);
 
-       $columns = array('time_date', 'fnum', 'user', 'thematique','engagement','student_id','campaign_id');
+        $columns = array('time_date', 'fnum', 'user', 'thematique','engagement','student_id','campaign_id');
 
-       $values = array($db->quote($date), $db->quote($fnum), $user, $db->quote($thematique), $engagement, $student_id, $campaign_id);
+        $values = array($db->quote($date), $db->quote($fnum), $user, $db->quote($thematique), $engagement, $student_id, $campaign_id);
 
-       $query
-           ->insert($db->quoteName('#__emundus_evaluations'))
-           ->columns($db->quoteName($columns))
-           ->values(implode(',', $values));
-       $db->setQuery($query);
-       $db->execute();
+        $query
+            ->insert($db->quoteName('#__emundus_evaluations'))
+            ->columns($db->quoteName($columns))
+            ->values(implode(',', $values));
+        $db->setQuery($query);
+        $db->execute();
 
-   }
+    }
     public function CountVote($fnum,$user){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -90,25 +90,27 @@ class EmundusModelAward extends JModelList
         return $db->loadResult();
     }
     public function CountVotes($user){
-    $db = JFactory::getDbo();
-    $query = $db->getQuery(true);
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
-    $query
-        ->select('COUNT(*)')
-        ->from($db->quoteName('#__emundus_evaluations'))
-        ->where($db->quoteName('user').' = '. $db->quote($user));
+        $query
+            ->select('COUNT(*)')
+            ->from($db->quoteName('#__emundus_evaluations'))
+            ->where($db->quoteName('user').' = '. $db->quote($user));
 
-    $db->setQuery($query);
+        $db->setQuery($query);
 
-    return $db->loadResult();
-}
+        return $db->loadResult();
+    }
     public function TotalVotes(){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
         $query
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__emundus_projet'));
+            ->from($db->quoteName('#__emundus_projet','ep'))
+            ->join('INNER',$db->quoteName('#__emundus_campaign_candidature', 'ecc'). ' ON ' . $db->quoteName('ep.fnum') . ' = ' . $db->quoteName('ecc.fnum'))
+            ->where($db->quoteName('ecc.campaign_id') . ' = 5 AND '. $db->quoteName('ecc.published').' = 1 AND '. $db->quoteName('ecc.status').' = 1');
 
         $db->setQuery($query);
 
@@ -134,8 +136,10 @@ class EmundusModelAward extends JModelList
 
         $query
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__emundus_projet'))
-            ->where($db->quoteName('thematique_projet').' = '.$thematique);
+            ->from($db->quoteName('#__emundus_projet','ep'))
+            ->join('LEFT',$db->quoteName('#__emundus_campaign_candidature', 'ecc'). ' ON ' . $db->quoteName('ep.fnum') . ' = ' . $db->quoteName('ecc.fnum'))
+            ->where($db->quoteName('thematique_projet').' = '.$thematique. ' AND '.$db->quoteName('ecc.campaign_id') . ' = 5 AND '. $db->quoteName('ecc.published').' = 1 AND '. $db->quoteName('ecc.status').' = 1');
+
 
         $db->setQuery($query);
 

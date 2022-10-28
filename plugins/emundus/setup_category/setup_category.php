@@ -24,7 +24,7 @@ class plgEmundusSetup_category extends JPlugin {
     }
 
 
-    function onCampaignCreate($id) {
+    function onAfterCampaignCreate($id) {
         try {
             $app = JFactory::getApplication();
             $label = $app->input->getString("jos_emundus_setup_campaigns___label");
@@ -72,10 +72,10 @@ class plgEmundusSetup_category extends JPlugin {
                 }
 
                 // Insert columns.
-                $columns = array('id', 'type', 'cloud_id', 'path', 'params', 'theme');
+                $columns = array('id', 'type', 'path', 'params', 'theme');
 
                 // Insert values.
-                $values = array($table->id, $this->db->quote('default'), $this->db->quote(''), $this->db->quote(''), $this->db->quote('{\"usergroup\":[\"1\"],\"ordering\":\"ordering\",\"orderingdir\":\"asc\",\"marginleft\":\"10\",\"margintop\":\"10\",\"marginright\":\"10\",\"marginbottom\":\"10\",\"columns\":\"2\",\"showsize\":\"1\",\"showtitle\":\"1\",\"showversion\":\"1\",\"showhits\":\"1\",\"showdownload\":\"1\",\"bgdownloadlink\":\"#76bc58\",\"colordownloadlink\":\"#ffffff\",\"showdateadd\":\"1\",\"showdatemodified\":\"0\",\"showsubcategories\":\"1\",\"showcategorytitle\":\"1\",\"showbreadcrumb\":\"1\",\"showfoldertree\":\"0\"}'), $this->db->quote(''));
+                $values = array($table->id, $this->db->quote('default'), $this->db->quote(''), $this->db->quote('{\"usergroup\":[\"1\"],\"ordering\":\"ordering\",\"orderingdir\":\"asc\",\"marginleft\":\"10\",\"margintop\":\"10\",\"marginright\":\"10\",\"marginbottom\":\"10\",\"columns\":\"2\",\"showsize\":\"1\",\"showtitle\":\"1\",\"showversion\":\"1\",\"showhits\":\"1\",\"showdownload\":\"1\",\"bgdownloadlink\":\"#76bc58\",\"colordownloadlink\":\"#ffffff\",\"showdateadd\":\"1\",\"showdatemodified\":\"0\",\"showsubcategories\":\"1\",\"showcategorytitle\":\"1\",\"showbreadcrumb\":\"1\",\"showfoldertree\":\"0\"}'), $this->db->quote(''));
 
                 // Prepare the insert query.
                 $this->query

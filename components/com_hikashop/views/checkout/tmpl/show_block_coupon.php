@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -18,6 +18,7 @@ defined('_JEXEC') or die('Restricted access');
 
 	$cart = $this->checkoutHelper->getCart();
 	if(empty($cart->coupon)) {
+		if($cart->full_total->prices[0]->price_value_with_tax > 0.001) {
 ?>
 	<label for="hikashop_checkout_coupon_input_<?php echo $this->step; ?>_<?php echo $this->module_position; ?>"><?php echo JText::_('HIKASHOP_ENTER_COUPON'); ?></label>
 	<div class="input-append">
@@ -27,6 +28,7 @@ defined('_JEXEC') or die('Restricted access');
 		?></button>
 		</div>
 <?php
+		}
 	} else {
 		echo JText::sprintf('HIKASHOP_COUPON_LABEL', @$cart->coupon->discount_code);
 		if(empty($cart->cart_params->coupon_autoloaded)) {
@@ -46,7 +48,7 @@ defined('_JEXEC') or die('Restricted access');
 </div>
 <script type="text/javascript">
 if(!window.checkout) window.checkout = {};
-window.Oby.registerAjax(['checkout.coupon.updated','cart.updated'], function(params){
+window.Oby.registerAjax(['checkout.coupon.updated','cart.updated', 'checkout.cart.updated'], function(params){
 	if(params && (params.cart_empty || (params.resp && params.resp.empty))) return;
 	window.checkout.refreshCoupon(<?php echo (int)$this->step; ?>, <?php echo (int)$this->module_position; ?>);
 });

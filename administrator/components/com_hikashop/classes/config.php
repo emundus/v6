@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -30,6 +30,9 @@ class hikashopConfigClass extends hikashopClass{
 		if(empty($this->values)){
 			$this->load();
 		}
+
+		if(in_array($namekey, array('checkout_legacy', 'add_to_cart_legacy')))
+			return false;
 
 		if(isset($this->values[$namekey])){
 			if((preg_match('#^(menu_|params_)[0-9]+$#',$namekey) || $namekey == 'default_params') && !empty($this->values[$namekey]->config_value) && is_string($this->values[$namekey]->config_value)){
@@ -71,12 +74,12 @@ class hikashopConfigClass extends hikashopClass{
 		JPluginHelper::importPlugin('hikashopshipping');
 		$app = JFactory::getApplication();
 		$do = true;
-		$app->triggerEvent('onBeforeConfigSave', array(&$config, &$do) );
+		$app->triggerEvent('onBeforeConfigSave', array(&$configObject, &$do) );
 		if(!$do)
 			return false;
 
 		jimport('joomla.filter.filterinput');
-		$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
+		$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 
 		foreach($configObject as $namekey => $value){
 			if($namekey == 'configClassInit')

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -87,8 +87,8 @@ class hikashopUpdateHelper{
 			,'plg_hikashoppayment_alipay' => array('HikaShop AliPay payment plugin',0,0)
 			,'plg_hikashoppayment_alphauserpoints' => array('Hikashop AlphaUserPoints Plugin',0,0)
 			,'plg_hikashoppayment_amazon' => array('HikaShop Amazon payment plugin',0,0)
-			,'plg_hikashoppayment_atos' => array('HikaShop SIPS Atos payment plugin',0,0)
-			,'plg_hikashoppayment_atossips' => array('HikaShop Atos SIPS V2 payment plugin',0,0)
+			,'plg_hikashoppayment_atos' => array('HikaShop Worldline SIPS payment plugin',0,0)
+			,'plg_hikashoppayment_atossips' => array('HikaShop Worldline SIPS V2 payment plugin',0,0)
 			,'plg_hikashoppayment_authorize' => array('HikaShop Authorize.net payment plugin',0,0)
 			,'plg_hikashoppayment_banktransfer' => array('HikaShop bank transfer payment plugin',0,0)
 			,'plg_hikashoppayment_be2bill' => array('HikaShop Be2Bill payment plugin',0,0)
@@ -125,6 +125,7 @@ class hikashopUpdateHelper{
 			,'plg_hikashoppayment_paymentexpress' => array('HikaShop Payment Express PxPost payment plugin',0,0)
 			,'plg_hikashoppayment_paypal' => array('HikaShop Paypal payment plugin',0,0)
 			,'plg_hikashoppayment_paypaladvanced' => array('HikaShop Paypal Advanced payment plugin',0,0)
+			,'plg_hikashoppayment_paypalcheckout' => array('HikaShop Paypal Checkout payment plugin',0,0)
 			,'plg_hikashoppayment_paypalexpress' => array('HikaShop Paypal Express Checkout payment plugin',0,0)
 			,'plg_hikashoppayment_paypalintegralevolution' => array('Hikashop Paypal Website Payments Pro Hosted Payment plugin',0,0)
 			,'plg_hikashoppayment_paypalpro' => array('HikaShop PayPal Pro payment plugin',0,0)
@@ -234,8 +235,11 @@ class hikashopUpdateHelper{
 		}
 
 		if(!empty($modules)) {
+			$front_position = 'position-7';
+			if(HIKASHOP_J40)
+				$front_position = 'sidebar-right';
 			foreach($modules as $oneModule) {
-				$position = empty($oneModule->client_id) ? 'position-7' : 'cpanel';
+				$position = empty($oneModule->client_id) ? $front_position : 'cpanel';
 				$ext_fields = array('`title`','`position`','`published`','`module`','`access`','`language`','`client_id`');
 				if(HIKASHOP_J40)
 					$ext_fields = array_merge($ext_fields, array('`params`'));

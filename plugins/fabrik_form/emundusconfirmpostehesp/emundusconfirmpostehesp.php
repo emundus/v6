@@ -160,8 +160,9 @@ class PlgFabrik_FormEmundusconfirmpostehesp extends plgFabrik_Form
 		JPluginHelper::importPlugin('emundus');
 		$dispatcher = JEventDispatcher::getInstance();
 		$dispatcher->trigger('onBeforeSubmitFile', [$student->id, $student->fnum]);
+        $dispatcher->trigger('callEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
-		$status_by_fnum = $student->fnums[$student->fnum]->step;
+		$status_by_fnum = $student->fnums[$student->fnum]->status;
 		$status_actuel = $this->getParam('emundusconfirmpost_status_actual',0);
 		$status_wanted_after_sent = $this->getParam('emundusconfirmpost_status_after_sent',1);
 
@@ -177,6 +178,7 @@ class PlgFabrik_FormEmundusconfirmpostehesp extends plgFabrik_Form
 
 		try {
 			$db->execute();
+            EmundusModelLogs::log($student->id, $student->id, $student->fnum, 13, 'u', $status_after_sent);
 
 		} catch (Exception $e) {
 			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
@@ -190,7 +192,8 @@ class PlgFabrik_FormEmundusconfirmpostehesp extends plgFabrik_Form
 		} catch (Exception $e) {
 			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
-		$dispatcher->trigger('onAfterSubmitFile', [$student->id, $student->fnum]);
+        $dispatcher->trigger('onAfterSubmitFile', [$student->id, $student->fnum]);
+        $dispatcher->trigger('callEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
 		$student->candidature_posted = 1;
 
@@ -249,7 +252,7 @@ class PlgFabrik_FormEmundusconfirmpostehesp extends plgFabrik_Form
 
 				// Build filename from tags, we are using helper functions found in the email model, not sending emails ;)
 				$post = array('FNUM' => $fnum, 'CAMPAIGN_YEAR' => $fnumInfo['year'], 'PROGRAMME_CODE' => $fnumInfo['training']);
-				$tags = $m_emails->setTags($student->id, $post, $fnum);
+				$tags = $m_emails->setTags($student->id, $post, $fnum, '', $application_form_name.$export_path);
 				$application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
 				$application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
 

@@ -48,13 +48,17 @@ class PlgDropfilesthemesTable extends DropfilesPluginBase
             return null;
         }
         $doc = JFactory::getDocument();
-        JHtml::_('behavior.framework');
+        if (DropfilesBase::isJoomla40()) {
+            JHtml::_('behavior.core');
+        } else {
+            JHtml::_('behavior.framework', true);
+        }
         $this->componentParams = JComponentHelper::getParams('com_dropfiles');
         JLoader::register('DropfilesBase', JPATH_ADMINISTRATOR . '/components/com_droppics/classes/dropfilesBase.php');
         JLoader::register('DropfilesHelper', JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/dropfiles.php');
         JHtml::_('jquery.framework');
         $this->addScriptTagLoading();
-        $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/handlebars-v4.1.0.js');
+        $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/handlebars-v4.7.7.js');
 
         $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/jaofoldertree.js');
         $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/colorbox.init.js');
@@ -64,7 +68,7 @@ class PlgDropfilesthemesTable extends DropfilesPluginBase
 
         $doc->addScript(JURI::base('true') . '/plugins/dropfilesthemes/table/js/script.js');
         $doc->addScript(JURI::base('true') . '/plugins/dropfilesthemes/table/js/jquery.mediaTable.js');
-        $doc->addStyleSheet(JURI::base('true') . '/plugins/dropfilesthemes/table/css/style.css');
+        $doc->addStyleSheet(JURI::base('true') . '/plugins/dropfilesthemes/table/css/style_ver5.4.css');
         $doc->addStyleSheet(JURI::base('true') . '/plugins/dropfilesthemes/table/css/jquery.mediaTable.css');
 
         $this->componentParams = JComponentHelper::getParams('com_dropfiles');
@@ -91,19 +95,13 @@ class PlgDropfilesthemesTable extends DropfilesPluginBase
                 $this->params = $this->options['params'];
             }
 
-            $style = ' .dropfiles-content-table td .downloadlink {background-color:';
+            $style = ' .dropfiles-content-table[data-category="'.$this->category->id.'"] td .downloadlink, .dropfiles-content-table[data-category="'.$this->category->id.'"] .download-all, .dropfiles-content-table[data-category="'.$this->category->id.'"] .download-selected {background-color:';
             $style .= DropfilesBase::loadValue($this->params, 'table_bgdownloadlink', '#006DCC') . ' !important;color:';
             $style .= DropfilesBase::loadValue($this->params, 'table_colordownloadlink', '#fff') . ' !important;}';
             $doc->addStyleDeclaration($style);
 
-            $this->tableclass = '';
+            $this->tableclass = 'table table-bordered table-striped';
             $this->dropfilesclass = '';
-            if (DropfilesBase::loadValue($this->params, 'table_styling', true)) {
-                $this->tableclass .= 'table table-bordered ';
-                if (DropfilesBase::loadValue($this->params, 'table_showborderbg', true)) {
-                    $this->tableclass .= 'table-striped';
-                }
-            }
             if (DropfilesBase::loadValue($this->params, 'table_stylingmenu', true)) {
                 $this->dropfilesclass .= 'colstyle';
             }

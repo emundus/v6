@@ -7,7 +7,7 @@
  */
 
 // ensure this file is being included by a parent file
-defined( '_JEXEC' ) or die( JText::_('RESTRICTED_ACCESS') );
+defined( '_JEXEC' ) or die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 
@@ -117,12 +117,12 @@ class EmundusControllerExport extends JControllerLegacy
                     $request->setMargins(Request::NO_MARGINS);
                     $request->setScale(0.75);
                 }
-                
+
                 # store method allows you to... store the resulting PDF in a particular destination.
                 $client->store($request, $dest);
-                
+
                 # if you wish to redirect the response directly to the browser, you may also use:
-                $client->post($request);          
+                $client->post($request);
             } catch (RequestException $e) {
                 # this exception is thrown if given paper size or margins are not correct.
                 $res->status = false;
@@ -147,6 +147,28 @@ class EmundusControllerExport extends JControllerLegacy
             $res->status = false;
             $res->msg = JText::_('ACCESS_DENIED');
             echo json_encode($res);
+            exit();
+        }
+    }
+
+    public function getprofiles() {
+        $current_user = JFactory::getUser();
+
+        if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+            die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+
+            $code = $jinput->getVar('code', null);
+            $camp = $jinput->getVar('camp', null);
+
+            $code = explode(",", $code);
+            $camp = explode(",", $camp);
+
+            $p_model = $this->getModel('profile');
+            $_profiles = $p_model->getProfileIDByCampaigns($camp,$code);
+
+            echo json_encode((object) $_profiles);
             exit();
         }
     }

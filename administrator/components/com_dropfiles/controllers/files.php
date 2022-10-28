@@ -203,12 +203,12 @@ class DropfilesControllerFiles extends JControllerForm
 
                 // init the destination file (format <filename.ext>.part<#chunk>
                 // the file is stored in a temporary directory
-                $resumableIdentifier  = html_entity_decode($input->getString('resumableIdentifier', ''));
-                $resumableFilename    = html_entity_decode($input->getString('resumableFilename', ''));
+                $resumableIdentifier  = html_entity_decode($input->getString('resumableIdentifier'), ENT_COMPAT, 'UTF-8');
+                $resumableFilename    = html_entity_decode($input->getString('resumableFilename'), ENT_COMPAT, 'UTF-8');
                 $resumableChunkNumber = $input->getInt('resumableChunkNumber', '');
                 $resumableTotalSize   = $input->getInt('resumableTotalSize', '');
                 $resumableTotalChunks = $input->getInt('resumableTotalChunks', '');
-                $resumableType        = html_entity_decode($input->getString('resumableType', ''));
+                $resumableType        = html_entity_decode($input->getString('resumableType', ''), ENT_COMPAT, 'UTF-8');
                 $temp_dir             = $file_dir . $resumableIdentifier;
                 $dest_file            = $temp_dir . '/' . $resumableFilename . '.part' . $resumableChunkNumber;
 
@@ -326,6 +326,49 @@ class DropfilesControllerFiles extends JControllerForm
                                 $this->exitStatus(JText::_('COM_DROPFILES_CTRL_FILES_CANT_SAVE_TO_DB'));
                             }
                             JFile::delete($filePath);
+                        } elseif ($category->type === 'onedrivebusiness') {
+                            $onedrive     = new DropfilesOneDriveBusiness();
+                            $ext          = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                            $fileTitle    = pathinfo($file['name'], PATHINFO_FILENAME);
+                            $file_name    = $fileTitle . '.' . $ext;
+                            $pic = array();
+                            $pic['error'] = 0;
+                            $pic['name']  = $file_name;
+                            $pic['type']  = '';
+                            $pic['size']  = $resumableTotalSize;
+                            $result = $onedrive->uploadFile(
+                                $file_name,
+                                $pic,
+                                $filePath,
+                                $category->cloud_id
+                            );
+                            // Save db
+                            if ($result && (int) $result['file']['error'] === 0) {
+                                $modelOnedriveBusiness      = $this->getModel('onedrivebusinessfiles');
+                                $created_time               = $date->setTimestamp(
+                                    strtotime($result['file']['createdDateTime'])
+                                )->toSql();
+                                $modified_time              = $date->setTimestamp(
+                                    strtotime($result['file']['lastModifiedDateTime'])
+                                )->toSql();
+                                $file_data                  = array();
+                                $file_data['id']            = 0;
+                                $file_data['title']         = JFile::stripExt($result['file']['name']);
+                                $file_data['file_id']       = $result['file']['id'];
+                                $file_data['ext']           = $ext;
+                                $file_data['size']          = $result['file']['size'];
+                                $file_data['catid']         = $category->cloud_id;
+                                $file_data['path']          = '';
+                                $file_data['created_time']  = $created_time;
+                                $file_data['modified_time'] = $modified_time;
+                                $file_data['author']        = $user->get('id');
+                                $modelOnedriveBusiness->save($file_data);
+                            } elseif ((int) $result['file']['error'] !== 0) {
+                                $this->exitStatus($result['file']['error']);
+                            } else {
+                                $this->exitStatus(JText::_('COM_DROPFILES_CTRL_FILES_CANT_SAVE_TO_DB'));
+                            }
+                            JFile::delete($filePath);
                         } else {
                             //Insert new image into databse when success
                             $id_file = $model->addFile(array(
@@ -342,6 +385,9 @@ class DropfilesControllerFiles extends JControllerForm
                                 $this->exitStatus(JText::_('COM_DROPFILES_CTRL_FILES_CANT_SAVE_TO_DB'));
                             }
                         }
+                        // Update files counter
+                        $categoriesModel = $this->getModel('Categories', 'DropfilesModel');
+                        $categoriesModel->updateFilesCount();
                         // Send email after done
                         $params = JComponentHelper::getParams('com_dropfiles');
 
@@ -359,11 +405,11 @@ class DropfilesControllerFiles extends JControllerForm
                         $email_body     = str_replace('{file_name}', $file['name'], $email_body);
                         $currentUser    = JFactory::getUser();
                         $email_body     = str_replace('{username}', $currentUser->name, $email_body);
+                        $email_body     = str_replace('{uploader_username}', $currentUser->name, $email_body);
 
                         if ($params->get('add_event_subject', '') !== '') {
                             $email_title = $params->get('add_event_subject', '');
                         }
-
 
                         if ((int) $params->get('file_owner', 0) === 1 && (int) $params->get('add_event', 1) === 1) {
                             $email_body = str_replace('{receiver}', $currentUser->name, $email_body);
@@ -396,7 +442,7 @@ class DropfilesControllerFiles extends JControllerForm
                                 }
                             }
                         }
-                        if ($app->isAdmin()) {
+                        if ($app->isClient('administrator')) {
                             if (isset($id_file)) {
                                 $this->exitStatus(true, array('id' => $id_file));
                             } else {
@@ -654,7 +700,7 @@ class DropfilesControllerFiles extends JControllerForm
                 if ($category->type === 'googledrive') {
                     $google        = new DropfilesGoogle();
                     $file_contents = file_get_contents($file);
-                    if (!$google->uploadFile(JFile::getName($file), $file_contents, '', $category->cloud_id)) {
+                    if (!$google->uploadFile(basename($file), $file_contents, '', $category->cloud_id)) {
                         $this->exitStatus($google->getLastError());
                     }
                 } else {
@@ -667,7 +713,7 @@ class DropfilesControllerFiles extends JControllerForm
                     $model   = $this->getModel();
                     $user    = JFactory::getUser();
                     $id_file = $model->addFile(array(
-                        'title'       => JFile::stripExt(JFile::getName($file)),
+                        'title'       => JFile::stripExt(basename($file)),
                         'id_category' => $id_category,
                         'file'        => $newname,
                         'ext'         => strtolower(JFile::getExt($file)),
@@ -681,6 +727,9 @@ class DropfilesControllerFiles extends JControllerForm
                 }
                 $count++;
             }
+            // Update files count
+            $categoriesModel = $this->getModel('Categories', 'DropfilesModel');
+            $categoriesModel->updateFilesCount();
             $this->exitStatus(true, array('nb' => $count));
         }
         $this->exitStatus(JText::_('COM_DROPFILES_CTRL_FILES_UPLOAD_FILE_ERROR')); //todo : translate
@@ -1285,8 +1334,439 @@ class DropfilesControllerFiles extends JControllerForm
                     $modelDropbox->deleteFile($id_file);
                 }
             }
+        } elseif ($active_category->type === 'onedrivebusiness' && $target_category->type === 'default') {
+            $onedriveBusiness   = new DropfilesOneDriveBusiness();
+            $file               = $onedriveBusiness->downloadFile($id_file);
+            $catpath_dest       = DropfilesBase::getFilesPath($id_category);
+
+            if (!file_exists($catpath_dest)) {
+                JFolder::create($catpath_dest);
+                $data = '<html><body bgcolor="#FFFFFF"></body></html>';
+                JFile::write($catpath_dest . 'index.html', $data);
+                $data = 'deny from all';
+                JFile::write($catpath_dest . '.htaccess', $data);
+            }
+
+            $newname = uniqid() . '.' . $file->ext;
+            file_put_contents($catpath_dest . $newname, $file->datas);
+
+            $user                   = JFactory::getUser();
+            $model                  = $this->getModel();
+            $modelOnedriveBusiness  = $this->getModel('onedrivebusinessfiles');
+            $fileOnedriveBusiness   = $modelOnedriveBusiness->getFile($id_file);
+            $newFile = $model->addFile(array(
+                'title'             => (isset($file->title)) ? $file->title : $fileOnedriveBusiness->title,
+                'id_category'       => $id_category,
+                'file'              => $newname,
+                'ext'               => (isset($fileOnedriveBusiness->ext)) ? $fileOnedriveBusiness->ext : '',
+                'description'       => (isset($fileOnedriveBusiness->description)) ? $fileOnedriveBusiness->description : '',
+                'size'              => $file->size,
+                'file_tags'         => (isset($fileOnedriveBusiness->file_tags)) ? $fileOnedriveBusiness->file_tags : '',
+                'author'            => $user->get('id')
+            ));
+
+            if ($newFile) {
+                if ($onedriveBusiness->delete($id_file)) {
+                    $modelOnedriveBusiness->deleteFile($id_file);
+                }
+                // Index new uploaded file
+                $ftsModel = $this->getModel('fts');
+                $ftsModel->reIndexFile($newFile);
+            }
+        } elseif ($active_category->type === 'default' && $target_category->type === 'onedrivebusiness') {
+            $file             = $modelFile->getItem($id_file);
+            $catpath_current  = DropfilesBase::getFilesPath($file->catid);
+            $file_current     = $catpath_current . $file->file;
+            $onedriveBusiness = new DropfilesOneDriveBusiness();
+
+            $pic          = array();
+            $pic['error'] = 0;
+            $pic['name']  = $file->title . '.' . $file->ext;
+            $pic['type']  = '';
+            $pic['size']  = $file->size;
+
+            $f_name = $file->title . '.' . $file->ext;
+            $user   = JFactory::getUser();
+            $result = $onedriveBusiness->uploadFile($f_name, $pic, $file_current, $target_category->cloud_id);
+            if ($result) {
+                $modelOnedriveBusiness = $this->getModel('onedrivebusinessfiles');
+                $result['file']['description'] = (isset($file->description)) ? $file->description : '';
+                $result['file']['file_tags'] = (isset($file->file_tags)) ? $file->file_tags : '';
+                $file_data = array();
+                $file_data['id'] = 0;
+                $file_data['title'] = JFile::stripExt($result['file']['name']);
+                $file_data['file_id'] = $result['file']['id'];
+                $file_data['ext'] = $file->ext;
+                $file_data['description'] = $result['file']['description'];
+                $file_data['size'] = $result['file']['size'];
+                $file_data['catid'] = $target_category->cloud_id;
+                $file_data['path'] = '';
+                $file_data['created_time'] = date('Y-m-d H:i:s', strtotime($result['file']['createdDateTime']));
+                $file_data['modified_time'] = date('Y-m-d H:i:s', strtotime($result['file']['lastModifiedDateTime']));
+                $file_data['author'] = $user->get('id');
+                $file_data['file_tags'] = $result['file']['file_tags'];
+                $modelOnedriveBusiness->save($file_data);
+                // Delete file
+                $modelFiles = $this->getModel('files');
+                if ($modelFiles->removePicture($id_file)) {
+                    JFile::delete($file_current);
+                }
+            }
+        } elseif ($active_category->type === 'onedrivebusiness' && $target_category->type === 'onedrivebusiness') {
+            $onedriveBusiness = new DropfilesOneDriveBusiness();
+            $cloudId          = DropfilesCloudHelper::getOneDriveBusinessIdByTermId($id_category);
+            $result           = $onedriveBusiness->moveFileWithInfo($id_file, $cloudId);
+
+            if ($result) {
+                $modelOnedriveBusiness = $this->getModel('onedrivebusinessfiles');
+                $fileOnedriveBusiness  = $modelOnedriveBusiness->getFile($id_file);
+                if ($result) {
+                    $modelOnedriveBusiness->deleteFile($id_file);
+                    $user                       = JFactory::getUser();
+                    $file['description']        = (isset($fileOnedriveBusiness->description)) ? $fileOnedriveBusiness->description : '';
+                    $file['file_tags']          = (isset($fileOnedriveBusiness->file_tags)) ? $fileOnedriveBusiness->file_tags : '';
+                    $file_data                  = array();
+                    $file_data['id']            = 0;
+                    $file_data['title']         = (isset($result['title'])) ? $result['title'] : $fileOnedriveBusiness->title;
+                    $file_data['file_id']       = (isset($result['id'])) ? $result['id'] : $fileOnedriveBusiness->file_id;
+                    $file_data['ext']           = (isset($fileOnedriveBusiness->ext)) ? $fileOnedriveBusiness->ext : '';
+                    $file_data['description']   = $file['description'];
+                    $file_data['size']          = (isset($result['size'])) ? $result['size'] : $fileOnedriveBusiness->size;
+                    $file_data['catid']         = $target_category->cloud_id;
+                    $file_data['path']          = '';
+                    $file_data['created_time']  = date('Y-m-d H:i:s', strtotime($result['created_time']->format('Y-m-d H:i:s')));
+                    $file_data['modified_time'] = date('Y-m-d H:i:s', strtotime($result['modified_time']->format('Y-m-d H:i:s')));
+                    $file_data['file_tags']     = $file['file_tags'];
+                    $file_data['author']        = $user->get('id');
+                    $modelOnedriveBusiness->save($file_data);
+                }
+            }
+        } elseif ($active_category->type === 'googledrive' && $target_category->type === 'onedrivebusiness') {
+            $google         = new DropfilesGoogle();
+            $file           = $google->download($id_file, $active_category->cloud_id, false, 0, true);
+            $catpath_dest   = DropfilesBase::getFilesPath($id_category);
+
+            if (!file_exists($catpath_dest)) {
+                JFolder::create($catpath_dest);
+                $data = '<html><body bgcolor="#FFFFFF"></body></html>';
+                JFile::write($catpath_dest . 'index.html', $data);
+                $data = 'deny from all';
+                JFile::write($catpath_dest . '.htaccess', $data);
+            }
+
+            $newname = uniqid() . '.' . $file->ext;
+            file_put_contents($catpath_dest . $newname, $file->datas);
+
+            $file_current       = $catpath_dest . $newname;
+            $onedriveBusiness   = new DropfilesOneDriveBusiness();
+
+            $pic            = array();
+            $pic['error']   = 0;
+            $pic['name']    = $file->title . '.' . $file->ext;
+            $pic['type']    = '';
+            $pic['size']    = $file->size;
+            $f_name         = $file->title . '.' . $file->ext;
+            $user           = JFactory::getUser();
+            $result         = $onedriveBusiness->uploadFile($f_name, $pic, $file_current, $target_category->cloud_id);
+
+            if ($result) {
+                $modelOnedriveBusiness          = $this->getModel('onedrivebusinessfiles');
+                $modelGoogle                    = $this->getModel('googlefiles');
+                $filegoogle                     = $modelGoogle->getFile($id_file);
+                $result['file']['description']  = (isset($filegoogle->description)) ? $filegoogle->description : '';
+                $result['file']['file_tags']    = (isset($filegoogle->file_tags)) ? $filegoogle->file_tags : '';
+                $file_data                      = array();
+                $file_data['id']                = 0;
+                $file_data['title']             = JFile::stripExt($result['file']['name']);
+                $file_data['file_id']           = $result['file']['id'];
+                $file_data['ext']               = $file->ext;
+                $file_data['description']       = $result['file']['description'];
+                $file_data['size']              = $result['file']['size'];
+                $file_data['catid']             = $target_category->cloud_id;
+                $file_data['path']              = '';
+                $file_data['created_time']      = date('Y-m-d H:i:s', strtotime($result['file']['createdDateTime']));
+                $file_data['modified_time']     = date('Y-m-d H:i:s', strtotime($result['file']['lastModifiedDateTime']));
+                $file_data['author']            = $user->get('id');
+                $file_data['file_tags']         = $result['file']['file_tags'];
+                $modelOnedriveBusiness->save($file_data);
+
+                JFile::delete($file_current);
+
+                if ($google->delete($id_file, $active_category->cloud_id)) {
+                    $modelGoogle->deleteFile($id_file);
+                }
+            }
+        } elseif ($active_category->type === 'onedrivebusiness' && $target_category->type === 'googledrive') {
+            $onedriveBusiness   = new DropfilesOneDriveBusiness();
+            $file               = $onedriveBusiness->downloadFile($id_file);
+            $catpath_dest       = DropfilesBase::getFilesPath($id_category);
+
+            if (!file_exists($catpath_dest)) {
+                JFolder::create($catpath_dest);
+                $data = '<html><body bgcolor="#FFFFFF"></body></html>';
+                JFile::write($catpath_dest . 'index.html', $data);
+                $data = 'deny from all';
+                JFile::write($catpath_dest . '.htaccess', $data);
+            }
+
+            $newname        = uniqid() . '.' . $file->ext;
+            file_put_contents($catpath_dest . $newname, $file->datas);
+            $file_current   = $catpath_dest . $newname;
+            $google         = new DropfilesGoogle();
+            $f_name         = $file->title . '.' . $file->ext;
+            $fg_contents    = file_get_contents($file_current);
+            $insertedFile   = $google->uploadFile($f_name, $fg_contents, '', $target_category->cloud_id);
+
+            if ($insertedFile) {
+                $modelGoogle            = $this->getModel('googlefiles');
+                $modelOnedriveBusiness  = $this->getModel('onedrivebusinessfiles');
+                $fileOnedriveBusiness   = $modelOnedriveBusiness->getFile($id_file);
+                $user                   = JFactory::getUser();
+                $file_data              = $google->getFileObj($insertedFile);
+                $file_data->ext         = (isset($fileOnedriveBusiness->ext)) ? $fileOnedriveBusiness->ext : '';
+                $file_data->description = (isset($fileOnedriveBusiness->description)) ? $fileOnedriveBusiness->description : '';
+                $file_data->catid       = $target_category->cloud_id;
+                $file_data->file_tags   = (isset($fileOnedriveBusiness->file_tags)) ? $fileOnedriveBusiness->file_tags : '';
+                $file_data->author      = $user->get('id');
+                unset($file_data->id);
+                $modelGoogle->addFile($file_data);
+                JFile::delete($file_current);
+
+                if ($onedriveBusiness->delete($id_file)) {
+                    $modelOnedriveBusiness->deleteFile($id_file);
+                }
+            }
+        } elseif ($active_category->type === 'dropbox' && $target_category->type === 'onedrivebusiness') {
+            $dropbox            = new DropfilesDropbox();
+            list($tem, $file)   = $dropbox->downloadDropbox($id_file);
+            $catpath_dest       = DropfilesBase::getFilesPath($id_category);
+
+            if (!file_exists($catpath_dest)) {
+                JFolder::create($catpath_dest);
+                $data = '<html><body bgcolor="#FFFFFF"></body></html>';
+                JFile::write($catpath_dest . 'index.html', $data);
+                $data = 'deny from all';
+                JFile::write($catpath_dest . '.htaccess', $data);
+            }
+
+            $newname = uniqid() . '.' . JFile::getExt($file['name']);
+
+            ob_start();
+            header('Content-Disposition: attachment; filename="' . $file['name'] . '"');
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Transfer-Encoding: binary');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+            header('Pragma: public');
+
+            header('Content-Length: ' . (int)$file['size']);
+
+            echo readfile($tem);
+            unlink($tem);
+            $data               = ob_get_clean();
+            $file_current       = $catpath_dest . $newname;
+            file_put_contents($file_current, $data);
+            $onedriveBusiness   = new DropfilesOneDriveBusiness();
+            $pic                = array();
+            $pic['error']       = 0;
+            $pic['name']        = $file['name'];
+            $pic['type']        = '';
+            $pic['size']        = $file['size'];
+            $f_name             = $file['name'];
+            $result             = $onedriveBusiness->uploadFile($f_name, $pic, $file_current, $target_category->cloud_id);
+
+            if ($result) {
+                $modelOnedriveBusiness          = $this->getModel('onedrivebusinessfiles');
+                $modelDropbox                   = $this->getModel('dropboxfiles');
+                $filedropbox                    = $modelDropbox->getFile($id_file);
+                $user                           = JFactory::getUser();
+                $result['file']['description']  = (isset($filedropbox->description)) ? $filedropbox->description : '';
+                $result['file']['file_tags']    = (isset($filedropbox->file_tags)) ? $filedropbox->file_tags : '';
+                $file_data                      = array();
+                $file_data['id']                = 0;
+                $file_data['title']             = JFile::stripExt($result['file']['name']);
+                $file_data['file_id']           = $result['file']['id'];
+                $file_data['ext']               = JFile::getExt($file['name']);
+                $file_data['description']       = $result['file']['description'];
+                $file_data['size']              = $result['file']['size'];
+                $file_data['catid']             = $target_category->cloud_id;
+                $file_data['path']              = '';
+                $file_data['created_time']      = date('Y-m-d H:i:s', strtotime($result['file']['createdDateTime']));
+                $file_data['modified_time']     = date('Y-m-d H:i:s', strtotime($result['file']['lastModifiedDateTime']));
+                $file_data['file_tags']         = $result['file']['file_tags'];
+                $file_data['author']            = $user->get('id');
+                $modelOnedriveBusiness->save($file_data);
+
+                JFile::delete($file_current);
+
+                if ($dropbox->deleteFileDropbox($id_file)) {
+                    $modelDropbox->deleteFile($id_file);
+                }
+            }
+        } elseif ($active_category->type === 'onedrivebusiness' && $target_category->type === 'dropbox') {
+            $onedriveBusiness   = new DropfilesOneDriveBusiness();
+            $file               = $onedriveBusiness->downloadFile($id_file);
+            $catpath_dest       = DropfilesBase::getFilesPath($id_category);
+
+            if (!file_exists($catpath_dest)) {
+                JFolder::create($catpath_dest);
+                $data = '<html><body bgcolor="#FFFFFF"></body></html>';
+                JFile::write($catpath_dest . 'index.html', $data);
+                $data = 'deny from all';
+                JFile::write($catpath_dest . '.htaccess', $data);
+            }
+
+            $newname        = uniqid() . '.' . $file->ext;
+            file_put_contents($catpath_dest . $newname, $file->datas);
+            $file_current   = $catpath_dest . $newname;
+            $dropbox        = new DropfilesDropbox();
+            $f_name         = $file->title . '.' . $file->ext;
+            $result         = $dropbox->uploadFile($f_name, $file_current, filesize($file_current), $target_category->path);
+
+            if ($result) {
+                $modelDropbox               = $this->getModel('dropboxfiles');
+                $modelOnedriveBusiness      = $this->getModel('onedrivebusinessfiles');
+                $fileOnedriveBusiness       = $modelOnedriveBusiness->getFile($id_file);
+                $result['description']      = (isset($fileOnedriveBusiness->description)) ? $fileOnedriveBusiness->description : '';
+                $result['file_tags']        = (isset($fileOnedriveBusiness->file_tags)) ? $fileOnedriveBusiness->file_tags : '';
+                $file_data                  = array();
+                $file_data['id']            = 0;
+                $file_data['title']         = JFile::stripExt($result['name']);
+                $file_data['file_id']       = $result['id'];
+                $file_data['ext']           = (isset($fileOnedriveBusiness->ext)) ? $fileOnedriveBusiness->ext : '';
+                $file_data['description']   = $result['description'];
+                $file_data['size']          = $result['size'];
+                $file_data['catid']         = $target_category->cloud_id;
+                $file_data['path']          = $result['path_lower'];
+                $file_data['created_time']  = date('Y-m-d H:i:s', strtotime($result['client_modified']));
+                $file_data['modified_time'] = date('Y-m-d H:i:s', strtotime($result['server_modified']));
+                $file_data['file_tags']     = $result['file_tags'];
+                $modelDropbox->save($file_data);
+
+                JFile::delete($file_current);
+
+                if ($onedriveBusiness->delete($id_file)) {
+                    $modelOnedriveBusiness->deleteFile($id_file);
+                }
+            }
+        } elseif ($active_category->type === 'onedrive' && $target_category->type === 'onedrivebusiness') {
+            $onedrive = new DropfilesOneDrive();
+            $file     = $onedrive->downloadFile($id_file);
+
+            $catpath_dest = DropfilesBase::getFilesPath($id_category);
+
+            if (!file_exists($catpath_dest)) {
+                JFolder::create($catpath_dest);
+                $data = '<html><body bgcolor="#FFFFFF"></body></html>';
+                JFile::write($catpath_dest . 'index.html', $data);
+                $data = 'deny from all';
+                JFile::write($catpath_dest . '.htaccess', $data);
+            }
+
+            $newname      = uniqid() . '.' . $file->ext;
+            $file_current = $catpath_dest . $newname;
+            file_put_contents($file_current, $file->datas);
+
+            $onedriveBusiness = new DropfilesOneDriveBusiness();
+
+            $pic              = array();
+            $pic['error']     = 0;
+            $pic['name']      = $file->title . '.' . $file->ext;
+            $pic['type']      = '';
+            $pic['size']      = $file->size;
+            $f_name           = $file->title . '.' . $file->ext;
+
+            $result = $onedriveBusiness->uploadFile($f_name, $pic, $file_current, $target_category->cloud_id);
+            if ($result) {
+                $modelOnedriveBusiness              = $this->getModel('onedrivebusinessfiles');
+                $modelOnedrive                      = $this->getModel('onedrivefiles');
+                $fileOneDrive                       = $modelOnedrive->getFile($id_file);
+                $user                               = JFactory::getUser();
+                $result['file']['description']      = (isset($fileOneDrive->description)) ? $fileOneDrive->description : '';
+                $result['file']['file_tags']        = (isset($fileOneDrive->file_tags)) ? $fileOneDrive->file_tags : '';
+                $file_data                          = array();
+                $file_data['id']                    = 0;
+                $file_data['title']                 = JFile::stripExt($result['file']['name']);
+                $file_data['file_id']               = $result['file']['id'];
+                $file_data['ext']                   = (isset($fileOneDrive->ext)) ? $fileOneDrive->ext : '';
+                $file_data['description']           = $result['file']['description'];
+                $file_data['size']                  = $result['file']['size'];
+                $file_data['catid']                 = $target_category->cloud_id;
+                $file_data['path']                  = '';
+                $file_data['created_time']          = date('Y-m-d H:i:s', strtotime($result['file']['createdDateTime']));
+                $file_data['modified_time']         = date('Y-m-d H:i:s', strtotime($result['file']['lastModifiedDateTime']));
+                $file_data['file_tags']             = $result['file']['file_tags'];
+                $file_data['author']                = $user->get('id');
+                $modelOnedriveBusiness->save($file_data);
+
+                JFile::delete($file_current);
+
+                if ($onedrive->delete($id_file, $active_category->cloud_id)) {
+                    $modelOnedrive->deleteFile($id_file);
+                }
+            }
+        } elseif ($active_category->type === 'onedrivebusiness' && $target_category->type === 'onedrive') {
+            $onedriveBusiness   = new DropfilesOneDriveBusiness();
+            $file               = $onedriveBusiness->downloadFile($id_file);
+            $catpath_dest       = DropfilesBase::getFilesPath($id_category);
+
+            if (!file_exists($catpath_dest)) {
+                JFolder::create($catpath_dest);
+                $data = '<html><body bgcolor="#FFFFFF"></body></html>';
+                JFile::write($catpath_dest . 'index.html', $data);
+                $data = 'deny from all';
+                JFile::write($catpath_dest . '.htaccess', $data);
+            }
+
+            $newname       = uniqid() . '.' . $file->ext;
+            file_put_contents($catpath_dest . $newname, $file->datas);
+
+            $onedrive     = new DropfilesOneDrive();
+            $file_current  = $catpath_dest . $newname;
+
+            $pic          = array();
+            $pic['error'] = 0;
+            $pic['name']  = $file->title . '.' . $file->ext;
+            $pic['type']  = '';
+            $pic['size']  = $file->size;
+            $f_name       = $file->title . '.' . $file->ext;
+
+            $result = $onedrive->uploadFile($f_name, $pic, $file_current, $target_category->cloud_id);
+            $user   = JFactory::getUser();
+            if ($result) {
+                $modelOnedrive                      = $this->getModel('onedrivefiles');
+                $modelOnedriveBusiness              = $this->getModel('onedrivebusinessfiles');
+                $fileonedrivebusiness               = $modelOnedriveBusiness->getFile($id_file);
+                $result['file']['description']      = (isset($fileonedrivebusiness->description)) ? $fileonedrivebusiness->description : '';
+                $result['file']['file_tags']        = (isset($fileonedrivebusiness->file_tags)) ? $fileonedrivebusiness->file_tags : '';
+                $file_data                          = array();
+                $file_data['id']                    = 0;
+                $file_data['title']                 = JFile::stripExt($result['file']['name']);
+                $file_data['file_id']               = $result['file']['id'];
+                $file_data['ext']                   = (isset($file->ext)) ? $file->ext : '';
+                $file_data['description']           = $result['file']['description'];
+                $file_data['size']                  = $result['file']['size'];
+                $file_data['catid']                 = $target_category->cloud_id;
+                $file_data['path']                  = '';
+                $file_data['created_time']          = date('Y-m-d H:i:s', strtotime($result['file']['createdDateTime']));
+                $file_data['modified_time']         = date('Y-m-d H:i:s', strtotime($result['file']['lastModifiedDateTime']));
+                $file_data['file_tags']             = $result['file']['file_tags'];
+                $file_data['author']                = $user->get('id');
+                $modelOnedrive->save($file_data);
+
+
+                JFile::delete($file_current);
+
+                if ($onedriveBusiness->delete($id_file)) {
+                    $modelOnedriveBusiness->deleteFile($id_file);
+                }
+            }
         }
 
+        // Update files count
+        $categoriesModel = $this->getModel('Categories', 'DropfilesModel');
+        $categoriesModel->updateFilesCount();
         $this->exitStatus(true, array('id_file' => $id_file));
         JFactory::getApplication()->close();
     }
@@ -1328,6 +1808,8 @@ class DropfilesControllerFiles extends JControllerForm
                 $data['id_category'] = $id_category;
                 $data['title']       = $file->title;
                 $data['ext']         = $file->ext;
+                $data['description'] = $file->description;
+                $data['file_tags']   = $file->file_tags;
                 $data['size']        = $file->size;
                 $data['author']      = $user->get('id');
                 $new_file = $model->addFile($data);
@@ -1354,7 +1836,7 @@ class DropfilesControllerFiles extends JControllerForm
             }
         } elseif ($active_category->type === 'googledrive' && $target_category->type === 'default') {
             $google       = new DropfilesGoogle();
-            $file         = $google->download($id_file, $active_category->cloud_id, false);
+            $file         = $google->download($id_file, $active_category->cloud_id, false, 0, true);
             $catpath_dest = DropfilesBase::getFilesPath($id_category);
 
             if (!file_exists($catpath_dest)) {
@@ -1368,14 +1850,21 @@ class DropfilesControllerFiles extends JControllerForm
             $newname = uniqid() . '.' . $file->ext;
             file_put_contents($catpath_dest . $newname, $file->datas);
 
-            $model    = $this->getModel();
-            $user     = JFactory::getUser();
+            $model              = $this->getModel();
+            $modelGoogle        = $this->getModel('googlefiles');
+            $filegoogle         = $modelGoogle->getFile($id_file);
+            $file->description  = (isset($filegoogle->description)) ? $filegoogle->description : '';
+            $file->file_tags    = (isset($filegoogle->file_tags)) ? $filegoogle->file_tags : '';
+            $user               = JFactory::getUser();
+
             $new_file = $model->addFile(array(
                 'title'       => $file->title,
                 'id_category' => $id_category,
                 'file'        => $newname,
                 'ext'         => $file->ext,
+                'description' => $file->description,
                 'size'        => $file->size,
+                'file_tags'   => $file->file_tags,
                 'author'      => $user->get('id')
             ));
             if ($new_file) {
@@ -1392,21 +1881,40 @@ class DropfilesControllerFiles extends JControllerForm
             if (!$google->uploadFile($file->title . '.' . $file->ext, $fg_contents, '', $target_category->cloud_id)) {
                 $this->exitStatus($google->getLastError());
             }
+            $insertedFile = $google->uploadFile($file->title . '.' . $file->ext, $fg_contents, '', $target_category->cloud_id);
+            if ($insertedFile) {
+                $modelGoogle                = $this->getModel('googlefiles');
+                $user                       = JFactory::getUser();
+                $file_data                  = $google->getFileObj($insertedFile);
+                $file_data->description     = (isset($file->description)) ? $file->description : '';
+                $file_data->catid           = $target_category->cloud_id;
+                $file_data->file_tags       = (isset($file->file_tags)) ? $file->file_tags : '';
+                $file_data->author          = $user->get('id');
+                unset($file_data->id);
+                $modelGoogle->addFile($file_data);
+                JFile::delete($file_current);
+            }
         } elseif ($active_category->type === 'googledrive' && $target_category->type === 'googledrive') {
             $google = new DropfilesGoogle();
             $file = $google->copyFile($id_file, $target_category->cloud_id);
             // Add new file to database
             if ($file) {
-                $user        = JFactory::getUser();
-                $modelGoogle = $this->getModel('googlefiles');
-                $file_data         = $google->getFileObj($file);
-                $file_data->catid  = $target_category->cloud_id;
-                $file_data->author = $user->get('id');
+                $user                   = JFactory::getUser();
+                $modelGoogle            = $this->getModel('googlefiles');
+                $filegoogle             = $modelGoogle->getFile($id_file);
+                $file_data              = $google->getFileObj($file);
+                $file_data->catid       = $target_category->cloud_id;
+                $file_data->ext         = (isset($filegoogle->ext)) ? $filegoogle->ext : '';
+                $file_data->description = (isset($filegoogle->description)) ? $filegoogle->description : '';
+                $file_data->file_tags   = (isset($filegoogle->file_tags)) ? $filegoogle->file_tags : '';
+                $file_data->author      = $user->get('id');
                 unset($file_data->id);
                 $modelGoogle->addFile($file_data);
             }
         } elseif ($active_category->type === 'dropbox' && $target_category->type === 'default') {
             $dropbox = new DropfilesDropbox();
+            $modelDropbox = $this->getModel('dropboxfiles');
+            $filedropbox = $modelDropbox->getFile($id_file);
             list($tem, $file) = $dropbox->downloadDropbox($id_file);
 
             $catpath_dest = DropfilesBase::getFilesPath($id_category);
@@ -1438,13 +1946,17 @@ class DropfilesControllerFiles extends JControllerForm
             file_put_contents($catpath_dest . $newname, $data);
             $user     = JFactory::getUser();
             $model    = $this->getModel();
+            $file['description'] = (isset($filedropbox->description)) ? $filedropbox->description : '';
+            $file['file_tags']   = (isset($filedropbox->file_tags)) ? $filedropbox->file_tags : '';
             $new_file = $model->addFile(array(
                 'title'       => JFile::stripExt($file['name']),
                 'id_category' => $id_category,
                 'file'        => $newname,
                 'ext'         => strtolower(JFile::getExt($file['name'])),
+                'description' => $file['description'],
                 'size'        => $file['size'],
-                'author'      => $user->get('id')
+                'author'      => $user->get('id'),
+                'file_tags'   => $file['file_tags']
             ));
         } elseif ($active_category->type === 'default' && $target_category->type === 'dropbox') {
             $file            = $modelFile->getItem($id_file);
@@ -1458,12 +1970,16 @@ class DropfilesControllerFiles extends JControllerForm
             if ($result) {
                 $modelDropbox               = $this->getModel('dropboxfiles');
                 $file_data                  = array();
+                $result['description']      = (isset($file->description)) ? $file->description : '';
+                $result['file_tags']        = (isset($file->file_tags)) ? $file->file_tags : '';
                 $file_data['id']            = 0;
                 $file_data['title']         = JFile::stripExt($result['name']);
                 $file_data['file_id']       = $result['id'];
                 $file_data['ext']           = strtolower(JFile::getExt($result['name']));
+                $file_data['description']   = $result['description'];
                 $file_data['size']          = $result['size'];
                 $file_data['catid']         = $target_category->cloud_id;
+                $file_data['file_tags']     = $result['file_tags'];
                 $file_data['path']          = $result['path_lower'];
                 $file_data['created_time']  = date('Y-m-d H:i:s', strtotime($result['client_modified']));
                 $file_data['modified_time'] = date('Y-m-d H:i:s', strtotime($result['server_modified']));
@@ -1477,13 +1993,18 @@ class DropfilesControllerFiles extends JControllerForm
             $result           = $dropbox->copyFileDropbox($file['path_lower'], $path_target_file);
             if ($result) {
                 $modelDropbox               = $this->getModel('dropboxfiles');
+                $filedropbox                = $modelDropbox->getFile($id_file);
+                $result['description']      = (isset($filedropbox->description)) ? $filedropbox->description : '';
+                $result['file_tags']        = (isset($filedropbox->file_tags)) ? $filedropbox->file_tags : '';
                 $file_data                  = array();
                 $file_data['id']            = 0;
                 $file_data['title']         = JFile::stripExt($result['name']);
                 $file_data['file_id']       = $result['id'];
                 $file_data['ext']           = strtolower(JFile::getExt($result['name']));
+                $file_data['description']   = $result['description'];
                 $file_data['size']          = $result['size'];
                 $file_data['catid']         = $target_category->cloud_id;
+                $file_data['file_tags']     = $result['file_tags'];
                 $file_data['path']          = $result['path_lower'];
                 $file_data['created_time']  = date('Y-m-d H:i:s', strtotime($result['client_modified']));
                 $file_data['modified_time'] = date('Y-m-d H:i:s', strtotime($result['server_modified']));
@@ -1491,7 +2012,7 @@ class DropfilesControllerFiles extends JControllerForm
             }
         } elseif ($active_category->type === 'googledrive' && $target_category->type === 'dropbox') {
             $google = new DropfilesGoogle();
-            $file   = $google->download($id_file, $active_category->cloud_id, false);
+            $file   = $google->download($id_file, $active_category->cloud_id, false, 0, true);
 
             $catpath_dest = DropfilesBase::getFilesPath($id_category);
 
@@ -1504,23 +2025,29 @@ class DropfilesControllerFiles extends JControllerForm
             }
 
             $newname = uniqid() . '.' . $file->ext;
-            file_put_contents($catpath_dest . $newname, $file->datas);
+            file_put_contents($catpath_dest . $newname, $file);
 
             $dropbox = new DropfilesDropbox();
 
             $file_current = $catpath_dest . $newname;
             $f_name       = $file->title . '.' . $file->ext;
             $result       = $dropbox->uploadFile($f_name, $file_current, filesize($file_current), $target_category->path);
-
             if ($result) {
                 $modelDropbox               = $this->getModel('dropboxfiles');
+                $modelGoogle                = $this->getModel('googlefiles');
+                $filegoogle                 = $modelGoogle->getFile($id_file);
+                $result['size']             = (isset($filegoogle->size)) ? $filegoogle->size : 0;
+                $result['description']      = (isset($filegoogle->description)) ? $filegoogle->description : '';
+                $result['file_tags']        = (isset($filegoogle->file_tags)) ? $filegoogle->file_tags : '';
                 $file_data                  = array();
                 $file_data['id']            = 0;
                 $file_data['title']         = JFile::stripExt($result['name']);
                 $file_data['file_id']       = $result['id'];
                 $file_data['ext']           = strtolower(JFile::getExt($result['name']));
+                $file_data['description']   = $result['description'];
                 $file_data['size']          = $result['size'];
                 $file_data['catid']         = $target_category->cloud_id;
+                $file_data['file_tags']     = $result['file_tags'];
                 $file_data['path']          = $result['path_lower'];
                 $file_data['created_time']  = date('Y-m-d H:i:s', strtotime($result['client_modified']));
                 $file_data['modified_time'] = date('Y-m-d H:i:s', strtotime($result['server_modified']));
@@ -1563,12 +2090,17 @@ class DropfilesControllerFiles extends JControllerForm
             $google      = new DropfilesGoogle();
             $fg_contents = file_get_contents($file_current);
             $insertedFile = $google->uploadFile($file['name'], $fg_contents, '', $target_category->cloud_id);
+
             if ($insertedFile) {
-                $modelGoogle       = $this->getModel('googlefiles');
-                $user              = JFactory::getUser();
-                $file_data         = $google->getFileObj($insertedFile);
-                $file_data->catid  = $target_category->cloud_id;
-                $file_data->author = $user->get('id');
+                $modelGoogle                = $this->getModel('googlefiles');
+                $modelDropbox               = $this->getModel('dropboxfiles');
+                $filedropbox                = $modelDropbox->getFile($id_file);
+                $user                       = JFactory::getUser();
+                $file_data                  = $google->getFileObj($insertedFile);
+                $file_data->description     = (isset($filedropbox->description)) ? $filedropbox->description : '';
+                $file_data->catid           = $target_category->cloud_id;
+                $file_data->author          = $user->get('id');
+                $file_data->file_tags       = (isset($filedropbox->file_tags)) ? $filedropbox->file_tags : '';
                 unset($file_data->id);
                 $modelGoogle->addFile($file_data);
                 JFile::delete($file_current);
@@ -1592,13 +2124,17 @@ class DropfilesControllerFiles extends JControllerForm
 
             $user     = JFactory::getUser();
             $model    = $this->getModel();
+            $modelOnedrive = $this->getModel('onedrivefiles');
+            $fileonedrive  = $modelOnedrive->getFile($id_file);
             $new_file = $model->addFile(array(
-                'title'       => $file->title,
-                'id_category' => $id_category,
-                'file'        => $newname,
-                'ext'         => $file->ext,
-                'size'        => $file->size,
-                'author'      => $user->get('id')
+                'title'             => $file->title,
+                'id_category'       => $id_category,
+                'file'              => $newname,
+                'ext'               => (isset($fileonedrive->ext)) ? $fileonedrive->ext : '',
+                'description'       => (isset($fileonedrive->description)) ? $fileonedrive->description : '',
+                'size'              => $file->size,
+                'file_tags'         => (isset($fileonedrive->file_tags)) ? $fileonedrive->file_tags : '',
+                'author'            => $user->get('id')
             ));
             if ($new_file) {
                 // Index new uploaded file
@@ -1621,18 +2157,22 @@ class DropfilesControllerFiles extends JControllerForm
             $result = $onedrive->uploadFile($f_name, $pic, $file_current, $target_category->cloud_id);
             $user   = JFactory::getUser();
             if ($result) {
-                $modelOnedrive              = $this->getModel('onedrivefiles');
-                $file_data                  = array();
-                $file_data['id']            = 0;
-                $file_data['title']         = JFile::stripExt($result['file']['name']);
-                $file_data['file_id']       = $result['file']['id'];
-                $file_data['ext']           = $file->ext;
-                $file_data['size']          = $result['file']['size'];
-                $file_data['catid']         = $target_category->cloud_id;
-                $file_data['path']          = '';
-                $file_data['created_time']  = date('Y-m-d H:i:s', strtotime($result['file']['createdDateTime']));
-                $file_data['modified_time'] = date('Y-m-d H:i:s', strtotime($result['file']['lastModifiedDateTime']));
-                $file_data['author']        = $user->get('id');
+                $modelOnedrive                          = $this->getModel('onedrivefiles');
+                $result['file']['description']      = (isset($file->description)) ? $file->description : '';
+                $result['file']['file_tags']        = (isset($file->file_tags)) ? $file->file_tags : '';
+                $file_data                          = array();
+                $file_data['id']                    = 0;
+                $file_data['title']                 = JFile::stripExt($result['file']['name']);
+                $file_data['file_id']               = $result['file']['id'];
+                $file_data['ext']                   = $file->ext;
+                $file_data['description']           = $result['file']['description'];
+                $file_data['size']                  = $result['file']['size'];
+                $file_data['catid']                 = $target_category->cloud_id;
+                $file_data['path']                  = '';
+                $file_data['created_time']          = date('Y-m-d H:i:s', strtotime($result['file']['createdDateTime']));
+                $file_data['modified_time']         = date('Y-m-d H:i:s', strtotime($result['file']['lastModifiedDateTime']));
+                $file_data['author']                = $user->get('id');
+                $file_data['file_tags']             = $result['file']['file_tags'];
                 $modelOnedrive->save($file_data);
             }
         } elseif ($active_category->type === 'onedrive' && $target_category->type === 'onedrive') {
@@ -1648,16 +2188,21 @@ class DropfilesControllerFiles extends JControllerForm
                 $user       = JFactory::getUser();
                 if ($file) {
                     $modelOnedrive              = $this->getModel('onedrivefiles');
+                    $fileonedrive               = $modelOnedrive->getFile($id_file);
+                    $file['description']        = (isset($fileonedrive->description)) ? $fileonedrive->description : '';
+                    $file['file_tags']          = (isset($fileonedrive->file_tags)) ? $fileonedrive->file_tags : '';
                     $file_data                  = array();
                     $file_data['id']            = 0;
                     $file_data['title']         = $file['title'];
                     $file_data['file_id']       = $file['id'];
-                    $file_data['ext']           = $file['ext'];
+                    $file_data['ext']           = (isset($fileonedrive->ext)) ? $fileonedrive->ext : '';
+                    $file_data['description']   = $file['description'];
                     $file_data['size']          = $file['size'];
                     $file_data['catid']         = $target_category->cloud_id;
                     $file_data['path']          = '';
                     $file_data['created_time']  = $file['created_time'];
                     $file_data['modified_time'] = $file['modified_time'];
+                    $file_data['file_tags']     = $file['file_tags'];
                     $file_data['author']        = $user->get('id');
                     $modelOnedrive->save($file_data);
                 }
@@ -1667,7 +2212,7 @@ class DropfilesControllerFiles extends JControllerForm
             }
         } elseif ($active_category->type === 'googledrive' && $target_category->type === 'onedrive') {
             $google = new DropfilesGoogle();
-            $file   = $google->download($id_file, $active_category->cloud_id, false);
+            $file   = $google->download($id_file, $active_category->cloud_id, false, 0, true);
 
             $catpath_dest = DropfilesBase::getFilesPath($id_category);
 
@@ -1696,18 +2241,24 @@ class DropfilesControllerFiles extends JControllerForm
             $user         = JFactory::getUser();
 
             if ($result) {
-                $modelOnedrive              = $this->getModel('onedrivefiles');
-                $file_data                  = array();
-                $file_data['id']            = 0;
-                $file_data['title']         = JFile::stripExt($result['file']['name']);
-                $file_data['file_id']       = $result['file']['id'];
-                $file_data['ext']           = $file->ext;
-                $file_data['size']          = $result['file']['size'];
-                $file_data['catid']         = $target_category->cloud_id;
-                $file_data['path']          = '';
-                $file_data['created_time']  = date('Y-m-d H:i:s', strtotime($result['file']['createdDateTime']));
-                $file_data['modified_time'] = date('Y-m-d H:i:s', strtotime($result['file']['lastModifiedDateTime']));
-                $file_data['author']        = $user->get('id');
+                $modelOnedrive                  = $this->getModel('onedrivefiles');
+                $modelGoogle                    = $this->getModel('googlefiles');
+                $filegoogle                     = $modelGoogle->getFile($id_file);
+                $result['file']['description']  = (isset($filegoogle->description)) ? $filegoogle->description : '';
+                $result['file']['file_tags']    = (isset($filegoogle->file_tags)) ? $filegoogle->file_tags : '';
+                $file_data                      = array();
+                $file_data['id']                = 0;
+                $file_data['title']             = JFile::stripExt($result['file']['name']);
+                $file_data['file_id']           = $result['file']['id'];
+                $file_data['ext']               = $file->ext;
+                $file_data['description']       = $result['file']['description'];
+                $file_data['size']              = $result['file']['size'];
+                $file_data['catid']             = $target_category->cloud_id;
+                $file_data['path']              = '';
+                $file_data['created_time']      = date('Y-m-d H:i:s', strtotime($result['file']['createdDateTime']));
+                $file_data['modified_time']     = date('Y-m-d H:i:s', strtotime($result['file']['lastModifiedDateTime']));
+                $file_data['file_tags']         = $result['file']['file_tags'];
+                $file_data['author']            = $user->get('id');
                 $modelOnedrive->save($file_data);
 
                 JFile::delete($file_current);
@@ -1736,11 +2287,16 @@ class DropfilesControllerFiles extends JControllerForm
             $insertedFile = $google->uploadFile($f_name, $fg_contents, '', $target_category->cloud_id);
 
             if ($insertedFile) {
-                $modelGoogle       = $this->getModel('googlefiles');
-                $user              = JFactory::getUser();
-                $file_data         = $google->getFileObj($insertedFile);
-                $file_data->catid  = $target_category->cloud_id;
-                $file_data->author = $user->get('id');
+                $modelGoogle                = $this->getModel('googlefiles');
+                $modelOnedrive              = $this->getModel('onedrivefiles');
+                $fileonedrive               = $modelOnedrive->getFile($id_file);
+                $user                       = JFactory::getUser();
+                $file_data                  = $google->getFileObj($insertedFile);
+                $file_data->ext             = (isset($fileonedrive->ext)) ? $fileonedrive->ext : '';
+                $file_data->description     = (isset($fileonedrive->description)) ? $fileonedrive->description : '';
+                $file_data->catid           = $target_category->cloud_id;
+                $file_data->file_tags       = (isset($fileonedrive->file_tags)) ? $fileonedrive->file_tags : '';
+                $file_data->author          = $user->get('id');
                 unset($file_data->id);
                 $modelGoogle->addFile($file_data);
                 JFile::delete($file_current);
@@ -1789,18 +2345,24 @@ class DropfilesControllerFiles extends JControllerForm
             $result = $onedrive->uploadFile($f_name, $pic, $file_current, $target_category->cloud_id);
             $user   = JFactory::getUser();
             if ($result) {
-                $modelOnedrive              = $this->getModel('onedrivefiles');
-                $file_data                  = array();
-                $file_data['id']            = 0;
-                $file_data['title']         = JFile::stripExt($result['file']['name']);
-                $file_data['file_id']       = $result['file']['id'];
-                $file_data['ext']           = JFile::getExt($file['name']);
-                $file_data['size']          = $result['file']['size'];
-                $file_data['catid']         = $target_category->cloud_id;
-                $file_data['path']          = '';
-                $file_data['created_time']  = date('Y-m-d H:i:s', strtotime($result['file']['createdDateTime']));
-                $file_data['modified_time'] = date('Y-m-d H:i:s', strtotime($result['file']['lastModifiedDateTime']));
-                $file_data['author']        = $user->get('id');
+                $modelOnedrive                      = $this->getModel('onedrivefiles');
+                $modelDropbox                       = $this->getModel('dropboxfiles');
+                $filedropbox                        = $modelDropbox->getFile($id_file);
+                $result['file']['description']      = (isset($filedropbox->description)) ? $filedropbox->description : '';
+                $result['file']['file_tags']        = (isset($filedropbox->file_tags)) ? $filedropbox->file_tags : '';
+                $file_data                          = array();
+                $file_data['id']                    = 0;
+                $file_data['title']                 = JFile::stripExt($result['file']['name']);
+                $file_data['file_id']               = $result['file']['id'];
+                $file_data['ext']                   = JFile::getExt($file['name']);
+                $file_data['description']           = $result['file']['description'];
+                $file_data['size']                  = $result['file']['size'];
+                $file_data['catid']                 = $target_category->cloud_id;
+                $file_data['path']                  = '';
+                $file_data['created_time']          = date('Y-m-d H:i:s', strtotime($result['file']['createdDateTime']));
+                $file_data['modified_time']         = date('Y-m-d H:i:s', strtotime($result['file']['lastModifiedDateTime']));
+                $file_data['file_tags']             = $result['file']['file_tags'];
+                $file_data['author']                = $user->get('id');
                 $modelOnedrive->save($file_data);
 
 
@@ -1832,22 +2394,425 @@ class DropfilesControllerFiles extends JControllerForm
 
             if ($result) {
                 $modelDropbox               = $this->getModel('dropboxfiles');
+                $modelOnedrive              = $this->getModel('onedrivefiles');
+                $fileonedrive               = $modelOnedrive->getFile($id_file);
+                $result['description']      = (isset($fileonedrive->description)) ? $fileonedrive->description : '';
+                $result['file_tags']        = (isset($fileonedrive->file_tags)) ? $fileonedrive->file_tags : '';
                 $file_data                  = array();
                 $file_data['id']            = 0;
                 $file_data['title']         = JFile::stripExt($result['name']);
                 $file_data['file_id']       = $result['id'];
-                $file_data['ext']           = strtolower(JFile::getExt($result['name']));
+                $file_data['ext']           = (isset($fileonedrive->ext)) ? $fileonedrive->ext : '';
+                $file_data['description']   = $result['description'];
                 $file_data['size']          = $result['size'];
                 $file_data['catid']         = $target_category->cloud_id;
                 $file_data['path']          = $result['path_lower'];
                 $file_data['created_time']  = date('Y-m-d H:i:s', strtotime($result['client_modified']));
                 $file_data['modified_time'] = date('Y-m-d H:i:s', strtotime($result['server_modified']));
+                $file_data['file_tags']     = $result['file_tags'];
                 $modelDropbox->save($file_data);
 
                 JFile::delete($file_current);
             }
-        }
+        } elseif ($active_category->type === 'onedrivebusiness' && $target_category->type === 'default') {
+            $onedriveBusiness   = new DropfilesOneDriveBusiness();
+            $file               = $onedriveBusiness->downloadFile($id_file);
+            $catpath_dest       = DropfilesBase::getFilesPath($id_category);
 
+            if (!file_exists($catpath_dest)) {
+                JFolder::create($catpath_dest);
+                $data = '<html><body bgcolor="#FFFFFF"></body></html>';
+                JFile::write($catpath_dest . 'index.html', $data);
+                $data = 'deny from all';
+                JFile::write($catpath_dest . '.htaccess', $data);
+            }
+
+            $newname = uniqid() . '.' . $file->ext;
+            file_put_contents($catpath_dest . $newname, $file->datas);
+
+            $user                   = JFactory::getUser();
+            $model                  = $this->getModel();
+            $modelOnedriveBusiness  = $this->getModel('onedrivebusinessfiles');
+            $fileOnedriveBusiness   = $modelOnedriveBusiness->getFile($id_file);
+            $newFile = $model->addFile(array(
+                'title'             => (isset($file->title)) ? $file->title : $fileOnedriveBusiness->title,
+                'id_category'       => $id_category,
+                'file'              => $newname,
+                'ext'               => (isset($fileOnedriveBusiness->ext)) ? $fileOnedriveBusiness->ext : '',
+                'description'       => (isset($fileOnedriveBusiness->description)) ? $fileOnedriveBusiness->description : '',
+                'size'              => $file->size,
+                'file_tags'         => (isset($fileOnedriveBusiness->file_tags)) ? $fileOnedriveBusiness->file_tags : '',
+                'author'            => $user->get('id')
+            ));
+
+            if ($newFile) {
+                // Index new uploaded file
+                $ftsModel = $this->getModel('fts');
+                $ftsModel->reIndexFile($newFile);
+            }
+        } elseif ($active_category->type === 'default' && $target_category->type === 'onedrivebusiness') {
+            $file               = $modelFile->getItem($id_file);
+            $catpath_current    = DropfilesBase::getFilesPath($file->catid);
+            $file_current       = $catpath_current . $file->file;
+            $onedriveBusiness   = new DropfilesOneDriveBusiness();
+
+            $pic          = array();
+            $pic['error'] = 0;
+            $pic['name']  = $file->title . '.' . $file->ext;
+            $pic['type']  = '';
+            $pic['size']  = $file->size;
+
+            $f_name       = $file->title . '.' . $file->ext;
+            $user         = JFactory::getUser();
+            $result       = $onedriveBusiness->uploadFile($f_name, $pic, $file_current, $target_category->cloud_id);
+            if ($result) {
+                $modelOnedriveBusiness              = $this->getModel('onedrivebusinessfiles');
+                $result['file']['description']      = (isset($file->description)) ? $file->description : '';
+                $result['file']['file_tags']        = (isset($file->file_tags)) ? $file->file_tags : '';
+                $file_data                          = array();
+                $file_data['id']                    = 0;
+                $file_data['title']                 = JFile::stripExt($result['file']['name']);
+                $file_data['file_id']               = $result['file']['id'];
+                $file_data['ext']                   = $file->ext;
+                $file_data['description']           = $result['file']['description'];
+                $file_data['size']                  = $result['file']['size'];
+                $file_data['catid']                 = $target_category->cloud_id;
+                $file_data['path']                  = '';
+                $file_data['created_time']          = date('Y-m-d H:i:s', strtotime($result['file']['createdDateTime']));
+                $file_data['modified_time']         = date('Y-m-d H:i:s', strtotime($result['file']['lastModifiedDateTime']));
+                $file_data['author']                = $user->get('id');
+                $file_data['file_tags']             = $result['file']['file_tags'];
+                $modelOnedriveBusiness->save($file_data);
+            }
+        } elseif ($active_category->type === 'onedrivebusiness' && $target_category->type === 'onedrivebusiness') {
+            $onedriveBusiness   = new DropfilesOneDriveBusiness();
+            $cloudId            = DropfilesCloudHelper::getOneDriveBusinessIdByTermId($id_category);
+            $result             = $onedriveBusiness->copyFile($id_file, $cloudId);
+            if (!empty($result) && isset($result['id'])) {
+                $resourceId = DropfilesCloudHelper::replaceIdOneDrive($result['id']);
+                $file       = $onedriveBusiness->getOneDriveBusinessFileInfos($resourceId, $target_category->cloud_id);
+                $user       = JFactory::getUser();
+                if ($file) {
+                    $modelOnedriveBusiness      = $this->getModel('onedrivebusinessfiles');
+                    $fileOnedriveBusiness       = $modelOnedriveBusiness->getFile($id_file);
+                    $file['description']        = (isset($fileOnedriveBusiness->description)) ? $fileOnedriveBusiness->description : '';
+                    $file['file_tags']          = (isset($fileOnedriveBusiness->file_tags)) ? $fileOnedriveBusiness->file_tags : '';
+                    $file_data                  = array();
+                    $file_data['id']            = 0;
+                    $file_data['title']         = $file['title'];
+                    $file_data['file_id']       = $file['id'];
+                    $file_data['ext']           = (isset($fileOnedriveBusiness->ext)) ? $fileOnedriveBusiness->ext : '';
+                    $file_data['description']   = $file['description'];
+                    $file_data['size']          = $file['size'];
+                    $file_data['catid']         = $target_category->cloud_id;
+                    $file_data['path']          = '';
+                    $file_data['created_time']  = $file['created_time'];
+                    $file_data['modified_time'] = $file['modified_time'];
+                    $file_data['file_tags']     = $file['file_tags'];
+                    $file_data['author']        = $user->get('id');
+                    $modelOnedriveBusiness->save($file_data);
+                }
+            }
+        } elseif ($active_category->type === 'googledrive' && $target_category->type === 'onedrivebusiness') {
+            $google       = new DropfilesGoogle();
+            $file         = $google->download($id_file, $active_category->cloud_id, false, 0, true);
+            $catpath_dest = DropfilesBase::getFilesPath($id_category);
+
+            if (!file_exists($catpath_dest)) {
+                JFolder::create($catpath_dest);
+                $data = '<html><body bgcolor="#FFFFFF"></body></html>';
+                JFile::write($catpath_dest . 'index.html', $data);
+                $data = 'deny from all';
+                JFile::write($catpath_dest . '.htaccess', $data);
+            }
+
+            $newname = uniqid() . '.' . $file->ext;
+            file_put_contents($catpath_dest . $newname, $file->datas);
+
+            $file_current       = $catpath_dest . $newname;
+            $onedriveBusiness   = new DropfilesOneDriveBusiness();
+
+            $pic          = array();
+            $pic['error'] = 0;
+            $pic['name']  = $file->title . '.' . $file->ext;
+            $pic['type']  = '';
+            $pic['size']  = $file->size;
+            $f_name       = $file->title . '.' . $file->ext;
+            $user         = JFactory::getUser();
+            $result       = $onedriveBusiness->uploadFile($f_name, $pic, $file_current, $target_category->cloud_id);
+
+            if ($result) {
+                $modelOnedriveBusiness              = $this->getModel('onedrivebusinessfiles');
+                $modelGoogle                        = $this->getModel('googlefiles');
+                $filegoogle                         = $modelGoogle->getFile($id_file);
+                $result['file']['description']      = (isset($filegoogle->description)) ? $filegoogle->description : '';
+                $result['file']['file_tags']        = (isset($filegoogle->file_tags)) ? $filegoogle->file_tags : '';
+                $file_data                          = array();
+                $file_data['id']                    = 0;
+                $file_data['title']                 = JFile::stripExt($result['file']['name']);
+                $file_data['file_id']               = $result['file']['id'];
+                $file_data['ext']                   = $file->ext;
+                $file_data['description']           = $result['file']['description'];
+                $file_data['size']                  = $result['file']['size'];
+                $file_data['catid']                 = $target_category->cloud_id;
+                $file_data['path']                  = '';
+                $file_data['created_time']          = date('Y-m-d H:i:s', strtotime($result['file']['createdDateTime']));
+                $file_data['modified_time']         = date('Y-m-d H:i:s', strtotime($result['file']['lastModifiedDateTime']));
+                $file_data['author']                = $user->get('id');
+                $file_data['file_tags']             = $result['file']['file_tags'];
+                $modelOnedriveBusiness->save($file_data);
+            }
+        } elseif ($active_category->type === 'onedrivebusiness' && $target_category->type === 'googledrive') {
+            $onedriveBusiness   = new DropfilesOneDriveBusiness();
+            $file               = $onedriveBusiness->downloadFile($id_file);
+            $catpath_dest       = DropfilesBase::getFilesPath($id_category);
+
+            if (!file_exists($catpath_dest)) {
+                JFolder::create($catpath_dest);
+                $data = '<html><body bgcolor="#FFFFFF"></body></html>';
+                JFile::write($catpath_dest . 'index.html', $data);
+                $data = 'deny from all';
+                JFile::write($catpath_dest . '.htaccess', $data);
+            }
+
+            $newname = uniqid() . '.' . $file->ext;
+            file_put_contents($catpath_dest . $newname, $file->datas);
+            $file_current  = $catpath_dest . $newname;
+            $google        = new DropfilesGoogle();
+            $f_name        = $file->title . '.' . $file->ext;
+            $fg_contents   = file_get_contents($file_current);
+            $insertedFile  = $google->uploadFile($f_name, $fg_contents, '', $target_category->cloud_id);
+
+            if ($insertedFile) {
+                $modelGoogle                = $this->getModel('googlefiles');
+                $modelOnedriveBusiness      = $this->getModel('onedrivebusinessfiles');
+                $fileOnedriveBusiness       = $modelOnedriveBusiness->getFile($id_file);
+                $user                       = JFactory::getUser();
+                $file_data                  = $google->getFileObj($insertedFile);
+                $file_data->ext             = (isset($fileOnedriveBusiness->ext)) ? $fileOnedriveBusiness->ext : '';
+                $file_data->description     = (isset($fileOnedriveBusiness->description)) ? $fileOnedriveBusiness->description : '';
+                $file_data->catid           = $target_category->cloud_id;
+                $file_data->file_tags       = (isset($fileOnedriveBusiness->file_tags)) ? $fileOnedriveBusiness->file_tags : '';
+                $file_data->author          = $user->get('id');
+                unset($file_data->id);
+                $modelGoogle->addFile($file_data);
+                JFile::delete($file_current);
+            }
+        } elseif ($active_category->type === 'dropbox' && $target_category->type === 'onedrivebusiness') {
+            $dropbox          = new DropfilesDropbox();
+            list($tem, $file) = $dropbox->downloadDropbox($id_file);
+            $catpath_dest     = DropfilesBase::getFilesPath($id_category);
+
+            if (!file_exists($catpath_dest)) {
+                JFolder::create($catpath_dest);
+                $data = '<html><body bgcolor="#FFFFFF"></body></html>';
+                JFile::write($catpath_dest . 'index.html', $data);
+                $data = 'deny from all';
+                JFile::write($catpath_dest . '.htaccess', $data);
+            }
+
+            $newname = uniqid() . '.' . JFile::getExt($file['name']);
+
+            ob_start();
+            header('Content-Disposition: attachment; filename="' . $file['name'] . '"');
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Transfer-Encoding: binary');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+            header('Pragma: public');
+
+            header('Content-Length: ' . (int) $file['size']);
+
+            echo readfile($tem);
+            unlink($tem);
+            $data             = ob_get_clean();
+            $file_current     = $catpath_dest . $newname;
+            file_put_contents($file_current, $data);
+            $onedriveBusiness = new DropfilesOneDriveBusiness();
+
+            $pic              = array();
+            $pic['error']     = 0;
+            $pic['name']      = $file['name'];
+            $pic['type']      = '';
+            $pic['size']      = $file['size'];
+            $f_name           = $file['name'];
+
+            $result = $onedriveBusiness->uploadFile($f_name, $pic, $file_current, $target_category->cloud_id);
+            if ($result) {
+                $modelOnedriveBusiness              = $this->getModel('onedrivebusinessfiles');
+                $modelDropbox                       = $this->getModel('dropboxfiles');
+                $filedropbox                        = $modelDropbox->getFile($id_file);
+                $user                               = JFactory::getUser();
+                $result['file']['description']      = (isset($filedropbox->description)) ? $filedropbox->description : '';
+                $result['file']['file_tags']        = (isset($filedropbox->file_tags)) ? $filedropbox->file_tags : '';
+                $file_data                          = array();
+                $file_data['id']                    = 0;
+                $file_data['title']                 = JFile::stripExt($result['file']['name']);
+                $file_data['file_id']               = $result['file']['id'];
+                $file_data['ext']                   = JFile::getExt($file['name']);
+                $file_data['description']           = $result['file']['description'];
+                $file_data['size']                  = $result['file']['size'];
+                $file_data['catid']                 = $target_category->cloud_id;
+                $file_data['path']                  = '';
+                $file_data['created_time']          = date('Y-m-d H:i:s', strtotime($result['file']['createdDateTime']));
+                $file_data['modified_time']         = date('Y-m-d H:i:s', strtotime($result['file']['lastModifiedDateTime']));
+                $file_data['file_tags']             = $result['file']['file_tags'];
+                $file_data['author']                = $user->get('id');
+                $modelOnedriveBusiness->save($file_data);
+
+                JFile::delete($file_current);
+            }
+        } elseif ($active_category->type === 'onedrivebusiness' && $target_category->type === 'dropbox') {
+            $onedriveBusiness   = new DropfilesOneDriveBusiness();
+            $file               = $onedriveBusiness->downloadFile($id_file);
+            $catpath_dest       = DropfilesBase::getFilesPath($id_category);
+
+            if (!file_exists($catpath_dest)) {
+                JFolder::create($catpath_dest);
+                $data = '<html><body bgcolor="#FFFFFF"></body></html>';
+                JFile::write($catpath_dest . 'index.html', $data);
+                $data = 'deny from all';
+                JFile::write($catpath_dest . '.htaccess', $data);
+            }
+
+            $newname       = uniqid() . '.' . $file->ext;
+            file_put_contents($catpath_dest . $newname, $file->datas);
+            $file_current  = $catpath_dest . $newname;
+            $dropbox       = new DropfilesDropbox();
+            $f_name        = $file->title . '.' . $file->ext;
+            $result        = $dropbox->uploadFile($f_name, $file_current, filesize($file_current), $target_category->path);
+
+            if ($result) {
+                $modelDropbox               = $this->getModel('dropboxfiles');
+                $modelOnedriveBusiness      = $this->getModel('onedrivebusinessfiles');
+                $fileOnedriveBusiness       = $modelOnedriveBusiness->getFile($id_file);
+                $result['description']      = (isset($fileOnedriveBusiness->description)) ? $fileOnedriveBusiness->description : '';
+                $result['file_tags']        = (isset($fileOnedriveBusiness->file_tags)) ? $fileOnedriveBusiness->file_tags : '';
+                $file_data                  = array();
+                $file_data['id']            = 0;
+                $file_data['title']         = JFile::stripExt($result['name']);
+                $file_data['file_id']       = $result['id'];
+                $file_data['ext']           = (isset($fileOnedriveBusiness->ext)) ? $fileOnedriveBusiness->ext : '';
+                $file_data['description']   = $result['description'];
+                $file_data['size']          = $result['size'];
+                $file_data['catid']         = $target_category->cloud_id;
+                $file_data['path']          = $result['path_lower'];
+                $file_data['created_time']  = date('Y-m-d H:i:s', strtotime($result['client_modified']));
+                $file_data['modified_time'] = date('Y-m-d H:i:s', strtotime($result['server_modified']));
+                $file_data['file_tags']     = $result['file_tags'];
+                $modelDropbox->save($file_data);
+
+                JFile::delete($file_current);
+            }
+        } elseif ($active_category->type === 'onedrive' && $target_category->type === 'onedrivebusiness') {
+            $onedrive = new DropfilesOneDrive();
+            $file     = $onedrive->downloadFile($id_file);
+
+            $catpath_dest = DropfilesBase::getFilesPath($id_category);
+
+            if (!file_exists($catpath_dest)) {
+                JFolder::create($catpath_dest);
+                $data = '<html><body bgcolor="#FFFFFF"></body></html>';
+                JFile::write($catpath_dest . 'index.html', $data);
+                $data = 'deny from all';
+                JFile::write($catpath_dest . '.htaccess', $data);
+            }
+
+            $newname      = uniqid() . '.' . $file->ext;
+            $file_current = $catpath_dest . $newname;
+            file_put_contents($file_current, $file->datas);
+
+            $onedriveBusiness = new DropfilesOneDriveBusiness();
+
+            $pic              = array();
+            $pic['error']     = 0;
+            $pic['name']      = $file->title . '.' . $file->ext;
+            $pic['type']      = '';
+            $pic['size']      = $file->size;
+            $f_name           = $file->title . '.' . $file->ext;
+
+            $result = $onedriveBusiness->uploadFile($f_name, $pic, $file_current, $target_category->cloud_id);
+            if ($result) {
+                $modelOnedriveBusiness              = $this->getModel('onedrivebusinessfiles');
+                $modelOnedrive                      = $this->getModel('onedrivefiles');
+                $fileOneDrive                       = $modelOnedrive->getFile($id_file);
+                $user                               = JFactory::getUser();
+                $result['file']['description']      = (isset($fileOneDrive->description)) ? $fileOneDrive->description : '';
+                $result['file']['file_tags']        = (isset($fileOneDrive->file_tags)) ? $fileOneDrive->file_tags : '';
+                $file_data                          = array();
+                $file_data['id']                    = 0;
+                $file_data['title']                 = JFile::stripExt($result['file']['name']);
+                $file_data['file_id']               = $result['file']['id'];
+                $file_data['ext']                   = (isset($fileOneDrive->ext)) ? $fileOneDrive->ext : '';
+                $file_data['description']           = $result['file']['description'];
+                $file_data['size']                  = $result['file']['size'];
+                $file_data['catid']                 = $target_category->cloud_id;
+                $file_data['path']                  = '';
+                $file_data['created_time']          = date('Y-m-d H:i:s', strtotime($result['file']['createdDateTime']));
+                $file_data['modified_time']         = date('Y-m-d H:i:s', strtotime($result['file']['lastModifiedDateTime']));
+                $file_data['file_tags']             = $result['file']['file_tags'];
+                $file_data['author']                = $user->get('id');
+                $modelOnedriveBusiness->save($file_data);
+
+                JFile::delete($file_current);
+            }
+        } elseif ($active_category->type === 'onedrivebusiness' && $target_category->type === 'onedrive') {
+            $onedriveBusiness   = new DropfilesOneDriveBusiness();
+            $file               = $onedriveBusiness->downloadFile($id_file);
+            $catpath_dest       = DropfilesBase::getFilesPath($id_category);
+
+            if (!file_exists($catpath_dest)) {
+                JFolder::create($catpath_dest);
+                $data = '<html><body bgcolor="#FFFFFF"></body></html>';
+                JFile::write($catpath_dest . 'index.html', $data);
+                $data = 'deny from all';
+                JFile::write($catpath_dest . '.htaccess', $data);
+            }
+
+            $newname       = uniqid() . '.' . $file->ext;
+            file_put_contents($catpath_dest . $newname, $file->datas);
+
+            $onedrive     = new DropfilesOneDrive();
+            $file_current  = $catpath_dest . $newname;
+
+            $pic          = array();
+            $pic['error'] = 0;
+            $pic['name']  = $file->title . '.' . $file->ext;
+            $pic['type']  = '';
+            $pic['size']  = $file->size;
+            $f_name       = $file->title . '.' . $file->ext;
+
+            $result = $onedrive->uploadFile($f_name, $pic, $file_current, $target_category->cloud_id);
+            $user   = JFactory::getUser();
+            if ($result) {
+                $modelOnedrive                      = $this->getModel('onedrivefiles');
+                $modelOnedriveBusiness              = $this->getModel('onedrivebusinessfiles');
+                $fileonedrivebusiness               = $modelOnedriveBusiness->getFile($id_file);
+                $result['file']['description']      = (isset($fileonedrivebusiness->description)) ? $fileonedrivebusiness->description : '';
+                $result['file']['file_tags']        = (isset($fileonedrivebusiness->file_tags)) ? $fileonedrivebusiness->file_tags : '';
+                $file_data                          = array();
+                $file_data['id']                    = 0;
+                $file_data['title']                 = JFile::stripExt($result['file']['name']);
+                $file_data['file_id']               = $result['file']['id'];
+                $file_data['ext']                   = (isset($file->ext)) ? $file->ext : '';
+                $file_data['description']           = $result['file']['description'];
+                $file_data['size']                  = $result['file']['size'];
+                $file_data['catid']                 = $target_category->cloud_id;
+                $file_data['path']                  = '';
+                $file_data['created_time']          = date('Y-m-d H:i:s', strtotime($result['file']['createdDateTime']));
+                $file_data['modified_time']         = date('Y-m-d H:i:s', strtotime($result['file']['lastModifiedDateTime']));
+                $file_data['file_tags']             = $result['file']['file_tags'];
+                $file_data['author']                = $user->get('id');
+                $modelOnedrive->save($file_data);
+
+
+                JFile::delete($file_current);
+            }
+        }
+        // Update files count
+        $categoriesModel = $this->getModel('Categories', 'DropfilesModel');
+        $categoriesModel->updateFilesCount();
         $this->exitStatus(true);
         JFactory::getApplication()->close();
     }
@@ -1901,8 +2866,9 @@ class DropfilesControllerFiles extends JControllerForm
     public function delete()
     {
         $return  = false;
-        $id_file = JRequest::getString('id_file', 0);
-        $id_cat  = JRequest::getInt('id_cat', 0);
+        $id_file = JFactory::getApplication()->input->getString('id_file', 0);
+        $id_cat  = JFactory::getApplication()->input->getInt('id_cat', 0);
+        $id_cate_ref  = JFactory::getApplication()->input->getInt('id_cate_ref', 0);
 
         if (!$this->allowEditOwn($id_cat)) {
             $this->exitStatus(JText::_('JLIB_APPLICATION_ERROR_SAVE_NOT_PERMITTED'));
@@ -1948,6 +2914,18 @@ class DropfilesControllerFiles extends JControllerForm
                         $modelOnedrive->deleteFile($id_file);
                     }
                     break;
+                case 'onedrivebusiness':
+                    $oneDriveBusiness       = new DropfilesOneDriveBusiness();
+                    $modelOneDriveBusiness  = $this->getModel('onedrivebusinessfiles');
+                    $file                   = $modelOneDriveBusiness->getFile($id_file);
+                    $author_user_id         = $file->author;
+                    if ($oneDriveBusiness->delete($id_file)) {
+                        $return = true;
+                        $modelOneDriveBusiness->deleteFile($id_file);
+                    }
+
+                    break;
+
                 default:
                     $model          = $this->getModel();
                     $file           = $model->getFile($id_file);
@@ -1955,20 +2933,40 @@ class DropfilesControllerFiles extends JControllerForm
                     if ($file !== false) {
                         $this->canEdit($file->catid);
                     }
-                    $file_dir = DropfilesBase::getFilesPath($file->catid);
-                    if (file_exists($file_dir . $file->file)) {
-                        JFile::delete($file_dir . $file->file);
-                    }
-                    if ($model->removePicture($file->id)) {
-                        // Index new uploaded file
-                        $ftsModel = $this->getModel('fts');
-                        $ftsModel->removeIndexRecordForPost($file->id);
-                        $return = true;
+                    if ($id_cat === $id_cate_ref) {
+                        $file_dir = DropfilesBase::getFilesPath($file->catid);
+                        if (file_exists($file_dir . $file->file)) {
+                            JFile::delete($file_dir . $file->file);
+                        }
+                        if ($model->removePicture($file->id)) {
+                            // Index new uploaded file
+                            $ftsModel = $this->getModel('fts');
+                            $ftsModel->removeIndexRecordForPost($file->id);
+                            $return = true;
+                        } else {
+                            $return = false;
+                        }
+                        break;
                     } else {
-                        $return = false;
+                        $modelC->deleteRefToFiles($id_cat, $id_file, $id_cate_ref);
+                        $file_mtc = (isset($file->file_multi_category)) ? $file->file_multi_category : '';
+                        if ($file_mtc !== '') {
+                            $file_mtc = explode(',', $file_mtc);
+                            if (is_array($file_mtc) && !empty($file_mtc)) {
+                                $delcate = array_search($id_cat, $file_mtc);
+                                if ($delcate !== false) {
+                                    unset($file_mtc[$delcate]);
+                                }
+                            }
+                            $file_mtc = implode(',', $file_mtc);
+                            $model->setMultiCategoryFile($id_file, $file_mtc);
+                            $return = true;
+                        }
                     }
-                    break;
             }
+            // Update files count
+            $categoriesModel = $this->getModel('Categories', 'DropfilesModel');
+            $categoriesModel->updateFilesCount();
             $params = JComponentHelper::getParams('com_dropfiles');
 
             $email_title = JText::_('COM_DROPFILES_EMAIL_DELETE_EVENT_TITLE');
@@ -1984,6 +2982,9 @@ class DropfilesControllerFiles extends JControllerForm
             $email_body     = str_replace('{category}', $category2->title, $email_body);
             $email_body     = str_replace('{website_url}', JUri::root(), $email_body);
             $email_body     = str_replace('{file_name}', $file->title, $email_body);
+            $uploader       = JFactory::getUser($file->author);
+            $email_body     = str_replace('{uploader_username}', $uploader->name, $email_body);
+
             $currentUser    = JFactory::getUser();
             $email_body     = str_replace('{username}', $currentUser->name, $email_body);
 
@@ -2035,7 +3036,7 @@ class DropfilesControllerFiles extends JControllerForm
      */
     public function reorder()
     {
-        $files    = JRequest::getString('order', null);
+        $files    = JFactory::getApplication()->input->getString('order', null);
         $idcat    = JFactory::getApplication()->input->getInt('idcat', false);
         $modelCat = $this->getModel('category');
         $category = $modelCat->getCategory($idcat);

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -21,9 +21,9 @@ $plugin_description_id = $plugin_description.'_id';
 ?>
 <table class="admintable" style="width:100%">
 	<tr>
-		<td class="key"><?php
+		<td class="key"><label for="hikashop_plugin_name_field"><?php
 			echo JText::_( 'HIKA_NAME' );
-		?></td>
+		?></label></td>
 		<td>
 			<input id="hikashop_plugin_name_field" type="text" name="<?php echo $this->$plugin_name_input; ?>" value="<?php echo $this->escape(@$this->element->$plugin_name); ?>" />
 <?php if(isset($this->$plugin_name_published)) {
@@ -35,7 +35,7 @@ $plugin_description_id = $plugin_description.'_id';
 	</tr>
 	<tr>
 		<td class="key"  colspan="2" width="100%">
-			<span style="float:left"><?php echo JText::_('HIKA_DESCRIPTION'); ?></span>
+			<span style="float:left"><label for="jform_articletext"><?php echo JText::_('HIKA_DESCRIPTION'); ?></label></span>
 <?php if(isset($this->$plugin_description_published)){
 	$publishedid = 'published-'.$this->$plugin_description_id;
 ?>

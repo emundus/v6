@@ -100,11 +100,12 @@ class DropfilesDocumentsHelper
                 $content = '';
         }
 
-        switch (mb_detect_encoding($content, $encodes)) {
+        $encode = mb_detect_encoding($content, $encodes);
+        switch ($encode) {
             case 'ISO-8859-1':
                 return utf8_encode($content);
             default:
-                return mb_convert_encoding($content, 'UTF-8');
+                return mb_convert_encoding($content, 'UTF-8', $encode);
         }
     }
 
@@ -199,8 +200,8 @@ class DropfilesDocumentsHelper
         $sheet      = 0;
         $tableClass = 'excel';
         $content    = $handle->dump($rowNumbers, $colLetters, $sheet, $tableClass);
-        $content    = mb_convert_encoding($content, 'UTF-8');
-        $content    = html_entity_decode($content);
+        $content    = mb_convert_encoding($content, 'UTF-8', null);
+        $content    = html_entity_decode($content, ENT_COMPAT, 'UTF-8');
 
         return $this->cleanXmlContent($content);
     }
@@ -272,7 +273,7 @@ class DropfilesDocumentsHelper
         $pdfContent = str_replace($punctuation, ' ', $pdfContent);
         $pdfContent = trim(preg_replace('/\t+/', '', $pdfContent));
         $pdfContent = preg_replace('/[[:blank:]]+/', ' ', $pdfContent);
-        $pdfContent = mb_convert_encoding($pdfContent, 'UTF-8');
+        $pdfContent = mb_convert_encoding($pdfContent, 'UTF-8', null);
 
         return $pdfContent;
     }
@@ -377,7 +378,7 @@ class DropfilesDocumentsHelper
                         $hex = substr($text, $i + 2, 2);
 
                         if ($this->rtfIsPlainText($stack[$j])) {
-                            $document .= html_entity_decode('&#' . hexdec($hex) . ';');
+                            $document .= html_entity_decode('&#' . hexdec($hex) . ';', ENT_COMPAT, 'UTF-8');
                         }
 
                         // Shift the pointer.
@@ -436,7 +437,7 @@ class DropfilesDocumentsHelper
                              * we should remove the N characters from the output stream.
                             */
                             case 'u':
-                                $toText .= html_entity_decode('&#x' . dechex($param) . ';');
+                                $toText .= html_entity_decode('&#x' . dechex($param) . ';', ENT_COMPAT, 'UTF-8');
                                 $ucDelta = @$stack[$j]['uc'];
 
                                 if ($ucDelta > 0) {
@@ -477,25 +478,25 @@ class DropfilesDocumentsHelper
 
                             // Replace some reserved characters to their html analogs.
                             case 'emdash':
-                                $toText .= html_entity_decode('&mdash;');
+                                $toText .= html_entity_decode('&mdash;', ENT_COMPAT, 'UTF-8');
                                 break;
                             case 'endash':
-                                $toText .= html_entity_decode('&ndash;');
+                                $toText .= html_entity_decode('&ndash;', ENT_COMPAT, 'UTF-8');
                                 break;
                             case 'bullet':
-                                $toText .= html_entity_decode('&#149;');
+                                $toText .= html_entity_decode('&#149;', ENT_COMPAT, 'UTF-8');
                                 break;
                             case 'lquote':
-                                $toText .= html_entity_decode('&lsquo;');
+                                $toText .= html_entity_decode('&lsquo;', ENT_COMPAT, 'UTF-8');
                                 break;
                             case 'rquote':
-                                $toText .= html_entity_decode('&rsquo;');
+                                $toText .= html_entity_decode('&rsquo;', ENT_COMPAT, 'UTF-8');
                                 break;
                             case 'ldblquote':
-                                $toText .= html_entity_decode('&laquo;');
+                                $toText .= html_entity_decode('&laquo;', ENT_COMPAT, 'UTF-8');
                                 break;
                             case 'rdblquote':
-                                $toText .= html_entity_decode('&raquo;');
+                                $toText .= html_entity_decode('&raquo;', ENT_COMPAT, 'UTF-8');
                                 break;
 
                             // Add all other to the control words stack. If a control word
@@ -641,7 +642,7 @@ class DropfilesDocumentsHelper
         }
 
         if (function_exists('mb_convert_encoding')) {
-            $content = mb_convert_encoding($content, 'UTF-8', 'UTF-8');
+            $content = mb_convert_encoding($content, 'UTF-8', null);
         }
 
         $acceptAtt = array(

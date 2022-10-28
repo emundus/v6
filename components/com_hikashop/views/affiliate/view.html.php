@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -49,7 +49,10 @@ class AffiliateViewAffiliate extends HikaShopView {
 		$this->assignRef('currencyHelper',$currencyHelper);
 		$popup = hikashop_get('helper.popup');
 		$this->assignRef('popup',$popup);
-		JHTML::_('behavior.tooltip');
+		if(HIKASHOP_J40)
+			JHtml::_('bootstrap.tooltip', '.hasTooltip', array('placement' => 'left'));
+		else
+			JHTML::_('behavior.tooltip');
 		$affiliate_plugin = hikashop_import('system','hikashopaffiliate');
 		$partner_id = (int)@$user->user_id;
 		$this->assignRef('partner_id',$partner_id);
@@ -127,8 +130,15 @@ class AffiliateViewAffiliate extends HikaShopView {
 		if ($this->params->get('menu-meta_description')) {
 			$doc->setMetadata('description', $this->params->get('menu-meta_description'));
 		}
-		if ($this->params->get('robots')) {
-			$doc->setMetadata('robots', $this->params->get('robots'));
+
+
+		$robots = $this->params->get('robots');
+		if (!$robots) {
+			$jconfig = JFactory::getConfig();
+			$robots = $jconfig->get('robots', '');
+		}
+		if($robots) {
+			$doc->setMetadata('robots', $robots);
 		}
 
 	}
