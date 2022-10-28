@@ -272,6 +272,10 @@ a.btn.btn-success:not(.btn-xs) {
     width: 100%;
 }
 
+.mod_emundus_applications___header p.em-h3 {
+ font-family: var(--applicant-title-font);
+}
+
 .mod_emundus_applications___header_desc h2 {
     margin-top: 24px;
 }
@@ -328,7 +332,13 @@ a.btn.btn-success:not(.btn-xs) {
     display: -webkit-box;
     line-height: 140%;
     min-height: 50px;
+    font-family: var(--applicant-title-font) !important;
 }
+
+.mod_emundus_applications___title:hover {
+    text-decoration: none;
+}
+
 .mod_emundus_applications__actions{
     margin-top: 8px;
     flex-direction: column;
@@ -344,6 +354,7 @@ a.btn.btn-success:not(.btn-xs) {
 
 .mod_emundus_applications__actions a:hover {
     color: #727272;
+    text-decoration: none;
 }
 
 .mod_emundus_applications__list_content--default {
