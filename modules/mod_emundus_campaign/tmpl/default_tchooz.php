@@ -86,15 +86,15 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         <hr>
         <div class="mod_emundus_campaign__list_content--default">
             <p class="em-text-neutral-900 em-h5 em-applicant-title-font"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN') ?></p><br/>
-            <p class="em-text-neutral-900 em-default-font em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT') ?></p>
-            <p class="em-text-neutral-600 em-default-font"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_2') ?></p><br/>
-            <p class="em-text-neutral-900 em-default-font em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_3') ?></p>
-            <p class="em-text-neutral-600 em-default-font"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_4') ?></p>
+            <p class="em-text-neutral-900 em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT') ?></p>
+            <p class="em-text-neutral-600"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_2') ?></p><br/>
+            <p class="em-text-neutral-900 em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_3') ?></p>
+            <p class="em-text-neutral-600"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_4') ?></p>
             <div class="em-flex-row-justify-end mod_emundus_campaign__buttons em-mt-32">
-                <button class="em-secondary-button em-w-auto em-default-font em-applicant-border-radius">
+                <button class="em-secondary-button em-w-auto em-applicant-border-radius">
                     <?php echo JText::_('MOD_EM_CAMPAIGN_REGISTRATION_URL') ?>
                 </button>
-                <button class="em-applicant-primary-button em-w-auto em-ml-8 em-default-font em-applicant-border-radius">
+                <button class="em-applicant-primary-button em-w-auto em-ml-8 em-applicant-border-radius">
                     <?php echo JText::_('MOD_EM_CAMPAIGN_LOGIN_URL') ?>
                 </button>
             </div>
