@@ -22,6 +22,7 @@ $params->def('greeting', 1);
 //Footer
 $mod_emundus_footer_texte_col_1=$params->get('mod_emundus_footer_texte_col_1', '');
 $mod_emundus_footer_texte_col_2=$params->get('mod_emundus_footer_texte_col_2', '');
+$mod_emundus_footer_display_tchooz_logo=$params->get('mod_emundus_footer_display_tchooz_logo',0);
 
 // Gdpr articles
 $mod_emundus_footer_legal_info=$params->get('mod_emundus_footer_legal_info', '1');

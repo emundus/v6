@@ -24,6 +24,17 @@
 				addfieldpath="/administrator/components/com_menus/models/fields"
 			>
 				<field
+						name="mod_emundus_footer_display_tchooz_logo"
+						type="radio"
+						label="MOD_EM_FOOTER_DISPLAY_TCHOOZ_LOGO"
+						description="MOD_EM_FOOTER_DISPLAY_TCHOOZ_LOGO"
+						class="btn-group btn-group-yesno"
+						default="0"
+						filter="integer">
+					<option value="1">JYES</option>
+					<option value="0">JNO</option>
+				</field>
+				<field
 						name="mod_emundus_footer_texte_col_1"
 						type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
 						default=""
@@ -41,7 +52,7 @@
 
 				<field class="text" label="spacer2" name="spacer2" type="spacer" hr="true"/>
 
-				<field type="spacer" name="MOD_EM_FOOTER_GDPR_ARTICLES" label="MOD_EM_FOOTER_GDPR_ARTICLES" />
+				<field type="note" name="MOD_EM_FOOTER_GDPR_ARTICLES" label="MOD_EM_FOOTER_GDPR_ARTICLES" />
 
 				<field
 						name="mod_emundus_footer_legal_info"
