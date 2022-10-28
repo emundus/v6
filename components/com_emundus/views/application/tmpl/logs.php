@@ -182,7 +182,10 @@ JFactory::getSession()->set('application_layout', 'logs');
         });
 
        $('#log-filter-btn').on('click', function() {
-            const crud = $('#crud-logs').val();
+            let crud = $('#crud-logs').val();
+
+            if(!crud) { crud = ['c','u', 'd']; }
+
             const types = $('#type-logs').val();
             const persons = $('#actors-logs').val();
 
