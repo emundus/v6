@@ -24,8 +24,15 @@ if (!empty($gantry)) {
 	$layout = 'gantry5';
 }
 
+$menu_style = $params->get('menu_style', $layout);
+$layout = $params->get('layout', $layout);
+
+if($params->get('menu_style') == 'tchooz_vertical') {
+    $layout = $menu_style;
+}
 
 $display_applicant_menu = $params->get('display_applicant_menu', 1);
+$applicant_menu = $params->get('applicant_menu', '');
 $display_tchooz = $params->get('displayTchooz', 1);
 
 $user = JFactory::getSession()->get('emundusUser');
@@ -37,13 +44,18 @@ if ((!empty($user->applicant) || !empty($user->fnum)) && $display_applicant_menu
 
 $list = array();
 $tchooz_list = array();
-if (isset($user->menutype)) {
+if (isset($user->menutype) && empty($user->applicant) || isset($user->menutype) && !empty($user->applicant) && empty($applicant_menu)) {
 	$list = modEmundusMenuHelper::getList($params);
     $current_profile = $m_profile->getProfileById($user->profile);
     if(EmundusHelperAccess::asCoordinatorAccessLevel($user->id) && $current_profile->applicant == 0) {
         $tchooz_list = modEmundusMenuHelper::getList($params,'onboardingmenu');
     }
     $help_list = modEmundusMenuHelper::getList($params,'usermenu');
+} elseif (!empty($applicant_menu)){
+    $list = modEmundusMenuHelper::getList($params,$applicant_menu);
+    $layout = 'default';
+
+    $document->addStyleSheet("modules/mod_emundusmenu/style/mod_emundusmenu_applicant.css" );
 }
 $app = JFactory::getApplication();
 $menu = $app->getMenu();
@@ -55,9 +67,5 @@ $coordinatorAccess = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
 $class_sfx = htmlspecialchars($params->get('class_sfx'));
 
 if (count($list)) {
-    if($params->get('menu_style') != 'tchooz_vertical') {
-        require JModuleHelper::getLayoutPath('mod_emundusmenu', $params->get('layout', $layout));
-    } else {
-        require JModuleHelper::getLayoutPath('mod_emundusmenu', $params->get('menu_style', $layout));
-    }
+    require JModuleHelper::getLayoutPath('mod_emundusmenu', $layout);
 }
