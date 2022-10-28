@@ -313,19 +313,18 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     }
 
     public function getJTEXTA() {
+        $response = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $getJtext = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $jinput = JFactory::getApplication()->input;
-
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $app = JFactory::getApplication();
+            $jinput = $app->input;
             $toJTEXT = $jinput->getString('toJTEXT');
 
-            $getJtext = $this->m_formbuilder->getJTEXTA($toJTEXT);
+            $response = $this->m_formbuilder->getJTEXTA($toJTEXT);
         }
-        echo json_encode((object)$getJtext);
+
+        echo json_encode((object)$response);
         exit;
     }
 
@@ -343,25 +342,24 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function getalltranslations() {
         $user = JFactory::getUser();
 
-        // Prepare languages
-        $path_to_file = basename(__FILE__) . '/../language/overrides/';
-        $path_to_files = array();
-        $Content_Folder = array();
-
-        $languages = JLanguageHelper::getLanguages();
-
-        foreach ($languages as $language) {
-            $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
-            $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
-        }
-
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $getJtext = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $jinput = JFactory::getApplication()->input;
-
             $toJTEXT = $jinput->getString('toJTEXT');
+
+            // Prepare languages
+            $path_to_file = basename(__FILE__) . '/../language/overrides/';
+            $path_to_files = array();
+            $Content_Folder = array();
+
+            $languages = JLanguageHelper::getLanguages();
+
+            foreach ($languages as $language) {
+                $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
+                $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+            }
 
             $getJtext = new stdClass();
             foreach ($languages as $language) {

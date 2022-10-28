@@ -121,14 +121,15 @@ class EmundusModelFormbuilder extends JModelList {
      * @return array
      */
     function getJTEXTA($toJTEXT) {
-        if ($toJTEXT != null) {
-            for ($i = 0; $i < count($toJTEXT); $i++) {
-                $toJTEXT[$i] = JText::_($toJTEXT[$i]);
+        $translations = [];
+
+        if (!empty($toJTEXT) && is_array($toJTEXT)) {
+            foreach($toJTEXT as $text) {
+                $translations[] = JText::_($text);
             }
-            return $toJTEXT;
-        } else {
-            return [];
         }
+
+        return $translations;
     }
 
     /**
