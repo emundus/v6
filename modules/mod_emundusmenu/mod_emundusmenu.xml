@@ -28,6 +28,16 @@
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
 				</field>
+				<field showon="display_applicant_menu:1"
+						name="applicant_menu"
+						type="sql"
+						default=""
+						label="MOD_EMUNDUSMENU_APPLICANT_MENU"
+					    description="MOD_EMUNDUSMENU_APPLICANT_MENU_DESC"
+						query="SELECT menutype AS value, title FROM #__menu_types"
+				>
+				<option value=""></option>
+				</field>
 				<field name="menu_style" type="list" default="list" label="Menu Style" 		description="The menu style">
 					<option value="list">List</option>
 					<option value="vert_indent">Legacy - Vertical</option>
