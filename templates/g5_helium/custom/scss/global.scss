@@ -924,9 +924,9 @@ body>.g-container {
 }
 .view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn.btn-primary.save-btn.sauvegarder.button.register,
 .view-form .em-formRegistrationCenter .row-fluid .span4 .button.btn.btn-primary.save-btn.sauvegarder.button.register {
-  background-color: $base-secondary-color;
+  background-color: $base-primary-color;
   color: var(--neutral-50);
-  border-color: $base-secondary-color;
+  border-color: $base-primary-color;
   text-transform: initial;
   margin-left: 0px !important;
 
@@ -934,8 +934,8 @@ body>.g-container {
   &:active,
   &:focus {
     background-color: transparent;
-    color: $base-secondary-color;
-    border-color: $base-secondary-color;
+    color: $base-primary-color;
+    border-color: $base-primary-color;
   }
 }
 
@@ -2834,16 +2834,16 @@ tr.fabrikFilterContainer{
 }
 
 #g-container-main div.login .control-group .controls button.btn.btn-primary:hover {
-  border: 1px solid $base-secondary-color;
-  background: $base-secondary-color;
+  border: 1px solid $base-primary-color;
+  background: $base-primary-color;
   color: var(--neutral-50);
   padding: 8px 12px;
 }
 
 #g-container-main div.login .control-group .controls button.btn.btn-primary {
-  border: 1px solid $base-secondary-color;
+  border: 1px solid $base-primary-color;
   background: var(--neutral-50);
-  color: $base-secondary-color;
+  color: $base-primary-color;
 }
 
   /* CONNEXION */

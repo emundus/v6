@@ -41,7 +41,7 @@ if($currentCampaign->apply_online == 0){
 }
 ?>
 
-<div class="em-grid-2-70-30 em-mt-24 em-mb-64" style="grid-gap: 64px">
+<div class="mod_emundus_campaign__grid em-mt-24 em-mb-64" style="grid-gap: 64px">
     <div>
         <?php
         $color = '#1C6EF2';

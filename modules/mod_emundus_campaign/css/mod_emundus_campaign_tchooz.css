@@ -355,6 +355,12 @@ a.em-blue-400-color:hover {
     color: #2B2B2B;
 }
 
+.mod_emundus_campaign__grid {
+    display: grid;
+    grid-gap: 0;
+    grid-template-columns: 64% 30%;
+}
+
 @media (max-width: 1080px) {
     .mod_emundus_campaign__list_items {
         grid-template-columns: repeat(1, 1fr);
@@ -382,8 +388,8 @@ a.em-blue-400-color:hover {
         flex-basis: auto !important;
     }
 
-    .em-grid-2-70-30 {
-        grid-template-columns: 100% !important;
+    .mod_emundus_campaign__grid {
+        grid-template-columns: 94% !important;
     }
 
     .mod_emundus_campaign__content .mod_emundus_campaign__pinned_campaign {
