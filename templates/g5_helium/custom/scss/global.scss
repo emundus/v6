@@ -322,7 +322,7 @@ ul {
   }
 }
 
-#users-table btn.btn-danger.pull-right.em-del-access {
+.files-board #users-table .btn.btn-danger.pull-right.em-del-access {
   border-radius: var(--em-border-radius) !important;
 }
 
@@ -3658,6 +3658,7 @@ h1.em-titre-connectez-vous {
         border-color: var(--night-blue);
         margin-right: 5px;
         color: var(--neutral-50);
+        border-radius: var(--em-border-radius) !important;
 
         &:hover,
         &:active,
