@@ -2924,13 +2924,13 @@ $(document).ready(function() {
                                 '<input class="em-ex-check" type="checkbox" value="comment" name="em-ex-comment" id="em-ex-comment" style="max-height:20px"/>' +
                                 '<label for="em-ex-comment">'+Joomla.JText._('COM_EMUNDUS_COMMENT')+'</label> <br/>' +
                                 '<input class="em-ex-check" type="checkbox" value="tags" name="em-ex-tags" id="em-ex-tags" style="max-height:20px"/>' +
-                                '<label for="em-ex-tags">'+Joomla.JText._('JTAG')+'</label> <br/>' +
+                                '<label for="em-ex-tags">'+Joomla.JText._('COM_EMUNDUS_TAGS')+'</label> <br/>' +
                                 '<input class="em-ex-check" type="checkbox" value="group-assoc" name="em-ex-group" id="em-ex-group" style="max-height: 20px;"/>' +
                                 '<label for="em-ex-group">'+Joomla.JText._('COM_EMUNDUS_ASSOCIATED_GROUPS')+'</label> <br/>' +
                                 '<input class="em-ex-check" type="checkbox" value="user-assoc" name="em-ex-user" id="em-ex-user" style="max-height: 20px;"/>' +
                                 '<label for="em-ex-user">'+Joomla.JText._('COM_EMUNDUS_ASSOCIATED_USERS')+'</label> <br/>' +
                                 '<input class="em-ex-check" type="checkbox" value="overall" name="em-ex-overall" id="em-ex-overall" style="max-height: 20px;"/>' +
-                                '<label for="em-ex-overall">'+Joomla.JText._('EVALUATION_OVERALL')+'</label> <br/>' +
+                                '<label for="em-ex-overall">'+Joomla.JText._('COM_EMUNDUS_EVALUATIONS_OVERALL')+'</label> <br/>' +
                                 '</div></div></div>')
 
                             $('#data').append( '<div id="methode">'+

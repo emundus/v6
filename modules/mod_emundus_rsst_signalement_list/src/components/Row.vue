@@ -166,17 +166,17 @@ export default {
         background: #F2F2F3;
 
         &.done {
-            background: #DFF5E9;
+            background: #80d5a7;
         }
 
         &.todo {
             color: black;
-            background: #FFEEEE;
+            background: #f28d8d;
         }
 
         &.inprogress {
 
-            background: #FFFBDB;
+            background: #ffeb47;
             color: black
         }
 
