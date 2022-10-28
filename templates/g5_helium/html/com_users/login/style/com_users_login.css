@@ -219,6 +219,11 @@ h1.em-titre-connectez-vous {
     text-align: center;
 }
 
+.page-header p.em-h3 {
+    font-family: var(--applicant-title-font);
+}
+
+
 .header-right a.btn.btn-danger.connexion , a.btn.btn-danger.inscription  {
     font-weight: 300;
     line-height: inherit;

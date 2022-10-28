@@ -1369,16 +1369,16 @@ body>.g-container {
   }
 
   button.btn.btn-primary.validate {
-    background-color: $base-secondary-color;
-    border-color: $base-secondary-color;
+    background-color: $base-primary-color;
+    border-color: $base-primary-color;
     color: var(--neutral-50);
 
     &:hover,
     &:active,
     &:focus {
       background-color: transparent;
-      color: $base-secondary-color;
-      border-color: $base-secondary-color;
+      color: $base-primary-color;
+      border-color: $base-primary-color;
     }
   }
 
