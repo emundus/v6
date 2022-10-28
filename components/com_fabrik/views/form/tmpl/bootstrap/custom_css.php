@@ -526,7 +526,7 @@ form#member-profile .form-horizontal .control-label {
     margin-top: 0;
     margin-bottom: 64px;
     border-radius: 16px;
-    margin-top: 117px;
+    margin-top: 68px;
     padding: 80px 64px 80px 64px;
 }
 
