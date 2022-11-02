@@ -8,7 +8,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             var self = this;
 
             this.parent(element, options);
-            this.setPlugin = 'fabrikEmundusreferent_telecomparis';
+            this.setPlugin = 'fabrikEmundusreferent';
             this.container = jQuery(this.container);
 
             this.observer = document.id(element);
@@ -23,7 +23,6 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             if (this.observer && $(this.btn) != null) {
                 $(this.btn).addEventListener('click', function () {
                     var v = this.observer.get('value');
-
                     var email = document.getElementById(options.email).value;
                     var attachment_id = this.options.attachment_id;
                     var fnum = document.querySelector('[id$="___fnum"]').value;
@@ -61,9 +60,11 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                         }
                     });
 
-                    $(this.btn).disabled = false;
-                    this.myAjax.send();
+                    $(this.btn).disabled = true;
+                    $(this.btn).value = options.sending + " <" + email + ">";
+                    $(this.loader).setStyle('display', '');
 
+                    this.myAjax.send();
                 }.bind(this));
 
             } else {
@@ -84,57 +85,9 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             json = JSON.decode(json);
             if (json.result == "1") {
                 $(this.observer).value = parseInt($(this.observer).value) + 1;
-
-                // remove the error message (if any) //
-                jQuery('.emundusreferent_error').remove();
-
-                // get the parent of this button
-                var parent = $(this.btn).closest('div').id;
-                jQuery('#messageResponse').last().remove();
-                jQuery('#' + parent).append("<div id='messageResponse'>" + json.message + "</div>");
-
-                // get the fieldset id (e.g: group507)
-                var fieldset = $(this.btn).closest('fieldset').id;
-
-                // find sollicitation element if exists
-                var sollicitationDiv = jQuery('#' + fieldset).find('div[class*=sollicitation_reference_]');
-
-                // find sent emails table if exists
-                var sentEmailTbl = jQuery('#' + fieldset).find('table[id=sollicitation_table]');
-
-                // find the last element of the current fieldset
-                var lastElt = jQuery('#' + fieldset).last();
-
-                // set table header
-                var sentEmailTblHeader =
-                    '<div>' +
-                    '<table id="sollicitation_table" class="table-striped" style="width:100%; border: none !important; display:inline-block">' +
-                    '<tr>' +
-                    '<th style="border-bottom: solid; background:unset !important">' + Joomla.JText._('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_SENT_REFERENCE') + '</th>' +
-                    '<th style="border-bottom: solid; background:unset !important">' + Joomla.JText._('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_SENT_DATE')                 + '</th>' +
-                    '<th style="border-bottom: solid; background:unset !important">' + Joomla.JText._('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_SENT_TO')                   + '</th>' +
-                    '<th style="border-bottom: solid; background:unset !important">' + Joomla.JText._('PLG_ELEMENT_EMUNDUSREFERENT_SOLLICITATION_SEND_STATUS')       + '</th>' +
-                    '</tr>' +
-                    '</table>' +
-                    '</div>';
-
-                if(sollicitationDiv.length > 0) {
-                    if(sentEmailTbl.length === 0) { sollicitationDiv.append(sentEmailTblHeader); }
-                } else {
-                    // append table after the last element
-                    if(sentEmailTbl.length === 0) { lastElt.append(sentEmailTblHeader); }
-                }
-
-                // reupdate table
-                sentEmailTbl = jQuery('#' + fieldset).find('table[id=sollicitation_table]');
-                sentEmailTbl.append(
-                    '<tr style="border: none !important; font-size: 15px">' +
-                    '<td style="border:none !important; width: 300px">' + json.email + '</td>' +
-                    '<td style="border:none !important">' + new Date().toLocaleDateString("fr-FR") + '</td>' +
-                    '<td style="border:none !important">' + new Date().toLocaleTimeString() + '</td>' +
-                    '<td style="border: none !important; text-align:center"><i class="large circle inverted question icon" style="color:darkorange; background-color: none"></i></td>' +
-                    '</tr>'
-                );
+                $(this.response).innerHTML = json.message;
+                $(this.error).innerHTML = "";
+                $(this.options.email).setStyle('border', '2px solid #B0BB1E');
             } else {
                 $(this.error).innerHTML = json.message;
                 $(this.btn).disabled = false;
