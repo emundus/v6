@@ -78,7 +78,7 @@
           <tr>
             <th id="check-th"><input class="attachment-check" type="checkbox" @change="updateAllCheckedAttachments"/></th>
             <th id="name" @click="orderBy('value')">
-              {{ translate("NAME") }}
+              {{ translate("COM_EMUNDUS_ATTACHMENTS_NAME") }}
               <span v-if="sort.orderBy == 'value' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
               <span v-if="sort.orderBy == 'value' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
@@ -88,7 +88,7 @@
               <span v-if="sort.orderBy == 'timedate' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th id="desc" class="desc" @click="orderBy('upload_description')">
-              {{ translate("DESCRIPTION") }}
+              {{ translate("COM_EMUNDUS_ATTACHMENTS_DESCRIPTION") }}
               <span v-if="sort.orderBy == 'upload_description' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
               <span v-if="sort.orderBy == 'upload_description' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
@@ -379,7 +379,6 @@ export default {
     updateAttachment() {
       this.resetOrder();
       this.getAttachments();
-      this.$modal.hide("edit");
       this.selectedAttachment = {};
       this.checkedAttachments = [];
     },

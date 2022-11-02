@@ -412,4 +412,8 @@ export default {
   width: calc(100% - 75px) !important;
   margin-left: auto;
 }
+
+#add-form-next-campaign{
+  width: 70%;
+}
 </style>

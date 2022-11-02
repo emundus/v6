@@ -31,14 +31,13 @@ class plgEmundusCustom_event_handler extends JPlugin {
 
         if (!empty($event_handlers)) {
             foreach ($event_handlers as $event_handler){
-                $events[] = $event_handler->event;
-                $codes[] = $event_handler->code;
+                if($event_handler->event == $event){
+                    $events[] = $event_handler->event;
+                    $codes[] = $event_handler->code;
+                }
             }
         }
 
-        if (!empty($events)) {
-            $events = array_values(array_intersect($events, [$event]));
-        }
         $returned_values = [];
 
         if (method_exists($this->hEvents, $event)) {

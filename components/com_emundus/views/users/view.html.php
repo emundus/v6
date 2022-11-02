@@ -130,6 +130,12 @@ class EmundusViewUsers extends JViewLegacy {
 		$groups = $m_users->getGroups();
 		$this->assignRef('groups', $groups);
 	}
+	private function _loadAffectIntranetForm()
+	{
+		$m_users = new EmundusModelUsers();
+		$groups = $m_users->getLascalaIntranetGroups();
+		$this->assignRef('groups', $groups);
+	}
 	private function _loadRightsForm()
 	{
 		$m_users = new EmundusModelUsers();
@@ -180,6 +186,9 @@ class EmundusViewUsers extends JViewLegacy {
 				break;
 			case 'affectgroup':
 				$this->_loadAffectForm();
+				break;
+			case 'affectintranetlascala':
+				$this->_loadAffectIntranetForm();
 				break;
 			case 'showrights':
 				$this->_loadRightsForm();

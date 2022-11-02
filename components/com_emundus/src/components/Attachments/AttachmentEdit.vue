@@ -11,6 +11,7 @@
               type="text"
               v-model="attachmentDescription"
               :disabled="!canUpdate"
+              @focusout="saveChanges"
           >
 					</textarea>
         </div>
@@ -52,6 +53,7 @@
               name="can_be_viewed"
               v-model="attachmentCanBeViewed"
               :disabled="!canUpdate"
+              @click="saveChanges"
           />
         </div>
         <div class="input-group">
@@ -61,6 +63,7 @@
               name="can_be_deleted"
               v-model="attachmentCanBeDeleted"
               :disabled="!canUpdate"
+              @click="saveChanges"
           />
         </div>
       </div>
@@ -98,11 +101,9 @@
 				  menu_open
 			  </span>
 		  </div>
-		  <div class="actions">
-			  <button v-if="canUpdate" @click="saveChanges" class="em-primary-button">
-				  {{ translate("COM_EMUNDUS_ATTACHMENTS_SAVE") }}
-			  </button>
-		  </div>
+		  <!--<div class="actions">
+			  <button v-if="canUpdate" @click="saveChanges" class="em-primary-button">{{ translate("COM_EMUNDUS_ATTACHMENTS_SAVE") }}</button>
+		  </div>-->
 	  </div>
     <div v-if="error" class="error-msg">{{ errorMessage }}</div>
   </div>
@@ -199,17 +200,17 @@ export default {
             id: this.attachment.aid,
           });
         }
-
-        this.$emit("saveChanges");
       } else {
         this.showError(response.msg);
       }
     },
     updateFile(event) {
       this.file = event.target.files[0];
+			this.saveChanges();
     },
     updateAttachmentStatus(event) {
       this.attachmentIsValidated = event.target.value;
+	    this.saveChanges();
     },
     showError(error) {
       this.error = true;

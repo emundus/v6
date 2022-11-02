@@ -268,6 +268,20 @@ class EmundusControllersettings extends JControllerLegacy {
         exit;
     }
 
+    public function getlogo() {
+        $logo_module = JModuleHelper::getModuleById('90');
+
+        $regex = '/logo_custom.{3,4}[png+|jpeg+|jpg+|svg+]/m';
+
+        preg_match($regex, $logo_module->content, $matches, PREG_OFFSET_CAPTURE, 0);
+
+        $tab = array('status' => 1, 'msg' => JText::_('LOGO_FOUND'), 'filename' => $matches[0][0]);
+
+        echo json_encode((object)$tab);
+        exit;
+
+    }
+
     public function updatelogo() {
         $user = JFactory::getUser();
 
@@ -280,21 +294,25 @@ class EmundusControllersettings extends JControllerLegacy {
 
             if(isset($image)) {
                 $target_dir = "images/custom/";
-                unlink($target_dir . 'logo_custom.png');
+                $ext = pathinfo($image['name'], PATHINFO_EXTENSION);
+                unlink($target_dir . 'logo_custom.' . $ext);
 
-                $target_file = $target_dir . basename('logo_custom.png');
+                $target_file = $target_dir . basename('logo_custom.' . $ext);
 
                 $logo_module = JModuleHelper::getModuleById('90');
 
                 if (move_uploaded_file($image["tmp_name"], $target_file)) {
-                    $new_content = str_replace('logo.png','logo_custom.png',$logo_module->content);
+                    $regex = '/(logo.(png+|jpeg+|jpg+|svg+))|(logo_custom.(png+|jpeg+|jpg+|svg+))/m';
+
+                    $new_content = preg_replace($regex,'logo_custom.' . $ext, $logo_module->content);
+
                     $this->m_settings->updateLogo($new_content);
-                    $tab = array('status' => 1, 'msg' => JText::_('LOGO_UPDATED'));
+                    $tab = array('status' => 1, 'msg' => JText::_('LOGO_UPDATED'), 'filename' => 'logo_custom.' . $ext);
                 } else {
-                    $tab = array('status' => 0, 'msg' => JText::_('LOGO_NOT_UPDATED'));
+                    $tab = array('status' => 0, 'msg' => JText::_('LOGO_NOT_UPDATED'), 'filename' => '');
                 }
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('LOGO_NOT_UPDATED'));
+                $tab = array('status' => 0, 'msg' => JText::_('LOGO_NOT_UPDATED'), 'filename' => '');
             }
             echo json_encode((object)$tab);
             exit;
