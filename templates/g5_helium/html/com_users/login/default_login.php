@@ -145,18 +145,15 @@ $eMConfig = JComponentHelper::getParams('com_emundus');
                 method: 'post',
             }).then((response) => {
                 if (response.ok) {
-                    response.json().then(data => ({
-                        data: data,
-                        status: response.status
-                    })).then(res => {
-                        if(res.data.username !== ''){
-                            document.getElementsByName('username')[0].value = res.data.username;
-                        }
-
-                        document.getElementById('login_form').submit();
-                    })
+                    return response.json();
                 }
-            });
+            }).then((res) => {
+                if(res.username !== ''){
+                    document.getElementsByName('username')[0].value = res.username;
+                }
+
+                document.getElementById('login_form').submit();
+            })
         });
     });
 </script>
