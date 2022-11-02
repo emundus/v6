@@ -89,6 +89,14 @@ ksort($applications);
     <?php endif; ?>
 </div>
 
+<?php if ($mod_em_applications_show_search && sizeof($applications) > 0): ?>
+    <div class="em-searchbar em-flex-row-justify-end em-mt-12">
+        <label for="searchword" style="display: inline-block">
+            <input name="searchword" type="text" id="applications_searchbar" class="form-control" placeholder="<?php echo JText::_('MOD_EM_APPLICATIONS_SEARCH') ?>">
+        </label>
+    </div>
+<?php endif; ?>
+
 <div class="em-mt-32">
     <?php if (sizeof($applications) == 0) : ?>
         <hr>
@@ -151,7 +159,7 @@ ksort($applications);
                     }
 
                     ?>
-                    <div class="row em-border-neutral-300 mod_emundus_applications___content_app em-pointer" onclick="openFile(event,'<?php echo $first_page_url ?>')">
+                    <div class="row em-border-neutral-300 mod_emundus_applications___content_app em-pointer" id="application_content<?php echo $application->fnum ?>" onclick="openFile(event,'<?php echo $first_page_url ?>')">
                         <div>
                             <div class="em-flex-row mod_emundus_applications___content_text">
                                 <?php if ($show_fnum) : ?>
@@ -214,8 +222,8 @@ ksort($applications);
 
 
                             </div>
-                            <a href="<?= JRoute::_($first_page_url); ?>" class="em-h6 mod_emundus_applications___title">
-                                <?= ($is_admission &&  $add_admission_prefix)?JText::_('COM_EMUNDUS_INSCRIPTION').' - '.$application->label:$application->label; ?>
+                            <a href="<?= JRoute::_($first_page_url); ?>" class="em-h6 mod_emundus_applications___title" id="application_title_<?php echo $application->fnum ?>">
+                                <span><?= ($is_admission &&  $add_admission_prefix)?JText::_('COM_EMUNDUS_INSCRIPTION').' - '.$application->label:$application->label; ?></span>
                             </a>
                         </div>
 
@@ -261,15 +269,15 @@ ksort($applications);
                             <div>
                                 <?php if(empty($visible_status)) : ?>
                                     <label class="em-text-neutral-600"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_STATUS'); ?> :</label>
-                                    <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row">
+                                    <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row" id="application_status_<?php echo $application->fnum ?>">
                                         <span class="mod_emundus_applications___circle em-mr-8 label-<?= $application->class; ?>"></span>
-                                        <span><?= $application->value; ?></span>
+                                        <span class="mod_emundus_applications___status_label"><?= $application->value; ?></span>
                                     </div>
                                 <?php elseif (in_array($application->status,$visible_status)) :?>
                                     <label class="em-text-neutral-600"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_STATUS'); ?> :</label>
-                                    <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row">
+                                    <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row" id="application_status_<?php echo $application->fnum ?>">
                                         <span class="mod_emundus_applications___circle em-mr-8 label-<?= $application->class; ?>"></span>
-                                        <span><?= $application->value; ?></span>
+                                        <span class="mod_emundus_applications___status_label"><?= $application->value; ?></span>
                                     </div>
                                 <?php endif; ?>
                                 <?php if(!empty($application->order_status)): ?>
@@ -363,6 +371,17 @@ ksort($applications);
     }
 </script>
 <script>
+    function delay(callback, ms) {
+        var timer = 0;
+        return function() {
+            var context = this, args = arguments;
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+                callback.apply(context, args);
+            }, ms || 0);
+        };
+    }
+
     jQuery(function () {
         jQuery('[data-toggle="tooltip"]').tooltip()
     })
@@ -401,4 +420,56 @@ ksort($applications);
             window.location.href = url;
         }
     }
+
+    $('#applications_searchbar').keyup(delay(function (e) {
+        let search = e.target.value;
+
+        if(search !== '') {
+            let campaigns = document.querySelectorAll('.mod_emundus_applications___title span');
+            let status = document.querySelectorAll('.mod_emundus_applications___status_label');
+            let fnums_to_hide = [];
+            let fnums_to_show = [];
+
+            for (let campaign of campaigns) {
+                let fnum = campaign.parentElement.id.split('_');
+                fnum = fnum[fnum.length - 1];
+
+                if(campaign.textContent.normalize('NFD').replace(/\p{Diacritic}/gu, "").toLowerCase().includes(search.normalize('NFD').replace(/\p{Diacritic}/gu, "").toLowerCase()) === false){
+                    fnums_to_hide.push(fnum);
+                } else {
+                    fnums_to_show.push(fnum);
+                }
+            }
+
+            for (let step of status) {
+                let fnum = step.parentElement.id.split('_');
+                fnum = fnum[fnum.length - 1];
+                console.log(fnums_to_show.includes(fnum.toString()));
+
+                if(step.textContent.normalize('NFD').replace(/\p{Diacritic}/gu, "").toLowerCase().includes(search.normalize('NFD').replace(/\p{Diacritic}/gu, "").toLowerCase()) === false){
+                    if(fnums_to_show.indexOf(fnum) !== -1) {
+                        fnums_to_hide.push(fnum);
+                    }
+                } else {
+                    fnums_to_show.push(fnum);
+                    if(fnums_to_hide.indexOf(fnum) !== -1) {
+                        fnums_to_hide.splice(fnums_to_hide.indexOf(fnum),1);
+                    }
+                }
+            }
+
+            fnums_to_hide.forEach((fnum) => {
+                document.getElementById('application_content' + fnum).style.display = 'none';
+            })
+            fnums_to_show.forEach((fnum) => {
+                document.getElementById('application_content' + fnum).style.display = 'block';
+            })
+        } else {
+            for (let application of document.querySelectorAll("div[id^='application_content']")) {
+                application.style.display = 'block';
+            }
+
+        }
+
+    }, 500));
 </script>

@@ -1433,6 +1433,18 @@ button.em-swal-delete-button{
   font-family: var(--applicant-default-font);
 }
 
+/** SEARCHBAR **/
+.em-searchbar label input[type="text"].form-control{
+  margin-bottom: 0 !important;
+  height: 40px;
+  border-radius: 8px;
+  width: 300px;
+  padding: 8px 16px;
+  background-image: url('/images/emundus/searchbar/search.svg') !important;
+  background-repeat: no-repeat !important;
+  background-position: 96% 50% !important;
+}
+
 /**
   MEDIA QUERIES
 **/

@@ -369,7 +369,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             </div>
 
             <?php if ($mod_em_campaign_show_search): ?>
-                <div class="mod_emundus_campaign__searchbar">
+                <div class="em-searchbar">
                     <label for="searchword" style="display: inline-block">
                         <input name="searchword" type="text" class="form-control"
                                placeholder="<?php echo JText::_('MOD_EM_CAMPAIGN_SEARCH') ?>" <?php if (isset($searchword) && !empty($searchword)) {
