@@ -8,8 +8,8 @@
 					:class="{selected: -1 == selected}"
 					@click="selected = -1;"
 			>
-				<div class="card em-pointer em-flex-row">
-					<span class="material-icons-outlined">add</span>
+				<div class="em-shadow-cards em-pointer em-flex-row">
+					<span class="add_circle material-icons-outlined">add_circle</span>
 				</div>
 				<p class="em-mt-8 em-p-4" contenteditable="true"> {{ page.label[shortDefaultLang] }}</p>
 			</div>
@@ -24,14 +24,16 @@
 						:class="{selected: model.id == selected}"
 						@click="selected = model.id"
 				>
-					<div class="card model-preview em-pointer">
+					<div class="em-shadow-cards model-preview em-pointer">
 						<span></span>
 					</div>
 					<p class="em-mt-8 em-p-4"> {{ model.label[shortDefaultLang] }}</p>
 				</div>
 			</div>
 		</section>
-		<button class="em-primary-button em-w-33" @click="createPage">{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_CREATE_SAVE') }}</button>
+		<div class="actions em-flex-row-justify-end em-w-100">
+			<button class="em-primary-button em-w-33" @click="createPage">{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_CREATE_SAVE') }}</button>
+		</div>
 	</div>
 </template>
 
@@ -91,16 +93,17 @@ export default {
 #form-builder-create-page {
 	background-color: #E3E5E8;
 
-	.card-wrapper {
-		width: 150px;
+	.add_circle {
+		color: #20835F;
+	}
 
-		.card {
+	.card-wrapper {
+		width: 198px;
+
+		.em-shadow-cards {
 			background-color: white;
-			height: 188px;
 			width: 150px;
 			border: 2px solid transparent;
-			border-radius: 4px;
-			transition: all .3s;
 		}
 
 		p {
@@ -111,7 +114,7 @@ export default {
 		}
 
 		&.selected {
-			.card {
+			.em-shadow-cards {
 				border: 2px solid #20835F;
 			}
 
