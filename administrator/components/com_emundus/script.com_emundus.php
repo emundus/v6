@@ -232,6 +232,10 @@ class com_emundusInstallerScript
                 EmundusHelperUpdate::addJoomlaMenu($datas);
             }
 
+            if (version_compare($cache_version, '1.34.0', '<') || $firstrun) {
+                $succeed['campaign_workflow'] = EmundusHelperUpdate::addProgramToCampaignWorkflow();
+            }
+
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
         }
 
