@@ -166,7 +166,7 @@
 
 				<field name="show_fnum"
 					   type="radio"
-					   default="1"
+					   default="0"
 					   label="MOD_EMUNDUS_APPLICATIONS_SHOW_FNUM"
 					   description="">
 					<option value="0">JNO</option>

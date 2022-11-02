@@ -60,7 +60,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $id_profiles = explode(',', $id_profiles);
 
     $description = JText::_($params->get('description', ''));
-    $show_fnum = $params->get('show_fnum', 1);
+    $show_fnum = $params->get('show_fnum', 0);
     $show_add_application = $params->get('show_add_application', 1);
     $show_show_campaigns = $params->get('show_show_campaigns', 0);
     $campaigns_list_url = $params->get('show_campaigns_url', 'liste-des-campagnes');

@@ -336,10 +336,42 @@ class EmundusModelModules extends JModelList {
             $db->setQuery($query);
             $db->execute();
 
-            EmundusHelperUpdate::installExtension('MOD_EMUNDUS_BANNER_XML','mod_emundus_banner','{"name":"MOD_EMUNDUS_BANNER_XML","type":"module","creationDate":"October 2022","author":"HUBINET Brice, GRANDIN Laura","copyright":"Copyright (C) 2022 eMundus. All rights reserved.","authorEmail":"contact@emundus.fr","authorUrl":"www.emundus.fr","version":"1.34.0","description":"MOD_EMUNDUS_BANNER_XML_DESCRIPTION","group":"","filename":"mod_emundus_banner"}','module');
-
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $eMConfig->set('allow_pinned_campaign','1');
+
+            EmundusHelperUpdate::installExtension('MOD_EMUNDUS_BANNER_XML','mod_emundus_banner','{"name":"MOD_EMUNDUS_BANNER_XML","type":"module","creationDate":"October 2022","author":"HUBINET Brice, GRANDIN Laura","copyright":"Copyright (C) 2022 eMundus. All rights reserved.","authorEmail":"contact@emundus.fr","authorUrl":"www.emundus.fr","version":"1.34.0","description":"MOD_EMUNDUS_BANNER_XML_DESCRIPTION","group":"","filename":"mod_emundus_banner"}','module');
+
+            $query->clear()
+                ->select('id, params')
+                ->from($db->quoteName('#__modules'))
+                ->where($db->quoteName('module') . ' like ' . $db->quote('mod_emundus_applications'))
+                ->andWhere($db->quoteName('published') . ' = 1');
+            $db->setQuery($query);
+            $modules = $db->loadObjectList();
+
+            foreach ($modules as $module){
+                $params = json_decode($module->params);
+                if($params->layout == '_:default'){
+                    $params->layout = '_:tchooz';
+
+                    $query->clear()
+                        ->update($db->quoteName('#__modules'))
+                        ->set($db->quoteName('showtitle') . ' = 0')
+                        ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($module->id));
+                    $db->setQuery($query);
+                    $db->execute();
+
+                    $query->clear()
+                        ->update($db->quoteName('#__falang_content'))
+                        ->set($db->quoteName('value') . ' = ' . $db->quote(json_encode($params)))
+                        ->where($db->quoteName('reference_table') . ' like ' . $db->quote('modules'))
+                        ->andWhere($db->quoteName('reference_field') . ' like ' . $db->quote('params'))
+                        ->andWhere($db->quoteName('reference_id') . ' like ' . $db->quote($module->id));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+            }
         } catch (Exception $e) {
             return false;
         }
