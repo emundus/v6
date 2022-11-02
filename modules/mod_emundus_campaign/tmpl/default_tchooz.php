@@ -226,21 +226,21 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             <div>
                 <div class="em-flex-row">
                     <!-- BUTTONS -->
-                    <div id="mod_emundus_campaign__header_sort" class="mod_emundus_campaign__header_filter em-border-neutral-400 em-neutral-800-color em-pointer" onclick="displaySort()">
+                    <div id="mod_emundus_campaign__header_sort" class="mod_emundus_campaign__header_filter em-border-neutral-400 em-neutral-800-color em-pointer em-mr-8" onclick="displaySort()">
                         <span class="material-icons-outlined">swap_vert</span>
                         <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_SORT') ?></span>
                     </div>
                     <?php if ($mod_em_campaign_show_filters == 1 && !empty($mod_em_campaign_show_filters_list)) : ?>
-                    <div id="mod_emundus_campaign__header_filter" class="mod_emundus_campaign__header_filter em-border-neutral-400 em-neutral-800-color em-pointer em-ml-8" onclick="displayFilters()">
+                    <div id="mod_emundus_campaign__header_filter" class="mod_emundus_campaign__header_filter em-border-neutral-400 em-neutral-800-color em-pointer em-mr-8" onclick="displayFilters()">
                         <span class="material-icons-outlined">filter_list</span>
                         <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER') ?></span>
-                        <span id="mod_emundus_campaign__header_filter_count" class="mod_emundus_campaign__header_filter_count em-ml-8"></span>
+                        <span id="mod_emundus_campaign__header_filter_count" class="mod_emundus_campaign__header_filter_count em-mr-8"></span>
                     </div>
                     <?php endif; ?>
 
                     <!-- TAGS ENABLED -->
                     <?php if ($mod_em_campaign_order == 'start_date' && $order == 'end_date') : ?>
-                        <div class="mod_emundus_campaign__header_filter em-ml-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
+                        <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
                             <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_END_DATE_NEAR') ?></span>
                             <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer" onclick="deleteSort(['order_date','order_time'])">
                                 <span class="material-icons-outlined">close</span>
@@ -248,7 +248,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                         </div>
                     <?php endif; ?>
                     <?php if ($mod_em_campaign_order == 'end_date' && $order == 'start_date') : ?>
-                        <div class="mod_emundus_campaign__header_filter em-ml-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
+                        <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
                             <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_START_DATE_NEAR') ?></span>
                             <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer" onclick="deleteSort(['order_date','order_time'])">
                                 <span class="material-icons-outlined">close</span>
@@ -256,7 +256,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                         </div>
                     <?php endif; ?>
                     <?php if ($group_by == 'program') : ?>
-                        <div class="mod_emundus_campaign__header_filter em-ml-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
+                        <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
                             <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_PROGRAM') ?></span>
                             <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer" onclick="deleteSort(['group_by'])">
                                 <span class="material-icons-outlined">close</span>
@@ -264,7 +264,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                         </div>
                     <?php endif; ?>
                     <?php if ($group_by == 'category') : ?>
-                        <div class="mod_emundus_campaign__header_filter em-ml-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
+                        <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
                             <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_CATEGORY') ?></span>
                             <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer" onclick="deleteSort(['group_by'])">
                                 <span class="material-icons-outlined">close</span>

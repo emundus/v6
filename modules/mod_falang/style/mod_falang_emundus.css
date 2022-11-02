@@ -32,6 +32,10 @@ div.mod-languages a{
     color: black;
 }
 
+div.mod-languages form[name="lang"]{
+    margin: 0 !important;
+}
+
 .view-programme .caret {
     margin-top: 0px !important;
 }
@@ -105,4 +109,10 @@ div.advanced-dropdown span.caret{
 .mod_falang_emundus___other_languages_selected{
     border-left: 3px solid #1C6EF2;
     color: black !important;
+}
+
+@media screen and (max-width: 767px) {
+    div.mod-languages form[name="lang"]{
+        margin: 10px 0 !important;
+    }
 }

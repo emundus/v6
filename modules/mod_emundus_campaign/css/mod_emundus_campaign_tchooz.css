@@ -409,6 +409,10 @@ a.em-blue-400-color:hover {
     .mod_emundus_campaign__buttons button:nth-child(2) {
         margin-top: 16px;
     }
+
+    .mod_emundus_campaign__header_filter{
+      margin-top: 4px;
+    }
 }
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
@@ -416,7 +420,8 @@ a.em-blue-400-color:hover {
         max-width: 680px;
     }
 
-    .mod_emundus_campaign__content .mod_emundus_campaign__pinned_campaign {
+    .mod_emundus_campaign__content .mod_emundus_campaign__list_content,
+    .mod_emundus_campaign__header {
         width: 94%;
     }
 }

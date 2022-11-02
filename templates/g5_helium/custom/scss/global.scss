@@ -4625,6 +4625,7 @@ button.swal2-cancel.goback-btn {
       display: flex;
       justify-content: center;
       align-items: center;
+      max-height: 100%;
 
       .g-content {
         display: flex;
@@ -5200,6 +5201,21 @@ button.swal2-cancel.goback-btn {
     }
   }
 
+@media all and (max-width: 767px) {
+  #g-navigation .g-container #header-c {
+    justify-content: center;
+  }
+
+  .em-container-footer-cand .em-flex-row {
+    justify-content: center;
+  }
+
+  .em-container-footer-cand .em-flex-row a {
+    text-align: center;
+  }
+
+}
+
 @media screen and (min-width: 480px) and (max-width: 959px) {
 
   /* FOOTER */
@@ -5215,9 +5231,7 @@ button.swal2-cancel.goback-btn {
   /* HEADER */
 
   #g-navigation .g-container #header-c {
-   /* justify-content: center;*/
-
-    .g-content .platform-content:nth-child(1) {
+     .g-content .platform-content:nth-child(1) {
       margin: 0 !important;
     }
   }
@@ -5231,6 +5245,18 @@ button.swal2-cancel.goback-btn {
 
 
   @media screen and (min-width: 768px) and (max-width: 959px) {
+
+    #g-navigation .g-container #header-c {
+      justify-content: flex-end;
+    }
+
+    footer .em-container-footer-cand .em-flex-row  {
+      justify-content: center;
+
+      a {
+        text-align: center;
+      }
+    }
 
     /* SINGLE CAMPAIGN */
 
