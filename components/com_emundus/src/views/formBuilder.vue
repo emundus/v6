@@ -135,7 +135,7 @@
         </aside>
       </div>
 	    <div v-else-if="principalContainer == 'create-page'">
-		    <form-builder-create-page :profile_id="profile_id" @close="principalContainer == 'default'">
+		    <form-builder-create-page :profile_id="profile_id" @close="principalContainer = 'default'">
 
 		    </form-builder-create-page>
 	    </div>

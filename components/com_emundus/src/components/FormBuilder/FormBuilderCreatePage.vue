@@ -1,6 +1,6 @@
 <template>
 	<div id="form-builder-create-page" class="em-w-100 em-p-32">
-		<h3>{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE') }}</h3>
+		<h3 class="em-mb-4">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE') }}</h3>
 		<p>{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_INTRO') }}</p>
 		<section id="new-page">
 			<div
@@ -14,14 +14,15 @@
 				<p class="em-mt-8 em-p-4" contenteditable="true"> {{ page.label[shortDefaultLang] }}</p>
 			</div>
 		</section>
-		<h4>{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_FROM_MODEL') }}</h4>
+		<h4 class="em-mb-4 em-mt-4">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_FROM_MODEL') }}</h4>
 		<section id="models" class="em-flex-row">
 			<p v-if="models.length < 1">{{ translate('COM_EMUNDUS_FORM_BUILDER_EMPTY_PAGE_MODELS') }}</p>
-			<div class="em-mt-16 em-mr-16 em-mb-16">
+			<div class="em-flex-row">
 				<div
 						v-for="model in models" :key="model.id"
 						class="em-mr-16 card-wrapper"
 						:class="{selected: model.id == selected}"
+						:title="model.label[shortDefaultLang]"
 						@click="selected = model.id"
 				>
 					<div class="em-shadow-cards model-preview em-pointer">
@@ -32,7 +33,8 @@
 			</div>
 		</section>
 		<div class="actions em-flex-row-justify-end em-w-100">
-			<button class="em-primary-button em-w-33" @click="createPage">{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_CREATE_SAVE') }}</button>
+			<button class="em-secondary-button em-w-max-content" @click="close">{{ translate('COM_EMUNDUS_FORM_BUILDER_CANCEL') }}</button>
+			<button class="em-primary-button em-w-max-content em-ml-8" @click="createPage">{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_CREATE_SAVE') }}</button>
 		</div>
 	</div>
 </template>
@@ -78,12 +80,34 @@ export default {
 			});
 		},
 		createPage() {
-			formBuilderService.addPage({...this.page, modelid: this.selected}).then(response => {
+			let model_form_id = -1;
+			if (this.selected > 0) {
+				const found_model = this.models.find((model) => {
+					return model.id == this.selected
+				});
+
+				if (found_model) {
+					model_form_id = found_model.form_id;
+					this.page.label = found_model.label;
+					this.page.intro = found_model.intro;
+				}
+			}
+
+			const data = {...this.page, modelid: model_form_id};
+			console.log(data);
+			return;
+
+
+			formBuilderService.addPage(data).then(response => {
 				if (!response.status) {
 
 				}
-				this.$emit('close');
+				this.close();
 			});
+		},
+		close()
+		{
+			this.$emit('close');
 		}
 	}
 }
@@ -91,6 +115,8 @@ export default {
 
 <style lang="scss" scoped>
 #form-builder-create-page {
+	height: calc(100vh - 42px);
+	overflow-y: auto;
 	background-color: #E3E5E8;
 
 	.add_circle {
@@ -111,6 +137,9 @@ export default {
 			border-radius: 4px;
 			padding: 4px;
 			transition: all .3s;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 
 		&.selected {
