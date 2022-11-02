@@ -95,12 +95,12 @@ export default {
 
 			const data = {...this.page, modelid: model_form_id};
 			console.log(data);
-			return;
-
 
 			formBuilderService.addPage(data).then(response => {
-				if (!response.status) {
+				console.log(response);
 
+
+				if (!response.status) {
 				}
 				this.close();
 			});
