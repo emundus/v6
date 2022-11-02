@@ -122,9 +122,10 @@ class PlgFabrik_FormEmundusReferentLetterTelecomparis extends plgFabrik_Form
 		$email_tmpl = $this->getParam('email_tmpl', 'referent_letter');
 
 		// Récupération des données du mail
-		$query = 'SELECT id, subject, emailfrom, name, message
-                FROM #__emundus_setup_emails
-                WHERE lbl="'.$email_tmpl.'"';
+        $query = 'SELECT est.id, est.subject, est.emailfrom, est.name, est.message, eet.Template
+                FROM #__emundus_setup_emails as est
+                LEFT JOIN #__emundus_email_templates AS eet ON est.email_tmpl = eet.id
+                WHERE est.lbl="'.$email_tmpl.'"';
 		$db->setQuery($query);
 		$obj = $db->loadObjectList();
 
@@ -222,6 +223,10 @@ class PlgFabrik_FormEmundusReferentLetterTelecomparis extends plgFabrik_Form
 
                         $body = $m_emails->setTagsFabrik($body, [$fnum_detail['fnum']]);
                         $subject = $m_emails->setTagsFabrik($subject, [$fnum_detail['fnum']]);
+
+                        if($obj[0]->Template) {
+                            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $obj[0]->Template);
+                        }
 
                         $to = array($recipient['email']);
 
