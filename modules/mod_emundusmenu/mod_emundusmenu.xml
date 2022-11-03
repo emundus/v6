@@ -4,7 +4,7 @@
 	version="2.5"
 	client="site"
 	method="upgrade">
-	<name>mod_emundusmenu</name>
+	<name>MOD_EMUNDUS_MENU_XML</name>
     <author>Benjamin Rivalland</author>
     <creationDate>June 2015</creationDate>
     <copyright>Copyright (C) 2015 eMundus. All rights reserved.</copyright>
@@ -12,7 +12,7 @@
     <authorEmail>benjamin@emundus.fr</authorEmail>
     <authorUrl>www.emundus.fr</authorUrl>
     <version>6.0</version>
-	<description>Displays application menu depending on user profile.</description>
+	<description>MOD_EMUNDUS_MENU_XML_DESC</description>
 	<files>
 		<filename module="mod_menu">mod_menu.php</filename>
 		<folder>tmpl</folder>

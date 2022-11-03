@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 	<extension type="module" version ="2.5.0" method="upgrade">
-		<name>EmundusCalendarCreateTimeslots</name>
+		<name>MOD_EM_CALENDAR_CREATE_TIMESLOTS_XML</name>
         <author>Hugo Moracchini</author>
         <creationDate>Febuary 2018</creationDate>
         <copyright>Copyright (C) 2018 eMundus. All rights reserved.</copyright>

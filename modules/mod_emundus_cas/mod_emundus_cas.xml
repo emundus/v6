@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="3.1" client="site" method="upgrade">
-	<name>mod_emundus_cas</name>
+	<name>MOD_EMUNDUS_CAS_LOGIN_XML</name>
 	<author>Joomla! Project</author>
 	<creationDate>July 2006</creationDate>
 	<copyright>Copyright (C) 2005 - 2020 Open Source Matters. All rights reserved.</copyright>

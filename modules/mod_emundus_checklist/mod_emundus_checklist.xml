@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="2.5.0">
-	<name>Emundus Checklist</name>
+	<name>MOD_EMUNDUS_CHECKLIST_SYS_XML</name>
     <author>Benjamin Rivalland</author>
     <creationDate>April 2016</creationDate>
     <copyright>Copyright (C) 2016 eMundus. All rights reserved.</copyright>
@@ -8,7 +8,7 @@
     <authorEmail>benjamin@emundus.fr</authorEmail>
     <authorUrl>www.emundus.fr</authorUrl>
     <version>6.0</version>
-	<description>Checklist of filled part of the application.</description>
+	<description>MOD_EMUNDUS_CHECKLIST_SYS_XML_DESC</description>
 	<files>
 		<filename module="mod_emundus_checklist">mod_emundus_checklist.php</filename>
 		<filename module="mod_emundus_checklist">index.html</filename>

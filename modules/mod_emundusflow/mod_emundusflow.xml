@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="2.5.0">
-	<name>EmundusFlow</name>
+	<name>MOD_EMUNDUS_FLOW_SYS_XML</name>
     <author>Benjamin Rivalland</author>
     <creationDate>June 2015</creationDate>
     <copyright>Copyright (C) 2015 eMundus. All rights reserved.</copyright>
@@ -8,7 +8,7 @@
     <authorEmail>benjamin@emundus.fr</authorEmail>
     <authorUrl>www.emundus.fr</authorUrl>
     <version>6.0</version>
-	<description>Gives to the applicant an overview of his application.</description>
+	<description>MOD_EMUNDUS_FLOW_SYS_XML_DESC</description>
 	<files>
 		<filename module="mod_emundusflow">mod_emundusflow.php</filename>
 		<filename module="mod_emundusflow">index.html</filename>
