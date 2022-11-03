@@ -384,6 +384,8 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
             $modelid = $jinput->getInt('modelid');
             $template = $jinput->getString('template');
 
+            $label = json_decode($label, true);
+            $intro = json_decode($intro, true);
             if ($modelid != -1) {
                 $response = $this->m_formbuilder->createMenuFromTemplate($label, $intro, $modelid, $prid);
             } else {
