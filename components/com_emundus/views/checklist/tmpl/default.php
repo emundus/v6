@@ -126,7 +126,7 @@ if (!empty($this->custom_title)) :?>
             } else {
                 $class = 'need_ok';
             }
-            $div = '<fieldset id="a'.$attachment->id.'" class="em-fieldset-attachment">
+            $div = '<div id="a'.$attachment->id.'" style="position: relative;top: -65px;"></div><fieldset id="a'.$attachment->id.'" class="em-fieldset-attachment em-mt-16">
                 <legend id="l'.$attachment->id.'" class="'.$class.'">
                     <a class="'.$class.'">'.$attachment->value .'</a>';
             $div .= '</legend>
@@ -577,7 +577,7 @@ if (!empty($this->custom_title)) :?>
       <div class="col-md-<?= (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_mand != '') {
-           echo '<div id="attachment_list_mand" class="em-container-attachments"><h1 class="em-titleDocMand">'.JText::_('COM_EMUNDUS_ATTACHMENTS_MANDATORY_DOCUMENTS').'</h1>'.$attachment_list_mand.'</div>';
+           echo '<div id="attachment_list_mand" class="em-container-attachments em-mt-8"><p class="em-h3 em-mt-8">'.JText::_('COM_EMUNDUS_ATTACHMENTS_MANDATORY_DOCUMENTS').'</p>'.$attachment_list_mand.'</div>';
         }
     ?>
       </div>
@@ -679,10 +679,10 @@ function OnSubmitForm() {
 
 
 
-var hash = window.location.hash;
+/*var hash = window.location.hash;
 if (hash != '') {
     $(hash).addClass("ui warning message");
-}
+}*/
 
 function processSelectedFiles(fileInput) {
     var files = fileInput.files;
