@@ -28,7 +28,7 @@ defined('_JEXEC') or die;
         </a>
     <?php endif; ?>
 </div>
-<?php if (!empty($applications)) : ?>
+<?php if (!empty($applications)) : $count = 0; ?>
     <div class="<?= $moduleclass_sfx ?>">
     <?php foreach ($applications as $application) : ?>
 
@@ -41,6 +41,7 @@ defined('_JEXEC') or die;
         }
 
         if($display_app) {
+            $count += 1;
             $state = $application->published;
             $confirm_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&confirm=1';
             $first_page_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
@@ -209,6 +210,7 @@ defined('_JEXEC') or die;
         <?php endif; ?>
         <?php } ?>
     <?php endforeach; ?>
+        <?php if($count === 0) { echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE');} ?>
 </div>
 <?php else :
     echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE');
