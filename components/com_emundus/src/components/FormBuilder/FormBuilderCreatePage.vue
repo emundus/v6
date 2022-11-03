@@ -5,7 +5,7 @@
 		<section id="new-page">
 			<div
 					class="em-mt-16 em-mr-16 em-mb-16 card-wrapper"
-					:class="{selected: -1 == selected}"
+					:class="{selected: -1 === selected}"
 					@click="selected = -1;"
 			>
 				<div class="em-shadow-cards em-pointer em-flex-row">
@@ -21,13 +21,15 @@
 				<div
 						v-for="model in models" :key="model.id"
 						class="em-mr-16 card-wrapper"
-						:class="{selected: model.id == selected}"
+						:class="{selected: model.id === selected}"
 						:title="model.label[shortDefaultLang]"
 						@click="selected = model.id"
 				>
-					<div class="em-shadow-cards model-preview em-pointer">
-						<span></span>
-					</div>
+					<form-builder-preview-form
+							:form_id="model.form_id"
+							class="em-shadow-cards model-preview em-pointer"
+					>
+					</form-builder-preview-form>
 					<p class="em-mt-8 em-p-4"> {{ model.label[shortDefaultLang] }}</p>
 				</div>
 			</div>
@@ -40,10 +42,14 @@
 </template>
 
 <script>
+import FormBuilderPreviewForm from "./FormBuilderPreviewForm";
 import formBuilderService from '../../services/formbuilder';
 
 export default {
 	name: "FormBuilderCreatePage.vue",
+	components: {
+		FormBuilderPreviewForm
+	},
 	props: {
 		profile_id: {
 			type: Number,
@@ -83,7 +89,7 @@ export default {
 			let model_form_id = -1;
 			if (this.selected > 0) {
 				const found_model = this.models.find((model) => {
-					return model.id == this.selected
+					return model.id === this.selected
 				});
 
 				if (found_model) {
@@ -94,12 +100,7 @@ export default {
 			}
 
 			const data = {...this.page, modelid: model_form_id};
-			console.log(data);
-
 			formBuilderService.addPage(data).then(response => {
-				console.log(response);
-
-
 				if (!response.status) {
 				}
 				this.close();
@@ -158,6 +159,11 @@ export default {
 		.material-icons-outlined {
 			margin: auto;
 		}
+	}
+
+	.model-preview {
+		padding: 8px !important;
+		overflow: hidden;
 	}
 }
 </style>
