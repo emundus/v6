@@ -1257,6 +1257,21 @@ input:focus + .em-slider {
   padding: 32px;
 }
 
+/** SKELETON **/
+.skeleton {
+  animation: skeleton-loading 1s linear infinite alternate;
+  border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-color: hsl(200, 20%, 80%);
+  }
+  100% {
+    background-color: hsl(200, 20%, 95%);
+  }
+}
+
 /** SWAL CUSTOM CLASSES **/
 .em-swal-title{
   margin: 8px 8px 32px 8px !important;

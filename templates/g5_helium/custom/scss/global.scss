@@ -513,7 +513,7 @@ p,
 .view-details #g-container-main {
   .page-header {
     background: transparent;
-    margin: 32px 0 0 32px;
+    margin: 32px 32px 0 32px;
   }
 }
 
@@ -2929,7 +2929,7 @@ h1.em-titre-connectez-vous {
 
   /************************ GESTIONNAIRE - COORDINATOR *********************/
 
-.view-form:not(.applicant-form):not(.com_emundus) main#g-main-mainbody {
+.view-form:not(.emundus-form):not(.com_emundus):not(.applicant-form) main#g-main-mainbody {
   width: 100%;
 }
 
@@ -4181,6 +4181,21 @@ button.swal2-cancel.goback-btn {
     }
 
     /* INTRO FORMULAIRE */
+    .emundus-form {
+      margin-bottom: 64px;
+      border-radius: 16px !important;
+      background: #FFFFFF;
+      border: 1px solid #EDEDED;
+      box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+
+      p:first-of-type:not(.accept_terms),
+      p.form-intro {
+        @include body-16;
+        //color: var(--neutral-600);
+        margin-top: 8px;
+      }
+    }
+
     .applicant-form {
       margin-bottom: 64px;
       border-radius: 16px !important;

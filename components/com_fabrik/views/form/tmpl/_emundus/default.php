@@ -29,8 +29,9 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 	</div>
 <?php
 endif;
-
-if ($this->params->get('show-title', 1)) :?>
+?>
+<div class="emundus-form">
+<?php if ($this->params->get('show-title', 1)) :?>
 <div class="page-header">
     <h1><?php $title = explode('-', $form->label); echo !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0])); ?></h1>
 </div>
@@ -70,7 +71,7 @@ foreach ($this->groups as $group) :
 	<fieldset class="<?php echo $group->class; ?>" id="group<?php echo $group->id;?>" style="<?php echo $group->css;?>">
 		<?php
 		if ($group->showLegend) :?>
-			<legend class="legend"><?php echo $group->title;?></legend>
+			<span class="legend"><?php echo $group->title;?></span>
 		<?php
 		endif;
 
@@ -114,20 +115,46 @@ echo FabrikHelperHTML::keepalive();
 if ($pageClass !== '') :
 	echo '</div>';
 endif; ?>
+</div>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // Set sidebar sticky depends on height of header
         const headerNav = document.getElementById('g-navigation');
-
-        if (headerNav) {
+        const sidebar = document.querySelector('.view-form #g-sidebar');
+        if (headerNav && sidebar) {
             document.querySelector('.view-form #g-sidebar').style.top = headerNav.offsetHeight + 'px';
         }
 
-        /*requirejs(['fab/fabrik'], function () {
-            Fabrik.addEvent('fabrik.form.loaded', function (form) {
-                console.log('here');
-                form.addElementFX('fabrik_trigger_group_group761', 'slide out');
-            });
-        });*/
+        // Remove applicant-form class if needed
+        const applicantFormClass = document.querySelector('div.applicant-form');
+        if(applicantFormClass){
+            applicantFormClass.classList.remove('applicant-form');
+        }
+
+        // Load skeleton
+        jQuery('#g-page-surround').after('<div class="em-page-loader" id="em-dimmer"></div>');
+        let header = document.querySelector('.page-header');
+        if(header) {
+            document.querySelector('.page-header h1').style.opacity = 0;
+            header.classList.add('skeleton');
+        }
+        let grouptitle = document.querySelectorAll('.fabrikGroup .legend');
+        for (title of grouptitle){
+            title.style.opacity = 0;
+        }
+        let groupintro = document.querySelector('.groupintro');
+        if (groupintro) {
+            groupintro.style.opacity = 0;
+        }
+
+        let elements = document.querySelectorAll('.fabrikGroup .row-fluid');
+        let elements_fields = document.querySelectorAll('.fabrikElementContainer');
+        for (field of elements_fields){
+            field.style.opacity = 0;
+        }
+        for (elt of elements){
+            elt.classList.add('skeleton');
+        }
     });
 </script>

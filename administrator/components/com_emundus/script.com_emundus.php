@@ -232,6 +232,9 @@ class com_emundusInstallerScript
                 EmundusHelperUpdate::addJoomlaMenu($datas);
             }
             if (version_compare($cache_version, '1.34.0', '<')) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
                 EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns','pinned','TINYINT',1);
                 EmundusHelperUpdate::addColumn('jos_emundus_setup_programmes','color','VARCHAR',10);
 
@@ -239,9 +242,6 @@ class com_emundusInstallerScript
 
                 $moduleid = EmundusHelperUpdate::installModule('eMundus - Back button','<p><a class="em-back-button em-pointer" href="/"><span class="material-icons em-mr-4">navigate_before</span>Retour à la page d\'accueil</a></p>','header-a','mod_custom','{"prepare_content":0,"backgroundimage":"","layout":"_:default","moduleclass_sfx":"","cache":1,"cache_time":900,"cachemode":"static","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}',9);
                 if(!empty($moduleid)) {
-                    $db = JFactory::getDbo();
-                    $query = $db->getQuery(true);
-
                     $query->select('id')
                         ->from($db->quoteName('#__menu'))
                         ->where($db->quoteName('link') . ' IN (' . $db->quote('index.php?option=com_users&view=login').',' . $db->quote('index.php?option=com_fabrik&view=form&formid=307') . ',' . $db->quote('index.php?option=com_users&view=reset') . ')');
@@ -268,6 +268,12 @@ class com_emundusInstallerScript
                     }
                 }
 
+                $query->clear()
+                    ->update($db->quoteName('#__fabrik_forms'))
+                    ->set($db->quoteName('form_template') . ' = ' . $db->quote('_emundus'))
+                    ->where($db->quoteName('form_template') . ' = ' . $db->quote('bootstrap'));
+                $db->setQuery($query);
+                $db->execute();
             }
 
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
