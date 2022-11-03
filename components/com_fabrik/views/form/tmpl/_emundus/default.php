@@ -113,4 +113,21 @@ echo FabrikHelperHTML::keepalive();
 
 if ($pageClass !== '') :
 	echo '</div>';
-endif;
+endif; ?>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const headerNav = document.getElementById('g-navigation');
+
+        if (headerNav) {
+            document.querySelector('.view-form #g-sidebar').style.top = headerNav.offsetHeight + 'px';
+        }
+
+        /*requirejs(['fab/fabrik'], function () {
+            Fabrik.addEvent('fabrik.form.loaded', function (form) {
+                console.log('here');
+                form.addElementFX('fabrik_trigger_group_group761', 'slide out');
+            });
+        });*/
+    });
+</script>
