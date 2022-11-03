@@ -321,6 +321,7 @@ class EmundusModelFiles extends JModelLegacy
      * @throws Exception
      */
     public function _buildContentOrderBy() {
+        $order = ' ORDER BY jecc.date_submitted DESC, jecc.date_time DESC';
         $menu = @JFactory::getApplication()->getMenu();
         $current_menu = $menu->getActive();
         $menu_params = $menu->getParams(@$current_menu->id);
@@ -370,13 +371,9 @@ class EmundusModelFiles extends JModelLegacy
             if (strpos($filter_order, 'date_time') === false) {
                 $order .= ', jecc.date_time DESC ';
             }
-
-            return $order;
-        } else {
-            return ' ORDER BY jecc.date_submitted DESC, jecc.date_time DESC';
         }
 
-        return '';
+        return $order;
     }
 
     /**
