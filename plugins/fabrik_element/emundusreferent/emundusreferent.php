@@ -218,6 +218,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 	public function onAjax_getOptions() {
 
 		include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
+        include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
 
 		$baseurl = JURI::root();
 		$db = JFactory::getDBO();
@@ -231,6 +232,10 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		$attachment_id = $jinput->post->getInt('attachment_id');
 		$form_recommend = $jinput->post->getInt('form_recommend');
 		$fnum = $jinput->post->get('fnum');
+
+        //// GET REFEENCE FIRSTNAME, REFERENCE LASTNAME ////
+        $firstname = ucfirst($jinput->post->getString('firstname'));
+        $lastname = ucfirst($jinput->post->getString('lastname'));
 
 		if (empty($recipient)) {
 			$response = array("result" => 0, "message"=>'<span class="emundusreferent_error">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_MISSING_ERROR').'</span>');
@@ -298,8 +303,8 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 			// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
 			$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid='.$form_recommend.'&keyid='.$key.'&sid='.$this->_user->id;
 
-			$patterns = array('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[UPLOAD_URL\]/', '/\[PROGRAMME_NAME\]/');
-			$replacements = array($this->_user->id, $this->_user->name, $this->_user->email, $link_upload, $fnum_detail['label']);
+			$patterns = array('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[UPLOAD_URL\]/', '/\[PROGRAMME_NAME\]/','/\[REFERENCE_FIRSTNAME\]/', '/\[REFERENCE_LASTNAME\]/');
+			$replacements = array($this->_user->id, $this->_user->name, $this->_user->email, $link_upload, $fnum_detail['label'],$firstname, $lastname);
 
 			$subject = preg_replace($patterns, $replacements, $obj->subject);
 			$body = $obj->message;
@@ -308,6 +313,16 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 				$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $obj->Template);
 			}
 			$body = preg_replace($patterns, $replacements, $body);
+
+            //// set tags and set fabrik tags for email subject + email body ////
+            $m_emails = new EmundusModelEmails();
+            $tags = $m_emails->setTags($fnum_detail['applicant_id'], ['FNUM' => $fnum], $fnum, '', $obj);
+
+            $subject = $m_emails->setTagsFabrik($subject, [$fnum]);
+            $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
+
+            $body = $m_emails->setTagsFabrik($body, [$fnum]);
+            $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
 			// Mail
 			$from = $obj->emailfrom;

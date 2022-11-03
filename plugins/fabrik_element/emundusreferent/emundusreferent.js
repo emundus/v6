@@ -28,6 +28,16 @@
 					var attachment_id = this.options.attachment_id;
 					var fnum = document.querySelector('[id$="___fnum"]').value;
 
+					// element id of email
+					var email_selector = options.email;
+
+					// parent group of email_selector
+					var parent_group = jQuery('#' + email_selector).closest('fieldset').attr('id');
+
+					// get the firstname, lastname of referent for each group
+					var firstname = jQuery('#' + parent_group ).find('[id^=jos_emundus_references___First_Name_]').val();
+					var lastname  = jQuery('#' + parent_group ).find('[id^=jos_emundus_references___Last_Name_]').val();
+
 					if (email == "") {
 						$(this.options.email).setStyle('border', '4px solid #ff0000');
 						this.endAjax();
@@ -40,7 +50,10 @@
 							'attachment_id': attachment_id,
 							'email': email,
 							'formid': this.options.formid,
-							'fnum': fnum
+							'fnum': fnum,
+							'firstname': firstname,
+							'lastname': lastname,
+							'form_recommend': this.options.form_recommend
 						},
 						onComplete: response => {
 							self.ajaxComplete(response);
