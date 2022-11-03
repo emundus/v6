@@ -1,0 +1,242 @@
+<?php
+/**
+ * @package     Joomla.Site
+ * @subpackage  mod_finder
+ *
+ * @copyright   (C) 2011 Open Source Matters, Inc. <https://www.joomla.org>
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ */
+
+defined('_JEXEC') or die;
+
+JHtml::addIncludePath(JPATH_SITE . '/components/com_finder/helpers/html');
+
+JHtml::_('jquery.framework');
+JHtml::_('formbehavior.chosen');
+JHtml::_('bootstrap.tooltip');
+
+// Load the smart search component language file.
+$lang = JFactory::getLanguage();
+$lang->load('com_finder', JPATH_SITE);
+
+$suffix = $params->get('moduleclass_sfx');
+$output = '<input type="text" name="q" id="mod-finder-searchword' . $module->id . '" class="search-query input-medium" size="'
+	. $params->get('field_size', 20) . '" value="' . htmlspecialchars(JFactory::getApplication()->input->get('q', '', 'string'), ENT_COMPAT, 'UTF-8') . '"'
+	. ' placeholder="' . JText::_('MOD_FINDER_SEARCH_VALUE') . '"/>';
+
+$showLabel  = $params->get('show_label', 1);
+$labelClass = (!$showLabel ? 'element-invisible ' : '') . 'finder' . $suffix;
+$label      = '<label for="mod-finder-searchword' . $module->id . '" class="' . $labelClass . '">' . $params->get('alt_label', JText::_('JSEARCH_FILTER_SUBMIT')) . '</label>';
+
+switch ($params->get('label_pos', 'left'))
+{
+	case 'top' :
+		$output = $label . '<br />' . $output;
+		break;
+
+	case 'bottom' :
+		$output .= '<br />' . $label;
+		break;
+
+	case 'right' :
+		$output .= $label;
+		break;
+
+	case 'left' :
+	default :
+		$output = $label . $output;
+		break;
+}
+
+if ($params->get('show_button', 0))
+{
+	$button = '<button class="btn btn-primary hasTooltip ' . $suffix . ' finder' . $suffix . '" type="submit" title="' . JText::_('MOD_FINDER_SEARCH_BUTTON') . '"><span class="icon-search icon-white"></span>' . JText::_('JSEARCH_FILTER_SUBMIT') . '</button>';
+
+	switch ($params->get('button_pos', 'left'))
+	{
+		case 'top' :
+			$output = $button . '<br />' . $output;
+			break;
+
+		case 'bottom' :
+			$output .= '<br />' . $button;
+			break;
+
+		case 'right' :
+			$output .= $button;
+			break;
+
+		case 'left' :
+		default :
+			$output = $button . $output;
+			break;
+	}
+}
+
+JHtml::_('stylesheet', 'com_finder/finder.css', array('version' => 'auto', 'relative' => true));
+/*
+ * This segment of code sets up the autocompleter.
+ */
+if ($params->get('show_autosuggest', 1))
+{
+	JHtml::_('script', 'jui/jquery.autocomplete.min.js', array('version' => 'auto', 'relative' => true));
+}
+?>
+
+<style>
+    .mod-finder-modal{
+        position: fixed;
+        left: 50%;
+        transform: translate(-50%, 0);
+        top: 20%;
+        width: 45%;
+        box-shadow: rgba(0, 0, 0, 0.5) 0px 16px 70px;
+        max-width: 640px;
+        padding: 20px;
+        border-radius: 8px;
+        background: #f0f8ff;
+        display: none;
+        z-index: 100;
+    }
+    .mod-finder-modal input{
+        width: 100%;
+        border-radius: 8px;
+        border: unset;
+        background: #f0f8ff;
+        margin-bottom: 0;
+    }
+    .mod-finder-modal input:hover,.mod-finder-modal input:focus{
+        border: unset;
+    }
+    .autocomplete-suggestions{
+        position: fixed !important;
+        width: 100% !important;
+        max-height: 640px !important;
+        z-index: 9999;
+        left: 0 !important;
+        margin-top: 5px;
+        background: #f0f8ff !important;
+        border: unset;
+        border-top: solid 1px;
+        padding: 10px 4px;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        box-shadow: unset;
+    }
+    .autocomplete-suggestion{
+        border-radius: 4px;
+        padding: 8px;
+    }
+    .autocomplete-selected{
+        background: #e1e1e1;
+    }
+</style>
+
+<div class="mod-finder-modal" id="mod_finder_modal">
+    <input type="search" placeholder="<?php echo  JText::_('MOD_FINDER_SEARCH_VALUE') ?>" id="mod-finder-searchword<?php echo $module->id ?>" />
+</div>
+
+<script>
+    let keysPressed = [];
+
+    function delay(callback, ms) {
+        var timer = 0;
+        return function() {
+            var context = this, args = arguments;
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+                callback.apply(context, args);
+            }, ms || 0);
+        };
+    }
+
+    document.addEventListener('click', function (e) {
+        let spotlight = document.getElementById('mod_finder_modal');
+        let clickInsideModule = false;
+
+        if(spotlight.style.display === 'block') {
+            e.composedPath().forEach((pathElement) => {
+                if (pathElement.id == "mod_finder_modal" || pathElement.id == "mod-finder-searchword<?php echo $module->id ?>") {
+                    clickInsideModule = true;
+                }
+            });
+
+            if (!clickInsideModule) {
+                spotlight.style.display = 'none';
+            }
+        }
+    });
+
+    window.addEventListener('keydown', (e) => {
+        e.stopImmediatePropagation();
+        keysPressed[e.key] = true;
+
+        if ((keysPressed['Control'] || keysPressed['Meta']) && e.key === 'k') {
+            e.preventDefault();
+            document.getElementsByClassName('mod-finder-modal')[0].style.display = 'block'
+            document.getElementById('mod-finder-searchword<?php echo $module->id ?>').focus();
+            keysPressed = [];
+        } else if(keysPressed['Escape']) {
+            e.preventDefault();
+            document.getElementsByClassName('mod-finder-modal')[0].style.display = 'none'
+        }
+    });
+
+    jQuery(document).ready(function() {
+        var value, searchword = jQuery('#mod-finder-searchword<?php echo $module->id ?>');
+
+        // Get the current value.
+        value = searchword.val();
+
+        // If the current value equals the default value, clear it.
+        searchword.on('focus', function () {
+            var el = jQuery(this);
+
+            if (el.val() === '<?php echo JText::_('MOD_FINDER_SEARCH_VALUE', true) ?>')
+            {
+                el.val('');
+            }
+        });
+
+        // If the current value is empty, set the previous value.
+        searchword.on('blur', function () {
+            var el = jQuery(this);
+
+            if (!el.val()) {
+                el.val(value);
+            }
+        });
+
+        jQuery('#mod-finder-searchform<?php echo $module->id ?>').on('submit', function (e) {
+            e.stopPropagation();
+            var advanced = jQuery('#mod-finder-advanced<?php echo $module->id ?>');
+
+            // Disable select boxes with no value selected.
+            if (advanced.length) {
+                advanced.find('select').each(function (index, el) {
+                    var el = jQuery(el);
+
+                    if (!el.val()) {
+                        el.attr('disabled', 'disabled');
+                    }
+                });
+            }
+        });
+
+        <?php if ($params->get('show_autosuggest', 1)) : ?>
+        /*jQuery('#mod-finder-searchword<?php echo $module->id ?>').keyup(delay(function (e) {
+        }, 500));*/
+        // TODO : Create a tmpl to display results as suggestion
+        var suggest = jQuery('#mod-finder-searchword<?php echo $module->id ?>').autocomplete({
+            appendTo: '#mod_finder_modal',
+            serviceUrl: '<?php echo JRoute::_($route); ?>',
+            paramName: 'q',
+            minChars: 1,
+            maxHeight: 400,
+            width: 300,
+            zIndex: 9999,
+            deferRequestBy: 500
+        });
+        <?php endif; ?>
+    });
+</script>
