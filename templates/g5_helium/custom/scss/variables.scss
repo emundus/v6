@@ -576,7 +576,7 @@ $font:'Inter', sans-serif;
 
   /* LABEL */
   .fabrikLabel {
-    @include body-16-medium;
+    @include body-14-medium;
     color: var(--neutral-800);
     margin-bottom: 0 !important;
     padding-top: 0 !important;
