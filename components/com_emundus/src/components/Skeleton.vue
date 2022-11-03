@@ -36,7 +36,7 @@ export default {
 	position: relative;
 	overflow: hidden;
 	vertical-align: middle;
-	background-color: #DDDBDD;
+	background-color: #DDDBDD !important;
 	transition: all .3s;
 
 	&::after {

@@ -4,36 +4,39 @@
 		<p>{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_INTRO') }}</p>
 		<section id="new-page">
 			<div
-					class="em-mt-16 em-mr-16 em-mb-16 card-wrapper"
+					class="em-mt-16 em-mb-16 card-wrapper"
 					:class="{selected: -1 === selected}"
 					@click="selected = -1;"
 			>
-				<div class="em-shadow-cards em-pointer em-flex-row">
+				<div class="card em-shadow-cards em-pointer em-flex-row">
 					<span class="add_circle material-icons-outlined">add_circle</span>
 				</div>
-				<p class="em-mt-8 em-p-4" contenteditable="true"> {{ page.label[shortDefaultLang] }}</p>
+				<p class="em-p-4" contenteditable="true"> {{ page.label[shortDefaultLang] }}</p>
 			</div>
 		</section>
-		<h4 class="em-mb-4 em-mt-4">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_FROM_MODEL') }}</h4>
+		<div class="separator em-mt-32">
+			<p class="line-head em-mt-4 em-p-8">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_FROM_MODEL') }}</p>
+			<div class="line"></div>
+		</div>
 		<section id="models" class="em-flex-row">
 			<p v-if="models.length < 1 && !loading">{{ translate('COM_EMUNDUS_FORM_BUILDER_EMPTY_PAGE_MODELS') }}</p>
 			<div v-if="!loading" class="em-flex-row">
 				<div
 						v-for="model in models" :key="model.id"
-						class="em-mr-16 card-wrapper"
+						class="card-wrapper"
 						:class="{selected: model.id === selected}"
 						:title="model.label[shortDefaultLang]"
 						@click="selected = model.id"
 				>
-					<form-builder-preview-form :form_id="model.form_id" class="em-shadow-cards model-preview em-pointer">
+					<form-builder-preview-form :form_id="model.form_id" class="card em-shadow-cards model-preview em-pointer">
 					</form-builder-preview-form>
-					<p class="em-mt-8 em-p-4"> {{ model.label[shortDefaultLang] }}</p>
+					<p class="em-p-4"> {{ model.label[shortDefaultLang] }}</p>
 				</div>
 			</div>
 			<div v-else class="em-flex-row">
-				<div v-for="i in 5" :key="i" class="em-mr-16 em-flex-column">
-					<skeleton width="150px" height="200px" classes="em-shadow-cards model-preview"></skeleton>
-					<skeleton width="190px" height="20px" classes="em-mt-8 em-p-4"></skeleton>
+				<div v-for="i in 5" :key="i" class="em-flex-column card-wrapper">
+					<skeleton width="150px" height="200px" classes="card em-shadow-cards model-preview"></skeleton>
+					<skeleton width="150px" height="20px" classes="em-p-4"></skeleton>
 				</div>
 			</div>
 		</section>
@@ -126,19 +129,37 @@ export default {
 #form-builder-create-page {
 	height: calc(100vh - 42px);
 	overflow-y: auto;
-	background-color: #E3E5E8;
+	background-color: #F2F2F3;
 
 	.add_circle {
 		color: #20835F;
 	}
 
+	.line-head {
+		background-color: #20835F;
+		border-top-left-radius: 4px;
+		border-top-right-radius: 4px;
+		color: white;
+		width: fit-content;
+	}
+
+	.line {
+		height: 4px;
+		background-color: #20835f;
+	}
+
 	.card-wrapper {
-		width: 198px;
+		width: 150px;
+		margin-right: 40px;
 
 		.em-shadow-cards {
 			background-color: white;
 			width: 150px;
 			border: 2px solid transparent;
+		}
+
+		.card {
+			margin: 24px 0 12px 0;
 		}
 
 		p {
@@ -149,6 +170,7 @@ export default {
 			white-space: nowrap;
 			overflow: hidden;
 			text-overflow: ellipsis;
+			font-size: 12px;
 		}
 
 		&.selected {
