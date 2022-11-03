@@ -15,6 +15,8 @@ JHtml::_('jquery.framework');
 JHtml::_('formbehavior.chosen');
 JHtml::_('bootstrap.tooltip');
 
+$route .= '&format=feed';
+
 // Load the smart search component language file.
 $lang = JFactory::getLanguage();
 $lang->load('com_finder', JPATH_SITE);
@@ -102,7 +104,7 @@ if ($params->get('show_autosuggest', 1))
         width: 100%;
         border-radius: 8px;
         border: unset;
-        background: #f0f8ff;
+        background: #f0f8ff !important;
         margin-bottom: 0;
     }
     .mod-finder-modal input:hover,.mod-finder-modal input:focus{
@@ -130,10 +132,18 @@ if ($params->get('show_autosuggest', 1))
     .autocomplete-selected{
         background: #e1e1e1;
     }
+    #search_results{
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        border-top: solid 1px #363636;
+    }
 </style>
 
 <div class="mod-finder-modal" id="mod_finder_modal">
     <input type="search" placeholder="<?php echo  JText::_('MOD_FINDER_SEARCH_VALUE') ?>" id="mod-finder-searchword<?php echo $module->id ?>" />
+    <div id="search_results">
+    </div>
 </div>
 
 <script>
@@ -224,10 +234,27 @@ if ($params->get('show_autosuggest', 1))
         });
 
         <?php if ($params->get('show_autosuggest', 1)) : ?>
-        /*jQuery('#mod-finder-searchword<?php echo $module->id ?>').keyup(delay(function (e) {
-        }, 500));*/
+        jQuery('#mod-finder-searchword<?php echo $module->id ?>').keyup(delay(function (e) {
+            document.getElementById('search_results').innerHTML = '';
+            fetch('<?php echo $route; ?>&q='+e.target.value)
+                .then((response) => {
+                if (response.ok) {
+                    return response.text();
+                }
+            }).then((res) => {
+                return new window.DOMParser().parseFromString(res, "text/xml")
+            }).then((data) => {
+                console.log(data);
+
+                let items = data.getElementsByTagName('item');
+                for (item of items){
+                    document.getElementById('search_results').insertAdjacentHTML('beforeend', '<a class="em-mb-8" target="_blank" href="'+item.getElementsByTagName('link')[0].textContent+'">'+item.getElementsByTagName('title')[0].textContent+'</a>');
+                }
+
+            })
+        }, 500));
         // TODO : Create a tmpl to display results as suggestion
-        var suggest = jQuery('#mod-finder-searchword<?php echo $module->id ?>').autocomplete({
+        /*var suggest = jQuery('#mod-finder-searchword<?php echo $module->id ?>').autocomplete({
             appendTo: '#mod_finder_modal',
             serviceUrl: '<?php echo JRoute::_($route); ?>',
             paramName: 'q',
@@ -236,7 +263,7 @@ if ($params->get('show_autosuggest', 1))
             width: 300,
             zIndex: 9999,
             deferRequestBy: 500
-        });
+        });*/
         <?php endif; ?>
     });
 </script>
