@@ -38,7 +38,7 @@
 			</div>
 		</section>
 		<div class="actions em-flex-row-justify-end em-w-100">
-			<button class="em-secondary-button em-w-max-content" @click="close">{{ translate('COM_EMUNDUS_FORM_BUILDER_CANCEL') }}</button>
+			<button class="em-secondary-button em-w-max-content" @click="close(false)">{{ translate('COM_EMUNDUS_FORM_BUILDER_CANCEL') }}</button>
 			<button class="em-primary-button em-w-max-content em-ml-8" @click="createPage">{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_CREATE_SAVE') }}</button>
 		</div>
 	</div>
@@ -114,9 +114,9 @@ export default {
 				this.close();
 			});
 		},
-		close()
+		close(reload = true)
 		{
-			this.$emit('close');
+			this.$emit('close', reload);
 		}
 	}
 }

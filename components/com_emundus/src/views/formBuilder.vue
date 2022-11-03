@@ -330,9 +330,11 @@ export default {
       }
       this.showInRightPanel = 'hierarchy';
     },
-	  onCloseCreatePage()
+	  onCloseCreatePage(reload)
 	  {
-			this.getPages();
+			if (reload) {
+				this.getPages();
+			}
 		  this.principalContainer = 'default';
 	  },
     onOpenCreateDocument(mandatory = "1")
