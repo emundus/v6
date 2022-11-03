@@ -91,6 +91,17 @@ export default {
 			formBuilderService.getModels().then((response) => {
 				if (response.status) {
 					this.models = response.data;
+				} else {
+					Swal.fire({
+						type: 'warning',
+						title: this.translate('COM_EMUNDUS_FORM_BUILDER_GET_PAGE_MODELS_ERROR'),
+						reverseButtons: true,
+						customClass: {
+							title: 'em-swal-title',
+							confirmButton: 'em-swal-confirm-button',
+							actions: "em-swal-single-action",
+						}
+					});
 				}
 
 				this.loading = false;
@@ -113,8 +124,20 @@ export default {
 			const data = {...this.page, modelid: model_form_id};
 			formBuilderService.addPage(data).then(response => {
 				if (!response.status) {
+					Swal.fire({
+						type: 'error',
+						title: this.translate('COM_EMUNDUS_FORM_BUILDER_CREATE_PAGE_ERROR'),
+						reverseButtons: true,
+						customClass: {
+							title: 'em-swal-title',
+							confirmButton: 'em-swal-confirm-button',
+							actions: "em-swal-single-action",
+						}
+					});
+					this.close(false);
+				} else {
+					this.close();
 				}
-				this.close();
 			});
 		},
 		close(reload = true)
