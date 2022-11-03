@@ -36,7 +36,7 @@
           </p>
         </div>
       </header>
-      <div v-if="principalContainer == 'default'" class="body em-flex-row em-flex-space-between">
+      <div v-if="principalContainer === 'default'" class="body em-flex-row em-flex-space-between">
         <aside class="left-panel em-flex-row em-flex-start em-h-100">
           <div class="tabs em-flex-column em-flex-start em-h-100">
             <div class="tab" v-for="tab in displayedLeftPanels" :key="title" :class="{ active: tab.active }">
@@ -63,7 +63,7 @@
           <transition name="fade" mode="out-in">
             <form-builder-page
               ref="formBuilderPage"
-              v-if="currentPage && showInSection == 'page'"
+              v-if="currentPage && showInSection === 'page'"
               :key="currentPage.id"
               :profile_id="profile_id"
               :page="currentPage"
@@ -73,7 +73,7 @@
             ></form-builder-page>
             <form-builder-document-list
               ref="formBuilderDocumentList"
-              v-else-if="showInSection == 'documents'"
+              v-else-if="showInSection === 'documents'"
               :profile_id="profile_id"
               :campaign_id="campaign_id"
               @add-document="onOpenCreateDocument"
@@ -84,7 +84,7 @@
         </section>
         <aside class="right-panel em-flex-column em-h-100">
           <transition name="fade" mode="out-in">
-            <div id="form-hierarchy" v-if="showInRightPanel == 'hierarchy'" class="em-w-100">
+            <div id="form-hierarchy" v-if="showInRightPanel === 'hierarchy'" class="em-w-100">
               <form-builder-pages
                   :pages="pages"
                   :selected="selectedPage"
@@ -104,25 +104,25 @@
               ></form-builder-documents>
             </div>
             <form-builder-page-properties
-                v-if="showInRightPanel == 'page-properties'"
+                v-if="showInRightPanel === 'page-properties'"
                 @close="onClosePageProperties"
                 :profile_id="profile_id"
                 :pages="pages"
             ></form-builder-page-properties>
             <form-builder-element-properties
-                v-if="showInRightPanel == 'element-properties'"
+                v-if="showInRightPanel === 'element-properties'"
                 @close="onCloseElementProperties"
                 :element="selectedElement"
                 :profile_id="profile_id"
             ></form-builder-element-properties>
             <form-builder-section-properties
-                v-if="showInRightPanel == 'section-properties'"
+                v-if="showInRightPanel === 'section-properties'"
                 @close="onCloseSectionProperties"
                 :section_id="selectedSection.group_id"
                 :profile_id="profile_id"
               ></form-builder-section-properties>
             <form-builder-create-document
-                v-if="showInRightPanel == 'create-document'"
+                v-if="showInRightPanel === 'create-document'"
                 ref="formBuilderCreateDocument"
                 :profile_id="profile_id"
                 :current_document="selectedDocument ? selectedDocument : null"
@@ -134,8 +134,8 @@
           </transition>
         </aside>
       </div>
-	    <div v-else-if="principalContainer == 'create-page'">
-		    <form-builder-create-page :profile_id="profile_id" @close="principalContainer = 'default'">
+	    <div v-else-if="principalContainer === 'create-page'">
+		    <form-builder-create-page :profile_id="profile_id" @close="onCloseCreatePage">
 
 		    </form-builder-create-page>
 	    </div>
@@ -330,6 +330,11 @@ export default {
       }
       this.showInRightPanel = 'hierarchy';
     },
+	  onCloseCreatePage()
+	  {
+			this.getPages();
+		  this.principalContainer = 'default';
+	  },
     onOpenCreateDocument(mandatory = "1")
     {
       this.selectedDocument = null;
@@ -362,7 +367,7 @@ export default {
     },
     selectTab(title) {
       this.leftPanel.tabs.forEach((tab) => {
-        tab.active = tab.title == title;
+        tab.active = tab.title === title;
       });
     },
     selectPage(page_id) {
@@ -372,13 +377,13 @@ export default {
     setSectionShown(section) {
       if (section === 'documents') {
         this.leftPanel.tabs.forEach((tab, i) => {
-          this.leftPanel.tabs[i].displayed = tab.title != 'Elements';
+          this.leftPanel.tabs[i].displayed = tab.title !== 'Elements';
         });
         this.selectTab('Documents');
         this.selectedPage = null;
       } else {
         this.leftPanel.tabs.forEach((tab, i) => {
-          this.leftPanel.tabs[i].displayed = tab.title != 'Documents';
+          this.leftPanel.tabs[i].displayed = tab.title !== 'Documents';
         });
         this.selectTab('Elements');
       }
@@ -402,11 +407,9 @@ export default {
       return this.leftPanel.tabs.find(tab => tab.active).title;
     },
     displayedLeftPanels() {
-      const displayedPanels = this.leftPanel.tabs.filter((tab) => {
-        return tab.displayed;
+      return this.leftPanel.tabs.filter((tab) => {
+	      return tab.displayed;
       });
-
-      return displayedPanels;
     }
   },
   watch: {
