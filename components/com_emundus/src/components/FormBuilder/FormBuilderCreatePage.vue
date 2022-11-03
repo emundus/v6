@@ -16,8 +16,8 @@
 		</section>
 		<h4 class="em-mb-4 em-mt-4">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_FROM_MODEL') }}</h4>
 		<section id="models" class="em-flex-row">
-			<p v-if="models.length < 1">{{ translate('COM_EMUNDUS_FORM_BUILDER_EMPTY_PAGE_MODELS') }}</p>
-			<div class="em-flex-row">
+			<p v-if="models.length < 1 && !loading">{{ translate('COM_EMUNDUS_FORM_BUILDER_EMPTY_PAGE_MODELS') }}</p>
+			<div v-if="!loading" class="em-flex-row">
 				<div
 						v-for="model in models" :key="model.id"
 						class="em-mr-16 card-wrapper"
@@ -25,12 +25,15 @@
 						:title="model.label[shortDefaultLang]"
 						@click="selected = model.id"
 				>
-					<form-builder-preview-form
-							:form_id="model.form_id"
-							class="em-shadow-cards model-preview em-pointer"
-					>
+					<form-builder-preview-form :form_id="model.form_id" class="em-shadow-cards model-preview em-pointer">
 					</form-builder-preview-form>
 					<p class="em-mt-8 em-p-4"> {{ model.label[shortDefaultLang] }}</p>
+				</div>
+			</div>
+			<div v-else class="em-flex-row">
+				<div v-for="i in 5" :key="i" class="em-mr-16 em-flex-column">
+					<skeleton width="150px" height="200px" classes="em-shadow-cards model-preview"></skeleton>
+					<skeleton width="190px" height="20px" classes="em-mt-8 em-p-4"></skeleton>
 				</div>
 			</div>
 		</section>
@@ -44,10 +47,12 @@
 <script>
 import FormBuilderPreviewForm from "./FormBuilderPreviewForm";
 import formBuilderService from '../../services/formbuilder';
+import Skeleton from '../Skeleton'
 
 export default {
 	name: "FormBuilderCreatePage.vue",
 	components: {
+		Skeleton,
 		FormBuilderPreviewForm
 	},
 	props: {
@@ -58,6 +63,7 @@ export default {
 	},
 	data() {
 		return {
+			loading: true,
 			selected: -1,
 			models: [],
 			page: {
@@ -83,6 +89,8 @@ export default {
 				if (response.status) {
 					this.models = response.data;
 				}
+
+				this.loading = false;
 			});
 		},
 		createPage() {
@@ -162,7 +170,6 @@ export default {
 	}
 
 	.model-preview {
-		padding: 8px !important;
 		overflow: hidden;
 	}
 }
