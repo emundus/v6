@@ -1603,7 +1603,7 @@ class EmundusModelForm extends JModelList {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->select(['g.id' , 'g.label', 'g.params'])
+        $query->select(['g.id' , 'g.label', 'g.params', 'g.published'])
             ->from ($db->quoteName('#__fabrik_formgroup', 'fg'))
             ->leftJoin($db->quoteName('#__fabrik_groups', 'g').' ON '.$db->quoteName('g.id').' = '.$db->quoteName('fg.group_id'))
             ->where($db->quoteName('fg.form_id') . ' = '.$form_id)
