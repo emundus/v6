@@ -959,11 +959,20 @@ class EmundusControllerFiles extends JControllerLegacy
                                                     }
                                                 }
                         */
+
+                        require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+                        $h_emails = new EmundusHelperEmails();
+
                         if ($trigger['to']['to_applicant'] == 1) {
 
                             // Manage with selected fnum
                             foreach ($fnumsInfos as $file) {
                                 if ($file['training'] != $code) {
+                                    continue;
+                                }
+
+                                $can_send_mail = $h_emails->assertCanSendMailToUser($file['applicant_id'], $file['fnum']);
+                                if (!$can_send_mail) {
                                     continue;
                                 }
 
@@ -1063,6 +1072,11 @@ class EmundusControllerFiles extends JControllerLegacy
                         }
 
                         foreach ($trigger['to']['recipients'] as $key => $recipient) {
+                            $can_send_mail = $h_emails->assertCanSendMailToUser($recipient['id']);
+                            if (!$can_send_mail) {
+                                continue;
+                            }
+
                             $mailer = JFactory::getMailer();
 
                             $post = array();
