@@ -56,7 +56,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
         <div class="em-flex-row">
             <?php if ($show_back_button == 1) : ?>
             <a href="<?php echo $home_link ?>" title="<?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?>">
-                <button class="btn btn-success em-mr-16"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
+                <button class="btn btn-primary em-mr-16" style="height: 41px"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
             </a>
             <?php endif; ?>
             <a href="/component/emundus/?task=pdf&amp;fnum=2022101914533400001650000100" target="_blank" title="Imprimer">

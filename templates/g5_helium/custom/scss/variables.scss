@@ -57,9 +57,9 @@
   --white-background-color: #fff;
   --background-color: #f8f8f8;
 
-  --border-radius: 4px; // for applicants side
-  --em-border-radius: 4px; // for coordinators side
-  --em-applicant-border-radius: 4px; // for applicants side but with the coordinator style
+  --border-radius: 8px; // for applicants side
+  --em-border-radius: 8px; // for coordinators side
+  --em-applicant-border-radius: 8px; // for applicants side but with the coordinator style
 }
 
 //Colors
@@ -424,6 +424,7 @@ $font:'Inter', sans-serif;
 @mixin yes-no {
   padding: 12px;
   box-shadow: none;
+  cursor: pointer;
 }
 
 @mixin calendar {
@@ -779,13 +780,18 @@ $font:'Inter', sans-serif;
 
       /* YES/NO & RADIO GROUPES */
       fieldset.btn-radio {
+        display: flex;
+        grid-gap: 16px;
 
         label.btn-default.btn.btn-success.active {
           @include yes-no;
           border: 1px solid var(--main-500);
           background: var(--main-500);
-          border-radius: 0 4px 4px 0 !important;
-          width: 55px !important;
+          border-radius: var(--border-radius) !important;
+          width: 100% !important;
+          max-width: 250px;
+          display: flex;
+          justify-content: center;
 
           &:hover {
             border: 1px solid var(--main-600);
@@ -803,8 +809,11 @@ $font:'Inter', sans-serif;
           @include yes-no;
           border: 1px solid var(--red-500);
           background: var(--red-500);
-          border-radius: 4px 0 0 4px !important;
-          width: 55px !important;
+          border-radius: var(--border-radius) !important;
+          width: 100% !important;
+          max-width: 250px;
+          display: flex;
+          justify-content: center;
 
           &:hover {
             border: 1px solid var(--red-600);
@@ -820,12 +829,15 @@ $font:'Inter', sans-serif;
 
         label.btn-default.btn:not(.active) {
           @include yes-no;
-          border: 1px solid var(--neutral-200);
-          background: var(--neutral-200);
-          border-radius: 4px !important;
+          border: 1px solid var(--neutral-400);
+          background: transparent;
+          border-radius: var(--border-radius) !important;
           margin-left: -2px;
           z-index: 0;
-          width: 55px !important;
+          width: 100% !important;
+          max-width: 250px;
+          display: flex;
+          justify-content: center;
 
           &:hover {
             border: 1px solid var(--neutral-300);
@@ -844,11 +856,11 @@ $font:'Inter', sans-serif;
         }
 
          label.btn-default.btn:nth-child(1) {
-           border-radius: 4px 0 0 4px !important;
+           border-radius: var(--border-radius) !important;
          }
 
          label.btn-default.btn:nth-child(2) {
-           border-radius: 0 4px 4px 0 !important;
+           border-radius: var(--border-radius) !important;
          }
       }
 

@@ -1,0 +1,44 @@
+.fabrikForm .row-fluid.nav{
+    display: none;
+}
+.plg-databasejoin .fabrikElement{
+    display: flex;
+}
+.view-form:not(.view-registration) .fabrikForm .fabrikActions.form-actions, .view-details .fabrikForm .fabrikActions.form-actions {
+    padding: 16px 0 0;
+    margin-bottom: 0;
+    border-top: 1px solid rgb(237, 237, 237);
+}
+.form-actions .row-fluid {
+    text-align: center;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    padding: 0 32px;
+}
+.fabrikActions.form-actions .row-fluid .span4 {
+    width: 100% !important;
+    margin: 0 !important;
+}
+.view-form .fabrikActions.form-actions .offset1.span4 {
+    float: left;
+}
+.view-form .fabrikActions.form-actions .span4 {
+    float: right;
+    text-align: right;
+}
+.view-form .fabrikActions.form-actions .offset1 .pull-right {
+    float: left;
+}
+.view-form form .btn.goback-btn.button[name="Goback"] {
+    width: auto !important;
+}
+.view-form .fabrikActions.form-actions .span4 {
+    text-align: right;
+}
+.view-form .fabrikActions.form-actions .row-fluid button, .view-details .fabrikActions.form-actions .row-fluid button {
+    height: 41px !important;
+}
+.view-form #g-sidebar{
+    position: sticky;
+}

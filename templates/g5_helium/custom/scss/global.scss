@@ -1192,7 +1192,7 @@ body>.g-container {
   .em-attachment-dropzone{
     margin-top: 4px !important;
     border: unset !important;
-    padding: 0 14px;
+    padding: 0 24px 0 0;
     margin-bottom: 0 !important;
   }
 
@@ -1975,7 +1975,7 @@ tr.fabrikFilterContainer{
   button.btn-secondary {
     background: $base-secondary-color;
     border: 1px solid $base-secondary-color;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     padding: 8px 12px;
 
     &:hover {

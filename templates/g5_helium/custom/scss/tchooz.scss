@@ -866,6 +866,12 @@ input:focus + .em-slider {
 .em-ml-24{
   margin-left: $m-24;
 }
+.em-ml-28{
+  margin-left: 28px;
+}
+.em-ml-30{
+  margin-left: 30px;
+}
 .em-ml-32{
   margin-left: 32px;
 }
@@ -1213,8 +1219,8 @@ input:focus + .em-slider {
 }
 
 .em-repeat-card{
-  box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
-  border-radius: 8px !important;
+  box-shadow: 0 1px 1px rgba(5, 47, 55, 0.07), 0 2px 1px rgba(5, 47, 55, 0.06), 0 1px 3px rgba(5, 47, 55, 0.1);
+  border-radius: calc(var(--border-radius)*2) !important;
   padding: 24px;
   height: auto;
   background: #fff;

@@ -110,15 +110,15 @@ if (!empty($this->custom_title)) :?>
         <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('COM_EMUNDUS_ATTACHMENTS_BYTES'); ?> </p>
     <?php if ($this->show_info_legend) :?>
         <div id="legend" class="em-mt-4">
-            <div class="em-flex-row">
+            <div class="em-flex-row em-mb-4">
                 <span class="material-icons-outlined em-red-500-color em-mr-4">highlight_off</span>
                 <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC'); ?></p>
             </div>
-            <div class="em-flex-row">
+            <div class="em-flex-row em-mb-4">
                 <span class="material-icons-outlined em-main-500-color em-mr-4">check_circle</span>
                 <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_SENT_DOC'); ?></p>
             </div>
-            <div class="em-flex-row">
+            <div class="em-flex-row em-mb-4">
                 <span class="material-icons-outlined em-red-500-color em-mr-4">error_outline</span>
                 <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC_FAC'); ?></p>
             </div>
@@ -145,26 +145,25 @@ if (!empty($this->custom_title)) :?>
             }
             $div .= '<p class="em-h5">'.$attachment->value .'</p>';
             $div .= '</div>
-                <p class="em-ml-22">'.$attachment->description .'</p>
+                <p class="em-ml-30 em-mt-4">'.$attachment->description .'</p>
                 <div>
-                <table id="'.$attachment->id .'" class="table em-fieldset-attachment-table">';
+                <table id="'.$attachment->id .'" class="table em-fieldset-attachment-table em-ml-24">';
 
             if ($attachment->nb > 0) {
                 foreach ($attachment->liste as $item) {
                     $div .= '<tr class="em-added-files">
-                    <td>';
+                    <td class="em-flex-row">';
                     if ($item->can_be_viewed == 1) {
-                        $div .= '<a class="btn btn-success btn-xs" href="'.$chemin.$this->user->id .'/'.$item->filename .'" target="_blank"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> '.JText::_('COM_EMUNDUS_ATTACHMENTS_VIEW').'</a>';
+                        $div .= '<a class="em-flex-row em-mr-16" href="'.$chemin.$this->user->id .'/'.$item->filename .'" target="_blank"><span class="material-icons-outlined em-mr-4">visibility</span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_VIEW').'</a>';
                     } else {
                         $div .= JText::_('COM_EMUNDUS_ATTACHMENTS_CANT_VIEW');
                     }
-                    $div .= '&nbsp;-&nbsp;' ;
                     if (($item->can_be_deleted == 1 || $item->is_validated == "0") && !$block_upload) {
-                        $div .= '<a class="btn btn-danger btn-xs" href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="material-icons">delete_outline</span> '.JText::_('COM_EMUNDUS_ACTIONS_DELETE').'</a>';
+                        $div .= '<a class="em-flex-row em-red-500-color" href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="material-icons-outlined em-red-500-color em-mr-4">delete_outline</span> '.JText::_('COM_EMUNDUS_ACTIONS_DELETE').'</a>';
                     } else {
                         $div .= JText::_('COM_EMUNDUS_ATTACHMENTS_CANT_DELETE');
                     }
-                    $div .= ' | ';
+                    $div .= '</td></tr><tr><td>';
                     $div .= JString::ucfirst(JHTML::Date(strtotime($item->timedate), "DATE_FORMAT_LC2"));
                     $div .= ' | ';
                     if ($this->show_shortdesc_input) {
@@ -549,7 +548,7 @@ if (!empty($this->custom_title)) :?>
                 </tr>
                 <tr class="em-allowed-files">
                     <td>
-                    <div class="em-ml-22">
+                    <div class="em-ml-12">
                     <p><em>'. JText::_('COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY').' '.$attachment->allowed_types.'</em></p>
                     <div class="em-flex-row em-flex-space-between">
                         <p><em>'.JText::_('COM_EMUNDUS_ATTACHMENTS_MAX_ALLOWED').' '.$attachment->nbmax .'</em></p>';
@@ -564,7 +563,7 @@ if (!empty($this->custom_title)) :?>
                     $div .= '
                 <tr class="em-no-more-files">
                     <td>
-                    <p>'. JText::_('COM_EMUNDUS_ATTACHMENTS_NO_MORE').' '.$attachment->value .'<br />'.JText::_('COM_EMUNDUS_ATTACHMENTS_MAX_ALLOWED').' '.$attachment->nbmax .'</p>
+                    <span class="em-red-500-color">'. JText::_('COM_EMUNDUS_ATTACHMENTS_NO_MORE').' '.$attachment->value .'</span><br /><span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_MAX_ALLOWED').' '.$attachment->nbmax .'</span>
                     </td>
                 </tr>';
 
