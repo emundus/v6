@@ -15,7 +15,7 @@
           <div class="em-flex-row em-flex-space-between" @mouseover="pageOptionsShown = page.id" @mouseleave="pageOptionsShown = 0">
             <p @click="selectPage(page.id)" class="em-w-100 em-p-16">{{ page.label }}</p>
             <div class="em-flex-row em-p-16" :style="pageOptionsShown === page.id ? 'opacity:1' : 'opacity: 0'">
-	            <span class="material-icons save" :class="{'already-saved': page.savedAsModel}" @click="saveAsModel(page)">save</span>
+	            <span class="material-icons save em-mr-4 em-pointer" :class="{'already-saved': page.savedAsModel}" @click="saveAsModel(page)" :title="page.savedAsModel ? translate('COM_EMUNDUS_FORM_BUILDER_DELETE_MODEL_TITLE') : translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')">save</span>
 	            <v-popover :popoverArrowClass="'custom-popover-arraow'">
                 <span class="material-icons">more_horiz</span>
 
