@@ -73,7 +73,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $show_progress_color = $params->get('show_progress_color', '#EA5012');
     $show_progress_color_forms = $params->get('show_progress_color_forms', '#EA5012');
     $show_progress_documents = $params->get('show_progress_documents', '#EA5012');
-    $admission_status = explode(',', $params->get('admission_status'));
+    $admission_status = $params->get('admission_status') ? explode(',', $params->get('admission_status')) : null;
     $add_admission_prefix = $params->get('add_admission_prefix', 1);
     $absolute_urls = $params->get('absolute_urls', 1);
 
