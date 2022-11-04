@@ -27,6 +27,8 @@ JText::script('COM_EMUNDUS_ADD_FILES_TO_PDF');
 JText::script('COM_EMUNDUS_EXPORT_FINISHED');
 JText::script('COM_EMUNDUS_ERROR_NBFILES_CAPACITY');
 JText::script('COM_EMUNDUS_ERROR_CAPACITY_PDF');
+JText::script('COM_EMUNDUS_ATTACHMENTS_FILES_UPLOADED');
+JText::script('COM_EMUNDUS_ATTACHMENTS_DESCRIPTION');
 JText::script('DECISION_PDF');
 JText::script('ADMISSION_PDF');
 JText::script('GENERATE_PDF');
@@ -140,8 +142,15 @@ class PlgFabrik_FormEmundusReferentLetterHopitauxParis extends plgFabrik_Form
             echo $e->getMessage() . '<br />';
         }
 
-        $student_id = $jinput->get('jos_emundus_references___user')[0];
-        $fnum       = $jinput->get('jos_emundus_references___fnum');
+        $formModel = $this->getModel();
+        $data = $formModel->formData;
+
+        $fnum = $data['fnum'];
+        $m_files = new EmundusModelFiles;
+        $fnum_detail = $m_files->getFnumInfos($fnum);
+
+        $student_id = $fnum_detail['applicant_id'];
+
 
         /**/
 
@@ -202,12 +211,9 @@ class PlgFabrik_FormEmundusReferentLetterHopitauxParis extends plgFabrik_Form
         //////////////////////////  SET FILES REQUEST  /////////////////////////////
         //
         // Génération de l'id du prochain fichier qui devra être ajouté par le referent
-        $m_files = new EmundusModelFiles;
         $m_emails = new EmundusModelEmails;
         $m_profile = new EmundusModelProfile;
         $m_campaign = new EmundusModelCampaign;
-
-        $fnum_detail = $m_files->getFnumInfos($current_user->fnum);
 
         // setup mail
         $email_from_sys = $app->getCfg('mailfrom');
