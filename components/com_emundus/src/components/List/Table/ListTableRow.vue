@@ -13,19 +13,8 @@
 					@showModalPreview="showModalPreview"
 				></list-action-menu>
 			</span>
-			<div
-				v-else-if="td.value == 'message' || td.value == 'status'"
-				:class="classFromTd(td)"
-				v-html="formattedDataFromTd(td)"
-			>
-			</div>
-			<span
-          v-else
-          @click="redirectToEditItem(td)"
-				  :class="classFromTd(td)"
-			>
-				{{ formattedDataFromTd(td) }}
-			</span>
+			<div v-else-if="td.value == 'message' || td.value == 'status'" :class="classFromTd(td)" v-html="formattedDataFromTd(td)"></div>
+			<span v-else @click="redirectToEditItem(td)" :class="classFromTd(td)">{{ formattedDataFromTd(td) }}</span>
 		</td>
 	</tr>
 </template>
@@ -34,7 +23,6 @@
 import ListActionMenu from '../ListActionMenu.vue';
 import rows from '../../../../data/tableRows';
 import moment from "moment";
-import axios from "axios";
 
 const qs = require('qs');
 
@@ -71,7 +59,6 @@ export default {
 	},
 	methods: {
 		formattedDataFromTd(td) {
-
 			if (this.type === 'campaign') {
 				return this.formattedCampaignData(td);
 			} else if (this.type === 'email') {

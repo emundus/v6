@@ -1,10 +1,6 @@
 <template>
   <div id="list">
-    <list-head
-        v-if="type !== 'files'"
-        :data="actions"
-    >
-    </list-head>
+    <list-head v-if="type !== 'files'" :data="actions"></list-head>
 
     <div class="search em-mb-16 em-flex-row">
       <span class="material-icons-outlined em-mr-8">search</span>
@@ -19,18 +15,14 @@
       <div class="em-list-filters" v-if="type === 'campaign'">
         <select v-model="selectedProgram" name="selectProgram" class="list-vue-select" @change="validateFilters">
           <option value="all">{{ translate('COM_EMUNDUS_ONBOARD_ALL_PROGRAMS') }} </option>
-          <option v-for="program in allPrograms" :value="program.code" :key="program.code">
-            {{ program.label }}
-          </option>
+          <option v-for="program in allPrograms" :value="program.code" :key="program.code">{{ program.label }}</option>
         </select>
       </div>
 
       <div class="em-list-filters em-ml-8" v-if="type === 'campaign'">
         <select v-model="selectedSession" name="selectedSession" class="list-vue-select" @change="validateFilters">
           <option value="all">{{ translate('COM_EMUNDUS_ONBOARD_ALL_SESSIONS') }} </option>
-          <option v-for="session in allSessions" :value="session" :key="session">
-            {{ session }}
-          </option>
+          <option v-for="session in allSessions" :value="session" :key="session">{{ session }}</option>
         </select>
       </div>
 
@@ -40,7 +32,6 @@
           <option v-for="(cat, index) in notEmptyEmailCategories" :value="cat" :key="'cat_' + index">{{ cat }}</option>
         </select>
       </div>
-
 
       <filters
           :data="actions"
@@ -59,18 +50,11 @@
           <a @click="nbpages(pages - 1)" class="pagination-arrow arrow-left">
             <em class="fas fa-chevron-left"></em>
           </a>
-          <li v-show="countPages <= 10 ||
-            index < 4 ||
-            index > countPages - 3 ||
-            (index > pages - 3 && index < pages + 3) ||
-            index == pages - 3 ||
-            index == pages + 3"
+          <li v-show="countPages <= 10 || index < 4 || index > countPages - 3 || (index > pages - 3 && index < pages + 3) || index == pages - 3 || index == pages + 3"
               v-for="index in countPages"
               :key="index"
               class="pagination-number">
-            <a @click="nbpages(index)"
-               class="pagination-number"
-               :class="index == pages ? 'current-number' : ''">
+            <a @click="nbpages(index)" class="pagination-number" :class="index == pages ? 'current-number' : ''">
               {{ paginationNumber(index) }}
             </a>
           </li>
@@ -82,19 +66,17 @@
     </transition>
 
     <div v-show="total > 0 || type == 'files'">
-
       <list-body
           :type="type"
           :actions="actions"
           :params="params"
+          :items="list"
           @validateFilters="validateFilters"
           @updateLoading="updateLoading"
       ></list-body>
     </div>
 
-    <div v-show="total == 0 && type != 'files' && !loading" class="noneDiscover">
-      {{ noneDiscoverTranslation }}
-    </div>
+    <div v-show="total == 0 && type != 'files' && !loading" class="noneDiscover">{{ noneDiscoverTranslation }}</div>
     <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
@@ -111,7 +93,6 @@ export default {
     ListHead,
     ListBody,
   },
-
   name: "List",
   data: () => ({
     loading: false,
@@ -166,31 +147,6 @@ export default {
     menuEmail: 0,
     email_categories: [],
   }),
-
-  computed: {
-    list() {
-      return list.getters.list;
-    },
-    isEmpty: () => {
-      return list.getters.isSomething;
-    },
-    noneDiscoverTranslation() {
-      if (this.type === "campaign") {
-        return this.translations.noCampaign;
-      } else if (this.type === "program") {
-        return this.translations.noProgram;
-      } else if (this.type === "email") {
-        return this.translations.noEmail;
-      } else if (this.type === "formulaire") {
-        return this.translations.noForm;
-      } else {
-        return this.translations.noFiles;
-      }
-    },
-    notEmptyEmailCategories() {
-      return this.email_categories.filter(category => category !== "");
-    },
-  },
   created() {
     this.datas = this.$store.getters['global/datas'];
     this.type = this.datas.type.value;
@@ -203,7 +159,7 @@ export default {
       this.actualLanguage = response.data.msg;
     });
 
-    if(this.type === 'campaign') {
+    if (this.type === 'campaign') {
       // Get programs to filters
       axios.get("index.php?option=com_emundus&controller=programme&task=getallprogram")
           .then(response => {
@@ -252,12 +208,12 @@ export default {
       this.actions.type = val;
       this.typeForAdd = val === 'formulaire' ? 'form' : val;
 
-      if (this.typeForAdd === "form") {
-        this.type = "formulaire";
+      if (this.typeForAdd === 'form') {
+        this.type = 'formulaire';
       }
 
       let view= this.typeForAdd === 'grilleEval' ? 'form' : this.typeForAdd
-      if(this.type == 'email' || this.type == 'campaign') {
+      if (this.type == 'email' || this.type == 'campaign') {
         this.actions.add_url = 'index.php?option=com_emundus&view=' + this.type + 's&layout=add'
       } else {
         this.actions.add_url = 'index.php?option=com_emundus&view=' + view + '&layout=add'
@@ -268,7 +224,7 @@ export default {
     menuEmail: function (val) {
       this.type = "email";
       this.params = {
-        email_category: val,
+        email_category: val
       };
     },
   },
@@ -281,20 +237,13 @@ export default {
     getFiltersByType() {
       switch (this.type){
         case 'campaign':
-          this.filter_columns = [
-              'label',
-              'short_description'
-          ];
+          this.filter_columns = ['label', 'short_description'];
           break;
         case 'email':
-          this.filter_columns = [
-            'subject'
-          ];
+          this.filter_columns = ['subject'];
           break;
         case 'form':
-          this.filter_columns = [
-            'label'
-          ];
+          this.filter_columns = ['label'];
           break;
         default:
       }
@@ -302,16 +251,9 @@ export default {
 
     validateFilters() {
       this.updateLoading(true);
-      this.filtersCount =
-          this.filtersCountFilter +
-          this.filtersCountSearch;
-      this.filters =
-          this.filtersFilter +
-          this.filtersSort +
-          this.filtersSearch +
-          this.filtersLim +
-          this.filtersPage;
-      if(this.type === 'campaign') {
+      this.filtersCount = this.filtersCountFilter + this.filtersCountSearch;
+      this.filters = this.filtersFilter + this.filtersSort + this.filtersSearch + this.filtersLim + this.filtersPage;
+      if (this.type === 'campaign') {
         this.filtersCount += "&program=" + this.selectedProgram + "&session=" + this.selectedSession;
         this.filters += "&program=" + this.selectedProgram + "&session=" + this.selectedSession;
       }
@@ -379,15 +321,9 @@ export default {
       let controller = this.typeForAdd === 'grilleEval' ? 'form' : this.typeForAdd;
 
       if (this.type !== "files") {
-          axios.get(
-              "index.php?option=com_emundus&controller=" +
-              controller +
-              "&task=getall" +
-              this.typeForAdd +
-              this.filters
-          ).then(rep => {
+          axios.get("index.php?option=com_emundus&controller=" + controller + "&task=getall" + this.typeForAdd + this.filters).then(rep => {
             this.total = rep.data.data.count;
-            if(this.all_datas.length === 0) {
+            if (this.all_datas.length === 0) {
               this.all_datas = rep.data.data.datas;
             }
             this.limited_datas = rep.data.data.datas;
@@ -395,12 +331,10 @@ export default {
 
             this.countPages = Math.ceil(this.total / this.limit);
             if (this.type == 'email') {
-
               axios.get("index.php?option=com_emundus&controller=email&task=getemailcategories")
-                  .then(catrep => {
+		              .then(catrep => {
                     this.email_categories = catrep.data.data;
                   });
-
             }
             this.loading = false;
           }).catch(e => {
@@ -424,7 +358,43 @@ export default {
     selectItem(id) {
       this.$store.commit("lists/selectItem", id);
     }
-  }
+  },
+	computed: {
+		isEmpty: () => {
+			return list.getters.isSomething;
+		},
+		noneDiscoverTranslation() {
+			if (this.type === "campaign") {
+				return this.translations.noCampaign;
+			} else if (this.type === "program") {
+				return this.translations.noProgram;
+			} else if (this.type === "email") {
+				return this.translations.noEmail;
+			} else if (this.type === "formulaire") {
+				return this.translations.noForm;
+			} else {
+				return this.translations.noFiles;
+			}
+		},
+		notEmptyEmailCategories() {
+			return this.email_categories.filter(category => category !== "");
+		},
+		list() {
+			let listItems = this.$store.getters['lists/list'];
+
+			if (this.params.email_category) {
+				listItems = listItems.filter((item) => {
+					if (this.params.email_category == 0) {
+						return true;
+					} else {
+						return item.category === this.params.email_category;
+					}
+				});
+			}
+
+			return listItems;
+		}
+	},
 }
 
 </script>
