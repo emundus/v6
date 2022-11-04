@@ -47,7 +47,7 @@ export default {
 		formService.getPageGroups(this.form_id).then((response) => {
 			if (response.status) {
 				response.data.groups = response.data.groups.filter((group) => {
-					return group.published === 1;
+					return Number(group.published) === 1;
 				});
 				this.formData = response.data;
 			}
