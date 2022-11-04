@@ -185,7 +185,7 @@ ksort($applications);
                             <div class="em-flex-row em-flex-space-between em-mb-12">
                                 <?php
                                 $color = '#1C6EF2';
-                                $background = '#F0F6FD';
+                                $background = '#C8E1FE';
                                 if(!empty($application->tag_color)){
                                     $color = $application->tag_color;
                                     switch ($application->tag_color) {
@@ -201,7 +201,7 @@ ksort($applications);
                                     }
                                 }
                                 ?>
-                                <p class="mod_emundus_applications___programme_tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
+                                <p class="em-programme-tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
                                     <?php  echo $application->programme; ?>
                                 </p>
                                 <?php if (!$show_fnum) : ?>
