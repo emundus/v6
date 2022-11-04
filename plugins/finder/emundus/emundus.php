@@ -272,9 +272,9 @@ class PlgFinderEmundus extends FinderIndexerAdapter
         $item->summary = FinderIndexerHelper::prepareContent($item->summary, $item->params, $item);
 
         // Build the necessary route and path information.
-        $item->url = 'dossiers#'.$item->summary.'|open';
-        $item->route = 'dossiers#'.$item->summary.'|open';
-        $item->path = 'dossiers#'.$item->summary.'|open';
+        $item->url = '/dossiers#'.$item->fnum.'|open';
+        $item->route = '/dossiers#'.$item->fnum.'|open';
+        $item->path = '/dossiers#'.$item->fnum.'|open';
         $item->state = 1;
         $item->access = 1;
 
@@ -292,6 +292,7 @@ class PlgFinderEmundus extends FinderIndexerAdapter
 
         // Add the metadata processing instructions.
         $item->addInstruction(FinderIndexer::META_CONTEXT, 'author');
+        $item->addInstruction(FinderIndexer::META_CONTEXT, 'status');
 
         // Translate the state. Articles should only be published if the category is published.
         $item->state = $this->translateState($item->state, $item->cat_state);
@@ -344,7 +345,7 @@ class PlgFinderEmundus extends FinderIndexerAdapter
 
         // Check if we can use the supplied SQL query.
         $query = $query instanceof JDatabaseQuery ? $query : $db->getQuery(true)
-            ->select('cc.id, u.name, cc.fnum AS summary, ss.value as status')
+            ->select('cc.id, u.name,cc.fnum, concat(cc.fnum,",",u.email) AS summary, ss.value as status')
             ->select('u.name AS author')
             ->from('#__emundus_campaign_candidature AS cc')
             ->join('LEFT', '#__users AS u ON u.id = cc.applicant_id')
