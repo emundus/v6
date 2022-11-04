@@ -11,7 +11,7 @@
 				<div class="card em-shadow-cards em-pointer em-flex-row">
 					<span class="add_circle material-icons-outlined">add_circle</span>
 				</div>
-				<p class="em-p-4" contenteditable="true"> {{ page.label[shortDefaultLang] }}</p>
+				<input class="em-p-4" type="text" v-model="page.label[shortDefaultLang]">
 			</div>
 		</section>
 		<div class="separator em-mt-32">
@@ -196,12 +196,21 @@ export default {
 			font-size: 12px;
 		}
 
+		input {
+			width: 150px;
+			height: 20px;
+			font-size: 12px;
+			border: 0;
+			background-color: transparent;
+			text-align: center;
+		}
+
 		&.selected {
 			.em-shadow-cards {
 				border: 2px solid #20835F;
 			}
 
-			p {
+			p, input {
 				color: white;
 				background-color: #20835F;
 			}
