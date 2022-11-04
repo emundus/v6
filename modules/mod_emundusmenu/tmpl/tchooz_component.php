@@ -12,15 +12,21 @@ defined('_JEXEC') or die;
 // Note. It is important to remove spaces between elements.
 $class = $item->anchor_css ? 'class="'.$item->anchor_css.'" ' : '';
 $title = $item->anchor_title ? 'title="'.$item->anchor_title.'" ' : '';
+$icon_css = $item->params->get('menu_image_css', '');
 if ($item->menu_image) {
-		$item->params->get('menu_text', 1 ) ?
-        $linktype = '<img src="'.JURI::base().$item->menu_image.'" alt="'.$item->title.'" /><span class="image-title" style="display: none;opacity: 0">'.$item->title.'</span>' :
-        $linktype = '<img src="'.JURI::base().$item->menu_image.'" alt="'.$item->title.'" />';
+		if($item->params->get('menu_text', 1 )) {
+            $linktype = '<img src="' . JURI::base() . $item->menu_image . '" alt="' . $item->title . '" /><span class="image-title" style="display: none;opacity: 0">' . $item->title . '</span>';
+        } else {
+            $linktype = '<img src="' . JURI::base() . $item->menu_image . '" alt="' . $item->title . '" />';
+        }
 } else {
     if(($item->deeper && $item->level == 1) || (!$item->deeper && $item->level == 1)) {
-        $linktype = '<span class="simple-letter">' . $item->title[0] . '</span><span class="image-title" style="display: none;opacity: 0">' . $item->title . '</span>';
+        if(!empty($icon_css)){
+            $linktype = '<span class="material-icons-outlined" style="padding: 5px; font-size: 24px; color: black">'.$icon_css.'</span><span class="image-title" style="display: none;opacity: 0">' . $item->title . '</span>';
+        } else {
+            $linktype = '<span class="simple-letter">' . $item->title[0] . '</span><span class="image-title" style="display: none;opacity: 0">' . $item->title . '</span>';
+        }
     } else {
-        //$linktype = 'test';
         $linktype = '<span>' . $item->title . '</span>';
     }
 }

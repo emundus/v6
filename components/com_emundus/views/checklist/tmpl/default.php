@@ -5,7 +5,6 @@ JHTML::_('behavior.modal');
 
 
 $document = JFactory::getDocument();
-$document->addStyleSheet("media/com_emundus/css/emundus_checklist.css" );
 $document->addScript("https://cdn.jsdelivr.net/npm/sweetalert2@8");
 $mainframe = JFactory::getApplication();
 
@@ -107,15 +106,25 @@ if (!empty($this->custom_title)) :?>
 
 <?php if (count($this->attachments) > 0) :?>
 
-    <div id="attachment_list" class="em-attachmentList">
+    <div id="attachment_list" class="em-attachmentList em-repeat-card">
         <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('COM_EMUNDUS_ATTACHMENTS_BYTES'); ?> </p>
     <?php if ($this->show_info_legend) :?>
-        <div id="legend" class="em-attachmentList-legend">
-            <div class="need_missing"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC'); ?></div>,
-            <div class="need_ok"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_SENT_DOC'); ?></div>,
-            <div class="need_missing_fac"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC_FAC'); ?></div>
+        <div id="legend" class="em-mt-4">
+            <div class="em-flex-row">
+                <span class="material-icons-outlined em-red-500-color em-mr-4">highlight_off</span>
+                <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC'); ?></p>
+            </div>
+            <div class="em-flex-row">
+                <span class="material-icons-outlined em-main-500-color em-mr-4">check_circle</span>
+                <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_SENT_DOC'); ?></p>
+            </div>
+            <div class="em-flex-row">
+                <span class="material-icons-outlined em-red-500-color em-mr-4">error_outline</span>
+                <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC_FAC'); ?></p>
+            </div>
         </div>
     <?php endif; ?>
+        <hr/>
     <?php
         $file_upload = 1;
         $attachment_list_mand = "";
@@ -126,12 +135,18 @@ if (!empty($this->custom_title)) :?>
             } else {
                 $class = 'need_ok';
             }
-            $div = '<div id="a'.$attachment->id.'" style="position: relative;top: -65px;"></div><fieldset id="a'.$attachment->id.'" class="em-fieldset-attachment em-mt-16">
-                <legend id="l'.$attachment->id.'" class="'.$class.'">
-                    <a class="'.$class.'">'.$attachment->value .'</a>';
-            $div .= '</legend>
-                <p class="description em-fieldset-attachment-description">'.$attachment->description .'</p>
-                <div class="table-responsive em-fieldset-attachment-table-responsive">
+            $div = '<div id="a'.$attachment->id.'" style="position: relative;top: -65px;"></div>
+                <fieldset id="a'.$attachment->id.'" class="em-fieldset-attachment em-mt-24">
+                <div id="l'.$attachment->id.'" class="em-flex-row">';
+            if ($attachment->nb == 0) {
+                $div .= $attachment->mandatory?'<span class="material-icons-outlined em-red-500-color em-mr-4">highlight_off</span>':'<span class="material-icons-outlined em-red-500-color em-mr-4">error_outline</span>';
+            } else {
+                $div .= '<span class="material-icons-outlined em-main-500-color em-mr-4">check_circle</span>';
+            }
+            $div .= '<p class="em-h5">'.$attachment->value .'</p>';
+            $div .= '</div>
+                <p class="em-ml-22">'.$attachment->description .'</p>
+                <div>
                 <table id="'.$attachment->id .'" class="table em-fieldset-attachment-table">';
 
             if ($attachment->nb > 0) {
@@ -327,14 +342,14 @@ if (!empty($this->custom_title)) :?>
                     }
 </script>';
             } else {
-                $div .= '<form id="form-a'.$attachment->id.'" name="checklistForm" class="dropzone" action="'.JRoute::_('index.php?option=com_emundus&task=upload&duplicate='.$attachment->duplicate.'&Itemid='.$itemid).'" method="post" enctype="multipart/form-data">';
+                $div .= '<form id="form-a'.$attachment->id.'" name="checklistForm" class="dropzone em-attachment-dropzone" action="'.JRoute::_('index.php?option=com_emundus&task=upload&duplicate='.$attachment->duplicate.'&Itemid='.$itemid).'" method="post" enctype="multipart/form-data">';
                 $div .= '<input type="hidden" name="attachment" value="'.$attachment->id.'"/>
                 <input type="hidden" name="duplicate" value="'.$attachment->duplicate.'"/>
                 <input type="hidden" name="label" value="'.$attachment->lbl.'"/>
                 <input type="hidden" name="required_desc" value="'.$this->required_desc.'"/>
-                <div class="input-group em-fieldset-attachment-table-upload">';
+                <div>';
                 if ($this->show_shortdesc_input) {
-                    $div .= '<div class="row"><div class="col-sm-12 em-description"><label><span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_SHORT_DESC').'</span></label><input type="text" class="form-control" maxlength="80" name="description" placeholder="'.(($this->required_desc != 0)?JText::_('EMUNDUS_REQUIRED_FIELD'):'').'" /></div></div>';
+                    $div .= '<div class="row"><div><label><span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_SHORT_DESC').'</span></label><input type="text" class="em-w-100" maxlength="80" name="description" placeholder="'.(($this->required_desc != 0)?JText::_('EMUNDUS_REQUIRED_FIELD'):'').'" /></div></div>';
                 }
                 if ($this->show_browse_button) {
                     $div .= '<div class="row" id="upload-files-'.$file_upload.'"><div class="col-sm-12"><label for="file" class="custom-file-upload"><input class="em-send-attachment" id="em-send-attachment-'.$file_upload.'" type="file" name="file" multiple onchange="processSelectedFiles(this)"/><span style="display: none;" >'.JText::_("COM_EMUNDUS_SELECT_UPLOAD_FILE").'</span></label>';
@@ -534,6 +549,7 @@ if (!empty($this->custom_title)) :?>
                 </tr>
                 <tr class="em-allowed-files">
                     <td>
+                    <div class="em-ml-22">
                     <p><em>'. JText::_('COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY').' '.$attachment->allowed_types.'</em></p>
                     <div class="em-flex-row em-flex-space-between">
                         <p><em>'.JText::_('COM_EMUNDUS_ATTACHMENTS_MAX_ALLOWED').' '.$attachment->nbmax .'</em></p>';
@@ -541,7 +557,7 @@ if (!empty($this->custom_title)) :?>
                         $div .= '<button class="btn btn-danger btn-xs em-pointer" onclick="uploadfromprofile('."$attachment->id".')">'.JText::_('COM_EMUNDUS_USERS_MY_DOCUMENTS_LOAD').'</button>';
                     }
 
-                    $div .= '</div></td>';
+                    $div .= '</div></div></td>';
 
                 $div .= '</tr>';
                 } else {
@@ -577,7 +593,7 @@ if (!empty($this->custom_title)) :?>
       <div class="col-md-<?= (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_mand != '') {
-           echo '<div id="attachment_list_mand" class="em-container-attachments em-mt-8"><p class="em-h3 em-mt-8">'.JText::_('COM_EMUNDUS_ATTACHMENTS_MANDATORY_DOCUMENTS').'</p>'.$attachment_list_mand.'</div>';
+           echo '<div id="attachment_list_mand" class="em-container-attachments em-w-100"><p class="em-h3">'.JText::_('COM_EMUNDUS_ATTACHMENTS_MANDATORY_DOCUMENTS').'</p>'.$attachment_list_mand.'</div>';
         }
     ?>
       </div>
@@ -589,7 +605,7 @@ if (!empty($this->custom_title)) :?>
       <div class="col-md-<?= (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_opt != '') {
-           echo '<div id="attachment_list_opt" class="em-container-attachmentsOpt"><h1 class="em-titleDocOpt">'.JText::_('COM_EMUNDUS_ATTACHMENTS_OPTIONAL_DOCUMENTS').'</h1>'.$attachment_list_opt.'</div>';
+           echo '<div id="attachment_list_opt" class="em-container-attachmentsOpt em-mt-16 em-w-100"><p class="em-h3">'.JText::_('COM_EMUNDUS_ATTACHMENTS_OPTIONAL_DOCUMENTS').'</p>'.$attachment_list_opt.'</div>';
         }
     ?>
       </div>

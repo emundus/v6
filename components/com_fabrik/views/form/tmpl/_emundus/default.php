@@ -133,7 +133,6 @@ endif; ?>
         }
 
         // Load skeleton
-        jQuery('#g-page-surround').after('<div class="em-page-loader" id="em-dimmer"></div>');
         let header = document.querySelector('.page-header');
         if(header) {
             document.querySelector('.page-header h1').style.opacity = 0;
@@ -154,6 +153,10 @@ endif; ?>
             field.style.opacity = 0;
         }
         for (elt of elements){
+            let elt_container = elt.querySelector('.fabrikElementContainer');
+            if(elt_container !== null && !elt_container.classList.contains('fabrikHide')) {
+                elt.style.marginTop = '24px';
+            }
             elt.classList.add('skeleton');
         }
     });

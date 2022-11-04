@@ -17,9 +17,9 @@
   --disabled-color: #c4c4c4;
 }
 
-.material-icons, .material-icons-outlined {
+span.material-icons, span.material-icons-outlined {
   transition: all 0.3s;
-  font-size: 18px !important;
+  font-size: 18px;
   color: var(--grey-color);
 }
 

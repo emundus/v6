@@ -1,6 +1,5 @@
 requirejs(['fab/fabrik'], function () {
     Fabrik.addEvent('fabrik.form.loaded', function (form) {
-        jQuery('#em-dimmer').remove();
 
         let header = document.querySelector('.page-header');
         if(header) {
@@ -22,6 +21,7 @@ requirejs(['fab/fabrik'], function () {
             field.style.opacity = 1;
         }
         for (elt of elements){
+            elt.style.marginTop = '0';
             elt.classList.remove('skeleton');
         }
     });
