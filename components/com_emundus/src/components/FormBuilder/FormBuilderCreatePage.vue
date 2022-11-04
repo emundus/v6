@@ -28,7 +28,7 @@
 						:title="model.label[shortDefaultLang]"
 						@click="selected = model.id"
 				>
-					<form-builder-preview-form :form_id="model.form_id" class="card em-shadow-cards model-preview em-pointer">
+					<form-builder-preview-form :form_id="Number(model.form_id)" :form_label="model.label[shortDefaultLang]"  class="card em-shadow-cards model-preview em-pointer">
 					</form-builder-preview-form>
 					<p class="em-p-4"> {{ model.label[shortDefaultLang] }}</p>
 				</div>

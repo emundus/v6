@@ -1,10 +1,10 @@
 <template>
 	<div id="form-builder-preview-form" class="em-h-100 em-w-100" :class="{loading: loading}">
 		<div v-if="!loading">
-			<h1 class="em-w-100 em-text-align-left">{{ formData.show_title.label[shortDefaultLang] }}</h1>
+			<h1 class="em-w-100 em-text-align-left">{{ form_label }}</h1>
 			<div class="preview-groups em-flex-column">
-				<section v-for="group in formData.Groups" :key="group.group_id" class="em-mb-8">
-					<h2 class="em-w-100 em-text-align-left">{{ group.label[shortDefaultLang] }}</h2>
+				<section v-for="group in formData.groups" :key="group.id" class="em-mb-8">
+					<h2 class="em-w-100 em-text-align-left">{{ group.label }}</h2>
 				</section>
 			</div>
 		</div>
@@ -24,6 +24,10 @@ export default {
 		form_id: {
 			type: Number,
 			required: true
+		},
+		form_label: {
+			type: String,
+			default: ''
 		}
 	},
 	data() {
@@ -33,7 +37,7 @@ export default {
 		}
 	},
 	created() {
-		formService.getPageObject(this.form_id).then((response) => {
+		formService.getPageGroups(this.form_id).then((response) => {
 			if (response.status) {
 				this.formData = response.data;
 			}
