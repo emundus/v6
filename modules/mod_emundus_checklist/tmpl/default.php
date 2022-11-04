@@ -83,6 +83,35 @@ foreach ($forms as $index => $form){
     </div>
 </div>
 
+<?php
+$uri =& JFactory::getURI();
+$url = explode('&',$uri->toString());
+$details_view = array_search('view=details',$url);
+?>
+
+<div class="em-ml-32 em-mt-24">
+    <?php if ($show_send && $details_view === false && $is_confirm_url === false) :?>
+        <a class="btn btn-success btn-xs em-w-100"
+            <?php if (((int)($attachments_progress) >= 100 && (int)($forms_progress) >= 100 && in_array($application->status, $status_for_send) && (!$is_dead_line_passed || ($is_dead_line_passed && $can_edit_after_deadline))) || in_array($user->id, $applicants)) :?>
+                href="<?php echo $confirm_form_url; ?>" style="opacity: 1"
+            <?php else: ?>
+                style="opacity: 0.6; cursor: not-allowed"
+            <?php endif; ?>
+            <?php if ($application_fee && !$paid) :?>
+                title="<?php echo JText::_('MOD_EMUNDUS_CHECKLIST_PROCESS_TO_PAYMENT'); ?>"
+            <?php else :?>
+                title="<?php echo JText::_('MOD_EMUNDUS_CHECKLIST_SEND_APPLICATION'); ?>"
+            <?php endif ?>
+        >
+            <?php if ($application_fee && !$paid) :?>
+                <?php echo JText::_('MOD_EMUNDUS_CHECKLIST_PROCESS_TO_PAYMENT'); ?>
+            <?php else :?>
+                <?php echo JText::_('MOD_EMUNDUS_CHECKLIST_SEND_APPLICATION'); ?>
+            <?php endif ?>
+        </a>
+    <?php endif; ?>
+</div>
+
 <script>
     function expandForms(){
         let content = document.getElementById('mod_emundus_checklist___content');

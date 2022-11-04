@@ -274,6 +274,12 @@ class com_emundusInstallerScript
                     ->where($db->quoteName('form_template') . ' = ' . $db->quote('bootstrap'));
                 $db->setQuery($query);
                 $db->execute();
+
+                EmundusHelperUpdate::insertTranslationsTag('HIKA_BILLING_DESCRIPTION','Afin de poursuivre, vous devrez régler les frais de dossier liés à l’inscription');
+                EmundusHelperUpdate::insertTranslationsTag('HIKA_BILLING_DESCRIPTION','In order to continue, you will need to pay the registration fee.','override',null,null,null,'en-GB');
+                EmundusHelperUpdate::insertTranslationsTag('HIKASHOP_PAYMENT_METHOD_SENTENCE','Vous souhaitez payer par');
+                EmundusHelperUpdate::insertTranslationsTag('HIKASHOP_PAYMENT_METHOD_SENTENCE','You wish to pay by','override',null,null,null,'en-GB');
+                EmundusHelperUpdate::insertTranslationsTag('HIKASHOP_NEW_BILLING_ADDRESS','Adresse de facturation');
             }
 
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();

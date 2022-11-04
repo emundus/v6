@@ -1227,6 +1227,19 @@ input:focus + .em-slider {
   border: 1px solid $neutral-200;
 }
 
+.em-input-card{
+  border-radius: var(--border-radius);
+  padding: 12px 16px;
+  height: auto;
+  background: #fff;
+  border: 1px solid $neutral-400;
+}
+.em-input-card-selected{
+  background: $blue-100;
+  border: 1px solid $blue-400;
+  box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+}
+
 .em-settings-menu{
   display: flex;
   flex-wrap: wrap;
