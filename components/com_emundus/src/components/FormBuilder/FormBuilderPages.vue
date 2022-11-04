@@ -15,7 +15,6 @@
           <div class="em-flex-row em-flex-space-between" @mouseover="pageOptionsShown = page.id" @mouseleave="pageOptionsShown = 0">
             <p @click="selectPage(page.id)" class="em-w-100 em-p-16">{{ page.label }}</p>
             <div class="em-flex-row em-p-16" :style="pageOptionsShown === page.id ? 'opacity:1' : 'opacity: 0'">
-	            <span class="material-icons save em-mr-4 em-pointer" :class="{'already-saved': page.savedAsModel}" @click="saveAsModel(page)" :title="page.savedAsModel ? translate('COM_EMUNDUS_FORM_BUILDER_DELETE_MODEL_TITLE') : translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')">save</span>
 	            <v-popover :popoverArrowClass="'custom-popover-arraow'">
                 <span class="material-icons">more_horiz</span>
 
@@ -107,12 +106,14 @@ export default {
         }).then(result => {
           if (result.value) {
             formBuilderService.deletePage(page.id).then(response => {
-              let deletedPage = this.pages.findIndex(p => p.id === page.id);
-              this.pages.splice(deletedPage, 1);
-              if (this.selected == page.id) {
-                this.$emit('delete-page');
-              }
-              this.updateLastSave();
+							if (response.status) {
+								let deletedPage = this.pages.findIndex(p => p.id === page.id);
+								this.pages.splice(deletedPage, 1);
+								if (this.selected == page.id) {
+									this.$emit('delete-page');
+								}
+								this.updateLastSave();
+							}
             });
           }
         });
@@ -132,89 +133,6 @@ export default {
         });
       }
     },
-	  saveAsModel(page) {
-			if (page.id > 0) {
-				if (!page.savedAsModel) {
-					const validationText = this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_INPUT_NOT_FILLED')
-
-					Swal.fire({
-						title: this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL'),
-						input: "text",
-						inputPlaceholder: this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_INPUT'),
-						showCancelButton: true,
-						confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
-						cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-						reverseButtons: true,
-						customClass: {
-							title: 'em-swal-title',
-							cancelButton: 'em-swal-cancel-button',
-							confirmButton: 'em-swal-confirm-button',
-						},
-						preConfirm(inputValue) {
-							if (inputValue == '') {
-								Swal.showValidationMessage(validationText);
-								return false;
-							}
-
-							return inputValue;
-						}
-					}).then((result) => {
-						if (typeof result.dismiss == 'undefined' && result.value !== '') {
-							formBuilderService.addFormModel(page.id, result.value).then((response) => {
-								if (response.status) {
-									page.savedAsModel = true;
-								} else {
-									Swal.fire({
-										type: 'warning',
-										title: this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_FAILURE'),
-										text: response.msg,
-										reverseButtons: true,
-										customClass: {
-											title: 'em-swal-title',
-											confirmButton: 'em-swal-confirm-button',
-											actions: "em-swal-single-action",
-										}
-									});
-								}
-							});
-						}
-					});
-				} else {
-					Swal.fire({
-						title: this.translate('COM_EMUNDUS_FORM_BUILDER_UNSAVE_MODEL'),
-						showCancelButton: true,
-						confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
-						cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-						reverseButtons: true,
-						customClass: {
-							title: 'em-swal-title',
-							cancelButton: 'em-swal-cancel-button',
-							confirmButton: 'em-swal-confirm-button',
-						},
-					}).then((result) => {
-						if (result.value) {
-							formBuilderService.deleteFormModel(page.id).then((response) => {
-								if (response.status) {
-									page.savedAsModel = false;
-								} else {
-									Swal.fire({
-										type: 'warning',
-										title: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_MODEL_FAILURE'),
-										text: response.msg,
-										reverseButtons: true,
-										customClass: {
-											title: 'em-swal-title',
-											confirmButton: 'em-swal-confirm-button',
-											actions: "em-swal-single-action",
-										}
-									});
-								}
-							});
-						}
-					});
-				}
-			}
-	  },
     onDragEnd() {
       const newOrder = this.pages.map((page, index) => {
         return {

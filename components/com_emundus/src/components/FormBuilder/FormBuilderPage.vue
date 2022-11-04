@@ -1,16 +1,19 @@
 <template>
   <div id="form-builder-page">
-    <span
-        class="em-font-size-24 em-font-weight-800 editable-data"
-        ref="pageTitle"
-        @focusout="updateTitle"
-        @keyup.enter="updateTitleKeyup"
-        @keydown="(event) => checkMaxMinlength(event, 50, 3)"
-        contenteditable="true"
-        :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
-        v-html="translate(title)"
-    >
-    </span>
+    <div class="em-flex-row em-flex-space-between">
+	    <span
+			    class="em-font-size-24 em-font-weight-800 editable-data"
+			    ref="pageTitle"
+			    @focusout="updateTitle"
+			    @keyup.enter="updateTitleKeyup"
+			    @keydown="(event) => checkMaxMinlength(event, 50, 3)"
+			    contenteditable="true"
+			    :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
+			    v-html="translate(title)"
+	    ></span>
+	    <span v-if="!page.savedAsModel" class="material-icons-outlined em-pointer" :title="translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')" @click="saveAsModel">library_add</span>
+	    <span v-else class="material-icons-outlined em-pointer" :title="translate('COM_EMUNDUS_FORM_BUILDER_DELETE_MODEL_TITLE')" @click="saveAsModel">library_add_check</span>
+    </div>
     <span
       class="description editable-data"
       id="pageDescription"
@@ -59,6 +62,7 @@ import translationService from '../../services/translations';
 import FormBuilderPageSection from "./FormBuilderPageSection";
 import formBuilderMixin from "../../mixins/formbuilder";
 import globalMixin from "../../mixins/mixin";
+import Swal from "sweetalert2";
 
 export default {
   components: {
@@ -227,6 +231,87 @@ export default {
       this.sections = this.sections.filter(section => section.group_id !== sectionId);
       this.updateLastSave();
     },
+	  saveAsModel() {
+		  if (!this.page.savedAsModel) {
+			  const validationText = this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_INPUT_NOT_FILLED')
+
+			  Swal.fire({
+				  title: this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL'),
+				  input: "text",
+				  inputPlaceholder: this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_INPUT'),
+				  showCancelButton: true,
+				  confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+				  cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
+				  reverseButtons: true,
+				  customClass: {
+					  title: 'em-swal-title',
+					  cancelButton: 'em-swal-cancel-button',
+					  confirmButton: 'em-swal-confirm-button',
+				  },
+				  preConfirm(inputValue) {
+					  if (inputValue == '') {
+						  Swal.showValidationMessage(validationText);
+						  return false;
+					  }
+
+					  return inputValue;
+				  }
+			  }).then((result) => {
+				  if (typeof result.dismiss == 'undefined' && result.value !== '') {
+					  formBuilderService.addFormModel(this.page.id, result.value).then((response) => {
+						  if (response.status) {
+							  this.page.savedAsModel = true;
+						  } else {
+							  Swal.fire({
+								  type: 'warning',
+								  title: this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_FAILURE'),
+								  text: response.msg,
+								  reverseButtons: true,
+								  customClass: {
+									  title: 'em-swal-title',
+									  confirmButton: 'em-swal-confirm-button',
+									  actions: "em-swal-single-action",
+								  }
+							  });
+						  }
+					  });
+				  }
+			  });
+		  } else {
+			  Swal.fire({
+				  title: this.translate('COM_EMUNDUS_FORM_BUILDER_UNSAVE_MODEL'),
+				  showCancelButton: true,
+				  confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+				  cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
+				  reverseButtons: true,
+				  customClass: {
+					  title: 'em-swal-title',
+					  cancelButton: 'em-swal-cancel-button',
+					  confirmButton: 'em-swal-confirm-button',
+				  },
+			  }).then((result) => {
+				  if (result.value) {
+					  formBuilderService.deleteFormModel(this.page.id).then((response) => {
+						  if (response.status) {
+							  this.page.savedAsModel = false;
+						  } else {
+							  Swal.fire({
+								  type: 'warning',
+								  title: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_MODEL_FAILURE'),
+								  text: response.msg,
+								  reverseButtons: true,
+								  customClass: {
+									  title: 'em-swal-title',
+									  confirmButton: 'em-swal-confirm-button',
+									  actions: "em-swal-single-action",
+								  }
+							  });
+						  }
+					  });
+				  }
+			  });
+		  }
+	  },
   },
 }
 </script>
