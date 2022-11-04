@@ -1113,10 +1113,11 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 
         if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
-            $formId = $jinput->getInt('form_id');
+            $form_id = $jinput->getInt('form_id');
+            $label = $jinput->getString('label');
 
-            if (!empty($formId)) {
-                $response['status'] = $this->m_formbuilder->addFormModel($formId);
+            if (!empty($form_id) && !empty($label)) {
+                $response['status'] = $this->m_formbuilder->addFormModel($form_id, $label);
                 $response['msg'] = $response['status'] ? JText::_('SUCCESS') :  JText::_('FAILED');
             } else {
                 $response['msg'] = JText::_('MISSING_PARAMS');
@@ -1134,10 +1135,10 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 
         if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
-            $formId = $jinput->getInt('form_id');
+            $form_id = $jinput->getInt('form_id');
 
-            if (!empty($formId)) {
-                $response['status'] = $this->m_formbuilder->deleteFormModel($formId);
+            if (!empty($form_id)) {
+                $response['status'] = $this->m_formbuilder->deleteFormModel($form_id);
                 $response['msg'] = $response['status'] ? JText::_('SUCCESS') :  JText::_('FAILED');
             } else {
                 $response['msg'] = JText::_('MISSING_PARAMS');

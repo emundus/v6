@@ -678,10 +678,11 @@ export default {
             };
         }
     },
-    async addFormModel(formId) {
+    async addFormModel(formId, modelLabel) {
         if (formId > 0) {
             const formData = new FormData();
             formData.append('form_id', formId);
+            formData.append('label', modelLabel);
 
             try {
                 const response = await client().post(

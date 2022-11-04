@@ -135,12 +135,82 @@ export default {
 	  saveAsModel(page) {
 			if (page.id > 0) {
 				if (!page.savedAsModel) {
-					formBuilderService.addFormModel(page.id).then((response) => {
-						page.savedAsModel = true;
+					const validationText = this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_INPUT_NOT_FILLED')
+
+					Swal.fire({
+						title: this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL'),
+						input: "text",
+						inputPlaceholder: this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_INPUT'),
+						showCancelButton: true,
+						confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+						cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
+						reverseButtons: true,
+						customClass: {
+							title: 'em-swal-title',
+							cancelButton: 'em-swal-cancel-button',
+							confirmButton: 'em-swal-confirm-button',
+						},
+						preConfirm(inputValue) {
+							if (inputValue == '') {
+								Swal.showValidationMessage(validationText);
+								return false;
+							}
+
+							return inputValue;
+						}
+					}).then((result) => {
+						if (typeof result.dismiss == 'undefined' && result.value !== '') {
+							formBuilderService.addFormModel(page.id, result.value).then((response) => {
+								if (response.status) {
+									page.savedAsModel = true;
+								} else {
+									Swal.fire({
+										type: 'warning',
+										title: this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_FAILURE'),
+										text: response.msg,
+										reverseButtons: true,
+										customClass: {
+											title: 'em-swal-title',
+											confirmButton: 'em-swal-confirm-button',
+											actions: "em-swal-single-action",
+										}
+									});
+								}
+							});
+						}
 					});
 				} else {
-					formBuilderService.deleteFormModel(page.id).then((response) => {
-						page.savedAsModel = false;
+					Swal.fire({
+						title: this.translate('COM_EMUNDUS_FORM_BUILDER_UNSAVE_MODEL'),
+						showCancelButton: true,
+						confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+						cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
+						reverseButtons: true,
+						customClass: {
+							title: 'em-swal-title',
+							cancelButton: 'em-swal-cancel-button',
+							confirmButton: 'em-swal-confirm-button',
+						},
+					}).then((result) => {
+						if (result.value) {
+							formBuilderService.deleteFormModel(page.id).then((response) => {
+								if (response.status) {
+									page.savedAsModel = false;
+								} else {
+									Swal.fire({
+										type: 'warning',
+										title: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_MODEL_FAILURE'),
+										text: response.msg,
+										reverseButtons: true,
+										customClass: {
+											title: 'em-swal-title',
+											confirmButton: 'em-swal-confirm-button',
+											actions: "em-swal-single-action",
+										}
+									});
+								}
+							});
+						}
 					});
 				}
 			}

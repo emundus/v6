@@ -3646,7 +3646,7 @@ class EmundusModelFormbuilder extends JModelList {
         return $form_id;
     }
 
-    public function addFormModel($form_id)
+    public function addFormModel($form_id, $label)
     {
         $inserted = false;
 
@@ -3658,8 +3658,8 @@ class EmundusModelFormbuilder extends JModelList {
                 $query = $db->getQuery(true);
 
                 $query->insert('#__emundus_template_form')
-                    ->columns('form_id')
-                    ->values($form_id);
+                    ->columns(['form_id', 'label'])
+                    ->values($form_id . ', ' . $db->quote($label));
 
                 $db->setQuery($query);
 
