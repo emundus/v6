@@ -1564,7 +1564,7 @@ class EmundusModelForm extends JModelList {
             $db->setQuery($query);
             $forms = $db->loadObjectList();
 
-            foreach ($forms as $form){
+            foreach ($forms as $form) {
                 $link = explode('=', $form->link);
                 $form->id = $link[sizeof($link) - 1];
 
@@ -1575,6 +1575,17 @@ class EmundusModelForm extends JModelList {
                 $db->setQuery($query);
                 $form->label = $formbuilder->getJTEXT($db->loadResult());
                 print_r($forms->label);
+
+
+                $query->clear()
+                    ->select('id')
+                    ->from('#__emundus_template_form')
+                    ->where('form_id = ' . $form->id);
+
+                $db->setQuery($query);
+                $modelId = $db->loadResult();
+
+                $form->savedAsModel = !empty($modelId);
             }
 
             return $forms;

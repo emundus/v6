@@ -2400,14 +2400,19 @@ class EmundusModelFormbuilder extends JModelList {
      *
      * @return array|mixed|void
      */
-    function getPagesModel() {
+    function getPagesModel($form_ids = []) {
         $models = [];
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
         $query->select('*')
-            ->from($db->quoteName('#__emundus_template_form'))
-            ->order('form_id');
+            ->from($db->quoteName('#__emundus_template_form'));
+
+        if (!empty($form_ids)) {
+            $query->where('form_id IN (' . implode(',', $form_ids) . ')');
+        }
+
+        $query->order('form_id');
 
         try {
             $db->setQuery($query);
@@ -3639,5 +3644,64 @@ class EmundusModelFormbuilder extends JModelList {
         }
 
         return $form_id;
+    }
+
+    public function addFormModel($form_id)
+    {
+        $inserted = false;
+
+        if (!empty($form_id)) {
+            $model = $this->getPagesModel([$form_id]);
+
+            if (empty($model)) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->insert('#__emundus_template_form')
+                    ->columns('form_id')
+                    ->values($form_id);
+
+                $db->setQuery($query);
+
+                try {
+                    $inserted = $db->execute();
+                } catch (Exception $e) {
+                    JLog::add('Failed to create new form model ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                }
+            } else {
+                $inserted = true;
+            }
+        }
+
+        return $inserted;
+    }
+
+    public function deleteFormModel($form_id)
+    {
+        $deleted = false;
+
+        if (!empty($form_id)) {
+            $model = $this->getPagesModel([$form_id]);
+
+            if (!empty($model)) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->delete('#__emundus_template_form')
+                    ->where('form_id = ' . $form_id);
+
+                $db->setQuery($query);
+
+                try {
+                    $deleted = $db->execute();
+                } catch (Exception $e) {
+                    JLog::add('Failed to delete form ' . $form_id . ' model ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                }
+            } else {
+                $deleted = true;
+            }
+        }
+
+        return $deleted;
     }
 }

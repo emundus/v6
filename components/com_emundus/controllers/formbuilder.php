@@ -1105,6 +1105,48 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
          echo json_encode((object)$response);
          exit;
      }
+
+    public function addformmodel()
+    {
+        $user = JFactory::getUser();
+        $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $jinput = JFactory::getApplication()->input;
+            $formId = $jinput->getInt('form_id');
+
+            if (!empty($formId)) {
+                $response['status'] = $this->m_formbuilder->addFormModel($formId);
+                $response['msg'] = $response['status'] ? JText::_('SUCCESS') :  JText::_('FAILED');
+            } else {
+                $response['msg'] = JText::_('MISSING_PARAMS');
+            }
+        }
+
+        echo json_encode((object)$response);
+        exit;
+    }
+
+    public function deleteformmodel()
+    {
+        $user = JFactory::getUser();
+        $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $jinput = JFactory::getApplication()->input;
+            $formId = $jinput->getInt('form_id');
+
+            if (!empty($formId)) {
+                $response['status'] = $this->m_formbuilder->deleteFormModel($formId);
+                $response['msg'] = $response['status'] ? JText::_('SUCCESS') :  JText::_('FAILED');
+            } else {
+                $response['msg'] = JText::_('MISSING_PARAMS');
+            }
+        }
+
+        echo json_encode((object)$response);
+        exit;
+    }
 }
 
 

@@ -15,7 +15,8 @@
           <div class="em-flex-row em-flex-space-between" @mouseover="pageOptionsShown = page.id" @mouseleave="pageOptionsShown = 0">
             <p @click="selectPage(page.id)" class="em-w-100 em-p-16">{{ page.label }}</p>
             <div class="em-flex-row em-p-16" :style="pageOptionsShown === page.id ? 'opacity:1' : 'opacity: 0'">
-              <v-popover :popoverArrowClass="'custom-popover-arraow'">
+	            <span class="material-icons save" :class="{'already-saved': page.savedAsModel}" @click="saveAsModel(page)">save</span>
+	            <v-popover :popoverArrowClass="'custom-popover-arraow'">
                 <span class="material-icons">more_horiz</span>
 
                 <template slot="popover">
@@ -131,6 +132,19 @@ export default {
         });
       }
     },
+	  saveAsModel(page) {
+			if (page.id > 0) {
+				if (!page.savedAsModel) {
+					formBuilderService.addFormModel(page.id).then((response) => {
+						page.savedAsModel = true;
+					});
+				} else {
+					formBuilderService.deleteFormModel(page.id).then((response) => {
+						page.savedAsModel = false;
+					});
+				}
+			}
+	  },
     onDragEnd() {
       const newOrder = this.pages.map((page, index) => {
         return {
@@ -180,5 +194,11 @@ export default {
   #form-builder-pages-sections-list {
     list-style: none;
   }
+
+	.save {
+		&.already-saved {
+			color: #20835f;
+		}
+	}
 }
 </style>
