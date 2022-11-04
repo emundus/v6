@@ -26,6 +26,7 @@ foreach ($forms as $index => $form){
         <?php if ($show_forms == 1 && count($forms) > 0) : ?>
             <?php
             $index_doc = count($forms) + 1;
+            $index_opt_doc = count($forms) + 2;
             ?>
             <div>
                 <?php foreach ($forms as $index => $form) : ?>
@@ -67,6 +68,15 @@ foreach ($forms as $index => $form){
                         </a>
                     </div>
                     <?php endforeach; ?>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($show_optional_documents == 1 && count($optional_documents) > 0) : ?>
+            <div class="<?php if($itemid['id'] == $menuid) echo 'active'?> mod_emundus_checklist_<?php echo $class; ?> mod_emundus_checklist___form_item em-mt-32">
+                <div class="mod_emundus_checklist___grid">
+                    <div class="mod_emundus_checklist___step_count"><?php echo $index_opt_doc ?></div>
+                    <a href="<?php echo $itemid['link'].'&Itemid='.$itemid['id'] ?>#attachment_list_opt"><?php echo JText::_($optional_documents_title) ?></a>
                 </div>
             </div>
         <?php endif; ?>
