@@ -1525,7 +1525,7 @@ class EmundusModelEvaluation extends JModelList {
      */
     public function getEvaluationAverageByFnum($fnums) {
         $dbo = $this->getDbo();
-        $query = 'SELECT AVG(overall) AS overall, fnum FROM #__emundus_evaluations WHERE fnum IN ("'.implode('","', $fnums).'") AND overall IS NOT NULL GROUP BY fnum';
+        $query = 'SELECT ROUND(AVG(overall),2) AS overall, fnum FROM #__emundus_evaluations WHERE fnum IN ("'.implode('","', $fnums).'") AND overall IS NOT NULL GROUP BY fnum';
 
         try {
 
