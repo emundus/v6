@@ -574,6 +574,7 @@ JText::script('COM_EMUNDUS_ACCESS_LOGS');                   # 37
 
 JText::script('COM_EMUNDUS_EDIT_COMMENT_BODY');
 JText::script('COM_EMUNDUS_EDIT_COMMENT_TITLE');
+JText::script('COM_EMUNDUS_FORM_BUILDER_DELETE_MODEL');
 
 // ONBOARD
 

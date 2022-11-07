@@ -672,10 +672,7 @@ export default {
 
             return response.data;
         } catch (e) {
-            return {
-                status: false,
-                message: e.message
-            };
+            return {status: false, message: e.message};
         }
     },
     async addFormModel(formId, modelLabel) {
@@ -691,16 +688,10 @@ export default {
 
                 return response.data;
             } catch (e) {
-                return {
-                    status: false,
-                    message: e.message
-                };
+                return {status: false, message: e.message};
             }
         } else {
-            return {
-                status: false,
-                message: 'MISSING_PARAMS'
-            };
+            return {status: false, message: 'MISSING_PARAMS'};
         }
     },
     async deleteFormModel(formId) {
@@ -715,16 +706,28 @@ export default {
 
                 return response.data;
             } catch (e) {
-                return {
-                    status: false,
-                    message: e.message
-                };
+                return {status: false, message: e.message};
             }
         } else {
-            return {
-                status: false,
-                message: 'MISSING_PARAMS'
-            };
+            return {status: false, message: 'MISSING_PARAMS'};
+        }
+    },
+    async deleteFormModelFromId(modelIds) {
+        if (modelIds.length > 0) {
+            const formData = new FormData();
+            formData.append('model_ids', JSON.stringify(modelIds));
+
+            try {
+                const response = await client().post(
+                    'index.php?option=com_emundus&controller=formbuilder&task=deleteformmodelfromids', formData
+                );
+
+                return response.data;
+            } catch (e) {
+                return {status: false, message: e.message};
+            }
+        } else {
+            return {status: false, message: 'MISSING_PARAMS'};
         }
     }
 };

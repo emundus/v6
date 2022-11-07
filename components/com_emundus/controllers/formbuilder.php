@@ -1148,6 +1148,28 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         echo json_encode((object)$response);
         exit;
     }
+
+    public function deleteformmodelfromids()
+    {
+        $user = JFactory::getUser();
+        $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $jinput = JFactory::getApplication()->input;
+            $model_ids = $jinput->getString('model_ids');
+            $model_ids = json_decode($model_ids, true);
+
+            if (!empty($model_ids) && is_array($model_ids)) {
+                $response['status'] = $this->m_formbuilder->deleteFormModelFromIds($model_ids);
+                $response['msg'] = $response['status'] ? JText::_('SUCCESS') :  JText::_('FAILED');
+            } else {
+                $response['msg'] = JText::_('MISSING_PARAMS');
+            }
+        }
+
+        echo json_encode((object)$response);
+        exit;
+    }
 }
 
 

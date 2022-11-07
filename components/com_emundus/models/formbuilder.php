@@ -2400,7 +2400,7 @@ class EmundusModelFormbuilder extends JModelList {
      *
      * @return array|mixed|void
      */
-    function getPagesModel($form_ids = []) {
+    function getPagesModel($form_ids = [], $model_ids = []) {
         $models = [];
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -2410,6 +2410,8 @@ class EmundusModelFormbuilder extends JModelList {
 
         if (!empty($form_ids)) {
             $query->where('form_id IN (' . implode(',', $form_ids) . ')');
+        } else if (!empty($model_ids)) {
+            $query->where('id IN (' . implode(',', $model_ids) . ')');
         }
 
         $query->order('form_id');
@@ -3700,6 +3702,43 @@ class EmundusModelFormbuilder extends JModelList {
             } else {
                 $deleted = true;
             }
+        }
+
+        return $deleted;
+    }
+
+    public function deleteFormModelFromIds($model_ids)
+    {
+        $deleted = false;
+
+        if (!empty($model_ids)) {
+            // get only models who truly exists
+            $models = $this->getPagesModel([], $model_ids);
+            $models_to_delete = [];
+
+            foreach ($models as $model) {
+                $models_to_delete[] = $model->id;
+            }
+
+            if (!empty($models_to_delete)) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->delete('#__emundus_template_form')
+                    ->where('id IN (' . implode(',', $models_to_delete) . ')');
+
+                $db->setQuery($query);
+
+                try {
+                    $deleted = $db->execute();
+                } catch (Exception $e) {
+                    JLog::add('Failed to delete ' .  implode(',', $models_to_delete) . ' model ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                }
+            } else {
+                $deleted = true;
+            }
+        } else {
+            $deleted = true;
         }
 
         return $deleted;
