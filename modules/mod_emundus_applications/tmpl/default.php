@@ -28,7 +28,8 @@ defined('_JEXEC') or die;
         </a>
     <?php endif; ?>
 </div>
-<?php if (!empty($applications)) : $count = 0; ?>
+<?php if (!empty($applications)) : ?>
+    <?php $count = 0; ?>
     <div class="<?= $moduleclass_sfx ?>">
     <?php foreach ($applications as $application) : ?>
 
