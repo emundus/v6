@@ -45,7 +45,7 @@ class EmundusModelLogs extends JModelList {
 	 *
 	 * @since 3.8.8
 	 */
-    static function log($user_from, $user_to, $fnum, $action, $crud = '', $message = '', $params = '',$status_from,$status_to) {
+    static function log($user_from, $user_to, $fnum, $action, $crud = '', $message = '', $params = '',$status_from=null,$status_to=null) {
         // write log file
         jimport('joomla.log.log');
         JLog::addLogger(['text_file' => 'com_emundus.logs.php'], JLog::ERROR, 'com_emundus');
