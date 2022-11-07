@@ -234,8 +234,8 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		$fnum = $jinput->post->get('fnum');
 
         //// GET REFEENCE FIRSTNAME, REFERENCE LASTNAME ////
-        $firstname = ucfirst($jinput->post->getString('firstname'));
-        $lastname = ucfirst($jinput->post->getString('lastname'));
+        $firstname = ucwords($jinput->post->getString('firstname'));
+        $lastname = ucwords($jinput->post->getString('lastname'));
 
 		if (empty($recipient)) {
 			$response = array("result" => 0, "message"=>'<span class="emundusreferent_error">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_MISSING_ERROR').'</span>');
