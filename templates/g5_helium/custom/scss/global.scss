@@ -1965,6 +1965,7 @@ tr.fabrikFilterContainer{
     border: 1px solid $base-secondary-color;
     border-radius: var(--border-radius);
     padding: 8px 12px;
+    height: 40px;
 
     &:hover {
       background-color: transparent;
@@ -1995,6 +1996,7 @@ tr.fabrikFilterContainer{
     border-radius: var(--border-radius) !important;
     padding: 8px 12px !important;
     color: var(--neutral-50);
+    height: 40px;
 
     &:hover,
     &:focus,
@@ -4408,6 +4410,22 @@ button.swal2-cancel.goback-btn {
       }
     }
   }
+}
+
+/*******************************  HIKASHOP  ***********************************/
+.hikashop_field_dropdown{
+  height: 41px !important;
+  width: 100% !important;
+}
+.hikashop_field_required_label{
+  color: $red-500;
+}
+.hikashop_checkout_cart{
+  margin-left: -24px;
+  margin-right: -24px;
+  padding: 24px;
+  border-top: solid 1px $neutral-300;
+  margin-top: 32px;
 }
 
 /******************************* RESPONSIVE ***********************************/

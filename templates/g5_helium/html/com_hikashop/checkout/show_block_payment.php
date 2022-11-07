@@ -82,7 +82,12 @@ if(!empty($cart->usable_methods->payment)) {
 <?php
 			}
 ?>
-	<label for="<?php echo $input_id; ?>" style="cursor:pointer;margin-bottom: 0">
+	<label for="<?php echo $input_id; ?>" class="em-flex-row" style="cursor:pointer;margin-bottom: 0">
+        <?php if ($payment->payment_type === 'banktransfer') : ?>
+            <span class="material-icons-outlined em-mr-12">account_balance</span>
+        <?php else : ?>
+            <span class="material-icons-outlined em-mr-12">credit_card</span>
+        <?php endif; ?>
 		<span class="hikashop_checkout_payment_name"><?php echo $payment->payment_name;?></span>
 	</label>
 	<span class="hikashop_checkout_payment_cost"><?php
@@ -247,6 +252,14 @@ if(!empty($cart->usable_methods->payment)) {
 		}
 ?>
 </div>
+    <?php foreach($cart->usable_methods->payment as $payment) : ?>
+        <?php
+        $selected = (!empty($cart->payment) && $payment->payment_id == $cart->payment->payment_id);
+        ?>
+        <?php if (!empty($payment->payment_description)) : ?>
+            <div class="em-mt-4" id="hikashop_checkout_payment_description_<?php echo $payment->payment_id ?>" style="display: <?php echo $selected ? 'block' : 'none' ?>"><?php echo $this->getDescription($payment) ?></div>
+        <?php endif; ?>
+    <?php endforeach; ?>
 <?php
 }
 
@@ -278,8 +291,16 @@ window.checkout.submitCustomPayment = function(name, id, step, pos) {
 };
 window.checkout.paymentSelected = function(el) {
     let payment_methods = document.querySelectorAll('[id^="payment_method_card_"]');
+    let payments_description = document.querySelectorAll('[id^="hikashop_checkout_payment_description_"]');
+    let payment_description = document.querySelector('#hikashop_checkout_payment_description_' + el.value)
     for(payment of payment_methods){
         payment.classList.remove('em-input-card-selected');
+    }
+    for(payment_desc of payments_description){
+        payment_desc.style.display = 'none';
+    }
+    if(typeof payment_description !== 'undefined' && payment_description !== null){
+        payment_description.style.display = 'block';
     }
     document.getElementById('payment_method_card_'+el.value).classList.add('em-input-card-selected');
 	var data = window.Oby.evalJSON(el.getAttribute('data-hk-checkout')),

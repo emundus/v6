@@ -618,6 +618,14 @@ input:focus + .em-slider {
   max-width: 600px;
 }
 
+.em-max-width-700{
+  max-width: 700px;
+}
+
+.em-max-width-768{
+  max-width: 768px;
+}
+
 .em-max-width-1200{
   max-width: 1200px;
 }
@@ -838,6 +846,9 @@ input:focus + .em-slider {
 }
 .em-mr-8{
   margin-right: 8px;
+}
+.em-mr-12{
+  margin-right: 12px;
 }
 .em-mr-16{
   margin-right: $m-16;

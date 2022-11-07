@@ -280,6 +280,15 @@ class com_emundusInstallerScript
                 EmundusHelperUpdate::insertTranslationsTag('HIKASHOP_PAYMENT_METHOD_SENTENCE','Vous souhaitez payer par');
                 EmundusHelperUpdate::insertTranslationsTag('HIKASHOP_PAYMENT_METHOD_SENTENCE','You wish to pay by','override',null,null,null,'en-GB');
                 EmundusHelperUpdate::insertTranslationsTag('HIKASHOP_NEW_BILLING_ADDRESS','Adresse de facturation');
+                EmundusHelperUpdate::insertTranslationsTag('MAKE_THIS_ADDRESS_THE_DEFAULT_BILLING_ADDRESS','Enregistrer cette adresse');
+                EmundusHelperUpdate::insertTranslationsTag('HIKASHOP_CONFIRM_MY_ADDRESS','Valider mon adresse');
+                EmundusHelperUpdate::insertTranslationsTag('HIKASHOP_CONFIRM_MY_ADDRESS','Validate my address','override',null,null,null,'en-GB');
+                EmundusHelperUpdate::insertTranslationsTag('HIKASHOP_COUPON_TITLE','Code de réduction');
+                EmundusHelperUpdate::insertTranslationsTag('HIKASHOP_COUPON_TITLE','Discount code','override',null,null,null,'en-GB');
+                EmundusHelperUpdate::insertTranslationsTag('CHECKOUT_BUTTON_FINISH','Procéder au paiement');
+                EmundusHelperUpdate::insertTranslationsTag('CHECKOUT_BUTTON_FINISH','Process to payment','override',null,null,null,'en-GB');
+                EmundusHelperUpdate::insertTranslationsTag('HIKA_NEW','Ajouter une adresse');
+                EmundusHelperUpdate::insertTranslationsTag('HIKA_NEW','Add an address','override',null,null,null,'en-GB');
             }
 
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
