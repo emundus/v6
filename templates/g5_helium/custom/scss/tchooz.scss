@@ -121,36 +121,6 @@
   color: $night-blue;
 }
 
-.em-blue-button{
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  padding: 0 $p-16;
-  border-radius: var(--border-radius);
-  border: unset;
-  height: 40px;
-  color: white;
-  background-color: var(--blue-500);
-  border: solid 1px transparent;
-
-  &:hover {
-    background-color: white;
-    color: var(--blue-500);
-    border: 1px solid var(--blue-500);
-    text-decoration: none;
-
-    .material-icons {
-      color: var(--blue-500) !important;
-    }
-  }
-
-  .material-icons {
-    color: $white;
-  }
-}
-
 .em-disabled-button {
   background: $neutral-300;
   border: 1px solid $neutral-300;

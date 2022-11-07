@@ -20,8 +20,8 @@ $now = $dateTime->format('Y-m-d H:i:s');
         display: flex;
         align-items: center;
     }
-    .mod_emundus_flow___print .material-icons-outlined{
-        color: white;
+    .btn-primary.mod_emundus_flow___print{
+        background: transparent;
     }
 </style>
 
@@ -60,7 +60,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
             </a>
             <?php endif; ?>
             <a href="/component/emundus/?task=pdf&amp;fnum=2022101914533400001650000100" target="_blank" title="Imprimer">
-                <button class="btn btn-secondary mod_emundus_flow___print">
+                <button class="btn btn-primary mod_emundus_flow___print">
                     <span class="material-icons-outlined" style="font-size: 16px">print</span>
                 </button>
             </a>

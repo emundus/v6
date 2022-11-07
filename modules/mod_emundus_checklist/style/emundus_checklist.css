@@ -29,50 +29,14 @@
     overflow: hidden;
     -webkit-box-orient: vertical;
     display: -webkit-box;
+    color: black;
+}
+.mod_emundus_checklist___attachment_links{
+    color: black;
 }
 
 .mod_emundus_checklist #mod_emundus_checklist___expand_icon{
     font-size: 24px !important;
-}
-
-.mod_emundus_checklist___step_count{
-    margin-right: 12px;
-    border-radius: 50px;
-    background: #F0F6FD;
-    color: #1C6EF2;
-    height: 24px;
-    width: 24px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.mod_emundus_checklist___border_item{
-    height: 32px;
-    border-left: 2px solid #F3F3F3;
-    margin: 1px 0 1px 11px;
-    margin-top: -15px;
-}
-
-.mod_emundus_checklist .mod_emundus_checklist_need_ok .mod_emundus_checklist___border_item{
-    height: 32px;
-    border-left: 2px solid #406AFF;
-    margin: 1px 0 1px 11px;
-    margin-top: -15px;
-}
-
-.mod_emundus_checklist .active .mod_emundus_checklist___step_count{
-    background: #F0F6FD;
-    color: #1C6EF2;
-}
-.mod_emundus_checklist .mod_emundus_checklist_need_missing:not(.active) .mod_emundus_checklist___step_count{
-    background: #F3F3F3;
-    color: #727272;
-}
-
-.mod_emundus_checklist .mod_emundus_checklist_need_ok:not(.active)  .mod_emundus_checklist___step_count{
-    background: #406AFF;
-    color: #FFF;
 }
 
 #mod_emundus_checklist___content{

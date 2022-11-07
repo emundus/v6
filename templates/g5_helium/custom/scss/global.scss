@@ -1908,7 +1908,7 @@ tr.fabrikFilterContainer{
   }
 
   .btn-primary {
-    font-weight: 500 !important;
+    font-weight: 400 !important;
   }
 
   /* PRINT AND SEND FILE */
@@ -2114,6 +2114,7 @@ tr.fabrikFilterContainer{
       border: 1px solid $base-primary-color;
       border-radius: var(--border-radius);
       color: var(--neutral-50);
+      font-size: 14px;
 
       &:hover,
       &:active,
@@ -4426,6 +4427,51 @@ button.swal2-cancel.goback-btn {
   padding: 24px;
   border-top: solid 1px $neutral-300;
   margin-top: 32px;
+}
+
+/******************************* MODULES  ************************************/
+.mod_emundus_checklist___step_count{
+  margin-right: 12px;
+  border-radius: 50px;
+  background: #F0F6FD;
+  color: $base-primary-color;
+  height: 24px;
+  width: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mod_emundus_checklist___border_item{
+  height: 32px;
+  border-left: 2px solid #F3F3F3;
+  margin: 1px 0 1px 11px;
+  margin-top: -15px;
+}
+
+.mod_emundus_checklist .mod_emundus_checklist_need_ok .mod_emundus_checklist___border_item{
+  height: 32px;
+  border-left: 2px solid $base-primary-color;
+  margin: 1px 0 1px 11px;
+  margin-top: -15px;
+}
+
+.mod_emundus_checklist .active .mod_emundus_checklist___step_count{
+  background: #F0F6FD;
+  color: $base-primary-color;
+}
+.mod_emundus_checklist .mod_emundus_checklist_need_missing:not(.active) .mod_emundus_checklist___step_count{
+  background: #F3F3F3;
+  color: #727272;
+}
+
+.mod_emundus_checklist .mod_emundus_checklist_need_ok:not(.active)  .mod_emundus_checklist___step_count{
+  background: $base-primary-color;
+  color: #FFF;
+}
+
+.mod_emundus_flow___print .material-icons-outlined{
+  color: $base-primary-color;
 }
 
 /******************************* RESPONSIVE ***********************************/
