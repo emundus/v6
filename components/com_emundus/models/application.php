@@ -5353,4 +5353,55 @@ class EmundusModelApplication extends JModelList
             JLog::add('Problem when get values of element ' . $eid . ' with fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
         }
     }
+
+
+    public function invertFnumsOrderByColumn($fnum_from, $new_position, $order_column = 'ordering')
+    {
+        $reordered = false;
+
+        if (!empty($fnum_from) && !empty($new_position)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select($order_column)
+                ->from('#__emundus_campaign_candidature as ecc')
+                ->where('fnum LIKE ' . $db->quote($fnum_from));
+
+            $db->setQuery($query);
+
+            try {
+                $old_position = $db->loadResult();
+
+                $query->clear()
+                    ->select('fnum')
+                    ->from('#__emundus_campaign_candidature as ecc')
+                    ->where($db->quoteName('ecc.' . $order_column) . ' = ' . $new_position);
+
+                $db->setQuery($query);
+                $target_fnum = $db->loadResult();
+
+                $query->clear()
+                    ->update('#__emundus_campaign_candidature')
+                    ->set($db->quoteName($order_column) . ' = ' . $new_position)
+                    ->where('fnum LIKE ' . $db->quote($fnum_from));
+
+                $db->setQuery($query);
+                $reordered = $db->execute();
+
+                if ($reordered) {
+                    $query->clear()
+                        ->update('#__emundus_campaign_candidature')
+                        ->set($db->quoteName($order_column) . ' = ' . $old_position)
+                        ->where('fnum LIKE ' . $db->quote($target_fnum));
+
+                    $db->setQuery($query);
+                    $reordered = $db->execute();
+                }
+            } catch (Exception $e) {
+                JLog::add('Failed to get ' . $order_column . ' in __emundus_campaign_candidature for ' . $fnum_from . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            }
+        }
+
+        return $reordered;
+    }
 }
