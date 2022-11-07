@@ -32,7 +32,7 @@ defined('_JEXEC') or die('Restricted access');
 	</div>
 	<div class="buttons_right">
 <!-- NEXT BUTTON -->
-		<button id="hikabtn_checkout_next" type="submit" class="<?php echo $this->config->get('css_button','hikabtn'); ?> btn btn-primary hikabtn_checkout_next" onclick="return window.checkout.submitStep(this);"><?php
+		<button id="hikabtn_checkout_next" type="submit" class="<?php echo $this->config->get('css_button','hikabtn'); ?> em-blue-button hikabtn_checkout_next" onclick="return window.checkout.submitStep(this);"><?php
 			$steps = count($this->checkoutHelper->checkout_workflow['steps']);
 			$txt = JText::_('HIKA_NEXT');
 			if(($this->step + 1) == $steps) {
