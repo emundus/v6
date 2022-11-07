@@ -307,7 +307,7 @@ endif; ?>
                 const fnum_to =  row_to[0].getAttribute('data-fnum');
 
                 Swal.fire({
-                    title: "<?= JText::_('MOVE_UP'); ?>",
+                    title: "<?= JText::_('MOD_EMUNDUS_APPLICATION_MOVE_UP'); ?>",
                     text: 'Inverser l\'ordre entre '  + fnum + ' et ' +  fnum_to,
                     type: 'warning',
                     showCancelButton: true,
@@ -341,7 +341,7 @@ endif; ?>
                 const fnum_to =  row_to[0].getAttribute('data-fnum');
 
                 Swal.fire({
-                    title: "<?= JText::_('MOVE_DOWN'); ?>",
+                    title: "<?= JText::_('MOD_EMUNDUS_APPLICATION_MOVE_DOWN'); ?>",
                     text: 'Inverser l\'ordre entre '  + fnum + ' et ' +  fnum_to,
                     type: 'warning',
                     showCancelButton: true,
