@@ -70,6 +70,11 @@ export default {
 		isEmptyRowsData() {
 			return this.rowsData.length === 0;
 		},
+	},
+	watch: {
+		type: function() {
+			this.rowsData = typeof rows[this.type] !== undefined ? rows[this.type] : [];
+		}
 	}
 }
 </script>

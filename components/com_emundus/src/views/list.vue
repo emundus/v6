@@ -76,19 +76,40 @@
 		    ></list-body>
 	    </div>
 	    <div v-else>
+		    <nav id="form-nav">
+			    <ul class="em-flex-row-start">
+				    <li
+						    class="em-pointer em-p-8"
+						    :class="{'selected': selectedListTab === 'formulaire' }"
+						    @click="selectedListTab = 'formulaire'"
+				    >
+					    {{ translate('COM_EMUNDUS_ONBOARD_FORMS') }}
+				    </li>
+				    <li
+						    class="em-pointer em-p-8"
+						    :class="{'selected': selectedListTab === 'formModels' }"
+						    @click="selectedListTab = 'formModels'"
+				    >
+					    {{ translate('COM_EMUNDUS_FORM_PAGE_MODELS') }}
+				    </li>
+			    </ul>
+			    <div id="tabs-line" class="em-w-100"></div>
+		    </nav>
 		    <list-body
-				    :type="type"
-				    :actions="actions"
-				    :params="params"
-				    :items="list"
-				    @validateFilters="validateFilters"
-				    @updateLoading="updateLoading"
-		    ></list-body>
-		    <list-body
+				    v-if="selectedListTab === 'formModels'"
 				    type="formModels"
 				    :actions="{}"
 				    :params="{}"
 				    :items="formModelsItems"
+				    @validateFilters="validateFilters"
+				    @updateLoading="updateLoading"
+		    ></list-body>
+		    <list-body
+				    v-else
+				    :type="type"
+				    :actions="actions"
+				    :params="params"
+				    :items="list"
 				    @validateFilters="validateFilters"
 				    @updateLoading="updateLoading"
 		    ></list-body>
@@ -166,7 +187,8 @@ export default {
 
     menuEmail: 0,
     email_categories: [],
-	  formModelsItems: []
+	  formModelsItems: [],
+	  selectedListTab: 'formulaire'
   }),
   created() {
     this.datas = this.$store.getters['global/datas'];
@@ -572,6 +594,35 @@ h2 {
 }
 .material-icons, .material-icons-outlined{
   font-size: 24px !important;
+}
+
+#form-nav {
+	ul {
+		list-style-type: none;
+		margin-left: 0;
+		margin-bottom: 0;
+
+		li {
+			border-top: 1px solid #e0e0e5;
+			border-right: 1px solid #e0e0e5;
+			border-top-left-radius: 4px;
+			border-top-right-radius: 4px;
+
+			&:first-child {
+				border-left: 1px solid #e0e0e5;
+			}
+
+			&.selected {
+				background-color: #f8f8f8;
+				color: #20835F;
+			}
+		}
+	}
+
+	#tabs-line {
+		border-top: 1px solid #e0e0e5;
+		margin-top: -1px;
+	}
 }
 
 </style>
