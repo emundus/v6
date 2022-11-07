@@ -215,10 +215,6 @@ class EmundusModelFormbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
-        $falang = new EmundusModelFalang;
-        $modules = [93,102,103,104,168,170];
-
         try {
             $params = $this->h_fabrik->prepareFabrikMenuParams();
 
@@ -246,20 +242,24 @@ class EmundusModelFormbuilder extends JModelList {
             $db->execute();
             $newmenuid = $db->insertid();
 
-            // Insert translation into falang for modules
-            $falang->insertFalang($label, $newmenuid, 'menu', 'title');
-            //
+            if (!empty($newmenuid)) {
+                // Insert translation into falang for modules
+                require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
+                $falang = new EmundusModelFalang;
+                $falang->insertFalang($label, $newmenuid, 'menu', 'title');
 
-            // Affect modules to this menu
-            foreach ($modules as $module) {
-                $query->clear()
-                    ->insert($db->quoteName('#__modules_menu'))
-                    ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
-                    ->set($db->quoteName('menuid') . ' = ' . $db->quote($newmenuid));
-                $db->setQuery($query);
-                $db->execute();
+                // Affect modules to this menu
+                $eMConfig = JComponentHelper::getParams('com_emundus');
+                $modules = $eMConfig->get('form_buider_page_creation_modules', [93,102,103,104,168,170]);
+                foreach ($modules as $module) {
+                    $query->clear()
+                        ->insert($db->quoteName('#__modules_menu'))
+                        ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
+                        ->set($db->quoteName('menuid') . ' = ' . $db->quote($newmenuid));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
             }
-            //
 
             return $newmenuid;
         } catch (Exception $e){
@@ -896,7 +896,6 @@ class EmundusModelFormbuilder extends JModelList {
             $query->clear()
                 ->update($db->quoteName('#__menu'))
                 ->set($db->quoteName('published') . ' = -2')
-                ->set($db->quoteName('modified_by') . ' = ' . $db->quote(JFactory::getUser()->id))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($jos_menu->id));
             $db->setQuery($query);
             return $db->execute();
@@ -2469,8 +2468,6 @@ class EmundusModelFormbuilder extends JModelList {
 
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
         $falang = new EmundusModelFalang;
-
-        $modules = [93,102,103,104,168,170];
         //
 
         $db = $this->getDbo();
@@ -2819,20 +2816,22 @@ class EmundusModelFormbuilder extends JModelList {
             $db->execute();
             $newmenuid = $db->insertid();
 
-            // Add translation for menu
-            $falang->insertFalang($label,$newmenuid,'menu','title');
-            //
+            if (!empty($newmenuid)) {
+                // Add translation for menu
+                $falang->insertFalang($label,$newmenuid,'menu','title');
 
-            // Affect modules to this menu
-            foreach ($modules as $module) {
-                $query->clear()
-                    ->insert($db->quoteName('#__modules_menu'))
-                    ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
-                    ->set($db->quoteName('menuid') . ' = ' . $db->quote($newmenuid));
-                $db->setQuery($query);
-                $db->execute();
+                // Affect modules to this menu
+                $eMConfig = JComponentHelper::getParams('com_emundus');
+                $modules = $eMConfig->get('form_buider_page_creation_modules', [93,102,103,104,168,170]);
+                foreach ($modules as $module) {
+                    $query->clear()
+                        ->insert($db->quoteName('#__modules_menu'))
+                        ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
+                        ->set($db->quoteName('menuid') . ' = ' . $db->quote($newmenuid));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
             }
-            //
         } catch(Exception $e) {
             JLog::add('component/com_emundus/models/formbuilder | Error at create a page from the model ' . $formid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
         }

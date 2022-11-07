@@ -19,10 +19,10 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     $config = JFactory::getConfig();
     $user = $m_profile->getEmundusUser($user_id);
     $fnum = empty($fnum) ? $user->fnum : $fnum;
-    
+
     $infos = $m_profile->getFnumDetails($fnum);
     $campaign_id = $infos['campaign_id'];
-    
+
     // Get form HTML
     $htmldata = '';
 
@@ -83,7 +83,7 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     }
     unset($logo);
     unset($title);
-    
+
     $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
     $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, 'I', PDF_FONT_SIZE_DATA));
     $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
@@ -240,20 +240,21 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
 		$htmldata .= '<p>'.JText::_('COM_EMUNDUS_NO_EVALUATIONS_FOUND').'</p>';
 	}
 
+    $pdf->startTransaction();
+    $start_y = $pdf->GetY();
+    if (!$anonymize_data) {
+        $pdf->Bookmark($item->lastname.' '.$item->firstname, 0);
+    }
+    $pdf->writeHTMLCell(0,'','',$start_y, $htmldata,'B', 1);
+
     foreach ($data as $evals) {
         foreach ($evals as $user => $html) {
-            $htmldata .= $html;
+            $start_y = $pdf->GetY();
+            $pdf->writeHTMLCell(0,'','',$start_y, $html,'B', 1);
+            if($user != array_key_last($evals)) {
+                $pdf->addPage();
+            }
         }
-    }
-
-    if (!empty($htmldata)) {
-        $pdf->startTransaction();
-        $start_y = $pdf->GetY();
-        $start_page = $pdf->getPage();
-        if (!$anonymize_data) {
-            $pdf->Bookmark($item->lastname.' '.$item->firstname, 0);
-        }
-        $pdf->writeHTMLCell(0,'','',$start_y, $htmldata,'B', 1);
     }
 
     if (is_null($name)) {

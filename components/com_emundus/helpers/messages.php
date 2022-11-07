@@ -156,9 +156,17 @@ class EmundusHelperMessages {
 
 		$nUsers = count($users);
         $info='';
+
+
+		require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+		$h_emails = new EmundusHelperEmails();
 		for ($i = 0; $i < $nUsers; $i++) {
 
             $user = $users[$i];
+
+			if (!$h_emails->assertCanSendMailToUser($user->id)) {
+				continue;
+			}
 
 			if (isset($campaigns_id[$i]) && !empty($campaigns_id[$i])) {
 				include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');

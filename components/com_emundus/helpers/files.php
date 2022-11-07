@@ -2342,7 +2342,7 @@ class EmundusHelperFiles
                             if (strpos($element->element_name, 'comment') !== false) {
                                 $str .= '<td colspan="2"><b>'.JText::_(trim($element->element_label)).'</b> <br>'.JText::_($eval[$k]).'</td>';
                             } else {
-                                $str .= '<td width="70%"><b>'.JText::_(trim($element->element_label)).'</b> </td><td width="30%">'.JText::_($eval[$k]).'</td>';
+                                $str .= '<td width="30%"><b>'.JText::_(trim($element->element_label)).'</b> </td><td width="70%">'.JText::_($eval[$k]).'</td>';
                             }
                             $str .= '</tr>';
                         }

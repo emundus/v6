@@ -957,11 +957,20 @@ class EmundusControllerFiles extends JControllerLegacy
                                                     }
                                                 }
                         */
+
+                        require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+                        $h_emails = new EmundusHelperEmails();
+
                         if ($trigger['to']['to_applicant'] == 1) {
 
                             // Manage with selected fnum
                             foreach ($fnumsInfos as $file) {
                                 if ($file['training'] != $code) {
+                                    continue;
+                                }
+
+                                $can_send_mail = $h_emails->assertCanSendMailToUser($file['applicant_id'], $file['fnum']);
+                                if (!$can_send_mail) {
                                     continue;
                                 }
 
@@ -976,7 +985,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
                                 $mailer = JFactory::getMailer();
 
-                                $post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['label'], 'CAMPAIGN_END' => $file['end_date']);
+                                $post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['label'], 'CAMPAIGN_END' => JHTML::_('date', $file['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null));
                                 $tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum'], '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
 
                                 $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
@@ -1061,6 +1070,11 @@ class EmundusControllerFiles extends JControllerLegacy
                         }
 
                         foreach ($trigger['to']['recipients'] as $key => $recipient) {
+                            $can_send_mail = $h_emails->assertCanSendMailToUser($recipient['id']);
+                            if (!$can_send_mail) {
+                                continue;
+                            }
+
                             $mailer = JFactory::getMailer();
 
                             $post = array();

@@ -91,7 +91,10 @@ class EmundusControllerUsers extends JControllerLegacy {
 			echo json_encode((object)array('status' => false, 'msg' => JText::_('COM_EMUNDUS_USERS_ERROR_USERNAME_NOT_GOOD')));
 			exit;
 		}
-		if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $email) !== 1) {
+
+        require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+        $h_emails = new EmundusHelperEmails();
+		if (!$h_emails->correctEmail($email)) {
 			echo json_encode((object)array('status' => false, 'msg' => JText::_('MAIL_NOT_GOOD')));
 			exit;
 		}
