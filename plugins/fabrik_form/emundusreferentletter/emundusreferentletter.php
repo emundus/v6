@@ -110,10 +110,10 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 		$fnum       = $jinput->get('jos_emundus_references___fnum');
 
         $recipients = array();
-        $recipients[] = array('attachment_id' => $jinput->get('jos_emundus_references___attachment_id_1', 4), 'email' => $jinput->getString('jos_emundus_references___Email_1', ''),'name'=>$jinput->getString('jos_emundus_references___Last_Name_1', JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS')),'firstname'=>$jinput->getString('jos_emundus_references___First_Name_1', ''));
-        $recipients[] = array('attachment_id' => $jinput->get('jos_emundus_references___attachment_id_2', 6), 'email' => $jinput->getString('jos_emundus_references___Email_2', ''),'name'=>$jinput->getString('jos_emundus_references___Last_Name_2', JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS')),'firstname'=>$jinput->getString('jos_emundus_references___First_Name_2', ''));
-        $recipients[] = array('attachment_id' => $jinput->get('jos_emundus_references___attachment_id_3', 21), 'email' => $jinput->getString('jos_emundus_references___Email_3', ''),'name'=>$jinput->getString('jos_emundus_references___Last_Name_3', JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS')),'firstname'=>$jinput->getString('jos_emundus_references___First_Name_3', ''));
-        $recipients[] = array('attachment_id' => $jinput->get('jos_emundus_references___attachment_id_4', 19), 'email' => $jinput->getString('jos_emundus_references___Email_4', ''),'name'=>$jinput->getString('jos_emundus_references___Last_Name_4', JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS')),'firstname'=>$jinput->getString('jos_emundus_references___First_Name_4', ''));
+        $recipients[] = array('attachment_id' => $jinput->get('jos_emundus_references___attachment_id_1', 4), 'email' => $jinput->getString('jos_emundus_references___Email_1', ''),'name'=>ucfirst($jinput->getString('jos_emundus_references___Last_Name_1', JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS'))),'firstname'=>ucfirst($jinput->getString('jos_emundus_references___First_Name_1', '')));
+        $recipients[] = array('attachment_id' => $jinput->get('jos_emundus_references___attachment_id_2', 6), 'email' => $jinput->getString('jos_emundus_references___Email_2', ''),'name'=>ucfirst($jinput->getString('jos_emundus_references___Last_Name_2', JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS'))),'firstname'=>ucfirst($jinput->getString('jos_emundus_references___First_Name_2', '')));
+        $recipients[] = array('attachment_id' => $jinput->get('jos_emundus_references___attachment_id_3', 21), 'email' => $jinput->getString('jos_emundus_references___Email_3', ''),'name'=>ucfirst($jinput->getString('jos_emundus_references___Last_Name_3', JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS'))),'firstname'=>ucfirst($jinput->getString('jos_emundus_references___First_Name_3', '')));
+        $recipients[] = array('attachment_id' => $jinput->get('jos_emundus_references___attachment_id_4', 19), 'email' => $jinput->getString('jos_emundus_references___Email_4', ''),'name'=>ucfirst($jinput->getString('jos_emundus_references___Last_Name_4', JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS'))),'firstname'=>ucfirst($jinput->getString('jos_emundus_references___First_Name_4', '')));
 
 		$student = JFactory::getUser($student_id);
 
@@ -122,10 +122,12 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 		$email_tmpl = $this->getParam('email_tmpl', 'referent_letter');
 
         // Récupération des données du mail
-        $query = 'SELECT est.id, est.subject, est.emailfrom, est.name, est.message, eet.Template
-                FROM #__emundus_setup_emails as est
-                LEFT JOIN #__emundus_email_templates AS eet ON est.email_tmpl = eet.id
-                WHERE est.lbl="'.$email_tmpl.'"';
+        $query = $db->getQuery(true);
+        $query->select('est.id,est.subject, est.emailfrom, est.name, est.message, eet.Template')
+            ->from($db->quoteName('#__emundus_setup_emails','est'))
+            ->leftJoin($db->quoteName('#__emundus_email_templates','eet') . ' ON ' . $db->quoteName('est.email_tmpl') . ' = ' . $db->quoteName('eet.id'))
+            ->where($db->quoteName('est.lbl') . ' LIKE ' . $db->quote($email_tmpl));
+
         $db->setQuery($query);
         $obj = $db->loadObjectList();
 
@@ -166,7 +168,14 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 				$attachment_id = $recipient['attachment_id']; //ID provenant de la table emundus_attachments
 
                 ////// SQL query with tuple <fnum,email,attachment> to find if this referee is selected before /////
-                $query = "select count(*) from jos_emundus_files_request as jefr where jefr.fnum like " . $db->quote($fnum) . " and jefr.email = " . $db->quote($recipient['email']) . " and jefr.attachment_id = " . $attachment_id;
+                $query = $db->getQuery(true);
+                $query->clear()
+                    ->select('count(*)')
+                    ->from($db->quoteName('#__emundus_files_request', 'jefr'))
+                    ->where($db->quoteName('jefr.fnum') . ' LIKE ' . $db->quote($fnum))
+                    ->andWhere($db->quoteName('jefr.email') . ' = ' . $db->quote($recipient['email']))
+                    ->andWhere($db->quoteName('jefr.attachment_id') . ' = ' . $db->quote($attachment_id));
+
                 $db->setQuery($query);
                 $isSelectedReferent = $db->loadResult();
 

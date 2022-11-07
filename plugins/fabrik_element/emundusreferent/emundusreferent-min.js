@@ -29,14 +29,14 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 					var fnum = document.querySelector('[id$="___fnum"]').value;
 
 					// element id of email
-					var email_selector = options.email;
+					var email_selector = this.options.email;
 
 					// parent group of email_selector
-					var parent_group = jQuery('#' + email_selector).closest('fieldset').attr('id');
+					var parent_group = document.querySelector('#' + email_selector).closest('fieldset').getAttribute('id');
 
 					// get the firstname, lastname of referent for each group
-					var firstname = jQuery('#' + parent_group ).find('[id^=jos_emundus_references___First_Name_]').val();
-					var lastname  = jQuery('#' + parent_group ).find('[id^=jos_emundus_references___Last_Name_]').val();
+					var firstname = document.querySelector('#' + parent_group + ' [id^=jos_emundus_references___First_Name_]').value;
+					var lastname  = document.querySelector('#' + parent_group + ' [id^=jos_emundus_references___Last_Name_]').value;
 
 					if (email == "") {
 						$(this.options.email).setStyle('border', '4px solid #ff0000');
