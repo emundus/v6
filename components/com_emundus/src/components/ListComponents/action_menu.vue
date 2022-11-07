@@ -4,24 +4,24 @@
       <transition :name="'slide-down'" type="transition">
         <div>
             <nav aria-label="action" class="em-flex-col-start">
-              <a v-on:click="publishSelected(checkItem)" class="action-submenu" v-if="!['formulaire','email', 'formModels'].includes(data.type) && !published">
+              <a @click="publishSelected(checkItem)" class="action-submenu" v-if="!['formulaire','email', 'formModels'].includes(data.type) && !published">
                 {{ translations.ActionPublish }}
               </a>
-              <a v-on:click="unpublishSelected(checkItem)" class="action-submenu" v-if="!['formulaire','email', 'formModels'].includes(data.type) && published">
+              <a @click="unpublishSelected(checkItem)" class="action-submenu" v-if="!['formulaire','email', 'formModels'].includes(data.type) && published">
                 {{ translations.ActionUnpublish }}
               </a>
-              <a v-on:click="publishSelected(checkItem)" class="action-submenu" style="border-right: 0" v-if="data.type === 'formulaire' && !published">
+              <a @click="publishSelected(checkItem)" class="action-submenu" style="border-right: 0" v-if="data.type === 'formulaire' && !published">
                 {{ translations.Restore }}
               </a>
               <a v-if="data.type === 'campaign' || data.type === 'formulaire'"
-                 v-on:click="duplicateSelected(checkItem)"
+                 @click="duplicateSelected(checkItem)"
                  class="action-submenu w-dropdown-link" style="border-left: 0;border-right: 0">
                 {{ translations.ActionDuplicate }}
               </a>
-              <a v-on:click="deleteSelected(checkItem)" class="action-submenu" v-if="data.type !== 'formulaire' && data.type !== 'campaign'">
+              <a v-else @click="deleteSelected(checkItem)" class="action-submenu">
                 {{ translations.ActionDelete }}
               </a>
-              <a v-on:click="deleteSelected(checkItem)" class="action-submenu" v-if="data.type === 'campaign' && nb_files === 0">
+              <a v-if="data.type === 'campaign' && nb_files === 0" class="action-submenu" @click="deleteSelected(checkItem)">
                 {{ translations.ActionDelete }}
               </a>
             </nav>
