@@ -825,12 +825,12 @@ class EmundusControllerApplication extends JControllerLegacy
 
         $jinput = JFactory::getApplication()->input;
         $fnum_from = $jinput->getString('fnum_from', '');
-        $position = $jinput->getInt('position', '');
+        $fnum_to = $jinput->getString('fnum_to', '');
         $order_column = $jinput->getString('order_column', 'ordering');
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id) || in_array($fnum_from, $emundusUserFnums)) {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id) || (in_array($fnum_from, $emundusUserFnums) && in_array($fnum_to, $emundusUserFnums))) {
             $m_application = $this->getModel('Application');
-            $reordered = $m_application->invertFnumsOrderByColumn($fnum_from, $position, $order_column);
+            $reordered = $m_application->invertFnumsOrderByColumn($fnum_from, $fnum_to, $order_column);
 
             $response['status'] = $reordered;
             $response['msg'] =  $reordered ? JText::_('SUCCESS') : JText::_('FAILED');

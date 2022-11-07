@@ -15,7 +15,7 @@ if (empty($user) || empty($user->id) || empty($applications)) {
 usort($applications, function($a, $b) {
     return $a->wish_number > $b->wish_number;
 });
-
+$uniqid = uniqid();
 ?>
 <div class="add-application-actions">
     <?php if ($show_add_application && ($position_add_application == 3 || $position_add_application == 4) && $applicant_can_renew) : ?>
@@ -38,7 +38,7 @@ usort($applications, function($a, $b) {
     <?php endif; ?>
 </div>
 <?php if (!empty($applications)) : ?>
-    <div class="<?= $moduleclass_sfx ?>">
+    <div id="application-list-<?= $uniqid; ?>" class="<?= $moduleclass_sfx ?>">
         <?php foreach ($applications as $a_index => $application) : ?>
             <?php
             $is_admission = in_array($application->status, $admission_status);
@@ -266,6 +266,8 @@ endif; ?>
 <?php endif; ?>
 
 <script type="text/javascript">
+    const uid = "<?= $uniqid ?>";
+
     function deletefile(fnum) {
         Swal.fire({
             title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_CONFIRM_DELETE_FILE'); ?>",
@@ -295,21 +297,31 @@ endif; ?>
             let from = upBtn.parentElement.parentElement.getAttribute('data-wish');
             let to = Number(from) - 1;
 
-            Swal.fire({
-                title: "<?= JText::_('MOVE_UP'); ?>",
-                text: fnum + ' from ' + from + ' to ' + to ,
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: "#28a745",
-                cancelButtonColor: "#dc3545",
-                reverseButtons: true,
-                confirmButtonText: "<?php echo JText::_('JYES');?>",
-                cancelButtonText: "<?php echo JText::_('JNO');?>"
-            }).then((confirm) => {
-                if (confirm.value) {
-                    reorderFiles(fnum, to, 'wish_number');
-                }
-            });
+            const files = document.querySelectorAll('#application-list-' + uid + ' .change-wish-number');
+
+            if (files) {
+                const row_to = [...files].filter((file) => {
+                    return file.getAttribute('data-wish') == to;
+                });
+
+                const fnum_to =  row_to[0].getAttribute('data-fnum');
+
+                Swal.fire({
+                    title: "<?= JText::_('MOVE_UP'); ?>",
+                    text: 'Inverser l\'ordre entre '  + fnum + ' et ' +  fnum_to,
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: "#28a745",
+                    cancelButtonColor: "#dc3545",
+                    reverseButtons: true,
+                    confirmButtonText: "<?php echo JText::_('JYES');?>",
+                    cancelButtonText: "<?php echo JText::_('JNO');?>"
+                }).then((confirm) => {
+                    if (confirm.value) {
+                        reorderFiles(fnum, fnum_to, 'wish_number');
+                    }
+                });
+            }
         });
     });
 
@@ -319,29 +331,39 @@ endif; ?>
             let from = downBtn.parentElement.parentElement.getAttribute('data-wish');
             let to = Number(from) + 1;
 
-            Swal.fire({
-                title: "<?= JText::_('MOVE_DOWN'); ?>",
-                text: fnum + ' from ' + from + ' to ' + to ,
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: "#28a745",
-                cancelButtonColor: "#dc3545",
-                reverseButtons: true,
-                confirmButtonText: "<?php echo JText::_('JYES');?>",
-                cancelButtonText: "<?php echo JText::_('JNO');?>"
-            }).then((confirm) => {
-                if (confirm.value) {
-                    reorderFiles(fnum, to, 'wish_number');
-                }
-            });
+            const files = document.querySelectorAll('#application-list-'+ uid +' .change-wish-number');
+
+            if (files) {
+                const row_to = [...files].filter((file) => {
+                    return file.getAttribute('data-wish') == to;
+                });
+
+                const fnum_to =  row_to[0].getAttribute('data-fnum');
+
+                Swal.fire({
+                    title: "<?= JText::_('MOVE_DOWN'); ?>",
+                    text: 'Inverser l\'ordre entre '  + fnum + ' et ' +  fnum_to,
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: "#28a745",
+                    cancelButtonColor: "#dc3545",
+                    reverseButtons: true,
+                    confirmButtonText: "<?php echo JText::_('JYES');?>",
+                    cancelButtonText: "<?php echo JText::_('JNO');?>"
+                }).then((confirm) => {
+                    if (confirm.value) {
+                        reorderFiles(fnum, fnum_to, 'wish_number');
+                    }
+                });
+            }
         });
     });
 
 
-    function reorderFiles(from, position) {
+    function reorderFiles(from, fnum_to) {
         let formData = new FormData();
         formData.append('fnum_from', from);
-        formData.append('position', position);
+        formData.append('fnum_to', fnum_to);
         formData.append('order_column', 'wish_number');
 
         fetch('index.php?option=com_emundus&controller=application&task=reorderapplications', {

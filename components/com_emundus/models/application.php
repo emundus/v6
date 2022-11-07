@@ -5355,11 +5355,11 @@ class EmundusModelApplication extends JModelList
     }
 
 
-    public function invertFnumsOrderByColumn($fnum_from, $new_position, $order_column = 'ordering')
+    public function invertFnumsOrderByColumn($fnum_from, $target_fnum, $order_column = 'ordering')
     {
         $reordered = false;
 
-        if (!empty($fnum_from) && !empty($new_position)) {
+        if (!empty($fnum_from) && !empty($target_fnum)) {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
 
@@ -5373,12 +5373,12 @@ class EmundusModelApplication extends JModelList
                 $old_position = $db->loadResult();
 
                 $query->clear()
-                    ->select('fnum')
+                    ->select($order_column)
                     ->from('#__emundus_campaign_candidature as ecc')
-                    ->where($db->quoteName('ecc.' . $order_column) . ' = ' . $new_position);
+                    ->where('fnum LIKE ' . $db->quote($target_fnum));
 
                 $db->setQuery($query);
-                $target_fnum = $db->loadResult();
+                $new_position = $db->loadResult();
 
                 $query->clear()
                     ->update('#__emundus_campaign_candidature')
