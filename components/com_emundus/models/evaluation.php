@@ -204,7 +204,7 @@ class EmundusModelEvaluation extends JModelList {
                         $element_attribs = json_decode($def_elmt->element_attribs);
                         $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
                         foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-                            $select = 'REPLACE(' . $select . ', "' . $value . '", "' .
+                            $select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' .
                                 JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
                         }
                         $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
@@ -1656,7 +1656,7 @@ class EmundusModelEvaluation extends JModelList {
 
         try {
             /// first --> from fnum --> get fnum info
-            $_mFile = new EmundusModelFiles;
+            $_mFile = new EmundusModelFiles();
             $_fnumArray = explode(',', $fnums);
 
             $_fnumsInfo = $_mFile->getFnumsInfos($_fnumArray);
@@ -1756,7 +1756,7 @@ class EmundusModelEvaluation extends JModelList {
 
     /// get affected letters by [fnums] and [templates]
     public function getLettersByFnumsTemplates($fnums=array(), $templates=array()) {
-        if (empty($fnum) || empty($templates)) {
+        if (empty($fnums) || empty($templates)) {
             return [];
         }
         /// from each fnum --> get fnum infos
@@ -2119,6 +2119,7 @@ class EmundusModelEvaluation extends JModelList {
 
                         try {
                             $phpWord = new \PhpOffice\PhpWord\PhpWord();
+                            \PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(true);
                             $preprocess = $phpWord->loadTemplate(JPATH_SITE . $letter->file);
                             $tags = $preprocess->getVariables();
 
