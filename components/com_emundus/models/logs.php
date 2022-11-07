@@ -45,7 +45,7 @@ class EmundusModelLogs extends JModelList {
 	 *
 	 * @since 3.8.8
 	 */
-    static function log($user_from, $user_to, $fnum, $action, $crud = '', $message = '', $params = '') {
+    static function log($user_from, $user_to, $fnum, $action, $crud = '', $message = '', $params = '',$status_from,$status_to) {
         // write log file
         jimport('joomla.log.log');
         JLog::addLogger(['text_file' => 'com_emundus.logs.php'], JLog::ERROR, 'com_emundus');
@@ -72,8 +72,8 @@ class EmundusModelLogs extends JModelList {
                     $db = JFactory::getDbo();
                     $query = $db->getQuery(true);
 
-                    $columns = ['user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params', 'ip_from'];
-                    $values  = [$user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $db->quote($params), $db->quote($ip)];
+                    $columns = ['user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params', 'ip_from', 'status_from', 'status_to'];
+                    $values  = [$user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $db->quote($params), $db->quote($ip), $status_from, $status_to];
 
                     try {
                         $query->insert($db->quoteName('#__emundus_logs'))
