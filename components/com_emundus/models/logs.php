@@ -90,8 +90,6 @@ class EmundusModelLogs extends JModelList {
         }
     }
 
-
-
     /**
 	 * Gets the actions done by a user. Can be filtered by action and/or CRUD.
 	 * If the user is not specified, use the currently signed in one.
@@ -192,14 +190,8 @@ class EmundusModelLogs extends JModelList {
 	 * @return Mixed Returns false on error and an array of objects on success.
 	 */
 	public function getActionsOnFnum($fnum, $user_from = null, $action = null, $crud = null, $offset = null, $limit = 100) {
-
-		// If the user ID from is not a number, something is wrong.
-		/* if (!empty($user_from) && !is_numeric($user_from)) {
-			JLog::add('Getting actions on fnum in model/logs with a user ID that isnt a number.', JLog::ERROR, 'com_emundus');
-			return false;
-		} */
-
-		$db = JFactory::getDbo();
+		$results = [];
+        $db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
         $user_from = implode(',', $user_from);
@@ -220,26 +212,23 @@ class EmundusModelLogs extends JModelList {
 			->leftJoin($db->quoteName('#__emundus_users', 'us').' ON '.$db->QuoteName('us.user_id').' = '.$db->QuoteName('lg.user_id_from'))
 			->where($where)
             ->order($db->QuoteName('lg.id') . ' DESC');
-//			->setLimit($limit, $offset);
 
         if(!is_null($offset)) {
             $query->setLimit($limit, $offset);
         }
 
-		$db->setQuery($query);
-		$results = $db->loadObjectList();
+        try {
+            $db->setQuery($query);
+            $results = $db->loadObjectList();
 
-		// Create a new element to store the correct date display
-		foreach ($results as $result) {
-			$result->date = EmundusHelperDate::displayDate($result->timestamp);
-		}
-
-		try {
-			return $results;
+            foreach ($results as $result) {
+                $result->date = EmundusHelperDate::displayDate($result->timestamp,'DATE_FORMAT_LC2',0);
+            }
 		} catch (Exception $e) {
 			JLog::add('Could not get logs in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-			return false;
 		}
+
+        return $results;
 	}
 
 

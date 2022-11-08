@@ -293,8 +293,7 @@ class EmundusController extends JControllerLegacy {
         if (in_array($fnum, array_keys($current_user->fnums))){
             $user = $current_user;
             $m_files->deleteFile($fnum);
-            EmundusModelLogs::log($current_user->id, (int)substr($fnum, -7), $fnum, 1, 'd', 'COM_EMUNDUS_ACCESS_FORM_DELETE');
-        } elseif (EmundusHelperAccess::asAccessAction(1, 'd', $current_user->id, $fnum) || EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
+            EmundusModelLogs::log($current_user->id, (int)substr($fnum, -7), $fnum, 1, 'd', 'COM_EMUNDUS_ACCESS_FORM_DELETE');        } elseif (EmundusHelperAccess::asAccessAction(1, 'd', $current_user->id, $fnum) || EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
             $user = $m_profile->getEmundusUser($student_id);
         } else {
             JError::raiseError(500, JText::_('ACCESS_DENIED'));
@@ -454,6 +453,10 @@ class EmundusController extends JControllerLegacy {
             JError::raiseError(500, JText::_('ACCESS_DENIED'));
             return false;
         }
+
+        $dispatcher = JDispatcher::getInstance();
+        JPluginHelper::importPlugin('emundus', 'sync_file');
+        $dispatcher->trigger('onDeleteFile', array(array('upload_id' => $upload_id)));
 
         if (isset($layout))
             $url = 'index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid;
@@ -1220,6 +1223,11 @@ class EmundusController extends JControllerLegacy {
                 $db->setQuery( $query );
                 $db->execute();
                 $id = $db->insertid();
+
+                // TODO: onAfterAttachmentUpload event appeared after onAfterUploadFile creation on this branch. move treatment to use onAfterAttachmentUpload
+                $dispatcher = JEventDispatcher::getInstance();
+                JPluginHelper::importPlugin('emundus', 'sync_file');
+                $dispatcher->trigger('onAfterUploadFile', [['upload_id' => $id]]);
 
                 $dispatcher = JEventDispatcher::getInstance();
                 $dispatcher->trigger('onAfterAttachmentUpload', [$fnum, (int)$attachments, $paths]);

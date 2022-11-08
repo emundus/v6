@@ -31,14 +31,13 @@ class plgEmundusCustom_event_handler extends JPlugin {
 
         if (!empty($event_handlers)) {
             foreach ($event_handlers as $event_handler){
-                $events[] = $event_handler->event;
-                $codes[] = $event_handler->code;
+                if($event_handler->event == $event){
+                    $events[] = $event_handler->event;
+                    $codes[] = $event_handler->code;
+                }
             }
         }
 
-        if (!empty($events)) {
-            $events = array_values(array_intersect($events, [$event]));
-        }
         $returned_values = [];
 
         if (method_exists($this->hEvents, $event)) {
@@ -58,21 +57,24 @@ class plgEmundusCustom_event_handler extends JPlugin {
     }
 
     private function _runPHP($code = '', $data = null) {
+        if (class_exists('FabrikWorker')) {
+            $w = new FabrikWorker;
+            $code = $w->parseMessageForPlaceHolder($code, $data);
 
-		$w = new FabrikWorker;
-        $code = $w->parseMessageForPlaceHolder($code, $data);
+            try {
+                $php_result = eval($code);
 
-        try {
-            $php_result = eval($code);
-
-            // Bail out if code specifically returns false
-            if ($php_result === false) {
+                // Bail out if code specifically returns false
+                if ($php_result === false) {
+                    return false;
+                }
+                return $php_result;
+            } catch (ParseError $p) {
+                JLog::add('Error while running event ' . $code . ' : "' . $p->getMessage() .'"', JLog::ERROR,'com_emundus');
                 return false;
             }
-            return $php_result;
-        } catch (ParseError $p) {
-            JLog::add('Error while running event ' . $code . ' : "' . $p->getMessage() .'"', JLog::ERROR,'com_emundus');
-            return false;
         }
+
+        return true;
 	}
 }

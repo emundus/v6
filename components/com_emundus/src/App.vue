@@ -120,6 +120,7 @@ export default {
 @import url("./assets/css/main.scss");
 
 .com_emundus_vue {
+  margin-bottom: 8px;
   input {
     display: block;
     margin-bottom: 10px;

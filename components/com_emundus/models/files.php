@@ -321,6 +321,7 @@ class EmundusModelFiles extends JModelLegacy
      * @throws Exception
      */
     public function _buildContentOrderBy() {
+        $order = ' ORDER BY jecc.date_submitted DESC, jecc.date_time DESC';
         $menu = @JFactory::getApplication()->getMenu();
         $current_menu = $menu->getActive();
         $menu_params = $menu->getParams(@$current_menu->id);
@@ -362,10 +363,17 @@ class EmundusModelFiles extends JModelLegacy
         }
 
         if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)) {
-            return ' ORDER BY '.$filter_order.' '.$filter_order_Dir;
+            $order = ' ORDER BY '.$filter_order.' '.$filter_order_Dir;
+
+            if (strpos($filter_order, 'date_submitted') === false) {
+                $order .= ', jecc.date_submitted DESC ';
+            }
+            if (strpos($filter_order, 'date_time') === false) {
+                $order .= ', jecc.date_time DESC ';
+            }
         }
 
-        return '';
+        return $order;
     }
 
     /**
@@ -1820,6 +1828,9 @@ class EmundusModelFiles extends JModelLegacy
                 }
 
                 if ($params_group->repeat_group_button == 1 || $is_join == 1) {
+                    $if = array();
+                    $endif = '';
+
                     // Get the table repeat table name using this query
                     $repeat_join_table_query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id=' . $elt->group_id . ' AND table_join_key like "parent_id"';
                     try {
@@ -2059,17 +2070,35 @@ class EmundusModelFiles extends JModelLegacy
                     $endif = '';
 
 
-                    if ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
+                    if ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton'|| $elt->element_plugin == 'checkbox') {
                         if($raw == 1){
                             $select = 'REPLACE(`'.$tableAlias[$elt->tab_name] . '`.`' . $elt->element_name.'`, "\t", "" )';
                         }
                         else{
                             $element_attribs = json_decode($elt->element_attribs);
-                            foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-                                $if[] = 'IF(' . $select . '="' . $value . '","' . $element_attribs->sub_options->sub_labels[$key] . '"';
-                                $endif .= ')';
+                            if($elt->element_plugin == 'checkbox'){
+                                $if = '';
                             }
-                            $select = implode(',', $if) . ',' . $select . $endif;
+                            foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+                                if($elt->element_plugin == 'checkbox'){
+                                    if(empty($if)) {
+                                        $if = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' .
+                                            JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+                                    } else {
+                                        $if = 'REGEXP_REPLACE(' . $if . ', "\\\b' . $value . '\\\b", "' .
+                                            JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+                                    }
+                                } else {
+                                    $if[] = 'IF(' . $select . '="' . $value . '","' . $element_attribs->sub_options->sub_labels[$key] . '"';
+                                    $endif .= ')';
+                                }
+
+                            }
+                            if(is_array($if)) {
+                                $select = implode(',', $if) . ',' . $select . $endif;
+                            } else {
+                                $select = $if;
+                            }
                         }
                     } elseif ($elt->element_plugin == 'yesno') {
                         if ($raw == 1){
@@ -2816,15 +2845,26 @@ class EmundusModelFiles extends JModelLegacy
      * @throws Exception
      */
     public function getAttachmentsById($ids) {
-        $dbo = $this->getDbo();
-        $query = 'select * from jos_emundus_uploads where id in ("'.implode('","', $ids).'")';
-        try {
-            $dbo->setQuery($query);
-            return $dbo->loadAssocList();
-        } catch(Exception $e) {
-            throw $e;
+        $attachments = [];
+
+        if (!empty($ids)) {
+            $dbo = $this->getDbo();
+            $query = $dbo->getQuery(true);
+            $query->select('jeu.fnum, jeu.filename, jeu.id, jecc.applicant_id, jeu.attachment_id')
+                ->from('#__emundus_uploads AS jeu')
+                ->leftJoin('#__emundus_campaign_candidature AS jecc ON jecc.fnum = jeu.fnum')
+                ->where('jeu.id IN (' . implode(',', $ids) . ')');
+            try {
+                $dbo->setQuery($query);
+                $attachments = $dbo->loadAssocList();
+            } catch(Exception $e) {
+                JLog::add('Failed to get attachment by ids ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
         }
+
+        return $attachments;
     }
+
     public function getSetupAttachmentsById($ids) {
         $dbo = $this->getDbo();
         $query = 'select * from jos_emundus_setup_attachments where id in ("'.implode('","', $ids).'")';

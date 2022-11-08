@@ -2924,13 +2924,13 @@ $(document).ready(function() {
                                 '<input class="em-ex-check" type="checkbox" value="comment" name="em-ex-comment" id="em-ex-comment" style="max-height:20px"/>' +
                                 '<label for="em-ex-comment">'+Joomla.JText._('COM_EMUNDUS_COMMENT')+'</label> <br/>' +
                                 '<input class="em-ex-check" type="checkbox" value="tags" name="em-ex-tags" id="em-ex-tags" style="max-height:20px"/>' +
-                                '<label for="em-ex-tags">'+Joomla.JText._('JTAG')+'</label> <br/>' +
+                                '<label for="em-ex-tags">'+Joomla.JText._('COM_EMUNDUS_TAGS')+'</label> <br/>' +
                                 '<input class="em-ex-check" type="checkbox" value="group-assoc" name="em-ex-group" id="em-ex-group" style="max-height: 20px;"/>' +
                                 '<label for="em-ex-group">'+Joomla.JText._('COM_EMUNDUS_ASSOCIATED_GROUPS')+'</label> <br/>' +
                                 '<input class="em-ex-check" type="checkbox" value="user-assoc" name="em-ex-user" id="em-ex-user" style="max-height: 20px;"/>' +
                                 '<label for="em-ex-user">'+Joomla.JText._('COM_EMUNDUS_ASSOCIATED_USERS')+'</label> <br/>' +
                                 '<input class="em-ex-check" type="checkbox" value="overall" name="em-ex-overall" id="em-ex-overall" style="max-height: 20px;"/>' +
-                                '<label for="em-ex-overall">'+Joomla.JText._('EVALUATION_OVERALL')+'</label> <br/>' +
+                                '<label for="em-ex-overall">'+Joomla.JText._('COM_EMUNDUS_EVALUATIONS_OVERALL')+'</label> <br/>' +
                                 '</div></div></div>')
 
                             $('#data').append( '<div id="methode">'+
@@ -6725,6 +6725,10 @@ $(document).ready(function() {
                 // $('#em-download-btn').remove();
                 addLoader();
 
+                if (fnums && fnums.length > 0 ) {
+                    // do that to remove the check-all option
+                    fnums = fnums.replace(/([a-z-]+,)/g, '');
+                }
                 $.ajax({
                     type:'post',
                     url:'index.php?option=com_emundus&controller=files&task=generateletter',
@@ -6849,40 +6853,42 @@ $(document).ready(function() {
                             } else {
                                 /// showMode == 2 (classic way)
                                 var files = result.data.files;
-                                var zipUrl = 'index.php?option=com_emundus&controller=files&task=exportzipdoc&ids=';
-                                var table = "<h3>" +
-                                    Joomla.JText._('FILES_GENERATED') +
-                                    "</h3>" +
-                                    "<table class='table table-striped' id='em-generated-docs'>" +
-                                    "<thead>" +
-                                    "<tr>" +
-                                    "<th>" + Joomla.JText._('FILE_NAME') + "</th>" +
-                                    "</tr>" +
-                                    "</thead>" +
-                                    "<tbody>";
+                                if (files && files.length > 0) {
+                                    var zipUrl = 'index.php?option=com_emundus&controller=files&task=exportzipdoc&ids=';
+                                    var table = "<h3>" +
+                                        Joomla.JText._('FILES_GENERATED') +
+                                        "</h3>" +
+                                        "<table class='table table-striped' id='em-generated-docs'>" +
+                                        "<thead>" +
+                                        "<tr>" +
+                                        "<th>" + Joomla.JText._('FILE_NAME') + "</th>" +
+                                        "</tr>" +
+                                        "</thead>" +
+                                        "<tbody>";
 
-                                files.forEach(file => {
-                                    table +=
-                                        "<tr id='" + file.upload + "'>" +
-                                        "<td>" + file.filename +
-                                        " <a id='" + 'em_download_doc_' + file.upload + "' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + file.url + file.filename + "'>" +
-                                        "<span class='glyphicon glyphicon-save'></span>" +
-                                        "</a>" +
-                                        "</td>" +
-                                        "</tr>";
-                                })
+                                    files.forEach(file => {
+                                        table +=
+                                            "<tr id='" + file.upload + "'>" +
+                                            "<td>" + file.filename +
+                                            " <a id='" + 'em_download_doc_' + file.upload + "' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + file.url + file.filename + "'>" +
+                                            "<span class='glyphicon glyphicon-save'></span>" +
+                                            "</a>" +
+                                            "</td>" +
+                                            "</tr>";
+                                    })
 
-                                table += "</tbody></table>";
-                                $('.modal-body').append(table);
+                                    table += "</tbody></table>";
+                                    $('.modal-body').append(table);
 
-                                let href_collections = $('[id^=em_download_doc_]');
-                                var href_array = Array.prototype.slice.call(href_collections);
-                                let urls = [];
-                                href_array.forEach(url => {
-                                    urls.push(url.id.split('em_download_doc_')[1]);
-                                })
+                                    let href_collections = $('[id^=em_download_doc_]');
+                                    var href_array = Array.prototype.slice.call(href_collections);
+                                    let urls = [];
+                                    href_array.forEach(url => {
+                                        urls.push(url.id.split('em_download_doc_')[1]);
+                                    })
 
-                                $('#em-download-all').attr('href', zipUrl + urls.toString());
+                                    $('#em-download-all').attr('href', zipUrl + urls.toString());
+                                }
                             }
                         } else {
                             /* show export error */

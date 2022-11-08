@@ -489,23 +489,23 @@ class EmundusModelApplication extends JModelList
 
             $query = 'DELETE FROM #__emundus_uploads WHERE id=' . $id;
             $this->_db->setQuery($query);
-            $this->_db->execute();
+            $deleted = $this->_db->execute();
 
-            // Log the tag in the eMundus logging system.
-            $logsStd = new stdClass();
+            if ($deleted) {
+                // Log the tag in the eMundus logging system.
+                $logsStd = new stdClass();
 
-            // get attachment data
-            $attachmentTpe = $this->getAttachmentByID($file['attachment_id']);
+                // get attachment data
+                $attachmentTpe = $this->getAttachmentByID($file['attachment_id']);
 
-            $logsStd->element = "[" . $attachmentTpe['value'] . "]";
-            $logsStd->details = $file['filename'];
-            $logsParams = array('deleted' => [$logsStd]);
+                $logsStd->element = "[" . $attachmentTpe['value'] . "]";
+                $logsStd->details = $file['filename'];
+                $logsParams = array('deleted' => [$logsStd]);
 
-            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($file['fnum'], -7), $file['fnum'], 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+                EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($file['fnum'], -7), $file['fnum'], 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+            }
 
-            return true;
-            //return $this->_db->Query();
-
+            return $deleted;
         } catch (Exception $e) {
             JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
         }
@@ -1615,8 +1615,12 @@ class EmundusModelApplication extends JModelList
 
                                                             try {
                                                                 $this->_db->setQuery($query);
-                                                                $res = $this->_db->loadColumn();
-                                                                $elt = "<ul><li>" . implode("</li><li>", $res) . "</li></ul>";
+                                                                $value = $this->_db->loadColumn();
+                                                                $elt = '<ul>';
+                                                                foreach ($value as $val){
+                                                                    $elt .= '<li>'.JText::_($val).'</li>';
+                                                                }
+                                                                $elt .= "</ul>";
                                                             } catch (Exception $e) {
                                                                 JLog::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
                                                                 throw $e;
@@ -1696,7 +1700,11 @@ class EmundusModelApplication extends JModelList
                                                                 $elm[] = $value;
                                                             }
                                                         }
-                                                        $elt = "<ul><li>" . implode("</li><li>", @$elm) . "</li></ul>";
+                                                        $elt = '<ul>';
+                                                        foreach ($elm as $val){
+                                                            $elt .= '<li>'.JText::_($val).'</li>';
+                                                        }
+                                                        $elt .= "</ul>";
                                                     }
 
                                                     elseif ($elements[$j]->plugin == 'dropdown' || $elements[$j]->plugin == 'radiobutton') {
@@ -1848,8 +1856,12 @@ class EmundusModelApplication extends JModelList
 
                                                     try {
                                                         $this->_db->setQuery($query);
-                                                        $res = $this->_db->loadColumn();
-                                                        $elt = "<ul><li>" . implode("</li><li>", $res) . "</li></ul>";
+                                                        $value = $this->_db->loadColumn();
+                                                        $elt = '<ul>';
+                                                        foreach ($value as $val){
+                                                            $elt .= '<li>'.JText::_($val).'</li>';
+                                                        }
+                                                        $elt .= "</ul>";
                                                     } catch (Exception $e) {
                                                         JLog::add('Line 997 - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
                                                         throw $e;
@@ -1898,7 +1910,12 @@ class EmundusModelApplication extends JModelList
                                                     $key = array_search($value,$params->sub_options->sub_values);
                                                     $elm[] =  ' - ' . JText::_($params->sub_options->sub_labels[$key]);
                                                 }
-                                                $elt = "<li>" . implode("</li><li>", @$elm) . "</li>";
+
+                                                $elt = '<ul>';
+                                                foreach ($elm as $val){
+                                                    $elt .= '<li>'.JText::_($val).'</li>';
+                                                }
+                                                $elt .= "</ul>";
                                             } elseif (($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') && isset($element->content)) {
                                                 $params = json_decode($element->params);
                                                 $index = array_search($element->content, $params->sub_options->sub_values);
@@ -2198,8 +2215,12 @@ class EmundusModelApplication extends JModelList
 
                                                         try {
                                                             $this->_db->setQuery($query);
-                                                            $res = $this->_db->loadColumn();
-                                                            $elt = "<ul><li>" . implode("</li><li>", $res) . "</li></ul>";
+                                                            $value = $this->_db->loadColumn();
+                                                            $elt = '<ul>';
+                                                            foreach ($value as $val){
+                                                                $elt .= '<li>'.JText::_($val).'</li>';
+                                                            }
+                                                            $elt .= "</ul>";
                                                         } catch (Exception $e) {
                                                             JLog::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
                                                             throw $e;
@@ -2374,8 +2395,12 @@ class EmundusModelApplication extends JModelList
 
                                                         try {
                                                             $this->_db->setQuery($query);
-                                                            $res = $this->_db->loadColumn();
-                                                            $elt = "<ul><li>" . implode("</li><li>", $res) . "</li></ul>";
+                                                            $value = $this->_db->loadColumn();
+                                                            $elt = '<ul>';
+                                                            foreach ($value as $val){
+                                                                $elt .= '<li>'.JText::_($val).'</li>';
+                                                            }
+                                                            $elt .= "</ul>";
                                                         } catch (Exception $e) {
                                                             JLog::add('Line ' . __LINE__ . ' - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
                                                             throw $e;
@@ -2428,7 +2453,11 @@ class EmundusModelApplication extends JModelList
                                                             $elm[] = $value;
                                                         }
                                                     }
-                                                    $elt = "<li>" . implode("</li><li>", @$elm) . "</li>";
+                                                    $elt = '<ul>';
+                                                    foreach ($elm as $val){
+                                                        $elt .= '<li>'.JText::_($val).'</li>';
+                                                    }
+                                                    $elt .= "</ul>";
                                                 } elseif ($elements[$j]->plugin == 'dropdown' || @$elements[$j] == 'radiobutton') {
                                                     $params = json_decode($elements[$j]->params);
                                                     $index = array_search($r_elt, $params->sub_options->sub_values);
@@ -2577,8 +2606,12 @@ class EmundusModelApplication extends JModelList
 
                                                     try {
                                                         $this->_db->setQuery($query);
-                                                        $res = $this->_db->loadColumn();
-                                                        $elt = "<li> - " . implode("</li><li> - ", $res) . "</li>";
+                                                        $value = $this->_db->loadColumn();
+                                                        $elt = '<ul>';
+                                                        foreach ($value as $val){
+                                                            $elt .= '<li>'.JText::_($val).'</li>';
+                                                        }
+                                                        $elt .= "</ul>";
                                                     } catch (Exception $e) {
                                                         JLog::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
                                                         throw $e;
@@ -2621,7 +2654,11 @@ class EmundusModelApplication extends JModelList
                                                     $key = array_search($value,$params->sub_options->sub_values);
                                                     $elm[] =  ' - ' . JText::_($params->sub_options->sub_labels[$key]);
                                                 }
-                                                $elt = "<li>" . implode("</li><li>", @$elm) . "</li>";
+                                                $elt = '<ul>';
+                                                foreach ($elm as $val){
+                                                    $elt .= '<li>'.JText::_($val).'</li>';
+                                                }
+                                                $elt .= "</ul>";
                                             } elseif ($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') {
                                                 $index = array_search($element->content, $params->sub_options->sub_values);
                                                 if (strlen($index) > 0) {
@@ -4572,7 +4609,6 @@ class EmundusModelApplication extends JModelList
         ->set($db->quoteName('modified_by') . ' = ' . $db->quote($data['user']))
         ->where($db->quoteName('id') . ' = ' . $db->quote($data['id']));
 
-        //execute query
         try {
             $db->setQuery($query);
             $db->execute();

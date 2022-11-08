@@ -59,6 +59,7 @@ JText::script('COM_EMUNDUS_ACCESS_EVALUATION');
 JText::script('COM_EMUNDUS_ACCESS_EXPORT_EXCEL');
 JText::script('COM_EMUNDUS_ACCESS_EXPORT_ZIP');
 JText::script('COM_EMUNDUS_ACCESS_EXPORT_PDF');
+JText::script('COM_EMUNDUS_EXPORTS_EXPORT_AS_CSV_TEMPLATE');
 JText::script('COM_EMUNDUS_ACCESS_MAIL_APPLICANT');
 JText::script('COM_EMUNDUS_ACCESS_MAIL_EVALUATOR');
 JText::script('COM_EMUNDUS_ACCESS_MAIL_GROUP');
@@ -447,8 +448,8 @@ JText::script('COM_EMUNDUS_EMAILS_BCC_PLACEHOLDER');
 
 // VUE ATTACHMENT
 JText::script('SEARCH');
-JText::script('NAME');
-JText::script('DESCRIPTION');
+JText::script('COM_EMUNDUS_ATTACHMENTS_FILE_NAME');
+JText::script('COM_EMUNDUS_ATTACHMENTS_DESCRIPTION');
 JText::script('STATUS');
 JText::script('COM_EMUNDUS_ATTACHMENTS_REPLACE');
 JText::script('EXPORT');
@@ -484,6 +485,14 @@ JText::script('COM_EMUNDUS_ATTACHMENTS_UNAUTHORIZED_ACTION');
 JText::script('COM_EMUNDUS_ATTACHMENTS_PERMISSION_VIEW');
 JText::script('COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE');
 JText::script('COM_EMUNDUS_ATTACHMENTS_COMPLETED');
+JText::script('COM_EMUNDUS_ATTACHMENTS_SYNC');
+JText::script('COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE');
+JText::script('COM_EMUNDUS_ATTACHMENTS_SYNC_WRITE');
+JText::script('COM_EMUNDUS_ATTACHMENTS_SYNC_READ');
+JText::script('COM_EMUNDUS_ONBOARD_DOCUMENTS');
+JText::script('COM_EMUNDUS_ATTACHMENTS_NAME');
+JText::script('COM_EMUNDUS_ATTACHMENTS_DESCRIPTION');
+
 JText::script('COM_EMUNDUS_ATTACHMENTS_EXPORT_LINK');
 JText::script('COM_EMUNDUS_ATTACHMENTS_SELECT_CATEGORY');
 JText::script('COM_EMUNDUS_EMAILS_SELECT_CATEGORY');
@@ -495,6 +504,8 @@ JText::script('COM_EMUNDUS_VIEW_FORM_OTHER_PROFILES');
 JText::script('COM_EMUNDUS_FILES_ARE_EDITED_BY_OTHER_USERS');
 JText::script('COM_EMUNDUS_FILES_IS_EDITED_BY_OTHER_USER');
 JText::script('COM_EMUNDUS_FILE_EDITED_BY_ANOTHER_USER');
+JText::script('COM_EMUNDUS_LIST_RETRIEVED');
+JText::script('COM_EMUNDUS_ERROR_CANNOT_RETRIEVE_LIST');
 
 // GOTENBERG EXPORT FAILED
 JText::script('COM_EMUNDUS_EXPORT_FAILED');
@@ -625,7 +636,7 @@ if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name
     $controller->execute($task);
 } elseif($user->guest && (($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && $secret === $token) {
     $controller->execute($task);
-} elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $json != 'json') && $task != 'passrequest') {
+} elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $json != 'json') && $task != 'passrequest' && $task != 'getusername') {
     $controller->setRedirect('index.php', JText::_("ACCESS_DENIED"), 'error');
 } else {
     if ($name != 'search_engine') {

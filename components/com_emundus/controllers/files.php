@@ -959,11 +959,20 @@ class EmundusControllerFiles extends JControllerLegacy
                                                     }
                                                 }
                         */
+
+                        require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+                        $h_emails = new EmundusHelperEmails();
+
                         if ($trigger['to']['to_applicant'] == 1) {
 
                             // Manage with selected fnum
                             foreach ($fnumsInfos as $file) {
                                 if ($file['training'] != $code) {
+                                    continue;
+                                }
+
+                                $can_send_mail = $h_emails->assertCanSendMailToUser($file['applicant_id'], $file['fnum']);
+                                if (!$can_send_mail) {
                                     continue;
                                 }
 
@@ -978,7 +987,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
                                 $mailer = JFactory::getMailer();
 
-                                $post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['label'], 'CAMPAIGN_END' => $file['end_date']);
+                                $post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['label'], 'CAMPAIGN_END' => JHTML::_('date', $file['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null));
                                 $tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum'], '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
 
                                 $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
@@ -1063,6 +1072,11 @@ class EmundusControllerFiles extends JControllerLegacy
                         }
 
                         foreach ($trigger['to']['recipients'] as $key => $recipient) {
+                            $can_send_mail = $h_emails->assertCanSendMailToUser($recipient['id']);
+                            if (!$can_send_mail) {
+                                continue;
+                            }
+
                             $mailer = JFactory::getMailer();
 
                             $post = array();
@@ -3708,63 +3722,68 @@ class EmundusControllerFiles extends JControllerLegacy
 
     public function exportzipdoc() {
         $jinput = JFactory::getApplication()->input;
-        $idFiles = explode(",", $jinput->getStrings('ids', ""));
-        $m_files = $this->getModel('Files');
-        $files = $m_files->getAttachmentsById($idFiles);
+        $idFiles = explode(',', $jinput->getString('ids', ''));
 
-        // $nom = date("Y-m-d").'_'.md5(rand(1000,9999).time()).'_x'.(count($files)-1).'.zip';
-        $nom = date("Y-m-d").'_'.md5(rand(1000,9999).time()).'.zip';
-        $path = JPATH_SITE.DS.'tmp'.DS.$nom;
+        if (!empty($idFiles)) {
+            $idFiles = array_unique($idFiles);
+            $m_files = $this->getModel('Files');
+            $files = $m_files->getAttachmentsById($idFiles);
+        }
 
-        if (extension_loaded('zip')) {
-            $zip = new ZipArchive();
+        if (!empty($files)) {
+            $nom = date("Y-m-d").'_'.md5(rand(1000,9999).time()).'.zip';
+            $path = JPATH_SITE.DS.'tmp'.DS.$nom;
 
-            if ($zip->open($path, ZipArchive::CREATE) == TRUE) {
+            if (extension_loaded('zip')) {
+                $zip = new ZipArchive();
+
+                if ($zip->open($path, ZipArchive::CREATE) == TRUE) {
+                    foreach ($files as $key => $file) {
+                        $filename = EMUNDUS_PATH_ABS.$file['applicant_id'].DS.$file['filename'];
+                        if (!$zip->addFile($filename, $file['filename'])) {
+                            JLog::add('Error when trying to add file to zip archive : ' . $filename , JLog::ERROR, 'com_emundus');
+                            continue;
+                        }
+                    }
+                    $zip->close();
+                } else {
+                    die("ERROR");
+                }
+
+            } else {
+                require_once(JPATH_SITE.DS.'libraries'.DS.'pclzip-2-8-2'.DS.'pclzip.lib.php');
+                $zip = new PclZip($path);
+
                 foreach ($files as $key => $file) {
-                    $filename = EMUNDUS_PATH_ABS.$file['user_id'].DS.$file['filename'];
+                    $user = JFactory::getUser($file['applicant_id']);
+                    $dir = $file['fnum'].'_'.$user->name;
+                    $filename = EMUNDUS_PATH_ABS.$file['applicant_id'].DS.$file['filename'];
+
+                    $zip->add($filename, PCLZIP_OPT_REMOVE_ALL_PATH, PCLZIP_OPT_ADD_PATH, $dir);
+
                     if (!$zip->addFile($filename, $file['filename'])) {
                         continue;
                     }
                 }
-                $zip->close();
-            } else {
-                die ("ERROR");
             }
 
-        } else {
-            require_once(JPATH_SITE.DS.'libraries'.DS.'pclzip-2-8-2'.DS.'pclzip.lib.php');
-            $zip = new PclZip($path);
-
-            foreach ($files as $key => $file) {
-                $user = JFactory::getUser($file['user_id']);
-                $dir = $file['fnum'].'_'.$user->name;
-                $filename = EMUNDUS_PATH_ABS.$file['user_id'].DS.$file['filename'];
-
-                $zip->add($filename, PCLZIP_OPT_REMOVE_ALL_PATH, PCLZIP_OPT_ADD_PATH, $dir);
-
-                if (!$zip->addFile($filename, $file['filename'])) {
-                    continue;
-                }
-            }
+            $mime_type = $this->get_mime_type($path);
+            header('Content-type: application/'.$mime_type);
+            header('Content-Disposition: inline; filename='.basename($path));
+            header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
+            header('Cache-Control: no-store, no-cache, must-revalidate');
+            header('Cache-Control: pre-check=0, post-check=0, max-age=0');
+            header('Pragma: anytextexeptno-cache', true);
+            header('Cache-control: private');
+            header('Expires: 0');
+            ob_clean();
+            flush();
+            readfile($path);
+            exit;
         }
-
-        $mime_type = $this->get_mime_type($path);
-        header('Content-type: application/'.$mime_type);
-        header('Content-Disposition: inline; filename='.basename($path));
-        header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
-        header('Cache-Control: no-store, no-cache, must-revalidate');
-        header('Cache-Control: pre-check=0, post-check=0, max-age=0');
-        header('Pragma: anytextexeptno-cache', true);
-        header('Cache-control: private');
-        header('Expires: 0');
-        ob_clean();
-        flush();
-        readfile($path);
-        exit;
     }
 
     public function exportonedoc() {
-        //require_once JPATH_LIBRARIES.DS.'vendor'.DS.'autoload.php';
         require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
         if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
@@ -3783,7 +3802,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $docs = array();
         foreach ($files as $key => $file) {
-            $filename = EMUNDUS_PATH_ABS.$file['user_id'].DS.$file['filename'];
+            $filename = EMUNDUS_PATH_ABS.$file['applicant_id'].DS.$file['filename'];
             $tmpName = JPATH_SITE.DS.'tmp'.DS.$file['filename'];
             $document = $wordPHP->loadTemplate($filename);
             $document->saveAs($tmpName); // Save to temp file
