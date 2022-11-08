@@ -348,31 +348,38 @@ class EmundusModelFormbuilder extends JModelList {
         }
     }
 
-    function createApplicantHeadingMenu($menutype,$title,$prid) {
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
+    function createApplicantHeadingMenu($menutype, $title, $prid) {
+        $created = false;
 
-        try {
-            $query->insert($db->quoteName('#__menu'));
-            $query->set($db->quoteName('menutype') . ' = ' . $db->quote($menutype))
-                ->set($db->quoteName('title') . ' = ' . $db->quote($title))
-                ->set($db->quoteName('alias') . ' = ' . $db->quote(str_replace($this->getSpecialCharacters(),'-',strtolower($this->replaceAccents($title))) . '-' . $prid))
-                ->set($db->quoteName('path') . ' = ' . $db->quote($menutype))
-                ->set($db->quoteName('link') . ' = ' . $db->quote(''))
-                ->set($db->quoteName('type') . ' = ' . $db->quote('heading'))
-                ->set($db->quoteName('published') . ' = ' . $db->quote(1))
-                ->set($db->quoteName('level') . ' = ' . $db->quote(1))
-                ->set($db->quoteName('access') . ' = ' . $db->quote(1))
-                ->set($db->quoteName('template_style_id') . ' = ' . $db->quote(22))
-                ->set($db->quoteName('params') . ' = ' . $db->quote('{"menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_image_css":"","menu_text":1,"menu_show":1}'))
-                ->set($db->quoteName('rgt') . ' = ' . $db->quote(1))
-                ->set($db->quoteName('language') . ' = ' . $db->quote('*'));
-            $db->setQuery($query);
-            return $db->execute();
-        } catch (Exception $e) {
-            JLog::add('component/com_emundus/models/formbuilder | Error when create the heading menu of the form ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
+        if (!empty($menutype) && !empty($prid)) {
+            $db = $this->getDbo();
+            $query = $db->getQuery(true);
+
+            try {
+                $query->insert($db->quoteName('#__menu'));
+                $query->set($db->quoteName('menutype') . ' = ' . $db->quote($menutype))
+                    ->set($db->quoteName('title') . ' = ' . $db->quote($title))
+                    ->set($db->quoteName('alias') . ' = ' . $db->quote(str_replace($this->getSpecialCharacters(),'-',strtolower($this->replaceAccents($title))) . '-' . $prid))
+                    ->set($db->quoteName('path') . ' = ' . $db->quote($menutype))
+                    ->set($db->quoteName('link') . ' = ' . $db->quote(''))
+                    ->set($db->quoteName('type') . ' = ' . $db->quote('heading'))
+                    ->set($db->quoteName('published') . ' = ' . $db->quote(1))
+                    ->set($db->quoteName('level') . ' = ' . $db->quote(1))
+                    ->set($db->quoteName('access') . ' = ' . $db->quote(1))
+                    ->set($db->quoteName('template_style_id') . ' = ' . $db->quote(22))
+                    ->set($db->quoteName('params') . ' = ' . $db->quote('{"menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_image_css":"","menu_text":1,"menu_show":1}'))
+                    ->set($db->quoteName('rgt') . ' = ' . $db->quote(1))
+                    ->set($db->quoteName('parent_id') . ' = 1')
+                    ->set($db->quoteName('language') . ' = ' . $db->quote('*'));
+                $db->setQuery($query);
+                $created = $db->execute();
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus/models/formbuilder | Error when create the heading menu of the form ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                $created = false;
+            }
         }
+
+        return $created;
     }
 
     function createApplicantMenu($label, $intro, $prid, $template) {

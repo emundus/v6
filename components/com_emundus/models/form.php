@@ -794,47 +794,59 @@ class EmundusModelForm extends JModelList {
             $db->execute();
             $newprofile = $db->insertid();
 
-            $this->createMenuType('menu-profile' . $newprofile,'Nouveau formulaire');
+            if (!empty($newprofile)) {
+                $menu_created = $this->createMenuType('menu-profile' . $newprofile,'Nouveau formulaire');
 
-            $query->clear()
-                ->update($db->quoteName('#__emundus_setup_profiles'))
-                ->set($db->quoteName('menutype') . ' = ' . $db->quote('menu-profile' . $newprofile))
-                ->where($db->quoteName('id') . ' = ' . $db->quote($newprofile));
-            $db->setQuery($query);
-            $db->execute();
+                if ($menu_created) {
+                    $query->clear()
+                        ->update($db->quoteName('#__emundus_setup_profiles'))
+                        ->set($db->quoteName('menutype') . ' = ' . $db->quote('menu-profile' . $newprofile))
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($newprofile));
+                    $db->setQuery($query);
+                    $db->execute();
 
-            $formbuilder->createApplicantHeadingMenu('menu-profile' . $newprofile,'Nouveau formulaire',$newprofile);
+                    $headingmenu_created = $formbuilder->createApplicantHeadingMenu('menu-profile' . $newprofile,'Nouveau formulaire',$newprofile);
 
-            if($first_page) {
-                // Create a first page
-                $label = array(
-                    'fr' => 'Ma première page',
-                    'en' => 'My first page'
-                );
-                $intro = array(
-                    'fr' => 'Décrivez votre page de formulaire avec une introduction',
-                    'en' => 'Describe your form page with an introduction'
-                );
-                $formbuilder->createApplicantMenu($label, $intro, $newprofile, 'false');
+                    if ($headingmenu_created) {
+                        if ($first_page) {
+                            // Create a first page
+                            $label = array(
+                                'fr' => 'Ma première page',
+                                'en' => 'My first page'
+                            );
+                            $intro = array(
+                                'fr' => 'Décrivez votre page de formulaire avec une introduction',
+                                'en' => 'Describe your form page with an introduction'
+                            );
+                            $formbuilder->createApplicantMenu($label, $intro, $newprofile, 'false');
+                        }
+
+                        // Create submittion page
+                        $label = array(
+                            'fr' => "Confirmation d'envoi de dossier",
+                            'en' => 'Data & disclaimer confirmation'
+                        );
+                        $intro = array(
+                            'fr' => '',
+                            'en' => ''
+                        );
+                        $formbuilder->createSubmittionPage($label,$intro,$newprofile);
+
+                        // Create checklist menu
+                        $this->addChecklistMenu($newprofile);
+                        //
+
+                        $user = JFactory::getUser();
+                        $settings->onAfterCreateForm($user->id);
+                    } else {
+                        JLog::add('Failed to create heading menu for profile ' . $newprofile . ', can not continue', JLog::WARNING, 'com_emundus.error');
+                    }
+                } else {
+                    JLog::add('Failed to create new menutype for profile ' . $newprofile . ', can not continue', JLog::WARNING, 'com_emundus.error');
+                }
+            } else {
+                JLog::add('Failed to create new profile can not continue', JLog::WARNING, 'com_emundus.error');
             }
-
-            // Create submittion page
-            $label = array(
-                'fr' => "Confirmation d'envoi de dossier",
-                'en' => 'Data & disclaimer confirmation'
-            );
-            $intro = array(
-                'fr' => '',
-                'en' => ''
-            );
-            $formbuilder->createSubmittionPage($label,$intro,$newprofile);
-
-            // Create checklist menu
-            $this->addChecklistMenu($newprofile);
-            //
-
-            $user = JFactory::getUser();
-            $settings->onAfterCreateForm($user->id);
 
             return $newprofile;
         } catch (Exception $e) {
