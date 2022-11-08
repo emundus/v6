@@ -857,38 +857,43 @@ class EmundusModelForm extends JModelList {
 
 
     public function createMenuType($menutype, $title) {
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $created = false;
 
-        // Insert columns.
-        $columns = array(
-            'asset_id',
-            'menutype',
-            'title',
-            'description',
-            'client_id'
-        );
+        if (!empty($menutype)) {
+            $db = $this->getDbo();
+            $query = $db->getQuery(true);
 
-        // Insert values.
-        $values = array(
-            0,
-            $menutype,
-            $title,
-            '',
-            0
-        );
+            // Insert columns.
+            $columns = array(
+                'asset_id',
+                'menutype',
+                'title',
+                'description',
+                'client_id'
+            );
 
-        $query->insert($db->quoteName('#__menu_types'))
-            ->columns($db->quoteName($columns))
-            ->values(implode(',', $db->Quote($values)));
+            // Insert values.
+            $values = array(
+                0,
+                $menutype,
+                $title,
+                '',
+                0
+            );
 
-        try {
-            $db->setQuery($query);
-            return $db->execute();
-        } catch (Exception $e) {
-            JLog::add('component/com_emundus/models/form | Cannot create the menutype ' . $menutype . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
+            $query->insert($db->quoteName('#__menu_types'))
+                ->columns($db->quoteName($columns))
+                ->values(implode(',', $db->Quote($values)));
+
+            try {
+                $db->setQuery($query);
+                $created = $db->execute();
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus/models/form | Cannot create the menutype ' . $menutype . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            }
         }
+
+        return $created;
     }
 
 
