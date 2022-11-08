@@ -5359,7 +5359,8 @@ class EmundusModelApplication extends JModelList
     {
         $reordered = false;
 
-        if (!empty($fnum_from) && !empty($target_fnum)) {
+        $excluded_columns = ['fnum', 'id', 'user', 'user_id', 'applicant_id'];
+        if (!in_array($order_column, $excluded_columns) && !empty($order_column) && !empty($fnum_from) && !empty($target_fnum)) {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
 
