@@ -4665,42 +4665,6 @@ $(document).ready(function() {
                 });
                 break;
 
-            // TODO : Fast emails
-            case 15:
-            case 16:
-                title = 'COM_EMUNDUS_FAST_EMAILS';
-                html = '<iframe id="iframe-fast-emails" src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>';
-                break;
-
-            // TODO : Custom emails
-            case 17:
-            case 18:
-                fnums = getUserCheckArray();
-
-                $('#can-val').empty();
-                addLoader();
-                $('.modal-footer').hide();
-                $('.modal-dialog').addClass('modal-lg');
-                $('.modal-body').empty();
-                $.ajax({
-                    type: 'post',
-                    url: url,
-                    dataType: 'html',
-                    data: {
-                        fnums: fnums
-                    },
-                    success: function(result) {
-                        $('.modal-body').empty();
-                        removeLoader();
-                        $('.modal-body').append(result);
-                    },
-                    error: function (jqXHR) {
-                        console.log(jqXHR.responseText);
-                    }
-                });
-                break;
-
-            // TODO : Generate letters
             case 27:
                 title = 'COM_EMUNDUS_ACCESS_LETTERS';
                 swal_confirm_button = 'GENERATE_DOCUMENT';
@@ -4759,6 +4723,7 @@ $(document).ready(function() {
                 html = '<iframe id="iframe-trombinoscope" src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>';
                 break;
 
+            // TODO: Synthesis (fast pdf generation from a model)
             case 35:
                 /// first --> get fnums
 
