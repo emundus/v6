@@ -18,9 +18,9 @@
 			<p class="line-head em-mt-4 em-p-8">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_FROM_MODEL') }}</p>
 			<div class="line"></div>
 		</div>
-		<section id="models" class="em-flex-row">
+		<section id="models" class="em-flex-row em-w-100">
 			<p v-if="models.length < 1 && !loading">{{ translate('COM_EMUNDUS_FORM_BUILDER_EMPTY_PAGE_MODELS') }}</p>
-			<div v-if="!loading" class="em-flex-row">
+			<div v-if="!loading" class="em-flex-row em-w-100">
 				<div
 						v-for="model in models" :key="model.id"
 						class="card-wrapper"
@@ -33,7 +33,7 @@
 					<p class="em-p-4"> {{ model.label[shortDefaultLang] }}</p>
 				</div>
 			</div>
-			<div v-else class="em-flex-row">
+			<div v-else class="em-flex-row em-w-100">
 				<div v-for="i in 5" :key="i" class="em-flex-column card-wrapper">
 					<skeleton width="150px" height="200px" classes="card em-shadow-cards model-preview"></skeleton>
 					<skeleton width="150px" height="20px" classes="em-p-4"></skeleton>
@@ -225,6 +225,10 @@ export default {
 
 	.model-preview {
 		overflow: hidden;
+	}
+
+	#models > div {
+		flex-wrap: wrap;
 	}
 }
 </style>

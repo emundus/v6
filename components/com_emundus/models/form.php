@@ -1584,8 +1584,6 @@ class EmundusModelForm extends JModelList {
 
                 $db->setQuery($query);
                 $modelId = $db->loadResult();
-
-                $form->savedAsModel = !empty($modelId);
             }
 
             return $forms;
