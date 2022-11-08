@@ -3667,19 +3667,21 @@ class EmundusModelFormbuilder extends JModelList {
                     $list_to_copy = $this->getList($form_id_to_copy);
 
                     if (!empty($list_to_copy)) {
-                        $new_list_id = $this->copyList($list_to_copy, $new_form_id, $list_to_copy->db_table_name);
+                        $new_list_id = $this->copyList($list_to_copy, $new_form_id);
 
                         if (!empty($new_list_id)) {
+                            $copied = $this->copyGroups($form_id_to_copy, $new_form_id, $new_list_id, $list_to_copy->db_table_name);
 
+                            if ($copied) {
+                                // insert form into models list
+                                $query->clear()
+                                    ->insert('#__emundus_template_form')
+                                    ->columns(['form_id', 'label'])
+                                    ->values($new_form_id . ', ' . $db->quote($label));
 
-                            // insert form into models list
-                            $query->clear()
-                                ->insert('#__emundus_template_form')
-                                ->columns(['form_id', 'label'])
-                                ->values($new_form_id . ', ' . $db->quote($label));
-
-                            $db->setQuery($query);
-                            $inserted = $db->execute();
+                                $db->setQuery($query);
+                                $inserted = $db->execute();
+                            }
                         }
                     }
                 } catch (Exception $e) {
@@ -3866,16 +3868,20 @@ class EmundusModelFormbuilder extends JModelList {
         $copied = false;
 
         if (!empty($form_id_to_copy) && !empty($new_form_id) && !empty($new_list_id)) {
+            $label = [];
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
 
+            $languages = JLanguageHelper::getLanguages();
             JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
             $form = JModelLegacy::getInstance('Form', 'FabrikFEModel');
             $form->setId(intval($form_id_to_copy));
             $ordering = 0;
 
             $groups	= $form->getGroups();
-            foreach ($groups as $group) {
+            $groups_copied = [];
+            foreach ($groups as $g_index => $group) {
+                $groups_copied[$g_index] = false;
                 $ordering++;
                 $properties = $group->getGroupProperties($group->getFormModel());
 
@@ -3939,7 +3945,7 @@ class EmundusModelFormbuilder extends JModelList {
                             $labels_to_duplicate = array();
                             foreach ($languages as $language) {
                                 $labels_to_duplicate[$language->sef] = $this->getTranslation($group_model->label, $language->lang_code);
-                                if($label[$language->sef] == ''){
+                                if ($label[$language->sef] == '') {
                                     $label[$language->sef] = $group_model->label;
                                 }
                             }
@@ -3969,13 +3975,13 @@ class EmundusModelFormbuilder extends JModelList {
                                 $el_params = json_decode($element->element->params);
 
                                 // Update translation files
-                                if(($element->element->plugin === 'checkbox' || $element->element->plugin === 'radiobutton' || $element->element->plugin === 'dropdown') && $el_params->sub_options){
+                                if (($element->element->plugin === 'checkbox' || $element->element->plugin === 'radiobutton' || $element->element->plugin === 'dropdown') && $el_params->sub_options){
                                     $sub_labels = [];
                                     foreach ($el_params->sub_options->sub_labels as $index => $sub_label) {
                                         $labels_to_duplicate = array();
                                         foreach ($languages as $language) {
                                             $labels_to_duplicate[$language->sef] = $this->getTranslation($sub_label,$language->lang_code);
-                                            if($label[$language->sef] == ''){
+                                            if ($label[$language->sef] == '') {
                                                 $label[$language->sef] = $sub_label;
                                             }
                                         }
@@ -4002,14 +4008,19 @@ class EmundusModelFormbuilder extends JModelList {
                                 $query->where('id =' . $new_element_id);
                                 $db->setQuery($query);
                                 $db->execute();
-
                             } catch (Exception $e) {
                                 JLog::add('component/com_emundus/models/formbuilder | Error at create a page from the model ' . $form_id_to_copy . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                             }
                         }
+
+                        $groups_copied[$g_index] = true;
                     }
                 }
             }
+
+            $copied = !in_array(false, $groups_copied);
         }
+
+        return $copied;
     }
 }
