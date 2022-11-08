@@ -1534,11 +1534,11 @@ const checkElement = async selector => {
 $(document).ready(function() {
     $('#check').removeClass('em-check-all-all');
 
-    const headerNav = document.getElementById('g-navigation');
+    const headerNav = document.querySelector('#g-navigation .g-container');
 
     // Fix actions and filters to sticky
     if (headerNav) {
-        $('.em-menuaction').css('top', headerNav.offsetHeight + 'px');
+        $('.em-menuaction').css('top',headerNav.offsetHeight + 'px');
         $('.side-panel').css('top', headerNav.offsetHeight + 'px');
     }
 

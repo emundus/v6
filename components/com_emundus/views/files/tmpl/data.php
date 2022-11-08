@@ -46,8 +46,8 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
                                     </div>
                                     <div class="selectAll" id="selectAll">
-                                        <label for="em-check-all">
-                                            <input value="-1" id="em-check-all" type="checkbox" class="em-check" />
+                                        <label>
+                                            <input value="-1" id="em-check-all-page" class="em-check-all-page" type="checkbox" />
                                             <span id="span-check-all"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL');?></span>
                                         </label>
                                         <label class="em-check-all-all" for="em-check-all-all">
@@ -58,16 +58,6 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                                             <span id="span-check-none"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_NONE'); ?></span>
                                         </label>
                                     </div>
-
-									<!--<label for="em-check-all">
-										<input type="checkbox" value="-1" id="em-check-all" class="em-check" style="width:20px !important;"/>
-										<span><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL');?></span>
-									</label>
-
-									<label class="em-hide em-check-all-all" for="em-check-all-all">
-										<input class="em-check-all-all em-hide" type="checkbox" name="check-all-all" value="all" id="em-check-all-all" style="width:20px !important;"/>
-										<span class="em-hide em-check-all-all"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL_ALL');?></span>
-									</label>-->
 								<?php elseif ($this->lists['order'] == $kl): ?>
 									<?php if ($this->lists['order_dir'] == 'desc'): ?>
 										<span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
@@ -238,8 +228,17 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
         $('#rt-main').children().addClass('mainemundus');
         $('#rt-main').children().children().addClass('mainemundus');
 		$('.em-data-container').doubleScroll();
+
+        const menuAction = document.querySelector('.em-menuaction');
+        const headerNav = document.querySelector('#g-navigation .g-container');
+        const containerResult = document.querySelector('.container-result');
+        setTimeout(() => {
+            $('.container-result').css('top', (headerNav.offsetHeight + menuAction.offsetHeight) + 'px');
+            $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
+        },2000);
 	});
     window.parent.$("html, body").animate({scrollTop : 0}, 300);
+
 </script>
 
 
@@ -271,14 +270,6 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
         $('.selectAll').slideUp();
     });
 
-    $('#span-check-all-all').click(function() {
-        $('.selectAll.em-check-all-all#em-check-all-all').prop('checked',true);// all
-        //$('.em-check#em-check-all').prop('checked',true);//.selectPage Page
-        //$('.em-check-all#em-check-all').prop('checked',true);//.selectAll Page
-        $('.em-check').prop('checked',true);
-        reloadActions('files', undefined, true);
-    });
-
     $('#span-check-none').click(function(){
         $('#em-check-all-all').prop('checked',false);
         $('.em-check#em-check-all').prop('checked',false);
@@ -288,15 +279,60 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
         reloadActions('files', undefined, false);
     });
 
-    $(document).on('change', '.em-check, .em-check-all-all', function() {
-
-        let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check ').filter(':checked').length;
+    $(document).on('change', '.em-check-all-all', function(e) {
         let allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');
-        let nbChecked = allCheck == true ? Joomla.JText._('COM_EMUNDUS_FILTERS_SELECT_ALL') : countCheckedCheckbox;
 
+        if(allCheck === true) {
+            $('.em-check-all-page#em-check-all-page').prop('checked', false);
+            $('.em-check').prop('checked', true);
+
+            $('#countCheckedCheckbox').html('<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + Joomla.JText._('COM_EMUNDUS_FILTERS_SELECT_ALL') + Joomla.JText._('COM_EMUNDUS_FILES_FILES') + '</p>');
+        } else {
+            $('.em-check').prop('checked', false);
+            $('#countCheckedCheckbox').html('');
+        }
+
+        reloadActions('files', undefined, true);
+    })
+
+    $(document).on('change', '.em-check-all-page,.selectPage #em-check-all', function(e) {
+        let pageCheckAll = $('.selectPage #em-check-all').is(':checked');
+
+        if(e.target.id === 'em-check-all'){
+            if(pageCheckAll === false){
+                $('.em-check-all-page#em-check-all-page').prop('checked', false);
+            }
+        }
+
+        let pageCheck = $('.em-check-all-page#em-check-all-page').is(':checked');
+
+        if(pageCheck === true || pageCheckAll === true) {
+            $('.em-check-all-all#em-check-all-all').prop('checked', false);
+            $('.em-check').prop('checked', true);
+
+            let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check').filter(':checked').length;
+            let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILES_FILE') : Joomla.JText._('COM_EMUNDUS_FILES_FILES');
+
+            if (countCheckedCheckbox !== 0) {
+                $('#countCheckedCheckbox').html('<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '</p>');
+            } else {
+                $('#countCheckedCheckbox').html('');
+            }
+
+        } else {
+            $('.em-check').prop('checked', false);
+            $('#countCheckedCheckbox').html('');
+        }
+
+        reloadActions('files', undefined, true);
+    })
+
+    $(document).on('change', '.em-check', function(e) {
+        let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check').filter(':checked').length;
         let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILES_FILE') : Joomla.JText._('COM_EMUNDUS_FILES_FILES');
+
         if (countCheckedCheckbox !== 0) {
-            $('#countCheckedCheckbox').html('<p>'+Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>');
+            $('#countCheckedCheckbox').html('<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '</p>');
         } else {
             $('#countCheckedCheckbox').html('');
         }

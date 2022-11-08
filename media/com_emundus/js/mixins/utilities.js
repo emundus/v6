@@ -1,4 +1,4 @@
-function addLoader(container = '#g-main-mainbody') {
+function addLoader(container = 'body') {
     if(document.getElementById('em-dimmer') === null) {
         $(container).after('<div class="em-page-loader" id="em-dimmer"></div>');
     }

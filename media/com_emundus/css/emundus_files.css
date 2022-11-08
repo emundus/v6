@@ -214,6 +214,16 @@ button.close {
     background: #F2F2F2 !important;
 }
 
+th {
+    position: sticky;
+    background: white !important;
+    z-index: 50;
+}
+.container-result {
+    position: sticky;
+    background: white;
+}
+
 
 td:first-child > .em-cell {
     display: flex;
@@ -331,8 +341,6 @@ ul.pagination.pagination-sm a:hover {
 #check {
     min-width: 150px !important;
     max-width: 220px !important;
-    display: flex;
-    height: 69px;
 }
 
 #check label {
@@ -1320,11 +1328,6 @@ p {
     overflow-x: auto;
     overflow-y: auto;
     text-overflow: ellipsis;
-}
-
-.em-data-container {
-    width: 100%;
-    overflow: auto;
 }
 
 th>.em-cell {
