@@ -308,7 +308,7 @@ endif; ?>
 
                 Swal.fire({
                     title: "<?= JText::_('MOD_EMUNDUS_APPLICATION_MOVE_UP'); ?>",
-                    text: 'Inverser l\'ordre entre '  + fnum + ' et ' +  fnum_to,
+                    text: 'Le dossier ' + fnum + ' associé au vœu n°' + from + ' va être associé au vœu n° ' + to,
                     type: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: "#28a745",
@@ -339,10 +339,10 @@ endif; ?>
                 });
 
                 const fnum_to =  row_to[0].getAttribute('data-fnum');
-
                 Swal.fire({
                     title: "<?= JText::_('MOD_EMUNDUS_APPLICATION_MOVE_DOWN'); ?>",
                     text: 'Inverser l\'ordre entre '  + fnum + ' et ' +  fnum_to,
+                    text: 'Le dossier ' + fnum + ' associé au vœu n°' + from + ' va être associé au vœu n° ' + to,
                     type: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: "#28a745",
