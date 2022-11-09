@@ -407,6 +407,33 @@ class EmundusModelProfile extends JModelList {
     }
 
     /**
+     * @param $campaign_id
+     * @return array
+     */
+    function getWorkflowProfilesByCampaign($campaign_id)
+    {
+        $profiles = [];
+
+        if (!empty($campaign_id)) {
+            $query = $this->_db->getQuery(true);
+
+            $query->select('DISTINCT(ecw.profile)')
+                ->from('#__emundus_campaign_workflow AS ecw')
+                ->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecwrc ON ecw.id = ecwrc.parent_id')
+                ->where('ecwrc.campaign = ' . $campaign_id);
+
+            try {
+                $this->_db->setQuery($query);
+                $profiles = $this->_db->loadColumn();
+            } catch (Exception $e) {
+                JLog::add('Failed to getWorkflowProfilesByCampaign '. $query->__toString() . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+        }
+
+        return $profiles;
+    }
+
+    /**
      * @description : Get profile by status
      * @param   int $step application file status
      * @return  array

@@ -1908,7 +1908,7 @@ class EmundusControllerFiles extends JControllerLegacy
     }
 
     public function getformslist() {
-
+        $html = '';
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
@@ -1924,40 +1924,37 @@ class EmundusControllerFiles extends JControllerLegacy
         $code = explode(',', $code);
         $camp = explode(',', $camp);
 
-        $profile = $m_profile->getProfileIDByCourse($code, $camp);
-        $pages = $h_menu->buildMenuQuery((int)$profile[0]);
+        $profiles = $m_profile->getProfileIDByCourse($code, $camp);
 
-        if ($camp[0] != 0) {
-            $campaign = $m_campaign->getCampaignsByCourseCampaign($code[0], $camp[0]);
-        } else {
-            $campaign = $m_campaign->getCampaignsByCourse($code[0]);
-        }
+        foreach($profiles as $profile) {
+            $html1 = '';
+            $html2 = '';
+            $pages = $h_menu->buildMenuQuery((int)$profile);
+            $campaign = $camp[0] != 0 ? $m_campaign->getCampaignsByCourseCampaign($code[0], $camp[0]) : $m_campaign->getCampaignsByCourse($code[0]) ;
 
+            foreach ($pages as $i => $page) {
+                $title = explode('-', $page->label);
+                $title = !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0]));
 
-        $html1 = '';
-        $html2 = '';
+                if ($i < count($pages)/2) {
+                    $html1 .= '<input class="em-ex-check" type="checkbox" value="'.$page->form_id.'|'.$code[0].'|'.$camp[0].'" name="'.$page->label.'" id="'.$page->form_id.'|'.$code[0].'|'.$camp[0].'|'. $profile .'" /><label for="'.$page->form_id.'|'.$code[0].'|'.$camp[0].'|'. $profile .'">'.JText::_($title).'</label><br/>';
+                } else {
+                    $html2 .= '<input class="em-ex-check" type="checkbox" value="'.$page->form_id.'|'.$code[0].'|'.$camp[0].'" name="'.$page->label.'" id="'.$page->form_id.'|'.$code[0].'|'.$camp[0].'|'. $profile .'" /><label for="'.$page->form_id.'|'.$code[0].'|'.$camp[0].'|'. $profile .'">'.JText::_($title).'</label><br/>';
+                }
+            }
 
-        for ($i = 0; $i < count($pages); $i++) {
-            $title = explode('-', $pages[$i]->label);
-            $title = !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0]));
-
-            if ($i < count($pages)/2)
-                $html1 .= '<input class="em-ex-check" type="checkbox" value="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" name="'.$pages[$i]->label.'" id="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" /><label for="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'">'.JText::_($title).'</label><br/>';
-            else
-                $html2 .= '<input class="em-ex-check" type="checkbox" value="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" name="'.$pages[$i]->label.'" id="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" /><label for="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'">'.JText::_($title).'</label><br/>';
-        }
-
-        $html = '<div class="panel panel-default pdform">
+            $html .= '<div class="panel panel-default pdform">
                     <div class="panel-heading">
-                        <button type="button" class="btn btn-info btn-xs" title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" style="float:left;" onclick="showelts(this, '."'felts-".$code[0].$camp[0]."'".')">
+                        <button type="button" class="btn btn-info btn-xs" title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" style="float:left;" onclick="showelts(this, '."'felts-".$code[0].$camp[0]. '-' . $profile . "'".')">
                         <span class="glyphicon glyphicon-plus"></span>
                         </button>&ensp;&ensp;
-                        <b>'.$campaign['label'].' ('.$campaign['year'].')</b>
+                        <b>'.$campaign['label'].' ('.$campaign['year'].' - ' . $profile . ')</b>
                     </div>
-                    <div class="panel-body" id="felts-'.$code[0].$camp[0].'" style="display:none;">
+                    <div class="panel-body" id="felts-'.$code[0].$camp[0]. '-' . $profile . '" style="display:none;">
                         <table><tr><td>'.$html1.'</td><td style="padding-left:80px;">'.$html2.'</td></tr></table>
                     </div>
                 </div>';
+        }
 
         echo json_encode((object)(array('status' => true, 'html' => $html)));
         exit;
@@ -2157,7 +2154,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         /// if menu-profile is not in array array_keys($elements) --> do nothing
                         /// otherwise, call to buildFormPDF
 
-                        if(in_array($_return_menutype, array_keys($elements))) {
+                        if (in_array($_return_menutype, array_keys($elements))) {
                             $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options, null, $pdf_data);
                         }
                     }
@@ -4433,7 +4430,8 @@ class EmundusControllerFiles extends JControllerLegacy
         $tag_ids = [];
 
         foreach($fabrikIds as $key => $tag) {
-            $tag_ids[] = reset($m_files->getVariables($tag));
+            $vars = $m_files->getVariables($tag);
+            $tag_ids[] = reset($vars);
         }
 
         $res = $m_emails->getEmailsFromFabrikIds($tag_ids);
