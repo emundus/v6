@@ -1454,16 +1454,6 @@ class EmundusModelForm extends JModelList {
 
             $newmenuid = $checklist_menu['id'];
 
-            // Affect modules to this menu
-            foreach ($modules as $module) {
-                $query->clear()
-                    ->insert($db->quoteName('#__modules_menu'))
-                    ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
-                    ->set($db->quoteName('menuid') . ' = ' . $db->quote($newmenuid));
-                $db->setQuery($query);
-                $db->execute();
-            }
-
             // Affect documents module to each menus of profile
             $query->clear()
                 ->select('*')
