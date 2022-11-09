@@ -769,7 +769,6 @@ class EmundusModelProfile extends JModelList {
         return $res;
     }
 
-    // TODO: incorrect function since 1.33, campaign workflow table changed
     public function getProfileIDByCampaigns($campaigns, $codes) {
         $query = $this->_db->getQuery(true);
         if(!empty($campaigns)) {
@@ -790,9 +789,10 @@ class EmundusModelProfile extends JModelList {
                     }
 
                     $query->clear()
-                        ->select('#__emundus_campaign_workflow.*')
-                        ->from($this->_db->quoteName('#__emundus_campaign_workflow'))
-                        ->where($this->_db->quoteName('#__emundus_campaign_workflow.campaign') . 'IN (' . implode(',', $campaigns) . ')')
+                        ->select('ecw.*')
+                        ->from($this->_db->quoteName('#__emundus_campaign_workflow', 'ecw'))
+                        ->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecwrc ON ecwrc.parent_id = ecw.id')
+                        ->where($this->_db->quoteName('ecwrc.campaign') . 'IN (' . implode(',', $campaigns) . ')')
                         ->order('step');
 
                     $this->_db->setQuery($query);
