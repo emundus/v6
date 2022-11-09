@@ -212,64 +212,6 @@ class EmundusModelFormbuilder extends JModelList {
         }
     }
 
-    function insertMenu($menu,$label){
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
-
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
-        $falang = new EmundusModelFalang;
-        $modules = [93,102,103,104,168,170];
-
-        try {
-            $params = $this->h_fabrik->prepareFabrikMenuParams();
-
-            $query->clear()
-                ->insert($db->quoteName('#__menu'));
-            $query->set($db->quoteName('menutype') . ' = ' . $db->quote($menu['menutype']))
-                ->set($db->quoteName('title') . ' = ' . $db->quote('FORM_' . $menu['profile_id'] . '_' . $menu['form_id']))
-                ->set($db->quoteName('alias') . ' = ' . $db->quote(preg_replace('/\s+/', '-', strtolower($this->replaceAccents($label['fr']))) . '-form-' . $menu['form_id']))
-                ->set($db->quoteName('path') . ' = ' . $db->quote($menu['path']))
-                ->set($db->quoteName('link') . ' = ' . $db->quote('index.php?option=com_fabrik&view=form&formid=' . $menu['form_id']))
-                ->set($db->quoteName('type') . ' = ' . $db->quote('component'))
-                ->set($db->quoteName('published') . ' = ' . $db->quote(1))
-                ->set($db->quoteName('parent_id') . ' = ' . $db->quote($menu['parent_id']))
-                ->set($db->quoteName('level') . ' = ' . $db->quote($menu['level']))
-                ->set($db->quoteName('component_id') . ' = ' . $db->quote(10041))
-                ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('access') . ' = ' . $db->quote(1))
-                ->set($db->quoteName('img') . ' = ' . $db->quote(''))
-                ->set($db->quoteName('template_style_id') . ' = ' . $db->quote(22))
-                ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-                ->set($db->quoteName('lft') . ' = ' . $db->quote($menu['lft']))
-                ->set($db->quoteName('rgt') . ' = ' . $db->quote($menu['rgt']))
-                ->set($db->quoteName('language') . ' = ' . $db->quote('*'));
-            $db->setQuery($query);
-            $db->execute();
-            $newmenuid = $db->insertid();
-
-            // Insert translation into falang for modules
-            $falang->insertFalang($label, $newmenuid, 'menu', 'title');
-            //
-
-            // Affect modules to this menu
-            foreach ($modules as $module) {
-                $query->clear()
-                    ->insert($db->quoteName('#__modules_menu'))
-                    ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
-                    ->set($db->quoteName('menuid') . ' = ' . $db->quote($newmenuid));
-                $db->setQuery($query);
-                $db->execute();
-            }
-            //
-
-            return $newmenuid;
-        } catch (Exception $e){
-            JLog::add('component/com_emundus/models/formbuilder | Error when create a menu : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return 0;
-        }
-
-    }
-
     function updateElementWithoutTranslation($eid,$label) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -362,6 +304,8 @@ class EmundusModelFormbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
+        $modules = [93,102,103,104,168,170];
+
         if (!is_array($label)) {
             $label = json_decode($label, true);
         }
@@ -444,7 +388,7 @@ class EmundusModelFormbuilder extends JModelList {
                 'component_id' => 10041,
                 'params' => $params
             ];
-            $result = EmundusHelperUpdate::addJoomlaMenu($datas,$menu_parent->id);
+            $result = EmundusHelperUpdate::addJoomlaMenu($datas,$menu_parent->id,1,'last-child',$modules);
             if ($result['status'] !== true) {
                 return array(
                     'status' => false,
@@ -719,6 +663,8 @@ class EmundusModelFormbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
+        $modules = [93,102,103,104,168,170];
+
         if (!is_array($label)) {
             $label = json_decode($label, true);
         }
@@ -847,7 +793,7 @@ class EmundusModelFormbuilder extends JModelList {
                 'component_id' => 10041,
                 'params' => $params
             ];
-            $result = EmundusHelperUpdate::addJoomlaMenu($datas);
+            $result = EmundusHelperUpdate::addJoomlaMenu($datas,1,1,'last-child',$modules);
             if ($result['status'] !== true) {
                 return array(
                     'status' => false,
@@ -2763,7 +2709,7 @@ class EmundusModelFormbuilder extends JModelList {
                 if ($list_model->db_table_name != 'jos_emundus_declaration' && $menu_parent->id != 0) {
                     $parent_id = $menu_parent->id;
                 }
-                $result = EmundusHelperUpdate::addJoomlaMenu($datas, $parent_id);
+                $result = EmundusHelperUpdate::addJoomlaMenu($datas, $parent_id, 1, 'last-child', $modules);
                 if ($result['status'] !== true) {
                     return array(
                         'status' => false,

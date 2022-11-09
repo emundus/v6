@@ -1092,7 +1092,7 @@ class EmundusHelperUpdate
      *
      * @since version 1.33.0
      */
-    public static function addJoomlaMenu($params, $parent_id = 1, $published = 1, $position='last-child') {
+    public static function addJoomlaMenu($params, $parent_id = 1, $published = 1, $position='last-child', $modules = []) {
         $result = ['status' => false, 'message' => '', 'id' => 0];
         $menu_table = JTableNested::getInstance('Menu');
 
@@ -1163,6 +1163,17 @@ class EmundusHelperUpdate
                     return $result;
                 }
                 $result['id'] = $menu_table->id;
+
+                if(!empty($modules)){
+                    foreach ($modules as $module) {
+                        $query->clear()
+                            ->insert($db->quoteName('#__modules_menu'))
+                            ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
+                            ->set($db->quoteName('menuid') . ' = ' . $db->quote($result['id']));
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
             } else {
                 $result['id'] = $is_existing;
             }

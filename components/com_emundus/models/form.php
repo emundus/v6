@@ -1447,7 +1447,7 @@ class EmundusModelForm extends JModelList {
                 'component_id' => 11369,
                 'params' => $params
             ];
-            $checklist_menu = EmundusHelperUpdate::addJoomlaMenu($datas,$submittion_page->id,1,'before');
+            $checklist_menu = EmundusHelperUpdate::addJoomlaMenu($datas,$submittion_page->id,1,'before',$modules);
             if($checklist_menu['status'] !== true){
                 return false;
             }
