@@ -159,6 +159,10 @@
 	background: transparent;
 }
 
+.ui.bottom.attached.steps .step:first-child a {
+	color: var(--neutral-800);
+}
+
 .registration form > div {
 	display: flex;
 	justify-content: center;

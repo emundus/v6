@@ -320,6 +320,11 @@ a.em-blue-400-color:hover {
     text-underline: #080C12;
 }
 
+.mod_emundus_campaign__details_file a:hover {
+    color: var(--neutral-700);
+}
+
+
 .mod_emundus_campaign__list_items{
     display: grid;
     align-items: flex-start;

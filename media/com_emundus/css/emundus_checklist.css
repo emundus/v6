@@ -250,6 +250,11 @@ button#back:hover, button#back:active, button#back:focus,
     background: #f2f2f2;
 }
 
+#g-sidebar .platform-content li:hover, #g-sidebar .platform-content li a  {
+    color: var(--neutral-800);
+}
+
+
 #g-sidebar ul {
     margin: 0 !important;
     list-style: none;
