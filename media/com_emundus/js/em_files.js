@@ -5380,10 +5380,12 @@ $(document).ready(function() {
     });
 
     $(document).on('change', '.em-check', function(e) {
+        console.log($(this).attr('id'))
         if ($(this).attr('id') == 'em-check-all') {
             $('.em-actions[multi="1"]').show();
             $('.em-actions[multi="1"]').removeClass('em-hidden');
 
+            console.log($(this).is(':checked'))
             if ($(this).is(':checked')) {
                 $(this).prop('checked', true);
                 $('.em-check').prop('checked', true);
@@ -5401,6 +5403,7 @@ $(document).ready(function() {
                 reloadActions('files', undefined, true);
 
             } else {
+                console.log('here');
                 $(this).prop('checked', false);
                 $('.em-check').prop('checked', false);
                 $('.em-actions[multi="0"]').show();

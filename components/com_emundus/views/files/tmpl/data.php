@@ -248,7 +248,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
     $('.selectDropdown').click(function() {
         if(selectDropdownContainer.style.display === 'none'){
-            selectDropdownContainer.style.display = 'block';
+            selectDropdownContainer.style.display = 'flex';
         } else {
             selectDropdownContainer.style.display = 'none';
         }
@@ -283,6 +283,8 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
         $('.em-check').prop('checked',false);
         $('#countCheckedCheckbox').html('');
         reloadActions('files', undefined, false);
+
+        document.querySelector('.selectContainer').style.backgroundColor = 'transparent';
     });
 
     $(document).on('change', '.em-check-all-all', function(e) {
@@ -293,9 +295,14 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
             $('.em-check').prop('checked', true);
 
             $('#countCheckedCheckbox').html('<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + Joomla.JText._('COM_EMUNDUS_FILTERS_SELECT_ALL') + Joomla.JText._('COM_EMUNDUS_FILES_FILES') + '</p>');
+
+            document.querySelector('.selectContainer').style.backgroundColor = '#F3F3F3';
+
         } else {
             $('.em-check').prop('checked', false);
             $('#countCheckedCheckbox').html('');
+
+            document.querySelector('.selectContainer').style.backgroundColor = 'transparent';
         }
 
         reloadActions('files', undefined, true);
@@ -303,16 +310,27 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
     $(document).on('change', '.em-check-all-page,.selectPage #em-check-all', function(e) {
         let pageCheckAll = $('.selectPage #em-check-all').is(':checked');
+        let is_checked = false;
 
         if(e.target.id === 'em-check-all'){
             if(pageCheckAll === false){
                 $('.em-check-all-page#em-check-all-page').prop('checked', false);
+            } else {
+                is_checked = true;
             }
         }
 
         let pageCheck = $('.em-check-all-page#em-check-all-page').is(':checked');
 
-        if(pageCheck === true || pageCheckAll === true) {
+        if(e.target.id === 'em-check-all-page'){
+            if(pageCheck === false){
+                $('.selectPage #em-check-all').prop('checked', false);
+            } else {
+                is_checked = true;
+            }
+        }
+
+        if(is_checked) {
             $('.em-check-all-all#em-check-all-all').prop('checked', false);
             $('.em-check').prop('checked', true);
 
@@ -325,12 +343,18 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                 $('#countCheckedCheckbox').html('');
             }
 
+            document.querySelector('.selectContainer').style.backgroundColor = '#F3F3F3';
+
         } else {
             $('.em-check').prop('checked', false);
             $('#countCheckedCheckbox').html('');
+
+            document.querySelector('.selectContainer').style.backgroundColor = 'transparent';
         }
 
-        reloadActions('files', undefined, true);
+        if(e.target.id === 'em-check-all-page') {
+            reloadActions('files', undefined, true);
+        }
     })
 
     $(document).on('change', '.em-check', function(e) {
