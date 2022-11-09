@@ -75,7 +75,7 @@ $uniqid = uniqid();
 
                     ?>
                     <div class="em-flex-row em-flex-space-between">
-                        <div class="row em-w-90" id="row<?= $application->fnum; ?>">
+                        <div class="row em-w-100" id="row<?= $application->fnum; ?>">
                             <div class="col-md-12 main-page-application-title">
 
                                 <a href="<?= JRoute::_($first_page_url); ?>">
@@ -290,6 +290,17 @@ endif; ?>
         jQuery('[data-toggle="tooltip"]').tooltip()
     });
 
+    document.querySelectorAll('#application-list-' + uid +  ' .row').forEach((row)=> {
+        const anchor = row.querySelector('.anchor-for-wishes');
+
+        if (anchor) {
+            const changeWishWrapper = row.parentElement.querySelector('.change-wish-number');
+            changeWishWrapper.classList.add('em-mb-8');
+            changeWishWrapper.classList.add('em-ml-8');
+
+            anchor.append(changeWishWrapper);
+        }
+    });
 
     document.querySelectorAll('.change-wish-number .up').forEach((upBtn) => {
         upBtn.addEventListener('click', function () {
