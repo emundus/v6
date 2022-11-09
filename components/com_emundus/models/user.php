@@ -111,4 +111,33 @@ class EmundusModelUser extends JModelList
         $session->set('emundusUser', $current_user);
     }
 
+    public function getUsernameByEmail($email){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $username = '';
+
+        try {
+            // Check if $email is not a username
+            $query->select('username')
+                ->from($db->quoteName('#__users'))
+                ->where($db->quoteName('username') . ' LIKE ' . $db->quote($email));
+            $db->setQuery($query);
+            $username = $db->loadResult();
+
+            if(empty($username)) {
+                $query->clear()
+                    ->select('username')
+                    ->from($db->quoteName('#__users'))
+                    ->where($db->quoteName('email') . ' LIKE ' . $db->quote($email));
+                $db->setQuery($query);
+                $username = $db->loadResult();
+            }
+        } catch (Exception $e) {
+            JLog::add(basename(__FILE__) . ' | Error getting username with email : ' . $email, JLog::ERROR, 'com_emundus');
+        }
+
+        return $username;
+    }
+
 }
