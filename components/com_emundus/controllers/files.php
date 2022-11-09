@@ -1927,6 +1927,8 @@ class EmundusControllerFiles extends JControllerLegacy
         $profiles = $m_profile->getProfileIDByCourse($code, $camp);
 
         foreach($profiles as $profile) {
+            $profile_data = $m_profile->getProfile($profile);
+
             $html1 = '';
             $html2 = '';
             $pages = $h_menu->buildMenuQuery((int)$profile);
@@ -1948,7 +1950,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         <button type="button" class="btn btn-info btn-xs" title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" style="float:left;" onclick="showelts(this, '."'felts-".$code[0].$camp[0]. '-' . $profile . "'".')">
                         <span class="glyphicon glyphicon-plus"></span>
                         </button>&ensp;&ensp;
-                        <b>'.$campaign['label'].' ('.$campaign['year'].' - ' . $profile . ')</b>
+                        <b>'.$campaign['label'].' ('.$campaign['year'].' | ' . $profile_data->label . ')</b>
                     </div>
                     <div class="panel-body" id="felts-'.$code[0].$camp[0]. '-' . $profile . '" style="display:none;">
                         <table><tr><td>'.$html1.'</td><td style="padding-left:80px;">'.$html2.'</td></tr></table>
