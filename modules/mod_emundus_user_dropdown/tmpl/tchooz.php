@@ -15,6 +15,36 @@ $document->addStyleSheet("modules/mod_emundus_user_dropdown/style/mod_emundus_us
 $guest = JFactory::getUser()->guest;
 
 if($user != null) {
+
+// background color of the home page
+    include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
+    $m_profiles = new EmundusModelProfile();
+    $app_prof = $m_profiles->getApplicantsProfilesArray();
+
+    $user = JFactory::getSession()->get('emundusUser');
+    if(in_array($user->profile,$app_prof)){
+
+?>
+        <style>
+          .gantry.homepage  #g-page-surround  {
+            background: var(--applicant-background-color);
+          }
+        </style>
+
+<?php
+}
+
+else {
+
+?>
+        <style>
+          .gantry.homepage  #g-page-surround  {
+            background: var(--background-color);
+          }
+        </style>
+
+<?php
+    }
 ?>
 
 <style>
@@ -78,6 +108,7 @@ if($user != null) {
         -webkit-appearance: none;
         width: 200px;
         color: #353544;
+        background-color: var( --neutral-50);
     }
     .select .profile-select:hover{
         background-color: white !important;
