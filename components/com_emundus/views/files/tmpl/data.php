@@ -252,42 +252,25 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
         } else {
             selectDropdownContainer.style.display = 'none';
         }
-
-        /*$('.selectAll').slideToggle(function() {
-
-            if ($(this).is(':visible')) {
-
-                $('.selectContainer').addClass('borderSelect');
-                $(document).click(function (e) {
-
-                    var container = $(".selectDropdown");
-
-                    if (!container.is(e.target) && container.has(e.target).length === 0){
-                        $('.selectAll').slideUp();
-                        $('.selectContainer').removeClass('borderSelect');
-                    }
-                });
-            }
-        });*/
     });
 
+    $(document).click(function (e) {
 
-    $('.selectAll>span').click(function() {
-        $('.selectAll').slideUp();
+        var container = $(".selectDropdown");
+
+        if (!container.is(e.target) && container.has(e.target).length === 0){
+            $('.selectAll').slideUp();
+            $('.selectContainer').removeClass('borderSelect');
+        }
     });
 
-    $('#span-check-none').click(function(){
-        $('#em-check-all-all').prop('checked',false);
-        $('.em-check#em-check-all').prop('checked',false);
-        $('.em-check-all#em-check-all').prop('checked',false);
-        $('.em-check').prop('checked',false);
-        $('#countCheckedCheckbox').html('');
-        reloadActions('files', undefined, false);
+    function checkAllFiles(){
+        $('#em-check-all-all').prop('checked',true);
 
-        document.querySelector('.selectContainer').style.backgroundColor = 'transparent';
-    });
+        selectAllFiles();
+    }
 
-    $(document).on('change', '.em-check-all-all', function(e) {
+    function selectAllFiles(){
         let allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');
 
         if(allCheck === true) {
@@ -306,6 +289,26 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
         }
 
         reloadActions('files', undefined, true);
+    }
+
+
+    $('.selectAll>span').click(function() {
+        $('.selectAll').slideUp();
+    });
+
+    $('#span-check-none').click(function(){
+        $('#em-check-all-all').prop('checked',false);
+        $('.em-check#em-check-all').prop('checked',false);
+        $('.em-check-all#em-check-all').prop('checked',false);
+        $('.em-check').prop('checked',false);
+        $('#countCheckedCheckbox').html('');
+        reloadActions('files', undefined, false);
+
+        document.querySelector('.selectContainer').style.backgroundColor = 'transparent';
+    });
+
+    $(document).on('change', '.em-check-all-all', function(e) {
+        selectAllFiles();
     })
 
     $(document).on('change', '.em-check-all-page,.selectPage #em-check-all', function(e) {
@@ -338,7 +341,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
             let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILES_FILE') : Joomla.JText._('COM_EMUNDUS_FILES_FILES');
 
             if (countCheckedCheckbox !== 0) {
-                $('#countCheckedCheckbox').html('<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '</p>');
+                $('#countCheckedCheckbox').html('<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer" onclick="checkAllFiles()">'+Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES')+'</a></p>');
             } else {
                 $('#countCheckedCheckbox').html('');
             }
@@ -362,7 +365,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
         let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILES_FILE') : Joomla.JText._('COM_EMUNDUS_FILES_FILES');
 
         if (countCheckedCheckbox !== 0) {
-            $('#countCheckedCheckbox').html('<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '</p>');
+            $('#countCheckedCheckbox').html('<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer" onclick="checkAllFiles()">'+Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES')+'</a></p>');
         } else {
             $('#countCheckedCheckbox').html('');
         }
