@@ -243,11 +243,17 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
 
 <script>
-    $('.selectAll').css('display','none');
-    $('.selectDropdown').click(function() {
+    const selectDropdownContainer = document.querySelector('.selectAll');
+    selectDropdownContainer.style.display = 'none';
 
-        $('.selectContainer').removeClass('borderSelect');
-        $('.selectAll').slideToggle(function() {
+    $('.selectDropdown').click(function() {
+        if(selectDropdownContainer.style.display === 'none'){
+            selectDropdownContainer.style.display = 'block';
+        } else {
+            selectDropdownContainer.style.display = 'none';
+        }
+
+        /*$('.selectAll').slideToggle(function() {
 
             if ($(this).is(':visible')) {
 
@@ -262,7 +268,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                     }
                 });
             }
-        });
+        });*/
     });
 
 
