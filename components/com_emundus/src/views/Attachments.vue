@@ -379,7 +379,6 @@ export default {
     updateAttachment() {
       this.resetOrder();
       this.getAttachments();
-      this.$modal.hide("edit");
       this.selectedAttachment = {};
       this.checkedAttachments = [];
     },
