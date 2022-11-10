@@ -231,6 +231,7 @@ class com_emundusInstallerScript
                 ];
                 EmundusHelperUpdate::addJoomlaMenu($datas);
             }
+
             if (version_compare($cache_version, '1.34.0', '<')) {
                 $db = JFactory::getDbo();
                 $query = $db->getQuery(true);
@@ -289,9 +290,7 @@ class com_emundusInstallerScript
                 EmundusHelperUpdate::insertTranslationsTag('CHECKOUT_BUTTON_FINISH','Process to payment','override',null,null,null,'en-GB');
                 EmundusHelperUpdate::insertTranslationsTag('HIKA_NEW','Ajouter une adresse');
                 EmundusHelperUpdate::insertTranslationsTag('HIKA_NEW','Add an address','override',null,null,null,'en-GB');
-            }
 
-            if (version_compare($cache_version, '1.34.0', '<') || $firstrun) {
                 $succeed['campaign_workflow'] = EmundusHelperUpdate::addProgramToCampaignWorkflow();
 
                 //TODO : Install a module or a plugin via folder (parse xml file and insert necessary datas)
