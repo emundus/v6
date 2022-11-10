@@ -1326,6 +1326,10 @@ body>.g-container {
   }
 }
 
+.pagination > .disabled > span{
+  height: 30px;
+}
+
 /* DOCUMENTS OBLIGATOIRES */
 .need_missing.active a::before {
   color: $base-primary-color;

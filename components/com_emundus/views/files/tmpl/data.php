@@ -20,11 +20,11 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 <div class="panel panel-default em-data">
 	<?php if (is_array($this->datas)):?>
         <div class="container-result">
-            <div>
+            <div class="em-ml-8">
                 <?= $this->pagination->getResultsCounter(); ?>
             </div>
-            <div id="countCheckedCheckbox" class="countCheckedCheckbox"></div>
             <?php echo $this->pageNavigation ?>
+            <div id="countCheckedCheckbox" class="countCheckedCheckbox" style="display: none"></div>
         </div>
 		<div class="em-data-container">
 			<table class="table table-striped table-hover" id="em-data">
@@ -182,6 +182,10 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 <script type="text/javascript">
     function checkurl() {
         var url = $(location).attr('href');
+        var menuAction = null;
+        var headerNav = null;
+        var containerResult = null;
+
         url = url.split("#");
         $('.alert.alert-warning').remove();
 
@@ -219,6 +223,8 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                 })
 
             }
+        } else {
+            $('.em-close-minimise').remove();
         }
 
     }
@@ -227,11 +233,11 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
         $('#rt-mainbody-surround').children().addClass('mainemundus');
         $('#rt-main').children().addClass('mainemundus');
         $('#rt-main').children().children().addClass('mainemundus');
-		$('.em-data-container').doubleScroll();
+		//$('.em-data-container').doubleScroll();
 
-        const menuAction = document.querySelector('.em-menuaction');
-        const headerNav = document.querySelector('#g-navigation .g-container');
-        const containerResult = document.querySelector('.container-result');
+        menuAction = document.querySelector('.em-menuaction');
+        headerNav = document.querySelector('#g-navigation .g-container');
+        containerResult = document.querySelector('.container-result');
         setTimeout(() => {
             $('.container-result').css('top', (headerNav.offsetHeight + menuAction.offsetHeight) + 'px');
             $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
@@ -244,6 +250,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
 <script>
     const selectDropdownContainer = document.querySelector('.selectAll');
+    const countFiles = document.querySelector('#countCheckedCheckbox');
     selectDropdownContainer.style.display = 'none';
 
     $('.selectDropdown').click(function() {
@@ -255,12 +262,10 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
     });
 
     $(document).click(function (e) {
-
         var container = $(".selectDropdown");
 
         if (!container.is(e.target) && container.has(e.target).length === 0){
-            $('.selectAll').slideUp();
-            $('.selectContainer').removeClass('borderSelect');
+            selectDropdownContainer.style.display = 'none';
         }
     });
 
@@ -270,6 +275,19 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
         selectAllFiles();
     }
 
+    function displayCount(){
+        countFiles.style.display = 'block';
+        countFiles.style.backgroundColor = '#EDEDED';
+        $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
+    }
+
+    function hideCount(){
+        countFiles.style.display = 'none';
+        $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
+        countFiles.style.backgroundColor = 'transparent';
+        $('.em-close-minimise').remove();
+    }
+
     function selectAllFiles(){
         let allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');
 
@@ -277,18 +295,23 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
             $('.em-check-all-page#em-check-all-page').prop('checked', false);
             $('.em-check').prop('checked', true);
 
-            $('#countCheckedCheckbox').html('<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + Joomla.JText._('COM_EMUNDUS_FILTERS_SELECT_ALL') + Joomla.JText._('COM_EMUNDUS_FILES_FILES') + '</p>');
+            displayCount();
+            countFiles.innerHTML = '<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + Joomla.JText._('COM_EMUNDUS_FILTERS_SELECT_ALL') + Joomla.JText._('COM_EMUNDUS_FILES_FILES') + '</p>';
 
             document.querySelector('.selectContainer').style.backgroundColor = '#F3F3F3';
 
+            reloadActions('files', undefined, true);
+
         } else {
             $('.em-check').prop('checked', false);
-            $('#countCheckedCheckbox').html('');
+
+            hideCount();
+            countFiles.innerHTML = '';
 
             document.querySelector('.selectContainer').style.backgroundColor = 'transparent';
-        }
 
-        reloadActions('files', undefined, true);
+            reloadActions('files', undefined, false);
+        }
     }
 
 
@@ -301,7 +324,9 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
         $('.em-check#em-check-all').prop('checked',false);
         $('.em-check-all#em-check-all').prop('checked',false);
         $('.em-check').prop('checked',false);
-        $('#countCheckedCheckbox').html('');
+        $('.nav.navbar-nav').hide();
+        hideCount();
+        countFiles.innerHTML = '';
         reloadActions('files', undefined, false);
 
         document.querySelector('.selectContainer').style.backgroundColor = 'transparent';
@@ -341,22 +366,29 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
             let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILES_FILE') : Joomla.JText._('COM_EMUNDUS_FILES_FILES');
 
             if (countCheckedCheckbox !== 0) {
-                $('#countCheckedCheckbox').html('<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer" onclick="checkAllFiles()">'+Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES')+'</a></p>');
+                displayCount();
+                countFiles.innerHTML = '<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer" onclick="checkAllFiles()">'+Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES')+'</a></p>';
             } else {
-                $('#countCheckedCheckbox').html('');
+                hideCount();
+                countFiles.innerHTML = '';
             }
 
             document.querySelector('.selectContainer').style.backgroundColor = '#F3F3F3';
 
         } else {
             $('.em-check').prop('checked', false);
-            $('#countCheckedCheckbox').html('');
+            hideCount();
+            countFiles.innerHTML = '';
 
             document.querySelector('.selectContainer').style.backgroundColor = 'transparent';
         }
 
         if(e.target.id === 'em-check-all-page') {
-            reloadActions('files', undefined, true);
+            if(is_checked) {
+                reloadActions('files', undefined, true);
+            } else {
+                reloadActions('files', undefined, false);
+            }
         }
     })
 
@@ -365,9 +397,11 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
         let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILES_FILE') : Joomla.JText._('COM_EMUNDUS_FILES_FILES');
 
         if (countCheckedCheckbox !== 0) {
-            $('#countCheckedCheckbox').html('<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer" onclick="checkAllFiles()">'+Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES')+'</a></p>');
+            displayCount();
+            countFiles.innerHTML ='<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer" onclick="checkAllFiles()">'+Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES')+'</a></p>';
         } else {
-            $('#countCheckedCheckbox').html('');
+            hideCount();
+            countFiles.innerHTML = '';
         }
     });
 </script>

@@ -77,7 +77,8 @@ endif;
     //$('#countCheckedCheckbox').html('');
 
     $('#em-close-file').click(function(){
-        $('#countCheckedCheckbox').html('');
+        hideCount();
+
         $('.em-check').prop('checked',false);
         $('.em-check-all-all').prop('checked',false);
         reloadActions('files', undefined, false);

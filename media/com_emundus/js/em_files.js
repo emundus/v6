@@ -736,7 +736,7 @@ function setFiltersSumo(event){
     }
 }
 
-function runAction(action, url = '') {
+function runAction(action, url = '', option = '') {
     $.ajaxQ.abortAll();
 
     // act-id represents the action to carry out (ex: export)
@@ -1106,9 +1106,6 @@ function runAction(action, url = '') {
 
         // Validating tags
         case 14:
-            var option = $('#em-tags:checked').val();
-            //console.log(option)
-            $('.modal-body').empty();
             addLoader();
             var url="";
             if (option == 1)
@@ -1562,6 +1559,7 @@ $(document).ready(function() {
         var swal_actions_class = '';
         var swal_confirm_button = 'COM_EMUNDUS_ONBOARD_OK';
         var preconfirm = '';
+        var preconfirm_value
         var multipleSteps = false;
 
         removeLoader();
@@ -4614,6 +4612,8 @@ $(document).ready(function() {
                         });
                         html += '</select></div>';
 
+                        preconfirm = "return document.querySelector('input[name=em-tags]:checked').value ";
+
                         removeLoader();
 
                         /***
@@ -4796,12 +4796,12 @@ $(document).ready(function() {
                 },
                 preConfirm: () => {
                     if(preconfirm !== '') {
-                        eval(preconfirm);
+                        preconfirm_value = new Function(preconfirm)();
                     }
                 },
             }).then((result) => {
                 if (result.value) {
-                    runAction(id, url);
+                    runAction(id, url,preconfirm_value);
                 }
             });
 
