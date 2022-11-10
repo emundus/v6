@@ -401,7 +401,7 @@ class EmundusHelperUpdate
                     ->set($db->quoteName('original_text') . ' = ' . $db->quote($value))
                     ->set($db->quoteName('original_md5') . ' = ' . $db->quote(md5($value)))
                     ->set($db->quoteName('override_md5') . ' = ' . $db->quote(md5($value)))
-                    ->set($db->quoteName('location') . ' = ' . $db->quote($lang . 'override.ini'))
+                    ->set($db->quoteName('location') . ' = ' . $db->quote($lang . '.override.ini'))
                     ->set($db->quoteName('type') . ' = ' . $db->quote($type))
                     ->set($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
                     ->set($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
