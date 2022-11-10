@@ -101,7 +101,7 @@ class EmundusHelperUpdate
         }
     }
 
-    public static function installExtension($name,$element,$manifest_cache,$type,$enabled = 1){
+    public static function installExtension($name,$element,$manifest_cache,$type,$enabled = 1,$folder = ''){
         $installed = false;
 
         if (!empty($element)) {
@@ -121,11 +121,11 @@ class EmundusHelperUpdate
                         ->set($db->quoteName('name') . ' = ' . $db->quote($name))
                         ->set($db->quoteName('type') . ' = ' . $db->quote($type))
                         ->set($db->quoteName('element') . ' = ' . $db->quote($element))
-                        ->set($db->quoteName('folder') . ' = ' . $db->quote(''))
+                        ->set($db->quoteName('folder') . ' = ' . $db->quote($folder))
                         ->set($db->quoteName('client_id') . ' = ' . $db->quote(0))
                         ->set($db->quoteName('enabled') . ' = ' . $db->quote($enabled))
                         ->set($db->quoteName('manifest_cache') . ' = ' . $db->quote($manifest_cache))
-                        ->set($db->quoteName('params') . ' = ' . $db->quote(''))
+                        ->set($db->quoteName('params') . ' = ' . $db->quote('{}'))
                         ->set($db->quoteName('custom_data') . ' = ' . $db->quote(''))
                         ->set($db->quoteName('system_data') . ' = ' . $db->quote(''));
                     $db->setQuery($query);
@@ -202,6 +202,7 @@ class EmundusHelperUpdate
 
         return $created;
     }
+
 
     /**
      * Update a parameter of a row in database. Parameteres updated need to be in a json format.
