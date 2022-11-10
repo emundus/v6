@@ -144,6 +144,65 @@ class EmundusHelperUpdate
         return $installed;
     }
 
+    public static function createModule($title, $position, $module, $params, $published = 0, $all_pages = 0, $access = 1, $showtitle = 0, $client_id = 0)
+    {
+        $created = false;
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('id')
+                ->from($db->quoteName('#__modules'))
+                ->where($db->quoteName('title') . ' LIKE ' . $db->quote($title))
+                ->andWhere($db->quoteName('module') . ' LIKE ' . $db->quote($module));
+            $db->setQuery($query);
+            $is_existing = $db->loadResult();
+
+            if (empty($is_existing)) {
+                $publish_up = new DateTime(); // For today/now, don't pass an arg.
+                $publish_up->modify('-1 day');
+
+                $query->clear()
+                    ->insert($db->quoteName('#__modules'))
+                    ->set($db->quoteName('title') . ' = ' . $db->quote($title))
+                    ->set($db->quoteName('note') . ' = ' . $db->quote(''))
+                    ->set($db->quoteName('ordering') . ' = ' . $db->quote(1))
+                    ->set($db->quoteName('position') . ' = ' . $db->quote($position))
+                    ->set($db->quoteName('checked_out') . ' = ' . $db->quote(62))
+                    ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('publish_up') . ' = ' . $db->quote($publish_up->format('Y-m-d H:i:s')))
+                    ->set($db->quoteName('publish_down') . ' = ' . $db->quote('2099-01-01 00:00:00'))
+                    ->set($db->quoteName('published') . ' = ' . $db->quote($published))
+                    ->set($db->quoteName('module') . ' = ' . $db->quote($module))
+                    ->set($db->quoteName('access') . ' = ' . $db->quote($access))
+                    ->set($db->quoteName('showtitle') . ' = ' . $db->quote($showtitle))
+                    ->set($db->quoteName('params') . ' = ' . $db->quote($params))
+                    ->set($db->quoteName('client_id') . ' = ' . $db->quote($client_id))
+                    ->set($db->quoteName('language') . ' = ' . $db->quote('*'));
+                $db->setQuery($query);
+                $db->execute();
+                $module_id = $db->insertid();
+
+                if (!empty($module_id) && $all_pages) {
+                    $query->clear()
+                        ->insert($db->quoteName('#__modules_menu'))
+                        ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module_id))
+                        ->set($db->quoteName('menuid') . ' = ' . $db->quote(0));
+                    $db->setQuery($query);
+                    $created = $db->execute();
+                }
+            } else {
+                echo "$title module already exists.";
+                $created = true;
+            }
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        }
+
+        return $created;
+    }
+
 
     /**
      * Update a parameter of a row in database. Parameteres updated need to be in a json format.
