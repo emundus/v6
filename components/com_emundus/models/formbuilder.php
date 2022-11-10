@@ -2494,7 +2494,6 @@ class EmundusModelFormbuilder extends JModelList {
                     ->where($db->quoteName('form_id') . ' = ' . $db->quote($formid));
                 $db->setQuery($query);
                 $list_model = $db->loadObject();
-            $list_model = $db->loadObject();
                 $db_table_name = $list_model->db_table_name;
 
                 $query->clear();

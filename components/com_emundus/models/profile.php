@@ -407,6 +407,33 @@ class EmundusModelProfile extends JModelList {
     }
 
     /**
+     * @param $campaign_id
+     * @return array
+     */
+    function getWorkflowProfilesByCampaign($campaign_id)
+    {
+        $profiles = [];
+
+        if (!empty($campaign_id)) {
+            $query = $this->_db->getQuery(true);
+
+            $query->select('DISTINCT(ecw.profile)')
+                ->from('#__emundus_campaign_workflow AS ecw')
+                ->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecwrc ON ecw.id = ecwrc.parent_id')
+                ->where('ecwrc.campaign = ' . $campaign_id);
+
+            try {
+                $this->_db->setQuery($query);
+                $profiles = $this->_db->loadColumn();
+            } catch (Exception $e) {
+                JLog::add('Failed to getWorkflowProfilesByCampaign '. $query->__toString() . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+        }
+
+        return $profiles;
+    }
+
+    /**
      * @description : Get profile by status
      * @param   int $step application file status
      * @return  array
@@ -644,41 +671,50 @@ class EmundusModelProfile extends JModelList {
 	 * @return array The profile IDs found
 	 */
     function getProfileIDByCourse($code = array(), $camps = array()) : array {
+        $profiles = [];
+        $query = $this->_db->getQuery(true);
 
-        if (!empty($code)>0 && isset($camps[0]) && $camps[0] != 0) {
+        if (!empty($code)) {
+            $query->select('DISTINCT(esc.profile_id)')
+                ->from($this->_db->quoteName('#__emundus_setup_campaigns', 'esc'))
+                ->where('esc.published = 1')
+                ->andWhere('esc.training IN (' . implode(',', $this->_db->quote($code)) . ')');
 
-            $query = 'SELECT DISTINCT(esc.profile_id)
-					FROM  #__emundus_setup_campaigns AS esc
-					WHERE esc.published = 1 AND esc.training IN ('.implode(",", $this->_db->quote($code)).') AND esc.id IN ('.implode(",", $camps).')';
+            if (!empty($camps[0])) {
+                $query->andWhere('esc.id IN (' . implode(',', $camps) . ')');
+            }
 
             try {
                 $this->_db->setQuery($query);
-                $res = $this->_db->loadColumn();
+                $profiles = $this->_db->loadColumn();
             } catch(Exception $e) {
-                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
-                $res = [];
-                JError::raiseError(500, $e->getMessage());
+                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
             }
 
-        } elseif (!empty($code)>0) {
+            $query->clear();
 
-            $query = 'SELECT DISTINCT(esc.profile_id)
-						FROM  #__emundus_setup_campaigns AS esc
-						WHERE esc.published = 1 AND esc.training IN ("'.implode("','", $code).'") LIMIT 1';
+            $query->select('DISTINCT(ecw.profile)')
+                ->from('#__emundus_campaign_workflow as ecw')
+                ->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecwrc ON ecwrc.parent_id = ecw.id');
+
+            if (!empty($camps[0])) {
+                $query->where($this->_db->quoteName('#__emundus_setup_campaigns.id') . 'IN (' . implode(',', $camps) . ')');
+            } else {
+                $query->leftJoin('#__emundus_setup_campaigns AS jesc ON jesc.id = ecwrc.campaign')
+                    ->where('jesc.training IN (' . implode(',', $this->_db->quote($code)) . ')');
+            }
 
             try {
                 $this->_db->setQuery($query);
-                $res = $this->_db->loadColumn();
+                $workflow_profiles = $this->_db->loadColumn();
+
+                $profiles = array_unique(array_merge($profiles, $workflow_profiles));
             } catch(Exception $e) {
-                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
-	            $res = [];
-                JError::raiseError(500, $e->getMessage());
+                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
             }
-        } else {
-            $res = $code;
         }
 
-        return $res;
+        return $profiles;
     }
 
 	/**
@@ -769,11 +805,10 @@ class EmundusModelProfile extends JModelList {
         return $res;
     }
 
-    // TODO: incorrect function since 1.33, campaign workflow table changed
     public function getProfileIDByCampaigns($campaigns, $codes) {
         $query = $this->_db->getQuery(true);
-        if(!empty($campaigns)) {
-            if(!empty($codes)) {
+        if (!empty($campaigns)) {
+            if (!empty($codes)) {
                 try {
                     $query->clear()
                         ->select('#__emundus_setup_campaigns.*')
@@ -790,9 +825,10 @@ class EmundusModelProfile extends JModelList {
                     }
 
                     $query->clear()
-                        ->select('#__emundus_campaign_workflow.*')
-                        ->from($this->_db->quoteName('#__emundus_campaign_workflow'))
-                        ->where($this->_db->quoteName('#__emundus_campaign_workflow.campaign') . 'IN (' . implode(',', $campaigns) . ')')
+                        ->select('ecw.*')
+                        ->from($this->_db->quoteName('#__emundus_campaign_workflow', 'ecw'))
+                        ->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecwrc ON ecwrc.parent_id = ecw.id')
+                        ->where($this->_db->quoteName('ecwrc.campaign') . 'IN (' . implode(',', $campaigns) . ')')
                         ->order('step');
 
                     $this->_db->setQuery($query);
