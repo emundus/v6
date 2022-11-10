@@ -237,12 +237,13 @@ class EmundusHelperList{
 
         $formsList = $h_menu->buildMenuQuery($profile['profile_id'], $formids);
 
-        foreach($workflow_profiles as $workflow_profile) {
+        //TODO : Break pdf export, not the good solution for zip
+        /*foreach($workflow_profiles as $workflow_profile) {
             if ($workflow_profile != $profile['profile_id']) {
                 $workflow_form_list = $h_menu->buildMenuQuery($workflow_profile, $formids);
                 $formsList = array_merge($formsList, $workflow_form_list);
             }
-        }
+        }*/
 
         return $formsList;
     }
