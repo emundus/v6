@@ -1313,7 +1313,7 @@ class EmundusHelperUpdate
      *
      * @since version 1.33.0
      */
-    public static function addJoomlaMenu($params, $parent_id = 1, $published = 1) {
+    public static function addJoomlaMenu($params, $parent_id = 1, $published = 1, $position='last-child', $modules = []) {
         $result = ['status' => false, 'message' => '', 'id' => 0];
         $menu_table = JTableNested::getInstance('Menu');
 
@@ -1326,59 +1326,84 @@ class EmundusHelperUpdate
             return $result;
         }
 
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        try {
+            // Initialize again Joomla database to fix problem with Falang (or other plugins) that override default mysql driver
+            JFactory::$database = null;
 
-        $alias = $params['alias'] ?: $params['menutype'] . '-' . str_replace(' ','-',strtolower($params['title']));
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-        $query->clear()
-            ->select('id')
-            ->from($db->quoteName('#__menu'))
-            ->where($db->quoteName('menutype') . ' = ' . $db->quote($params['menutype']));
-        if(!empty($params['link'])) {
-            $query->andWhere($db->quoteName('link') . ' = ' . $db->quote($params['link']));
-        } else {
-            $query->andWhere($db->quoteName('alias') . ' = ' . $db->quote($alias));
-        }
-        $db->setQuery($query);
-        $is_existing = $db->loadResult();
+            $alias = $params['alias'] ?: $params['menutype'] . '-' . str_replace(' ','-',strtolower($params['title']));
 
-        if(empty($is_existing)) {
-            $default_params = [
-                'menu-anchor_title' => '',
-                'menu-anchor_css' => '',
-                'menu-anchor_rel' => '',
-                'menu_image_css' => '',
-                'menu_text' => 1,
-                'menu_show' => 1
-            ];
-            $params['params'] = array_merge($default_params, $params['params']);
-
-            $menu_data = array(
-                'menutype' => $params['menutype'],
-                'title' => $params['title'],
-                'alias' => $alias,
-                'path' => $params['path'] ?: $alias,
-                'type' => $params['type'] ?: 'url',
-                'link' => $params['link'] ?: '#',
-                'component_id' => $params['component_id'] ?: 0,
-                'language' => '*',
-                'published' => $published,
-                'params' => json_encode($params['params'])
-            );
-
-            $menu_table->setLocation($parent_id, 'last-child');
-
-            if (!$menu_table->save($menu_data)) {
-                $result['message'] = 'INSERTING JOOMLA MENU : Error at saving menu.';
-                return $result;
+            $query->clear()
+                ->select('id')
+                ->from($db->quoteName('#__menu'))
+                ->where($db->quoteName('menutype') . ' = ' . $db->quote($params['menutype']));
+            if(!empty($params['link'])) {
+                $query->andWhere($db->quoteName('link') . ' = ' . $db->quote($params['link']));
+            } else {
+                $query->andWhere($db->quoteName('alias') . ' = ' . $db->quote($alias));
             }
-            $result['id'] = $menu_table->id;
-        } else {
-            $result['id'] = $is_existing;
+            $db->setQuery($query);
+            $is_existing = $db->loadResult();
+
+            if(empty($is_existing)) {
+                $default_params = [
+                    'menu-anchor_title' => '',
+                    'menu-anchor_css' => '',
+                    'menu-anchor_rel' => '',
+                    'menu_image_css' => '',
+                    'menu_text' => 1,
+                    'menu_show' => 1
+                ];
+                $params['params'] = array_merge($default_params, $params['params']);
+
+                $menu_data = array(
+                    'menutype' => $params['menutype'],
+                    'title' => $params['title'],
+                    'alias' => $alias,
+                    'path' => $params['path'] ?: $alias,
+                    'type' => $params['type'] ?: 'url',
+                    'link' => $params['link'] ?: '#',
+                    'access' => $params['access'] ?: 1,
+                    'component_id' => $params['component_id'] ?: 0,
+                    'template_style_id' => $params['template_style_id'] ?: 22,
+                    'language' => '*',
+                    'published' => $published,
+                    'params' => json_encode($params['params'])
+                );
+
+                if($parent_id <= 0){
+                    $parent_id = 1;
+                }
+
+                $menu_table->setLocation($parent_id, $position);
+
+                if (!$menu_table->save($menu_data)) {
+                    $result['message'] = 'INSERTING JOOMLA MENU : Error at saving menu.';
+                    return $result;
+                }
+                $result['id'] = $menu_table->id;
+
+                if(!empty($modules)){
+                    foreach ($modules as $module) {
+                        $query->clear()
+                            ->insert($db->quoteName('#__modules_menu'))
+                            ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
+                            ->set($db->quoteName('menuid') . ' = ' . $db->quote($result['id']));
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
+            } else {
+                $result['id'] = $is_existing;
+            }
+
+            $result['status'] = true;
+        } catch (Exception $e) {
+            echo '<pre>'; var_dump('INSERTING MENU : ' . $e->getMessage()); echo '</pre>'; die;
         }
 
-        $result['status'] = true;
         return $result;
     }
 
