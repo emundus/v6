@@ -273,25 +273,38 @@ class FileSynchronizer
 
     private function saveEmundusRootDirectory()
     {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-        $query->select('params')
-            ->from('#__emundus_setup_sync')
-            ->where("type = " . $db->quote($this->type));
-        $db->setQuery($query);
-        $params = $db->loadResult();
-        $params = json_decode($params);
+        $saved = false;
 
-        $params->emundus_root_directory = $this->emundusRootDirectory;
-        $params = json_encode($params);
+        if (!empty($this->emundusRootDirectory)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-        $query = $db->getQuery(true);
-        $query->update('#__emundus_setup_sync')
-            ->set('params = ' . $db->quote($params))
-            ->where("type = " . $db->quote($this->type));
-        $db->setQuery($query);
+            try {
+                $query->select('params')
+                    ->from('#__emundus_setup_sync')
+                    ->where("type = " . $db->quote($this->type));
+                $db->setQuery($query);
+                $params = $db->loadResult();
+                $params = json_decode($params);
 
-        $db->execute();
+                $params->emundus_root_directory = $this->emundusRootDirectory;
+                $params = json_encode($params);
+
+                $query->clear()
+                    ->update('#__emundus_setup_sync')
+                    ->set('params = ' . $db->quote($params))
+                    ->where("type = " . $db->quote($this->type));
+                $db->setQuery($query);
+
+                $saved = $db->execute();
+            } catch(Exception $e) {
+                JLog::add('Failed to save eMundus root directory config ' . $e->getMessage(), JLog::ERROR, 'com_emundus.sync');
+            }
+        } else {
+            JLog::add('Tried to save emundus root directory, but  emundusRootDirectory is empty', JLog::WARNING, 'com_emundus.sync');
+        }
+
+        return $saved;
     }
 
     private function post($url, $params = array())
@@ -422,51 +435,60 @@ class FileSynchronizer
 
     public function addGEDFile($upload_id, $filename, $filepath, $relativePath) {
         $saved = false;
-        $ext = pathinfo($filepath, PATHINFO_EXTENSION);
-        $file_pointer = fopen($filepath, 'r');
 
-        if ($file_pointer) {
-            $params = array(
-                array(
-                    'name' => 'name',
-                    'contents' => $filename . '.' . $ext
-                ),
-                array(
-                    'name' => 'nodeType',
-                    'contents' => 'cm:content',
-                ),
-                array(
-                    'name' => 'relativePath',
-                    'contents' => $relativePath,
-                ),
-                array(
-                    'name' => 'filedata',
-                    'contents' => $file_pointer,
-                ),
-            );
-            $properties = $this->getGEDProperties($upload_id);
-            foreach($properties as $key => $property) {
-                $params[] = array(
-                    'name' => $key,
-                    'contents' => $property
+        if (empty($this->emundusRootDirectory)) {
+            $this->setEmundusRootDirectory();
+        }
+
+        if (!empty($this->emundusRootDirectory)) {
+            $ext = pathinfo($filepath, PATHINFO_EXTENSION);
+            $file_pointer = fopen($filepath, 'r');
+
+            if ($file_pointer) {
+                $params = array(
+                    array(
+                        'name' => 'name',
+                        'contents' => $filename . '.' . $ext
+                    ),
+                    array(
+                        'name' => 'nodeType',
+                        'contents' => 'cm:content',
+                    ),
+                    array(
+                        'name' => 'relativePath',
+                        'contents' => $relativePath,
+                    ),
+                    array(
+                        'name' => 'filedata',
+                        'contents' => $file_pointer,
+                    ),
                 );
-            }
+                $properties = $this->getGEDProperties($upload_id);
+                foreach($properties as $key => $property) {
+                    $params[] = array(
+                        'name' => $key,
+                        'contents' => $property
+                    );
+                }
 
-            $response = $this->postFormData($this->coreUrl . "/nodes/$this->emundusRootDirectory/children", $params);
+                $response = $this->postFormData($this->coreUrl . "/nodes/$this->emundusRootDirectory/children", $params);
 
-            fclose($filepath);
+                fclose($filepath);
 
-            if (!empty($response->entry)) {
-                $saved = $this->saveNodeId($upload_id, $response->entry->id, $relativePath . '/' . $filename);
+                if (!empty($response->entry)) {
+                    $saved = $this->saveNodeId($upload_id, $response->entry->id, $relativePath . '/' . $filename);
 
-                if (!$saved) {
-                    JLog::add('Could not save node id for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus.sync');
+                    if (!$saved) {
+                        JLog::add('Could not save node id for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus.sync');
+                    }
+                } else {
+                    JLog::add('Could not add file for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus.sync');
                 }
             } else {
-                JLog::add('Could not add file for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus.sync');
+                JLog::add('Could not open file for upload_id ' . $upload_id . ' with file name :' . $filename . ' and file path : ' . $filepath, JLog::ERROR, 'com_emundus.sync');
             }
         } else {
-            JLog::add('Could not open file for upload_id ' . $upload_id . ' with file name :' . $filename . ' and file path : ' . $filepath, JLog::ERROR, 'com_emundus.sync');
+            JLog::add('Could not post request, empty root directory, ' . $upload_id . ' with file name :' . $filename . ' and file path : ' . $filepath, JLog::ERROR, 'com_emundus.sync');
         }
 
         return $saved;

@@ -28,6 +28,16 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 					var attachment_id = this.options.attachment_id;
 					var fnum = document.querySelector('[id$="___fnum"]').value;
 
+					// element id of email
+					var email_selector = this.options.email;
+
+					// parent group of email_selector
+					var parent_group = document.querySelector('#' + email_selector).closest('fieldset').getAttribute('id');
+
+					// get the firstname, lastname of referent for each group
+					var firstname = document.querySelector('#' + parent_group + ' [id^=jos_emundus_references___First_Name_]').value;
+					var lastname  = document.querySelector('#' + parent_group + ' [id^=jos_emundus_references___Last_Name_]').value;
+
 					if (email == "") {
 						$(this.options.email).setStyle('border', '4px solid #ff0000');
 						this.endAjax();
@@ -41,6 +51,8 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 							'email': email,
 							'formid': this.options.formid,
 							'fnum': fnum,
+							'firstname': firstname,
+							'lastname': lastname,
 							'form_recommend': this.options.form_recommend
 						},
 						onComplete: response => {
