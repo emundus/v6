@@ -7,6 +7,8 @@
  */
 // no direct access
 defined('_JEXEC') or die;
+
+// TODO: Move parameters to above and use array_filter with $applications
 ?>
 <div class="add-application-actions">
     <?php if ($show_add_application && ($position_add_application == 3 || $position_add_application == 4) && $applicant_can_renew) : ?>
