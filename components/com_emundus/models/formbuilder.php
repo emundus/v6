@@ -2698,7 +2698,7 @@ class EmundusModelFormbuilder extends JModelList {
                             }
 
                             $params = EmundusHelperFabrik::prepareFabrikMenuParams();
-                            datas = [
+                            $datas = [
                                 'menutype' => $profile->menutype,
                                 'title' => 'FORM_' . $profile->id . '_' . $newformid,
                                 'link' => 'index.php?option=com_fabrik&view=form&formid=' . $newformid,
