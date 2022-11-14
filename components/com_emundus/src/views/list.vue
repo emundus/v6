@@ -64,7 +64,6 @@
     </transition>
 
     <div v-show="total > 0 || type == 'files'">
-	    <!-- TODO : tabs for form view -->
 	    <div v-if="type !== 'form' && type !== 'formulaire'">
 		    <list-body
 				    :type="type"
@@ -79,21 +78,26 @@
 		    <nav id="form-nav">
 			    <ul class="em-flex-row-start">
 				    <li
-						    class="em-pointer em-p-8"
-						    :class="{'selected': selectedListTab === 'formulaire' }"
+						    class="em-pointer em-p-8 em-font-weight-600 em-p-16"
+						    :class="{
+									'em-main-500-color em-border-bottom-main-500 ': selectedListTab === 'formulaire',
+						      'em-border-bottom-neutral-300': selectedListTab !== 'formulaire'
+								}"
 						    @click="selectedListTab = 'formulaire'"
 				    >
-					    {{ translate('COM_EMUNDUS_ONBOARD_FORMS') }}
+					    {{ translate('COM_EMUNDUS_FORM_MY_FORMS') }}
 				    </li>
 				    <li
-						    class="em-pointer em-p-8"
-						    :class="{'selected': selectedListTab === 'formModels' }"
+						    class="em-pointer em-p-8 em-font-weight-600 em-p-16"
+						    :class="{
+									'em-main-500-color em-border-bottom-main-500': selectedListTab === 'formModels',
+									'em-border-bottom-neutral-300': selectedListTab !== 'formModels'
+								}"
 						    @click="selectedListTab = 'formModels'"
 				    >
 					    {{ translate('COM_EMUNDUS_FORM_PAGE_MODELS') }}
 				    </li>
 			    </ul>
-			    <div id="tabs-line" class="em-w-100"></div>
 		    </nav>
 		    <list-body
 				    v-if="selectedListTab === 'formModels'"
@@ -603,25 +607,8 @@ h2 {
 		margin-bottom: 0;
 
 		li {
-			border-top: 1px solid #e0e0e5;
-			border-right: 1px solid #e0e0e5;
-			border-top-left-radius: 4px;
-			border-top-right-radius: 4px;
-
-			&:first-child {
-				border-left: 1px solid #e0e0e5;
-			}
-
-			&.selected {
-				background-color: #f8f8f8;
-				color: #20835F;
-			}
+			transition: all .3s;
 		}
-	}
-
-	#tabs-line {
-		border-top: 1px solid #e0e0e5;
-		margin-top: -1px;
 	}
 }
 

@@ -920,6 +920,11 @@ input:focus + .em-slider {
 .em-border-left-main-500{
   border-left: solid 2px $main-500;
 }
+
+.em-border-bottom-main-500 {
+  border-bottom: solid 1px $main-500;
+}
+
 .em-border-left-red-500{
   border-left: solid 2px $red-500;
 }
