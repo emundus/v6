@@ -256,24 +256,77 @@ export default {
 			  }
 		  }).then((result) => {
 			  if (typeof result.dismiss == 'undefined' && result.value !== '') {
-				  formBuilderService.addFormModel(this.page.id, result.value).then((response) => {
-					  if (!response.status) {
+				  formBuilderService.getModels().then((response) => {
+					  const modelExists = response.data.filter((model) => {
+						  return model.label.fr == result.value || model.label.en == result.value;
+					  });
+
+					  if (modelExists.length > 0) {
 						  Swal.fire({
 							  type: 'warning',
-							  title: this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_FAILURE'),
-							  text: response.msg,
+							  title: this.translate('COM_EMUNDUS_FORM_BUILDER_MODEL_WITH_SAME_TITLE_EXISTS'),
+							  showCancelButton: true,
+							  confirmButtonText: this.translate("COM_EMUNDUS_REPLACE_MODEL_WITH_SAME_TITLE"),
+							  cancelButtonText: this.translate("COM_EMUNDUS_ADD_MODEL_CHANGE_TITLE"),
 							  reverseButtons: true,
 							  customClass: {
 								  title: 'em-swal-title',
+								  cancelButton: 'em-swal-cancel-button',
 								  confirmButton: 'em-swal-confirm-button',
-								  actions: "em-swal-single-action",
+							  },
+						  }).then((confirm) => {
+							  if (confirm.value) {
+								  this.replaceFormModel(this.page.id, modelExists[0].id, result.value);
+								  return;
+							  } else {
+								  this.saveAsModel();
+								  return;
 							  }
 						  });
+					  } else {
+						  this.addFormModel(this.page.id, result.value);
 					  }
 				  });
 			  }
 		  });
 	  },
+	  addFormModel(page_id, label) {
+		  formBuilderService.addFormModel(page_id, label).then((response) => {
+			  if (!response.status) {
+				  Swal.fire({
+					  type: 'warning',
+					  title: this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_FAILURE'),
+					  text: response.msg,
+					  reverseButtons: true,
+					  customClass: {
+						  title: 'em-swal-title',
+						  confirmButton: 'em-swal-confirm-button',
+						  actions: "em-swal-single-action",
+					  }
+				  });
+			  }
+		  });
+	  },
+	  replaceFormModel(page_id, model_id, label) {
+		  formBuilderService.addFormModel(page_id, label).then((response) => {
+			  if (!response.status) {
+				  Swal.fire({
+					  type: 'warning',
+					  title: this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_FAILURE'),
+					  text: response.msg,
+					  reverseButtons: true,
+					  customClass: {
+						  title: 'em-swal-title',
+						  confirmButton: 'em-swal-confirm-button',
+						  actions: "em-swal-single-action",
+					  }
+				  });
+			  } else {
+					const modelIds = [model_id];
+					formBuilderService.deleteFormModelFromId(modelIds);
+			  }
+		  });
+	  }
   },
 }
 </script>
