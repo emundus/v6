@@ -114,12 +114,10 @@ if($currentCampaign->apply_online == 0){
         </div>
 
         <div class="mod_emundus_campaign__tabs em-flex-row">
-            <?php if (!empty($faq_articles) || !empty($files)) : ?>
-                <a class="em-text-neutral-600 current-tab em-mr-24" onclick="displayTab('campaign')" id="campaign_tab">
-                    <span><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS') ?></span>
-                </a>
-            <?php endif; ?>
-            <?php if (in_array('faq', $modules_tabs) && !empty($faq_articles)) : ?>
+            <a class="em-text-neutral-600 current-tab em-mr-24" onclick="displayTab('campaign')" id="campaign_tab">
+                <span><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS') ?></span>
+            </a>
+            <?php if ($mod_em_campaign_show_faq == 1 && !empty($faq_articles)) :?>
                 <a class="em-text-neutral-600" onclick="displayTab('faq')" id="faq_tab">
                     <span><?php echo JText::_('MOD_EM_CAMPAIGN_FAQ') ?></span>
                 </a>
@@ -140,7 +138,7 @@ if($currentCampaign->apply_online == 0){
                 <?php endif; ?>
             </div><!-- Close campaign-content -->
 
-            <?php if ($mod_em_campaign_modules_tab) :?>
+            <?php if ($mod_em_campaign_show_faq == 1 && !empty($faq_articles)) :?>
                 <div id="faq">
                     <?php foreach ($faq_articles as $article) :?>
                         <h2> <?php echo $article->title ?></h2>
