@@ -232,6 +232,14 @@ class com_emundusInstallerScript
                 EmundusHelperUpdate::addJoomlaMenu($datas);
             }
 
+            if((version_compare($cache_version, '1.33.28', '<') || $firstrun)) {
+                EmundusHelperUpdate::installExtension('PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE','custom_event_handler','{"name":"PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE","type":"plugin","creationDate":"18 August 2021","author":"James Dean","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"james@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"1.22.1","description":"PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE_DESC","group":"","filename":"custom_event_handler"}','plugin', 1, 'emundus');
+            }
+
+            if((version_compare($cache_version, '1.33.32', '<') || $firstrun)) {
+                EmundusHelperUpdate::disableEmundusPlugins('emundus_su');
+            }
+
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
         }
 
