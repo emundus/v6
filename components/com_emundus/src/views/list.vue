@@ -279,6 +279,10 @@ export default {
         this.filters += "&program=" + this.selectedProgram + "&session=" + this.selectedSession;
       }
 
+			if (this.type == 'formulaire') {
+				this.getFormModels();
+			}
+
       this.allFilters();
     },
 

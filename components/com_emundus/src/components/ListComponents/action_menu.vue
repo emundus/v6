@@ -215,18 +215,19 @@ export default {
 								formBuilderService.deleteFormModelFromId(id).then(response => {
 									if (!response.status) {
 										Swal.fire({
-											title: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_MODEL_FAILURE'),
+											title: this.translate('COM_EMUNDUS_FORM_DELETE_MODEL_FAILURE'),
 											type: 'warning',
 											showConfirmButton: false,
 											timer: 2000
 										});
 									} else {
 										Swal.fire({
-											title: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_MODEL_SUCCESS'),
+											title: this.translate('COM_EMUNDUS_FORM_DELETE_MODEL_SUCCESS'),
 											type: 'success',
 											showConfirmButton: false,
 											timer: 2000
 										});
+										this.$emit('validateFilters');
 									}
 								});
 			        }
