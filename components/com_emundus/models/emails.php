@@ -239,9 +239,16 @@ class EmundusModelEmails extends JModelList {
                 'COURSE_NAME' => $campaign['label']
             );
 
+            require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+            $h_emails = new EmundusHelperEmails();
+
             foreach ($trigger_emails as $trigger_email) {
 
                 foreach ($trigger_email[$student->code]['to']['recipients'] as $recipient) {
+                    if (!$h_emails->assertCanSendMailToUser($recipient['id'])) {
+                        continue;
+                    }
+
                     $mailer = JFactory::getMailer();
 
                     $tags = $this->setTags($student->id, $post, $student->fnum, '', $trigger_email[$student->code]['tmpl']['emailfrom'].$trigger_email[$student->code]['tmpl']['name'].$trigger_email[$student->code]['tmpl']['subject'].$trigger_email[$student->code]['tmpl']['message']);
@@ -1421,71 +1428,76 @@ class EmundusModelEmails extends JModelList {
         $user = JFactory::getUser($user);
         $toAttach = [];
 
-        // Tags are replaced with their corresponding values using the PHP preg_replace function.
-        $tags = $this->setTags($user->id);
+        require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+        $h_emails = new EmundusHelperEmails();
 
-        $subject = preg_replace($tags['patterns'], $tags['replacements'], $template->subject);
-        $body =  $template->message;
-        if ($template) {
-            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
-        }
-        $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+        if ($h_emails->assertCanSendMailToUser($user->id)) {
+            // Tags are replaced with their corresponding values using the PHP preg_replace function.
+            $tags = $this->setTags($user->id);
 
-        $config = JFactory::getConfig();
-        // Get default mail sender info
-        $mail_from_sys = $config->get('mailfrom');
-        $mail_from_sys_name = $config->get('fromname');
-        // Set sender
-        $sender = [
-            $mail_from_sys,
-            $mail_from_sys_name
-        ];
-
-        // Configure email sender
-        $mailer = JFactory::getMailer();
-        $mailer->setSender($sender);
-        $mailer->addReplyTo($mail_from_sys, $mail_from_sys_name);
-        $mailer->addRecipient($user->email);
-        $mailer->setSubject($subject);
-        $mailer->isHTML(true);
-        $mailer->Encoding = 'base64';
-        $mailer->setBody($body);
-
-        $files = '';
-        // Files uploaded from the frontend.
-        if (!empty($attachments)) {
-            // Here we also build the HTML being logged to show which files were attached to the email.
-            $files = '<ul>';
-            foreach ($attachments as $upload) {
-                if (file_exists(JPATH_SITE.DS.$upload)) {
-                    $toAttach[] = JPATH_SITE.DS.$upload;
-                    $files .= '<li>'.basename($upload).'</li>';
-                }
+            $subject = preg_replace($tags['patterns'], $tags['replacements'], $template->subject);
+            $body =  $template->message;
+            if ($template) {
+                $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
             }
-            $files .= '</ul>';
-        }
+            $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
-        $mailer->addAttachment($toAttach);
-
-        // Send and log the email.
-        $send = $mailer->Send();
-        if ($send !== true) {
-            $failed[] = $user->email;
-            echo 'Error sending email: ' . $send->__toString();
-            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
-        } else {
-            $sent[] = $user->email;
-            $log = [
-                'user_id_from' => $current_user->id,
-                'user_id_to' => $user->id,
-                'subject' => $subject,
-                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $user->email . '</i><br>' . $body . $files,
-                'type' => !empty($template)?$template->type:''
+            $config = JFactory::getConfig();
+            // Get default mail sender info
+            $mail_from_sys = $config->get('mailfrom');
+            $mail_from_sys_name = $config->get('fromname');
+            // Set sender
+            $sender = [
+                $mail_from_sys,
+                $mail_from_sys_name
             ];
-            $this->logEmail($log);
-            // Log the email in the eMundus logging system.
-            $logsParams = array('created' => [$subject]);
-            EmundusModelLogs::log($current_user->id, $user->id, '', 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+
+            // Configure email sender
+            $mailer = JFactory::getMailer();
+            $mailer->setSender($sender);
+            $mailer->addReplyTo($mail_from_sys, $mail_from_sys_name);
+            $mailer->addRecipient($user->email);
+            $mailer->setSubject($subject);
+            $mailer->isHTML(true);
+            $mailer->Encoding = 'base64';
+            $mailer->setBody($body);
+
+            $files = '';
+            // Files uploaded from the frontend.
+            if (!empty($attachments)) {
+                // Here we also build the HTML being logged to show which files were attached to the email.
+                $files = '<ul>';
+                foreach ($attachments as $upload) {
+                    if (file_exists(JPATH_SITE.DS.$upload)) {
+                        $toAttach[] = JPATH_SITE.DS.$upload;
+                        $files .= '<li>'.basename($upload).'</li>';
+                    }
+                }
+                $files .= '</ul>';
+            }
+
+            $mailer->addAttachment($toAttach);
+
+            // Send and log the email.
+            $send = $mailer->Send();
+            if ($send !== true) {
+                $failed[] = $user->email;
+                echo 'Error sending email: ' . $send->__toString();
+                JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+            } else {
+                $sent[] = $user->email;
+                $log = [
+                    'user_id_from' => $current_user->id,
+                    'user_id_to' => $user->id,
+                    'subject' => $subject,
+                    'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $user->email . '</i><br>' . $body . $files,
+                    'type' => !empty($template)?$template->type:''
+                ];
+                $this->logEmail($log);
+                // Log the email in the eMundus logging system.
+                $logsParams = array('created' => [$subject]);
+                EmundusModelLogs::log($current_user->id, $user->id, '', 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+            }
         }
     }
 
