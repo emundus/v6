@@ -609,7 +609,7 @@ class EmundusHelperFabrik {
     }
 
     static function prepareFabrikMenuParams(){
-        return array(
+        return [
             'rowid' => '',
             'usekey' => '',
             'random' => '0',
@@ -629,7 +629,7 @@ class EmundusHelperFabrik {
             'menu-meta_keywords' => '',
             'robots' => '',
             'secure' => '0',
-        );
+        ];
     }
 
     static function addOption($eid,$label,$value){
