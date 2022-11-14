@@ -232,8 +232,12 @@ class com_emundusInstallerScript
                 EmundusHelperUpdate::addJoomlaMenu($datas);
             }
 
-            if((version_compare($cache_version, '1.33.28', '<') || $firstrun)) {
-                EmundusHelperUpdate::installExtension('PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE','custom_event_handler','{"name":"PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE","type":"plugin","creationDate":"18 August 2021","author":"James Dean","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"james@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"1.22.1","description":"PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE_DESC","group":"","filename":"custom_event_handler"}','plugin', 1, 'emundus');
+            if (version_compare($cache_version, '1.34.0', '<') || $firstrun) {
+                $succeed['campaign_workflow'] = EmundusHelperUpdate::addProgramToCampaignWorkflow();
+
+                //TODO : Install a module or a plugin via folder (parse xml file and insert necessary datas)
+                EmundusHelperUpdate::installExtension('MOD_EMUNDUS_ANNOUNCEMENTS_SYS_XML','mod_emundus_announcements','{"name":"MOD_EMUNDUS_ANNOUNCEMENTS_SYS_XML","type":"module","creationDate":"September 2022","author":"eMundus","copyright":"Copyright (C) 2022 eMundus. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"1.0.0","description":"MOD_EMUNDUS_ANNOUNCEMENTS_XML_DESCRIPTION","group":"","filename":"mod_emundus_announcements"}','module');
+                EmundusHelperUpdate::createModule('Announcement','top-b','mod_emundus_announcements','{"announcement_content":"Cette plateforme de préproduction est une copie de la production datant du [DATE]. Les mails sont désactivés. Elle est isolée du web.","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}',0,1);
             }
 
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();

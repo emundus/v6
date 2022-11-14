@@ -109,10 +109,10 @@ class PlgEmundusReferent_status extends JPlugin {
 
                         $post = array(
                             'FNUM' => $applicant->fnum,
-                            'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($applicant->end_date)),
+                            'DEADLINE' => JHTML::_('date', $applicant->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
                             'CAMPAIGN_LABEL' => $applicant->label,
-                            'CAMPAIGN_START' => $applicant->start_date,
-                            'CAMPAIGN_END' => $applicant->end_date,
+                            'CAMPAIGN_START' => JHTML::_('date', $applicant->start_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+                            'CAMPAIGN_END' => JHTML::_('date', $applicant->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
                             'FIRSTNAME' => $applicant->firstname,
                             'LASTNAME' => strtoupper($applicant->lastname),
                             'UPLOAD_URL' => $link_upload,
