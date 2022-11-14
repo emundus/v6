@@ -69,6 +69,7 @@
               :page="currentPage"
               @open-element-properties="onOpenElementProperties"
               @open-section-properties="onOpenSectionProperties"
+              @open-create-model="onOpenCreateModel"
               @update-page-title="getPages(currentPage.id)"
             ></form-builder-page>
             <form-builder-document-list
@@ -114,7 +115,12 @@
                 @close="onCloseSectionProperties"
                 :section_id="selectedSection.group_id"
                 :profile_id="profile_id"
-              ></form-builder-section-properties>
+            ></form-builder-section-properties>
+	          <form-builder-create-model
+			          v-if="showInRightPanel === 'create-model'"
+			          :page="selectedPage"
+			          @close="showInRightPanel = 'hierarchy';"
+	          ></form-builder-create-model>
             <form-builder-create-document
                 v-if="showInRightPanel === 'create-document'"
                 ref="formBuilderCreateDocument"
@@ -122,16 +128,14 @@
                 :current_document="selectedDocument ? selectedDocument : null"
                 :mandatory="createDocumentMandatory"
                 :mode="createDocumentMode"
-                @close="onCloseCreateDocument"
+                @close="showInRightPanel = 'hierarchy'"
                 @documents-updated="onUpdateDocument"
             ></form-builder-create-document>
           </transition>
         </aside>
       </div>
 	    <div v-else-if="principalContainer === 'create-page'">
-		    <form-builder-create-page :profile_id="profile_id" @close="onCloseCreatePage">
-
-		    </form-builder-create-page>
+		    <form-builder-create-page :profile_id="profile_id" @close="onCloseCreatePage"></form-builder-create-page>
 	    </div>
     </modal>
   </div>
@@ -152,10 +156,12 @@ import FormBuilderDocumentFormats from "../components/FormBuilder/FormBuilderDoc
 
 // services
 import formService from '../services/form.js';
+import FormBuilderCreateModel from "../components/FormBuilder/FormBuilderCreateModel";
 
 export default {
   name: 'FormBuilder',
   components: {
+	  FormBuilderCreateModel,
     FormBuilderSectionProperties,
 	  FormBuilderCreatePage,
     FormBuilderElements,
@@ -293,10 +299,6 @@ export default {
       }
       this.showInRightPanel = 'element-properties';
     },
-    onCloseCreateDocument()
-    {
-      this.showInRightPanel = 'hierarchy';
-    },
 	  onUpdateDocument()
 	  {
 		  this.$refs.formBuilderDocumentList.getDocuments();
@@ -320,6 +322,13 @@ export default {
 				this.getPages();
 			}
 		  this.principalContainer = 'default';
+	  },
+	  onOpenCreateModel(pageId)
+	  {
+			if (pageId > 0) {
+				this.selectedPage = pageId;
+				this.showInRightPanel = 'create-model';
+			}
 	  },
     onOpenCreateDocument(mandatory = "1")
     {
