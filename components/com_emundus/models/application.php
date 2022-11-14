@@ -2483,6 +2483,8 @@ class EmundusModelApplication extends JModelList
                                                     $index = array_search($r_elt, $params->sub_options->sub_values);
                                                     if (strlen($index) > 0) {
                                                         $elt = JText::_($params->sub_options->sub_labels[$index]);
+                                                    } elseif (!empty($params->dropdown_populate)) {
+                                                        $elt = $r_elt;
                                                     } else {
                                                         $elt = "";
                                                     }
@@ -2684,6 +2686,8 @@ class EmundusModelApplication extends JModelList
                                                     $elt = JText::_($params->sub_options->sub_labels[$index]);
                                                 } elseif ($params->multiple == 1) {
                                                     $elt = implode(", ", json_decode(@$element->content));
+                                                } elseif (!empty($params->dropdown_populate)) {
+                                                    $elt = $r_elt;
                                                 } else {
                                                     $elt = "";
                                                 }
