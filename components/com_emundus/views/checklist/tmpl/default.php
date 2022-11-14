@@ -147,7 +147,7 @@ if (!empty($this->custom_title)) :?>
             $div .= '</div>
                 <p class="em-ml-30 em-mt-4">'.$attachment->description .'</p>
                 <div>
-                <table id="'.$attachment->id .'" class="table em-fieldset-attachment-table em-ml-24">';
+                <table id="'.$attachment->id .'" class="table em-fieldset-attachment-table">';
 
             if ($attachment->nb > 0) {
                 foreach ($attachment->liste as $item) {
