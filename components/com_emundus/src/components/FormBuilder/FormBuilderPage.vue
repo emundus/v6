@@ -11,7 +11,7 @@
 			    :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
 			    v-html="translate(title)"
 	    ></span>
-	    <span class="material-icons-outlined em-pointer" :title="translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')" @click="saveAsModel">library_add</span>
+	    <span class="material-icons-outlined em-pointer" :title="translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')" @click="saveAsModel">save_as</span>
     </div>
     <span
       class="description editable-data"
@@ -95,7 +95,7 @@ export default {
     }
   },
   methods: {
-    getSections(newElementIndex = null) {
+    getSections() {
       this.loading = true;
       formService.getPageObject(this.page.id).then(response => {
         if (response.status) {
@@ -247,7 +247,7 @@ export default {
 				  confirmButton: 'em-swal-confirm-button',
 			  },
 			  preConfirm(inputValue) {
-				  if (inputValue == '') {
+				  if (inputValue === '') {
 					  Swal.showValidationMessage(validationText);
 					  return false;
 				  }
@@ -258,7 +258,7 @@ export default {
 			  if (typeof result.dismiss == 'undefined' && result.value !== '') {
 				  formBuilderService.getModels().then((response) => {
 					  const modelExists = response.data.filter((model) => {
-						  return model.label.fr == result.value || model.label.en == result.value;
+						  return model.label[this.shortDefaultLang] === result.value;
 					  });
 
 					  if (modelExists.length > 0) {
@@ -277,10 +277,8 @@ export default {
 						  }).then((confirm) => {
 							  if (confirm.value) {
 								  this.replaceFormModel(this.page.id, modelExists[0].id, result.value);
-								  return;
 							  } else {
 								  this.saveAsModel();
-								  return;
 							  }
 						  });
 					  } else {

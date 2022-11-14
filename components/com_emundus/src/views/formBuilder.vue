@@ -103,12 +103,6 @@
                   @open-create-document="onOpenCreateDocument"
               ></form-builder-documents>
             </div>
-            <form-builder-page-properties
-                v-if="showInRightPanel === 'page-properties'"
-                @close="onClosePageProperties"
-                :profile_id="profile_id"
-                :pages="pages"
-            ></form-builder-page-properties>
             <form-builder-element-properties
                 v-if="showInRightPanel === 'element-properties'"
                 @close="onCloseElementProperties"
@@ -149,7 +143,6 @@ import FormBuilderElements  from "../components/FormBuilder/FormBuilderElements"
 import FormBuilderElementProperties  from "../components/FormBuilder/FormBuilderElementProperties";
 import FormBuilderSectionProperties  from "../components/FormBuilder/FormBuilderSectionProperties";
 import FormBuilderPage      from "../components/FormBuilder/FormBuilderPage";
-import FormBuilderPageProperties from "../components/FormBuilder/FormBuilderPageProperties";
 import FormBuilderCreatePage from "../components/FormBuilder/FormBuilderCreatePage";
 import FormBuilderPages     from "../components/FormBuilder/FormBuilderPages";
 import FormBuilderDocuments from "../components/FormBuilder/FormBuilderDocuments";
@@ -164,7 +157,6 @@ export default {
   name: 'FormBuilder',
   components: {
     FormBuilderSectionProperties,
-    FormBuilderPageProperties,
 	  FormBuilderCreatePage,
     FormBuilderElements,
     FormBuilderElementProperties,
@@ -321,14 +313,6 @@ export default {
       this.selectedSection = null;
       this.showInRightPanel = 'hierarchy';
       this.$refs.formBuilderPage.getSections();
-    },
-    onClosePageProperties(page = null)
-    {
-      if (page) {
-        this.pages.splice(this.pages.length-1,0, page)
-        this.selectedPage = page.id;
-      }
-      this.showInRightPanel = 'hierarchy';
     },
 	  onCloseCreatePage(reload)
 	  {
