@@ -252,6 +252,7 @@ function refreshFilter(view) {
 }
 
 function tableOrder(order) {
+    addLoader();
     $.ajax({
         type: 'POST',
         url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=order',
@@ -262,6 +263,8 @@ function tableOrder(order) {
         success: function(result) {
             if (result.status) {
                 reloadData($('#view').val());
+            } else {
+                removeLoader();
             }
         },
         error: function(jqXHR) {
@@ -5292,6 +5295,7 @@ $(document).ready(function() {
     $(document).on('change', '#pager-select', function(e) {
         if (e.handle !== true) {
             e.handle = true;
+            addLoader();
             $.ajax({
                 type: 'POST',
                 url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=setlimit',
@@ -5302,6 +5306,8 @@ $(document).ready(function() {
                 success: function(result) {
                     if (result.status) {
                         reloadData($('#view').val());
+                    } else {
+                        removeLoader();
                     }
                 }
             });

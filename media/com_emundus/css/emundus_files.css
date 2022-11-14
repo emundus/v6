@@ -223,6 +223,7 @@ th {
 .container-result {
     position: sticky;
     background: white;
+    z-index: 6;
 }
 
 
@@ -2384,6 +2385,7 @@ div#em-assoc-files .panel > .panel-heading {
 }
 
 .glyphicon {
+    z-index: 4;
     display: inline-flex;
     align-items: center;
 }

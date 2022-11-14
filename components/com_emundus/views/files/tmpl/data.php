@@ -20,13 +20,28 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 <div class="panel panel-default em-data">
 	<?php if (is_array($this->datas)):?>
         <div class="container-result">
-            <div class="em-ml-8">
+            <div class="em-ml-8 em-flex-row">
                 <?= $this->pagination->getResultsCounter(); ?>
+                <div class="em-ml-16">|</div>
+                <div class="em-ml-16 em-flex-row">
+                    <label for="pager-select" class="em-mb-0-important em-mr-4"><?= JText::_('COM_EMUNDUS_DISPLAY') ?></label>
+                    <select name="pager-select" id="pager-select" class="em-select-no-border">
+                        <option value="0" <?php if ($this->pagination->limit == 0) { echo "selected=true"; } ?>><?= JText::_('COM_EMUNDUS_ACTIONS_ALL')?></option>
+                        <option value="5" <?php if ($this->pagination->limit == 5) { echo "selected=true"; } ?>>5</option>
+                        <option value="10" <?php if ($this->pagination->limit == 10) { echo "selected=true"; } ?>>10</option>
+                        <option value="15" <?php if ($this->pagination->limit == 15) { echo "selected=true"; } ?>>15</option>
+                        <option value="20" <?php if ($this->pagination->limit == 20) { echo "selected=true"; } ?>>20</option>
+                        <option value="25" <?php if ($this->pagination->limit == 25) { echo "selected=true"; } ?>>25</option>
+                        <option value="30" <?php if ($this->pagination->limit == 30) { echo "selected=true"; } ?>>30</option>
+                        <option value="50" <?php if ($this->pagination->limit == 50) { echo "selected=true"; } ?>>50</option>
+                        <option value="100" <?php if ($this->pagination->limit == 100) { echo "selected=true"; } ?>>100</option>
+                    </select>
+                </div>
             </div>
             <?php echo $this->pageNavigation ?>
             <div id="countCheckedCheckbox" class="countCheckedCheckbox" style="display: none"></div>
         </div>
-		<div class="em-data-container">
+		<div class="em-data-container" style="padding-bottom: unset">
 			<table class="table table-striped table-hover" id="em-data">
 				<thead>
 				<tr>
@@ -155,23 +170,6 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 				<?php  endforeach;?>
 				</tbody>
 			</table>
-		</div>
-		<div class="em-container-pagination">
-            <div class="em-container-pagination-select">
-                <label for="pager-select" class="em-paginate-label em-container-pagination-label"><?= JText::_('COM_EMUNDUS_DISPLAY') ?></label>
-                <select name="pager-select" class="chzn-select" id="pager-select">
-                    <option value="0" <?php if ($this->pagination->limit == 0) { echo "selected=true"; } ?>><?= JText::_('COM_EMUNDUS_ACTIONS_ALL')?></option>
-                    <option value="5" <?php if ($this->pagination->limit == 5) { echo "selected=true"; } ?>>5</option>
-                    <option value="10" <?php if ($this->pagination->limit == 10) { echo "selected=true"; } ?>>10</option>
-                    <option value="15" <?php if ($this->pagination->limit == 15) { echo "selected=true"; } ?>>15</option>
-                    <option value="20" <?php if ($this->pagination->limit == 20) { echo "selected=true"; } ?>>20</option>
-                    <option value="25" <?php if ($this->pagination->limit == 25) { echo "selected=true"; } ?>>25</option>
-                    <option value="30" <?php if ($this->pagination->limit == 30) { echo "selected=true"; } ?>>30</option>
-                    <option value="50" <?php if ($this->pagination->limit == 50) { echo "selected=true"; } ?>>50</option>
-                    <option value="100" <?php if ($this->pagination->limit == 100) { echo "selected=true"; } ?>>100</option>
-                </select>
-            </div>
-            <?php echo $this->pageNavigation; ?>
 		</div>
 	<?php else:?>
 		<?= $this->datas?>

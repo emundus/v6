@@ -142,6 +142,13 @@ button[class ^= 'em-']{
   }
 }
 
+.em-select-no-border{
+  border: unset;
+  height: auto;
+  background: transparent;
+  padding: unset;
+}
+
 
 // TOGGLE BUTTON //
 .em-switch {
