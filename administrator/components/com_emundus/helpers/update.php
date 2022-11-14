@@ -52,9 +52,9 @@ class EmundusHelperUpdate
         $query = $db->getQuery(true);
 
         try {
-            $query->update('#__extensions')
-                ->set('enabled = 0')
-                ->where("element LIKE " . $db->q('%'. $name .'%'));
+            $query->update($db->quoteName('#__extensions'))
+                ->set($db->quoteName('enabled') . ' = 0')
+                ->where($db->quoteName('element') . ' LIKE ' . $db->quote($name));
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e) {
