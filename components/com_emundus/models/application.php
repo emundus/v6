@@ -713,6 +713,8 @@ class EmundusModelApplication extends JModelList
             return false;
         }
 
+        $m_profile = new EmundusModelProfile();
+
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
@@ -722,6 +724,11 @@ class EmundusModelApplication extends JModelList
 
         $result = array();
         foreach ($fnum as $f) {
+
+            // get profile for each fnum
+            $current_profile = $m_profile->getProfileByFnum($f);
+            $this->getFormsProgressWithProfile($f,$current_profile);
+
             $query->clear()
                 ->select('attachment_progress, form_progress')
                 ->from('#__emundus_campaign_candidature')
