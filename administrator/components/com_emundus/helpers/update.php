@@ -9,34 +9,13 @@
 // No direct access
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Table\Table;
+
 /**
  * Emundus helper.
  */
 class EmundusHelperUpdate
 {
-
-    /**
-     * Get all emundus plugins
-     *
-     * @return array|mixed
-     *
-     * @since version 1.33.0
-     */
-    public static function getEmundusPlugins() {
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        try {
-            $query->select('*')
-                ->from('#__extensions')
-                ->where("folder LIKE '%emundus%' OR element LIKE " . $db->q('%emundus%') . " AND type='plugin'");
-            $db->setQuery($query);
-            return $db->loadObjectList();
-        } catch (Exception $e){
-            echo $e->getMessage();
-            return [];
-        }
-    }
 
     /**
      * Disable an emundus plugin
@@ -61,55 +40,6 @@ class EmundusHelperUpdate
             echo $e->getMessage();
             return false;
         }
-    }
-
-    public static function installModule($title,$content,$position,$module,$params,$access = 1,$showtitle = 0,$published = 1) {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        try {
-            $query->select('id')
-                ->from($db->quoteName('#__modules'))
-                ->where($db->quoteName('module') . ' LIKE ' . $db->quote($module))
-                ->andWhere($db->quoteName('title') . ' LIKE ' . $db->quote($title))
-                ->andWhere($db->quoteName('position') . ' LIKE ' . $db->quote($position));
-            $db->setQuery($query);
-            $is_existing = $db->loadResult();
-
-            if(empty($is_existing)){
-                $publish_up = new DateTime();
-                $publish_up->modify('-1 day');
-
-                $query->clear()
-                    ->insert($db->quoteName('#__modules'))
-                    ->set($db->quoteName('title') . ' = ' . $db->quote($title))
-                    ->set($db->quoteName('note') . ' = ' . $db->quote(''))
-                    ->set($db->quoteName('content') . ' = ' . $db->quote($content))
-                    ->set($db->quoteName('ordering') . ' = ' . $db->quote(1))
-                    ->set($db->quoteName('position') . ' = ' . $db->quote($position))
-                    ->set($db->quoteName('checked_out') . ' = ' . $db->quote(62))
-                    ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                    ->set($db->quoteName('publish_up') . ' = ' . $db->quote($publish_up->format('Y-m-d H:i:s')))
-                    ->set($db->quoteName('publish_down') . ' = ' . $db->quote('2099-01-01 00:00:00'))
-                    ->set($db->quoteName('published') . ' = ' . $db->quote($published))
-                    ->set($db->quoteName('module') . ' = ' . $db->quote($module))
-                    ->set($db->quoteName('access') . ' = ' . $db->quote($access))
-                    ->set($db->quoteName('showtitle') . ' = ' . $db->quote($showtitle))
-                    ->set($db->quoteName('params') . ' = ' . $db->quote($params))
-                    ->set($db->quoteName('client_id') . ' = ' . $db->quote(0))
-                    ->set($db->quoteName('language') . ' = ' . $db->quote('*'));
-                $db->setQuery($query);
-                $db->execute();
-
-                return $db->insertid();
-            } else {
-                return $is_existing;
-            }
-        } catch (Exception $e) {
-            echo $e->getMessage();
-        }
-
-        return 0;
     }
 
 
@@ -192,65 +122,6 @@ class EmundusHelperUpdate
         }
 
         return $installed;
-    }
-
-    public static function createModule($title, $position, $module, $params, $published = 0, $all_pages = 0, $access = 1, $showtitle = 0, $client_id = 0)
-    {
-        $created = false;
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        try {
-            $query->select('id')
-                ->from($db->quoteName('#__modules'))
-                ->where($db->quoteName('title') . ' LIKE ' . $db->quote($title))
-                ->andWhere($db->quoteName('module') . ' LIKE ' . $db->quote($module));
-            $db->setQuery($query);
-            $is_existing = $db->loadResult();
-
-            if (empty($is_existing)) {
-                $publish_up = new DateTime(); // For today/now, don't pass an arg.
-                $publish_up->modify('-1 day');
-
-                $query->clear()
-                    ->insert($db->quoteName('#__modules'))
-                    ->set($db->quoteName('title') . ' = ' . $db->quote($title))
-                    ->set($db->quoteName('note') . ' = ' . $db->quote(''))
-                    ->set($db->quoteName('ordering') . ' = ' . $db->quote(1))
-                    ->set($db->quoteName('position') . ' = ' . $db->quote($position))
-                    ->set($db->quoteName('checked_out') . ' = ' . $db->quote(62))
-                    ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                    ->set($db->quoteName('publish_up') . ' = ' . $db->quote($publish_up->format('Y-m-d H:i:s')))
-                    ->set($db->quoteName('publish_down') . ' = ' . $db->quote('2099-01-01 00:00:00'))
-                    ->set($db->quoteName('published') . ' = ' . $db->quote($published))
-                    ->set($db->quoteName('module') . ' = ' . $db->quote($module))
-                    ->set($db->quoteName('access') . ' = ' . $db->quote($access))
-                    ->set($db->quoteName('showtitle') . ' = ' . $db->quote($showtitle))
-                    ->set($db->quoteName('params') . ' = ' . $db->quote($params))
-                    ->set($db->quoteName('client_id') . ' = ' . $db->quote($client_id))
-                    ->set($db->quoteName('language') . ' = ' . $db->quote('*'));
-                $db->setQuery($query);
-                $db->execute();
-                $module_id = $db->insertid();
-
-                if (!empty($module_id) && $all_pages) {
-                    $query->clear()
-                        ->insert($db->quoteName('#__modules_menu'))
-                        ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module_id))
-                        ->set($db->quoteName('menuid') . ' = ' . $db->quote(0));
-                    $db->setQuery($query);
-                    $created = $db->execute();
-                }
-            } else {
-                echo "$title module already exists.";
-                $created = true;
-            }
-        } catch (Exception $e) {
-            echo $e->getMessage();
-        }
-
-        return $created;
     }
 
     /**
@@ -1773,6 +1644,79 @@ class EmundusHelperUpdate
                 $result['message'] = 'ADDING COLUMN : Error : ' . $e->getMessage();
                 return $result;
             }
+        }
+
+        return $result;
+    }
+
+    public static function addJoomlaModule($data, $published = 1, $all_pages = false) {
+        $result = ['status' => false, 'message' => '', 'id' => 0];
+        $module_table = \Joomla\CMS\Table\Table::getInstance('module');
+
+        if(empty($data['title'])) {
+            $result['message'] = 'INSERTING JOOMLA MODULE : Please pass a title.';
+            return $result;
+        }
+        if(empty($data['position'])) {
+            $result['message'] = 'INSERTING JOOMLA MODULE : Please indicate a position.';
+            return $result;
+        }
+        if(empty($data['module'])) {
+            $result['message'] = 'INSERTING JOOMLA MODULE : Please indicate a module.';
+            return $result;
+        }
+        if(!isset($data['params'])){
+            $data['params'] = [];
+        }
+
+        $default_params = [
+            'module_tag' => 'div',
+            'bootstrap_size' => 0,
+            'header_tag' => 'h3',
+            'header_class' => '',
+            'style' => 0,
+        ];
+        $data['params'] = array_merge($default_params, $data['params']);
+
+        try {
+            // Initialize again Joomla database to fix problem with Falang (or other plugins) that override default mysql driver
+            JFactory::$database = null;
+            $db = JFactory::getDbo();
+
+            $module_data = array(
+                'title' => $data['title'],
+                'note' => $data['note'] ?: '',
+                'content' => $data['content'] ?: null,
+                'position' => $data['position'],
+                'module' => $data['module'],
+                'showtitle' => $data['showtitle'] ?: 0,
+                'access' => $data['access'] ?: 1,
+                'published' => $published,
+                'client_id' => 0,
+                'language' => '*',
+                'params' => json_encode($data['params'])
+            );
+
+            if (!$module_table->save($module_data)) {
+                $result['message'] = 'INSERTING JOOMLA MODULE : Error at saving module.';
+                return $result;
+            }
+            $result['id'] = $module_table->id;
+
+            if (!empty($result['id']) && $all_pages) {
+                $query = $db->getQuery(true);
+
+                $query->clear()
+                    ->insert($db->quoteName('#__modules_menu'))
+                    ->set($db->quoteName('moduleid') . ' = ' . $db->quote($result['id']))
+                    ->set($db->quoteName('menuid') . ' = ' . $db->quote(0));
+                $db->setQuery($query);
+                $db->execute();
+            }
+
+            $result['status'] = true;
+        } catch (Exception $e) {
+            echo '<pre>'; var_dump('INSERTING MODULE : ' . $e->getMessage()); echo '</pre>'; die;
         }
 
         return $result;

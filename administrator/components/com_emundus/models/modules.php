@@ -5,6 +5,9 @@
  * Date: 28/01/15
  * Time: 16:28
  */
+
+use Joomla\CMS\Table\Table;
+
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
@@ -278,7 +281,7 @@ class EmundusModelModules extends JModelList {
 		return true;
 	}
 
-    public function installHomepage(){
+    public function installHomepage() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -374,6 +377,84 @@ class EmundusModelModules extends JModelList {
             }
         } catch (Exception $e) {
             return false;
+        }
+    }
+
+    public function installChecklist() {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->update($db->quoteName('#__modules'))
+                ->set($db->quoteName('published') . ' = 0')
+                ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_jumi'))
+                ->andWhere(
+                    $db->quoteName('title') . ' LIKE ' . $db->quote('Formulaires%') . ' OR ' . $db->quoteName('title') . ' LIKE ' . $db->quote('Document%')
+                );
+            $db->setQuery($query);
+            $db->execute();
+
+            $query->clear()
+                ->select('m.id')
+                ->from($db->quoteName('#__emundus_setup_profiles','esp'))
+                ->rightJoin($db->quoteName('#__menu','m').' ON '.$db->quoteName('m.menutype').' = '.$db->quoteName('esp.menutype'))
+                ->where($db->quoteName('esp.published') . ' = 1')
+                ->andWhere($db->quoteName('m.menutype') . ' <> ' . $db->quote(''));
+            $db->setQuery($query);
+            $menus = $db->loadColumn();
+
+            $query->clear()
+                ->select('id')
+                ->from($db->quoteName('#__modules'))
+                ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_checklist'))
+                ->andWhere($db->quoteName('note') . ' LIKE ' . $db->quote('applicant_sidebar'));
+            $db->setQuery($query);
+            $module_id = $db->loadResult();
+
+            if(empty($module_id)){
+                $data = [
+                    'title' => 'Forms',
+                    'note' => 'applicant_sidebar',
+                    'position' => 'sidebar-a',
+                    'module' => 'mod_emundus_checklist',
+                    'params' => [
+                        'show_forms' => 1,
+                        'forms_title' => 'Formulaires',
+                        'show_mandatory_documents' => 1,
+                        'mandatory_documents_title' => 'Documents',
+                        'show_optional_documents' => 0,
+                        'optional_documents_title' => 'Documents complémentaires',
+                        'show_duplicate_documents' => -1,
+                        'showsend' => 1,
+                        'admission' => 0,
+                    ]
+                ];
+                $module_id = EmundusHelperUpdate::addJoomlaModule($data)['id'];
+            }
+
+            if(!empty($module_id)) {
+                foreach ($menus as $menu) {
+                    $query->clear()
+                        ->select('moduleid')
+                        ->from($db->quoteName('#__modules_menu'))
+                        ->where($db->quoteName('moduleid') . ' = ' . $module_id)
+                        ->andWhere($db->quoteName('menuid') . ' = ' . $menu);
+                    $db->setQuery($query);
+                    $existing = $db->loadResult();
+
+                    if(empty($existing)) {
+                        $query->clear()
+                            ->insert($db->quoteName('#__modules_menu'))
+                            ->set($db->quoteName('moduleid') . ' = ' . $module_id)
+                            ->set($db->quoteName('menuid') . ' = ' . $menu);
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            echo '<pre>'; var_dump($e->getMessage()); echo '</pre>'; die;
         }
     }
 }
