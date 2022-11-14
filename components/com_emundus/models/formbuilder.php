@@ -3596,7 +3596,6 @@ class EmundusModelFormbuilder extends JModelList {
             // copy list, form, groups and elements from origin form_id
             $new_form_id = $this->copyForm($form_id_to_copy);
 
-
             // then add form created to list of form models
             if (!empty($new_form_id)) {
                 $db = JFactory::getDbo();
@@ -3723,6 +3722,7 @@ class EmundusModelFormbuilder extends JModelList {
             if (!empty($form_model)) {
                 $query->clear();
                 $query->insert($db->quoteName('#__fabrik_forms'));
+                $form_model->label = $form_model->label . '_MODEL';
                 foreach ($form_model as $key => $val) {
                     if ($key != 'id') {
                         $query->set($key . ' = ' . $db->quote($val));

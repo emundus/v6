@@ -1,47 +1,63 @@
 <template>
-	<div id="form-builder-create-page" class="em-w-100 em-p-32">
-		<h3 class="em-mb-4">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE') }}</h3>
-		<p>{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_INTRO') }}</p>
-		<section id="new-page">
-			<div
-					class="em-mt-16 em-mb-16 card-wrapper"
-					:class="{selected: -1 === selected}"
-					@click="selected = -1;"
-			>
-				<div class="card em-shadow-cards em-pointer em-flex-row">
-					<span class="add_circle material-icons-outlined">add_circle</span>
+	<div id="form-builder-create-page" class="em-w-100 em-p-32 em-pt-16">
+		<div>
+			<h3 class="em-mb-4">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE') }}</h3>
+			<p>{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_INTRO') }}</p>
+			<section id="new-page">
+				<div class="em-mt-16 em-mb-16 card-wrapper" :class="{selected: -1 === selected}" @click="selected = -1;">
+					<div class="card em-shadow-cards em-pointer em-flex-row">
+						<span class="add_circle material-icons-outlined">add_circle</span>
+					</div>
+					<input class="em-p-4" type="text" v-model="page.label[shortDefaultLang]">
 				</div>
-				<input class="em-p-4" type="text" v-model="page.label[shortDefaultLang]">
+			</section>
+			<div class="separator em-mt-32">
+				<p class="line-head em-mt-4 em-p-8">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_FROM_MODEL') }}</p>
+				<div class="line"></div>
 			</div>
-		</section>
-		<div class="separator em-mt-32">
-			<p class="line-head em-mt-4 em-p-8">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_FROM_MODEL') }}</p>
-			<div class="line"></div>
+			<section id="models" class="em-flex-row em-w-100">
+				<p v-if="models.length < 1 && !loading" class="em-w-100 em-text-align-center empty-model-message">{{ translate('COM_EMUNDUS_FORM_BUILDER_EMPTY_PAGE_MODELS') }}</p>
+				<div v-if="!loading" class="em-w-100">
+					<div id="search-model-wrapper">
+						<input id="search-model" class="em-mt-16" type="text" v-model="search" placeholder="Rechercher"/>
+						<span class="reset-search material-icons-outlined em-pointer" @click="search = ''">close</span>
+					</div>
+					<div class="models-card em-grid">
+						<div
+							v-for="model in models" :key="model.id"
+							class="card-wrapper"
+							:class="{selected: model.id === selected, hidden: !model.displayed}"
+							:title="model.label[shortDefaultLang]"
+							@click="selected = model.id"
+						>
+							<form-builder-preview-form
+								:form_id="Number(model.form_id)"
+								:form_label="model.label[shortDefaultLang]"
+								class="card em-shadow-cards model-preview em-pointer"
+							>
+							</form-builder-preview-form>
+							<p class="em-p-4"> {{ model.label[shortDefaultLang] }}</p>
+						</div>
+
+						<div v-if="displayedModels.length < 1" class="empty-model-message em-w-100 em-text-align-center">
+							<span class="material-icons-outlined">manage_search</span>
+							<p class="em-w-100"> {{ translate('COM_EMUNDUS_FORM_BUILDER_EMPTY_PAGE_MODELS') }}</p>
+						</div>
+					</div>
+				</div>
+				<div v-else class="em-w-100">
+					<skeleton width="206px" height="41px" classes="em-mt-16 em-mb-16 em-border-radius-5"></skeleton>
+					<div class="models-card em-grid">
+						<div v-for="i in 16" :key="i" class="em-flex-column card-wrapper em-mr-24">
+							<skeleton width="150px" height="200px" classes="card em-shadow-cards model-preview"></skeleton>
+							<skeleton width="150px" height="20px" classes="em-p-4"></skeleton>
+						</div>
+					</div>
+				</div>
+			</section>
 		</div>
-		<section id="models" class="em-flex-row em-w-100">
-			<p v-if="models.length < 1 && !loading">{{ translate('COM_EMUNDUS_FORM_BUILDER_EMPTY_PAGE_MODELS') }}</p>
-			<div v-if="!loading" class="em-flex-row em-w-100">
-				<div
-						v-for="model in models" :key="model.id"
-						class="card-wrapper"
-						:class="{selected: model.id === selected}"
-						:title="model.label[shortDefaultLang]"
-						@click="selected = model.id"
-				>
-					<form-builder-preview-form :form_id="Number(model.form_id)" :form_label="model.label[shortDefaultLang]"  class="card em-shadow-cards model-preview em-pointer">
-					</form-builder-preview-form>
-					<p class="em-p-4"> {{ model.label[shortDefaultLang] }}</p>
-				</div>
-			</div>
-			<div v-else class="em-flex-row em-w-100">
-				<div v-for="i in 5" :key="i" class="em-flex-column card-wrapper">
-					<skeleton width="150px" height="200px" classes="card em-shadow-cards model-preview"></skeleton>
-					<skeleton width="150px" height="20px" classes="em-p-4"></skeleton>
-				</div>
-			</div>
-		</section>
 		<div class="actions em-flex-row-justify-end em-w-100">
-			<button class="em-secondary-button em-w-max-content" @click="close(false)">{{ translate('COM_EMUNDUS_FORM_BUILDER_CANCEL') }}</button>
+			<button class="em-secondary-button em-w-max-content em-white-bg" @click="close(false)">{{ translate('COM_EMUNDUS_FORM_BUILDER_CANCEL') }}</button>
 			<button class="em-primary-button em-w-max-content em-ml-8" @click="createPage">{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_CREATE_SAVE') }}</button>
 		</div>
 	</div>
@@ -80,7 +96,8 @@ export default {
 				},
 				prid: this.profile_id,
 				template: 0,
-			}
+			},
+			search: ''
 		};
 	},
 	created() {
@@ -90,7 +107,11 @@ export default {
 		getModels() {
 			formBuilderService.getModels().then((response) => {
 				if (response.status) {
-					this.models = response.data;
+					this.models = response.data.map((model) => {
+						model.displayed = true;
+
+						return model;
+					});
 				} else {
 					Swal.fire({
 						type: 'warning',
@@ -144,6 +165,20 @@ export default {
 		{
 			this.$emit('close', reload);
 		}
+	},
+	computed: {
+		displayedModels() {
+			return this.models.filter((model) => {
+				return model.displayed;
+			})
+		}
+	},
+	watch: {
+		search: function() {
+			this.models.forEach((model) => {
+				model.displayed = model.label[this.shortDefaultLang].toLowerCase().includes(this.search.toLowerCase().trim());
+			});
+		}
 	}
 }
 </script>
@@ -173,7 +208,6 @@ export default {
 
 	.card-wrapper {
 		width: 150px;
-		margin-right: 40px;
 
 		.em-shadow-cards {
 			background-color: white;
@@ -227,8 +261,35 @@ export default {
 		overflow: hidden;
 	}
 
-	#models > div {
-		flex-wrap: wrap;
+	#models .models-card {
+		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+		margin-bottom: 64px;
+	}
+
+	#search-model-wrapper {
+		position: relative;
+
+		.reset-search {
+			position: absolute;
+			top: 28px;
+			left: 180px;
+		}
+	}
+
+	.empty-model-message {
+		margin: 120px;
+
+		.material-icons-outlined {
+			font-size: 42px;
+		}
+	}
+
+	.actions {
+		position: fixed;
+		bottom: 0;
+		right: 0;
+		padding: 16px 32px;
+		background: linear-gradient(to top, white, transparent);
 	}
 }
 </style>
