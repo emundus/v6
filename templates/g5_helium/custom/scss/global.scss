@@ -815,7 +815,7 @@ body>.g-container {
         background: $base-secondary-color;
         border: 1px solid $base-secondary-color;
         color: var(--neutral-50);
-        border-radius: var(--em-applicant-border-radius) !important;
+        border-radius: var(--applicant-border-radius) !important;
 
         &:hover,
         &:active,
@@ -1024,7 +1024,7 @@ body>.g-container {
       border-color: $base-secondary-color;
       color: var(--neutral-50);
       font-size: 14px !important;
-      border-radius: var(--border-radius);
+      border-radius: var(--applicant-border-radius);
 
       &:hover,
       &:active,
@@ -1040,7 +1040,7 @@ body>.g-container {
       border-color: $base-primary-color;
       color: $base-primary-color;
       font-size: 14px !important;
-      border-radius: var(--border-radius);
+      border-radius: var(--applicant-border-radius);
 
       &:hover,
       &:active,
@@ -1294,8 +1294,8 @@ body>.g-container {
 
 .single-campaign-tabs {
   .btn:first-child {
-    border-top-left-radius: var(--border-radius) !important;
-    border-bottom-left-radius: var(--border-radius) !important;
+    border-top-left-radius: var(--applicant-border-radius) !important;
+    border-bottom-left-radius: var(--applicant-border-radius) !important;
     border-top-right-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
     left: 0;
@@ -1304,8 +1304,8 @@ body>.g-container {
   .btn:last-child {
     border-top-left-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
-    border-top-right-radius: var(--border-radius) !important;
-    border-bottom-right-radius: var(--border-radius) !important;
+    border-top-right-radius: var(--applicant-border-radius) !important;
+    border-bottom-right-radius: var(--applicant-border-radius) !important;
   }
 
   .btn {
@@ -1389,7 +1389,7 @@ body>.g-container {
     height: 50px;
     text-transform: unset;
     margin-right: 0;
-    border-radius: var(--em-applicant-border-radius);
+    border-radius: var(--applicant-border-radius);
     padding: 8px 12px;
     font-family: var(--applicant-default-font);
     font-weight: 500;
@@ -1499,7 +1499,7 @@ body>.g-container {
   .fabrikFilterContainer .fabrik_actions .fabrik_filter_submit {
     background: grey;
     border: 1px solid grey;
-    border-radius: 4px;
+    border-radius: var(--em-border-radius);
     padding: 7px 20px;
   }
 
@@ -1568,7 +1568,7 @@ div.fabrikFilterContainer{
         align-items: center;
         width: 100%;
         padding: 0 16px;
-        border-radius: 4px;
+        border-radius: var(--em-border-radius);
         border: unset;
         height: 40px;
         color: var(--neutral-50);
@@ -1686,7 +1686,7 @@ tr.fabrikFilterContainer{
     background: $base-secondary-color;
     border: 1px solid $base-secondary-color;
     padding: 8px 12px;
-    border-radius: var(--border-radius);
+    border-radius: var(--applicant-border-radius);
     cursor: pointer;
     margin: 8px 0;
   }
@@ -1900,7 +1900,7 @@ tr.fabrikFilterContainer{
   }
 
   .btn {
-    border-radius: var(--border-radius);
+    border-radius: var(--applicant-border-radius);
   }
 
   .btnmarge {
@@ -1963,7 +1963,7 @@ tr.fabrikFilterContainer{
   button.btn-primary {
     background: $base-secondary-color;
     border: 1px solid $base-secondary-color;
-    border-radius: var(--border-radius);
+    border-radius: var(--applicant-border-radius);
     padding: 8px 12px;
     height: 40px;
 
@@ -1976,7 +1976,7 @@ tr.fabrikFilterContainer{
   button.btn-secondary {
     background: $base-secondary-color;
     border: 1px solid $base-secondary-color;
-    border-radius: var(--border-radius);
+    border-radius: var(--applicant-border-radius);
     padding: 8px 12px;
 
     &:hover {
@@ -1993,7 +1993,7 @@ tr.fabrikFilterContainer{
   span.btn {
     background: $base-primary-color;
     border: 1px solid $base-primary-color;
-    border-radius: var(--border-radius) !important;
+    border-radius: var(--applicant-border-radius) !important;
     padding: 8px 12px !important;
     color: var(--neutral-50);
     height: 40px;
@@ -2076,7 +2076,7 @@ tr.fabrikFilterContainer{
     .span4.offset1 button.btn[name="Goback"] {
       background: transparent;
       border: 1px solid $base-secondary-color;
-      border-radius: var(--border-radius) !important;
+      border-radius: var(--applicant-border-radius) !important;
       color: $base-secondary-color;
       margin-right: 10px;
       font-weight: normal;
@@ -2093,7 +2093,7 @@ tr.fabrikFilterContainer{
     .span12 button.btn[name="Goback"] {
       background: transparent;
       border: 1px solid $base-secondary-color;
-      border-radius: var(--border-radius) !important;
+      border-radius: var(--applicant-border-radius) !important;
       color: $base-secondary-color;
       margin-right: 10px;
       font-weight: normal;
@@ -2112,7 +2112,7 @@ tr.fabrikFilterContainer{
     .span4 button.btn.save-btn {
       background: $base-primary-color;
       border: 1px solid $base-primary-color;
-      border-radius: var(--border-radius);
+      border-radius: var(--applicant-border-radius);
       color: var(--neutral-50);
       font-size: 14px;
 
@@ -2138,7 +2138,7 @@ tr.fabrikFilterContainer{
     button.btn.btn-danger {
       background: transparent;
       border: 1px solid var(--dark-grey);
-      border-radius: 4px !important;
+      border-radius: var(--em-border-radius) !important;
       color: var(--dark-grey);
       margin-right: 10px;
       font-weight: normal;
@@ -2157,7 +2157,7 @@ tr.fabrikFilterContainer{
     a.btn-success {
       background: var(--dark-grey);
       border: 1px solid var(--dark-grey);
-      border-radius: 4px !important;
+      border-radius: var(--em-border-radius) !important;
       color: var(--neutral-50);
       padding: 7px 30px;
 
@@ -2178,7 +2178,7 @@ tr.fabrikFilterContainer{
   justify-content: center;
   align-items: center;
   padding: 0 $p-16;
-  border-radius: var(--border-radius);
+  border-radius: var(--applicant-border-radius);
   border: 1px solid transparent;
   height: 40px;
 
@@ -2318,7 +2318,7 @@ tr.fabrikFilterContainer{
   .span4.offset1>.btn-group>button.button {
     background: $base-primary-color;
     border: 1px solid $base-primary-color;
-    border-radius: var(--border-radius);
+    border-radius: var(--applicant-border-radius);
 
     &:hover,
     &:focus,
@@ -2334,7 +2334,7 @@ tr.fabrikFilterContainer{
     background: $base-primary-color;
     background-color: $base-primary-color;
     border: 1px solid $base-primary-color;
-    border-radius: var(--border-radius) !important;
+    border-radius: var(--applicant-border-radius) !important;
 
     &:hover,
     &:focus,
@@ -2376,7 +2376,7 @@ tr.fabrikFilterContainer{
     text-shadow: none;
     text-transform: none;
     color: $base-secondary-color;
-    border-radius: var(--border-radius);
+    border-radius: var(--applicant-border-radius);
     padding: 8px 12px;
     font-weight: inherit;
 
@@ -2394,7 +2394,7 @@ tr.fabrikFilterContainer{
     border: 1px solid $base-primary-color;
     text-shadow: none;
     text-transform: initial;
-    border-radius: var(--border-radius) !important;
+    border-radius: var(--applicant-border-radius) !important;
 
     &:hover,
     &:focus,
@@ -3007,7 +3007,7 @@ h1.em-titre-connectez-vous {
     padding: 5px 30px;
     border: 1px solid var(--main-500);
     background: var(--main-500);
-    border-radius: var(--border-radius) !important;
+    border-radius: var(--em-border-radius) !important;
 
     &:hover, &:active, &:focus {
       border: 1px solid var(--main-500);
@@ -3020,7 +3020,7 @@ h1.em-titre-connectez-vous {
     padding: 5px 30px;
     border: 1px solid var(--dark-grey);
     background: var(--dark-grey);
-    border-radius: 4px !important;
+    border-radius: var(--em-border-radius) !important;
 
     &:hover, &:active, &:focus {
       border: 1px solid var(--grey);
@@ -3321,7 +3321,7 @@ h1.em-titre-connectez-vous {
     height: 36px;
     background-color: var(--night-blue);
     border: 1px solid var(--night-blue) !important;
-    border-radius: 5px !important;
+    border-radius: var(--em-border-radius) !important;
     padding: 5px 30px !important;
 
     &:hover,
@@ -3465,7 +3465,7 @@ h1.em-titre-connectez-vous {
       .edit-comment-container button.edit-comment {
         background: var(--neutral-50);
         border: 1px solid var(--neutral-50);
-        border-radius: var(--border-radius) !important;
+        border-radius: var(--em-border-radius) !important;
 
         span {
           color: var(--night-blue);
@@ -3485,7 +3485,7 @@ h1.em-titre-connectez-vous {
     .em-container-tags-body button.btn-danger[title="Supprimer"]{
       background: var(--neutral-50);
       border: 1px solid var(--neutral-50);
-      border-radius: var(--border-radius) !important;
+      border-radius: var(--em-border-radius) !important;
 
       span {
         color: var(--red-500);
@@ -3516,6 +3516,7 @@ h1.em-titre-connectez-vous {
       border: 1.5px solid var(--neutral-100);
       color: var(--neutral-100);
       padding: 8px 12px !important;
+      border-radius: var(--em-border-radius);
 
       &:hover, &:active, &:focus {
         background: var(--neutral-100) !important;
@@ -3705,14 +3706,14 @@ h1.em-titre-connectez-vous {
     }
 
     form .filtertable input.fabrik_filter_submit {
-      border-radius: var(--border-radius);
+      border-radius: var(--em-border-radius);
       padding: 8px 12px;
       border: 1px solid var(--main-500);
       background: var(--night-blue);
       color: var(--neutral-50);
 
       &:active, &:focus, &:hover {
-        border-radius: var(--border-radius);
+        border-radius: var(--em-border-radius);
         padding: 8px 12px;
         border: 1px solid var(--main-500);
         background: transparent;
@@ -3735,7 +3736,7 @@ h1.em-titre-connectez-vous {
     .fabrik_filter_submit.button {
       background: var(--main-500);
       border-color: var(--main-500);
-      border-radius: 4px;
+      border-radius: var(--em-border-radius);
 
       &:hover, &:active, &:focus {
         background: var(--neutral-50);
@@ -3853,7 +3854,7 @@ h1.em-titre-connectez-vous {
       background-color: var(--neutral-50);
       color: var( --neutral-900) !important;
       box-shadow: 0 1px 2px 0 hsla(0, 0%, 41.2%, .19);
-      border-radius: var(--border-radius);
+      border-radius: var(--em-border-radius);
     }
 
     .item-pageindicateurs-page {
@@ -4103,7 +4104,7 @@ h1.em-titre-connectez-vous {
             color: var(--neutral-50);
             border: 1px solid $base-secondary-color;
             padding: 8px 12px;
-            border-radius: var(--border-radius);
+            border-radius: var(--em-border-radius);
 
             &:hover,
             &:active,
@@ -4131,13 +4132,13 @@ button.swal2-confirm.save-btn.sauvegarder.save_continue {
   font-family: var(--font);
   background: $base-primary-color !important;
   border: 1px solid $base-primary-color !important;
-  border-radius: var(--border-radius);
+  border-radius: var(--em-border-radius);
   color: var(--neutral-50) !important;
   font-weight: inherit;
   &:hover {
     background: darken($base-primary-color, 8%) !important;
     border: 1px solid darken($base-primary-color, 8%) !important;
-    border-radius: var(--border-radius);
+    border-radius: var(--em-border-radius);
     color: var(--neutral-50) !important;
   }
 }
@@ -4146,12 +4147,12 @@ button.swal2-cancel.goback-btn {
   font-family: var(--font);
   background: $base-secondary-color !important;
   border: 1px solid $base-secondary-color !important;
-  border-radius: var(--border-radius) !important;
+  border-radius: var(--em-border-radius) !important;
   color: var(--neutral-50) !important;
   &:hover {
     background: darken($base-primary-color, 8%) !important;
     border: 1px solid darken($base-primary-color, 8%) !important;
-    border-radius: var(--border-radius);
+    border-radius: var(--em-border-radius);
     color: var(--neutral-50) !important;
   }
 }
@@ -4195,7 +4196,7 @@ button.swal2-cancel.goback-btn {
 
   /* BOUTONS */
   button.btn-primary {
-    border-radius: var(--border-radius) !important;
+    border-radius: var(--applicant-border-radius) !important;
   }
 
 
@@ -4686,13 +4687,13 @@ button.swal2-cancel.goback-btn {
 
       .edit.item-page {
         .btn-toolbar .btn.btn-primary {
-          border-radius: var(--border-radius);
+          border-radius: var(--em-border-radius);
           text-transform: initial;
           padding: 8px 12px;
         }
 
         .btn[title="Basculer l'éditeur"] {
-          border-radius: var(--border-radius);
+          border-radius: var(--em-border-radius);
           text-transform: initial;
           padding: 8px 12px;
         }
@@ -5228,7 +5229,7 @@ button.swal2-cancel.goback-btn {
       border: 1px solid var(--main-500);
       padding: 5px 30px !important;
       font-weight: 500 !important;
-      border-radius: var(--border-radius) !important;
+      border-radius: var(--em-border-radius) !important;
 
       &:active, &:focus, &:hover {
         background: transparent;
@@ -6121,7 +6122,7 @@ fieldset[disabled] .multiselect {
     }
   }
   .loginguard-methods-list-method{
-    border-radius: var(--border-radius);
+    border-radius: var(--em-border-radius);
     padding: 1em;
     .loginguard-methods-list-method-header {
       align-items: center;

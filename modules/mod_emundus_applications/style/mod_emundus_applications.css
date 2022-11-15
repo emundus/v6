@@ -152,7 +152,7 @@ button#back:hover, button#back:active, button#back:focus,
 a.btn.btn-success:not(.btn-xs) {
     width: 100%;
     text-align: center;
-    border-radius: var(--em-border-radius) !important;
+    border-radius: var(--em-applicant-border-radius) !important;
 }
 
 /*** Progression bar percentage ***/
@@ -333,7 +333,7 @@ a.btn.btn-success:not(.btn-xs) {
     display: -webkit-box;
     line-height: 140%;
     min-height: 50px;
-    font-family: var(--font) !important;
+    font-family: var(--applicant-title-font) !important;
 }
 
 .mod_emundus_applications___title:hover,

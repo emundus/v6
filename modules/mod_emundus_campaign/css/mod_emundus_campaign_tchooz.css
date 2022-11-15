@@ -9,7 +9,7 @@
 
 .mod_emundus_campaign__intro p{
     line-height: 150%;
-    color: #727272;
+    color: var(--em-applicant-text-color);
     font-size: 18px;
 }
 
@@ -25,7 +25,7 @@
 
 .mod_emundus_campaign__intro h1{
     margin-bottom: 12px !important;
-    color: #000;
+    color: var(--em-applicant-title-color);
     font-weight: 600;
     font-family: var(--applicant-title-font) !important;
 }
@@ -34,6 +34,12 @@
     margin-top: 40px;
     margin-bottom: 64px;
 }
+
+.mod_emundus_campaign__content .em-h4 {
+    font-family: var(--applicant-title-font);
+    color: var(--em-applicant-title-color);
+}
+
 .mod_emundus_campaign__header{
     display: flex;
     justify-content: space-between;
@@ -202,7 +208,7 @@ a.em-blue-400-color:hover {
 
 .mod_emundus_campaign__campaign_title {
     margin-bottom: 8px !important;
-    color: #000000 !important;
+    color: var(--em-applicant-title-color) !important;
     -webkit-line-clamp: 2;
     overflow: hidden;
     -webkit-box-orient: vertical;
@@ -210,7 +216,7 @@ a.em-blue-400-color:hover {
     display: -webkit-box;
     line-height: 140%;
     min-height: 50px;
-    font-family: var(--font) !important;
+    font-family: var(--applicant-title-font) !important;
 }
 
 .mod_emundus_campaign__date * {
@@ -234,7 +240,7 @@ a.em-blue-400-color:hover {
     font-weight: 500;
     font-size: 20px;
     line-height: 25px;
-    color: #000000;
+    color: var(--em-applicant-title-color);
 }
 
 .mod_emundus_campaign__tabs{
@@ -271,6 +277,7 @@ a.em-blue-400-color:hover {
 
 #faq * {
     color: var(--neutral-800);
+    font-family: var(--applicant-default-font);
 }
 
 #faq hr:last-of-type {

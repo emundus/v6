@@ -120,7 +120,7 @@ li>a:hover {
 
 #g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte, #g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription {
      color: #fff;
-     border-radius: var(--border-radius);
+     border-radius: var(--applicant-border-radius);
      margin-bottom: 5px;
     line-height: normal;
     letter-spacing: normal;
@@ -128,7 +128,7 @@ li>a:hover {
 
 #g-navigation #header-c .header-right a.btn.btn-danger:not(btn-creer-compte) {
     color: #fff;
-    border-radius: var(--em-applicant-border-radius) !important;
+    border-radius: var(--applicant-border-radius) !important;
     margin-bottom: 0 !important;
     line-height: normal;
     letter-spacing: normal;
@@ -145,7 +145,7 @@ li>a:hover {
 
 .logout-button-user{
     padding: 10px 24px !important;
-    border-radius: var(--border-radius);
+    border-radius: var(--applicant-border-radius);
     text-align: center;
     background-color: #E5283B;
     color: white !important;
@@ -160,7 +160,7 @@ li>a:hover {
 #header-c #userDropdownMenu a.edit-button-user {
     text-shadow: none;
     text-transform: initial;
-    border-radius: var(--border-radius) !important;
+    border-radius: var(--applicant-border-radius) !important;
     color: #fff;
     padding: 10px 24px;
     text-align: center;

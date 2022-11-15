@@ -55,16 +55,16 @@
   --applicant-title-font: 'Inter', sans-serif; // for applicants side
 
 
-  --em-applicant-text-color: $base-text-color; // for applicants side
+  --em-applicant-text-color: #727272; // for applicants side
+  --em-applicant-title-color: #000000; // for applicants side
 
   --white-background-color: #fff;
   --applicant-background-color: #f8f8f8; // for applicants side
   --background-color: #f8f8f8;
 
-  --border-radius: 8px; // for applicants side
+  --applicant-border-radius: 8px; //for applicants side
   --em-border-radius: 8px; // for coordinators side
   --em-applicant-border-radius: 8px; // for applicants side but with the tchooz style
-
 }
 
 //Colors
