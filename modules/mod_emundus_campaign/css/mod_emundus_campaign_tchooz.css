@@ -320,11 +320,16 @@ a.em-blue-400-color:hover {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: 16px;
 }
+
 .mod_emundus_campaign__details_file a{
     color: #080C12;
     text-decoration: underline;
     text-underline: #080C12;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .mod_emundus_campaign__details_file a:hover {

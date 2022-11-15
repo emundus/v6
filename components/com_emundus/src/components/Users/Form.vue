@@ -1,7 +1,5 @@
 <template>
   <div>
-    <p class="em-h3" v-if="noFormFound">{{ translate('COM_EMUNDUS_USERS_EDIT_PROFILE_NO_FORM_FOUND') }}</p>
-
     <form class="em-form em-container-profile-view-form em-grid-2 em-small-flex-column" :name="'form_' + formId" :id="'form_' + formId" v-if="!loading">
       <Section v-for="group in groups" :group="group" :user="user" @input="updateValue" />
       <Attachments />

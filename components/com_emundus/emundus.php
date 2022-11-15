@@ -575,6 +575,11 @@ JText::script('COM_EMUNDUS_ACCESS_LOGS');                   # 37
 JText::script('COM_EMUNDUS_EDIT_COMMENT_BODY');
 JText::script('COM_EMUNDUS_EDIT_COMMENT_TITLE');
 
+// PASSWORD CHARACTER VALIDATION
+JText::script('COM_EMUNDUS_PASSWORD_WRONG_FORMAT_TITLE');
+JText::script('COM_EMUNDUS_PASSWORD_WRONG_FORMAT_DESCRIPTION');
+
+
 // ONBOARD
 
 $app = JFactory::getApplication();
@@ -636,7 +641,7 @@ if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name
     $controller->execute($task);
 } elseif($user->guest && (($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && $secret === $token) {
     $controller->execute($task);
-} elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $json != 'json') && $task != 'passrequest') {
+} elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $json != 'json') && $task != 'passrequest' && $task != 'getusername') {
     $controller->setRedirect('index.php', JText::_("ACCESS_DENIED"), 'error');
 } else {
     if ($name != 'search_engine') {

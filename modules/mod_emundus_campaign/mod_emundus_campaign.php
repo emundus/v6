@@ -4,7 +4,9 @@ defined('_JEXEC') or die('Access Deny');
 // INCLUDES
 require_once(dirname(__FILE__).DS.'helper.php');
 include_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+include_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'settings.php');
 $m_campaign = new EmundusModelCampaign();
+$m_settings = new EmundusModelsettings();
 $helper     = new modEmundusCampaignHelper();
 // END INCLUDES
 
@@ -35,6 +37,9 @@ $mod_em_campaign_show_camp_end_date = $params->get('mod_em_campaign_show_camp_en
 $mod_em_campaign_show_timezone = $params->get('mod_em_campaign_show_timezone', 1);
 $mod_em_campaign_list_sections = $params->get('mod_em_campaign_list_sections');
 $mod_em_campaign_intro = $params->get('mod_em_campaign_intro', '');
+if(empty($mod_em_campaign_intro)){
+    $mod_em_campaign_intro = $m_settings->getArticle(JFactory::getLanguage()->getTag(),52)->introtext;
+}
 $mod_em_campaign_show_search = $params->get('mod_em_campaign_show_search', 1);
 $mod_em_campaign_show_results = $params->get('mod_em_campaign_show_results', 1);
 $mod_em_campaign_list_tab = $params->get('mod_em_campaign_list_tab');
@@ -51,6 +56,7 @@ $mod_em_campaign_show_registration = $params->get('mod_em_campaign_show_registra
 $mod_em_campaign_show_registration_steps = $params->get('mod_em_campaign_show_registration_steps');
 $mod_em_campaign_allow_alerting = $params->get('mod_em_campaign_allow_alerting',0);
 $mod_em_campaign_google_schema = $params->get('mod_em_campaign_google_schema',0);
+$mod_em_campaign_show_faq = $params->get('mod_em_campaign_show_faq',0);
 $mod_em_campaign_show_filters = $params->get('mod_em_campaign_show_filters',0);
 $mod_em_campaign_show_filters_list = $params->get('mod_em_campaign_show_filters_list');
 $mod_em_campaign_sort_list = $params->get('mod_em_campaign_sort_list');

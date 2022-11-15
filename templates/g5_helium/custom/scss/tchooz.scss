@@ -140,6 +140,11 @@
   color: $neutral-900;
 }
 
+.em-back-button:focus{
+  text-decoration: unset;
+  color: var(--blue-400);
+}
+
 .em-back-button:hover {
   color: var(--neutral-700);
 }

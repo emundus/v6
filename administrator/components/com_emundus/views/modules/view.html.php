@@ -47,6 +47,11 @@ class EmundusViewModules extends JViewLegacy
         $homepage_module->module = 'homepage';
         $modules[] = $homepage_module;
 
+        $sidebar_module = new stdClass();
+        $sidebar_module->label = 'Remplacer les modules des formulaires candidat';
+        $sidebar_module->module = 'checklist';
+        $modules[] = $sidebar_module;
+
         $this->assignRef('modules', $modules);
 
         parent::display($tpl);

@@ -48,7 +48,7 @@ if(sizeof($tmp_campaigns) > 0) {
 
         foreach ($tmp_campaigns as $campaign) {
             $campaigns[$campaign->prog_type][] = $campaign;
-            $campaigns[$campaign->prog_type]['label'] = $campaign->prog_type;
+            $campaigns[$campaign->prog_type]['label'] = JText::_($campaign->prog_type);
         }
     } else {
         $campaigns ['campaigns'] = $tmp_campaigns;

@@ -33,6 +33,9 @@ class EmundusControllerModules extends JControllerLegacy
             case 'homepage':
                 $result['status'] = $this->installHomepage();
                 break;
+            case 'checklist':
+                $result['status'] = $this->installChecklist();
+                break;
             default:
                 $result['message'] = 'Module not found';
         }
@@ -76,6 +79,14 @@ class EmundusControllerModules extends JControllerLegacy
         require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/models/modules.php');
         $mModules = new EmundusModelModules();
         $mModules->installHomepage();
+
+        return true;
+    }
+
+    function installChecklist() {
+        require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/models/modules.php');
+        $mModules = new EmundusModelModules();
+        $mModules->installChecklist();
 
         return true;
     }

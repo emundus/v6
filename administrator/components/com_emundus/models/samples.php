@@ -16,67 +16,52 @@ include_once(JPATH_SITE.'/components/com_emundus/helpers/files.php');
 
 class EmundusModelSamples extends JModelList {
 
-    public function createSampleUser($profile = 9,$username = 'user.test@emundus.fr')
+    public function createSampleUser($profile = 9)
     {
+        $user_id = 0;
+        $m_users = new EmundusModelUsers();
+
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $m_users = new EmundusModelUsers();
-
-        $user = clone(JFactory::getUser(0));
-        $user->name = 'USER Test';
-        $user->username = (string)rand(100000, 1000000);
 
         do {
+            $username = (string)rand(100000, 1000000);
+
             $query->clear()
                 ->select('id')
                 ->from($db->quoteName('#__users'))
-                ->where($db->quoteName('username') . ' = ' . $user->username);
+                ->where($db->quoteName('username') . ' = ' . $username);
             $db->setQuery($query);
             $existing = $db->loadResult();
         } while(!is_null($existing));
 
-        $user->email = $username;
-        $user->password = md5('test1234');
-        $user->registerDate = date('Y-m-d H:i:s');
-        $user->lastvisitDate = date('Y-m-d H:i:s');
-        $user->groups = array();
-        $user->block = 0;
+        $query->insert('#__users')
+            ->columns('name, email, password')
+            ->values($db->quote('Test USER') . ', ' . $db->quote($username) . ',' .  $db->quote(md5('test1234')));
 
-        $other_param['firstname'] 		= 'Test';
-        $other_param['lastname'] 		= 'USER';
-        $other_param['profile'] 		= $profile;
-        $other_param['em_oprofiles'] 	= '';
-        $other_param['univ_id'] 		= 0;
-        $other_param['em_groups'] 		= '';
-        $other_param['em_campaigns'] 	= '1';
-        $other_param['news'] 			= '';
+        try {
+            $db->setQuery($query);
+            $db->execute();
+            $user_id = $db->insertid();
+        } catch (Exception $e) {
+            JLog::add("Failed to insert jos_users" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+        }
 
-        $acl_aro_groups = $m_users->getDefaultGroup($profile);
-        $user->groups = $acl_aro_groups;
+        if (!empty($user_id)) {
+            $other_param['firstname'] = 'Test';
+            $other_param['lastname'] = 'USER';
+            $other_param['profile'] = $profile;
+            $other_param['em_oprofiles'] = '';
+            $other_param['univ_id'] = 0;
+            $other_param['em_groups'] = '';
+            $other_param['em_campaigns'] = '1';
+            $other_param['news'] = '';
 
-        $usertype = $m_users->found_usertype($acl_aro_groups[0]);
-        $user->usertype = $usertype;
+            $m_users->addEmundusUser($user_id, $other_param);
+        }
 
-        $user->save();
-
-        $query->clear()
-            ->select('id')
-            ->from($db->quoteName('#__users'))
-            ->where($db->quoteName('username') . ' = ' . $user->username);
-        $db->setQuery($query);
-        $user->id = $db->loadResult();
-
-        /*$query->clear()
-            ->update($db->quoteName('#__users'))
-            ->set($db->quoteName('username') . ' = ' . $db->quote('user'.$user->id.'.test@emundus.fr'))
-            ->where($db->quoteName('id') . ' = ' . $user->id);
-        $db->setQuery($query);
-        $db->execute();*/
-
-        $m_users->addEmundusUser($user->id, $other_param);
-
-        return $user;
+        return $user_id;
     }
 
     public function createSampleFile($uids = null){

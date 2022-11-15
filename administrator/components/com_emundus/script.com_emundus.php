@@ -231,6 +231,7 @@ class com_emundusInstallerScript
                 ];
                 EmundusHelperUpdate::addJoomlaMenu($datas);
             }
+
             if (version_compare($cache_version, '1.34.0', '<')) {
                 $db = JFactory::getDbo();
                 $query = $db->getQuery(true);
@@ -240,7 +241,24 @@ class com_emundusInstallerScript
 
                 EmundusHelperUpdate::genericUpdateParams('#__modules', 'module', 'mod_falang', array('advanced_dropdown','full_name'), array('0','0'));
 
-                $moduleid = EmundusHelperUpdate::installModule('eMundus - Back button','<p><a class="em-back-button em-pointer" href="/"><span class="material-icons em-mr-4">navigate_before</span>Retour à la page d\'accueil</a></p>','header-a','mod_custom','{"prepare_content":0,"backgroundimage":"","layout":"_:default","moduleclass_sfx":"","cache":1,"cache_time":900,"cachemode":"static","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}',9);
+                $datas = [
+                    'title' => 'eMundus - Back button',
+                    'note' => 'Back button available on login and register views',
+                    'content' => '<p><a class="em-back-button em-pointer" href="/"><span class="material-icons em-mr-4">navigate_before</span>Retour à la page d\'accueil</a></p>',
+                    'position' => 'header-a',
+                    'module' => 'mod_custom',
+                    'access' => 9,
+                    'params' => [
+                        'prepare_content' => 0,
+                        'backgroundimage' => '',
+                        'layout' => '_:default',
+                        'moduleclass_sfx' => '',
+                        'cache' => 1,
+                        'cache_time' => 900,
+                        'cachemode' => 'static',
+                    ]
+                ];
+                $moduleid = EmundusHelperUpdate::addJoomlaModule($datas);
                 if(!empty($moduleid)) {
                     $query->select('id')
                         ->from($db->quoteName('#__menu'))
@@ -289,6 +307,21 @@ class com_emundusInstallerScript
                 EmundusHelperUpdate::insertTranslationsTag('CHECKOUT_BUTTON_FINISH','Process to payment','override',null,null,null,'en-GB');
                 EmundusHelperUpdate::insertTranslationsTag('HIKA_NEW','Ajouter une adresse');
                 EmundusHelperUpdate::insertTranslationsTag('HIKA_NEW','Add an address','override',null,null,null,'en-GB');
+
+                $succeed['campaign_workflow'] = EmundusHelperUpdate::addProgramToCampaignWorkflow();
+
+                //TODO : Install a module or a plugin via folder (parse xml file and insert necessary datas)
+                EmundusHelperUpdate::installExtension('MOD_EMUNDUS_ANNOUNCEMENTS_SYS_XML','mod_emundus_announcements','{"name":"MOD_EMUNDUS_ANNOUNCEMENTS_SYS_XML","type":"module","creationDate":"September 2022","author":"eMundus","copyright":"Copyright (C) 2022 eMundus. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"1.0.0","description":"MOD_EMUNDUS_ANNOUNCEMENTS_XML_DESCRIPTION","group":"","filename":"mod_emundus_announcements"}','module');
+                $datas = [
+                    'title' => 'Announcement',
+                    'note' => 'Back button available on login and register views',
+                    'position' => 'top-b',
+                    'module' => 'mod_emundus_announcements',
+                    'params' => [
+                        'announcement_content' => 'Cette plateforme de préproduction est une copie de la production datant du [DATE]. Les mails sont désactivés. Elle est isolée du web.'
+                    ]
+                ];
+                EmundusHelperUpdate::addJoomlaModule($datas,0,true);
             }
 
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
