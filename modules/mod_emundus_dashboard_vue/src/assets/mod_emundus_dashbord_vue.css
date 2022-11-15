@@ -138,6 +138,16 @@
   margin-top: 10%;
 }
 
+.widget-files-status-number .widget-files-status-number-block p {
+ color: var(--neutral-600);
+  font-family: var(--font);
+}
+
+.widget-files-status-number h1 {
+  color: var(--neutral-900);
+  font-family: var(--font);
+}
+
 #g-container-main .g-container{
   width: 100%;
   padding-left: 100px !important;

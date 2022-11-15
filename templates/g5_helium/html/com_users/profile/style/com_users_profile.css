@@ -72,6 +72,7 @@ form#member-profile.well legend {
 form#member-profile.form-validate.form-horizontal.well input {
     border-radius: 4px;
     width: 100%;
+    color: var(--neutral-600);
 }
 form#member-profile.form-validate.form-horizontal.well button.btn.btn-primary.validate {
     text-transform: capitalize;
@@ -94,6 +95,11 @@ form#member-profile.form-validate.form-horizontal.well fieldset:nth-child(2) {
 }
 form#member-profile.form-validate.form-horizontal.well label {
     font-size: 14px;
+    color: var(--neutral-800);
+}
+
+form#member-profile.form-validate.form-horizontal.well span {
+    color: var(--neutral-600);
 }
 
 form#member-profile.form-validate.form-horizontal.well span.star {

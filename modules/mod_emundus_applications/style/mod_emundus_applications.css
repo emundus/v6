@@ -274,6 +274,7 @@ a.btn.btn-success:not(.btn-xs) {
 
 .mod_emundus_applications___header p.em-h3 {
  font-family: var(--applicant-title-font);
+ color: var(--em-applicant-title-color);
 }
 
 .mod_emundus_applications___header_desc h2 {
@@ -325,7 +326,7 @@ a.btn.btn-success:not(.btn-xs) {
 }
 .mod_emundus_applications___title{
     margin-bottom: 8px !important;
-    color: #000000 !important;
+    color: var(--em-applicant-title-color) !important;
     -webkit-line-clamp: 2;
     overflow: hidden;
     -webkit-box-orient: vertical;

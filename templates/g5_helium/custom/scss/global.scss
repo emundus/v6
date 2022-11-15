@@ -2995,6 +2995,17 @@ h1.em-titre-connectez-vous {
   font-family: var(--applicant-title-font);
 }
 
+
+.com_emundus.view-users .em-container-profile-view-form .fabrikGroup {
+  legend {
+    color: var(--neutral-800);
+    font-family: var(--font);
+  }
+  input {
+    color: var(--neutral-600);
+  }
+}
+
 .com_emundus .em-w-custom form.fabrikForm input[placeholder] {
   color: var(--neutral-500);
 }
@@ -4166,6 +4177,18 @@ button.swal2-cancel.goback-btn {
 .view-details {
   .span12 h1{
     margin: 48px 0;
+    font-family: var(--applicant-title-font);
+    color: var(--neutral-900);
+  }
+
+  .span12 .fabrikGroup .legend {
+    font-family: var(--applicant-title-font);
+    color: var(--neutral-900);
+  }
+
+  .fabrikLabel {
+    color: var(--em-applicant-text-color);
+    font-family: var(--applicant-default-font);
   }
 }
 

@@ -9,7 +9,7 @@
     </div>
 
     <div class="em-container-profile-view-intro em-flex-row em-flex-space-between em-mb-24 em-small-flex-column em-small-align-items-start">
-      <span class="em-font-size-14 em-neutral-600-color">{{ translate('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_TIP') }}</span>
+      <span class="em-font-size-14 em-text-neutral-600">{{ translate('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_TIP') }}</span>
     </div>
 
     <Form :user="user" @input="updateValue" />

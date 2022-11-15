@@ -124,7 +124,7 @@
 .em-disabled-button {
   background: $neutral-300;
   border: 1px solid $neutral-300;
-  border-radius: var(--em-border-radius);
+  border-radius: var(--em-applicant-border-radius);
   padding: 8px 12px;
   color: $neutral-600;
 }
@@ -142,7 +142,7 @@
 
 .em-back-button:focus{
   text-decoration: unset;
-  color: var(--blue-400);
+  color: var(--neutral-700);
 }
 
 .em-back-button:hover {
@@ -748,12 +748,19 @@ input:focus + .em-slider {
 .em-text-neutral-900{
   color: $neutral-900;
 }
+.em-text-neutral-800{
+  color: $neutral-800;
+}
 .em-red-500-color{
   color: $red-500;
 }
 
 .em-applicant-text-color {
   color: var(--em-applicant-text-color);
+}
+
+.em-applicant-title-color {
+  color: var(--em-applicant-title-color);
 }
 
 .em-green-bg{

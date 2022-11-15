@@ -55,6 +55,10 @@ button.btn-primary:hover{
     margin-right: auto;
 }
 
+#g-container-main div.em-formRegistrationCenter div:not(.page-header){
+ color: var(--em-applicant-text-color);
+}
+
 
 #g-container-main div.login {
     display: flex !important;
@@ -221,6 +225,7 @@ h1.em-titre-connectez-vous {
 
 .page-header p.em-h3 {
     font-family: var(--applicant-title-font);
+    color: var(--em-applicant-title-color);
 }
 
 
