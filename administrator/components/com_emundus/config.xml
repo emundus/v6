@@ -101,7 +101,6 @@
 		</field>
 		-->
 	</fieldset>
-
 	<fieldset label="COM_EMUNDUS_APPLICANTS" name="applicants" description="COM_EMUNDUS_APPLICANTS_DESC">
 		<field name="id_applicants" type="text" size="50" default="" label="ID_APPLICANTS" description="ID_APPLICANTS_DESC" />
 		<field name="applicant_files_path" type="text" size="50" default="images/emundus/files/" label="APPLICANT_FILES_PATH" description="APPLICANT_FILES_PATH_DESC" />
@@ -136,7 +135,19 @@
 		<field name="status_for_send" type="text" default="0" label="COM_EMUNDUS_SEND_APPLICATION_STATUS_FOR_SEND" description="COM_EMUNDUS_SEND_APPLICATION_STATUS_FOR_SEND_DESC" />
 		<field name="status_for_delete" type="text" default="" label="COM_EMUNDUS_SEND_APPLICATION_STATUS_FOR_DELETE" description="COM_EMUNDUS_SEND_APPLICATION_STATUS_FOR_DELETE_DESC" />
 	</fieldset>
-
+	<fieldset label="COM_EMUNDUS_FORM_BUILDER" name="form_builder" description="COM_EMUNDUS_FORM_BUILDER_DESC">
+		<field
+				name="form_buider_page_creation_modules"
+				label="FORM_BUIDER_PAGE_CREATION_MODULES"
+				description="FORM_BUIDER_PAGE_CREATION_MODULES_DESC"
+				type="sql"
+				query="SELECT id, title FROM jos_modules WHERE published = 1"
+				key_field="id"
+				value_field="title"
+				multiple="true"
+				default="[93,102,103,104,168,170]"
+		></field>
+	</fieldset>
 	<fieldset label="COM_EMUNDUS_PAYMENT" name="payment" description="COM_EMUNDUS_PAYMENT_DESC">
 		<field name="application_fee" menu="hide" type="list" default="0" label="COM_EMUNDUS_APPLICATION_FEES" description="COM_EMUNDUS_APPLICATION_FEES_DESC">
 			<option value="0">JNO</option>
@@ -440,6 +451,12 @@
 				<option value="demo">Démo</option>
 				<option value="production">Production</option>
 			</field>
+		</fieldset>
+
+		<field name="spacer9" type="spacer" hr="true"/>
+		<field name="saml_integration" type="note" label="COM_EMUNDUS_SAML_INTEGRATION"/>
+		<fieldset label="COM_EMUNDUS_SAML_INTEGRATION">
+			<field name="saml_default_profile" label="COM_EMUNDUS_SAML_INTEGRATION_DEFAULT_PROFILE" type="text"></field>
 		</fieldset>
 
 	</fieldset>

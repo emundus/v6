@@ -1,5 +1,5 @@
 FROM php:7.4-apache
-LABEL maintainer="DevOps Team <devops@emundus.io>"
+LABEL maintainer="Wilfried Maillet <wilfried.maillet@emundus.fr>"
 
 # Enable Apache Rewrite Module
 RUN a2enmod rewrite

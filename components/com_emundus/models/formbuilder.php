@@ -663,7 +663,8 @@ class EmundusModelFormbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $modules = [93,102,103,104,168,170];
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $modules = $eMConfig->get('form_buider_page_creation_modules', [93,102,103,104,168,170]);
 
         if (!is_array($label)) {
             $label = json_decode($label, true);
@@ -2425,7 +2426,8 @@ class EmundusModelFormbuilder extends JModelList {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
         $falang = new EmundusModelFalang();
 
-        $modules = [93,102,103,104,168,170];
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $modules = $eMConfig->get('form_buider_page_creation_modules', [93,102,103,104,168,170]);
         //
 
         $db = $this->getDbo();
@@ -2501,7 +2503,7 @@ class EmundusModelFormbuilder extends JModelList {
                         $query->set($key . ' = ' . $db->quote($val));
                     } elseif ($key == 'form_id') {
                         $query->set($key . ' = ' . $db->quote($newformid));
-                    } elseif ($key == 'access') {
+                } elseif ($key == 'access') {
                         $query->set($key . ' = ' . $db->quote($prid));
                     }
                 }
@@ -2718,11 +2720,13 @@ class EmundusModelFormbuilder extends JModelList {
                 }
                 $newmenuid = $result['id'];
 
+            if (!empty($newmenuid)) {
                 // Add translation for menu
-                $falang->insertFalang($label, $newmenuid, 'menu', 'title');
-                //
+                $falang->insertFalang($label,$newmenuid,'menu','title');
 
                 // Affect modules to this menu
+                $eMConfig = JComponentHelper::getParams('com_emundus');
+                $modules = $eMConfig->get('form_buider_page_creation_modules', [93,102,103,104,168,170]);
                 foreach ($modules as $module) {
                     $query->clear()
                         ->insert($db->quoteName('#__modules_menu'))
@@ -2731,7 +2735,7 @@ class EmundusModelFormbuilder extends JModelList {
                     $db->setQuery($query);
                     $db->execute();
                 }
-                //
+            }
             } catch (Exception $e) {
                 JLog::add('component/com_emundus/models/formbuilder | Error at create a page from the model ' . $formid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
                 return array(
