@@ -98,15 +98,28 @@ export default {
     getSections() {
       this.loading = true;
       formService.getPageObject(this.page.id).then(response => {
-        if (response.status) {
+        if (response.status && response.data != '') {
           this.fabrikPage = response.data;
           this.title = this.fabrikPage.show_title.label[this.shortDefaultLang];
           const groups = Object.values(response.data.Groups);
           this.sections = groups.filter(group => group.hidden_group != -1);
 	        this.getDescription();
-
-          this.loading = false;
+        } else {
+					Swal.fire({
+						title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
+						type: 'error',
+						showCancelButton: false,
+						confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
+						reverseButtons: true,
+						customClass: {
+							title: 'em-swal-title',
+							confirmButton: 'em-swal-confirm-button',
+							actions: 'em-swal-single-action'
+						},
+					});
         }
+
+	      this.loading = false;
       });
     },
     getDescription() {
@@ -133,9 +146,9 @@ export default {
         Swal.fire({
           title: this.translate('COM_EMUNDUS_FORM_BUILDER_MAX_SECTION_TITLE'),
           text: this.translate('COM_EMUNDUS_FORM_BUILDER_MAX_SECTION_TEXT'),
-          type: "error",
+          type: 'error',
           showCancelButton: false,
-          confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+          confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
           reverseButtons: true,
           customClass: {
             title: 'em-swal-title',

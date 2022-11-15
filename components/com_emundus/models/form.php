@@ -796,14 +796,13 @@ class EmundusModelForm extends JModelList {
             $db->setQuery($query);
             $db->execute();
             $newprofile = $db->insertid();
-            if(empty($newprofile)){
+            if (empty($newprofile)){
                 return false;
             }
-            //
 
             // Create menutype
             $menutype = $this->createMenuType('menu-profile' . $newprofile,'Nouveau formulaire');
-            if(empty($menutype)){
+            if (empty($menutype)) {
                 return false;
             }
 
@@ -813,7 +812,6 @@ class EmundusModelForm extends JModelList {
                 ->where($db->quoteName('id') . ' = ' . $db->quote($newprofile));
             $db->setQuery($query);
             $db->execute();
-            //
 
 
             // Create heading menu
@@ -826,13 +824,12 @@ class EmundusModelForm extends JModelList {
                 'params' => []
             ];
             $heading_menu = EmundusHelperUpdate::addJoomlaMenu($datas);
-            if($heading_menu['status'] !== true){
+            if ($heading_menu['status'] !== true){
                 return false;
             }
-            //
 
             // Create first page
-            if($first_page) {
+            if ($first_page) {
                 $label = [
                     'fr' => 'Ma première page',
                     'en' => 'My first page'
@@ -842,11 +839,10 @@ class EmundusModelForm extends JModelList {
                     'en' => 'Describe your form page with an introduction'
                 ];
                 $first_page_res = $formbuilder->createApplicantMenu($label, $intro, $newprofile, 'false');
-                if($first_page_res['status'] !== true){
+                if ($first_page_res['status'] !== true){
                     return false;
                 }
             }
-            //
 
             // Create submittion page
             $label = [
@@ -867,7 +863,6 @@ class EmundusModelForm extends JModelList {
             if(empty($checklist_menu)){
                 return false;
             }
-            //
 
             $user = JFactory::getUser();
             $settings->onAfterCreateForm($user->id);
