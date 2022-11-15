@@ -1342,7 +1342,8 @@ class EmundusHelperUpdate
                 ->where($db->quoteName('menutype') . ' = ' . $db->quote($params['menutype']));
             if(!empty($params['link'])) {
                 $query->andWhere($db->quoteName('link') . ' = ' . $db->quote($params['link']));
-            } else {
+            }
+            if(!empty($params['alias'])) {
                 $query->andWhere($db->quoteName('alias') . ' = ' . $db->quote($alias));
             }
             $db->setQuery($query);

@@ -32,7 +32,7 @@ class EmundusModelModules extends JModelList {
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;")->execute();
                 $db->setQuery("create index jos_emundus_setup_qcm_jos_fabrik_forms_id_fk on jos_emundus_setup_qcm (form_id);")->execute();
                 $db->setQuery("create index jos_emundus_setup_qcm_jos_fabrik_groups_id_fk on jos_emundus_setup_qcm (group_id);")->execute();
-                $db->setQuery("ALTER TABLE `jos_emundus_setup_qcm` 
+                $db->setQuery("ALTER TABLE `jos_emundus_setup_qcm`
                     ADD CONSTRAINT jos_emundus_setup_qcm_ibfk_1 FOREIGN KEY (`form_id`) REFERENCES `jos_fabrik_forms` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
                     ADD CONSTRAINT jos_emundus_setup_qcm_ibfk_2 FOREIGN KEY (`group_id`) REFERENCES `jos_fabrik_groups` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;")->execute();
             }
@@ -237,7 +237,8 @@ class EmundusModelModules extends JModelList {
             ];
             EmundusHelperUpdate::addJoomlaMenu($datas,$header['id']);
 
-            $query->select('id')
+            $query->clear()
+                ->select('id')
                 ->from($db->quoteName('#__fabrik_lists'))
                 ->where($db->quoteName('db_table_name') . ' LIKE ' . $db->quote('jos_emundus_qcm_questions'));
             $db->setQuery($query);
@@ -253,7 +254,8 @@ class EmundusModelModules extends JModelList {
             ];
             EmundusHelperUpdate::addJoomlaMenu($datas,$header['id']);
 
-            $query->select('id')
+            $query->clear()
+                ->select('id')
                 ->from($db->quoteName('#__fabrik_lists'))
                 ->where($db->quoteName('db_table_name') . ' LIKE ' . $db->quote('jos_emundus_setup_qcm_campaign'));
             $db->setQuery($query);
