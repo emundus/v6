@@ -16,7 +16,7 @@ defined('_JEXEC') or die('RESTRICTED');
       <p align="center"><a href="http://www.emundus.fr" target="_blank">www.emundus.fr</a></p></td>
     <td width="20%"><p align="center"><strong><?php echo JText::_("EMUNDUS_COMPONENT"); ?></strong></p>
       <p align="center"><?php echo JText::_("GESTIONNAIRE_CANDIDATURE"); ?></p>
-      <p align="center">Version 6.3918 - 05/2020</p>
+      <p align="center"><?php echo $this->version ?></p>
     </td>
   </tr>
 </table>
