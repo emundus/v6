@@ -94,8 +94,11 @@ class plgUserEmundus_registration_email extends JPlugin {
      * @throws Exception
      */
     public function onUserAfterSave($user, $isnew, $result, $error) {
-        if (strpos($user['email'], '@emundus.io') !== false && strpos($user['email'], 'fake') !== false) {
-            $user['params'] = json_encode(['skip_activation' => true, 'send_mail' => false]);
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $allow_anonym_files = $eMConfig->get('allow_anonym_files', 0);
+
+        if ($allow_anonym_files && preg_match('/^fake.*@emundus\.io$/', $user['email'])) {
+            $user['params'] = json_encode(array_merge($user['params'], ['skip_activation' => true, 'send_mail' => false]));
 
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
