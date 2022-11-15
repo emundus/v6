@@ -64,11 +64,11 @@ if (is_array($this->elements) && count($this->elements) > 0) {
                 }
             }
 
-            echo ' <input name="ud[]" type="checkbox" id="emundus_elm_'.$t->id.'" class="emundusitem_'.$this->form.'_'.$t->group_id.' otherForm"';
+            echo '<div class="em-flex-row"><input name="ud[]" type="checkbox" id="emundus_elm_'.$t->id.'" class="emundusitem_'.$this->form.'_'.$t->group_id.' otherForm"';
             if (!empty($s_elements) && in_array($t->table_name,$table_name) && in_array($t->element_name,$element_name)) {
                 echo "checked=checked";
             }
-            echo ' value="'.$t->id.'"/><label style="margin-bottom: 0" for="emundus_elm_'.$t->id.'">'.preg_replace('#<[^>]+>#', ' ', JText::_($t->element_label)).'</label> ';
+            echo ' value="'.$t->id.'"/><label style="margin-bottom: 0" for="emundus_elm_'.$t->id.'">'.preg_replace('#<[^>]+>#', ' ', JText::_($t->element_label)).'</label></div>';
 
             $tbl_tmp=$t->table_id;
             $grp_tmp=$t->group_id;

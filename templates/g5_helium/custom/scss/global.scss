@@ -329,25 +329,15 @@ ul {
   }
 }
 
-.modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs  {
-  background: $red-500 !important;
-  background-color: $red-500 !important;
-  border: 1px solid $red-500 !important;
-  color: $white !important;
-
-  &:active, &:focus, &:hover {
-    background: transparent !important;
-    background-color: transparent !important;
-    border: 1px solid $red-500 !important;
-    color: $red-500 !important;
-
-    .material-icons {
-      color: $red-500;
-    }
-  }
-
-  .material-icons {
-    color: $white;
+#em-export-elts{
+  max-height: 216px;
+  overflow-y: scroll;
+  min-height: 230px;
+  border-radius: 8px;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  ::-webkit-scrollbar {
+    display: none;
   }
 }
 
