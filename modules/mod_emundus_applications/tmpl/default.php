@@ -7,6 +7,8 @@
  */
 // no direct access
 defined('_JEXEC') or die;
+
+// TODO: Move parameters to above and use array_filter with $applications
 ?>
 <div class="add-application-actions">
     <?php if ($show_add_application && ($position_add_application == 3 || $position_add_application == 4) && $applicant_can_renew) : ?>
@@ -29,6 +31,7 @@ defined('_JEXEC') or die;
     <?php endif; ?>
 </div>
 <?php if (!empty($applications)) : ?>
+    <?php $count = 0; ?>
     <div class="<?= $moduleclass_sfx ?>">
     <?php foreach ($applications as $application) : ?>
 
@@ -41,6 +44,7 @@ defined('_JEXEC') or die;
         }
 
         if($display_app) {
+            $count += 1;
             $state = $application->published;
             $confirm_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&confirm=1';
             $first_page_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
@@ -209,6 +213,11 @@ defined('_JEXEC') or die;
         <?php endif; ?>
         <?php } ?>
     <?php endforeach; ?>
+        <?php
+            if($count === 0) {
+                echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE');
+            }
+        ?>
 </div>
 <?php else :
     echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE');
