@@ -1301,7 +1301,7 @@ class EmundusHelperEvents {
         try {
             $status_labels = $db->loadObjectList('step');
 
-            EmundusModelLogs::log($user_id, $applicant_id, $fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode(array(
+            EmundusModelLogs::log($user_id, $applicant_id, $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode(array(
                 "updated" => array(
                     array(
                         'old' => $status_labels[$old_status]->value,
