@@ -276,4 +276,34 @@ class EmundusModelFormbuilderTest extends TestCase
             $this->assertTrue($deleted);
         }
     }
+
+    public function testCopyForm()
+    {
+        $new_form_id = $this->m_formbuilder->copyForm(0, 'Test Unitaire - ');
+        $this->assertEquals(0, $new_form_id, 'Copy form returns 0 if no form id given');
+
+
+        $new_form_id = $this->m_formbuilder->copyForm(9999999, 'Test Unitaire - ');
+        $this->assertEquals(0, $new_form_id, 'Copy form returns 0 if no form does not exists');
+
+        $new_form_id = $this->m_formbuilder->copyForm(102, 'Test Unitaire - ');
+        $this->assertNotEmpty($new_form_id, 'La copie de formulaire fonctionne');
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->clear()
+            ->select('label')
+            ->from('#__fabrik_forms')
+            ->where('id = ' . $new_form_id);
+
+        try {
+            $db->setQuery($query);
+            $label = $db->loadResult();
+
+            $this->assertSame('FORM_MODEL_' .$new_form_id, $label, 'Le label d\'un formulaire copié est correct');
+        } catch (Exception $e) {
+            JLog::add('Failed to insert model for unit tests ' . $e->getMessage(), JLog::ERROR, 'com_emundus.tests');
+        }
+    }
 }
