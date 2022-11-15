@@ -154,6 +154,9 @@
     border: 1px solid var(--blue-500);
 }
 
+.mod_emundus_campaign__grid .mod_emundus_campaign__details_content .btn.btn-primary {
+    border-radius: var(--em-applicant-border-radius) !important;
+}
 
 .mod_emundus_campaign__header_filter__values *:not(.material-icons-outlined) {
     font-family: var(--applicant-default-font);

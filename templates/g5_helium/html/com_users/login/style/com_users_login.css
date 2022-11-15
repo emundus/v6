@@ -77,6 +77,7 @@ button.btn-primary:hover{
     text-transform: initial;
     height: 48px;
     width: 100%;
+    border-radius: var(--applicant-border-radius) !important;
 }
 
 .invalid {

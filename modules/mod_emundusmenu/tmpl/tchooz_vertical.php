@@ -102,6 +102,7 @@ defined('_JEXEC') or die;
     #g-navigation .g-main-nav .tchooz-vertical-toplevel > li{
         width: 50px;
         margin: 5px 10px !important;
+        font-family: var(--font);
     }
 
     .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo > a {

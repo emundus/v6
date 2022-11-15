@@ -346,6 +346,7 @@ export default {
 		.dates {
 			font-size: 12px;
       color: var(--neutral-800);
+      font-family: var(--font);
 		}
 	}
 
@@ -356,6 +357,10 @@ export default {
     white-space: nowrap;
     max-width: 240px;
 	}
+
+  .description {
+    font-family: var(--font);
+  }
 
 	.informations {
 		font-size: 12px;
@@ -397,6 +402,7 @@ export default {
 			box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07),
     		0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
       margin-left: 8px;
+       font-family: var(--font);
       &:nth-child(1){
         margin-left: 0;
       }

@@ -28,6 +28,7 @@
   color: white;
   background-color: var(--main-500);
   border: solid 1px transparent;
+  font-family: var(--font);
 
   &:hover {
     background-color: white;
@@ -91,6 +92,7 @@
   height: 40px;
   background: transparent;
   color: $night-blue;
+  font-family: var(--font);
 }
 
 .em-applicant-secondary-button{
