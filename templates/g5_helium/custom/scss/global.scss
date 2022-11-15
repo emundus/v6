@@ -2977,7 +2977,8 @@ h1.em-titre-connectez-vous {
   color: #333333;
 }
 
-.com_emundus:not(.view-programme):not(.view-form):not(.view-users.layout-edit):not(.view-checklist) {
+.com_emundus:not(.view-programme):not(.view-form):not(.view-users.layout-edit):not(.view-checklist),
+.com_emundus.view-form .com_emundus_vue {
    h2,
    p,
    .em-w-custom form.fabrikForm label,
@@ -2992,7 +2993,16 @@ h1.em-titre-connectez-vous {
     ul li,
    select{
     color: var(--neutral-800) !important;
-     font-family: var(--font);
+  }
+
+  *:not(.material-icons):not(.material-icons-outlined){
+    font-family: var(--font);
+  }
+}
+
+.files-board.com_emundus, .view-list.com_fabrik {
+  *:not(.material-icons):not(.material-icons-outlined){
+    font-family: var(--font);
   }
 }
 
@@ -3753,6 +3763,7 @@ h1.em-titre-connectez-vous {
       background: var(--main-500);
       border-color: var(--main-500);
       border-radius: var(--em-border-radius);
+      font-family: var(--font);
 
       &:hover, &:active, &:focus {
         background: var(--neutral-50);
@@ -3871,11 +3882,16 @@ h1.em-titre-connectez-vous {
       color: var( --neutral-900) !important;
       box-shadow: 0 1px 2px 0 hsla(0, 0%, 41.2%, .19);
       border-radius: var(--em-border-radius);
+
+      * {
+        font-family: var(--font);
+      }
     }
 
     .item-pageindicateurs-page {
       h1 {
         color: var( --neutral-900);
+        font-family: var(--font);
       }
     }
 

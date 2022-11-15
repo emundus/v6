@@ -487,6 +487,7 @@ h2 {
   border-bottom: solid 1px black;
   background: transparent;
   border-radius: 0;
+  font-family: var(--font);
 
   &:hover {
     border-top: unset;
