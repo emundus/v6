@@ -271,14 +271,14 @@ class com_emundusInstallerScript
                             ->select('moduleid')
                             ->from($db->quoteName('#__modules_menu'))
                             ->where($db->quoteName('menuid') . ' = ' . $db->quote($menu))
-                            ->andWhere($db->quoteName('moduleid') . ' = ' . $db->quote($moduleid));
+                            ->andWhere($db->quoteName('moduleid') . ' = ' . $db->quote($moduleid['id']));
                         $db->setQuery($query);
                         $is_existing = $db->loadResult();
 
                         if(!$is_existing){
                             $query->clear()
                                 ->insert($db->quoteName('#__modules_menu'))
-                                ->set($db->quoteName('moduleid') . ' = ' . $db->quote($moduleid))
+                                ->set($db->quoteName('moduleid') . ' = ' . $db->quote($moduleid['id']))
                                 ->set($db->quoteName('menuid') . ' = ' . $db->quote($menu));
                             $db->setQuery($query);
                             $db->execute();
