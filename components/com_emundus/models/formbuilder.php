@@ -3651,6 +3651,8 @@ class EmundusModelFormbuilder extends JModelList {
         $deleted = false;
 
         if (!empty($model_ids)) {
+            $model_ids = !is_array($model_ids) ? [$model_ids] : $model_ids;
+
             // get only models who truly exists
             $models = $this->getPagesModel([], $model_ids);
             $models_to_delete = [];
@@ -3676,8 +3678,6 @@ class EmundusModelFormbuilder extends JModelList {
             } else {
                 $deleted = true;
             }
-        } else {
-            $deleted = true;
         }
 
         return $deleted;

@@ -248,4 +248,32 @@ class EmundusModelFormbuilderTest extends TestCase
             $this->assertTrue($deleted, 'Le formulaire de test a bien été supprimé');
         }
     }
+
+    public function testDeleteFormModel()
+    {
+        $deleted = $this->m_formbuilder->deleteFormModel(0);
+        $this->assertFalse($deleted);
+
+        $deleted = $this->m_formbuilder->deleteFormModelFromIds(0);
+        $this->assertFalse($deleted);
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->insert('#__emundus_template_form')
+            ->columns(['form_id', 'label'])
+            ->values('99999, ' .  $db->quote('Modèle Test unitaire'));
+
+        try {
+            $db->setQuery($query);
+            $inserted = $db->execute();
+        } catch (Exception $e) {
+            JLog::add('Failed to insert model for unit tests ' . $e->getMessage(), JLog::ERROR, 'com_emundus.tests');
+        }
+
+        if ($inserted) {
+            $deleted = $this->m_formbuilder->deleteFormModel(99999);
+            $this->assertTrue($deleted);
+        }
+    }
 }
