@@ -2045,7 +2045,7 @@ class EmundusModelApplication extends JModelList
         $em_breaker = $eMConfig->get('export_application_pdf_breaker', '0');
 
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
-        $h_list = new EmundusHelperList;
+        $h_list = new EmundusHelperList();
 
         $tableuser = $h_list->getFormsList($aid, $fnum, $fids, $profile_id);
 
