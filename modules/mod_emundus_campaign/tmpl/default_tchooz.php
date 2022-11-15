@@ -226,10 +226,13 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             <div>
                 <div class="em-flex-row">
                     <!-- BUTTONS -->
+                    <?php if ($mod_em_campaign_show_sort == 1 && !empty($mod_em_campaign_sort_list)) : ?>
                     <div id="mod_emundus_campaign__header_sort" class="mod_emundus_campaign__header_filter em-border-neutral-400 em-neutral-800-color em-pointer em-mr-8" onclick="displaySort()">
                         <span class="material-icons-outlined">swap_vert</span>
                         <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_SORT') ?></span>
                     </div>
+                    <?php endif; ?>
+
                     <?php if ($mod_em_campaign_show_filters == 1 && !empty($mod_em_campaign_show_filters_list)) : ?>
                     <div id="mod_emundus_campaign__header_filter" class="mod_emundus_campaign__header_filter em-border-neutral-400 em-neutral-800-color em-pointer em-mr-8" onclick="displayFilters()">
                         <span class="material-icons-outlined">filter_list</span>
@@ -255,7 +258,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                             </a>
                         </div>
                     <?php endif; ?>
-                    <?php if ($group_by == 'program') : ?>
+                    <?php if ($mod_em_campaign_show_sort == 1 && $group_by == 'program') : ?>
                         <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
                             <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_PROGRAM') ?></span>
                             <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer" onclick="deleteSort(['group_by'])">
@@ -263,7 +266,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                             </a>
                         </div>
                     <?php endif; ?>
-                    <?php if ($group_by == 'category') : ?>
+                    <?php if ($mod_em_campaign_show_sort == 1 && $group_by == 'category') : ?>
                         <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
                             <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_CATEGORY') ?></span>
                             <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer" onclick="deleteSort(['group_by'])">
