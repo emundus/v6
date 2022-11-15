@@ -122,6 +122,14 @@
 						<option checked="true" value="programme">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_PROGRAMME</option>
 						<option checked="false" value="category">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_CATEGORY</option>
 					</field>
+					<field showon="mod_em_campaign_layout:default_tchooz" type="list" name="mod_em_campaign_show_sort" label="MOD_EM_CAMPAIGN_SHOW_SORT" default="1">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
+					<field showon="mod_em_campaign_show_sort:1" type="checkboxes" name="mod_em_campaign_sort_list" label="MOD_EM_CAMPAIGN_SORT_LIST">
+						<option checked="true" value="programme">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_PROGRAMME</option>
+						<option checked="false" value="category">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_CATEGORY</option>
+					</field>
 
 					<field
 							name="spacer_campaigns"
@@ -182,11 +190,6 @@
 					<field type="text" name="mod_em_program_code" label="MOD_EM_PROGRAM_CODE" description="MOD_EM_PROGRAM_CODE_DESC"/>
 
 					<field type="text" name="mod_em_ignored_program_code" label="MOD_EM_PROGRAM_CODE_IGNORE" description="MOD_EM_PROGRAM_CODE_IGNORE_DESC"/>
-
-					<field showon="mod_em_campaign_layout:default_tchooz" type="checkboxes" name="mod_em_campaign_sort_list" label="MOD_EM_CAMPAIGN_SORT_LIST">
-						<option checked="true" value="programme">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_PROGRAMME</option>
-						<option checked="false" value="category">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_CATEGORY</option>
-					</field>
 				</fieldset>
 
 				<fieldset name="single" label="Paramètres des détails">

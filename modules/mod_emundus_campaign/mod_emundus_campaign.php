@@ -58,9 +58,9 @@ $mod_em_campaign_allow_alerting = $params->get('mod_em_campaign_allow_alerting',
 $mod_em_campaign_google_schema = $params->get('mod_em_campaign_google_schema',0);
 $mod_em_campaign_show_faq = $params->get('mod_em_campaign_show_faq',0);
 $mod_em_campaign_show_filters = $params->get('mod_em_campaign_show_filters',0);
+$mod_em_campaign_show_sort = $params->get('mod_em_campaign_show_sort',1);
 $mod_em_campaign_show_filters_list = $params->get('mod_em_campaign_show_filters_list');
 $mod_em_campaign_sort_list = $params->get('mod_em_campaign_sort_list');
-$mod_em_campaign_show_filters_list = $params->get('mod_em_campaign_show_filters_list');
 $mod_em_campaign_groupby = $params->get('mod_em_campaign_groupby');
 
 // OLD PARAMS
