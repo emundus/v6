@@ -816,6 +816,7 @@ body>.g-container {
         border: 1px solid $base-secondary-color;
         color: var(--neutral-50);
         border-radius: var(--applicant-border-radius) !important;
+        height: auto;
 
         &:hover,
         &:active,
@@ -830,6 +831,7 @@ body>.g-container {
         background: transparent;
         border: 1px solid $base-primary-color;
         color: $base-primary-color;
+        height: auto;
 
         &:hover,
         &:active,
@@ -2990,6 +2992,7 @@ h1.em-titre-connectez-vous {
     ul li,
    select{
     color: var(--neutral-800) !important;
+     font-family: var(--font);
   }
 }
 
