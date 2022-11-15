@@ -263,9 +263,10 @@ class EmundusModelFormbuilderTest extends TestCase
         $query->insert('#__emundus_template_form')
             ->columns(['form_id', 'label'])
             ->values('99999, ' .  $db->quote('Modèle Test unitaire'));
+        $db->setQuery($query);
+        $inserted = false;
 
         try {
-            $db->setQuery($query);
             $inserted = $db->execute();
         } catch (Exception $e) {
             JLog::add('Failed to insert model for unit tests ' . $e->getMessage(), JLog::ERROR, 'com_emundus.tests');
