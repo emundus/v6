@@ -1997,6 +1997,7 @@ tr.fabrikFilterContainer{
     padding: 8px 12px !important;
     color: var(--neutral-50);
     height: 40px;
+    font-family: get-font-family($font-family-default);
 
     &:hover,
     &:focus,
@@ -2080,6 +2081,7 @@ tr.fabrikFilterContainer{
       color: $base-secondary-color;
       margin-right: 10px;
       font-weight: normal;
+      font-family: get-font-family($font-family-default);
 
       &:hover,
       &:active,
@@ -4220,6 +4222,7 @@ button.swal2-cancel.goback-btn {
   /* BOUTONS */
   button.btn-primary {
     border-radius: var(--applicant-border-radius) !important;
+    font-family: get-font-family($font-family-default);
   }
 
 

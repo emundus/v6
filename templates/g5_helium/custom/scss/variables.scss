@@ -383,6 +383,7 @@ $font:'Inter', sans-serif;
   background-repeat: no-repeat;
   height: 48px !important;
   padding: 0 32px 0 12px !important;
+  font-family: var(--font);
 }
 
 @mixin multiple-select {

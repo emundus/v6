@@ -138,6 +138,7 @@
   border-radius: var(--em-border-radius);
   padding: 6px 20px;
   color: $neutral-900;
+  font-family: var(--font);
 }
 
 .em-back-button:focus{
@@ -1520,6 +1521,7 @@ button.em-swal-delete-button{
   background-image: url('/images/emundus/searchbar/search.svg') !important;
   background-repeat: no-repeat !important;
   background-position: 96% 50% !important;
+  font-family: var(--applicant-default-font);
 }
 
 /**

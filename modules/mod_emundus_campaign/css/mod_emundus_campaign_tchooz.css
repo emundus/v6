@@ -296,7 +296,7 @@ a.em-blue-400-color:hover {
 }
 
 .mod_emundus_campaign__details_content p.em-h6 {
- font-family: var(--applicant-default-font);
+ font-family: var(--applicant-title-font);
  color: var(--em-applicant-title-color);
 }
 

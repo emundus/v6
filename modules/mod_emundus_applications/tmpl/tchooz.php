@@ -164,7 +164,7 @@ ksort($applications);
                             <div class="em-flex-row mod_emundus_applications___content_text">
                                 <?php if ($show_fnum) : ?>
                                     <div class="em-mb-8 em-font-size-14">
-                                        <span class="em-neutral-800-color">N°<?php echo $application->fnum ?></span>
+                                        <span class="em-applicant-default-font em-neutral-800-color">N°<?php echo $application->fnum ?></span>
                                     </div>
                                     <div>
                                         <span class="material-icons em-applicant-text-color" id="actions_button_<?php echo $application->fnum ?>" style="font-size: 16px">more_vert</span>
@@ -238,7 +238,7 @@ ksort($applications);
                             <div class="mod_emundus_applications___date em-mt-8">
                                 <?php if (!$displayInterval) : ?>
                                     <span class="material-icons em-applicant-text-color em-font-size-16 em-mr-8">schedule</span>
-                                    <p class="em-applicant-text-color em-font-size-16"> <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_END_DATE'); ?> <?php echo JFactory::getDate(new JDate($application->end_date, $site_offset))->format('d/m/Y H:i'); ?></p>
+                                    <p class="em-applicant-text-color em-font-size-16 em-applicant-default-font"> <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_END_DATE'); ?> <?php echo JFactory::getDate(new JDate($application->end_date, $site_offset))->format('d/m/Y H:i'); ?></p>
                                 <?php else : ?>
                                     <span class="material-icons-outlined em-applicant-text-color em-font-size-16 em-red-500-color em-mr-8">schedule</span>
                                     <p class="em-red-500-color"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_LAST_DAY'); ?>
@@ -253,7 +253,7 @@ ksort($applications);
                             <?php if($key == 'sent') : ?>
                                 <div class="mod_emundus_applications___date em-mt-8">
                                     <span class="material-icons-outlined em-applicant-text-color em-font-size-16 em-mr-8">insert_drive_file</span>
-                                    <p class="em-applicant-text-color em-font-size-16"> <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_SUBMITTED_DATE'); ?> <?php echo JFactory::getDate(new JDate($application->submitted_date, $site_offset))->format('d/m/Y H:i'); ?></p>
+                                    <p class="em-applicant-text-color em-font-size-16 em-applicant-default-font"> <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_SUBMITTED_DATE'); ?> <?php echo JFactory::getDate(new JDate($application->submitted_date, $site_offset))->format('d/m/Y H:i'); ?></p>
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -262,16 +262,16 @@ ksort($applications);
 
                         <div class="mod_emundus_applications___informations">
                             <div>
-                                <label class="em-applicant-text-color"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_APPLICANT'); ?> :</label>
-                                <p class="em-neutral-800-color"><?php echo $user->name ?></p>
+                                <label class="em-applicant-text-color em-applicant-default-font"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_APPLICANT'); ?> :</label>
+                                <p class="em-neutral-800-color em-applicant-default-font"><?php echo $user->name ?></p>
                             </div>
 
                             <div>
                                 <?php if(empty($visible_status)) : ?>
-                                    <label class="em-applicant-text-color"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_STATUS'); ?> :</label>
+                                    <label class="em-applicant-text-color em-applicant-default-font"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_STATUS'); ?> :</label>
                                     <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row" id="application_status_<?php echo $application->fnum ?>">
                                         <span class="mod_emundus_applications___circle em-mr-8 label-<?= $application->class; ?>"></span>
-                                        <span class="mod_emundus_applications___status_label em-neutral-800-color"><?= $application->value; ?></span>
+                                        <span class="mod_emundus_applications___status_label em-neutral-800-color em-applicant-default-font"><?= $application->value; ?></span>
                                     </div>
                                 <?php elseif (in_array($application->status,$visible_status)) :?>
                                     <label class="em-applicant-text-color"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_STATUS'); ?> :</label>
