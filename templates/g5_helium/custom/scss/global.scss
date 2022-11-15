@@ -329,25 +329,15 @@ ul {
   }
 }
 
-.modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs  {
-  background: $red-500 !important;
-  background-color: $red-500 !important;
-  border: 1px solid $red-500 !important;
-  color: $white !important;
-
-  &:active, &:focus, &:hover {
-    background: transparent !important;
-    background-color: transparent !important;
-    border: 1px solid $red-500 !important;
-    color: $red-500 !important;
-
-    .material-icons {
-      color: $red-500;
-    }
-  }
-
-  .material-icons {
-    color: $white;
+#em-export-elts{
+  max-height: 216px;
+  overflow-y: scroll;
+  min-height: 230px;
+  border-radius: 8px;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  ::-webkit-scrollbar {
+    display: none;
   }
 }
 
@@ -1324,6 +1314,10 @@ body>.g-container {
   small {
     color: #353544;
   }
+}
+
+.pagination > .disabled > span{
+  height: 30px;
 }
 
 /* DOCUMENTS OBLIGATOIRES */
@@ -4081,8 +4075,8 @@ button.swal2-cancel.goback-btn {
               &:checked {
                 background-color: initial;
                 appearance: auto;
-                height: 16px !important;
-                width: 16px !important;
+                height: 14px !important;
+                width: 14px !important;
               }
             }
 
@@ -6247,4 +6241,56 @@ fieldset[disabled] .multiselect {
 .little-move-left-enter, .little-move-left-leave-to {
   transform: translateX(200px);
   left: 30px;
+}
+
+.em-menuaction{
+  position: sticky;
+  z-index: 9;
+}
+.em-modal-actions {
+  .em-w-auto{
+    width: auto !important;
+  }
+  .em-w-100{
+    width: 100% !important;
+  }
+  .em-h-100{
+    justify-content: start;
+    min-height: 100% !important;
+    height: auto;
+    .swal2-content{
+      min-height: 100%;
+      height: auto;
+    }
+  }
+  .swal2-content {
+    text-align: left;
+  }
+  .swal2-actions:not(.em-actions-fixed) {
+    z-index: 0 !important;
+  }
+  .em-actions-fixed{
+    position: fixed;
+    bottom: 0;
+    z-index: 999 !important;
+    background: white;
+    border: solid 1px $neutral-300;
+  }
+  .em-actions-none {
+    display: none;
+  }
+
+  .swal2-progress-steps {
+    display: none !important;
+  }
+}
+.em-modal-actions.em-export{
+  padding: 0 !important;
+  .swal2-popup{
+    padding: 0;
+  }
+  .swal2-content{
+    padding: 16px;
+    margin-bottom: 64px;
+  }
 }

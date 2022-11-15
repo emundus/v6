@@ -160,10 +160,13 @@ class plgUserEmundus extends JPlugin
         $controller = $jinput->get->get('controller', null);
         $task = $jinput->get->get('task', null);
 
+        $profile = 0;
+
         // If the details are empty, we are probably signing in via LDAP for the first time.
         if ($isnew && empty($details) && empty($fabrik)) {
             require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
             $m_users = new EmundusModelusers();
+
             if (JPluginHelper::getPlugin('authentication', 'ldap') && ($option !== 'com_emundus' && $controller !== 'users' && $task !== 'adduser')) {
 
                 $return = $m_users->searchLDAP($user['username']);
@@ -216,6 +219,38 @@ class plgUserEmundus extends JPlugin
                 $details['emundus_profile']['lastname'] = $name;
                 $details['firstname'] = $username[0];
             }
+            if (JPluginHelper::getPlugin('authentication', 'miniorangesaml') && ($option !== 'com_emundus' && $controller !== 'users' && $task !== 'adduser')) {
+                $o_user = JFactory::getUser($user['id']);
+
+                $username = explode(' ',$user["name"]);
+                $name = '';
+
+                if(count($username)>2){
+                    for($i=1;$i>count($username);$i++){
+                        $name .= ' '.$username[$i];
+                    }
+                }
+                else{
+                    $name= $username[1];
+                }
+
+                $details['name'] = $name;
+
+                $details['emundus_profile']['lastname'] = $user["name"];
+                $details['firstname'] = $username[0];
+                // Set the user table instance to include the new token.
+                $table = JTable::getInstance('user', 'JTable');
+                $table->load($o_user->id);
+                $table->block = 0;
+
+                // Save user data
+                if (!$table->store()) {
+                    throw new RuntimeException($table->getError());
+                }
+
+                $eMConfig = JComponentHelper::getParams('com_emundus');
+                $profile = $eMConfig->get('saml_default_profile',1000);
+            }
         }
 
         if (is_array($details) && count($details) > 0) {
@@ -244,7 +279,7 @@ class plgUserEmundus extends JPlugin
                     $campaign = $db->loadAssocList();
 
                     $profile = $campaign[0]['profile_id'];
-                } else {
+                } elseif (empty($profile)) {
                     $profile = 1000;
                 }
 

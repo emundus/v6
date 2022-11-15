@@ -473,6 +473,8 @@ class EmundusHelperFiles
     }
 
     public function getAttachmentsTypesByProfileID ($pid) {
+        $attachments_by_profile = [];
+
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
@@ -482,14 +484,18 @@ class EmundusHelperFiles
         $db->setQuery($query);
         $attachments = $db->loadColumn();
 
-        $query->clear()
-            ->select('*')
-            ->from($db->quoteName('#__emundus_setup_attachments'))
-            ->where($db->quoteName('id') . ' IN (' . implode(',', $attachments) . ')')
-            ->order('ordering');
+        if (!empty($attachments)) {
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__emundus_setup_attachments'))
+                ->where($db->quoteName('id') . ' IN (' . implode(',', $attachments) . ')')
+                ->order('ordering');
 
-        $db->setQuery($query);
-        return $db->loadObjectList();
+            $db->setQuery($query);
+            $attachments_by_profile = $db->loadObjectList();
+        }
+
+        return $attachments_by_profile;
     }
 
 	public function getEvaluation_doc($status) {
@@ -2336,7 +2342,7 @@ class EmundusHelperFiles
                             if (strpos($element->element_name, 'comment') !== false) {
                                 $str .= '<td colspan="2"><b>'.JText::_(trim($element->element_label)).'</b> <br>'.JText::_($eval[$k]).'</td>';
                             } else {
-                                $str .= '<td width="70%"><b>'.JText::_(trim($element->element_label)).'</b> </td><td width="30%">'.JText::_($eval[$k]).'</td>';
+                                $str .= '<td width="30%"><b>'.JText::_(trim($element->element_label)).'</b> </td><td width="70%">'.JText::_($eval[$k]).'</td>';
                             }
                             $str .= '</tr>';
                         }

@@ -163,20 +163,6 @@ class EmundusModelList extends JModelList
                 }
 
                 $firstWhere = true;
-                $emundusUser = JFactory::getSession()->get('emundusUser');
-                if (empty(array_intersect([1,2,5], $emundusUser->emGroups))) {
-                    // get only files associated to my group
-                    $query->leftJoin("#__emundus_group_assoc as jega ON jega.fnum = $dbTableName.fnum")
-                        ->leftJoin('#__emundus_groups as jeg ON jeg.group_id = jega.group_id');
-
-                    $user_id = JFactory::getUser()->id;
-                    if (!$firstWhere) {
-                        $query->andWhere('jeg.user_id = ' . $user_id);
-                    } else {
-                        $query->where('jeg.user_id = ' . $user_id);
-                        $firstWhere = false;
-                    }
-                }
 
                 /*** The code below before the try catch is used to get data from table with specific where clause column define in module configuration ******/
                 foreach ($listParticularConditionalColumn as $column) {
@@ -193,14 +179,6 @@ class EmundusModelList extends JModelList
                     }
                 }
 
-                if (empty(array_intersect([1,2,5], $emundusUser->emGroups))) {
-                    $user_id = JFactory::getUser()->id;
-                    if (!$firstWhere) {
-                        $query->andWhere('jeg.user_id = ' . $user_id);
-                    } else {
-                        $query->where('jeg.user_id = ' . $user_id);
-                    }
-                }
 
                 $this->db->setQuery($query);
                 try {
@@ -208,6 +186,26 @@ class EmundusModelList extends JModelList
                 } catch (Exception $e) {
                     JLog::add('component/com_emundus/models/list | Cannot getting the list data table content: ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
                     return 0;
+                }
+
+                require_once (JPATH_ROOT .'/components/com_emundus/helpers/access.php');
+                require_once (JPATH_ROOT .'/components/com_emundus/models/users.php');
+                require_once (JPATH_ROOT .'/components/com_emundus/models/campaign.php');
+                $m_users = new EmundusModelUsers();
+                $user_id = JFactory::getUser()->id;
+                $user_programs = $m_users->getUserGroupsProgramme($user_id);
+                foreach($listDataResult as $index => $listResult) {
+                    $query->clear()
+                        ->select('training')
+                        ->from('#__emundus_setup_campaigns as jesc')
+                        ->leftJoin('#__emundus_campaign_candidature as jecc ON jecc.campaign_id = jesc.id')
+                        ->where('jecc.fnum LIKE ' .  $this->db->quote($listResult->fnum));
+                    $this->db->setQuery($query);
+                    $program = $this->db->loadResult();
+
+                    if(!EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $listResult->fnum) && !in_array($program, $user_programs)) {
+                        unset($listDataResult[$index]);
+                    }
                 }
 
                 foreach ($result as $key => $res) {

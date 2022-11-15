@@ -24,7 +24,7 @@ RUN ["/usr/local/bin/docker-entrypoint.sh", "mysqld", "--datadir", "/initialized
 
 
 FROM mysql:8
-LABEL maintainer="DevOps Team <devops@emundus.io>"
+LABEL maintainer="Wilfried Maillet <wilfried.maillet@emundus.fr>"
 
 # Preloading of the database
 COPY --from=builder /initialized-db /var/lib/mysql
