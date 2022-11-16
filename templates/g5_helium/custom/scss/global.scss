@@ -691,10 +691,16 @@ footer#g-footer img {
   background: $base-background;
 }
 
-.com_emundus:not(.view-programme)  #g-page-surround,
-.view-form:not(.view-registration)  #g-page-surround,
+.com_fabrik.view-form.applicant-form #g-page-surround,
+.com_fabrik.view-form:not(.view-registration) #g-page-surround,
+.view-users.layout-edit #g-page-surround,
+.view-profile.layout-edit #g-page-surround,
 .view-details #g-page-surround,
-.view-checklist #g-page-surround,
+.view-checklist.com_emundus #g-page-surround {
+  background: var(--em-applicant-background-color) !important;
+}
+
+.com_emundus:not(.view-programme):not(.view-checklist):not(.view-users)  #g-page-surround,
 .files-board #g-page-surround,
 .g-back-office-emundus-tableau #g-page-surround,
 .view-list.com_fabrik #g-page-surround {
@@ -2425,7 +2431,7 @@ tr.fabrikFilterContainer{
 
   .view-profile {
     #g-page-surround {
-      background: var(--background-color);
+      background: var(--em-applicant-background-color);
     }
     #g-navigation .header-c .open > .dropdown-menu .chzn-single {
       height: inherit;
