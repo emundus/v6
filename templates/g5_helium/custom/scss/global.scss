@@ -2995,13 +2995,13 @@ h1.em-titre-connectez-vous {
     color: var(--neutral-800) !important;
   }
 
-  *:not(.material-icons):not(.material-icons-outlined){
+  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas){
     font-family: var(--font);
   }
 }
 
 .files-board.com_emundus, .view-list.com_fabrik {
-  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon){
+  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas){
     font-family: var(--font);
   }
 }
