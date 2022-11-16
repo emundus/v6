@@ -1253,6 +1253,7 @@ class EmundusModelCampaign extends JModelList {
         $query = $this->_db->getQuery(true);
 
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'date.php');
 
         $m_falang = new EmundusModelFalang;
 
@@ -1276,6 +1277,8 @@ class EmundusModelCampaign extends JModelList {
                     $fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($data['label']);
                 } else if ($key == 'limit_status') {
                     $limit_status = $data['limit_status'];
+                } else if ($key == 'end_date' || $key == 'start_date'){
+                    $fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote(EmundusHelperDate::displayDate($val,'Y-m-d H:i:s'));
                 }
                 else if ($key !== 'profileLabel' && $key !== 'progid' && $key !== 'status') {
                     $insert = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
