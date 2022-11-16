@@ -1269,15 +1269,17 @@ class EmundusHelperUpdate
             $is_existing = $db->loadResult();
 
             if(empty($is_existing)) {
-                $default_params = [
-                    'menu-anchor_title' => '',
-                    'menu-anchor_css' => '',
-                    'menu-anchor_rel' => '',
-                    'menu_image_css' => '',
-                    'menu_text' => 1,
-                    'menu_show' => 1
-                ];
-                $params['params'] = array_merge($default_params, $params['params']);
+                if($params['client_id'] != 1) {
+                    $default_params = [
+                        'menu-anchor_title' => '',
+                        'menu-anchor_css' => '',
+                        'menu-anchor_rel' => '',
+                        'menu_image_css' => '',
+                        'menu_text' => 1,
+                        'menu_show' => 1
+                    ];
+                    $params['params'] = array_merge($default_params, $params['params']);
+                }
 
                 $menu_data = array(
                     'menutype' => $params['menutype'],
@@ -1291,7 +1293,9 @@ class EmundusHelperUpdate
                     'template_style_id' => $params['template_style_id'] ?: 22,
                     'language' => '*',
                     'published' => $published,
-                    'params' => json_encode($params['params'])
+                    'params' => json_encode($params['params']),
+                    'client_id' => $params['client_id'] ?: 0,
+                    'img' => $params['img'] ?: ''
                 );
 
                 if($parent_id <= 0){

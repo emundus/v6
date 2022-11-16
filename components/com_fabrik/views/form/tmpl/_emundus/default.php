@@ -142,9 +142,11 @@ endif; ?>
         }
         let intro = document.querySelector('.em-form-intro');
         if(intro) {
-            let content = document.querySelector('.em-form-intro p');
-            if(content) {
-                content.style.opacity = 0;
+            let content = document.querySelector('.em-form-intro').children;
+            if(content.length > 0) {
+                for (const child of content) {
+                    child.style.opacity = 0;
+                }
             }
             intro.classList.add('skeleton');
         }

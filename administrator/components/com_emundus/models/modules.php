@@ -285,6 +285,8 @@ class EmundusModelModules extends JModelList {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
+        require_once (JPATH_SITE.'/components/com_emundus/models/form.php');
+
         try {
             $query->select('introtext')
                 ->from($db->quoteName('#__content'))
@@ -356,6 +358,62 @@ class EmundusModelModules extends JModelList {
                 $params = json_decode($module->params);
                 if($params->layout == '_:default'){
                     $params->layout = '_:tchooz';
+                    $params->show_add_application = 0;
+                    $params->show_show_campaigns = 0;
+
+                    $query->clear()
+                        ->select('id')
+                        ->from($db->quoteName('#__menu'))
+                        ->where($db->quoteName('menutype') . ' LIKE ' . $db->quote('topmenu'))
+                        ->andWhere($db->quoteName('alias') . ' LIKE ' . $db->quote('liste-des-campagnes') . ' OR ' . $db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_content&view=article&id=1039'));
+                    $db->setQuery($query);
+                    $campaigns_list = $db->loadResult();
+
+                    // Create applicant menu
+                    $m_form = new EmundusModelForm();
+                    $m_form->createMenuType('applicantmenu','Applicant');
+
+                    if(!empty($campaigns_list)) {
+                        $data = [
+                            'menutype' => 'applicantmenu',
+                            'title' => 'Toutes les campagnes',
+                            'alias' => 'toutes-les-campagnes',
+                            'path' => 'toutes-les-campagnes',
+                            'link' => 'index.php?Itemid=',
+                            'type' => 'alias',
+                            'component_id' => 0,
+                            'template_style_id' => 0,
+                            'params' => [
+                                'aliasoptions' => $campaigns_list,
+                            ],
+                        ];
+                        EmundusHelperUpdate::addJoomlaMenu($data);
+                    }
+
+                    $query->clear()
+                        ->select('id')
+                        ->from($db->quoteName('#__menu'))
+                        ->where($db->quoteName('menutype') . ' LIKE ' . $db->quote('topmenu'))
+                        ->andWhere($db->quoteName('alias') . ' LIKE ' . $db->quote('home') . ' OR ' . $db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_content&view=featured'));
+                    $db->setQuery($query);
+                    $homepage = $db->loadResult();
+
+                    if(!empty($homepage)) {
+                        $data = [
+                            'menutype' => 'applicantmenu',
+                            'title' => 'Mes candidatures',
+                            'alias' => 'mes-candidatures',
+                            'path' => 'mes-candidatures',
+                            'link' => 'index.php?Itemid=',
+                            'type' => 'alias',
+                            'component_id' => 0,
+                            'template_style_id' => 0,
+                            'params' => [
+                                'aliasoptions' => $homepage,
+                            ],
+                        ];
+                        EmundusHelperUpdate::addJoomlaMenu($data);
+                    }
 
                     $query->clear()
                         ->update($db->quoteName('#__modules'))
@@ -392,6 +450,13 @@ class EmundusModelModules extends JModelList {
                 ->andWhere(
                     $db->quoteName('title') . ' LIKE ' . $db->quote('Formulaires%') . ' OR ' . $db->quoteName('title') . ' LIKE ' . $db->quote('Document%')
                 );
+            $db->setQuery($query);
+            $db->execute();
+
+            $query->clear()
+                ->update($db->quoteName('#__modules'))
+                ->set($db->quoteName('published') . ' = 0')
+                ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_send_application'));
             $db->setQuery($query);
             $db->execute();
 
@@ -451,6 +516,38 @@ class EmundusModelModules extends JModelList {
                         $db->setQuery($query);
                         $db->execute();
                     }
+                }
+            }
+
+            $query->clear()
+                ->select('id, params')
+                ->from($db->quoteName('#__modules'))
+                ->where($db->quoteName('module') . ' like ' . $db->quote('mod_emundusflow'))
+                ->andWhere($db->quoteName('published') . ' = 1');
+            $db->setQuery($query);
+            $modules = $db->loadObjectList();
+
+            foreach ($modules as $module) {
+                $params = json_decode($module->params);
+                if ($params->layout == '_:default') {
+                    $params->layout = '_:tchooz';
+
+                    $query->clear()
+                        ->update($db->quoteName('#__modules'))
+                        ->set($db->quoteName('showtitle') . ' = 0')
+                        ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($module->id));
+                    $db->setQuery($query);
+                    $db->execute();
+
+                    $query->clear()
+                        ->update($db->quoteName('#__falang_content'))
+                        ->set($db->quoteName('value') . ' = ' . $db->quote(json_encode($params)))
+                        ->where($db->quoteName('reference_table') . ' like ' . $db->quote('modules'))
+                        ->andWhere($db->quoteName('reference_field') . ' like ' . $db->quote('params'))
+                        ->andWhere($db->quoteName('reference_id') . ' like ' . $db->quote($module->id));
+                    $db->setQuery($query);
+                    $db->execute();
                 }
             }
         } catch (Exception $e) {

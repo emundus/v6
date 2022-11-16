@@ -241,6 +241,7 @@ class com_emundusInstallerScript
 
                 EmundusHelperUpdate::genericUpdateParams('#__modules', 'module', 'mod_falang', array('advanced_dropdown','full_name'), array('0','0'));
 
+                // Add back button to login, register and reset view
                 $datas = [
                     'title' => 'eMundus - Back button',
                     'note' => 'Back button available on login and register views',
@@ -260,7 +261,8 @@ class com_emundusInstallerScript
                 ];
                 $moduleid = EmundusHelperUpdate::addJoomlaModule($datas);
                 if(!empty($moduleid)) {
-                    $query->select('id')
+                    $query->clear()
+                        ->select('id')
                         ->from($db->quoteName('#__menu'))
                         ->where($db->quoteName('link') . ' IN (' . $db->quote('index.php?option=com_users&view=login').',' . $db->quote('index.php?option=com_fabrik&view=form&formid=307') . ',' . $db->quote('index.php?option=com_users&view=reset') . ')');
                     $db->setQuery($query);
@@ -285,11 +287,20 @@ class com_emundusInstallerScript
                         }
                     }
                 }
+                //
 
+                // Setup our new layouts
                 $query->clear()
                     ->update($db->quoteName('#__fabrik_forms'))
                     ->set($db->quoteName('form_template') . ' = ' . $db->quote('_emundus'))
                     ->where($db->quoteName('form_template') . ' = ' . $db->quote('bootstrap'));
+                $db->setQuery($query);
+                $db->execute();
+
+                $query->clear()
+                    ->update($db->quoteName('#__menu'))
+                    ->set($db->quoteName('params') . ' = JSON_REPLACE(params,"$.fabriklayout","_emundus")')
+                    ->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_fabrik&view=form&formid=307'));
                 $db->setQuery($query);
                 $db->execute();
 
@@ -307,9 +318,11 @@ class com_emundusInstallerScript
                 EmundusHelperUpdate::insertTranslationsTag('CHECKOUT_BUTTON_FINISH','Process to payment','override',null,null,null,'en-GB');
                 EmundusHelperUpdate::insertTranslationsTag('HIKA_NEW','Ajouter une adresse');
                 EmundusHelperUpdate::insertTranslationsTag('HIKA_NEW','Add an address','override',null,null,null,'en-GB');
+                //
 
                 $succeed['campaign_workflow'] = EmundusHelperUpdate::addProgramToCampaignWorkflow();
 
+                // Install announcement module
                 //TODO : Install a module or a plugin via folder (parse xml file and insert necessary datas)
                 EmundusHelperUpdate::installExtension('MOD_EMUNDUS_ANNOUNCEMENTS_SYS_XML','mod_emundus_announcements','{"name":"MOD_EMUNDUS_ANNOUNCEMENTS_SYS_XML","type":"module","creationDate":"September 2022","author":"eMundus","copyright":"Copyright (C) 2022 eMundus. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"1.0.0","description":"MOD_EMUNDUS_ANNOUNCEMENTS_XML_DESCRIPTION","group":"","filename":"mod_emundus_announcements"}','module');
                 $datas = [
@@ -322,6 +335,30 @@ class com_emundusInstallerScript
                     ]
                 ];
                 EmundusHelperUpdate::addJoomlaModule($datas,0,true);
+                //
+
+                // Install smart search menu
+                $query->clear()
+                    ->select('extension_id')
+                    ->from($db->quoteName('#__extensions'))
+                    ->where($db->quoteName('element') . ' LIKE ' . $db->quote('com_finder'));
+                $db->setQuery($query);
+                $ext_id = $db->loadResult();
+
+                $datas = [
+                    'menutype' => 'main',
+                    'title' => 'COM_FINDER',
+                    'alias' => 'com-finder',
+                    'path' => 'com-finder',
+                    'link' => 'index.php?option=com_finder',
+                    'type' => 'component',
+                    'component_id' => $ext_id,
+                    'params' => [],
+                    'client_id' => 1,
+                    'img' => 'class:finder'
+                ];
+                EmundusHelperUpdate::addJoomlaMenu($datas);
+                //
             }
 
             // Insert new translations in overrides files
