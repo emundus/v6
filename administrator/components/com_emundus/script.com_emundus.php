@@ -325,6 +325,16 @@ class com_emundusInstallerScript
             }
 
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
+
+
+            $dir = JPATH_BASE . '/templates/g5_helium/custom/css-compiled';
+            if(!empty($dir)) {
+                foreach (glob($dir . '/*') as $file) {
+                    unlink($file);
+                }
+
+                rmdir($dir);
+            }
         }
 
         return $succeed;
