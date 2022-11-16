@@ -324,9 +324,11 @@ class com_emundusInstallerScript
                 EmundusHelperUpdate::addJoomlaModule($datas,0,true);
             }
 
+            // Insert new translations in overrides files
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
 
 
+            // Recompile Gantry5 css at each update
             $dir = JPATH_BASE . '/templates/g5_helium/custom/css-compiled';
             if(!empty($dir)) {
                 foreach (glob($dir . '/*') as $file) {
