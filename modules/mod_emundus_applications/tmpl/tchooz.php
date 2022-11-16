@@ -167,7 +167,7 @@ ksort($applications);
                                         <span class="em-applicant-default-font em-neutral-800-color">N°<?php echo $application->fnum ?></span>
                                     </div>
                                     <div>
-                                        <span class="material-icons em-applicant-text-color" id="actions_button_<?php echo $application->fnum ?>" style="font-size: 16px">more_vert</span>
+                                        <span class="material-icons em-text-neutral-600" id="actions_button_<?php echo $application->fnum ?>" style="font-size: 16px">more_vert</span>
 
                                         <!-- ACTIONS BLOCK -->
                                         <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color" id="actions_block_<?php echo $application->fnum ?>" style="display: none">
@@ -206,7 +206,7 @@ ksort($applications);
                                 </p>
                                 <?php if (!$show_fnum) : ?>
                                 <div>
-                                    <span class="material-icons em-applicant-text-color" id="actions_button_<?php echo $application->fnum ?>" style="font-size: 16px">more_vert</span>
+                                    <span class="material-icons em-text-neutral-600" id="actions_button_<?php echo $application->fnum ?>" style="font-size: 16px">more_vert</span>
 
                                     <!-- ACTIONS BLOCK -->
                                     <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color" id="actions_block_<?php echo $application->fnum ?>" style="display: none">
@@ -237,10 +237,10 @@ ksort($applications);
                             ?>
                             <div class="mod_emundus_applications___date em-mt-8">
                                 <?php if (!$displayInterval) : ?>
-                                    <span class="material-icons em-applicant-text-color em-font-size-16 em-mr-8">schedule</span>
+                                    <span class="material-icons em-text-neutral-600 em-font-size-16 em-mr-8">schedule</span>
                                     <p class="em-applicant-text-color em-font-size-16 em-applicant-default-font"> <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_END_DATE'); ?> <?php echo JFactory::getDate(new JDate($application->end_date, $site_offset))->format('d/m/Y H:i'); ?></p>
                                 <?php else : ?>
-                                    <span class="material-icons-outlined em-applicant-text-color em-font-size-16 em-red-500-color em-mr-8">schedule</span>
+                                    <span class="material-icons-outlined em-text-neutral-600 em-font-size-16 em-red-500-color em-mr-8">schedule</span>
                                     <p class="em-red-500-color"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_LAST_DAY'); ?>
                                         <?php if ($interval->h > 0) {
                                             echo $interval->h.'h'.$interval->i ;
@@ -252,7 +252,7 @@ ksort($applications);
                             </div>
                             <?php if($key == 'sent') : ?>
                                 <div class="mod_emundus_applications___date em-mt-8">
-                                    <span class="material-icons-outlined em-applicant-text-color em-font-size-16 em-mr-8">insert_drive_file</span>
+                                    <span class="material-icons-outlined em-text-neutral-600 em-font-size-16 em-mr-8">insert_drive_file</span>
                                     <p class="em-applicant-text-color em-font-size-16 em-applicant-default-font"> <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_SUBMITTED_DATE'); ?> <?php echo JFactory::getDate(new JDate($application->submitted_date, $site_offset))->format('d/m/Y H:i'); ?></p>
                                 </div>
                             <?php endif; ?>

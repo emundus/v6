@@ -371,7 +371,7 @@ a.em-blue-400-color:hover {
 
 .tchooz-single-campaign #campaign p{
     line-height: 160%;
-    color: #2B2B2B;
+    color: var(--em-applicant-text-color);
     font-family: var(--applicant-default-font);
 }
 

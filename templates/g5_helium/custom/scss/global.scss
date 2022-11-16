@@ -1177,7 +1177,7 @@ body>.g-container {
 #attachment_list > p,
 #attachment_list_mand .em-fieldset-attachment p:not(.em-h5),
 #attachment_list_opt .em-fieldset-attachment p:not(.em-h5) {
-  color: var(--em-applicant-text-color);
+  color: var(--neutral-800);
   font-family: var(--font);
 }
 
@@ -4252,7 +4252,7 @@ button.swal2-cancel.goback-btn {
   }
 
   .fabrikLabel {
-    color: var(--em-applicant-text-color);
+    color: var(--neutral-700);
     font-family: var(--font);
   }
 }
