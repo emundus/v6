@@ -6,6 +6,14 @@ requirejs(['fab/fabrik'], function () {
             document.querySelector('.page-header h1').style.opacity = 1;
             header.classList.remove('skeleton');
         }
+        let intro = document.querySelector('.em-form-intro');
+        if(intro) {
+            let content = document.querySelector('.em-form-intro p');
+            if(content) {
+                content.style.opacity = 1;
+            }
+            intro.classList.remove('skeleton');
+        }
         let grouptitle = document.querySelectorAll('.fabrikGroup .legend');
         for (title of grouptitle){
             title.style.opacity = 1;

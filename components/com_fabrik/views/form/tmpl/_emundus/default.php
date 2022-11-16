@@ -140,6 +140,14 @@ endif; ?>
             document.querySelector('.page-header h1').style.opacity = 0;
             header.classList.add('skeleton');
         }
+        let intro = document.querySelector('.em-form-intro');
+        if(intro) {
+            let content = document.querySelector('.em-form-intro p');
+            if(content) {
+                content.style.opacity = 0;
+            }
+            intro.classList.add('skeleton');
+        }
         let grouptitle = document.querySelectorAll('.fabrikGroup .legend');
         for (title of grouptitle){
             title.style.opacity = 0;
