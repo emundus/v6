@@ -38,6 +38,7 @@ $uniqid = uniqid();
     <?php endif; ?>
 </div>
 <?php if (!empty($applications)) : ?>
+    <?php $count = 0; ?>
     <div id="application-list-<?= $uniqid; ?>" class="<?= $moduleclass_sfx ?>">
         <?php foreach ($applications as $a_index => $application) : ?>
             <?php
@@ -48,6 +49,16 @@ $uniqid = uniqid();
             }
 
             if ($display_app) {
+                switch($application->status) {
+                    case(7):
+                        $open_file_message = JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_PAYMENT');
+                        break;
+                    default:
+                        $open_file_message = JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION');
+                        break;
+                }
+
+                $count += 1;
                 $state = $application->published;
                 $confirm_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&confirm=1';
                 $first_page_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
@@ -87,7 +98,7 @@ $uniqid = uniqid();
                             <div class="col-xs-12 col-md-6 main-page-file-info">
                                 <p class="em-tags-display"><?= $file_tags_display; ?></i></p>
                                 <a class="btn btn-warning" href="<?php echo JRoute::_($first_page_url); ?>" role="button">
-                                    <i class="folder open outline icon"></i> <?= ($is_admission) ? JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_ADMISSION') : JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION'); ?>
+                                    <i class="folder open outline icon"></i> <?= ($is_admission) ? JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_ADMISSION') : $open_file_message; ?>
                                 </a>
 
                                 <?php if (!empty($attachments) && ((int) ($attachments[$application->fnum]) >= 100 && (int) ($forms[$application->fnum]) >= 100 && in_array($application->status, $status_for_send) && !$is_dead_line_passed) || in_array($user->id, $applicants)) : ?>
@@ -228,6 +239,9 @@ $uniqid = uniqid();
                 <?php endif; ?>
             <?php } ?>
         <?php endforeach; ?>
+        <?php
+            if($count === 0) echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE');
+        ?>
     </div>
 <?php else :
     echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE');
