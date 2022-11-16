@@ -478,9 +478,4 @@ class EmundusModelModules extends JModelList {
 
         return $response;
     }
-
-    public function addAnonymUserMenus()
-    {
-
-    }
 }
