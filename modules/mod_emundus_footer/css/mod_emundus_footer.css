@@ -82,6 +82,10 @@ hr.footer-separation {
     align-items: center;
 }
 
+.em-container-footer-gest .em-block-footer p {
+    color: var(--neutral-900);
+}
+
 .em-container-footer-gest .em-block-footer a {
     color: #000 !important;
     text-decoration: none !important;

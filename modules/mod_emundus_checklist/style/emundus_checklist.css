@@ -38,6 +38,7 @@
 
 .mod_emundus_checklist #mod_emundus_checklist___expand_icon{
     font-size: 24px !important;
+    color: var(--neutral-800);
 }
 
 #mod_emundus_checklist___content{
@@ -66,5 +67,6 @@
     align-items: center;
     justify-content: center;
     font-family: var(--font);
+    color: var(--neutral-800);
 }
 

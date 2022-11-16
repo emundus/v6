@@ -239,7 +239,7 @@ a.em-blue-400-color:hover {
 }
 
 .mod_emundus_campaign__programme_cat_title {
-    font-family: var(--applicant-default-font);
+    font-family: var(--applicant-title-font);
     font-style: normal;
     font-weight: 500;
     font-size: 20px;

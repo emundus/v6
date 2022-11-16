@@ -334,6 +334,7 @@ ul {
   border: 1px solid var(--dark-grey) !important;
   border-radius: var(--em-border-radius) !important;
   color: var(--neutral-50);
+  font-family: var(--font);
 
   &:active, &:focus, &:hover {
     background: var(--grey)!important;
@@ -350,6 +351,7 @@ ul {
   border: 1px solid var(--dark-grey) !important;
   border-radius: var(--em-border-radius) !important;
   color: var(--neutral-50) !important;
+  font-family: var(--font);
 
   &:active, &:focus, &:hover {
     background: var(--grey) !important;
@@ -3015,6 +3017,9 @@ h1.em-titre-connectez-vous {
 
 .com_emundus:not(.view-programme):not(.view-form):not(.view-users.layout-edit):not(.view-checklist),
 .com_emundus.view-form .com_emundus_vue {
+
+  color: inherit;
+
    h2,
    p,
    .em-w-custom form.fabrikForm label,
@@ -3043,9 +3048,12 @@ h1.em-titre-connectez-vous {
 }
 
 .com_emundus.view-users.layout-edit .em-container-profile-view-pict span.em-h3 {
-  font-family: var(--applicant-title-font);
+  font-family: var(--font);
 }
 
+.indicateurs-page  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon) {
+  font-family: var(--font);
+}
 
 .com_emundus.view-users .em-container-profile-view-form .fabrikGroup {
   legend {
@@ -4234,12 +4242,12 @@ button.swal2-cancel.goback-btn {
 .view-details {
   .span12 h1{
     margin: 48px 0;
-    font-family: var(--applicant-title-font);
+    font-family: var(--font);
     color: var(--neutral-900);
   }
 
   .span12 .fabrikGroup .legend {
-    font-family: var(--applicant-title-font);
+    font-family: var(--font);
     color: var(--neutral-900);
   }
 

@@ -175,6 +175,7 @@ defined('_JEXEC') or die;
         font-weight: 600;
         border-bottom: 1px solid #e0e0e5;
         padding-bottom: 10px;
+        color: var(--neutral-900);
     }
 
     .message-tooltip-block{
