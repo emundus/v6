@@ -78,6 +78,7 @@ button.btn-primary:hover{
     height: 48px;
     width: 100%;
     border-radius: var(--applicant-border-radius) !important;
+    font-family: var(--applicant-default-font);
 }
 
 .invalid {

@@ -23,7 +23,7 @@ $eMConfig = JComponentHelper::getParams('com_emundus');
             <p class="em-mb-8 em-h3">
                 <?php echo JText::_('JLOGIN'); ?>
             </p>
-            <p class="em-applicant-text-color"><?php echo JText::_('JLOGIN_DESC'); ?></p>
+            <p class="em-applicant-text-color em-applicant-default-font"><?php echo JText::_('JLOGIN_DESC'); ?></p>
         </div>
     <?php endif; ?>
     <?php if (($this->params->get('logindescription_show') == 1 && str_replace(' ', '', $this->params->get('login_description')) != '') || $this->params->get('login_image') != '') : ?>

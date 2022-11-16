@@ -156,6 +156,7 @@
 
 .mod_emundus_campaign__grid .mod_emundus_campaign__details_content .btn.btn-primary {
     border-radius: var(--em-applicant-border-radius) !important;
+    font-family: var(--applicant-default-font);
 }
 
 .mod_emundus_campaign__header_filter__values *:not(.material-icons-outlined) {
@@ -268,6 +269,7 @@ a.em-blue-400-color:hover {
 .mod_emundus_campaign__tabs a.current-tab span {
     color: var(--neutral-900);
     font-weight: 500;
+    font-family: var(--applicant-default-font);
 }
 
 #faq h2 {
@@ -370,6 +372,7 @@ a.em-blue-400-color:hover {
 .tchooz-single-campaign #campaign p{
     line-height: 160%;
     color: #2B2B2B;
+    font-family: var(--applicant-default-font);
 }
 
 .mod_emundus_campaign__grid {
