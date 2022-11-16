@@ -956,6 +956,9 @@ $font:'Inter', sans-serif;
 
 
     /* CHECKBOX - RADIO */
+    .fabrikSubElementContainer .row-fluid:first-child [class*="fabrikgrid_radio"]:first-child{
+    margin-top: 0;
+    }
     .row-fluid .fabrikgrid_radio,
     .row-fluid .fabrikgrid_checkbox,
     .row-fluid .plg-databasejoin.mode-checkbox {

@@ -486,7 +486,10 @@ form#member-profile .form-horizontal .control-label {
 /* ---- ALLOW * TO BE AT THE END OF TEXT ----- */
 
 /* Inscription */
-
+.view-registration .login.em-formRegistrationCenter .emundus-form{
+    border: unset !important;
+    box-shadow: unset !important;
+}
 .view-registration .login.em-formRegistrationCenter .em-heading-registration h1,
 .view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) .em-heading-registration h1 {
     margin-top: 0px !important;
@@ -507,14 +510,14 @@ form#member-profile .form-horizontal .control-label {
     flex-direction: column;
     align-items: center;
     background: #fff;
-    width: 50%;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 0;
     margin-bottom: 64px;
     border-radius: 16px;
     margin-top: 68px;
-    padding: 80px 64px 80px 64px;
+    width: 45%;
+    min-width: 360px;
+    max-width: 720px;
 }
 
 .view-registration .view-registration.login.em-formRegistrationCenter p.em-h3 {
@@ -537,6 +540,7 @@ form#member-profile .form-horizontal .control-label {
 
 .view-registration .login.em-formRegistrationCenter .row-fluid {
     background: #fff;
+    padding: 0;
 }
 
 .view-form.view-registration #system-message {
@@ -572,7 +576,7 @@ form#member-profile .form-horizontal .control-label {
     align-items: flex-end;
     flex-direction: row;
     width: 100%;
-    padding: 80px 64px 32px 64px;
+    padding: 0 64px 16px 64px;
 }
 
 form.fabrikForm label {

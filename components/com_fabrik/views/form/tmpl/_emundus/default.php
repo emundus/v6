@@ -35,11 +35,13 @@ endif;
 <div class="page-header">
     <h1><?php $title = explode('-', $form->label); echo !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0])); ?></h1>
 </div>
-<?php
-endif;
+<?php endif; ?>
 
+    <div class="em-form-intro">
+<?php
 echo $form->intro;
 ?>
+    </div>
 <form method="post" <?php echo $form->attribs?>>
 <?php
 echo $this->plugintop;
@@ -137,6 +139,14 @@ endif; ?>
         if(header) {
             document.querySelector('.page-header h1').style.opacity = 0;
             header.classList.add('skeleton');
+        }
+        let intro = document.querySelector('.em-form-intro');
+        if(intro) {
+            let content = document.querySelector('.em-form-intro p');
+            if(content) {
+                content.style.opacity = 0;
+            }
+            intro.classList.add('skeleton');
         }
         let grouptitle = document.querySelectorAll('.fabrikGroup .legend');
         for (title of grouptitle){

@@ -4273,11 +4273,13 @@ button.swal2-cancel.goback-btn {
       border: 1px solid #EDEDED;
       box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
 
-      p:first-of-type:not(.accept_terms),
-      p.form-intro {
-        @include body-16;
-        //color: var(--neutral-600);
-        margin-top: 8px;
+      .em-form-intro {
+        margin: 8px 32px 0 32px;
+
+        p {
+          @include body-16;
+          color: var(--neutral-600);
+        }
       }
     }
 
