@@ -9,7 +9,7 @@
 							<span>{{ translate('COM_EMUNDUS_FORM_BUILDER_SECTION') }} {{ index + 1 }} / {{ formData.groups.length }}</span>
 						</div>
 						<div class="section-content em-w-100">
-							<h2 class="em-w-100 em-text-align-left">{{ group.label }}</h2>
+							<h2 class="em-w-100 em-text-align-left">{{ group.label.replace('Model - ', '') }}</h2>
 						</div>
 					</div>
 				</section>
