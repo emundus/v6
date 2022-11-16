@@ -185,7 +185,7 @@
 	flex-direction: row;
 }
 
-.view-form .attached p, .view-details .attached p {
+.view-form .attached p, .view-details .attached p, .view-checklist .attached p {
 	color: white;
 	font-family: var(--font);
 }

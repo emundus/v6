@@ -1,8 +1,4 @@
 /*view-checklist*/
-#attachment_list #legend p,
-#attachment_list > p {
-    color: var(--em-applicant-text-color);
-}
 
 button.save-btn, .btn-success, button.save, button.save_continue, button.send, a.btn-attach, #trombi_preview, #trombi_generate,
 .indicateurs-page .btn, .fabrik_filter_submit, button.importation, a.btn-warning, a.btn-info, .header-right .btn-danger, button.btn-primary,

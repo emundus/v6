@@ -109,6 +109,7 @@ else {
         width: 200px;
         color: #353544;
         background-color: var( --neutral-50);
+        font-family: var(--font);
     }
     .select .profile-select:hover{
         background-color: white !important;

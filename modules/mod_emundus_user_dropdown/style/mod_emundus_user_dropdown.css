@@ -42,8 +42,13 @@
     transition: all 0.3s ease-in-out;
 }
 
+#g-navigation .header-c .open > #userDropdownMenu li.dropdown-header {
+    font-family: var(--font);
+}
+
 #userDropdownMenu h5  {
     color: #000;
+    font-family: var(--font);
 }
 
 
