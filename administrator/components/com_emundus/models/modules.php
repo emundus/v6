@@ -299,13 +299,12 @@ class EmundusModelModules extends JModelList {
         $tableData = $db->loadObjectList();
 
         $columns = array_map(function($tableData) {
-            return $tableData['Field'];
+            return $tableData->Field;
         }, $tableData);
 
         $queries_passed = [];
         foreach($columns_to_add as $column_key => $column_type) {
             if (!in_array($column_key, $columns)) {
-
                 try {
                     $db->setQuery("ALTER TABLE jos_emundus_users ADD $column_key $column_type null" );
                     $queries_passed[] = $db->execute();
@@ -322,21 +321,59 @@ class EmundusModelModules extends JModelList {
         }
 
         if ($jos_emundus_users_altered) {
-            // ADD anonym email if necessary
             $query = $db->getQuery(true);
+            $query->select('id')
+                ->from('#__emundus_setup_emails')
+                ->where('lbl = ' . $db->quote('anonym_token_email'));
 
+            $db->setQuery($query);
+            $email_id = $db->loadResult();
+
+            if (empty($email_id)) {
+                $query->clear()
+                    ->insert()
+                    ->columns(['lbl', 'subject', 'emailfrom', 'message', 'name', 'type', 'published', 'email_tmpl', 'letter_attachment', 'candidate_attachment', 'category', 'cci', 'tags'])
+                    ->values($db->quote('anonym_token_email') . ',' . $db->quote('Dossier envoyé avec succès') . ', null, ' . $db->quote("<p>URL d''activation : [ACTIVATION_ANONYM_URL]</p><p>Votre mot de passe : [PASSWORD]</p><p>Votre clé d''authentification sans mot de passe (valide une semaine) : [TOKEN]</p>") . ', null, 2, 1, 1, null, null, null, null, null');
+
+                $db->setQuery($query);
+                $db->execute();
+            }
 
             // ADD TABLE jos_emundus_token_auth_attempts if necessary
+            $db->setQuery('SHOW TABLES;');
+            $tables = $db->loadColumn();
+
+            if (!in_array('jos_emundus_token_auth_attempts', $tables)) {
+                $db->setQuery('CREATE TABLE jos_emundus_token_auth_attempts(
+                    id               int auto_increment primary key,
+                    date_time        datetime     null,
+                    token            varchar(255) null,
+                    ip               text         null,
+                    succeed          int          null)'
+                );
+
+                $created = false;
+                try {
+                    $created = $db->execute();
+                } catch (Exception $e) {
+                    JLog::add('Failed to create jos_emundus_token_auth_attempts table : ' . $e->getMessage(), JLog::WARNING, 'com_emundus.error');
+                }
+
+                if (!$created) {
+                    $response['message'] = 'Failed to create jos_emundus_token_auth_attempts table';
+                    return $response;
+                }
+            }
 
             $buffer = file_get_contents(JPATH_LIBRARIES . '/emundus/sql/anonym_file_forms.sql');
             if (!empty($buffer)) {
-                $queries = \JDatabaseDriver::splitSql($buffer);
+                $file_queries = \JDatabaseDriver::splitSql($buffer);
 
-                if (!empty($queries)) {
+                if (!empty($file_queries)) {
                     $queries_passed = [];
 
-                    foreach ($queries as $query) {
-                        $db->setQuery($db->convertUtf8mb4QueryToUtf8($query));
+                    foreach ($file_queries as $file_query) {
+                        $db->setQuery($db->convertUtf8mb4QueryToUtf8($file_query));
                         try {
                             $queries_passed[] = $db->execute();
                         } catch (Exception $e) {
@@ -350,6 +387,70 @@ class EmundusModelModules extends JModelList {
 
                     if (!in_array(false, $queries_passed)) {
                         $response['status'] = true;
+                    } else {
+                        $response['message'] = 'One or multiple sql file queries failed';
+                    }
+
+                    $query->clear()
+                        ->select('id, params')
+                        ->from('#__fabrik_forms')
+                        ->where('label = ' . $db->quote('Déposer un dossier anonyme'))
+                        ->order('id DESC')
+                        ->setLimit(1);
+
+                    $db->setQuery($query);
+                    $form = $db->loadObject();
+
+                    if (!empty($form->id)) {
+                        $element_names = ['user_id', 'lastname', 'email', 'password'];
+
+                        $query->clear()
+                            ->select('jfe.id, jfe.name')
+                            ->from('#__fabrik_elements AS jfe')
+                            ->leftJoin('#__fabrik_groups AS jfg ON jfg.id = jfe.group_id')
+                            ->leftJoin('#__fabrik_formgroup as jff ON jff.group_id = jfg.id')
+                            ->where('jff.form_id = ' . $form->id)
+                            ->andWhere('jfe.name IN (' . implode(',' , $db->quote($element_names)) . ')');
+
+                        $db->setQuery($query);
+                        $elements = $db->loadObjectList();
+
+                        if (!empty($elements)) {
+                            $form->params = json_decode($form->params, true);
+                            foreach ($elements as $element) {
+                                switch($element->name) {
+                                    case 'user_id':
+                                        $form->params['juser_field_userid'] = [$element->id];
+                                        break;
+                                    case 'lastname':
+                                        $form->params['juser_field_name'] = [$element->id];
+                                        break;
+                                    case 'email':
+                                        $form->params['juser_field_username'] = [$element->id];
+                                        $form->params['juser_field_email'] = [$element->id];
+                                        break;
+                                    case 'password':
+                                        $form->params['juser_field_password'] = [$element->id];
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+
+                            $form->params = json_encode($form->params);
+                            $query->clear()
+                                ->update('#__fabrik_forms')
+                                ->set('params = ' . $db->quote($form->params))
+                                ->where('id = ' . $form->id);
+
+                            $db->setQuery($query);
+
+                            try {
+                                $db->execute();
+                            } catch (Exception $e) {
+                                JLog::add('Failed to update anonym form params for juser mapping : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                            }
+                        }
                     }
                 }
             } else {
