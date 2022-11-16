@@ -331,7 +331,7 @@ class EmundusModelModules extends JModelList {
 
             if (empty($email_id)) {
                 $query->clear()
-                    ->insert()
+                    ->insert('#__emundus_setup_emails')
                     ->columns(['lbl', 'subject', 'emailfrom', 'message', 'name', 'type', 'published', 'email_tmpl', 'letter_attachment', 'candidate_attachment', 'category', 'cci', 'tags'])
                     ->values($db->quote('anonym_token_email') . ',' . $db->quote('Dossier envoyé avec succès') . ', null, ' . $db->quote("<p>URL d''activation : [ACTIVATION_ANONYM_URL]</p><p>Votre mot de passe : [PASSWORD]</p><p>Votre clé d''authentification sans mot de passe (valide une semaine) : [TOKEN]</p>") . ', null, 2, 1, 1, null, null, null, null, null');
 
