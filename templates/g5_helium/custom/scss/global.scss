@@ -687,6 +687,9 @@ footer#g-footer img {
   background: $base-background;
 }
 
+.view-featured.homepage #g-page-surround {
+  background: $base-background;
+}
 
 .com_emundus:not(.view-programme)  #g-page-surround,
 .view-form:not(.view-registration)  #g-page-surround,
@@ -2995,13 +2998,13 @@ h1.em-titre-connectez-vous {
     color: var(--neutral-800) !important;
   }
 
-  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas){
+  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon){
     font-family: var(--font);
   }
 }
 
 .files-board.com_emundus, .view-list.com_fabrik {
-  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas){
+  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon){
     font-family: var(--font);
   }
 }

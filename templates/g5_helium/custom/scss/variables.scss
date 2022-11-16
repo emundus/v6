@@ -59,7 +59,8 @@
   --em-applicant-title-color: #000000; // for applicants side
 
   --white-background-color: #fff;
-  --applicant-background-color: #f8f8f8; // for applicants side
+  --applicant-background-color: $base-background; // for applicants side
+  --em-applicant-background-color: #f8f8f8; // for applicants side
   --background-color: #f8f8f8;
 
   --applicant-border-radius: 8px; //for applicants side
