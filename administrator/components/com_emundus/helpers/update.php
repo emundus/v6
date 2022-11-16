@@ -1333,327 +1333,6 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addFabrikForm($datas,$params = [], $published = 1) {
-        $result = ['status' => false, 'message' => '', 'id' => 0];
-
-        if(empty($datas['label'])){
-            $result['message'] = 'INSERTING FABRIK FORM : Please indicate a label.';
-            return $result;
-        }
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        try {
-            $query->select('id')
-                ->from($db->quoteName('#__fabrik_forms'))
-                ->where($db->quoteName('label') . ' LIKE ' . $db->quote($datas['label']));
-            $db->setQuery($query);
-            $is_existing = $db->loadResult();
-
-            if(!$is_existing) {
-                require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
-
-                $default_params = EmundusHelperFabrik::prepareFormParams(false);
-                $params = array_merge($default_params, $params);
-
-                $publish_up = new DateTime();
-                $publish_up->modify('-1 day');
-
-                $inserting_datas = [
-                    'label' => $datas['label'],
-                    'record_in_database' => $datas['record_in_database'] ?: 1,
-                    'error' => $datas['error'] ?: 'FORM_ERROR',
-                    'intro' => $datas['intro'] ?: '',
-                    'created' => date('Y-m-d H:i:s'),
-                    'created_by' => 62,
-                    'created_by_alias' => 'admin',
-                    'modified' => date('Y-m-d H:i:s'),
-                    'modified_by' => 0,
-                    'checked_out' => 0,
-                    'checked_out_time' => date('Y-m-d H:i:s'),
-                    'published' => $published,
-                    'publish_up' => $publish_up->format('Y-m-d H:i:s'),
-                    'publish_down' => '2099-01-01 00:00:00',
-                    'reset_button_label' => $datas['reset_button_label'] ?: 'RESET',
-                    'submit_button_label' => $datas['submit_button_label'] ?: 'SAVE_CONTINUE',
-                    'form_template' => $datas['form_template'] ?: 'bootstrap',
-                    'view_only_template' => $datas['view_only_template'] ?: 'bootstrap',
-                    'params' => json_encode($params),
-                ];
-
-                $query->clear()
-                    ->insert($db->quoteName('#__fabrik_forms'))
-                    ->columns($db->quoteName(array_keys($inserting_datas)))
-                    ->values(implode(',',$db->quote(array_values($inserting_datas))));
-                $db->setQuery($query);
-                $db->execute();
-
-                $result['id'] = $db->insertid();
-            } else {
-                $result['id'] = $is_existing;
-            }
-        } catch (Exception $e) {
-            $result['message'] = 'INSERTING FABRIK FORM : Error : ' . $e->getMessage();
-            return $result;
-        }
-
-        $result['status'] = true;
-        return $result;
-    }
-
-    public static function addFabrikList($datas,$params = [], $published = 1) {
-        $result = ['status' => false, 'message' => '', 'id' => 0];
-
-        if(empty($datas['label'])){
-            $result['message'] = 'INSERTING FABRIK LIST : Please indicate a label.';
-            return $result;
-        }
-        if(empty($datas['form_id'])){
-            $result['message'] = 'INSERTING FABRIK LIST : Please pass a form_id.';
-            return $result;
-        }
-        if(empty($datas['db_table_name'])){
-            $result['message'] = 'INSERTING FABRIK LIST : Please indicate a table name.';
-            return $result;
-        }
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        $query->select('id')
-            ->from($db->quoteName('#__fabrik_lists'))
-            ->where($db->quoteName('label') . ' LIKE ' . $db->quote($datas['label']))
-            ->andWhere($db->quoteName('db_table_name') . ' LIKE ' . $db->quote($datas['db_table_name']));
-        $db->setQuery($query);
-        $is_existing = $db->loadResult();
-
-        if(!$is_existing) {
-            require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
-
-            $default_params = EmundusHelperFabrik::prepareListParams();
-            $params = array_merge($default_params, $params);
-
-            try {
-                $publish_up = new DateTime();
-                $publish_up->modify('-1 day');
-
-                $inserting_datas = [
-                    'label' => $datas['label'],
-                    'introduction' => $datas['introduction'] ?: '',
-                    'form_id' => $datas['form_id'],
-                    'db_table_name' => $datas['db_table_name'],
-                    'db_primary_key' => $datas['db_primary_key'] ?: $datas['db_table_name'] . '.id',
-                    'auto_inc' => $datas['auto_inc'] ?: 1,
-                    'connection_id' => $datas['connection_id'] ?: 1,
-                    'created' => date('Y-m-d H:i:s'),
-                    'created_by' => 62,
-                    'created_by_alias' => 'admin',
-                    'modified' => date('Y-m-d H:i:s'),
-                    'modified_by' => 0,
-                    'checked_out' => 0,
-                    'checked_out_time' => date('Y-m-d H:i:s'),
-                    'published' => $published,
-                    'publish_up' => $publish_up->format('Y-m-d H:i:s'),
-                    'publish_down' => '2099-01-01 00:00:00',
-                    'access' => $datas['access'] ?: 1,
-                    'hits' => 0,
-                    'rows_per_page' => $datas['rows_per_page'] ?: 10,
-                    'template' => $datas['template'] ?: 'bootstrap',
-                    'order_by' => $datas['order_by'] ?: '[]',
-                    'order_dir' => $datas['order_dir'] ?: '[]',
-                    'filter_action' => $datas['filter_action'] ?: 'onchange',
-                    'group_by' => $datas['group_by'] ?: '',
-                    'params' => json_encode($params)
-                ];
-
-                $query->clear()
-                    ->insert($db->quoteName('#__fabrik_lists'))
-                    ->columns($db->quoteName(array_keys($inserting_datas)))
-                    ->values(implode(',',$db->quote(array_values($inserting_datas))));
-                $db->setQuery($query);
-                $db->execute();
-
-                $result['id'] = $db->insertid();
-            } catch (Exception $e) {
-                $result['message'] = 'INSERTING FABRIK LIST : Error : ' . $e->getMessage();
-                return $result;
-            }
-        } else {
-            $result['id'] = $is_existing;
-        }
-
-        $result['status'] = true;
-        return $result;
-    }
-
-    public static function addFabrikGroup($datas,$params = [], $published = 1) {
-        $result = ['status' => false, 'message' => '', 'id' => 0];
-
-        if(empty($datas['name'])){
-            $result['message'] = 'INSERTING FABRIK GROUP : Please indicate a name.';
-            return $result;
-        }
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        $query->select('id')
-            ->from($db->quoteName('#__fabrik_groups'))
-            ->where($db->quoteName('name') . ' LIKE ' . $db->quote($datas['name']));
-        $db->setQuery($query);
-        $is_existing = $db->loadResult();
-
-        if(!$is_existing) {
-            require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
-
-            $default_params = EmundusHelperFabrik::prepareGroupParams();
-            $params = array_merge($default_params, $params);
-
-            try {
-                $inserting_datas = [
-                    'name' => $datas['name'],
-                    'css' => $datas['css'] ?: '',
-                    'label' => $datas['label'] ?: $datas['name'],
-                    'created' => date('Y-m-d H:i:s'),
-                    'created_by' => 62,
-                    'created_by_alias' => 'admin',
-                    'modified' => date('Y-m-d H:i:s'),
-                    'modified_by' => 0,
-                    'checked_out' => 0,
-                    'checked_out_time' => date('Y-m-d H:i:s'),
-                    'published' => $published,
-                    'is_join' => $datas['is_join'] ?: 0,
-                    'params' => json_encode($params)
-                ];
-
-                $query->clear()
-                    ->insert($db->quoteName('#__fabrik_groups'))
-                    ->columns($db->quoteName(array_keys($inserting_datas)))
-                    ->values(implode(',',$db->quote(array_values($inserting_datas))));
-                $db->setQuery($query);
-                $db->execute();
-
-                $result['id'] = $db->insertid();
-            } catch (Exception $e) {
-                $result['message'] = 'INSERTING FABRIK GROUP : Error : ' . $e->getMessage();
-                return $result;
-            }
-        } else {
-            $result['id'] = $is_existing;
-        }
-
-        $result['status'] = true;
-        return $result;
-    }
-
-    public static function joinFormGroup($form_id,$groups_id) {
-        $result = ['status' => false, 'message' => ''];
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        try {
-            foreach ($groups_id as $group){
-                $query->clear()
-                    ->select('id')
-                    ->from($db->quoteName('#__fabrik_formgroup'))
-                    ->where($db->quoteName('form_id') . ' = ' . $form_id)
-                    ->andWhere($db->quoteName('group_id') . ' = ' . $group);
-                $db->setQuery($query);
-                $is_existing = $db->loadResult();
-
-                if(!$is_existing){
-                    $query->clear()
-                        ->insert($db->quoteName('#__fabrik_formgroup'))
-                        ->set($db->quoteName('form_id') . ' = ' . $db->quote($form_id))
-                        ->set($db->quoteName('group_id') . ' = ' . $db->quote($group));
-                    $db->setQuery($query);
-                    $db->execute();
-                }
-            }
-        } catch (Exception $e) {
-            $result['message'] = 'JOIN FABRIK FORM WITH GROUPS : Error : ' . $e->getMessage();
-            return $result;
-        }
-
-        $result['status'] = true;
-        return $result;
-    }
-
-    public static function addFabrikJoin($datas,$params) {
-        $result = ['status' => false, 'message' => ''];
-
-        if(empty($datas['table_join'])){
-            $result['message'] = 'INSERTING FABRIK JOIN : Please indicate a table_join.';
-            return $result;
-        }
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        try {
-            $inserting_datas = [
-                'list_id' => $datas['list_id'] ?: 0,
-                'element_id' => $datas['element_id'] ?: 0,
-                'join_from_table' => $datas['join_from_table'] ?: '',
-                'table_join' => $datas['table_join'],
-                'table_key' => $datas['table_key'],
-                'table_join_key' => $datas['table_join_key'] ?: 'id',
-                'join_type' => $datas['join_type'] ?: 'left',
-                'group_id' => $datas['group_id'] ?: 0,
-                'params' => json_encode($params)
-            ];
-
-            $query->clear()
-                ->insert($db->quoteName('#__fabrik_joins'))
-                ->columns($db->quoteName(array_keys($inserting_datas)))
-                ->values(implode(',',$db->quote(array_values($inserting_datas))));
-            $db->setQuery($query);
-            $db->execute();
-        } catch (Exception $e) {
-            $result['message'] = 'INSERTING FABRIK JOIN : Error : ' . $e->getMessage();
-            return $result;
-        }
-
-        $result['status'] = true;
-        return $result;
-    }
-
-    public static function addColumn($table,$name,$type = 'VARCHAR',$length = 255,$null = 1){
-        $result = ['status' => false, 'message' => ''];
-
-        if(empty($table)){
-            $result['message'] = 'ADDING COLUMN : Please refer a database table.';
-            return $result;
-        }
-        if(empty($name)){
-            $result['message'] = 'ADDING COLUMN : Please refer a column name.';
-            return $result;
-        }
-
-        $db = JFactory::getDbo();
-
-        $column_existing = $db->setQuery('SHOW COLUMNS FROM ' . $table . ' WHERE ' . $db->quoteName('Field') . ' = ' . $db->quote($name))->loadResult();
-
-        if(empty($column_existing)){
-            $null_query = 'NULL';
-            if($null == 0){
-                $null_query = 'NOT NULL';
-            }
-            try {
-                $query = 'ALTER TABLE ' . $table . ' ADD COLUMN ' . $db->quoteName($name) . ' ' . $type . '(' . $length . ') ' . $null_query;
-                $db->setQuery($query);
-                $result['status'] = $db->execute();
-            } catch (Exception $e) {
-                $result['message'] = 'ADDING COLUMN : Error : ' . $e->getMessage();
-                return $result;
-            }
-        }
-
-        return $result;
-    }
-
     public static function addJoomlaModule($data, $published = 1, $all_pages = false) {
         $result = ['status' => false, 'message' => '', 'id' => 0];
         $module_table = \Joomla\CMS\Table\Table::getInstance('module');
@@ -2011,6 +1690,40 @@ class EmundusHelperUpdate
         }
 
         $result['status'] = true;
+        return $result;
+    }
+
+    public static function addColumn($table,$name,$type = 'VARCHAR',$length = 255,$null = 1){
+        $result = ['status' => false, 'message' => ''];
+
+        if(empty($table)){
+            $result['message'] = 'ADDING COLUMN : Please refer a database table.';
+            return $result;
+        }
+        if(empty($name)){
+            $result['message'] = 'ADDING COLUMN : Please refer a column name.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+
+        $column_existing = $db->setQuery('SHOW COLUMNS FROM ' . $table . ' WHERE ' . $db->quoteName('Field') . ' = ' . $db->quote($name))->loadResult();
+
+        if(empty($column_existing)){
+            $null_query = 'NULL';
+            if($null == 0){
+                $null_query = 'NOT NULL';
+            }
+            try {
+                $query = 'ALTER TABLE ' . $table . ' ADD COLUMN ' . $db->quoteName($name) . ' ' . $type . '(' . $length . ') ' . $null_query;
+                $db->setQuery($query);
+                $result['status'] = $db->execute();
+            } catch (Exception $e) {
+                $result['message'] = 'ADDING COLUMN : Error : ' . $e->getMessage();
+                return $result;
+            }
+        }
+
         return $result;
     }
 
