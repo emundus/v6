@@ -276,4 +276,45 @@ class EmundusModelModules extends JModelList {
 
 		return true;
 	}
+
+    public function installAnonymUserForms()
+    {
+        $response = [
+            'status' => false,
+            'message' => ''
+        ];
+
+        $db = JFactory::getDbo();
+        $buffer = file_get_contents(JPATH_LIBRARIES . '/emundus/sql/anonym_file_forms.sql');
+
+        if (!empty($buffer)) {
+            $queries = \JDatabaseDriver::splitSql($buffer);
+
+            if (!empty($queries)) {
+                $queries_passed = [];
+
+                foreach ($queries as $query) {
+                    $db->setQuery($db->convertUtf8mb4QueryToUtf8($query));
+                    try {
+                        $queries_passed[] = $db->execute();
+                    } catch (Exception $e) {
+                        $queries_passed[] = false;
+                        $response['message'] = basename(__FILE__) . ' | Error when install anonym files forms : ' . $e->getMessage();
+                        JLog::add($response['message'], JLog::ERROR, 'com_emundus.error');
+
+                        break;
+                    }
+                }
+
+                if (!in_array(false, $queries_passed)) {
+                    $response['status'] = true;
+                }
+            }
+        } else {
+            $response['message'] = basename(__FILE__) . ' | Failed to get files content : ' . JPATH_LIBRARIES . '/emundus/sql/anonym_file_forms.sql';
+            JLog::add($response['message'], JLog::WARNING, 'com_emundus.error');
+        }
+
+        return $response;
+    }
 }

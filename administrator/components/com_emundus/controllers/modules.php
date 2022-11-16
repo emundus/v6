@@ -30,6 +30,9 @@ class EmundusControllerModules extends JControllerLegacy
             case 'qcm':
                 $result['status'] = $this->installQcm();
                 break;
+            case 'anonym_user_sessions':
+                $result = $this->installAnonymUserForms();
+                break;
             default:
                 $result['message'] = 'Module not found';
         }
@@ -67,5 +70,14 @@ class EmundusControllerModules extends JControllerLegacy
 
 
         return true;
+    }
+
+    function installAnonymUserForms()
+    {
+        require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/models/modules.php');
+        $mModules = new EmundusModelModules();
+        $installed = $mModules->installAnonymUserForms();
+
+        return $installed;
     }
 }
