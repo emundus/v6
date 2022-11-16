@@ -402,6 +402,7 @@ class EmundusModelModules extends JModelList {
                     $form = $db->loadObject();
 
                     if (!empty($form->id)) {
+                        $response['send_anonym_form_id'] = $form->id;
                         $element_names = ['user_id', 'lastname', 'email', 'password'];
 
                         $query->clear()
@@ -452,6 +453,20 @@ class EmundusModelModules extends JModelList {
                             }
                         }
                     }
+
+                    $query->clear()
+                        ->select('id, params')
+                        ->from('#__fabrik_forms')
+                        ->where('label = ' . $db->quote('Me connecter depuis ma clé d’authentification'))
+                        ->order('id DESC')
+                        ->setLimit(1);
+
+                    $db->setQuery($query);
+                    $form = $db->loadObject();
+
+                    if (!empty($form->id)) {
+                        $response['connect_from_token_form_id'] = $form->id;
+                    }
                 }
             } else {
                 $response['message'] = basename(__FILE__) . ' | Failed to get files content : ' . JPATH_LIBRARIES . '/emundus/sql/anonym_file_forms.sql';
@@ -462,5 +477,10 @@ class EmundusModelModules extends JModelList {
         }
 
         return $response;
+    }
+
+    public function addAnonymUserMenus()
+    {
+
     }
 }
