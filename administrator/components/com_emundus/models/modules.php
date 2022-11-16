@@ -285,34 +285,79 @@ class EmundusModelModules extends JModelList {
         ];
 
         $db = JFactory::getDbo();
-        $buffer = file_get_contents(JPATH_LIBRARIES . '/emundus/sql/anonym_file_forms.sql');
 
-        if (!empty($buffer)) {
-            $queries = \JDatabaseDriver::splitSql($buffer);
+        $jos_emundus_users_altered = false;
+        $columns_to_add = [
+            'token' => 'varchar(255)',
+            'token_expiration' => 'datetime',
+            'firstname_anonym' => 'varchar(100)',
+            'lastname_anonym' => 'varchar(100)',
+            'email_anonym' => 'varchar(255)',
+            'is_anonym' => 'int',
+        ];
+        $db->setQuery('SHOW COLUMNS FROM jos_emundus_users');
+        $tableData = $db->loadObjectList();
 
-            if (!empty($queries)) {
-                $queries_passed = [];
+        $columns = array_map(function($tableData) {
+            return $tableData['Field'];
+        }, $tableData);
 
-                foreach ($queries as $query) {
-                    $db->setQuery($db->convertUtf8mb4QueryToUtf8($query));
-                    try {
-                        $queries_passed[] = $db->execute();
-                    } catch (Exception $e) {
-                        $queries_passed[] = false;
-                        $response['message'] = basename(__FILE__) . ' | Error when install anonym files forms : ' . $e->getMessage();
-                        JLog::add($response['message'], JLog::ERROR, 'com_emundus.error');
+        $queries_passed = [];
+        foreach($columns_to_add as $column_key => $column_type) {
+            if (!in_array($column_key, $columns)) {
 
-                        break;
-                    }
-                }
-
-                if (!in_array(false, $queries_passed)) {
-                    $response['status'] = true;
+                try {
+                    $db->setQuery("ALTER TABLE jos_emundus_users ADD $column_key $column_type null" );
+                    $queries_passed[] = $db->execute();
+                } catch (Exception $e) {
+                    $queries_passed[] = false;
+                    $response['message'] = basename(__FILE__) . ' | Error when install anonym files forms : ' . $e->getMessage();
+                    JLog::add($response['message'], JLog::ERROR, 'com_emundus.error');
                 }
             }
+        }
+
+        if (!in_array(false, $queries_passed)) {
+            $jos_emundus_users_altered = true;
+        }
+
+        if ($jos_emundus_users_altered) {
+            // ADD anonym email if necessary
+            $query = $db->getQuery(true);
+
+
+            // ADD TABLE jos_emundus_token_auth_attempts if necessary
+
+            $buffer = file_get_contents(JPATH_LIBRARIES . '/emundus/sql/anonym_file_forms.sql');
+            if (!empty($buffer)) {
+                $queries = \JDatabaseDriver::splitSql($buffer);
+
+                if (!empty($queries)) {
+                    $queries_passed = [];
+
+                    foreach ($queries as $query) {
+                        $db->setQuery($db->convertUtf8mb4QueryToUtf8($query));
+                        try {
+                            $queries_passed[] = $db->execute();
+                        } catch (Exception $e) {
+                            $queries_passed[] = false;
+                            $response['message'] = basename(__FILE__) . ' | Error when install anonym files forms : ' . $e->getMessage();
+                            JLog::add($response['message'], JLog::ERROR, 'com_emundus.error');
+
+                            break;
+                        }
+                    }
+
+                    if (!in_array(false, $queries_passed)) {
+                        $response['status'] = true;
+                    }
+                }
+            } else {
+                $response['message'] = basename(__FILE__) . ' | Failed to get files content : ' . JPATH_LIBRARIES . '/emundus/sql/anonym_file_forms.sql';
+                JLog::add($response['message'], JLog::WARNING, 'com_emundus.error');
+            }
         } else {
-            $response['message'] = basename(__FILE__) . ' | Failed to get files content : ' . JPATH_LIBRARIES . '/emundus/sql/anonym_file_forms.sql';
-            JLog::add($response['message'], JLog::WARNING, 'com_emundus.error');
+            $response['message'] = 'Could not update jos_emundus_users';
         }
 
         return $response;
