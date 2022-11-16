@@ -359,6 +359,31 @@ class com_emundusInstallerScript
                 ];
                 EmundusHelperUpdate::addJoomlaMenu($datas);
                 //
+
+                EmundusHelperUpdate::installExtension('Smart Search - eMundus','emundus','{"name":"Smart Search - eMundus","type":"plugin","creationDate":"November 2022","author":"HUBINET Brice","copyright":"Copyright (C) 2016 eMundus. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"","description":"This plugin indexes applications in eMundus extension.","group":"","filename":"emundus"}','plugin',1,'finder');
+                $datas = [
+                    'title' => 'Spotlight eMundus',
+                    'note' => 'Advanced search based on Joomla indexing',
+                    'position' => 'drawer',
+                    'module' => 'mod_finder',
+                    'access' => 7,
+                    'params' => [
+                        'searchfilter' => '',
+                        'show_autosuggest' => 0,
+                        'show_advanced' => 0,
+                        'field_size' => 25,
+                        'show_label' => 1,
+                        'label_pos' => 'left',
+                        'alt_label' => '',
+                        'show_button' => 0,
+                        'button_pos' => 'left',
+                        'opensearch' => 1,
+                        'opensearch_title' => '',
+                        'set_itemid' => 0,
+                        'layout' => '_:tchooz',
+                    ]
+                ];
+                EmundusHelperUpdate::addJoomlaModule($datas,1,true);
             }
 
             // Insert new translations in overrides files

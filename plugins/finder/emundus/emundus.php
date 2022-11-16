@@ -345,7 +345,7 @@ class PlgFinderEmundus extends FinderIndexerAdapter
 
         // Check if we can use the supplied SQL query.
         $query = $query instanceof JDatabaseQuery ? $query : $db->getQuery(true)
-            ->select('cc.id, u.name,cc.fnum, concat(cc.fnum,",",u.email) AS summary, ss.value as status')
+            ->select('cc.id, concat(u.name," - ",cc.fnum) as name,cc.fnum, concat(cc.fnum,",",u.email) AS summary, ss.value as status')
             ->select('u.name AS author')
             ->from('#__emundus_campaign_candidature AS cc')
             ->join('LEFT', '#__users AS u ON u.id = cc.applicant_id')
