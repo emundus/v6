@@ -206,19 +206,26 @@ class EmundusModelTrombinoscope extends JModelLegacy
         return $db->loadAssocList();
     }
 
-    public function selectLabelSetupAttachments($attachment_id){
+    public function selectLabelSetupAttachments($attachment_id)
+    {
+        $attachment = [];
+
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $query
-            ->select($db->quoteName('lbl'))
+
+        $query->select($db->quoteName('lbl'))
             ->from($db->quoteName('#__emundus_setup_attachments','esa'))
             ->join('INNER', $db->quoteName('#__emundus_setup_letters', 'esl') . ' ON (' . $db->quoteName('esa.id') . ' = ' . $db->quoteName('esl.attachment_id') . ')')
             ->where($db->quoteName('esl.attachment_id') . ' = '. $attachment_id );
 
-        //die($query);
         $db->setQuery($query);
-        return $db->loadAssoc();
+
+        try {
+            $attachment = $db->loadAssoc();
+        } catch (Exception $e) {
+            JLog::add('Failed to select attachment attachment label' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+        }
+
+        return $attachment;
     }
-
-
 }

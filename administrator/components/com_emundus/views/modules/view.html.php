@@ -37,21 +37,26 @@ class EmundusViewModules extends JViewLegacy
         JToolBarHelper::preferences('com_emundus', '580', '750');
         JToolBarHelper::help('screen.cpanel', true);
 
-        $qcm_module = new stdClass();
-        $qcm_module->label = 'QCM';
-        $qcm_module->module = 'qcm';
-        $modules[] = $qcm_module;
-
-        $homepage_module = new stdClass();
-        $homepage_module->label = 'Nouvelle page d\'accueil';
-        $homepage_module->module = 'homepage';
-        $modules[] = $homepage_module;
-
-        $sidebar_module = new stdClass();
-        $sidebar_module->label = 'Remplacer les modules des formulaires candidat';
-        $sidebar_module->module = 'checklist';
-        $modules[] = $sidebar_module;
-
+        $modules = [
+            'qcm' => [
+                'title' => 'QCM'
+            ],
+            'anonym_user_sessions' => [
+                'title' => 'Dépôt de dossiers anonymes',
+                'desc' => 'Installation des formulaires Fabrik et des menus qui permettent le dépôt de dossier sans avoir à se connecter ni créer de compte.',
+                'install_button' => 'Installer les formulaires'
+            ],
+            'homepage' => [
+                'title' => 'Nouvelle page d\'accueil',
+                'desc' => '',
+                'install_button' => 'Installer la page d\'accueil'
+            ],
+            'checklist' => [
+                'title' => 'Remplacer les modules des formulaires candidats',
+                'desc' => '',
+                'install_button' => 'Installer'
+            ]
+        ];
         $this->assignRef('modules', $modules);
 
         parent::display($tpl);

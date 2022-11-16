@@ -75,7 +75,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $add_admission_prefix = $params->get('add_admission_prefix', 1);
     $absolute_urls = $params->get('absolute_urls', 1);
 
-    $show_status = $params->get('show_status') !== null ? explode(',', $params->get('show_status')) : null;
+    $show_status = $params->get('show_status', '') !== '' ? explode(',', $params->get('show_status', '')) : null;
 
     $show_remove_files = $params->get('show_remove_files', 1);
     $show_archive_files = $params->get('show_archived_files', 1);

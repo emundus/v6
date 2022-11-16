@@ -1,0 +1,80 @@
+CREATE TABLE IF NOT EXISTS `#__miniorange_saml_customer_details` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`email` VARCHAR(255)  NOT NULL ,
+`password` VARCHAR(255)  NOT NULL ,
+`admin_phone` VARCHAR(255)  NOT NULL ,
+`customer_key` VARCHAR(255)  NOT NULL ,
+`customer_token` VARCHAR(255) NOT NULL,
+`api_key` VARCHAR(255)  NOT NULL,
+`login_status` BOOLEAN NOT NULL,
+`registration_status` VARCHAR(255) NOT NULL,
+`status` VARCHAR(255) NOT NULL,
+`new_registration`BOOLEAN NOT NULL,
+`sml_lk` VARCHAR(255) NOT NULL,
+`in_cmp` VARCHAR(255) NOT NULL,
+`email_count` int(11),
+`enable_admin_login` BOOLEAN DEFAULT FALSE,
+`enable_redirect` BOOLEAN DEFAULT FALSE,
+`user_login_for_other_domains` VARCHAR(255) DEFAULT 'BLOCK',
+`sp_base_url` VARCHAR(255),
+`sp_entity_id` VARCHAR(255),
+`idp_link_page` VARCHAR(255),
+`mo_idp_list_link_page` VARCHAR(255),
+PRIMARY KEY (`id`)
+) DEFAULT COLLATE=utf8_general_ci;
+
+
+CREATE TABLE IF NOT EXISTS `#__miniorange_saml_config` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`idp_entity_id` VARCHAR(255)  NOT NULL ,
+`single_signon_service_url` VARCHAR(255)  NOT NULL ,
+`binding` VARCHAR(255)  NOT NULL ,
+`single_logout_url` VARCHAR(1024)  NOT NULL ,
+`certificate` VARCHAR(4096)  NOT NULL ,
+`enable_email` BOOLEAN NOT NULL,
+`username` VARCHAR(255)  NOT NULL,
+`email` VARCHAR(255)  NOT NULL,
+`name` VARCHAR(255)  NOT NULL,
+`idp_name` VARCHAR(255) NOT NULL,
+`domain_mapping` VARCHAR(4096),
+`public_certificate` VARCHAR(4096) NOT NULL,
+`private_certificate` VARCHAR(4096) NOT NULL,
+`mo_saml_country_code_text` VARCHAR(12) NOT NULL,
+`mo_saml_certificate_state_name` VARCHAR(32) NOT NULL,
+`mo_saml_certificate_company_name` VARCHAR(32) NOT NULL,
+`miniorange_saml_unit_name` VARCHAR(24) NOT NULL,
+`mo_saml_certificate_common_name` VARCHAR(24) NOT NULL,
+`mo_saml_select_digest_algo` VARCHAR(12) NOT NULL,
+`mo_saml_select_private_key_bit` INT(12) NOT NULL,
+`mo_saml_select_valid_days` INT(12) NOT NULL,
+`mo_saml_select_sign_algo` VARCHAR (256) NOT NULL,
+`auto_sync_enable`  VARCHAR(255) NOT NULL,
+`metadata_url`  VARCHAR(255) NOT NULL,
+`metadata_check_timestamp`  VARCHAR(255) NOT NULL,
+`mdata_sync_interval`  VARCHAR(255) NOT NULL,
+`user_profile_attributes` VARCHAR(255) NOT NULL,
+`saml_request_sign` VARCHAR(10) NOT NULL,
+`name_id_format` VARCHAR(255) NOT NULL,
+`miniorange_saml_idp_slo_binding` VARCHAR(15) NOT NULL,
+
+PRIMARY KEY (`id`)
+) DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__miniorange_saml_role_mapping` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`default_role` VARCHAR(255)  NOT NULL ,
+`mapping_value_default` VARCHAR(255)  NOT NULL ,
+`role_mapping_count` int(11) UNSIGNED NOT NULL ,
+`mapping_memberof_attribute` VARCHAR(255)  NOT NULL ,
+`role_mapping_key_value` VARCHAR(10240) NOT NULL,
+`params` VARCHAR(255)  NOT NULL,
+`enable_saml_role_mapping` int(11) UNSIGNED NOT NULL ,
+`idp_id` int(11) NOT NULL,
+`do_not_auto_create_users` int(11),
+`disable_existing_users_role_update` BOOLEAN NOT NULL default false,
+`update_existing_users_role_without_removing_current` BOOLEAN NOT NULL default false,
+`grp` VARCHAR(255)  NOT NULL,
+PRIMARY KEY (`id`)
+) DEFAULT COLLATE=utf8_general_ci;
+
+INSERT IGNORE INTO `#__miniorange_saml_customer_details`(`id`,`login_status`) values (1,true) ;

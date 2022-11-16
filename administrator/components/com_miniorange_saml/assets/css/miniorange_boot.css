@@ -1414,6 +1414,27 @@ fieldset:disabled a.mo_boot_btn {
   box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
 }
 
+.mo_boot_btn-saml{
+  color:white;
+  background-color:#226a8b;
+  border-color: #226a8b;
+}
+
+.mo_boot_btn-saml:hover{
+  color:white;
+  background-color:#163c4e;
+}
+
+.mo_boot_btn-saml:focus, .mo_boot_btn-saml.mo_boot_focus {
+  box-shadow: 0 0 0 0.2rem #163c4e;
+}
+
+.mo_boot_btn-saml.mo_boot_disabled, .mo_boot_btn-saml:disabled {
+  color: #fff;
+  background-color: #163c4e;
+  border-color: #163c4e;
+}
+
 .mo_boot_btn-secondary {
   color: #fff;
   background-color: #6c757d;
@@ -1450,14 +1471,14 @@ fieldset:disabled a.mo_boot_btn {
 
 .mo_boot_btn-success {
   color: #fff;
-  background-color: #46a546;
-  border-color: #46a546;
+  background-color: #457d54;
+  border-color: #457d54;
 }
 
 .mo_boot_btn-success:hover {
   color: #fff;
-  background-color: #2f6f2f;
-  border-color: #2f6f2f;
+  background-color: #457d54;
+  border-color: #457d54;
 }
 
 .mo_boot_btn-success:focus, .mo_boot_btn-success.mo_boot_focus {
@@ -1466,15 +1487,15 @@ fieldset:disabled a.mo_boot_btn {
 
 .mo_boot_btn-success.mo_boot_disabled, .mo_boot_btn-success:disabled {
   color: #fff;
-  background-color: #46a546;
-  border-color: #46a546;
+  background-color: #457d54;
+  border-color:#457d54;
 }
 
 .mo_boot_btn-success:not(:disabled):not(.mo_boot_disabled):active, .mo_boot_btn-success:not(:disabled):not(.mo_boot_disabled).mo_boot_active,
 .mo_boot_show > .mo_boot_btn-success.mo_boot_dropdown-toggle {
   color: #fff;
-  background-color: #1e7e34;
-  border-color: #1c7430;
+  background-color:#457d54;
+  border-color: #457d54;
 }
 
 .mo_boot_btn-success:not(:disabled):not(.mo_boot_disabled):active:focus, .mo_boot_btn-success:not(:disabled):not(.mo_boot_disabled).mo_boot_active:focus,

@@ -154,7 +154,7 @@ $eMConfig = JComponentHelper::getParams('com_emundus');
                     return response.json();
                 }
             }).then((res) => {
-                if(res.username !== ''){
+                if(res.username !== '' && res.username !== null){
                     document.getElementsByName('username')[0].value = res.username;
                 }
 

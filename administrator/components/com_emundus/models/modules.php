@@ -1,18 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yoan
- * Date: 28/01/15
- * Time: 16:28
- */
-
-use Joomla\CMS\Table\Table;
-
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
 
+/**
+ * @package     com_emundus
+ *
+ * @since version 1.34.0
+ */
 class EmundusModelModules extends JModelList {
 
 	public function installQCM() {
@@ -36,7 +32,7 @@ class EmundusModelModules extends JModelList {
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;")->execute();
                 $db->setQuery("create index jos_emundus_setup_qcm_jos_fabrik_forms_id_fk on jos_emundus_setup_qcm (form_id);")->execute();
                 $db->setQuery("create index jos_emundus_setup_qcm_jos_fabrik_groups_id_fk on jos_emundus_setup_qcm (group_id);")->execute();
-                $db->setQuery("ALTER TABLE `jos_emundus_setup_qcm` 
+                $db->setQuery("ALTER TABLE `jos_emundus_setup_qcm`
                     ADD CONSTRAINT jos_emundus_setup_qcm_ibfk_1 FOREIGN KEY (`form_id`) REFERENCES `jos_fabrik_forms` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
                     ADD CONSTRAINT jos_emundus_setup_qcm_ibfk_2 FOREIGN KEY (`group_id`) REFERENCES `jos_fabrik_groups` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;")->execute();
             }
@@ -142,144 +138,346 @@ class EmundusModelModules extends JModelList {
                     on jos_emundus_qcm_applicants (fnum);")->execute();
             }
 
-            // TODO : Create Fabrik lists and elements
-            $datas = [
-                'label' => 'QCM - Questions',
-            ];
-            $form_questions = EmundusHelperUpdate::addFabrikForm($datas);
+            if(!in_array('jos_emundus_setup_qcm_campaign', $tables)) {
+                $db->setQuery("create table jos_emundus_setup_qcm_campaign
+                    (
+                        id        int auto_increment
+                            primary key,
+                        date_time datetime null,
+                        campaign  int      null,
+                        label     text     null,
+                        status    int(2)   null,
+                        template  text     null,
+                        profile   int      null
+                    ) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;")->execute();
 
-            if($form_questions['status']) {
-                $datas = [
-                    'label' => 'QCM - Questions',
-                    'introduction' => '',
-                    'form_id' => $form_questions['id'],
-                    'db_table_name' => 'jos_emundus_qcm_questions',
-                    'access' => 7,
-                ];
-                $list_questions = EmundusHelperUpdate::addFabrikList($datas);
+                $db->setQuery("create table jos_emundus_setup_qcm_campaign_1052_repeat
+                    (
+                        id        int auto_increment
+                            primary key,
+                        parent_id int null,
+                        category  int null
+                    ) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;")->execute();
 
-                $datas = [
-                    'name' => 'QCM - Questions',
-                ];
-                $group_questions = EmundusHelperUpdate::addFabrikGroup($datas);
-                if($group_questions['status']){
-                    EmundusHelperUpdate::joinFormGroup($form_questions['id'],[$group_questions['id']]);
-                }
+                $db->setQuery("create index fb_parent_fk_parent_id_INDEX
+                        on jos_emundus_setup_qcm_campaign_1052_repeat (parent_id);")->execute();
+            }
 
-                $repeat_params = [
-                    'repeat_group_button' => 1
-                ];
-                $datas = [
-                    'name' => 'QCM - Proposals',
-                    'is_join' => '1'
-                ];
-                $group_proposals = EmundusHelperUpdate::addFabrikGroup($datas,$repeat_params);
-                if($group_proposals['status']){
-                    EmundusHelperUpdate::joinFormGroup($form_questions['id'],[$group_proposals['id']]);
-
-                    $datas = [
-                        'list_id' => $list_questions['id'],
-                        'join_from_table' => 'jos_emundus_qcm_questions',
-                        'table_join' => 'jos_emundus_qcm_questions_765_repeat',
-                        'table_key' => 'id',
-                        'table_join_key' => 'parent_id',
-                        'group_id' => $group_proposals['id'],
-                    ];
-                    $join_params = [
-                        'type' => 'group',
-                        'pk' => '`jos_emundus_qcm_questions_765_repeat`.`id`',
-                    ];
-                    EmundusHelperUpdate::addFabrikJoin($datas,$join_params);
+            $buffer = file_get_contents(JPATH_SITE . '/modules/mod_emundus_qcm/install.sql');
+            $queries = \JDatabaseDriver::splitSql($buffer);
+            foreach ($queries as $query) {
+                $db->setQuery($db->convertUtf8mb4QueryToUtf8($query));
+                try {
+                    $db->execute();
+                } catch (Exception $e) {
+                    JLog::add(basename(__FILE__) . ' | Error when install QCM setup : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
                 }
             }
 
+            EmundusHelperUpdate::insertTranslationsTag('QCM_QUESTIONS','Questions','override',null,'fabrik_elements','label');
+            EmundusHelperUpdate::insertTranslationsTag('QCM_QUESTIONS','Questions','override',null,'fabrik_elements','label','en-GB');
+
+            EmundusHelperUpdate::insertTranslationsTag('QCM','QCM','override',null,'fabrik_elements','label');
+            EmundusHelperUpdate::insertTranslationsTag('QCM','QCM','override',null,'fabrik_elements','label','en-GB');
+
+            EmundusHelperUpdate::insertTranslationsTag('QCM_SECTION','Catégorie','override',null,'fabrik_elements','label');
+            EmundusHelperUpdate::insertTranslationsTag('QCM_SECTION','Category','override',null,'fabrik_elements','label','en-GB');
+
+            EmundusHelperUpdate::insertTranslationsTag('QCM_TIME_QUESTION','Temps (en s)','override',null,'fabrik_elements','label');
+            EmundusHelperUpdate::insertTranslationsTag('QCM_TIME_QUESTION','Time (in s)','override',null,'fabrik_elements','label','en-GB');
+
+            EmundusHelperUpdate::insertTranslationsTag('QCM_QUESTION','Question','override',null,'fabrik_elements','label');
+            EmundusHelperUpdate::insertTranslationsTag('QCM_QUESTION','Question','override',null,'fabrik_elements','label','en-GB');
+
+            EmundusHelperUpdate::insertTranslationsTag('QCM_ANSWERS','Réponse(s)','override',null,'fabrik_elements','label');
+            EmundusHelperUpdate::insertTranslationsTag('QCM_ANSWERS','Answer(s)','override',null,'fabrik_elements','label','en-GB');
+
+            EmundusHelperUpdate::insertTranslationsTag('QCM_NAME','Nom','override',null,'fabrik_elements','label');
+            EmundusHelperUpdate::insertTranslationsTag('QCM_NAME','Name','override',null,'fabrik_elements','label','en-GB');
+
+            EmundusHelperUpdate::insertTranslationsTag('QCM_FORM','Formulaire','override',null,'fabrik_elements','label');
+            EmundusHelperUpdate::insertTranslationsTag('QCM_FORM','Form','override',null,'fabrik_elements','label','en-GB');
+
+            EmundusHelperUpdate::insertTranslationsTag('QCM_QUESTIONS_COUNT','Nombre de questions','override',null,'fabrik_elements','label');
+            EmundusHelperUpdate::insertTranslationsTag('QCM_QUESTIONS_COUNT','Number of questions','override',null,'fabrik_elements','label','en-GB');
+
+            EmundusHelperUpdate::insertTranslationsTag('QCM_QUESTION_OR_SECTIONS','Choisir un tye','override',null,'fabrik_elements','label');
+            EmundusHelperUpdate::insertTranslationsTag('QCM_QUESTION_OR_SECTIONS','Choose a type','override',null,'fabrik_elements','label','en-GB');
+
+            EmundusHelperUpdate::insertTranslationsTag('QCM_GROUP','Formulaire','override',null,'fabrik_elements','label');
+            EmundusHelperUpdate::insertTranslationsTag('QCM_GROUP','Form','override',null,'fabrik_elements','label','en-GB');
+
+            //TODO: Create Joomla menus
+            $query = $db->getQuery(true);
+
             $datas = [
-                'label' => 'QCM - Section',
+                'menutype' => 'coordinatormenu',
+                'title' => 'QCM',
+                'alias' => 'qcm',
+                'path' => 'qcm',
+                'link' => '#',
+                'type' => 'url',
+                'component_id' => 0,
             ];
-            $form_sections = EmundusHelperUpdate::addFabrikForm($datas);
+            $header = EmundusHelperUpdate::addJoomlaMenu($datas);
 
-            if($form_sections['status']) {
-                $datas = [
-                    'label' => 'QCM - Section',
-                    'introduction' => '',
-                    'form_id' => $form_sections['id'],
-                    'db_table_name' => 'jos_emundus_qcm_section',
-                    'access' => 7,
-                ];
-                EmundusHelperUpdate::addFabrikList($datas);
-
-                $datas = [
-                    'name' => 'QCM - Section',
-                ];
-                $group_sections = EmundusHelperUpdate::addFabrikGroup($datas);
-                if($group_sections['status']){
-                    EmundusHelperUpdate::joinFormGroup($form_sections['id'],[$group_sections['id']]);
-                }
-            }
-
+            $query->select('id')
+                ->from($db->quoteName('#__fabrik_lists'))
+                ->where($db->quoteName('db_table_name') . ' LIKE ' . $db->quote('jos_emundus_qcm_section'));
+            $db->setQuery($query);
+            $section_list = $db->loadResult();
             $datas = [
-                'label' => 'QCM - Setup',
+                'menutype' => 'coordinatormenu',
+                'title' => 'Catégories',
+                'alias' => 'categories',
+                'path' => 'qcm/categories',
+                'link' => 'index.php?option=com_fabrik&view=list&listid=' . $section_list,
+                'type' => 'component',
+                'component_id' => 10041,
             ];
-            $form_setup = EmundusHelperUpdate::addFabrikForm($datas);
+            EmundusHelperUpdate::addJoomlaMenu($datas,$header['id']);
 
-            if($form_setup['status']) {
-                $datas = [
-                    'label' => 'QCM - Setup',
-                    'introduction' => '',
-                    'form_id' => $form_setup['id'],
-                    'db_table_name' => 'jos_emundus_qcm_section',
-                    'access' => 7,
-                ];
-                EmundusHelperUpdate::addFabrikList($datas);
-
-                $datas = [
-                    'name' => 'QCM - Setup',
-                ];
-                $group_setup = EmundusHelperUpdate::addFabrikGroup($datas);
-                if($group_setup['status']){
-                    EmundusHelperUpdate::joinFormGroup($form_setup['id'],[$group_setup['id']]);
-                }
-            }
-
-            $plugin_qcm_setup = [
-                'plugin_state' => ['1'],
-                'only_process_curl' => ['onBeforeStore'],
-                'form_php_file' => ['emundus-qcm-setup.php'],
-                'form_php_require_once' => ['0'],
-                'plugins' => ['php'],
-                'plugin_locations' => ['both'],
-                'plugin_events' => ['both'],
-                'plugin_description' => ['Setup QCM'],
-            ];
+            $query->clear()
+                ->select('id')
+                ->from($db->quoteName('#__fabrik_lists'))
+                ->where($db->quoteName('db_table_name') . ' LIKE ' . $db->quote('jos_emundus_qcm_questions'));
+            $db->setQuery($query);
+            $questions_list = $db->loadResult();
             $datas = [
-                'label' => 'QCM - Applicants',
+                'menutype' => 'coordinatormenu',
+                'title' => 'Questions',
+                'alias' => 'questions',
+                'path' => 'qcm/questions',
+                'link' => 'index.php?option=com_fabrik&view=list&listid=' . $questions_list,
+                'type' => 'component',
+                'component_id' => 10041,
             ];
-            $form_applicants = EmundusHelperUpdate::addFabrikForm($datas,$plugin_qcm_setup);
+            EmundusHelperUpdate::addJoomlaMenu($datas,$header['id']);
 
-            if($form_applicants['status']) {
-                $datas = [
-                    'label' => 'QCM - Applicants',
-                    'introduction' => '',
-                    'form_id' => $form_applicants['id'],
-                    'db_table_name' => 'jos_emundus_qcm_applicants',
-                    'access' => 7,
-                ];
-                EmundusHelperUpdate::addFabrikList($datas);
-
-                $datas = [
-                    'name' => 'QCM - Applicants',
-                ];
-                $group_applicants = EmundusHelperUpdate::addFabrikGroup($datas);
-                if($group_applicants['status']){
-                    EmundusHelperUpdate::joinFormGroup($form_applicants['id'],[$group_applicants['id']]);
-                }
-            }
+            $query->clear()
+                ->select('id')
+                ->from($db->quoteName('#__fabrik_lists'))
+                ->where($db->quoteName('db_table_name') . ' LIKE ' . $db->quote('jos_emundus_setup_qcm_campaign'));
+            $db->setQuery($query);
+            $setup_campaign_list = $db->loadResult();
+            $datas = [
+                'menutype' => 'coordinatormenu',
+                'title' => 'Configuration',
+                'alias' => 'configuration',
+                'path' => 'qcm/configuration',
+                'link' => 'index.php?option=com_fabrik&view=list&listid=' . $setup_campaign_list,
+                'type' => 'component',
+                'component_id' => 10041,
+            ];
+            EmundusHelperUpdate::addJoomlaMenu($datas,$header['id']);
 		} catch (Exception $e) {
 			return false;
 		}
 
 		return true;
 	}
+
+    public function installAnonymUserForms()
+    {
+        $response = [
+            'status' => false,
+            'message' => ''
+        ];
+
+        $db = JFactory::getDbo();
+
+        $jos_emundus_users_altered = false;
+        $columns_to_add = [
+            'token' => 'varchar(255)',
+            'token_expiration' => 'datetime',
+            'firstname_anonym' => 'varchar(100)',
+            'lastname_anonym' => 'varchar(100)',
+            'email_anonym' => 'varchar(255)',
+            'is_anonym' => 'int',
+        ];
+        $db->setQuery('SHOW COLUMNS FROM jos_emundus_users');
+        $tableData = $db->loadObjectList();
+
+        $columns = array_map(function ($tableData) {
+            return $tableData->Field;
+        }, $tableData);
+
+        $queries_passed = [];
+        foreach ($columns_to_add as $column_key => $column_type) {
+            if (!in_array($column_key, $columns)) {
+                try {
+                    $db->setQuery("ALTER TABLE jos_emundus_users ADD $column_key $column_type null");
+                    $queries_passed[] = $db->execute();
+                } catch (Exception $e) {
+                    $queries_passed[] = false;
+                    $response['message'] = basename(__FILE__) . ' | Error when install anonym files forms : ' . $e->getMessage();
+                    JLog::add($response['message'], JLog::ERROR, 'com_emundus.error');
+                }
+            }
+        }
+
+        if (!in_array(false, $queries_passed)) {
+            $jos_emundus_users_altered = true;
+        }
+
+        if ($jos_emundus_users_altered) {
+            $query = $db->getQuery(true);
+            $query->select('id')
+                ->from('#__emundus_setup_emails')
+                ->where('lbl = ' . $db->quote('anonym_token_email'));
+
+            $db->setQuery($query);
+            $email_id = $db->loadResult();
+
+            if (empty($email_id)) {
+                $query->clear()
+                    ->insert('#__emundus_setup_emails')
+                    ->columns(['lbl', 'subject', 'emailfrom', 'message', 'name', 'type', 'published', 'email_tmpl', 'letter_attachment', 'candidate_attachment', 'category', 'cci', 'tags'])
+                    ->values($db->quote('anonym_token_email') . ',' . $db->quote('Dossier envoyé avec succès') . ', null, ' . $db->quote("<p>URL d''activation : [ACTIVATION_ANONYM_URL]</p><p>Votre mot de passe : [PASSWORD]</p><p>Votre clé d''authentification sans mot de passe (valide une semaine) : [TOKEN]</p>") . ', null, 2, 1, 1, null, null, null, null, null');
+
+                $db->setQuery($query);
+                $db->execute();
+            }
+
+            // ADD TABLE jos_emundus_token_auth_attempts if necessary
+            $db->setQuery('SHOW TABLES;');
+            $tables = $db->loadColumn();
+
+            if (!in_array('jos_emundus_token_auth_attempts', $tables)) {
+                $db->setQuery('CREATE TABLE jos_emundus_token_auth_attempts(
+                    id               int auto_increment primary key,
+                    date_time        datetime     null,
+                    token            varchar(255) null,
+                    ip               text         null,
+                    succeed          int          null)'
+                );
+
+                $created = false;
+                try {
+                    $created = $db->execute();
+                } catch (Exception $e) {
+                    JLog::add('Failed to create jos_emundus_token_auth_attempts table : ' . $e->getMessage(), JLog::WARNING, 'com_emundus.error');
+                }
+
+                if (!$created) {
+                    $response['message'] = 'Failed to create jos_emundus_token_auth_attempts table';
+                    return $response;
+                }
+            }
+
+            $buffer = file_get_contents(JPATH_LIBRARIES . '/emundus/sql/anonym_file_forms.sql');
+            if (!empty($buffer)) {
+                $file_queries = \JDatabaseDriver::splitSql($buffer);
+
+                if (!empty($file_queries)) {
+                    $queries_passed = [];
+
+                    foreach ($file_queries as $file_query) {
+                        $db->setQuery($db->convertUtf8mb4QueryToUtf8($file_query));
+                        try {
+                            $queries_passed[] = $db->execute();
+                        } catch (Exception $e) {
+                            $queries_passed[] = false;
+                            $response['message'] = basename(__FILE__) . ' | Error when install anonym files forms : ' . $e->getMessage();
+                            JLog::add($response['message'], JLog::ERROR, 'com_emundus.error');
+
+                            break;
+                        }
+                    }
+
+                    if (!in_array(false, $queries_passed)) {
+                        $response['status'] = true;
+                    } else {
+                        $response['message'] = 'One or multiple sql file queries failed';
+                    }
+
+                    $query->clear()
+                        ->select('id, params')
+                        ->from('#__fabrik_forms')
+                        ->where('label = ' . $db->quote('Déposer un dossier anonyme'))
+                        ->order('id DESC')
+                        ->setLimit(1);
+
+                    $db->setQuery($query);
+                    $form = $db->loadObject();
+
+                    if (!empty($form->id)) {
+                        $response['send_anonym_form_id'] = $form->id;
+                        $element_names = ['user_id', 'lastname', 'email', 'password'];
+
+                        $query->clear()
+                            ->select('jfe.id, jfe.name')
+                            ->from('#__fabrik_elements AS jfe')
+                            ->leftJoin('#__fabrik_groups AS jfg ON jfg.id = jfe.group_id')
+                            ->leftJoin('#__fabrik_formgroup as jff ON jff.group_id = jfg.id')
+                            ->where('jff.form_id = ' . $form->id)
+                            ->andWhere('jfe.name IN (' . implode(',', $db->quote($element_names)) . ')');
+
+                        $db->setQuery($query);
+                        $elements = $db->loadObjectList();
+
+                        if (!empty($elements)) {
+                            $form->params = json_decode($form->params, true);
+                            foreach ($elements as $element) {
+                                switch ($element->name) {
+                                    case 'user_id':
+                                        $form->params['juser_field_userid'] = [$element->id];
+                                        break;
+                                    case 'lastname':
+                                        $form->params['juser_field_name'] = [$element->id];
+                                        break;
+                                    case 'email':
+                                        $form->params['juser_field_username'] = [$element->id];
+                                        $form->params['juser_field_email'] = [$element->id];
+                                        break;
+                                    case 'password':
+                                        $form->params['juser_field_password'] = [$element->id];
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+
+                            $form->params = json_encode($form->params);
+                            $query->clear()
+                                ->update('#__fabrik_forms')
+                                ->set('params = ' . $db->quote($form->params))
+                                ->where('id = ' . $form->id);
+
+                            $db->setQuery($query);
+
+                            try {
+                                $db->execute();
+                            } catch (Exception $e) {
+                                JLog::add('Failed to update anonym form params for juser mapping : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                            }
+                        }
+                    }
+
+                    $query->clear()
+                        ->select('id, params')
+                        ->from('#__fabrik_forms')
+                        ->where('label = ' . $db->quote('Me connecter depuis ma clé d’authentification'))
+                        ->order('id DESC')
+                        ->setLimit(1);
+
+                    $db->setQuery($query);
+                    $form = $db->loadObject();
+
+                    if (!empty($form->id)) {
+                        $response['connect_from_token_form_id'] = $form->id;
+                    }
+                }
+            } else {
+                $response['message'] = basename(__FILE__) . ' | Failed to get files content : ' . JPATH_LIBRARIES . '/emundus/sql/anonym_file_forms.sql';
+                JLog::add($response['message'], JLog::WARNING, 'com_emundus.error');
+            }
+        } else {
+            $response['message'] = 'Could not update jos_emundus_users';
+        }
+
+        return $response;
+    }
 
     public function installHomepage() {
         $db = JFactory::getDbo();
@@ -433,6 +631,8 @@ class EmundusModelModules extends JModelList {
                     $db->execute();
                 }
             }
+
+            return true;
         } catch (Exception $e) {
             return false;
         }
@@ -550,6 +750,8 @@ class EmundusModelModules extends JModelList {
                     $db->execute();
                 }
             }
+
+            return true;
         } catch (Exception $e) {
             echo '<pre>'; var_dump($e->getMessage()); echo '</pre>'; die;
         }

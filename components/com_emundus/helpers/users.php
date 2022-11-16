@@ -76,4 +76,10 @@ class EmundusHelperUsers {
         $dash_str .= $password;
         return $dash_str;
     }
+
+    static function generateToken($length = 16)
+    {
+        $rand_token = openssl_random_pseudo_bytes($length);
+        return bin2hex($rand_token);
+    }
 }

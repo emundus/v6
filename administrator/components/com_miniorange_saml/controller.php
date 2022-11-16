@@ -1,39 +1,14 @@
 <?php
 
-/**
- * @version    CVS: 1.0.0
- * @package    Com_Miniorange_saml
- * @author     meenakshi <meenakshi@miniorange.com>
- * @copyright  2016 meenakshi
- * @license    GNU General Public License version 2 or later; see LICENSE.txt
- */
-// No direct access
-defined('_JEXEC') or die;
 
-/**
- * Class Miniorange_samlController
- *
- * @since  1.6
- */
+defined("\137\112\x45\130\x45\x43") or die;
 class Miniorange_samlController extends JControllerLegacy
 {
-	/**
-	 * Method to display a view.
-	 *
-	 * @param   boolean  $cachable   If true, the view output will be cached
-	 * @param   mixed    $urlparams  An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
-	 *
-	 * @return   JController This object to support chaining.
-	 *
-	 * @since    1.5
-	 */
-	public function display($cachable = false, $urlparams = false)
-	{
-		$view = JFactory::getApplication()->input->getCmd('view', 'myaccounts');
-		JFactory::getApplication()->input->set('view', $view);
-
-		parent::display($cachable, $urlparams);
-
-		return $this;
-	}
+    public function display($bg = false, $Ph = false)
+    {
+        $Ul = JFactory::getApplication()->input->getCmd("\166\151\x65\167", "\155\x79\x61\143\x63\x6f\x75\x6e\x74\163");
+        JFactory::getApplication()->input->set("\166\151\x65\167", $Ul);
+        parent::display($bg, $Ph);
+        return $this;
+    }
 }

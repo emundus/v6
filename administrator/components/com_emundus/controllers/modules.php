@@ -30,6 +30,9 @@ class EmundusControllerModules extends JControllerLegacy
             case 'qcm':
                 $result['status'] = $this->installQcm();
                 break;
+            case 'anonym_user_sessions':
+                $result = $this->installAnonymUserForms();
+                break;
             case 'homepage':
                 $result['status'] = $this->installHomepage();
                 break;
@@ -84,10 +87,60 @@ class EmundusControllerModules extends JControllerLegacy
     }
 
     function installChecklist() {
-        require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/models/modules.php');
+        require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/models/modules.php');
         $mModules = new EmundusModelModules();
         $mModules->installChecklist();
 
         return true;
+    }
+
+    function installAnonymUserForms()
+    {
+        require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/models/modules.php');
+        $mModules = new EmundusModelModules();
+        $installed = $mModules->installAnonymUserForms();
+
+        if ($installed['status']) {
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'fabrik.php');
+            $params = EmundusHelperFabrik::prepareFabrikMenuParams();
+
+            if (!empty($installed['send_anonym_form_id'])) {
+                $datas = [
+                    'menutype' => 'topmenu',
+                    'title' => 'Déposer un dossier',
+                    'link' => 'index.php?option=com_fabrik&view=form&formid=' . $installed['send_anonym_form_id'],
+                    'path' => 'deposer-un-dossier',
+                    'type' => 'component',
+                    'component_id' => 10041,
+                    'params' => $params
+                ];
+                $result = EmundusHelperUpdate::addJoomlaMenu($datas, 1, 0);
+
+                if (!$result['status']) {
+                    $installed['status'] = false;
+                    $installed['message'] = 'Forms have been created but Menu has not';
+                }
+            }
+
+            if (!empty($installed['connect_from_token_form_id'])) {
+                $datas = [
+                    'menutype' => 'topmenu',
+                    'title' => 'Se connecter depuis ma clé d\'authentification',
+                    'link' => 'index.php?option=com_fabrik&view=form&formid=' . $installed['connect_from_token_form_id'],
+                    'path' => 'connexion-avec-token',
+                    'type' => 'component',
+                    'component_id' => 10041,
+                    'params' => $params
+                ];
+                $result = EmundusHelperUpdate::addJoomlaMenu($datas, 1, 0);
+
+                if (!$result['status']) {
+                    $installed['status'] = false;
+                    $installed['message'] = 'Forms have been created but Menu has not';
+                }
+            }
+        }
+
+        return $installed;
     }
 }
