@@ -16,10 +16,10 @@
         }
     ],
     "require": {
-        "php-http/guzzle6-adapter": "^2.0",
+        "php-http/guzzle7-adapter": "1.0.0",
         "thecodingmachine/gotenberg-php-client": "^6.2",
         "phpoffice/phpspreadsheet": "^1.12",
-        "phpoffice/phpword": "^0.17.0",
+        "phpoffice/phpword": "^0.18.3",
         "setasign/fpdf": "1.8.*",
         "setasign/fpdi": "^2.3",
         "tecnickcom/tcpdf": "6.2.*",
