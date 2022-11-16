@@ -35,11 +35,13 @@ endif;
 <div class="page-header">
     <h1><?php $title = explode('-', $form->label); echo !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0])); ?></h1>
 </div>
-<?php
-endif;
+<?php endif; ?>
 
+    <div class="em-form-intro">
+<?php
 echo $form->intro;
 ?>
+    </div>
 <form method="post" <?php echo $form->attribs?>>
 <?php
 echo $this->plugintop;
