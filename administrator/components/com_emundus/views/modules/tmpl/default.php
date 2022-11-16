@@ -12,20 +12,23 @@ defined('_JEXEC') or die('RESTRICTED');
 <table width="100%" border="0">
   <tr>
       <td><h1>Installer des modules</h1></td>
-      <?php foreach ($this->modules as $module) ?>
+      <?php foreach ($this->modules as $m_key => $module): ?>
         <tr>
-        <td><h3><?php echo $module ?></h3></td>
+            <td>
+                <h3><?php echo $module['title'] ?></h3>
+                <?php if (!empty($module['desc'])): ?> <p><?= $module['desc']; ?></p> <?php endif; ?>
+            </td>
         </tr>
         <tr>
-            <td><button class="em-primary-button em-w-auto" type="button" onclick="install('<?php echo strtolower($module) ?>')">Installer le module</button></td>
+            <td><button class="em-primary-button em-w-auto" type="button" onclick="install('<?= $m_key ?>')">Installer le module</button></td>
         </tr>
+      <?php endforeach; ?>
   </tr>
 </table>
 </body></html>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script>
     function install(module){
-        console.log(module);
         jQuery.ajax({
             type: 'POST',
             url: 'index.php?option=com_emundus&controller=modules&task=install',
@@ -35,7 +38,6 @@ defined('_JEXEC') or die('RESTRICTED');
             success: function (result) {
                 result = JSON.parse(result);
                 if(result.status === true){
-                    console.log('here')
                     Swal.fire({
                         title: 'Installation effectuée',
                         text: 'Installation du module ' + module + ' effectuée avec succès',
