@@ -215,12 +215,12 @@ defined('_JEXEC') or die;
     <?php endforeach; ?>
         <?php
             if($count === 0) {
-                echo JText::_($empty_file_message);
+                echo JText::_($empty_file_message_module);
             }
         ?>
 </div>
 <?php else :
-    echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE');
+    echo JText::_($empty_file_message_global);
     echo '<hr>';
 endif; ?>
 <div class="add-application-actions">

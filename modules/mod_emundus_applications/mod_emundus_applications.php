@@ -78,7 +78,8 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $absolute_urls = $params->get('absolute_urls', 1);
 
     $show_status = $params->get('show_status', '') !== '' ? explode(',', $params->get('show_status', '')) : null;
-    $empty_file_message = $params->get('empty_file_message', 'MOD_EMUNDUS_APPLICATIONS_NO_FILE');
+    $empty_file_message_module = $params->get('empty_file_message_module', 'MOD_EMUNDUS_APPLICATIONS_NO_FILE');
+    $empty_file_message_global = $params->get('empty_file_message_global', 'MOD_EMUNDUS_APPLICATIONS_NO_FILE');
 
     $show_remove_files = $params->get('show_remove_files', 1);
     $show_archive_files = $params->get('show_archived_files', 1);

@@ -243,10 +243,16 @@
 						description="MOD_EMUNDUS_SHOW_STATUS_DESC"
 				/>
 				<field
-						name="empty_file_message"
+						name="empty_file_message_global"
 						type="text"
-						label="MOD_EMUNDUS_EMPTY_FILE_MESSAGE"
-						description="MOD_EMUNDUS_EMPTY_FILE_MESSAGE_DESC"
+						label="MOD_EMUNDUS_EMPTY_FILE_MESSAGE_GLOBAL"
+						description="MOD_EMUNDUS_EMPTY_FILE_MESSAGE_GLOBAL_DESC"
+				/>
+				<field
+						name="empty_file_message_module"
+						type="text"
+						label="MOD_EMUNDUS_EMPTY_FILE_MESSAGE_MODULE"
+						description="MOD_EMUNDUS_EMPTY_FILE_MESSAGE_MODULE_DESC"
 				/>
 			</fieldset>
 			<fieldset
