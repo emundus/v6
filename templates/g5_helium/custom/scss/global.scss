@@ -1302,6 +1302,7 @@ body>.g-container {
         background-color: $base-secondary-color;
         border-color: $base-secondary-color;
         color: var(--neutral-50);
+        height: auto;
 
         &:hover,
         &:active,
@@ -1316,6 +1317,7 @@ body>.g-container {
         background-color: transparent;
         border-color: $base-primary-color;
         color: $base-primary-color;
+        height: auto;
 
         &:hover,
         &:active,
@@ -3054,8 +3056,8 @@ h1.em-titre-connectez-vous {
   color: #333333;
 }
 
-.layout-formbuilder #form-builder-page {
-  color: inherit;
+.layout-formbuilder {
+  color: initial;
 }
 
 .com_emundus:not(.view-programme):not(.view-form):not(.view-users.layout-edit):not(.view-checklist),
