@@ -90,7 +90,7 @@ ksort($applications);
 </div>
 
 <?php if ($mod_em_applications_show_search && sizeof($applications) > 0): ?>
-    <div class="em-searchbar em-flex-row-justify-end em-mt-12">
+    <div class="em-searchbar em-flex-row-justify-end em-mt-32">
         <label for="searchword" style="display: inline-block">
             <input name="searchword" type="text" id="applications_searchbar" class="form-control" placeholder="<?php echo JText::_('MOD_EM_APPLICATIONS_SEARCH') ?>">
         </label>

@@ -2196,6 +2196,15 @@ label[for="em-file_to_upload"]:hover {
     background: transparent;
 }
 
+.countCheckedCheckbox a.em-pointer{
+    color: var(--main-500);
+}
+
+.countCheckedCheckbox a.em-pointer:hover {
+    color: var(--main-600);
+}
+
+
 .tooltipSelectAttachments{
     display:none;
     transition:opacity 1s ease-out;

@@ -349,11 +349,13 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     .view-login .login  {
          width: 100% !important;
         padding: 80px 24px 0 24px;
+        margin-top: 0px !important;
     }
 
     .view-login .login .page-header {
         width: 100% !important;
         padding: 0px 12px;
+        margin-top: 0px;
     }
 
     .view-login .form-horizontal fieldset .control-group {

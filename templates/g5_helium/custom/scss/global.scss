@@ -164,6 +164,14 @@ a {
   }
 }
 
+#emailForm.em-form-message a {
+  color: var(--main-500);
+  &:hover {
+    color: var(--main-600);
+  }
+}
+
+
 .hidden {
   display: none;
 }
@@ -3015,6 +3023,10 @@ h1.em-titre-connectez-vous {
   color: #333333;
 }
 
+.layout-formbuilder #form-builder-page {
+  color: inherit;
+}
+
 .com_emundus:not(.view-programme):not(.view-form):not(.view-users.layout-edit):not(.view-checklist),
 .com_emundus.view-form .com_emundus_vue {
 
@@ -4710,14 +4722,19 @@ button.swal2-cancel.goback-btn {
         padding: 0;
 
         .login.em-formRegistrationCenter, .em-formRegistrationCenter:not(.componentheading) {
-
+          padding: 0;
           width: 100% !important;
+          margin-top: -13px;
 
           ol {
             width: 80%;
             text-align: justify;
             margin-left: 0 !important;
             padding: 0 !important;
+          }
+
+          .form-actions .row-fluid {
+            padding: 0;
           }
 
           div.em-heading-registration {

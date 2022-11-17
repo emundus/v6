@@ -424,7 +424,7 @@ a.em-blue-400-color:hover {
         margin-top: 16px;
     }
 
-    .mod_emundus_campaign__header_filter{
+    .mod_emundus_campaign__header_filter,  .mod_emundus_campaign__header input[name="searchword"] {
       margin-top: 4px;
     }
 }

@@ -380,8 +380,16 @@ a.btn.btn-success:not(.btn-xs) {
        flex-basis: auto !important;
     }
 
+    .em-font-size-16 {
+        flex-basis: auto !important;
+    }
+
     .view-featured .candidacy-files-list .row {
         align-items: flex-start;
+    }
+
+    .mod_emundus_applications___content {
+        grid-template-columns: repeat(1,1fr);
     }
 
     .mod_emundus_applications___content_text {
