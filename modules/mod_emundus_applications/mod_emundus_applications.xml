@@ -242,6 +242,12 @@
 						label="MOD_EMUNDUS_SHOW_STATUS"
 						description="MOD_EMUNDUS_SHOW_STATUS_DESC"
 				/>
+				<field
+						name="empty_file_message"
+						type="text"
+						label="MOD_EMUNDUS_EMPTY_FILE_MESSAGE"
+						description="MOD_EMUNDUS_EMPTY_FILE_MESSAGE_DESC"
+				/>
 			</fieldset>
 			<fieldset
 					name="advanced">

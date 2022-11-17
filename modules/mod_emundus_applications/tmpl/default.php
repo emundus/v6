@@ -215,7 +215,7 @@ defined('_JEXEC') or die;
     <?php endforeach; ?>
         <?php
             if($count === 0) {
-                echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE');
+                echo JText::_($empty_file_message);
             }
         ?>
 </div>

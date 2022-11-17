@@ -240,7 +240,7 @@ $uniqid = uniqid();
             <?php } ?>
         <?php endforeach; ?>
         <?php
-            if($count === 0) echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE');
+            if($count === 0) echo JText::_($empty_file_message);
         ?>
     </div>
 <?php else :
