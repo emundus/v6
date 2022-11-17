@@ -339,7 +339,11 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                             $db->setQuery( $query );
                             $stored = $db->loadAssocList();
 
-                            if (!empty($stored)) {
+                            $query = 'SELECT count(id) FROM #__emundus_uploads WHERE user_id='.$user->id.' AND fnum like '.$db->Quote($user->fnum);
+                            $db->setQuery($query);
+                            $already_cloned = $db->loadResult();
+
+                            if (!empty($stored) && $already_cloned == 0) {
                                 // 2. copy DB définition and duplicate files in applicant directory
                                 foreach ($stored as $row) {
                                     $src = $row['filename'];
@@ -355,6 +359,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                                     unset($row['nbmax']);
                                     unset($row['inform_applicant_by_email']);
                                     unset($row['is_validated']);
+                                    $row['can_be_deleted'] = 1;
                                     if(empty($row['modified_by'])){
                                         unset($row['modified_by']);
                                     }
