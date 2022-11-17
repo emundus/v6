@@ -149,6 +149,7 @@ class EmundusHelperEvents {
 
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $copy_application_form = $eMConfig->get('copy_application_form', 0);
+            $copy_exclude_forms = $eMConfig->get('copy_exclude_forms', []);
             $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
             $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
             $current_phase = $m_campaign->getCurrentCampaignWorkflow($emundusUser);
@@ -312,7 +313,7 @@ class EmundusHelperEvents {
                 }
             }
 
-            if ($copy_application_form == 1 && isset($user->fnum) && !in_array($formModel->getId(),explode(',',$copy_exclude_forms))) {
+            if ($copy_application_form == 1 && isset($user->fnum) && !in_array($formModel->getId(), $copy_exclude_forms)) {
                 if (empty($formModel->getRowId())) {
                     $db = JFactory::getDBO();
                     $table = $listModel->getTable();
