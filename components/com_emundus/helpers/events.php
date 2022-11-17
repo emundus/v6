@@ -330,7 +330,12 @@ class EmundusHelperEvents {
                         $query = 'SELECT '.implode(',', $db->quoteName($elements)).' FROM '.$table->db_table_name.' WHERE user='.$user->id;
                         $db->setQuery($query);
                         $stored = $db->loadAssoc();
-                        if (!empty($stored)) {
+
+                        $query = 'SELECT count(id) FROM #__emundus_uploads WHERE user_id='.$user->id.' AND fnum like '.$db->Quote($user->fnum);
+                        $db->setQuery($query);
+                        $already_cloned = $db->loadResult();
+
+                        if (!empty($stored) && $already_cloned == 0) {
                             // update form data
                             $parent_id = $stored['id'];
                             unset($stored['id']);
@@ -404,6 +409,11 @@ class EmundusHelperEvents {
                                     unset($row['nbmax']);
                                     unset($row['inform_applicant_by_email']);
                                     unset($row['is_validated']);
+                                    $row['can_be_deleted'] = 1;
+                                    if(empty($row['modified_by'])){
+                                        unset($row['modified_by']);
+                                    }
+                                    $row['pdf_pages_count'] = (int)$row['pdf_pages_count'];
                                     if(empty($row['modified_by'])){
                                         unset($row['modified_by']);
                                     }
