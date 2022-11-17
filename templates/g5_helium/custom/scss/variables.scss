@@ -794,7 +794,7 @@ $font:'Inter', sans-serif;
           @include yes-no;
           border: 1px solid var(--main-500);
           background: var(--main-500);
-          border-radius: var(--border-radius) !important;
+          border-radius: var(--em-border-radius) !important;
           width: 100% !important;
           max-width: 250px;
           display: flex;
@@ -816,7 +816,7 @@ $font:'Inter', sans-serif;
           @include yes-no;
           border: 1px solid var(--red-500);
           background: var(--red-500);
-          border-radius: var(--border-radius) !important;
+          border-radius: var(--em-border-radius) !important;
           width: 100% !important;
           max-width: 250px;
           display: flex;
@@ -838,7 +838,7 @@ $font:'Inter', sans-serif;
           @include yes-no;
           border: 1px solid var(--neutral-400);
           background: transparent;
-          border-radius: var(--border-radius) !important;
+          border-radius: var(--em-border-radius) !important;
           margin-left: -2px;
           z-index: 0;
           width: 100% !important;
@@ -863,11 +863,11 @@ $font:'Inter', sans-serif;
         }
 
          label.btn-default.btn:nth-child(1) {
-           border-radius: var(--border-radius) !important;
+           border-radius: var(--em-border-radius) !important;
          }
 
          label.btn-default.btn:nth-child(2) {
-           border-radius: var(--border-radius) !important;
+           border-radius: var(--em-border-radius) !important;
          }
       }
 
