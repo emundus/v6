@@ -414,9 +414,6 @@ class EmundusHelperEvents {
                                         unset($row['modified_by']);
                                     }
                                     $row['pdf_pages_count'] = (int)$row['pdf_pages_count'];
-                                    if(empty($row['modified_by'])){
-                                        unset($row['modified_by']);
-                                    }
                                     $row['pdf_pages_count'] = (int)$row['pdf_pages_count'];
 
                                     try {
