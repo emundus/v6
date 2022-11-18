@@ -145,7 +145,7 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
 			<select name="campaigns" size="5" multiple="multiple" id="campaigns" class="em-chosen em-mt-4">
 				<option value="0" disabled="disabled"><?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
 				<?php foreach ($this->campaigns as $campaign) :?>
-				    <option value="<?= $campaign->id; ?>" <?= (($this->edit == 1) && (array_key_exists($campaign->id, $this->uCamps)))?'selected="true"':''; ?>><?= trim($campaign->label.' ('.$campaign->year.') - '.$campaign->programme.' | '.JText::_('COM_EMUNDUS_ONBOARD_START_DATE').' : '.EmundusHelperDate::displayDate($campaign->start_date, 'COM_EMUNDUS_DATE_FORMAT', 1));?></option>
+				    <option value="<?= $campaign->campaign_id; ?>" <?= (($this->edit == 1) && (array_key_exists($campaign->campaign_id, $this->uCamps)))?'selected="true"':''; ?>><?= trim($campaign->label.' ('.$campaign->year.') - '.$campaign->programme.' | '.JText::_('COM_EMUNDUS_ONBOARD_START_DATE').' : '.EmundusHelperDate::displayDate($campaign->start_date, 'COM_EMUNDUS_DATE_FORMAT', 1));?></option>
 				<?php endforeach;?>
 			</select>
 		</div>
