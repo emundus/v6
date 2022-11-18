@@ -34,7 +34,7 @@ $eMConfig = JComponentHelper::getParams('com_emundus');
         <?php if (($this->params->get('logindescription_show') == 1 && str_replace(' ', '', $this->params->get('login_description')) != '') || $this->params->get('login_image') != '') : ?>
     </div>
 <?php endif; ?>
-    <form action="<?php echo (!empty($this->redirect)) ? 'index.php?option=com_users&task=user.login&redirect='.$this->redirect : 'index.php?option=com_users&task=user.login'; ?>" method="post" class="form-validate form-horizontal well">
+    <form id="login_form" action="<?php echo (!empty($this->redirect)) ? 'index.php?option=com_users&task=user.login&redirect='.$this->redirect : 'index.php?option=com_users&task=user.login'; ?>" method="post" class="form-validate form-horizontal well">
         <fieldset>
             <?php foreach ($this->form->getFieldset('credentials') as $field) : ?>
                 <?php if (!$field->hidden) : ?>
@@ -112,23 +112,48 @@ $eMConfig = JComponentHelper::getParams('com_emundus');
     <?php endif; ?>
 </div>
 
-<?php if ($eMConfig['reveal_password']): ?>
 <script>
-    const spanVisibility = document.querySelector('#toggle-password-visibility');
-    const inputPassword = document.querySelector('.controls #password');
+    document.addEventListener("DOMContentLoaded", function() {
+        <?php if ($eMConfig['reveal_password']): ?>
+            const spanVisibility = document.querySelector('#toggle-password-visibility');
+            const inputPassword = document.querySelector('.controls #password');
 
-    if (spanVisibility && inputPassword) {
-        spanVisibility.addEventListener('click', function() {
             if (spanVisibility && inputPassword) {
-                if (spanVisibility.innerText == "visibility") {
-                    spanVisibility.innerText = "visibility_off";
-                    inputPassword.type = "password";
-                }  else {
-                    spanVisibility.innerText = "visibility";
-                    inputPassword.type = "text";
-                }
+                spanVisibility.addEventListener('click', function () {
+                    if (spanVisibility && inputPassword) {
+                        if (spanVisibility.innerText == "visibility") {
+                            spanVisibility.innerText = "visibility_off";
+                            inputPassword.type = "password";
+                        } else {
+                            spanVisibility.innerText = "visibility";
+                            inputPassword.type = "text";
+                        }
+                    }
+                });
             }
+        <?php endif; ?>
+
+
+        document.getElementById('login_form').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            let formData = new FormData();
+            formData.append('username', document.getElementsByName('username')[0].value);
+
+            fetch('index.php?option=com_emundus&controller=user&task=getusername', {
+                body: formData,
+                method: 'post',
+            }).then((response) => {
+                if (response.ok) {
+                    return response.json();
+                }
+            }).then((res) => {
+                if(res.username !== '' && res.username !== null){
+                    document.getElementsByName('username')[0].value = res.username;
+                }
+
+                document.getElementById('login_form').submit();
+            })
         });
-    }
+    });
 </script>
-<?php endif; ?>
