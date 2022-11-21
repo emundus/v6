@@ -160,9 +160,6 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
     }
 
     public function onAfterOrderUpdate(&$order) {
-        JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterOrderUpdate', ['order' => $order]]);
-
         $db         = JFactory::getDbo();
         $order_id = $order->order_parent_id ?: $order->order_id;
 
@@ -244,6 +241,9 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
             JLog::add('Could not set application file status on order ID -> '. $order_id, JLog::ERROR, 'com_emundus');
             return false;
         }
+
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterOrderUpdate', ['order' => $order, 'em_order' => $em_order]]);
 
         $this->onAfterOrderCreate($order);
     }
