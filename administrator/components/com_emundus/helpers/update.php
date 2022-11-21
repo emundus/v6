@@ -853,7 +853,7 @@ class EmundusHelperUpdate
 
                             try {
                                 $created = $db->execute();
-                            } catch (Execption $e) {
+                            } catch (Exception $e) {
                                 JLog::add('Error trying to create jos_emundus_campaign_workflow_repeat_entry_status ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
                                 $update_campaign_workflow['message'] = 'Error trying to create jos_emundus_campaign_workflow_repeat_entry_status ' . $e->getMessage();
                             }
@@ -877,7 +877,7 @@ class EmundusHelperUpdate
                             $db->setQuery($query);
                             try {
                                 $joined = $db->execute();
-                            } catch (Execption $e) {
+                            } catch (Exception $e) {
                                 JLog::add('Cannot update fabrik element join with new table jos_emundus_campaign_workflow_repeat_entry_status ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
                                 $update_campaign_workflow['message'] = 'Cannot update fabrik element join with new table jos_emundus_campaign_workflow_repeat_entry_status ' . $e->getMessage();
                             }
@@ -924,7 +924,7 @@ class EmundusHelperUpdate
 
                             try {
                                 $created = $db->execute();
-                            } catch (Execption $e) {
+                            } catch (Exception $e) {
                                 JLog::add('Error trying to create jos_emundus_campaign_workflow_repeat_campaign ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
                                 $update_campaign_workflow['message'] = 'Error trying to create jos_emundus_campaign_workflow_repeat_campaign ' . $e->getMessage();
                             }
@@ -948,7 +948,7 @@ class EmundusHelperUpdate
                             $db->setQuery($query);
                             try {
                                 $joined = $db->execute();
-                            } catch (Execption $e) {
+                            } catch (Exception $e) {
                                 JLog::add('Cannot update fabrik element join with new table jos_emundus_campaign_workflow_repeat_campaign ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
                                 $update_campaign_workflow['message'] = 'Cannot update fabrik element join with new table jos_emundus_campaign_workflow_repeat_campaign ' . $e->getMessage();
                             }
@@ -1190,7 +1190,7 @@ class EmundusHelperUpdate
 
                             try {
                                 $joined = $db->execute();
-                            } catch (Execption $e) {
+                            } catch (Exception $e) {
                                 $joined = false;
                                 JLog::add('Failed to update fabrik element join with new table jos_emundus_campaign_workflow_repeat_programs ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
                                 $update['message'] = 'Failed to update fabrik element join with new table jos_emundus_campaign_workflow_repeat_programs ' . $e->getMessage();
@@ -1400,7 +1400,8 @@ class EmundusHelperUpdate
 
             $result['status'] = true;
         } catch (Exception $e) {
-            echo '<pre>'; var_dump('INSERTING MODULE : ' . $e->getMessage()); echo '</pre>'; die;
+            $result['status'] = false;
+            $result['message'] = 'INSERTING MODULE : ' . $e->getMessage();
         }
 
         return $result;
