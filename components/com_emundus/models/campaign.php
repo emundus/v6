@@ -2127,7 +2127,7 @@ class EmundusModelCampaign extends JModelList {
                 $query->clear()
                     ->select('m.id')
                     ->from($this->_db->quoteName('#__menu', 'm'))
-                    ->leftJoin($this->_db->quoteName('#__emundus_setup_profiles', 'sp') . ' ON ' . $this->_db->quoteName('sp.menutype') . ' = ' . $db->quoteName('m.menutype'))
+                    ->leftJoin($this->_db->quoteName('#__emundus_setup_profiles', 'sp') . ' ON ' . $this->_db->quoteName('sp.menutype') . ' = ' . $this->_db->quoteName('m.menutype'))
                     ->where($this->_db->quoteName('sp.id') . ' = ' . $this->_db->quote($pid));
                 $this->_db->setQuery($query);
                 $mids = $this->_db->loadObjectList();
