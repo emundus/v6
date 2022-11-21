@@ -5,11 +5,7 @@
               @click="pinCampaign"
               :class="pinned == 1 ? 'material-icons' : 'material-icons-outlined em-text-neutral-500'"
               class="em-pointer">push_pin</span>
-    <v-popover
-        v-if="showTootlip === true"
-        class="em-pointer"
-        :popoverArrowClass="'custom-popover-arrow'"
-    >
+    <v-popover v-if="showTootlip === true" class="em-pointer" :popoverArrowClass="'custom-popover-arrow'">
       <span class="tooltip-target b3 material-icons-outlined">more_vert</span>
       <template slot="popover">
         <actions

@@ -248,4 +248,63 @@ class EmundusModelFormbuilderTest extends TestCase
             $this->assertTrue($deleted, 'Le formulaire de test a bien été supprimé');
         }
     }
+
+    public function testDeleteFormModel()
+    {
+        $deleted = $this->m_formbuilder->deleteFormModel(0);
+        $this->assertFalse($deleted);
+
+        $deleted = $this->m_formbuilder->deleteFormModelFromIds(0);
+        $this->assertFalse($deleted);
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->insert('#__emundus_template_form')
+            ->columns(['form_id', 'label'])
+            ->values('99999, ' .  $db->quote('Modèle Test unitaire'));
+        $db->setQuery($query);
+        $inserted = false;
+
+        try {
+            $inserted = $db->execute();
+        } catch (Exception $e) {
+            JLog::add('Failed to insert model for unit tests ' . $e->getMessage(), JLog::ERROR, 'com_emundus.tests');
+        }
+
+        if ($inserted) {
+            $deleted = $this->m_formbuilder->deleteFormModel(99999);
+            $this->assertTrue($deleted);
+        }
+    }
+
+    public function testCopyForm()
+    {
+        $new_form_id = $this->m_formbuilder->copyForm(0, 'Test Unitaire - ');
+        $this->assertEquals(0, $new_form_id, 'Copy form returns 0 if no form id given');
+
+
+        $new_form_id = $this->m_formbuilder->copyForm(9999999, 'Test Unitaire - ');
+        $this->assertEquals(0, $new_form_id, 'Copy form returns 0 if no form does not exists');
+
+        $new_form_id = $this->m_formbuilder->copyForm(102, 'Test Unitaire - ');
+        $this->assertNotEmpty($new_form_id, 'La copie de formulaire fonctionne');
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->clear()
+            ->select('label')
+            ->from('#__fabrik_forms')
+            ->where('id = ' . $new_form_id);
+
+        try {
+            $db->setQuery($query);
+            $label = $db->loadResult();
+
+            $this->assertSame('FORM_MODEL_' .$new_form_id, $label, 'Le label d\'un formulaire copié est correct');
+        } catch (Exception $e) {
+            JLog::add('Failed to insert model for unit tests ' . $e->getMessage(), JLog::ERROR, 'com_emundus.tests');
+        }
+    }
 }
