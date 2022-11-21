@@ -256,4 +256,15 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
             ['checkout_workflow' => $checkout_workflow, 'shop_closed' => $shop_closed, 'cart_id' => $cart_id]
         ]);
     }
+
+    public function onBeforeProductListingLoad(&$filters,&$order,&$parent, &$select, &$select2, &$a, &$b, &$on) {
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopBeforeProductListingLoad',
+            ['filters' => $filters, 'order' => $order,'parent' => $parent, 'select' => $select, 'select2' => $select2, 'a' => $a, 'b' => $b, 'on' => $on]
+        ]);
+
+        // Nobody can see product list for the moment
+        $app = JFactory::getApplication();
+        $app->redirect('/');
+    }
 }
