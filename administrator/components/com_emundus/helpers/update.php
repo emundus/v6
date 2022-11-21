@@ -1699,31 +1699,28 @@ class EmundusHelperUpdate
     public static function addColumn($table,$name,$type = 'VARCHAR',$length = 255,$null = 1){
         $result = ['status' => false, 'message' => ''];
 
-        if(empty($table)){
+        if (empty($table)) {
             $result['message'] = 'ADDING COLUMN : Please refer a database table.';
             return $result;
         }
-        if(empty($name)){
+
+        if (empty($name)) {
             $result['message'] = 'ADDING COLUMN : Please refer a column name.';
             return $result;
         }
 
         $db = JFactory::getDbo();
-
         $column_existing = $db->setQuery('SHOW COLUMNS FROM ' . $table . ' WHERE ' . $db->quoteName('Field') . ' = ' . $db->quote($name))->loadResult();
 
-        if(empty($column_existing)){
-            $null_query = 'NULL';
-            if($null == 0){
-                $null_query = 'NOT NULL';
-            }
+        if (empty($column_existing)) {
+            $null_query = $null == 0 ? 'NOT NULL' : 'NULL';
+
             try {
                 $query = 'ALTER TABLE ' . $table . ' ADD COLUMN ' . $db->quoteName($name) . ' ' . $type . '(' . $length . ') ' . $null_query;
                 $db->setQuery($query);
                 $result['status'] = $db->execute();
             } catch (Exception $e) {
                 $result['message'] = 'ADDING COLUMN : Error : ' . $e->getMessage();
-                return $result;
             }
         }
 
