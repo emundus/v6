@@ -3177,31 +3177,39 @@ h1.em-titre-connectez-vous {
   }
 
   // CHOSEN css
-  .chosen-container{
+  .chzn-single{
+    span{
+      height: 100%;
+      display: flex !important;
+      align-items: center !important;
+    }
+  }
+  .chzn-container{
     width: auto;
   }
 
-  .chosen-container-multi:not(.chosen-container-active){
-    .chosen-drop{
+  .chzn-container-multi:not(.chzn-container-active){
+    .chzn-drop{
       display: none;
     }
   }
-  .chosen-container-multi {
-    .chosen-choices {
+  .chzn-container-multi {
+    .chzn-choices {
       background: var(--neutral-50) !important;
       box-shadow: unset;
       border-color: var(--neutral-300);
       border-radius: 4px;
+      width: 100%;
     }
-    .chosen-drop{
+    .chzn-drop{
       border-color: var(--neutral-300);
       border-bottom-left-radius: 4px;
       border-bottom-right-radius: 4px;
       box-shadow: unset;
     }
   }
-  .chosen-container {
-    .chosen-single {
+  .chzn-container {
+    .chzn-single {
       background: var(--neutral-50) !important;
       box-shadow: unset;
       height: 40px;
@@ -3210,14 +3218,12 @@ h1.em-titre-connectez-vous {
       align-items: center;
       justify-content: space-between;
       border-color: var(--neutral-300);
-      div{
-        position: relative;
-      }
     }
 
-    .chosen-search {
+    .chzn-search {
       padding: 8px 12px;
       input[type="text"] {
+        border-radius: calc(var(--em-border-radius)/2);
         &:focus {
           box-shadow: unset;
           border: solid 1px $blue-400;
@@ -3225,7 +3231,7 @@ h1.em-titre-connectez-vous {
       }
     }
 
-    .chosen-results {
+    .chzn-results {
       padding: 0;
       margin: 0;
       li {
@@ -3233,9 +3239,9 @@ h1.em-titre-connectez-vous {
       }
     }
 
-    .chosen-results li.highlighted {
+    .chzn-results li.highlighted {
       background-color: var(--neutral-300);
-      color: var(--neutral-900);
+      background-image: unset !important;
     }
   }
 
@@ -3611,18 +3617,18 @@ h1.em-titre-connectez-vous {
       }
     }
 
-    .chosen-container .chosen-results li.group-option,
-    .chosen-container .chosen-results li.group-result {
+    .chzn-container .chzn-results li.group-option,
+    .chzn-container .chzn-results li.group-result {
       color: var(--neutral-900);
     }
 
-    .chosen-container .chosen-results li.group-option.highlighted,
-    .chosen-container .chosen-results li.group-result.highlighted{
+    .chzn-container .chzn-results li.group-option.highlighted,
+    .chzn-container .chzn-results li.group-result.highlighted{
       color: var(--neutral-100);
       background: var(--night-blue);
     }
 
-    .chosen-container-multi .chosen-choices li.search-choice span {
+    .chzn-container-multi .chzn-choices li.search-choice span {
       color: var(--neutral-900);
     }
 
