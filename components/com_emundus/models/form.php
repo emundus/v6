@@ -796,14 +796,13 @@ class EmundusModelForm extends JModelList {
             $db->setQuery($query);
             $db->execute();
             $newprofile = $db->insertid();
-            if(empty($newprofile)){
+            if (empty($newprofile)){
                 return false;
             }
-            //
 
             // Create menutype
             $menutype = $this->createMenuType('menu-profile' . $newprofile,'Nouveau formulaire');
-            if(empty($menutype)){
+            if (empty($menutype)) {
                 return false;
             }
 
@@ -813,7 +812,6 @@ class EmundusModelForm extends JModelList {
                 ->where($db->quoteName('id') . ' = ' . $db->quote($newprofile));
             $db->setQuery($query);
             $db->execute();
-            //
 
 
             // Create heading menu
@@ -826,13 +824,12 @@ class EmundusModelForm extends JModelList {
                 'params' => []
             ];
             $heading_menu = EmundusHelperUpdate::addJoomlaMenu($datas);
-            if($heading_menu['status'] !== true){
+            if ($heading_menu['status'] !== true){
                 return false;
             }
-            //
 
             // Create first page
-            if($first_page) {
+            if ($first_page) {
                 $label = [
                     'fr' => 'Ma première page',
                     'en' => 'My first page'
@@ -842,11 +839,10 @@ class EmundusModelForm extends JModelList {
                     'en' => 'Describe your form page with an introduction'
                 ];
                 $first_page_res = $formbuilder->createApplicantMenu($label, $intro, $newprofile, 'false');
-                if($first_page_res['status'] !== true){
+                if ($first_page_res['status'] !== true){
                     return false;
                 }
             }
-            //
 
             // Create submittion page
             $label = [
@@ -867,7 +863,6 @@ class EmundusModelForm extends JModelList {
             if(empty($checklist_menu)){
                 return false;
             }
-            //
 
             $user = JFactory::getUser();
             $settings->onAfterCreateForm($user->id);
@@ -1587,7 +1582,7 @@ class EmundusModelForm extends JModelList {
             $db->setQuery($query);
             $forms = $db->loadObjectList();
 
-            foreach ($forms as $form){
+            foreach ($forms as $form) {
                 $link = explode('=', $form->link);
                 $form->id = $link[sizeof($link) - 1];
 
@@ -1598,6 +1593,15 @@ class EmundusModelForm extends JModelList {
                 $db->setQuery($query);
                 $form->label = $formbuilder->getJTEXT($db->loadResult());
                 print_r($forms->label);
+
+
+                $query->clear()
+                    ->select('id')
+                    ->from('#__emundus_template_form')
+                    ->where('form_id = ' . $form->id);
+
+                $db->setQuery($query);
+                $modelId = $db->loadResult();
             }
 
             return $forms;
@@ -1615,7 +1619,7 @@ class EmundusModelForm extends JModelList {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->select(['g.id' , 'g.label', 'g.params'])
+        $query->select(['g.id' , 'g.label', 'g.params', 'g.published'])
             ->from ($db->quoteName('#__fabrik_formgroup', 'fg'))
             ->leftJoin($db->quoteName('#__fabrik_groups', 'g').' ON '.$db->quoteName('g.id').' = '.$db->quoteName('fg.group_id'))
             ->where($db->quoteName('fg.form_id') . ' = '.$form_id)

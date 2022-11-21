@@ -2,32 +2,32 @@
 	<div id="list-table">
 		<table :aria-describedby="'Table of ' + type" v-if="!isEmptyRowsData">
 		<thead class="list-table-head">
-			<tr>
-				<th v-for="th in rowsData" :key="th.value" :id="th.value">
-					{{ translate(th.label) }}
-				</th>
-			</tr>
+			<tr><th v-for="th in rowsData" :key="th.value" :id="th.value">{{ translate(th.label) }}</th></tr>
 		</thead>
-		<list-table-body
-			:type="type"
-			:actions="actions"
-			:params="params"
-			@validateFilters="validateFilters"
-			@updateLoading="updateLoading"
-			@showModalPreview="showModalPreview"
-		></list-table-body>
+		<tbody>
+			<list-table-row
+					v-for="item in items"
+					:key="item.id"
+					:data="item"
+					:type="type"
+					:actions="actions"
+					@validateFilters="validateFilters"
+					@updateLoading="updateLoading"
+					@showModalPreview="showModalPreview(item.id)"
+			></list-table-row>
+		</tbody>
 		</table>
 		<p v-if="isEmptyRowsData">Unable to create table...</p>
 	</div>
 </template>
 
 <script>
-import ListTableBody from './ListTableBody.vue'
+import ListTableRow from './ListTableRow.vue'
 import rows from '../../../../data/tableRows'
 
 export default {
 	components: {
-		ListTableBody
+		ListTableRow
 	},
 	props: {
 		type: {
@@ -41,6 +41,10 @@ export default {
 		params: {
 			type: Object,
 			default: {}
+		},
+		items: {
+			type: [],
+			required: true
 		}
 	},
 	data() {
@@ -66,6 +70,11 @@ export default {
 		isEmptyRowsData() {
 			return this.rowsData.length === 0;
 		},
+	},
+	watch: {
+		type: function() {
+			this.rowsData = typeof rows[this.type] !== undefined ? rows[this.type] : [];
+		}
 	}
 }
 </script>

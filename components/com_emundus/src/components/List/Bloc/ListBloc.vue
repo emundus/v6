@@ -67,8 +67,13 @@
 
 		<hr class="em-w-100">
 
-		<div class="actions em-flex-row em-w-100 em-flex-space-between">
-			<a @click="redirectToEditItem" class="em-primary-button em-font-size-14 em-pointer">
+		<div class="actions em-flex-row em-w-100"
+		  :class="{
+				'em-flex-row-justify-end': getEditUrlByType() === '',
+	      'em-flex-space-between': getEditUrlByType() !== ''
+			}"
+		>
+			<a v-if="getEditUrlByType() !== ''" @click="redirectToEditItem" class="em-primary-button em-font-size-14 em-pointer">
 					{{ translations.edit }}
 			</a>
 			<list-action-menu
@@ -155,7 +160,7 @@ export default {
       window.location.href = this.getEditUrlByType();
 		},
 		getEditUrlByType() {
-			let url;
+			let url = '';
 
 			switch(this.type) {
 				case 'campaign':
