@@ -123,6 +123,18 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+		<field name="copy_exclude_forms"
+			   label="COM_EMUNDUS_COPY_APPLICATION_FORM_EXCLUDE"
+			   description="COM_EMUNDUS_COPY_APPLICATION_FORM_EXCLUDE_DESC"
+			   showon="copy_application_form:1"
+			   menu="hide"
+			   type="sql"
+			   query="SELECT id, label FROM jos_fabrik_forms WHERE published = 1"
+			   key_field="id"
+			   value_field="label"
+			   multiple="true"
+			   default=""
+		/>
 		<field name="display_poll" menu="hide" type="list" default="0" label="COM_EMUNDUS_DISPLAY_POLL" description="COM_EMUNDUS_DISPLAY_POLL_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
@@ -134,6 +146,10 @@
 		</field>
 		<field name="status_for_send" type="text" default="0" label="COM_EMUNDUS_SEND_APPLICATION_STATUS_FOR_SEND" description="COM_EMUNDUS_SEND_APPLICATION_STATUS_FOR_SEND_DESC" />
 		<field name="status_for_delete" type="text" default="" label="COM_EMUNDUS_SEND_APPLICATION_STATUS_FOR_DELETE" description="COM_EMUNDUS_SEND_APPLICATION_STATUS_FOR_DELETE_DESC" />
+		<field name="allow_anonym_files" type="radio" default="0" label="COM_EMUNDUS_ALLOW_ANONYM_FILES" description="COM_EMUNDUS_ALLOW_ANONYM_FILES_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_FORM_BUILDER" name="form_builder" description="COM_EMUNDUS_FORM_BUILDER_DESC">
 		<field
@@ -451,6 +467,12 @@
 				<option value="demo">Démo</option>
 				<option value="production">Production</option>
 			</field>
+		</fieldset>
+
+		<field name="spacer9" type="spacer" hr="true"/>
+		<field name="saml_integration" type="note" label="COM_EMUNDUS_SAML_INTEGRATION"/>
+		<fieldset label="COM_EMUNDUS_SAML_INTEGRATION">
+			<field name="saml_default_profile" label="COM_EMUNDUS_SAML_INTEGRATION_DEFAULT_PROFILE" type="text"></field>
 		</fieldset>
 
 	</fieldset>
