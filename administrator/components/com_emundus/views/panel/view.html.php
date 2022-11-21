@@ -14,16 +14,23 @@ jimport( 'joomla.application.component.helper' );
 class EmundusViewPanel extends JViewLegacy
 {
     function display($tpl = null)
-    {   
+    {
     	JHTML::stylesheet( 'administrator/components/com_emundus/assets/css/emundus.css' );
 
 		$document = JFactory::getDocument();
 		$document->setTitle(JText::_('COM_EMUNDUS_TITLE') . ' :: ' .JText::_('COM_EMUNDUS_CONTROL_PANEL'));
-		
+
 		// Set toolbar items for the page
 		JToolBarHelper::title( JText::_('COM_EMUNDUS_TITLE') .' :: '. JText::_( 'COM_EMUNDUS_HEADER' ), 'emundus' );
 		JToolBarHelper::preferences('com_emundus', '580', '750');
 		JToolBarHelper::help( 'screen.cpanel', true);
+
+        $xmlDoc = new DOMDocument();
+        if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
+            $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
+        }
+
+        $this->assignRef('version', $release_version);
 
         parent::display($tpl);
     }

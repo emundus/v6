@@ -33,39 +33,39 @@ include_once(JPATH_SITE.'/components/com_emundus/api/FileSynchronizer.php');
  */
 class EmundusUnittestHelperSamples
 {
-    public function createSampleUser($profile = 9,$username = 'user.test@emundus.fr')
+    public function createSampleUser($profile = 9, $username = 'user.test@emundus.fr')
     {
+        $user_id = 0;
         $m_users = new EmundusModelUsers;
 
-        $user = clone(JFactory::getUser(0));
-        $user->name = 'USER Test';
-        $user->username = $username;
-        $user->email = $username;
-        $user->password = md5('test1234');
-        $user->registerDate = date('Y-m-d H:i:s');
-        $user->lastvisitDate = date('Y-m-d H:i:s');
-        $user->groups = array();
-        $user->block = 0;
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
-        $other_param['firstname'] 		= 'Test';
-        $other_param['lastname'] 		= 'USER';
-        $other_param['profile'] 		= $profile;
-        $other_param['em_oprofiles'] 	= '';
-        $other_param['univ_id'] 		= 0;
-        $other_param['em_groups'] 		= '';
-        $other_param['em_campaigns'] 	= '1';
-        $other_param['news'] 			= '';
+        $query->insert('#__users')
+            ->columns('name, email, password')
+            ->values($db->quote('Test USER') . ', ' . $db->quote($username) . ',' .  $db->quote(md5('test1234')));
 
-        $acl_aro_groups = $m_users->getDefaultGroup($profile);
-        $user->groups = $acl_aro_groups;
+        try {
+            $db->setQuery($query);
+            $db->execute();
+            $user_id = $db->insertid();
+        } catch (Exception $e) {
+            JLog::add("Failed to insert jos_users" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+        }
 
-        $usertype = $m_users->found_usertype($acl_aro_groups[0]);
-        $user->usertype = $usertype;
+        if (!empty($user_id)) {
+            $other_param['firstname'] 		= 'Test';
+            $other_param['lastname'] 		= 'USER';
+            $other_param['profile'] 		= $profile;
+            $other_param['em_oprofiles'] 	= '';
+            $other_param['univ_id'] 		= 0;
+            $other_param['em_groups'] 		= '';
+            $other_param['em_campaigns'] 	= '1';
+            $other_param['news'] 			= '';
+            $m_users->addEmundusUser($user_id, $other_param);
+        }
 
-        $user->save();
-        $m_users->addEmundusUser($user->id, $other_param);
-
-        return $user;
+        return $user_id;
     }
 
     public function createSampleFile($cid,$uid){
