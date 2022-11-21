@@ -1327,7 +1327,9 @@ class EmundusHelperUpdate
 
             $result['status'] = true;
         } catch (Exception $e) {
-            echo '<pre>'; var_dump('INSERTING MENU : ' . $e->getMessage()); echo '</pre>'; die;
+            JLog::add('Failed to insert menu ' . $params['title'] . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            $result['status'] = false;
+            $result['message'] = 'INSERTING MENU : ' . $e->getMessage();
         }
 
         return $result;
