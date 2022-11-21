@@ -1436,7 +1436,7 @@ class EmundusModelFormbuilder extends JModelList {
             //
 
             $query->clear()
-                ->select(['fg.is_join,fg.params,fl.db_table_name AS dbtable'])
+                ->select(['fg.is_join, fg.params, fl.db_table_name AS dbtable'])
                 ->from($db->quoteName('#__fabrik_formgroup', 'ffg'))
                 ->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('ffg.form_id'))
                 ->leftJoin($db->quoteName('#__fabrik_groups', 'fg') . ' ON ' . $db->quoteName('fg.id') . ' = ' . $db->quoteName('ffg.group_id'))
@@ -1518,10 +1518,26 @@ class EmundusModelFormbuilder extends JModelList {
                 $db->execute();
 
                 if ($group_params->repeat_group_button == 1 || $formlist->is_join == 1) {
-                    $repeat_table_name = $formlist->dbtable . "_" . $gid . "_repeat";
-                    $query = "ALTER TABLE " . $repeat_table_name . " ADD e_" . $gid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
+                    $query = $db->getQuery(true);
+                    $query->select('table_join')
+                        ->from('#__fabrik_joins')
+                        ->where('join_from_table = ' .$db->quote($formlist->dbtable))
+                        ->andWhere('group_id = ' . $gid);
                     $db->setQuery($query);
-                    $db->execute();
+
+                    $repeat_table_name = $db->loadResult();
+
+                    if (empty($repeat_table_name)) {
+                        $repeat_table_name = $formlist->dbtable . "_" . $gid . "_repeat";
+                    }
+
+                    $query = "ALTER TABLE " . $repeat_table_name . " ADD e_" . $gid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
+                    try {
+                        $db->setQuery($query);
+                        $db->execute();
+                    } catch (Exception $e) {
+                        JLog::add('component/com_emundus/models/formbuilder | Failed to alter table for ' . $repeat_table_name . $gid . '_' . $elementId . ' ' . $dbtype . ' ' . $dbnull . ' : ' .$e->getMessage(), JLog::ERROR, 'com_emundus');
+                    }
                 }
             }
             //
