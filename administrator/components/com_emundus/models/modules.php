@@ -634,6 +634,7 @@ class EmundusModelModules extends JModelList {
 
             return true;
         } catch (Exception $e) {
+            JLog::add('Failed to install Homepage ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             return false;
         }
     }
@@ -753,7 +754,8 @@ class EmundusModelModules extends JModelList {
 
             return true;
         } catch (Exception $e) {
-            echo '<pre>'; var_dump($e->getMessage()); echo '</pre>'; die;
+            JLog::add('Failed to install Checklist ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return false;
         }
     }
 }
