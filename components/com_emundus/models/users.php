@@ -3269,4 +3269,32 @@ class EmundusModelUsers extends JModelList {
 
         return $new_token;
     }
+
+    public function isSamlUser($user_id) {
+        $isSamlUser = false;
+
+        if (!empty($user_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('params')
+                ->from('#__users')
+                ->where('id = ' . $user_id);
+
+            try {
+                $params = $db->loadResult();
+            } catch (Exception $e) {
+                $params = '';
+                JLog::add(' com_emundus/models/users.php | Failed to check if is saml users : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            }
+
+            if (!empty($params)) {
+                $params = json_decode($params, true);
+
+                $isSamlUser = !empty($params['saml']) && $params['saml'] == 1;
+            }
+        }
+
+        return $isSamlUser;
+    }
 }
