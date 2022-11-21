@@ -35,8 +35,8 @@ class EmundusHelperMenu {
 			->innerJoin($db->quoteName('#__emundus_setup_profiles','profile').' ON '.$db->quoteName('profile.menutype').' = '.$db->quoteName('menu.menutype') . ' AND ' . $db->quoteName('profile.id') . ' = ' . $db->quote($profile))
 			->innerJoin($db->quoteName('#__fabrik_forms','fbforms').' ON '.$db->quoteName('fbforms.id').' = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)')
 			->innerJoin($db->quoteName('#__fabrik_lists','fbtables').' ON '.$db->quoteName('fbtables.form_id').' = '.$db->quoteName('fbforms.id'))
-			->where($db->quoteName('menu.published') . ' <> -1')
-			->andWhere($db->quoteName('menu.parent_id') . ' <> -1');
+			->where($db->quoteName('menu.published') . ' = 1')
+			->andWhere($db->quoteName('menu.parent_id') . ' != 1');
 		if($checklevel && !empty($levels)){
 			$query->andWhere($db->quoteName('menu.access') . ' IN ('.implode(',', $levels).')');
 		}
@@ -57,8 +57,8 @@ class EmundusHelperMenu {
 					->innerJoin($db->quoteName('#__emundus_setup_profiles','profile').' ON '.$db->quoteName('profile.menutype').' = '.$db->quoteName('menu.menutype') . ' AND ' . $db->quoteName('profile.id') . ' = ' . $db->quote($profile))
 					->innerJoin($db->quoteName('#__fabrik_forms','fbforms').' ON '.$db->quoteName('fbforms.id').' = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)')
 					->innerJoin($db->quoteName('#__fabrik_lists','fbtables').' ON '.$db->quoteName('fbtables.form_id').' = '.$db->quoteName('fbforms.id'))
-					->where($db->quoteName('menu.published') . ' <> -1')
-					->andWhere($db->quoteName('menu.parent_id') . ' <> -1');
+					->where($db->quoteName('menu.published') . ' = 1')
+					->andWhere($db->quoteName('menu.parent_id') . ' != 1');
 				if($checklevel && !empty($levels)){
 					$query->andWhere($db->quoteName('menu.access') . ' IN ('.implode(',', $levels).')');
 				}
