@@ -82,6 +82,7 @@
 				:isPublished="actionMenuIsPublished"
 				:showTootlip="hasActionMenu"
 				:nb_files="type === 'campaign' ? parseInt(data.nb_files) : 0"
+				:pinned="type === 'campaign' ? parseInt(data.pinned) : 0"
 				@validateFilters="validateFilters"
 				@updateLoading="updateLoading"
 				@showModalPreview="showModalPreview"
@@ -349,6 +350,8 @@ export default {
 
 		.dates {
 			font-size: 12px;
+      color: var(--neutral-800);
+      font-family: var(--font);
 		}
 	}
 
@@ -360,12 +363,17 @@ export default {
     max-width: 240px;
 	}
 
+  .description {
+    font-family: var(--font);
+  }
+
 	.informations {
 		font-size: 12px;
     display: flex;
     flex-direction: column;
     justify-content: end;
     height: 100%;
+    color: var(--neutral-800);
 
 		.associated-campaigns {
 			margin: 0 0 24px 0;
@@ -399,12 +407,13 @@ export default {
 			box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07),
     		0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
       margin-left: 8px;
+       font-family: var(--font);
       &:nth-child(1){
         margin-left: 0;
       }
 
 			&.published {
-				background: #DFF5E9;
+				background: var(--main-100);
 			}
 
 			&.unpublished {
@@ -442,11 +451,11 @@ export default {
 
 		.em-primary-button {
 			width: fit-content;
-			border: 1px solid #20835F;
+			border: 1px solid var(--main-500);
 
 			&:hover {
 				background-color: white;
-				color: #20835F;
+				color: var(--main-500);
 			}
 		}
 	}

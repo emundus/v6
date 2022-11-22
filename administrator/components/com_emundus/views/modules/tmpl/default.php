@@ -40,7 +40,7 @@ defined('_JEXEC') or die('RESTRICTED');
                 if(result.status === true){
                     Swal.fire({
                         title: 'Installation effectuée',
-                        text: 'Installation du module ' + module + ' effectuée avec succès',
+                        text: 'Installation du module effectuée avec succès',
                         type: "success",
                         showCancelButton: false,
                         reverseButtons: true,

@@ -136,8 +136,8 @@ export default {
 
 
 				&.active {
-					color: #298721;
-					border-color: #298721;
+					color: var(--main-500);
+					border-color: var(--main-500);
 				}
 			}
 		}

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 	<extension type="module" version ="2.5.0" method="upgrade">
-		<name>QueryBuilder</name>
+		<name>MOD_EMUNDUS_QUERY_BUILDER_XML</name>
         <author>Anne-laure Drouard</author>
         <creationDate>May 2020</creationDate>
         <authorUrl>www.emundus.fr</authorUrl>
@@ -18,7 +18,7 @@
 		<config>
 			<fields name="params">
 				<fieldset name="basic" addfieldpath="/modules/mod_emundus_query_builder/tmpl" >
-					
+
 				</fieldset>
 			</fields>
 		</config>

@@ -160,7 +160,7 @@ if($user != null) {
             var messageIcon = document.getElementById('messageDropdownIcon');
 
             if (dropdown.classList.contains('open')) {
-                jQuery("#userDropdownMenu").css("transform","translate(250px)")
+                jQuery("#userDropdownMenu").css("transform","translate(300px)")
                 setTimeout(() => {
                     dropdown.classList.remove('open');
                     jQuery("#userDropdownMenu").css("transform","unset")

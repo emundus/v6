@@ -24,11 +24,20 @@ class EmundusControllerSamples extends JControllerLegacy
             include_once(JPATH_SITE.'/administrator/components/com_emundus/models/samples.php');
             $mSamples = new EmundusModelSamples();
 
+            if($datas['samples_programs']){
+                $i = 0;
+                $codes = [];
+                while($i < $datas['samples_programs']) {
+                    $codes[] = $mSamples->createSampleProgram('Programme ' . $i,'prog-' . $i);
+                    $i++;
+                }
+            }
+
             if($datas['samples_campaigns']){
                 $i = 0;
                 $campaigns = [];
                 while($i < $datas['samples_campaigns']) {
-                    $campaigns[] = $mSamples->createSampleCampaign('Campagne de test ' . $i);
+                    $campaigns[] = $mSamples->createSampleCampaign('Campagne ' . $i);
                     $i++;
                 }
             }

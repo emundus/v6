@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="3.8.8" client="site" method="upgrade">
-	<name>mod_emundus_user_dropdown</name>
+	<name>MOD_EMUNDUS_USER_DROPDOWN_XML</name>
     <author>Hugo Moracchini</author>
     <creationDate>June 2018</creationDate>
     <copyright>Copyright (C) 2018 eMundus. All rights reserved.</copyright>
@@ -8,7 +8,7 @@
     <authorEmail>hugo.moracchini@emundus.fr</authorEmail>
     <authorUrl>www.emundus.fr</authorUrl>
     <version>6.0</version>
-	<description>Displays a small dropdown menu for user actions.</description>
+	<description>MOD_EMUNDUS_USER_DROPDOWN_XML_DESC</description>
 	<files>
 		<filename module="mod_emundus_user_dropdown">mod_emundus_user_dropdown.php</filename>
 		<folder>tmpl</folder>

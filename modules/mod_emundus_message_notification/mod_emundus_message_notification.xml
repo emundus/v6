@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="3.8.8" client="site" method="upgrade">
-	<name>mod_emundus_message_notification</name>
+	<name>MOD_EMUNDUS_MESSAGE_NOTIFICATIONS_XML</name>
     <author>James Dean</author>
     <creationDate>August 2018</creationDate>
     <copyright>Copyright (C) 2018 eMundus. All rights reserved.</copyright>
@@ -8,7 +8,7 @@
     <authorEmail>james.dean@emundus.fr</authorEmail>
     <authorUrl>www.emundus.fr</authorUrl>
     <version>6.0</version>
-	<description>Displays notification if the user has new messages</description>
+	<description>MOD_EMUNDUS_MESSAGE_NOTIFICATIONS_XML_DESCRIPTION</description>
 	<files>
 		<filename module="mod_emundus_message_notification">mod_emundus_message_notification.php</filename>
 		<folder>tmpl</folder>

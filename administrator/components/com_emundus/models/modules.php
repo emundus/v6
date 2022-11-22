@@ -298,15 +298,15 @@ class EmundusModelModules extends JModelList {
         $db->setQuery('SHOW COLUMNS FROM jos_emundus_users');
         $tableData = $db->loadObjectList();
 
-        $columns = array_map(function($tableData) {
+        $columns = array_map(function ($tableData) {
             return $tableData->Field;
         }, $tableData);
 
         $queries_passed = [];
-        foreach($columns_to_add as $column_key => $column_type) {
+        foreach ($columns_to_add as $column_key => $column_type) {
             if (!in_array($column_key, $columns)) {
                 try {
-                    $db->setQuery("ALTER TABLE jos_emundus_users ADD $column_key $column_type null" );
+                    $db->setQuery("ALTER TABLE jos_emundus_users ADD $column_key $column_type null");
                     $queries_passed[] = $db->execute();
                 } catch (Exception $e) {
                     $queries_passed[] = false;
@@ -411,7 +411,7 @@ class EmundusModelModules extends JModelList {
                             ->leftJoin('#__fabrik_groups AS jfg ON jfg.id = jfe.group_id')
                             ->leftJoin('#__fabrik_formgroup as jff ON jff.group_id = jfg.id')
                             ->where('jff.form_id = ' . $form->id)
-                            ->andWhere('jfe.name IN (' . implode(',' , $db->quote($element_names)) . ')');
+                            ->andWhere('jfe.name IN (' . implode(',', $db->quote($element_names)) . ')');
 
                         $db->setQuery($query);
                         $elements = $db->loadObjectList();
@@ -419,7 +419,7 @@ class EmundusModelModules extends JModelList {
                         if (!empty($elements)) {
                             $form->params = json_decode($form->params, true);
                             foreach ($elements as $element) {
-                                switch($element->name) {
+                                switch ($element->name) {
                                     case 'user_id':
                                         $form->params['juser_field_userid'] = [$element->id];
                                         break;
@@ -477,5 +477,285 @@ class EmundusModelModules extends JModelList {
         }
 
         return $response;
+    }
+
+    public function installHomepage() {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        require_once (JPATH_SITE.'/components/com_emundus/models/form.php');
+
+        try {
+            $query->select('introtext')
+                ->from($db->quoteName('#__content'))
+                ->where($db->quoteName('id') . ' = 52');
+            $db->setQuery($query);
+            $introtext = $db->loadResult();
+
+            $query->clear()
+                ->update($db->quoteName('#__content'))
+                ->set($db->quoteName('state') . ' = 0')
+                ->where($db->quoteName('id') . ' = 52');
+            $db->setQuery($query);
+            $db->execute();
+
+            $query->clear()
+                ->select('id, params')
+                ->from($db->quoteName('#__modules'))
+                ->where($db->quoteName('module') . ' like ' . $db->quote('mod_emundus_campaign'))
+                ->andWhere($db->quoteName('published') . ' = 1');
+            $db->setQuery($query);
+            $modules = $db->loadObjectList();
+
+            foreach ($modules as $module){
+                $params = json_decode($module->params);
+                if($params->mod_em_campaign_layout == 'default_g5'){
+                    $params->mod_em_campaign_layout = 'default_tchooz';
+                    $params->mod_em_campaign_intro = $introtext;
+
+                    $query->clear()
+                        ->update($db->quoteName('#__modules'))
+                        ->set($db->quoteName('showtitle') . ' = 0')
+                        ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($module->id));
+                    $db->setQuery($query);
+                    $db->execute();
+
+                    $query->clear()
+                        ->update($db->quoteName('#__falang_content'))
+                        ->set($db->quoteName('value') . ' = ' . $db->quote(json_encode($params)))
+                        ->where($db->quoteName('reference_table') . ' like ' . $db->quote('modules'))
+                        ->andWhere($db->quoteName('reference_field') . ' like ' . $db->quote('params'))
+                        ->andWhere($db->quoteName('reference_id') . ' like ' . $db->quote($module->id));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+            }
+
+            $query->clear()
+                ->update($db->quoteName('#__modules'))
+                ->set($db->quoteName('published') . ' = 0')
+                ->where($db->quoteName('module') . ' like ' . $db->quote('mod_emundus_campaign_dropfiles'));
+            $db->setQuery($query);
+            $db->execute();
+
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $eMConfig->set('allow_pinned_campaign','1');
+
+            EmundusHelperUpdate::installExtension('MOD_EMUNDUS_BANNER_XML','mod_emundus_banner','{"name":"MOD_EMUNDUS_BANNER_XML","type":"module","creationDate":"October 2022","author":"HUBINET Brice, GRANDIN Laura","copyright":"Copyright (C) 2022 eMundus. All rights reserved.","authorEmail":"contact@emundus.fr","authorUrl":"www.emundus.fr","version":"1.34.0","description":"MOD_EMUNDUS_BANNER_XML_DESCRIPTION","group":"","filename":"mod_emundus_banner"}','module');
+
+            $query->clear()
+                ->select('id, params')
+                ->from($db->quoteName('#__modules'))
+                ->where($db->quoteName('module') . ' like ' . $db->quote('mod_emundus_applications'))
+                ->andWhere($db->quoteName('published') . ' = 1');
+            $db->setQuery($query);
+            $modules = $db->loadObjectList();
+
+            foreach ($modules as $module){
+                $params = json_decode($module->params);
+                if($params->layout == '_:default'){
+                    $params->layout = '_:tchooz';
+                    $params->show_add_application = 0;
+                    $params->show_show_campaigns = 0;
+
+                    $query->clear()
+                        ->select('id')
+                        ->from($db->quoteName('#__menu'))
+                        ->where($db->quoteName('menutype') . ' LIKE ' . $db->quote('topmenu'))
+                        ->andWhere($db->quoteName('alias') . ' LIKE ' . $db->quote('liste-des-campagnes') . ' OR ' . $db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_content&view=article&id=1039'));
+                    $db->setQuery($query);
+                    $campaigns_list = $db->loadResult();
+
+                    // Create applicant menu
+                    $m_form = new EmundusModelForm();
+                    $m_form->createMenuType('applicantmenu','Applicant');
+
+                    if(!empty($campaigns_list)) {
+                        $data = [
+                            'menutype' => 'applicantmenu',
+                            'title' => 'Toutes les campagnes',
+                            'alias' => 'toutes-les-campagnes',
+                            'path' => 'toutes-les-campagnes',
+                            'link' => 'index.php?Itemid=',
+                            'type' => 'alias',
+                            'component_id' => 0,
+                            'template_style_id' => 0,
+                            'params' => [
+                                'aliasoptions' => $campaigns_list,
+                            ],
+                        ];
+                        EmundusHelperUpdate::addJoomlaMenu($data);
+                    }
+
+                    $query->clear()
+                        ->select('id')
+                        ->from($db->quoteName('#__menu'))
+                        ->where($db->quoteName('menutype') . ' LIKE ' . $db->quote('topmenu'))
+                        ->andWhere($db->quoteName('alias') . ' LIKE ' . $db->quote('home') . ' OR ' . $db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_content&view=featured'));
+                    $db->setQuery($query);
+                    $homepage = $db->loadResult();
+
+                    if(!empty($homepage)) {
+                        $data = [
+                            'menutype' => 'applicantmenu',
+                            'title' => 'Mes candidatures',
+                            'alias' => 'mes-candidatures',
+                            'path' => 'mes-candidatures',
+                            'link' => 'index.php?Itemid=',
+                            'type' => 'alias',
+                            'component_id' => 0,
+                            'template_style_id' => 0,
+                            'params' => [
+                                'aliasoptions' => $homepage,
+                            ],
+                        ];
+                        EmundusHelperUpdate::addJoomlaMenu($data);
+                    }
+
+                    $query->clear()
+                        ->update($db->quoteName('#__modules'))
+                        ->set($db->quoteName('showtitle') . ' = 0')
+                        ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($module->id));
+                    $db->setQuery($query);
+                    $db->execute();
+
+                    $query->clear()
+                        ->update($db->quoteName('#__falang_content'))
+                        ->set($db->quoteName('value') . ' = ' . $db->quote(json_encode($params)))
+                        ->where($db->quoteName('reference_table') . ' like ' . $db->quote('modules'))
+                        ->andWhere($db->quoteName('reference_field') . ' like ' . $db->quote('params'))
+                        ->andWhere($db->quoteName('reference_id') . ' like ' . $db->quote($module->id));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+            }
+
+            return true;
+        } catch (Exception $e) {
+            JLog::add('Failed to install Homepage ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return false;
+        }
+    }
+
+    public function installChecklist() {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->update($db->quoteName('#__modules'))
+                ->set($db->quoteName('published') . ' = 0')
+                ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_jumi'))
+                ->andWhere(
+                    $db->quoteName('title') . ' LIKE ' . $db->quote('Formulaires%') . ' OR ' . $db->quoteName('title') . ' LIKE ' . $db->quote('Document%')
+                );
+            $db->setQuery($query);
+            $db->execute();
+
+            $query->clear()
+                ->update($db->quoteName('#__modules'))
+                ->set($db->quoteName('published') . ' = 0')
+                ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_send_application'));
+            $db->setQuery($query);
+            $db->execute();
+
+            $query->clear()
+                ->select('m.id')
+                ->from($db->quoteName('#__emundus_setup_profiles','esp'))
+                ->rightJoin($db->quoteName('#__menu','m').' ON '.$db->quoteName('m.menutype').' = '.$db->quoteName('esp.menutype'))
+                ->where($db->quoteName('esp.published') . ' = 1')
+                ->andWhere($db->quoteName('m.menutype') . ' <> ' . $db->quote(''));
+            $db->setQuery($query);
+            $menus = $db->loadColumn();
+
+            $query->clear()
+                ->select('id')
+                ->from($db->quoteName('#__modules'))
+                ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_checklist'))
+                ->andWhere($db->quoteName('note') . ' LIKE ' . $db->quote('applicant_sidebar'));
+            $db->setQuery($query);
+            $module_id = $db->loadResult();
+
+            if(empty($module_id)){
+                $data = [
+                    'title' => 'Forms',
+                    'note' => 'applicant_sidebar',
+                    'position' => 'sidebar-a',
+                    'module' => 'mod_emundus_checklist',
+                    'params' => [
+                        'show_forms' => 1,
+                        'forms_title' => 'Formulaires',
+                        'show_mandatory_documents' => 1,
+                        'mandatory_documents_title' => 'Documents',
+                        'show_optional_documents' => 0,
+                        'optional_documents_title' => 'Documents complémentaires',
+                        'show_duplicate_documents' => -1,
+                        'showsend' => 1,
+                        'admission' => 0,
+                    ]
+                ];
+                $module_id = EmundusHelperUpdate::addJoomlaModule($data)['id'];
+            }
+
+            if(!empty($module_id)) {
+                foreach ($menus as $menu) {
+                    $query->clear()
+                        ->select('moduleid')
+                        ->from($db->quoteName('#__modules_menu'))
+                        ->where($db->quoteName('moduleid') . ' = ' . $module_id)
+                        ->andWhere($db->quoteName('menuid') . ' = ' . $menu);
+                    $db->setQuery($query);
+                    $existing = $db->loadResult();
+
+                    if(empty($existing)) {
+                        $query->clear()
+                            ->insert($db->quoteName('#__modules_menu'))
+                            ->set($db->quoteName('moduleid') . ' = ' . $module_id)
+                            ->set($db->quoteName('menuid') . ' = ' . $menu);
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
+            }
+
+            $query->clear()
+                ->select('id, params')
+                ->from($db->quoteName('#__modules'))
+                ->where($db->quoteName('module') . ' like ' . $db->quote('mod_emundusflow'))
+                ->andWhere($db->quoteName('published') . ' = 1');
+            $db->setQuery($query);
+            $modules = $db->loadObjectList();
+
+            foreach ($modules as $module) {
+                $params = json_decode($module->params);
+                if ($params->layout == '_:default') {
+                    $params->layout = '_:tchooz';
+
+                    $query->clear()
+                        ->update($db->quoteName('#__modules'))
+                        ->set($db->quoteName('showtitle') . ' = 0')
+                        ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($module->id));
+                    $db->setQuery($query);
+                    $db->execute();
+
+                    $query->clear()
+                        ->update($db->quoteName('#__falang_content'))
+                        ->set($db->quoteName('value') . ' = ' . $db->quote(json_encode($params)))
+                        ->where($db->quoteName('reference_table') . ' like ' . $db->quote('modules'))
+                        ->andWhere($db->quoteName('reference_field') . ' like ' . $db->quote('params'))
+                        ->andWhere($db->quoteName('reference_id') . ' like ' . $db->quote($module->id));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+            }
+
+            return true;
+        } catch (Exception $e) {
+            JLog::add('Failed to install Checklist ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return false;
+        }
     }
 }

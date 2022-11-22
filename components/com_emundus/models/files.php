@@ -1364,6 +1364,8 @@ class EmundusModelFiles extends JModelLegacy
             $profile = null;
         }
 
+        $fnums = is_array($fnums) ? $fnums : [$fnums];
+
         $dispatcher->trigger('onBeforeMultipleStatusChange', [$fnums, $state]);
         $trigger = $dispatcher->trigger('callEventHandler', ['onBeforeMultipleStatusChange', ['fnums' => $fnums, 'state' => $state]]);
         foreach($trigger as $responses) {
@@ -1375,7 +1377,6 @@ class EmundusModelFiles extends JModelLegacy
         }
 
         try {
-            $fnums = is_array($fnums) ? $fnums : [$fnums];
 
             foreach ($fnums as $fnum) {
                 $dispatcher->trigger('onBeforeStatusChange', [$fnum, $state]);

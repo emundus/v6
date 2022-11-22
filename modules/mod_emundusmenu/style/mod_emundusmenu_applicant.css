@@ -1,0 +1,19 @@
+#em_user_menu{
+    list-style-type: none;
+    margin: unset;
+    display: flex;
+    align-items: center;
+}
+#em_user_menu li{
+    padding: 6px 12px;
+    border-radius: 8px;
+}
+#em_user_menu li.active{
+    background: #F3F3F3;
+}
+#em_user_menu li:not(:first-child){
+    margin-left: 24px;
+}
+#header-b{
+    justify-content: start;
+}

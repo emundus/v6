@@ -250,7 +250,7 @@ export  default {
     }
 
     .section-content {
-      border-top: 4px solid #20835F;
+      border-top: 4px solid var(--main-500);
       background-color: white;
       transition: all 0.3s ease-in-out;
 

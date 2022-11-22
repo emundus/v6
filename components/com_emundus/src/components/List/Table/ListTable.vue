@@ -93,6 +93,8 @@ export default {
 			font-size: 14px;
 			padding: 0.85rem 0.5rem;
 			background-color: transparent;
+      color: var(--neutral-900);
+
 		}
 	}
 }

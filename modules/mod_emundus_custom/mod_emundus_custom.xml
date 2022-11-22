@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="3.1" client="site" method="upgrade">
-	<name>mod_emundus_custom</name>
+	<name>MOD_EMUNDUS_CUSTOM_XML</name>
 	<author>eMundus</author>
 	<creationDate>September 2018</creationDate>
 	<copyright>Copyright (C) 2018 eMundus. All rights reserved.</copyright>

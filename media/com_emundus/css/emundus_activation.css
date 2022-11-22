@@ -1,3 +1,9 @@
+.com_emundus.view-user div#g-page-surround{
+    background: white !important;
+}
+#g-navigation{
+    display: none;
+}
 .em-activation{
     display: flex;
     flex-direction: column;
@@ -5,11 +11,20 @@
     align-items: center;
     height: 80vh;
 }
+.em-activation-header{
+    width: 100vw;
+    position: fixed;
+    max-height: 100px;
+    height: 65px;
+    background: transparent;
+    left: 0;
+    padding: 24px;
+}
 .info{
     display: flex !important;
     flex-direction: column;
     align-items: center;
-    background: #fff;
+    background: transparent;
     margin-left: auto;
     margin-right: auto;
     margin-top: 50px;

@@ -133,6 +133,10 @@ JText::script('COM_EMUNDUS_ONBOARD_SUBJECT');
 JText::script('COM_EMUNDUS_ONBOARD_TYPE');
 JText::script('COM_EMUNDUS_ONBOARD_STATUS');
 
+JText::script('COM_EMUNDUS_CAMPAIGNS_PIN');
+JText::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_CAMPAIGN_PINNED');
+JText::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_CAMPAIGN_PINNED_TEXT');
+
 $lang = JFactory::getLanguage();
 $short_lang = substr($lang->getTag(), 0 , 2);
 $current_lang = $lang->getTag();

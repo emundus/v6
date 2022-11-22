@@ -58,18 +58,27 @@ function showFabrikElt(elements) {
 function hideFabrikGroupByElt(elements, clearElements = false) {
     if (!Array.isArray(elements)) elements = [elements];
 
-    var form = Fabrik.getBlock(elements[0].form.block);
+    let form = null;
 
     elements.forEach((element) => {
+        if (element) {
+            document.getElementById(`group${element.groupid}`).classList.add('fabrikHide');
 
-        if (element) document.getElementById(`group${element.groupid}`).classList.add('fabrikHide');
+            if (clearElements) {
 
-        if (clearElements) {
-            Object.values(form.elements).map((all_element) => {
-                if (all_element.groupid === element.groupid) all_element.clear();
-            });
+                if(form === null){
+                    form = Fabrik.getBlock(element.form.block);
+                }
+
+                if(form) {
+                    Object.values(form.elements).map((all_element) => {
+                        if (all_element.groupid === element.groupid) all_element.clear();
+                    });
+                }
+            }
+        } else {
+            console.log('hideFabrikGroupByElt: An element is undefined');
         }
-
     });
 
 }
@@ -85,8 +94,13 @@ function hideFabrikGroupByElt(elements, clearElements = false) {
  */
 function showFabrikGroupByElt(elements) {
     if (!Array.isArray(elements)) elements = [elements];
+
     elements.forEach((element) => {
-        if (element) document.getElementById(`group${element.groupid}`).classList.remove('fabrikHide');
+        if (element) {
+            document.getElementById(`group${element.groupid}`).classList.remove('fabrikHide');
+        } else {
+            console.log('showFabrikGroupByElt: An element is undefined');
+        }
     });
 }
 
@@ -157,7 +171,7 @@ function defineCheckboxLimit(element, max) {
             }
         })
     }
-    else{
+    else {
         Object.values(allCheck).forEach((option) =>{
             option.disabled = false;
         })

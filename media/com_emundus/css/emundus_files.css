@@ -1,8 +1,8 @@
 /*boutons*/
 
 .em-user-personal-filter .btn-xs, *.btn, a.btn-attach, .xclsform .panel-body button, button.close {
-    border-radius: 4px !important;
-    padding: 6px 8px;
+    border-radius: 8px !important;
+    padding: 10px 24px;
     color: #fff;
     text-shadow: none !important;
     line-height: normal !important;
@@ -813,7 +813,7 @@ div#em-modal-actions #form-element{
 div#em-modal-actions #savePDFfilter, div#em-modal-actions #savefilter{
     margin-left: 0;
     margin-right: 1%;
-    border-radius: 4px;
+    border-radius: var(--em-border-radius);
     margin-top: 10px;
     background: #5a5a72;
     border: solid 1px #5a5a72;
@@ -2196,6 +2196,15 @@ label[for="em-file_to_upload"]:hover {
     background: transparent;
 }
 
+.countCheckedCheckbox a.em-pointer{
+    color: var(--main-500);
+}
+
+.countCheckedCheckbox a.em-pointer:hover {
+    color: var(--main-600);
+}
+
+
 .tooltipSelectAttachments{
     display:none;
     transition:opacity 1s ease-out;
@@ -2395,7 +2404,7 @@ div#em-assoc-files .panel > .panel-heading {
     text-shadow: none;
     color: #FFFFFF;
     padding: 0px 12px !important;
-    border-radius: 4px !important;
+    border-radius: var(--em-border-radius) !important;
 }
 
 .g-back-office-emundus-tableau #em_select_filter #del-filter {
