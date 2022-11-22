@@ -333,6 +333,8 @@ class com_emundusInstallerScript
                 // Install announcement module
                 //TODO : Install a module or a plugin via folder (parse xml file and insert necessary datas)
                 EmundusHelperUpdate::installExtension('MOD_EMUNDUS_ANNOUNCEMENTS_SYS_XML','mod_emundus_announcements','{"name":"MOD_EMUNDUS_ANNOUNCEMENTS_SYS_XML","type":"module","creationDate":"September 2022","author":"eMundus","copyright":"Copyright (C) 2022 eMundus. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"1.0.0","description":"MOD_EMUNDUS_ANNOUNCEMENTS_XML_DESCRIPTION","group":"","filename":"mod_emundus_announcements"}','module');
+                EmundusHelperUpdate::createModule('Announcement','top-b','mod_emundus_announcements','{"announcement_content":"Cette plateforme de préproduction est une copie de la production datant du [DATE]. Les mails sont désactivés. Elle est isolée du web.","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}',0,1);
+
                 $datas = [
                     'title' => 'Announcement',
                     'note' => 'Back button available on login and register views',
@@ -392,6 +394,16 @@ class com_emundusInstallerScript
                     ]
                 ];
                 EmundusHelperUpdate::addJoomlaModule($datas,1,true);
+
+                $succeed['hikashop_events_added'] = EmundusHelperUpdate::addCustomEvents([['label' => 'onHikashopBeforeOrderCreate', 'category' => 'Hikashop'],
+                    ['label' => 'onHikashopAfterOrderCreate', 'category' => 'Hikashop'],
+                    ['label' => 'onHikashopBeforeOrderUpdate', 'category' => 'Hikashop'],
+                    ['label' => 'onHikashopAfterOrderUpdate', 'category' => 'Hikashop'],
+                    ['label' => 'onHikashopAfterOrderConfirm', 'category' => 'Hikashop'],
+                    ['label' => 'onHikashopAfterOrderDelete', 'category' => 'Hikashop'],
+                    ['label' => 'onHikashopCheckoutWorkflowLoad', 'category' => 'Hikashop'],
+                    ['label' => 'onHikashopBeforeProductListingLoad', 'category' => 'Hikashop']
+                ]);
             }
 
             // Insert new translations in overrides files

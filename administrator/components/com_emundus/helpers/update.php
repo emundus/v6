@@ -1866,4 +1866,83 @@ class EmundusHelperUpdate
         $result['status'] = true;
         return $result;
     }
+
+    public static function addCustomEvents($events) {
+        $response = [
+            'status' => false,
+            'message' => 'Empty events'
+        ];
+
+        if (!empty($events)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $rows = [];
+            foreach($events as $event) {
+                if (!empty($event['label'])) {
+                    $query->clear()
+                        ->select('id')
+                        ->from('#__emundus_plugin_events')
+                        ->where('label = ' . $db->quote($event['label']));
+
+                    try {
+                        $event_id = $db->loadResult();
+                    } catch (Exception $e) {
+                        JLog::add('Failed to check if event does not already exists ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                        $event_id = 0;
+                    }
+
+                    if (empty($event_id)) {
+                        $row = $db->quote($event['label']);
+
+                        if (isset($event['published'])) {
+                            $row .= ', ' . $event['published'];
+                        } else {
+                            $row .= ', 0';
+                        }
+
+                        if (isset($event['category'])) {
+                            $row .= ', ' .  $db->quote($event['category']);
+                        } else {
+                            $row .= ', ' .  $db->quote('default');
+                        }
+
+                        if (isset($event['description'])) {
+                            $row .= ', ' .  $db->quote($event['description']);
+                        } else {
+                            $row .= ', ' .  $db->quote('');
+                        }
+
+                        $rows[] = $row;
+                    }
+                }
+            }
+
+            if (!empty($rows)) {
+                $columns = ['label', 'published', 'category', 'description'];
+                $query->clear()
+                    ->insert('#__emundus_plugin_events')
+                    ->columns($columns)
+                    ->values($rows);
+
+                $db->setQuery($query);
+                try {
+                    $inserted = $db->execute();
+                } catch (Exception $e) {
+                    $inserted = false;
+                    JLog::add('Failed addCustomEvents ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                }
+
+                if (!$inserted) {
+                    $response['message'] = 'Custom events have not been inserted in database';
+                    JLog::add('Custom events have not been inserted in database', JLog::WARNING, 'com_emundus.error');
+                } else {
+                    $response['status'] = true;
+                    $response['message'] = 'Success';
+                }
+            }
+        }
+
+        return $response;
+    }
 }
