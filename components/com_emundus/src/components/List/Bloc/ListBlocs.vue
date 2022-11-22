@@ -1,12 +1,7 @@
 <template>
-	<div id="list-blocs"
-		class="em-grid"
-		:class="{
-			'less-than-4': list.length < 4,
-		}"
-	>
+	<div id="list-blocs" class="em-grid" :class="{'less-than-4': items.length < 4,}">
 		<list-bloc
-			v-for="item in list"
+			v-for="item in items"
 			:key="item.id"
 			:data="item"
 			:type="type"
@@ -39,6 +34,10 @@ export default {
 		params: {
 			type: Object,
 			default: {}
+		},
+		items: {
+			type: [],
+			required: true
 		}
 	},
 	methods: {
@@ -51,21 +50,6 @@ export default {
 		showModalPreview(id) {
 			this.$emit('showModalPreview', id)
 		},
-	},
-	computed: {
-		list() {
-			if (this.params.email_category) {
-				return this.$store.getters['lists/list'].filter((item) => {
-					if (this.params.email_category == 0) {
-						return true;
-					} else {
-						return item.category === this.params.email_category;
-					}
-				});
-			}
-
-			return this.$store.getters['lists/list'];
-		}
 	}
 }
 </script>

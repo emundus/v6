@@ -197,11 +197,25 @@ class EmundusModelCampaign extends JModelList {
 	 * @since version v6
 	 */
 	function getCampaignByID($campaign_id) {
-		$query = 'SELECT esc.*
-					FROM #__emundus_setup_campaigns AS esc
-					WHERE esc.id='.$campaign_id.' ORDER BY esc.end_date DESC';
-		$this->_db->setQuery( $query );
-		return $this->_db->loadAssoc();
+        $campaign = [];
+
+        if (!empty($campaign_id)) {
+            $query = $this->_db->getQuery(true);
+            $query->select('*')
+                ->from('#__emundus_setup_campaigns AS esc')
+                ->where('esc.id = ' . $campaign_id)
+                ->order('esc.end_date DESC');
+
+            $this->_db->setQuery($query);
+
+            try {
+                $campaign = $this->_db->loadAssoc();
+            } catch (Exception $e) {
+                JLog::add('Failed to retrieve campaign from id ' . $campaign_id . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            }
+        }
+
+		return $campaign;
 	}
 
 	/**
@@ -2113,7 +2127,7 @@ class EmundusModelCampaign extends JModelList {
                 $query->clear()
                     ->select('m.id')
                     ->from($this->_db->quoteName('#__menu', 'm'))
-                    ->leftJoin($this->_db->quoteName('#__emundus_setup_profiles', 'sp') . ' ON ' . $this->_db->quoteName('sp.menutype') . ' = ' . $db->quoteName('m.menutype'))
+                    ->leftJoin($this->_db->quoteName('#__emundus_setup_profiles', 'sp') . ' ON ' . $this->_db->quoteName('sp.menutype') . ' = ' . $this->_db->quoteName('m.menutype'))
                     ->where($this->_db->quoteName('sp.id') . ' = ' . $this->_db->quote($pid));
                 $this->_db->setQuery($query);
                 $mids = $this->_db->loadObjectList();
@@ -2195,6 +2209,8 @@ class EmundusModelCampaign extends JModelList {
 
             if (!empty($current_phase->id)) {
                 $current_phase->entry_status = !empty($current_phase->entry_status) ? explode(',', $current_phase->entry_status) : [];
+            } else {
+                $current_phase = new stdClass();
             }
         }
 
@@ -2202,34 +2218,46 @@ class EmundusModelCampaign extends JModelList {
     }
 
     public function pinCampaign($cid): bool {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $pinned = false;
 
-        try {
-            $query->select('id')
-                ->from($db->quoteName('#__emundus_setup_campaigns'))
-                ->where($db->quoteName('pinned') . ' = 1');
-            $db->setQuery($query);
-            $campaign_already_pinned = $db->loadResult();
+        if (!empty($cid)) {
+            // check if campaign exists
+            $campaign = $this->getCampaignByID($cid);
 
-            if(!empty($campaign_already_pinned)){
-                $query->clear()
-                    ->update($db->quoteName('#__emundus_setup_campaigns'))
-                    ->set($db->quoteName('pinned') . ' = 0')
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($campaign_already_pinned));
-                $db->setQuery($query);
-                $db->execute();
+            if (!empty($campaign)) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                try {
+                    $query->clear()
+                        ->select('id')
+                        ->from($db->quoteName('#__emundus_setup_campaigns'))
+                        ->where($db->quoteName('pinned') . ' = 1');
+                    $db->setQuery($query);
+                    $campaign_already_pinned = $db->loadResult();
+
+                    if (!empty($campaign_already_pinned)) {
+                        $query->clear()
+                            ->update($db->quoteName('#__emundus_setup_campaigns'))
+                            ->set($db->quoteName('pinned') . ' = 0')
+                            ->where($db->quoteName('id') . ' = ' . $db->quote($campaign_already_pinned));
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+
+                    $query->clear()
+                        ->update($db->quoteName('#__emundus_setup_campaigns'))
+                        ->set($db->quoteName('pinned') . ' = 1')
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($cid));
+                    $db->setQuery($query);
+
+                    $pinned = $db->execute();
+                } catch (Exception $e) {
+                    JLog::add('Error updating form document in component/com_emundus/models/campaign: '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                }
             }
-
-            $query->clear()
-                ->update($db->quoteName('#__emundus_setup_campaigns'))
-                ->set($db->quoteName('pinned') . ' = 1')
-                ->where($db->quoteName('id') . ' = ' . $db->quote($cid));
-            $db->setQuery($query);
-            return $db->execute();
-        } catch (Exception $e) {
-            JLog::add('Error updating form document in component/com_emundus/models/campaign: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-            return false;
         }
+
+        return $pinned;
     }
 }

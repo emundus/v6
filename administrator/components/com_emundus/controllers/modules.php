@@ -81,17 +81,13 @@ class EmundusControllerModules extends JControllerLegacy
     function installHomepage() {
         require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/models/modules.php');
         $mModules = new EmundusModelModules();
-        $mModules->installHomepage();
-
-        return true;
+        return $mModules->installHomepage();
     }
 
     function installChecklist() {
         require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/models/modules.php');
         $mModules = new EmundusModelModules();
-        $mModules->installChecklist();
-
-        return true;
+        return $mModules->installChecklist();
     }
 
     function installAnonymUserForms()

@@ -1,24 +1,24 @@
 export default {
 	campaign: [
 		{
-			label: "COM_EMUNDUS_ONBOARD_NAME",
+			label: 'COM_EMUNDUS_ONBOARD_NAME',
 			value: 'label',
 			redirect: true
 		},
 		{
-			label: "COM_EMUNDUS_ONBOARD_START_DATE",
+			label: 'COM_EMUNDUS_ONBOARD_START_DATE',
 			value: 'start_date',
 		},
 		{
-			label: "COM_EMUNDUS_ONBOARD_END_DATE",
+			label: 'COM_EMUNDUS_ONBOARD_END_DATE',
 			value: 'end_date',
 		},
 		{
-			label: "COM_EMUNDUS_ONBOARD_STATE",
+			label: 'COM_EMUNDUS_ONBOARD_STATE',
 			value: 'status',
 		},
 		{
-			label: "COM_EMUNDUS_ONBOARD_NB_FILES",
+			label: 'COM_EMUNDUS_ONBOARD_NB_FILES',
 			value: 'nb_files',
 		},
 		{
@@ -28,12 +28,12 @@ export default {
 	],
 	email: [
 		{
-			label: "COM_EMUNDUS_ONBOARD_SUBJECT",
+			label: 'COM_EMUNDUS_ONBOARD_SUBJECT',
 			value: 'subject',
 			redirect: true
 		},
 		{
-			label: "COM_EMUNDUS_ONBOARD_CATEGORY",
+			label: 'COM_EMUNDUS_ONBOARD_CATEGORY',
 			value: 'category',
 		},
 		{
@@ -43,12 +43,12 @@ export default {
 	],
 	form:  [
 		{
-			label: "COM_EMUNDUS_ONBOARD_NAME",
+			label: 'COM_EMUNDUS_ONBOARD_NAME',
 			value: 'label',
 			redirect: true
 		},
 		{
-			label: "COM_EMUNDUS_ONBOARD_STATUS",
+			label: 'COM_EMUNDUS_ONBOARD_STATUS',
 			value: 'published',
 		},
 		{
@@ -58,12 +58,12 @@ export default {
 	],
 	formulaire:  [
 		{
-			label: "COM_EMUNDUS_ONBOARD_NAME",
+			label: 'COM_EMUNDUS_ONBOARD_NAME',
 			value: 'label',
 			redirect: true
 		},
 		{
-			label: "COM_EMUNDUS_ONBOARD_STATUS",
+			label: 'COM_EMUNDUS_ONBOARD_STATUS',
 			value: 'published',
 		},
 		{
@@ -73,12 +73,12 @@ export default {
 	],
 	grilleEval:  [
 		{
-			label: "COM_EMUNDUS_ONBOARD_NAME",
+			label: 'COM_EMUNDUS_ONBOARD_NAME',
 			value: 'label',
 			redirect: true
 		},
 		{
-			label: "COM_EMUNDUS_ONBOARD_STATUS",
+			label: 'COM_EMUNDUS_ONBOARD_STATUS',
 			value: 'published',
 		},
 		{
@@ -86,4 +86,14 @@ export default {
 			value: 'actions',
 		}
 	],
+	formModels: [
+		{
+			label: 'COM_EMUNDUS_ONBOARD_NAME',
+			value: 'label'
+		},
+		{
+			label: '',
+			value: 'actions',
+		}
+	]
 };

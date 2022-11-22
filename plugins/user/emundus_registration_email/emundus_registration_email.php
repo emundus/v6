@@ -152,7 +152,13 @@ class plgUserEmundus_registration_email extends JPlugin {
         }
 
         if (JPluginHelper::getPlugin('authentication','miniorangesaml')) {
-            return;
+            require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+            $m_users = new EmundusModelusers();
+            $isSamlUser = $m_users->isSamlUser($userId);
+
+            if ($isSamlUser) {
+                return;
+            }
         }
 
         // if saving user's data was successful

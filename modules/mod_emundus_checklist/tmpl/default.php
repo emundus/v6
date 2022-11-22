@@ -6,7 +6,7 @@ $index_form = 1;
 $index_doc = 1;
 
 foreach ($forms as $index => $form){
-    if($form->id == $menuid){
+    if ($form->id == $menuid) {
         $index_form = $index + 1;
         break;
     }
@@ -42,7 +42,7 @@ foreach ($forms as $index => $form){
                             <div class="mod_emundus_checklist___step_count"><?php echo $step ?></div>
                             <a href="<?php echo $form->link ?>"><?php echo $form->title; ?></a>
                         </div>
-                        <?php if ($index != (sizeof($forms) - 1) || $show_mandatory_documents == 1) : ?>
+                        <?php if ($index != (sizeof($forms) - 1) || ($show_mandatory_documents == 1 && (!empty($mandatory_documents)) || !empty($optional_documents))) : ?>
                             <div class="mod_emundus_checklist___border_item"></div>
                         <?php endif ?>
                     </div>

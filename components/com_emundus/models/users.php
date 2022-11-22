@@ -518,10 +518,25 @@ class EmundusModelUsers extends JModelList {
     }
 
     public function getAllCampaigns() {
+        $campaigns = [];
+
         $db = JFactory::getDBO();
-        $query = 'SELECT *,esp.label as programme FROM #__emundus_setup_campaigns AS sc LEFT JOIN #__emundus_setup_programmes AS esp on sc.training = esp.code ORDER BY sc.start_date DESC, sc.label ASC';
-        $db->setQuery($query);
-        return $db->loadObjectList();
+        $query = $db->getQuery(true);
+
+        $query->select('*, esp.label as programme, sc.id as campaign_id')
+            ->from($db->quoteName('#__emundus_setup_campaigns', 'sc'))
+            ->leftJoin($db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON sc.training = esp.code')
+            ->order('sc.start_date DESC')
+            ->order('sc.label ASC');
+
+        try {
+            $db->setQuery($query);
+            $campaigns = $db->loadObjectList();
+        } catch (Exception $e) {
+            JLog::add('Failed to list all campaigns ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+        }
+
+        return $campaigns;
     }
 
    /* public function getAllOprofiles()
@@ -2406,7 +2421,7 @@ class EmundusModelUsers extends JModelList {
 
             return $elements;
         } catch (Exception $e) {
-            JLog::add(' com_emundus/models/users.php | Cannot get elements of group '.$groupid.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            JLog::add(' com_emundus/models/users.php | Cannot get elements of group '.$group.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             return [];
         }
     }
@@ -2590,7 +2605,7 @@ class EmundusModelUsers extends JModelList {
 
             return true;
         } catch (Exception $e) {
-            JLog::add(' com_emundus/models/users.php | Cannot copy profile document ' . $aid . ' to fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            JLog::add(' com_emundus/models/users.php | Cannot copy profile document ' . json_encode($aids) . ' to fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             return false;
         }
     }
@@ -3253,5 +3268,33 @@ class EmundusModelUsers extends JModelList {
         }
 
         return $new_token;
+    }
+
+    public function isSamlUser($user_id) {
+        $isSamlUser = false;
+
+        if (!empty($user_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('params')
+                ->from('#__users')
+                ->where('id = ' . $user_id);
+
+            try {
+                $params = $db->loadResult();
+            } catch (Exception $e) {
+                $params = '';
+                JLog::add(' com_emundus/models/users.php | Failed to check if is saml users : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            }
+
+            if (!empty($params)) {
+                $params = json_decode($params, true);
+
+                $isSamlUser = !empty($params['saml']) && $params['saml'] == 1;
+            }
+        }
+
+        return $isSamlUser;
     }
 }
