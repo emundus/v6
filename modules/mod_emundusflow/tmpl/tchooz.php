@@ -59,7 +59,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
                 <button class="btn btn-primary em-mr-16" style="height: 41px"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
             </a>
             <?php endif; ?>
-            <a href="/component/emundus/?task=pdf&amp;fnum=2022101914533400001650000100" target="_blank" title="Imprimer">
+            <a href="/component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>" target="_blank" title="Imprimer">
                 <button class="btn btn-primary mod_emundus_flow___print">
                     <span class="material-icons-outlined" style="font-size: 16px">print</span>
                 </button>
