@@ -219,7 +219,7 @@ a.em-blue-400-color:hover {
     max-height: 48px;
     display: -webkit-box;
     line-height: 140%;
-    min-height: 50px;
+    min-height: 46px;
     font-family: var(--applicant-title-font) !important;
 }
 
