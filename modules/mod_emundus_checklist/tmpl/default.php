@@ -6,7 +6,7 @@ $index_form = 1;
 $index_doc = 1;
 
 foreach ($forms as $index => $form){
-    if($form->id == $menuid){
+    if ($form->id == $menuid) {
         $index_form = $index + 1;
         break;
     }

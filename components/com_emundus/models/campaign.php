@@ -2209,6 +2209,8 @@ class EmundusModelCampaign extends JModelList {
 
             if (!empty($current_phase->id)) {
                 $current_phase->entry_status = !empty($current_phase->entry_status) ? explode(',', $current_phase->entry_status) : [];
+            } else {
+                $current_phase = new stdClass();
             }
         }
 
