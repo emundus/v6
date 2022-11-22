@@ -141,9 +141,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
                     <div class="<?php echo $mod_em_campaign_class; ?> em-applicant-text-color em-font-size-16">
                         <div>
-
-
-                            <?php if(strtotime($now) < strtotime($campaign_pinned->start_date)  ) : //pas commencé ?>
+                            <?php if($mod_em_campaign_show_camp_end_date && strtotime($now) < strtotime($campaign_pinned->start_date)  ) : //pas commencé ?>
 
                                 <div class="mod_emundus_campaign__date em-flex-row">
                                     <span class="material-icons em-text-neutral-600 em-font-size-16">schedule</span>
@@ -152,14 +150,14 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                 </div>
                             <?php endif; ?>
 
-                            <?php if(strtotime($now) > strtotime($campaign_pinned->end_date) ) :    //fini  ?>
+                            <?php if($mod_em_campaign_show_camp_end_date && strtotime($now) > strtotime($campaign_pinned->end_date) ) :    //fini  ?>
                                 <div class="mod_emundus_campaign__date em-flex-row">
                                     <span class="material-icons em-text-neutral-600 em-font-size-16">alarm_off</span>
                                     <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_CLOSED'); ?></p>
                                 </div>
                             <?php endif; ?>
 
-                            <?php if( strtotime($now) < strtotime($campaign_pinned->end_date)  && strtotime($now) > strtotime($campaign_pinned->start_date) ) : //en cours ?>
+                            <?php if($mod_em_campaign_show_camp_end_date && strtotime($now) < strtotime($campaign_pinned->end_date)  && strtotime($now) > strtotime($campaign_pinned->start_date) ) : //en cours ?>
                                 <div class="mod_emundus_campaign__date em-flex-row">
                                     <span class="material-icons em-text-neutral-600 em-font-size-16">schedule</span>
                                     <p class="em-applicant-text-color em-font-size-16"> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?>
@@ -457,14 +455,14 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                             </div>
                                         <?php endif; ?>
 
-                                        <?php if(strtotime($now) > strtotime($result->end_date) ) :    //fini  ?>
+                                        <?php if($mod_em_campaign_show_camp_end_date && strtotime($now) > strtotime($result->end_date) ) :    //fini  ?>
                                            <div class="mod_emundus_campaign__date em-flex-row">
                                                 <span class="material-icons em-text-neutral-600 em-font-size-16">alarm_off</span>
                                                 <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_CLOSED'); ?></p>
                                             </div>
                                         <?php endif; ?>
 
-                                        <?php if( strtotime($now) < strtotime($result->end_date)  && strtotime($now) > strtotime($result->start_date) ) : //en cours ?>
+                                        <?php if($mod_em_campaign_show_camp_end_date && strtotime($now) < strtotime($result->end_date)  && strtotime($now) > strtotime($result->start_date) ) : //en cours ?>
                                             <?php
                                                 $displayInterval = false;
                                                 $interval = date_create($now)->diff(date_create($result->end_date));
