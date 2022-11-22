@@ -281,10 +281,15 @@ export default {
   span.list-td-subject {
     cursor: pointer;
     transition: all .3s;
+    color: var(--neutral-900);
 
     &:hover {
       color: #20835F;
     }
+  }
+
+  span:not(.material-icons) {
+    color: var(--neutral-900);
   }
 }
 

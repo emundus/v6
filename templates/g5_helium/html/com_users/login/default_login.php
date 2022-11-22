@@ -16,10 +16,14 @@ $eMConfig = JComponentHelper::getParams('com_emundus');
 <div class="login<?php echo $this->pageclass_sfx; ?>">
     <?php if ($this->params->get('show_page_heading')) : ?>
         <div class="page-header">
-            <h1 class="em-titre-connectez-vous">
+            <?php if (file_exists('images/custom/favicon.png')) : ?>
+                <a href="/" class="em-profile-picture em-mb-32" style="width: 50px;height: 50px;background-image: url('images/custom/favicon.png')">
+                </a>
+            <?php endif; ?>
+            <p class="em-mb-8 em-h3">
                 <?php echo JText::_('JLOGIN'); ?>
-            </h1>
-            <p><?php echo JText::_('JLOGIN_DESC'); ?></p>
+            </p>
+            <p class="em-applicant-text-color em-applicant-default-font"><?php echo JText::_('JLOGIN_DESC'); ?></p>
         </div>
     <?php endif; ?>
     <?php if (($this->params->get('logindescription_show') == 1 && str_replace(' ', '', $this->params->get('login_description')) != '') || $this->params->get('login_image') != '') : ?>
@@ -114,6 +118,8 @@ $eMConfig = JComponentHelper::getParams('com_emundus');
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        document.querySelector('#header-a img').style.display = 'none';
+
         <?php if ($eMConfig['reveal_password']): ?>
             const spanVisibility = document.querySelector('#toggle-password-visibility');
             const inputPassword = document.querySelector('.controls #password');

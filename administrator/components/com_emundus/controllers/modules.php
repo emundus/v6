@@ -33,6 +33,12 @@ class EmundusControllerModules extends JControllerLegacy
             case 'anonym_user_sessions':
                 $result = $this->installAnonymUserForms();
                 break;
+            case 'homepage':
+                $result['status'] = $this->installHomepage();
+                break;
+            case 'checklist':
+                $result['status'] = $this->installChecklist();
+                break;
             default:
                 $result['message'] = 'Module not found';
         }
@@ -70,6 +76,18 @@ class EmundusControllerModules extends JControllerLegacy
 
 
         return true;
+    }
+
+    function installHomepage() {
+        require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/models/modules.php');
+        $mModules = new EmundusModelModules();
+        return $mModules->installHomepage();
+    }
+
+    function installChecklist() {
+        require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/models/modules.php');
+        $mModules = new EmundusModelModules();
+        return $mModules->installChecklist();
     }
 
     function installAnonymUserForms()

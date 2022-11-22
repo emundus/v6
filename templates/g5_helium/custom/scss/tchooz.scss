@@ -2,6 +2,10 @@
   eMundus classes
 **/
 
+.em-text-color {
+  color: var(--neutral-800);
+}
+
 .em-logo{
   width: auto;
   height: 24px;
@@ -18,21 +22,22 @@
   align-items: center;
   width: 100%;
   padding: 0 $p-16;
-  border-radius: 4px;
+  border-radius: var(--em-border-radius);
   border: unset;
   height: 40px;
   color: white;
-  background-color: $main-500;
+  background-color: var(--main-500);
   border: solid 1px transparent;
+  font-family: var(--font);
 
   &:hover {
     background-color: white;
-    color: $main-500;
-    border: 1px solid $main-500;
+    color: var(--main-500);
+    border: 1px solid var(--main-500);
     text-decoration: none;
 
     .material-icons {
-      color: $main-500 !important;
+      color: var(--main-500) !important;
     }
   }
 
@@ -45,6 +50,36 @@
   background-color: $main-100;
 }
 
+.em-applicant-primary-button{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0 $p-16;
+  border-radius: var(--em-applicant-border-radius);
+  border: unset;
+  height: 40px;
+  color: white;
+  background-color: $base-secondary-color;
+  border: solid 1px transparent;
+
+  &:hover {
+    background-color: white;
+    color: $base-secondary-color;
+    border: 1px solid $base-secondary-color;
+    text-decoration: none;
+
+    .material-icons {
+      color: $base-secondary-color !important;
+    }
+  }
+
+  .material-icons {
+    color: $white;
+  }
+}
+
 .em-secondary-button{
   display: flex;
   flex-direction: row;
@@ -52,7 +87,22 @@
   align-items: center;
   width: 100%;
   padding: 0 $p-16;
-  border-radius: 4px;
+  border-radius: var(--em-border-radius);
+  border: solid 1px $neutral-300;
+  height: 40px;
+  background: transparent;
+  color: $night-blue;
+  font-family: var(--font);
+}
+
+.em-applicant-secondary-button{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0 $p-16;
+  border-radius: var(--em-applicant-border-radius);
   border: solid 1px $neutral-300;
   height: 40px;
   background: transparent;
@@ -66,11 +116,40 @@
   align-items: center;
   width: 100%;
   padding: 0 $p-16;
-  border-radius: 4px;
+  border-radius: var(--em-border-radius);
   border: unset;
   height: 40px;
   background: transparent;
   color: $night-blue;
+}
+
+.em-disabled-button {
+  background: $neutral-300;
+  border: 1px solid $neutral-300;
+  border-radius: var(--em-applicant-border-radius);
+  padding: 8px 12px;
+  color: $neutral-600;
+}
+
+.em-back-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $neutral-200;
+  border: 1px solid $neutral-200;
+  border-radius: var(--em-border-radius);
+  padding: 6px 20px;
+  color: $neutral-900;
+  font-family: var(--font);
+}
+
+.em-back-button:focus{
+  text-decoration: unset;
+  color: var(--neutral-700);
+}
+
+.em-back-button:hover {
+  color: var(--neutral-700);
 }
 
 .em-radio-button{
@@ -97,7 +176,7 @@ button[class ^= 'em-']{
     border-color: #E3E3E3;
   }
   &:focus {
-    border-color: $main-500 !important;
+    border-color: var(--main-500) !important;
     -webkit-box-shadow: 0 0 6px #e0f3f8 !important;
     -moz-box-shadow: 0 0 6px #e0f3f8 !important;
     box-shadow: 0 0 6px #e0f3f8 !important;
@@ -117,7 +196,7 @@ button[class ^= 'em-']{
 }
 
 .em-editable-content{
-  caret-color: $main-500;
+  caret-color: var(--main-500);
   &:focus{
     border: solid 1px $neutral-500;
     border-radius: 5px;
@@ -135,7 +214,7 @@ button[class ^= 'em-']{
         p{
           color: white !important;
         }
-        background: $main-500 !important;
+        background: var(--main-500) !important;
         color: white !important;
       }
     }
@@ -281,7 +360,7 @@ input:focus + .em-slider {
 /* LOADING */
 .em-loader {
   border: 5px solid #f3f3f4;
-  border-top: 5px solid $main-500;
+  border-top: 5px solid var(--main-500);
   border-radius: 50%;
   width: 25px;
   height: 25px;
@@ -290,7 +369,7 @@ input:focus + .em-slider {
 }
 .em-page-loader{
   border: 5px solid #f3f3f4;
-  border-top: 5px solid $main-500;
+  border-top: 5px solid var(--main-500);
   border-radius: 50%;
   animation: spin 2s linear infinite;
   top: 50%;
@@ -409,10 +488,10 @@ input:focus + .em-slider {
   align-items: end;
 }
 
-.em-flex-row-justify-end {
+.em-flex-row-justify-end{
   display: flex;
   flex-direction: row;
-  align-items: end;
+  align-items: center;
   justify-content: flex-end;
 }
 
@@ -442,6 +521,12 @@ input:focus + .em-slider {
   grid-template-columns: 30% 70%;
 }
 
+.em-grid-2-70-30{
+  display: grid;
+  grid-gap: 0;
+  grid-template-columns: 70% 30%;
+}
+
 .em-grid-3{
   display: grid;
   grid-gap: 24px;
@@ -454,6 +539,9 @@ input:focus + .em-slider {
   grid-template-columns: repeat(4, 1fr);
 }
 
+.em-float-left{
+  float: left;
+}
 .em-float-right{
   float: right;
 }
@@ -495,7 +583,7 @@ input:focus + .em-slider {
 
 .em-hover-main-600{
   &:hover{
-    color: $main-600;
+    color: var(--main-600);
   }
 }
 
@@ -547,6 +635,14 @@ input:focus + .em-slider {
 
 .em-max-width-600{
   max-width: 600px;
+}
+
+.em-max-width-700{
+  max-width: 700px;
+}
+
+.em-max-width-768{
+  max-width: 768px;
 }
 
 .em-max-width-1200{
@@ -621,7 +717,7 @@ input:focus + .em-slider {
   color: $main-400;
 }
 .em-main-500-color{
-  color: $main-500;
+  color: var(--main-500);
 }
 .em-yellow-500-color{
   color: $yellow-500;
@@ -647,8 +743,14 @@ input:focus + .em-slider {
 .em-neutral-700-color{
   color: $neutral-700;
 }
+.em-neutral-800-color{
+  color: $neutral-800;
+}
 .em-text-neutral-600{
   color: $neutral-600;
+}
+.em-text-neutral-500{
+  color: $neutral-500;
 }
 .em-text-neutral-300{
   color: $neutral-300;
@@ -656,8 +758,19 @@ input:focus + .em-slider {
 .em-text-neutral-900{
   color: $neutral-900;
 }
+.em-text-neutral-800{
+  color: $neutral-800;
+}
 .em-red-500-color{
   color: $red-500;
+}
+
+.em-applicant-text-color {
+  color: var(--em-applicant-text-color);
+}
+
+.em-applicant-title-color {
+  color: var(--em-applicant-title-color);
 }
 
 .em-green-bg{
@@ -673,7 +786,10 @@ input:focus + .em-slider {
   background: #F5F6F6;
 }
 .em-bg-main-500{
-  background: $main-500;
+  background: var(--main-500);
+}
+.em-bg-neutral-100{
+  background: $neutral-100;
 }
 .em-bg-neutral-200{
   background: $neutral-200;
@@ -771,6 +887,9 @@ input:focus + .em-slider {
 .em-mr-8{
   margin-right: 8px;
 }
+.em-mr-12{
+  margin-right: 12px;
+}
 .em-mr-16{
   margin-right: $m-16;
 }
@@ -780,14 +899,29 @@ input:focus + .em-slider {
 .em-ml-4{
   margin-left: 4px;
 }
+.em-ml-6{
+  margin-left: 6px;
+}
 .em-ml-8{
   margin-left: 8px;
+}
+.em-ml-12{
+  margin-left: 12px;
 }
 .em-ml-16{
   margin-left: 16px;
 }
+.em-ml-22{
+  margin-left: 22px;
+}
 .em-ml-24{
   margin-left: $m-24;
+}
+.em-ml-28{
+  margin-left: 28px;
+}
+.em-ml-30{
+  margin-left: 30px;
 }
 .em-ml-32{
   margin-left: 32px;
@@ -833,6 +967,9 @@ input:focus + .em-slider {
 }
 .em-mb-8{
   margin-bottom: $m-8;
+}
+.em-mb-12{
+  margin-bottom: 12px;
 }
 .em-mb-16{
   margin-bottom: $m-16;
@@ -922,6 +1059,10 @@ input:focus + .em-slider {
 .em-border-radius-8{
   border-radius: 8px;
 }
+.em-border-neutral-400{
+  border: 1px solid $neutral-400;
+  box-sizing: border-box;
+}
 .em-border-neutral-300{
   border: 1px solid $neutral-300;
   box-sizing: border-box;
@@ -934,14 +1075,14 @@ input:focus + .em-slider {
   border-left: solid 2px $yellow-500;
 }
 .em-border-main-500 {
-  border: 1px solid $main-500;
+  border: 1px solid var(--main-500);
 
   &.important {
-    border: 1px solid $main-500 !important;
+    border: 1px solid var(--main-500) !important;
   }
 }
 .em-border-left-main-500{
-  border-left: solid 2px $main-500;
+  border-left: solid 2px var(--main-500);
 }
 
 .em-border-bottom-main-500 {
@@ -976,7 +1117,7 @@ input:focus + .em-slider {
   TITLES
 */
 .em-h1{
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font);
   font-style: normal;
   font-weight: 600;
   font-size: 56px;
@@ -984,7 +1125,7 @@ input:focus + .em-slider {
   color: $night-blue;
 }
 .em-h2{
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font);
   font-style: normal;
   font-weight: 600;
   font-size: 48px;
@@ -992,7 +1133,7 @@ input:focus + .em-slider {
   color: $night-blue;
 }
 .em-h3{
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font);
   font-style: normal;
   font-weight: 600;
   font-size: 32px;
@@ -1000,7 +1141,7 @@ input:focus + .em-slider {
   color: $night-blue;
 }
 .em-h4{
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font);
   font-style: normal;
   font-weight: 600;
   font-size: 24px;
@@ -1008,7 +1149,7 @@ input:focus + .em-slider {
   color: $night-blue;
 }
 .em-h5{
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font);
   font-style: normal;
   font-weight: 600;
   font-size: 20px;
@@ -1016,12 +1157,24 @@ input:focus + .em-slider {
   color: $night-blue;
 }
 .em-h6{
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font);
   font-style: normal;
   font-weight: 600;
   font-size: 18px;
   line-height: 23px;
   color: $night-blue;
+}
+
+.em-applicant-default-font {
+  font-family: var(--font);
+}
+
+.em-applicant-title-font {
+  font-family: var(--applicant-title-font);
+}
+
+.em-default-font {
+  font-family: var(--font);
 }
 
 .em-caption{
@@ -1074,6 +1227,14 @@ input:focus + .em-slider {
   font-weight: 800;
 }
 
+.em-border-radius {
+  font-family: var(--em-border-radius);
+}
+
+.em-applicant-border-radius {
+  border-radius: var(--em-applicant-border-radius);
+}
+
 @supports (background-clip: text) {
   .em-gradient-icons {
     background: linear-gradient(90deg, #26CAEA 0%, #32EE5F 100%);
@@ -1086,12 +1247,12 @@ input:focus + .em-slider {
   Focus for lables
 */
 .em-available{
-  color: $main-500;
+  color: var(--main-500);
   align-items: center;
   display: flex;
 }
 .em-border-available:focus {
-  border-color: $main-500 !important;
+  border-color: var(--main-500) !important;
 }
 .em-not-available{
   color: $red-500;
@@ -1117,6 +1278,28 @@ input:focus + .em-slider {
   padding: 24px 32px !important;
   margin: 24px;
   cursor: pointer;
+}
+
+.em-repeat-card{
+  box-shadow: 0 1px 1px rgba(5, 47, 55, 0.07), 0 2px 1px rgba(5, 47, 55, 0.06), 0 1px 3px rgba(5, 47, 55, 0.1);
+  border-radius: calc(var(--em-border-radius)*2) !important;
+  padding: 24px;
+  height: auto;
+  background: #fff;
+  border: 1px solid $neutral-200;
+}
+
+.em-input-card{
+  border-radius: var(--em-border-radius);
+  padding: 12px 16px;
+  height: auto;
+  background: #fff;
+  border: 1px solid $neutral-400;
+}
+.em-input-card-selected{
+  background: $blue-100;
+  border: 1px solid $blue-400;
+  box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
 }
 
 .em-settings-menu{
@@ -1145,6 +1328,34 @@ input:focus + .em-slider {
   background-color: $yellow-500;
 }
 
+.em-card-neutral-100{
+  background-color: $neutral-100;
+  border-radius: 16px;
+  padding: 32px;
+  cursor: pointer;
+}
+
+.em-card-white{
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 32px;
+}
+
+/** SKELETON **/
+.skeleton {
+  animation: skeleton-loading 1s linear infinite alternate;
+  border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-color: hsl(200, 20%, 80%);
+  }
+  100% {
+    background-color: hsl(200, 20%, 95%);
+  }
+}
+
 /** SWAL CUSTOM CLASSES **/
 .em-swal-title{
   margin: 8px 8px 32px 8px !important;
@@ -1156,11 +1367,11 @@ button.em-swal-confirm-button{
   align-items: center;
   width: auto !important;
   padding: 0 $p-16 !important;
-  border-radius: 4px !important;
+  border-radius: var(--em-border-radius) !important;
   border: unset !important;
   height: 40px !important;
   color: white !important;
-  background-color: $main-500 !important;
+  background-color: var(--main-500) !important;
 }
 .swal2-actions.swal2-loading{
   border-radius: 25px !important;
@@ -1172,7 +1383,7 @@ button.em-swal-cancel-button{
   align-items: center;
   width: auto;
   padding: 0 $p-16 !important;
-  border-radius: 4px !important;
+  border-radius: var(--em-border-radius) !important;
   border: solid 1px $neutral-300 !important;
   height: 40px !important;
   background: transparent !important;
@@ -1188,7 +1399,7 @@ button.em-swal-delete-button{
   align-items: center;
   width: auto !important;
   padding: 0 $p-16 !important;
-  border-radius: 4px !important;
+  border-radius: var(--em-border-radius) !important;
   border: unset !important;
   height: 40px !important;
   color: white !important;
@@ -1318,6 +1529,31 @@ button.em-swal-delete-button{
     filter: brightness(80%);
   }
 }
+
+/** PROGRAMME **/
+.em-programme-tag{
+  border-radius: 8px;
+  padding: 5px 12px;
+  width: fit-content;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  font-family: var(--applicant-default-font);
+}
+
+/** SEARCHBAR **/
+.em-searchbar label input[type="text"].form-control{
+  margin-bottom: 0 !important;
+  height: 40px;
+  border-radius: 8px;
+  width: 300px;
+  padding: 8px 16px;
+  background-image: url('/images/emundus/searchbar/search.svg') !important;
+  background-repeat: no-repeat !important;
+  background-position: 96% 50% !important;
+  font-family: var(--applicant-default-font);
+}
+
 /**
   MEDIA QUERIES
 **/

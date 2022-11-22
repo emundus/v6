@@ -35,7 +35,7 @@
 
 
 .btnConsulter {
-	border-radius:4px;
+	border-radius: var(--em-border-radius);
 	color:white;
 	font-size: 14px;
 	white-space: normal;

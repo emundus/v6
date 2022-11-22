@@ -9,34 +9,13 @@
 // No direct access
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Table\Table;
+
 /**
  * Emundus helper.
  */
 class EmundusHelperUpdate
 {
-
-    /**
-     * Get all emundus plugins
-     *
-     * @return array|mixed
-     *
-     * @since version 1.33.0
-     */
-    public static function getEmundusPlugins() {
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        try {
-            $query->select('*')
-                ->from('#__extensions')
-                ->where("folder LIKE '%emundus%' OR element LIKE " . $db->q('%emundus%') . " AND type='plugin'");
-            $db->setQuery($query);
-            return $db->loadObjectList();
-        } catch (Exception $e){
-            echo $e->getMessage();
-            return [];
-        }
-    }
 
     /**
      * Disable an emundus plugin
@@ -62,6 +41,7 @@ class EmundusHelperUpdate
             return false;
         }
     }
+
 
     /**
      * Update a parameter of a Joomla module
@@ -143,66 +123,6 @@ class EmundusHelperUpdate
 
         return $installed;
     }
-
-    public static function createModule($title, $position, $module, $params, $published = 0, $all_pages = 0, $access = 1, $showtitle = 0, $client_id = 0)
-    {
-        $created = false;
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        try {
-            $query->select('id')
-                ->from($db->quoteName('#__modules'))
-                ->where($db->quoteName('title') . ' LIKE ' . $db->quote($title))
-                ->andWhere($db->quoteName('module') . ' LIKE ' . $db->quote($module));
-            $db->setQuery($query);
-            $is_existing = $db->loadResult();
-
-            if (empty($is_existing)) {
-                $publish_up = new DateTime(); // For today/now, don't pass an arg.
-                $publish_up->modify('-1 day');
-
-                $query->clear()
-                    ->insert($db->quoteName('#__modules'))
-                    ->set($db->quoteName('title') . ' = ' . $db->quote($title))
-                    ->set($db->quoteName('note') . ' = ' . $db->quote(''))
-                    ->set($db->quoteName('ordering') . ' = ' . $db->quote(1))
-                    ->set($db->quoteName('position') . ' = ' . $db->quote($position))
-                    ->set($db->quoteName('checked_out') . ' = ' . $db->quote(62))
-                    ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                    ->set($db->quoteName('publish_up') . ' = ' . $db->quote($publish_up->format('Y-m-d H:i:s')))
-                    ->set($db->quoteName('publish_down') . ' = ' . $db->quote('2099-01-01 00:00:00'))
-                    ->set($db->quoteName('published') . ' = ' . $db->quote($published))
-                    ->set($db->quoteName('module') . ' = ' . $db->quote($module))
-                    ->set($db->quoteName('access') . ' = ' . $db->quote($access))
-                    ->set($db->quoteName('showtitle') . ' = ' . $db->quote($showtitle))
-                    ->set($db->quoteName('params') . ' = ' . $db->quote($params))
-                    ->set($db->quoteName('client_id') . ' = ' . $db->quote($client_id))
-                    ->set($db->quoteName('language') . ' = ' . $db->quote('*'));
-                $db->setQuery($query);
-                $db->execute();
-                $module_id = $db->insertid();
-
-                if (!empty($module_id) && $all_pages) {
-                    $query->clear()
-                        ->insert($db->quoteName('#__modules_menu'))
-                        ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module_id))
-                        ->set($db->quoteName('menuid') . ' = ' . $db->quote(0));
-                    $db->setQuery($query);
-                    $created = $db->execute();
-                }
-            } else {
-                echo "$title module already exists.";
-                $created = true;
-            }
-        } catch (Exception $e) {
-            echo $e->getMessage();
-        }
-
-        return $created;
-    }
-
 
     /**
      * Update a parameter of a row in database. Parameteres updated need to be in a json format.
@@ -1350,15 +1270,17 @@ class EmundusHelperUpdate
             $is_existing = $db->loadResult();
 
             if(empty($is_existing)) {
-                $default_params = [
-                    'menu-anchor_title' => '',
-                    'menu-anchor_css' => '',
-                    'menu-anchor_rel' => '',
-                    'menu_image_css' => '',
-                    'menu_text' => 1,
-                    'menu_show' => 1
-                ];
-                $params['params'] = array_merge($default_params, $params['params']);
+                if($params['client_id'] != 1) {
+                    $default_params = [
+                        'menu-anchor_title' => '',
+                        'menu-anchor_css' => '',
+                        'menu-anchor_rel' => '',
+                        'menu_image_css' => '',
+                        'menu_text' => 1,
+                        'menu_show' => 1
+                    ];
+                    $params['params'] = array_merge($default_params, $params['params']);
+                }
 
                 $menu_data = array(
                     'menutype' => $params['menutype'],
@@ -1372,7 +1294,9 @@ class EmundusHelperUpdate
                     'template_style_id' => $params['template_style_id'] ?: 22,
                     'language' => '*',
                     'published' => $published,
-                    'params' => json_encode($params['params'])
+                    'params' => json_encode($params['params']),
+                    'client_id' => $params['client_id'] ?: 0,
+                    'img' => $params['img'] ?: ''
                 );
 
                 if($parent_id <= 0){
@@ -1403,7 +1327,83 @@ class EmundusHelperUpdate
 
             $result['status'] = true;
         } catch (Exception $e) {
-            echo '<pre>'; var_dump('INSERTING MENU : ' . $e->getMessage()); echo '</pre>'; die;
+            JLog::add('Failed to insert menu ' . $params['title'] . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            $result['status'] = false;
+            $result['message'] = 'INSERTING MENU : ' . $e->getMessage();
+        }
+
+        return $result;
+    }
+
+    public static function addJoomlaModule($data, $published = 1, $all_pages = false) {
+        $result = ['status' => false, 'message' => '', 'id' => 0];
+        $module_table = \Joomla\CMS\Table\Table::getInstance('module');
+
+        if(empty($data['title'])) {
+            $result['message'] = 'INSERTING JOOMLA MODULE : Please pass a title.';
+            return $result;
+        }
+        if(empty($data['position'])) {
+            $result['message'] = 'INSERTING JOOMLA MODULE : Please indicate a position.';
+            return $result;
+        }
+        if(empty($data['module'])) {
+            $result['message'] = 'INSERTING JOOMLA MODULE : Please indicate a module.';
+            return $result;
+        }
+        if(!isset($data['params'])){
+            $data['params'] = [];
+        }
+
+        $default_params = [
+            'module_tag' => 'div',
+            'bootstrap_size' => 0,
+            'header_tag' => 'h3',
+            'header_class' => '',
+            'style' => 0,
+        ];
+        $data['params'] = array_merge($default_params, $data['params']);
+
+        try {
+            // Initialize again Joomla database to fix problem with Falang (or other plugins) that override default mysql driver
+            JFactory::$database = null;
+            $db = JFactory::getDbo();
+
+            $module_data = array(
+                'title' => $data['title'],
+                'note' => $data['note'] ?: '',
+                'content' => $data['content'] ?: null,
+                'position' => $data['position'],
+                'module' => $data['module'],
+                'showtitle' => $data['showtitle'] ?: 0,
+                'access' => $data['access'] ?: 1,
+                'published' => $published,
+                'client_id' => 0,
+                'language' => '*',
+                'params' => json_encode($data['params'])
+            );
+
+            if (!$module_table->save($module_data)) {
+                $result['message'] = 'INSERTING JOOMLA MODULE : Error at saving module.';
+                return $result;
+            }
+            $result['id'] = $module_table->id;
+
+            if (!empty($result['id']) && $all_pages) {
+                $query = $db->getQuery(true);
+
+                $query->clear()
+                    ->insert($db->quoteName('#__modules_menu'))
+                    ->set($db->quoteName('moduleid') . ' = ' . $db->quote($result['id']))
+                    ->set($db->quoteName('menuid') . ' = ' . $db->quote(0));
+                $db->setQuery($query);
+                $db->execute();
+            }
+
+            $result['status'] = true;
+        } catch (Exception $e) {
+            $result['status'] = false;
+            $result['message'] = 'INSERTING MODULE : ' . $e->getMessage();
         }
 
         return $result;
@@ -1693,6 +1693,37 @@ class EmundusHelperUpdate
         }
 
         $result['status'] = true;
+        return $result;
+    }
+
+    public static function addColumn($table,$name,$type = 'VARCHAR',$length = 255,$null = 1){
+        $result = ['status' => false, 'message' => ''];
+
+        if (empty($table)) {
+            $result['message'] = 'ADDING COLUMN : Please refer a database table.';
+            return $result;
+        }
+
+        if (empty($name)) {
+            $result['message'] = 'ADDING COLUMN : Please refer a column name.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $column_existing = $db->setQuery('SHOW COLUMNS FROM ' . $table . ' WHERE ' . $db->quoteName('Field') . ' = ' . $db->quote($name))->loadResult();
+
+        if (empty($column_existing)) {
+            $null_query = $null == 0 ? 'NOT NULL' : 'NULL';
+
+            try {
+                $query = 'ALTER TABLE ' . $table . ' ADD COLUMN ' . $db->quoteName($name) . ' ' . $type . '(' . $length . ') ' . $null_query;
+                $db->setQuery($query);
+                $result['status'] = $db->execute();
+            } catch (Exception $e) {
+                $result['message'] = 'ADDING COLUMN : Error : ' . $e->getMessage();
+            }
+        }
+
         return $result;
     }
 

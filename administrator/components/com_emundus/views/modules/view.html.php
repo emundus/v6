@@ -45,6 +45,16 @@ class EmundusViewModules extends JViewLegacy
                 'title' => 'Dépôt de dossiers anonymes',
                 'desc' => 'Installation des formulaires Fabrik et des menus qui permettent le dépôt de dossier sans avoir à se connecter ni créer de compte.',
                 'install_button' => 'Installer les formulaires'
+            ],
+            'homepage' => [
+                'title' => 'Nouvelle page d\'accueil',
+                'desc' => '',
+                'install_button' => 'Installer la page d\'accueil'
+            ],
+            'checklist' => [
+                'title' => 'Remplacer les modules des formulaires candidats',
+                'desc' => '',
+                'install_button' => 'Installer'
             ]
         ];
         $this->assignRef('modules', $modules);

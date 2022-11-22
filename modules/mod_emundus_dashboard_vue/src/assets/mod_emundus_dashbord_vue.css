@@ -47,10 +47,10 @@
   width: 64px;
   height: 64px;
   margin: 8px;
-  border: 8px solid #20835F;
+  border: 8px solid var(--main-500);
   border-radius: 50%;
   animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-  border-color: #20835F transparent transparent transparent;
+  border-color: var(--main-500) transparent transparent transparent;
 }
 .lds-ring div:nth-child(1) {
   animation-delay: -0.45s;
@@ -136,6 +136,16 @@
   align-items: center;
   justify-content: space-between;
   margin-top: 10%;
+}
+
+.widget-files-status-number .widget-files-status-number-block p {
+ color: var(--neutral-600);
+  font-family: var(--font);
+}
+
+.widget-files-status-number h1 {
+  color: var(--neutral-900);
+  font-family: var(--font);
 }
 
 #g-container-main .g-container{

@@ -4,7 +4,7 @@
 	version="2.5"
 	client="site"
 	method="upgrade">
-	<name>eMundus - Send application button</name>
+	<name>MOD_EMUNDUS_SEND_APPLICATION_XML</name>
 	<author>Hugo Moracchini</author>
 	<creationDate>October 2018</creationDate>
 	<copyright>Copyright (C) 2018 eMundus. All rights reserved.</copyright>
@@ -12,7 +12,7 @@
 	<authorEmail>hugo.moracchini@emundus.fr</authorEmail>
 	<authorUrl>www.emundus.fr</authorUrl>
 	<version>3.8.13</version>
-	<description>A button allowing the user to send his/her application.</description>
+	<description>MOD_EMUNDUS_APPLICATIONS_XML_DESCRIPTION</description>
 	<files>
 		<filename module="mod_emundus_send_application">mod_emundus_send_application.php</filename>
 		<folder>tmpl</folder>

@@ -3492,10 +3492,11 @@ class EmundusModelApplication extends JModelList
         $dbo = $this->getDbo();
         try
         {
-            $query = 'SELECT ecc.*, esc.*, ess.step, ess.value, ess.class
+            $query = 'SELECT ecc.*, esc.*, ess.step, ess.value, ess.class, esp.color as tag_color
                         FROM #__emundus_campaign_candidature AS ecc
                         LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
                         LEFT JOIN #__emundus_setup_status AS ess ON ess.step=ecc.status
+                        LEFT JOIN #__emundus_setup_programmes as esp on esc.training = esp.code
                         WHERE ecc.fnum like '.$dbo->Quote($fnum).'
                         ORDER BY esc.end_date DESC';
             $dbo->setQuery($query);
