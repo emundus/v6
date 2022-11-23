@@ -174,13 +174,16 @@ export default {
 					});
 					this.close(false);
 				} else {
-					this.close();
+					this.close(true, response.data.id);
 				}
 			});
 		},
-		close(reload = true)
+		close(reload = true, newSelected = 0)
 		{
-			this.$emit('close', reload);
+			this.$emit('close', {
+				'reload': reload,
+				'newSelected': newSelected
+			});
 		}
 	},
 	computed: {
