@@ -1024,7 +1024,7 @@ class EmundusModelFormbuilder extends JModelList {
                         ->where($db->quoteName('id') . ' = ' . $db->quote($groupid));
                     $db->setQuery($query);
                     $db->execute();
--
+
                     // INSERT FORMGROUP
                     $query->clear()
                         ->select('*')
