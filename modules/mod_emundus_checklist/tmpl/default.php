@@ -40,7 +40,7 @@ foreach ($forms as $index => $form){
                     <div id="mlf<?php echo $form->id; ?>" class="<?php if($form->id == $menuid) echo 'active'?> mod_emundus_checklist_<?php echo $class; ?> mod_emundus_checklist___form_item">
                         <div class="mod_emundus_checklist___grid">
                             <div class="mod_emundus_checklist___step_count"><?php echo $step ?></div>
-                            <a href="<?php echo $form->link ?>"><?php echo $form->title; ?></a>
+                            <a href="<?php echo $form->link ?>"><?php echo JText::_($form->title); ?></a>
                         </div>
                         <?php if ($index != (sizeof($forms) - 1) || ($show_mandatory_documents == 1 && (!empty($mandatory_documents)) || !empty($optional_documents))) : ?>
                             <div class="mod_emundus_checklist___border_item"></div>
