@@ -305,7 +305,8 @@ class EmundusModelFormbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $modules = [93,102,103,104,168,170];
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $modules = $eMConfig->get('form_builder_page_creation_modules', [93,102,103,104,168,170]);
 
         if (!is_array($label)) {
             $label = json_decode($label, true);
@@ -477,7 +478,7 @@ class EmundusModelFormbuilder extends JModelList {
                 'publish_up' => gmdate('Y-m-d h:i:s'),
                 'reset_button_label' => 'RESET',
                 'submit_button_label' => 'SAVE_CONTINUE',
-                'form_template' => 'bootstrap',
+                'form_template' => '_emundus',
                 'view_only_template' => 'bootstrap',
                 'published' => 1,
                 'params' => json_encode($params),
@@ -705,7 +706,7 @@ class EmundusModelFormbuilder extends JModelList {
                 'publish_up' => date('Y-m-d h:i:s'),
                 'reset_button_label' => 'RESET',
                 'submit_button_label' => 'SUBMIT',
-                'form_template' => 'bootstrap',
+                'form_template' => '_emundus',
                 'view_only_template' => 'bootstrap',
                 'published' => 1,
                 'params' => json_encode($params),
