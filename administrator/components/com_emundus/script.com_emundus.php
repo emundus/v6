@@ -250,24 +250,30 @@ class com_emundusInstallerScript
                 EmundusHelperUpdate::genericUpdateParams('#__modules', 'module', 'mod_falang', array('advanced_dropdown','full_name'), array('0','0'));
 
                 // Add back button to login, register and reset view
-                $datas = [
-                    'title' => 'eMundus - Back button',
-                    'note' => 'Back button available on login and register views',
-                    'content' => '<p><a class="em-back-button em-pointer" href="/"><span class="material-icons em-mr-4">navigate_before</span>Retour à la page d\'accueil</a></p>',
-                    'position' => 'header-a',
-                    'module' => 'mod_custom',
-                    'access' => 9,
-                    'params' => [
-                        'prepare_content' => 0,
-                        'backgroundimage' => '',
-                        'layout' => '_:default',
-                        'moduleclass_sfx' => '',
-                        'cache' => 1,
-                        'cache_time' => 900,
-                        'cachemode' => 'static',
-                    ]
-                ];
-                $moduleid = EmundusHelperUpdate::addJoomlaModule($datas);
+                $back_module = EmundusHelperUpdate::getModule(0, 'eMundus - Back button');
+                if (!empty($back_module) && !empty($back_module['id'])) {
+                    $moduleid = $back_module['id'];
+                } else {
+                    $datas = [
+                        'title' => 'eMundus - Back button',
+                        'note' => 'Back button available on login and register views',
+                        'content' => '<p><a class="em-back-button em-pointer" href="/"><span class="material-icons em-mr-4">navigate_before</span>Retour à la page d\'accueil</a></p>',
+                        'position' => 'header-a',
+                        'module' => 'mod_custom',
+                        'access' => 9,
+                        'params' => [
+                            'prepare_content' => 0,
+                            'backgroundimage' => '',
+                            'layout' => '_:default',
+                            'moduleclass_sfx' => '',
+                            'cache' => 1,
+                            'cache_time' => 900,
+                            'cachemode' => 'static',
+                        ]
+                    ];
+                    $moduleid = EmundusHelperUpdate::addJoomlaModule($datas);
+                }
+
                 if(!empty($moduleid)) {
                     $query->clear()
                         ->select('id')

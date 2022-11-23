@@ -2027,4 +2027,32 @@ class EmundusHelperUpdate
 
         return $created;
     }
+
+    public static function getModule($id = 0, $title = '')
+    {
+        $module = [];
+
+        if (!empty($id) || !empty($title)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            $query->select('*')
+                ->from('#__modules');
+
+            if (!empty($id)) {
+                $query->where('id = ' . $id);
+            } else if(!empty($title)) {
+                $query->where('title = ' . $db->quote($title));
+            }
+
+            $db->setQuery($query);
+
+            try {
+                $module = $db->loadAssoc();
+            } catch (Exception $e) {
+                JLog::add('Failed to get module ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            }
+        }
+
+        return $module;
+    }
 }
