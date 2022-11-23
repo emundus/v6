@@ -206,3 +206,12 @@ function firstLetterToUppercase(element) {
 function displayElementFromCheckboxValue(element, value, element_to_display, action = 'show') {
     //TODO : create the method
 }
+
+function numberOfDaysBetweenDates(date1,date2 = null) {
+    if(date2 === null) {
+        date2 = new Date();
+    }
+
+    const diffTime = Math.abs(date2 - date1);
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+}
