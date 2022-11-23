@@ -27,8 +27,11 @@ foreach ($forms as $form) {
 	$need = $form->nb==0?'need_missing':'need_ok';
 	$class = $need.$active;
 	$endlink= '</a>';
+    // TODO: implement this way of writing title everywhere (instead of the explode)
+    $title = preg_replace('/^([^-]+ - )/', '', $form->label);
+    $linkForm = $link . JText::_(trim($title)) . $endlink;
 ?>
-	<li class="em_module <?php echo $class; ?>"><div class="em_form em-checklist"><?php echo $link.JText::_($form->label).$endlink; ?></div></li>
+	<li class="em_module <?php echo $class; ?>"><div class="em_form em-checklist"><?php echo $linkForm; ?></div></li>
 <?php } ?>
 </ul>
 <?php
