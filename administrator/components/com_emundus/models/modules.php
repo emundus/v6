@@ -486,12 +486,6 @@ class EmundusModelModules extends JModelList {
         require_once (JPATH_SITE.'/components/com_emundus/models/form.php');
 
         try {
-            $query->select('introtext')
-                ->from($db->quoteName('#__content'))
-                ->where($db->quoteName('id') . ' = 52');
-            $db->setQuery($query);
-            $introtext = $db->loadResult();
-
             $query->clear()
                 ->update($db->quoteName('#__content'))
                 ->set($db->quoteName('state') . ' = 0')
@@ -511,7 +505,7 @@ class EmundusModelModules extends JModelList {
                 $params = json_decode($module->params);
                 if($params->mod_em_campaign_layout == 'default_g5'){
                     $params->mod_em_campaign_layout = 'default_tchooz';
-                    $params->mod_em_campaign_intro = $introtext;
+                    $params->mod_em_campaign_intro = '';
 
                     $query->clear()
                         ->update($db->quoteName('#__modules'))
