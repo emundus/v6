@@ -3934,7 +3934,8 @@ h1.em-titre-connectez-vous {
 
       .fabrik_groupdata,
       thead {
-        border-color: var(--night-blue)-blue;
+        border-color: var(--night-blue);
+        color: var(--night-blue);
       }
 
       thead tr.fabrik___heading {
