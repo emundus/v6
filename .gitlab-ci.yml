@@ -92,8 +92,6 @@ jest-job:
     - docker logs redis-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
     - docker logs web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
     - docker-compose down
-  needs:
-    - phpunit-job
   only:
     - merge_request
 

@@ -905,7 +905,7 @@ $font:'Inter', sans-serif;
           border-radius: 4px 0 0 4px;
         }
 
-        input[id$='cal'].inputbox{
+        input[id$='cal'].inputbox, input.inputbox.timeField{
           color: var(--neutral-800) !important;
           margin-right: 1px !important;
         }

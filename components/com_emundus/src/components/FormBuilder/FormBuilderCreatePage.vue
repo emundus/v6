@@ -33,7 +33,7 @@
 					<div class="models-card em-flex-row">
 						<div
 							v-for="model in models" :key="model.id"
-							class="card-wrapper em-mr-16"
+							class="card-wrapper em-mr-32"
 							:class="{selected: model.id === selected, hidden: !model.displayed}"
 							:title="model.label[shortDefaultLang]"
 							@click="selected = model.id"
@@ -210,6 +210,7 @@ export default {
 		border-top-left-radius: 4px;
 		border-top-right-radius: 4px;
 		width: fit-content;
+		color: white !important;
 	}
 
 	.line {
@@ -253,14 +254,10 @@ export default {
 				border: 2px solid #20835F;
 			}
 
-			p {
-				color: white;
-				background-color: #20835F;
+			p, input {
+				color: white !important;
+				background-color: #20835F !important;
 			}
-      input {
-        color: var(--neutral-700);
-        background-color: #20835F;
-      }
 		}
 	}
 
@@ -284,7 +281,7 @@ export default {
 
 		.reset-search {
 			position: absolute;
-			top: 28px;
+			top: 25px;
 			left: 180px;
 		}
 	}

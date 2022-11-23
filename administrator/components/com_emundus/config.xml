@@ -158,7 +158,7 @@
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_FORM_BUILDER" name="form_builder" description="COM_EMUNDUS_FORM_BUILDER_DESC">
 		<field
-				name="form_buider_page_creation_modules"
+				name="form_builder_page_creation_modules"
 				label="FORM_BUIDER_PAGE_CREATION_MODULES"
 				description="FORM_BUIDER_PAGE_CREATION_MODULES_DESC"
 				type="sql"

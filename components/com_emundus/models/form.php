@@ -231,7 +231,7 @@ class EmundusModelForm extends JModelList {
         $falang = new EmundusModelFalang;
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
-        $modules = $eMConfig->get('form_buider_page_creation_modules', [93,102,103,104,168,170]);
+        $modules = $eMConfig->get('form_builder_page_creation_modules', [93,102,103,104,168,170]);
 
         if (count($data) > 0) {
             $sp_conditions = array(
@@ -1402,7 +1402,7 @@ class EmundusModelForm extends JModelList {
         $query = $db->getQuery(true);
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
-        $modules = $eMConfig->get('form_buider_page_creation_modules', [93,102,103,104,168,170]);
+        $modules = $eMConfig->get('form_builder_page_creation_modules', [93,102,103,104,168,170]);
 
         try {
             // Create the menu
@@ -1508,7 +1508,7 @@ class EmundusModelForm extends JModelList {
         $query = $db->getQuery(true);
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
-        $modules = $eMConfig->get('form_buider_page_creation_modules', [93,102,103,104,168,170]);
+        $modules = $eMConfig->get('form_builder_page_creation_modules', [93,102,103,104,168,170]);
 
         $query->clear()
             ->select('*')
