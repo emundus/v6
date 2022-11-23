@@ -94,6 +94,27 @@ class plgUserEmundus_registration_email extends JPlugin {
      * @throws Exception
      */
     public function onUserAfterSave($user, $isnew, $result, $error) {
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $allow_anonym_files = $eMConfig->get('allow_anonym_files', 0);
+
+        if ($allow_anonym_files && preg_match('/^fake.*@emundus\.io$/', $user['email'])) {
+            $user['params'] = json_encode(array_merge($user['params'], ['skip_activation' => true, 'send_mail' => false]));
+
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            $query->update('#__users')
+                ->set('params = ' . $db->quote($user['params']))
+                ->where('username = ' . $db->quote($user['username']));
+
+            $db->setQuery($query);
+
+            try {
+                $db->execute();
+            } catch (Exception $e) {
+                JLog::add('Failed to update user params', JLog::ERROR, 'com_emundus.error');
+            }
+        }
+
         $this->onAfterStoreUser($user, $isnew, $result, $error);
     }
 
@@ -126,6 +147,16 @@ class plgUserEmundus_registration_email extends JPlugin {
             $return = $m_users->searchLDAP($user->username);
 
             if (!empty($return->users[0])) {
+                return;
+            }
+        }
+
+        if (JPluginHelper::getPlugin('authentication','miniorangesaml')) {
+            require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+            $m_users = new EmundusModelusers();
+            $isSamlUser = $m_users->isSamlUser($userId);
+
+            if ($isSamlUser) {
                 return;
             }
         }

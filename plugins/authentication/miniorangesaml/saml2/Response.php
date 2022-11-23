@@ -1,119 +1,72 @@
 <?php
-defined('_JEXEC') or die;
-/**
- * This file is part of miniOrange SAML plugin.
- *
- * miniOrange SAML plugin is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * miniOrange SAML plugin is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with miniOrange SAML plugin.  If not, see <http://www.gnu.org/licenses/>.
- */
 
-include 'Assertion.php';
 
-/**
- * Class for SAML2 Response messages.
- *
- */
+include_once "\x41\163\x73\x65\162\x74\x69\157\x6e\x2e\160\x68\x70";
 class SAML2_Response
 {
-    /**
-     * The assertions in this response.
-     */
     private $assertions;
-	
-	/**
-     * The destination URL in this response.
-     */
-	private $destination;
-	private $certificates;
-	private $signatureData;
-
-    /**
-     * Constructor for SAML 2 response messages.
-     *
-     * @param DOMElement|NULL $xml The input message.
-     */
-    public function __construct(DOMElement $xml = NULL)
+    private $destination;
+    private $certificates;
+    private $signatureData;
+    public function __construct(DOMElement $ZQ = NULL)
     {
-        //parent::__construct('Response', $xml);
-
         $this->assertions = array();
-		 $this->assertions = array();
-		$this->certificates = array();
-		
-        if ($xml === NULL) {
-            return;
+        $this->certificates = array();
+        if (!($ZQ === NULL)) {
+            goto RQ;
         }
-		
-		$sig = SAML_Utilities::validateElement($xml);
-	
-	if ($sig !== FALSE) {
-			$this->certificates = $sig['Certificates'];
-			$this->signatureData = $sig;
-		}
-		
-		/* set the destination from saml response */
-		if ($xml->hasAttribute('Destination')) {
-            $this->destination = $xml->getAttribute('Destination');
+        return;
+        RQ:
+        $AM = UtilitiesSAML::validateElement($ZQ);
+        if (!($AM !== FALSE)) {
+            goto CU;
         }
-		
-		for ($node = $xml->firstChild; $node !== NULL; $node = $node->nextSibling) {
-			if ($node->namespaceURI !== 'urn:oasis:names:tc:SAML:2.0:assertion') {
-				continue;
-			}
-			
-			if ($node->localName === 'Assertion') {
-				$this->assertions[] = new SAML2_Assertion($node);
-			}else if ( $node->localName === 'EncryptedAssertion'){
-				throw new Exception('Encrypted assertions are supported in premium version of the plugin.');
-			}
-			
-		}
+        $this->certificates = $AM["\x43\145\162\x74\151\146\151\143\141\164\x65\x73"];
+        $this->signatureData = $AM;
+        CU:
+        if (!$ZQ->hasAttribute("\104\145\163\x74\151\156\x61\164\x69\157\156")) {
+            goto Jx;
+        }
+        $this->destination = $ZQ->getAttribute("\104\x65\163\x74\x69\x6e\141\x74\151\157\156");
+        Jx:
+        $Il = $ZQ->firstChild;
+        lK:
+        if (!($Il !== NULL)) {
+            goto BK;
+        }
+        if (!($Il->namespaceURI !== "\x75\x72\x6e\x3a\x6f\x61\163\151\163\x3a\156\141\x6d\145\163\72\x74\x63\72\123\101\115\x4c\72\x32\x2e\x30\x3a\141\163\x73\145\x72\x74\x69\x6f\156")) {
+            goto c8;
+        }
+        goto Pv;
+        c8:
+        if (!($Il->localName === "\101\163\x73\145\x72\x74\x69\157\x6e" || $Il->localName === "\x45\156\x63\162\171\160\164\145\144\101\163\x73\145\162\x74\151\x6f\x6e")) {
+            goto Rv;
+        }
+        $this->assertions[] = new SAML2_Assertion($Il);
+        Rv:
+        Pv:
+        $Il = $Il->nextSibling;
+        goto lK;
+        BK:
     }
-
-    /**
-     * Retrieve the assertions in this response.
-     *
-     * @return SAML2_Assertion[]|SAML2_EncryptedAssertion[]
-     */
     public function getAssertions()
-    {	
+    {
         return $this->assertions;
     }
-
-    /**
-     * Set the assertions that should be included in this response.
-     *
-     * @param SAML2_Assertion[]|SAML2_EncryptedAssertion[] The assertions.
-     */
-    public function setAssertions(array $assertions)
+    public function setAssertions(array $Pf)
     {
-        $this->assertions = $assertions;
+        $this->assertions = $Pf;
     }
-	
-	public function getDestination()
+    public function getDestination()
     {
         return $this->destination;
     }
-
-
-	public function getCertificates()
-	{
-		return $this->certificates;
-	}
-
-	public function getSignatureData()
-	{
-		return $this->signatureData;
-	}
-
+    public function getCertificates()
+    {
+        return $this->certificates;
+    }
+    public function getSignatureData()
+    {
+        return $this->signatureData;
+    }
 }

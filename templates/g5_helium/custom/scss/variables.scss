@@ -1,9 +1,76 @@
 /** VARIABLES **/
 
+:root {
+
+  --neutral-50: #FFFFFF;
+  --neutral-100: #FAFAFA;
+  --neutral-200: #F3F3F3;
+  --neutral-300: #EDEDED;
+  --neutral-400: #E3E3E3;
+  --neutral-500: #A4A4A4;
+  --neutral-600: #727272;
+  --neutral-700: #4B4B4B;
+  --neutral-800: #2B2B2B;
+  --neutral-900: #000000;
+
+  --red-100: #FFEEEE;
+  --red-200: #FEDCDC;
+  --red-300: #FBABAB;
+  --red-400: #E76767;
+  --red-500: #DB333E;
+  --red-600: #C31924;
+  --red-700: #9F0B15;
+  --red-800: #7F050D;
+  --red-900: #480005;
+
+  --main-100: #DFF5E9;
+  --main-200: #CCEDE1;
+  --main-300: #87D4B8;
+  --main-400: #34B385;
+  --main-500: #20835F;
+  --main-600: #106949;
+  --main-700: #0D5946;
+  --main-800: #00473D;
+  --main-900: #00322B;
+
+  --blue-100: #F0F6FD;
+  --blue-200: #C8E1FE;
+  --blue-300: #79B6FB;
+  --blue-400: #007AFF;
+  --blue-500: #1C6EF2;
+  --blue-600: #0A53CC;
+  --blue-700: #0738AB;
+  --blue-800: #042A80;
+  --blue-900: #011C5B;
+
+  --night-blue: #353544;
+  --dark-grey: #5A5A72;
+  --grey: #B0B0BF;
+  --light-grey: #F4F4F6;
+  --light-grey-2: #F2F2F2;
+  --light-grey-3: #CCCCCC;
+
+  --font: 'Inter', sans-serif; // for coordinators side
+  --applicant-default-font: 'Inter', sans-serif; // for applicants side
+  --applicant-title-font: 'Inter', sans-serif; // for applicants side
+
+  --em-applicant-text-color: #727272; // for applicants side
+  --em-applicant-title-color: #000000; // for applicants side
+
+  --white-background-color: #fff;
+  --applicant-background-color: $base-background; // for applicants side
+  --em-applicant-background-color: #f8f8f8; // for applicants side
+  --background-color: #f8f8f8;
+
+  --applicant-border-radius: 8px; //for applicants side
+  --em-border-radius: 8px; // for coordinators side
+  --em-applicant-border-radius: 8px; // for applicants side but with the tchooz style
+}
+
 //Colors
 $em-green: #12DB42;
 $em-blue: #16afe1;
-$em-grey: #5A5A72;
+$em-blue: #5A5A72;
 
 $light-blue: #26CAEA;
 $dark-blue: #16AFE1;
@@ -16,17 +83,6 @@ $dark-grey: #5A5A72;
 $grey: #B0B0BF;
 $light-grey: #F4F4F6;
 $white: #FFFFFF;
-
-/*
-$neutral-100: #FFFFFF;
-$neutral-200: #F2F2F3;
-$neutral-300: #E3E5E8;
-$neutral-400: #C5C8CE;
-$neutral-500: #ACB1B9;
-$neutral-600: #8F96A3;
-$neutral-700: #5E646E;
-$neutral-800: #2B313B;
-$neutral-900: #080C12;*/
 
 $neutral-50: #FFFFFF;
 $neutral-100: #FAFAFA;
@@ -79,12 +135,6 @@ $yellow-700: #CC8100;
 $yellow-800: #805100;
 $yellow-900: #3E2200;
 
-
-$valid: #20835F;
-$focus: #1C6EF2;
-$red: #e5283B;
-
-
 // Padding
 $p-4: 4px;
 $p-8: 8px;
@@ -111,6 +161,8 @@ $m-72: 72px;
 $m-80: 80px;
 
 
+
+
 // Gradient
 $complete-gradient: linear-gradient(rgba(240,238,109,10), rgba(50,238,95,50), rgba(240,238,109,96));
 $simple-gradient: linear-gradient(rgba(240,238,109,5), rgba(240,238,109,120));
@@ -122,7 +174,7 @@ $font:'Inter', sans-serif;
 // Mixin - typo
 
 @mixin headline-1 {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 80px;
   font-style: normal;
   font-weight: 600;
@@ -132,7 +184,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin headline-2 {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 64px;
   font-style: normal;
   font-weight: 600;
@@ -142,7 +194,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin headline-3 {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 48px;
   font-style: normal;
   font-weight: 600;
@@ -152,7 +204,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin headline-4 {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 32px;
   font-style: normal;
   font-weight: 600;
@@ -162,7 +214,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin headline-5 {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 24px;
   font-style: normal;
   font-weight: 600;
@@ -172,7 +224,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin headline-6 {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 20px;
   font-style: normal;
   font-weight: 600;
@@ -182,7 +234,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin body-16 {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
@@ -192,7 +244,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin body-16-medium {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 16px;
   font-style: normal;
   font-weight: 500 !important;
@@ -202,7 +254,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin body-16-semibold {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 16px;
   font-style: normal;
   font-weight: 600;
@@ -212,7 +264,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin body-14 {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
@@ -222,7 +274,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin body-14-medium {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
@@ -232,7 +284,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin body-14-semibold {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
@@ -242,7 +294,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin caption {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
@@ -252,7 +304,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin overline {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 10px;
   font-style: normal;
   font-weight: 400;
@@ -264,7 +316,7 @@ $font:'Inter', sans-serif;
 // Mixin - form
 
 @mixin star {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 5px;
   font-style: normal;
   font-weight: 400;
@@ -274,14 +326,14 @@ $font:'Inter', sans-serif;
   position: relative;
   top: -5px;
   margin-right: -2px;
-  color: $red;
+  color: var(--red-500);
 }
 
 @mixin input-default {
   height: 48px;
   border-radius: 4px;
   padding: 0 12px 0 12px;
-  border: 1px solid $neutral-400;
+  border: 1px solid var(--neutral-400);
   box-shadow: none;
   margin-top: 12px;
 }
@@ -290,34 +342,34 @@ $font:'Inter', sans-serif;
   height: 48px;
   border-radius: 4px;
   padding: 0 12px 0 12px;
-  border: 1px solid $neutral-400;
+  border: 1px solid var(--neutral-400);
   box-shadow: none;
   margin: 0 6px 0 0;
 }
 
 @mixin input-focus {
-  border: 1px solid $focus;
+  border: 1px solid var(--blue-500);
   box-shadow: none;
 }
 
 @mixin input-hover {
-  border: 1px solid $neutral-600;
+  border: 1px solid var(--neutral-600);
   box-shadow: none;
 }
 
 @mixin input-error {
-  border: 1px solid $red !important;
+  border: 1px solid var(--red-500) !important;
   box-shadow: none;
 }
 
 @mixin input-valid {
-  border: 1px solid $valid !important;
+  border: 1px solid var(--main-500) !important;
   box-shadow: none;
 }
 
 @mixin input-readonly {
-  background: $neutral-400;
-  border: 1px solid $neutral-400;
+  background: var(--neutral-400);
+  border: 1px solid var(--neutral-400);
   border-radius: 4px;
   box-shadow: none;
 }
@@ -331,6 +383,7 @@ $font:'Inter', sans-serif;
   background-repeat: no-repeat;
   height: 48px !important;
   padding: 0 32px 0 12px !important;
+  font-family: var(--font);
 }
 
 @mixin multiple-select {
@@ -346,46 +399,51 @@ $font:'Inter', sans-serif;
 
 @mixin select-button-default {
   height: 48px !important;
-  background: $neutral-200;
+  background: var(--neutral-200);
   border-radius: 4px 0 0 4px !important;
-  color: $neutral-800;
+  color: var(--neutral-800);
 }
 
 @mixin checkbox {
   height: 16px !important;
   width: 16px !important;
-  background: $neutral-200;
+  background: var(--neutral-200);
   border-radius: 1px !important;
   margin-right: 16px;
   margin-top: 0;
-  border: 1px solid $neutral-600;
+  border: 1px solid var(--neutral-600);
   padding: 0 !important;
 }
 
 @mixin radio {
   height: 14px !important;
   width: 14px !important;
+  background: var(--neutral-50);
+  border-radius: 9px !important;
   appearance: auto;
   margin-top: 0 !important;
+  border: 1px solid var(--neutral-600);
+  padding: 0!important;
   margin-right: 16px;
 }
 
 @mixin yes-no {
   padding: 12px;
   box-shadow: none;
+  cursor: pointer;
 }
 
 @mixin calendar {
   .calendar{
     border-radius: 5px;
     border: solid 1px #e6e6e6;
-    box-shadow: 5px 5px 11px #ebebeb, -5px -5px 11px #ffffff;
+    box-shadow: 5px 5px 11px #ebebeb, -5px -5px 11px var(--neutral-50);
     padding: 10px;
     width: 250px;
-    background: white;
+    background: var(--neutral-50);
     table{
       border: unset;
-      background: white;
+      background: var(--neutral-50);
 
       thead {
         tr:first-child {
@@ -399,7 +457,7 @@ $font:'Inter', sans-serif;
 
           td.title {
             background: transparent;
-            color: black;
+            color: var(--neutral-900);
             font-size: 12px;
             position: absolute;
             top: 17px;
@@ -418,7 +476,7 @@ $font:'Inter', sans-serif;
         }
 
         tr.headrow {
-          background: white;
+          background: var(--neutral-50);
 
           td {
             padding-bottom: 6px;
@@ -437,7 +495,7 @@ $font:'Inter', sans-serif;
         }
 
         tr.daynames {
-          background: white;
+          background: var(--neutral-50);
 
           td {
             padding: 6px;
@@ -457,7 +515,7 @@ $font:'Inter', sans-serif;
         .rowhilite{
           td {
             background: transparent;
-            color: black;
+            color: var(--neutral-900);
           }
         }
         td{
@@ -467,13 +525,13 @@ $font:'Inter', sans-serif;
         }
         td.selected{
           border-radius: 5px;
-          background: $neutral-800;
-          color: white;
+          background: var(--neutral-800);
+          color: var(--neutral-50);
         }
         td.hilite{
-          background: $neutral-400;
+          background: var(--neutral-400);
           border-radius: 5px;
-          color: black !important;
+          color: var(--neutral-900) !important;
         }
       }
 
@@ -498,16 +556,16 @@ $font:'Inter', sans-serif;
   /* SUCCESS */
   &.success input, &.has-success input {
     @include input-valid;
-    color: $neutral-800 !important;
+    color: var(--neutral-800) !important;
   }
 
   .fabrikErrorMessage {
     @include body-14;
-    color: $red-500;
+    color: var(--red-500);
     margin-top: 8px;
 
     &.help-inline {
-      color: $red-500;
+      color: var(--red-500);
       padding: 0;
 
       i.icon-warning {
@@ -525,8 +583,8 @@ $font:'Inter', sans-serif;
 
   /* LABEL */
   .fabrikLabel {
-    @include body-16-medium;
-    color: $neutral-800;
+    @include body-14-medium;
+    color: var(--neutral-800);
     margin-bottom: 0 !important;
     padding-top: 0 !important;
 
@@ -539,7 +597,7 @@ $font:'Inter', sans-serif;
   /* TEXTE D AIDE */
   span:not(.badge):not([class^="material-icons"]):not(.icon-handle):not([class^="tox"]) {
     @include body-14;
-    color: $neutral-600;
+    color: var(--neutral-600);
     display: flex;
     margin-top: 12px;
 
@@ -582,6 +640,7 @@ $font:'Inter', sans-serif;
     /* INPUT */
     .fabrikinput:not(textarea):not([type='checkbox']) {
       @include input-default;
+      background: $neutral-50;
 
       &:hover {
         @include input-hover;
@@ -589,11 +648,11 @@ $font:'Inter', sans-serif;
 
       &:focus {
         @include input-focus;
-        color: $neutral-800 !important;
+        color: var(--neutral-800) !important;
       }
 
       &.inputbox:focus {
-        color: $neutral-800 !important;
+        color: var(--neutral-800) !important;
       }
 
       &.readonly {
@@ -607,13 +666,13 @@ $font:'Inter', sans-serif;
       }
 
       &[placeholder] {
-        color: $neutral-500 !important;
+        color: var(--neutral-500) !important;
         @include body-16;
       }
 
       &[value] {
         @include body-16;
-        color: $neutral-800;
+        color: var(--neutral-800);
       }
 
       &.input-medium,
@@ -638,7 +697,7 @@ $font:'Inter', sans-serif;
     textarea {
       margin-top: 12px !important;
       resize: vertical;
-      color: $neutral-800;
+      color: var(--neutral-800);
       @include body-16;
 
       &.input-medium, &.input-small {
@@ -656,7 +715,7 @@ $font:'Inter', sans-serif;
 
     /* LIMITE */
     .label-info, .badge-info {
-      background: $focus !important;
+      background: var(--blue-500) !important;
     }
 
     /* TINYMCE */
@@ -665,17 +724,17 @@ $font:'Inter', sans-serif;
     }
 
     .label, .badge {
-      background: $neutral-600;
+      background: var(--neutral-600);
     }
 
     /* SELECT */
     select {
       @include select-default;
-      color: $neutral-800 !important;
+      color: var(--neutral-800) !important;
 
       option {
         @include body-16;
-        color: $neutral-800;
+        color: var(--neutral-800);
       }
     }
 
@@ -693,8 +752,8 @@ $font:'Inter', sans-serif;
         height: 100% !important;
 
         li.search-choice {
-          border: $neutral-400;
-          background: $neutral-200;
+          border: var(--neutral-400);
+          background: var(--neutral-200);
           @include body-14;
 
           span {
@@ -716,66 +775,80 @@ $font:'Inter', sans-serif;
         @include body-14;
 
         &.highlighted {
-          background: $neutral-200;
-          color: $neutral-900;
+          background: var(--neutral-200);
+          color: var(--neutral-900);
         }
       }
     }
 
     .fabrikSubElementContainer {
       margin-top: 12px;
+      color: var(--neutral-800);
 
       /* YES/NO & RADIO GROUPES */
       fieldset.btn-radio {
+        display: flex;
+        grid-gap: 16px;
 
         label.btn-default.btn.btn-success.active {
           @include yes-no;
-          border: 1px solid $main-500;
-          background: $main-500;
-          width: 55px !important;
+          border: 1px solid var(--main-500);
+          background: var(--main-500);
+          border-radius: var(--em-border-radius) !important;
+          width: 100% !important;
+          max-width: 250px;
+          display: flex;
+          justify-content: center;
 
           &:hover {
-            border: 1px solid $main-600;
-            background: $main-600;
+            border: 1px solid var(--main-600);
+            background: var(--main-600);
           }
 
           span {
             @include body-16-medium;
             margin-top: 0;
-            color: $neutral-50;
+            color: var(--neutral-50);
           }
         }
 
         label.btn-default.btn.btn-danger.active {
           @include yes-no;
-          border: 1px solid $red-500;
-          background: $red-500;
-
-          width: 55px !important;
+          border: 1px solid var(--red-500);
+          background: var(--red-500);
+          border-radius: var(--em-border-radius) !important;
+          width: 100% !important;
+          max-width: 250px;
+          display: flex;
+          justify-content: center;
 
           &:hover {
-            border: 1px solid $red-600;
-            background: $red-600;
+            border: 1px solid var(--red-600);
+            background: var(--red-600);
           }
 
           span {
             @include body-16-medium;
             margin-top: 0;
-            color: $neutral-50;
+            color: var(--neutral-50);
           }
         }
 
         label.btn-default.btn:not(.active) {
           @include yes-no;
-          border: 1px solid $neutral-200;
-          background: $neutral-200;
+          border: 1px solid var(--neutral-400);
+          background: transparent;
+          border-radius: var(--em-border-radius) !important;
           margin-left: -2px;
           z-index: 0;
-          width: 55px !important;
+          width: 100% !important;
+          max-width: 250px;
+          display: flex;
+          justify-content: center;
 
           &:hover {
-            border: 1px solid $neutral-300;
-            background: $neutral-300;
+            border: 1px solid var(--neutral-300);
+            background: var(--neutral-300);
 
             span, input {
               margin-left: 0 !important;
@@ -785,16 +858,16 @@ $font:'Inter', sans-serif;
           span {
             @include body-16-medium;
             margin-top: 0;
-            color: $neutral-900;
+            color: var(--neutral-900);
           }
         }
 
          label.btn-default.btn:nth-child(1) {
-           border-radius: 4px 0 0 4px !important;
+           border-radius: var(--em-border-radius) !important;
          }
 
          label.btn-default.btn:nth-child(2) {
-           border-radius: 0 4px 4px 0 !important;
+           border-radius: var(--em-border-radius) !important;
          }
       }
 
@@ -833,22 +906,22 @@ $font:'Inter', sans-serif;
         }
 
         input[id$='cal'].inputbox{
-          color: $neutral-800 !important;
+          color: var(--neutral-800) !important;
           margin-right: 1px !important;
         }
 
         button.calendarbutton,
         button.timeButton {
-          border: 1px solid $neutral-400;
+          border: 1px solid var(--neutral-400);
           margin-top: 12px;
           width: 48px !important;
           display: flex;
           justify-content: center;
           align-items: center;
           height: 48px !important;
-          background: $neutral-200;
+          background: var(--neutral-200);
           border-radius: 0 4px 4px 0 !important;
-          color: $neutral-800;
+          color: var(--neutral-800);
           z-index: 10;
 
           i.icon-clock {
@@ -868,12 +941,12 @@ $font:'Inter', sans-serif;
 
 
     .fabrikMainError.alert.alert-error.fabrikError {
-      border-color: $red-500;
-      color: $red-500;
+      border-color: var(--red-500);
+      color: var(--red-500);
     }
 
     .fabrikMainError.alert.alert-error.fabrikError .close {
-      color: $red-500 !important;
+      color: var(--red-500) !important;
     }
 
 
@@ -884,6 +957,9 @@ $font:'Inter', sans-serif;
 
 
     /* CHECKBOX - RADIO */
+    .fabrikSubElementContainer .row-fluid:first-child [class*="fabrikgrid_radio span12"]:first-child{
+    margin-top: 0;
+    }
     .row-fluid .fabrikgrid_radio,
     .row-fluid .fabrikgrid_checkbox,
     .row-fluid .plg-databasejoin.mode-checkbox {
@@ -901,7 +977,7 @@ $font:'Inter', sans-serif;
 
         input[type="checkbox"] {
           @include checkbox;
-          margin-left: 0px !important;
+          margin-left: 0 !important;
         }
       }
 
@@ -914,7 +990,7 @@ $font:'Inter', sans-serif;
 
         input[type="radio"] {
           @include radio;
-          margin-left: 0px !important;
+          margin-left: 0 !important;
 
           &:checked {
             appearance: auto;
@@ -927,7 +1003,7 @@ $font:'Inter', sans-serif;
 
       span {
         height: auto !important;
-        color: $neutral-800;
+        color: var(--neutral-800);
         margin-top: 0 !important;
         padding: 0 !important;
         display: flex;

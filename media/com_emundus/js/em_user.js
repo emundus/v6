@@ -2,7 +2,9 @@
  * Created by yoan on 16/09/14.
  */
 
-/* load Menu action */
+var lastIndex = 0;
+var loading;
+
 function reloadActions(view) {
 	var mutli = 0;
 	multi = $('.em-check:checked').length;
@@ -20,25 +22,10 @@ function reloadActions(view) {
 	})
 }
 
-
-
 function clearchosen(cible) {
 	$(cible).val("%");
 	$(cible).trigger('chosen:updated');
 }
-
-function getCookie(cname) {
-	var name = cname + "=";
-	var ca = document.cookie.split(';');
-	for (var i = 0; i < ca.length; i++) {
-		var c = ca[i].trim();
-		if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
-	}
-	return "";
-}
-
-var lastIndex = 0;
-var loading;
 
 function getUserCheck() {
 	var id = parseInt($('.modal-body').attr('act-id'));
@@ -112,13 +99,6 @@ function reloadData() {
 			console.log(jqXHR.responseText);
 		}
 	})
-}
-
-function addLoader() {
-	$('#g-main-mainbody').after('<div class="em-page-loader" id="em-dimmer"></div>');
-}
-function removeLoader() {
-	$('#em-dimmer').remove();
 }
 
 function refreshFilter() {

@@ -93,7 +93,10 @@ class EmundusControllerUsers extends JControllerLegacy {
 			echo json_encode((object)array('status' => false, 'msg' => JText::_('COM_EMUNDUS_USERS_ERROR_USERNAME_NOT_GOOD')));
 			exit;
 		}
-		if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $email) !== 1) {
+
+        require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+        $h_emails = new EmundusHelperEmails();
+		if (!$h_emails->correctEmail($email)) {
 			echo json_encode((object)array('status' => false, 'msg' => JText::_('MAIL_NOT_GOOD')));
 			exit;
 		}
@@ -1281,5 +1284,34 @@ class EmundusControllerUsers extends JControllerLegacy {
 
         echo json_encode($tab);
         exit;
+    }
+
+
+    public function activation_anonym_user()
+    {
+        $app = JFactory::getApplication();
+        $jinput = $app->input;
+        $user_id = $jinput->getInt('user_id', 0);
+        $token = $jinput->getString('token', '');
+
+        if (!empty($token) && !empty($user_id)) {
+            $m_users = new EmundusModelUsers();
+            $valid = $m_users->checkTokenCorrespondToUser($token, $user_id);
+
+            if ($valid) {
+                $updated = $m_users->updateAnonymUserAccount($token, $user_id);
+
+                if ($updated) {
+                    $app->enqueueMessage(JText::_('COM_EMUNDUS_USERS_ANONYM_USER_ACTIVATION_SUCCESS'), 'success');
+                } else {
+                    $app->enqueueMessage(JText::_('COM_EMUNDUS_USERS_FAILED_TO_ACTIVATE_USER'), 'warning');
+                }
+                $app->redirect('/');
+            } else {
+                JLog::add("WARNING! Wrong paramters together, token $token and user_id $user_id from" . $_SERVER['REMOTE_ADDR'], JLog::WARNING, 'com_emundus.error');
+            }
+        } else {
+            JLog::add('WARNING! Attempt to activate anonym user without necessary parameters from ' . $_SERVER['REMOTE_ADDR'], JLog::WARNING, 'com_emundus.error');
+        }
     }
 }
