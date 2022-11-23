@@ -3078,7 +3078,7 @@ h1.em-titre-connectez-vous {
    .em-w-custom .em-email-card,
     ul li,
    select{
-    color: var(--neutral-800) !important;
+     color: initial;
   }
 
   *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon){

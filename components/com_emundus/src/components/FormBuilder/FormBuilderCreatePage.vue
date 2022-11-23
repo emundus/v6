@@ -1,7 +1,7 @@
 <template>
 	<div id="form-builder-create-page" class="em-w-100 em-p-32 em-pt-16">
 		<div>
-			<h3 class="em-mb-4">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE') }}</h3>
+			<h3 class="em-mb-4 em-text-neutral-800">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE') }}</h3>
 			<p>{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_INTRO') }}</p>
 			<section id="new-page">
 				<div class="em-mt-16 em-mb-16 card-wrapper" :class="{selected: -1 === selected}" @click="selected = -1;">
@@ -244,10 +244,14 @@ export default {
 				border: 2px solid #20835F;
 			}
 
-			p, input {
+			p {
 				color: white;
 				background-color: #20835F;
 			}
+      input {
+        color: var(--neutral-700);
+        background-color: #20835F;
+      }
 		}
 	}
 
