@@ -3804,7 +3804,7 @@ class EmundusModelApplication extends JModelList
         {
             $query = 'SELECT CONCAT(link, "&Itemid=", id) as url
                         FROM #__menu
-                        WHERE alias like "checkout'.$pid.'"';
+                        WHERE alias like "checkout'.$pid.'" and published = 1';
             $dbo->setQuery($query);
             $url = $dbo->loadResult();
             return $url;
