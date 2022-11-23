@@ -665,7 +665,7 @@ class EmundusModelFormbuilder extends JModelList {
         $query = $db->getQuery(true);
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
-        $modules = $eMConfig->get('form_buider_page_creation_modules', [93,102,103,104,168,170]);
+        $modules = $eMConfig->get('form_builder_page_creation_modules', [93,102,103,104,168,170]);
 
         if (!is_array($label)) {
             $label = json_decode($label, true);
@@ -2442,7 +2442,7 @@ class EmundusModelFormbuilder extends JModelList {
         $falang = new EmundusModelFalang();
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
-        $modules = $eMConfig->get('form_buider_page_creation_modules', [93,102,103,104,168,170]);
+        $modules = $eMConfig->get('form_builder_page_creation_modules', [93,102,103,104,168,170]);
 
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -2728,7 +2728,7 @@ class EmundusModelFormbuilder extends JModelList {
 
                                 // Affect modules to this menu
                                 $eMConfig = JComponentHelper::getParams('com_emundus');
-                                $modules = $eMConfig->get('form_buider_page_creation_modules', [93,102,103,104,168,170]);
+                                $modules = $eMConfig->get('form_builder_page_creation_modules', [93,102,103,104,168,170]);
                                 foreach ($modules as $module) {
                                     $query->clear()
                                         ->insert($db->quoteName('#__modules_menu'))

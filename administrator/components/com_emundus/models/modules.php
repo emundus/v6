@@ -718,6 +718,28 @@ class EmundusModelModules extends JModelList {
                         $db->execute();
                     }
                 }
+
+                // add module id to the list of modules to add on page creation via the form builder
+                $query->clear()
+                    ->select('params')
+                    ->from('#__extensions')
+                    ->where('name LIKE ' . $db->quote('com_emundus'));
+
+                $db-setQuery($query);
+                $params = $db->loadResult();
+
+                if (!empty($params)) {
+                    $params = json_decode($params, true);
+                    $params['form_buider_page_creation_modules'][] = $module_id;
+
+                    $query->clear()
+                        ->update('#__extensions')
+                        ->set('params = ' . $db->quote(json_encode($params)))
+                        ->where('name = ' . $db->quote('com_emundus'));
+
+                    $db->setQuery($query);
+                    $db->execute();
+                }
             }
 
             $query->clear()
