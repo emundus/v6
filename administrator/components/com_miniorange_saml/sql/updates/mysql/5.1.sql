@@ -1,1 +1,0 @@
-ALTER TABLE `#__miniorange_saml_config` ADD COLUMN IF NOT EXISTS `name_id_format` VARCHAR(255) NOT NULL;

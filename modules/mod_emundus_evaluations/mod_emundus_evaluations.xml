@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="1.0.0" client="site" method="upgrade">
-    <name>Gestion des évaluations</name>
+    <name>MOD_EMUNDUS_EVALUATIONS_XML</name>
     <author>HUBINET Brice</author>
     <creationDate>2022 June</creationDate>
-    <description>Gestion des évaluations sur les dossiers qui me sont associés</description>
+    <description>MOD_EMUNDUS_EVALUATIONS_XML_DESC</description>
 
     <files>
         <filename module="mod_emundus_evaluations">mod_emundus_evaluations.xml</filename>

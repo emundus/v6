@@ -1323,7 +1323,7 @@ export default {
   position: absolute;
 }
 .element-updating{
-  border: solid 2px #20835F !important;
+  border: solid 2px var(--main-500) !important;
   border-radius: 4px;
 }
 .em-transparent-border-2{

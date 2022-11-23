@@ -379,7 +379,6 @@ export default {
     updateAttachment() {
       this.resetOrder();
       this.getAttachments();
-      this.$modal.hide("edit");
       this.selectedAttachment = {};
       this.checkedAttachments = [];
     },
@@ -581,15 +580,11 @@ export default {
       this.attachments.forEach((attachment, index) => {
         // if attachment description contains the search term, show it
         // lowercase the search term to avoid case sensitivity
-        if (
-						attachment.upload_description.toLowerCase().includes(this.$refs["searchbar"].value.toLowerCase()) ||
-            attachment.value.toLowerCase().includes(this.$refs["searchbar"].value.toLowerCase())
-        ) {
+        if (attachment.upload_description.toLowerCase().includes(this.$refs["searchbar"].value.toLowerCase()) ||
+            attachment.value.toLowerCase().includes(this.$refs["searchbar"].value.toLowerCase())) {
           this.attachments[index].show = true;
         } else {
-          this.checkedAttachments = this.checkedAttachments.filter(
-              (aid) => aid !== attachment.aid
-          );
+          this.checkedAttachments = this.checkedAttachments.filter((aid) => aid !== attachment.aid);
           this.attachments[index].show = false;
         }
       });

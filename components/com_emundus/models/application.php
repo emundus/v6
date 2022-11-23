@@ -2045,7 +2045,7 @@ class EmundusModelApplication extends JModelList
         $em_breaker = $eMConfig->get('export_application_pdf_breaker', '0');
 
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
-        $h_list = new EmundusHelperList;
+        $h_list = new EmundusHelperList();
 
         $tableuser = $h_list->getFormsList($aid, $fnum, $fids, $profile_id);
 
@@ -3492,10 +3492,11 @@ class EmundusModelApplication extends JModelList
         $dbo = $this->getDbo();
         try
         {
-            $query = 'SELECT ecc.*, esc.*, ess.step, ess.value, ess.class
+            $query = 'SELECT ecc.*, esc.*, ess.step, ess.value, ess.class, esp.color as tag_color
                         FROM #__emundus_campaign_candidature AS ecc
                         LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
                         LEFT JOIN #__emundus_setup_status AS ess ON ess.step=ecc.status
+                        LEFT JOIN #__emundus_setup_programmes as esp on esc.training = esp.code
                         WHERE ecc.fnum like '.$dbo->Quote($fnum).'
                         ORDER BY esc.end_date DESC';
             $dbo->setQuery($query);
@@ -3910,8 +3911,14 @@ class EmundusModelApplication extends JModelList
         $pids = [];
 
         try {
+            $divergent_users = false;
             $m_profiles = new EmundusModelProfile();
             $fnumInfos = $m_profiles->getFnumDetails($fnum_from);
+            $fnumToInfos =  $m_profiles->getFnumDetails($fnum_to);
+
+            if ($fnumInfos['applicant_id'] !== $fnumToInfos['applicant_id']) {
+                $divergent_users = true;
+            }
 
             if(!empty($campaign_id)){
                 $pids = $m_profiles->getProfilesIDByCampaign((array)$campaign_id);
@@ -3945,6 +3952,14 @@ class EmundusModelApplication extends JModelList
                     unset($stored['id']);
                     $stored['fnum'] = $fnum_to;
                     $q=1;
+
+                    if ($divergent_users) {
+                        foreach($stored as $key => $value) {
+                            if ($key === 'user' && $value == $fnumInfos['applicant_id']) {
+                                $stored[$key] = $fnumToInfos['applicant_id'];
+                            }
+                        }
+                    }
 
                     $query = 'INSERT INTO '.$form->db_table_name.' (`'.implode('`,`', array_keys($stored)).'`) VALUES('.implode(',', $db->Quote($stored)).')';
                     $db->setQuery($query);
@@ -4014,8 +4029,8 @@ class EmundusModelApplication extends JModelList
                 $query = $db->getQuery(true);
 
                 $query->select('jeu.*, jsa.lbl')
-                    ->from('jos_emundus_uploads AS jeu')
-                    ->leftJoin('jos_emundus_setup_attachments AS jsa ON jsa.id=jeu.attachment_id')
+                    ->from('#__emundus_uploads AS jeu')
+                    ->leftJoin('#__emundus_setup_attachments AS jsa ON jsa.id=jeu.attachment_id')
                     ->where('jeu.fnum LIKE '. $db->quote($fnum_from));
 
                 $db->setQuery($query);
@@ -4030,14 +4045,15 @@ class EmundusModelApplication extends JModelList
                 if (!empty($documents)) {
                     foreach ($documents as $document) {
                         $file_ext = pathinfo($document['filename'], PATHINFO_EXTENSION);
-                        $new_file = $fnumInfos['applicant_id'] . '-' . $campaign_id . '-' . trim($document['lbl'], ' _') . '-' . rand() . '.' . $file_ext;
+                        $new_file = $fnumToInfos['applicant_id'] . '-' . $campaign_id . '-' . trim($document['lbl'], ' _') . '-' . rand() . '.' . $file_ext;
 
                         // try to copy file with new name
-                        $copied = copy(JPATH_SITE . DS . "images/emundus/files" . DS .  $fnumInfos['applicant_id'] . DS . $document['filename'], JPATH_SITE . DS . "images/emundus/files" . DS .  $fnumInfos['applicant_id'] . DS . $new_file);
+                        $copied = copy(JPATH_SITE . DS . "images/emundus/files" . DS .  $fnumInfos['applicant_id'] . DS . $document['filename'], JPATH_SITE . DS . "images/emundus/files" . DS .  $fnumToInfos['applicant_id'] . DS . $new_file);
                         if (!$copied) {
                             JLog::add("La copie " . $document['file'] . " du fichier a échoué...\n", JLog::ERROR, 'com_emundus');
                         }
 
+                        $document['user_id'] = $fnumToInfos['applicant_id'];
                         $document['filename'] = $new_file;
                         $document['fnum'] = $fnum_to;
                         $document['is_validated'] = empty($document['is_validated']) ? '-2' : $document['is_validated'];
@@ -4109,16 +4125,16 @@ class EmundusModelApplication extends JModelList
         JPluginHelper::importPlugin('emundus');
         $dispatcher = JDispatcher::getInstance();
         $dispatcher->trigger('callEventHandler', array(
-                'onAfterCopyApplication',
-                array(
-                    'fnum_from' => $fnum_from,
-                    'fnum_to' => $fnum_to,
-                    'pid' => $pid,
-                    'copy_attachment' => $copy_attachment,
-                    'campaign_id' => $campaign_id,
-                    'copy_tag' => $copy_tag,
-                    'move_hikashop_command' => $move_hikashop_command,
-                    'delete_from_file' => $delete_from_file)
+            'onAfterCopyApplication',
+            array(
+                'fnum_from' => $fnum_from,
+                'fnum_to' => $fnum_to,
+                'pid' => $pid,
+                'copy_attachment' => $copy_attachment,
+                'campaign_id' => $campaign_id,
+                'copy_tag' => $copy_tag,
+                'move_hikashop_command' => $move_hikashop_command,
+                'delete_from_file' => $delete_from_file)
             )
         );
 
@@ -5382,5 +5398,57 @@ class EmundusModelApplication extends JModelList
         } catch (Exception $e) {
             JLog::add('Problem when get values of element ' . $eid . ' with fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
         }
+    }
+
+
+    public function invertFnumsOrderByColumn($fnum_from, $target_fnum, $order_column = 'ordering')
+    {
+        $reordered = false;
+
+        $excluded_columns = ['fnum', 'id', 'user', 'user_id', 'applicant_id'];
+        if (!in_array($order_column, $excluded_columns) && !empty($order_column) && !empty($fnum_from) && !empty($target_fnum)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select($order_column)
+                ->from('#__emundus_campaign_candidature as ecc')
+                ->where('fnum LIKE ' . $db->quote($fnum_from));
+
+            $db->setQuery($query);
+
+            try {
+                $old_position = $db->loadResult();
+
+                $query->clear()
+                    ->select($order_column)
+                    ->from('#__emundus_campaign_candidature as ecc')
+                    ->where('fnum LIKE ' . $db->quote($target_fnum));
+
+                $db->setQuery($query);
+                $new_position = $db->loadResult();
+
+                $query->clear()
+                    ->update('#__emundus_campaign_candidature')
+                    ->set($db->quoteName($order_column) . ' = ' . $new_position)
+                    ->where('fnum LIKE ' . $db->quote($fnum_from));
+
+                $db->setQuery($query);
+                $reordered = $db->execute();
+
+                if ($reordered) {
+                    $query->clear()
+                        ->update('#__emundus_campaign_candidature')
+                        ->set($db->quoteName($order_column) . ' = ' . $old_position)
+                        ->where('fnum LIKE ' . $db->quote($target_fnum));
+
+                    $db->setQuery($query);
+                    $reordered = $db->execute();
+                }
+            } catch (Exception $e) {
+                JLog::add('Failed to get ' . $order_column . ' in __emundus_campaign_candidature for ' . $fnum_from . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            }
+        }
+
+        return $reordered;
     }
 }

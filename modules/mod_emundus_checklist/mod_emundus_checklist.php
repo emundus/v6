@@ -13,51 +13,50 @@
 
 // no direct access
 defined('_JEXEC') or die('Restricted access');
+
 $document = JFactory::getDocument();
-$document->addStyleSheet("modules/mod_emundus_checklist/style/emundus_checklist.css" );
+$document->addStyleSheet('modules/mod_emundus_checklist/style/emundus_checklist.css');
+
 $user = JFactory::getSession()->get('emundusUser');
 
 if (isset($user->fnum) && !empty($user->fnum)) {
+    require_once(dirname(__FILE__).DS.'helper.php');
+    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+    $m_checklist = new EmundusModelChecklist();
+    $m_application = new EmundusModelApplication();
+    $m_campaign = new EmundusModelCampaign();
+    $m_profile = new EmundusModelProfile();
+    $m_files = new EmundusModelFiles();
 
-	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
-	//require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
-	//require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
-	//require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+    $db = JFactory::getDBO();
+    $app = JFactory::getApplication();
 
-	$db = JFactory::getDBO();
-	$document = JFactory::getDocument();
-	$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
-	// overide css
-	$header_class = $params->get('header_class', '');
-	if (!empty($header_class)) {
-		$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$header_class.".css" );
-	}
-	$document->addStyleSheet("media/com_emundus/css/emundus.css" );
+    $jinput = $app->input;
+    $option = $jinput->get('option');
+    $view = $jinput->get('view');
 
-	$app = JFactory::getApplication();
-	$jinput = $app->input;
-	$option = $jinput->get('option');
-	$view = $jinput->get('view');
+    $show_forms = $params->get('show_forms', 1);
+    $show_mandatory_documents = $params->get('show_mandatory_documents', 1);
+    $show_optional_documents = $params->get('show_optional_documents', 0);
+    $show_duplicate_documents = $params->get('show_duplicate_documents', 1);
+    $forms_title = $params->get('forms_title', JText::_('FORMS'));
+    $mandatory_documents_title = $params->get('mandatory_documents_title', JText::_('MANDATORY_DOCUMENTS'));
+    $optional_documents_title = $params->get('optional_documents_title', JText::_('OPTIONAL_DOCUMENTS'));
+    $admission = $params->get('admission', 0);
+    $show_send = $params->get('show_send', 1);
+
+    $eMConfig = JComponentHelper::getParams('com_emundus');
+    $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
 
 	$menuid = $app->getMenu()->getActive()->id;
-
 	$query='SELECT id, link FROM #__menu WHERE alias like "checklist%" AND menutype like "%'.$user->menutype.'"';
 	$db->setQuery( $query );
 	$itemid = $db->loadAssoc();
-
-
-	//$params = JComponentHelper::getParams('com_emundus');
-	$show_forms = $params->get('show_forms', 0);
-	$show_mandatory_documents = $params->get('show_mandatory_documents', 0);
-	$show_optional_documents = $params->get('show_optional_documents', 0);
-	$show_duplicate_documents = $params->get('show_duplicate_documents', 0);
-
-	$forms_title = $params->get('forms_title', JText::_('FORMS'));
-	$mandatory_documents_title = $params->get('mandatory_documents_title', JText::_('MANDATORY_DOCUMENTS'));
-	$optional_documents_title = $params->get('optional_documents_title', JText::_('OPTIONAL_DOCUMENTS'));
-
-
-	$forms = @EmundusHelperMenu::buildMenuQuery($user->profile);
 
 	$and = ($show_duplicate_documents != -1)?' AND esap.duplicate='.$show_duplicate_documents:'';
 	$query = 'SELECT esa.value, esap.id, esa.id as _id, esap.mandatory, esap.duplicate
@@ -65,7 +64,6 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 		JOIN #__emundus_setup_attachments esa ON esa.id = esap.attachment_id
 		WHERE esap.displayed = 1 '.$and.' AND esap.profile_id ='.$user->profile.'
 		ORDER BY esa.ordering';
-
 	$db->setQuery( $query );
 	$documents = $db->loadObjectList();
 
@@ -80,6 +78,94 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 				$optional_documents[] = $document;
 		}
 	}
+
+    $query = $db->getQuery(true);
+
+    $query->select('eu.*,esa.value as attachment_name')
+        ->from($db->quoteName('#__emundus_uploads','eu'))
+        ->leftJoin($db->quoteName('#__emundus_setup_attachment_profiles','esap').' ON '.$db->quoteName('eu.attachment_id').' = '.$db->quoteName('esap.attachment_id'))
+        ->leftJoin($db->quoteName('#__emundus_setup_attachments','esa').' ON '.$db->quoteName('esap.attachment_id').' = '.$db->quoteName('esa.id'))
+        ->where($db->quoteName('esap.mandatory') . ' = 1')
+        ->andWhere($db->quoteName('esap.displayed') . ' = 1')
+        ->andWhere($db->quoteName('esap.profile_id') . ' = ' . $db->quote($user->profile))
+        ->andWhere($db->quoteName('eu.fnum') . ' like ' . $db->quote($user->fnum))
+        ->andWhere($db->quoteName('eu.user_id') . ' = ' . $db->quote($user->id))
+        ->group('esa.id');
+    $db->setQuery($query);
+    $uploads = $db->loadObjectList();
+
+    foreach ($uploads as $upload){
+        $file = $applicant_files_path . $user->id . '/' . $upload->filename;
+        $bytes = filesize($file);
+
+        if($bytes) {
+            $decimals = 0;
+
+            $factor = floor((strlen($bytes) - 1) / 3);
+            if ($factor > 0) $sz = 'KMGT';
+            $upload->filesize = sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor - 1] . 'o';
+        } else {
+            $upload->filesize = 0;
+        }
+    }
+
+    $forms = @EmundusHelperMenu::buildMenuQuery($user->profile);
+
+    // Prepare display of send button
+    $application = @modEmundusChecklistHelper::getApplication($user->fnum);
+    $status_for_send = explode(',', $eMConfig->get('status_for_send', 0));
+
+    $confirm_form_url = $m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
+    $uri = JUri::getInstance();
+    $is_confirm_url = false;
+
+    if (preg_match('/formid=[0-9]+&/', $confirm_form_url, $matches)) {
+        if (!empty($matches) && strpos($uri->getQuery(), $matches[0]) !== false) {
+            $is_confirm_url = true;
+        }
+    }
+
+    $current_phase = $m_campaign->getCurrentCampaignWorkflow($user);
+    $current_phase = !empty($current_phase->id) ? $current_phase : null;
+    $attachments_progress = $m_application->getAttachmentsProgress($user->fnum);
+    $forms_progress 	= $m_application->getFormsProgress($user->fnum);
+
+    $app = JFactory::getApplication();
+    $offset = $app->get('offset', 'UTC');
+    $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+    $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+    $now = $dateTime->format('Y-m-d H:i:s');
+
+    if (!empty($user->end_date)) {
+        $is_dead_line_passed = strtotime(date($now)) > strtotime($user->end_date);
+
+        if (!empty($current_phase) && !empty($current_phase->end_date)) {
+            $is_dead_line_passed = strtotime(date($now)) > strtotime($current_phase->end_date);
+        } elseif ($admission) {
+            $is_dead_line_passed = strtotime(date($now)) > strtotime($user->admission_end_date);
+        }
+    }
+    if (!empty($current_phase)) {
+        $is_app_sent = !in_array($user->status, $current_phase->entry_status);
+
+        $status_for_send = array_merge($status_for_send, $current_phase->entry_status);
+    } elseif (!empty($user->status)) {
+        $is_app_sent = $user->status != 0;
+    }
+
+    $id_applicants = $eMConfig->get('id_applicants', '0');
+    $applicants = explode(',',$id_applicants);
+    $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
+    $application_fee = $eMConfig->get('application_fee', 0);
+    $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
+    if ($application_fee) {
+        $fnumInfos = $m_files->getFnumInfos($user->fnum);
+
+        $order = $m_application->getHikashopOrder($fnumInfos);
+        $cart = $m_application->getHikashopCartUrl($user->profile);
+        $paid = !empty($order);
+    }
+    //
 
 	require(JModuleHelper::getLayoutPath('mod_emundus_checklist'));
 }

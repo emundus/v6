@@ -109,7 +109,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 <div class="modal fade" id="em-modal-actions" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-actions" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<div class="modal-header">
+			<div class="modal-header em-flex-row-reverse em-flex-space-between">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				<h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('COM_EMUNDUS_FORM_TITLE');?></h4>
 			</div>

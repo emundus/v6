@@ -1,15 +1,7 @@
 <template>
 <div id="list-body">
-	<ModalEmailPreview
-		v-if="type == 'email'"
-    :model="email.emailToPreview"
-    :models="list"
-  />
-
-	<div id="actions">
-		<div class="filters">
-
-		</div>
+	<ModalEmailPreview v-if="type == 'email'" :model="email.emailToPreview" :models="items"/>
+	<div id="actions" class="em-flex-row-justify-end em-mt-16 em-mb-16">
 		<div class="view-type">
 			<span
 				v-for="viewTypeOption in viewTypeOptions"
@@ -25,12 +17,11 @@
 	<list-table
 		key="list-table"
 		class="list-view"
-		:class="{
-			'not-displayed': viewType !== 'table',
-		}"
+		:class="{'not-displayed': viewType !== 'table'}"
 		:type="type"
 		:actions="actions"
 		:params="params"
+		:items="items"
 		@validateFilters="validateFilters"
 		@updateLoading="updateLoading"
 		@showModalPreview="showModalPreview"
@@ -38,12 +29,11 @@
 	<list-blocs
 		key="list-blocs"
 		class="list-view"
-		:class="{
-			'not-displayed': viewType !== 'blocs',
-		}"
+		:class="{'not-displayed': viewType !== 'blocs'}"
 		:type="type"
 		:actions="actions"
 		:params="params"
+		:items="items"
 		@validateFilters="validateFilters"
 		@updateLoading="updateLoading"
 		@showModalPreview="showModalPreview"
@@ -74,6 +64,10 @@ export default {
 		params: {
 			type: Object,
 			default: {}
+		},
+		items: {
+			type: [],
+			required: true
 		}
 	},
 	data() {
@@ -119,11 +113,6 @@ export default {
         this.$modal.show('modalEmailPreview_' + itemId);
       },200)
 		}
-	},
-	computed: {
-		list() {
-			return this.$store.getters['lists/list'];
-		}
 	}
 }
 </script>
@@ -131,11 +120,6 @@ export default {
 <style lang="scss" scoped>
 #list-body {
 	#actions {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin: 20px 0;
-
 		.view-type {
 			display: flex;
 			align-items: center;
@@ -152,8 +136,8 @@ export default {
 
 
 				&.active {
-					color: #298721;
-					border-color: #298721;
+					color: var(--main-500);
+					border-color: var(--main-500);
 				}
 			}
 		}

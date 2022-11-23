@@ -1,16 +1,18 @@
 <template>
   <div id="form-builder-page">
-    <span
-        class="em-font-size-24 em-font-weight-800 editable-data"
-        ref="pageTitle"
-        @focusout="updateTitle"
-        @keyup.enter="updateTitleKeyup"
-        @keydown="(event) => checkMaxMinlength(event, 50, 3)"
-        contenteditable="true"
-        :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
-        v-html="translate(title)"
-    >
-    </span>
+    <div class="em-flex-row em-flex-space-between">
+	    <span
+			    class="em-font-size-24 em-font-weight-800 editable-data"
+			    ref="pageTitle"
+			    @focusout="updateTitle"
+			    @keyup.enter="updateTitleKeyup"
+			    @keydown="(event) => checkMaxMinlength(event, 50, 3)"
+			    contenteditable="true"
+			    :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
+			    v-html="translate(title)"
+	    ></span>
+	    <span class="material-icons-outlined em-pointer" :title="translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')" @click="$emit('open-create-model', page.id)">save_as</span>
+    </div>
     <span
       class="description editable-data"
       id="pageDescription"
@@ -59,6 +61,7 @@ import translationService from '../../services/translations';
 import FormBuilderPageSection from "./FormBuilderPageSection";
 import formBuilderMixin from "../../mixins/formbuilder";
 import globalMixin from "../../mixins/mixin";
+import Swal from "sweetalert2";
 
 export default {
   components: {
@@ -92,18 +95,31 @@ export default {
     }
   },
   methods: {
-    getSections(newElementIndex = null) {
+    getSections() {
       this.loading = true;
       formService.getPageObject(this.page.id).then(response => {
-        if (response.status) {
+        if (response.status && response.data != '') {
           this.fabrikPage = response.data;
           this.title = this.fabrikPage.show_title.label[this.shortDefaultLang];
           const groups = Object.values(response.data.Groups);
           this.sections = groups.filter(group => group.hidden_group != -1);
 	        this.getDescription();
-
-          this.loading = false;
+        } else {
+					Swal.fire({
+						title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
+						type: 'error',
+						showCancelButton: false,
+						confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
+						reverseButtons: true,
+						customClass: {
+							title: 'em-swal-title',
+							confirmButton: 'em-swal-confirm-button',
+							actions: 'em-swal-single-action'
+						},
+					});
         }
+
+	      this.loading = false;
       });
     },
     getDescription() {
@@ -130,9 +146,9 @@ export default {
         Swal.fire({
           title: this.translate('COM_EMUNDUS_FORM_BUILDER_MAX_SECTION_TITLE'),
           text: this.translate('COM_EMUNDUS_FORM_BUILDER_MAX_SECTION_TEXT'),
-          type: "error",
+          type: 'error',
           showCancelButton: false,
-          confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+          confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
           reverseButtons: true,
           customClass: {
             title: 'em-swal-title',
@@ -226,7 +242,7 @@ export default {
     deleteSection(sectionId) {
       this.sections = this.sections.filter(section => section.group_id !== sectionId);
       this.updateLastSave();
-    },
+    }
   },
 }
 </script>

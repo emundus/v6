@@ -4,29 +4,26 @@
       <transition :name="'slide-down'" type="transition">
         <div>
             <nav aria-label="action" class="em-flex-col-start">
-              <a v-on:click="publishSelected(checkItem)" class="action-submenu" v-if="!['formulaire','email'].includes(data.type) && !published">
+              <a @click="publishSelected(checkItem)" class="action-submenu" v-if="!['formulaire','email', 'formModels'].includes(data.type) && !published">
                 {{ translations.ActionPublish }}
               </a>
-              <a v-on:click="unpublishSelected(checkItem)" class="action-submenu" v-if="!['formulaire','email'].includes(data.type) && published">
+              <a @click="unpublishSelected(checkItem)" class="action-submenu" v-if="!['formulaire','email', 'formModels'].includes(data.type) && published">
                 {{ translations.ActionUnpublish }}
               </a>
-              <a v-on:click="publishSelected(checkItem)" class="action-submenu" style="border-right: 0" v-if="data.type === 'formulaire' && !published">
+              <a @click="publishSelected(checkItem)" class="action-submenu" style="border-right: 0" v-if="data.type === 'formulaire' && !published">
                 {{ translations.Restore }}
               </a>
               <a v-if="data.type === 'campaign' || data.type === 'formulaire'"
-                 v-on:click="duplicateSelected(checkItem)"
+                 @click="duplicateSelected(checkItem)"
                  class="action-submenu w-dropdown-link" style="border-left: 0;border-right: 0">
                 {{ translations.ActionDuplicate }}
               </a>
-              <a v-on:click="deleteSelected(checkItem)" class="action-submenu" v-if="data.type !== 'formulaire' && data.type !== 'campaign'">
+              <a v-else @click="deleteSelected(checkItem)" class="action-submenu">
                 {{ translations.ActionDelete }}
               </a>
-              <a v-on:click="deleteSelected(checkItem)" class="action-submenu" v-if="data.type === 'campaign' && nb_files === 0">
+              <a v-if="data.type === 'campaign' && nb_files === 0" class="action-submenu" @click="deleteSelected(checkItem)">
                 {{ translations.ActionDelete }}
               </a>
-<!--              <a v-on:click="unpublishSelected(checkItem)" class="action-submenu" style="border-left: 0"  v-if="data.type === 'formulaire' && published">
-                {{ translations.Archive }}
-              </a>-->
             </nav>
         </div>
       </transition>
@@ -36,12 +33,13 @@
 </template>
 
 <script>
-  import axios from "axios";
-  import Swal from "sweetalert2";
+import formBuilderService from '../../services/formbuilder';
+import axios from "axios";
+import Swal from "sweetalert2";
 
-  const qs = require("qs");
+const qs = require("qs");
 
-  export default {
+export default {
     name: "action_menu",
 
     props: {
@@ -197,6 +195,48 @@
               }
             });
             break;
+
+	        case 'formModels':
+		        Swal.fire({
+			        title: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_MODEL'),
+			        text: this.translate('COM_EMUNDUS_ONBOARD_CANT_REVERT'),
+			        type: 'warning',
+			        showCancelButton: true,
+			        confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
+			        cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
+			        reverseButtons: true,
+			        customClass: {
+				        title: 'em-swal-title',
+				        cancelButton: 'em-swal-cancel-button',
+				        confirmButton: 'em-swal-confirm-button',
+			        },
+		        }).then(result => {
+			        if (result.value) {
+								formBuilderService.deleteFormModelFromId(id).then(response => {
+									if (!response.status) {
+										Swal.fire({
+											title: this.translate('COM_EMUNDUS_FORM_DELETE_MODEL_FAILURE'),
+											type: 'warning',
+											showConfirmButton: false,
+											timer: 2000
+										});
+									} else {
+										Swal.fire({
+											title: this.translate('COM_EMUNDUS_FORM_DELETE_MODEL_SUCCESS'),
+											type: 'success',
+											showConfirmButton: false,
+											timer: 2000
+										});
+										this.$emit('validateFilters');
+									}
+								});
+			        }
+		        });
+
+						break;
+	        default:
+						console.warn('Unhandled case ' + type + ' for delete action');
+						break;
         }
       },
 
@@ -473,7 +513,7 @@
         }
       },
     },
-  };
+};
 </script>
 
 <style lang="scss" scoped>
@@ -490,7 +530,7 @@
     color: black;
     font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif !important;
     &:hover {
-     color: #20835F;
+     color: var(--main-500);
    }
   }
 </style>
