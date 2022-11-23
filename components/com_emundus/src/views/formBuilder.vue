@@ -252,12 +252,13 @@ export default {
         this.pages = response.data.data;
 
         if (page_id === 0) {
-          this.selectedPage = this.pages[0].id;
+	        this.selectPage(this.pages[0].id);
         } else {
-          this.selectedPage = page_id;
+	        this.selectPage(String(page_id));
         }
+	      this.principalContainer = 'default';
 
-        formService.getSubmissionPage(this.profile_id).then(response => {
+	      formService.getSubmissionPage(this.profile_id).then(response => {
           const formId = response.data.link.match(/formid=(\d+)/)[1];
           if (formId) {
             // check if the form is already in the pages
@@ -316,12 +317,13 @@ export default {
       this.showInRightPanel = 'hierarchy';
       this.$refs.formBuilderPage.getSections();
     },
-	  onCloseCreatePage(reload)
+	  onCloseCreatePage(response)
 	  {
-			if (reload) {
-				this.getPages();
+			if (response.reload) {
+				this.getPages(response.newSelected);
+			} else {
+				this.principalContainer = 'default';
 			}
-		  this.principalContainer = 'default';
 	  },
 	  onOpenCreateModel(pageId)
 	  {

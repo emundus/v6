@@ -147,12 +147,12 @@ hr{
 }
 
 .messages__message-item-span_current-user{
-    background: #d1dbfa;
+    background: #F2F2F2;
     color: #353544;
 }
 
 .messages__message-item-span_other-user{
-    background: #F0F4F5;
+    background: #EDEDED;
 }
 
 .messages__message-item-from{
@@ -196,7 +196,7 @@ hr{
 
 .messages__send_button{
     border-radius: 4px;
-    background: #052F37;
+    background: var(--night-blue);
     padding: 8px 16px;
     color: white;
 }

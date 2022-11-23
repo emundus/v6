@@ -305,7 +305,8 @@ class EmundusModelFormbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $modules = [93,102,103,104,168,170];
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $modules = $eMConfig->get('form_builder_page_creation_modules', [93,102,103,104,168,170]);
 
         if (!is_array($label)) {
             $label = json_decode($label, true);
@@ -477,7 +478,7 @@ class EmundusModelFormbuilder extends JModelList {
                 'publish_up' => gmdate('Y-m-d h:i:s'),
                 'reset_button_label' => 'RESET',
                 'submit_button_label' => 'SAVE_CONTINUE',
-                'form_template' => 'bootstrap',
+                'form_template' => '_emundus',
                 'view_only_template' => 'bootstrap',
                 'published' => 1,
                 'params' => json_encode($params),
@@ -705,7 +706,7 @@ class EmundusModelFormbuilder extends JModelList {
                 'publish_up' => date('Y-m-d h:i:s'),
                 'reset_button_label' => 'RESET',
                 'submit_button_label' => 'SUBMIT',
-                'form_template' => 'bootstrap',
+                'form_template' => '_emundus',
                 'view_only_template' => 'bootstrap',
                 'published' => 1,
                 'params' => json_encode($params),
@@ -1015,73 +1016,62 @@ class EmundusModelFormbuilder extends JModelList {
                 $db->execute();
                 $groupid = $db->insertid();
 
-                $tag = 'GROUP_' . $fid . '_' . $groupid;
+                if (!empty($groupid)) {
+                    $tag = 'GROUP_' . $fid . '_' . $groupid;
+                    $this->translate($tag,$label,'fabrik_groups',$groupid,'label');
 
-                $this->translate($tag,$label,'fabrik_groups',$groupid,'label');
+                    $query->clear()
+                        ->update($db->quoteName('#__fabrik_groups'))
+                        ->set($db->quoteName('name') . ' = ' . $db->quote($tag))
+                        ->set($db->quoteName('label') . ' = ' . $db->quote($tag))
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($groupid));
+                    $db->setQuery($query);
+                    $db->execute();
 
-                $query->clear()
-                    ->update($db->quoteName('#__fabrik_groups'))
-                    ->set($db->quoteName('name') . ' = ' . $db->quote($label['fr']))
-                    ->set($db->quoteName('label') . ' = ' . $db->quote('GROUP_' . $fid . '_' . $groupid))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($groupid));
-                $db->setQuery($query);
-                $db->execute();
-                //
+                    // INSERT FORMGROUP
+                    $query->clear()
+                        ->select('*')
+                        ->from($db->quoteName('#__fabrik_formgroup'))
+                        ->where($db->quoteName('form_id') . ' = ' . $db->quote($fid))
+                        ->order('ordering');
 
-                // INSERT FORMGROUP
-                $query->clear()
-                    ->select('*')
-                    ->from($db->quoteName('#__fabrik_formgroup'))
-                    ->where($db->quoteName('form_id') . ' = ' . $db->quote($fid))
-                    ->order('ordering');
-
-                $db->setQuery($query);
-                $results = $db->loadObjectList();
-                $orderings = [];
-                foreach (array_values($results) as $result) {
-                    if (!in_array($result->ordering, $orderings)) {
-                        $orderings[] = intval($result->ordering);
+                    $db->setQuery($query);
+                    $results = $db->loadObjectList();
+                    $orderings = [];
+                    foreach (array_values($results) as $result) {
+                        if (!in_array($result->ordering, $orderings)) {
+                            $orderings[] = intval($result->ordering);
+                        }
                     }
+
+                    $columns = array('form_id', 'group_id', 'ordering',);
+                    $order = array_values($orderings)[strval(sizeof($orderings) - 1)] + 1;
+                    $values = array($fid, $groupid, $order,);
+
+                    $query->clear()
+                        ->insert($db->quoteName('#__fabrik_formgroup'))
+                        ->columns($db->quoteName($columns))
+                        ->values(implode(',', $db->Quote($values)));
+
+                    $db->setQuery($query);
+                    $db->execute();
+
+                    $label_fr = $this->getTranslation($tag, 'fr-FR');
+                    $label_en = $this->getTranslation($tag, 'en-GB');
+
+                    $group = array(
+                        'elements' => array(),
+                        'group_id' => $groupid,
+                        'group_tag' => $tag,
+                        'group_showLegend' => $this->getJTEXT("GROUP_" . $fid . "_" . $groupid),
+                        'label' => array(
+                            'fr' => $label_fr,
+                            'en' => $label_en,
+                        ),
+                        'ordering' => $order,
+                        'formid' => $fid
+                    );
                 }
-
-                $columns = array(
-                    'form_id',
-                    'group_id',
-                    'ordering',
-                );
-
-                $order = array_values($orderings)[strval(sizeof($orderings) - 1)] + 1;
-
-                $values = array(
-                    $fid,
-                    $groupid,
-                    $order,
-                );
-
-                $query->clear()
-                    ->insert($db->quoteName('#__fabrik_formgroup'))
-                    ->columns($db->quoteName($columns))
-                    ->values(implode(',', $db->Quote($values)));
-
-                $db->setQuery($query);
-                $db->execute();
-
-                $label_fr = $this->getTranslation($tag, 'fr-FR');
-                $label_en = $this->getTranslation($tag, 'en-GB');
-
-                $group = array(
-                    'elements' => array(),
-                    'group_id' => $groupid,
-                    'group_tag' => $tag,
-                    'group_showLegend' => $this->getJTEXT("GROUP_" . $fid . "_" . $groupid),
-                    'label' => array(
-                        'fr' => $label_fr,
-                        'en' => $label_en,
-                    ),
-                    'ordering' => $order,
-                    'formid' => $fid
-                );
-                //
             } catch(Exception $e){
                 JLog::add('component/com_emundus/models/formbuilder | Error at creating a group for fabrik_form ' . $fid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             }
@@ -2710,8 +2700,6 @@ class EmundusModelFormbuilder extends JModelList {
                             if ($list_model->db_table_name != 'jos_emundus_declaration' && $menu_parent->id != 0) {
                                 $parent_id = $menu_parent->id;
                             }
-
-                            echo json_encode($datas);
                             $result = EmundusHelperUpdate::addJoomlaMenu($datas, $parent_id, 1, 'last-child', $modules);
                             if ($result['status'] !== true) {
                                 return array(
