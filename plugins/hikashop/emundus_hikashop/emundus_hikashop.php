@@ -278,6 +278,8 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
 
         // Nobody can see product list for the moment
         $app = JFactory::getApplication();
-        $app->redirect('/');
+        if(!$app->isAdmin()) {
+            $app->redirect('/');
+        }
     }
 }
