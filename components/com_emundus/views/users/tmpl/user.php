@@ -19,9 +19,8 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
 <input type="hidden" id="view" name="view" value="users">
 <?php if (!empty($this->users)) :?>
 	<div class="container-result">
-        <div>
-		<?php echo $this->pagination->getResultsCounter();
-		?>
+        <div class="em-mt-8 em-ml-8">
+		    <?php echo $this->pagination->getResultsCounter(); ?>
         </div>
         <div id="countCheckedCheckbox" class="countCheckedCheckbox"></div>
 	</div>
