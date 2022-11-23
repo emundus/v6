@@ -1505,11 +1505,19 @@ body>.g-container {
   margin: 0;
 }
 
+.fabrikNav .pagination-list li a {
+   color: var(--neutral-800);
+}
+
 .fabrikNav .list-footer .limit .input-prepend.input-append {
   display: flex;
 
   small {
     color: #353544;
+  }
+
+  select {
+    color: var(--neutral-800);
   }
 }
 
@@ -1690,6 +1698,7 @@ tr.fabrikFilterContainer{
     .listfilter{
       input,select{
         height: 40px;
+        color: initial;
       }
     }
   }
