@@ -157,6 +157,7 @@ class plgUserEmundus_registration_email extends JPlugin {
 
             // Get the raw User Parameters
             $params = $user->getParameters();
+            $user->set('params', $params);
 
             // Set the user table instance to include the new token.
             $table = JTable::getInstance('user', 'JTable');
@@ -255,7 +256,6 @@ class plgUserEmundus_registration_email extends JPlugin {
      * @throws Exception
      */
     private function sendActivationEmail($data, $token) {
-
         if (json_decode($data['params'])->skip_activation) {
             return false;
         }
