@@ -1186,6 +1186,43 @@ class EmundusModelEmails extends JModelList {
                 continue;
             }
 
+
+
+            $this->_db->setQuery('show tables');
+            $existingTables = $this->_db->loadColumn();
+            if (in_array('jos_emundus_files_request_1614_repeat', $existingTables)) {
+                $parent_id = 0;
+                $query = $this->_db->getQuery(true);
+
+                foreach ($fnums_infos as $fnum) {
+                    $query->clear()
+                        ->select($this->_db->quoteName(['id', 'fnum', 'student_id']))
+                        ->from($this->_db->quoteName('#__emundus_files_request'))
+                        ->where($this->_db->quoteName('email').' LIKE '.$this->_db->Quote($m_to) . ' AND ' . $this->_db->quoteName('fnum').' LIKE '.$this->_db->Quote($fnum['fnum']));
+                    $this->_db->setQuery($query);
+                    $files_request = $this->_db->loadObject();
+
+                    if(empty($parent_id)){
+                        $parent_id = $files_request->id;
+                    }
+
+                    $query->clear()
+                        ->select($this->_db->quoteName('name'))
+                        ->from($this->_db->quoteName('#__users'))
+                        ->where($this->_db->quoteName('id').' = ' . $files_request->student_id);
+                    $this->_db->setQuery($query);
+                    $student_name = $this->_db->loadResult();
+
+                    $query->clear()
+                        ->insert($this->_db->quoteName('#__emundus_files_request_1614_repeat'))
+                        ->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($parent_id))
+                        ->set($this->_db->quoteName('nom_candidat_expertise') . ' = ' . $this->_db->quote($student_name))
+                        ->set($this->_db->quoteName('fnum_expertise') .'=' . $this->_db->quote($fnum['fnum']));
+                    $this->_db->setQuery($query);
+                    $this->_db->execute();
+                }
+            }
+
             // 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
             $link_accept = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid->accepted.'&keyid='.$key1.'&cid='.$campaign_id;
             $link_refuse = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid->refused.'&keyid='.$key1.'&cid='.$campaign_id.'&usekey=keyid&rowid='.$key1;
