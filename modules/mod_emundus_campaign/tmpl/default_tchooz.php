@@ -448,7 +448,6 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                     }
                                 ?>
 
-                             <!-- align the logo and the programme when the programme is displayed -->
                             <?php  if ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '1') :  ?>
 
                             <div class="mod_emundus_campaign__programme_properties">
@@ -461,22 +460,24 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
                             </div>
 
-                            <?php endif; ?>
-
-                            <!-- align the programme when the logo is not displayed -->
-
-                            <?php  if ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '0') :  ?>
-
-                                    <p class="em-programme-tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
-                                        <?php  echo $result->programme; ?>
-                                    </p>
-
-                            <?php endif; ?>
+                            <a href="<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                                <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></p>
+                            </a>
 
 
-                            <!-- align the logo and the campaign label when the programme is not displayed -->
 
-                            <?php  if ($mod_em_campaign_list_show_programme == '0' && $mod_em_campaign_show_programme_logo == '1') :  ?>
+                            <?php  elseif ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '0') :  ?>
+
+                                <p class="em-programme-tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
+                                    <?php  echo $result->programme; ?>
+                                </p>
+
+                                <a href="<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                                    <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></p>
+                                </a>
+
+
+                            <?php  elseif ($mod_em_campaign_list_show_programme == '0' && $mod_em_campaign_show_programme_logo == '1') :  ?>
 
                             <div class="mod_emundus_campaign__campagne_properties">
 
@@ -490,15 +491,13 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                              </div>
 
 
-                            <!-- align the campaign label when the logo is not displayed -->
+                            <?php  else :  ?>
 
-                                <?php  else :  ?>
+                                    <a href="<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                                        <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></p>
+                                    </a>
 
-                                        <a href="<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
-                                            <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></p>
-                                        </a>
-
-                                <?php endif; ?>
+                            <?php endif; ?>
 
 
                             <div class="<?php echo $mod_em_campaign_class; ?> em-applicant-text-color em-font-size-16">
