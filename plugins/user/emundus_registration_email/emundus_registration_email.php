@@ -146,7 +146,7 @@ class plgUserEmundus_registration_email extends JPlugin {
             $allow_anonym_files = $eMConfig->get('allow_anonym_files', 0);
             if ($allow_anonym_files && preg_match('/^fake.*@emundus\.io$/', $user->email)) {
                 $user->setParam('skip_activation', true);
-                $user->setParam('send_email', false);
+                $user->setParam('send_mail', false);
             }
 
             // Generate the activation token.
