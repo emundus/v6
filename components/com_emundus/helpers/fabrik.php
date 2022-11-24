@@ -443,7 +443,7 @@ class EmundusHelperFabrik {
                 $db->setQuery("SHOW TABLES LIKE " .$db->quote('data_nationality'));
                 $tableExists = $db->loadResult();
 
-                if ($tableExists) {
+                if (!empty($tableExists)) {
                     $params['join_db_name'] = $table;
 
                     if (in_array($table, ['data_nationality', 'data_country'])) {
