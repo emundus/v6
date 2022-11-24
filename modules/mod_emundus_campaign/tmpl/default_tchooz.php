@@ -132,9 +132,11 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                         }
                     }
                     ?>
+                    <?php  if ($mod_em_campaign_list_show_programme == '1') :  ?>
                     <p class="em-programme-tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
                         <?php  echo $campaign_pinned->programme; ?>
                     </p>
+                    <?php endif; ?>
                     <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
                         <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $campaign_pinned->label; ?></p>
                     </a>
@@ -435,9 +437,12 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                         }
                                     }
                                 ?>
+                                <?php  if ($mod_em_campaign_list_show_programme == '1') :  ?>
                                 <p class="em-programme-tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
                                     <?php  echo $result->programme; ?>
                                 </p>
+                                <?php endif; ?>
+
                                 <a href="<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
                                     <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></p>
                                 </a>
