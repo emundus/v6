@@ -102,7 +102,17 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     <?php else : ?>
     <div class="mod_emundus_campaign__content">
 
-        <?php if ($campaign_pinned) : ?>
+        <?php if ($campaign_pinned) :
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('logo')
+            ->from($db->quoteName('#__emundus_setup_programmes'))
+            ->where($db->quoteName('code') . ' LIKE ' . $db->quote($campaign_pinned->code));
+        $db->setQuery($query);
+        $db->loadResult();
+
+        ?>
         <span class="em-h4"><?php echo JText::_('MOD_EM_CAMPAIGN_PINNED_CAMPAIGN') ?></span>
         <div class="mod_emundus_campaign__pinned_campaign em-mt-32 em-mb-24">
         <?php if(strtotime($now) > strtotime($campaign_pinned->end_date)) :  ?>
@@ -132,14 +142,57 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                         }
                     }
                     ?>
-                    <?php  if ($mod_em_campaign_list_show_programme == '1') :  ?>
-                    <p class="em-programme-tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
-                        <?php  echo $campaign_pinned->programme; ?>
-                    </p>
+
+                    <?php  if ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '1') :  ?>
+
+                        <div class="mod_emundus_campaign__programme_properties">
+
+                            <p class="em-programme-tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
+                                <?php  echo $campaign_pinned->programme; ?>
+                            </p>
+
+                            <img src="/images/custom/<?php echo $campaign_pinned->code.'.png'; ?>" alt="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_PROGRAMME_LOGO_ALT'); ?>">
+
+                        </div>
+
+                        <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                            <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $campaign_pinned->label; ?></p>
+                        </a>
+
+
+
+                    <?php  elseif ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '0') :  ?>
+
+                        <p class="em-programme-tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
+                            <?php  echo $campaign_pinned->programme; ?>
+                        </p>
+
+                        <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                            <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $campaign_pinned->label; ?></p>
+                        </a>
+
+
+                    <?php  elseif ($mod_em_campaign_list_show_programme == '0' && $mod_em_campaign_show_programme_logo == '1') :  ?>
+
+                        <div class="mod_emundus_campaign__campagne_properties">
+
+                            <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                                <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $campaign_pinned->label; ?></p>
+                            </a>
+
+
+                            <img src="/images/custom/<?php echo $campaign_pinned->code.'.png'; ?>" alt="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_PROGRAMME_LOGO_ALT'); ?>">
+
+                        </div>
+
+
+                    <?php  else :  ?>
+
+                        <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                            <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $campaign_pinned->label; ?></p>
+                        </a>
+
                     <?php endif; ?>
-                    <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
-                        <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $campaign_pinned->label; ?></p>
-                    </a>
 
                     <div class="<?php echo $mod_em_campaign_class; ?> em-applicant-text-color em-font-size-16">
                         <div>

@@ -95,6 +95,7 @@
 .mod_emundus_campaign__campagne_properties img,
 .mod_emundus_campaign__programme_properties img{
     height: 38px;
+    justify-self: flex-end;
 }
 
 
