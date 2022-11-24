@@ -837,11 +837,8 @@ class EmundusModelForm extends JModelList {
                 $intro = [
                     'fr' => 'Décrivez votre page de formulaire avec une introduction',
                     'en' => 'Describe your form page with an introduction'
-                ];
-                $first_page_res = $formbuilder->createApplicantMenu($label, $intro, $newprofile, 'false');
-                if ($first_page_res['status'] !== true){
-                    return false;
-                }
+                );
+                $formbuilder->createApplicantMenu($label, $intro, $newprofile, 'false');
             }
 
             // Create submittion page
@@ -859,10 +856,8 @@ class EmundusModelForm extends JModelList {
             }
 
             // Create checklist menu
-            $checklist_menu = $this->addChecklistMenu($newprofile);
-            if(empty($checklist_menu)){
-                return false;
-            }
+            $this->addChecklistMenu($newprofile);
+            //
 
             $user = JFactory::getUser();
             $settings->onAfterCreateForm($user->id);
