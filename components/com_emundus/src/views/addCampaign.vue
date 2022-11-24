@@ -716,9 +716,6 @@ export default {
 
 <style scoped>
 @import "../assets/css/date-time.css";
-.campaigns__add-campaign{
-  width: 75rem;
-}
 #add-program{
   height: 24px;
   width: 24px;
