@@ -29,17 +29,21 @@ use Joomla\CMS\HTML\HTMLHelper;
  */
 class EmundusHelperDate {
     static function displayDate($date,$format = 'DATE_FORMAT_LC2', $local = 1) {
-        $config = JFactory::getConfig();
+        if(!empty($value) && $value !== '0000-00-00 00:00:00') {
+            $config = JFactory::getConfig();
 
-         if ($local) {
-            $offset = $config->get('offset');
+            if ($local) {
+                $offset = $config->get('offset');
 
-            $date_time = new DateTime($date, new DateTimeZone($offset));
-            $date_time->setTimezone(new DateTimeZone("UTC"));
-         } else {
-            $date_time = new DateTime($date);
-         }
+                $date_time = new DateTime($date, new DateTimeZone($offset));
+                $date_time->setTimezone(new DateTimeZone("UTC"));
+            } else {
+                $date_time = new DateTime($date);
+            }
 
-        return HtmlHelper::date($date_time->format("Y-m-d H:i:s"), Text::_($format));
+            return HtmlHelper::date($date_time->format("Y-m-d H:i:s"), Text::_($format));
+        } else {
+            return '';
+        }
     }
 }
