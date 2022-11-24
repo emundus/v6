@@ -407,6 +407,14 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                             <?php
                             foreach ($campaign as $result) {
                                 if(is_object($result)){
+
+                                $db = JFactory::getDbo();
+                                $query = $db->getQuery(true);
+                                $query->select('logo')
+                                    ->from($db->quoteName('#__emundus_setup_programmes'))
+                                    ->where($db->quoteName('code') . ' LIKE ' . $db->quote($result->code));
+                                $db->setQuery($query);
+                                $db->loadResult();
                             ?>
 
                         <?php if(strtotime($now) > strtotime($result->end_date)) :  ?>
@@ -419,6 +427,8 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                         <?php endif; ?>
 
                             <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
+
+
                                 <?php
                                     $color = '#1C6EF2';
                                     $background = '#C8E1FE';
@@ -437,18 +447,62 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                         }
                                     }
                                 ?>
-                                <?php  if ($mod_em_campaign_list_show_programme == '1') :  ?>
+
+                             <!-- align the logo and the programme when the programme is displayed -->
+                            <?php  if ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '1') :  ?>
+
+                            <div class="mod_emundus_campaign__programme_properties">
+
                                 <p class="em-programme-tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
                                     <?php  echo $result->programme; ?>
                                 </p>
-                                <?php endif; ?>
+
+                               <img src="/images/custom/<?php echo $result->code.'.png'; ?>" alt="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_PROGRAMME_LOGO_ALT'); ?>">
+
+                            </div>
+
+                            <?php endif; ?>
+
+                            <!-- align the programme when the logo is not displayed -->
+
+                            <?php  if ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '0') :  ?>
+
+                                    <p class="em-programme-tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
+                                        <?php  echo $result->programme; ?>
+                                    </p>
+
+                            <?php endif; ?>
+
+
+                            <!-- align the logo and the campaign label when the programme is not displayed -->
+
+                            <?php  if ($mod_em_campaign_list_show_programme == '0' && $mod_em_campaign_show_programme_logo == '1') :  ?>
+
+                            <div class="mod_emundus_campaign__campagne_properties">
 
                                 <a href="<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
                                     <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></p>
                                 </a>
 
-                                <div class="<?php echo $mod_em_campaign_class; ?> em-applicant-text-color em-font-size-16">
-                                    <div>
+
+                                 <img src="/images/custom/<?php echo $result->code.'.png'; ?>" alt="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_PROGRAMME_LOGO_ALT'); ?>">
+
+                             </div>
+
+
+                            <!-- align the campaign label when the logo is not displayed -->
+
+                                <?php  else :  ?>
+
+                                        <a href="<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                                            <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></p>
+                                        </a>
+
+                                <?php endif; ?>
+
+
+                            <div class="<?php echo $mod_em_campaign_class; ?> em-applicant-text-color em-font-size-16">
+                                <div>
 
 
                                         <?php if(strtotime($now) < strtotime($result->start_date)  ) : //pas commencé ?>
