@@ -5501,6 +5501,11 @@ button.swal2-cancel.goback-btn {
     text-align: center;
   }
 
+  /* MESSAGERIE */
+  .view-article .messages__vue .em-small-flex-column {
+    display: flex;
+    flex-direction: inherit;
+  }
 }
 
 @media screen and (min-width: 480px) and (max-width: 959px) {
