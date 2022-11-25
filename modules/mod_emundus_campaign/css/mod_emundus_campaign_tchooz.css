@@ -427,6 +427,10 @@ a.em-blue-400-color:hover {
     .mod_emundus_campaign__header_filter,  .mod_emundus_campaign__header input[name="searchword"] {
       margin-top: 4px;
     }
+
+     body.gantry .mod_emundus_campaign__grid .em-flex-row .em-font-size-16 {
+        flex-basis: auto;
+    }
 }
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
