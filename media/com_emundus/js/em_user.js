@@ -94,10 +94,11 @@ function reloadData() {
 		dataType: 'html',
 		success: function (data) {
 			removeLoader();
-			$(".col-md-9 .panel.panel-default").empty();
-			$(".col-md-9 .panel.panel-default").append(data);
+			$('.col-md-9 .panel.panel-default').empty();
+			$('.col-md-9 .panel.panel-default').append(data);
 		},
 		error: function (jqXHR) {
+			removeLoader();
 			console.log(jqXHR.responseText);
 		}
 	});
@@ -192,7 +193,6 @@ function search() {
 			if (result.status) {
 				reloadData($('#view').val());
 			}
-
 		},
 		error: function (jqXHR) {
 			console.log(jqXHR.responseText);
@@ -280,7 +280,7 @@ $(document).ready(function () {
 			$.ajax({
 				type: 'get',
 				url: 'index.php?option=com_emundus&controller=users&task=getfnuminfos',
-				dataType: "json",
+				dataType: 'json',
 				data: ({
 					fnum: fnum.fnum
 				}),
@@ -305,7 +305,7 @@ $(document).ready(function () {
 			switch (id) {
 				case 'save-filter':
 					var filName = prompt(filterName);
-					if (filName != "") {
+					if (filName != '') {
 						$.ajax({
 							type: 'POST',
 							url: 'index.php?option=com_emundus&controller=users&task=savefilters&Itemid=' + itemId,
@@ -332,10 +332,10 @@ $(document).ready(function () {
 							error: function (jqXHR) {
 								console.log(jqXHR.responseText);
 							}
-						})
+						});
 					} else {
 						alert(filterEmpty);
-						filName = prompt(filterName, "name");
+						filName = prompt(filterName, 'name');
 					}
 					break;
 				case 'del-filter':
@@ -354,12 +354,12 @@ $(document).ready(function () {
 									$('#select_filter option:selected').remove();
 									$("#select_filter").trigger("chosen:updated");
 									$('#deleted-filter').show();
-									setTimeout(function (e) {
+									setTimeout(function () {
 										$('#deleted-filter').hide();
 									}, 600);
 								} else {
 									$('#error-filter').show();
-									setTimeout(function (e) {
+									setTimeout(function () {
 										$('#error-filter').hide();
 									}, 600);
 								}
@@ -398,7 +398,7 @@ $(document).ready(function () {
 					$.ajax({
 						type: 'get',
 						url: 'index.php?option=com_emundus&controller=users&task=getfnuminfos',
-						dataType: "json",
+						dataType: 'json',
 						data: ({
 							fnum: fnum.fnum
 						}),
@@ -430,21 +430,21 @@ $(document).ready(function () {
 							},
 							success: function (result) {
 								if (result.status) {
-									if ($("#" + fnum + "-collapse").parent('div').hasClass('panel-primary')) {
+									if ($('#' + fnum + '-collapse').parent('div').hasClass('panel-primary')) {
 										$('.em-open-files').remove();
 										$('.em-hide').hide();
 										$('#em-last-open').show();
 										$('#em-last-open .list-group .list-group-item').removeClass('active');
 										$('#em-user-filters').show();
 										$('.em-check:checked').prop('checked', false);
-										$(".col-md-9.col-xs-16 .panel.panel-default").show();
+										$('.col-md-9.col-xs-16 .panel.panel-default').show();
 									}
-									$("#em-last-open #" + fnum + "_ls_op").remove();
-									$("#" + fnum + "-collapse").parent('div').remove();
+									$('#em-last-open #' + fnum + '_ls_op').remove();
+									$('#' + fnum + '-collapse').parent('div').remove();
 
 								}
 							},
-							error: function (jqXHR, textStatus, errorThrown) {
+							error: function (jqXHR) {
 								console.log(jqXHR.responseText);
 							}
 						});
@@ -558,7 +558,7 @@ $(document).ready(function () {
 		}
 
 		setTimeout(function () {
-			$('ul[aria-labelledby="' + id + '"]').removeClass('just-open')
+			$('ul[aria-labelledby="' + id + '"]').removeClass('just-open');
 		}, 300);
 	});
 
@@ -632,7 +632,7 @@ $(document).ready(function () {
 			for (key in hash) {
 				string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]);
 			}
-			return string
+			return string;
 		};
 
 		url = url.fmt({
@@ -1000,6 +1000,7 @@ $(document).ready(function () {
 
 					},
 					error: function (jqXHR) {
+						removeLoader();
 						console.log(jqXHR.responseText);
 					}
 				});
@@ -1152,10 +1153,11 @@ $(document).ready(function () {
 								},
 							});
 						}
-
 					},
-					error: function (jqXHR, textStatus, errorThrown) {
+					error: function (jqXHR) {
+						removeLoader();
 						console.log(jqXHR.responseText);
+						displayErrorMessage(jqXHR.responseText);
 					}
 				});
 				break;
@@ -1203,7 +1205,8 @@ $(document).ready(function () {
 						}
 
 					},
-					error: function (jqXHR, textStatus, errorThrown) {
+					error: function (jqXHR) {
+						removeLoader();
 						console.log(jqXHR.responseText);
 					}
 				});
@@ -1250,6 +1253,7 @@ $(document).ready(function () {
 						}
 					},
 					error: function (jqXHR, textStatus, errorThrown) {
+						removeLoader();
 						console.log(jqXHR.responseText, errorThrown);
 					}
 
@@ -1376,4 +1380,17 @@ $(document).ready(function () {
 			}
 		}
 	});
+
+	function displayErrorMessage(msg)
+	{
+		Swal.fire({
+			type: 'error',
+			title: msg,
+			customClass: {
+				title: 'em-swal-title',
+				confirmButton: 'em-swal-confirm-button',
+				actions: "em-swal-single-action",
+			},
+		});
+	}
 })
