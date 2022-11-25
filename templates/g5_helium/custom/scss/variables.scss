@@ -554,7 +554,7 @@ $font:'Inter', sans-serif;
   }
 
   /* SUCCESS */
-  &.success input, &.has-success input {
+  &.success input:not([name*="captcha"]), &.has-success input:not([name*="captcha"]) {
     @include input-valid;
     color: var(--neutral-800) !important;
   }
@@ -573,6 +573,12 @@ $font:'Inter', sans-serif;
       }
     }
   }
+
+  &.success .captcha_input input,
+  &.has-success .captcha_input input {
+    color: var(--neutral-800) !important;
+  }
+
 
   /* DISPLAY */
   &.plg-display .fabrikinput {
