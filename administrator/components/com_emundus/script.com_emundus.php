@@ -410,6 +410,8 @@ class com_emundusInstallerScript
                     ['label' => 'onHikashopCheckoutWorkflowLoad', 'category' => 'Hikashop'],
                     ['label' => 'onHikashopBeforeProductListingLoad', 'category' => 'Hikashop']
                 ]);
+
+                EmundusHelperUpdate::disableEmundusPlugins('J2top');
             }
 
             // Insert new translations in overrides files
