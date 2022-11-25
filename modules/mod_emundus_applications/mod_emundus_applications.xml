@@ -169,6 +169,13 @@
 					   label="MOD_EMUNDUS_APPLICATIONS_APPLICATION_PARAMETERS"
 				/>
 
+				<field name="mod_em_application_date_format"
+					   type="text"
+					   default="d/m/Y H:i"
+					   label="MOD_EMUNDUS_APPLICATIONS_DATE_FORMAT"
+					   description="">
+				</field>
+
 				<field name="show_fnum"
 					   type="radio"
 					   default="0"
