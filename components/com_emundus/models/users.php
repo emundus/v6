@@ -801,32 +801,34 @@ class EmundusModelUsers extends JModelList {
 	 * @param $user
 	 * @param $other_params
 	 *
-	 * @return array|bool
+	 * @return int user_id, 0 if failed
 	 */
     public function adduser($user, $other_params) {
+        $new_user_id = 0;
 
-    	$db = JFactory::getDBO();
-
-        // add to jos_emundus_users; jos_users; jos_emundus_groups; jos_users_profiles; jos_users_profiles_history
         try {
-
             if (!$user->save()) {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_USERS_CAN_NOT_SAVE_USER').'<BR />'.$user->getError(), 'error');
-                $res = array('msg' => $user->getError());
-                return $res;
+                JLog::add('Failed to create user ' . $user->getError(), JLog::ERROR, 'com_emundus.error');
             } else {
-                $query = 'UPDATE `#__users` SET block=0 WHERE id='.$user->id;
+                $db = JFactory::getDBO();
+                $query = $db->getQuery(true);
+                $query->update('#__users')
+                    ->set('block = 0')
+                    ->where('id = ' . $user->id);
                 $db->setQuery($query);
                 $db->execute();
 
                 $this->addEmundusUser($user->id, $other_params);
-                return $user->id;
+                $new_user_id = $user->id;
             }
-
         } catch(Exception $e) {
-            error_log($e->getMessage(), 0);
-            return false;
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_USERS_CAN_NOT_SAVE_USER').'<br />'. $e->getMessage(), 'error');
+            JLog::add('Failed to create user : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            $new_user_id = 0;
         }
+
+        return $new_user_id;
     }
 
     public function addEmundusUser($user_id, $params) {
