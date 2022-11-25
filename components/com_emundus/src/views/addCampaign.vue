@@ -44,6 +44,7 @@
                     id="startDate"
                     type="datetime"
                     class="em-w-100"
+                    format=""
                     :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE')"
                     :input-id="'start_date'"
                     :phrases="{ok: translate('COM_EMUNDUS_ONBOARD_OK'), cancel: translate('COM_EMUNDUS_ONBOARD_CANCEL')}"
@@ -59,6 +60,7 @@
                     id="endDate"
                     type="datetime"
                     class="em-w-100"
+                    format=""
                     :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE') + ' *'"
                     :input-id="'end_date'"
                     :min-datetime="minDate"
@@ -518,7 +520,7 @@ export default {
 
 
     submit() {
-      this.$store.dispatch('campaign/setUnsavedChanges', true);
+	    this.$store.dispatch('campaign/setUnsavedChanges', true);
 
       // Checking errors
       this.errors = {
@@ -529,17 +531,23 @@ export default {
         limit_files_number: false,
         limit_status: false
       }
-      if(this.form.label[this.actualLanguage] === '' || this.form.label[this.actualLanguage] == null || typeof this.form.label[this.actualLanguage] === 'undefined') {
+      if (this.form.label[this.actualLanguage] === '' || this.form.label[this.actualLanguage] == null || typeof this.form.label[this.actualLanguage] === 'undefined') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         this.errors.label = true;
         return 0;
       }
 
-      if (this.form.end_date == "") {
+      if (this.form.end_date == '' || this.form.end_date == '0000-00-00 00:00:00') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         document.getElementById('end_date').focus();
         return 0;
       }
+
+	    if (this.form.start_date == '' || this.form.start_date == '0000-00-00 00:00:00') {
+		    window.scrollTo({ top: 0, behavior: 'smooth' });
+		    document.getElementById('start_date').focus();
+		    return 0;
+	    }
 
       if (this.form.year == "") {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -622,9 +630,24 @@ export default {
               "Content-Type": "application/x-www-form-urlencoded"
             },
             data: qs.stringify({ body: this.form, cid: this.campaignId })
-          }).then(() => {
-            this.$emit('nextSection');
-            this.$emit('updateHeader',this.form);
+          }).then((response) => {
+						if (!response.status) {
+							Swal.fire({
+								type: 'error',
+								title: this.translate('COM_EMUNDUS_ADD_CAMPAIGN_ERROR'),
+								reverseButtons: true,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
+							});
+							this.submitted = false;
+							return 0;
+						} else {
+							this.$emit('nextSection');
+							this.$emit('updateHeader',this.form);
+						}
           }).catch(error => {
             console.log(error);
           });
