@@ -127,7 +127,7 @@ select:not(.profile-select),
 a.chzn-single,
 textarea{
   background: $neutral-50 !important;
-  color: inherit;
+  color: initial;
   font-family: var(--font);
 }
 
