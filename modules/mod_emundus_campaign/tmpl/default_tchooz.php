@@ -102,17 +102,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     <?php else : ?>
     <div class="mod_emundus_campaign__content">
 
-        <?php if ($campaign_pinned) :
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-        $query->select('logo')
-            ->from($db->quoteName('#__emundus_setup_programmes'))
-            ->where($db->quoteName('code') . ' LIKE ' . $db->quote($campaign_pinned->code));
-        $db->setQuery($query);
-        $db->loadResult();
-
-        ?>
+        <?php if ($campaign_pinned) : ?>
         <span class="em-h4"><?php echo JText::_('MOD_EM_CAMPAIGN_PINNED_CAMPAIGN') ?></span>
         <div class="mod_emundus_campaign__pinned_campaign em-mt-32 em-mb-24">
         <?php if(strtotime($now) > strtotime($campaign_pinned->end_date)) :  ?>
@@ -151,7 +141,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                 <?php  echo $campaign_pinned->programme; ?>
                             </p>
 
-                            <img src="/images/custom/<?php echo $campaign_pinned->code.'.png'; ?>" alt="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_PROGRAMME_LOGO_ALT'); ?>">
+                            <img src="<?php echo $campaign_pinned->logo; ?>" alt="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_PROGRAMME_LOGO_ALT'); ?>">
 
                         </div>
 
@@ -181,7 +171,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                             </a>
 
 
-                            <img src="/images/custom/<?php echo $campaign_pinned->code.'.png'; ?>" alt="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_PROGRAMME_LOGO_ALT'); ?>">
+                            <img src="<?php echo $campaign_pinned->logo; ?>" alt="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_PROGRAMME_LOGO_ALT'); ?>">
 
                         </div>
 
@@ -460,14 +450,6 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                             <?php
                             foreach ($campaign as $result) {
                                 if(is_object($result)){
-
-                                $db = JFactory::getDbo();
-                                $query = $db->getQuery(true);
-                                $query->select('logo')
-                                    ->from($db->quoteName('#__emundus_setup_programmes'))
-                                    ->where($db->quoteName('code') . ' LIKE ' . $db->quote($result->code));
-                                $db->setQuery($query);
-                                $db->loadResult();
                             ?>
 
                         <?php if(strtotime($now) > strtotime($result->end_date)) :  ?>
@@ -509,7 +491,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                     <?php  echo $result->programme; ?>
                                 </p>
 
-                               <img src="/images/custom/<?php echo $result->code.'.png'; ?>" alt="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_PROGRAMME_LOGO_ALT'); ?>">
+                               <img src="<?php echo $result->logo; ?>" alt="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_PROGRAMME_LOGO_ALT'); ?>">
 
                             </div>
 
@@ -539,7 +521,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                 </a>
 
 
-                                 <img src="/images/custom/<?php echo $result->code.'.png'; ?>" alt="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_PROGRAMME_LOGO_ALT'); ?>">
+                                 <img src="<?php echo $result->logo; ?>" alt="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_PROGRAMME_LOGO_ALT'); ?>">
 
                              </div>
 
