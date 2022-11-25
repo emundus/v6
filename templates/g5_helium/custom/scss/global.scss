@@ -562,7 +562,6 @@ p,
 
 /* ESPACEMENTS SOUS LES TITRES  */
 
-.view-list #g-container-main,
 .view-form #g-container-main,
 .view-details #g-container-main {
   .page-header {
@@ -570,6 +569,15 @@ p,
     margin: 32px 32px 0 32px;
   }
 }
+
+.view-list #g-container-main,
+.view-details #g-container-main {
+  .page-header {
+    background: transparent;
+    margin: 32px 32px 0 0px;
+  }
+}
+
 
 /* Branding */
 .g-branding {
@@ -1261,6 +1269,10 @@ body>.g-container {
     align-items: center;
     border-radius: 8px;
     margin: 8px 0;
+
+    span {
+      color: var(--neutral-800);
+    }
   }
 
   .em-attachment-dropzone{
