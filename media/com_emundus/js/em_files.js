@@ -1867,7 +1867,7 @@ $(document).ready(function() {
                                         });
 
                                         $('#em-export-prg').append(result.html);
-                                        $('#em-export-prg').trigger("chosen:updated");
+                                        $('#em-export-prg').chosen('destroy').chosen({width: "100%"});
                                         nbprg = $('#em-export-prg option').size();
 
                                         if (nbprg == 2) {
@@ -2167,7 +2167,7 @@ $(document).ready(function() {
                                                         $('#em-export-camp').empty();
                                                         $('#em-export-camp').append('<option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option>');
                                                         $('#em-export-camp').append(result.html);
-                                                        $('#em-export-camp').trigger("chosen:updated");
+                                                        $('#em-export-camp').chosen('destroy').chosen({width: "100%"});
 
                                                         $('#loadingimg-campaign').remove();
                                                         $('#camp').show();
@@ -3084,7 +3084,7 @@ $(document).ready(function() {
                                 addLoader('.swal2-popup');
 
                                 $('#em-export-prg').append(result.html);
-                                $('#em-export-prg').trigger("chosen:updated");
+                                $('#em-export-prg').chosen('destroy').chosen({width: "100%"});
 
                                 nbprg = $('#em-export-prg option').size();
 
@@ -3134,7 +3134,7 @@ $(document).ready(function() {
 
                                             if (result.status) {
                                                 $('#em-export-camp').append(result.html);
-                                                $('#em-export-camp').trigger("chosen:updated");
+                                                $('#em-export-camp').chosen('destroy').chosen({width: "100%"});
                                                 $('#camp').show();
 
                                                 var camp = $("#em-export-camp").val();
@@ -3227,7 +3227,7 @@ $(document).ready(function() {
                                                     $('#em-export-camp').empty();
                                                     $('#em-export-camp').append('<option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option>');
                                                     $('#em-export-camp').append(result.html);
-                                                    $('#em-export-camp').trigger("chosen:updated");
+                                                    $('#em-export-camp').chosen('destroy').chosen({width: "100%"});
                                                     $('#camp').show();
 
                                                     var camp = $("#em-export-camp").val();
@@ -3613,7 +3613,7 @@ $(document).ready(function() {
 
 
                             $('#em-export-prg').append(result.html);
-                            $('#em-export-prg').trigger("chosen:updated");
+                            $('#em-export-prg').chosen('destroy').chosen({width: "100%"});
 
                             nbprg = $('#em-export-prg option').size();
 
@@ -3655,7 +3655,7 @@ $(document).ready(function() {
                                                 success: function(result) {
                                                     if (result.status) {
                                                         $('#em-export-camp').append(result.html);
-                                                        $('#em-export-camp').trigger("chosen:updated");
+                                                        $('#em-export-camp').chosen('destroy').chosen({width: "100%"});
                                                         $('#camp').show();
 
                                                         var camp = $("#em-export-camp").val();
@@ -3889,7 +3889,7 @@ $(document).ready(function() {
                                                             $('#em-export-camp').empty();
 
                                                             $('#em-export-camp').append(result.html);
-                                                            $('#em-export-camp').trigger("chosen:updated");
+                                                            $('#em-export-camp').chosen('destroy').chosen({width: "100%"});
                                                             $('#camp').show();
 
                                                             var camp = $("#em-export-camp").val();
