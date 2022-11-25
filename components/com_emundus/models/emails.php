@@ -64,9 +64,26 @@ class EmundusModelEmails extends JModelList {
      */
     public function getEmailById($id)
     {
-        $query = 'SELECT ese.*, et.Template FROM #__emundus_setup_emails ese LEFT JOIN #__emundus_email_templates AS et ON et.id = ese.email_tmpl WHERE ese.id='.$this->_db->Quote($id);
-        $this->_db->setQuery( $query );
-        return $this->_db->loadObject();
+        $email = new stdClass();
+
+        if (!empty($id)) {
+            $query = $this->_db->getQuery(true);
+
+            $query->select('ese.*, et.Template')
+                ->from('#__emundus_setup_emails AS ese')
+                ->leftJoin('#__emundus_email_templates AS et ON et.id = ese.email_tmpl')
+                ->where('ese.id = ' . $this->_db->Quote($id));
+
+            $this->_db->setQuery($query);
+
+            try {
+                $email = $this->_db->loadObject();
+            } catch (Exception $e) {
+                JLog::add('Failed to get email by id ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            }
+        }
+
+        return $email;
     }
 
     /**
@@ -1391,7 +1408,7 @@ class EmundusModelEmails extends JModelList {
         $string = '';
         for ($i = 0; $i < $len; $i++) {
             $pos = rand(0, strlen($chars)-1);
-            $string .= $chars{$pos};
+            $string .= $chars[$pos];
         }
         return $string;
     }
@@ -2374,60 +2391,70 @@ class EmundusModelEmails extends JModelList {
      * @since version 1.0
      */
     function createTrigger($trigger, $users, $user) {
-        $query = $this->_db->getQuery(true);
+        $created = false;
 
-        $to_current_user = 0;
-        $to_applicant = 0;
+        if (!empty($user->id) && !empty($trigger['model']) && is_int($trigger['model']) && isset($trigger['status'])) {
+            $email = $this->getEmailById($trigger['model']);
 
-        if ($trigger['action_status'] == 'to_current_user') {
-            $to_current_user = 1;
-        } elseif ($trigger['action_status'] == 'to_applicant') {
-            $to_applicant = 1;
-        }
+            if (!empty($email) && !empty($email->id)) {
+                $query = $this->_db->getQuery(true);
 
-        try {
-            $query->insert($this->_db->quoteName('#__emundus_setup_emails_trigger'))
-                ->set($this->_db->quoteName('user') . ' = ' . $this->_db->quote($user->id))
-                ->set($this->_db->quoteName('step') . ' = ' . $this->_db->quote($trigger['status']))
-                ->set($this->_db->quoteName('email_id') . ' = ' . $this->_db->quote($trigger['model']))
-                ->set($this->_db->quoteName('to_current_user') . ' = ' . $this->_db->quote($to_current_user))
-                ->set($this->_db->quoteName('to_applicant') . ' = ' . $this->_db->quote($to_applicant));
+                $to_current_user = 0;
+                $to_applicant = 0;
 
-            $this->_db->setQuery($query);
-            $this->_db->execute();
+                if ($trigger['action_status'] == 'to_current_user') {
+                    $to_current_user = 1;
+                } elseif ($trigger['action_status'] == 'to_applicant') {
+                    $to_applicant = 1;
+                }
 
-            $trigger_id = $this->_db->insertid();
-
-            if ($trigger['target'] == 5 || $trigger['target'] == 6) {
-                $query->clear()
-                    ->insert($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id'))
-                    ->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($trigger_id))
-                    ->set($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($trigger['target']));
-                $this->_db->setQuery($query);
-                $this->_db->execute();
-            } elseif ($trigger['target'] == 0) {
-                foreach (array_keys($users) as $uid) {
-                    $query->clear()
-                        ->insert($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id'))
-                        ->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($trigger_id))
-                        ->set($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($uid));
+                try {
+                    $query->insert($this->_db->quoteName('#__emundus_setup_emails_trigger'))
+                        ->set($this->_db->quoteName('user') . ' = ' . $this->_db->quote($user->id))
+                        ->set($this->_db->quoteName('step') . ' = ' . $this->_db->quote($trigger['status']))
+                        ->set($this->_db->quoteName('email_id') . ' = ' . $this->_db->quote($trigger['model']))
+                        ->set($this->_db->quoteName('to_current_user') . ' = ' . $this->_db->quote($to_current_user))
+                        ->set($this->_db->quoteName('to_applicant') . ' = ' . $this->_db->quote($to_applicant));
 
                     $this->_db->setQuery($query);
                     $this->_db->execute();
+                    $trigger_id = $this->_db->insertid();
+
+                    if (!empty($trigger_id)) {
+                        if ($trigger['target'] == 5 || $trigger['target'] == 6) {
+                            $query->clear()
+                                ->insert($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id'))
+                                ->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($trigger_id))
+                                ->set($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($trigger['target']));
+                            $this->_db->setQuery($query);
+                            $this->_db->execute();
+                        } elseif ($trigger['target'] == 0) {
+                            foreach (array_keys($users) as $uid) {
+                                $query->clear()
+                                    ->insert($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id'))
+                                    ->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($trigger_id))
+                                    ->set($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($uid));
+
+                                $this->_db->setQuery($query);
+                                $this->_db->execute();
+                            }
+                        }
+
+                        $query->clear()
+                            ->insert($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id'))
+                            ->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($trigger_id))
+                            ->set($this->_db->quoteName('programme_id') . ' = ' . $this->_db->quote($trigger['program']));
+
+                        $this->_db->setQuery($query);
+                        $created = $this->_db->execute();
+                    }
+                } catch(Exception $e) {
+                    JLog::add('component/com_emundus/models/email | Cannot create a trigger : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 }
             }
-
-            $query->clear()
-                ->insert($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id'))
-                ->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($trigger_id))
-                ->set($this->_db->quoteName('programme_id') . ' = ' . $this->_db->quote($trigger['program']));
-
-            $this->_db->setQuery($query);
-            return $this->_db->execute();
-        } catch(Exception $e) {
-            JLog::add('component/com_emundus/models/email | Cannot create a trigger : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
         }
+
+        return $created;
     }
 
     /**
