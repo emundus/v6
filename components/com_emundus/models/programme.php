@@ -693,44 +693,49 @@ class EmundusModelProgramme extends JModelList {
      * @since version 1.0
      */
     public function updateProgram($id, $data) {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $updated = false;
 
-        JPluginHelper::importPlugin('emundus');
-        $dispatcher = JEventDispatcher::getInstance();
-        $dispatcher->trigger('callEventHandler', ['onBeforeProgramUpdate', ['id' => $id, 'data' => $data]]);
+        if (!empty($id) && !empty($data)) {
+            $db = JFactory::getDbo();
 
-        if (count($data) > 0) {
+            JPluginHelper::importPlugin('emundus');
+            $dispatcher = JEventDispatcher::getInstance();
+            $dispatcher->trigger('callEventHandler', ['onBeforeProgramUpdate', ['id' => $id, 'data' => $data]]);
 
-            $fields = [];
-
-            foreach ($data as $key => $val) {
-                $insert = $db->quoteName($key) . ' = ' . $db->quote($val);
-                $fields[] = $insert;
-            }
-
-            $query->update($db->quoteName('#__emundus_setup_programmes'))
-                ->set($fields)
-                ->where($db->quoteName('id') . ' = '.$db->quote($id));
-
-            try {
+            if (!empty($data)) {
+                $query = 'SELECT DISTINCT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = ' . $db->quote('jos_emundus_setup_programmes');
                 $db->setQuery($query);
-                $res = $db->execute();
+                $table_columns = $db->loadColumn();
 
-                if ($res) {
-                    $dispatcher = JEventDispatcher::getInstance();
-                    $dispatcher->trigger('callEventHandler', ['onAfterProgramUpdate', ['id' => $id, 'data' => $data]]);
+                $fields = [];
+                foreach ($data as $key => $val) {
+                    if (in_array($key, $table_columns)) {
+                        $fields[] = $db->quoteName($key) . ' = ' . $db->quote($val);
+                    }
                 }
 
-                return $res;
-            } catch(Exception $e) {
-                JLog::add('component/com_emundus/models/program | Error when updating the program ' . $id . ': ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-                return $e->getMessage();
-            }
+                if (!empty($fields)) {
+                    $query = $db->getQuery(true);
+                    $query->update($db->quoteName('#__emundus_setup_programmes'))
+                        ->set($fields)
+                        ->where($db->quoteName('id') . ' = '.$db->quote($id));
 
-        } else {
-            return false;
+                    try {
+                        $db->setQuery($query);
+                        $updated = $db->execute();
+
+                        if ($updated) {
+                            $dispatcher = JEventDispatcher::getInstance();
+                            $dispatcher->trigger('callEventHandler', ['onAfterProgramUpdate', ['id' => $id, 'data' => $data]]);
+                        }
+                    } catch(Exception $e) {
+                        JLog::add('component/com_emundus/models/program | Error when updating the program ' . $id . ': ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                    }
+                }
+            }
         }
+
+        return $updated;
     }
 
     /**
