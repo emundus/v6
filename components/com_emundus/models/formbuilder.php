@@ -399,8 +399,6 @@ class EmundusModelFormbuilder extends JModelList {
             }
             $newmenuid = $result['id'];
 
-            //
-
             // Create hidden group
             $group = $this->createGroup(array('fr' => 'Hidden group', 'en' => 'Hidden group',), $formid, -1);
             $this->createElement('id',$group['group_id'],'internalid','id','',1,0,0);
@@ -453,65 +451,65 @@ class EmundusModelFormbuilder extends JModelList {
      * @return false|int|mixed
      */
     function createFabrikForm($prid, $label, $intro) {
-        if (empty($prid) || empty($label) || !is_array($label)) {
-            return false;
-        }
+        $formid = 0;
 
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        if (!empty($prid) && !empty($label) && is_array($label)) {
+            $db = $this->getDbo();
+            $query = $db->getQuery(true);
 
-        try {
-            $params = $this->h_fabrik->prepareFormParams();
+            try {
+                $params = $this->h_fabrik->prepareFormParams();
 
-            $data = array(
-                'label' => 'FORM_' . $prid,
-                'record_in_database' => 1,
-                'error' => 'FORM_ERROR',
-                'intro' => '<p>' . 'FORM_' . $prid . '_INTRO</p>',
-                'created' => gmdate('Y-m-d h:i:s'),
-                'created_by' => JFactory::getUser()->id,
-                'created_by_alias' => JFactory::getUser()->username,
-                'modified' => gmdate('Y-m-d h:i:s'),
-                'modified_by' => JFactory::getUser()->id,
-                'checked_out' => JFactory::getUser()->id,
-                'checked_out_time' => gmdate('Y-m-d h:i:s'),
-                'publish_up' => gmdate('Y-m-d h:i:s'),
-                'reset_button_label' => 'RESET',
-                'submit_button_label' => 'SAVE_CONTINUE',
-                'form_template' => '_emundus',
-                'view_only_template' => 'bootstrap',
-                'published' => 1,
-                'params' => json_encode($params),
-            );
+                $data = array(
+                    'label' => 'FORM_' . $prid,
+                    'record_in_database' => 1,
+                    'error' => 'FORM_ERROR',
+                    'intro' => '<p>' . 'FORM_' . $prid . '_INTRO</p>',
+                    'created' => gmdate('Y-m-d h:i:s'),
+                    'created_by' => JFactory::getUser()->id,
+                    'created_by_alias' => JFactory::getUser()->username,
+                    'modified' => gmdate('Y-m-d h:i:s'),
+                    'modified_by' => JFactory::getUser()->id,
+                    'checked_out' => JFactory::getUser()->id,
+                    'checked_out_time' => gmdate('Y-m-d h:i:s'),
+                    'publish_up' => gmdate('Y-m-d h:i:s'),
+                    'reset_button_label' => 'RESET',
+                    'submit_button_label' => 'SAVE_CONTINUE',
+                    'form_template' => '_emundus',
+                    'view_only_template' => 'bootstrap',
+                    'published' => 1,
+                    'params' => json_encode($params),
+                );
 
-            $query->insert($db->quoteName('#__fabrik_forms'))
-                ->columns($db->quoteName(array_keys($data)))
-                ->values(implode(',',$db->quote(array_values($data))));
-            $db->setQuery($query);
-            $db->execute();
-            $formid = $db->insertid();
+                $query->insert($db->quoteName('#__fabrik_forms'))
+                    ->columns($db->quoteName(array_keys($data)))
+                    ->values(implode(',',$db->quote(array_values($data))));
+                $db->setQuery($query);
+                $db->execute();
+                $formid = $db->insertid();
 
-            $query->clear()
-                ->update($db->quoteName('#__fabrik_forms'))
-                ->set($db->quoteName('label') . ' = ' . $db->quote('FORM_' . $prid . '_' . $formid))
-                ->set($db->quoteName('intro') . ' = ' . $db->quote('<p>' . 'FORM_' . $prid . '_INTRO_' . $formid . '</p>'));
-            $query->where($db->quoteName('id') . ' = ' . $db->quote($formid));
-            $db->setQuery($query);
-            $db->execute();
+                if (!empty($formid)) {
+                    $query->clear()
+                        ->update($db->quoteName('#__fabrik_forms'))
+                        ->set($db->quoteName('label') . ' = ' . $db->quote('FORM_' . $prid . '_' . $formid))
+                        ->set($db->quoteName('intro') . ' = ' . $db->quote('<p>' . 'FORM_' . $prid . '_INTRO_' . $formid . '</p>'));
+                    $query->where($db->quoteName('id') . ' = ' . $db->quote($formid));
+                    $db->setQuery($query);
+                    $db->execute();
 
-            // Add translation to translation files
-            $this->translate('FORM_' . $prid . '_' . $formid, $label,'fabrik_forms', $formid,'label');
+                    // Add translation to translation files
+                    $this->translate('FORM_' . $prid . '_' . $formid, $label,'fabrik_forms', $formid,'label');
 
-            if (!empty($intro) && is_array($intro)) {
-                $this->translate('FORM_' . $prid . '_INTRO_' . $formid, $intro,'fabrik_forms', $formid,'intro');
+                    if (!empty($intro) && is_array($intro)) {
+                        $this->translate('FORM_' . $prid . '_INTRO_' . $formid, $intro,'fabrik_forms', $formid,'intro');
+                    }
+                }
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus/models/formbuilder | Error when create a form ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             }
-            //
-
-            return $formid;
-        } catch (Exception $e) {
-            JLog::add('component/com_emundus/models/formbuilder | Error when create a form ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return 0;
         }
+
+        return $formid;
     }
 
     function createFabrikList($prid,$formid){
