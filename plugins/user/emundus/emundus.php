@@ -342,9 +342,9 @@ class plgUserEmundus extends JPlugin
                     JLog::add('Error at line ' . __LINE__ . ' of file ' . __FILE__ . ' : ' . '. Error is : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
                 }
 
-                if (!in_array($task, ["passrequest", "reset.complete"])) {
+                /*if (!in_array($task, ["passrequest", "reset.complete"])) {
                     JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_USERS_EDIT_PROFILE_SAVE_SUCCESS_TEXT'));
-                }
+                }*/
 
                 $this->onUserLogin($user);
             }
