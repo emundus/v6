@@ -167,7 +167,7 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 
 				$attachment_id = $recipient['attachment_id']; //ID provenant de la table emundus_attachments
 
-                ////// SQL query with tuple <fnum,email,attachment> to find if this referee is selected before /////
+                // TODO : Check if an element of type emundus_referent is available and published on this form
                 $query = $db->getQuery(true);
                 $query->clear()
                     ->select('count(*)')
