@@ -1,6 +1,6 @@
 <template>
   <div class="campaigns__add-campaign">
-    <div v-if="typeof campaignId == 'undefined'">
+    <div v-if="typeof campaignId == 'undefined' || campaignId == 0">
       <div class="em-flex-row em-mt-16 em-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
         <span class="material-icons-outlined">arrow_back</span>
         <p class="em-ml-8">{{ translate('BACK') }}</p>
@@ -351,11 +351,11 @@ export default {
   }),
 
   created() {
-    if (this.$props.campaign == "") {
+    if (this.$props.campaign == '') {
       // Get datas that we need with store
-      this.campaignId = this.$store.getters['global/datas'].campaign.value;
+      this.campaignId = this.$store.getters['global/datas'].campaign ? this.$store.getters['global/datas'].campaign.value : 0;
     } else {
-      this.campaignId = this.$props.campaign;
+      this.campaignId = this.$props.campaign ? this.$props.campaign : 0;
     }
 
     this.actualLanguage = this.$store.getters['global/shortLang'];
@@ -374,7 +374,7 @@ export default {
   methods: {
     getCampaignById() {
       // Check if we add or edit a campaign
-      if (typeof this.campaignId !== 'undefined' && this.campaignId !== "") {
+      if (typeof this.campaignId !== 'undefined' && this.campaignId !== '' && this.campaignId > 0) {
         axios.get(
             `index.php?option=com_emundus&controller=campaign&task=getcampaignbyid&id=${this.campaignId}`
         ).then(response => {
@@ -539,19 +539,28 @@ export default {
 
       if (this.form.end_date == '' || this.form.end_date == '0000-00-00 00:00:00') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        document.getElementById('end_date').focus();
+	      const endDate = document.getElementById('end_date');
+	      if (endDate) {
+		      endDate.focus();
+	      }
         return 0;
       }
 
 	    if (this.form.start_date == '' || this.form.start_date == '0000-00-00 00:00:00') {
 		    window.scrollTo({ top: 0, behavior: 'smooth' });
-		    document.getElementById('start_date').focus();
+				const startDate = document.getElementById('start_date');
+				if (startDate) {
+					startDate.focus();
+				}
 		    return 0;
 	    }
 
       if (this.form.year == "") {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        document.getElementById('year').focus();
+        const year = document.getElementById('year');
+				if (year) {
+					year.focus();
+				}
         return 0;
       }
 
