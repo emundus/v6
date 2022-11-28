@@ -226,23 +226,24 @@ class EmundusModelCampaign extends JModelList {
 	 * @since version v6
 	 */
 	function getAllCampaigns($published = true) {
-		$query = $this->_db->getQuery(true);
+        $all_campaigns = [];
 
+		$query = $this->_db->getQuery(true);
 		$query->select(['tu.*'])
 			->from($this->_db->quoteName('#__emundus_setup_teaching_unity', 'tu'));
 
 		if ($published) {
-			$query->where($this->_db->quoteName('c.published').' = 1');
+			$query->where($this->_db->quoteName('tu.published').' = 1');
 		}
 
 		try {
             $this->_db->setQuery($query);
-			return $this->_db->loadObjectList();
+            $all_campaigns = $this->_db->loadObjectList();
 		} catch (Exception $e) {
 			JLog::add('Error getting campaigns at model/campaign at query :'.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-			return [];
 		}
 
+        return $all_campaigns;
 	}
 
 	/**
@@ -253,14 +254,22 @@ class EmundusModelCampaign extends JModelList {
 	 * @since version v6
 	 */
 	function getProgrammeByCampaignID($campaign_id) {
-		$campaign = $this->getCampaignByID($campaign_id);
+        $program = [];
 
-		$query = 'SELECT esp.*
+        if (!empty($campaign_id)) {
+            $campaign = $this->getCampaignByID($campaign_id);
+
+            if (!empty($campaign)) {
+                $query = 'SELECT esp.*
 					FROM #__emundus_setup_programmes AS esp
 					WHERE esp.code like "'.$campaign['training'].'"';
-		$this->_db->setQuery( $query );
-		return $this->_db->loadAssoc();
-	}
+                $this->_db->setQuery($query);
+                $program = $this->_db->loadAssoc();
+            }
+        }
+
+        return $program;
+    }
 
 	/**
 	 * @param $training
@@ -270,11 +279,18 @@ class EmundusModelCampaign extends JModelList {
 	 * @since version v6
 	 */
 	function getProgrammeByTraining($training) {
-		$query = 'SELECT esp.*
+        $program = null;
+
+        if (!empty($training)) {
+            $query = 'SELECT esp.*
 					FROM #__emundus_setup_programmes AS esp
 					WHERE esp.code like "'.$training.'"';
-		$this->_db->setQuery($query);
-		return $this->_db->loadObject();
+            $this->_db->setQuery($query);
+
+            $program = $this->_db->loadObject();
+        }
+
+		return $program;
 	}
 
 	/**
@@ -692,37 +708,34 @@ class EmundusModelCampaign extends JModelList {
      *
      */
     public function isLimitObtained($id) {
+        $is_limit_obtained = null;
 
         $user = JFactory::getSession()->get('emundusUser');
-        if (empty($user)){
+        if (empty($user)) {
             $user = $this->_user;
         }
 
-        if(!EmundusHelperAccess::isApplicant($user->id) || empty($id)) {
-            return null;
-        }
+        if (EmundusHelperAccess::isApplicant($user->id) && !empty($id)) {
+            $limit = $this->getLimit($id);
 
-        $limit = $this->getLimit($id);
+            if (!empty($limit->is_limited)) {
+                $query = $this->_db->getQuery(true);
 
-        if (!empty($limit->is_limited)) {
-            $query = $this->_db->getQuery(true);
+                $query->select('COUNT(id)')
+                    ->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+                    ->where($this->_db->quoteName('status') . ' IN (' . $limit->steps . ')')
+                    ->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $id);
 
-            $query
-                ->select('COUNT(id)')
-                ->from($this->_db->quoteName('#__emundus_campaign_candidature'))
-                ->where($this->_db->quoteName('status') . ' IN (' . $limit->steps . ')')
-                ->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $id);
-
-            try {
-                $this->_db->setQuery($query);
-                return ($limit->limit <= $this->_db->loadResult());
-            } catch (Exception $exception) {
-                JLog::add('Error checking obtained limit at query :'.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-                return null;
+                try {
+                    $this->_db->setQuery($query);
+                    $is_limit_obtained =  ($limit->limit <= $this->_db->loadResult());
+                } catch (Exception $exception) {
+                    JLog::add('Error checking obtained limit at query :'.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+                }
             }
-        } else {
-            return null;
         }
+
+        return $is_limit_obtained;
     }
 
     /**
@@ -874,31 +887,28 @@ class EmundusModelCampaign extends JModelList {
      *
      * @since version 1.0
      */
-    function getCampaignsByProgramId($program){
-        $query = $this->_db->getQuery(true);
+    function getCampaignsByProgramId($program) {
+        $campaigns = [];
 
-        $date = new Date();
+        if (!empty($program)) {
+            $query = $this->_db->getQuery(true);
+            $date = new Date();
 
-        $query
-            ->select('sc.*')
-            ->from($this->_db->quoteName('#__emundus_setup_programmes','sp'))
-            ->leftJoin(
-                $this->_db->quoteName('#__emundus_setup_campaigns', 'sc') .
-                ' ON ' .
-                $this->_db->quoteName('sp.code') .
-                ' LIKE ' .
-                $this->_db->quoteName('sc.training')
-            )
-            ->where($this->_db->quoteName('sp.id') . ' = ' . $this->_db->quote($program))
-            ->andWhere($this->_db->quoteName('sc.end_date') . ' >= ' . $this->_db->quote($date));
+            $query->select('sc.*')
+                ->from($this->_db->quoteName('#__emundus_setup_programmes','sp'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $this->_db->quoteName('sp.code') . ' LIKE ' . $this->_db->quoteName('sc.training'))
+                ->where($this->_db->quoteName('sp.id') . ' = ' . $this->_db->quote($program))
+                ->andWhere($this->_db->quoteName('sc.end_date') . ' >= ' . $this->_db->quote($date));
 
-        try {
-            $this->_db->setQuery($query);
-            return $this->_db->loadObjectList();
-        } catch (Exception $e){
-            JLog::add('component/com_emundus/models/campaign | Error when try to get campaigns associated to programs : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return new stdClass();
+            try {
+                $this->_db->setQuery($query);
+                $campaigns = $this->_db->loadObjectList();
+            } catch (Exception $e){
+                JLog::add('component/com_emundus/models/campaign | Error when try to get campaigns associated to programs : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            }
         }
+
+        return $campaigns;
     }
 
     /**
@@ -1109,25 +1119,27 @@ class EmundusModelCampaign extends JModelList {
      * @since version 1.0
      */
     function getYears() {
-        $query = $this->_db->getQuery(true);
+        $years = [];
 
+        $query = $this->_db->getQuery(true);
         $query->select('DISTINCT(tu.schoolyear)')
             ->from($this->_db->quoteName('#__emundus_setup_teaching_unity', 'tu'))
             ->order('tu.id DESC');
 
         try {
             $this->_db->setQuery($query);
-            return $this->_db->loadObjectList();
+            $years = $this->_db->loadObjectList();
         } catch (Exception $e) {
             JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return [];
         }
+
+        return $years;
     }
 
     /**
      * @param $data
      *
-     * @return false|mixed|string
+     * @return int campaign_id, 0 if failed
      *
      * @since version 1.0
      */
@@ -1493,8 +1505,6 @@ class EmundusModelCampaign extends JModelList {
             ->from($this->_db->quoteName('#__emundus_setup_campaigns'))
             ->where($this->_db->quoteName('date_time') . ' = ' . $this->_db->quote($currentDate));
 
-        $this->_db->setQuery($query);
-
         try {
             $this->_db->setQuery($query);
             return $this->_db->loadObject();
@@ -1513,56 +1523,58 @@ class EmundusModelCampaign extends JModelList {
      * @since version 1.0
      */
     public function updateProfile($profile, $campaign) {
-        $query = $this->_db->getQuery(true);
+        $updated = false;
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'form.php');
-
-        $m_form = new EmundusModelForm;
-
-        $query->select('label,year,training')
-            ->from($this->_db->quoteName('#__emundus_setup_campaigns'))
-            ->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($campaign));
-
-        try {
-            $this->_db->setQuery($query);
-            $schoolyear = $this->_db->loadAssoc();
-
-            $query->clear()
-                ->update($this->_db->quoteName('#__emundus_setup_attachment_profiles'))
-                ->set($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($profile))
-                ->where($this->_db->quoteName('campaign_id') . ' = ' . $this->_db->quote($campaign));
-            $this->_db->setQuery($query);
-            $this->_db->execute();
-
-            // Create checklist menu if documents are asked
-            $query->clear()
-                ->select('*')
-                ->from($this->_db->quoteName('#__menu'))
-                ->where($this->_db->quoteName('alias') . ' = ' . $this->_db->quote('checklist-' . $profile));
-            $this->_db->setQuery($query);
-            $checklist = $this->_db->loadObject();
-
-            if ($checklist == null) {
-                $m_form->addChecklistMenu($profile);
-            }
-
+        if (!empty($profile) && !empty($campaign)) {
             $query = $this->_db->getQuery(true);
-            $query->update($this->_db->quoteName('#__emundus_setup_campaigns'))
-                ->set($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($profile))
+            $query->select('label,year,training')
+                ->from($this->_db->quoteName('#__emundus_setup_campaigns'))
                 ->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($campaign));
 
-            $this->_db->setQuery($query);
-            $this->_db->execute();
+            try {
+                $this->_db->setQuery($query);
+                $schoolyear = $this->_db->loadAssoc();
 
-            // Create teaching unity
-            $this->createYear($schoolyear,$profile);
-            //
+                $query->clear()
+                    ->update($this->_db->quoteName('#__emundus_setup_attachment_profiles'))
+                    ->set($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($profile))
+                    ->where($this->_db->quoteName('campaign_id') . ' = ' . $this->_db->quote($campaign));
+                $this->_db->setQuery($query);
+                $this->_db->execute();
 
-            return true;
-        } catch (Exception $e) {
-            JLog::add('component/com_emundus/models/campaign | Error at updating setup_profile of the campaign: ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
+                // Create checklist menu if documents are asked
+                $query->clear()
+                    ->select('*')
+                    ->from($this->_db->quoteName('#__menu'))
+                    ->where($this->_db->quoteName('alias') . ' = ' . $this->_db->quote('checklist-' . $profile));
+                $this->_db->setQuery($query);
+                $checklist = $this->_db->loadObject();
+
+                if ($checklist == null) {
+                    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'form.php');
+                    $m_form = new EmundusModelForm;
+                    $m_form->addChecklistMenu($profile);
+                }
+
+                $query = $this->_db->getQuery(true);
+                $query->update($this->_db->quoteName('#__emundus_setup_campaigns'))
+                    ->set($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($profile))
+                    ->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($campaign));
+
+                $this->_db->setQuery($query);
+                $this->_db->execute();
+
+                // Create teaching unity
+                $this->createYear($schoolyear,$profile);
+                //
+
+                $updated = true;
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus/models/campaign | Error at updating setup_profile of the campaign: ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            }
         }
+
+        return $updated;
     }
 
     /**
@@ -1602,8 +1614,9 @@ class EmundusModelCampaign extends JModelList {
      * @since version 1.0
      */
     public function getCampaignsToAffectByTerm($term){
-        $query = $this->_db->getQuery(true);
+        $campaigns_to_affect = [];
 
+        $query = $this->_db->getQuery(true);
         $date = new Date();
 
         // Get affected programs
@@ -1611,24 +1624,26 @@ class EmundusModelCampaign extends JModelList {
 
         $m_programme = new EmundusModelProgramme;
         $programs = $m_programme->getUserPrograms($this->_user->id);
-        //
 
-        $searchName = $this->_db->quoteName('label').' LIKE '.$this->_db->quote('%' . $term . '%');
+        if (!empty($programs)) {
+            $searchName = $this->_db->quoteName('label').' LIKE '.$this->_db->quote('%' . $term . '%');
 
-        $query->select('id,label')
-            ->from($this->_db->quoteName('#__emundus_setup_campaigns'))
-            ->where($this->_db->quoteName('profile_id') . ' IS NULL')
-            ->andWhere($this->_db->quoteName('end_date') . ' >= ' . $this->_db->quote($date))
-            ->andWhere($searchName)
-            ->andWhere($this->_db->quoteName('training') . ' IN (' . implode(',',$this->_db->quote($programs)) . ')');
+            $query->select('id,label')
+                ->from($this->_db->quoteName('#__emundus_setup_campaigns'))
+                ->where($this->_db->quoteName('profile_id') . ' IS NULL')
+                ->andWhere($this->_db->quoteName('end_date') . ' >= ' . $this->_db->quote($date))
+                ->andWhere($searchName)
+                ->andWhere($this->_db->quoteName('training') . ' IN (' . implode(',',$this->_db->quote($programs)) . ')');
 
-        try {
-            $this->_db->setQuery($query);
-            return $this->_db->loadObjectList();
-        } catch (Exception $e) {
-            JLog::add('component/com_emundus/models/campaign | Error getting campaigns without setup_profiles associated with search terms : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
+            try {
+                $this->_db->setQuery($query);
+                $campaigns_to_affect =  $this->_db->loadObjectList();
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus/models/campaign | Error getting campaigns without setup_profiles associated with search terms : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            }
         }
+
+        return $campaigns_to_affect;
     }
 
     /**

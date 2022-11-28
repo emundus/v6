@@ -96,6 +96,54 @@ class EmundusModelCampaignTest extends TestCase
 
             $new_campaign_id = $this->m_campaign->createCampaign($inserting_datas);
             $this->assertGreaterThan(0, $new_campaign_id, 'Assert campaign creation works.');
+
+            $program = $this->m_campaign->getProgrammeByCampaignID($new_campaign_id);
+            $this->assertNotEmpty($program, 'Getting program from campaign id works');
+            $this->assertSame($program['code'], $programmes[0], 'The program code used in creation is retrieved when getting program by the new campaign id');
+
+            $program_by_training = $this->m_campaign->getProgrammeByTraining($program['code']);
+            $this->assertNotEmpty($program_by_training->id, 'Assert getting program by his training code works');
+
+            $campaigns_by_program = $this->m_campaign->getCampaignsByProgramId($program_by_training->id);
+            $campaign_ids_by_program = [];
+            foreach ($campaigns_by_program as $campaign) {
+                $campaign_ids_by_program[] = $campaign->id;
+            }
+            $this->assertTrue(in_array($new_campaign_id, $campaign_ids_by_program), 'Assert campaign is found in getCampaignsByProgramId function');
+
+            $this->assertTrue($this->m_campaign->unpublishCampaign([$new_campaign_id]), 'Assert unpublish campaign works');
+            $this->assertTrue($this->m_campaign->publishCampaign([$new_campaign_id]), 'Assert publish campaign works');
+            $this->assertTrue($this->m_campaign->pinCampaign($new_campaign_id), 'Assert pin campaign works properly');
+
+            $deleted = $this->m_campaign->deleteCampaign([$new_campaign_id]);
+            $this->assertTrue($deleted, 'Campaign deletion works properly');
         }
+    }
+
+    public function testUpdateCampaign()
+    {
+        $updated = $this->m_campaign->updateCampaign([], 1);
+        $this->assertFalse($updated, 'Update campaign with empty data does nothing');
+
+        $updated = $this->m_campaign->updateCampaign(['label' => ['fr' => 'Mise à jour de campagne TU', 'en' => 'Mise à jour de campagne TU']], 0);
+        $this->assertFalse($updated, 'Update campaign with empty campaign_id does nothing');
+
+        $updated = $this->m_campaign->updateCampaign(['start_date' => null], 0);
+        $this->assertFalse($updated, 'Update campaign with empty data start_date stops the update');
+
+        $updated = $this->m_campaign->updateCampaign(['end_date' => null], 0);
+        $this->assertFalse($updated, 'Update campaign with empty data end_date stops the update');
+    }
+
+    public function testGetAllCampaigns()
+    {
+        $campaigns = $this->m_campaign->getAllCampaigns();
+        $this->assertIsArray($campaigns, 'La fonction de récupération des campagnes renvoie toujours un tableau');
+    }
+
+    public function testGetProgrammeByTraining()
+    {
+        $progam = $this->m_campaign->getProgrammeByTraining('');
+        $this->assertEmpty($progam, 'Get programme by training without param returns null');
     }
 }
