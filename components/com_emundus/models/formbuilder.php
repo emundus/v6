@@ -2714,18 +2714,6 @@ class EmundusModelFormbuilder extends JModelList {
                                 $falang = new EmundusModelFalang;
                                 $falang->insertFalang($label, $newmenuid,'menu','title');
 
-                                // Affect modules to this menu
-                                $eMConfig = JComponentHelper::getParams('com_emundus');
-                                $modules = $eMConfig->get('form_builder_page_creation_modules', [93,102,103,104,168,170]);
-                                foreach ($modules as $module) {
-                                    $query->clear()
-                                        ->insert($db->quoteName('#__modules_menu'))
-                                        ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
-                                        ->set($db->quoteName('menuid') . ' = ' . $db->quote($newmenuid));
-                                    $db->setQuery($query);
-                                    $db->execute();
-                                }
-
                                 $response = array(
                                     'id' => $newformid,
                                     'link' => 'index.php?option=com_fabrik&view=form&formid=' . $newformid,
