@@ -65,10 +65,11 @@ class EmundusModelSamples extends JModelList {
     }
 
     public function createSampleFile($uids = null){
+        $nb_files_created = 0;
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        if(!is_array($uids)){
+        if(!is_array($uids) && !empty($uids)) {
             $uids = [$uids];
         }
 
@@ -77,41 +78,51 @@ class EmundusModelSamples extends JModelList {
         $db->setQuery($query);
         $cids = $db->loadColumn();
 
-        $query->clear()
-            ->select('step')
-            ->from($db->quoteName('#__emundus_setup_status'));
-        $db->setQuery($query);
-        $status = $db->loadColumn();
-
-        if(empty($uid)){
+        if (!empty($cids)) {
             $query->clear()
-                ->select('user_id')
-                ->from($db->quoteName('#__emundus_users'))
-                ->where($db->quoteName('profile') . ' = 9');
+                ->select('step')
+                ->from($db->quoteName('#__emundus_setup_status'));
             $db->setQuery($query);
-            $uids = $db->loadColumn();
-        }
+            $status = $db->loadColumn();
 
-        foreach ($uids as $uid) {
-            foreach ($cids as $cid) {
-                $fnum = @EmundusHelperFiles::createFnum($cid, $uid);
+            if (empty($uids)) {
+                $query->clear()
+                    ->select('user_id')
+                    ->from($db->quoteName('#__emundus_users'))
+                    ->where($db->quoteName('profile') . ' = 9')
+                    ->setLimit('1');
+                $db->setQuery($query);
+                $uids = [$db->loadResult()];
+            }
 
-                try {
-                    $query->clear()
-                        ->insert($db->quoteName('#__emundus_campaign_candidature'));
-                    $query->set($db->quoteName('applicant_id') . ' = ' . $db->quote($uid))
-                        ->set($db->quoteName('user_id') . ' = ' . $db->quote($uid))
-                        ->set($db->quoteName('campaign_id') . ' = ' . $db->quote($cid))
-                        ->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
-                        ->set($db->quoteName('status') . ' = ' . $db->quote(array_rand($status)));
-                    $db->setQuery($query);
-                    $db->execute();
-                } catch (Exception $e) {
-                    JLog::add('component/com_emundus/models/formbuilder | Error at creating a testing file in the campaign ' . $cid . ' of the user ' . $uid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-                    return false;
+            foreach ($uids as $uid) {
+                $cid_key = array_rand($cids);
+                $fnum = @EmundusHelperFiles::createFnum($cids[$cid_key], $uid);
+
+                if (!empty($fnum)) {
+                    try {
+                        $query->clear()
+                            ->insert($db->quoteName('#__emundus_campaign_candidature'));
+                        $query->set($db->quoteName('applicant_id') . ' = ' . $db->quote($uid))
+                            ->set($db->quoteName('user_id') . ' = ' . $db->quote($uid))
+                            ->set($db->quoteName('campaign_id') . ' = ' . $db->quote($cids[$cid_key]))
+                            ->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
+                            ->set($db->quoteName('status') . ' = ' . $db->quote(array_rand($status)));
+                        $db->setQuery($query);
+                        $created = $db->execute();
+
+                        if ($created) {
+                            $nb_files_created++;
+                        }
+                    } catch (Exception $e) {
+                        JLog::add('component/com_emundus/models/formbuilder | Error at creating a testing file in the campaign ' . $cids[$cid_key] . ' of the user ' . $uid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+                        JFactory::getApplication()->enqueueMessage('Error at creating a testing file in the campaign ' . $cids[$cid_key] . ' of the user ' . $uid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), 'warning');
+                    }
                 }
             }
         }
+
+        return $nb_files_created;
     }
 
     public function createSampleTag(){
