@@ -1134,7 +1134,7 @@ class EmundusModelCampaign extends JModelList {
     public function createCampaign($data) {
         $campaign_id = 0;
 
-        if (!empty($data)) {
+        if (!empty($data) && !empty($data['label'])) {
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'settings.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
@@ -1153,7 +1153,7 @@ class EmundusModelCampaign extends JModelList {
             $this->_db->setQuery($query);
             $campaign_columns = $this->_db->loadColumn();
 
-            $data['label'] = json_decode($data['label'],true);
+            $data['label'] = json_decode($data['label'], true);
 
             $dispatcher = JEventDispatcher::getInstance();
             $dispatcher->trigger('onBeforeCampaignCreate', $data);
