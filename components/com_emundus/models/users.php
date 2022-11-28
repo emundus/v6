@@ -2704,7 +2704,7 @@ class EmundusModelUsers extends JModelList {
             $app_profile = $db->loadResult();
 
             $query->clear()
-                ->insert('#__emundus_users_profile')
+                ->insert('#__emundus_users_profiles')
                 ->set($db->quoteName('date_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
                 ->set($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
                 ->set($db->quoteName('profile_id') . ' = ' . $db->quote($app_profile->id));
