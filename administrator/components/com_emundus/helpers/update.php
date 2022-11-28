@@ -25,6 +25,7 @@ class EmundusHelperUpdate
      * @since version 1.33.0
      */
     public static function getEmundusPlugins() {
+        $plugins = [];
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -33,11 +34,13 @@ class EmundusHelperUpdate
                 ->from('#__extensions')
                 ->where("folder LIKE '%emundus%' OR element LIKE " . $db->q('%emundus%') . " AND type='plugin'");
             $db->setQuery($query);
-            return $db->loadObjectList();
-        } catch (Exception $e){
+            $plugins = $db->loadObjectList();
+        } catch (Exception $e) {
             echo $e->getMessage();
-            return [];
+            JLog::add('Failed to retrieve emundus plugins', JLog::WARNING, 'com_emundus.error');
         }
+
+        return $plugins;
     }
 
     /**
@@ -50,19 +53,24 @@ class EmundusHelperUpdate
      * @since version 1.33.0
      */
     public static function disableEmundusPlugins($name) {
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $disabled = false;
 
-        try {
-            $query->update($db->quoteName('#__extensions'))
-                ->set($db->quoteName('enabled') . ' = 0')
-                ->where($db->quoteName('element') . ' LIKE ' . $db->quote($name));
-            $db->setQuery($query);
-            return $db->execute();
-        } catch (Exception $e) {
-            echo $e->getMessage();
-            return false;
+        if (!empty($name)) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            try {
+                $query->update($db->quoteName('#__extensions'))
+                    ->set($db->quoteName('enabled') . ' = 0')
+                    ->where($db->quoteName('element') . ' LIKE ' . $db->quote($name));
+                $db->setQuery($query);
+                $disabled = $db->execute();
+            } catch (Exception $e) {
+                echo $e->getMessage();
+            }
         }
+
+        return $disabled;
     }
 
 
@@ -77,34 +85,40 @@ class EmundusHelperUpdate
      * @since version 1.33.0
      */
     public static function updateModulesParams($name, $param, $value) {
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $updated = false;
 
-        try {
-            $query->select('id,params')
-                ->from("#__modules")
-                ->where('module LIKE ' . $db->q('%'.$name.'%'));
-            $db->setQuery($query);
-            $rows =  $db->loadObjectList();
+        if (!empty($name)) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-            foreach ($rows as $row) {
-                $params = json_decode($row->params,true);
-                $params[$param] = $value;
-
-                $query->clear()
-                    ->update("#__modules")
-                    ->set("params = " . $db->quote(json_encode($params)))
-                    ->where("id = " . $row->id);
+            try {
+                $query->select('id,params')
+                    ->from('#__modules')
+                    ->where('module LIKE ' . $db->q('%'.$name.'%'));
                 $db->setQuery($query);
-                $db->execute();
+                $rows =  $db->loadObjectList();
+
+                foreach ($rows as $row) {
+                    $params = json_decode($row->params,true);
+                    $params[$param] = $value;
+
+                    $query->clear()
+                        ->update('#__modules')
+                        ->set('params = ' . $db->quote(json_encode($params)))
+                        ->where('id = ' . $row->id);
+                    $db->setQuery($query);
+
+                    $updated = $db->execute();
+                }
+            } catch (Exception $e) {
+                echo $e->getMessage();
             }
         }
-        catch (Exception $e) {
-            echo $e->getMessage();
-        }
+
+        return $updated;
     }
 
-    public static function installExtension($name,$element,$manifest_cache,$type,$enabled = 1,$folder = ''){
+    public static function installExtension($name, $element, $manifest_cache, $type, $enabled = 1, $folder = ''){
         $installed = false;
 
         if (!empty($element)) {
@@ -161,38 +175,44 @@ class EmundusHelperUpdate
      * @since version 1.33.0
      */
     public static function genericUpdateParams($table, $where, $name, $param, $valuesToSet, $updateParams = null) {
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $updated = false;
 
-        if (empty($updateParams[0])) {
-            $updateParams[0] = "params";
-        }
-        if (empty($updateParams[1])) {
-            $updateParams[1] = "id";
-        }
-        try {
-            $query->select('*')
-                ->from($table)
-                ->where($where. ' LIKE ' . $db->q('%'.$name.'%'));
-            $db->setQuery($query);
-            $rows =  $db->loadObjectList();
+        if (!empty($table) && !empty($where) && !empty($name)) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-            foreach ($rows as $row) {
-                $params = json_decode($row->params,true);
-                foreach ($param as $k => $par) {
-                    $params[$par] = $valuesToSet[$k];
-                }
-
-                $query->clear()
-                    ->update($table)
-                    ->set($updateParams[0] . ' = ' . $db->quote(json_encode($params)))
-                    ->where($updateParams[1] . ' = ' . $row->id);
-                $db->setQuery($query);
-                $db->execute();
+            if (empty($updateParams[0])) {
+                $updateParams[0] = "params";
             }
-        } catch (Exception $e) {
-            echo $e->getMessage();
+            if (empty($updateParams[1])) {
+                $updateParams[1] = "id";
+            }
+            try {
+                $query->select('*')
+                    ->from($table)
+                    ->where($where. ' LIKE ' . $db->q('%'.$name.'%'));
+                $db->setQuery($query);
+                $rows =  $db->loadObjectList();
+
+                foreach ($rows as $row) {
+                    $params = json_decode($row->params,true);
+                    foreach ($param as $k => $par) {
+                        $params[$par] = $valuesToSet[$k];
+                    }
+
+                    $query->clear()
+                        ->update($table)
+                        ->set($updateParams[0] . ' = ' . $db->quote(json_encode($params)))
+                        ->where($updateParams[1] . ' = ' . $row->id);
+                    $db->setQuery($query);
+                    $updated = $db->execute();
+                }
+            } catch (Exception $e) {
+                echo $e->getMessage();
+            }
         }
+
+        return $updated;
     }
 
     /**
@@ -206,33 +226,38 @@ class EmundusHelperUpdate
      * @since version 1.33.0
      */
     public static function updateFabrikCronParams($name, $param, $values) {
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $updated = false;
 
-        try {
+        if (!empty($name)) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-            $query->select('id,params')
-                ->from($db->quoteName('#__fabrik_cron'))
-                ->where('plugin LIKE ' . $db->q('%' . $name . '%'));
-            $db->setQuery($query);
-            $rows = $db->loadObjectList();
-
-            foreach ($rows as $row) {
-                $params = json_decode($row->params, true);
-                foreach ($param as $k => $par) {
-                    $params[$par] = $values[$k];
-                }
-
-                $query->clear()
-                    ->update($db->quoteName('#__fabrik_cron'))
-                    ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($row->id));
+            try {
+                $query->select('id,params')
+                    ->from($db->quoteName('#__fabrik_cron'))
+                    ->where('plugin LIKE ' . $db->q('%' . $name . '%'));
                 $db->setQuery($query);
-                $db->execute();
+                $rows = $db->loadObjectList();
+
+                foreach ($rows as $row) {
+                    $params = json_decode($row->params, true);
+                    foreach ($param as $k => $par) {
+                        $params[$par] = $values[$k];
+                    }
+
+                    $query->clear()
+                        ->update($db->quoteName('#__fabrik_cron'))
+                        ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($row->id));
+                    $db->setQuery($query);
+                    $updated = $db->execute();
+                }
+            } catch (Exception $e) {
+                echo $e->getMessage();
             }
-        } catch (Exception $e) {
-            echo $e->getMessage();
         }
+
+        return $updated;
     }
 
     /**
@@ -1261,11 +1286,11 @@ class EmundusHelperUpdate
         $result = ['status' => false, 'message' => '', 'id' => 0];
         $menu_table = JTableNested::getInstance('Menu');
 
-        if(empty($params['menutype'])){
+        if (empty($params['menutype'])) {
             $result['message'] = 'INSERTING JOOMLA MENU : Please pass a menutype.';
             return $result;
         }
-        if(empty($params['title'])){
+        if (empty($params['title'])) {
             $result['message'] = 'INSERTING JOOMLA MENU : Please indicate a title.';
             return $result;
         }
@@ -1292,8 +1317,8 @@ class EmundusHelperUpdate
             $db->setQuery($query);
             $is_existing = $db->loadResult();
 
-            if(empty($is_existing)) {
-                if($params['client_id'] != 1) {
+            if (empty($is_existing)) {
+                if ($params['client_id'] != 1) {
                     $default_params = [
                         'menu-anchor_title' => '',
                         'menu-anchor_css' => '',
@@ -1322,7 +1347,7 @@ class EmundusHelperUpdate
                     'img' => $params['img'] ?: ''
                 );
 
-                if($parent_id <= 0){
+                if ($parent_id <= 0) {
                     $parent_id = 1;
                 }
 
@@ -1334,14 +1359,25 @@ class EmundusHelperUpdate
                 }
                 $result['id'] = $menu_table->id;
 
-                if(!empty($modules)){
+                if (!empty($modules)) {
                     foreach ($modules as $module) {
                         $query->clear()
-                            ->insert($db->quoteName('#__modules_menu'))
-                            ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
-                            ->set($db->quoteName('menuid') . ' = ' . $db->quote($result['id']));
+                            ->select('menuid')
+                            ->from('#__modules_menu')
+                            ->where($db->quoteName('moduleid') . ' = ' . $db->quote($module))
+                            ->andWhere($db->quoteName('menuid') . ' = ' . $db->quote($result['id']));
+
                         $db->setQuery($query);
-                        $db->execute();
+                        $module_already_assoc = $db->loadResult();
+
+                        if (empty($module_already_assoc)) {
+                            $query->clear()
+                                ->insert($db->quoteName('#__modules_menu'))
+                                ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
+                                ->set($db->quoteName('menuid') . ' = ' . $db->quote($result['id']));
+                            $db->setQuery($query);
+                            $db->execute();
+                        }
                     }
                 }
             } else {
