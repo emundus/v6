@@ -59,4 +59,43 @@ class EmundusModelCampaignTest extends TestCase
         $created = $this->m_campaign->createDocument($document, $types, null, 9);
         $this->assertFalse($created['status'], 'Assert impossible to create document with empty types');
     }
+
+    public function testCreateCampaign()
+    {
+        $new_campaign_id = $this->m_campaign->createCampaign([]);
+        $this->assertEmpty($new_campaign_id, 'Assert can not create campaign without data');
+
+        $new_campaign_id = $this->m_campaign->createCampaign(['limit_status' => 1, 'profile_id' => 9]);
+        $this->assertEmpty($new_campaign_id, 'Assert can not create campaign without label');
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('code')
+            ->from($db->quoteName('#__emundus_setup_programmes'));
+        $db->setQuery($query);
+        $programmes = $db->loadColumn();
+
+        if (!empty($programmes)) {
+            $start_date = new DateTime();
+            $start_date->modify('-1 day');
+
+            $end_date = new DateTime();
+            $end_date->modify('+1 year');
+
+            $inserting_datas = [
+                'label' =>  json_encode(['fr' => 'Campagne test unitaire', 'en' => 'Campagne test unitaire']),
+                'description' => 'Lorem ipsum',
+                'short_description' => 'Lorem ipsum',
+                'start_date' => $start_date->format('Y-m-d H:i:s'),
+                'end_date' => $end_date->format('Y-m-d H:i:s'),
+                'profile_id' => 9,
+                'training' => $programmes[0],
+                'year' => '2022-2023',
+                'published' => 1
+            ];
+
+            $new_campaign_id = $this->m_campaign->createCampaign($inserting_datas);
+            $this->assertGreaterThan(0, $new_campaign_id, 'Assert campaign creation works.');
+        }
+    }
 }

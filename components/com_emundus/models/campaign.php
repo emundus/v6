@@ -1143,15 +1143,15 @@ class EmundusModelCampaign extends JModelList {
             $m_emails = new EmundusModelEmails;
 
             $lang = JFactory::getLanguage();
-            $actualLanguage = substr($lang->getTag(), 0 , 2);
+            $actualLanguage = !empty($lang->getTag()) ? substr($lang->getTag(), 0 , 2) : 'fr';
 
             $i = 0;
             $labels = new stdClass;
             $limit_status = [];
 
-            $query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'jos_emundus_setup_campaigns'";
+            $query = "SELECT DISTINCT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'jos_emundus_setup_campaigns'";
             $this->_db->setQuery($query);
-            $campaign_columns = $this->_db->loadColumn($query);
+            $campaign_columns = $this->_db->loadColumn();
 
             $data['label'] = json_decode($data['label'],true);
 
@@ -1161,7 +1161,7 @@ class EmundusModelCampaign extends JModelList {
 
             $query = $this->_db->getQuery(true);
             foreach ($data as $key => $val) {
-                if (!in_array($key,$campaign_columns)){
+                if (!in_array($key, $campaign_columns)) {
                     unset($data[$key]);
                 } else {
                     if ($key == 'profileLabel') {
@@ -1183,7 +1183,7 @@ class EmundusModelCampaign extends JModelList {
                             ->andWhere($this->_db->quoteName('status') . ' = 1');
                         $this->_db->setQuery($query);
                         $data['profile_id'] = $this->_db->loadResult();
-                        if(empty($data['profile_id'])){
+                        if (empty($data['profile_id'])) {
                             unset($data['profile_id']);
                             $data['published'] = 0;
                         }
@@ -1257,7 +1257,7 @@ class EmundusModelCampaign extends JModelList {
                     }
                 } catch (Exception $e) {
                     JLog::add('component/com_emundus/models/campaign | Error when create the campaign : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-                    $campaign_id = 0;
+                    return $e->getMessage();
                 }
             }
         }
