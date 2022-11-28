@@ -150,12 +150,12 @@ if (isset($user->fnum) && !empty($user->fnum)) {
         ->from($db->quoteName('#__emundus_uploads','eu'))
         ->leftJoin($db->quoteName('#__emundus_setup_attachment_profiles','esap').' ON '.$db->quoteName('eu.attachment_id').' = '.$db->quoteName('esap.attachment_id'))
         ->leftJoin($db->quoteName('#__emundus_setup_attachments','esa').' ON '.$db->quoteName('esap.attachment_id').' = '.$db->quoteName('esa.id'))
-        ->where($db->quoteName('esap.mandatory') . ' = 1')
-        ->andWhere($db->quoteName('esap.displayed') . ' = 1')
+        ->where($db->quoteName('esap.displayed') . ' = 1')
         ->andWhere($db->quoteName('esap.profile_id') . ' = ' . $db->quote($user->profile))
         ->andWhere($db->quoteName('eu.fnum') . ' like ' . $db->quote($user->fnum))
         ->andWhere($db->quoteName('eu.user_id') . ' = ' . $db->quote($user->id))
-        ->group('esa.id');
+        ->group('esa.id')
+        ->order('esa.ordering');
     $db->setQuery($query);
     $uploads = $db->loadObjectList();
 
