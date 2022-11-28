@@ -971,6 +971,15 @@ class EmundusControllerFiles extends JControllerLegacy
                                     continue;
                                 }
 
+                                $toAttach = [];
+                                if(!empty($trigger['tmpl']['attachments'])){
+                                    $attachments = $m_application->getAttachmentsByFnum($file['fnum'],null,explode(',',$trigger['tmpl']['attachments']));
+
+                                    foreach ($attachments as $attachment){
+                                        $toAttach[] = EMUNDUS_PATH_ABS.$file['applicant_id'].'/'.$attachment->filename;
+                                    }
+                                }
+
                                 $can_send_mail = $h_emails->assertCanSendMailToUser($file['applicant_id'], $file['fnum']);
                                 if (!$can_send_mail) {
                                     continue;
