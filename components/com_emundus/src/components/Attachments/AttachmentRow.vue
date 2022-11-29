@@ -243,8 +243,8 @@ export default {
 		select {
 			padding: 4px 8px;
 			border-radius: 4px;
-			background-color: var(--grey-bg-color);
-			color: var(--grey-color);
+			background-color: var(--grey-bg-color) !important;
+			color: var(--grey-color) !important;
 			border: none;
 			width: max-content;
 		}
@@ -255,22 +255,22 @@ export default {
 
 		&.warning {
 			select {
-				color: var(--warning-color);
-				background-color: var(--warning-bg-color);
+				color: var(--warning-color) !important;
+				background-color: var(--warning-bg-color) !important;
 			}
 		}
 
 		&.success {
 			select {
-				color: var(--success-color);
-				background-color: var(--success-bg-color);
+				color: var(--success-color) !important;
+				background-color: var(--success-bg-color) !important;
 			}
 		}
 
 		&.error {
 			select {
-				color: var(--error-color);
-				background-color: var(--error-bg-color);
+				color: var(--error-color) !important;
+				background-color: var(--error-bg-color) !important;
 			}
 		}
 	}
