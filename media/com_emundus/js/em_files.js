@@ -108,13 +108,15 @@ function reloadData(view) {
         success: function(data) {
             removeLoader();
 
-            if($('.col-md-9 .panel.panel-default').length > 0) {
-                $('.col-md-9 .panel.panel-default').remove();
+            let col9 = $('.col-md-9 .panel.panel-default');
+            if(col9.length > 0) {
+                col9.remove();
                 $('.col-md-9').append(data);
             }
 
-            if($('.col-md-12 .panel.panel-default').length > 0) {
-                $('.col-md-12 .panel.panel-default').remove();
+            let col12 = $('.col-md-12 .panel.panel-default');
+            if(col12.length > 0) {
+                col12.remove();
                 $('.col-md-12').append(data);
             }
         },
@@ -140,8 +142,9 @@ function reloadActions(view, fnum, onCheck, async, display = 'none') {
         url: 'index.php?option=com_emundus&view=files&layout=menuactions&format=raw&Itemid=' + itemId + '&display=' + display + '&fnum=' + fnum + '&multi=' + multi,
         dataType: 'html',
         success: function(data) {
-            $('.navbar.navbar-inverse').empty();
-            $('.navbar.navbar-inverse').append(data);
+            let navbar = $('.navbar.navbar-inverse');
+            navbar.empty();
+            navbar.append(data);
 
             if (onCheck === true) {
                 menuBar1();
@@ -240,8 +243,9 @@ function refreshFilter(view) {
         url: 'index.php?option=com_emundus&view='+view+'&layout=filters&format=raw&Itemid=' + itemId,
         dataType: 'html',
         success: function(data) {
-            $('#em-files-filters .panel-body').empty();
-            $('#em-files-filters .panel-body').append(data);
+            let panelBody = $('#em-files-filters .panel-body');
+            panelBody.empty();
+            panelBody.append(data);
             $('.chzn-select').chosen();
             reloadData($('#view').val());
         },
@@ -385,8 +389,9 @@ function openFiles(fnum, page = 0, vue = false) {
             //.main-panel
             $('.main-panel').append('<div class="clearfix"></div><div class="col-md-12" id="em-appli-block"></div>');
             if (result) {
-                $('#em-synthesis .panel-body').empty();
-                $('#em-synthesis .panel-body').append(panel);
+                let panelBody = $('#em-synthesis .panel-body');
+                panelBody.empty();
+                panelBody.append(panel);
                 $('#em-synthesis').show();
             } else {
                 $('#em-synthesis').hide();
@@ -407,13 +412,14 @@ function openFiles(fnum, page = 0, vue = false) {
                         }
                     };
 
-                    $('#em-appli-menu .list-group').empty();
+                    let menuListGroup = $('#em-appli-menu .list-group');
+                    menuListGroup.empty();
                     if (result.status) {
                         var menus = result.menus;
                         var numMenu = 0;
 
                         while (numMenu <= menus.length) {
-                            if (menus[numMenu].link.indexOf("layout="+page) != -1) {
+                            if (menus[numMenu].link.indexOf('layout=' + page) != -1) {
                                 break;
                             }
                             numMenu++;
@@ -452,7 +458,7 @@ function openFiles(fnum, page = 0, vue = false) {
                                     menuList +=  '<strong>'+menus[m].title+'</strong></a>';
                                 }
                             }
-                            $('#em-appli-menu .list-group').append(menuList);
+                            menuListGroup.append(menuList);
                             $('#em-appli-menu').show();
                         } else {
                             $('#em-appli-menu').hide();
@@ -492,7 +498,7 @@ function openFiles(fnum, page = 0, vue = false) {
                         });
 
                     } else {
-                        $('#em-appli-menu .list-group').append(result.msg);
+                        menuListGroup.append(result.msg);
                     }
                 },
                 error: function (jqXHR) {
@@ -987,7 +993,7 @@ function runAction(action, url = '', option = '') {
                         Swal.fire({
                             title: Joomla.JText._('WARNING_CHANGE_STATUS'),
                             text: result.msg,
-                            type: "warning",
+                            type: 'warning',
                             showCancelButton: true,
                             confirmButtonText: Joomla.JText._('COM_EMUNDUS_APPLICATION_VALIDATE_CHANGE_STATUT'),
                             cancelButtonText: Joomla.JText._('COM_EMUNDUS_APPLICATION_CANCEL_CHANGE_STATUT'),
@@ -1144,7 +1150,7 @@ function runAction(action, url = '', option = '') {
                         Swal.fire({
                             title: Joomla.JText._('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE'),
                             text: '',
-                            type: "error",
+                            type: 'error',
                             showCancelButton: false,
                             showConfirmButton: false,
                             reverseButtons: true,
@@ -1867,7 +1873,7 @@ $(document).ready(function() {
                                         });
 
                                         $('#em-export-prg').append(result.html);
-                                        $('#em-export-prg').trigger("chosen:updated");
+                                        $('#em-export-prg').chosen('destroy').chosen({width: "100%"});
                                         nbprg = $('#em-export-prg option').size();
 
                                         if (nbprg == 2) {
@@ -2167,7 +2173,7 @@ $(document).ready(function() {
                                                         $('#em-export-camp').empty();
                                                         $('#em-export-camp').append('<option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option>');
                                                         $('#em-export-camp').append(result.html);
-                                                        $('#em-export-camp').trigger("chosen:updated");
+                                                        $('#em-export-camp').chosen('destroy').chosen({width: "100%"});
 
                                                         $('#loadingimg-campaign').remove();
                                                         $('#camp').show();
@@ -3084,7 +3090,7 @@ $(document).ready(function() {
                                 addLoader('.swal2-popup');
 
                                 $('#em-export-prg').append(result.html);
-                                $('#em-export-prg').trigger("chosen:updated");
+                                $('#em-export-prg').chosen('destroy').chosen({width: "100%"});
 
                                 nbprg = $('#em-export-prg option').size();
 
@@ -3134,7 +3140,7 @@ $(document).ready(function() {
 
                                             if (result.status) {
                                                 $('#em-export-camp').append(result.html);
-                                                $('#em-export-camp').trigger("chosen:updated");
+                                                $('#em-export-camp').chosen('destroy').chosen({width: "100%"});
                                                 $('#camp').show();
 
                                                 var camp = $("#em-export-camp").val();
@@ -3227,7 +3233,7 @@ $(document).ready(function() {
                                                     $('#em-export-camp').empty();
                                                     $('#em-export-camp').append('<option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option>');
                                                     $('#em-export-camp').append(result.html);
-                                                    $('#em-export-camp').trigger("chosen:updated");
+                                                    $('#em-export-camp').chosen('destroy').chosen({width: "100%"});
                                                     $('#camp').show();
 
                                                     var camp = $("#em-export-camp").val();
@@ -3613,7 +3619,7 @@ $(document).ready(function() {
 
 
                             $('#em-export-prg').append(result.html);
-                            $('#em-export-prg').trigger("chosen:updated");
+                            $('#em-export-prg').chosen('destroy').chosen({width: "100%"});
 
                             nbprg = $('#em-export-prg option').size();
 
@@ -3655,7 +3661,7 @@ $(document).ready(function() {
                                                 success: function(result) {
                                                     if (result.status) {
                                                         $('#em-export-camp').append(result.html);
-                                                        $('#em-export-camp').trigger("chosen:updated");
+                                                        $('#em-export-camp').chosen('destroy').chosen({width: "100%"});
                                                         $('#camp').show();
 
                                                         var camp = $("#em-export-camp").val();
@@ -3733,9 +3739,11 @@ $(document).ready(function() {
                                                         var checkAllTables = json.pdffilter.checkAllTables;
                                                         var attachments = json.pdffilter.attachments;
 
-                                                        $('#em-export-camp').val(campCode);
-                                                        $('#em-export-camp').trigger("chosen:updated");
-                                                        $('#em-export-camp').trigger("change");
+
+                                                        let emExportCamp = $('#em-export-camp');
+                                                        emExportCamp.val(campCode);
+                                                        emExportCamp.trigger("chosen:updated");
+                                                        emExportCamp.trigger("change");
 
                                                         if (elements[0] !== "") {
                                                             $.ajax({
@@ -3789,12 +3797,12 @@ $(document).ready(function() {
                                                             /// show #aelts
                                                             $('#' + selector.id).show();
 
+                                                            let aelts = $('#aelts');
                                                             /// set button css (+ vs -)
-
-                                                            $('#aelts').find('.btn-info').attr('class', 'btn-xs btn btn-elements-success');
+                                                            aelts.find('.btn-info').attr('class', 'btn-xs btn btn-elements-success');
 
                                                             ///btn-xs btn btn-elements-success
-                                                            $('#aelts').find('.glyphicon-plus').attr('class', 'glyphicon glyphicon-minus');
+                                                            aelts.find('.glyphicon-plus').attr('class', 'glyphicon glyphicon-minus');
 
                                                             /// check to selected elements
                                                             attachments.forEach((doc) => {
@@ -3889,7 +3897,7 @@ $(document).ready(function() {
                                                             $('#em-export-camp').empty();
 
                                                             $('#em-export-camp').append(result.html);
-                                                            $('#em-export-camp').trigger("chosen:updated");
+                                                            $('#em-export-camp').chosen('destroy').chosen({width: "100%"});
                                                             $('#camp').show();
 
                                                             var camp = $("#em-export-camp").val();
@@ -4902,7 +4910,7 @@ $(document).ready(function() {
             e.handle = true;
             var id = $(this).attr('id');
             $.ajax({
-                type: "POST",
+                type: 'POST',
                 url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=setlimitstart',
                 dataType: 'json',
                 data: ({
@@ -5303,7 +5311,7 @@ $(document).ready(function() {
         var id = $(this).attr('id');
         var val = $('#' + id).val();
         $.ajax({
-            type: "POST",
+            type: 'POST',
             dataType: 'json',
             url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=setfilters',
             data: ({
@@ -6550,7 +6558,7 @@ function sendMail(data)
     });
 
     $.ajax({
-        type: "POST",
+        type: 'POST',
         url: "index.php?option=com_emundus&controller=messages&task=applicantemail",
         data: data,
         success: function (result) {

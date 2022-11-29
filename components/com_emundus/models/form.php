@@ -837,7 +837,7 @@ class EmundusModelForm extends JModelList {
                 $intro = [
                     'fr' => 'Décrivez votre page de formulaire avec une introduction',
                     'en' => 'Describe your form page with an introduction'
-                );
+                ];
                 $formbuilder->createApplicantMenu($label, $intro, $newprofile, 'false');
             }
 
