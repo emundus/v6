@@ -492,6 +492,37 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
                     ];
                     $m_emails->logEmail($message);
                 }
+                
+                $email = $m_emails->getEmail('expert_accept');
+                $body = $m_emails->setBody($user, $email->message);
+
+                $email_from_sys = $app->getCfg('mailfrom');
+                $sender = [
+                    $email_from_sys,
+                    $email->name
+                ];
+                $recipient = $user->email;
+
+                $mailer->setSender($sender);
+                $mailer->addReplyTo($email->emailfrom, $email->name);
+                $mailer->addRecipient($recipient);
+                $mailer->setSubject($email->subject);
+                $mailer->isHTML(true);
+                $mailer->Encoding = 'base64';
+                $mailer->setBody($body);
+
+                $send = $mailer->Send();
+                if ($send !== true) {
+                    echo 'Error sending email: ' . $send->__toString(); die();
+                } else {
+                    $message = [
+                        'user_id_from' => 62,
+                        'user_id_to' => $user->id,
+                        'subject' => $email->subject,
+                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$user->email.'</i><br>'.$body
+                    ];
+                    $m_emails->logEmail($message);
+                }
 
                 // 2.1.3. Commentaire sur le dossier du candidat : nouvel expert ayant accepté l'évaluation du dossier
                 foreach ($fnums as $fnum) {
