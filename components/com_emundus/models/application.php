@@ -1786,6 +1786,7 @@ class EmundusModelApplication extends JModelList
                                     foreach ($elements as &$element) {
 
                                         if (!empty(trim($element->label))) {
+                                            // TODO : If databasejoin checkbox or multilist get value from children table. Add a query to get join table from jos_fabrik_joins where element_id = $element->id
                                             $query = 'SELECT `id`, `' . $element->name . '` FROM `' . $itemt->db_table_name . '` WHERE fnum like ' . $this->_db->Quote($fnum);
                                             $this->_db->setQuery($query);
                                             $res = $this->_db->loadRow();
