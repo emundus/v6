@@ -108,10 +108,12 @@ if($currentCampaign->apply_online == 0){
             </div>
             <?php endif; ?>
         </div>
-        <div class="em-mt-8 em-applicant-text-color em-flex-row">
-            <p class="em-flex-row"><span class="material-icons-outlined em-mr-8 em-font-size-16">public</span></p>
-            <span class="em-applicant-default-font "><?= (!empty($mod_em_campaign_show_timezone)) ? JText::_('MOD_EM_CAMPAIGN_TIMEZONE').$offset : ''; ?></span>
-        </div>
+        <?php if (!empty($mod_em_campaign_show_timezone)) : ?>
+            <div class="em-mt-8 em-applicant-text-color em-flex-row">
+                <p class="em-flex-row"><span class="material-icons-outlined em-mr-8 em-font-size-16">public</span></p>
+                <span class="em-applicant-default-font "><?php JText::_('MOD_EM_CAMPAIGN_TIMEZONE').$offset ?></span>
+            </div>
+        <?php endif; ?>
 
         <div class="mod_emundus_campaign__tabs em-flex-row">
             <a class="em-applicant-text-color current-tab em-mr-24" onclick="displayTab('campaign')" id="campaign_tab">
