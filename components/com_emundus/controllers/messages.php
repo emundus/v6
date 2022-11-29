@@ -1121,11 +1121,12 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    // Tags are replaced with their corresponding values using the PHP preg_replace function.
 	    $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
 	    $body = $message;
-	    if ($template) {
-		    $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
-	    }
 	    $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
+        $body_raw = $body;
+        if ($template) {
+            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+        }
         // Check if user defined a cc address
         $cc = [];
         $emundus_user = $m_users->getUserById($fnum['applicant_id'])[0];
@@ -1150,6 +1151,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    $mailer->isHTML(true);
 	    $mailer->Encoding = 'base64';
 	    $mailer->setBody($body);
+        $mailer->AltBody = strip_tags($body_raw);
 
 
         // Get any candidate files included in the message.
@@ -1331,9 +1333,6 @@ class EmundusControllerMessages extends JControllerLegacy {
         }
 
 		$body = $template->message;
-		if ($template != false) {
-			$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
-		}
 
         if($user_id != null) {
             $body = preg_replace($post['patterns'], $post['replacements'], $body);
@@ -1343,6 +1342,11 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         if($fnum != null) {
             $body = $m_email->setTagsFabrik($body, array($fnum));
+        }
+
+        $body_raw = $body;
+        if ($template != false) {
+            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
         }
 
         // Set sender
@@ -1360,6 +1364,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 		$mailer->isHTML(true);
 		$mailer->Encoding = 'base64';
 		$mailer->setBody($body);
+        $mailer->AltBody = strip_tags($body_raw);
 
 		if (!empty($toAttach)) {
 			$mailer->addAttachment($toAttach);
