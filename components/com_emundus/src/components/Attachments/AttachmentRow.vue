@@ -63,14 +63,14 @@
 		<td class="date">{{ formattedDate(attachment.modified) }}</td>
 		<td class="permissions">
 			<span
-				class="material-icons-outlined visibility-permission"
+				class="material-icons-outlined visibility-permission em-pointer"
 				:class="{ active: attachment.can_be_viewed == '1' }"
 				@click="changePermission('can_be_viewed', attachment)"
 				:title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_VIEW')"
 				>visibility</span
 			>
 			<span
-				class="material-icons-outlined delete-permission"
+				class="material-icons-outlined delete-permission em-pointer"
 				:class="{ active: attachment.can_be_deleted == '1' }"
 				@click="changePermission('can_be_deleted', attachment)"
 				:title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE')"
@@ -81,7 +81,7 @@
       <div v-if="attachment.sync > 0">
         <span
             v-if="attachment.sync_method == 'write' && !syncLoading"
-            class="material-icons sync"
+            class="material-icons sync em-pointer"
             :class="{
               success: synchronizeState == 1,
               error: synchronizeState != 1,
@@ -93,7 +93,7 @@
         </span>
         <span
             v-else-if="attachment.sync_method == 'read' && !syncLoading"
-            class="material-icons sync"
+            class="material-icons sync em-pointer"
             :class="{
               success: synchronizeState == 1,
               error: synchronizeState != 1,
