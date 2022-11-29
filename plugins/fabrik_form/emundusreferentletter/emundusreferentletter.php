@@ -167,7 +167,7 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 
 				$attachment_id = $recipient['attachment_id']; //ID provenant de la table emundus_attachments
 
-                // TODO : Check if an element of type emundus_referent is available and published on this form
+                // TODO : Check if we already sent a file request today, merge this query with query uploaded. If a file request is sent today OR already uploaded we don't send this email
                 $query = $db->getQuery(true);
                 $query->clear()
                     ->select('count(*)')
@@ -182,7 +182,6 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
                 if ($isSelectedReferent > 0) {
                     continue;
                 } else {
-
                     $query = 'SELECT count(id) as cpt FROM #__emundus_files_request 
 							WHERE student_id=' . $student->id . ' AND attachment_id=' . $attachment_id . ' AND uploaded=1 AND fnum like ' . $db->Quote($fnum);
 
