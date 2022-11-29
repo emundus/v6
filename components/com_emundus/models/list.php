@@ -188,12 +188,14 @@ class EmundusModelList extends JModelList
                     return 0;
                 }
 
-                require_once (JPATH_ROOT .'/components/com_emundus/helpers/access.php');
                 require_once (JPATH_ROOT .'/components/com_emundus/models/users.php');
-                require_once (JPATH_ROOT .'/components/com_emundus/models/campaign.php');
                 $m_users = new EmundusModelUsers();
                 $user_id = JFactory::getUser()->id;
                 $user_programs = $m_users->getUserGroupsProgramme($user_id);
+                $groups = $m_users->getUserGroups($user_id, 'Column');
+                $fnum_assoc_to_groups = $m_users->getApplicationsAssocToGroups($groups);
+                $fnum_assoc = $m_users->getApplicantsAssoc($user_id);
+
                 foreach($listDataResult as $index => $listResult) {
                     $query->clear()
                         ->select('training')
@@ -203,7 +205,7 @@ class EmundusModelList extends JModelList
                     $this->db->setQuery($query);
                     $program = $this->db->loadResult();
 
-                    if(!EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $listResult->fnum) && !in_array($program, $user_programs)) {
+                    if(!in_array($listResult->fnum, $fnum_assoc_to_groups) && !in_array($listResult->fnum, $fnum_assoc) && !in_array($program, $user_programs)) {
                         unset($listDataResult[$index]);
                     }
                 }

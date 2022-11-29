@@ -1652,37 +1652,49 @@ class EmundusModelUsers extends JModelList {
      *   @return array
     */
     public function getApplicationsAssocToGroups($gid) {
+        $applications = [];
 
-        if (count($gid) == 0) {
-            return array();
-        }
-        try {
-            $query = 'SELECT DISTINCT (ga.fnum)
-                      FROM #__emundus_group_assoc as ga
-                      WHERE ga.group_id IN ('.implode(',', $gid).')';
+        if (!empty($gid)) {
             $db = $this->getDbo();
-            $db->setQuery($query);
 
-            return $db->loadColumn();
-        } catch(Exception $e) {
-            return false;
+            $query = $db->getQuery(true);
+            $query->select('DISTINCT ga.fnum')
+                ->from($db->quoteName('#__emundus_group_assoc', 'ga'))
+                ->where('ga.group_id IN (' . implode(',', $gid) . ')');
+
+            try {
+                $db->setQuery($query);
+                $applications = $db->loadColumn();
+            } catch(Exception $e) {
+                JLog::add('Failed to get applications assoc to group ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            }
         }
+
+        return $applications;
     }
 
 
     // get applicants associated to a user
     public function getApplicantsAssoc($uid) {
-        try {
-            $query = "SELECT DISTINCT (eua.fnum)
-                      FROM #__emundus_users_assoc as eua
-                      WHERE eua.user_id = " .$uid;
-            $db = $this->getDbo();
-            $db->setQuery($query);
+        $applications = [];
 
-            return $db->loadColumn();
-        } catch(Exception $e) {
-            return false;
+        if (!empty($uid)) {
+            $db = $this->getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('DISTINCT eua.fnum')
+                ->from($db->quoteName('#__emundus_users_assoc', 'eua'))
+                ->where('eua.user_id = ' . $uid);
+
+            try {
+                $db->setQuery($query);
+                $applications = $db->loadColumn();
+            } catch(Exception $e) {
+                JLog::add('Failed to get applications assoc to user ' . $uid . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            }
         }
+
+        return $applications;
     }
 
     public function getUserCampaigns($uid) {
