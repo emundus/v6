@@ -35,10 +35,7 @@
 				error: attachment.is_validated == 0,
 			}"
 		>
-			<select
-				@change="(e) => updateStatus(e)"
-				:disabled="canUpdate === false ? true : false"
-			>
+			<select @change="(e) => updateStatus(e)" :disabled="canUpdate === false ? true : false">
 				<option value="1" :selected="attachment.is_validated == 1">
 					{{ translate("VALID") }}
 				</option>
@@ -48,12 +45,7 @@
 				<option value="2" :selected="attachment.is_validated == 2">
 					{{ translate("COM_EMUNDUS_ATTACHMENTS_WARNING") }}
 				</option>
-				<option
-					value="-2"
-					:selected="
-						attachment.is_validated == -2 || attachment.is_validated === null
-					"
-				>
+				<option value="-2" :selected="attachment.is_validated == -2 || attachment.is_validated === null">
 					{{ translate("COM_EMUNDUS_ATTACHMENTS_WAITING") }}
 				</option>
 			</select>
@@ -222,7 +214,7 @@ export default {
     "$store.state.attachment.categories": function () {
       this.categories = this.$store.state.attachment.categories;
       this.category = this.categories[this.attachment.category] ? this.categories[this.attachment.category] : "";
-    },
+    }
 	},
 };
 </script>

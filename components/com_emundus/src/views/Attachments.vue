@@ -156,7 +156,12 @@
       <div class="modal-head em-w-100 em-flex-row em-flex-space-between">
         <div id="actions-left" class="em-flex-row em-flex-start"><span>{{ selectedAttachment.filename }}</span></div>
         <div id="actions-right" class="em-flex-row">
-          <a download v-if="canDownload" :href="attachmentPath" class="download btn-icon-text em-mr-24">
+          <a v-if="sync && syncSelectedPreview" class="download btn-icon-text em-mr-24"
+             :href="syncSelectedPreview" target="_blank">
+	          <span class="material-icons-outlined">open_in_new</span>
+	          <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_OPEN_IN_GED') }}</span>
+          </a>
+	        <a download v-if="canDownload" :href="attachmentPath" class="download btn-icon-text em-mr-24">
             <span class="material-icons"> file_download </span>
             <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_LINK_TO_DOWNLOAD") }}</span>
           </a>
@@ -198,18 +203,18 @@
 </template>
 
 <script>
-import AttachmentPreview from "../components/Attachments/AttachmentPreview.vue";
-import AttachmentEdit from "../components/Attachments/AttachmentEdit.vue";
-import AttachmentRow from "../components/Attachments/AttachmentRow.vue";
-import attachmentService from "../services/attachment.js";
-import userService from "../services/user.js";
-import fileService from "../services/file.js";
-import syncService from "../services/sync.js";
-import mixin from "../mixins/mixin.js";
-import Swal from "sweetalert2";
+import AttachmentPreview from '../components/Attachments/AttachmentPreview.vue';
+import AttachmentEdit from '../components/Attachments/AttachmentEdit.vue';
+import AttachmentRow from '../components/Attachments/AttachmentRow.vue';
+import attachmentService from '../services/attachment.js';
+import userService from '../services/user.js';
+import fileService from '../services/file.js';
+import syncService from '../services/sync.js';
+import mixin from '../mixins/mixin.js';
+import Swal from 'sweetalert2';
 
 export default {
-  name: "Attachments",
+  name: 'Attachments',
   components: {
     AttachmentPreview,
     AttachmentEdit,
@@ -246,11 +251,11 @@ export default {
       displayedFnum: this.fnum,
       checkedAttachments: [],
       selectedAttachment: {},
-      progress: "",
+      progress: '',
       sort: {
-        last: "",
-        order: "",
-        orderBy: "",
+        last: '',
+        order: '',
+        orderBy: '',
       },
       canSee: true,
       canExport: false,
@@ -259,11 +264,12 @@ export default {
       canUpdate: false,
       canSync: false,
       modalLoading: false,
-      slideTransition: "slide-fade",
+      slideTransition: 'slide-fade',
 	    onlyPreview: false,
       changeFileEvent: null,
       sync: false,
-      exportLink: "",
+	    syncSelectedPreview: null,
+      exportLink: '',
     };
   },
   created() {
@@ -284,7 +290,7 @@ export default {
 					this.categories = response ? response : {};
 					this.attachments = this.defaultAttachments;
 					this.displayedAttachments = this.attachments;
-					this.$store.dispatch("attachment/setAttachmentsOfFnum", {
+					this.$store.dispatch('attachment/setAttachmentsOfFnum', {
 						fnum: [this.displayedFnum],
 						attachments: this.attachments,
 					});
@@ -319,21 +325,19 @@ export default {
           if (resp.status) {
             this.users.push(resp.user[0]);
             this.displayedUser = resp.user[0];
-            this.$store.dispatch("user/setDisplayedUser", this.displayedUser.user_id);
+            this.$store.dispatch('user/setDisplayedUser', this.displayedUser.user_id);
             this.$store.dispatch('user/setUsers', resp.user);
           } else {
-            this.displayErrorMessage(
-                this.translate("COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND")
-            );
+            this.displayErrorMessage(this.translate('COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND'));
           }
         } else {
           this.displayedUser = foundUser;
-          this.$store.dispatch("user/setDisplayedUser", this.displayedUser.user_id);
-          this.$store.dispatch("user/setUsers", [foundUser]);
+          this.$store.dispatch('user/setDisplayedUser', this.displayedUser.user_id);
+          this.$store.dispatch('user/setUsers', [foundUser]);
         }
       } else {
         this.displayErrorMessage(
-            this.translate("COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND")
+            this.translate('COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND')
         );
       }
     },
@@ -353,13 +357,13 @@ export default {
 
       this.resetOrder();
       this.checkedAttachments = [];
-      this.$refs["searchbar"].value = "";
+      this.$refs['searchbar'].value = '';
       const response = await attachmentService.getAttachmentsByFnum(this.displayedFnum);
 
       if (response.status) {
         this.attachments = response.attachments;
 	      this.displayedAttachments = this.attachments;
-	      this.$store.dispatch("attachment/setAttachmentsOfFnum", {
+	      this.$store.dispatch('attachment/setAttachmentsOfFnum', {
           fnum: [this.displayedFnum],
           attachments: this.attachments,
         });
@@ -367,9 +371,7 @@ export default {
         const categoriesResponse = await this.getAttachmentCategories();
         this.categories = categoriesResponse ? categoriesResponse : {};
       } else {
-        this.displayErrorMessage(
-            this.translate("COM_EMUNDUS_ATTACHMENTS_ERROR_GETTING_ATTACHMENTS")
-        );
+        this.displayErrorMessage(this.translate('COM_EMUNDUS_ATTACHMENTS_ERROR_GETTING_ATTACHMENTS'));
       }
 
       if (addLoading === true) {
@@ -394,10 +396,10 @@ export default {
             this.attachments[key].is_validated = $event.target.value;
 
             let formData = new FormData();
-            formData.append("fnum", this.displayedFnum);
-            formData.append("user", this.$store.state.user.currentUser);
-            formData.append("id", this.attachments[key].aid);
-            formData.append("is_validated", this.attachments[key].is_validated);
+            formData.append('fnum', this.displayedFnum);
+            formData.append('user', this.$store.state.user.currentUser);
+            formData.append('id', this.attachments[key].aid);
+            formData.append('is_validated', this.attachments[key].is_validated);
 
             attachmentService
                 .updateAttachment(formData)
@@ -419,12 +421,12 @@ export default {
           if (attachment.aid == selectedAttachment.aid) {
             this.resetOrder();
             this.attachments[key][permission] =
-                this.attachments[key][permission] === "1" ? "0" : "1";
+                this.attachments[key][permission] === '1' ? '0' : '1';
 
             let formData = new FormData();
-            formData.append("fnum", this.displayedFnum);
-            formData.append("user", this.$store.state.user.currentUser);
-            formData.append("id", this.attachments[key].aid);
+            formData.append('fnum', this.displayedFnum);
+            formData.append('user', this.$store.state.user.currentUser);
+            formData.append('id', this.attachments[key].aid);
             formData.append(permission, this.attachments[key][permission]);
 
             attachmentService.updateAttachment(formData).then((response) => {
@@ -435,9 +437,7 @@ export default {
           }
         });
       } else {
-        this.displayErrorMessage(
-            this.translate("COM_EMUNDUS_ATTACHMENTS_UNAUTHORIZED_ACTION")
-        );
+        this.displayErrorMessage(this.translate('COM_EMUNDUS_ATTACHMENTS_UNAUTHORIZED_ACTION'));
       }
     },
     synchronizeAttachments(aids)
@@ -460,7 +460,7 @@ export default {
         );
 
         if (response.status === true) {
-          this.$store.dispatch("user/setAccessRights", {fnum: this.displayedFnum, rights: response.rights});
+          this.$store.dispatch('user/setAccessRights', {fnum: this.displayedFnum, rights: response.rights});
         }
       }
       this.canExport = this.$store.state.user.rights[this.displayedFnum] ? this.$store.state.user.rights[this.displayedFnum].canExport : false;
@@ -475,7 +475,7 @@ export default {
 		        this.checkedAttachments
         ).then((response) => {
 	        if (response.data.status === true) {
-		        window.open(response.data.link, "_blank");
+		        window.open(response.data.link, '_blank');
 		        this.exportLink = response.data.link;
 	        } else {
 		        this.displayErrorMessage(response.data.msg);
@@ -486,31 +486,28 @@ export default {
 
     confirmDeleteAttachments() {
       if (this.canDelete) {
-        let html =
-            "<p>" +
-            this.translate("CONFIRM_DELETE_SELETED_ATTACHMENTS") +
-            "</p><br>";
+        let html = '<p>' + this.translate('CONFIRM_DELETE_SELETED_ATTACHMENTS') + '</p><br>';
 
-        let list = "";
+        let list = '';
         this.checkedAttachments.forEach((aid) => {
           this.attachments.forEach((attachment) => {
             if (attachment.aid == aid) {
-              list += attachment.value + ", ";
+              list += attachment.value + ', ';
             }
           });
         });
 
         // remove last ", "
         list = list.substring(0, list.length - 2);
-        html += "<p>" + list + "</p>";
+        html += '<p>' + list + '</p>';
 
         Swal.fire({
-          title: this.translate("DELETE_SELECTED_ATTACHMENTS"),
+          title: this.translate('DELETE_SELECTED_ATTACHMENTS'),
           html: html,
-          type: "warning",
+          type: 'warning',
           showCancelButton: true,
-          confirmButtonText: this.translate("JYES"),
-          cancelButtonText: this.translate("JNO"),
+          confirmButtonText: this.translate('JYES'),
+          cancelButtonText: this.translate('JNO'),
           reverseButtons: true,
           customClass: {
             title: 'em-swal-title',
@@ -523,9 +520,7 @@ export default {
           }
         });
       } else {
-        this.displayErrorMessage(
-            this.translate("YOU_NOT_HAVE_PERMISSION_TO_DELETE_ATTACHMENTS")
-        );
+        this.displayErrorMessage(this.translate('YOU_NOT_HAVE_PERMISSION_TO_DELETE_ATTACHMENTS'));
       }
     },
     async deleteAttachments() {
@@ -556,19 +551,14 @@ export default {
           // Display tooltip deleted succesfully
         }
       } else {
-        this.displayErrorMessage(
-            this.translate("YOU_NOT_HAVE_PERMISSION_TO_DELETE_ATTACHMENTS")
-        );
+        this.displayErrorMessage(this.translate('YOU_NOT_HAVE_PERMISSION_TO_DELETE_ATTACHMENTS'));
       }
     },
 	  changeAttachment(position, reverse = false) {
-      this.slideTransition = reverse ? "slide-fade-reverse" : "slide-fade";
+      this.slideTransition = reverse ? 'slide-fade-reverse' : 'slide-fade';
       this.modalLoading = true;
       this.selectedAttachment = this.displayedAttachments[position];
-      this.$store.dispatch(
-          "attachment/setSelectedAttachment",
-          this.selectedAttachment
-      );
+      this.$store.dispatch('attachment/setSelectedAttachment', this.selectedAttachment);
 
       setTimeout(() => {
         this.modalLoading = false;
@@ -605,20 +595,20 @@ export default {
     },
     resetOrder() {
       this.sort = {
-        last: "",
-        order: "",
-        orderBy: "",
+        last: '',
+        order: '',
+        orderBy: '',
       };
     },
     resetCategoryFilters() {
-      if (this.$refs["categoryFilter"]) {
-        this.$refs["categoryFilter"].value = "all";
+      if (this.$refs['categoryFilter']) {
+        this.$refs['categoryFilter'].value = 'all';
       }
     },
     orderBy(key) {
       // if last sort is the same as the current sort, reverse the order
       if (this.sort.last == key) {
-        this.sort.order = this.sort.order == "asc" ? "desc" : "asc";
+        this.sort.order = this.sort.order == 'asc' ? 'desc' : 'asc';
         this.attachments.reverse();
       } else {
         // sort in ascending order by key
@@ -632,7 +622,7 @@ export default {
           return 0;
         });
 
-        this.sort.order = "asc";
+        this.sort.order = 'asc';
       }
 
       this.sort.orderBy = key;
@@ -640,7 +630,7 @@ export default {
     },
     filterByCategory(e) {
       this.attachments.forEach((attachment) => {
-        if (e.target.value == "all") {
+        if (e.target.value == 'all') {
           attachment.show = true;
         } else {
           if (attachment.category == e.target.value) {
@@ -719,11 +709,6 @@ export default {
 	  }
   },
   computed: {
-    /*displayedAttachments() {
-      return this.attachments.filter((attachment) => {
-        return ((attachment.show === true || typeof attachment.show == 'undefined' || attachment.show == null ));
-      });
-    },*/
     fnumPosition() {
       return this.fnums.indexOf(this.displayedFnum);
     },
@@ -751,7 +736,13 @@ export default {
   watch: {
     "$store.state.global.anonyme": function () {
       this.canSee = !this.$store.state.global.anonyme;
-    }
+    },
+		selectedAttachment: function() {
+			this.syncSelectedPreview = null;
+			syncService.getAttachmentSyncNodeId(this.selectedAttachment.aid).then((response) => {
+				this.syncSelectedPreview = response;
+			});
+		}
   }
 };
 </script>
