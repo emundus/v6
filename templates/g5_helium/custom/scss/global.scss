@@ -3300,6 +3300,97 @@ h1.em-titre-connectez-vous {
   }
 }
 
+.com_emundus_vue #em-attachments {
+  .attachment-row {
+    border-bottom: 1px solid #e0e0e0;
+
+    &:hover:not(.checked) {
+      background-color: #f2f2f3 !important;
+    }
+
+    &.checked {
+      background-color: #f0f6fd !important;
+    }
+
+    .valid-state {
+      select {
+        padding: 4px 8px;
+        border-radius: 4px;
+        background-color: var(--grey-bg-color);
+        color: var(--grey-color);
+        border: none;
+        width: max-content;
+      }
+
+      select::-ms-expand {
+        display: none !important;
+      }
+
+      &.warning {
+        select {
+          color: var(--warning-color);
+          background-color: var(--warning-bg-color);
+        }
+      }
+
+      &.success {
+        select {
+          color: var(--success-color);
+          background-color: var(--success-bg-color);
+        }
+      }
+
+      &.error {
+        select {
+          color: var(--error-color);
+          background-color: var(--error-bg-color);
+        }
+      }
+    }
+
+    .permissions {
+      .material-icons, .material-icons-outlined {
+        margin: 0 10px;
+        opacity: 0.3;
+
+        &.active {
+          opacity: 1;
+        }
+      }
+    }
+
+    .material-icons {
+      cursor: pointer;
+
+      &.success {
+        color: var(--success-color);
+      }
+
+      &.error {
+        color: var(--error-color);
+      }
+    }
+
+    .td-document {
+      max-width: 250px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+
+      .warning.file-not-found {
+        color: var(--error-color);
+        transform: translate(10px, 3px);
+      }
+    }
+
+    .sync-loader {
+      width: 30px !important;
+      height: 30px !important;
+    }
+  }
+}
+
   #em-files-filters #em_filters fieldset input#save-filter,
   #em_adv_filters .em_filters_adv_filter_addColumn button#add-filter{
     margin-top: 10px;
