@@ -44,6 +44,7 @@ $mod_em_campaign_show_search = $params->get('mod_em_campaign_show_search', 1);
 $mod_em_campaign_show_results = $params->get('mod_em_campaign_show_results', 1);
 $mod_em_campaign_list_tab = $params->get('mod_em_campaign_list_tab');
 $mod_em_campaign_list_show_programme = $params->get('mod_em_campaign_show_programme');
+$mod_em_campaign_show_programme_logo = $params->get('mod_em_campaign_show_programme_logo');
 $mod_em_campaign_show_pinned_campaign = $params->get('mod_em_campaign_show_pinned_campaign');
 $mod_em_campaign_order = $params->get('mod_em_campaign_orderby');
 $mod_em_campaign_order_type = $params->get('mod_em_campaign_order_type');
