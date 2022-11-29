@@ -1186,4 +1186,34 @@ class EmundusModelProfile extends JModelList {
             return false;
         }
     }
+
+    /**
+     * @param $profile_id
+     * @return string
+     */
+    public function getFilesMenuPathByProfile($profile_id)
+    {
+        $path = '';
+
+        if (!empty($profile_id) && $profile_id) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('jm.path')
+                ->from('#__menu AS jm')
+                ->leftJoin('#__emundus_setup_profiles AS jesp ON jesp.menutype = jm.menutype')
+                ->where('jesp.id = ' . $profile_id)
+                ->andWhere('jm.link = ' . $db->quote('index.php?option=com_emundus&view=files'))
+                ->andWhere('jm.published = 1');
+
+            $db->setQuery($query);
+            try {
+                $path = $db->loadResult();
+            } catch (Exception $e) {
+                JLog::add('Failed to get path of files view from profile', JLog::ERROR, 'com_emundus.error');
+            }
+        }
+
+        return $path;
+    }
 }
