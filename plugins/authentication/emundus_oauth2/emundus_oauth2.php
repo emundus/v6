@@ -77,6 +77,7 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
      */
     public function onUserAuthenticate($credentials, $options, &$response)
     {
+        $authenticate = false;
         $this->attributes = json_decode($this->params->get('attributes'));
 
         $response->type = 'OAuth2';
@@ -87,70 +88,66 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
             if (!$username) {
                 $response->status = JAuthentication::STATUS_FAILURE;
                 $response->error_message = JText::_('JGLOBAL_AUTH_NO_USER');
-                return false;
-            }
+            } else {
+                try {
+                    $token = JArrayHelper::getValue($options, 'token');
+                    $url = $this->params->get('sso_account_url');
+                    $oauth2 = new JOAuth2Client;
+                    $oauth2->setToken($token);
+                    $oauth2->setOption('scope', $this->scopes);
+                    $result = $oauth2->query($url);
 
-            try {
-                $token = JArrayHelper::getValue($options, 'token');
-                $url = $this->params->get('sso_account_url');
-                $oauth2 = new JOAuth2Client;
-                $oauth2->setToken($token);
-                $oauth2->setOption('scope', $this->scopes);
-                $result = $oauth2->query($url);
-
-                $body = json_decode($result->body);
-                foreach ($this->attributes->user_column_name as $key => $column){
-                    $response->{$column} = $body->{$this->attributes->attribute_name[$key]};
-                }
-
-                if (!empty($response->username)) {
-                    if (empty(JUserHelper::getUserId($response->username)) && !empty($response->email)) {
-                        // check if user exists from email
-                        $db = JFactory::getDbo();
-                        $query = $db->getQuery(true);
-
-                        $query->select('username')
-                            ->from('#__users')
-                            ->where('email = ' . $db->quote($response->email));
-
-                        $db->setQuery($query);
-
-                        try {
-                            $existing_username = $db->loadResult();
-                        } catch (Exception $e) {
-                            JLog::add('Failed to check if user exists from mail but with another username ' .$e->getMessage(), JLog::ERROR, 'com_emundus.error');
-                        }
-
-                        if (!empty($existing_username)) {
-                            $response->username = $existing_username;
-                        }
+                    $body = json_decode($result->body);
+                    foreach ($this->attributes->user_column_name as $key => $column){
+                        $response->{$column} = $body->{$this->attributes->attribute_name[$key]};
                     }
 
-                    $response->profile = $this->params->get('emundus_profile', 9);
-                    $response->status = JAuthentication::STATUS_SUCCESS;
-                    $response->isnew = empty(JUserHelper::getUserId($response->username));
-                    $response->error_message = '';
-                    $user = new JUser(JUserHelper::getUserId($response->username));
+                    if (!empty($response->username)) {
+                        if (empty(JUserHelper::getUserId($response->username)) && !empty($response->email)) {
+                            // check if user exists from email
+                            $db = JFactory::getDbo();
+                            $query = $db->getQuery(true);
 
-                    if ($user->get('block') || $user->get('activation')) {
+                            $query->select('username')
+                                ->from('#__users')
+                                ->where('email = ' . $db->quote($response->email));
+
+                            $db->setQuery($query);
+
+                            try {
+                                $existing_username = $db->loadResult();
+                            } catch (Exception $e) {
+                                JLog::add('Failed to check if user exists from mail but with another username ' .$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                            }
+
+                            if (!empty($existing_username)) {
+                                $response->username = $existing_username;
+                            }
+                        }
+
+                        $response->profile = $this->params->get('emundus_profile', 9);
+                        $response->status = JAuthentication::STATUS_SUCCESS;
+                        $response->isnew = empty(JUserHelper::getUserId($response->username));
+                        $response->error_message = '';
+                        $user = new JUser(JUserHelper::getUserId($response->username));
+
+                        if ($user->get('block') || $user->get('activation')) {
+                            $response->status = JAuthentication::STATUS_FAILURE;
+                            $response->error_message = JText::_('JGLOBAL_AUTH_ACCESS_DENIED');
+                        } else {
+                            $authenticate = true;
+                        }
+                    } else {
                         $response->status = JAuthentication::STATUS_FAILURE;
-                        $response->error_message = JText::_('JGLOBAL_AUTH_ACCESS_DENIED');
-                        return false;
+                        $response->error_message = JText::_('JGLOBAL_AUTH_NO_USER');
                     }
-                } else {
+                } catch (Exception $e) {
                     $response->status = JAuthentication::STATUS_FAILURE;
-                    $response->error_message = JText::_('JGLOBAL_AUTH_NO_USER');
-                    return false;
                 }
-
-                return true;
-            } catch (Exception $e) {
-                // log error.
-                $response->status = JAuthentication::STATUS_FAILURE;
-                return false;
             }
         }
-        return false;
+
+        return $authenticate;
     }
 
     /**
