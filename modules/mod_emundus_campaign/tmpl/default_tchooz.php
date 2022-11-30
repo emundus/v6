@@ -76,9 +76,11 @@ $protocol = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SERV
 $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 ?>
 
-<div class="mod_emundus_campaign__intro">
-    <?= $mod_em_campaign_intro; ?>
-</div>
+<?php if (in_array('intro',$mod_em_campaign_list_sections)): ?>
+    <div class="mod_emundus_campaign__intro">
+        <?= $mod_em_campaign_intro; ?>
+    </div>
+<?php endif; ?>
 
 
 <form action="<?php echo $CurPageURL ?>" method="post" id="search_program">
