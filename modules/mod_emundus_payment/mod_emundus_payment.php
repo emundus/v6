@@ -142,7 +142,7 @@ if (!empty($user) && !empty($user->fnum)) {
                                     // PayID
                                     '',
                                     // TransID
-                                    1,
+                                    $order,
                                     // MerchantID
                                     $merchant_id,
                                     // Amount
