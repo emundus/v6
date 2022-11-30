@@ -104,6 +104,28 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
                 }
 
                 if (!empty($response->username)) {
+                    if (empty(JUserHelper::getUserId($response->username)) && !empty($response->email)) {
+                        // check if user exists from email
+                        $db = JFactory::getDbo();
+                        $query = $db->getQuery(true);
+
+                        $query->select('username')
+                            ->from('#__users')
+                            ->where('email = ' . $db->quote($response->email));
+
+                        $db->setQuery($query);
+
+                        try {
+                            $existing_username = $db->loadResult();
+                        } catch (Exception $e) {
+                            JLog::add('Failed to check if user exists from mail but with another username ' .$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                        }
+
+                        if (!empty($existing_username)) {
+                            $response->username = $existing_username;
+                        }
+                    }
+
                     $response->profile = $this->params->get('emundus_profile', 9);
                     $response->status = JAuthentication::STATUS_SUCCESS;
                     $response->isnew = empty(JUserHelper::getUserId($response->username));
