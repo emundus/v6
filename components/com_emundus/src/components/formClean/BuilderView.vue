@@ -171,7 +171,7 @@
 
                         <div class="em-flex-row">
                           <div class="em-flex-row em-mr-8 em-pointer" @click="openParameters(element)" :title="translations.Edit">
-                            <span class="material-icons">edit</span>
+                            <span class="material-icons-outlined">edit</span>
                           </div>
                           <div class="em-flex-row em-mr-8 em-pointer" @click="deleteElement(element,index)" :title="translations.Delete">
                             <span class="material-icons-outlined em-red-500-color">delete</span>
@@ -725,11 +725,6 @@ export default {
           this.repeat = true;
           this.reloadElement(element);
         }
-            // //
-            // else if(response.data.plugin === 'date' && this.repeat === false) {
-            //   this.repeat = true;
-            //   this.reloadElement(element);
-        // }
 
         else{
           this.$set(element,'element',response.data.element);
@@ -1328,7 +1323,7 @@ export default {
   position: absolute;
 }
 .element-updating{
-  border: solid 2px #20835F !important;
+  border: solid 2px var(--main-500) !important;
   border-radius: 4px;
 }
 .em-transparent-border-2{

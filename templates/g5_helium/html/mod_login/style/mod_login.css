@@ -117,14 +117,13 @@ ul.unstyled.em-linkForgot li a span::before {
 }
 
 .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter .page-header h1 {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font);
     font-size: 32px;
     font-style: normal;
     font-weight: 600;
     line-height: 39px;
     letter-spacing: 0;
 }
-
 
 /* RESPONSIVE */
 

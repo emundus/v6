@@ -1,110 +1,44 @@
 <?php
-// No direct access to this file
-defined('_JEXEC') or die('Restricted access');
 
-/**
- * Script file of miniorange_saml_system_plugin.
- *
- * The name of this class is dependent on the component being installed.
- * The class name should have the component's name, directly followed by
- * the text InstallerScript (ex:. com_helloWorldInstallerScript).
- *
- * This class will be called by Joomla!'s installer, if specified in your component's
- * manifest file, and is used for custom automation actions in its installation process.
- *
- * In order to use this automation script, you should reference it in your component's
- * manifest file as follows:
- * <scriptfile>script.php</scriptfile>
- *
- 
- * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
- */
+
+defined("\x5f\112\x45\130\105\103") or die("\122\x65\x73\164\162\151\143\x74\x65\144\x20\141\x63\143\x65\163\163");
 class plgSystemSamlredirectInstallerScript
 {
-    /**
-     * This method is called after a component is installed.
-     *
-     * @param  \stdClass $parent - Parent object calling this method.
-     *
-     * @return void
-     */
-    public function install($parent) 
+    public function install($VW)
     {
-
-          $db  = JFactory::getDbo();
-          $query = $db->getQuery(true);
-          $query->update('#__extensions');
-          $query->set($db->quoteName('enabled') . ' = 1');
-          $query->where($db->quoteName('element') . ' = ' . $db->quote('miniorangesaml'));
-          $query->where($db->quoteName('type') . ' = ' . $db->quote('plugin'));
-          $db->setQuery($query);
-          $db->execute();
-
-          $query1 = $db->getQuery(true);
-          $query1->update('#__extensions');
-          $query1->set($db->quoteName('enabled') . ' = 1');
-          $query1->where($db->quoteName('element') . ' = ' . $db->quote('samlredirect'));
-          $query1->where($db->quoteName('type') . ' = ' . $db->quote('plugin'));
-          $db->setQuery($query1);
-          $db->execute();
-            
+        $F7 = JFactory::getDbo();
+        $bm = $F7->getQuery(true);
+        $bm->update("\43\137\137\145\170\164\145\156\x73\x69\x6f\x6e\x73");
+        $bm->set($F7->quoteName("\x65\156\x61\142\x6c\x65\x64") . "\x20\75\x20\x31");
+        $bm->where($F7->quoteName("\x65\154\145\155\x65\x6e\164") . "\x20\x3d\40" . $F7->quote("\x6d\151\156\x69\157\162\x61\x6e\x67\145\163\x61\x6d\x6c"));
+        $bm->where($F7->quoteName("\164\x79\x70\x65") . "\x20\x3d\x20" . $F7->quote("\x70\154\x75\x67\x69\x6e"));
+        $F7->setQuery($bm);
+        $F7->execute();
+        $S8 = $F7->getQuery(true);
+        $S8->update("\x23\x5f\137\145\170\164\145\156\x73\x69\157\x6e\163");
+        $S8->set($F7->quoteName("\145\156\141\x62\154\x65\x64") . "\x20\75\40\x31");
+        $S8->where($F7->quoteName("\145\154\x65\155\145\156\x74") . "\40\x3d\x20" . $F7->quote("\x73\x61\155\154\154\157\147\x6f\x75\164"));
+        $S8->where($F7->quoteName("\x74\x79\160\x65") . "\40\75\40" . $F7->quote("\160\x6c\165\x67\x69\x6e"));
+        $F7->setQuery($S8);
+        $F7->execute();
+        $vW = $F7->getQuery(true);
+        $vW->update("\43\x5f\x5f\145\170\x74\x65\156\x73\x69\157\x6e\163");
+        $vW->set($F7->quoteName("\x65\156\141\x62\x6c\x65\144") . "\x20\75\40\x31");
+        $vW->where($F7->quoteName("\x65\x6c\145\155\x65\156\x74") . "\40\x3d\x20" . $F7->quote("\x73\x61\155\x6c\x72\x65\144\x69\x72\x65\143\x74"));
+        $vW->where($F7->quoteName("\164\x79\160\x65") . "\x20\x3d\x20" . $F7->quote("\x70\154\165\x67\151\x6e"));
+        $F7->setQuery($vW);
+        $F7->execute();
     }
-
-    /**
-     * This method is called after a component is uninstalled.
-     *
-     * @param  \stdClass $parent - Parent object calling this method.
-     *
-     * @return void
-     */
-    public function uninstall($parent) 
+    public function uninstall($VW)
     {
-        //echo '<p>' . JText::_('COM_HELLOWORLD_UNINSTALL_TEXT') . '</p>';
     }
-
-    /**
-     * This method is called after a component is updated.
-     *
-     * @param  \stdClass $parent - Parent object calling object.
-     *
-     * @return void
-     */
-    public function update($parent) 
+    public function update($VW)
     {
-        //echo '<p>' . JText::sprintf('COM_HELLOWORLD_UPDATE_TEXT', $parent->get('manifest')->version) . '</p>';
     }
-
-    /**
-     * Runs just before any installation action is performed on the component.
-     * Verifications and pre-requisites should run in this function.
-     *
-     * @param  string    $type   - Type of PreFlight action. Possible values are:
-     *                           - * install
-     *                           - * update
-     *                           - * discover_install
-     * @param  \stdClass $parent - Parent object calling object.
-     *
-     * @return void
-     */
-    public function preflight($type, $parent) 
+    public function preflight($Zu, $VW)
     {
-        //echo '<p>' . JText::_('COM_HELLOWORLD_PREFLIGHT_' . $type . '_TEXT') . '</p>';
     }
-
-    /**
-     * Runs right after any installation action is performed on the component.
-     *
-     * @param  string    $type   - Type of PostFlight action. Possible values are:
-     *                           - * install
-     *                           - * update
-     *                           - * discover_install
-     * @param  \stdClass $parent - Parent object calling object.
-     *
-     * @return void
-     */
-    function postflight($type, $parent) 
+    function postflight($Zu, $VW)
     {
-       // echo '<p>' . JText::_('COM_HELLOWORLD_POSTFLIGHT_' . $type . '_TEXT') . '</p>';
     }
 }

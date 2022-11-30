@@ -4,6 +4,7 @@ defined('_JEXEC') or die;
 header('Content-Type: text/html; charset=utf-8');
 
 $app = JFactory::getApplication();
+$user = JFactory::getUser();
 $searchword = $app->input->getString('searchword', null);
 
 $lang = JFactory::getLanguage();
@@ -83,7 +84,7 @@ $site_offset = $config->get('offset');
                                 <?php endif; ?>
 
                                 <?php if ($mod_em_campaign_show_camp_end_date && $result->end_date != '0000-00-00 00:00:00') :?>
-                                    <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?>:</strong>
+                                    <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?></strong>
                                     <span class="em-camp-end"><?php echo JFactory::getDate(new JDate($result->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                     <br>
                                 <?php endif; ?>
@@ -122,9 +123,12 @@ $site_offset = $config->get('offset');
                                         if (!isset($redirect_url) || empty($redirect_url)) {
                                             $redirect_url = "index.php?option=com_users&view=registration";
                                         }
-                                        $register_url = $redirect_url . "&course=" . $result->code . "&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid . "&redirect=" . $formUrl;
+                                        $register_url = $redirect_url . "&course=" . $result->code . "&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid;
                                     } else {
-                                        $register_url = $redirect_url . "?course=" . $result->code . "&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid . "&redirect=" . $formUrl;
+                                        $register_url = $redirect_url . "?course=" . $result->code . "&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid;
+                                    }
+                                    if(!$user->guest) {
+                                        $register_url .= "&redirect=" . $formUrl;
                                     }
                                     ?>
                                     <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo $register_url; ?>'

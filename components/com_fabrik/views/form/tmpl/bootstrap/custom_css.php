@@ -98,18 +98,17 @@ echo <<<EOT
     box-shadow: none !important;
 }
 
-.view-form main#g-main-mainbody {
-    padding-right: 5%;
-}
-
 .view-registration main#g-main-mainbody {
     padding-right: 0;
 }
 
 
-.view-form .fabrikForm .fabrikActions.form-actions, .view-details .fabrikForm .fabrikActions.form-actions{
-    padding: 0;
+.view-form:not(.view-registration) .fabrikForm .fabrikActions.form-actions,
+.view-details .fabrikForm .fabrikActions.form-actions{
+    padding: 16px 0 0 0;
     margin-bottom: 0;
+    border-top: solid 1px #EDEDED;
+    padding-top: 16px;
 }
 
 
@@ -132,6 +131,7 @@ echo <<<EOT
 
 .view-form.view-registration .size-100 .size-100 .fabrikGroup {
     background: #fff;
+    margin-bottom: 32px;
 }
 
 .view-checklist #attachment_list_mand .fieldset, .view-checklist #attachment_list_opt .fieldset {
@@ -216,7 +216,6 @@ label {
     display: flex !important;
     flex-direction:row;
 }
-
 
 #g-navigation .g-main-nav .g-dropdown > .g-dropdown-column {
     border: none;
@@ -504,12 +503,12 @@ form#member-profile .form-horizontal .control-label {
 .view-registration .login.em-formRegistrationCenter .em-heading-registration h1, 
 .view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) .em-heading-registration h1 {
     margin-top: 0px !important; 
-    font-family:'Inter', sans-serif;
     font-size: 32px;
     font-style: normal;
     font-weight: 600;
     line-height: 39px;
     letter-spacing: 0;
+    color: var(--em-applicant-title-color);
 }
 
 .view-form.view-registration .span12. .login.em-formRegistrationCenter  p:first-of-type, 
@@ -525,9 +524,17 @@ form#member-profile .form-horizontal .control-label {
     width: 50%;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 92px;
+    margin-top: 0;
+    margin-bottom: 64px;
     border-radius: 16px;
+    margin-top: 68px;
+    padding: 80px 64px 80px 64px;
 }
+
+.view-registration .view-registration.login.em-formRegistrationCenter p.em-h3 {
+   font-family:  var(--applicant-title-font);
+}
+
 
  .view-form.em-formRegistrationCenter:not(.view-registration) .em-formRegistrationCenter:not(.componentheading) {
     display: flex !important;
@@ -575,7 +582,7 @@ form#member-profile .form-horizontal .control-label {
 
   .view-registration .login div.em-heading-registration,  .view-form .em-formRegistrationCenter div.em-heading-registration  {
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: flex-end;
     flex-direction: row;
     width: 100%;
@@ -595,7 +602,7 @@ button.register {
     border-radius: 0;
     background: #fff;
     box-shadow: none;
-    padding: 0px 64px 80px 64px;
+    padding: 0px 64px 16px 64px;
     margin-top: 0px !important;
     border-radius: 0 0 16px 16px;
     width: 100%;
@@ -743,7 +750,7 @@ button.register {
 }
 /* --------- Créez votre espace -------------- */
 .fabrikActions.form-actions .row-fluid .span4 {
-    width: auto !important;
+    width: 100% !important;
     margin-bottom: 0 !important;
 }
 
@@ -1031,7 +1038,7 @@ a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
     border: 1px solid #4e5b6d;
     border-radius: 4px !important;
     padding: 10px 12px !important;
-   font-family: 'Inter', sans-serif;
+   font-family:  var(--applicant-default-font);
     font-weight: 500;
 }
 .span4 > .btn-group > button.save-btn:hover, .span4 > .btn-group > button.save:hover {
@@ -1131,10 +1138,6 @@ body.em-formRegistrationCenter  {
     overflow-x: hidden;
 }
 
-.view-form .fabrikElement div a.chzn-single {
-   border-radius: 0px; 
-}
-
 .view-form .fabrikElement div a.chzn-single span {
    display: inline; 
 }
@@ -1143,10 +1146,6 @@ body.em-formRegistrationCenter  {
 
 .import-csv-page h1, .import-csv-page legend { 
     color: #000 !important; 
-}
-
-.import-csv-page select { 
-   border: 2px solid #ccc!important;
 }
 
 /* RAPPRT ERREUR */ 
@@ -1404,8 +1403,9 @@ form.fabrikForm .row-fluid .control-group.plg-textarea label.fabrikTip {
 .form-actions .row-fluid {
     text-align: center;
     display: flex;
-    justify-content: center;
     flex-direction: row-reverse;
+    justify-content: space-between;
+    padding: 0 32px;
 }
 
 .form-actions .row-fluid .span4 {

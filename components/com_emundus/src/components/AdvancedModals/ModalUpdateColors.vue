@@ -16,11 +16,11 @@
           {{updateColors}}
         </span>
         <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalUpdateColors')">
-          <span class="material-icons">close</span>
+          <span class="material-icons-outlined">close</span>
         </button>
       </div>
 
-      <div>
+      <div class="em-grid-3">
         <div v-for="(preset) in presets" class="preset-presentation" :style="'background-color:' + preset.primary + ';border-right: 100px solid' + preset.secondary" @click="changeColors(preset)"></div>
       </div>
     </modal>

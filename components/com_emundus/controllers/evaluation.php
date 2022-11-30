@@ -615,11 +615,13 @@ class EmundusControllerEvaluation extends JControllerLegacy
 		    }
 		    //*********************************************************************
 		    // Get triggered email
-		    include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
+            include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
 		    $m_email = new EmundusModelEmails;
 		    $trigger_emails = $m_email->getEmailTrigger($state, $code, 1);
 
 		    if (count($trigger_emails) > 0) {
+                include_once(JPATH_SITE.'/components/com_emundus/helpers/emails.php');
+                $h_email = new EmundusHelperEmails;
 
 			    foreach ($trigger_emails as $key => $trigger_email) {
 
@@ -630,8 +632,12 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
 						    // Manage with selected fnum
 						    foreach ($fnumsInfos as $file) {
-							    $mailer = JFactory::getMailer();
-
+                                $can_send_mail = $h_email->assertCanSendMailToUser($file['applicant_id'], $file['fnum']);
+                                if (!$can_send_mail) {
+                                   continue;
+                                }
+                                
+                                $mailer = JFactory::getMailer();
 							    $post = array('FNUM' => $file['fnum']);
 							    $tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum'], '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
 
@@ -682,6 +688,11 @@ class EmundusControllerEvaluation extends JControllerLegacy
 					    }
 
 					    foreach ($trigger['to']['recipients'] as $key => $recipient) {
+                            $can_send_mail = $h_email->assertCanSendMailToUser($recipient['id']);
+                            if (!$can_send_mail) {
+                                continue;
+                            }
+
 						    $mailer = JFactory::getMailer();
 
 						    $tags = $m_email->setTags($recipient['id'], array(), null, '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
@@ -1875,6 +1886,39 @@ class EmundusControllerEvaluation extends JControllerLegacy
             $result = array('status' => true, 'attachment_letters' => $attachment_letters);
         } else {
             $result = array('status' => false, 'attachment_letters' => null);
+        }
+        echo json_encode((object) $result);
+        exit;
+    }
+
+    public function getmyevaluations() {
+        $current_user = JFactory::getUser();
+        $jinput = JFactory::getApplication()->input;
+        $campaign = $jinput->getInt('campaign');
+        $module = $jinput->getInt('module');
+
+        $files_to_evaluate = $this->getModel('Evaluation')->getMyEvaluations($current_user->id,$campaign,$module);
+
+        if (!empty($files_to_evaluate)) {
+            $result = array('status' => true, 'files' => $files_to_evaluate);
+        } else {
+            $result = array('status' => false, 'files' => []);
+        }
+        echo json_encode((object) $result);
+        exit;
+    }
+
+    public function getcampaignstoevaluate() {
+        $current_user = JFactory::getUser();
+        $jinput = JFactory::getApplication()->input;
+        $module = $jinput->getInt('module');
+
+        $campaigns = $this->getModel('Evaluation')->getCampaignsToEvaluate($current_user->id,$module);
+
+        if (!empty($campaigns)) {
+            $result = array('status' => true, 'campaigns' => $campaigns);
+        } else {
+            $result = array('status' => false, 'campaigns' => []);
         }
         echo json_encode((object) $result);
         exit;

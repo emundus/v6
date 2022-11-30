@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -55,7 +55,10 @@ foreach($this->order->history as $k => $history) {
 				$elements = array();
 				if(!empty($history->history_user_id)){
 					$user = $userClass->get($history->history_user_id);
-					$elements[] = $user->username;
+					if(!empty($user->username))
+						$elements[] = $user->username;
+					elseif(!empty($user->user_email))
+						$elements[] = $user->user_email;
 				}
 				if(!empty($history->history_ip))
 					$elements[] = $history->history_ip;
@@ -76,6 +79,6 @@ foreach($this->order->history as $k => $history) {
 </div>
 <script type="text/javascript">
 window.orderMgr.updateHistory = function() {
-	window.Oby.xRequest('<?php echo hikashop_completeLink('order&task=show&subtask=history&cid='.$this->order->order_id, true, false, true); ?>',{update:'hikashop_order_field_history'});
+	window.hikashop.xRequest('<?php echo hikashop_completeLink('order&task=show&subtask=history&cid='.$this->order->order_id, true, false, true); ?>',{update:'hikashop_order_field_history'});
 }
 </script>

@@ -1,13 +1,18 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><div style="min-height: 50px;">
+?><?php
+	$extra_css = "";
+	if (HIKASHOP_J40)
+		$extra_css = "display: block; min-height: 50px; max-width:unset !important;";
+?>
+<div style="min-height: 50px;">
 	<h1 style="float:left;"><?php echo JText::_('SELECT_SUBZONES'); ?></h1>
 	<div class="toolbar" id="toolbar" style="float: right;">
 		<?php if(!in_array($this->type,array('discount','shipping','payment','config','tax'))){?>
@@ -20,10 +25,10 @@ defined('_JEXEC') or die('Restricted access');
 <form action="index.php?option=<?php echo HIKASHOP_COMPONENT ?>&amp;ctrl=zone&amp;tmpl=component" method="post"  name="adminForm" id="adminForm">
 	<table width="100%">
 		<tr>
-			<td>
+			<td style="<?php echo $extra_css; ?>">
 				<?php echo $this->loadHkLayout('search'); ?>
 			</td>
-			<td nowrap="nowrap" style="text-align:right;">
+			<td nowrap="nowrap" style="text-align:right; <?php echo $extra_css; ?>">
 				<?php echo $this->filters->country; ?>
 				<?php echo $this->filters->type; ?>
 			</td>
@@ -62,7 +67,6 @@ defined('_JEXEC') or die('Restricted access');
 			<tr>
 				<td colspan="10">
 					<?php echo $this->pagination->getListFooter(); ?>
-					<?php echo $this->pagination->getResultsCounter(); ?>
 				</td>
 			</tr>
 		</tfoot>

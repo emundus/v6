@@ -2,6 +2,7 @@
 
 require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
 require_once (JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+
 class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
 {
     /**
@@ -29,7 +30,7 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
         $date = date('Y-m-d H:i:s');
 
         $params = $this->getParams();
-        $eMConfig 	= JComponentHelper::getParams('com_emundus');
+        $eMConfig   = JComponentHelper::getParams('com_emundus');
 
         $link = $eMConfig->get('filename');
         $id_element = $params->get('element', '');
@@ -57,13 +58,17 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
         $lastrun = $db->loadResult();
         // Requête qui recherche les dossiers créés ou modifié à la date du lancement du cron
         $query = $db->getQuery(true);
-
-        $query->select('DISTINCT (fnum_to) as fnum');
-        $query->from($db->quoteName('#__emundus_logs'));
-        $query->where($db->quoteName('message') . ' IN ('.$status.') AND '.$db->quoteName('timestamp').' BETWEEN '.$db->quote($lastrun).' AND '.$db->quote($date).' ORDER BY timestamp DESC');
+        /*
+                $query->select('DISTINCT (fnum_to) as fnum');
+                $query->from($db->quoteName('#__emundus_logs'));
+                $query->where($db->quoteName('message') . ' IN ('.$status.') AND '.$db->quoteName('timestamp').' BETWEEN '.$db->quote($lastrun).' AND '.$db->quote($date).' ORDER BY timestamp DESC');
+        */
+        // Suite à la demande de pouvoir télécharger tous les dossiers complets, on ne cherche plus à identifier les dossiers dernièrement modifiés, seulement ceux non-archivés parmis une liste de statuts
+        $query->select('fnum');
+        $query->from($db->quoteName('#__emundus_campaign_candidature'));
+        $query->where($db->quoteName('published') . '=1 AND '.$db->quoteName('status') . ' IN ('.$status.') ORDER BY date_submitted DESC');
 
         $db->setQuery($query);
-
 
         try {
             $resultlogs = $db->loadAssocList();
@@ -164,6 +169,7 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
             }
         }
     }
+
     public function getElementsName($elements_id) {
         if (!empty($elements_id) && !empty(ltrim($elements_id))) {
 

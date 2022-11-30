@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -94,16 +94,16 @@ if(!empty($show_msrp)) {
 
 			if(!empty($this->row->discount)) {
 				if(in_array($this->params->get('show_discount'), array(1, 4))) {
-					echo '<span class="hikashop_product_discount">'.JText::_('PRICE_DISCOUNT_START');
-					if(bccomp($this->row->discount->discount_flat_amount, 0, 5) !== 0) {
+					echo '<span class="hikashop_product_discount">'.JText::_('PRICE_DISCOUNT_START').'<span class="hikashop_product_discount_amount">';
+					if(bccomp(sprintf('%F',$this->row->discount->discount_flat_amount), 0, 5) !== 0) {
 						echo $this->currencyHelper->format( -1 * $this->row->discount->discount_flat_amount, $price->price_currency_id);
-					} elseif(bccomp($this->row->discount->discount_percent_amount, 0, 5) !== 0) {
+					} elseif(bccomp(sprintf('%F',$this->row->discount->discount_percent_amount), 0, 5) !== 0) {
 						echo -1*$this->row->discount->discount_percent_amount.'%';
 					}
-					echo JText::_('PRICE_DISCOUNT_END').'</span>';
+					echo '</span>'.JText::_('PRICE_DISCOUNT_END').'</span>';
 				}
 				if(in_array($this->params->get('show_discount'), array(2, 4))) {
-					echo '<span class="hikashop_product_price_before_discount">'.JText::_('PRICE_DISCOUNT_START');
+					echo '<span class="hikashop_product_price_before_discount">'.JText::_('PRICE_DISCOUNT_START').'<span class="hikashop_product_price_before_discount_amount">';
 					if($this->params->get('price_with_tax')){
 						echo $this->currencyHelper->format($price->price_value_without_discount_with_tax, $price->price_currency_id);
 					}
@@ -132,7 +132,7 @@ if(!empty($show_msrp)) {
 						}
 						echo JText::_('PRICE_AFTER_ORIG');
 					}
-					echo JText::_('PRICE_DISCOUNT_END').'</span>';
+					echo '</span>'.JText::_('PRICE_DISCOUNT_END').'</span>';
 				} elseif($this->params->get('show_discount') == 3) {
 
 				}
@@ -148,12 +148,16 @@ if(!empty($show_msrp)) {
 					$prefix = '';
 				}
 				if($this->params->get('price_with_tax')) {
-					$attributes = ' '.$prefix.'itemprop="price" '.$prefix.'content="'. str_replace(',','.',$this->currencyHelper->round($price->price_value_with_tax, $round, 0, true)) .'"';
+					$price_attributes = str_replace(',','.',$this->currencyHelper->round($price->price_value_with_tax, $round, 0, true));
 				} else {
-					$attributes = ' '.$prefix.'itemprop="price" '.$prefix.'content="'. str_replace(',','.',$this->currencyHelper->round($price->price_value, $round, 0, true)) .'"';
+					$price_attributes = str_replace(',','.',$this->currencyHelper->round($price->price_value, $round, 0, true));
 				}
+				$this->itemprop_price = new stdClass();
+				$this->itemprop_price = $price_attributes .'';
 			}
-			echo '<span class="'.implode(' ',$classes).'"'.$attributes.'>';
+
+
+			echo '<span class="'.implode(' ',$classes).'">';
 
 			if($this->params->get('price_with_tax')) {
 				echo $this->currencyHelper->format(@$price->price_value_with_tax, $price->price_currency_id);
@@ -192,7 +196,7 @@ if(!empty($show_msrp)) {
 				}
 			}
 			if($this->params->get('show_price_weight')){
-				if(!empty($this->element->product_id) && isset($this->row->product_weight) && bccomp($this->row->product_weight, 0, 3)) {
+				if(!empty($this->element->product_id) && isset($this->row->product_weight) && bccomp(sprintf('%F',$this->row->product_weight), 0, 3)) {
 
 					echo JText::_('PRICE_SEPARATOR').'<span class="hikashop_product_price_per_weight_unit">';
 					if($this->params->get('price_with_tax')){

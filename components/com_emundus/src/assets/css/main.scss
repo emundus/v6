@@ -17,9 +17,9 @@
   --disabled-color: #c4c4c4;
 }
 
-.material-icons {
+.material-icons, .material-icons-outlined {
   transition: all 0.3s;
-  font-size: 18px !important;
+  font-size: 18px;
   color: var(--grey-color);
 }
 
@@ -126,5 +126,10 @@ body ::-webkit-scrollbar-track {
   background: #E3E5E8 !important;
   padding: 16px;
   border-radius: 4px;
+}
+
+.v-popover .trigger{
+  display: flex !important;
+  align-items: center;
 }
 

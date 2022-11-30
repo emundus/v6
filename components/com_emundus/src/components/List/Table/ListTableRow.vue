@@ -13,28 +13,16 @@
 					@showModalPreview="showModalPreview"
 				></list-action-menu>
 			</span>
-			<div
-				v-else-if="td.value == 'message' || td.value == 'status'"
-				:class="classFromTd(td)"
-				v-html="formattedDataFromTd(td)"
-			>
-			</div>
-			<span
-          v-else
-          @click="redirectToEditItem(td)"
-				  :class="classFromTd(td)"
-			>
-				{{ formattedDataFromTd(td) }}
-			</span>
+			<div v-else-if="td.value == 'message' || td.value == 'status'" :class="classFromTd(td)" v-html="formattedDataFromTd(td)"></div>
+			<span v-else @click="redirectToEditItem(td)" :class="classFromTd(td)">{{ formattedDataFromTd(td) }}</span>
 		</td>
 	</tr>
 </template>
 
 <script>
 import ListActionMenu from '../ListActionMenu.vue';
-import rows from '../../../data/tableRows';
+import rows from '../../../../data/tableRows';
 import moment from "moment";
-import axios from "axios";
 
 const qs = require('qs');
 
@@ -67,11 +55,10 @@ export default {
 	},
 	mounted() {
 		this.tds = typeof rows[this.type] !== undefined ? rows[this.type] : [];
-		this.lang = this.$store.getters['global/actualLanguage'];
+		this.lang = this.$store.getters['global/shortLang'];
 	},
 	methods: {
 		formattedDataFromTd(td) {
-
 			if (this.type === 'campaign') {
 				return this.formattedCampaignData(td);
 			} else if (this.type === 'email') {
@@ -294,10 +281,15 @@ export default {
   span.list-td-subject {
     cursor: pointer;
     transition: all .3s;
+    color: var(--neutral-900);
 
     &:hover {
       color: #20835F;
     }
+  }
+
+  span:not(.material-icons) {
+    color: var(--neutral-900);
   }
 }
 

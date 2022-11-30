@@ -5,8 +5,8 @@
           :name="'messages'"
           transition="nice-modal-fade"
           :adaptive="true"
-          height="auto"
-          width="60%"
+          height="90%"
+          width="90%"
           :scrollable="true"
           :delay="100"
           :clickToClose="true"
@@ -14,12 +14,11 @@
           @closed="beforeClose"
           @opened="getFilesByUser"
       >
-        <div class="drag-window em-grid-2-20-80">
+        <div class="em-flex-row em-flex-align-start em-w-100 em-h-100 em-small-flex-column">
           <div class="messages__campaigns-list">
             <div v-for="file in files" @click="fileSelected = file.fnum" :class="file.fnum == fileSelected ? 'messages__active-campaign' : ''" class="messages__block">
-              <div class="messages__campaign-block">
-                <img class="messages__campaigns_folder-icon" src="/images/emundus/messenger/folder.svg" />
-                <div style="margin-left: 10px;">
+              <div class="messages__campaign-block em-w-100">
+                <div class="em-w-100">
                   <p class="messages__campaigns_title">{{file.label}}</p>
                   <p class="messages__campaigns_fnum messages__campaigns_title">N° {{file.fnum}}</p>
                   <p class="messages__campaigns_fnum messages__campaigns_title">{{file.year}}</p>
@@ -29,12 +28,18 @@
             </div>
           </div>
 
-          <div class="messages__list">
+	        <div class="messages__campaigns-list-select">
+		        <select v-model="fileSelected">
+			        <option v-for="file in files" :value="file.fnum">{{ file.label }} - {{ file.fnum }}</option>
+		        </select>
+	        </div>
+
+          <div class="messages__list em-w-100 em-h-100">
             <div class="message__header">
               <label class="text-center" style="width: 100%">{{translations.messages}}</label>
               <i class="fas fa-times pointer" @click="$modal.hide('messages')"></i>
             </div>
-            <div class="messages__list-block" id="messages__list">
+            <div class="messages__list-block em-h-80" id="messages__list">
               <div v-for="date in dates">
                 <div class="messages__date-section">
                   <hr>
@@ -59,17 +64,21 @@
                <AttachDocument :user="user" :fnum="fileSelected" v-if="attachOpen" :applicant="true" @pushAttachmentMessage="pushAttachmentMessage" ref="attachment"/>
               </transition>
             </div>
-            <div class="messages__bottom-input">
-              <textarea type="text" class="messages__input_text" rows="1" :disabled="send_progress" spellcheck="true" :placeholder="translations.writeMessage" v-model="message" @keydown.enter.exact.prevent="sendMessage($event)"/>
-            </div>
-            <div class="messages__bottom-input-actions">
-              <div class="messages__actions_bar">
-                <img class="messages__send-icon" src="/images/emundus/messenger/attached.svg" @click="attachDocument"/>
+
+            <div style="position: sticky;bottom: 15px;padding: 0 15px;margin-right: 15px;">
+              <div class="messages__bottom-input">
+                <textarea type="text" class="messages__input_text" rows="1" :disabled="send_progress" spellcheck="true" :placeholder="translations.writeMessage" v-model="message" @keydown.enter.exact.prevent="sendMessage($event)"/>
               </div>
-              <button type="button" class="messages__send_button" @click="sendMessage">
-                  {{ translations.send }}
-              </button>
+              <div class="messages__bottom-input-actions">
+                <div class="messages__actions_bar">
+                  <img class="messages__send-icon" src="/images/emundus/messenger/attached.svg" @click="attachDocument"/>
+                </div>
+                <button type="button" class="messages__send_button" @click="sendMessage">
+                    {{ translations.send }}
+                </button>
+              </div>
             </div>
+
           </div>
         </div>
       </modal>
@@ -277,7 +286,7 @@ export default {
   },
 
   watch: {
-    fileSelected: function(){
+    fileSelected: function() {
       this.getMessagesByFnum(true);
     }
   }

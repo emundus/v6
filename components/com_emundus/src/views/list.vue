@@ -1,67 +1,45 @@
 <template>
   <div id="list">
-    <list-head
-      v-if="type !== 'files'"
-      :data="actions"
-    >
-    </list-head>
+    <list-head v-if="type !== 'files'" :data="actions"></list-head>
 
-    <div
-      class="em-flex-row em-flex-space-between em-w-auto"
-    >
-      <select
-          v-if="type === 'campaign'"
-          v-model="selectedProgram"
-          name="selectProgram"
-          class="list-vue-select"
-          @change="validateFilters"
-      >
-        <option value="all">{{translations.AllPrograms}} </option>
-        <option
-            v-for="program in allPrograms"
-            :value="program.code"
-            :key="program.code"
-        >
-          {{ program.label }}
-        </option>
-      </select>
+    <div class="search em-mb-16 em-flex-row">
+      <span class="material-icons-outlined em-mr-8">search</span>
+      <input class="searchTerm"
+             :placeholder="translate('COM_EMUNDUS_ONBOARD_SEARCH')"
+             v-model="recherche"
+             @keyup="cherche(recherche)"
+      />
+    </div>
 
-      <select
-          class="list-vue-select"
-          v-if="type === 'email'"
-          v-model="menuEmail"
-      >
-        <option value="0">{{ translations.All }}</option>
-        <option v-for="(cat, index) in notEmptyEmailCategories" :value="cat" :key="'cat_' + index">{{ cat }}</option>
-      </select>
-
-      <div class="search-container">
-        <div class="search em-flex-row">
-          <input class="searchTerm"
-            :placeholder="translations.Rechercher"
-            v-model="recherche"
-            @keyup="cherche(recherche) || debounce"
-            @keyup.enter="chercheGo(recherche)"
-          />
-        </div>
-        <v-popover :popoverArrowClass="'custom-popover-arrow'">
-          <span class="tooltip-target b3 material-icons">more_vert</span>
-
-          <template slot="popover">
-            <filters
-                :data="actions"
-                :selected="selecedItems"
-                :updateTotal="updateTotal"
-                :filter="filter"
-                :sort="sort"
-                :cherche="cherche"
-                :chercheGo="chercheGo"
-                :validateFilters="validateFilters"
-                :nbresults="nbresults"
-            ></filters>
-          </template>
-        </v-popover>
+    <div class="em-flex-row em-w-auto">
+      <div class="em-list-filters" v-if="type === 'campaign'">
+        <select v-model="selectedProgram" name="selectProgram" class="list-vue-select" @change="validateFilters">
+          <option value="all">{{ translate('COM_EMUNDUS_ONBOARD_ALL_PROGRAMS') }} </option>
+          <option v-for="program in allPrograms" :value="program.code" :key="program.code">{{ program.label }}</option>
+        </select>
       </div>
+      <div class="em-list-filters em-ml-8" v-else-if="type === 'campaign'">
+        <select v-model="selectedSession" name="selectedSession" class="list-vue-select" @change="validateFilters">
+          <option value="all">{{ translate('COM_EMUNDUS_ONBOARD_ALL_SESSIONS') }} </option>
+          <option v-for="session in allSessions" :value="session" :key="session">{{ session }}</option>
+        </select>
+      </div>
+      <div class="em-list-filters" v-else-if="type === 'email'">
+        <select class="list-vue-select" v-model="menuEmail">
+          <option value="0">{{ translate('COM_EMUNDUS_ONBOARD_ALL') }}</option>
+          <option v-for="(cat, index) in notEmptyEmailCategories" :value="cat" :key="'cat_' + index">{{ cat }}</option>
+        </select>
+      </div>
+
+      <filters
+          :data="actions"
+          :selected="selecedItems"
+          :updateTotal="updateTotal"
+          :filter="filter"
+          :sort="sort"
+          :validateFilters="validateFilters"
+          :nbresults="nbresults"
+      ></filters>
     </div>
 
     <transition :name="'slide-down'" type="transition">
@@ -70,19 +48,12 @@
           <a @click="nbpages(pages - 1)" class="pagination-arrow arrow-left">
             <em class="fas fa-chevron-left"></em>
           </a>
-          <li v-show="countPages <= 10 ||
-            index < 4 ||
-            index > countPages - 3 ||
-            (index > pages - 3 && index < pages + 3) ||
-            index == pages - 3 ||
-            index == pages + 3"
+          <li v-show="countPages <= 10 || index < 4 || index > countPages - 3 || (index > pages - 3 && index < pages + 3) || index == pages - 3 || index == pages + 3"
               v-for="index in countPages"
               :key="index"
               class="pagination-number">
-            <a @click="nbpages(index)"
-               class="pagination-number"
-               :class="index == pages ? 'current-number' : ''">
-               {{ paginationNumber(index) }}
+            <a @click="nbpages(index)" class="pagination-number" :class="index == pages ? 'current-number' : ''">
+              {{ paginationNumber(index) }}
             </a>
           </li>
           <a @click="nbpages(pages + 1)" class="pagination-arrow arrow-right">
@@ -93,19 +64,63 @@
     </transition>
 
     <div v-show="total > 0 || type == 'files'">
-
-      <list-body
-        :type="type"
-        :actions="actions"
-        :params="params"
-        @validateFilters="validateFilters"
-		    @updateLoading="updateLoading"
-      ></list-body>
+	    <div v-if="type !== 'form' && type !== 'formulaire'">
+		    <list-body
+				    :type="type"
+				    :actions="actions"
+				    :params="params"
+				    :items="list"
+				    @validateFilters="validateFilters"
+				    @updateLoading="updateLoading"
+		    ></list-body>
+	    </div>
+	    <div v-else>
+		    <nav id="form-nav">
+			    <ul class="em-flex-row-start">
+				    <li
+						    class="em-pointer em-p-8 em-font-weight-600 em-p-16"
+						    :class="{
+									'em-main-500-color em-border-bottom-main-500 ': selectedListTab === 'formulaire',
+						      'em-border-bottom-neutral-300': selectedListTab !== 'formulaire'
+								}"
+						    @click="selectedListTab = 'formulaire'"
+				    >
+					    {{ translate('COM_EMUNDUS_FORM_MY_FORMS') }}
+				    </li>
+				    <li
+						    class="em-pointer em-p-8 em-font-weight-600 em-p-16"
+						    :class="{
+									'em-main-500-color em-border-bottom-main-500': selectedListTab === 'formModels',
+									'em-border-bottom-neutral-300': selectedListTab !== 'formModels'
+								}"
+						    @click="selectedListTab = 'formModels'"
+				    >
+					    {{ translate('COM_EMUNDUS_FORM_PAGE_MODELS') }}
+				    </li>
+			    </ul>
+		    </nav>
+		    <list-body
+				    v-if="selectedListTab === 'formModels'"
+				    type="formModels"
+				    :actions="{}"
+				    :params="{}"
+				    :items="formModelsItems"
+				    @validateFilters="validateFilters"
+				    @updateLoading="updateLoading"
+		    ></list-body>
+		    <list-body
+				    v-else
+				    :type="type"
+				    :actions="actions"
+				    :params="params"
+				    :items="list"
+				    @validateFilters="validateFilters"
+				    @updateLoading="updateLoading"
+		    ></list-body>
+	    </div>
     </div>
 
-    <div v-show="total == 0 && type != 'files' && !loading" class="noneDiscover">
-      {{ noneDiscoverTranslation }}
-    </div>
+    <div v-show="total == 0 && type != 'files' && !loading" class="noneDiscover">{{ noneDiscoverTranslation }}</div>
     <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
@@ -115,6 +130,7 @@ import axios from "axios";
 import filters from "../components/ListComponents/filters_menu";
 import ListHead from "../components/List/ListHead.vue";
 import ListBody from "../components/List/ListBody.vue";
+import formBuilderService from '../services/formbuilder';
 
 export default {
   components: {
@@ -122,43 +138,39 @@ export default {
     ListHead,
     ListBody,
   },
-
   name: "List",
   data: () => ({
+    loading: false,
+    actualLanguage: '',
+
     datas: {},
+    all_datas: [],
+    limited_datas: [],
+
     params: {},
     type: "",
+    filter_columns: [],
+
     selecedItems: [],
     actions: {
       type: "",
       add_url: ""
     },
-    loading: false,
-    actualLanguage: '',
     allPrograms: [],
+    allSessions: [],
     selectedProgram: 'all',
+    selectedSession: 'all',
     actualProgramShowingCampaignName: 'Tous',
+
     recherche: "",
     timer: null,
 
     translations: {
-      Select: Joomla.JText._("COM_EMUNDUS_ONBOARD_SELECT"),
-      Deselect: Joomla.JText._("COM_EMUNDUS_ONBOARD_DESELECT"),
-      Total: Joomla.JText._("COM_EMUNDUS_ONBOARD_TOTAL"),
-      noCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOCAMPAIGN"),
-      noProgram: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOPROGRAM"),
-      noEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOEMAIL"),
-      noForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFORM"),
-      noFiles: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFILES"),
-      All: Joomla.JText._("COM_EMUNDUS_ONBOARD_ALL"),
-      AllPrograms:Joomla.JText._('COM_EMUNDUS_ONBOARD_ALL_PROGRAMS'),
-      programs: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
-      ortherPrograms: Joomla.JText._("COM_EMUNDUS_ONBOARD_OTHERCAMP_PROGRAM"),
-      System: Joomla.JText._("COM_EMUNDUS_ONBOARD_SYSTEM"),
-      Categories: Joomla.JText._("COM_EMUNDUS_ONBOARD_CATEGORIES"),
-      Rechercher: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEARCH"),
-      candidature: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGN"),
-      evaluations: Joomla.JText._("COM_EMUNDUS_ONBOARD_EVALUATION"),
+      noCampaign: "COM_EMUNDUS_ONBOARD_NOCAMPAIGN",
+      noProgram: "COM_EMUNDUS_ONBOARD_NOPROGRAM",
+      noEmail: "COM_EMUNDUS_ONBOARD_NOEMAIL",
+      noForm: "COM_EMUNDUS_ONBOARD_NOFORM",
+      noFiles: "COM_EMUNDUS_ONBOARD_NOFILES",
     },
     total: 0,
     filtersCount: "",
@@ -179,36 +191,13 @@ export default {
 
     menuEmail: 0,
     email_categories: [],
+	  formModelsItems: [],
+	  selectedListTab: 'formulaire'
   }),
-
-  computed: {
-    list() {
-      return list.getters.list;
-    },
-    isEmpty: () => {
-      return list.getters.isSomething;
-    },
-    noneDiscoverTranslation() {
-      if (this.type === "campaign") {
-        return this.translations.noCampaign;
-      } else if (this.type === "program") {
-        return this.translations.noProgram;
-      } else if (this.type === "email") {
-        return this.translations.noEmail;
-      } else if (this.type === "formulaire") {
-        return this.translations.noForm;
-      } else {
-        return this.translations.noFiles;
-      }
-    },
-    notEmptyEmailCategories() {
-      return this.email_categories.filter(category => category !== "");
-    },
-  },
   created() {
     this.datas = this.$store.getters['global/datas'];
     this.type = this.datas.type.value;
-    this.filtersFilter = "&filter=published"
+    this.filtersFilter = "&filter=Publish"
 
     axios({
       method: "get",
@@ -217,67 +206,82 @@ export default {
       this.actualLanguage = response.data.msg;
     });
 
-    axios.get("index.php?option=com_emundus&controller=programme&task=getallprogram")
-        .then(response => {
-          this.allPrograms = response.data.data;
+    if (this.type === 'campaign') {
+      // Get programs to filters
+      axios.get("index.php?option=com_emundus&controller=programme&task=getallprogram")
+          .then(response => {
+            this.allPrograms = response.data.data;
 
-          // sort all programs by label
-          this.allPrograms.sort((a, b) => {
-            if (a.label < b.label) {
-              return -1;
-            }
-            if (a.label > b.label) {
-              return 1;
-            }
-            return 0;
-          });
+            // sort all programs by label
+            this.allPrograms.sort((a, b) => {
+              if (a.label < b.label) {
+                return -1;
+              }
+              if (a.label > b.label) {
+                return 1;
+              }
+              return 0;
+            });
 
-        }).catch(e => {
-      console.log(e);
-    });
+          }).catch(e => {
+        console.log(e);
+      });
+
+      axios.get("index.php?option=com_emundus&controller=programme&task=getallsessions")
+          .then(response => {
+            this.allSessions = response.data.data;
+
+            // sort all programs by label
+            this.allSessions.sort((a, b) => {
+              if (a.year < b.year) {
+                return -1;
+              }
+              if (a.year > b.year) {
+                return 1;
+              }
+              return 0;
+            });
+
+          }).catch(e => {
+        console.log(e);
+      });
+    } else if (this.type == 'form') {
+	    this.getFormModels();
+    }
+    this.getFiltersByType();
   },
-
-  watch: {
-    type: function (val) {
-      this.actions.type = val;
-      this.typeForAdd = val === 'formulaire' ? 'form' : val;
-
-      if (this.typeForAdd === "form") {
-        this.type = "formulaire";
-      }
-
-      let view= this.typeForAdd === 'grilleEval' ? 'form' : this.typeForAdd
-      if(this.type == 'email' || this.type == 'campaign') {
-        this.actions.add_url = 'index.php?option=com_emundus&view=' + this.type + 's&layout=add'
-      } else {
-        this.actions.add_url = 'index.php?option=com_emundus&view=' + view + '&layout=add'
-      }
-
-      this.validateFilters();
-    },
-    menuEmail: function (val) {
-      this.type = "email";
-      this.params = {
-        email_category: val,
-      };
-    },
-  },
-
   methods: {
     updateLoading(value) {
       this.loading = value;
     },
 
+    getFiltersByType() {
+      switch (this.type){
+        case 'campaign':
+          this.filter_columns = ['label', 'short_description'];
+          break;
+        case 'email':
+          this.filter_columns = ['subject'];
+          break;
+        case 'form':
+          this.filter_columns = ['label'];
+          break;
+        default:
+      }
+    },
+
     validateFilters() {
       this.updateLoading(true);
       this.filtersCount = this.filtersCountFilter + this.filtersCountSearch;
-      this.filters =
-        this.filtersFilter +
-        this.filtersSort +
-        this.filtersSearch +
-        this.filtersLim +
-        this.filtersPage +
-        "&program=" + this.selectedProgram;
+      this.filters = this.filtersFilter + this.filtersSort + this.filtersSearch + this.filtersLim + this.filtersPage;
+      if (this.type === 'campaign') {
+        this.filtersCount += "&program=" + this.selectedProgram + "&session=" + this.selectedSession;
+        this.filters += "&program=" + this.selectedProgram + "&session=" + this.selectedSession;
+      }
+
+			if (this.type == 'formulaire') {
+				this.getFormModels();
+			}
 
       this.allFilters();
     },
@@ -301,16 +305,21 @@ export default {
         this.timer = null;
       }
       this.timer = setTimeout(() => {
-        this.filtersCountSearch = "&rechercheCount=" + recherche;
-        this.filtersSearch = "&recherche=" + recherche;
-        this.search = recherche;
-        this.validateFilters();
-      }, 800);
-    },
+        if (this.recherche) {
+          let new_datas = this.all_datas.filter((item, index) => {
+            let search_query = recherche.toLowerCase().split(" ");
+            return this.filter_columns.some((filter) => {
+              return search_query.every(v => item[filter].toLowerCase().includes(v))
+            })
+          });
 
-    chercheGo(recherche) {
-      this.cherche(recherche);
-      this.validateFilters();
+          this.$store.commit("lists/listUpdate", new_datas);
+          this.countPages = Math.ceil(new_datas.length / this.limit);
+        } else {
+          this.$store.commit("lists/listUpdate", this.limited_datas);
+          this.countPages = Math.ceil(this.total / this.limit);
+        }
+      }, 300);
     },
 
     nbresults(lim) {
@@ -337,41 +346,35 @@ export default {
       let controller = this.typeForAdd === 'grilleEval' ? 'form' : this.typeForAdd;
 
       if (this.type !== "files") {
-        axios.get("index.php?option=com_emundus&controller=" +
-          controller +
-          "&task=get" +
-          this.typeForAdd +
-          "count" +
-          this.filtersCount
-        ).then(response => {
-          axios.get(
-            "index.php?option=com_emundus&controller=" +
-            controller +
-            "&task=getall" +
-            this.typeForAdd +
-            this.filters
-          ).then(rep => {
-            this.total = response.data.data;
-            this.$store.commit("lists/listUpdate", rep.data.data);
+          axios.get("index.php?option=com_emundus&controller=" + controller + "&task=getall" + this.typeForAdd + this.filters).then(rep => {
+            this.total = rep.data.data.count;
+            if (this.all_datas.length === 0) {
+              this.all_datas = rep.data.data.datas;
+            }
+            this.limited_datas = rep.data.data.datas;
+            this.$store.commit("lists/listUpdate", this.limited_datas);
 
             this.countPages = Math.ceil(this.total / this.limit);
+
             if (this.type == 'email') {
-
               axios.get("index.php?option=com_emundus&controller=email&task=getemailcategories")
-              .then(catrep => {
-                this.email_categories = catrep.data.data;
-              });
-
+		              .then(catrep => {
+                    this.email_categories = catrep.data.data;
+                  });
+            }
+            if (this.type == 'campaign') {
+              this.$store.commit('campaign/setAllowPinnedCampaign',rep.data.allow_pinned_campaigns);
+              this.limited_datas.forEach((campaign) => {
+                if(campaign.pinned == 1){
+                  this.$store.commit('campaign/setPinned',campaign.id);
+                }
+              })
             }
             this.loading = false;
           }).catch(e => {
             console.log(e);
             this.updateLoading(false);
           });
-        }).catch(e => {
-          console.log(e);
-          this.loading = false;
-        });
       }
     },
 
@@ -388,15 +391,92 @@ export default {
     },
     selectItem(id) {
       this.$store.commit("lists/selectItem", id);
-    }
-  }
+    },
+	  getFormModels() {
+			formBuilderService.getModels().then((response) => {
+				if (response.status && Array.isArray(response.data)) {
+					this.formModelsItems = [];
+					response.data.forEach((model) => {
+						this.formModelsItems.push({
+							id: model.id,
+							label: model.label[this.shortDefaultLang]
+						});
+					});
+				}
+			});
+
+			return this.formModelsItems;
+	  }
+  },
+	computed: {
+		isEmpty: () => {
+			return list.getters.isSomething;
+		},
+		noneDiscoverTranslation() {
+			if (this.type === "campaign") {
+				return this.translations.noCampaign;
+			} else if (this.type === "program") {
+				return this.translations.noProgram;
+			} else if (this.type === "email") {
+				return this.translations.noEmail;
+			} else if (this.type === "formulaire") {
+				return this.translations.noForm;
+			} else {
+				return this.translations.noFiles;
+			}
+		},
+		notEmptyEmailCategories() {
+			return this.email_categories.filter(category => category !== "");
+		},
+		list() {
+			let listItems = this.$store.getters['lists/list'];
+
+			if (this.params.email_category) {
+				listItems = listItems.filter((item) => {
+					if (this.params.email_category == 0) {
+						return true;
+					} else {
+						return item.category === this.params.email_category;
+					}
+				});
+			}
+
+			return listItems;
+		}
+	},
+	watch: {
+		type: function (val) {
+			this.actions.type = val;
+			this.typeForAdd = val === 'formulaire' ? 'form' : val;
+
+			if (this.typeForAdd === 'form') {
+				this.type = 'formulaire';
+			}
+
+			let view= this.typeForAdd === 'grilleEval' ? 'form' : this.typeForAdd
+			if (this.type == 'email' || this.type == 'campaign') {
+				this.actions.add_url = 'index.php?option=com_emundus&view=' + this.type + 's&layout=add'
+			} else {
+				this.actions.add_url = 'index.php?option=com_emundus&view=' + view + '&layout=add'
+			}
+
+			this.validateFilters();
+		},
+		menuEmail: function (val) {
+			this.type = "email";
+			this.params = {
+				email_category: val
+			};
+		},
+	}
 }
 
 </script>
 
 <style scoped lang="scss">
 #list{
-  width: 100%;
+  width: calc(100% - 75px) !important;
+  margin-left: auto;
 }
 h2 {
   color: #de6339 !important;
@@ -406,9 +486,21 @@ h2 {
   top: unset;
 }
 
-.list-vue-select
-{
-  height: 43px;
+.em-list-filters{
+  background: white;
+  border: solid 1px #e0e0e5;
+  border-radius: 5px;
+  padding: 4px;
+  .list-vue-select{
+    height: 35px;
+    margin-bottom: 0;
+    border: unset;
+    background: transparent;
+    color: var(--neutral-800);
+    &:focus{
+      outline: unset;
+    }
+  }
 }
 
 
@@ -418,7 +510,6 @@ h2 {
 }
 
 .searchTerm {
-  width: 100%;
   font-size: 14px !important;
   padding: 8px 36px 8px 8px !important;
   outline: none;
@@ -427,11 +518,29 @@ h2 {
   height: 30px;
   position: relative;
   margin-bottom: 0 !important;
+  border-top: unset;
+  border-right: unset;
+  border-left: unset;
+  border-bottom: solid 1px black;
+  background: transparent;
+  border-radius: 0;
+  font-family: var(--font);
+
+  &:hover {
+    border-top: unset;
+    border-right: unset;
+    border-left: unset;
+    border-bottom: solid 1px #87D4B8;
+    box-shadow: unset !important;
+  }
 
   &:focus {
-     border-color: #16AFE1 !important;
-     box-shadow: unset !important;
-   }
+    border-top: unset;
+    border-right: unset;
+    border-left: unset;
+    border-bottom: solid 1px #20835F;
+    box-shadow: unset !important;
+  }
 }
 
 #g-container-main .g-container{
@@ -464,7 +573,7 @@ h2 {
     height: 35px;
     margin-right: 10px;
     .current-number{
-      background: #12DB42;
+      background: #34B385;
       color: #fff;
       border: unset;
     }
@@ -502,8 +611,20 @@ h2 {
 .noPagination{
   display: none;
 }
-.material-icons{
+.material-icons, .material-icons-outlined{
   font-size: 24px !important;
+}
+
+#form-nav {
+	ul {
+		list-style-type: none;
+		margin-left: 0;
+		margin-bottom: 0;
+
+		li {
+			transition: all .3s;
+		}
+	}
 }
 
 </style>

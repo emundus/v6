@@ -32,11 +32,11 @@ echo $description;
 
                     $post = array(
                         'APPLICANT_ID'  => $user->id,
-                        'DEADLINE'      => strftime("%A %d %B %Y %H:%M", strtotime($application->end_date)),
+                        'DEADLINE'      => JHTML::_('date', $application->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
                         'CAMPAIGN_LABEL' => $application->label,
                         'CAMPAIGN_YEAR'  => $application->year,
-                        'CAMPAIGN_START' => $application->start_date,
-                        'CAMPAIGN_END'  => $application->end_date,
+                        'CAMPAIGN_START' => JHTML::_('date', $application->start_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+                        'CAMPAIGN_END'  => JHTML::_('date', $application->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
                         'CAMPAIGN_CODE' => $application->training,
                         'FNUM'          => $application->fnum
                     );
@@ -217,9 +217,21 @@ endif; ?>
 
 <script type="text/javascript">
     function deletefile(fnum) {
-        if (confirm("<?= JText::_('MOD_EMUNDUS_APPLICATIONS_CONFIRM_DELETE_FILE'); ?>")) {
-            document.location.href = "index.php?option=com_emundus&task=deletefile&fnum=" + fnum+"&redirect=<?php echo base64_encode(JUri::getInstance()->getPath()); ?>";
-        }
+        Swal.fire({
+            title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_CONFIRM_DELETE_FILE'); ?>",
+            text: "",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#28a745",
+            cancelButtonColor: "#dc3545",
+            reverseButtons: true,
+            confirmButtonText: "<?php echo JText::_('JYES');?>",
+            cancelButtonText: "<?php echo JText::_('JNO');?>"
+        }).then((confirm) => {
+            if (confirm.value) {
+                document.location.href = "index.php?option=com_emundus&task=deletefile&fnum=" + fnum+"&redirect=<?php echo base64_encode(JUri::getInstance()->getPath()); ?>";
+            }
+        });
     }
 </script>
 <script>

@@ -128,15 +128,15 @@ class plgSystemEmundus_caslogin extends JPlugin
      * @since   2.0.0
      */
     function onGetOption($context) {
-    /*
-     * Plugin code goes here.
-     * You can access database and application objects and parameters via $this->db,
-     * $this->app and $this->params respectively
-     */
+        /*
+         * Plugin code goes here.
+         * You can access database and application objects and parameters via $this->db,
+         * $this->app and $this->params respectively
+         */
         if ($context == 'com_externallogin') {
             return array('value' => 'system.emundus_caslogin', 'text' => 'eMundus CAS Login');
         }
-	}
+    }
 
     /**
      * Prepare Form
@@ -296,14 +296,21 @@ class plgSystemEmundus_caslogin extends JPlugin
                                 $this->server = $server;
 
                                 // Get username
-                                $userName = $this->xpath->evaluate('string(cas:user)', $this->success);
+                                $userName = $this->xpath->evaluate($params->get('username_xpath') ?: 'string(cas:user)', $this->success);
+
+                                // Get email
+                                $userEmail = str_replace(
+                                    array('<', '>', '"', "'", '%', ';', '(', ')', '&', '\\'),
+                                    '',
+                                    $this->xpath->evaluate($params->get('email_xpath'), $this->success)
+                                );
 
                                 // Log message
                                 if ($params->get('log_xml', 0)) {
                                     JLog::add(
                                         new ExternalloginLogEntry(
                                             'Successful login on server ' . $sid . ' for CAS user "' .
-                                            $this->xpath->evaluate('string(cas:user)', $this->success) . '"',
+                                            $this->xpath->evaluate($params->get('username_xpath') ?: 'string(cas:user)', $this->success) . '"',
                                             JLog::INFO,
                                             'system-emundus_caslogin-xml'
                                         )
@@ -319,6 +326,31 @@ class plgSystemEmundus_caslogin extends JPlugin
 
                                 try {
                                     $uID = $db->loadResult();
+
+                                    if(empty($uID) && !empty($userEmail)){
+                                        $query->clear()
+                                            ->select("id");
+                                        $query->from("#__users");
+                                        $query->where($db->quoteName("username") . ' = ' . $db->quote($userEmail));
+                                        $db->setQuery($query);
+                                        $uID = $db->loadResult();
+
+                                        if(!empty($uID)){
+                                            $query->clear()
+                                                ->update("#__users");
+                                            $query->set($db->quoteName("username") . ' = ' . $db->quote($userName));
+                                            $query->where($db->quoteName("id") . ' = ' . $db->quote($uID));
+                                            $db->setQuery($query);
+                                            $db->execute();
+
+                                            $query->clear()
+                                                ->insert("#__externallogin_users");
+                                            $query->set($db->quoteName("server_id") . ' = ' . $db->quote($sid));
+                                            $query->set($db->quoteName("user_id") . ' = ' . $db->quote($uID));
+                                            $db->setQuery($query);
+                                            $db->execute();
+                                        }
+                                    }
                                 } catch (Exception $exc) {
                                     $app->enqueueMessage($exc->getMessage(), 'error');
                                 }
@@ -793,7 +825,7 @@ class plgSystemEmundus_caslogin extends JPlugin
         $query->select('*');
         $query->from('#__externallogin_servers AS a');
         $query->leftJoin('#__externallogin_users AS e ON e.server_id = a.id');
-        $query->where('a.plugin = ' . $db->quote('system.caslogin'));
+        $query->where('a.published = 1');
         $query->where('e.user_id = ' . (int) $user['id']);
         $db->setQuery($query);
         $server = $db->loadObject();

@@ -1,16 +1,12 @@
 <template>
 	<div id="list-head">
 		<div class="list-head-container">
-			<h2> {{ translations['title_' + data.type] }}</h2>
-			<a :href="data.add_url" v-if="data.type !== 'form' && data.type !== 'formulaire'">
-    	  <div class="em-primary-button">
+			<h2 class="em-text-neutral-800"> {{ translations['title_' + data.type] }}</h2>
+			<a :href="data.add_url" v-if="data.type !== 'form' && data.type !== 'formulaire'" class="em-primary-button em-w-auto">
 					{{ translations['add_' + data.type] }}
-				</div>
 			</a>
-      <a @click="getAddUrlToCreateForm()" v-else>
-        <div class="em-primary-button">
+      <a @click="getAddUrlToCreateForm()" class="em-primary-button em-w-auto" v-else>
           {{ translations['add_' + data.type] }}
-        </div>
       </a>
 		</div>
     <div class="em-page-loader" v-if="loading"></div>
@@ -50,12 +46,6 @@ export default {
 		getAddUrlToCreateForm() {
 			this.loading = true;
 
-			const body = {
-				label: "Nouveau formulaire",
-      	description: "",
-      	published: 1
-			};
-
 			// find add_url
 			axios({
           method: "post",
@@ -63,9 +53,6 @@ export default {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
-          data: qs.stringify({
-						body: body
-					})
         }).then(response => {
           this.loading = false;
           const profileId = response.data.data;
@@ -85,13 +72,13 @@ export default {
 	margin-bottom: 15px;
 
 	.em-primary-button {
-		border: 1px solid #20835F;
+		border: 1px solid var(--main-500);
 		cursor: pointer;
 		transition: all 0.3s ease;
 
 		&:hover {
 			background-color: white;
-			color: #20835F;
+			color: var(--main-500);
 		}
 	}
 
@@ -104,6 +91,7 @@ export default {
 
 		h2 {
 			margin: 0;
+      font-weight: 600;
 		}
 	}
 }

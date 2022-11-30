@@ -4,28 +4,25 @@
       <transition :name="'slide-down'" type="transition">
         <div>
             <nav aria-label="action" class="em-flex-col-start">
-              <a v-on:click="publishSelected(checkItem)" class="action-submenu" v-if="!['formulaire','email'].includes(data.type) && !published">
+              <a @click="publishSelected(checkItem)" class="action-submenu" v-if="!['formulaire','email', 'formModels'].includes(data.type) && !published">
                 {{ translations.ActionPublish }}
               </a>
-              <a v-on:click="unpublishSelected(checkItem)" class="action-submenu" v-if="!['formulaire','email'].includes(data.type) && published">
+              <a @click="unpublishSelected(checkItem)" class="action-submenu" v-if="!['formulaire','email', 'formModels'].includes(data.type) && published">
                 {{ translations.ActionUnpublish }}
               </a>
-              <a v-on:click="publishSelected(checkItem)" class="action-submenu" style="border-right: 0" v-if="data.type === 'formulaire' && !published">
+              <a @click="publishSelected(checkItem)" class="action-submenu" style="border-right: 0" v-if="data.type === 'formulaire' && !published">
                 {{ translations.Restore }}
               </a>
               <a v-if="data.type === 'campaign' || data.type === 'formulaire'"
-                 v-on:click="duplicateSelected(checkItem)"
+                 @click="duplicateSelected(checkItem)"
                  class="action-submenu w-dropdown-link" style="border-left: 0;border-right: 0">
                 {{ translations.ActionDuplicate }}
               </a>
-              <a v-on:click="deleteSelected(checkItem)" class="action-submenu" v-if="data.type !== 'formulaire' && data.type !== 'campaign'">
+              <a v-else @click="deleteSelected(checkItem)" class="action-submenu">
                 {{ translations.ActionDelete }}
               </a>
-              <a v-on:click="deleteSelected(checkItem)" class="action-submenu" v-if="data.type === 'campaign' && filesCount == 0">
+              <a v-if="data.type === 'campaign' && nb_files === 0" class="action-submenu" @click="deleteSelected(checkItem)">
                 {{ translations.ActionDelete }}
-              </a>
-              <a v-on:click="unpublishSelected(checkItem)" class="action-submenu" style="border-left: 0"  v-if="data.type === 'formulaire' && published">
-                {{ translations.Archive }}
               </a>
             </nav>
         </div>
@@ -36,13 +33,13 @@
 </template>
 
 <script>
-  import axios from "axios";
-  import Swal from "sweetalert2";
-  ;
+import formBuilderService from '../../services/formbuilder';
+import axios from "axios";
+import Swal from "sweetalert2";
 
-  const qs = require("qs");
+const qs = require("qs");
 
-  export default {
+export default {
     name: "action_menu",
 
     props: {
@@ -50,6 +47,7 @@
       isEmpty: Boolean,
       selected: String,
       published: Boolean,
+      nb_files: Number,
     },
 
     computed: {
@@ -61,7 +59,6 @@
     data() {
       return {
         loading: false,
-        filesCount: null,
         translations: {
           ActionPublish: this.translate("COM_EMUNDUS_ONBOARD_ACTION_PUBLISH"),
           ActionUnpublish: this.translate("COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH"),
@@ -72,74 +69,10 @@
         },
       };
     },
-    mounted() {
-      if(this.data.type === 'campaign'){
-        this.filesNumber();
-      }
-    },
 
     methods: {
-      filesNumber() {
-        axios({
-          method: "get",
-          url: "index.php?option=com_emundus&controller=dashboard&task=getfilesbycampaign",
-          params: {
-            cid: this.selected,
-          },
-          paramsSerializer: params => {
-            return qs.stringify(params);
-          }
-        }).then(response => {
-          this.filesCount = parseInt(response.data.data);
-        });
-      },
-
       deleteSelected(id) {
         switch (this.data.type) {
-          case "program":
-            Swal.fire({
-              title: this.translate("COM_EMUNDUS_ONBOARD_PROGDELETE"),
-              text: this.translate("COM_EMUNDUS_ONBOARD_CANT_REVERT"),
-              type: "warning",
-              showCancelButton: true,
-              confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
-              cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-              reverseButtons: true,
-              customClass: {
-                title: 'em-swal-title',
-                cancelButton: 'em-swal-cancel-button',
-                confirmButton: 'em-swal-confirm-button',
-              },
-            }).then(result => {
-              if (result.value) {
-                this.$emit("updateLoading",true);
-                axios({
-                  method: "post",
-                  url: "index.php?option=com_emundus&controller=programme&task=deleteprogram",
-                  data: qs.stringify({ id })
-                }).then(response => {
-                  this.$emit("updateLoading",false);
-                  this.$store.commit("lists/deleteSelected", id);
-                  Swal.fire({
-                    title: this.translate("COM_EMUNDUS_ONBOARD_PROGDELETED"),
-                    type: "success",
-                    showConfirmButton: false,
-                    timer: 2000
-                  });
-                }).then(() => {
-                  axios.get(
-                          "index.php?option=com_emundus&controller=programme&task=getprogramcount"
-                  ).then(response => {
-                    this.total = response.data.data;
-                    this.updateTotal(this.total);
-                  });
-                }).catch(error => {
-                  console.log(error);
-                });
-              }
-            });
-            break;
-
           case "campaign":
             Swal.fire({
               title: this.translate("COM_EMUNDUS_ONBOARD_CAMPDELETE"),
@@ -173,19 +106,12 @@
                     timer: 2000
                   });
                 }).then(() => {
-                  axios.get(
-                          "index.php?option=com_emundus&controller=campaign&task=getcampaigncount"
-                  ).then(response => {
-                    this.total = response.data.data;
-                    this.updateTotal(this.total);
                     this.$emit('validateFilters');
-                  });
                 }).catch(error => {
                   console.log(error);
                 });
               }
             });
-
             break;
 
           case "email":
@@ -221,18 +147,12 @@
                     timer: 2000
                   });
                 }).then(() => {
-                  axios.get("index.php?option=com_emundus&controller=email&task=getemailcount")
-                          .then(response => {
-                            this.total = response.data.data;
-                            this.updateTotal(this.total);
-                            this.$emit('validateFilters');
-                          });
+                  this.$emit('validateFilters');
                 }).catch(error => {
                   console.log(error);
                 });
               }
             });
-
             break;
 
           case "formulaire":
@@ -268,19 +188,55 @@
                     timer: 2000
                   });
                 }).then(() => {
-                  axios.get("index.php?option=com_emundus&controller=form&task=getformcount")
-                          .then(response => {
-                            this.total = response.data.data;
-                            this.updateTotal(this.total);
-                            this.$emit('validateFilters');
-                          });
+                  this.$emit('validateFilters');
                 }).catch(error => {
                   console.log(error);
                 });
               }
             });
-
             break;
+
+	        case 'formModels':
+		        Swal.fire({
+			        title: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_MODEL'),
+			        text: this.translate('COM_EMUNDUS_ONBOARD_CANT_REVERT'),
+			        type: 'warning',
+			        showCancelButton: true,
+			        confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
+			        cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
+			        reverseButtons: true,
+			        customClass: {
+				        title: 'em-swal-title',
+				        cancelButton: 'em-swal-cancel-button',
+				        confirmButton: 'em-swal-confirm-button',
+			        },
+		        }).then(result => {
+			        if (result.value) {
+								formBuilderService.deleteFormModelFromId(id).then(response => {
+									if (!response.status) {
+										Swal.fire({
+											title: this.translate('COM_EMUNDUS_FORM_DELETE_MODEL_FAILURE'),
+											type: 'warning',
+											showConfirmButton: false,
+											timer: 2000
+										});
+									} else {
+										Swal.fire({
+											title: this.translate('COM_EMUNDUS_FORM_DELETE_MODEL_SUCCESS'),
+											type: 'success',
+											showConfirmButton: false,
+											timer: 2000
+										});
+										this.$emit('validateFilters');
+									}
+								});
+			        }
+		        });
+
+						break;
+	        default:
+						console.warn('Unhandled case ' + type + ' for delete action');
+						break;
         }
       },
 
@@ -557,7 +513,7 @@
         }
       },
     },
-  };
+};
 </script>
 
 <style lang="scss" scoped>
@@ -574,7 +530,7 @@
     color: black;
     font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif !important;
     &:hover {
-     color: #16AFE1;
+     color: var(--main-500);
    }
   }
 </style>

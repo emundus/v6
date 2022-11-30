@@ -31,7 +31,7 @@ class modemundusApplicationsHelper {
 			}
 		}
 
-        $query = 'SELECT ecc.date_time AS campDateTime, ecc.*, esc.*, ess.step, ess.value, ess.class ';
+        $query = 'SELECT ecc.date_time AS campDateTime, ecc.*, esc.*, ess.step, ess.value, ess.class, ecc.published as published,p.label as programme,p.color as tag_color';
 
 		// CCI-RS layout needs to get the start and end date of each application
 		if ($layout == '_:ccirs') {
@@ -45,11 +45,11 @@ class modemundusApplicationsHelper {
 
 		$query .= ' FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
-					LEFT JOIN #__emundus_setup_status AS ess ON ess.step=ecc.status ';
+					LEFT JOIN #__emundus_setup_status AS ess ON ess.step=ecc.status 
+					LEFT JOIN #__emundus_setup_programmes AS p ON p.code = esc.training';
 
 		if ($layout == '_:ccirs') {
-			$query .= ' LEFT JOIN #__emundus_setup_teaching_unity AS t ON t.session_code = esc.session_code 
-                        LEFT JOIN #__emundus_setup_programmes AS p ON p.code = esc.training';
+			$query .= ' LEFT JOIN #__emundus_setup_teaching_unity AS t ON t.session_code = esc.session_code';
 		}
 
 		if ($has_table) {

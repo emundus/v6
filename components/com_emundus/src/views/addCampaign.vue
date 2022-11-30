@@ -2,7 +2,7 @@
   <div class="campaigns__add-campaign">
     <div v-if="typeof campaignId == 'undefined'">
       <div class="em-flex-row em-mt-16 em-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
-        <span class="material-icons">arrow_back</span>
+        <span class="material-icons-outlined">arrow_back</span>
         <p class="em-ml-8">{{ translate('BACK') }}</p>
       </div>
 
@@ -27,7 +27,7 @@
                 v-model="form.label[actualLanguage]"
                 required
                 :class="{ 'is-invalid': errors.label }"
-                class="form-control fabrikinput"
+                class="form-control fabrikinput em-w-100"
                 @focusout="onFormChange()"
             />
           </div>
@@ -120,6 +120,7 @@
             />
           </div>
 
+          <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
           <div class="em-mb-16" v-if="typeof form.description != 'undefined'">
             <editor
                 :height="'30em'"
@@ -145,7 +146,7 @@
           <div class="em-flex-row em-mb-16">
             <select
                 id="select_prog"
-                class="form-control fabrikinput"
+                class="form-control fabrikinput em-w-100"
                 v-model="form.training"
                 v-on:change="setCategory"
                 :disabled="this.programs.length <= 0"
@@ -172,7 +173,7 @@
                   <input
                       type="text"
                       id="prog_label"
-                      class="form-control fabrikinput"
+                      class="form-control fabrikinput em-w-100"
                       placeholder=" "
                       v-model="programForm.label"
                       :class="{ 'is-invalid': errors.progLabel }"
@@ -181,6 +182,20 @@
                 <p v-if="errors.progLabel" class="em-red-500-color em-mb-8">
                   <span class="em-red-500-color">{{ translate('COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL') }}</span>
                 </p>
+
+                <div class="em-mb-16">
+                  <label for="prog_color">{{ translate('COM_EMUNDUS_ONBOARD_PROGCOLOR') }}</label>
+                  <div class="em-flex-row">
+                    <div v-for="(color,index) in colors">
+                      <div class="em-color-round em-pointer em-flex-row em-flex-center"
+                           :class="index != 0 ? 'em-ml-8' : ''"
+                           :style="selectedColor == color.text ? 'background-color:' + color.text + ';border: 2px solid ' + color.background : 'background-color:' + color.text"
+                           @click="programForm.color = color.text;selectedColor = color.text">
+                        <span v-if="selectedColor == color.text" class="material-icons-outlined" style="font-weight: bold;color: black">done</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </transition>
@@ -287,7 +302,8 @@ export default {
       notes: "",
       programmes: "",
       published: 1,
-      apply_online: 1
+      apply_online: 1,
+      color: ""
     },
 
     year: {
@@ -308,6 +324,26 @@ export default {
       limit_status: false
     },
 
+    colors: [
+        {
+          text: '#1C6EF2',
+          background: '#79B6FB',
+        },
+      {
+        text: '#20835F',
+        background: '#87D4B8',
+      },
+      {
+        text: '#DB333E',
+        background: '#FBABAB',
+      },
+      {
+        text: '#FFC633',
+        background: '#FEEBA1',
+      },
+    ],
+    selectedColor: '#1C6EF2',
+
     submitted: false,
     ready: false,
   }),
@@ -320,7 +356,7 @@ export default {
       this.campaignId = this.$props.campaign;
     }
 
-    this.actualLanguage = this.$store.getters['global/actualLanguage'];
+    this.actualLanguage = this.$store.getters['global/shortLang'];
     this.coordinatorAccess = this.$store.getters['global/coordinatorAccess'];
 
     // Configure datetime
@@ -384,10 +420,14 @@ export default {
     getAllPrograms() {
       axios.get("index.php?option=com_emundus&controller=programme&task=getallprogram")
           .then(response => {
-            this.programs = response.data.data;
-            if(Object.keys(this.programs).length !== 0) {
-              this.programs.sort((a, b) => a.id - b.id);
-            }
+	          if (response.data.status > 0) {
+		          this.programs = response.data.data;
+		          if(Object.keys(this.programs).length !== 0) {
+			          this.programs.sort((a, b) => a.id - b.id);
+		          }
+	          } else {
+		          this.programs = [];
+	          }
           }).catch(e => {
               console.log(e);
           });
@@ -687,5 +727,11 @@ export default {
 
 #campResume {
   height: 85px !important;
+}
+
+.em-color-round{
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
 }
 </style>

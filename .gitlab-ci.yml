@@ -1,50 +1,163 @@
 default:
-  image: docker:20.10
-  retry: 
-    max: 2
-    when:
-     - stuck_or_timeout_failure
+  retry:
+    max: 1
 
-workflow:
-  rules:
-    - if: ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "staging" || $CI_PIPELINE_SOURCE == "merge_request_event" )
-      when: always
-    - when: never
-
-stages:
-  - release
+services:
+  - name: docker:20.10-dind
 
 variables:
   GIT_SUBMODULE_STRATEGY: normal
   DOCKER_DRIVER: overlay2
   DOCKER_BUILDKIT: 1
+  BUILDKIT_INLINE_CACHE: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_CLIENT_TIMEOUT: 360
+  COMPOSE_HTTP_TIMEOUT: 360
 
-connect-to-registry:
-  stage: release
+stages:
+  - check
+  - build
+  - test
+  - release
+  - publish
+
+check-tchooz-version-job:
+  stage: check
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
+      when: always
+    - when: never
+  image: debian:stable-slim
+  before_script: 
+    - apt update
+    - apt install curl jq -y
+  script:
+    - .ci/file-search-in-gitlab-merge-request.sh "$CI_SERVER_URL" "$GITLAB_TOKEN" "$CI_PROJECT_ID" "$CI_MERGE_REQUEST_IID" "administrator/components/com_emundus/emundus.xml"
+
+build-app-to-test-job:
+  stage: build
+  image: docker:20.10
   before_script: 
     - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
   script:
-    - echo "Connected to $CI_REGISTRY repository"
+    - docker pull $CI_REGISTRY/tchooz-build-app:latest || true
+    - docker build --cache-from $CI_REGISTRY/tchooz-build-app:latest -t $CI_REGISTRY/tchooz-build-app:latest -t $CI_REGISTRY/tchooz-build-app:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 --build-arg xdebug=1 --build-arg jest=1 .
+    - docker push $CI_REGISTRY/tchooz-build-app:$CI_COMMIT_SHORT_SHA
+    - docker push $CI_REGISTRY/tchooz-build-app:latest
+  only:
+    - merge_request
+
+build-db-to-test-job:
+  stage: build
+  image: docker:20.10
+  before_script: 
+    - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+  script:
+    - docker pull $CI_REGISTRY/tchooz-build-db:latest || true
+    - docker build --cache-from $CI_REGISTRY/tchooz-build-db:latest --compress -f Dockerfile.db -t $CI_REGISTRY/tchooz-build-db:latest -t $CI_REGISTRY/tchooz-build-db:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 --build-arg xdebug=1 --build-arg jest=1 .
+    - docker push $CI_REGISTRY/tchooz-build-db:$CI_COMMIT_SHORT_SHA
+    - docker push $CI_REGISTRY/tchooz-build-db:latest
+  only:
+    - merge_request
+
+phpunit-job:
+  stage: test
+  image: docker/compose:1.29.2
+  coverage: '/^\s*Lines:\s*\d+.\d+\%/'
+  before_script: 
+    - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+    - docker-compose up -d
+  script:
+    - docker exec web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID /bin/sh -c "/var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?"
+  after_script:
+    - docker logs database-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
+    - docker logs redis-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
+    - docker logs web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
+    - docker-compose down
+  only:
+    - merge_request
+
+jest-job:
+  stage: test
+  image: docker/compose:1.29.2
+  coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
+  before_script: 
+    - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+    - docker-compose up -d
+  script:
+    - docker exec web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID /bin/bash -c "cd /var/www/html/components && yarn run test:unit com_emundus/ --ci --coverage && echo $?"
+  after_script:
+    - docker logs database-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
+    - docker logs redis-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
+    - docker logs web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
+    - docker-compose down
+  only:
+    - merge_request
 
 release-job:
   stage: release
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - administrator/components/com_emundus/emundus.xml
+      when: on_success
+    - when: never
   image: $CI_REGISTRY/emundus-semantic-release:latest
-  variables:
-    GITLAB_TOKEN: $GITLAB_TOKEN
   script:
     - semantic-release
   artifacts:
     reports:
       dotenv: release.env
-  only: 
-    - master
 
 sync-documentation-job:
   stage: release
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - administrator/components/com_emundus/emundus.xml
+      when: on_success
+    - when: never
   image: $CI_REGISTRY/emundus-sync-documentation:1.0.0
   script:
     - /go/generate-release-note.sh "$CI_SERVER_URL" "$CI_PROJECT_ID" "$GITLAB_TOKEN" "$ATLASSIAN_URL" "$ATLASSIAN_USER" "$ATLASSIAN_TOKEN" "$ATLASSIAN_SPACE" "$ATLASSIAN_PARENT_PAGE" "$ATLASSIAN_PAGE_TITLE"
   needs:
     - release-job
-  only: 
-    - master
+
+publish-app-image-job:
+  stage: publish
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - administrator/components/com_emundus/emundus.xml
+      when: on_success
+    - when: never
+  image: docker:20.10
+  before_script: 
+    - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+  script:
+    - docker pull $CI_REGISTRY/tchooz-app:latest || true
+    - docker build --cache-from $CI_REGISTRY/tchooz-app:latest --compress -t $CI_REGISTRY/tchooz-app:$NEW_VERSION -t $CI_REGISTRY/tchooz-app:latest .
+    - docker push $CI_REGISTRY/tchooz-app:$NEW_VERSION
+    - docker push $CI_REGISTRY/tchooz-app:latest
+  needs:
+    - release-job
+
+publish-db-image-job:
+  stage: publish
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - administrator/components/com_emundus/emundus.xml
+      when: on_success
+    - when: never
+  image: docker:20.10
+  before_script: 
+    - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+  script:
+    - docker pull $CI_REGISTRY/tchooz-db:latest || true
+    - docker build --cache-from $CI_REGISTRY/tchooz-db:latest --compress -f Dockerfile.db -t $CI_REGISTRY/tchooz-db:$NEW_VERSION -t $CI_REGISTRY/tchooz-db:latest .
+    - docker push $CI_REGISTRY/tchooz-db:$NEW_VERSION
+    - docker push $CI_REGISTRY/tchooz-db:latest
+  needs:
+    - release-job

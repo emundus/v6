@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.0.0
+ * @version    4.1.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -16,15 +16,8 @@ defined('_JEXEC') or die('Restricted access');
 	);
 ?>
 <form action="<?php echo hikamarket::completeLink('menus'); ?>" method="POST" name="adminForm" id="adminForm">
-<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
-<div id="page-menus">
-	<table style="width:100%">
-		<tr>
-			<td valign="top" width="50%">
-<?php } else { ?>
-<div id="page-menus" class="row-fluid">
-	<div class="span6">
-<?php } ?>
+<div id="page-menus" class="hk-row-fluid">
+	<div class="hkc-6">
 				<fieldset class="adminform">
 					<legend><?php echo JText::_( 'HIKA_DETAILS' ); ?></legend>
 
@@ -148,13 +141,8 @@ defined('_JEXEC') or die('Restricted access');
 						</tr>
 					</table>
 				</fieldset>
-<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
-			</td>
-			<td valign="top" width="50%">
-<?php } else { ?>
 	</div>
-	<div class="span6">
-<?php } ?>
+	<div class="hkc-6">
 				<fieldset data-block="content" data-block-value="vendor" class="adminform">
 					<legend><?php echo JText::_('PARAMS_FOR_VENDORS'); ?></legend>
 					<table class="admintable table" cellspacing="1" width="100%">
@@ -262,15 +250,8 @@ defined('_JEXEC') or die('Restricted access');
 						</tr>
 					</table>
 				</fieldset>
-<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
-			</td>
-		</tr>
-	</table>
-</div>
-<?php } else { ?>
 	</div>
 </div>
-<?php } ?>
 	<div class="clr"></div>
 
 	<input type="hidden" name="option" value="<?php echo HIKAMARKET_COMPONENT; ?>" />

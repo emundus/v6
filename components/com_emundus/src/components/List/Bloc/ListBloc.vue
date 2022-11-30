@@ -10,8 +10,7 @@
 		<div class="informations">
 			<p v-if="data.short_description" class="description">{{ data.short_description }}</p>
 
-			<div
-				v-if="campaign.associatedCampaigns !== null && campaign.associatedCampaigns.length > 0"
+			<div v-if="campaign.associatedCampaigns !== null && campaign.associatedCampaigns.length === 1"
 				class="associated-campaigns em-w-100 em-flex-row"
 				:title="translations.associatedCampaigns">
 				<div
@@ -21,22 +20,23 @@
 				>
 					{{ campaign.label }}
 				</div>
-
 			</div>
+      <div v-else-if="campaign.associatedCampaigns !== null && campaign.associatedCampaigns.length > 1" @click="displayAssociatedCampaigns">
+        <span class="em-pointer em-hover-underline">{{ campaign.associatedCampaigns.length }} {{ translate('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED') }}</span>
+      </div>
+      <div v-else-if="campaign.associatedCampaigns !== null && campaign.associatedCampaigns.length === 0">{{ translate('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_NOT') }}</div>
 
 			<div class="tags em-flex-row em-flex-start">
-				<div
-					v-if="displayPublished && isPublished !== null"
+				<div v-if="displayPublished && isPublished !== null"
 					:class="{
 						published: isPublished,
 						unpublished: !isPublished
 					}"
-				>
-					{{ isPublished ? translations.publishedTag : translations.unpublishedTag }}
+        >
+          {{ isPublished ? translations.publishedTag : translations.unpublishedTag }}
 				</div>
 
-				<div
-					v-if="displayPublished && isActive !== null"
+				<div v-if="displayPublished && isActive !== null"
 					:class="{
 						published: isActive,
 						unpublished: !isActive
@@ -67,8 +67,13 @@
 
 		<hr class="em-w-100">
 
-		<div class="actions em-flex-row em-w-100 em-flex-space-between">
-			<a @click="redirectToEditItem" class="em-primary-button em-font-size-14 em-pointer">
+		<div class="actions em-flex-row em-w-100"
+		  :class="{
+				'em-flex-row-justify-end': getEditUrlByType() === '',
+	      'em-flex-space-between': getEditUrlByType() !== ''
+			}"
+		>
+			<a v-if="getEditUrlByType() !== ''" @click="redirectToEditItem" class="em-primary-button em-font-size-14 em-pointer">
 					{{ translations.edit }}
 			</a>
 			<list-action-menu
@@ -76,6 +81,8 @@
 				:itemId="data.id"
 				:isPublished="actionMenuIsPublished"
 				:showTootlip="hasActionMenu"
+				:nb_files="type === 'campaign' ? parseInt(data.nb_files) : 0"
+				:pinned="type === 'campaign' ? parseInt(data.pinned) : 0"
 				@validateFilters="validateFilters"
 				@updateLoading="updateLoading"
 				@showModalPreview="showModalPreview"
@@ -87,8 +94,9 @@
 <script>
 import moment from "moment";
 import axios from "axios";
-import rows from '../../../data/tableRows';
+import rows from '../../../../data/tableRows';
 import ListActionMenu from '../ListActionMenu.vue';
+import Swal from "sweetalert2";
 
 const qs = require("qs");
 
@@ -132,7 +140,7 @@ export default {
 		};
 	},
 	mounted() {
-		this.lang = this.$store.getters['global/actualLanguage'];
+		this.lang = this.$store.getters['global/shortLang'];
 		this.getTitle();
 
 		if (this.type === "formulaire" || this.type === "form" || this.type === "grilleEval") {
@@ -153,7 +161,7 @@ export default {
       window.location.href = this.getEditUrlByType();
 		},
 		getEditUrlByType() {
-			let url;
+			let url = '';
 
 			switch(this.type) {
 				case 'campaign':
@@ -202,6 +210,24 @@ export default {
 		formatDate(date) {
 			return moment(date).format('DD/MM/YYYY');
 		},
+    displayAssociatedCampaigns() {
+      let campaigns = '<div class="em-flex-col-start" style="text-align: left">';
+      this.campaign.associatedCampaigns.forEach((campaign) => {
+        campaigns += '<p>'+campaign.label+'</p><hr style="width: 100%; margin: 4px 0">';
+      })
+      campaigns += '</div>';
+      Swal.fire({
+        title: this.translate('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE'),
+        html: campaigns,
+        type: "info",
+        confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+        customClass: {
+          title: 'em-swal-title',
+          confirmButton: 'em-swal-confirm-button',
+          actions: "em-swal-single-action",
+        },
+      });
+    }
 	},
 	computed: {
 		isPublished() {
@@ -286,7 +312,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+.em-hover-underline{
+  &:hover{
+    text-decoration: underline;
+  }
+}
 .not-displayed {
 	.list-bloc-item {
 		display: none;
@@ -300,8 +330,8 @@ export default {
 	justify-content: space-between;
 	padding: 16px;
 	background: #FFFFFF;
-  box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07),
-    0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+  //box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+  border: solid 1px #e0e0e5;
 	box-sizing: border-box;
 	border-radius: 4px;
 
@@ -312,7 +342,7 @@ export default {
 	.title {
 		h3 {
 			font-size: 18px;
-			font-weight: 800;
+			font-weight: 600;
 			line-height: 23px;
 			color: #080C12;
 			margin-bottom: 8px;
@@ -320,6 +350,8 @@ export default {
 
 		.dates {
 			font-size: 12px;
+      color: var(--neutral-800);
+      font-family: var(--font);
 		}
 	}
 
@@ -331,8 +363,17 @@ export default {
     max-width: 240px;
 	}
 
+  .description {
+    font-family: var(--font);
+  }
+
 	.informations {
 		font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    height: 100%;
+    color: var(--neutral-800);
 
 		.associated-campaigns {
 			margin: 0 0 24px 0;
@@ -353,12 +394,11 @@ export default {
 
 	.tags {
     flex-wrap: wrap;
-    margin: 8px 0;
+    margin: 8px 0 0 0;
 		font-size: 10px;
 		line-height: 13px;
 
 		>div {
-			margin: 0 8px 8px 0;
 			padding: 4px 8px;
 			border-radius: 4px;
 			color: #080C12;
@@ -366,9 +406,14 @@ export default {
 			background: #F2F2F3;
 			box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07),
     		0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+      margin-left: 8px;
+       font-family: var(--font);
+      &:nth-child(1){
+        margin-left: 0;
+      }
 
 			&.published {
-				background: #DFF5E9;
+				background: var(--main-100);
 			}
 
 			&.unpublished {
@@ -406,11 +451,11 @@ export default {
 
 		.em-primary-button {
 			width: fit-content;
-			border: 1px solid #20835F;
+			border: 1px solid var(--main-500);
 
 			&:hover {
 				background-color: white;
-				color: #20835F;
+				color: var(--main-500);
 			}
 		}
 	}

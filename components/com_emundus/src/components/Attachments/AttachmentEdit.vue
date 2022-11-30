@@ -11,6 +11,7 @@
               type="text"
               v-model="attachmentDescription"
               :disabled="!canUpdate"
+              @focusout="saveChanges"
           >
 					</textarea>
         </div>
@@ -23,9 +24,7 @@
 			    	error: attachmentIsValidated == 0,
 			    }"
         >
-          <label for="status">{{
-              translate("COM_EMUNDUS_ATTACHMENTS_CHECK")
-            }}</label>
+          <label for="status">{{translate("COM_EMUNDUS_ATTACHMENTS_CHECK") }}</label>
           <select
               name="status"
               v-model="attachmentIsValidated"
@@ -34,18 +33,12 @@
           >
             <option value=1>{{ translate("VALID") }}</option>
             <option value=0>{{ translate("INVALID") }}</option>
-            <option value=2>
-              {{ translate("COM_EMUNDUS_ATTACHMENTS_WARNING") }}
-            </option>
-            <option value=-2>
-              {{ translate("COM_EMUNDUS_ATTACHMENTS_WAITING") }}
-            </option>
+            <option value=2>{{ translate("COM_EMUNDUS_ATTACHMENTS_WARNING") }}</option>
+            <option value=-2>{{ translate("COM_EMUNDUS_ATTACHMENTS_WAITING") }}</option>
           </select>
         </div>
         <div class="input-group" v-if="canUpdate">
-          <label for="replace">
-            {{ translate("COM_EMUNDUS_ATTACHMENTS_REPLACE") }}</label
-          >
+          <label for="replace">{{ translate("COM_EMUNDUS_ATTACHMENTS_REPLACE") }}</label>
           <input
               type="file"
               name="replace"
@@ -54,25 +47,23 @@
           />
         </div>
         <div class="input-group">
-          <label for="can_be_viewed">{{
-              translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED")
-            }}</label>
+          <label for="can_be_viewed">{{translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED") }}</label>
           <input
               type="checkbox"
               name="can_be_viewed"
               v-model="attachmentCanBeViewed"
               :disabled="!canUpdate"
+              @click="saveChanges"
           />
         </div>
         <div class="input-group">
-          <label for="can_be_deleted">{{
-              translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED")
-            }}</label>
+          <label for="can_be_deleted">{{translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED") }}</label>
           <input
               type="checkbox"
               name="can_be_deleted"
               v-model="attachmentCanBeDeleted"
               :disabled="!canUpdate"
+              @click="saveChanges"
           />
         </div>
       </div>
@@ -94,20 +85,26 @@
           <span>{{ getUserNameById(attachment.modified_by) }}</span>
         </div>
         <div v-if="attachment.modified">
-					<span>{{
-              translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE")
-            }}</span>
+					<span>{{translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE") }}</span>
           <span>{{ formattedDate(attachment.modified) }}</span>
         </div>
         <!-- TODO: add file size -->
       </div>
     </div>
-    <div class="actions">
-      <button v-if="canUpdate" @click="saveChanges" class="em-primary-button">
-        {{ translate("COM_EMUNDUS_ATTACHMENTS_SAVE") }}
-      </button>
-    </div>
 
+	  <div class="em-w-100 em-flex-row em-flex-space-between">
+		  <div id="toggle-display">
+			  <span v-if="displayed" class="material-icons-outlined displayed em-pointer" @click="toggleDisplay(false)">
+				  chevron_right
+			  </span>
+			  <span v-else class="material-icons-outlined not-displayed em-pointer" @click="toggleDisplay(true)">
+				  menu_open
+			  </span>
+		  </div>
+		  <!--<div class="actions">
+			  <button v-if="canUpdate" @click="saveChanges" class="em-primary-button">{{ translate("COM_EMUNDUS_ATTACHMENTS_SAVE") }}</button>
+		  </div>-->
+	  </div>
     <div v-if="error" class="error-msg">{{ errorMessage }}</div>
   </div>
 </template>
@@ -123,10 +120,15 @@ export default {
       type: String,
       required: true,
     },
+	  isDisplayed: {
+			type: Boolean,
+		  default: true
+	  }
   },
   mixins: [mixin],
   data() {
     return {
+			displayed: true,
       attachment: {},
       categories: {},
       file: null,
@@ -141,9 +143,8 @@ export default {
     };
   },
   mounted() {
-    this.canUpdate = this.$store.state.user.rights[this.fnum]
-        ? this.$store.state.user.rights[this.fnum].canUpdate
-        : false;
+		this.displayed = this.isDisplayed;
+    this.canUpdate = this.$store.state.user.rights[this.fnum] ? this.$store.state.user.rights[this.fnum].canUpdate : false;
     this.canSee = !this.$store.state.global.anonyme;
     this.attachment = this.$store.state.attachment.selectedAttachment;
     this.categories = this.$store.state.attachment.categories;
@@ -199,17 +200,17 @@ export default {
             id: this.attachment.aid,
           });
         }
-
-        this.$emit("saveChanges");
       } else {
         this.showError(response.msg);
       }
     },
     updateFile(event) {
       this.file = event.target.files[0];
+			this.saveChanges();
     },
     updateAttachmentStatus(event) {
       this.attachmentIsValidated = event.target.value;
+	    this.saveChanges();
     },
     showError(error) {
       this.error = true;
@@ -220,6 +221,10 @@ export default {
         this.errorMessage = "";
       }, 3000);
     },
+	  toggleDisplay(displayed) {
+			this.displayed = displayed;
+			this.$emit('update-displayed', this.displayed);
+	  }
   },
   computed: {
     allowedType() {
@@ -234,7 +239,7 @@ export default {
   },
   watch: {
     "$store.state.attachment.selectedAttachment": function () {
-      // check if selected attchment is not an empty object
+      // check if selected attachment is not an empty object
       const keys = Object.keys(this.$store.state.attachment.selectedAttachment);
 
       if (keys.length > 0) {
@@ -338,6 +343,7 @@ export default {
 
   .actions {
     align-self: flex-end;
+    margin-right: 20px;
 
     button {
       transition: all 0.3s;
@@ -347,13 +353,16 @@ export default {
 
   .input-group {
     margin-top: 10px;
-
     display: flex;
     flex-direction: column;
 
     [type="checkbox"] {
       width: fit-content;
     }
+
+	  input {
+		  height: fit-content !important;
+	  }
   }
 
 	.valid-state {
@@ -389,6 +398,18 @@ export default {
 				color: var(--error-color);
 				background-color: var(--error-bg-color);
 			}
+		}
+	}
+
+	#toggle-display {
+		.not-displayed {
+			position: absolute;
+			bottom: 0;
+			right: 15px;
+			padding: 10px;
+			background: white;
+			border-top-left-radius: 4px;
+			border: 1px solid #ececec;
 		}
 	}
 }

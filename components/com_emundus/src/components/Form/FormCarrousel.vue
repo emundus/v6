@@ -10,7 +10,7 @@
       <div class="em-flex-column em-align-start em-mt-48">
         <div class="em-mb-16">
           <p class="em-h4">
-            <span class="material-icons">article</span>
+            <span class="material-icons-outlined">article</span>
             {{ Form }}
           </p>
           <div v-for="(value, index) in formNameArray" :key="index" class="MenuForm em-mb-8">
@@ -24,7 +24,7 @@
 
         <div>
           <p class="em-h4">
-            <span class="material-icons">folder</span>
+            <span class="material-icons-outlined">folder</span>
             {{ Documents }}
           </p>
           <div v-for="(doc, index) in documentsList" :key="index" class="MenuForm em-mb-8">
@@ -103,7 +103,7 @@ export default {
 
 <style scoped>
 .MenuFormItem_current{
-  color: #20835F;
+  color: var(--main-500);
 }
 .MenuForm a:hover{
   color: #1C6EF2;

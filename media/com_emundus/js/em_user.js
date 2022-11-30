@@ -2,7 +2,9 @@
  * Created by yoan on 16/09/14.
  */
 
-/* load Menu action */
+var lastIndex = 0;
+var loading;
+
 function reloadActions(view) {
 	var mutli = 0;
 	multi = $('.em-check:checked').length;
@@ -20,25 +22,10 @@ function reloadActions(view) {
 	})
 }
 
-
-
 function clearchosen(cible) {
 	$(cible).val("%");
 	$(cible).trigger('chosen:updated');
 }
-
-function getCookie(cname) {
-	var name = cname + "=";
-	var ca = document.cookie.split(';');
-	for (var i = 0; i < ca.length; i++) {
-		var c = ca[i].trim();
-		if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
-	}
-	return "";
-}
-
-var lastIndex = 0;
-var loading;
 
 function getUserCheck() {
 	var id = parseInt($('.modal-body').attr('act-id'));
@@ -98,13 +85,13 @@ function formCheck(id) {
 }
 
 function reloadData() {
-	addDimmer();
+	addLoader();
 	$.ajax({
 		type: "GET",
 		url: 'index.php?option=com_emundus&view=users&format=raw&layout=user&Itemid=' + itemId,
 		dataType: 'html',
 		success: function (data) {
-			$('.em-dimmer').remove();
+			removeLoader();
 			$(".col-md-9 .panel.panel-default").empty();
 			$(".col-md-9 .panel.panel-default").append(data);
 		},
@@ -112,10 +99,6 @@ function reloadData() {
 			console.log(jqXHR.responseText);
 		}
 	})
-}
-
-function addDimmer() {
-	$('.row').before('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
 }
 
 function refreshFilter() {
@@ -924,7 +907,7 @@ $(document).ready(function () {
 			}
 		}
 
-		if ($('.modal-body .em-dimmer').is(':visible')) {
+		if ($('#em-dimmer').is(':visible')) {
 			return false;
 		}
 
@@ -946,7 +929,7 @@ $(document).ready(function () {
 					progs = progs.substr(0, progs.length - 1);
 				}
 
-				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+				addLoader();
 
 				$.ajax({
 					type: 'POST',
@@ -958,7 +941,7 @@ $(document).ready(function () {
 					},
 					dataType: 'json',
 					success: function (result) {
-						$('.modal-body .em-dimmer').remove();
+						removeLoader();
 						if (result.status) {
 
 							Swal.fire({
@@ -1026,7 +1009,7 @@ $(document).ready(function () {
 					$('#profiles').after('<span class="help-block">' + Joomla.JText._('SELECT_A_VALUE') + '</span>');
 					return false;
 				}
-				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+				addLoader();
 				$.ajax({
 					type: 'POST',
 					url: $('#em-add-user').attr('action'),
@@ -1046,7 +1029,7 @@ $(document).ready(function () {
 					},
 					dataType: 'json',
 					success: function (result) {
-						$('.modal-body .em-dimmer').remove();
+						removeLoader();
 
 						if (result.status) {
 							Swal.fire({
@@ -1116,7 +1099,7 @@ $(document).ready(function () {
 					},
 					dataType: 'json',
 					success: function (result) {
-						$('.modal-body .em-dimmer').remove();
+						removeLoader();
 
 						if (result.status) {
 							Swal.fire({
@@ -1195,28 +1178,33 @@ $(document).ready(function () {
 					$('#profiles').after('<span class="help-block">' + Joomla.JText._('SELECT_A_VALUE') + '</span>');
 					return false;
 				}
-				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+				addLoader();
+
+				let addUserData = {
+					login: login,
+					firstname: fn,
+					lastname: ln,
+					campaigns: campaigns.substr(0, campaigns.length - 1),
+					oprofiles: oprofiles.substr(0, oprofiles.length - 1),
+					groups: groups.substr(0, groups.length - 1),
+					profile: profile,
+					jgr: $('#profiles option:selected').attr('id'),
+					email: email,
+					newsletter: $('#news').is(':checked') ? 1 : 0,
+					university_id: $('#univ').val()
+				}
+
+				if($('#em-add-user').attr('action').indexOf('edituser') !== -1) {
+					addUserData.id =  $('.em-check:checked').attr('id').split('_')[0];
+				}
 
 				$.ajax({
 					type: 'POST',
 					url: $('#em-add-user').attr('action'),
-					data: {
-						id: $('.em-check:checked').attr('id').split('_')[0],
-						login: login,
-						firstname: fn,
-						lastname: ln,
-						campaigns: campaigns.substr(0, campaigns.length - 1),
-						oprofiles: oprofiles.substr(0, oprofiles.length - 1),
-						groups: groups.substr(0, groups.length - 1),
-						profile: profile,
-						jgr: $('#profiles option:selected').attr('id'),
-						email: email,
-						newsletter: $('#news').is(':checked') ? 1 : 0,
-						university_id: $('#univ').val()
-					},
+					data: addUserData,
 					dataType: 'json',
 					success: function (result) {
-						$('.modal-body .em-dimmer').remove();
+						removeLoader();
 
 						if (result.status) {
 							Swal.fire({
@@ -1260,7 +1248,7 @@ $(document).ready(function () {
 
 			case 26:
 				var checkInput = getUserCheck();
-				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+				addLoader();
 				$.ajax({
 					type: 'POST',
 					url: 'index.php?option=com_emundus&controller=users&task=deleteusers&Itemid=' + itemId,
@@ -1269,7 +1257,7 @@ $(document).ready(function () {
 					},
 					dataType: 'json',
 					success: function (result) {
-						$('.modal-body .em-dimmer').remove();
+						removeLoader();
 
 						if (result.status) {
 							Swal.fire({
@@ -1319,7 +1307,7 @@ $(document).ready(function () {
 				var usersData = getUserCheck();/*get objectJson with id et uid*/
 				var uid = JSON.parse(usersData);/*parsing in json to get only the uid*/
 
-				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+				addLoader();
 
 				$.ajax({
 					type: 'POST',
@@ -1330,7 +1318,7 @@ $(document).ready(function () {
 
 					dataType: 'json',
 					success: function (result) {
-						$('.modal-body .em-dimmer').remove();
+						removeLoader();
 
 						if (result.status) {
 							Swal.fire({

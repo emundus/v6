@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -12,7 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 		<div class="hikashop_module_subblock_title hikashop_module_edit_display_settings_div_title"><?php echo JText::_('DISPLAY'); ?></div>
 		 <dl class="hika_options">
 			<dt class="hikashop_option_name">
-				<?php echo JText::_('PRODUCT_PAGE');?>
+				<label><?php echo JText::_('PRODUCT_PAGE');?></label>
 			</dt>
 			<dd class="hikashop_option_value"><?php
 				if(!isset($this->element['display_on_product_page']))
@@ -22,7 +22,7 @@ defined('_JEXEC') or die('Restricted access');
 		</dl>
 		<dl class="hika_options">
 			<dt class="hikashop_option_name">
-				<?php echo JText::_('PRODUCT_LISTING_PAGE');?>
+				<label><?php echo JText::_('PRODUCT_LISTING_PAGE');?></label>
 			</dt>
 			<dd class="hikashop_option_value"><?php
 				if(!isset($this->element['display_on_product_listing_page']))
@@ -32,7 +32,7 @@ defined('_JEXEC') or die('Restricted access');
 		</dl>
 		<dl class="hika_options">
 			<dt class="hikashop_option_name">
-				<?php echo JText::_('PRODUCT_COMPARE_PAGE');?>
+				<label><?php echo JText::_('PRODUCT_COMPARE_PAGE');?></label>
 			</dt>
 			<dd class="hikashop_option_value">
 				<?php
@@ -43,7 +43,7 @@ defined('_JEXEC') or die('Restricted access');
 		</dl>
 		<dl class="hika_options">
 			<dt class="hikashop_option_name">
-				<?php echo JText::_('CATEGORY_LISTING_PAGE');?>
+				<label><?php echo JText::_('CATEGORY_LISTING_PAGE');?></label>
 			</dt>
 			<dd class="hikashop_option_value">
 				<?php
@@ -54,7 +54,7 @@ defined('_JEXEC') or die('Restricted access');
 		</dl>
 		<dl class="hika_options">
 			<dt class="hikashop_option_name">
-				<?php echo JText::_('CHECKOUT_PAGE');?>
+				<label><?php echo JText::_('CHECKOUT_PAGE');?></label>
 			</dt>
 			<dd class="hikashop_option_value">
 				<?php
@@ -64,9 +64,9 @@ defined('_JEXEC') or die('Restricted access');
 			?></dd>
 		</dl>
 		<dl class="hika_options">
-			<dt class="hikashop_option_name"><?php
-				echo JText::_('COM_HIKASHOP_CONTACT_VIEW_DEFAULT_TITLE');
-			?></dt>
+			<dt class="hikashop_option_name">
+				<label><?php echo JText::_('COM_HIKASHOP_CONTACT_VIEW_DEFAULT_TITLE'); ?></label>
+			</dt>
 			<dd class="hikashop_option_value"><?php
 				if(!isset($this->element['display_on_contact_page']))
 					$this->element['display_on_contact_page'] = 1;
@@ -74,9 +74,9 @@ defined('_JEXEC') or die('Restricted access');
 			?></dd>
 		</dl>
 		<dl class="hika_options">
-			<dt class="hikashop_option_name"><?php
-				echo JText::_('COM_HIKASHOP_WAITLIST_VIEW_DEFAULT_TITLE');
-			?></dt>
+			<dt class="hikashop_option_name">
+				<label><?php echo JText::_('COM_HIKASHOP_WAITLIST_VIEW_DEFAULT_TITLE'); ?></label>
+			</dt>
 			<dd class="hikashop_option_value"><?php
 				if(!isset($this->element['display_on_waitlist_page']))
 					$this->element['display_on_waitlist_page'] = 1;

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -51,6 +51,7 @@ class EntryViewEntry extends hikashopView{
 		}
 		switch($pageInfo->filter->filter_status){
 			case '':
+			case 'all':
 				break;
 			default:
 				$filters[]='a.order_status = '.$database->Quote($pageInfo->filter->filter_status);
@@ -106,7 +107,7 @@ class EntryViewEntry extends hikashopView{
 				$displayNew = FALSE;
 
 			$this->toolbar = array(
-				array('name' => 'custom','task'=>'export','icon'=>'upload','alt'=>JText::_('HIKA_EXPORT')),
+				array('name' => 'export'),
 				array('name'=>'addNew','display'=>$displayNew),
 				array('name'=>'editList','display'=>hikashop_isAllowed($config->get('acl_entry_manage','all'))),
 				array('name'=>'deleteList','display'=>hikashop_isAllowed($config->get('acl_entry_delete','all'))),

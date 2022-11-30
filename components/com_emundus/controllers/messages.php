@@ -339,8 +339,9 @@ class EmundusControllerMessages extends JControllerLegacy {
             'COURSE_LABEL' => $programme->label,
             'CAMPAIGN_LABEL' => $fnum->label,
             'CAMPAIGN_YEAR' => $fnum->year,
-            'CAMPAIGN_START' => $fnum->start_date,
-            'CAMPAIGN_END' => $fnum->end_date,
+            'CAMPAIGN_START' => JHTML::_('date', $fnum->start_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+            'CAMPAIGN_END' => JHTML::_('date', $fnum->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+            'DEADLINE' => JHTML::_('date', $fnum->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
             'SITE_URL' => JURI::base(),
             'USER_EMAIL' => $fnum->email
         ];
@@ -506,12 +507,14 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 	    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
 
         $m_messages = new EmundusModelMessages();
         $m_emails = new EmundusModelEmails();
+        $m_users = new EmundusModelUsers();
         $m_files = new EmundusModelFiles();
         $m_campaign = new EmundusModelCampaign();
         $m_eval = new EmundusModelEvaluation;
@@ -572,8 +575,26 @@ class EmundusControllerMessages extends JControllerLegacy {
         // Loading the message template is not used for getting the message text as that can be modified on the frontend by the user before sending.
         $template = $m_messages->getEmail($template_id);
 
+        require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+        $h_emails = new EmundusHelperEmails();
+
         foreach ($fnums as $fnum) {
+            $can_send_mail = $h_emails->assertCanSendMailToUser($fnum->applicant_id, $fnum->fnum);
+            if (!$can_send_mail) {
+                continue;
+            }
+
             $programme = $m_campaign->getProgrammeByTraining($fnum->training);
+
+            $cc_custom = [];
+            $emundus_user = $m_users->getUserById($fnum->applicant_id)[0];
+            if(isset($emundus_user->email_cc) && !empty($emundus_user->email_cc)) {
+                if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
+                    $cc_custom[] = $emundus_user->email_cc;
+                }
+            }
+            $cc_final = array_merge($cc,$cc_custom);
+
 
             $toAttach = [];
             $post = [
@@ -582,8 +603,9 @@ class EmundusControllerMessages extends JControllerLegacy {
                 'COURSE_LABEL' => $programme->label,
                 'CAMPAIGN_LABEL' => $fnum->label,
                 'CAMPAIGN_YEAR' => $fnum->year,
-                'CAMPAIGN_START' => $fnum->start_date,
-                'CAMPAIGN_END' => $fnum->end_date,
+                'CAMPAIGN_START' => JHTML::_('date', $fnum->start_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+                'CAMPAIGN_END' => JHTML::_('date', $fnum->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+                'DEADLINE' => JHTML::_('date', $fnum->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
                 'SITE_URL' => JURI::base(),
                 'USER_EMAIL' => $fnum->email
             ];
@@ -640,8 +662,8 @@ class EmundusControllerMessages extends JControllerLegacy {
             $mailer->Encoding = 'base64';
             $mailer->setBody($body);
 
-            if (!empty($cc)) {
-                $mailer->addCc($cc);
+            if (!empty($cc_final)) {
+                $mailer->addCc($cc_final);
             }
 
             if (!empty($bcc)) {
@@ -898,7 +920,13 @@ class EmundusControllerMessages extends JControllerLegacy {
 		// Loading the message template is not used for getting the message text as that can be modified on the frontend by the user before sending.
 		$template = $m_messages->getEmail($template_id);
 
+        require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+        $h_emails = new EmundusHelperEmails();
 		foreach ($users as $user) {
+            $can_send_mail = $h_emails->assertCanSendMailToUser($user->id);
+            if (!$can_send_mail) {
+                continue;
+            }
 
 			$toAttach = [];
 			$post = [
@@ -1005,15 +1033,29 @@ class EmundusControllerMessages extends JControllerLegacy {
 	 * @throws \PhpOffice\PhpWord\Exception\Exception
 	 */
     function sendEmail($fnum, $email_id, $post = null, $attachments = [], $bcc = false) {
+        if (empty($fnum) || empty($email_id)) {
+            return false;
+        }
+
+        require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'emails.php');
+        $h_emails   = new EmundusHelperEmails();
+
+        $can_send_mail = $h_emails->assertCanSendMailToUser(null, $fnum);
+        if (!$can_send_mail) {
+            return false;
+        }
+
         require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 	    require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-	    require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+        require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 	    require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+	    require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 
         $m_messages = new EmundusModelMessages();
 	    $m_emails   = new EmundusModelEmails();
-	    $m_files    = new EmundusModelFiles();
+        $m_files    = new EmundusModelFiles();
 	    $m_campaign = new EmundusModelCampaign();
+	    $m_users = new EmundusModelUsers();
 
 	    $user   = JFactory::getUser();
 	    $config = JFactory::getConfig();
@@ -1084,8 +1126,20 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    }
 	    $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
+        // Check if user defined a cc address
+        $cc = [];
+        $emundus_user = $m_users->getUserById($fnum['applicant_id'])[0];
+        if(isset($emundus_user->email_cc) && !empty($emundus_user->email_cc)) {
+            if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
+                $cc[] = $emundus_user->email_cc;
+            }
+        }
+
 	    // Configure email sender
 	    $mailer = JFactory::getMailer();
+        if (!empty($cc)) {
+            $mailer->addCc($cc);
+        }
 	    if ($bcc) {
 		    $mailer->addBCC($user->email);
 	    }
@@ -1580,18 +1634,29 @@ class EmundusControllerMessages extends JControllerLegacy {
         $fnum = $jinput->post->getRaw('fnum', null);
 
         $raw = $jinput->post->getRaw('raw', null);
+        $template_email_id = $jinput->post->getString('tmpl', null);
 
         if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
             die(JText::_("ACCESS_DENIED"));
+        }
+
+        require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+        $h_emails = new EmundusHelperEmails();
+        $can_send_mail = $h_emails->assertCanSendMailToUser(null, $fnum);
+        if (!$can_send_mail) {
+            echo json_encode(['status' => false, 'msg' => 'Can not send mail to this user']);
+            exit;
         }
 
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
 
         $m_emails = new EmundusModelEmails();
+        $m_users = new EmundusModelUsers();
         $m_files = new EmundusModelFiles();
         $m_campaign = new EmundusModelCampaign();
         $_meval = new EmundusModelEvaluation;
@@ -1678,11 +1743,23 @@ class EmundusControllerMessages extends JControllerLegacy {
             $mail_from_name
         ];
 
+        // Check if user defined a cc address
+        $cc = [];
+        $emundus_user = $m_users->getUserById($fnum_info['applicant_id'])[0];
+        if(isset($emundus_user->email_cc) && !empty($emundus_user->email_cc)) {
+            if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
+                $cc[] = $emundus_user->email_cc;
+            }
+        }
+
         // Configure email sender
         $mailer = JFactory::getMailer();
         $mailer->setSender($sender);
         $mailer->addReplyTo($mail_from, $mail_from_name);
         $mailer->addRecipient($fnum_info['email']);
+        if(!empty($cc)) {
+            $mailer->addCC($cc);
+        }
         $mailer->setSubject($subject);
         $mailer->isHTML(true);
         $mailer->Encoding = 'base64';
@@ -1711,7 +1788,9 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         $mailer->addAttachment($file_path);
         $send = $mailer->Send();
-
+        $dispatcher = JEventDispatcher::getInstance();
+        $dispatcher->trigger('onAfterEmailSend', ['fnum', 'template_id']);
+        $dispatcher->trigger('callEventHandler', ['onAfterEmailSend', ['fnum' => $fnum, 'template_id' => $template_email_id]]);
         /* track the log of email */
         if ($send !== true) {
             $failed[] = $fnum_info['email'];

@@ -226,22 +226,29 @@ class EmundusModelEmails extends JModelList {
             $campaign = $m_campaign->getCampaignByID($student->campaign_id);
             $post = array(
                 'APPLICANT_ID' => $student->id,
-                'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($campaign['end_date'])),
+                'DEADLINE' => JHTML::_('date', $campaign['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
                 'APPLICANTS_LIST' => '',
                 'EVAL_CRITERIAS' => '',
                 'EVAL_PERIOD' => '',
                 'CAMPAIGN_LABEL' => $campaign['label'],
                 'CAMPAIGN_YEAR' => $campaign['year'],
-                'CAMPAIGN_START' => $campaign['start_date'],
-                'CAMPAIGN_END' => $campaign['end_date'],
+                'CAMPAIGN_START' => JHTML::_('date', $campaign['start_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
+                'CAMPAIGN_END' => JHTML::_('date', $campaign['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
                 'CAMPAIGN_CODE' => $campaign['training'],
                 'FNUM' => $student->fnum,
                 'COURSE_NAME' => $campaign['label']
             );
 
+            require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+            $h_emails = new EmundusHelperEmails();
+
             foreach ($trigger_emails as $trigger_email) {
 
                 foreach ($trigger_email[$student->code]['to']['recipients'] as $recipient) {
+                    if (!$h_emails->assertCanSendMailToUser($recipient['id'])) {
+                        continue;
+                    }
+
                     $mailer = JFactory::getMailer();
 
                     $tags = $this->setTags($student->id, $post, $student->fnum, '', $trigger_email[$student->code]['tmpl']['emailfrom'].$trigger_email[$student->code]['tmpl']['name'].$trigger_email[$student->code]['tmpl']['subject'].$trigger_email[$student->code]['tmpl']['message']);
@@ -396,7 +403,7 @@ class EmundusModelEmails extends JModelList {
      * @throws Exception
      * @since version v6
      */
-    public function setConstants($user_id, $post=null, $passwd='') {
+    public function setConstants($user_id, $post=null, $passwd='', $fnum=null) {
         $app            = JFactory::getApplication();
         $current_user   = JFactory::getUser();
         $user           = $current_user->id == $user_id ? $current_user : JFactory::getUser($user_id);
@@ -439,6 +446,23 @@ class EmundusModelEmails extends JModelList {
             JURI::base()."index.php?option=com_users&task=registration.activate&token=".$activation, "index.php?option=com_users&task=registration.activate&token=".$activation, JURI::base(), $sitename,
             $user->id, $user->name, $user->email, $user->username, JFactory::getDate('now')->format(JText::_('DATE_FORMAT_LC3')), $logo
         );
+
+        if(!empty($fnum)){
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+            $m_files = new EmundusModelFiles();
+            $status = $m_files->getStatusByFnums([$fnum]);
+
+            $patterns[] = '/\[APPLICATION_STATUS\]/';
+            $replacements[] = $status[$fnum]['value'];
+
+            $tags = $m_files->getTagsByFnum([$fnum]);
+            $tags_label = [];
+            foreach ($tags as $tag){
+                $tags_label[] = $tag['label'];
+            }
+            $patterns[] = '/\[APPLICATION_TAGS\]/';
+            $replacements[] = implode(',', $tags_label);
+        }
 
         if(isset($post)) {
             foreach ($post as $key => $value) {
@@ -493,7 +517,7 @@ class EmundusModelEmails extends JModelList {
             return array('patterns' => array() , 'replacements' => array());
         }
 
-        $constants = $this->setConstants($user_id, $post, $passwd);
+        $constants = $this->setConstants($user_id, $post, $passwd, $fnum);
 
         $patterns = $constants['patterns'];
         $replacements = $constants['replacements'];
@@ -1404,114 +1428,76 @@ class EmundusModelEmails extends JModelList {
         $user = JFactory::getUser($user);
         $toAttach = [];
 
-        // Tags are replaced with their corresponding values using the PHP preg_replace function.
-        $tags = $this->setTags($user->id);
+        require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+        $h_emails = new EmundusHelperEmails();
 
-        $subject = preg_replace($tags['patterns'], $tags['replacements'], $template->subject);
-        $body =  $template->message;
-        if ($template) {
-            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
-        }
-        $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+        if ($h_emails->assertCanSendMailToUser($user->id)) {
+            // Tags are replaced with their corresponding values using the PHP preg_replace function.
+            $tags = $this->setTags($user->id);
 
-        $config = JFactory::getConfig();
-        // Get default mail sender info
-        $mail_from_sys = $config->get('mailfrom');
-        $mail_from_sys_name = $config->get('fromname');
-        // Set sender
-        $sender = [
-            $mail_from_sys,
-            $mail_from_sys_name
-        ];
-
-        // Configure email sender
-        $mailer = JFactory::getMailer();
-        $mailer->setSender($sender);
-        $mailer->addReplyTo($mail_from_sys, $mail_from_sys_name);
-        $mailer->addRecipient($user->email);
-        $mailer->setSubject($subject);
-        $mailer->isHTML(true);
-        $mailer->Encoding = 'base64';
-        $mailer->setBody($body);
-
-        $files = '';
-        // Files uploaded from the frontend.
-        if (!empty($attachments)) {
-            // Here we also build the HTML being logged to show which files were attached to the email.
-            $files = '<ul>';
-            foreach ($attachments as $upload) {
-                if (file_exists(JPATH_SITE.DS.$upload)) {
-                    $toAttach[] = JPATH_SITE.DS.$upload;
-                    $files .= '<li>'.basename($upload).'</li>';
-                }
+            $subject = preg_replace($tags['patterns'], $tags['replacements'], $template->subject);
+            $body =  $template->message;
+            if ($template) {
+                $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
             }
-            $files .= '</ul>';
-        }
+            $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
-        $mailer->addAttachment($toAttach);
-
-        // Send and log the email.
-        $send = $mailer->Send();
-        if ($send !== true) {
-            $failed[] = $user->email;
-            echo 'Error sending email: ' . $send->__toString();
-            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
-        } else {
-            $sent[] = $user->email;
-            $log = [
-                'user_id_from' => $current_user->id,
-                'user_id_to' => $user->id,
-                'subject' => $subject,
-                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $user->email . '</i><br>' . $body . $files,
-                'type' => !empty($template)?$template->type:''
+            $config = JFactory::getConfig();
+            // Get default mail sender info
+            $mail_from_sys = $config->get('mailfrom');
+            $mail_from_sys_name = $config->get('fromname');
+            // Set sender
+            $sender = [
+                $mail_from_sys,
+                $mail_from_sys_name
             ];
-            $this->logEmail($log);
-            // Log the email in the eMundus logging system.
-            $logsParams = array('created' => [$subject]);
-            EmundusModelLogs::log($current_user->id, $user->id, '', 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
-        }
-    }
 
-    /**
-     * @param $filter
-     * @param $recherche
-     *
-     * @return int
-     *
-     * @since version 1.0
-     */
-    function getEmailCount($filter, $recherche) {
-        $query = $this->_db->getQuery(true);
+            // Configure email sender
+            $mailer = JFactory::getMailer();
+            $mailer->setSender($sender);
+            $mailer->addReplyTo($mail_from_sys, $mail_from_sys_name);
+            $mailer->addRecipient($user->email);
+            $mailer->setSubject($subject);
+            $mailer->isHTML(true);
+            $mailer->Encoding = 'base64';
+            $mailer->setBody($body);
 
-        if ($filter == 'Publish') {
-            $filterCount = $this->_db->quoteName('se.published') . ' = 1';
-        } else if ($filter == 'Unpublish') {
-            $filterCount = $this->_db->quoteName('se.published') . ' = 0';
-        } else {
-            $filterCount = ('1');
-        }
+            $files = '';
+            // Files uploaded from the frontend.
+            if (!empty($attachments)) {
+                // Here we also build the HTML being logged to show which files were attached to the email.
+                $files = '<ul>';
+                foreach ($attachments as $upload) {
+                    if (file_exists(JPATH_SITE.DS.$upload)) {
+                        $toAttach[] = JPATH_SITE.DS.$upload;
+                        $files .= '<li>'.basename($upload).'</li>';
+                    }
+                }
+                $files .= '</ul>';
+            }
 
-        if (empty($recherche)) {
-            $fullRecherche = 1;
-        } else {
-            $rechercheSubject = $this->_db->quoteName('se.subject') . ' LIKE ' . $this->_db->quote('%'.$recherche.'%');
-            $rechercheMessage = $this->_db->quoteName('se.message') . ' LIKE ' . $this->_db->quote('%'.$recherche.'%');
-            $rechercheEmail = $this->_db->quoteName('se.emailfrom') . ' LIKE ' . $this->_db->quote('%'.$recherche.'%');
-            $rechercheType = $this->_db->quoteName('se.type') . ' LIKE ' . $this->_db->quote('%'.$recherche.'%');
-            $fullRecherche = $rechercheSubject.' OR '.$rechercheMessage.' OR '.$rechercheEmail.' OR '.$rechercheType;
-        }
+            $mailer->addAttachment($toAttach);
 
-        $query->select('COUNT(se.id)')
-            ->from($this->_db->quoteName('#__emundus_setup_emails', 'se'))
-            ->where($filterCount)
-            ->where($fullRecherche);
-
-        try {
-            $this->_db->setQuery($query);
-            return $this->_db->loadResult();
-        } catch(Exception $e) {
-            JLog::add('component/com_emundus/models/email | Error when try to get number of emails : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return 0;
+            // Send and log the email.
+            $send = $mailer->Send();
+            if ($send !== true) {
+                $failed[] = $user->email;
+                echo 'Error sending email: ' . $send->__toString();
+                JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+            } else {
+                $sent[] = $user->email;
+                $log = [
+                    'user_id_from' => $current_user->id,
+                    'user_id_to' => $user->id,
+                    'subject' => $subject,
+                    'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $user->email . '</i><br>' . $body . $files,
+                    'type' => !empty($template)?$template->type:''
+                ];
+                $this->logEmail($log);
+                // Log the email in the eMundus logging system.
+                $logsParams = array('created' => [$subject]);
+                EmundusModelLogs::log($current_user->id, $user->id, '', 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+            }
         }
     }
 
@@ -1573,12 +1559,14 @@ class EmundusModelEmails extends JModelList {
             ->order($sortDb.$sort);
 
         try {
+            $this->_db->setQuery($query);
+            $count_emails  = sizeof($this->_db->loadObjectList());
             if(empty($lim)) {
                 $this->_db->setQuery($query, $offset);
             } else {
                 $this->_db->setQuery($query, $offset, $limit);
             }
-            return $this->_db->loadObjectList();
+            return array('datas' => $this->_db->loadObjectList(), 'count' => $count_emails);
         } catch (Exception $e) {
             JLog::add('component/com_emundus/models/email | Error when try to get emails : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];
@@ -1793,12 +1781,11 @@ class EmundusModelEmails extends JModelList {
 
             /// get associated letters
             $query->clear()
-                ->select('#__emundus_setup_attachments.*')
-                ->from($this->_db->quoteName('#__emundus_setup_attachments'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_letters') . ' ON ' . $this->_db->quoteName('#__emundus_setup_letters.attachment_id') . ' = ' . $this->_db->quoteName('#__emundus_setup_attachments.id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $this->_db->quoteName('#__emundus_setup_letters.id') . ' = ' . $this->_db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment'))
-                ->where($this->_db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' = ' . (int)$id);
-
+                ->select('esa.*')
+                ->from($this->_db->quoteName('#__emundus_setup_attachments','esa'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_letters','esl') . ' ON ' . $this->_db->quoteName('esl.attachment_id') . ' = ' . $this->_db->quoteName('esa.id'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_letter_attachment','eslr') . ' ON ' . $this->_db->quoteName('esl.attachment_id') . ' = ' . $this->_db->quoteName('eslr.letter_attachment'))
+                ->where($this->_db->quoteName('eslr.parent_id') . ' = ' . (int)$id);
             $this->_db->setQuery($query);
             $letter_Info = $this->_db->loadObjectList();         /// get attachment info
 

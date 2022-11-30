@@ -93,8 +93,7 @@ class LanguageFileToBase extends JApplicationCli {
             $db->quoteName('reference_id'),
             $db->quoteName('reference_table'),
             $db->quoteName('reference_field'),
-            ];
-        $db_values = [];
+        ];
 
         foreach ($files as $file) {
             echo $file . "\n";
@@ -134,28 +133,101 @@ class LanguageFileToBase extends JApplicationCli {
                             $reference_field = 'label';
                         } else {
                             $query->clear()
-                                ->select('id')
-                                ->from($db->quoteName('#__fabrik_groups'))
-                                ->where($db->quoteName('label') . ' LIKE ' . $db->quote($key));
+                                ->select('id,intro')
+                                ->from($db->quoteName('#__fabrik_forms'));
                             $db->setQuery($query);
-                            $find = $db->loadResult();
+                            $forms_intro = $db->loadObjectList();
 
-                            if(!empty($find)) {
-                                $reference_table = 'fabrik_groups';
+                            foreach ($forms_intro as $intro) {
+                                if (strip_tags($intro->intro) == $key) {
+                                    $find = $intro->id;
+                                    break;
+                                }
+                            }
+
+                            if (!empty($find)) {
+                                $reference_table = 'fabrik_forms';
                                 $reference_id = $find;
-                                $reference_field = 'label';
+                                $reference_field = 'intro';
                             } else {
                                 $query->clear()
                                     ->select('id')
-                                    ->from($db->quoteName('#__fabrik_elements'))
+                                    ->from($db->quoteName('#__fabrik_groups'))
                                     ->where($db->quoteName('label') . ' LIKE ' . $db->quote($key));
                                 $db->setQuery($query);
                                 $find = $db->loadResult();
 
                                 if(!empty($find)) {
-                                    $reference_table = 'fabrik_elements';
+                                    $reference_table = 'fabrik_groups';
                                     $reference_id = $find;
                                     $reference_field = 'label';
+                                } else {
+                                    $query->clear()
+                                        ->select('id,params')
+                                        ->from($db->quoteName('#__fabrik_groups'));
+                                    $db->setQuery($query);
+                                    $groups_params = $db->loadObjectList();
+
+                                    if (!empty($groups_params)) {
+                                        foreach ($groups_params as $group_params) {
+                                            $params = json_decode($group_params->params);
+                                            if (!empty($params->intro)) {
+                                                if (strip_tags($params->intro) == $key) {
+                                                    $find = $group_params->id;
+                                                    break;
+                                                }
+                                            } else {
+                                                $find = null;
+                                            }
+                                        }
+                                    }
+
+                                    if (!empty($find)) {
+                                        $reference_table = 'fabrik_groups';
+                                        $reference_id = $find;
+                                        $reference_field = 'intro';
+                                    } else {
+                                        $query->clear()
+                                            ->select('id')
+                                            ->from($db->quoteName('#__fabrik_elements'))
+                                            ->where($db->quoteName('label') . ' LIKE ' . $db->quote($key));
+                                        $db->setQuery($query);
+                                        $find = $db->loadResult();
+
+                                        if(!empty($find)) {
+                                            $reference_table = 'fabrik_elements';
+                                            $reference_id = $find;
+                                            $reference_field = 'label';
+                                        } else {
+                                            $query->clear()
+                                                ->select('id,params')
+                                                ->from($db->quoteName('#__fabrik_elements'))
+                                                ->where($db->quoteName('plugin') . ' = ' . $db->quote('dropdown'));
+                                            $db->setQuery($query);
+                                            $elements_params = $db->loadObjectList();
+
+                                            if(!empty($elements_params)) {
+                                                foreach ($elements_params as $element_params) {
+                                                    $params = json_decode($element_params->params);
+                                                    if (!empty($params->sub_options)) {
+                                                        $sub_options = $params->sub_options;
+                                                        if (in_array($key, array_values($sub_options->sub_labels))) {
+                                                            $find = $element_params->id;
+                                                            break;
+                                                        }
+                                                    } else {
+                                                        $find = null;
+                                                    }
+                                                }
+                                            }
+
+                                            if (!empty($find)) {
+                                                $reference_table = 'fabrik_elements';
+                                                $reference_id = $find;
+                                                $reference_field = 'sub_labels';
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -164,28 +236,25 @@ class LanguageFileToBase extends JApplicationCli {
                     } else {
                         $row = [$db->quote($key), $db->quote($language), $db->quote($val), $db->quote($val), $db->quote(md5($val)), $db->quote(md5($val)), $db->quote($file_name),$db->quote(null), 62, $db->quote(null), $db->quote(null), $db->quote(null)];
                     }
-                    $db_values[] = implode(',', $row);
+
+                    $query
+                        ->clear()
+                        ->insert($db->quoteName('jos_emundus_setup_languages'))
+                        ->columns($db_columns)
+                        ->values(implode(',', $row));
+
+                    $db->setQuery($query);
+
+                    try {
+                        $db->execute();
+                    } catch (Exception $exception) {
+                        $error[] = $key . ' : ' . $exception->getMessage();
+                    }
                 }
             }
         }
-
-        if(!empty($db_values)) {
-            $query
-                ->clear()
-                ->insert($db->quoteName('jos_emundus_setup_languages'))
-                ->columns($db_columns)
-                ->values($db_values);
-
-            $db->setQuery($query);
-
-            try {
-                $db->execute();
-            } catch (Exception $exception) {
-                echo "<pre>";
-                var_dump('error inserting data : ' . $exception->getMessage());
-                echo "</pre>";
-                die();
-            }
+        if(!empty($error)) {
+            echo $error;
         }
     }
 
