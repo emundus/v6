@@ -157,10 +157,12 @@ export default {
       return parseInt(this.$store.state.global.sysadminAccess);
     },
     displayOptions: function(){
-      return this.$parent.$parent.$parent.$parent.$parent.$parent.optionsSelectedElement;
+      return this.$parent.$parent.$parent.$parent.$parent.$parent.optionsSelectedElement
+        && this.$parent.$parent.$parent.$parent.$parent.$parent.selectedElement !== null
+        && this.$parent.$parent.$parent.$parent.$parent.$parent.selectedElement.id == this.element.id;
     },
     propertiesOpened: function(){
-      if(this.$parent.$parent.$parent.$parent.$parent.$parent.selectedElement !== null) {
+      if (this.$parent.$parent.$parent.$parent.$parent.$parent.selectedElement !== null) {
         return this.$parent.$parent.$parent.$parent.$parent.$parent.selectedElement.id;
       } else {
         return 0;
