@@ -98,16 +98,17 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
                     $result = $oauth2->query($url);
 
                     $body = json_decode($result->body);
-                    foreach ($this->attributes->user_column_name as $key => $column){
-                        $response->{$column} = $body->{$this->attributes->attribute_name[$key]};
+                    foreach ($this->attributes->column_name as $key => $column) {
+                        if ($this->attributes->table_name[$key] == 'jos_users') {
+                            $response->{$column} = $body->{$this->attributes->attribute_name[$key]};
+                        }
                     }
 
                     if (!empty($response->username)) {
-                        if (empty(JUserHelper::getUserId($response->username)) && !empty($response->email)) {
-                            // check if user exists from email
-                            $db = JFactory::getDbo();
-                            $query = $db->getQuery(true);
+                        $db = JFactory::getDbo();
+                        $query = $db->getQuery(true);
 
+                        if (empty(JUserHelper::getUserId($response->username)) && !empty($response->email)) {
                             $query->select('username')
                                 ->from('#__users')
                                 ->where('email = ' . $db->quote($response->email));
@@ -117,7 +118,7 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
                             try {
                                 $existing_username = $db->loadResult();
                             } catch (Exception $e) {
-                                JLog::add('Failed to check if user exists from mail but with another username ' .$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                                JLog::add('Failed to check if user exists from mail but with another username ' .$e->getMessage(), JLog::ERROR, 'com_emundus.oauth2');
                             }
 
                             if (!empty($existing_username)) {
@@ -136,6 +137,23 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
                             $response->error_message = JText::_('JGLOBAL_AUTH_ACCESS_DENIED');
                         } else {
                             $authenticate = true;
+
+                            foreach ($this->attributes->column_name as $key => $column) {
+                                if ($this->attributes->table_name[$key] !== 'jos_users' && !empty($body->{$this->attributes->attribute_name[$key]}) && !empty($this->attributes->column_join_user_id[$key])) {
+                                    $query->clear()
+                                        ->update($this->attributes->table_name[$key])
+                                        ->set($db->quoteName($column) . ' = ' . $db->quote($body->{$this->attributes->attribute_name[$key]}))
+                                        ->where($db->quoteName($this->attributes->column_join_user_id[$key]) . ' = ' . $user->id);
+
+                                    $db->setQuery($query);
+
+                                    try {
+                                        $db->execute();
+                                    } catch (Exception $e) {
+                                        JLog::add('Failed to execute update query ' . $e->getMessage(), JLog::ERROR, 'com_emundus.oauth2');
+                                    }
+                                }
+                            }
                         }
                     } else {
                         $response->status = JAuthentication::STATUS_FAILURE;
@@ -193,7 +211,7 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
         } catch (Exception $e) {
             $app = JFactory::getApplication();
 
-            JLog::add('Error when try to connect with oauth2 : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error when try to connect with oauth2 : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.oauth2');
 
             $app->enqueueMessage(JText::_('PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CONNECT_DOWN'), 'error');
             $app->redirect(JRoute::_('connexion'));
@@ -294,7 +312,7 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
 
             if ($send !== true) {
 
-                JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.oauth2');
                 return false;
 
             } else {
