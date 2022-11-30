@@ -711,4 +711,19 @@ class EmundusControllerWebhook extends JControllerLegacy {
         echo json_encode(array('status' => $status, 'msg' => $msg));
         exit;
     }
+
+    public function updateAxeptaPaymentInfos(){
+        $status = false;
+        $msg = JText::_('FLYWIRE_PAYMENT_INFOS_UPDATED_FAILED');
+
+        $post_data = file_get_contents('php://input');
+        $data = json_decode($post_data, true);
+
+        echo '<pre>'; var_dump($data); echo '</pre>';
+        exit;
+    }
+
+    public function failedaxepta(){
+        echo '<pre>'; var_dump('here'); echo '</pre>';
+    }
 }

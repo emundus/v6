@@ -30,6 +30,7 @@
                         <option value="flywire">Flywire</option>
                         <option value="transfer">Virement</option>
                         <option value="hikashop">Hikashop</option>
+                        <option value="axepta">Axepta</option>
                     </field>
                     <field
                         name="payment_highlighted"
@@ -77,6 +78,29 @@
                    value_field="value"
                 >
                 </field>
+            </fieldset>
+            <fieldset name="axepta" label="MOD_EMUNDUS_AXEPTA_LABEL">
+                <field name="MOD_EMUNDUS_AXEPTA_FIELDSET_DESC" type="spacer"></field>
+                <field
+                        name="axepta_test_mode"
+                        type="radio"
+                        label="MOD_EMUNDUS_AXEPTA_TEST_MODE"
+                        description="Activer le mode de test pour Axepta"
+                        class="btn-group btn-group-yesno"
+                        default="0"
+                        filter="integer"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field name="axepta_merchant_id" label="MOD_EMUNDUS_AXEPTA_MERCHANT_ID" type="text"></field>
+                <field name="axepta_hmac_key" label="MOD_EMUNDUS_AXEPTA_HMAC_KEY" type="text"></field>
+                <field name="axepta_blowfish_key" label="MOD_EMUNDUS_AXEPTA_BLOWFISH_KEY" type="text"></field>
+                <field name="axepta_notify_url" label="MOD_EMUNDUS_AXEPTA_NOTIFY_URL" type="text"></field>
+                <field name="axepta_success_url" label="MOD_EMUNDUS_AXEPTA_SUCCESS_URL" type="text"></field>
+                <field name="axepta_failed_url" label="MOD_EMUNDUS_AXEPTA_FAILED_URL" type="text"></field>
+                <field name="axepta_currency" label="MOD_EMUNDUS_AXEPTA_CURRENCY" type="text" default="EUR"></field>
+                <field name="axepta_order_desc" label="MOD_EMUNDUS_AXEPTA_ORDER_DESC" type="text" default=""></field>
             </fieldset>
         </fields>
     </config>

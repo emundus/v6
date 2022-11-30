@@ -139,6 +139,7 @@ class EmundusModelPayment extends JModelList
 
     public function createPaymentOrder($fnum, $type, $order_number = null)
     {
+        $order_id = 0;
         $created = false;
         $user_id = $this->getUserIdFromFnum($fnum);
         $hikashop_user_id = $this->getHikashopUserId($user_id);
@@ -177,7 +178,7 @@ class EmundusModelPayment extends JModelList
             JLog::add('Error creating payment order : user is empty', JLog::WARNING, 'com_emundus.payment');
         }
 
-        return $created;
+        return $order_id;
     }
 
     private function getUserIdFromFnum($fnum)

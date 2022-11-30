@@ -416,4 +416,20 @@ class modEmundusPaymentHelper
             return $mimetype;
         } else return 'application/octet-stream';
     }
+
+    function encrypt(string $data, string $key): string
+    {
+        $l = strlen($key);
+        if ($l < 16) {
+            $key = str_repeat($key, (int) ceil(16 / $l));
+        }
+
+        if (($m = strlen($data) % 8) > 0) {
+            $data .= str_repeat("\x00", 8 - $m);
+        }
+
+        $val = openssl_encrypt($data, 'BF-ECB', $key, OPENSSL_RAW_DATA | OPENSSL_NO_PADDING);
+
+        return (string) $val;
+    }
 }
