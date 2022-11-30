@@ -208,7 +208,7 @@ ksort($applications);
                                         <?php  echo $application->programme; ?>
                                     </p>
                                 <?php endif; ?>
-                                <?php if (!$show_fnum && !$mod_emundus_applications_show_programme) : ?>
+                                <?php if (!$show_fnum) : ?>
                                 <div>
                                     <span class="material-icons em-text-neutral-600" id="actions_button_<?php echo $application->fnum ?>" style="font-size: 16px">more_vert</span>
 
