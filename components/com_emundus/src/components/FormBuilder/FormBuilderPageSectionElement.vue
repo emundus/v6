@@ -19,7 +19,7 @@
 	      />
       </label>
       <div id="element-action-icons" class="em-flex-row">
-        <span class="icon-handle"><span class="material-icons-outlined handle em-grab">drag_indicator</span></span>
+        <span class="material-icons-outlined handle em-grab">drag_indicator</span>
         <span id="delete-element" class="material-icons-outlined em-red-500-color em-pointer" @click="deleteElement">delete</span>
         <span v-if="sysadmin" class="material-icons-outlined em-pointer em-ml-8" @click="openAdmin">content_copy</span>
       </div>
