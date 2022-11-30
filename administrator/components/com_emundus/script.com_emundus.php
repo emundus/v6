@@ -412,6 +412,10 @@ class com_emundusInstallerScript
                 ]);
 
                 EmundusHelperUpdate::disableEmundusPlugins('J2top');
+
+                $succeed['generate_letter_events_added'] = EmundusHelperUpdate::addCustomEvents([
+                    ['label' => 'onAfterGenerateLetters', 'category' => 'Files']
+                ]);
             }
 
             // Insert new translations in overrides files
