@@ -62,7 +62,9 @@ ksort($applications);
 
 ?>
 <div class="mod_emundus_applications___header">
-    <p class="em-h3 em-mb-8"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_HELLO') . $user->firstname ?></p>
+    <?php if ($mod_em_applications_show_hello_text == 1) : ?>
+        <p class="em-h3 em-mb-8"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_HELLO') . $user->firstname ?></p>
+    <?php endif; ?>
 
     <?php if (sizeof($applications) > 0) : ?>
         <div class="em-flex-column em-flex-align-start">
