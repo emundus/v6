@@ -102,19 +102,22 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
                 foreach ($this->attributes->user_column_name as $key => $column){
                     $response->{$column} = $body->{$this->attributes->attribute_name[$key]};
                 }
-                $response->fullname = 'BROSSE Adam';
-                $response->firstname = 'Adam';
-                $response->lastname = 'BROSSE';
-                $response->username = 'v15314';
-                $response->profile = $this->params->get('emundus_profile', 9);
-                $response->status = JAuthentication::STATUS_SUCCESS;
-                $response->isnew = empty(JUserHelper::getUserId('v15314'));
-                $response->error_message = '';
 
-                $user = new JUser(JUserHelper::getUserId('v15314'));
-                if ($user->get('block') || $user->get('activation')) {
+                if (!empty($response->username)) {
+                    $response->profile = $this->params->get('emundus_profile', 9);
+                    $response->status = JAuthentication::STATUS_SUCCESS;
+                    $response->isnew = empty(JUserHelper::getUserId($response->username));
+                    $response->error_message = '';
+                    $user = new JUser(JUserHelper::getUserId($response->username));
+
+                    if ($user->get('block') || $user->get('activation')) {
+                        $response->status = JAuthentication::STATUS_FAILURE;
+                        $response->error_message = JText::_('JGLOBAL_AUTH_ACCESS_DENIED');
+                        return false;
+                    }
+                } else {
                     $response->status = JAuthentication::STATUS_FAILURE;
-                    $response->error_message = JText::_('JGLOBAL_AUTH_ACCESS_DENIED');
+                    $response->error_message = JText::_('JGLOBAL_AUTH_NO_USER');
                     return false;
                 }
 
