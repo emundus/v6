@@ -185,28 +185,30 @@ ksort($applications);
                             </div>
 
                             <div class="em-flex-row em-flex-space-between em-mb-12">
-                                <?php
-                                $color = '#1C6EF2';
-                                $background = '#C8E1FE';
-                                if(!empty($application->tag_color)){
-                                    $color = $application->tag_color;
-                                    switch ($application->tag_color) {
-                                        case '#20835F':
-                                            $background = '#DFF5E9';
-                                            break;
-                                        case '#DB333E':
-                                            $background = '#FFEEEE';
-                                            break;
-                                        case '#FFC633':
-                                            $background = '#FFFBDB';
-                                            break;
+                                <?php if ($mod_emundus_applications_show_programme == 1) : ?>
+                                    <?php
+                                    $color = '#1C6EF2';
+                                    $background = '#C8E1FE';
+                                    if(!empty($application->tag_color)){
+                                        $color = $application->tag_color;
+                                        switch ($application->tag_color) {
+                                            case '#20835F':
+                                                $background = '#DFF5E9';
+                                                break;
+                                            case '#DB333E':
+                                                $background = '#FFEEEE';
+                                                break;
+                                            case '#FFC633':
+                                                $background = '#FFFBDB';
+                                                break;
+                                        }
                                     }
-                                }
-                                ?>
-                                <p class="em-programme-tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
-                                    <?php  echo $application->programme; ?>
-                                </p>
-                                <?php if (!$show_fnum) : ?>
+                                    ?>
+                                    <p class="em-programme-tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
+                                        <?php  echo $application->programme; ?>
+                                    </p>
+                                <?php endif; ?>
+                                <?php if (!$show_fnum && !$mod_emundus_applications_show_programme) : ?>
                                 <div>
                                     <span class="material-icons em-text-neutral-600" id="actions_button_<?php echo $application->fnum ?>" style="font-size: 16px">more_vert</span>
 
@@ -232,28 +234,30 @@ ksort($applications);
                         </div>
 
                         <div class="em-flex-row">
-                            <?php
-                            $displayInterval = false;
-                            $interval = date_create($now)->diff(date_create($application->end_date));
-                            if($interval->d == 0){
-                                $displayInterval = true;
-                            }
-                            ?>
-                            <div class="mod_emundus_applications___date em-mt-8">
-                                <?php if (!$displayInterval) : ?>
-                                    <span class="material-icons em-text-neutral-600 em-font-size-16 em-mr-8">schedule</span>
-                                    <p class="em-applicant-text-color em-font-size-16 em-applicant-default-font"> <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_END_DATE'); ?> <?php echo JFactory::getDate(new JDate($application->end_date, $site_offset))->format($date_format); ?></p>
-                                <?php else : ?>
-                                    <span class="material-icons-outlined em-text-neutral-600 em-font-size-16 em-red-500-color em-mr-8">schedule</span>
-                                    <p class="em-red-500-color"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_LAST_DAY'); ?>
-                                        <?php if ($interval->h > 0) {
-                                            echo $interval->h.'h'.$interval->i ;
-                                        } else {
-                                            echo $interval->i . 'm';
-                                        }?>
-                                    </p>
-                                <?php endif; ?>
-                            </div>
+                            <?php if ($mod_emundus_applications_show_end_date == 1) : ?>
+                                <?php
+                                $displayInterval = false;
+                                $interval = date_create($now)->diff(date_create($application->end_date));
+                                if($interval->d == 0){
+                                    $displayInterval = true;
+                                }
+                                ?>
+                                <div class="mod_emundus_applications___date em-mt-8">
+                                    <?php if (!$displayInterval) : ?>
+                                        <span class="material-icons em-text-neutral-600 em-font-size-16 em-mr-8">schedule</span>
+                                        <p class="em-applicant-text-color em-font-size-16 em-applicant-default-font"> <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_END_DATE'); ?> <?php echo JFactory::getDate(new JDate($application->end_date, $site_offset))->format($date_format); ?></p>
+                                    <?php else : ?>
+                                        <span class="material-icons-outlined em-text-neutral-600 em-font-size-16 em-red-500-color em-mr-8">schedule</span>
+                                        <p class="em-red-500-color"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_LAST_DAY'); ?>
+                                            <?php if ($interval->h > 0) {
+                                                echo $interval->h.'h'.$interval->i ;
+                                            } else {
+                                                echo $interval->i . 'm';
+                                            }?>
+                                        </p>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
                             <?php if($key == 'sent') : ?>
                                 <div class="mod_emundus_applications___date em-mt-8">
                                     <span class="material-icons-outlined em-text-neutral-600 em-font-size-16 em-mr-8">insert_drive_file</span>
