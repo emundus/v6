@@ -93,9 +93,6 @@
                     <option value="0">JNO</option>
                     <option value="1">JYES</option>
                 </field>
-                <field name="axepta_merchant_id" label="MOD_EMUNDUS_AXEPTA_MERCHANT_ID" type="text"></field>
-                <field name="axepta_hmac_key" label="MOD_EMUNDUS_AXEPTA_HMAC_KEY" type="text"></field>
-                <field name="axepta_blowfish_key" label="MOD_EMUNDUS_AXEPTA_BLOWFISH_KEY" type="text"></field>
                 <field name="axepta_notify_url" label="MOD_EMUNDUS_AXEPTA_NOTIFY_URL" type="text"></field>
                 <field name="axepta_success_url" label="MOD_EMUNDUS_AXEPTA_SUCCESS_URL" type="text"></field>
                 <field name="axepta_failed_url" label="MOD_EMUNDUS_AXEPTA_FAILED_URL" type="text"></field>

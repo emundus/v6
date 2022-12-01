@@ -475,6 +475,21 @@
 		</fieldset>
 
 		<field name="spacer9" type="spacer" hr="true"/>
+
+		<field
+				name="axepta_integration"
+				type="note"
+				label="COM_EMUNDUS_PAYMENT_AXEPTA"
+		/>
+		<fieldset label="COM_EMUNDUS_PAYMENT_AXEPTA">
+			<field name="axepta_merchant_id" label="COM_EMUNDUS_PAYMENT_AXEPTA_MERCHANT_ID" type="text"/>
+			<field name="axepta_hmac_key" label="COM_EMUNDUS_PAYMENT_AXEPTA_HMAC_KEY" type="text"/>
+			<field name="axepta_blowfish_key" label="COM_EMUNDUS_PAYMENT_AXEPTA_BLOWFISH_KEY" type="text"/>
+		</fieldset>
+
+
+
+		<field name="spacer10" type="spacer" hr="true"/>
 		<field name="saml_integration" type="note" label="COM_EMUNDUS_SAML_INTEGRATION"/>
 		<fieldset label="COM_EMUNDUS_SAML_INTEGRATION">
 			<field name="saml_default_profile" label="COM_EMUNDUS_SAML_INTEGRATION_DEFAULT_PROFILE" type="text"></field>
