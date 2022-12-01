@@ -195,7 +195,7 @@ class EmundusViewApplication extends JViewLegacy {
                             }
 
                             if (!empty($formid)) {
-                                $this->url_evaluation = JURI::base().'index.php?option=com_emundus&view=evaluation&layout=data&format=raw&Itemid='.$Itemid.'&cfnum='.$fnum;
+                                $this->url_evaluation = JURI::base().'index.php?option=com_emundus&view=evaluation&layout=data_old&format=raw&Itemid='.$Itemid.'&cfnum='.$fnum;
                             }
 
                         } else {
@@ -287,7 +287,7 @@ class EmundusViewApplication extends JViewLegacy {
                             // get evaluation form ID
                             $formid_eval = $m_evaluation->getEvaluationFormByProgramme($fnumInfos['training']);
                             if (!empty($formid_eval)) {
-                                $this->url_evaluation = JURI::base().'index.php?option=com_emundus&view=evaluation&layout=data&format=raw&Itemid='.$Itemid.'&cfnum='.$fnum;
+                                $this->url_evaluation = JURI::base().'index.php?option=com_emundus&view=evaluation&layout=data_old&format=raw&Itemid='.$Itemid.'&cfnum='.$fnum;
                             }
                         }
 
@@ -591,7 +591,7 @@ class EmundusViewApplication extends JViewLegacy {
                             }
 
                             if (!empty($formid))
-                                $this->url_evaluation = JURI::base().'index.php?option=com_emundus&view=evaluation&layout=data&format=raw&Itemid='.$Itemid.'&cfnum='.$fnum;
+                                $this->url_evaluation = JURI::base().'index.php?option=com_emundus&view=evaluation&layout=data_old&format=raw&Itemid='.$Itemid.'&cfnum='.$fnum;
 
                         } else {
                             $this->url_evaluation = '';
