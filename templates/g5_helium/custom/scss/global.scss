@@ -564,7 +564,8 @@ p,
 
 .view-list #g-container-main,
 .view-form #g-container-main,
-.view-details #g-container-main {
+.view-details #g-container-main,
+.g-back-office-emundus-tableau #g-container-main{
   .page-header {
     background: transparent;
     margin: 32px 32px 0 32px;
@@ -4339,17 +4340,14 @@ button.swal2-cancel.goback-btn {
   .page-header h1 {
     margin-top: 0 !important;
   }
-
-   form fieldset.fabrikGroup  {
-    padding: 0 !important;
-  }
 }
 
 .view-form:not(.com_emundus),
 .view-form.view-registration,
 .view-form.em-formRegistrationCenter,
 .gantry.contentpane.modal,
-.view-users.layout-edit {
+.view-users.layout-edit,
+.g-back-office-emundus-tableau {
   @include calendar;
 
   /* BOUTONS */
