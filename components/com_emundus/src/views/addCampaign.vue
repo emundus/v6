@@ -607,7 +607,7 @@ export default {
 
       this.submitted = true;
 
-      if (typeof this.campaignId !== 'undefined' && this.campaignId !== null && this.campaignId !== "") {
+      if (typeof this.campaignId !== 'undefined' && this.campaignId !== null && this.campaignId !== "" && this.campaignId !== 0) {
         let task = 'createprogram';
         let params = {body: this.programForm}
 
