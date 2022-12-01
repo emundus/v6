@@ -46,7 +46,7 @@ JFactory::getSession()->set('application_layout', 'evaluation');
             </div>
         </div>
         <div class="panel-body em-container-evaluation-body">
-            <div class="content">
+            <div class="content" style="display: flex; flex-direction: column;">
                 <?php if (isset($this->evaluation_select) && count($this->evaluation_select) > 0) :?>
                     <label for="copy_evaltuations" class="em-container-evaluation-body-label"><?= JText::_('COM_EMUNDUS_EVALUATION_PICK_EVAL_TO_COPY'); ?></label>
                     <select id="copy_evaluations">
