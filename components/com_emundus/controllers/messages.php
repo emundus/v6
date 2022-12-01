@@ -1347,6 +1347,12 @@ class EmundusControllerMessages extends JControllerLegacy {
         $body_raw = $body;
         if ($template != false) {
             $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+
+            if($user_id != null) {
+                $body = preg_replace($post['patterns'], $post['replacements'], $body);
+            } else {
+                $body = preg_replace($keys, $post, $body);
+            }
         }
 
         // Set sender

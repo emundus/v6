@@ -986,7 +986,6 @@ function runAction(action, url = '', option = '') {
                 }),
                 success: function(result) {
                     $('.modal-body').empty();
-                    addLoader();
                     url = 'index.php?option=com_emundus&controller=files&task=updatestate';
 
                     if(result.status) {
@@ -1005,6 +1004,7 @@ function runAction(action, url = '', option = '') {
                             },
                         }).then(function(result) {
                             if (result.value) {
+                                addLoader();
                                 $.ajax({
                                     type:'POST',
                                     url:url,
@@ -1058,6 +1058,7 @@ function runAction(action, url = '', option = '') {
                             }
                         })
                     } else {
+                        addLoader();
                         $.ajax({
                             type:'POST',
                             url:url,
