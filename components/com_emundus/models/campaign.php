@@ -2406,4 +2406,83 @@ class EmundusModelCampaign extends JModelList {
 
         return $pinned;
     }
+
+    /**
+     * Create a workflow
+     * @param $profile int
+     * @param $entry_status array
+     * @param $output_status int
+     * @param $start_date date
+     * @param $params array of optional parameters (campaigns, programs, end_date)
+     * @return $new_workflow_id int
+     */
+    public function createWorkflow($profile, $entry_status, $output_status, $start_date = null, $params = []) {
+        $new_workflow_id = 0;
+
+        if (!empty($profile) && !empty($entry_status)) {
+            $start_date = empty($start_date) ? date('Y-m-d H:i:s') : $start_date;
+
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $columns = ['profile', 'output_status', 'start_date'];
+            $values = $profile . ',' . $output_status . ', ' . $db->quote($start_date);
+
+            if (isset($params['end_date'])) {
+                $columns[] = 'end_date';
+                $values .= ', ' . $db->quote($params['end_date']);
+            }
+
+            $query->insert('#__emundus_campaign_workflow')
+                ->columns($columns)
+                ->values($values);
+
+            $created = false;
+            try {
+                $db->setQuery($query);
+                $created = $db->execute();
+                $new_workflow_id = $db->insertid();
+            } catch (Exception $e) {
+                JLog::add('Failed to create campaign workflow', JLog::ERROR, 'com_emundus.error');
+            }
+
+            if ($created) {
+                foreach ($entry_status as $status) {
+                    $query->clear()
+                        ->insert('#__emundus_campaign_workflow_repeat_entry_status')
+                        ->columns(['parent_id', 'entry_status'])
+                        ->values($new_workflow_id . ',' . $db->quote($status));
+
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+
+                if (!empty($params['campaigns'])) {
+                    foreach($params['campaigns'] as $cid) {
+                        $query->clear()
+                            ->insert('#__emundus_campaign_workflow_repeat_campaign')
+                            ->columns(['parent_id', 'campaign'])
+                            ->values($new_workflow_id . ',' . $db->quote($cid));
+
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
+
+                if (!empty($params['programs'])) {
+                    foreach($params['programs'] as $code) {
+                        $query->clear()
+                            ->insert('#__emundus_campaign_workflow_repeat_programs')
+                            ->columns(['parent_id', 'programs'])
+                            ->values($new_workflow_id . ',' . $db->quote($code));
+
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
+            }
+        }
+
+        return $new_workflow_id;
+    }
 }
