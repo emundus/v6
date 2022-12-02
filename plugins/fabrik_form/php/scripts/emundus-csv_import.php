@@ -95,11 +95,11 @@ if (!$handle) {
 
 JPluginHelper::importPlugin('emundus');
 $dispatcher = JEventDispatcher::getInstance();
-$dispatcher->trigger('callEventHandler', ['onBeforeImportCSV', array(
+$dispatcher->trigger('callEventHandler', ['onBeforeImportCSV', ['data' => array(
     'csv' => $csv,
     'create_new_fnum' => $create_new_fnum,
     'formData' => $formModel->formData,
-)]);
+)]]);
 
 // Prepare data structure for parsing.
 $database_elements = [];
