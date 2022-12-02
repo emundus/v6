@@ -336,6 +336,22 @@ class com_emundusInstallerScript
 
                 $succeed['campaign_workflow'] = EmundusHelperUpdate::addProgramToCampaignWorkflow();
 
+                $query->clear()
+                    ->select('jfe.id')
+                    ->from($db->quoteName('jos_fabrik_elements', 'jfe'))
+                    ->leftJoin($db->quoteName('jos_fabrik_formgroup', 'jffg') . ' ON jfe.group_id = jffg.group_id')
+                    ->leftJoin($db->quoteName('jos_fabrik_lists', 'jfl') .' ON jffg.form_id = jfl.form_id')
+                    ->where('jfl.db_table_name = ' . $db->quote('jos_emundus_campaign_workflow'))
+                    ->andWhere($db->quoteName('jfe.name') . ' IN (' . $db->quote('campaign') . ', ' .$db->quote('end_date') . ')');
+                $db->setQuery($query);
+                $campaign_elements = $db->loadColumn();
+
+                if (!empty($campaign_elements)) {
+                    foreach($campaign_elements as $campaign_element) {
+                        EmundusHelperUpdate::genericUpdateParams('jos_fabrik_elements', 'id', $campaign_element, 'validations', [], null, true);
+                    }
+                }
+
                 // Install announcement module
                 //TODO : Install a module or a plugin via folder (parse xml file and insert necessary datas)
                 EmundusHelperUpdate::installExtension('MOD_EMUNDUS_ANNOUNCEMENTS_SYS_XML','mod_emundus_announcements','{"name":"MOD_EMUNDUS_ANNOUNCEMENTS_SYS_XML","type":"module","creationDate":"September 2022","author":"eMundus","copyright":"Copyright (C) 2022 eMundus. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"1.0.0","description":"MOD_EMUNDUS_ANNOUNCEMENTS_XML_DESCRIPTION","group":"","filename":"mod_emundus_announcements"}','module');
