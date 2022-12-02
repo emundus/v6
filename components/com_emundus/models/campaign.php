@@ -2223,7 +2223,7 @@ class EmundusModelCampaign extends JModelList {
         $current_phase = null;
 
         if (!empty($fnum)) {
-            require_once (JPATH_ROOT.'components/com_emundus/models/files.php');
+            require_once (JPATH_SITE . '/components/com_emundus/models/files.php');
             $m_files = new EmundusModelFiles();
             $fnumInfos = $m_files->getFnumInfos($fnum);
 
@@ -2251,10 +2251,9 @@ class EmundusModelCampaign extends JModelList {
                     ->from('#__emundus_campaign_workflow as ecw')
                     ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
                     ->leftJoin('#__emundus_setup_campaigns AS esc ON esc.id = ' . $this->_db->quote($fnumInfos['campaign_id']))
-                    ->leftJoin('#__emundus_campaign_workflow_repeat_programs AS ecwrp ON ecwrp.programs = esc.training')
-                    ->where('ecw_status.entry_status = ' . $this->_db->quote($fnumInfos['status']));
-
-                $this->_db->setQuery($query);
+                    ->leftJoin('#__emundus_campaign_workflow_repeat_programs AS ecwrp ON ecwrp.parent_id = ecw.id')
+                    ->where('ecw_status.entry_status = ' . $this->_db->quote($fnumInfos['status']))
+                    ->andWhere('ecwrp.programs = esc.training');
 
                 try {
                     $current_phase = $this->_db->loadObject();
@@ -2268,12 +2267,13 @@ class EmundusModelCampaign extends JModelList {
                     $query->clear()
                         ->select('DISTINCT ecw.id, ecw.start_date, ecw.end_date, ecw.profile, ecw.output_status, GROUP_CONCAT(ecw_status.entry_status separator ",") as entry_status')
                         ->from('#__emundus_campaign_workflow as ecw')
+                        ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
                         ->where('ecw_status.entry_status = ' . $this->_db->quote($fnumInfos['status']))
-                        ->andWhere('id NOT IN (SELECT parent_id
+                        ->andWhere('ecw.id NOT IN (SELECT parent_id
                             FROM jos_emundus_campaign_workflow_repeat_programs
                             UNION
                             SELECT parent_id
-                            FROM jos_emundus_campaign_workflow_repeat_campaign))');
+                            FROM jos_emundus_campaign_workflow_repeat_campaign)');
                     $this->_db->setQuery($query);
 
                     try {
@@ -2301,6 +2301,66 @@ class EmundusModelCampaign extends JModelList {
         }
 
         return $current_phase;
+    }
+
+    public function getAllCampaignWorkflows($campaign_id)
+    {
+        $workflows = [];
+
+        if (!empty($campaign_id)) {
+            $campaign_workflows_by_campaign = [];
+            $query = $this->_db->getQuery(true);
+            $query->select('DISTINCT ecw.*, GROUP_CONCAT(ecw_status.entry_status separator ",") as entry_status')
+                ->from('#__emundus_campaign_workflow as ecw')
+                ->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecw_camp ON ecw_camp.parent_id = ecw.id')
+                ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
+                ->where('ecw_camp.campaign = ' . $this->_db->quote($campaign_id));
+            $this->_db->setQuery($query);
+
+            try {
+                $campaign_workflows_by_campaign = $this->_db->loadObjectList();
+            } catch (Exception $e) {
+                JLog::add('[getCurrentCampaignWorkflow] Error getting current campaign workflow in component/com_emundus/models/campaign: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+
+            $campaign_workflows_by_campaign_program = [];
+            $query->clear()
+                ->select('DISTINCT ecw.*, GROUP_CONCAT(ecw_status.entry_status separator ",") as entry_status')
+                ->from('#__emundus_campaign_workflow as ecw')
+                ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
+                ->leftJoin('#__emundus_setup_campaigns AS esc ON esc.id = ' . $this->_db->quote($campaign_id))
+                ->leftJoin('#__emundus_campaign_workflow_repeat_programs AS ecwrp ON ecwrp.parent_id = ecw.id')
+                ->andWhere('ecwrp.programs = esc.training');
+            $this->_db->setQuery($query);
+
+            try {
+                $campaign_workflows_by_campaign_program = $this->_db->loadObjectList();
+            } catch (Exception $e) {
+                JLog::add('[getCurrentCampaignWorkflow] Error getting current campaign workflow in component/com_emundus/models/campaign: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+
+            $default_campaign_workflows = [];
+            $query->clear()
+                ->select('DISTINCT ecw.*, GROUP_CONCAT(ecw_status.entry_status separator ",") as entry_status')
+                ->from('#__emundus_campaign_workflow as ecw')
+                ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
+                ->where('ecw.id NOT IN (SELECT parent_id
+                            FROM jos_emundus_campaign_workflow_repeat_programs
+                            UNION
+                            SELECT parent_id
+                            FROM jos_emundus_campaign_workflow_repeat_campaign)');
+            $this->_db->setQuery($query);
+
+            try {
+                $default_campaign_workflows = $this->_db->loadObjectList();
+            } catch (Exception $e) {
+                JLog::add('[getCurrentCampaignWorkflow] Error getting current campaign workflow in component/com_emundus/models/campaign: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+
+            $workflows = array_merge($campaign_workflows_by_campaign, $campaign_workflows_by_campaign_program, $default_campaign_workflows);
+        }
+
+        return $workflows;
     }
 
     public function pinCampaign($cid): bool {

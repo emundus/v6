@@ -29,15 +29,21 @@ class EmundusModelProfile extends JModelList {
      * @return string The greeting to be displayed to the user
      */
     function getProfile($p) {
-        $query = 'SELECT * FROM #__emundus_setup_profiles WHERE id='.(int)$p;
+        $profile = null;
 
-        try {
-            $this->_db->setQuery( $query );
-            return $this->_db->loadObject();
-        } catch(Exception $e) {
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
-            JError::raiseError(500, $e->getMessage());
+        if (!empty($p)) {
+            $query = 'SELECT * FROM #__emundus_setup_profiles WHERE id='.(int)$p;
+
+            try {
+                $this->_db->setQuery( $query );
+                $profile = $this->_db->loadObject();
+            } catch(Exception $e) {
+                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+                JError::raiseError(500, $e->getMessage());
+            }
         }
+
+        return $profile;
     }
 
     /**
@@ -186,36 +192,22 @@ class EmundusModelProfile extends JModelList {
         $profile = 0;
         $query = $this->_db->getQuery(true);
 
-        $query->select('ecw.profile')
-            ->from('#__emundus_campaign_workflow AS ecw')
-            ->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecw_camp ON ecw.id = ecw_camp.parent_id')
-            ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw.id = ecw_status.parent_id')
-            ->leftJoin('#__emundus_campaign_candidature AS cc ON cc.campaign_id = ecw_camp.campaign AND cc.status = ecw_status.entry_status')
-            ->where('cc.fnum = ' . $fnum);
+        // check if a default workflow exists
+        require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
+        $m_campaign = new EmundusModelCampaign();
+        $campaign_workflow = $m_campaign->getCurrentCampaignWorkflow($fnum);
 
-        $this->_db->setQuery($query);
-
-        try {
-            $profile = $this->_db->loadResult();
-        } catch(Exception $e) {
-            JLog::add('Error on query profile Model function getProfileByFnum => '.$query->__toString(), JLog::ERROR, 'com_emundus.error');
+        if (!empty($campaign_workflow)) {
+            $profile = $campaign_workflow->profile;
         }
 
         if (empty($profile)) {
-            $query = 'SELECT ss.profile from jos_emundus_setup_status ss
+
+            if (!empty($default_workflow)) {
+                $profile = $default_workflow->profile;
+            } else {
+                $query = 'SELECT ss.profile from jos_emundus_setup_status ss
                   LEFT JOIN jos_emundus_campaign_candidature cc ON cc.status = ss.step
-						WHERE cc.fnum LIKE "'.$fnum.'"';
-            $this->_db->setQuery($query);
-
-            try {
-                $profile = $this->_db->loadResult();
-            } catch(Exception $e) {
-                JLog::add('Error on query profile Model function getProfileByFnum => '.$query, JLog::ERROR, 'com_emundus.error');
-            }
-
-            if (empty($profile)) {
-                $query = 'SELECT esc.profile_id from jos_emundus_setup_campaigns esc
-                  LEFT JOIN jos_emundus_campaign_candidature cc ON cc.campaign_id = esc.id
 						WHERE cc.fnum LIKE "'.$fnum.'"';
                 $this->_db->setQuery($query);
 
@@ -223,6 +215,19 @@ class EmundusModelProfile extends JModelList {
                     $profile = $this->_db->loadResult();
                 } catch(Exception $e) {
                     JLog::add('Error on query profile Model function getProfileByFnum => '.$query, JLog::ERROR, 'com_emundus.error');
+                }
+
+                if (empty($profile)) {
+                    $query = 'SELECT esc.profile_id from jos_emundus_setup_campaigns esc
+                  LEFT JOIN jos_emundus_campaign_candidature cc ON cc.campaign_id = esc.id
+						WHERE cc.fnum LIKE "'.$fnum.'"';
+                    $this->_db->setQuery($query);
+
+                    try {
+                        $profile = $this->_db->loadResult();
+                    } catch(Exception $e) {
+                        JLog::add('Error on query profile Model function getProfileByFnum => '.$query, JLog::ERROR, 'com_emundus.error');
+                    }
                 }
             }
         }
@@ -415,18 +420,14 @@ class EmundusModelProfile extends JModelList {
         $profiles = [];
 
         if (!empty($campaign_id)) {
-            $query = $this->_db->getQuery(true);
+            require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
+            $m_campaign = new EmundusModelCampaign();
+            $workflows = $m_campaign->getAllCampaignWorkflows($campaign_id);
 
-            $query->select('DISTINCT(ecw.profile)')
-                ->from('#__emundus_campaign_workflow AS ecw')
-                ->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecwrc ON ecw.id = ecwrc.parent_id')
-                ->where('ecwrc.campaign = ' . $campaign_id);
-
-            try {
-                $this->_db->setQuery($query);
-                $profiles = $this->_db->loadColumn();
-            } catch (Exception $e) {
-                JLog::add('Failed to getWorkflowProfilesByCampaign '. $query->__toString() . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            foreach ($workflows as $workflow) {
+                if (!in_array($workflow->profile, $profiles)) {
+                    $profiles[] = $workflow->profile;
+                }
             }
         }
 
@@ -445,18 +446,28 @@ class EmundusModelProfile extends JModelList {
         $res = array();
 
         try {
-            $query->select('eu.firstname, eu.lastname, esp.id AS profile, eu.university_id, esp.label, esp.menutype, esp.published, cc.campaign_id as campaign_id')
-                ->from($this->_db->quoteName('jos_emundus_campaign_candidature', 'cc'))
-                ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
-                ->leftJoin('jos_emundus_campaign_workflow_repeat_campaign AS ecw_camp ON ecw_camp.campaign = cc.campaign_id')
-                ->leftJoin($this->_db->quoteName('jos_emundus_campaign_workflow', 'ecw').' ON '.$this->_db->quoteName('ecw.id').' = '.$this->_db->quoteName('ecw_camp.parent_id'))
-                ->leftJoin($this->_db->quoteName('jos_emundus_campaign_workflow_repeat_entry_status', 'ecw_status').' ON '.$this->_db->quoteName('ecw.id').' = '.$this->_db->quoteName('ecw_status.parent_id'))
-                ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('ecw.profile'))
-                ->where($this->_db->quoteName('cc.fnum').' LIKE '. $this->_db->quote($fnum))
-                ->andWhere($this->_db->quoteName('cc.status'). ' = ' . $this->_db->quoteName('ecw_status.entry_status'));
+            require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
+            $m_campaign = new EmundusModelCampaign();
+            $workflow = $m_campaign->getCurrentCampaignWorkflow($fnum);
 
-            $this->_db->setQuery($query);
-            $res = $this->_db->loadAssoc();
+            if (!empty($workflow)) {
+                $query->select('eu.firstname, eu.lastname, eu.university_id, cc.campaign_id as campaign_id')
+                    ->from($this->_db->quoteName('jos_emundus_campaign_candidature', 'cc'))
+                    ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
+                    ->where($this->_db->quoteName('cc.fnum').' LIKE '. $this->_db->quote($fnum));
+                $this->_db->setQuery($query);
+                $res = $db->loadAssoc();
+
+                $query->clear()
+                    ->select('esp.id AS profile, esp.label, esp.menutype, esp.published')
+                    ->from('#__emundus_setup_profiles AS esp')
+                    ->where('esp.id = ' . $this->_db->quote($workflow->profile));
+                $this->_db->setQuery($query);
+
+                $profile = $db->loadAssoc();
+
+                $res = array_merge($res, $profile);
+            }
 
             if(empty($res['profile'])){
                 $query->clear()
@@ -490,7 +501,8 @@ class EmundusModelProfile extends JModelList {
         }
     }
 
-    function getProfileByStep($fnum,$step){
+    // TODO: if it is used, update
+    function getProfileByStep($fnum, $step){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         try {
@@ -693,25 +705,38 @@ class EmundusModelProfile extends JModelList {
 
             $query->clear();
 
-            $query->select('DISTINCT(ecw.profile)')
-                ->from('#__emundus_campaign_workflow as ecw')
-                ->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecwrc ON ecwrc.parent_id = ecw.id');
+            $workflow_profiles = [];
 
             if (!empty($camps[0])) {
-                $query->where($this->_db->quoteName('#__emundus_setup_campaigns.id') . 'IN (' . implode(',', $camps) . ')');
+                require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
+                $m_campaign = new EmundusModelCampaign();
+
+                foreach($camps as $campaign_id) {
+                    $campaign_workflows = $m_campaign->getAllCampaignWorkflows($camps);
+
+                    foreach ($campaign_workflows as $workflow) {
+                        if (!in_array($workflow->profile, $workflow_profiles)) {
+                            $workflow_profiles[] = $workflow->profile;
+                        }
+                    }
+                }
             } else {
-                $query->leftJoin('#__emundus_setup_campaigns AS jesc ON jesc.id = ecwrc.campaign')
+                $query->select('DISTINCT(ecw.profile)')
+                    ->from('#__emundus_campaign_workflow as ecw')
+                    ->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecwrc ON ecwrc.parent_id = ecw.id')
+                    ->leftJoin('#__emundus_setup_campaigns AS jesc ON jesc.id = ecwrc.campaign')
                     ->where('jesc.training IN (' . implode(',', $this->_db->quote($code)) . ')');
+                try {
+                    $this->_db->setQuery($query);
+                    $workflow_profiles = $this->_db->loadColumn();
+                } catch(Exception $e) {
+                    JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
+                }
+
             }
 
-            try {
-                $this->_db->setQuery($query);
-                $workflow_profiles = $this->_db->loadColumn();
+            $profiles = array_unique(array_merge($profiles, $workflow_profiles));
 
-                $profiles = array_unique(array_merge($profiles, $workflow_profiles));
-            } catch(Exception $e) {
-                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-            }
         }
 
         return $profiles;
@@ -798,7 +823,6 @@ class EmundusModelProfile extends JModelList {
                 }
             } catch(Exception $e) {
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
-                return [];
             }
         }
 
@@ -824,19 +848,13 @@ class EmundusModelProfile extends JModelList {
                         $firstProfile[] = $value->profile_id;
                     }
 
-                    $query->clear()
-                        ->select('ecw.*')
-                        ->from($this->_db->quoteName('#__emundus_campaign_workflow', 'ecw'))
-                        ->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecwrc ON ecwrc.parent_id = ecw.id')
-                        ->where($this->_db->quoteName('ecwrc.campaign') . 'IN (' . implode(',', $campaigns) . ')')
-                        ->order('step');
-
-                    $this->_db->setQuery($query);
-                    $_secondResult = $this->_db->loadObjectList();
-
-                    $secondProfile = array();
-                    foreach ($_secondResult as $key => $value) {
-                        $secondProfile[] = $value->profile;
+                    $secondProfile = [];
+                    $filtered_campaign_ids = array_map(function($campaign) {
+                        return $campaign->id;
+                    }, $_firstResult);
+                    foreach($filtered_campaign_ids as $campaign) {
+                        $workflow_profiles = $this->getWorkflowProfilesByCampaign($campaign);
+                        $secondProfile = array_unique(array_merge($secondProfile, $workflow_profiles));
                     }
 
                     $profileIds = array_unique(array_merge($firstProfile, $secondProfile));
@@ -865,18 +883,10 @@ class EmundusModelProfile extends JModelList {
                 }
             } else {
                 try {
-                    $query->clear()
-                        ->select('#__emundus_campaign_workflow.*')
-                        ->from($this->_db->quoteName('#__emundus_campaign_workflow'))
-                        ->where($this->_db->quoteName('#__emundus_campaign_workflow.campaign') . 'IN (' . implode(',', $campaigns) . ')')
-                        ->order('step');
-
-                    $this->_db->setQuery($query);
-
-                    $_firstResult = $this->_db->loadObjectList();
-
-                    foreach ($_firstResult as $key => $value) {
-                        $firstProfile[] = $value->profile;
+                    $firstProfile = [];
+                    foreach($campaigns as $campaign) {
+                        $workflow_profiles = $this->getWorkflowProfilesByCampaign($campaign);
+                        $firstProfile = array_unique(array_merge($firstProfile, $workflow_profiles));
                     }
 
                     $query->clear()
