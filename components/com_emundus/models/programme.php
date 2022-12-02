@@ -709,7 +709,7 @@ class EmundusModelProgramme extends JModelList {
 
                 $fields = [];
                 foreach ($data as $key => $val) {
-                    if (in_array($key, $table_columns) && $key != 'id') {
+                    if (in_array($key, $table_columns) && $key != 'id' && $key != 'code') {
                         $fields[] = $db->quoteName($key) . ' = ' . $db->quote($val);
                     }
                 }
@@ -729,7 +729,7 @@ class EmundusModelProgramme extends JModelList {
                             $dispatcher->trigger('callEventHandler', ['onAfterProgramUpdate', ['id' => $id, 'data' => $data]]);
                         }
                     } catch(Exception $e) {
-                        JLog::add('component/com_emundus/models/program | Error when updating the program ' . $id . ': ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                        JLog::add('component/com_emundus/models/program | Error when updating the program ' . $id . ': ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
                     }
                 }
             }
