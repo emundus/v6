@@ -198,6 +198,44 @@ export default {
 
   .element-field:not(.fabrikElementdisplay) {
     @include fabrik-elements;
+
+    .fabrikgrid_1.btn-default{
+      padding: 12px;
+      box-shadow: none;
+      cursor: pointer;
+      border: 1px solid var(--main-500);
+      background: var(--main-500);
+      border-radius: var(--em-border-radius) !important;
+      width: 100% !important;
+      max-width: 250px;
+      display: flex;
+      justify-content: center;
+
+      span {
+        @include body-16-medium;
+        margin-top: 0;
+        color: var(--neutral-50) !important;
+      }
+    }
+
+    .fabrikgrid_0.btn-default {
+      padding: 12px;
+      box-shadow: none;
+      cursor: pointer;
+      border: 1px solid var(--red-500);
+      background: var(--red-500);
+      border-radius: var(--em-border-radius) !important;
+      width: 100% !important;
+      max-width: 250px;
+      display: flex;
+      justify-content: center;
+
+      span {
+        @include body-16-medium;
+        margin-top: 0;
+        color: var(--neutral-50) !important;
+      }
+    }
   }
 
   &.unpublished {
