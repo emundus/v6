@@ -178,7 +178,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
         }
     }
 
-    $current_phase = $m_campaign->getCurrentCampaignWorkflow($user);
+    $current_phase = $m_campaign->getCurrentCampaignWorkflow($user->fnum);
     if (!empty($current_phase) && !empty($current_phase->end_date)) {
         $deadline = new JDate($current_phase->end_date);
     } else {

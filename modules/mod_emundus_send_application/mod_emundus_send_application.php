@@ -41,7 +41,7 @@ if (!empty($user->fnum)) {
     $m_files = new EmundusModelFiles;
     $m_campaign = new EmundusModelCampaign;
 
-    $current_phase = $m_campaign->getCurrentCampaignWorkflow($user);
+    $current_phase = $m_campaign->getCurrentCampaignWorkflow($user->fnum);
     $attachments = $m_application->getAttachmentsProgress($user->fnum);
     $forms 	= $m_application->getFormsProgress($user->fnum);
     $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));

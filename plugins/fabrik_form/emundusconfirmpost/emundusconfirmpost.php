@@ -125,7 +125,7 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 			echo $e->getMessage() . '<br />';
 		}
 
-        $current_phase = $m_campaign->getCurrentCampaignWorkflow($student);
+        $current_phase = $m_campaign->getCurrentCampaignWorkflow($student->fnum);
         if (!empty($current_phase) && !empty($current_phase->end_date)) {
             if (!is_null($current_phase->output_status)) {
                 $new_status = $current_phase->output_status;
