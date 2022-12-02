@@ -475,14 +475,14 @@ export default {
           });
     },
 
-    createCampaignWithExistingProgram(form_data){
+	  createCampaign(form_data){
       campaignService.createCampaign(form_data).then((response) => {
         this.campaignId = response.data.data;
         this.quitFunnelOrContinue(this.quit);
       });
     },
 
-    createCampainWithNoExistingProgram(programForm){
+	  createCampaignWithNoExistingProgram(programForm){
       axios({
         method: "post",
         url: "index.php?option=com_emundus&controller=programme&task=createprogram",
@@ -497,10 +497,7 @@ export default {
           this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
           this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
 
-          campaignService.createCampaign(this.form).then((response) => {
-            this.campaignId = response.data.data;
-            this.quitFunnelOrContinue(this.quit);
-          });
+					this.createCampaign(this.form);
         } else {
           Swal.fire({
             title: this.translate(rep.data.msg),
@@ -608,61 +605,27 @@ export default {
       this.submitted = true;
 
       if (typeof this.campaignId !== 'undefined' && this.campaignId !== null && this.campaignId !== "" && this.campaignId !== 0) {
-        let task = 'createprogram';
-        let params = {body: this.programForm}
+        if (this.form.training != '') {
+          this.updateCampaign();
+        } else {
+	        axios({
+		        method: "post",
+		        url: "index.php?option=com_emundus&controller=programme&task=createprogram",
+		        headers: {
+			        "Content-Type": "application/x-www-form-urlencoded"
+		        },
+		        data: qs.stringify( {body: this.programForm})
+	        }).then((response) => {
+		        if (task === 'createprogram') {
+			        this.programForm.code = response.data.data.programme_code;
+			        this.form.progid = response.data.data.programme_id;
+		        }
 
-        if (this.form.training != "") {
-          task = 'updateprogram';
-          params = { body: this.programForm, id: this.form.progid };
+						this.updateCampaign();
+	        }).catch(error => {
+		        console.log(error);
+	        });
         }
-        axios({
-          method: "post",
-          url: "index.php?option=com_emundus&controller=programme&task=" + task,
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify(params)
-        }).then((response) => {
-          if (task === 'createprogram') {
-            this.programForm.code = response.data.data.programme_code;
-            this.form.progid = response.data.data.programme_id;
-          }
-
-          this.form.training = this.programForm.code;
-          this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
-          this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
-
-          axios({
-            method: "post",
-            url: "index.php?option=com_emundus&controller=campaign&task=updatecampaign",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({ body: this.form, cid: this.campaignId })
-          }).then((response) => {
-						if (!response.status) {
-							Swal.fire({
-								type: 'error',
-								title: this.translate('COM_EMUNDUS_ADD_CAMPAIGN_ERROR'),
-								reverseButtons: true,
-								customClass: {
-									title: 'em-swal-title',
-									confirmButton: 'em-swal-confirm-button',
-									actions: "em-swal-single-action",
-								},
-							});
-							this.submitted = false;
-							return 0;
-						} else {
-							this.$emit('nextSection');
-							this.$emit('updateHeader',this.form);
-						}
-          }).catch(error => {
-            console.log(error);
-          });
-        }).catch(error => {
-          console.log(error);
-        });
       } else {
         // get program code if there is training value
         if (this.form.training !== "")  {
@@ -670,12 +633,47 @@ export default {
           this.form.training = this.programForm.code;
           this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
           this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
-          this.createCampaignWithExistingProgram(this.form);
+          this.createCampaign(this.form);
         } else {
-          this.createCampainWithNoExistingProgram(this.programForm);
+          this.createCampaignWithNoExistingProgram(this.programForm);
         }
       }
     },
+
+	  updateCampaign() {
+		  this.form.training = this.programForm.code;
+		  this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
+		  this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
+
+		  axios({
+			  method: 'post',
+			  url: 'index.php?option=com_emundus&controller=campaign&task=updatecampaign',
+			  headers: {
+				  'Content-Type': 'application/x-www-form-urlencoded'
+			  },
+			  data: qs.stringify({ body: this.form, cid: this.campaignId })
+		  }).then((response) => {
+			  if (!response.status) {
+				  Swal.fire({
+					  type: 'error',
+					  title: this.translate('COM_EMUNDUS_ADD_CAMPAIGN_ERROR'),
+					  reverseButtons: true,
+					  customClass: {
+						  title: 'em-swal-title',
+						  confirmButton: 'em-swal-confirm-button',
+						  actions: "em-swal-single-action",
+					  },
+				  });
+				  this.submitted = false;
+				  return 0;
+			  } else {
+				  this.$emit('nextSection');
+				  this.$emit('updateHeader',this.form);
+			  }
+		  }).catch(error => {
+			  console.log(error);
+		  });
+	  },
 
     quitFunnelOrContinue(quit) {
       if (quit === 0) {
@@ -705,12 +703,12 @@ export default {
       } else {
         this.old_training = this.form.training;
         this.old_program_form = this.programForm;
-        this.form.training = "";
+        this.form.training = '';
         this.programForm = {
-          code: "",
-          label: "",
-          notes: "",
-          programmes: "",
+          code: '',
+          label: '',
+          notes: '',
+          programmes: '',
           published: 1,
           apply_online: 1
         }
