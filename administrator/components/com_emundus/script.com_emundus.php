@@ -335,7 +335,6 @@ class com_emundusInstallerScript
                 //
 
                 $succeed['campaign_workflow'] = EmundusHelperUpdate::addProgramToCampaignWorkflow();
-
                 $query->clear()
                     ->select('jfe.id')
                     ->from($db->quoteName('jos_fabrik_elements', 'jfe'))
@@ -348,7 +347,7 @@ class com_emundusInstallerScript
 
                 if (!empty($campaign_elements)) {
                     foreach($campaign_elements as $campaign_element) {
-                        EmundusHelperUpdate::genericUpdateParams('jos_fabrik_elements', 'id', $campaign_element, 'validations', [], null, true);
+                        EmundusHelperUpdate::genericUpdateParams('#__fabrik_elements', 'id', $campaign_element, ['validations'], [], null, true);
                     }
                 }
 
