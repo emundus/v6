@@ -92,7 +92,7 @@ foreach ($applications as $application) {
                         'FNUM'          => $application->fnum
                     );
 
-                    $tags = $m_email->setTags($user->id, $post, $application->fnum);
+                    $tags = $m_email->setTags($user->id, $post, $application->fnum, '', $file_tags);
                     $file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
                     $file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($application->fnum));
                 }
@@ -112,7 +112,6 @@ foreach ($applications as $application) {
                         <a class="btn btn-warning" href="<?php echo JRoute::_($first_page_url); ?>" role="button">
                             <i class="folder open outline icon"></i> <?= ($is_admission) ? JText::_('OPEN_ADMISSION') : JText::_('OPEN_APPLICATION'); ?>
                         </a>
-
 
                         <?php if (!$is_admission) :?>
                             <a id='print' class="btn btn-info btn-xs" href="<?= JRoute::_('index.php?option=com_emundus&task=pdf&fnum=' . $application->fnum); ?>" title="<?= JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
@@ -261,9 +260,21 @@ endif; ?>
 
 <script type="text/javascript">
     function deletefile(fnum) {
-        if (confirm("<?= JText::_('CONFIRM_DELETE_FILE'); ?>")) {
-            document.location.href = "index.php?option=com_emundus&task=deletefile&fnum=" + fnum+"&redirect=<?php echo base64_encode(JUri::getInstance()->getPath()); ?>";
-        }
+        Swal.fire({
+            title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_CONFIRM_DELETE_FILE'); ?>",
+            text: "",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#28a745",
+            cancelButtonColor: "#dc3545",
+            reverseButtons: true,
+            confirmButtonText: "<?php echo JText::_('JYES');?>",
+            cancelButtonText: "<?php echo JText::_('JNO');?>"
+        }).then((confirm) => {
+            if (confirm.value) {
+                document.location.href = "index.php?option=com_emundus&task=deletefile&fnum=" + fnum+"&redirect=<?php echo base64_encode(JUri::getInstance()->getPath()); ?>";
+            }
+        });
     }
 </script>
 <script>

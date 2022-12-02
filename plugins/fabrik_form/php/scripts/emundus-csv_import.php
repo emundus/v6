@@ -859,7 +859,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
             $totals['user']++;
             $email = $m_emails->getEmail('new_account');
             try {
-                $tags = $m_emails->setTags($user->id, null, $fnum, $password);
+                $tags = $m_emails->setTags($user->id, null, $fnum, $password, $email->emailfrom.$email->name.$email->subject.$email->message);
             } catch(Exception $e) {
                 JLog::add('ERROR setting tags in query : error text -> '.$e->getMessage(), JLog::ERROR, 'com_emundus.csvimport');
             }
