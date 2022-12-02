@@ -83,14 +83,6 @@ if (pathinfo($csv, PATHINFO_EXTENSION) !== 'csv') {
     return false;
 }
 
-JPluginHelper::importPlugin('emundus');
-$dispatcher = JEventDispatcher::getInstance();
-$dispatcher->trigger('callEventHandler', ['onBeforeImportCSV', array(
-    'csv' => $csv,
-    'create_new_fnum' => $create_new_fnum,
-    'formData' => $formModel->formData,
-)]);
-
 // auto_detect_line_endings allows PHP to detect MACOS line endings or else things get ugly...
 ini_set('auto_detect_line_endings', TRUE);
 
@@ -100,6 +92,14 @@ if (!$handle) {
     $app->enqueueMessage('ERROR: Could not open import file.', 'error');
     return false;
 }
+
+JPluginHelper::importPlugin('emundus');
+$dispatcher = JEventDispatcher::getInstance();
+$dispatcher->trigger('callEventHandler', ['onBeforeImportCSV', array(
+    'csv' => $csv,
+    'create_new_fnum' => $create_new_fnum,
+    'formData' => $formModel->formData,
+)]);
 
 // Prepare data structure for parsing.
 $database_elements = [];
@@ -120,16 +120,6 @@ $delimiter = getCsvDelimiter(JPATH_ROOT.$csv);
 if (($data = fgetcsv($handle, 0, $delimiter)) !== false) {
 
     foreach ($data as $column_number => $column) {
-        if (!empty($insert_row['jos_emundus_users'])) {
-            $insert_row['jos_emundus_personal_detail']['first_name'] = !empty($insert_row['jos_emundus_users']['firstname']) ? $insert_row['jos_emundus_users']['firstname'] : '';
-            $insert_row['jos_emundus_personal_detail']['last_name'] = !empty($insert_row['jos_emundus_users']['lastname']) ? $insert_row['jos_emundus_users']['lastname'] : '';
-            $insert_row['jos_emundus_personal_detail']['email'] = !empty($insert_row['jos_emundus_users']['email']) ? $insert_row['jos_emundus_users']['email'] : '';
-            $insert_row['jos_emundus_personal_detail']['telephone_1'] = !empty($insert_row['jos_emundus_users']['tel']) ? $insert_row['jos_emundus_users']['tel'] : '';
-
-            if (!empty($insert_row['jos_emundus_users']['civility'])) {
-                $insert_row['jos_emundus_personal_detail']['gender'] = $insert_row['jos_emundus_users']['civility'] == 1 ? "M" : "F";
-            }
-        }
 
         //try to convert char
         //$data = array_map( "convert", $data );
