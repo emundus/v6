@@ -2395,7 +2395,7 @@ class EmundusModelEmails extends JModelList {
     function createTrigger($trigger, $users, $user) {
         $created = false;
 
-        if (!empty($user->id) && !empty($trigger['model']) && is_int($trigger['model']) && isset($trigger['status'])) {
+        if (!empty($user->id) && !empty($trigger['model']) && isset($trigger['status'])) {
             $email = $this->getEmailById($trigger['model']);
 
             if (!empty($email) && !empty($email->id)) {
@@ -2417,6 +2417,7 @@ class EmundusModelEmails extends JModelList {
                         ->set($this->_db->quoteName('email_id') . ' = ' . $this->_db->quote($trigger['model']))
                         ->set($this->_db->quoteName('to_current_user') . ' = ' . $this->_db->quote($to_current_user))
                         ->set($this->_db->quoteName('to_applicant') . ' = ' . $this->_db->quote($to_applicant));
+
 
                     $this->_db->setQuery($query);
                     $this->_db->execute();
@@ -2448,10 +2449,11 @@ class EmundusModelEmails extends JModelList {
                             ->set($this->_db->quoteName('programme_id') . ' = ' . $this->_db->quote($trigger['program']));
 
                         $this->_db->setQuery($query);
-                        $created = $this->_db->execute();
+                        $trigger_assoc_prog = $this->_db->execute();
+                        $created = true;
                     }
                 } catch(Exception $e) {
-                    JLog::add('component/com_emundus/models/email | Cannot create a trigger : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                    JLog::add('component/com_emundus/models/email | Cannot create a trigger : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
                 }
             }
         }
