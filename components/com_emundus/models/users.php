@@ -523,7 +523,7 @@ class EmundusModelUsers extends JModelList {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
-        $query->select('*, esp.label as programme, sc.id as campaign_id')
+        $query->select('sc.*, esp.label as programme, sc.id as campaign_id')
             ->from($db->quoteName('#__emundus_setup_campaigns', 'sc'))
             ->leftJoin($db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON sc.training = esp.code')
             ->order('sc.start_date DESC')
