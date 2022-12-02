@@ -709,7 +709,7 @@ class EmundusModelProgramme extends JModelList {
 
                 $fields = [];
                 foreach ($data as $key => $val) {
-                    if (in_array($key, $table_columns)) {
+                    if (in_array($key, $table_columns) && $key != 'id') {
                         $fields[] = $db->quoteName($key) . ' = ' . $db->quote($val);
                     }
                 }
@@ -2065,7 +2065,7 @@ class EmundusModelProgramme extends JModelList {
             $db->execute();
             //
 
-            $formbuilder->createHiddenGroup($formid,1);
+            //$formbuilder->createHiddenGroup($formid,1);
             $group = $formbuilder->createGroup($label,$formid);
 
             // Link groups to program
