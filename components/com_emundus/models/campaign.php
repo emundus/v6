@@ -2218,9 +2218,9 @@ class EmundusModelCampaign extends JModelList {
      *
      * @since version 1.30.0
      */
-    public function getCurrentCampaignWorkflow($emundusUser): stdClass
+    public function getCurrentCampaignWorkflow($emundusUser)
     {
-        $current_phase = new stdClass();
+        $current_phase = null;
 
         if (!empty($emundusUser->fnum) && !empty($emundusUser->fnums[$emundusUser->fnum])) {
             $query = $this->_db->getQuery(true);
@@ -2240,6 +2240,8 @@ class EmundusModelCampaign extends JModelList {
             }
 
             if (empty($current_phase->id)) {
+                // if not found from campaigns, check programs
+
                 $query->clear()
                     ->select('DISTINCT ecw.id, ecw.start_date, ecw.end_date, ecw.profile, ecw.output_status, GROUP_CONCAT(ecw_status.entry_status separator ",") as entry_status')
                     ->from('#__emundus_campaign_workflow as ecw')
@@ -2255,13 +2257,40 @@ class EmundusModelCampaign extends JModelList {
                 } catch (Exception $e) {
                     JLog::add('[getCurrentCampaignWorkflow] Error getting current campaign workflow from program: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
                 }
+
+                if (empty($current_phase->id)) {
+                    // I not found from programs nor campaigns, check workflow that are applied only from entry status (0 campaign, 0 program)
+
+                    $query->clear()
+                        ->select('DISTINCT ecw.id, ecw.start_date, ecw.end_date, ecw.profile, ecw.output_status, GROUP_CONCAT(ecw_status.entry_status separator ",") as entry_status')
+                        ->from('#__emundus_campaign_workflow as ecw')
+                        ->where('ecw_status.entry_status = ' . $this->_db->quote($emundusUser->fnums[$emundusUser->fnum]->status))
+                        ->andWhere('id NOT IN (SELECT parent_id
+                            FROM jos_emundus_campaign_workflow_repeat_programs
+                            UNION
+                            SELECT parent_id
+                            FROM jos_emundus_campaign_workflow_repeat_campaign))');
+                    $this->_db->setQuery($query);
+
+                    try {
+                        $current_phase = $this->_db->loadObject();
+                    } catch (Exception $e) {
+                        JLog::add('[getCurrentCampaignWorkflow] Error getting current campaign workflow from program: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                    }
+                }
             }
 
 
             if (!empty($current_phase->id)) {
                 $current_phase->entry_status = !empty($current_phase->entry_status) ? explode(',', $current_phase->entry_status) : [];
+
+                if (empty($current_phase->end_date) || $current_phase->end_date === '') {
+                    // todo: set campaign end_date
+
+
+                }
             } else {
-                $current_phase = new stdClass();
+                $current_phase = null;
             }
         }
 
