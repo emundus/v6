@@ -35,11 +35,13 @@ session_start();
 class EmundusModelCampaignTest extends TestCase
 {
     private $m_campaign;
+    private $h_sample;
 
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
         $this->m_campaign = new EmundusModelCampaign;
+        $this->h_sample = new EmundusUnittestHelperSamples;
     }
 
 
@@ -145,5 +147,55 @@ class EmundusModelCampaignTest extends TestCase
     {
         $progam = $this->m_campaign->getProgrammeByTraining('');
         $this->assertEmpty($progam, 'Get programme by training without param returns null');
+    }
+
+    public function testGetCurrentCampaignWorkflow()
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('code')
+            ->from($db->quoteName('#__emundus_setup_programmes'));
+        $db->setQuery($query);
+        $programmes = $db->loadColumn();
+
+        if (!empty($programmes)) {
+            $start_date = new DateTime();
+            $start_date->modify('-1 day');
+
+            $end_date = new DateTime();
+            $end_date->modify('+1 year');
+
+            $new_campaign_id = $this->m_campaign->createCampaign([
+                'label' =>  json_encode(['fr' => 'Campagne test unitaire', 'en' => 'Campagne test unitaire']),
+                'description' => 'Lorem ipsum',
+                'short_description' => 'Lorem ipsum',
+                'start_date' => $start_date->format('Y-m-d H:i:s'),
+                'end_date' => $end_date->format('Y-m-d H:i:s'),
+                'profile_id' => 9,
+                'training' => $programmes[0],
+                'year' => '2022-2023',
+                'published' => 1
+            ]);
+
+            if ($new_campaign_id) {
+                $user_id = $this->h_sample->createSampleUser();
+
+                $fnum = $this->h_sample->createSampleFile($new_campaign_id, $user_id);
+
+                $new_workflow_id = $this->m_campaign->createWorkflow(9, [1], 2, null, ['campaigns' => [$new_campaign_id]]);
+                $this->assertEmpty($this->m_campaign->getCurrentCampaignWorkflow($fnum), 'Mon dossier au statut Brouillon n\'est pas impacté par la phase sur le statut envoyé');
+
+                $query->clear()
+                    ->update('#__emundus_campaign_candidature')
+                    ->set('status = 1' )
+                    ->where('fnum LIKE ' . $db->quote($fnum));
+
+                $db->setQuery($query);
+                $db->execute();
+
+                $current_file_workflow = $this->m_campaign->getCurrentCampaignWorkflow($fnum);
+                $this->assertSame($current_file_workflow->id, $new_workflow_id);
+            }
+        }
     }
 }
