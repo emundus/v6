@@ -68,6 +68,7 @@ $campaign = $formModel->data['jos_emundus_setup_csv_import___campaign_raw'][0];
 $profile_id = $formModel->data['jos_emundus_setup_csv_import___profile'];
 $create_new_fnum = $formModel->data['jos_emundus_setup_csv_import___create_new_fnum'];
 $send_email = $formModel->data['jos_emundus_setup_csv_import___send_email_raw'][0];
+$resume = '';
 
 // Check if the file is a file on the server and in the right format.
 if (!is_file(JPATH_ROOT.$csv)) {
@@ -82,6 +83,14 @@ if (pathinfo($csv, PATHINFO_EXTENSION) !== 'csv') {
     return false;
 }
 
+JPluginHelper::importPlugin('emundus');
+$dispatcher = JEventDispatcher::getInstance();
+$dispatcher->trigger('callEventHandler', ['onBeforeImportCSV', array(
+    'csv' => $csv,
+    'create_new_fnum' => $create_new_fnum,
+    'formData' => $formModel->formData,
+)]);
+
 // auto_detect_line_endings allows PHP to detect MACOS line endings or else things get ugly...
 ini_set('auto_detect_line_endings', TRUE);
 
@@ -91,15 +100,6 @@ if (!$handle) {
     $app->enqueueMessage('ERROR: Could not open import file.', 'error');
     return false;
 }
-
-
-JPluginHelper::importPlugin('emundus');
-$dispatcher = JEventDispatcher::getInstance();
-$dispatcher->trigger('callEventHandler', ['onBeforeImportCSV', ['data' => array(
-    'csv' => $csv,
-    'create_new_fnum' => $create_new_fnum,
-    'formData' => $formModel->formData,
-)]]);
 
 // Prepare data structure for parsing.
 $database_elements = [];
@@ -120,6 +120,16 @@ $delimiter = getCsvDelimiter(JPATH_ROOT.$csv);
 if (($data = fgetcsv($handle, 0, $delimiter)) !== false) {
 
     foreach ($data as $column_number => $column) {
+        if (!empty($insert_row['jos_emundus_users'])) {
+            $insert_row['jos_emundus_personal_detail']['first_name'] = !empty($insert_row['jos_emundus_users']['firstname']) ? $insert_row['jos_emundus_users']['firstname'] : '';
+            $insert_row['jos_emundus_personal_detail']['last_name'] = !empty($insert_row['jos_emundus_users']['lastname']) ? $insert_row['jos_emundus_users']['lastname'] : '';
+            $insert_row['jos_emundus_personal_detail']['email'] = !empty($insert_row['jos_emundus_users']['email']) ? $insert_row['jos_emundus_users']['email'] : '';
+            $insert_row['jos_emundus_personal_detail']['telephone_1'] = !empty($insert_row['jos_emundus_users']['tel']) ? $insert_row['jos_emundus_users']['tel'] : '';
+
+            if (!empty($insert_row['jos_emundus_users']['civility'])) {
+                $insert_row['jos_emundus_personal_detail']['gender'] = $insert_row['jos_emundus_users']['civility'] == 1 ? "M" : "F";
+            }
+        }
 
         //try to convert char
         //$data = array_map( "convert", $data );
@@ -759,6 +769,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
             if($element['email'] == $existData->email){
                 $app->enqueueMessage('The user with email : '.$existData->email.' already exist', 'info');
+                $resume .= 'The user with email : '.$existData->email.' already exist <br>';
             }
 
             $query->clear()
@@ -835,20 +846,33 @@ foreach ($parsed_data as $row_id => $insert_row) {
     if ($new_user && !empty($send_email) && $send_email == 1) {
         // Send email indicating account creation.
         $m_emails = new EmundusModelEmails();
+        $tags = array('patterns' => [], 'replacements' => []);
 
         // If we are creating an ldap or cas account, we need to send a different email.
         if ($ldap_user) {
             $totals['ldap']++;
             $email = $m_emails->getEmail('new_ldap_account');
-            $tags = $m_emails->setTags($user->id, null, $fnum, null, $email->emailfrom.$email->name.$email->subject.$email->message);
+            try {
+                $tags = $m_emails->setTags($user->id, null, $fnum, null, $email->emailfrom.$email->name.$email->subject.$email->message);
+            } catch(Exception $e) {
+                JLog::add('ERROR setting tags in query : error text -> '.$e->getMessage(), JLog::ERROR, 'com_emundus.csvimport');
+            }
         } else if ($cas_user) {
             $totals['cas']++;
             $email = $m_emails->getEmail('new_cas_account');
-            $tags = $m_emails->setTags($user->id, null, $fnum, null, $email->emailfrom.$email->name.$email->subject.$email->message);
+            try {
+                $tags = $m_emails->setTags($user->id, null, $fnum, null, $email->emailfrom.$email->name.$email->subject.$email->message);
+            } catch(Exception $e) {
+                JLog::add('ERROR setting tags in query : error text -> '.$e->getMessage(), JLog::ERROR, 'com_emundus.csvimport');
+            }
         } else {
             $totals['user']++;
             $email = $m_emails->getEmail('new_account');
-            $tags = $m_emails->setTags($user->id, null, $fnum, $password, $email->emailfrom.$email->name.$email->subject.$email->message);
+            try {
+                $tags = $m_emails->setTags($user->id, null, $fnum, $password);
+            } catch(Exception $e) {
+                JLog::add('ERROR setting tags in query : error text -> '.$e->getMessage(), JLog::ERROR, 'com_emundus.csvimport');
+            }
         }
 
         $mailer = JFactory::getMailer();
@@ -937,6 +961,7 @@ if (!empty($totals)) {
     if (!empty($totals['write'])) {
         $summary .= 'Wrote '.$totals['write'].' lines.';
     }
+    $resume .= $summary;
     $app->enqueueMessage($summary, 'info');
 }
 
@@ -948,6 +973,7 @@ $data = array(
     'repeat_tables' => $repeat_tables,
     'database_elements' => $database_elements,
     'formData' => $formModel->formData,
+    'resume' => !empty($resume) ? $resume : null
 );
 
 JPluginHelper::importPlugin('emundus');

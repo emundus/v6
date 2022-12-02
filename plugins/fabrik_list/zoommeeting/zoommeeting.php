@@ -38,7 +38,12 @@ class PlgFabrik_ListZoommeeting extends PlgFabrik_List {
                 ->where('id = ' . $db->quote($mId));
 
             $db->setQuery($query);
-            $room = $db->loadObject();
+
+            try {
+                $room = $db->loadObject();
+            } catch (Exception $e) {
+                JLog::add('Error trying to get meeting session on delete rows', JLog::ERROR, 'com_emundus.zoom');
+            }
 
             if (!empty($room)) {
                 $eMConfig = JComponentHelper::getParams('com_emundus');
@@ -50,8 +55,20 @@ class PlgFabrik_ListZoommeeting extends PlgFabrik_List {
 
                 if ($zoom->responseCode() != 204) {
                     $zoom->requestErrors();
+                } else {
+                    $user = JFactory::getSession()->get('emundusUser');
+
+                    if (!empty($user)) {
+                        JLog::add('Zoom session ' . $room->meeting_session . ' deleted by ' .  $user->id , JLog::INFO, 'com_emundus.zoom');
+                    } else {
+                        JLog::add('Zoom session ' . $room->meeting_session . ' deleted', JLog::INFO, 'com_emundus.zoom');
+                    }
                 }
+            } else {
+                JLog::add('No zoom room found corresponding to mid ' . $mId, JLog::INFO, 'com_emundus.zoom');
             }
+        } else {
+            JLog::add('Empty ids onDeleteRows zoommeeting.php', JLog::INFO, 'com_emundus.zoom');
         }
     }
 }
