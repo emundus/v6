@@ -2,7 +2,7 @@ version: '3.9'
 services:
   web:
     container_name: web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
-    image: $CI_REGISTRY/tchooz-build-app:$CI_COMMIT_SHORT_SHA
+    image: emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA
     restart: always
     environment:
       - TCHOOZ_OFFLINE=0
@@ -85,7 +85,7 @@ services:
 
   database:
     container_name: database-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
-    image: $CI_REGISTRY/tchooz-build-db:$CI_COMMIT_SHORT_SHA
+    image: emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA
     environment:
       - MYSQL_DATABASE=${TCHOOZ_DB_NAME}
       - MYSQL_USER=${TCHOOZ_DB_USER}
