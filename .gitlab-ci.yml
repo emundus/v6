@@ -196,6 +196,7 @@ jest-job:
     TCHOOZ_INSTANCE_ID: 999999
     TCHOOZ_CUSTOMER_ID: 999999
   before_script:
+    - ps -ef 
     - /scripts/entrypoint.sh && echo $?
   script:
     - apache2-foreground &
