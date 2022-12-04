@@ -122,7 +122,7 @@ phpunit-job:
     TCHOOZ_CUSTOMER_ID: 999999
   script:
     - /scripts/entrypoint.sh && echo $?
-    - /var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?
+    - cd /var/www/html/ && /var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?
   only:
     - merge_request
 
