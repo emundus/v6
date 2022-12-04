@@ -1,7 +1,3 @@
-default:
-  retry:
-    max: 1
-
 services:
   - docker:20.10-dind
   - emundus/tchooz-build-app:latest
@@ -23,6 +19,9 @@ stages:
   - test
   - release
   - publish
+
+before_script: 
+  - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
 
 check-tchooz-version-job:
   stage: check
