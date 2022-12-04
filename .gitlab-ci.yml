@@ -68,8 +68,6 @@ phpunit-job:
     # - /scripts/entrypoint.sh
     # - ls -lha && cat configuration.php
     - /var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?
-  dependencies:
-    - prepare-job
   only:
     - merge_request
 
