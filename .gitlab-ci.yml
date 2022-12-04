@@ -135,7 +135,7 @@ jest-job:
     - name: emundus/tchooz-build-db:latest
       alias: database
     - redis:latest
-variables:
+  variables:
     TCHOOZ_OFFLINE: 0
     TCHOOZ_OFFLINE_MESSAGE: Offline
     TCHOOZ_DISPLAY_OFFLINE_MESSAGE: 1
