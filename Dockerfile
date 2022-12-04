@@ -142,9 +142,10 @@ RUN if [ "$jest" = "1" ];then \
 # Entrypoint declaration
 ENTRYPOINT [ "/scripts/entrypoint.sh" ]
 
-# Volume and Port
+# Volume, Port and workdir
 VOLUME [ "/var/www/html" ]
-EXPOSE 8080
+EXPOSE 80
+WORKDIR /var/www/html
 
 # Set user
 USER www-data

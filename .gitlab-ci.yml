@@ -57,12 +57,9 @@ build-db-to-test-job:
 
 phpunit-job:
   stage: test
-  image: 
-    name: emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA
+  image: emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA
   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
   services:
-    - name: emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA
-      alias: localhost
     - name: emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA
       alias: database
     - redis:latest
@@ -127,19 +124,16 @@ phpunit-job:
   before_script:
     - /scripts/entrypoint.sh && echo $?
   script:
-    - curl http://localhost:8080
+    - curl http://localhost:80
     - cd /var/www/html/ && /var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?
   only:
     - merge_request
 
 jest-job:
   stage: test
-  image:
-    name: emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA
+  image: emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   services:
-    - name: emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA
-      alias: localhost
     - name: emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA
       alias: database
     - redis:latest
@@ -204,7 +198,7 @@ jest-job:
   before_script:
     - /scripts/entrypoint.sh && echo $?
   script:
-    - curl http://localhost:8080
+    - curl http://localhost:80
     - cd /var/www/html/components && yarn run test:unit com_emundus/ --ci --coverage && echo $?
   only:
     - merge_request
