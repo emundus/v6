@@ -1,6 +1,6 @@
-#services:
-#  - name: docker:20.10-dind
-#    alias: localhost
+services:
+  - name: docker:20.10-dind
+    alias: localhost
 
 variables:
   GIT_SUBMODULE_STRATEGY: normal
@@ -125,7 +125,7 @@ phpunit-job:
   before_script:
     - /scripts/entrypoint.sh && echo $?
   script:
-    - ps -ef && curl http://localhost
+    - ps -ef && curl http://docker && curl http://localhost
     - cd /var/www/html/ && /var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?
   only:
     - merge_request
