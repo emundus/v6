@@ -66,13 +66,12 @@ prepare-job:
     - cp -pvr media/com_emundus_vanilla/v6/.htaccess .htaccess
     - cp -pvr media/com_emundus_vanilla/v6/language/overrides/ language/
     - cp -pvr media/com_emundus_vanilla/v6/templates/g5_helium/ templates/
-    - chown -R www-data:www-data .
   artifacts:
     paths:
       - configuration.php
       - .htaccess
-      - language/overrides/
-      - templates/g5_helium/
+      - language/overrides/*
+      - templates/g5_helium/*
 
 phpunit-job:
   stage: test
@@ -84,6 +83,7 @@ phpunit-job:
     - redis:latest
   script:
     - cd /var/www/html/components && yarn
+    - chown -R www-data:www-data .
     - /scripts/entrypoint.sh
     - ls -lha && cat configuration.php
     - /var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?
