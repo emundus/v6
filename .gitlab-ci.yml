@@ -71,7 +71,7 @@ phpunit-job:
     TCHOOZ_EDITOR: tinymce
     TCHOOZ_DEBUG: 0
     TCHOOZ_DEBUG_LANG: 0
-    TCHOOZ_DB_HOST: tchooz-build-db
+    TCHOOZ_DB_HOST: database
     TCHOOZ_DB_USER: tchooz
     TCHOOZ_DB_PASSWORD: tchooz_password
     TCHOOZ_DB_NAME: vanilla
