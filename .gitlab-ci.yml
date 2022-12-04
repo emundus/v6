@@ -28,31 +28,31 @@ check-tchooz-version-job:
   script:
     - .ci/file-search-in-gitlab-merge-request.sh "$CI_SERVER_URL" "$GITLAB_TOKEN" "$CI_PROJECT_ID" "$CI_MERGE_REQUEST_IID" "administrator/components/com_emundus/emundus.xml"
 
-# build-app-to-test-job:
-#   stage: build
-#   image: docker:20.10
-#   before_script: 
-#     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
-#   script:
-#     - docker pull emundus/tchooz-build-app:latest || true
-#     - docker build --cache-from emundus/tchooz-build-app:latest --compress -t emundus/tchooz-build-app:latest -t emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 --build-arg xdebug=1 --build-arg jest=1 .
-#     - docker push emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA
-#     - docker push emundus/tchooz-build-app:latest
-#   only:
-#     - merge_request
+build-app-to-test-job:
+  stage: build
+  image: docker:20.10
+  before_script: 
+    - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
+  script:
+    - docker pull emundus/tchooz-build-app:latest || true
+    - docker build --cache-from emundus/tchooz-build-app:latest --compress -t emundus/tchooz-build-app:latest -t emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 --build-arg xdebug=1 --build-arg jest=1 .
+    - docker push emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA
+    - docker push emundus/tchooz-build-app:latest
+  only:
+    - merge_request
 
-# build-db-to-test-job:
-#   stage: build
-#   image: docker:20.10
-#   before_script: 
-#     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
-#   script:
-#     - docker pull emundus/tchooz-build-db:latest || true
-#     - docker build --cache-from emundus/tchooz-build-db:latest --compress -f Dockerfile.db -t emundus/tchooz-build-db:latest -t emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 .
-#     - docker push emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA
-#     - docker push emundus/tchooz-build-db:latest
-#   only:
-#     - merge_request
+build-db-to-test-job:
+  stage: build
+  image: docker:20.10
+  before_script: 
+    - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
+  script:
+    - docker pull emundus/tchooz-build-db:latest || true
+    - docker build --cache-from emundus/tchooz-build-db:latest --compress -f Dockerfile.db -t emundus/tchooz-build-db:latest -t emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 .
+    - docker push emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA
+    - docker push emundus/tchooz-build-db:latest
+  only:
+    - merge_request
 
 phpunit-job:
   stage: test
@@ -243,10 +243,10 @@ publish-app-image-job:
   before_script: 
     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
   script:
-    - docker pull tchooz-app:latest || true
-    - docker build --cache-from tchooz-app:latest --compress -t tchooz-app:$NEW_VERSION -t tchooz-app:latest .
-    - docker push tchooz-app:$NEW_VERSION
-    - docker push tchooz-app:latest
+    - docker pull emundus/tchooz-app:latest || true
+    - docker build --cache-from emundus/tchooz-app:latest --compress -t emundus/tchooz-app:$NEW_VERSION -t emundus/tchooz-app:latest .
+    - docker push emundus/tchooz-app:$NEW_VERSION
+    - docker push emundus/tchooz-app:latest
   needs:
     - release-job
 
@@ -262,9 +262,9 @@ publish-db-image-job:
   before_script: 
     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
   script:
-    - docker pull tchooz-db:latest || true
-    - docker build --cache-from tchooz-db:latest --compress -f Dockerfile.db -t tchooz-db:$NEW_VERSION -t tchooz-db:latest .
-    - docker push tchooz-db:$NEW_VERSION
-    - docker push tchooz-db:latest
+    - docker pull emundus/tchooz-db:latest || true
+    - docker build --cache-from emundus/tchooz-db:latest --compress -f Dockerfile.db -t emundus/tchooz-db:$NEW_VERSION -t emundus/tchooz-db:latest .
+    - docker push emundus/tchooz-db:$NEW_VERSION
+    - docker push emundus/tchooz-db:latest
   needs:
     - release-job
