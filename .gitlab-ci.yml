@@ -3,7 +3,9 @@ default:
     max: 1
 
 services:
-  - name: docker:20.10-dind
+  - docker:20.10-dind
+  - emundus/tchooz-build-app:latest
+  - redis:latest
 
 variables:
   GIT_SUBMODULE_STRATEGY: normal
@@ -39,7 +41,7 @@ build-app-to-test-job:
     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
   script:
     - docker pull emundus/tchooz-build-app:latest || true
-    - docker build --cache-from tchooz-build-app:latest --compress -t emundus/tchooz-build-app:latest -t emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 --build-arg xdebug=1 --build-arg jest=1 .
+    - docker build --cache-from emundus/tchooz-build-app:latest --compress -t emundus/tchooz-build-app:latest -t emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 --build-arg xdebug=1 --build-arg jest=1 .
     - docker push emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA
     - docker push emundus/tchooz-build-app:latest
   only:
@@ -52,7 +54,7 @@ build-db-to-test-job:
     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
   script:
     - docker pull emundus/tchooz-build-db:latest || true
-    - docker build --cache-from tchooz-build-db:latest --compress -f Dockerfile.db -t emundus/tchooz-build-db:latest -t emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 .
+    - docker build --cache-from emundus/tchooz-build-db:latest --compress -f Dockerfile.db -t emundus/tchooz-build-db:latest -t emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 .
     - docker push emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA
     - docker push emundus/tchooz-build-db:latest
   only:
