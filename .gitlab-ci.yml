@@ -196,7 +196,8 @@ jest-job:
   before_script:
     - /scripts/entrypoint.sh && echo $?
   script:
-    - ps -ef
+    - apache2-foreground &
+    - ps -ef && curl localhost
     - cd /var/www/html/components && yarn run test:unit com_emundus/ --ci --coverage && echo $?
   only:
     - merge_request
