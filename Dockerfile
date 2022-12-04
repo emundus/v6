@@ -121,6 +121,7 @@ echo 'max_input_time = 600'; \
 
 # Copy entrypoint script and Apache default vhost 
 COPY --chown=www-data:www-data [".ci/php/7.4/apache/000-default.conf","/etc/apache2/sites-available/000-default.conf"]
+COPY --chown=root:root [".ci/php/7.4/apache/ports.conf","/etc/apache2/ports.conf"]
 COPY --chown=www-data:www-data [".ci/php/7.4/scripts/entrypoint.sh","/scripts/entrypoint.sh"]
 
 # COPY PROJECT
