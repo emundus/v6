@@ -66,7 +66,7 @@ phpunit-job:
     # - cd /var/www/html/components && yarn
     # - chown -R www-data:www-data .
     # - /scripts/entrypoint.sh
-    # - ls -lha && cat configuration.php
+    - ls -lha && cat configuration.php
     - /var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?
   only:
     - merge_request
@@ -82,7 +82,7 @@ jest-job:
   script:
     # - cd /var/www/html/components && yarn
     # - /scripts/entrypoint.sh
-    # - ls -lha && cat configuration.php
+    - ls -lha && cat configuration.php
     - cd /var/www/html/components && yarn run test:unit com_emundus/ --ci --coverage && echo $?
   only:
     - merge_request
