@@ -144,7 +144,7 @@ ENTRYPOINT [ "/scripts/entrypoint.sh" ]
 
 # Volume, Port and workdir
 VOLUME [ "/var/www/html" ]
-EXPOSE 80
+EXPOSE 8080
 WORKDIR /var/www/html
 
 # Set user
