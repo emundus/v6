@@ -59,43 +59,46 @@ check-tchooz-version-job:
 
 phpunit-job:
   stage: test
-  image: docker/compose:1.29.2
+  #image: docker/compose:1.29.2
+  image: emundus/tchooz-build-app:latest
   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
   services:
     - emundus/tchooz-build-db:latest
     - redis:latest
-  before_script: 
-    - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
-    - docker-compose up -d
+  # before_script: 
+  #   - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
+  #   - docker-compose up -d
   script:
-    - docker exec web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID /bin/sh -c "/var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?"
+    #- docker exec web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID /bin/sh -c "/var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?"
+    - ls -lha
+    - /var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?
   after_script:
     # - docker logs database-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
     # - docker logs redis-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
-    - docker logs web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
-    - docker-compose down
+    # - docker logs web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
+    # - docker-compose down
   only:
     - merge_request
 
-jest-job:
-  stage: test
-  image: docker/compose:1.29.2
-  coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
-  services:
-    - emundus/tchooz-build-db:latest
-    - redis:latest
-  before_script: 
-    - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
-    - docker-compose up -d
-  script:
-    - docker exec web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID /bin/bash -c "cd /var/www/html/components && yarn run test:unit com_emundus/ --ci --coverage && echo $?"
-  after_script:
-    # - docker logs database-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
-    # - docker logs redis-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
-    - docker logs web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
-    - docker-compose down
-  only:
-    - merge_request
+# jest-job:
+#   stage: test
+#   image: docker/compose:1.29.2
+#   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
+#   services:
+#     - emundus/tchooz-build-db:latest
+#     - redis:latest
+#   before_script: 
+#     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
+#     - docker-compose up -d
+#   script:
+#     - docker exec web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID /bin/bash -c "cd /var/www/html/components && yarn run test:unit com_emundus/ --ci --coverage && echo $?"
+#   after_script:
+#     # - docker logs database-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
+#     # - docker logs redis-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
+#     - docker logs web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
+#     - docker-compose down
+#   only:
+#     - merge_request
 
 release-job:
   stage: release
