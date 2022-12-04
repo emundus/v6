@@ -78,9 +78,9 @@ services:
       - all
     cap_add:
       - NET_BIND_SERVICE
-    links:
-      - database
-      - redis
+    # links:
+    #   - database
+    #   - redis
     # networks:
     #   - default
 

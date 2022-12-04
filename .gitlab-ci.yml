@@ -70,8 +70,8 @@ phpunit-job:
   script:
     - docker exec web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID /bin/sh -c "/var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?"
   after_script:
-    - docker logs database-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
-    - docker logs redis-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
+    # - docker logs database-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
+    # - docker logs redis-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
     - docker logs web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
     - docker-compose down
   only:
@@ -90,8 +90,8 @@ jest-job:
   script:
     - docker exec web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID /bin/bash -c "cd /var/www/html/components && yarn run test:unit com_emundus/ --ci --coverage && echo $?"
   after_script:
-    - docker logs database-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
-    - docker logs redis-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
+    # - docker logs database-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
+    # - docker logs redis-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
     - docker logs web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
     - docker-compose down
   only:
