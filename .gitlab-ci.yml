@@ -118,10 +118,15 @@ phpunit-job:
   #   - docker-compose up -d
   script:
     #- docker exec web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID /bin/sh -c "/var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?"
-    - cat configuration.php
+    - cp -pvr configuration.php.dist configuration.php
+    - cp -pvr media/com_emundus_vanilla/v6/.htaccess .htaccess
+    - cp -pvr media/com_emundus_vanilla/v6/language/overrides/ language/overrides/
+    - cp -pvr media/com_emundus_vanilla/v6/templates/g5_helium/ templates/g5_helium/
+    - cd /var/www/html/components && yarn
+    - cd /var/www/html/ && cat configuration.php
     - ping mysql
     - /var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?
-  after_script:
+  #after_script:
     # - docker logs database-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
     # - docker logs redis-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
     # - docker logs web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
