@@ -64,6 +64,7 @@ phpunit-job:
     - redis:latest
   before_script:
     - /scripts/entrypoint.sh && echo $?
+    - cat /var/www/html/configuration.php
   script:
     - cd /var/www/html/ && /var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?
   only:
