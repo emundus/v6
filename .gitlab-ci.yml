@@ -1,6 +1,5 @@
 services:
   - name: docker:20.10-dind
-    alias: localhost
 
 variables:
   GIT_SUBMODULE_STRATEGY: normal
