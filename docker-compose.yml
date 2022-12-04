@@ -63,12 +63,12 @@ services:
       - TCHOOZ_COORD_PASSWORD=${TCHOOZ_COORD_PASSWORD}
       - TCHOOZ_INSTANCE_ID=999999
       - TCHOOZ_CUSTOMER_ID=999999
-    healthcheck:
-      test: curl --fail -s http://web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID || exit 1
-      interval: 5s
-      timeout: 10s
-      retries: 10
-      start_period: 5s
+    # healthcheck:
+    #   test: curl --fail -s http://web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID || exit 1
+    #   interval: 5s
+    #   timeout: 10s
+    #   retries: 10
+    #   start_period: 5s
     # depends_on:
     #   database:
     #     condition: service_healthy

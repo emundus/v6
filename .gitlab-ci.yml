@@ -200,7 +200,8 @@ jest-job:
     - /scripts/entrypoint.sh && echo $?
   script:
     - apache2-foreground &
-    - who && curl http://localhost:80
+    - who
+    - curl http://localhost
     - cd /var/www/html/components && yarn run test:unit com_emundus/ --ci --coverage && echo $?
   only:
     - merge_request
