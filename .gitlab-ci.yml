@@ -10,6 +10,7 @@ variables:
   DOCKER_TLS_CERTDIR: ""
   DOCKER_CLIENT_TIMEOUT: 360
   COMPOSE_HTTP_TIMEOUT: 360
+  DOCKER_HOST: tcp://127.0.0.1:2375
 
 stages:
   - check
