@@ -13,10 +13,10 @@ services:
       - TCHOOZ_EDITOR=tinymce
       - TCHOOZ_DEBUG=0
       - TCHOOZ_DEBUG_LANG=0
-      - TCHOOZ_DB_HOST=database
-      - TCHOOZ_DB_USER=${TCHOOZ_DB_USER}
-      - TCHOOZ_DB_PASSWORD=${TCHOOZ_DB_PASSWORD}
-      - TCHOOZ_DB_NAME=${TCHOOZ_DB_NAME}
+      - TCHOOZ_DB_HOST=tchooz-build-db
+      - TCHOOZ_DB_USER=tchooz
+      - TCHOOZ_DB_PASSWORD=tchooz_password
+      - TCHOOZ_DB_NAME=vanilla
       - TCHOOZ_LIVE_SITE=
       - TCHOOZ_SECRET=${TCHOOZ_SECRET}
       - TCHOOZ_OFFSET=Europe/Paris
@@ -80,35 +80,35 @@ services:
     links:
       - database
       - redis
-    networks:
-      - default
+    # networks:
+    #   - default
 
-  database:
-    container_name: database-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
-    image: emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA
-    environment:
-      - MYSQL_DATABASE=${TCHOOZ_DB_NAME}
-      - MYSQL_USER=${TCHOOZ_DB_USER}
-      - MYSQL_PASSWORD=${TCHOOZ_DB_PASSWORD}
-    healthcheck:
-      test: ["CMD", "mysql" ,"-h", "${TCHOOZ_DB_HOST}", "-P", "3306", "-u", "${TCHOOZ_DB_USER}", "-p${TCHOOZ_DB_PASSWORD}", "-e", "USE ${TCHOOZ_DB_NAME}; DESCRIBE language_requirements;"]
-      interval: 5s
-      retries: 30
-      start_period: 1s
-      timeout: 10s
-    restart: always
-    cap_add:
-      - SYS_NICE
-    networks:
-      - default
+  # database:
+  #   container_name: database-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
+  #   image: emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA
+  #   environment:
+  #     - MYSQL_DATABASE=${TCHOOZ_DB_NAME}
+  #     - MYSQL_USER=${TCHOOZ_DB_USER}
+  #     - MYSQL_PASSWORD=${TCHOOZ_DB_PASSWORD}
+  #   healthcheck:
+  #     test: ["CMD", "mysql" ,"-h", "${TCHOOZ_DB_HOST}", "-P", "3306", "-u", "${TCHOOZ_DB_USER}", "-p${TCHOOZ_DB_PASSWORD}", "-e", "USE ${TCHOOZ_DB_NAME}; DESCRIBE language_requirements;"]
+  #     interval: 5s
+  #     retries: 30
+  #     start_period: 1s
+  #     timeout: 10s
+  #   restart: always
+  #   cap_add:
+  #     - SYS_NICE
+  #   networks:
+  #     - default
 
-  redis:
-    container_name: redis-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
-    image: redis:latest
-    restart: always
-    networks:
-      - default
+  # redis:
+  #   container_name: redis-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
+  #   image: redis:latest
+  #   restart: always
+  #   networks:
+  #     - default
 
-networks:
-  default:
-    name: tchooz-network-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
+# networks:
+#   default:
+#     name: tchooz-network-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID

@@ -1,7 +1,5 @@
 services:
   - docker:20.10-dind
-  - emundus/tchooz-build-app:latest
-  - redis:latest
 
 variables:
   GIT_SUBMODULE_STRATEGY: normal
@@ -63,6 +61,9 @@ phpunit-job:
   stage: test
   image: docker/compose:1.29.2
   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
+  services:
+    - emundus/tchooz-build-db:latest
+    - redis:latest
   before_script: 
     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
     - docker-compose up -d
@@ -80,6 +81,9 @@ jest-job:
   stage: test
   image: docker/compose:1.29.2
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
+  services:
+    - emundus/tchooz-build-db:latest
+    - redis:latest
   before_script: 
     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
     - docker-compose up -d
