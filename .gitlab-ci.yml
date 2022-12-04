@@ -18,9 +18,6 @@ stages:
   - release
   - publish
 
-# before_script: 
-#   - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
-
 check-tchooz-version-job:
   stage: check
   rules:
@@ -68,8 +65,8 @@ phpunit-job:
   script:
     - cp -pvr configuration.php.dist configuration.php
     - cp -pvr media/com_emundus_vanilla/v6/.htaccess .htaccess
-    - cp -pvr media/com_emundus_vanilla/v6/language/overrides/ language/overrides/
-    - cp -pvr media/com_emundus_vanilla/v6/templates/g5_helium/ templates/g5_helium/
+    - cp -pvr media/com_emundus_vanilla/v6/language/overrides/ language/
+    - cp -pvr media/com_emundus_vanilla/v6/templates/g5_helium/ templates/
     - cd /var/www/html/components && yarn
     - /scripts/entrypoint.sh
     - /var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?
@@ -87,8 +84,8 @@ jest-job:
   script:
     - cp -pvr configuration.php.dist configuration.php
     - cp -pvr media/com_emundus_vanilla/v6/.htaccess .htaccess
-    - cp -pvr media/com_emundus_vanilla/v6/language/overrides/ language/overrides/
-    - cp -pvr media/com_emundus_vanilla/v6/templates/g5_helium/ templates/g5_helium/
+    - cp -pvr media/com_emundus_vanilla/v6/language/overrides/ language/
+    - cp -pvr media/com_emundus_vanilla/v6/templates/g5_helium/ templates/
     - cd /var/www/html/components && yarn
     - /scripts/entrypoint.sh
     - cd /var/www/html/components && yarn run test:unit com_emundus/ --ci --coverage && echo $?
