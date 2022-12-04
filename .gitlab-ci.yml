@@ -56,10 +56,10 @@ build-db-to-test-job:
 
 phpunit-job:
   stage: test
-  image: emundus/tchooz-build-app:latest
+  image: emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA
   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
   services:
-    - name: emundus/tchooz-build-db:latest
+    - name: emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA
       alias: database
     - redis:latest
   variables:
@@ -129,10 +129,10 @@ phpunit-job:
 
 jest-job:
   stage: test
-  image: emundus/tchooz-build-app:latest
+  image: emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   services:
-    - name: emundus/tchooz-build-db:latest
+    - name: emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA
       alias: database
     - redis:latest
   variables:
