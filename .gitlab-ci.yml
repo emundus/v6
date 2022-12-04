@@ -273,7 +273,7 @@ jest-job:
     TCHOOZ_INSTANCE_ID: 999999
     TCHOOZ_CUSTOMER_ID: 999999
   script:
-    - docker run --cap-add=NET_BIND_SERVICE --sysctl net.ipv4.ip_unprivileged_port_start=0 -it emundus/tchooz-build-app:latest bash -c "cd /var/www/html/components && yarn run test:unit com_emundus/ --ci --coverage && echo $?"
+    - docker run --cap-add=NET_BIND_SERVICE --sysctl net.ipv4.ip_unprivileged_port_start=0 emundus/tchooz-build-app:latest bash -c "cd /var/www/html/components && yarn run test:unit com_emundus/ --ci --coverage && echo $?"
   only:
     - merge_request
 
