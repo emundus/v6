@@ -196,6 +196,7 @@ jest-job:
   before_script:
     - /scripts/entrypoint.sh && echo $?
   script:
+    - curl http://localhost
     - cd /var/www/html/components && yarn run test:unit com_emundus/ --ci --coverage && echo $?
   only:
     - merge_request
