@@ -54,6 +54,25 @@ check-tchooz-version-job:
 #   only:
 #     - merge_request
 
+prepare-job:
+  stage: build
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
+    - when: never
+  image: enix/ci-toolbox
+  script:
+    - cp -pvr configuration.php.dist configuration.php
+    - cp -pvr media/com_emundus_vanilla/v6/.htaccess .htaccess
+    - cp -pvr media/com_emundus_vanilla/v6/language/overrides/ language/
+    - cp -pvr media/com_emundus_vanilla/v6/templates/g5_helium/ templates/
+  artifacts:
+    paths:
+      - configuration.php
+      - .htaccess
+      - language/overrides/
+      - templates/g5_helium/
+
 phpunit-job:
   stage: test
   image: emundus/tchooz-build-app:latest
@@ -63,13 +82,12 @@ phpunit-job:
       alias: database
     - redis:latest
   script:
-    - cp -pvr configuration.php.dist configuration.php
-    - cp -pvr media/com_emundus_vanilla/v6/.htaccess .htaccess
-    - cp -pvr media/com_emundus_vanilla/v6/language/overrides/ language/
-    - cp -pvr media/com_emundus_vanilla/v6/templates/g5_helium/ templates/
+    - ls -lha && cat configuration.php
     - cd /var/www/html/components && yarn
     - /scripts/entrypoint.sh
     - /var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?
+  dependencies:
+    - prepare-job
   only:
     - merge_request
 
@@ -82,13 +100,12 @@ jest-job:
       alias: database
     - redis:latest
   script:
-    - cp -pvr configuration.php.dist configuration.php
-    - cp -pvr media/com_emundus_vanilla/v6/.htaccess .htaccess
-    - cp -pvr media/com_emundus_vanilla/v6/language/overrides/ language/
-    - cp -pvr media/com_emundus_vanilla/v6/templates/g5_helium/ templates/
+    - ls -lha && cat configuration.php
     - cd /var/www/html/components && yarn
     - /scripts/entrypoint.sh
     - cd /var/www/html/components && yarn run test:unit com_emundus/ --ci --coverage && echo $?
+  dependencies:
+    - prepare-job
   only:
     - merge_request
 
