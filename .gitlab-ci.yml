@@ -29,38 +29,38 @@ check-tchooz-version-job:
   script:
     - .ci/file-search-in-gitlab-merge-request.sh "$CI_SERVER_URL" "$GITLAB_TOKEN" "$CI_PROJECT_ID" "$CI_MERGE_REQUEST_IID" "administrator/components/com_emundus/emundus.xml"
 
-build-app-to-test-job:
-  stage: build
-  image: docker:20.10
-  before_script: 
-    - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
-  script:
-    - docker pull emundus/tchooz-build-app:latest || true
-    - docker build --cache-from emundus/tchooz-build-app:latest --compress -t emundus/tchooz-build-app:latest -t emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 --build-arg xdebug=1 --build-arg jest=1 .
-    - docker push emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA
-    - docker push emundus/tchooz-build-app:latest
-  only:
-    - merge_request
+# build-app-to-test-job:
+#   stage: build
+#   image: docker:20.10
+#   before_script: 
+#     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
+#   script:
+#     - docker pull emundus/tchooz-build-app:latest || true
+#     - docker build --cache-from emundus/tchooz-build-app:latest --compress -t emundus/tchooz-build-app:latest -t emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 --build-arg xdebug=1 --build-arg jest=1 .
+#     - docker push emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA
+#     - docker push emundus/tchooz-build-app:latest
+#   only:
+#     - merge_request
 
-build-db-to-test-job:
-  stage: build
-  image: docker:20.10
-  before_script: 
-    - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
-  script:
-    - docker pull emundus/tchooz-build-db:latest || true
-    - docker build --cache-from emundus/tchooz-build-db:latest --compress -f Dockerfile.db -t emundus/tchooz-build-db:latest -t emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 .
-    - docker push emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA
-    - docker push emundus/tchooz-build-db:latest
-  only:
-    - merge_request
+# build-db-to-test-job:
+#   stage: build
+#   image: docker:20.10
+#   before_script: 
+#     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
+#   script:
+#     - docker pull emundus/tchooz-build-db:latest || true
+#     - docker build --cache-from emundus/tchooz-build-db:latest --compress -f Dockerfile.db -t emundus/tchooz-build-db:latest -t emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 .
+#     - docker push emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA
+#     - docker push emundus/tchooz-build-db:latest
+#   only:
+#     - merge_request
 
 phpunit-job:
   stage: test
-  image: emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA
+  image: emundus/tchooz-build-app:latest
   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
   services:
-    - name: emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA
+    - name: emundus/tchooz-build-db:latest
       alias: database
     - redis:latest
   variables:
@@ -124,6 +124,7 @@ phpunit-job:
   before_script:
     - /scripts/entrypoint.sh && echo $?
   script:
+    - apache2-foreground &
     - curl http://localhost:80
     - cd /var/www/html/ && /var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?
   only:
@@ -131,10 +132,10 @@ phpunit-job:
 
 jest-job:
   stage: test
-  image: emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA
+  image: emundus/tchooz-build-app:latest
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   services:
-    - name: emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA
+    - name: emundus/tchooz-build-db:latest
       alias: database
     - redis:latest
   variables:
@@ -198,6 +199,7 @@ jest-job:
   before_script:
     - /scripts/entrypoint.sh && echo $?
   script:
+    - apache2-foreground &
     - curl http://localhost:80
     - cd /var/www/html/components && yarn run test:unit com_emundus/ --ci --coverage && echo $?
   only:
