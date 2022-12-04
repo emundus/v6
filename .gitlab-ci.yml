@@ -61,6 +61,8 @@ phpunit-job:
     name: emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA
   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
   services:
+    - name: emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA
+      alias: localhost
     - name: emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA
       alias: database
     - redis:latest
@@ -136,6 +138,8 @@ jest-job:
     name: emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   services:
+    - name: emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA
+      alias: localhost
     - name: emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA
       alias: database
     - redis:latest
