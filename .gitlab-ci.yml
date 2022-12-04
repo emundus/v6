@@ -207,7 +207,7 @@ check-tchooz-version-job:
 
 jest-job:
   stage: test
-  image: docker:20.10
+  # image: docker:20.10
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   services:
     - name: emundus/tchooz-build-db:latest
