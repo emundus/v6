@@ -18,8 +18,8 @@ stages:
   - release
   - publish
 
-before_script: 
-  - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
+# before_script: 
+#   - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
 
 check-tchooz-version-job:
   stage: check
