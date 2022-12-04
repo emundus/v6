@@ -62,9 +62,66 @@ phpunit-job:
     - name: emundus/tchooz-build-db:latest
       alias: database
     - redis:latest
+  variables:
+    TCHOOZ_OFFLINE: 0
+    TCHOOZ_OFFLINE_MESSAGE: Offline
+    TCHOOZ_DISPLAY_OFFLINE_MESSAGE: 1
+    TCHOOZ_OFFLINE_IMAGE: images/logo.png
+    TCHOOZ_SITENAME: Tchooz
+    TCHOOZ_EDITOR: tinymce
+    TCHOOZ_DEBUG: 0
+    TCHOOZ_DEBUG_LANG: 0
+    TCHOOZ_DB_HOST: tchooz-build-db
+    TCHOOZ_DB_USER: tchooz
+    TCHOOZ_DB_PASSWORD: tchooz_password
+    TCHOOZ_DB_NAME: vanilla
+    TCHOOZ_LIVE_SITE: 
+    TCHOOZ_SECRET: ${TCHOOZ_SECRET}
+    TCHOOZ_OFFSET: Europe/Paris
+    TCHOOZ_MAILER: smtp
+    TCHOOZ_MAIL_FROM: 
+    TCHOOZ_MAIL_FROM_NAME: 
+    TCHOOZ_MAIL_SMTP_AUTH: 
+    TCHOOZ_MAIL_SMTP_USER: 
+    TCHOOZ_MAIL_SMTP_PASS: 
+    TCHOOZ_MAIL_SMTP_HOST: 
+    TCHOOZ_MAIL_SMTP_SECURITY: 
+    TCHOOZ_MAIL_SMTP_PORT: 
+    TCHOOZ_CACHING: 0
+    TCHOOZ_CACHE_HANDLER: redis
+    TCHOOZ_CACHE_LIFETIME: 15
+    TCHOOZ_META_DESCRIPTION: Tchooz
+    TCHOOZ_META_KEYS: tchooz
+    TCHOOZ_LOG_PATH: /var/www/html/logs
+    TCHOOZ_TMP_PATH: /var/www/html/tmp
+    TCHOOZ_SESSION_LIFETIME: 15
+    TCHOOZ_SESSION_HANDLER: redis
+    TCHOOZ_FORCE_SSL: 0
+    TCHOOZ_REDIS_PERSIST: 1
+    TCHOOZ_REDIS_HOST: redis
+    TCHOOZ_REDIS_PORT: 6379
+    TCHOOZ_REDIS_DB: 0
+    TCHOOZ_MAIL_REPLY_TO: 
+    TCHOOZ_MAIL_REPLY_TO_NAME: 
+    TCHOOZ_SESSION_REDIS_PERSIST: 1
+    TCHOOZ_SESSION_REDIS_HOST: redis
+    TCHOOZ_SESSION_REDIS_PORT: 6379
+    TCHOOZ_SESSION_REDIS_DB: 0
+    TCHOOZ_PROSPECT: 0
+    TCHOOZ_PLAN_LIMIT_APP_FORMS: 0
+    TCHOOZ_PLAN_LIMIT_STORAGE_SPACE: 0
+    TCHOOZ_PLAN_LIMIT_FORMS: 0
+    TCHOOZ_BEHIND_LOADBALANCER: 0
+    TCHOOZ_ADMIN_ACCESS_TOKEN: ${TCHOOZ_ADMIN_ACCESS_TOKEN}
+    TCHOOZ_COORD_USERNAME: coordinator
+    TCHOOZ_COORD_MAIL: ${TCHOOZ_COORD_MAIL}
+    TCHOOZ_COORD_FIRST_NAME: Coordinator
+    TCHOOZ_COORD_LAST_NAME: Tchooz
+    TCHOOZ_COORD_PASSWORD: ${TCHOOZ_COORD_PASSWORD}
+    TCHOOZ_INSTANCE_ID: 999999
+    TCHOOZ_CUSTOMER_ID: 999999
   before_script:
     - /scripts/entrypoint.sh && echo $?
-    - cat /var/www/html/configuration.php
   script:
     - cd /var/www/html/ && /var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?
   only:
