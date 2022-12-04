@@ -2,7 +2,8 @@ version: '3.9'
 services:
   web:
     container_name: web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
-    image: emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA
+    #image: emundus/tchooz-build-app:$CI_COMMIT_SHORT_SHA
+    image: emundus/tchooz-build-app:latest
     restart: always
     environment:
       - TCHOOZ_OFFLINE=0
@@ -68,9 +69,9 @@ services:
       timeout: 10s
       retries: 10
       start_period: 5s
-    depends_on:
-      database:
-        condition: service_healthy
+    # depends_on:
+    #   database:
+    #     condition: service_healthy
     sysctls:
       - net.ipv4.ip_unprivileged_port_start=0
     cap_drop:
