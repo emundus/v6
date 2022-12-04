@@ -144,7 +144,7 @@ ENTRYPOINT [ "/scripts/entrypoint.sh" ]
 
 # Volume and Port
 VOLUME [ "/var/www/html" ]
-EXPOSE 80
+EXPOSE 8080
 
 # Set user
 USER www-data
