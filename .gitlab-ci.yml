@@ -66,6 +66,7 @@ prepare-job:
     - cp -pvr media/com_emundus_vanilla/v6/.htaccess .htaccess
     - cp -pvr media/com_emundus_vanilla/v6/language/overrides/ language/
     - cp -pvr media/com_emundus_vanilla/v6/templates/g5_helium/ templates/
+    - chown -R www-data:www-data .
   artifacts:
     paths:
       - configuration.php
@@ -82,9 +83,9 @@ phpunit-job:
       alias: database
     - redis:latest
   script:
-    - ls -lha && cat configuration.php
     - cd /var/www/html/components && yarn
     - /scripts/entrypoint.sh
+    - ls -lha && cat configuration.php
     - /var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?
   dependencies:
     - prepare-job
@@ -100,9 +101,9 @@ jest-job:
       alias: database
     - redis:latest
   script:
-    - ls -lha && cat configuration.php
     - cd /var/www/html/components && yarn
     - /scripts/entrypoint.sh
+    - ls -lha && cat configuration.php
     - cd /var/www/html/components && yarn run test:unit com_emundus/ --ci --coverage && echo $?
   dependencies:
     - prepare-job
