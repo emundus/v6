@@ -25,6 +25,8 @@ check-tchooz-version-job:
       when: always
     - when: never
   image: enix/ci-toolbox
+  before_script: 
+    - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
   script:
     - .ci/file-search-in-gitlab-merge-request.sh "$CI_SERVER_URL" "$GITLAB_TOKEN" "$CI_PROJECT_ID" "$CI_MERGE_REQUEST_IID" "administrator/components/com_emundus/emundus.xml"
 
@@ -61,6 +63,8 @@ prepare-job:
       when: always
     - when: never
   image: enix/ci-toolbox
+  before_script: 
+    - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
   script:
     - cp -pvr configuration.php.dist configuration.php
     - cp -pvr media/com_emundus_vanilla/v6/.htaccess .htaccess
