@@ -122,6 +122,7 @@ phpunit-job:
     TCHOOZ_CUSTOMER_ID: 999999
   script:
     - ls -lha /var/www/html/ && cat /var/www/html/configuration.php
+    - env
     - /var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?
   only:
     - merge_request
@@ -194,6 +195,7 @@ jest-job:
     TCHOOZ_CUSTOMER_ID: 999999
   script:
     - ls -lha /var/www/html/ && cat /var/www/html/configuration.php
+    - env
     - cd /var/www/html/components && yarn run test:unit com_emundus/ --ci --coverage && echo $?
   only:
     - merge_request
