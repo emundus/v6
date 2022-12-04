@@ -208,7 +208,7 @@ release-job:
         - administrator/components/com_emundus/emundus.xml
       when: on_success
     - when: never
-  image: $CI_REGISTRY/emundus-semantic-release:latest
+  image: emundus/semantic-release:latest
   script:
     - semantic-release
   artifacts:
@@ -223,7 +223,7 @@ sync-documentation-job:
         - administrator/components/com_emundus/emundus.xml
       when: on_success
     - when: never
-  image: $CI_REGISTRY/emundus-sync-documentation:1.0.0
+  image: emundus/sync-documentation:1.0.0
   script:
     - /go/generate-release-note.sh "$CI_SERVER_URL" "$CI_PROJECT_ID" "$GITLAB_TOKEN" "$ATLASSIAN_URL" "$ATLASSIAN_USER" "$ATLASSIAN_TOKEN" "$ATLASSIAN_SPACE" "$ATLASSIAN_PARENT_PAGE" "$ATLASSIAN_PAGE_TITLE"
   needs:
