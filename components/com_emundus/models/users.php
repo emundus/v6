@@ -172,7 +172,7 @@ class EmundusModelUsers extends JModelList {
         $showJoomlagroups   = $eMConfig->get('showJoomlagroups',0);
         $showNewsletter     = $eMConfig->get('showNewsletter');
 
-        $query = 'SELECT DISTINCT(u.id), e.lastname, e.firstname, u.email, u.username,  espr.label as profile, ';
+        $query = 'SELECT DISTINCT(u.id), e.lastname, e.firstname, u.email, u.username,  espr.label as profile, espr.published as is_applicant_profile, ';
 
         if ($showNewsletter == 1)
             $query .= 'up.profile_value as newsletter, ';
@@ -523,7 +523,7 @@ class EmundusModelUsers extends JModelList {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
-        $query->select('*, esp.label as programme, sc.id as campaign_id')
+        $query->select('sc.*, esp.label as programme, sc.id as campaign_id')
             ->from($db->quoteName('#__emundus_setup_campaigns', 'sc'))
             ->leftJoin($db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON sc.training = esp.code')
             ->order('sc.start_date DESC')
@@ -801,32 +801,34 @@ class EmundusModelUsers extends JModelList {
 	 * @param $user
 	 * @param $other_params
 	 *
-	 * @return array|bool
+	 * @return int user_id, 0 if failed
 	 */
     public function adduser($user, $other_params) {
+        $new_user_id = 0;
 
-    	$db = JFactory::getDBO();
-
-        // add to jos_emundus_users; jos_users; jos_emundus_groups; jos_users_profiles; jos_users_profiles_history
         try {
-
             if (!$user->save()) {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_USERS_CAN_NOT_SAVE_USER').'<BR />'.$user->getError(), 'error');
-                $res = array('msg' => $user->getError());
-                return $res;
+                JLog::add('Failed to create user ' . $user->getError(), JLog::ERROR, 'com_emundus.error');
             } else {
-                $query = 'UPDATE `#__users` SET block=0 WHERE id='.$user->id;
+                $db = JFactory::getDBO();
+                $query = $db->getQuery(true);
+                $query->update('#__users')
+                    ->set('block = 0')
+                    ->where('id = ' . $user->id);
                 $db->setQuery($query);
                 $db->execute();
 
                 $this->addEmundusUser($user->id, $other_params);
-                return $user->id;
+                $new_user_id = $user->id;
             }
-
         } catch(Exception $e) {
-            error_log($e->getMessage(), 0);
-            return false;
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_USERS_CAN_NOT_SAVE_USER').'<br />'. $e->getMessage(), 'error');
+            JLog::add('Failed to create user : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            $new_user_id = 0;
         }
+
+        return $new_user_id;
     }
 
     public function addEmundusUser($user_id, $params) {
@@ -1650,37 +1652,49 @@ class EmundusModelUsers extends JModelList {
      *   @return array
     */
     public function getApplicationsAssocToGroups($gid) {
+        $applications = [];
 
-        if (count($gid) == 0) {
-            return array();
-        }
-        try {
-            $query = 'SELECT DISTINCT (ga.fnum)
-                      FROM #__emundus_group_assoc as ga
-                      WHERE ga.group_id IN ('.implode(',', $gid).')';
+        if (!empty($gid)) {
             $db = $this->getDbo();
-            $db->setQuery($query);
 
-            return $db->loadColumn();
-        } catch(Exception $e) {
-            return false;
+            $query = $db->getQuery(true);
+            $query->select('DISTINCT ga.fnum')
+                ->from($db->quoteName('#__emundus_group_assoc', 'ga'))
+                ->where('ga.group_id IN (' . implode(',', $gid) . ')');
+
+            try {
+                $db->setQuery($query);
+                $applications = $db->loadColumn();
+            } catch(Exception $e) {
+                JLog::add('Failed to get applications assoc to group ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            }
         }
+
+        return $applications;
     }
 
 
     // get applicants associated to a user
     public function getApplicantsAssoc($uid) {
-        try {
-            $query = "SELECT DISTINCT (eua.fnum)
-                      FROM #__emundus_users_assoc as eua
-                      WHERE eua.user_id = " .$uid;
-            $db = $this->getDbo();
-            $db->setQuery($query);
+        $applications = [];
 
-            return $db->loadColumn();
-        } catch(Exception $e) {
-            return false;
+        if (!empty($uid)) {
+            $db = $this->getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('DISTINCT eua.fnum')
+                ->from($db->quoteName('#__emundus_users_assoc', 'eua'))
+                ->where('eua.user_id = ' . $uid);
+
+            try {
+                $db->setQuery($query);
+                $applications = $db->loadColumn();
+            } catch(Exception $e) {
+                JLog::add('Failed to get applications assoc to user ' . $uid . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            }
         }
+
+        return $applications;
     }
 
     public function getUserCampaigns($uid) {
@@ -2702,7 +2716,7 @@ class EmundusModelUsers extends JModelList {
             $app_profile = $db->loadResult();
 
             $query->clear()
-                ->insert('#__emundus_users_profile')
+                ->insert('#__emundus_users_profiles')
                 ->set($db->quoteName('date_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
                 ->set($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
                 ->set($db->quoteName('profile_id') . ' = ' . $db->quote($app_profile->id));

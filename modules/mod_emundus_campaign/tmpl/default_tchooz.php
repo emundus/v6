@@ -76,9 +76,11 @@ $protocol = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SERV
 $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 ?>
 
-<div class="mod_emundus_campaign__intro">
-    <?= $mod_em_campaign_intro; ?>
-</div>
+<?php if (in_array('intro',$mod_em_campaign_list_sections)): ?>
+    <div class="mod_emundus_campaign__intro">
+        <?= $mod_em_campaign_intro; ?>
+    </div>
+<?php endif; ?>
 
 
 <form action="<?php echo $CurPageURL ?>" method="post" id="search_program">
@@ -102,287 +104,322 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     <?php else : ?>
     <div class="mod_emundus_campaign__content">
 
+        <!-- PINNED CAMPAIGN -->
         <?php if ($campaign_pinned) : ?>
         <span class="em-h4"><?php echo JText::_('MOD_EM_CAMPAIGN_PINNED_CAMPAIGN') ?></span>
         <div class="mod_emundus_campaign__pinned_campaign em-mt-32 em-mb-24">
-        <?php if(strtotime($now) > strtotime($campaign_pinned->end_date)) :  ?>
-        <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'">
+            <?php if(strtotime($now) > strtotime($campaign_pinned->end_date)) :  ?>
+            <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'">
 
-            <?php  else : ?>
+                <?php  else : ?>
 
-            <div class="mod_emundus_campaign__list_content em-border-neutral-300">
-                <?php endif; ?>
+                <div class="mod_emundus_campaign__list_content em-border-neutral-300">
+                    <?php endif; ?>
 
-                <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
-                    <?php
-                    $color = '#1C6EF2';
-                    $background = '#C8E1FE';
-                    if(!empty($campaign_pinned->tag_color)){
-                        $color = $campaign_pinned->tag_color;
-                        switch ($campaign_pinned->tag_color) {
-                            case '#20835F':
-                                $background = '#DFF5E9';
-                                break;
-                            case '#DB333E':
-                                $background = '#FFEEEE';
-                                break;
-                            case '#FFC633':
-                                $background = '#FFFBDB';
-                                break;
-                        }
-                    }
-                    ?>
-                    <p class="em-programme-tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
-                        <?php  echo $campaign_pinned->programme; ?>
-                    </p>
-                    <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
-                        <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $campaign_pinned->label; ?></p>
-                    </a>
-
-                    <div class="<?php echo $mod_em_campaign_class; ?> em-applicant-text-color em-font-size-16">
-                        <div>
-                            <?php if($mod_em_campaign_show_camp_end_date && strtotime($now) < strtotime($campaign_pinned->start_date)  ) : //pas commencé ?>
-
-                                <div class="mod_emundus_campaign__date em-flex-row">
-                                    <span class="material-icons em-text-neutral-600 em-font-size-16">schedule</span>
-                                    <p class="em-applicant-text-color em-font-size-16"> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?></p>
-                                    <span class="em-camp-start em-applicant-text-color"> <?php echo JFactory::getDate(new JDate($campaign_pinned->start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if($mod_em_campaign_show_camp_end_date && strtotime($now) > strtotime($campaign_pinned->end_date) ) :    //fini  ?>
-                                <div class="mod_emundus_campaign__date em-flex-row">
-                                    <span class="material-icons em-text-neutral-600 em-font-size-16">alarm_off</span>
-                                    <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_CLOSED'); ?></p>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if($mod_em_campaign_show_camp_end_date && strtotime($now) < strtotime($campaign_pinned->end_date)  && strtotime($now) > strtotime($campaign_pinned->start_date) ) : //en cours ?>
-                                <div class="mod_emundus_campaign__date em-flex-row">
-                                    <span class="material-icons em-text-neutral-600 em-font-size-16">schedule</span>
-                                    <p class="em-applicant-text-color em-font-size-16"> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?>
-                                    </p>
-                                    <span class="em-camp-end em-applicant-text-color"> <?php echo JFactory::getDate(new JDate($campaign_pinned->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
-                                </div>
-                            <?php endif; ?>
-
-
-                            <?php if ($mod_em_campaign_show_formation_start_date && $campaign_pinned->formation_start !== '0000-00-00 00:00:00') : ?>
-                                <div class="mod_emundus_campaign__date em-flex-row">
-                                    <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_START_DATE'); ?>:</p>
-                                    <span class="em-formation-start em-applicant-text-color"><?php echo JFactory::getDate(new JDate($campaign_pinned->formation_start, $site_offset))->format($mod_em_campaign_date_format); ?></span>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if ($mod_em_campaign_show_formation_end_date && $campaign_pinned->formation_end !== '0000-00-00 00:00:00') : ?>
-                                <div class="mod_emundus_campaign__date em-flex-row">
-                                    <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_END_DATE'); ?>:</p>
-                                    <span class="em-formation-end em-applicant-text-color"><?php echo JFactory::getDate(new JDate($campaign_pinned->formation_end, $site_offset))->format($mod_em_campaign_date_format); ?></span>
-                                </div>
-                            <?php endif; ?>
-                            <?php if ($mod_em_campaign_show_admission_start_date && $campaign_pinned->admission_start_date !== '0000-00-00 00:00:00') : ?>
-                                <div class="mod_emundus_campaign__date em-flex-row">
-                                    <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_START_DATE'); ?>:</p>
-                                    <span class="em-formation-start em-applicant-text-color"><?php echo JFactory::getDate(new JDate($campaign_pinned->admission_start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span></div>
-                            <?php endif; ?>
-
-                            <?php if ($mod_em_campaign_show_admission_end_date && $campaign_pinned->admission_end_date !== '0000-00-00 00:00:00') : ?>
-                                <div class="mod_emundus_campaign__date em-flex-row">
-                                    <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_END_DATE'); ?>:</p>
-                                    <span class="em-formation-end em-applicant-text-color"><?php echo JFactory::getDate(new JDate($campaign_pinned->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if (!empty($mod_em_campaign_show_timezone) && !(strtotime($now) > strtotime($campaign_pinned->end_date)) ) : ?>
-                                <div class="mod_emundus_campaign__date em-flex-row">
-                                    <span class="material-icons em-text-neutral-600 em-font-size-16">public</span>
-                                    <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_TIMEZONE') . $offset; ?></p>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-
-                    <hr>
-
-                    <p class="mod_emundus_campaign__list_content_resume em-applicant-text-color em-font-size-16">
+                    <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
                         <?php
-                        $text = '';
-                        $textprog = '';
-                        $textcamp = '';
-                        if ($showcampaign) {
-                            $textcamp = $campaign_pinned->short_description;
+                        $color = '#1C6EF2';
+                        $background = '#C8E1FE';
+                        if(!empty($campaign_pinned->tag_color)){
+                            $color = $campaign_pinned->tag_color;
+                            switch ($campaign_pinned->tag_color) {
+                                case '#20835F':
+                                    $background = '#DFF5E9';
+                                    break;
+                                case '#DB333E':
+                                    $background = '#FFEEEE';
+                                    break;
+                                case '#FFC633':
+                                    $background = '#FFFBDB';
+                                    break;
+                            }
                         }
-                        echo $textcamp;
                         ?>
-                    </p>
+
+                        <?php  if ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '1') :  ?>
+                            <div class="mod_emundus_campaign__programme_properties">
+                                <p class="em-programme-tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
+                                    <?php  echo $campaign_pinned->programme; ?>
+                                </p>
+                                <?php if (!empty($campaign_pinned->logo)) :?>
+                                    <img src="<?php echo $campaign_pinned->logo; ?>" alt="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_PROGRAMME_LOGO_ALT'); ?>">
+                                <?php endif; ?>
+                            </div>
+
+                            <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                                <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $campaign_pinned->label; ?></p>
+                            </a>
+                        <?php  elseif ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '0') :  ?>
+                            <p class="em-programme-tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
+                                <?php  echo $campaign_pinned->programme; ?>
+                            </p>
+                            <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                                <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $campaign_pinned->label; ?></p>
+                            </a>
+                        <?php  elseif ($mod_em_campaign_list_show_programme == '0' && $mod_em_campaign_show_programme_logo == '1') :  ?>
+                            <div class="mod_emundus_campaign__campagne_properties">
+                                <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                                    <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $campaign_pinned->label; ?></p>
+                                </a>
+                                <?php if (!empty($campaign_pinned->logo)) :?>
+                                    <img src="<?php echo $campaign_pinned->logo; ?>" alt="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_PROGRAMME_LOGO_ALT'); ?>">
+                                <?php endif; ?>
+                            </div>
+                        <?php  else :  ?>
+                            <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                                <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $campaign_pinned->label; ?></p>
+                            </a>
+                        <?php endif; ?>
+
+                        <div class="<?php echo $mod_em_campaign_class; ?> em-applicant-text-color em-font-size-16">
+                            <div>
+                                <?php if($mod_em_campaign_show_camp_end_date && strtotime($now) < strtotime($campaign_pinned->start_date)  ) : //pas commencé ?>
+
+                                    <div class="mod_emundus_campaign__date em-flex-row">
+                                        <span class="material-icons em-text-neutral-600 em-font-size-16">schedule</span>
+                                        <p class="em-applicant-text-color em-font-size-16"> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?></p>
+                                        <span class="em-camp-start em-applicant-text-color"> <?php echo JFactory::getDate(new JDate($campaign_pinned->start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if($mod_em_campaign_show_camp_end_date && strtotime($now) > strtotime($campaign_pinned->end_date) ) :    //fini  ?>
+                                    <div class="mod_emundus_campaign__date em-flex-row">
+                                        <span class="material-icons em-text-neutral-600 em-font-size-16">alarm_off</span>
+                                        <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_CLOSED'); ?></p>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if($mod_em_campaign_show_camp_end_date && strtotime($now) < strtotime($campaign_pinned->end_date)  && strtotime($now) > strtotime($campaign_pinned->start_date) ) : //en cours ?>
+                                    <div class="mod_emundus_campaign__date em-flex-row">
+                                        <span class="material-icons em-text-neutral-600 em-font-size-16">schedule</span>
+                                        <p class="em-applicant-text-color em-font-size-16"> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?>
+                                        </p>
+                                        <span class="em-camp-end em-applicant-text-color"> <?php echo JFactory::getDate(new JDate($campaign_pinned->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                                    </div>
+                                <?php endif; ?>
+
+
+                                <?php if ($mod_em_campaign_show_formation_start_date && $campaign_pinned->formation_start !== '0000-00-00 00:00:00') : ?>
+                                    <div class="mod_emundus_campaign__date em-flex-row">
+                                        <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_START_DATE'); ?>:</p>
+                                        <span class="em-formation-start em-applicant-text-color"><?php echo JFactory::getDate(new JDate($campaign_pinned->formation_start, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if ($mod_em_campaign_show_formation_end_date && $campaign_pinned->formation_end !== '0000-00-00 00:00:00') : ?>
+                                    <div class="mod_emundus_campaign__date em-flex-row">
+                                        <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_END_DATE'); ?>:</p>
+                                        <span class="em-formation-end em-applicant-text-color"><?php echo JFactory::getDate(new JDate($campaign_pinned->formation_end, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if ($mod_em_campaign_show_admission_start_date && $campaign_pinned->admission_start_date !== '0000-00-00 00:00:00') : ?>
+                                    <div class="mod_emundus_campaign__date em-flex-row">
+                                        <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_START_DATE'); ?>:</p>
+                                        <span class="em-formation-start em-applicant-text-color"><?php echo JFactory::getDate(new JDate($campaign_pinned->admission_start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span></div>
+                                <?php endif; ?>
+
+                                <?php if ($mod_em_campaign_show_admission_end_date && $campaign_pinned->admission_end_date !== '0000-00-00 00:00:00') : ?>
+                                    <div class="mod_emundus_campaign__date em-flex-row">
+                                        <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_END_DATE'); ?>:</p>
+                                        <span class="em-formation-end em-applicant-text-color"><?php echo JFactory::getDate(new JDate($campaign_pinned->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if (!empty($mod_em_campaign_show_timezone) && !(strtotime($now) > strtotime($campaign_pinned->end_date)) ) : ?>
+                                    <div class="mod_emundus_campaign__date em-flex-row">
+                                        <span class="material-icons em-text-neutral-600 em-font-size-16">public</span>
+                                        <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_TIMEZONE') . $offset; ?></p>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <p class="mod_emundus_campaign__list_content_resume em-applicant-text-color em-font-size-16">
+                            <?php
+                            $text = '';
+                            $textprog = '';
+                            $textcamp = '';
+                            if ($showcampaign) {
+                                $textcamp = $campaign_pinned->short_description;
+                            }
+                            echo $textcamp;
+                            ?>
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
-        <?php endif; ?>
-
-        <div class="mod_emundus_campaign__header">
-            <div>
-                <div class="em-flex-row">
-                    <!-- BUTTONS -->
-                    <?php if ($mod_em_campaign_show_sort == 1 && !empty($mod_em_campaign_sort_list)) : ?>
-                    <div id="mod_emundus_campaign__header_sort" class="mod_emundus_campaign__header_filter em-border-neutral-400 em-neutral-800-color em-pointer em-mr-8" onclick="displaySort()">
-                        <span class="material-icons-outlined">swap_vert</span>
-                        <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_SORT') ?></span>
-                    </div>
-                    <?php endif; ?>
-
-                    <?php if ($mod_em_campaign_show_filters == 1 && !empty($mod_em_campaign_show_filters_list)) : ?>
-                    <div id="mod_emundus_campaign__header_filter" class="mod_emundus_campaign__header_filter em-border-neutral-400 em-neutral-800-color em-pointer em-mr-8" onclick="displayFilters()">
-                        <span class="material-icons-outlined">filter_list</span>
-                        <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER') ?></span>
-                        <span id="mod_emundus_campaign__header_filter_count" class="mod_emundus_campaign__header_filter_count em-mr-8"></span>
-                    </div>
-                    <?php endif; ?>
-
-                    <!-- TAGS ENABLED -->
-                    <?php if ($mod_em_campaign_order == 'start_date' && $order == 'end_date') : ?>
-                        <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
-                            <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_END_DATE_NEAR') ?></span>
-                            <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer" onclick="deleteSort(['order_date','order_time'])">
-                                <span class="material-icons-outlined">close</span>
-                            </a>
-                        </div>
-                    <?php endif; ?>
-                    <?php if ($mod_em_campaign_order == 'end_date' && $order == 'start_date') : ?>
-                        <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
-                            <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_START_DATE_NEAR') ?></span>
-                            <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer" onclick="deleteSort(['order_date','order_time'])">
-                                <span class="material-icons-outlined">close</span>
-                            </a>
-                        </div>
-                    <?php endif; ?>
-                    <?php if ($mod_em_campaign_show_sort == 1 && $group_by == 'program') : ?>
-                        <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
-                            <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_PROGRAM') ?></span>
-                            <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer" onclick="deleteSort(['group_by'])">
-                                <span class="material-icons-outlined">close</span>
-                            </a>
-                        </div>
-                    <?php endif; ?>
-                    <?php if ($mod_em_campaign_show_sort == 1 && $group_by == 'category') : ?>
-                        <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
-                            <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_CATEGORY') ?></span>
-                            <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer" onclick="deleteSort(['group_by'])">
-                                <span class="material-icons-outlined">close</span>
-                            </a>
-                        </div>
-                    <?php endif; ?>
-                </div>
-
-                <!-- SORT BLOCK -->
-                <div class="mod_emundus_campaign__header_sort__values em-border-neutral-400 em-neutral-800-color" id="sort_block" style="display: none">
-                    <?php if($mod_em_campaign_order == 'start_date') : ?>
-                        <a onclick="filterCampaigns(['order_date','order_time'],['end_date','asc'])" class="em-text-neutral-900 em-pointer">
-                            <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_END_DATE_NEAR') ?>
-                        </a>
-                    <?php endif; ?>
-                    <?php if($mod_em_campaign_order == 'end_date') : ?>
-                        <a onclick="filterCampaigns(['order_date','order_time'],['start_date','asc'])" class="em-text-neutral-900 em-pointer">
-                            <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_START_DATE_NEAR') ?>
-                        </a>
-                    <?php endif; ?>
-                    <?php if(in_array('programme',$mod_em_campaign_sort_list) && $group_by != 'program') : ?>
-                        <a onclick="filterCampaigns('group_by','program')" class="em-text-neutral-900 em-pointer">
-                            <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_PROGRAM') ?>
-                        </a>
-                    <?php endif; ?>
-                    <?php if(in_array('category',$mod_em_campaign_sort_list) && $group_by != 'category') : ?>
-                        <a onclick="filterCampaigns('group_by','category')" class="em-text-neutral-900 em-pointer">
-                            <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_CATEGORY') ?>
-                        </a>
-                    <?php endif; ?>
-                </div>
-
-                <!-- FILTERS BLOCK -->
-                <?php if ($mod_em_campaign_show_filters == 1  && !empty($mod_em_campaign_show_filters_list)) : ?>
-                <div class="mod_emundus_campaign__header_filter__values em-border-neutral-400 em-neutral-800-color" id="filters_block" style="display: none">
-                    <a class="em-mb-8 em-flex-row em-font-size-14 em-blue-400-color em-pointer" onclick="addFilter()" title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_ADD_FILTER') ?>">
-                        <span class="material-icons-outlined em-font-size-14">add</span>
-                        <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_ADD_FILTER') ?>
-                    </a>
-
-                    <div id="filters_list">
-                        <?php $i = 0; ?>
-                        <?php foreach ($codes_filters as $key => $code) : ?>
-                            <div class="mod_emundus_campaign__header_filter__grid" id="filter_<?php echo $i ?>">
-                                <select onchange="setupFilter('<?php echo $i ?>')" id="select_filter_<?php echo $i ?>">
-                                    <option value="0"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PLEASE_SELECT') ?></option>
-                                    <option value="programme" selected><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PROGRAMME') ?></option>
-                                    <option value="category"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PROGRAMME_CATEGORY') ?></option>
-                                    </select>
-                                <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_IS') ?></span>
-                                <div id="filters_options_<?php echo $i ?>">
-                                    <select id="filter_value_<?php echo $i ?>">
-                                        <option value = 0></option>
-                                        <?php foreach ($programs as $program) : ?>
-                                            <option value=<?php echo $program['code'] ?> <?php if ($program['code'] == $code) : ?>selected<?php endif; ?>>
-                                                <?php echo $program['label'] ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                        </select>
-                                </div>
-                                <div class="em-flex-row">
-                                    <span class="material-icons-outlined em-font-size-16 em-red-500-color em-pointer" onclick="deleteFilter('<?php echo $i ?>')" title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_DELETE') ?>">delete</span>
-                                </div>
-                            </div>
-                            <?php $i++; ?>
-                        <?php endforeach; ?>
-
-                        <?php foreach ($categories_filters as $key => $category) : ?>
-                            <div class="mod_emundus_campaign__header_filter__grid" id="filter_<?php echo $i ?>">
-                                <select onchange="setupFilter('<?php echo $i ?>')" id="select_filter_<?php echo $i ?>">
-                                    <option value="0"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PLEASE_SELECT') ?></option>
-                                    <option value="programme"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PROGRAMME') ?></option>
-                                    <option value="category" selected><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PROGRAMME_CATEGORY') ?></option>
-                                </select>
-                                <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_IS') ?></span>
-                                <div id="filters_options_<?php echo $i ?>">
-                                    <select id="filter_value_<?php echo $i ?>">
-                                        <option value = 0></option>
-                                        <?php foreach ($categories as $item) : ?>
-                                            <option value="<?php echo $item ?>" <?php if ($item == $category) : ?>selected<?php endif; ?>>
-                                                <?php echo $item ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="em-flex-row">
-                                    <span class="material-icons-outlined em-font-size-16 em-red-500-color em-pointer" onclick="deleteFilter('<?php echo $i ?>')" title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_DELETE') ?>">delete</span>
-                                </div>
-                            </div>
-                            <?php $i++; ?>
-                        <?php endforeach; ?>
-                    </div>
-
-                    <div>
-                        <button class="btn btn-primary em-float-right" type="button" onclick="filterCampaigns()" title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER') ?>">
-                            <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER') ?>
-                        </button>
-                    </div>
-                </div>
-                <?php endif; ?>
-
-            </div>
-
-            <?php if ($mod_em_campaign_show_search): ?>
-                <div class="em-searchbar">
-                    <label for="searchword" style="display: inline-block">
-                        <input name="searchword" type="text" class="form-control"
-                               placeholder="<?php echo JText::_('MOD_EM_CAMPAIGN_SEARCH') ?>" <?php if (isset($searchword) && !empty($searchword)) {
-                                   echo "value=" . htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8');
-                               }; ?>>
-                    </label>
-                </div>
             <?php endif; ?>
-        </div>
+            <!-- END PINNED CAMPAIGN -->
 
-        <div class="mod_emundus_campaign__list em-mt-32">
-            <?php foreach ($campaigns as $key => $campaign) : ?>
+
+            <!-- HEADER : FILTERS, SORT AND SEARCHBAR -->
+            <div class="mod_emundus_campaign__header">
+                <div>
+                    <div class="em-flex-row">
+                        <!-- BUTTONS -->
+                        <?php if ($mod_em_campaign_show_sort == 1 && !empty($mod_em_campaign_sort_list)) : ?>
+                            <div id="mod_emundus_campaign__header_sort" class="mod_emundus_campaign__header_filter em-border-neutral-400 em-neutral-800-color em-pointer em-mr-8" onclick="displaySort()">
+                                <span class="material-icons-outlined">swap_vert</span>
+                                <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_SORT') ?></span>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ($mod_em_campaign_show_filters == 1 && !empty($mod_em_campaign_show_filters_list)) : ?>
+                            <div id="mod_emundus_campaign__header_filter" class="mod_emundus_campaign__header_filter em-border-neutral-400 em-neutral-800-color em-pointer em-mr-8" onclick="displayFilters()">
+                                <span class="material-icons-outlined">filter_list</span>
+                                <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER') ?></span>
+                                <span id="mod_emundus_campaign__header_filter_count" class="mod_emundus_campaign__header_filter_count em-mr-8"></span>
+                            </div>
+                        <?php endif; ?>
+
+                        <!-- TAGS ENABLED -->
+                        <?php if ($mod_em_campaign_order == 'start_date' && $order == 'end_date') : ?>
+                            <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
+                                <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_END_DATE_NEAR') ?></span>
+                                <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer" onclick="deleteSort(['order_date','order_time'])">
+                                    <span class="material-icons-outlined">close</span>
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                        <?php if ($mod_em_campaign_order == 'end_date' && $order == 'start_date') : ?>
+                            <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
+                                <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_START_DATE_NEAR') ?></span>
+                                <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer" onclick="deleteSort(['order_date','order_time'])">
+                                    <span class="material-icons-outlined">close</span>
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                        <?php if ($mod_em_campaign_show_sort == 1 && $group_by == 'program') : ?>
+                            <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
+                                <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_PROGRAM') ?></span>
+                                <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer" onclick="deleteSort(['group_by'])">
+                                    <span class="material-icons-outlined">close</span>
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                        <?php if ($mod_em_campaign_show_sort == 1 && $group_by == 'category') : ?>
+                            <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
+                                <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_CATEGORY') ?></span>
+                                <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer" onclick="deleteSort(['group_by'])">
+                                    <span class="material-icons-outlined">close</span>
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- SORT BLOCK -->
+                    <div class="mod_emundus_campaign__header_sort__values em-border-neutral-400 em-neutral-800-color" id="sort_block" style="display: none">
+                        <?php if($mod_em_campaign_order == 'start_date') : ?>
+                            <a onclick="filterCampaigns(['order_date','order_time'],['end_date','asc'])" class="em-text-neutral-900 em-pointer">
+                                <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_END_DATE_NEAR') ?>
+                            </a>
+                        <?php endif; ?>
+                        <?php if($mod_em_campaign_order == 'end_date') : ?>
+                            <a onclick="filterCampaigns(['order_date','order_time'],['start_date','asc'])" class="em-text-neutral-900 em-pointer">
+                                <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_START_DATE_NEAR') ?>
+                            </a>
+                        <?php endif; ?>
+                        <?php if(in_array('programme',$mod_em_campaign_sort_list) && $group_by != 'program') : ?>
+                            <a onclick="filterCampaigns('group_by','program')" class="em-text-neutral-900 em-pointer">
+                                <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_PROGRAM') ?>
+                            </a>
+                        <?php endif; ?>
+                        <?php if(in_array('category',$mod_em_campaign_sort_list) && $group_by != 'category') : ?>
+                            <a onclick="filterCampaigns('group_by','category')" class="em-text-neutral-900 em-pointer">
+                                <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_CATEGORY') ?>
+                            </a>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- FILTERS BLOCK -->
+                    <?php if ($mod_em_campaign_show_filters == 1  && !empty($mod_em_campaign_show_filters_list)) : ?>
+                        <div class="mod_emundus_campaign__header_filter__values em-border-neutral-400 em-neutral-800-color" id="filters_block" style="display: none">
+                            <a class="em-mb-8 em-flex-row em-font-size-14 em-blue-400-color em-pointer" onclick="addFilter()" title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_ADD_FILTER') ?>">
+                                <span class="material-icons-outlined em-font-size-14">add</span>
+                                <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_ADD_FILTER') ?>
+                            </a>
+
+                            <div id="filters_list">
+                                <?php $i = 0; ?>
+                                <?php foreach ($codes_filters as $key => $code) : ?>
+                                    <div class="mod_emundus_campaign__header_filter__grid" id="filter_<?php echo $i ?>">
+                                        <select onchange="setupFilter('<?php echo $i ?>')" id="select_filter_<?php echo $i ?>">
+                                            <option value="0"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PLEASE_SELECT') ?></option>
+                                            <option value="programme" selected><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PROGRAMME') ?></option>
+                                            <option value="category"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PROGRAMME_CATEGORY') ?></option>
+                                        </select>
+                                        <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_IS') ?></span>
+                                        <div id="filters_options_<?php echo $i ?>">
+                                            <select id="filter_value_<?php echo $i ?>">
+                                                <option value = 0></option>
+                                                <?php foreach ($programs as $program) : ?>
+                                                    <option value=<?php echo $program['code'] ?> <?php if ($program['code'] == $code) : ?>selected<?php endif; ?>>
+                                                        <?php echo $program['label'] ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="em-flex-row">
+                                            <span class="material-icons-outlined em-font-size-16 em-red-500-color em-pointer" onclick="deleteFilter('<?php echo $i ?>')" title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_DELETE') ?>">delete</span>
+                                        </div>
+                                    </div>
+                                    <?php $i++; ?>
+                                <?php endforeach; ?>
+
+                                <?php foreach ($categories_filters as $key => $category) : ?>
+                                    <div class="mod_emundus_campaign__header_filter__grid" id="filter_<?php echo $i ?>">
+                                        <select onchange="setupFilter('<?php echo $i ?>')" id="select_filter_<?php echo $i ?>">
+                                            <option value="0"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PLEASE_SELECT') ?></option>
+                                            <option value="programme"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PROGRAMME') ?></option>
+                                            <option value="category" selected><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PROGRAMME_CATEGORY') ?></option>
+                                        </select>
+                                        <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_IS') ?></span>
+                                        <div id="filters_options_<?php echo $i ?>">
+                                            <select id="filter_value_<?php echo $i ?>">
+                                                <option value = 0></option>
+                                                <?php foreach ($categories as $item) : ?>
+                                                    <option value="<?php echo $item ?>" <?php if ($item == $category) : ?>selected<?php endif; ?>>
+                                                        <?php echo $item ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="em-flex-row">
+                                            <span class="material-icons-outlined em-font-size-16 em-red-500-color em-pointer" onclick="deleteFilter('<?php echo $i ?>')" title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_DELETE') ?>">delete</span>
+                                        </div>
+                                    </div>
+                                    <?php $i++; ?>
+                                <?php endforeach; ?>
+                            </div>
+
+                            <div>
+                                <button class="btn btn-primary em-float-right" type="button" onclick="filterCampaigns()" title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER') ?>">
+                                    <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER') ?>
+                                </button>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                </div>
+
+                <?php if ($mod_em_campaign_show_search): ?>
+                    <div class="em-searchbar">
+                        <label for="searchword" style="display: inline-block">
+                            <input name="searchword" type="text" class="form-control"
+                                   placeholder="<?php echo JText::_('MOD_EM_CAMPAIGN_SEARCH') ?>" <?php if (isset($searchword) && !empty($searchword)) {
+                                echo "value=" . htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8');
+                            }; ?>>
+                        </label>
+                    </div>
+                <?php endif; ?>
+            </div>
+            <!-- END HEADER -->
+
+            <!-- LIST OF CAMPAIGNS -->
+            <div class="mod_emundus_campaign__list em-mt-32">
+                <?php foreach ($campaigns as $key => $campaign) : ?>
                 <?php if (sizeof($campaign) == 0) : ?>
                     <div class="em-mb-24">
                         <p class="mod_emundus_campaign__programme_cat_title"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_FOUND') ?></p>
@@ -401,51 +438,80 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                 <?php endif ;?>
 
                 <?php if (!empty($campaign)) : ?>
-                    <div id="current" class="mod_emundus_campaign__list_items">
-                            <?php
-                            foreach ($campaign as $result) {
-                                if(is_object($result)){
-                            ?>
+                <div id="current" class="mod_emundus_campaign__list_items">
+                    <?php
+                    foreach ($campaign as $result) {
+                    if(is_object($result)){
+                    ?>
 
-                        <?php if(strtotime($now) > strtotime($result->end_date)) :  ?>
-                        <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'">
+                <?php if(strtotime($now) > strtotime($result->end_date)) :  ?>
+                    <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'">
 
                         <?php  else : ?>
 
 
                         <div class="mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'">
-                        <?php endif; ?>
+                            <?php endif; ?>
 
                             <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
-                                <?php
-                                    $color = '#1C6EF2';
-                                    $background = '#C8E1FE';
-                                    if(!empty($result->tag_color)){
-                                        $color = $result->tag_color;
-                                        switch ($result->tag_color) {
-                                            case '#20835F':
-                                                $background = '#CCEDE1';
-                                                break;
-                                            case '#DB333E':
-                                                $background = '#FEDCDC';
-                                                break;
-                                            case '#FFC633':
-                                                $background = '#FFF0B5';
-                                                break;
-                                        }
-                                    }
-                                ?>
-                                <p class="em-programme-tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
-                                    <?php  echo $result->programme; ?>
-                                </p>
-                                <a href="<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
-                                    <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></p>
-                                </a>
 
+
+                                <?php
+                                $color = '#1C6EF2';
+                                $background = '#C8E1FE';
+                                if(!empty($result->tag_color)){
+                                    $color = $result->tag_color;
+                                    switch ($result->tag_color) {
+                                        case '#20835F':
+                                            $background = '#CCEDE1';
+                                            break;
+                                        case '#DB333E':
+                                            $background = '#FEDCDC';
+                                            break;
+                                        case '#FFC633':
+                                            $background = '#FFF0B5';
+                                            break;
+                                    }
+                                }
+                                ?>
+
+                                <?php  if ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '1') :  ?>
+                                    <div class="mod_emundus_campaign__programme_properties">
+                                        <p class="em-programme-tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
+                                            <?php  echo $result->programme; ?>
+                                        </p>
+                                        <?php if (!empty($result->logo)) :?>
+                                            <img src="<?php echo $result->logo; ?>" alt="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_PROGRAMME_LOGO_ALT'); ?>">
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <a href="<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                                        <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></p>
+                                    </a>
+                                <?php  elseif ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '0') :  ?>
+                                    <p class="em-programme-tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
+                                        <?php  echo $result->programme; ?>
+                                    </p>
+
+                                    <a href="<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                                        <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></p>
+                                    </a>
+                                <?php  elseif ($mod_em_campaign_list_show_programme == '0' && $mod_em_campaign_show_programme_logo == '1') :  ?>
+                                    <div class="mod_emundus_campaign__campagne_properties">
+                                        <a href="<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                                            <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></p>
+                                        </a>
+                                        <?php if (!empty($result->logo)) :?>
+                                            <img src="<?php echo $result->logo; ?>" alt="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_PROGRAMME_LOGO_ALT'); ?>">
+                                        <?php endif; ?>
+                                    </div>
+                                <?php  else :  ?>
+                                    <a href="<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                                        <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></p>
+                                    </a>
+                                <?php endif; ?>
                                 <div class="<?php echo $mod_em_campaign_class; ?> em-applicant-text-color em-font-size-16">
                                     <div>
-
-
                                         <?php if(strtotime($now) < strtotime($result->start_date)  ) : //pas commencé ?>
 
                                             <div class="mod_emundus_campaign__date em-flex-row">
@@ -456,7 +522,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                         <?php endif; ?>
 
                                         <?php if($mod_em_campaign_show_camp_end_date && strtotime($now) > strtotime($result->end_date) ) :    //fini  ?>
-                                           <div class="mod_emundus_campaign__date em-flex-row">
+                                            <div class="mod_emundus_campaign__date em-flex-row">
                                                 <span class="material-icons em-text-neutral-600 em-font-size-16">alarm_off</span>
                                                 <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_CLOSED'); ?></p>
                                             </div>
@@ -464,11 +530,11 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
                                         <?php if($mod_em_campaign_show_camp_end_date && strtotime($now) < strtotime($result->end_date)  && strtotime($now) > strtotime($result->start_date) ) : //en cours ?>
                                             <?php
-                                                $displayInterval = false;
-                                                $interval = date_create($now)->diff(date_create($result->end_date));
-                                                if($interval->d == 0){
-                                                    $displayInterval = true;
-                                                }
+                                            $displayInterval = false;
+                                            $interval = date_create($now)->diff(date_create($result->end_date));
+                                            if($interval->d == 0){
+                                                $displayInterval = true;
+                                            }
                                             ?>
                                             <div class="mod_emundus_campaign__date em-flex-row">
                                                 <?php if (!$displayInterval) : ?>
@@ -492,36 +558,36 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
                                         <?php if ($mod_em_campaign_show_formation_start_date && $result->formation_start !== '0000-00-00 00:00:00') : ?>
                                             <div class="mod_emundus_campaign__date em-flex-row">
-                                            <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_START_DATE'); ?>:</p>
-                                            <span class="em-formation-start em-applicant-text-color"><?php echo JFactory::getDate(new JDate($result->formation_start, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                                                <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_START_DATE'); ?>:</p>
+                                                <span class="em-formation-start em-applicant-text-color"><?php echo JFactory::getDate(new JDate($result->formation_start, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                             </div>
                                         <?php endif; ?>
 
                                         <?php if ($mod_em_campaign_show_formation_end_date && $result->formation_end !== '0000-00-00 00:00:00') : ?>
                                             <div class="mod_emundus_campaign__date em-flex-row">
-                                           <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_END_DATE'); ?>:</p>
-                                            <span class="em-formation-end em-applicant-text-color"><?php echo JFactory::getDate(new JDate($result->formation_end, $site_offset))->format($mod_em_campaign_date_format); ?></span>
-                                           </div>
+                                                <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_END_DATE'); ?>:</p>
+                                                <span class="em-formation-end em-applicant-text-color"><?php echo JFactory::getDate(new JDate($result->formation_end, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                                            </div>
                                         <?php endif; ?>
                                         <?php if ($mod_em_campaign_show_admission_start_date && $result->admission_start_date !== '0000-00-00 00:00:00') : ?>
                                             <div class="mod_emundus_campaign__date em-flex-row">
-                                            <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_START_DATE'); ?>:</p>
-                                            <span class="em-formation-start em-applicant-text-color"><?php echo JFactory::getDate(new JDate($result->admission_start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span></div>
+                                                <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_START_DATE'); ?>:</p>
+                                                <span class="em-formation-start em-applicant-text-color"><?php echo JFactory::getDate(new JDate($result->admission_start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span></div>
                                         <?php endif; ?>
 
                                         <?php if ($mod_em_campaign_show_admission_end_date && $result->admission_end_date !== '0000-00-00 00:00:00') : ?>
                                             <div class="mod_emundus_campaign__date em-flex-row">
-                                            <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_END_DATE'); ?>:</p>
-                                            <span class="em-formation-end em-applicant-text-color"><?php echo JFactory::getDate(new JDate($result->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                                                <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_END_DATE'); ?>:</p>
+                                                <span class="em-formation-end em-applicant-text-color"><?php echo JFactory::getDate(new JDate($result->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                             </div>
                                         <?php endif; ?>
                                         <?php
                                         ?>
                                         <?php if (!empty($mod_em_campaign_show_timezone) && !(strtotime($now) > strtotime($result->end_date)) ) : ?>
-                                        <div class="mod_emundus_campaign__date em-flex-row">
-                                            <span class="material-icons em-text-neutral-600 em-font-size-16">public</span>
-                                            <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_TIMEZONE') . $offset; ?></p>
-                                        </div>
+                                            <div class="mod_emundus_campaign__date em-flex-row">
+                                                <span class="material-icons em-text-neutral-600 em-font-size-16">public</span>
+                                                <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_TIMEZONE') . $offset; ?></p>
+                                            </div>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -540,18 +606,39 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                     }
                                     echo $textcamp;
                                     ?>
-                                </>
+                                </p>
+
+                                <?php if ($mod_em_campaign_show_apply_button == 1) : ?>
+                                    <div>
+                                        <?php
+                                        $register_url = '';
+                                        // The register URL does not work  with SEF, this workaround helps counter this.
+                                        if ($sef == 0) {
+                                            if(!isset($redirect_url) || empty($redirect_url)) {
+                                                $redirect_url = "index.php?option=com_users&view=registration";
+                                            }
+                                            $register_url = $redirect_url."&course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
+                                        } else {
+                                            $register_url = $redirect_url."?course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
+                                        }
+                                        if(!$user->guest) {
+                                            $register_url .= "&redirect=" . $formUrl;
+                                        }
+                                        ?>
+                                        <a class="btn btn-primary em-w-100 em-mt-12 em-applicant-default-font em-flex-column" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
-                    <?php } } ?>
+                        <?php } } ?>
                     </div>
                     <div class="pagination"></div>
-                <?php endif; ?>
-            <?php endforeach; ?>
+                    <?php endif; ?>
+                    <?php endforeach; ?>
 
-        </div><!-- Close tab-content -->
-    </div>
-    <?php endif; ?>
+                </div><!-- Close tab-content -->
+            </div>
+            <?php endif; ?>
 </form>
 <script type="text/javascript">
     jQuery(document).ready(function () {
@@ -603,9 +690,9 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         <?php if ($mod_em_campaign_show_filters == 1 && !empty($mod_em_campaign_show_filters_list)) : ?>
         setTimeout(() => {
             let sort_button = document.getElementById('mod_emundus_campaign__header_sort');
-                if(typeof sort_button !== 'undefined'){
-                    document.getElementById('filters_block').style.marginLeft = (sort_button.offsetWidth + 8) +'px';
-                }
+            if(typeof sort_button !== 'undefined'){
+                document.getElementById('filters_block').style.marginLeft = (sort_button.offsetWidth + 8) +'px';
+            }
         },1000);
 
         let filter_existing = document.querySelectorAll("div[id^='filter_']");
@@ -684,7 +771,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             '<span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_IS') ?></span> ' +
             '<div id="filters_options_'+index+'"></div>' +
             '<div class="em-flex-row">' +
-                '<span class="material-icons-outlined em-font-size-16 em-red-500-color em-pointer" onclick="deleteFilter('+index+')">delete</span>' +
+            '<span class="material-icons-outlined em-font-size-16 em-red-500-color em-pointer" onclick="deleteFilter('+index+')">delete</span>' +
             '</div>' +
             '</div>';
         document.getElementById('filters_list').insertAdjacentHTML('beforeend',html);

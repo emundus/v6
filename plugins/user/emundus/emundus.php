@@ -342,9 +342,9 @@ class plgUserEmundus extends JPlugin
                     JLog::add('Error at line ' . __LINE__ . ' of file ' . __FILE__ . ' : ' . '. Error is : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
                 }
 
-                if (!in_array($task, ["passrequest", "reset.complete"])) {
+                /*if (!in_array($task, ["passrequest", "reset.complete"])) {
                     JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_USERS_EDIT_PROFILE_SAVE_SUCCESS_TEXT'));
-                }
+                }*/
 
                 $this->onUserLogin($user);
             }
@@ -460,6 +460,13 @@ class plgUserEmundus extends JPlugin
                         $db->execute();
                     }
 
+                    $query->clear()
+                        ->update('#__users')
+                        ->set($db->quoteName('activation') . ' = 1')
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($user_id));
+                    $db->setQuery($query);
+                    $db->execute();
+
 
                     if(isset($user['other_properties'])){
                         if (!empty($user['other_properties'])) {
@@ -510,103 +517,27 @@ class plgUserEmundus extends JPlugin
             // Init first_login parameter
             $user = JFactory::getUser();
             $table = JTable::getInstance('user', 'JTable');
-            /*$table->load($user->id);
 
-            $params = $user->getParameters();
-            if (!$params->get('first_login_date')) {
-                $date = \JFactory::getDate();
-                $user->setParam('first_login_date', $date->toSql());
+            $user = JFactory::getSession()->get('emundusUser');
+            if(empty($user)) {
+                include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
+                $m_profile = new EmundusModelProfile();
+                $m_profile->initEmundusSession();
+                $user = JFactory::getSession()->get('emundusUser');
 
-                // Get the raw User Parameters
-                $params = $user->getParameters();
-
-                // Set the user table instance to include the new token.
-                $table->params = $params->toString();
-
-                if (!$table->store()) {
-                    JLog::add('component/com_emundus_onboard/models/settings | Error when create a param in the user ' . $user->id . ' : ' . $table->getError(), JLog::ERROR, 'com_emundus');
-                }
-
-                /*if($user->id == 95) {
-                    // Send an email to Commercial
-                    $db = JFactory::getDBO();
-
-                    $query = 'SELECT se.id, se.subject, se.emailfrom, se.name, se.message, et.Template
-				FROM #__emundus_setup_emails AS se
-				LEFT JOIN #__emundus_email_templates AS et ON se.email_tmpl = et.id
-				WHERE se.lbl LIKE "first_coord_login"';
-                    $db->setQuery($query);
-                    $obj = $db->loadObjectList();
-
-                    $site_url = str_replace('http://', "", JURI::base());
-
-                    $subject = $obj[0]->subject;
-                    $body = $obj[0]->message;
-
-                    if ($obj[0]->Template) {
-                        $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/", "/\[SITE_NAME\]/"], [$subject, $body, JFactory::getConfig()->get('sitename')], $obj[0]->Template);
-                    }
-
-                    $body = preg_replace(["/\[USER_EMAIL\]/", "/\[SITE_URL\]/"], [$user->email, $site_url], $body);
-
-                    $commercial_emails = 'brice.hubinet@emundus.fr,brice.hubinet@emundus.io';
-
-                    $emails = explode(',', $commercial_emails);
-
-                    // setup mail
-                    $email_from_sys = JFactory::getConfig()->get('mailfrom');
-
-                    $from = $obj[0]->emailfrom;
-                    $fromname = $obj[0]->name;
-
-                    $sender = array(
-                        $email_from_sys,
-                        $fromname
-                    );
-
-                    foreach ($emails as $email) {
-                        $to = array($email);
-
-                        $mailer = JFactory::getMailer();
-                        $mailer->setSender($sender);
-                        $mailer->addReplyTo($from, $fromname);
-                        $mailer->addRecipient($to);
-                        $mailer->setSubject($subject);
-                        $mailer->isHTML(true);
-                        $mailer->Encoding = 'base64';
-                        $mailer->setBody($body);
-
-                        $send = $mailer->Send();
-                        if ($send !== true) {
-
-                            JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_NOT_SENT') . ' : ' . $email, 'error');
-                            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
-
-                        }
-                    }
-                }
-            }*/
-
-            // Store token in User's Parameters
-
-            //
-
-            include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
-            $m_profile = new EmundusModelProfile;
-            $m_profile->initEmundusSession();
+                $user->just_logged = true;
+            }
 
 
             // Log the action of signing in.
             // No id exists in jos_emundus_actions for signin so we use -2 instead.
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-            $user = JFactory::getSession()->get('emundusUser');
 
             // if user_id is null -> there is no session data because the account is not activated yet, so don't log
             if ($user->id) {
                 EmundusModelLogs::log($user->id, $user->id, null, -2, '', 'COM_EMUNDUS_LOGS_USER_LOGIN');
             }
 
-            $user->just_logged = true;
             if(empty($user->lastvisitDate)){
                 $user->first_logged = true;
             }

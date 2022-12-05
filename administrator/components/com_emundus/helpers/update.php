@@ -25,6 +25,7 @@ class EmundusHelperUpdate
      * @since version 1.33.0
      */
     public static function getEmundusPlugins() {
+        $plugins = [];
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -33,11 +34,13 @@ class EmundusHelperUpdate
                 ->from('#__extensions')
                 ->where("folder LIKE '%emundus%' OR element LIKE " . $db->q('%emundus%') . " AND type='plugin'");
             $db->setQuery($query);
-            return $db->loadObjectList();
-        } catch (Exception $e){
+            $plugins = $db->loadObjectList();
+        } catch (Exception $e) {
             echo $e->getMessage();
-            return [];
+            JLog::add('Failed to retrieve emundus plugins', JLog::WARNING, 'com_emundus.error');
         }
+
+        return $plugins;
     }
 
     /**
@@ -50,19 +53,24 @@ class EmundusHelperUpdate
      * @since version 1.33.0
      */
     public static function disableEmundusPlugins($name) {
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $disabled = false;
 
-        try {
-            $query->update($db->quoteName('#__extensions'))
-                ->set($db->quoteName('enabled') . ' = 0')
-                ->where($db->quoteName('element') . ' LIKE ' . $db->quote($name));
-            $db->setQuery($query);
-            return $db->execute();
-        } catch (Exception $e) {
-            echo $e->getMessage();
-            return false;
+        if (!empty($name)) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            try {
+                $query->update($db->quoteName('#__extensions'))
+                    ->set($db->quoteName('enabled') . ' = 0')
+                    ->where($db->quoteName('element') . ' LIKE ' . $db->quote($name));
+                $db->setQuery($query);
+                $disabled = $db->execute();
+            } catch (Exception $e) {
+                echo $e->getMessage();
+            }
         }
+
+        return $disabled;
     }
 
 
@@ -77,34 +85,40 @@ class EmundusHelperUpdate
      * @since version 1.33.0
      */
     public static function updateModulesParams($name, $param, $value) {
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $updated = false;
 
-        try {
-            $query->select('id,params')
-                ->from("#__modules")
-                ->where('module LIKE ' . $db->q('%'.$name.'%'));
-            $db->setQuery($query);
-            $rows =  $db->loadObjectList();
+        if (!empty($name)) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-            foreach ($rows as $row) {
-                $params = json_decode($row->params,true);
-                $params[$param] = $value;
-
-                $query->clear()
-                    ->update("#__modules")
-                    ->set("params = " . $db->quote(json_encode($params)))
-                    ->where("id = " . $row->id);
+            try {
+                $query->select('id,params')
+                    ->from('#__modules')
+                    ->where('module LIKE ' . $db->q('%'.$name.'%'));
                 $db->setQuery($query);
-                $db->execute();
+                $rows =  $db->loadObjectList();
+
+                foreach ($rows as $row) {
+                    $params = json_decode($row->params,true);
+                    $params[$param] = $value;
+
+                    $query->clear()
+                        ->update('#__modules')
+                        ->set('params = ' . $db->quote(json_encode($params)))
+                        ->where('id = ' . $row->id);
+                    $db->setQuery($query);
+
+                    $updated = $db->execute();
+                }
+            } catch (Exception $e) {
+                echo $e->getMessage();
             }
         }
-        catch (Exception $e) {
-            echo $e->getMessage();
-        }
+
+        return $updated;
     }
 
-    public static function installExtension($name,$element,$manifest_cache,$type,$enabled = 1,$folder = ''){
+    public static function installExtension($name, $element, $manifest_cache, $type, $enabled = 1, $folder = ''){
         $installed = false;
 
         if (!empty($element)) {
@@ -155,44 +169,57 @@ class EmundusHelperUpdate
      * @param $name
      * @param $param
      * @param $valuesToSet
+     * @param $strict boolean
      * @param $updateParams
      *
      *
      * @since version 1.33.0
      */
-    public static function genericUpdateParams($table, $where, $name, $param, $valuesToSet, $updateParams = null) {
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
+    public static function genericUpdateParams($table, $where, $name, $param, $valuesToSet, $updateParams = null, $strict = false) {
+        $updated = false;
 
-        if (empty($updateParams[0])) {
-            $updateParams[0] = "params";
-        }
-        if (empty($updateParams[1])) {
-            $updateParams[1] = "id";
-        }
-        try {
-            $query->select('*')
-                ->from($table)
-                ->where($where. ' LIKE ' . $db->q('%'.$name.'%'));
-            $db->setQuery($query);
-            $rows =  $db->loadObjectList();
+        if (!empty($table) && !empty($where) && !empty($name)) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-            foreach ($rows as $row) {
-                $params = json_decode($row->params,true);
-                foreach ($param as $k => $par) {
-                    $params[$par] = $valuesToSet[$k];
+            if (empty($updateParams[0])) {
+                $updateParams[0] = "params";
+            }
+            if (empty($updateParams[1])) {
+                $updateParams[1] = "id";
+            }
+            try {
+                $query->select('*')
+                    ->from($table);
+
+                if (!$strict) {
+                    $query->where($where. ' LIKE ' . $db->q('%'.$name.'%'));
+                } else {
+                    $query->where($where. ' = ' . $db->q($name));
                 }
 
-                $query->clear()
-                    ->update($table)
-                    ->set($updateParams[0] . ' = ' . $db->quote(json_encode($params)))
-                    ->where($updateParams[1] . ' = ' . $row->id);
                 $db->setQuery($query);
-                $db->execute();
+                $rows =  $db->loadObjectList();
+
+                foreach ($rows as $row) {
+                    $params = json_decode($row->params,true);
+                    foreach ($param as $k => $par) {
+                        $params[$par] = $valuesToSet[$k];
+                    }
+
+                    $query->clear()
+                        ->update($table)
+                        ->set($updateParams[0] . ' = ' . $db->quote(json_encode($params)))
+                        ->where($updateParams[1] . ' = ' . $row->id);
+                    $db->setQuery($query);
+                    $updated = $db->execute();
+                }
+            } catch (Exception $e) {
+                echo $e->getMessage();
             }
-        } catch (Exception $e) {
-            echo $e->getMessage();
         }
+
+        return $updated;
     }
 
     /**
@@ -206,33 +233,38 @@ class EmundusHelperUpdate
      * @since version 1.33.0
      */
     public static function updateFabrikCronParams($name, $param, $values) {
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $updated = false;
 
-        try {
+        if (!empty($name)) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-            $query->select('id,params')
-                ->from($db->quoteName('#__fabrik_cron'))
-                ->where('plugin LIKE ' . $db->q('%' . $name . '%'));
-            $db->setQuery($query);
-            $rows = $db->loadObjectList();
-
-            foreach ($rows as $row) {
-                $params = json_decode($row->params, true);
-                foreach ($param as $k => $par) {
-                    $params[$par] = $values[$k];
-                }
-
-                $query->clear()
-                    ->update($db->quoteName('#__fabrik_cron'))
-                    ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($row->id));
+            try {
+                $query->select('id,params')
+                    ->from($db->quoteName('#__fabrik_cron'))
+                    ->where('plugin LIKE ' . $db->q('%' . $name . '%'));
                 $db->setQuery($query);
-                $db->execute();
+                $rows = $db->loadObjectList();
+
+                foreach ($rows as $row) {
+                    $params = json_decode($row->params, true);
+                    foreach ($param as $k => $par) {
+                        $params[$par] = $values[$k];
+                    }
+
+                    $query->clear()
+                        ->update($db->quoteName('#__fabrik_cron'))
+                        ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($row->id));
+                    $db->setQuery($query);
+                    $updated = $db->execute();
+                }
+            } catch (Exception $e) {
+                echo $e->getMessage();
             }
-        } catch (Exception $e) {
-            echo $e->getMessage();
         }
+
+        return $updated;
     }
 
     /**
@@ -917,7 +949,7 @@ class EmundusHelperUpdate
                     $campaign_element_id = $db->loadResult();
 
                     if (!empty($campaign_element_id)) {
-                        $params = '{"database_join_display_type":"multilist","join_conn_id":"1","join_db_name":"jos_emundus_setup_campaigns","join_key_column":"id","join_val_column":"label","join_val_column_concat":"","database_join_where_sql":"","database_join_where_access":"1","database_join_where_access_invert":"0","database_join_where_when":"3","databasejoin_where_ajax":"0","databasejoin_where_ajax_default_eval":"","database_join_filter_where_sql":"","database_join_show_please_select":"1","database_join_noselectionvalue":"","database_join_noselectionlabel":"","placeholder":"","databasejoin_popupform":"103","fabrikdatabasejoin_frontend_add":"0","join_popupwidth":"","databasejoin_readonly_link":"0","fabrikdatabasejoin_frontend_select":"0","advanced_behavior":"1","dbjoin_options_per_row":"4","dbjoin_multiselect_max":"0","dbjoin_multilist_size":"6","dbjoin_autocomplete_size":"20","dbjoin_autocomplete_rows":"10","bootstrap_class":"input-large","dabase_join_label_eval":"","join_desc_column":"","dbjoin_autocomplete_how":"contains","clean_concat":"0","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"8","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"8","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"8","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"8","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","notempty-message":[""],"notempty-validation_condition":[""],"tip_text":[""],"icon":[""],"validations":{"plugin":["notempty"],"plugin_published":["1"],"validate_in":["both"],"validation_on":["both"],"validate_hidden":["0"],"must_validate":["0"],"show_icon":["1"]}}';
+                        $params = '{"database_join_display_type":"multilist","join_conn_id":"1","join_db_name":"jos_emundus_setup_campaigns","join_key_column":"id","join_val_column":"label","join_val_column_concat":"","database_join_where_sql":"","database_join_where_access":"1","database_join_where_access_invert":"0","database_join_where_when":"3","databasejoin_where_ajax":"0","databasejoin_where_ajax_default_eval":"","database_join_filter_where_sql":"","database_join_show_please_select":"1","database_join_noselectionvalue":"","database_join_noselectionlabel":"","placeholder":"","databasejoin_popupform":"103","fabrikdatabasejoin_frontend_add":"0","join_popupwidth":"","databasejoin_readonly_link":"0","fabrikdatabasejoin_frontend_select":"0","advanced_behavior":"1","dbjoin_options_per_row":"4","dbjoin_multiselect_max":"0","dbjoin_multilist_size":"6","dbjoin_autocomplete_size":"20","dbjoin_autocomplete_rows":"10","bootstrap_class":"input-large","dabase_join_label_eval":"","join_desc_column":"","dbjoin_autocomplete_how":"contains","clean_concat":"0","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"8","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"8","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"8","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"8","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","notempty-message":[""],"notempty-validation_condition":[""],"tip_text":[""],"icon":[""],"validations":{}';
                         $query->clear()
                             ->update('#__fabrik_elements')
                             ->set('params = ' . $db->quote($params))
@@ -981,7 +1013,7 @@ class EmundusHelperUpdate
                         }
                     }
 
-                    $params = '{"database_join_display_type":"dropdown","join_conn_id":"1","join_db_name":"jos_emundus_setup_status","join_key_column":"step","join_val_column":"value","join_val_column_concat":"","database_join_where_sql":"","database_join_where_access":"1","database_join_where_access_invert":"0","database_join_where_when":"3","databasejoin_where_ajax":"0","databasejoin_where_ajax_default_eval":"","database_join_filter_where_sql":"","database_join_show_please_select":"1","database_join_noselectionvalue":"","database_join_noselectionlabel":"","placeholder":"","databasejoin_popupform":"275","fabrikdatabasejoin_frontend_add":"0","join_popupwidth":"","databasejoin_readonly_link":"0","fabrikdatabasejoin_frontend_select":"0","advanced_behavior":"1","dbjoin_options_per_row":"4","dbjoin_multiselect_max":"0","dbjoin_multilist_size":"6","dbjoin_autocomplete_size":"20","dbjoin_autocomplete_rows":"10","bootstrap_class":"input-large","dabase_join_label_eval":"","join_desc_column":"","dbjoin_autocomplete_how":"contains","clean_concat":"0","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"8","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"8","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"8","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"8","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","notempty-message":[""],"notempty-validation_condition":[""],"tip_text":[""],"icon":[""],"validations":{"plugin":["notempty"],"plugin_published":["1"],"validate_in":["both"],"validation_on":["both"],"validate_hidden":["0"],"must_validate":["0"],"show_icon":["1"]}}';
+                    $params = '{"database_join_display_type":"dropdown","join_conn_id":"1","join_db_name":"jos_emundus_setup_status","join_key_column":"step","join_val_column":"value","join_val_column_concat":"","database_join_where_sql":"","database_join_where_access":"1","database_join_where_access_invert":"0","database_join_where_when":"3","databasejoin_where_ajax":"0","databasejoin_where_ajax_default_eval":"","database_join_filter_where_sql":"","database_join_show_please_select":"1","database_join_noselectionvalue":"","database_join_noselectionlabel":"","placeholder":"","databasejoin_popupform":"275","fabrikdatabasejoin_frontend_add":"0","join_popupwidth":"","databasejoin_readonly_link":"0","fabrikdatabasejoin_frontend_select":"0","advanced_behavior":"0","dbjoin_options_per_row":"4","dbjoin_multiselect_max":"0","dbjoin_multilist_size":"6","dbjoin_autocomplete_size":"20","dbjoin_autocomplete_rows":"10","bootstrap_class":"input-large","dabase_join_label_eval":"","join_desc_column":"","dbjoin_autocomplete_how":"contains","clean_concat":"0","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"8","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"8","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"8","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"8","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","notempty-message":[""],"notempty-validation_condition":[""],"tip_text":[""],"icon":[""],"validations":{"plugin":["notempty"],"plugin_published":["1"],"validate_in":["both"],"validation_on":["both"],"validate_hidden":["0"],"must_validate":["0"],"show_icon":["1"]}}';
                     $sql = 'INSERT INTO jos_fabrik_elements (name, group_id, plugin, label, checked_out, checked_out_time, created, created_by, created_by_alias, modified, modified_by, width, height, `default`, hidden, eval, ordering, show_in_list_summary, filter_type, filter_exact_match, published, link_to_detail, primary_key, auto_increment, access, use_in_page_title, parent_id, params) VALUES ("output_status",' . $group_id . ', "databasejoin", "Statut de sortie", DEFAULT, NOW(), NOW(), 62, "admin", NOW(), 62, 50, 6, " ", 0, 0, 9, 1, null, 0, 1, 0, 0, 0, 1, 0, 0, \'' . $params . '\')';
                     $db->setQuery($sql);
 
@@ -1261,11 +1293,11 @@ class EmundusHelperUpdate
         $result = ['status' => false, 'message' => '', 'id' => 0];
         $menu_table = JTableNested::getInstance('Menu');
 
-        if(empty($params['menutype'])){
+        if (empty($params['menutype'])) {
             $result['message'] = 'INSERTING JOOMLA MENU : Please pass a menutype.';
             return $result;
         }
-        if(empty($params['title'])){
+        if (empty($params['title'])) {
             $result['message'] = 'INSERTING JOOMLA MENU : Please indicate a title.';
             return $result;
         }
@@ -1292,8 +1324,8 @@ class EmundusHelperUpdate
             $db->setQuery($query);
             $is_existing = $db->loadResult();
 
-            if(empty($is_existing)) {
-                if($params['client_id'] != 1) {
+            if (empty($is_existing)) {
+                if ($params['client_id'] != 1) {
                     $default_params = [
                         'menu-anchor_title' => '',
                         'menu-anchor_css' => '',
@@ -1322,7 +1354,7 @@ class EmundusHelperUpdate
                     'img' => $params['img'] ?: ''
                 );
 
-                if($parent_id <= 0){
+                if ($parent_id <= 0) {
                     $parent_id = 1;
                 }
 
@@ -1334,14 +1366,25 @@ class EmundusHelperUpdate
                 }
                 $result['id'] = $menu_table->id;
 
-                if(!empty($modules)){
+                if (!empty($modules)) {
                     foreach ($modules as $module) {
                         $query->clear()
-                            ->insert($db->quoteName('#__modules_menu'))
-                            ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
-                            ->set($db->quoteName('menuid') . ' = ' . $db->quote($result['id']));
+                            ->select('menuid')
+                            ->from('#__modules_menu')
+                            ->where($db->quoteName('moduleid') . ' = ' . $db->quote($module))
+                            ->andWhere($db->quoteName('menuid') . ' = ' . $db->quote($result['id']));
+
                         $db->setQuery($query);
-                        $db->execute();
+                        $module_already_assoc = $db->loadResult();
+
+                        if (empty($module_already_assoc)) {
+                            $query->clear()
+                                ->insert($db->quoteName('#__modules_menu'))
+                                ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
+                                ->set($db->quoteName('menuid') . ' = ' . $db->quote($result['id']));
+                            $db->setQuery($query);
+                            $db->execute();
+                        }
                     }
                 }
             } else {
@@ -1719,7 +1762,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addColumn($table,$name,$type = 'VARCHAR',$length = 255,$null = 1){
+    public static function addColumn($table,$name,$type = 'VARCHAR',$length = null,$null = 1){
         $result = ['status' => false, 'message' => ''];
 
         if (empty($table)) {
@@ -1739,7 +1782,11 @@ class EmundusHelperUpdate
             $null_query = $null == 0 ? 'NOT NULL' : 'NULL';
 
             try {
-                $query = 'ALTER TABLE ' . $table . ' ADD COLUMN ' . $db->quoteName($name) . ' ' . $type . '(' . $length . ') ' . $null_query;
+                $query = 'ALTER TABLE ' . $table . ' ADD COLUMN ' . $db->quoteName($name) . ' ' . $type;
+                if(!empty($length)) {
+                    $query .= ' (' . $length . ')';
+                }
+                $query .= ' ' . $null_query;
                 $db->setQuery($query);
                 $result['status'] = $db->execute();
             } catch (Exception $e) {
