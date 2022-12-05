@@ -172,7 +172,7 @@ phpunit-job:
   script:
     - libraries/emundus/phpunit.phar -c phpunit.xml --coverage-text --colors=never && echo $?
   dependencies:
-    - prepare_job
+    - prepare-job
   only:
     - merge_request
 
