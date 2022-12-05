@@ -144,8 +144,8 @@ phpunit-job:
     - apache2-foreground &
     - sleep 3
   script:
-    - cat configuration.php
-    - ps -ef
+    - cat /etc/apache2/sites-available/000-default.conf
+    - cat /etc/apache2/ports.conf
     - curl "http://localhost:8080"
     - libraries/emundus/phpunit.phar -c phpunit.xml --coverage-text --colors=never && echo $?
   only:
