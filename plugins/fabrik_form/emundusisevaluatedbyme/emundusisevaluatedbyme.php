@@ -2,14 +2,9 @@
 /**
  * @version 1.34.0: emundusisevaluatedbyme 2022-12-02 Brice HUBINET
  * @package Fabrik
- * @copyright Copyright (C) 2020 emundus.fr. All rights reserved.
+ * @copyright Copyright (C) 2022 emundus.fr. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
- * Joomla! is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
- * See COPYRIGHT.php for copyright notices and details.
- * @description Locks access to a file if the file is not of a certain status.
+ * @description Check how can the connected user can access to an evaluation
  */
 
 // No direct access
@@ -26,7 +21,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  */
 class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
 
-    // TODO: Add dispatcher to event handler onRenderEvaluation
+
 	public function onBeforeLoad() {
         $app = JFactory::getApplication();
         $db = JFactory::getDBO();
@@ -40,7 +35,7 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
 
         $r = $app->input->get('r', 0);
         $formid = $app->input->get('formid', '256');
-        $rowid = $app->input->get('rowid', null);
+        $rowid = $app->input->get('rowid');
         $student_id = '{jos_emundus_evaluations___student_id}';
         $fnum = '{jos_emundus_evaluations___fnum}';
         $params = JComponentHelper::getParams('com_emundus');
@@ -52,6 +47,17 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
             ->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
         $db->setQuery($query);
         $eval_dates = $db->loadObject();
+
+        $event_datas = [
+            'formid' => $formid,
+            'rowid' => $rowid,
+            'student_id' => $student_id,
+            'fnum' => $fnum,
+            'multi_eval' => $multi_eval,
+            'eval_dates' => $eval_dates,
+        ];
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onRenderEvaluation', ['event_datas' => $event_datas]]);
 
         $passed = false;
         $started = true;
@@ -105,13 +111,13 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
                 }
             }
             // If evaluation period started and not passed and we have update rights
-            elseif (EmundusHelperAccess::asAccessAction(5, 'u', $user->id)) {
+            elseif (EmundusHelperAccess::asAccessAction(5, 'u', $user->id, $fnum)) {
                 if ($r != 1) {
                     $app->redirect($form_url);
                 }
             }
             // If evaluation period started and not passed and we have read rights
-            elseif (EmundusHelperAccess::asAccessAction(5, 'r', $user->id)){
+            elseif (EmundusHelperAccess::asAccessAction(5, 'r', $user->id, $fnum)){
                 if ($r != 1) {
                     $app->redirect($details_url);
                 }
@@ -123,7 +129,7 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
             }
         }
         // If no evaluation found but period is not started or passed
-        elseif(($passed || !$started) && EmundusHelperAccess::asAccessAction(5, 'r', $user->id)) {
+        elseif(($passed || !$started) && EmundusHelperAccess::asAccessAction(5, 'r', $user->id, $fnum)) {
             if($r != 1) {
                 if($passed){
                     $app->enqueueMessage(JText::_('EVALUATION_PERIOD_PASSED'), 'warning');
@@ -135,7 +141,7 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
             }
         }
         // If no evaluation and period is started and not passed and I have create rights
-        elseif ((!$passed && $started) && EmundusHelperAccess::asAccessAction(5, 'c', $user->id)) {
+        elseif ((!$passed && $started) && EmundusHelperAccess::asAccessAction(5, 'c', $user->id, $fnum)) {
             if($r != 1) {
                 $app->redirect($form_url);
             }
@@ -149,13 +155,17 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
         return true;
 	}
 
-    // TODO: Add dispatcher to event handler onBeforeSubmitEvaluation
     public function onBeforeProcess() {
+        $formModel = $this->getModel();
 
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeSubmitEvaluation', ['formModel' => $formModel]]);
     }
 
-    // TODO: Add dispatcher to event handler onAfterSubmitEvaluation
     public function onAfterProcess() {
+        $formModel = $this->getModel();
 
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterSubmitEvaluation', ['formModel' => $formModel]]);
     }
 }

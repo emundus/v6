@@ -432,6 +432,11 @@ class com_emundusInstallerScript
                 $succeed['generate_letter_events_added'] = EmundusHelperUpdate::addCustomEvents([
                     ['label' => 'onAfterGenerateLetters', 'category' => 'Files']
                 ]);
+                $succeed['evaluation_events_added'] = EmundusHelperUpdate::addCustomEvents([
+                    ['label' => 'onRenderEvaluation', 'category' => 'Evaluation'],
+                    ['label' => 'onBeforeSubmitEvaluation', 'category' => 'Evaluation'],
+                    ['label' => 'onAfterSubmitEvaluation', 'category' => 'Evaluation']
+                ]);
             }
 
             // Insert new translations in overrides files
