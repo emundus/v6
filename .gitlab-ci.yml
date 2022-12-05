@@ -133,12 +133,12 @@ phpunit-job:
     TCHOOZ_INSTANCE_ID: 999999
     TCHOOZ_CUSTOMER_ID: 999999
   before_script:
+    - cp configuration.php.dist configuration.php
+    - cp media/com_emundus_vanilla/v6/.htaccess .htaccess
+    - cp -r media/com_emundus_vanilla/v6/language/overrides/* language/overrides/
+    - cp -r media/com_emundus_vanilla/v6/templates/g5_helium/* templates/g5_helium/
     - ls -lha
-    - cp $CI_PROJECT_DIR/configuration.php.dist $CI_PROJECT_DIR/configuration.php
-    - cp $CI_PROJECT_DIR/media/com_emundus_vanilla/v6/.htaccess $CI_PROJECT_DIR/.htaccess
-    - cp -r $CI_PROJECT_DIR/media/com_emundus_vanilla/v6/language/overrides/* $CI_PROJECT_DIR/language/overrides/
-    - cp -r $CI_PROJECT_DIR/media/com_emundus_vanilla/v6/templates/g5_helium/* $CI_PROJECT_DIR/templates/g5_helium/
-    - cd $CI_PROJECT_DIR/components && yarn
+    # - cd components && yarn
     - /scripts/entrypoint.sh && echo $?
     - apache2-foreground &
     - sleep 3
@@ -146,7 +146,7 @@ phpunit-job:
     - cat $CI_PROJECT_DIR/configuration.php
     - ls -lha /var/www/html/
     - ls -lha /var/www/
-    - cd /var/www/html/ && /var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?
+    - /var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?
   only:
     - merge_request
 
