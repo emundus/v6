@@ -60,18 +60,18 @@ build-app-to-test-job:
 #    - merge_request
    - schedules
 
-# build-db-to-test-job:
-#   stage: build
-#   image: docker:20.10
-#   before_script: 
-#     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
-#   script:
-#     - docker pull emundus/tchooz-build-db:latest || true
-#     - docker build --cache-from emundus/tchooz-build-db:latest --compress -f Dockerfile.db -t emundus/tchooz-build-db:latest -t emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 .
-#     - docker push emundus/tchooz-build-db:latest
-#   only:
-# #    - merge_request
-#    - schedules
+build-db-to-test-job:
+  stage: build
+  image: docker:20.10
+  before_script: 
+    - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
+  script:
+    - docker pull emundus/tchooz-build-db:latest || true
+    - docker build --cache-from emundus/tchooz-build-db:latest --compress -f Dockerfile.db -t emundus/tchooz-build-db:latest -t emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 .
+    - docker push emundus/tchooz-build-db:latest
+  only:
+#    - merge_request
+   - schedules
 
 phpunit-job:
   stage: test
