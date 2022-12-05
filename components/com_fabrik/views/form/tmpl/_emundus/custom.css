@@ -516,7 +516,6 @@ form#member-profile .form-horizontal .control-label {
     border-radius: 16px;
     margin-top: 68px;
     width: 45%;
-    min-width: 360px;
     max-width: 720px;
 }
 
@@ -920,10 +919,6 @@ input:not([type]).mce-textbox {
 .form-horizontal .control-group .control-label {
     text-align: left;
     color: #000;
-}
-
-.btn {
-    border-radius: 4px !important;
 }
 
 .form-horizontal .control-group .btn-group label.btn-default {
@@ -1568,6 +1563,10 @@ a.btn-attach:active {
 }
 
 @media all and (max-width: 479px) {
+
+    .fabrikActions.form-actions .em-grid-2{
+        text-align: center;
+    }
 
     .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter {
         padding: 20px;

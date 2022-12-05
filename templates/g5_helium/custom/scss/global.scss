@@ -1469,7 +1469,7 @@ body>.g-container {
     height: 50px;
     text-transform: unset;
     margin-right: 0;
-    border-radius: var(--applicant-border-radius);
+    border-radius: var(--applicant-border-radius) !important;
     padding: 8px 12px;
     font-family: var(--applicant-default-font);
     font-weight: 500;
@@ -1778,7 +1778,7 @@ tr.fabrikFilterContainer{
     background: $base-secondary-color;
     border: 1px solid $base-secondary-color;
     padding: 8px 12px;
-    border-radius: var(--applicant-border-radius);
+    border-radius: var(--applicant-border-radius) !important;
     cursor: pointer;
     margin: 8px 0;
   }
@@ -1992,7 +1992,7 @@ body.error-page .container-404 p {
 }
 
 .btn {
-  border-radius: var(--applicant-border-radius);
+  border-radius: var(--applicant-border-radius) !important;
 }
 
 .btnmarge {
@@ -2055,7 +2055,7 @@ body.error-page .container-404 p {
 button.btn-primary {
   background: $base-secondary-color;
   border: 1px solid $base-secondary-color;
-  border-radius: var(--applicant-border-radius);
+  border-radius: var(--applicant-border-radius) !important;
   padding: 8px 12px;
   height: 40px;
 
@@ -2068,7 +2068,7 @@ button.btn-primary {
 button.btn-secondary {
   background: $base-secondary-color;
   border: 1px solid $base-secondary-color;
-  border-radius: var(--applicant-border-radius);
+  border-radius: var(--applicant-border-radius) !important;
   padding: 8px 12px;
 
   &:hover {
@@ -2206,7 +2206,7 @@ p.readmore .btn,
   .span4 button.btn.save-btn {
     background: $base-primary-color;
     border: 1px solid $base-primary-color;
-    border-radius: var(--applicant-border-radius);
+    border-radius: var(--applicant-border-radius) !important;
     color: var(--neutral-50);
     font-size: 14px;
 
@@ -4785,7 +4785,7 @@ screen and (max-height: 769px) {
         margin-top: -13px;
 
         ol {
-          width: 80%;
+          width: 100%;
           text-align: justify;
           margin-left: 0 !important;
           padding: 0 !important;

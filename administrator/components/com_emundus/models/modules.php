@@ -487,6 +487,13 @@ class EmundusModelModules extends JModelList {
 
         try {
             $query->clear()
+                ->update($db->quoteName('#__content'))
+                ->set($db->quoteName('state') . ' = 0')
+                ->where($db->quoteName('id') . ' = 52');
+            $db->setQuery($query);
+            $db->execute();
+
+            $query->clear()
                 ->select('id, params')
                 ->from($db->quoteName('#__modules'))
                 ->where($db->quoteName('module') . ' like ' . $db->quote('mod_emundus_campaign'))
