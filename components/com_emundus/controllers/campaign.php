@@ -341,25 +341,28 @@ class EmundusControllerCampaign extends JControllerLegacy {
      * @since version 1.0
      */
     public function updatecampaign() {
+        $tab = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('body');
             $cid = $jinput->getInt('cid');
 
             $data['user'] = $this->_user->id;
 
-            $result = $this->m_campaign->updateCampaign($data, $cid);
+            if (!empty($cid)) {
+                $result = $this->m_campaign->updateCampaign($data, $cid);
 
-            if ($result) {
-                $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_UPDATED'), 'data' => $result);
+                if ($result) {
+                    $tab = array('status' => true, 'msg' => JText::_('CAMPAIGN_UPDATED'), 'data' => $result);
+                } else {
+                    $tab = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_UPDATE_CAMPAIGN'), 'data' => $result);
+                }
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_CAMPAIGN'), 'data' => $result);
+                $tab = array('status' => false, 'msg' => JText::_('MISSING_PARAMETERS'));
             }
         }
+
         echo json_encode((object)$tab);
         exit;
     }

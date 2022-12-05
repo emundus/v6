@@ -113,7 +113,7 @@ class EmundusModelFormbuilderTest extends TestCase
         $this->m_translations->deleteTranslation('ELEMENT_TEST', 'fr-FR', '', $reference_id);
     }
 
-    public function testCreatefabrikForm()
+    public function testCreateFabrikForm()
     {
         // Test 1 - Création de formulaire basique
         $prid = 9;
@@ -141,11 +141,10 @@ class EmundusModelFormbuilderTest extends TestCase
         // Test 2 - S'assurer que les paramètres ne vont pas causer d'erreur, si vide ou de mauvais type
 
         $form_id = $this->h_sample->createSampleForm(0);
-
-        $this->assertFalse($form_id);
+        $this->assertSame(0, $form_id);
 
         $form_id = $this->h_sample->createSampleForm($prid, 'label');
-        $this->assertFalse($form_id);
+        $this->assertSame(0, $form_id);
 
         // Se tromper pour le champ introduction ne devrait pas causer d'erreur
         $form_id = $this->h_sample->createSampleForm($prid, ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], 'label intro');

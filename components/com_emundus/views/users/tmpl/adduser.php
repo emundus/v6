@@ -417,7 +417,8 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
 			var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/;
 			if ($(this).val().length == 0 || !re.test($(this).val())) {
 				$(this).parent('.form-group').addClass('has-error');
-				$(this).after('<span class="help-block">'+Joomla.JText._('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_EMAIL')+'</span>');
+                $(this).siblings('.help-block').remove();
+                $(this).after('<span class="help-block">'+Joomla.JText._('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_EMAIL')+'</span>');
 			}
 		});
 

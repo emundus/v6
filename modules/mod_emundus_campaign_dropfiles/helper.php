@@ -16,7 +16,7 @@ class modEmundusCampaignDropfilesHelper {
         $now = $dateTime->toSQL();
 
         // If empty id module is probably on a form
-        if (empty($id)) {
+        if (!empty($id)) {
             $current_profile = JFactory::getSession()->get('emundusUser')->profile;
 
             if (!empty($column)) {

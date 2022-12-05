@@ -69,22 +69,22 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
                             </p>
                         </th>
                     <?php else :?>
-                        <?php if($key !== 'active') : ?>
+                        <?php if(!in_array($key,['active','is_applicant_profile'])) : ?>
                         <th id="<?php echo $key?>">
-                        <?php if ($this->lists['order'] == $key) :?>
+                            <?php if ($this->lists['order'] == $key) :?>
+                                    <p class="em-cell">
+                                    <?php if ($this->lists['order_dir'] == 'desc') :?>
+                                            <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                    <?php else :?>
+                                            <span class="glyphicon glyphicon-sort-by-attributes"></span>
+                                    <?php endif; ?>
+                                    <strong><?php echo JText::_('COM_EMUNDUS_' . strtoupper($key))?></strong>
+                                    </p>
+                            <?php else :?>
                                 <p class="em-cell">
-                                <?php if ($this->lists['order_dir'] == 'desc') :?>
-                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-                                <?php else :?>
-                                        <span class="glyphicon glyphicon-sort-by-attributes"></span>
-                                <?php endif; ?>
-                                <strong><?php echo JText::_('COM_EMUNDUS_' . strtoupper($key))?></strong>
+                                    <strong><?php echo JText::_('COM_EMUNDUS_' . strtoupper($key))?></strong>
                                 </p>
-                        <?php else :?>
-                            <p class="em-cell">
-                                <strong><?php echo JText::_('COM_EMUNDUS_' . strtoupper($key))?></strong>
-                            </p>
-                        <?php endif; ?>
+                            <?php endif; ?>
                         </th>
                      <?php endif; ?>
                      <?php endif; ?>
@@ -96,7 +96,7 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
 			<?php foreach ($this->users as $l => $user) :?>
 				<tr>
 					<?php foreach ($user as $k => $value) :?>
-                        <?php if ($k != 'active') :?>
+                        <?php if (!in_array($k, ['active','is_applicant_profile'])) :?>
 								<?php if ($k == 'id') :?>
                                     <td>
                                         <div class="em-cell" >
@@ -142,6 +142,18 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
                                             </div>
                                         </td>
                                     <?php endif; ?>
+                                <?php elseif ($k == 'profile') : ?>
+                                    <td>
+                                        <?php if($user->is_applicant_profile == 0) : ?>
+                                            <div class="em-cell" >
+                                                <?php echo $value;?>
+                                            </div>
+                                        <?php else : ?>
+                                            <div class="em-cell" >
+                                                <?= JText::_('COM_EMUNDUS_APPLICANT'); ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </td>
 								<?php elseif ($k == 'newsletter') :?>
 									<?php if ($value == 1) :?>
                                         <td>

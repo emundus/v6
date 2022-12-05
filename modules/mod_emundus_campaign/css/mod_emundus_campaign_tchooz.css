@@ -75,6 +75,37 @@
     color: var(--neutral-600);
 }
 
+.mod_emundus_campaign__campagne_properties {
+    display: grid;
+    grid-template-columns: 80% 14%;
+    grid-template-rows: auto;
+    grid-template-areas: "titre logo";
+    column-gap: 6%;
+    align-items: center;
+}
+
+.mod_emundus_campaign__programme_properties {
+    display: grid;
+    grid-template-columns: 80% 14%;
+    grid-template-rows: auto;
+    grid-template-areas: "titre logo";
+    column-gap: 6%;
+    margin-bottom: 8px;
+    align-items: center;
+    height: 35px;
+}
+
+.mod_emundus_campaign__programme_properties .em-programme-tag{
+    margin-bottom: 0px;
+}
+
+.mod_emundus_campaign__campagne_properties img,
+.mod_emundus_campaign__programme_properties img{
+    max-height: 38px;
+    justify-self: flex-end;
+}
+
+
 .mod_emundus_campaign__list_content{
     box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
     border-radius: 16px !important;

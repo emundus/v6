@@ -290,10 +290,10 @@ export default {
     onOpenElementProperties(event)
     {
       this.selectedElement = event;
-      if(this.selectedElement.plugin === 'dropdown'){
+      if (this.selectedElement.plugin === 'dropdown') {
         this.optionsSelectedElement = true;
       } else {
-        if(this.optionsSelectedElement === true){
+        if (this.optionsSelectedElement === true){
           this.$refs.formBuilderPage.getSections();
         }
         this.optionsSelectedElement = false;

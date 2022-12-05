@@ -325,7 +325,7 @@ $font:'Inter', sans-serif;
   text-align: left;
   position: relative;
   top: -5px;
-  margin-right: -2px;
+  margin-right: -5px;
   color: var(--red-500);
 }
 
@@ -646,7 +646,7 @@ $font:'Inter', sans-serif;
     /* INPUT */
     .fabrikinput:not(textarea):not([type='checkbox']) {
       @include input-default;
-      background: $neutral-50;
+      background-color: $neutral-50;
 
       &:hover {
         @include input-hover;
