@@ -14,6 +14,7 @@ variables:
 stages:
   - check
   - build
+  - prepare
   - test
   - release
   - publish
@@ -54,21 +55,8 @@ check-tchooz-version-job:
 #   only:
 #     - merge_request
 
-# build-db-to-test-job:
-#   stage: build
-#   image: docker:20.10
-#   before_script: 
-#     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
-#   script:
-#     - docker pull emundus/tchooz-build-db:latest || true
-#     - docker build --cache-from emundus/tchooz-build-db:latest --compress -f Dockerfile.db -t emundus/tchooz-build-db:latest -t emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 .
-#     - docker push emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA
-#     - docker push emundus/tchooz-build-db:latest
-#   only:
-#     - merge_request
-
-phpunit-job:
-  stage: test
+prepare-job:
+  stage: prepare
   image: emundus/tchooz-build-app:latest
   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
   services:
@@ -133,21 +121,58 @@ phpunit-job:
     TCHOOZ_COORD_PASSWORD: ${TCHOOZ_COORD_PASSWORD}
     TCHOOZ_INSTANCE_ID: 999999
     TCHOOZ_CUSTOMER_ID: 999999
-  before_script:
+  script:
     - cp configuration.php.dist configuration.php
     - cp media/com_emundus_vanilla/v6/.htaccess .htaccess
     - cp -r media/com_emundus_vanilla/v6/language/overrides/* language/overrides/
     - cp -r media/com_emundus_vanilla/v6/templates/g5_helium/* templates/g5_helium/
-    - ls -lha
-    # - cd components && yarn
+    - /scripts/entrypoint.sh && echo $?
+    - cd components && yarn
+  artifacts:
+    paths:
+      - configuration.php
+      - .htaccess
+      - language/overrides/
+      - templates/g5_helium/
+    expire_in: 24h
+  only:
+    - merge_request
+
+# build-db-to-test-job:
+#   stage: build
+#   image: docker:20.10
+#   before_script: 
+#     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
+#   script:
+#     - docker pull emundus/tchooz-build-db:latest || true
+#     - docker build --cache-from emundus/tchooz-build-db:latest --compress -f Dockerfile.db -t emundus/tchooz-build-db:latest -t emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 .
+#     - docker push emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA
+#     - docker push emundus/tchooz-build-db:latest
+#   only:
+#     - merge_request
+
+phpunit-job:
+  stage: test
+  image: emundus/tchooz-build-app:latest
+  coverage: '/^\s*Lines:\s*\d+.\d+\%/'
+  services:
+    - name: emundus/tchooz-build-db:latest
+      alias: database
+    - redis:latest
+  before_script:
+    - cat configuration.php
+    # - cp configuration.php.dist configuration.php
+    # - cp media/com_emundus_vanilla/v6/.htaccess .htaccess
+    # - cp -r media/com_emundus_vanilla/v6/language/overrides/* language/overrides/
+    # - cp -r media/com_emundus_vanilla/v6/templates/g5_helium/* templates/g5_helium/
+    # # - cd components && yarn
     - /scripts/entrypoint.sh && echo $?
     - apache2-foreground &
     - sleep 3
   script:
-    - cat /etc/apache2/sites-available/000-default.conf
-    - cat /etc/apache2/ports.conf
-    - curl "http://localhost:8080"
     - libraries/emundus/phpunit.phar -c phpunit.xml --coverage-text --colors=never && echo $?
+  dependencies:
+    - prepare_job
   only:
     - merge_request
 
