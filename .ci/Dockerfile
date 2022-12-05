@@ -125,13 +125,13 @@ RUN sed -i 's/\/var\/www\/html\//\/builds\/emundus\/cms\/core\//g' /etc/apache2/
 COPY --chown=root:root ["php/7.4/apache/ports.conf","/etc/apache2/ports.conf"]
 COPY --chown=www-data:www-data ["php/7.4/scripts/entrypoint.sh","/scripts/entrypoint.sh"]
 
-# Install yarn environment
-RUN if [ "$jest" = "1" ];then \
-    cd /var/www/html/components; \
-    yarn; \
-	else \
-		echo "[BUILD INFO] : Jest is not required"; \
-	fi
+# # Install yarn environment
+# RUN if [ "$jest" = "1" ];then \
+#     cd /var/www/html/components; \
+#     yarn; \
+# 	else \
+# 		echo "[BUILD INFO] : Jest is not required"; \
+# 	fi
 
 # Entrypoint declaration
 ENTRYPOINT [ "/scripts/entrypoint.sh" ]
