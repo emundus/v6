@@ -126,7 +126,7 @@ input[type="color"],
 select:not(.profile-select),
 a.chzn-single,
 textarea{
-  background: $neutral-50 !important;
+  background-color: $neutral-50 !important;
   color: initial;
   font-family: var(--font);
 }
