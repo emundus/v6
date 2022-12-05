@@ -58,10 +58,10 @@ check-tchooz-version-job:
 prepare-job:
   stage: prepare
   image: docker:20.10
-  services:
-    - name: emundus/tchooz-build-db:latest
-      alias: database
-    - redis:latest
+  # services:
+  #   - name: emundus/tchooz-build-db:latest
+  #     alias: database
+  #   - redis:latest
   # variables:
     # TCHOOZ_OFFLINE: 0
     # TCHOOZ_OFFLINE_MESSAGE: Offline
