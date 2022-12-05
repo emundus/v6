@@ -77,7 +77,7 @@ phpunit-job:
   stage: test
   image: 
     name: emundus/tchooz-build-app:latest
-    entrypoint: [""]
+    entrypoint: ["/scripts/entrypoint.sh"]
   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
   services:
     - name: emundus/tchooz-build-db:latest
@@ -104,7 +104,7 @@ jest-job:
   stage: test
   image: 
     name: emundus/tchooz-build-app:latest
-    entrypoint: [""]
+    entrypoint: ["/scripts/entrypoint.sh"]
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   services:
     - name: emundus/tchooz-build-db:latest
