@@ -122,10 +122,10 @@ phpunit-job:
     TCHOOZ_CUSTOMER_ID: 999999
   before_script:
     - env
-    - cp -p $pwd/configuration.php.dist $pwd/configuration.php
-    - cp -p $pwd/media/com_emundus_vanilla/v6/.htaccess
-    - cp -pr $pwd/media/com_emundus_vanilla/v6/language/overrides/* $pwd/language/overrides/
-    - cp -pr $pwd/media/com_emundus_vanilla/v6/templates/g5_helium/* $pwd/templates/g5_helium/
+    - cp -p $CI_PROJECT_DIR/configuration.php.dist $CI_PROJECT_DIR/configuration.php
+    - cp -p $CI_PROJECT_DIR/media/com_emundus_vanilla/v6/.htaccess
+    - cp -pr $CI_PROJECT_DIR/media/com_emundus_vanilla/v6/language/overrides/* $CI_PROJECT_DIR/language/overrides/
+    - cp -pr $CI_PROJECT_DIR/media/com_emundus_vanilla/v6/templates/g5_helium/* $CI_PROJECT_DIR/templates/g5_helium/
     - /scripts/entrypoint.sh && echo $?
     - apache2-foreground &
     - sleep 3
@@ -133,7 +133,7 @@ phpunit-job:
     - env
     - ls -lha
     - pwd
-    - cat $pwd/configuration.php
+    - cat $CI_PROJECT_DIR/configuration.php
     - ls -lha /var/www/html/
     - ls -lha /var/www/
     - cd /var/www/html/ && /var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?
