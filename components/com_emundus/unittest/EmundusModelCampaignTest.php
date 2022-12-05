@@ -18,6 +18,7 @@ include_once ( JPATH_BASE . 'includes/defines.php' );
 include_once ( JPATH_BASE . 'includes/framework.php' );
 include_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
 include_once(JPATH_SITE.'/components/com_emundus/models/campaign.php');
+include_once(JPATH_SITE.'/components/com_emundus/models/programme.php');
 include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
 jimport('joomla.user.helper');
@@ -36,12 +37,14 @@ session_start();
 class EmundusModelCampaignTest extends TestCase
 {
     private $m_campaign;
+    private $m_programme;
     private $h_sample;
 
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
         $this->m_campaign = new EmundusModelCampaign;
+        $this->m_programme = new EmundusModelProgramme;
         $this->h_sample = new EmundusUnittestHelperSamples;
     }
 
@@ -165,14 +168,12 @@ class EmundusModelCampaignTest extends TestCase
 
     public function testGetCurrentCampaignWorkflow()
     {
+        $program = $this->m_programme->addProgram(['label' => 'Programme Test Unitaire']);
+        $this->assertNotEmpty($program['programme_code'], 'La création de programme depuis un label fonctionne');
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $query->select('code')
-            ->from($db->quoteName('#__emundus_setup_programmes'));
-        $db->setQuery($query);
-        $programmes = $db->loadColumn();
 
-        if (!empty($programmes)) {
+        if (!empty($program['programme_code'])) {
             $start_date = new DateTime();
             $start_date->modify('-1 day');
 
@@ -186,7 +187,7 @@ class EmundusModelCampaignTest extends TestCase
                 'start_date' => $start_date->format('Y-m-d H:i:s'),
                 'end_date' => $end_date->format('Y-m-d H:i:s'),
                 'profile_id' => 9,
-                'training' => $programmes[0],
+                'training' => $program['programme_code'],
                 'year' => '2022-2023',
                 'published' => 1
             ]);
@@ -201,7 +202,7 @@ class EmundusModelCampaignTest extends TestCase
                 $current_file_workflow = $this->m_campaign->getCurrentCampaignWorkflow($fnum);
                 $this->assertSame(intval($workflow_on_all), intval($current_file_workflow->id), 'Le dossier est impacté par le workflow qui n\'a ni campagne ni programme par défaut, mais est sur le même statut.');
 
-                $workflow_on_program = $this->m_campaign->createWorkflow(9, [0], 1, null, ['programs' => [$programmes[0]]]);
+                $workflow_on_program = $this->m_campaign->createWorkflow(9, [0], 1, null, ['programs' => [$program['programme_code']]]);
                 $current_file_workflow = $this->m_campaign->getCurrentCampaignWorkflow($fnum);
                 $this->assertSame(intval($workflow_on_program), intval($current_file_workflow->id), 'Le dossier est impacté par le workflow qui a un programme et un statut commun.');
 
