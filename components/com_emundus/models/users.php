@@ -172,7 +172,7 @@ class EmundusModelUsers extends JModelList {
         $showJoomlagroups   = $eMConfig->get('showJoomlagroups',0);
         $showNewsletter     = $eMConfig->get('showNewsletter');
 
-        $query = 'SELECT DISTINCT(u.id), e.lastname, e.firstname, u.email, u.username,  espr.label as profile, ';
+        $query = 'SELECT DISTINCT(u.id), e.lastname, e.firstname, u.email, u.username,  espr.label as profile, espr.published as is_applicant_profile, ';
 
         if ($showNewsletter == 1)
             $query .= 'up.profile_value as newsletter, ';
