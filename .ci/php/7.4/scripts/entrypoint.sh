@@ -100,4 +100,10 @@ pushd libraries/emundus && ./update-db.sh $TCHOOZ_DB_HOST && popd
 # Custom update script
 php cli/update_cli.php -av
 
-exec "$@"
+if [[ -n "$CI" ]]; then
+    echo "this block will only execute in a CI environment"
+    exec /bin/bash
+else
+    echo "Not in CI. Running the image normally"
+    exec "$@"
+fi

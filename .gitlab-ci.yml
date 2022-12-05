@@ -82,7 +82,6 @@ phpunit-job:
       alias: database
     - redis:latest
   before_script:
-    # # - cd components && yarn
     - /scripts/entrypoint.sh && echo $?
     - apache2-foreground &
     - sleep 3
