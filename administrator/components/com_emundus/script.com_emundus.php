@@ -245,6 +245,7 @@ class com_emundusInstallerScript
                 $query = $db->getQuery(true);
 
                 EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns','pinned','TINYINT',1);
+                EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns','eval_start_date','DATETIME');
                 EmundusHelperUpdate::addColumn('jos_emundus_setup_programmes','color','VARCHAR',10);
 
                 EmundusHelperUpdate::genericUpdateParams('#__modules', 'module', 'mod_falang', array('advanced_dropdown','full_name'), array('0','0'));
