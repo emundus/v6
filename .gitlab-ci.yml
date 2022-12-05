@@ -141,8 +141,8 @@ phpunit-job:
     - ls -lha
     # - cd components && yarn
     - /scripts/entrypoint.sh && echo $?
-    # - apache2-foreground &
-    # - sleep 3
+    - apache2-foreground &
+    - sleep 3
   script:
     - cat configuration.php
     - ps -ef
