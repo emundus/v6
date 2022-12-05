@@ -38,7 +38,7 @@ build-app-to-test-job:
     - docker build --cache-from emundus/tchooz-build-app:latest --compress -t emundus/tchooz-build-app:latest --build-arg=BUILDKIT_INLINE_CACHE=1 --build-arg xdebug=1 --build-arg jest=1 .ci
     - docker push emundus/tchooz-build-app:latest
   only:
-    - merge_request
+    - schedules
 
 # build-app-to-test-job:
 #   stage: build
@@ -133,18 +133,16 @@ phpunit-job:
     TCHOOZ_INSTANCE_ID: 999999
     TCHOOZ_CUSTOMER_ID: 999999
   before_script:
-    - env
+    - ls -lha
     - cp $CI_PROJECT_DIR/configuration.php.dist $CI_PROJECT_DIR/configuration.php
     - cp $CI_PROJECT_DIR/media/com_emundus_vanilla/v6/.htaccess $CI_PROJECT_DIR/.htaccess
     - cp -r $CI_PROJECT_DIR/media/com_emundus_vanilla/v6/language/overrides/* $CI_PROJECT_DIR/language/overrides/
     - cp -r $CI_PROJECT_DIR/media/com_emundus_vanilla/v6/templates/g5_helium/* $CI_PROJECT_DIR/templates/g5_helium/
+    - cd $CI_PROJECT_DIR/components && yarn
     - /scripts/entrypoint.sh && echo $?
     - apache2-foreground &
     - sleep 3
   script:
-    - env
-    - ls -lha
-    - pwd
     - cat $CI_PROJECT_DIR/configuration.php
     - ls -lha /var/www/html/
     - ls -lha /var/www/
