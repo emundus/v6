@@ -17,7 +17,8 @@ define('JPATH_BASE', dirname(__DIR__) . '/../../');
 include_once ( JPATH_BASE . 'includes/defines.php' );
 include_once ( JPATH_BASE . 'includes/framework.php' );
 include_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
-include_once (JPATH_SITE . '/components/com_emundus/models/campaign.php');
+include_once(JPATH_SITE.'/components/com_emundus/models/campaign.php');
+include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
 jimport('joomla.user.helper');
 jimport( 'joomla.application.application' );
@@ -178,9 +179,10 @@ class EmundusModelCampaignTest extends TestCase
             ]);
 
             if ($new_campaign_id) {
-                $user_id = $this->h_sample->createSampleUser();
-
+                $user_id = $this->h_sample->createSampleUser(9, 'user.test.emundus_' . rand() . '@emundus.fr');
+                $this->assertGreaterThan(0, $user_id);
                 $fnum = $this->h_sample->createSampleFile($new_campaign_id, $user_id);
+                $this->assertNotEmpty($fnum);
 
                 $new_workflow_id = $this->m_campaign->createWorkflow(9, [1], 2, null, ['campaigns' => [$new_campaign_id]]);
                 $this->assertEmpty($this->m_campaign->getCurrentCampaignWorkflow($fnum), 'Mon dossier au statut Brouillon n\'est pas impacté par la phase sur le statut envoyé');
@@ -194,7 +196,7 @@ class EmundusModelCampaignTest extends TestCase
                 $db->execute();
 
                 $current_file_workflow = $this->m_campaign->getCurrentCampaignWorkflow($fnum);
-                $this->assertSame($current_file_workflow->id, $new_workflow_id);
+                $this->assertSame(intval($new_workflow_id), intval($current_file_workflow->id));
             }
         }
     }
