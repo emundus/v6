@@ -120,12 +120,11 @@ phpunit-job:
     TCHOOZ_COORD_PASSWORD: ${TCHOOZ_COORD_PASSWORD}
     TCHOOZ_INSTANCE_ID: 999999
     TCHOOZ_CUSTOMER_ID: 999999
-    CI_PROJECT_DIR: /var/www/html
-    PWD: /var/www/html
-    CI_BUILDS_DIR: /var/www/html
   before_script:
-    - env
-    - export CI_PROJECT_DIR="/var/www/html"
+    - cp -p configuration.php.dist configuration.php
+    - cp -p media/com_emundus_vanilla/v6/.htaccess
+    - cp -pr media/com_emundus_vanilla/v6/language/overrides/* language/overrides/
+    - cp -pr media/com_emundus_vanilla/v6/templates/g5_helium/* templates/g5_helium/
     - /scripts/entrypoint.sh && echo $?
     - apache2-foreground &
     - sleep 3
