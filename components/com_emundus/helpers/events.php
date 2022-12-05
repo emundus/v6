@@ -908,9 +908,10 @@ class EmundusHelperEvents {
 
         EmundusModelLogs::log($student->id, $applicant_id, $student->fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'COM_EMUNDUS_ACCESS_FILE_SENT_BY_APPLICANT');
 
-        $app->enqueueMessage(JText::_('APPLICATION_SENT'), 'success');
-        $app->redirect('index.php');
-
+        $redirect_message = !empty($params['plugin_options']) && !empty($params['plugin_options']->get('trigger_confirmpost_success_msg')) ? JText::_($params['plugin_options']->get('trigger_confirmpost_success_msg')) : JText::_('APPLICATION_SENT');
+        $redirect_url = !empty($params['plugin_options']) && !empty($params['plugin_options']->get('trigger_confirmpost_redirect_url')) ? JText::_($params['plugin_options']->get('trigger_confirmpost_redirect_url')) : 'index.php';
+        $app->enqueueMessage($redirect_message, 'success');
+        $app->redirect($redirect_url);
 
         return true;
     }
