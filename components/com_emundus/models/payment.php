@@ -902,6 +902,11 @@ class EmundusModelPayment extends JModelList
                 case 'OK':
                 case 'AUTHORIZED':
                     $hikashop_status = 'confirmed';
+
+                    $eMConfig = JComponentHelper::getParams('com_emundus');
+                    $status_after_payment = $eMConfig->get('status_after_payment');
+
+                    $m_files->updateState($fnum, $status_after_payment);
                     break;
                 case 'FAILED':
                 case '':
