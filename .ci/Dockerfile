@@ -141,7 +141,7 @@ VOLUME [ "/var/www/html" ]
 EXPOSE 8080
 
 # Set user
-USER www-data
+# USER www-data
 
 # Start Web Server Apache
 CMD ["apache2-foreground"]
