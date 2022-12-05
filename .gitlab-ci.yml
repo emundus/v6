@@ -121,6 +121,8 @@ phpunit-job:
     TCHOOZ_INSTANCE_ID: 999999
     TCHOOZ_CUSTOMER_ID: 999999
     CI_PROJECT_DIR: /var/www/html
+    PWD: /var/www/html
+    CI_BUILDS_DIR: /var/www/html
   before_script:
     - env
     - export CI_PROJECT_DIR="/var/www/html"
