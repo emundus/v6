@@ -122,10 +122,13 @@ phpunit-job:
     TCHOOZ_CUSTOMER_ID: 999999
     CI_PROJECT_DIR: /var/www/html
   before_script:
+    - env
+    - export CI_PROJECT_DIR="/var/www/html"
     - /scripts/entrypoint.sh && echo $?
     - apache2-foreground &
     - sleep 3
   script:
+    - env
     - ls -lha
     - pwd
     - cat configuration.php
