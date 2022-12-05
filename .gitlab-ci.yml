@@ -83,9 +83,10 @@ phpunit-job:
   before_script:
     - apache2-foreground &
     - sleep 3
-    - curl "http://localhost:8080"
     - /scripts/entrypoint.sh
   script:
+    - cat configuration.php
+    - curl "http://localhost:8080"
     - libraries/emundus/phpunit.phar -c phpunit.xml --coverage-text --colors=never
   dependencies:
     - prepare-job
@@ -104,9 +105,10 @@ jest-job:
   before_script:
     - apache2-foreground &
     - sleep 3
-    - cat configuration.php
     - /scripts/entrypoint.sh
   script:
+    - cat configuration.php
+    - curl "http://localhost:8080"
     - cd components && yarn && yarn run test:unit com_emundus/ --ci --coverage
   dependencies:
     - prepare-job
