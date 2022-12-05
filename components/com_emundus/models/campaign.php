@@ -2485,4 +2485,27 @@ class EmundusModelCampaign extends JModelList {
 
         return $new_workflow_id;
     }
+
+    public function deleteWorkflows($ids = null)
+    {
+        $deleted = false;
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->delete('#__emundus_campaign_workflow');
+
+        if (!empty($ids)) {
+            $query->where('id IN (' . implode(', ' . $ids). ')');
+        }
+
+        try {
+            $db->setQuery($query);
+            $deleted = $db->execute();
+        } catch (Exception $e) {
+            JLog::add('Failed to delete workflow(s) ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+        }
+
+        return $deleted;
+    }
 }
