@@ -87,6 +87,7 @@ phpunit-job:
   script:
     - cat configuration.php
     - curl "http://localhost:8080"
+    - ls -lha
     - libraries/emundus/phpunit.phar -c phpunit.xml --coverage-text --colors=never
   dependencies:
     - prepare-job
