@@ -71,7 +71,7 @@ JFactory::getSession()->set('application_layout', 'evaluation');
                         <div class="holds-iframe"><?= JText::_('COM_EMUNDUS_LOADING'); ?></div>
                         <iframe id="iframe" src="<?= $this->url_form; ?>" align="left" frameborder="0" height="600" width="100%" scrolling="no" marginheight="0" marginwidth="0" onload="resizeIframe(this)"></iframe>
                     <?php else :?>
-                        <div class="em_no-form"><?= JText::_('COM_EMUNDUS_EVALUATIONS_NO_EVALUATION_FORM_SET'); ?></div>
+                        <div class="em_no-form"><?= JText::_($this->message); ?></div>
                     <?php endif; ?>
                 </div>
                 <div class="evaluations" id="evaluations"></div>
