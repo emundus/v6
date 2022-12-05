@@ -1762,7 +1762,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addColumn($table,$name,$type = 'VARCHAR',$length = 255,$null = 1){
+    public static function addColumn($table,$name,$type = 'VARCHAR',$length = null,$null = 1){
         $result = ['status' => false, 'message' => ''];
 
         if (empty($table)) {
@@ -1782,7 +1782,11 @@ class EmundusHelperUpdate
             $null_query = $null == 0 ? 'NOT NULL' : 'NULL';
 
             try {
-                $query = 'ALTER TABLE ' . $table . ' ADD COLUMN ' . $db->quoteName($name) . ' ' . $type . '(' . $length . ') ' . $null_query;
+                $query = 'ALTER TABLE ' . $table . ' ADD COLUMN ' . $db->quoteName($name) . ' ' . $type;
+                if(!empty($length)) {
+                    $query .= ' (' . $length . ')';
+                }
+                $query .= ' ' . $null_query;
                 $db->setQuery($query);
                 $result['status'] = $db->execute();
             } catch (Exception $e) {
