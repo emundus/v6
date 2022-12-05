@@ -126,8 +126,6 @@ prepare-job:
     - cp media/com_emundus_vanilla/v6/.htaccess .htaccess
     - cp -r media/com_emundus_vanilla/v6/language/overrides/* language/overrides/
     - cp -r media/com_emundus_vanilla/v6/templates/g5_helium/* templates/g5_helium/
-    - /scripts/entrypoint.sh && echo $?
-    - cd components && yarn
   artifacts:
     paths:
       - configuration.php
