@@ -26,7 +26,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  */
 class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
 
-    // TODO: Add dispatcher to event handler onRenderEvaluation
+
 	public function onBeforeLoad() {
         $app = JFactory::getApplication();
         $db = JFactory::getDBO();
@@ -52,6 +52,17 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
             ->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
         $db->setQuery($query);
         $eval_dates = $db->loadObject();
+
+        $event_datas = [
+            'formid' => $formid,
+            'rowid' => $rowid,
+            'student_id' => $student_id,
+            'fnum' => $fnum,
+            'multi_eval' => $multi_eval,
+            'eval_dates' => $eval_dates,
+        ];
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onRenderEvaluation', ['event_datas' => $event_datas]]);
 
         $passed = false;
         $started = true;
@@ -149,13 +160,17 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
         return true;
 	}
 
-    // TODO: Add dispatcher to event handler onBeforeSubmitEvaluation
     public function onBeforeProcess() {
+        $formModel = $this->getModel();
 
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeSubmitEvaluation', ['formModel' => $formModel]]);
     }
 
-    // TODO: Add dispatcher to event handler onAfterSubmitEvaluation
     public function onAfterProcess() {
+        $formModel = $this->getModel();
 
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterSubmitEvaluation', ['formModel' => $formModel]]);
     }
 }
