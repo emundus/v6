@@ -40,7 +40,7 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
 
         $r = $app->input->get('r', 0);
         $formid = $app->input->get('formid', '256');
-        $rowid = $app->input->get('rowid', null);
+        $rowid = $app->input->get('rowid');
         $student_id = '{jos_emundus_evaluations___student_id}';
         $fnum = '{jos_emundus_evaluations___fnum}';
         $params = JComponentHelper::getParams('com_emundus');
@@ -116,13 +116,13 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
                 }
             }
             // If evaluation period started and not passed and we have update rights
-            elseif (EmundusHelperAccess::asAccessAction(5, 'u', $user->id)) {
+            elseif (EmundusHelperAccess::asAccessAction(5, 'u', $user->id, $fnum)) {
                 if ($r != 1) {
                     $app->redirect($form_url);
                 }
             }
             // If evaluation period started and not passed and we have read rights
-            elseif (EmundusHelperAccess::asAccessAction(5, 'r', $user->id)){
+            elseif (EmundusHelperAccess::asAccessAction(5, 'r', $user->id, $fnum)){
                 if ($r != 1) {
                     $app->redirect($details_url);
                 }
@@ -134,7 +134,7 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
             }
         }
         // If no evaluation found but period is not started or passed
-        elseif(($passed || !$started) && EmundusHelperAccess::asAccessAction(5, 'r', $user->id)) {
+        elseif(($passed || !$started) && EmundusHelperAccess::asAccessAction(5, 'r', $user->id, $fnum)) {
             if($r != 1) {
                 if($passed){
                     $app->enqueueMessage(JText::_('EVALUATION_PERIOD_PASSED'), 'warning');
@@ -146,7 +146,7 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
             }
         }
         // If no evaluation and period is started and not passed and I have create rights
-        elseif ((!$passed && $started) && EmundusHelperAccess::asAccessAction(5, 'c', $user->id)) {
+        elseif ((!$passed && $started) && EmundusHelperAccess::asAccessAction(5, 'c', $user->id, $fnum)) {
             if($r != 1) {
                 $app->redirect($form_url);
             }
