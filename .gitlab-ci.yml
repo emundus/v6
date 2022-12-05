@@ -75,7 +75,9 @@ check-tchooz-version-job:
 
 phpunit-job:
   stage: test
-  image: emundus/tchooz-build-app:latest
+  image: 
+    name: emundus/tchooz-build-app:latest
+    entrypoint: [""]
   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
   services:
     - name: emundus/tchooz-build-db:latest
@@ -99,7 +101,9 @@ phpunit-job:
 
 jest-job:
   stage: test
-  image: emundus/tchooz-build-app:latest
+  image: 
+    name: emundus/tchooz-build-app:latest
+    entrypoint: [""]
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   services:
     - name: emundus/tchooz-build-db:latest
