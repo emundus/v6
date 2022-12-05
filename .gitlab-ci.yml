@@ -91,6 +91,7 @@ phpunit-job:
   #   - apache2-foreground &
   #   - sleep 3
   script:
+    - pwd && cat configuration.php
     - ps -ef
     - curl "http://localhost:8080"
     - libraries/emundus/phpunit.phar -c phpunit.xml --coverage-text --colors=never
@@ -117,6 +118,7 @@ jest-job:
   #   - apache2-foreground &
   #   - sleep 3
   script:
+    - pwd && cat configuration.php
     - ps -ef
     - curl "http://localhost:8080"
     - cd components && yarn && yarn run test:unit com_emundus/ --ci --coverage
