@@ -95,7 +95,7 @@ date > /scripts/securitycheckpro-done
 fi
 
 # update Tchooz database
-cd libraries/emundus && ./update-db.sh $TCHOOZ_DB_HOST
+pushd libraries/emundus && ./update-db.sh $TCHOOZ_DB_HOST && popd
 
 # Custom update script
 php cli/update_cli.php -av

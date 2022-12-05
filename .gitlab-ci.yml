@@ -144,7 +144,7 @@ phpunit-job:
     - apache2-foreground &
     - sleep 3
   script:
-    - cat $CI_PROJECT_DIR/configuration.php
+    - cat configuration.php
     - ls -lha /var/www/html/
     - ls -lha /var/www/
     - /var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?
