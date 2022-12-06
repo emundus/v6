@@ -128,8 +128,5 @@ COPY ["php/7.4/scripts/entrypoint.sh","/scripts/entrypoint.sh"]
 # Port
 EXPOSE 8080
 
-# Set user
-USER www-data
-
 # Start Web Server Apache
 CMD ["apache2-foreground"]

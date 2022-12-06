@@ -17,24 +17,6 @@ stages:
   - release
   - publish
 
-prepare-job:
-  stage: prepare
-  image: docker:20.10
-  script:
-    - cp configuration.php.dist configuration.php
-    - cp media/com_emundus_vanilla/v6/.htaccess .htaccess
-    - cp -r media/com_emundus_vanilla/v6/language/overrides/* language/overrides/
-    - cp -r media/com_emundus_vanilla/v6/templates/g5_helium/* templates/g5_helium/
-  artifacts:
-    paths:
-      - configuration.php
-      - .htaccess
-      - language/overrides/
-      - templates/g5_helium/
-    expire_in: 24h
-  only:
-    - merge_request
-
 check-tchooz-version-job:
   stage: check
   rules:
@@ -70,6 +52,24 @@ build-db-to-test-job:
     - docker push emundus/tchooz-build-db:latest
   only:
     - schedules
+
+prepare-job:
+  stage: prepare
+  image: docker:20.10
+  script:
+    - cp -p configuration.php.dist configuration.php
+    - cp -p media/com_emundus_vanilla/v6/.htaccess .htaccess
+    - cp -pr media/com_emundus_vanilla/v6/language/overrides/* language/overrides/
+    - cp -pr media/com_emundus_vanilla/v6/templates/g5_helium/* templates/g5_helium/
+  artifacts:
+    paths:
+      - configuration.php
+      - .htaccess
+      - language/overrides/
+      - templates/g5_helium/
+    expire_in: 24h
+  only:
+    - merge_request
 
 phpunit-job:
   stage: test
