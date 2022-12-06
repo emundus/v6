@@ -80,13 +80,13 @@ phpunit-job:
     - name: emundus/tchooz-build-db:latest
       alias: database
     - redis:latest
-  variables:
-    FF_KUBERNETES_HONOR_ENTRYPOINT: 1
+  before_script:
+    - apache2-foreground &
+    - /scripts/entrypoint.sh
   script:
     - ps -ef
     - ls -lha
     - cat configuration.php
-    - /scripts/entrypoint.sh
     - curl "http://localhost:8080"
     - libraries/emundus/phpunit.phar -c phpunit.xml --coverage-text --colors=never
   dependencies:
