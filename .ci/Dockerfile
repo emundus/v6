@@ -126,10 +126,9 @@ COPY --chown=root:root ["php/7.4/apache/ports.conf","/etc/apache2/ports.conf"]
 COPY --chown=www-data:www-data ["php/7.4/scripts/entrypoint.sh","/scripts/entrypoint.sh"]
 
 # Entrypoint declaration
-ENTRYPOINT [ "/scripts/entrypoint.sh" ]
+ ENTRYPOINT ["docker-php-entrypoint"]
 
-# Volume, Port and workdir
-VOLUME [ "/var/www/html" ]
+# Port
 EXPOSE 8080
 
 # Set user

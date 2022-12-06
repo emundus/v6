@@ -1,14 +1,5 @@
 #!/bin/bash
 
-pwd
-ls -lha /builds/
-ls -lha /var/www/html/
-cd /builds/emundus/cms/core
-
-if [ ! -f configuration.php ] ; then
-cp configuration.php.dist configuration.php
-fi
-
 if [ ! -f /scripts/init-done ] ; then
 
 sed -i "s:\$offline = '.*':\$offline = '$TCHOOZ_OFFLINE':g" configuration.php

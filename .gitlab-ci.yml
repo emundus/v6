@@ -80,14 +80,12 @@ phpunit-job:
     - redis:latest
   variables:
     FF_KUBERNETES_HONOR_ENTRYPOINT: 1
-    FF_USE_LEGACY_KUBERNETES_EXECUTION_STRATEGY: 0
   before_script:
-    - cp configuration.php.dist configuration.php
+    - /scripts/entrypoint.sh
   script:
     - ps -ef
     - ls -lha
     - cat configuration.php
-    - cat /scripts/entrypoint.sh
     - curl "http://localhost:8080"
     - libraries/emundus/phpunit.phar -c phpunit.xml --coverage-text --colors=never
   dependencies:
