@@ -1,5 +1,10 @@
 #!/bin/bash
 
+pwd
+ls -lha /builds/
+ls -lha /var/www/html/
+cd /builds/emundus/cms/core
+
 if [ ! -f configuration.php ] ; then
 cp configuration.php.dist configuration.php
 fi
