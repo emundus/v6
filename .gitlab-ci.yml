@@ -21,11 +21,13 @@ prepare-job:
   stage: prepare
   image: docker:20.10
   script:
+    - cp configuration.php.dist configuration.php
     - cp media/com_emundus_vanilla/v6/.htaccess .htaccess
     - cp -r media/com_emundus_vanilla/v6/language/overrides/* language/overrides/
     - cp -r media/com_emundus_vanilla/v6/templates/g5_helium/* templates/g5_helium/
   artifacts:
     paths:
+      - configuration.php
       - .htaccess
       - language/overrides/
       - templates/g5_helium/
@@ -52,10 +54,10 @@ build-app-to-test-job:
     - docker pull emundus/tchooz-build-app:latest || true
     - docker build --cache-from emundus/tchooz-build-app:latest --compress -t emundus/tchooz-build-app:latest --build-arg=BUILDKIT_INLINE_CACHE=1 --build-arg xdebug=1 --build-arg jest=1 .ci
     - docker push emundus/tchooz-build-app:latest
-  # only:
-  #   - schedules
   only:
-    - merge_request
+    - schedules
+  # only:
+  #   - merge_request
 
 build-db-to-test-job:
   stage: build
