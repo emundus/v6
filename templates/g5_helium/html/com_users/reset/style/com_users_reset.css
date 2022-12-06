@@ -52,6 +52,7 @@ form#user-registration.form-validate.form-horizontal.well label,
     text-align: left;
     margin-bottom: 0px;
     color: #2B2B2B;
+    width: 100%;
 }
 
 form#user-registration.form-validate.form-horizontal.well label.invalid,

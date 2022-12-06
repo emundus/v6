@@ -99,7 +99,7 @@ $url = explode('&',$uri->toString());
 $details_view = array_search('view=details',$url);
 ?>
 
-<div class="em-ml-32 em-mt-24">
+<div class="mod_emundus_checklist___buttons">
     <?php if ($show_send && $details_view === false && $is_confirm_url === false) :?>
         <a class="btn btn-success btn-xs em-w-100"
             <?php if (((int)($attachments_progress) >= 100 && (int)($forms_progress) >= 100 && in_array($application->status, $status_for_send) && (!$is_dead_line_passed || ($is_dead_line_passed && $can_edit_after_deadline))) || in_array($user->id, $applicants)) :?>
@@ -123,6 +123,12 @@ $details_view = array_search('view=details',$url);
 </div>
 
 <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if(window.innerWidth < 480){
+            expandForms();
+        }
+    });
+
     function expandForms(){
         let content = document.getElementById('mod_emundus_checklist___content');
         let icon = document.getElementById('mod_emundus_checklist___expand_icon');
