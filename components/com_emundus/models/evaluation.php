@@ -3389,10 +3389,10 @@ class EmundusModelEvaluation extends JModelList {
 
             $passed = false;
             $started = true;
-            if(!empty($eval_dates->eval_end_date)) {
+            if(!empty($eval_dates->eval_end_date) && $eval_dates->eval_end_date !== '0000-00-00 00:00:00') {
                 $passed = strtotime($now) > strtotime($eval_dates->eval_end_date);
             }
-            if(!empty($eval_dates->eval_start_date)) {
+            if(!empty($eval_dates->eval_start_date) && $eval_dates->eval_start_date !== '0000-00-00 00:00:00') {
                 $started = strtotime($now) > strtotime($eval_dates->eval_start_date);
             }
 
