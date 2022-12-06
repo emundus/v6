@@ -20,23 +20,23 @@
     width: 100% !important;
     margin: 0 !important;
 }
-.view-form .fabrikActions.form-actions .offset1.span4 {
+.fabrikActions.form-actions .offset1.span4 {
     float: left;
 }
-.view-form .fabrikActions.form-actions .span4 {
+.fabrikActions.form-actions .span4 {
     float: right;
     text-align: right;
 }
-.view-form .fabrikActions.form-actions .offset1 .pull-right {
+.fabrikActions.form-actions .offset1 .pull-right {
     float: left;
 }
 .view-form form .btn.goback-btn.button[name="Goback"] {
     width: auto !important;
 }
-.view-form .fabrikActions.form-actions .span4 {
+.fabrikActions.form-actions .span4 {
     text-align: right;
 }
-.view-form .fabrikActions.form-actions .row-fluid button, .view-details .fabrikActions.form-actions .row-fluid button {
+.fabrikActions.form-actions .row-fluid button, .view-details .fabrikActions.form-actions .row-fluid button {
     height: 41px !important;
 }
 .view-form #g-sidebar{
@@ -1279,10 +1279,6 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
     display: flex;
     flex-direction: row-reverse;
     justify-content: center;
-}
-
-.form-actions .row-fluid .span4 {
-    text-align: center;
 }
 
 .form-actions .row-fluid .span4 .btn-group .register {

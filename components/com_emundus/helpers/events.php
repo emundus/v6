@@ -152,7 +152,6 @@ class EmundusHelperEvents {
             $copy_exclude_forms = $eMConfig->get('copy_exclude_forms', []);
             $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
             $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
-            $current_phase = $m_campaign->getCurrentCampaignWorkflow($emundusUser);
 
             $id_applicants = $eMConfig->get('id_applicants', '0');
             $applicants = explode(',',$id_applicants);
@@ -178,6 +177,7 @@ class EmundusHelperEvents {
             $reload++;
 
             $current_fnum = !empty($fnum) ? $fnum : $user->fnum;
+            $current_phase = $m_campaign->getCurrentCampaignWorkflow($current_fnum);
             if (!empty($current_phase) && !empty($current_phase->end_date)) {
                 $current_end_date = $current_phase->end_date;
                 $current_start_date = $current_phase->start_date;
@@ -731,7 +731,7 @@ class EmundusHelperEvents {
         $now = $dateTime->format('Y-m-d H:i:s');
 
 
-        $current_phase = $mCampaign->getCurrentCampaignWorkflow($student);
+        $current_phase = $mCampaign->getCurrentCampaignWorkflow($student->fnum);
         if (!empty($current_phase) && !empty($current_phase->id)) {
             if (!is_null($current_phase->output_status)) {
                 $new_status = $current_phase->output_status;
@@ -908,9 +908,10 @@ class EmundusHelperEvents {
 
         EmundusModelLogs::log($student->id, $applicant_id, $student->fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'COM_EMUNDUS_ACCESS_FILE_SENT_BY_APPLICANT');
 
-        $app->enqueueMessage(JText::_('APPLICATION_SENT'), 'success');
-        $app->redirect('index.php');
-
+        $redirect_message = !empty($params['plugin_options']) && !empty($params['plugin_options']->get('trigger_confirmpost_success_msg')) ? JText::_($params['plugin_options']->get('trigger_confirmpost_success_msg')) : JText::_('APPLICATION_SENT');
+        $redirect_url = !empty($params['plugin_options']) && !empty($params['plugin_options']->get('trigger_confirmpost_redirect_url')) ? JText::_($params['plugin_options']->get('trigger_confirmpost_redirect_url')) : 'index.php';
+        $app->enqueueMessage($redirect_message, 'success');
+        $app->redirect($redirect_url);
 
         return true;
     }

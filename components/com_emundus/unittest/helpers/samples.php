@@ -42,8 +42,8 @@ class EmundusUnittestHelperSamples
         $query = $db->getQuery(true);
 
         $query->insert('#__users')
-            ->columns('name, email, password')
-            ->values($db->quote('Test USER') . ', ' . $db->quote($username) . ',' .  $db->quote(md5('test1234')));
+            ->columns('name, username, email, password')
+            ->values($db->quote('Test USER') . ', ' . $db->quote($username) .  ', ' . $db->quote($username) . ',' .  $db->quote(md5('test1234')));
 
         try {
             $db->setQuery($query);

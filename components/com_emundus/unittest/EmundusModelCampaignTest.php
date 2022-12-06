@@ -17,7 +17,9 @@ define('JPATH_BASE', dirname(__DIR__) . '/../../');
 include_once ( JPATH_BASE . 'includes/defines.php' );
 include_once ( JPATH_BASE . 'includes/framework.php' );
 include_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
-include_once (JPATH_SITE . '/components/com_emundus/models/campaign.php');
+include_once(JPATH_SITE.'/components/com_emundus/models/campaign.php');
+include_once(JPATH_SITE.'/components/com_emundus/models/programme.php');
+include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
 jimport('joomla.user.helper');
 jimport( 'joomla.application.application' );
@@ -35,11 +37,15 @@ session_start();
 class EmundusModelCampaignTest extends TestCase
 {
     private $m_campaign;
+    private $m_programme;
+    private $h_sample;
 
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
         $this->m_campaign = new EmundusModelCampaign;
+        $this->m_programme = new EmundusModelProgramme;
+        $this->h_sample = new EmundusUnittestHelperSamples;
     }
 
 
@@ -145,5 +151,82 @@ class EmundusModelCampaignTest extends TestCase
     {
         $progam = $this->m_campaign->getProgrammeByTraining('');
         $this->assertEmpty($progam, 'Get programme by training without param returns null');
+    }
+
+
+    public function testCreateWorkflow()
+    {
+        $workflow_on_all = $this->m_campaign->createWorkflow(9, [0], 1, null, []);
+        $this->assertNotEmpty($workflow_on_all);
+    }
+
+
+    public function testDeleteWorkflow()
+    {
+        $this->assertTrue($this->m_campaign->deleteWorkflows(), 'La suppression de workflow fonctionne');
+    }
+
+    public function testGetCurrentCampaignWorkflow()
+    {
+        $program = $this->m_programme->addProgram(['label' => 'Programme Test Unitaire']);
+        $this->assertNotEmpty($program, 'La création de programme depuis un label fonctionne');
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if (!empty($program['programme_code'])) {
+            $start_date = new DateTime();
+            $start_date->modify('-1 day');
+
+            $end_date = new DateTime();
+            $end_date->modify('+1 year');
+
+            $new_campaign_id = $this->m_campaign->createCampaign([
+                'label' =>  json_encode(['fr' => 'Campagne test unitaire', 'en' => 'Campagne test unitaire']),
+                'description' => 'Lorem ipsum',
+                'short_description' => 'Lorem ipsum',
+                'start_date' => $start_date->format('Y-m-d H:i:s'),
+                'end_date' => $end_date->format('Y-m-d H:i:s'),
+                'profile_id' => 9,
+                'training' => $program['programme_code'],
+                'year' => '2022-2023',
+                'published' => 1
+            ]);
+
+            if ($new_campaign_id) {
+                $user_id = $this->h_sample->createSampleUser(9, 'user.test.emundus_' . rand() . '@emundus.fr');
+                $this->assertGreaterThan(0, $user_id);
+                $fnum = $this->h_sample->createSampleFile($new_campaign_id, $user_id);
+                $this->assertNotEmpty($fnum, 'La création de dossier test fonctionne');
+
+                $workflow_on_all = $this->m_campaign->createWorkflow(9, [0], 1, null, []);
+                $current_file_workflow = $this->m_campaign->getCurrentCampaignWorkflow($fnum);
+                $this->assertSame(intval($workflow_on_all), intval($current_file_workflow->id), 'Le dossier est impacté par le workflow qui n\'a ni campagne ni programme par défaut, mais est sur le même statut.');
+
+                $workflow_on_program = $this->m_campaign->createWorkflow(9, [0], 1, null, ['programs' => [$program['programme_code']]]);
+                $current_file_workflow = $this->m_campaign->getCurrentCampaignWorkflow($fnum);
+                $this->assertSame(intval($workflow_on_program), intval($current_file_workflow->id), 'Le dossier est impacté par le workflow qui a un programme et un statut commun.');
+
+                $workflow_on_campaign = $this->m_campaign->createWorkflow(9, [0], 1, null, ['campaigns' => [$new_campaign_id]]);
+                $current_file_workflow = $this->m_campaign->getCurrentCampaignWorkflow($fnum);
+                $this->assertSame(intval($workflow_on_campaign), intval($current_file_workflow->id), 'Le dossier est impacté par le workflow qui a une campagne et un statut commun.');
+
+                $new_workflow_id = $this->m_campaign->createWorkflow(9, [1], 2, null, ['campaigns' => [$new_campaign_id]]);
+                $current_file_workflow = $this->m_campaign->getCurrentCampaignWorkflow($fnum);
+                $this->assertNotSame(intval($new_workflow_id), intval($current_file_workflow->id), 'Mon dossier au statut Brouillon n\'est pas impacté par la phase sur la même campagne mais sur le statut Envoyé');
+
+                $query->clear()
+                    ->update('#__emundus_campaign_candidature')
+                    ->set('status = 1' )
+                    ->where('fnum LIKE ' . $db->quote($fnum));
+
+                $db->setQuery($query);
+                $db->execute();
+
+                $current_file_workflow = $this->m_campaign->getCurrentCampaignWorkflow($fnum, 'Mon dossier au statut 1 récupère le workflow associé à sa campagne');
+                $this->assertSame(intval($new_workflow_id), intval($current_file_workflow->id));
+
+                $this->assertTrue($this->m_campaign->deleteWorkflows(), 'La suppression de workflow fonctionne');
+            }
+        }
     }
 }
