@@ -120,13 +120,10 @@ echo 'max_input_time = 600'; \
 } > /usr/local/etc/php/php.ini
 
 # Copy entrypoint script and Apache default vhost 
-COPY --chown=www-data:www-data ["php/7.4/apache/000-default.conf","/etc/apache2/sites-available/000-default.conf"]
+COPY ["php/7.4/apache/000-default.conf","/etc/apache2/sites-available/000-default.conf"]
 RUN sed -i 's/\/var\/www\/html\//\/builds\/emundus\/cms\/core\//g' /etc/apache2/sites-available/000-default.conf
-COPY --chown=root:root ["php/7.4/apache/ports.conf","/etc/apache2/ports.conf"]
-COPY --chown=www-data:www-data ["php/7.4/scripts/entrypoint.sh","/scripts/entrypoint.sh"]
-
-# Entrypoint declaration
-ENTRYPOINT ["docker-php-entrypoint"]
+COPY ["php/7.4/apache/ports.conf","/etc/apache2/ports.conf"]
+COPY ["php/7.4/scripts/entrypoint.sh","/scripts/entrypoint.sh"]
 
 # Port
 EXPOSE 8080
