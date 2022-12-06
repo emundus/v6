@@ -36,10 +36,8 @@ build-app-to-test-job:
     - docker pull emundus/tchooz-build-app:latest || true
     - docker build --cache-from emundus/tchooz-build-app:latest --compress -t emundus/tchooz-build-app:latest --build-arg=BUILDKIT_INLINE_CACHE=1 --build-arg xdebug=1 --build-arg jest=1 .ci
     - docker push emundus/tchooz-build-app:latest
-  # only:
-  #   - schedules
   only:
-    - merge_request
+    - schedules
 
 build-db-to-test-job:
   stage: build
@@ -73,8 +71,7 @@ prepare-job:
 
 phpunit-job:
   stage: test
-  image: 
-    name: emundus/tchooz-build-app:latest
+  image: emundus/tchooz-build-app:latest
   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
   services:
     - name: emundus/tchooz-build-db:latest
@@ -84,61 +81,30 @@ phpunit-job:
     - apache2-foreground &
     - /scripts/entrypoint.sh
   script:
-    - ps -ef
-    - ls -lha
-    - cat configuration.php
-    - curl "http://localhost:8080"
     - libraries/emundus/phpunit.phar -c phpunit.xml --coverage-text --colors=never
   dependencies:
     - prepare-job
   only:
     - merge_request
 
-# phpunit-job:
-#   stage: test
-#   image: 
-#     name: emundus/tchooz-build-app:latest
-#   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
-#   services:
-#     - name: emundus/tchooz-build-db:latest
-#       alias: database
-#     - redis:latest
-#   before_script:
-#     - apache2-foreground &
-#     - sleep 3
-#     - /scripts/entrypoint.sh
-#   script:
-#     - ps -ef
-#     - ls -lha
-#     - cat configuration.php
-#     - curl "http://localhost:8080"
-#     - libraries/emundus/phpunit.phar -c phpunit.xml --coverage-text --colors=never
-#   dependencies:
-#     - prepare-job
-#   only:
-#     - merge_request
-
-# jest-job:
-#   stage: test
-#   image: 
-#     name: emundus/tchooz-build-app:latest
-#   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
-#   services:
-#     - name: emundus/tchooz-build-db:latest
-#       alias: database
-#     - redis:latest
-#   before_script:
-#     - apache2-foreground &
-#     - sleep 3
-#     - /scripts/entrypoint.sh
-#   script:
-#     - cat configuration.php
-#     - curl "http://localhost:8080"
-#     - cd components && yarn && yarn run test:unit com_emundus/ --ci --coverage
-#   dependencies:
-#     - prepare-job
-#   only:
-#     - merge_request
+jest-job:
+  stage: test
+  image: emundus/tchooz-build-app:latest
+  coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
+  services:
+    - name: emundus/tchooz-build-db:latest
+      alias: database
+    - redis:latest
+  before_script:
+    - apache2-foreground &
+    - /scripts/entrypoint.sh
+  script:
+    - cd components && yarn 
+    - yarn run test:unit com_emundus/ --ci --coverage
+  dependencies:
+    - prepare-job
+  only:
+    - merge_request
 
 release-job:
   stage: release
