@@ -1,6 +1,19 @@
 requirejs(['fab/fabrik'], function () {
-    Fabrik.addEvent('fabrik.form.loaded', function (form) {
+    var removedFabrikFormSkeleton = false;
 
+    Fabrik.addEvent('fabrik.form.loaded', function (form) {
+        if (!removedFabrikFormSkeleton) {
+            removeFabrikFormSkeleton();
+        }
+    });
+
+    window.setInterval(function() {
+        if (!removedFabrikFormSkeleton && Object.entries(Fabrik.blocks).length > 0) {
+            removeFabrikFormSkeleton();
+        }
+    }, 5000);
+
+    function removeFabrikFormSkeleton() {
         let header = document.querySelector('.page-header');
         if(header) {
             document.querySelector('.page-header h1').style.opacity = 1;
@@ -34,5 +47,7 @@ requirejs(['fab/fabrik'], function () {
             elt.style.marginTop = '0';
             elt.classList.remove('skeleton');
         }
-    });
+
+        removedFabrikFormSkeleton = true;
+    }
 });

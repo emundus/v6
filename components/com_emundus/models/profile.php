@@ -830,8 +830,11 @@ class EmundusModelProfile extends JModelList {
     }
 
     public function getProfileIDByCampaigns($campaigns, $codes) {
-        $query = $this->_db->getQuery(true);
+        $profiles = [];
+
         if (!empty($campaigns)) {
+            $query = $this->_db->getQuery(true);
+
             if (!empty($codes)) {
                 try {
                     $query->clear()
@@ -875,11 +878,10 @@ class EmundusModelProfile extends JModelList {
                         $profileMenuType[] = $raw->menutype;
                     }
 
-                    return ['profile_id' => $profileIds, 'profile_label' => $profileLabels, 'profile_menu_type' => $profileMenuType];
+                    $profiles = ['profile_id' => $profileIds, 'profile_label' => $profileLabels, 'profile_menu_type' => $profileMenuType];
 
                 } catch(Exception $e) {
                     JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(). ' : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-                    return false;
                 }
             } else {
                 try {
@@ -901,7 +903,7 @@ class EmundusModelProfile extends JModelList {
                         $secondProfile[] = $value->profile_id;
                     }
 
-                    $_profileIds = array_unique(array_merge($firstProfile,$secondProfile));
+                    $_profileIds = array_unique(array_merge($firstProfile, $secondProfile));
 
                     $profileLabels = [];
                     $profileMenuType = [];
@@ -919,16 +921,15 @@ class EmundusModelProfile extends JModelList {
                         $profileMenuType[] = $raw->menutype;
                     }
 
-                    return ['profile_id' => $_profileIds, 'profile_label' => $profileLabels, 'profile_menu_type' => $profileMenuType];
+                    $profiles = ['profile_id' => $_profileIds, 'profile_label' => $profileLabels, 'profile_menu_type' => $profileMenuType];
 
                 } catch(Exception $e) {
                     JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(). ' : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-                    return false;
                 }
             }
-        } else {
-            return false;
         }
+
+        return $profiles;
     }
 
     function getFnumDetails($fnum) {

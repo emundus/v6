@@ -2319,6 +2319,11 @@ class EmundusModelCampaign extends JModelList {
 
             try {
                 $campaign_workflows_by_campaign = $this->_db->loadObjectList();
+                foreach($campaign_workflows_by_campaign as $key => $wf) {
+                    if (empty($wf->id)) {
+                        unset($campaign_workflows_by_campaign[$key]);
+                    }
+                }
             } catch (Exception $e) {
                 JLog::add('[getCurrentCampaignWorkflow] Error getting current campaign workflow in component/com_emundus/models/campaign: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             }
@@ -2326,15 +2331,20 @@ class EmundusModelCampaign extends JModelList {
             $campaign_workflows_by_campaign_program = [];
             $query->clear()
                 ->select('DISTINCT ecw.*, GROUP_CONCAT(ecw_status.entry_status separator ",") as entry_status')
-                ->from('#__emundus_campaign_workflow as ecw')
-                ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
-                ->leftJoin('#__emundus_setup_campaigns AS esc ON esc.id = ' . $this->_db->quote($campaign_id))
-                ->leftJoin('#__emundus_campaign_workflow_repeat_programs AS ecwrp ON ecwrp.parent_id = ecw.id')
-                ->andWhere('ecwrp.programs = esc.training');
+                ->from($this->_db->quoteName('#__emundus_campaign_workflow','ecw'))
+                ->leftJoin($this->_db->quoteName('#__emundus_campaign_workflow_repeat_entry_status','ecw_status').' ON '.$this->_db->quoteName('ecw_status.parent_id').' = '.$this->_db->quoteName('ecw.id'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$this->_db->quoteName('esc.id').' = '.$this->_db->quote($campaign_id))
+                ->leftJoin($this->_db->quoteName('#__emundus_campaign_workflow_repeat_programs','ecwrp').' ON '.$this->_db->quoteName('ecwrp.parent_id').' = '.$this->_db->quoteName('ecw.id'))
+                ->where($this->_db->quoteName('ecwrp.programs') . ' = ' . $this->_db->quoteName('esc.training'));
             $this->_db->setQuery($query);
 
             try {
                 $campaign_workflows_by_campaign_program = $this->_db->loadObjectList();
+                foreach($campaign_workflows_by_campaign_program as $key => $wf) {
+                    if (empty($wf->id)) {
+                        unset($campaign_workflows_by_campaign_program[$key]);
+                    }
+                }
             } catch (Exception $e) {
                 JLog::add('[getCurrentCampaignWorkflow] Error getting current campaign workflow in component/com_emundus/models/campaign: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             }
@@ -2353,6 +2363,11 @@ class EmundusModelCampaign extends JModelList {
 
             try {
                 $default_campaign_workflows = $this->_db->loadObjectList();
+                foreach($default_campaign_workflows as $key => $wf) {
+                    if (empty($wf->id)) {
+                        unset($default_campaign_workflows[$key]);
+                    }
+                }
             } catch (Exception $e) {
                 JLog::add('[getCurrentCampaignWorkflow] Error getting current campaign workflow in component/com_emundus/models/campaign: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             }
@@ -2484,5 +2499,28 @@ class EmundusModelCampaign extends JModelList {
         }
 
         return $new_workflow_id;
+    }
+
+    public function deleteWorkflows($ids = null)
+    {
+        $deleted = false;
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->delete('#__emundus_campaign_workflow');
+
+        if (!empty($ids)) {
+            $query->where('id IN (' . implode(', ' . $ids). ')');
+        }
+
+        try {
+            $db->setQuery($query);
+            $deleted = $db->execute();
+        } catch (Exception $e) {
+            JLog::add('Failed to delete workflow(s) ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+        }
+
+        return $deleted;
     }
 }
