@@ -1,6 +1,10 @@
 services:
   - name: docker:20.10-dind
 
+default:
+  tags:
+    - k8s
+
 variables:
   GIT_SUBMODULE_STRATEGY: normal
   DOCKER_DRIVER: overlay2
