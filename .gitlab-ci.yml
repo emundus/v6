@@ -10,15 +10,14 @@ variables:
   DOCKER_TLS_CERTDIR: ""
 
 stages:
-  - check
-  - build
   - prepare
+  - build
   - test
   - release
   - publish
 
 check-tchooz-version-job:
-  stage: check
+  stage: prepare
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
       when: always
@@ -26,6 +25,24 @@ check-tchooz-version-job:
   image: enix/ci-toolbox
   script:
     - .ci/file-search-in-gitlab-merge-request.sh "$CI_SERVER_URL" "$GITLAB_TOKEN" "$CI_PROJECT_ID" "$CI_MERGE_REQUEST_IID" "administrator/components/com_emundus/emundus.xml"
+
+vanilla-job:
+  stage: prepare
+  image: docker:20.10
+  script:
+    - cp -p configuration.php.dist configuration.php
+    - cp -p media/com_emundus_vanilla/v6/.htaccess .htaccess
+    - cp -pr media/com_emundus_vanilla/v6/language/overrides/* language/overrides/
+    - cp -pr media/com_emundus_vanilla/v6/templates/g5_helium/* templates/g5_helium/
+  artifacts:
+    paths:
+      - configuration.php
+      - .htaccess
+      - language/overrides/
+      - templates/g5_helium/
+    expire_in: 24h
+  only:
+    - merge_request
 
 build-app-to-test-job:
   stage: build
@@ -51,24 +68,6 @@ build-db-to-test-job:
   only:
     - schedules
 
-prepare-job:
-  stage: prepare
-  image: docker:20.10
-  script:
-    - cp -p configuration.php.dist configuration.php
-    - cp -p media/com_emundus_vanilla/v6/.htaccess .htaccess
-    - cp -pr media/com_emundus_vanilla/v6/language/overrides/* language/overrides/
-    - cp -pr media/com_emundus_vanilla/v6/templates/g5_helium/* templates/g5_helium/
-  artifacts:
-    paths:
-      - configuration.php
-      - .htaccess
-      - language/overrides/
-      - templates/g5_helium/
-    expire_in: 24h
-  only:
-    - merge_request
-
 phpunit-job:
   stage: test
   image: emundus/tchooz-build-app:latest
@@ -83,7 +82,7 @@ phpunit-job:
   script:
     - libraries/emundus/phpunit.phar -c phpunit.xml --coverage-text --colors=never
   dependencies:
-    - prepare-job
+    - vanilla-job
   only:
     - merge_request
 
@@ -102,7 +101,7 @@ jest-job:
     - cd components && yarn 
     - yarn run test:unit com_emundus/ --ci --coverage
   dependencies:
-    - prepare-job
+    - vanilla-job
   only:
     - merge_request
 
