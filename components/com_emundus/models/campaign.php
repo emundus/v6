@@ -2330,7 +2330,7 @@ class EmundusModelCampaign extends JModelList {
                 ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
                 ->leftJoin('#__emundus_setup_campaigns AS esc ON esc.id = ' . $this->_db->quote($campaign_id))
                 ->leftJoin('#__emundus_campaign_workflow_repeat_programs AS ecwrp ON ecwrp.parent_id = ecw.id')
-                ->andWhere('ecwrp.programs = esc.training');
+                ->where('ecwrp.programs = esc.training');
             $this->_db->setQuery($query);
 
             try {
