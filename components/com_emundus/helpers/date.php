@@ -28,10 +28,22 @@ use Joomla\CMS\HTML\HTMLHelper;
  * @since 1.5
  */
 class EmundusHelperDate {
+
+    /**
+     * Return date formatted
+     * @param $date
+     * @param $format
+     * @param $local
+     *
+     * @return string
+     *
+     * @throws Exception
+     * @since version 1.28.0
+     */
     static function displayDate($date, $format = 'DATE_FORMAT_LC2', $local = 1) {
         $display_date = '';
 
-        if (!empty($date) && $date !== '0000-00-00 00:00:00') {
+        if (!EmundusHelperDate::isNull($date)) {
             if ($local) {
                 $config = JFactory::getConfig();
                 $offset = $config->get('offset');
@@ -46,5 +58,17 @@ class EmundusHelperDate {
         }
 
         return $display_date;
+    }
+
+    /**
+     * Check if date is null
+     * @param $date
+     *
+     * @return bool
+     *
+     * @since version 1.34.0
+     */
+    static function isNull($date) {
+        return (empty($date) || $date === '0000-00-00 00:00:00' || $date === '0000-00-00');
     }
 }

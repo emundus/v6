@@ -3157,7 +3157,57 @@ class EmundusModelEvaluation extends JModelList {
             $db->setQuery($query);
             $files_groups_associated = $db->loadObjectList();
 
-            $files_associated = array_merge($files_users_associated, $files_groups_associated);
+            /* */
+            $query->clear()
+                ->select('DISTINCT ecc.fnum,ecc.applicant_id,ecc.campaign_id,u.name')
+                ->from($db->quoteName('#__emundus_groups','eg'))
+                ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course','esgrc').' ON '.$db->quoteName('esgrc.parent_id').' = '.$db->quoteName('eg.group_id'))
+                ->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.training').' = '.$db->quoteName('esgrc.course'))
+                ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
+                ->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('ecc.applicant_id').' = '.$db->quoteName('u.id'))
+                ->where($db->quoteName('eg.user_id') . ' = ' . $db->quote($user))
+                ->andWhere($db->quoteName('ecc.campaign_id') . ' = ' . $db->quote($campaign))
+                ->andWhere($db->quoteName('ecc.published') . ' = 1');
+
+            if (isset($params->status) && $params->status !== '') {
+                $query->andWhere($db->quoteName('ecc.status') . ' IN (' . implode(',',$params->status) . ')');
+            }
+
+            if (isset($params->tags) && $params->tags !== '') {
+                $query->leftJoin($db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum'))
+                    ->andWhere($db->quoteName('eta.id_tag') . ' IN (' . implode(',',$params->tags) . ')');
+            }
+
+            if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
+                $query->andWhere($db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')');
+            }
+
+            if (!empty($params->status_to_exclude)) {
+                $query->andWhere($db->quoteName('ecc.status') . ' NOT IN (' . implode(',',$params->status_to_exclude) . ')');
+            }
+
+            if (!empty($params->tags_to_exclude)) {
+                $exclude_query = $db->getQuery(true);
+
+                $exclude_query->select('eta.fnum')
+                    ->from('jos_emundus_tag_assoc eta')
+                    ->where('eta.id_tag IN (' . implode(',', $params->tags_to_exclude) . ')');
+
+                $db->setQuery($exclude_query);
+
+                $fnums_to_exclude = $db->loadColumn();
+
+                if (!empty($fnums_to_exclude)) {
+                    $query->where('ecc.fnum NOT IN (' . implode(',', $fnums_to_exclude) . ')');
+                }
+            }
+
+            $query->order('ecc.date_submitted');
+            $db->setQuery($query);
+            $files_groups_programmes_associated = $db->loadObjectList();
+            /* */
+
+            $files_associated = array_merge($files_users_associated, $files_groups_associated, $files_groups_programmes_associated);
 
             foreach ($files_associated as $file) {
                 if (!in_array($file->fnum, $fnums)) {
@@ -3347,7 +3397,55 @@ class EmundusModelEvaluation extends JModelList {
             $db->setQuery($query);
             $campaigns_groups_assoc = $db->loadObjectList();
 
-            $campaigns = array_merge($campaigns_users_assoc,$campaigns_groups_assoc);
+            // Get files associated to my groups +++ programmes
+            $query->clear()
+                ->select('DISTINCT esc.id,esc.label,count(distinct ecc.fnum) as files')
+                ->from($db->quoteName('#__emundus_groups','eg'))
+                ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course','esgrc').' ON '.$db->quoteName('esgrc.parent_id').' = '.$db->quoteName('eg.group_id'))
+                ->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.training').' = '.$db->quoteName('esgrc.course'))
+                ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
+                ->where($db->quoteName('eg.user_id') . ' = ' . $db->quote($user))
+                ->andWhere($db->quoteName('ecc.published') . ' = 1');
+
+            if (isset($params->status) && $params->status !== '') {
+                $query->andWhere($db->quoteName('ecc.status') . ' IN (' . implode(',',$params->status) . ')');
+            }
+
+            if (isset($params->tags) && $params->tags !== '') {
+                $query->leftJoin($db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum'))
+                    ->andWhere($db->quoteName('eta.id_tag') . ' IN (' . implode(',',$params->tags) . ')');
+            }
+
+            if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
+                $query->andWhere($db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')');
+            }
+
+            if (!empty($params->status_to_exclude)) {
+                $query->andWhere($db->quoteName('ecc.status') . ' NOT IN (' . implode(',',$params->status_to_exclude) . ')');
+            }
+
+            if (!empty($params->tags_to_exclude)) {
+                $exclude_query = $db->getQuery(true);
+
+                $exclude_query->select('eta.fnum')
+                    ->from('jos_emundus_tag_assoc eta')
+                    ->where('eta.id_tag IN (' . implode(',', $params->tags_to_exclude) . ')');
+
+                $db->setQuery($exclude_query);
+
+                $fnums_to_exclude = $db->loadColumn();
+
+                if (!empty($fnums_to_exclude)) {
+                    $query->where('ecc.fnum NOT IN (' . implode(',', $fnums_to_exclude) . ')');
+                }
+            }
+
+            $query->group('esc.id');
+            $db->setQuery($query);
+            $campaigns_groups_programmes = $db->loadObjectList();
+
+            $campaigns = array_merge($campaigns_users_assoc,$campaigns_groups_assoc, $campaigns_groups_programmes);
+
             return $h_array->mergeAndSumPropertyOfSameObjects($campaigns,'id','files');
         } catch (Exception $e) {
             JLog::add('Problem to get campaigns to evaluate for user '.$user.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
