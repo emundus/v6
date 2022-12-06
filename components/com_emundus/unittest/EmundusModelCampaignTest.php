@@ -169,7 +169,7 @@ class EmundusModelCampaignTest extends TestCase
     public function testGetCurrentCampaignWorkflow()
     {
         $program = $this->m_programme->addProgram(['label' => 'Programme Test Unitaire']);
-        $this->assertNotEmpty($program['programme_code'], 'La création de programme depuis un label fonctionne');
+        $this->assertNotEmpty($program, 'La création de programme depuis un label fonctionne');
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
