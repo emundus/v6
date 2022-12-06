@@ -48,15 +48,26 @@ class EmundusModelApplication extends JModelList
 
     public function getApplicantInfos($aid, $param)
     {
-        $query = 'SELECT ' . implode(",", $param) . '
+        $applicant_infos = [];
+
+        if (!empty($aid) && !empty($param)) {
+            $query = 'SELECT ' .  implode(',', $param) . '
                 FROM #__users
                 LEFT JOIN #__emundus_users ON #__emundus_users.user_id=#__users.id
                 LEFT JOIN #__emundus_personal_detail ON #__emundus_personal_detail.user=#__users.id
                 LEFT JOIN #__emundus_setup_profiles ON #__emundus_setup_profiles.id=#__emundus_users.profile
                 LEFT JOIN #__emundus_uploads ON (#__emundus_uploads.user_id=#__users.id AND #__emundus_uploads.attachment_id=10)
                 WHERE #__users.id=' . $aid;
-        $this->_db->setQuery($query);
-        return $this->_db->loadAssoc();
+            $this->_db->setQuery($query);
+
+            try {
+                $applicant_infos =  $this->_db->loadAssoc();
+            } catch (Exception $e) {
+                JLog::add("Failed to get applicant infos for user_id $aid " . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            }
+        }
+
+        return $applicant_infos;
     }
 
     public function getApplicantDetails($aid, $ids)
