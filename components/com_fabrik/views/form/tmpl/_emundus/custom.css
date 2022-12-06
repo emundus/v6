@@ -1,3 +1,7 @@
+.em-submit-form-button{
+    justify-self: end;
+}
+
 .fabrikForm .row-fluid.nav{
     display: none;
 }
@@ -492,7 +496,7 @@ form#member-profile .form-horizontal .control-label {
 }
 .view-registration .login.em-formRegistrationCenter .em-heading-registration h1,
 .view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) .em-heading-registration h1 {
-    margin-top: 0px !important;
+    margin-top: 0 !important;
     font-size: 32px;
     font-style: normal;
     font-weight: 600;
@@ -516,7 +520,6 @@ form#member-profile .form-horizontal .control-label {
     border-radius: 16px;
     margin-top: 68px;
     width: 45%;
-    min-width: 360px;
     max-width: 720px;
 }
 
@@ -922,10 +925,6 @@ input:not([type]).mce-textbox {
     color: #000;
 }
 
-.btn {
-    border-radius: 4px !important;
-}
-
 .form-horizontal .control-group .btn-group label.btn-default {
     color: white;
     border-radius: 0 !important;
@@ -1155,11 +1154,11 @@ body.em-formRegistrationCenter  {
 
 .error-report-page  button.submit:hover,
 .error-report-page  button.submit:focus,
-.error-report-page  button.submit:active,
+.error-report-page  button.submit:active
 {
     border-radius: 25px;
     padding: 5px 30px;
-    border: 2px solid #16afe 1!important;
+    border: 2px solid #16afe1 !important;
     background: transparent;
     color: #16afe1 !important;
 }
@@ -1521,7 +1520,7 @@ a.btn-attach:active {
 
 @media screen and (min-width:480px) and (max-width: 959px) {
 
-    .view-form {
+    .view-form
     .sauvegarder {
         margin-left: 0 !important;
     }
@@ -1569,6 +1568,19 @@ a.btn-attach:active {
 
 @media all and (max-width: 479px) {
 
+    .em-submit-form-button{
+        justify-self: center;
+    }
+
+    .view-form .sauvegarder,
+    .view-checkout .sauvegarder, #fabrikSubmit_321 {
+        margin-left: 0 !important;
+    }
+
+    .fabrikActions.form-actions .em-grid-2{
+        text-align: center;
+    }
+
     .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter {
         padding: 20px;
     }
@@ -1589,7 +1601,7 @@ a.btn-attach:active {
 
 }
 
-@media all and (min-width 480px) and (max-width: 767px) {
+@media all and (min-width: 480px) and (max-width: 767px) {
 
     .fabrikActions.form-actions .row-fluid .span4 {
         width: 98% !important;
