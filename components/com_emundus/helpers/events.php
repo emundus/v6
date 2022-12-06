@@ -169,9 +169,6 @@ class EmundusHelperEvents {
             $jinput = $mainframe->input;
             $view = $jinput->get('view');
             $fnum = $jinput->get->get('rowid', null);
-            if(empty($fnum)){
-                $fnum = $jinput->get('rowid', null);
-            }
             $itemid = $jinput->get('Itemid');
             $reload = $jinput->get('r', 0);
             $reload++;
