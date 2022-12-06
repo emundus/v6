@@ -85,6 +85,7 @@ phpunit-job:
     - ps -ef
     - ls -lha
     - cat configuration.php
+    - cat /scripts/entrypoint.sh
     - curl "http://localhost:8080"
     - libraries/emundus/phpunit.phar -c phpunit.xml --coverage-text --colors=never
   dependencies:
