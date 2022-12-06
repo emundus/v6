@@ -4659,6 +4659,16 @@ screen and (max-height: 769px) {
 /* MOBILE */
 @media all and (max-width: 479px) {
 
+  .em-searchbar{
+    width: 100%;
+    label{
+      width: 100%;
+      #applications_searchbar{
+        width: 100%;
+      }
+    }
+  }
+
   #drawer{
     padding: 8px;
   }
@@ -4673,6 +4683,9 @@ screen and (max-height: 769px) {
   }
 
   .view-form.applicant-form,.view-form.emundus-form{
+    .span12 .emundus-form{
+      margin-top: 0;
+    }
     .g-container{
       .g-grid{
         .g-block:first-child{

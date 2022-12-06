@@ -29,7 +29,7 @@ if ($this->hasActions) : ?>
         </div>
         <?php endif; ?>
 		<?php if ( $form->submitButton || $form->applyButton || $form->copyButton ): ?>
-			<div style="justify-self: end">
+			<div class="em-submit-form-button">
 				<div class="btn-group">
 					<?php
 					echo $form->submitButton . ' ';

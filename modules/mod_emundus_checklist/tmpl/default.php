@@ -122,6 +122,12 @@ $details_view = array_search('view=details',$url);
 </div>
 
 <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if(window.innerWidth < 480){
+            expandForms();
+        }
+    });
+
     function expandForms(){
         let content = document.getElementById('mod_emundus_checklist___content');
         let icon = document.getElementById('mod_emundus_checklist___expand_icon');

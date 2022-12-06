@@ -1,3 +1,7 @@
+.em-submit-form-button{
+    justify-self: end;
+}
+
 .fabrikForm .row-fluid.nav{
     display: none;
 }
@@ -1563,6 +1567,15 @@ a.btn-attach:active {
 }
 
 @media all and (max-width: 479px) {
+
+    .em-submit-form-button{
+        justify-self: center;
+    }
+
+    .view-form .sauvegarder,
+    .view-checkout .sauvegarder, #fabrikSubmit_321 {
+        margin-left: 0 !important;
+    }
 
     .fabrikActions.form-actions .em-grid-2{
         text-align: center;

@@ -162,7 +162,7 @@ ksort($applications);
 
                                     ?>
                                     <div class="row em-border-neutral-300 mod_emundus_applications___content_app em-pointer" id="application_content<?php echo $application->fnum ?>" onclick="openFile(event,'<?php echo $first_page_url ?>')">
-                                        <div>
+                                        <div class="em-w-100">
                                             <div class="em-flex-row mod_emundus_applications___content_text">
                                                 <?php if ($show_fnum) : ?>
                                                     <div class="em-mb-8 em-font-size-14">
