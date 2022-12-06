@@ -126,8 +126,8 @@ input[type="color"],
 select:not(.profile-select),
 a.chzn-single,
 textarea{
-  background: $neutral-50 !important;
-  color: inherit;
+  background-color: $neutral-50 !important;
+  color: initial;
   font-family: var(--font);
 }
 
@@ -545,15 +545,22 @@ p,
 
 /* ESPACEMENTS SOUS LES TITRES  */
 
-.view-list #g-container-main,
 .view-form #g-container-main,
-.view-details #g-container-main,
 .emundus-form {
   .page-header {
     background: transparent;
     margin: 32px 32px 0 32px;
   }
 }
+
+.view-list #g-container-main,
+.view-details #g-container-main {
+  .page-header {
+    background: transparent;
+    margin: 32px 32px 0 0px;
+  }
+}
+
 
 /* Branding */
 .g-branding {
@@ -1245,6 +1252,10 @@ body>.g-container {
     align-items: center;
     border-radius: 8px;
     margin: 8px 0;
+
+    span {
+      color: var(--neutral-800);
+    }
   }
 
   .em-attachment-dropzone{
@@ -1458,7 +1469,7 @@ body>.g-container {
     height: 50px;
     text-transform: unset;
     margin-right: 0;
-    border-radius: var(--applicant-border-radius);
+    border-radius: var(--applicant-border-radius) !important;
     padding: 8px 12px;
     font-family: var(--applicant-default-font);
     font-weight: 500;
@@ -1767,7 +1778,7 @@ tr.fabrikFilterContainer{
     background: $base-secondary-color;
     border: 1px solid $base-secondary-color;
     padding: 8px 12px;
-    border-radius: var(--applicant-border-radius);
+    border-radius: var(--applicant-border-radius) !important;
     cursor: pointer;
     margin: 8px 0;
   }
@@ -1981,7 +1992,7 @@ body.error-page .container-404 p {
 }
 
 .btn {
-  border-radius: var(--applicant-border-radius);
+  border-radius: var(--applicant-border-radius) !important;
 }
 
 .btnmarge {
@@ -2044,7 +2055,7 @@ body.error-page .container-404 p {
 button.btn-primary {
   background: $base-secondary-color;
   border: 1px solid $base-secondary-color;
-  border-radius: var(--applicant-border-radius);
+  border-radius: var(--applicant-border-radius) !important;
   padding: 8px 12px;
   height: 40px;
 
@@ -2057,7 +2068,7 @@ button.btn-primary {
 button.btn-secondary {
   background: $base-secondary-color;
   border: 1px solid $base-secondary-color;
-  border-radius: var(--applicant-border-radius);
+  border-radius: var(--applicant-border-radius) !important;
   padding: 8px 12px;
 
   &:hover {
@@ -2195,7 +2206,7 @@ p.readmore .btn,
   .span4 button.btn.save-btn {
     background: $base-primary-color;
     border: 1px solid $base-primary-color;
-    border-radius: var(--applicant-border-radius);
+    border-radius: var(--applicant-border-radius) !important;
     color: var(--neutral-50);
     font-size: 14px;
 
@@ -3061,7 +3072,7 @@ ul.unstyled.em-linkForgot li a {
   color: initial;
 }
 
-.com_emundus:not(.view-programme):not(.view-form):not(.view-users.layout-edit):not(.view-checklist),
+.com_emundus:not(.view-programme):not(.view-form):not(.view-users.layout-edit):not(.view-checklist):not(.files-board),
 .com_emundus.view-form .com_emundus_vue {
 
   color: inherit;
@@ -4648,6 +4659,16 @@ screen and (max-height: 769px) {
 /* MOBILE */
 @media all and (max-width: 479px) {
 
+  .em-searchbar{
+    width: 100%;
+    label{
+      width: 100%;
+      #applications_searchbar{
+        width: 100%;
+      }
+    }
+  }
+
   #drawer{
     padding: 8px;
   }
@@ -4657,6 +4678,22 @@ screen and (max-height: 769px) {
       #mceu_57-body {
         display: flex;
         flex-wrap: wrap;
+      }
+    }
+  }
+
+  .view-form.applicant-form,.view-form.emundus-form{
+    .span12 .emundus-form{
+      margin-top: 0;
+    }
+    .g-container{
+      .g-grid{
+        .g-block:first-child{
+          order: 2;
+        }
+        .g-block:nth-child(2){
+          order: 1;
+        }
       }
     }
   }
@@ -4774,7 +4811,7 @@ screen and (max-height: 769px) {
         margin-top: -13px;
 
         ol {
-          width: 80%;
+          width: 100%;
           text-align: justify;
           margin-left: 0 !important;
           padding: 0 !important;
@@ -4786,12 +4823,12 @@ screen and (max-height: 769px) {
 
         div.em-heading-registration {
           width: 100%;
-          padding: 80px 24px 32px 24px;
+            padding: 80px 0px 32px 0px;
           text-align: center;
         }
 
         form.fabrikForm {
-          width: 90%;
+            width: 100%;
         }
 
         .icon-star.small {
@@ -5479,6 +5516,11 @@ screen and (max-height: 769px) {
     text-align: center;
   }
 
+  /* MESSAGERIE */
+  .view-article .messages__vue .em-small-flex-column {
+    display: flex;
+    flex-direction: inherit;
+  }
 }
 
 @media screen and (min-width: 480px) and (max-width: 959px) {
