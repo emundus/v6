@@ -262,7 +262,7 @@ button[class ^= 'em-']{
   top: 0;
   left: 0;
   width: 100% !important;
-  height: 100%;
+  height: auto;
   opacity: 0;
   z-index: 6;
   &:checked {
