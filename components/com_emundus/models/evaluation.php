@@ -2174,7 +2174,7 @@ class EmundusModelEvaluation extends JModelList {
 
                                         if (count($val) > 0) {
                                             foreach ($val as $k => $v) {
-                                                $index = array_search(trim($v), $params->sub_options->sub_values);
+                                                $index = array_search($v, $params->sub_options->sub_values);
                                                 $val[$k] = JText::_($params->sub_options->sub_labels[$index]);
                                             }
                                             $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
