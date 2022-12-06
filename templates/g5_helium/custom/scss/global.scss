@@ -4672,6 +4672,19 @@ screen and (max-height: 769px) {
     }
   }
 
+  .view-form.applicant-form,.view-form.emundus-form{
+    .g-container{
+      .g-grid{
+        .g-block:first-child{
+          order: 2;
+        }
+        .g-block:nth-child(2){
+          order: 1;
+        }
+      }
+    }
+  }
+
   .view-users #g-container-main .g-container {
     width: 100% !important;
   }
