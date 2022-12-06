@@ -525,15 +525,21 @@ class EmundusHelperEvents {
                 $accept_other_payments = $params->get('accept_other_payments', 0);
 
                 if (count($fnumInfos) > 0) {
-                    $checkout_url = $mApplication->getHikashopCheckoutUrl($user->profile . $scholarship_document_id);
-                    if(strpos($checkout_url,'${') !== false) {
-                        $checkout_url = $mEmails->setTagsFabrik($checkout_url, [$user->fnum]);
-                    }
-                    // If $accept_other_payments is 2 : that means we do not redirect to the payment page.
-                    if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments >= 100 && $forms >= 100) {
-                        // Profile number and document ID are concatenated, this is equal to the menu corresponding to the free option (or the paid option in the case of document_id = NULL)
-                        $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($checkout_url));
-                        $mainframe->redirect($checkout_url);
+                    $checkout_cart_url = $mApplication->getHikashopCartUrl($user->profile);
+                    if (!empty($checkout_cart_url)) {
+                        $mainframe->redirect($checkout_cart_url);
+                    } else {
+                        $checkout_url = $mApplication->getHikashopCheckoutUrl($user->profile . $scholarship_document_id);
+
+                        if (strpos($checkout_url,'${') !== false) {
+                            $checkout_url = $mEmails->setTagsFabrik($checkout_url, [$user->fnum]);
+                        }
+                        // If $accept_other_payments is 2 : that means we do not redirect to the payment page.
+                        if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments >= 100 && $forms >= 100) {
+                            // Profile number and document ID are concatenated, this is equal to the menu corresponding to the free option (or the paid option in the case of document_id = NULL)
+                            $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($checkout_url));
+                            $mainframe->redirect($checkout_url);
+                        }
                     }
                 } else {
                     $mainframe->redirect('index.php');
