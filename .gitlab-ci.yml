@@ -21,13 +21,11 @@ prepare-job:
   stage: prepare
   image: docker:20.10
   script:
-    - cp configuration.php.dist configuration.php
     - cp media/com_emundus_vanilla/v6/.htaccess .htaccess
     - cp -r media/com_emundus_vanilla/v6/language/overrides/* language/overrides/
     - cp -r media/com_emundus_vanilla/v6/templates/g5_helium/* templates/g5_helium/
   artifacts:
     paths:
-      - configuration.php
       - .htaccess
       - language/overrides/
       - templates/g5_helium/
@@ -81,6 +79,8 @@ phpunit-job:
   variables:
     FF_KUBERNETES_HONOR_ENTRYPOINT: 1
     FF_USE_LEGACY_KUBERNETES_EXECUTION_STRATEGY: 0
+  before_script:
+    - cp configuration.php.dist configuration.php
   script:
     - ps -ef
     - ls -lha
