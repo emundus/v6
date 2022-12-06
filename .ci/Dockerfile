@@ -126,7 +126,7 @@ COPY --chown=root:root ["php/7.4/apache/ports.conf","/etc/apache2/ports.conf"]
 COPY --chown=www-data:www-data ["php/7.4/scripts/entrypoint.sh","/scripts/entrypoint.sh"]
 
 # Entrypoint declaration
- ENTRYPOINT ["docker-php-entrypoint"]
+ENTRYPOINT ["docker-php-entrypoint"]
 
 # Port
 EXPOSE 8080
