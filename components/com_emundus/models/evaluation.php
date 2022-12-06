@@ -2162,7 +2162,7 @@ class EmundusModelEvaluation extends JModelList {
                                     }
                                 }
 
-                                if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown") {
+                                if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
 
                                     foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
 
