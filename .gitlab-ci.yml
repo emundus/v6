@@ -52,8 +52,10 @@ build-app-to-test-job:
     - docker pull emundus/tchooz-build-app:latest || true
     - docker build --cache-from emundus/tchooz-build-app:latest --compress -t emundus/tchooz-build-app:latest --build-arg=BUILDKIT_INLINE_CACHE=1 --build-arg xdebug=1 --build-arg jest=1 .ci
     - docker push emundus/tchooz-build-app:latest
+  # only:
+  #   - schedules
   only:
-    - schedules
+    - merge_request
 
 build-db-to-test-job:
   stage: build

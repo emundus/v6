@@ -1,8 +1,11 @@
 #!/bin/bash
 
+if [ ! -f configuration.php ] ; then
+cp configuration.php.dist configuration.php
+fi
+
 if [ ! -f /scripts/init-done ] ; then
 
-# configuration.php
 sed -i "s:\$offline = '.*':\$offline = '$TCHOOZ_OFFLINE':g" configuration.php
 sed -i "s:\$offline_message = '.*':\$offline_message = '$TCHOOZ_OFFLINE_MESSAGE':g" configuration.php
 sed -i "s:\$display_offline_message = '.*':\$display_offline_message = '$TCHOOZ_DISPLAY_OFFLINE_MESSAGE':g" configuration.php
