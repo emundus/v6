@@ -10,7 +10,6 @@ variables:
   DOCKER_DRIVER: overlay2
   DOCKER_BUILDKIT: 1
   BUILDKIT_INLINE_CACHE: 1
-  COMPOSE_DOCKER_CLI_BUILD: 1
   DOCKER_TLS_CERTDIR: ""
 
 stages:
@@ -55,10 +54,15 @@ build-app-to-test-job:
     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
   script:
     - docker pull emundus/tchooz-build-app:latest || true
-    - docker build --cache-from emundus/tchooz-build-app:latest --compress -t emundus/tchooz-build-app:latest --build-arg=BUILDKIT_INLINE_CACHE=1 --build-arg xdebug=1 --build-arg jest=1 .ci
+    - docker build --cache-from emundus/tchooz-build-app:latest --compress -t emundus/tchooz-build-app:latest --build-arg=BUILDKIT_INLINE_CACHE=1 --build-arg xdebug=1 --build-arg jest=1 .ci/php/7.4
     - docker push emundus/tchooz-build-app:latest
   only:
     - schedules
+  # only:
+  #   refs:
+  #     - merge_requests
+  #   changes:
+  #     - vanilla.sql
 
 build-db-to-test-job:
   stage: build
@@ -101,8 +105,8 @@ jest-job:
   before_script:
     - apache2-foreground &
     - /scripts/entrypoint.sh
-  script:
-    - cd components && yarn 
+    - cd components && yarn
+  script: 
     - yarn run test:unit com_emundus/ --ci --coverage
   dependencies:
     - vanilla-job
@@ -132,7 +136,7 @@ sync-documentation-job:
         - administrator/components/com_emundus/emundus.xml
       when: on_success
     - when: never
-  image: emundus/sync-documentation:1.0.0
+  image: emundus/sync-documentation:latest
   script:
     - /go/generate-release-note.sh "$CI_SERVER_URL" "$CI_PROJECT_ID" "$GITLAB_TOKEN" "$ATLASSIAN_URL" "$ATLASSIAN_USER" "$ATLASSIAN_TOKEN" "$ATLASSIAN_SPACE" "$ATLASSIAN_PARENT_PAGE" "$ATLASSIAN_PAGE_TITLE"
   needs:
