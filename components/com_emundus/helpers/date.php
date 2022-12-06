@@ -31,7 +31,7 @@ class EmundusHelperDate {
     static function displayDate($date, $format = 'DATE_FORMAT_LC2', $local = 1) {
         $display_date = '';
 
-        if (!empty($date) && $date !== '0000-00-00 00:00:00') {
+        if (!empty($date) && $date !== '0000-00-00 00:00:00' && $date !== '0000-00-00') {
             if ($local) {
                 $config = JFactory::getConfig();
                 $offset = $config->get('offset');
