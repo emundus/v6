@@ -72,7 +72,7 @@ build-db-to-test-job:
     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
   script:
     - docker pull emundus/tchooz-build-db:latest || true
-    - docker build --cache-from emundus/tchooz-build-db:latest --compress -f Dockerfile.db -t emundus/tchooz-build-db:latest -t emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 .
+    - docker build --cache-from emundus/tchooz-build-db:latest --compress -f Dockerfile.db -t emundus/tchooz-build-db:latest --build-arg=BUILDKIT_INLINE_CACHE=1 .
     - docker push emundus/tchooz-build-db:latest
   only:
     refs:
