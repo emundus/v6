@@ -49,6 +49,10 @@ div#frame.outline {
   margin: 0;
 }
 
+.com_emundus_vue input, .com_emundus_vue select{
+  height: 48px;
+}
+
 .com_emundus_vue .fabrikElementContainer.control-group span.material-icons{
   font-family: 'Material Icons' !important;
   font-size: 24px !important;
@@ -517,6 +521,18 @@ p,
 .g-container.g-flushed{
   width: calc(100% - 75px) !important;
   margin: unset;
+}
+
+.view-list .table .fabrikFilterContainer .fabrikDateListFilterRange button.btn.calendarbutton {
+  height: 40px;
+  border-radius: 0px 4px 4px 0px !important;
+  background: var(--neutral-50);
+  color: var(--neutral-900);
+  border: 1px solid #e0e0e5;
+
+  &:hover {
+    background: var(--neutral-100);
+  }
 }
 
 .gantry.view-list #g-container-main .g-container .page-header {
