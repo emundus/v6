@@ -57,12 +57,13 @@ build-app-to-test-job:
     - docker build --cache-from emundus/tchooz-build-app:latest --compress -t emundus/tchooz-build-app:latest --build-arg=BUILDKIT_INLINE_CACHE=1 --build-arg xdebug=1 --build-arg jest=1 .ci/php/7.4
     - docker push emundus/tchooz-build-app:latest
   only:
-    - schedules
-  # only:
-  #   refs:
-  #     - merge_requests
-  #   changes:
-  #     - vanilla.sql
+    refs:
+      - merge_requests
+    changes:
+      - .ci/php/7.4/Dockerfile
+      - .ci/php/7.4/apache/000-default.conf
+      - .ci/php/7.4/apache/ports.conf
+      - .ci/php/7.4/scripts/entrypoint.sh
 
 build-db-to-test-job:
   stage: build
@@ -74,7 +75,12 @@ build-db-to-test-job:
     - docker build --cache-from emundus/tchooz-build-db:latest --compress -f Dockerfile.db -t emundus/tchooz-build-db:latest -t emundus/tchooz-build-db:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 .
     - docker push emundus/tchooz-build-db:latest
   only:
-    - schedules
+    refs:
+      - merge_requests
+    changes:
+      - media/com_emundus_vanilla
+      - Dockerfile.db
+      - ./.ci/mysql/conf/my.cnf
 
 phpunit-job:
   stage: test
