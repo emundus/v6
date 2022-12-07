@@ -56,12 +56,11 @@ build-app-to-test-job:
     - docker pull emundus/tchooz-build-app:latest || true
     - docker build --cache-from emundus/tchooz-build-app:latest --compress -t emundus/tchooz-build-app:latest --build-arg=BUILDKIT_INLINE_CACHE=1 --build-arg xdebug=1 --build-arg jest=1 .ci/php/7.4
     - docker push emundus/tchooz-build-app:latest
-  only:
-    changes:
-      - .ci/php/7.4/Dockerfile
-      - .ci/php/7.4/apache/000-default.conf
-      - .ci/php/7.4/apache/ports.conf
-      - .ci/php/7.4/scripts/entrypoint.sh
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - .ci/php/7.4/*
+      when: manual
 
 build-db-to-test-job:
   stage: build
@@ -72,11 +71,13 @@ build-db-to-test-job:
     - docker pull emundus/tchooz-build-db:latest || true
     - docker build --cache-from emundus/tchooz-build-db:latest --compress -f Dockerfile.db -t emundus/tchooz-build-db:latest --build-arg=BUILDKIT_INLINE_CACHE=1 .
     - docker push emundus/tchooz-build-db:latest
-  only:
-    changes:
-      - media/com_emundus_vanilla
-      - Dockerfile.db
-      - ./.ci/mysql/conf/my.cnf
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - media/com_emundus_vanilla
+        - Dockerfile.db
+        - .ci/mysql/*
+      when: manual
 
 phpunit-job:
   stage: test
