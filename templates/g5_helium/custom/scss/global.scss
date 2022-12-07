@@ -523,6 +523,18 @@ p,
   margin: unset;
 }
 
+.view-list .table .fabrikFilterContainer .fabrikDateListFilterRange button.btn.calendarbutton {
+  height: 40px;
+  border-radius: 0px 4px 4px 0px !important;
+  background: var(--neutral-50);
+  color: var(--neutral-900);
+  border: 1px solid #e0e0e5;
+
+  &:hover {
+    background: var(--neutral-100);
+  }
+}
+
 .gantry.view-list #g-container-main .g-container .page-header {
   margin-top: 50px;
   margin-left: 8px;
