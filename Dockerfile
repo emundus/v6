@@ -12,7 +12,7 @@ ARG jest
 RUN if [ "$jest" = "1" ];then \
 	curl -fsSL https://deb.nodesource.com/setup_14.x | bash -; \
 	apt-get install -y nodejs; \
-	npm install --global npm@9.1.3 yarn; \
+	npm install --global yarn; \
 	else \
 		echo "[BUILD INFO] : Jest is not required"; \
 	fi
