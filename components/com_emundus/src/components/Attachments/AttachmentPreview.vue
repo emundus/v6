@@ -39,7 +39,9 @@ export default {
 		};
 	},
   mounted() {
-    this.$refs["a-preview"].attachShadow({ mode: "open" });
+		if (typeof this.$refs["a-preview"].attachShadow === 'function') {
+			this.$refs["a-preview"].attachShadow({ mode: "open" });
+		}
     this.attachment = this.$store.state.attachment.selectedAttachment;
 		this.getPreview();
 	},
