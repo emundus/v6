@@ -60,7 +60,6 @@ build-app-to-test-job:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
         - .ci/php/7.4/*
-      when: manual
 
 build-db-to-test-job:
   stage: build
@@ -77,7 +76,6 @@ build-db-to-test-job:
         - media/com_emundus_vanilla
         - Dockerfile.db
         - .ci/mysql/*
-      when: manual
 
 phpunit-job:
   stage: test
