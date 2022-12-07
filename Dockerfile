@@ -10,7 +10,7 @@ ARG jest
 
 # Install nodejs, npm and yarn
 RUN if [ "$jest" = "1" ];then \
-	curl -fsSL https://deb.nodesource.com/setup_16.x | bash -; \
+	curl -fsSL https://deb.nodesource.com/setup_14.x | bash -; \
 	apt-get install -y nodejs; \
 	npm install --global npm@9.1.3 yarn; \
 	else \
