@@ -1364,6 +1364,10 @@ class EmundusModelEmails extends JModelList {
      * @since version v6
      */
     public function logEmail($row) {
+        $logged = false;
+
+        // log email to admin user if user_id_from is empty
+        $row['user_id_from'] = !empty($row['user_id_from']) ? $row['user_id_from'] : 62;
 
         $offset = JFactory::getConfig()->get('offset', 'UTC');
         try {
@@ -1377,7 +1381,6 @@ class EmundusModelEmails extends JModelList {
         $query = $this->_db->getQuery(true);
 
         $columns = ['user_id_from', 'user_id_to', 'subject', 'message' , 'date_time'];
-
         $values = [$row['user_id_from'], $row['user_id_to'], $this->_db->quote($row['subject']), $this->_db->quote($row['message']), $this->_db->quote($now)];
 
         // If we are logging the email type as well, this allows us to put them in separate folders.
@@ -1393,12 +1396,13 @@ class EmundusModelEmails extends JModelList {
         try {
 
             $this->_db->setQuery($query);
-            $this->_db->execute();
+            $logged = $this->_db->execute();
 
         } catch (Exception $e) {
-            JLog::add('Error logging email in model/emails : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Error logging email in model/emails : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.email.error');
         }
 
+        return $logged;
     }
 
     //////////////////////////  SET FILES REQUEST  /////////////////////////////

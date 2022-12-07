@@ -1233,11 +1233,13 @@ class EmundusControllerMessages extends JControllerLegacy {
         $send = $mailer->Send();
 
 	    if ($send !== true) {
-		    JLog::add($send, JLog::ERROR, 'com_emundus');
+		    JLog::add($send, JLog::WARNING, 'com_emundus.email');
 		    return false;
 	    } else {
+            // if empty current user, it must come from cron task. so use default user_id
+            $user_id = !empty($user) ? $user->id : 62;
 		    $log = [
-			    'user_id_from'  => $user->id,
+			    'user_id_from'  => $user_id,
 			    'user_id_to'    => $fnum['applicant_id'],
 			    'subject'       => $subject,
 			    'message'       => '<i>'.JText::_('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO').' '.$fnum['email'].'</i><br>'.$body,
@@ -1247,7 +1249,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 		    // Log the email in the eMundus logging system.
             $logsParams = array('created' => [$subject]);
-		    EmundusModelLogs::log($user->id, $fnum['applicant_id'], $fnum['fnum'], 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+		    EmundusModelLogs::log($user_id, $fnum['applicant_id'], $fnum['fnum'], 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
 		    return true;
 	    }
