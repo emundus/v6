@@ -28,6 +28,9 @@
     flex: 0 0 33%;
 }
 
+.em-big-col-footer {
+    flex: 0 0 66%;
+}
 
 .em-col-2-footer {
     display: flex;
