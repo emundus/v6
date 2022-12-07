@@ -116,36 +116,13 @@ echo 'max_input_time = 600'; \
 } > /usr/local/etc/php/php.ini
 
 # Copy entrypoint script and Apache default vhost 
-COPY --chown=root:root [".ci/php/7.4/apache/000-default.conf","/etc/apache2/sites-available/000-default.conf"]
-COPY --chown=root:root [".ci/php/7.4/apache/ports.conf","/etc/apache2/ports.conf"]
-COPY --chown=www-data:www-data [".ci/php/7.4/scripts/entrypoint.sh","/scripts/entrypoint.sh"]
+COPY ["apache/000-default.conf","/etc/apache2/sites-available/000-default.conf"]
+RUN sed -i 's/\/var\/www\/html\//\/builds\/emundus\/cms\/core\//g' /etc/apache2/sites-available/000-default.conf
+COPY ["apache/ports.conf","/etc/apache2/ports.conf"]
+COPY ["scripts/entrypoint.sh","/scripts/entrypoint.sh"]
 
-# COPY PROJECT
-COPY --chown=www-data:www-data  [".","/var/www/html"]
-COPY --chown=www-data:www-data  ["configuration.php.dist","configuration.php"]
-COPY --chown=www-data:www-data  ["media/com_emundus_vanilla/v6/.htaccess",".htaccess"]
-COPY --chown=www-data:www-data  ["media/com_emundus_vanilla/v6/language/overrides/","language/overrides/"]
-COPY --chown=www-data:www-data  ["media/com_emundus_vanilla/v6/templates/g5_helium/","templates/g5_helium/"]
-RUN rm -rf /var/www/html/.ci/ && rm -rf /var/www/html/media/com_emundus_vanilla/*
-
-# Install yarn environment
-RUN if [ "$jest" = "1" ];then \
-    cd /var/www/html/components; \
-    yarn; \
-	else \
-		echo "[BUILD INFO] : Jest is not required"; \
-	fi
-
-# Entrypoint declaration
-ENTRYPOINT [ "/scripts/entrypoint.sh" ]
-
-# Volume, Port and workdir
-VOLUME [ "/var/www/html" ]
-WORKDIR /var/www/html
+# Port
 EXPOSE 8080
-
-# Set user
-USER www-data
 
 # Start Web Server Apache
 CMD ["apache2-foreground"]
