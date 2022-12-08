@@ -87,9 +87,14 @@ class EmundusController extends JControllerLegacy {
         );
 
         $infos 		= $m_profile->getFnumDetails($fnum);
+        $workflow_infos = $m_campaign->getCurrentCampaignWorkflow($user);
 
         if($profile == null) {
             $profile 	= !empty($infos['profile']) ? $infos['profile'] : $infos['profile_id'];
+        }
+
+        if($workflow_infos->profile !== null)  {
+            $profile = $workflow_infos->profile;
         }
 
         $h_menu = new EmundusHelperMenu;
