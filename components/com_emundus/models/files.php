@@ -350,10 +350,18 @@ class EmundusModelFiles extends JModelLegacy
         $can_be_ordering[] = 'jecc.status';
         $can_be_ordering[] = 'jecc.form_progress';
         $can_be_ordering[] = 'jecc.attachment_progress';
+        $can_be_ordering[] = 'form_progress';
+        $can_be_ordering[] = 'attachment_progress';
         $can_be_ordering[] = 'fnum';
         $can_be_ordering[] = 'status';
         $can_be_ordering[] = 'name';
         $can_be_ordering[] = 'eta.id_tag';
+
+        $campaign_candidature_columns = [
+            'form_progress',
+            'attachment_progress',
+            'status'
+        ];
 
 
         if (in_array('overall', $em_other_columns)) {
@@ -361,6 +369,9 @@ class EmundusModelFiles extends JModelLegacy
         }
 
         if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)) {
+            if(in_array($filter_order, $campaign_candidature_columns)){
+                $filter_order = 'jecc.' . $filter_order;
+            }
             $order = ' ORDER BY '.$filter_order.' '.$filter_order_Dir;
 
             if (strpos($filter_order, 'date_submitted') === false) {
