@@ -4352,6 +4352,13 @@ button.swal2-cancel.goback-btn {
   }
 }
 
+.view-form:not(.com_emundus).gantry .span12 form .fabrikGroup .row-fluid .fabrikElementContainer.control-group:not(.plg-display) .fabrikElement .row-fluid .fabrikgrid_radio label.radio input[type="radio"] {
+  -webkit-appearance: radio;
+  padding: 0 !important;
+  -moz-appearance: radio !important;
+  -webkit-border-radius: 50px !important;
+}
+
 .view-form:not(.com_emundus),
 .view-form.view-registration,
 .view-form.em-formRegistrationCenter,
