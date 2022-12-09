@@ -1230,22 +1230,24 @@ class EmundusModelFiles extends JModelLegacy
     /**
      * @param $fnums
      * @param $tag
-     * @return bool|mixed
+     * @return bool
      */
-    public function tagFile($fnums, $tags) {
-        try {
-            $db = $this->getDbo();
-            $user = JFactory::getUser()->id;
+    public function tagFile($fnums, $tags, $user = null) {
+        $tagged = false;
 
+        if (!empty($fnums) && !empty($tags)) {
             JPluginHelper::importPlugin('emundus');
-            $dispatcher = JEventDispatcher::getInstance();
+            \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeTagAdd', ['fnums' => $fnums, 'tag' => $tags]]);
 
-            $dispatcher->trigger('callEventHandler', ['onBeforeTagAdd', ['fnums' => $fnums, 'tag' => $tags]]);
+            try {
+                $db = $this->getDbo();
+                if (empty($user)) {
+                    $user = JFactory::getUser()->id;
+                }
 
-            $query_associated_tags = $db->getQuery(true);
-            $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id) VALUES ";
+                $query_associated_tags = $db->getQuery(true);
+                $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id) VALUES ";
 
-            if (!empty($fnums) && !empty($tags)) {
                 $logger = array();
                 foreach ($fnums as $fnum) {
                     // Get tags already associated to this fnum by the current user
@@ -1259,7 +1261,7 @@ class EmundusModelFiles extends JModelLegacy
 
                     // Insert valid tags
                     foreach ($tags as $tag) {
-                        if(!in_array($tag,$tags_already_associated)) {
+                        if (!in_array($tag, $tags_already_associated)) {
                             $query .= '("' . $fnum . '", ' . $tag . ',' . $user . '),';
                             $query_log = 'SELECT label
                                 FROM #__emundus_setup_action_tag
@@ -1267,38 +1269,29 @@ class EmundusModelFiles extends JModelLegacy
                             $db->setQuery($query_log);
                             $log_tag = $db->loadResult();
 
-                            //stock the tag name
                             $logsStd = new stdClass();
-
                             $logsStd->details = $log_tag;
                             $logger[] = $logsStd;
                         }
                     }
 
-                    if(!empty($logger)) {
+                    if (!empty($logger)) {
                         $logsParams = array('created' => array_unique($logger, SORT_REGULAR));
-                    } else {
-                        continue;
+                        EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_ACCESS_TAGS_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
                     }
-
-                    // Log the tags in the eMundus logging system.
-                    EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_ACCESS_TAGS_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
                 }
 
-                $query = substr_replace($query, ";", -1);
+                $query = substr_replace($query, ';', -1);
                 $db->setQuery($query);
-                $db->execute();
+                $tagged = $db->execute();
+            } catch (Exception $e) {
+                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
             }
 
-            $dispatcher->trigger('callEventHandler', ['onAfterTagAdd', ['fnums' => $fnums, 'tag' => $tags]]);
+            \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterTagAdd', ['fnums' => $fnums, 'tag' => $tags, 'tagged' => $tagged]]);
+        }
 
-            return true;
-        }
-        catch (Exception $e)
-        {
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-            return false;
-        }
+        return $tagged;
     }
 
 
