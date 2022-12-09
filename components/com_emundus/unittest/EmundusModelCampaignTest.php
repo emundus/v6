@@ -19,6 +19,7 @@ include_once ( JPATH_BASE . 'includes/framework.php' );
 include_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
 include_once(JPATH_SITE.'/components/com_emundus/models/campaign.php');
 include_once(JPATH_SITE.'/components/com_emundus/models/programme.php');
+include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
 include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
 jimport('joomla.user.helper');
@@ -38,6 +39,7 @@ class EmundusModelCampaignTest extends TestCase
 {
     private $m_campaign;
     private $m_programme;
+    private $m_profile;
     private $h_sample;
 
     public function __construct(?string $name = null, array $data = [], $dataName = '')
@@ -45,6 +47,7 @@ class EmundusModelCampaignTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_campaign = new EmundusModelCampaign;
         $this->m_programme = new EmundusModelProgramme;
+        $this->m_profile = new EmundusModelProfile;
         $this->h_sample = new EmundusUnittestHelperSamples;
     }
 
@@ -209,6 +212,11 @@ class EmundusModelCampaignTest extends TestCase
                 $workflow_on_campaign = $this->m_campaign->createWorkflow(9, [0], 1, null, ['campaigns' => [$new_campaign_id]]);
                 $current_file_workflow = $this->m_campaign->getCurrentCampaignWorkflow($fnum);
                 $this->assertSame(intval($workflow_on_campaign), intval($current_file_workflow->id), 'Le dossier est impacté par le workflow qui a une campagne et un statut commun.');
+
+                $profile = $this->m_profile->getProfileByFnum($fnum);
+                $this->assertSame(intval($current_file_workflow->profile), intval($profile), 'La récupération de profile prend en compte le workflow');
+                $profileByStatus = $this->m_profile->getProfileByStatus($fnum);
+                $this->assertSame(intval($current_file_workflow->profile), intval($profileByStatus['profile']));
 
                 $new_workflow_id = $this->m_campaign->createWorkflow(9, [1], 2, null, ['campaigns' => [$new_campaign_id]]);
                 $current_file_workflow = $this->m_campaign->getCurrentCampaignWorkflow($fnum);

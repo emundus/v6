@@ -978,16 +978,17 @@ class EmundusModelCampaign extends JModelList {
      *
      * @param $data
      *
-     * @return false|string
+     * @return false
      *
      * @since version 1.0
      */
     public function unpublishCampaign($data) {
-        $query = $this->_db->getQuery(true);
+        $unpublished = false;
 
         if (!empty($data)) {
+            $query = $this->_db->getQuery(true);
             foreach ($data as $key => $val) {
-                $data[$key] = htmlspecialchars($data[$key]);
+                $data[$key] = htmlspecialchars($val);
             }
 
             $dispatcher = JEventDispatcher::getInstance();
@@ -1007,36 +1008,35 @@ class EmundusModelCampaign extends JModelList {
                     ->where($sc_conditions);
 
                 $this->_db->setQuery($query);
-                $res = $this->_db->execute();
+                $unpublished = $this->_db->execute();
 
-                if ($res) {
+                if ($unpublished) {
                     $dispatcher->trigger('onAfterCampaignUnpublish', $data);
                     $dispatcher->trigger('callEventHandler', ['onAfterCampaignUnpublish', ['campaign' => $data]]);
                 }
-                return $res;
             } catch (Exception $e) {
                 JLog::add('component/com_emundus/models/campaign | Error when unpublish campaigns : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
-                return $e->getMessage();
             }
-        } else {
-            return false;
         }
+
+        return $unpublished;
     }
 
     /**
      *
      * @param $data
      *
-     * @return false|string
+     * @return false
      *
      * @since version 1.0
      */
     public function publishCampaign($data) {
-        $query = $this->_db->getQuery(true);
+        $published = false;
 
         if (!empty($data)) {
+            $query = $this->_db->getQuery(true);
             foreach ($data as $key => $val) {
-                $data[$key] = htmlspecialchars($data[$key]);
+                $data[$key] = htmlspecialchars($val);
             }
 
             $dispatcher = JEventDispatcher::getInstance();
@@ -1051,20 +1051,18 @@ class EmundusModelCampaign extends JModelList {
                     ->where($sc_conditions);
 
                 $this->_db->setQuery($query);
-                $res = $this->_db->execute();
+                $published = $this->_db->execute();
 
-                if ($res) {
+                if ($published) {
                     $dispatcher->trigger('onAfterCampaignPublish', $data);
                     $dispatcher->trigger('callEventHandler', ['onAfterCampaignPublish', ['campaign' => $data]]);
                 }
-                return $res;
             } catch (Exception $e) {
                 JLog::add('component/com_emundus/models/campaign | Error when publish campaigns : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
-                return $e->getMessage();
             }
-        } else {
-            return false;
         }
+
+        return $published;
     }
 
     /**
