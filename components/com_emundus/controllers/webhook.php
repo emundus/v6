@@ -713,48 +713,56 @@ class EmundusControllerWebhook extends JControllerLegacy {
     }
 
     public function updateAxeptaPaymentInfos(){
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'payment'.DS.'Axepta.php');
-        $axepta = new Axepta();
+        JLog::addLogger(['text_file' => 'com_emundus.payment.php'], JLog::ALL, array('com_emundus.payment'));
 
-        $status = false;
-        $msg = JText::_('AXEPTA_PAYMENT_INFOS_UPDATED_FAILED');
+        try {
+            JLog::add('[updateAxeptaPaymentInfos] Start to get payment notification from axepta', JLog::INFO, 'com_emundus.payment');
 
-        $eMConfig = JComponentHelper::getParams('com_emundus');
-        $blowfish_key = $eMConfig->get('axepta_blowfish_key','Tc5*2D_xs7B[6E?w');
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'payment'.DS.'Axepta.php');
+            $axepta = new Axepta();
 
-        $data = $_POST["Data"];
-        $len = $_POST["Len"];
-        $plaintext = $axepta->ctDecrypt($data, $len, $blowfish_key);
+            $status = false;
+            $msg = JText::_('AXEPTA_PAYMENT_INFOS_UPDATED_FAILED');
 
-        $a = "";
-        $a = explode('&', $plaintext);
-        $info = $axepta->ctSplit($a, '=');
-        $TransID = $axepta->ctSplit($a, '=', 'TransID');
-        $Status = $axepta->ctSplit($a, '=', 'Status');
-        $PayID = $axepta->ctSplit($a, '=', 'PayID');
-        $Type = $axepta->ctSplit($a, '=', 'Type');
-        $UserData = $axepta->ctSplit($a, '=', 'UserData');
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $blowfish_key = $eMConfig->get('axepta_blowfish_key','Tc5*2D_xs7B[6E?w');
 
-        // check transmitted decrypted status
-        $realstatus = $axepta->ctRealstatus($Status);
+            $data = $_POST["Data"];
+            $len = $_POST["Len"];
+            $plaintext = $axepta->ctDecrypt($data, $len, $blowfish_key);
 
-        JLog::add('[updateAxeptaPaymentInfos] Get payment from Axepta with status : ' . $Status, JLog::INFO, 'com_emundus.payment');
+            $a = "";
+            $a = explode('&', $plaintext);
+            $info = $axepta->ctSplit($a, '=');
+            $TransID = $axepta->ctSplit($a, '=', 'TransID');
+            $Status = $axepta->ctSplit($a, '=', 'Status');
+            $PayID = $axepta->ctSplit($a, '=', 'PayID');
+            $Type = $axepta->ctSplit($a, '=', 'Type');
+            $UserData = $axepta->ctSplit($a, '=', 'UserData');
 
-        if (!empty($TransID) && !empty($Status) && !empty($PayID)) {
-            require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'payment.php');
-            $m_payment = new EmundusModelPayment();
-            $status = $m_payment->updateAxeptaPaymentInfos($TransID,$Status,$PayID);
+            // check transmitted decrypted status
+            $realstatus = $axepta->ctRealstatus($Status);
 
-            if ($status) {
-                $msg = JText::_('AXEPTA_PAYMENT_INFOS_UPDATED_SUCCESSFULLY');
+            JLog::add('[updateAxeptaPaymentInfos] Get payment from Axepta with status : ' . $Status, JLog::INFO, 'com_emundus.payment');
+
+            if (!empty($TransID) && !empty($Status) && !empty($PayID)) {
+                require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'payment.php');
+                $m_payment = new EmundusModelPayment();
+                $status = $m_payment->updateAxeptaPaymentInfos($TransID,$Status,$PayID);
+
+                if ($status) {
+                    $msg = JText::_('AXEPTA_PAYMENT_INFOS_UPDATED_SUCCESSFULLY');
+                }
+            } else {
+                JLog::add('[updateAxeptaPaymentInfos] BAD_REQUEST_OR_MISSING_PARAMS - Malicious attempt ? Sender : ' . $_SERVER['REMOTE_ADDR'] .  ' data : ' . json_encode($data), JLog::ERROR, 'com_emundus.payment');
+                header('HTTP/1.1 400 Bad Request');
+                echo 'Error 400 - Bad Request';
+                die();
             }
-        } else {
-            JLog::addLogger(['text_file' => 'com_emundus.payment.php'], JLog::ALL, array('com_emundus.payment'));
-            JLog::add('[updateAxeptaPaymentInfos] BAD_REQUEST_OR_MISSING_PARAMS - Malicious attempt ? Sender : ' . $_SERVER['REMOTE_ADDR'] .  ' data : ' . json_encode($data), JLog::ERROR, 'com_emundus.payment');
-            header('HTTP/1.1 400 Bad Request');
-            echo 'Error 400 - Bad Request';
-            die();
+        } catch (Exception $e) {
+            JLog::add('[updateAxeptaPaymentInfos] BAD_REQUEST_OR_MISSING_PARAMS - Malicious attempt ? Sender : ' . $_SERVER['REMOTE_ADDR'] .  ' with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.payment');
         }
+
 
         header('Content-type: application/json');
         echo json_encode(array('status' => $realstatus, 'msg' => $msg));

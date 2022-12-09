@@ -74,7 +74,7 @@ class modEmundusPaymentHelper
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
-        $query->select('jeh.*, jho.order_status, jho.order_type')
+        $query->select('jeh.*, jho.order_status, jho.order_type, jho.order_id as hikashop_order')
             ->from('#__emundus_hikashop as jeh')
             ->leftJoin('#__hikashop_order as jho ON jho.order_id = jeh.order_id')
             ->where('jeh.fnum = ' . $db->quote($fnum));
@@ -429,7 +429,7 @@ class modEmundusPaymentHelper
         if(empty($currentPayment)) {
             $order = $m_payment->createPaymentOrder($fnum, 'axepta');
         } else {
-            $order = $currentPayment->id;
+            $order = $currentPayment->hikashop_order;
         }
 
         $amount = number_format($product->product_sort_price,2)*100;
@@ -438,9 +438,9 @@ class modEmundusPaymentHelper
         $currency = $params->get('axepta_currency','EUR');
         $hmac_key = $eMConfig->get('axepta_hmac_key','4n!BmF3_?9oJ2Q*z(iD7q6[RSb5)a]A8');
         $blowfish_key = $eMConfig->get('axepta_blowfish_key','Tc5*2D_xs7B[6E?w');
-        $notify_url = JUri::base() . $params->get('axepta_notify_url','index.php?option=com_emundus&controller=webhook&task=updateaxeptapaymentinfos&token=' . JFactory::getConfig()->get('secret') . '&guest=1&format=raw');
-        $success_url = JUri::base() . $params->get('axepta_success_url','index.php');
-        $failed_url = JUri::base() . $params->get('axepta_failed_url','index.php');
+        $notify_url = $params->get('axepta_notify_url',JUri::base() . '/notify');
+        $success_url = $params->get('axepta_success_url',JUri::base());
+        $failed_url = $params->get('axepta_failed_url',JUri::base());
 
         /* BUILD payment_url */
         $mac_value = $axepta->ctHMAC('',$order,$merchant_id,$amount,$currency,$hmac_key);

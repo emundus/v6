@@ -891,6 +891,8 @@ class EmundusModelPayment extends JModelList
         $updated = false;
         $fnum = $this->getFnumFromOrderId($order);
 
+        JLog::add('[updateAxeptaPaymentInfos] Update file '.$fnum.' in order : ' . $order . ' with status ' . $status, JLog::INFO, 'com_emundus.payment');
+
         if (!empty($fnum)) {
             require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
             require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
@@ -906,6 +908,7 @@ class EmundusModelPayment extends JModelList
                     $eMConfig = JComponentHelper::getParams('com_emundus');
                     $status_after_payment = $eMConfig->get('status_after_payment');
 
+                    JLog::add('[updateAxeptaPaymentInfos] Update file status to '.$status_after_payment,JLog::INFO, 'com_emundus.payment');
                     $m_files->updateState($fnum, $status_after_payment);
                     break;
                 case 'FAILED':
