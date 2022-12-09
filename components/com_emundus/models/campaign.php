@@ -2303,6 +2303,10 @@ class EmundusModelCampaign extends JModelList {
         return $current_phase;
     }
 
+    /**
+     * @param $campaign_id int
+     * @return array
+     */
     public function getAllCampaignWorkflows($campaign_id)
     {
         $workflows = [];

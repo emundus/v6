@@ -712,7 +712,7 @@ class EmundusModelProfile extends JModelList {
                 $m_campaign = new EmundusModelCampaign();
 
                 foreach($camps as $campaign_id) {
-                    $campaign_workflows = $m_campaign->getAllCampaignWorkflows($camps);
+                    $campaign_workflows = $m_campaign->getAllCampaignWorkflows($campaign_id);
 
                     foreach ($campaign_workflows as $workflow) {
                         if (!in_array($workflow->profile, $workflow_profiles)) {
