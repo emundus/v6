@@ -10,13 +10,9 @@ ARG jest
 
 # Install nodejs, npm and yarn
 RUN if [ "$jest" = "1" ];then \
-	apt update; \
-	apt-get install -y --no-install-recommends \
-      nodejs \
-      npm \
-    ; \
-    \
-    npm install --global yarn; \
+	curl -fsSL https://deb.nodesource.com/setup_14.x | bash -; \
+	apt-get install -y nodejs; \
+	npm install --global yarn; \
 	else \
 		echo "[BUILD INFO] : Jest is not required"; \
 	fi
@@ -120,7 +116,8 @@ echo 'max_input_time = 600'; \
 } > /usr/local/etc/php/php.ini
 
 # Copy entrypoint script and Apache default vhost 
-COPY --chown=www-data:www-data [".ci/php/7.4/apache/000-default.conf","/etc/apache2/sites-available/000-default.conf"]
+COPY --chown=root:root [".ci/php/7.4/apache/000-default.conf","/etc/apache2/sites-available/000-default.conf"]
+COPY --chown=root:root [".ci/php/7.4/apache/ports.conf","/etc/apache2/ports.conf"]
 COPY --chown=www-data:www-data [".ci/php/7.4/scripts/entrypoint.sh","/scripts/entrypoint.sh"]
 
 # COPY PROJECT
@@ -142,9 +139,10 @@ RUN if [ "$jest" = "1" ];then \
 # Entrypoint declaration
 ENTRYPOINT [ "/scripts/entrypoint.sh" ]
 
-# Volume and Port
+# Volume, Port and workdir
 VOLUME [ "/var/www/html" ]
-EXPOSE 80
+WORKDIR /var/www/html
+EXPOSE 8080
 
 # Set user
 USER www-data

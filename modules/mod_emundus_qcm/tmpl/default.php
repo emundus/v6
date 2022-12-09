@@ -32,6 +32,6 @@ JText::script('MOD_EM_QCM_CONFIRM_ANSWER');
      pending="<?= $qcm_applicant->pending ?>"
      module="<?= $module->id ?>"
      tierstemps="<?= $qcm_applicant->tiers_temps ?>"
-</div>
+></div>
 
 <script src="media/mod_emundus_qcm/app.js"></script>

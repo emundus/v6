@@ -656,6 +656,11 @@ JHTML::script('media/com_emundus_vue/chunk-vendors_emundus.js');
 JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
 JHTML::styleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined');
 
+/** QUILL */
+JHTML::script('https://cdn.quilljs.com/1.3.6/quill.min.js');
+JHtml::styleSheet('https://cdn.quilljs.com/1.3.6/quill.snow.css');
+JHtml::script('components/com_emundus/src/assets/js/image-resize.min.js');
+JHtml::script('components/com_emundus/src/assets/js/image-drop.min.js');
 
 // The task 'getproductpdf' can be executed as public (when not signed in and form any view).
 if ($task == 'getproductpdf') {

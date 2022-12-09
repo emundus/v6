@@ -129,7 +129,7 @@ if($currentCampaign->apply_online == 0){
         </div>
 
         <div class="g-block size-100 tchooz-single-campaign">
-            <div class="single-campaign" id="campaign">
+            <div class="single-campaign ql-editor" id="campaign">
                 <?php if ($showprogramme) :?>
                     <div class="em-mt-16 em-w-100">
                         <span><?php echo $currentCampaign->notes ?></span>

@@ -11,7 +11,7 @@
         </div>
       </div>
       <div v-if="testPassed && quizTesting">
-        <p>{{ translations.ready }}</p>
+        <p class="em-mb-8">{{ translations.ready }}</p>
         <div class="em-print-button">
           <a class="btn btn-info btn-xs" @click="startQcm">{{ translations.startingQcm }}</a>
         </div>

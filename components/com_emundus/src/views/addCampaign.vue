@@ -124,8 +124,8 @@
 
           <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
           <div class="em-mb-16" v-if="typeof form.description != 'undefined'">
-            <editor
-                :height="'30em'"
+            <editor-quill
+                style="height: 30em"
                 :text="form.description"
                 v-model="form.description"
                 :enable_variables="false"
@@ -133,13 +133,13 @@
                 :id="'campaign_description'"
                 :key="editorKey"
                 @focusout="onFormChange"
-            ></editor>
+            ></editor-quill>
           </div>
         </div>
 
         <hr/>
 
-        <div>
+        <div class="em-mt-32">
           <div class="em-mb-16">
             <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM') }}</h2>
           </div>
@@ -237,6 +237,7 @@ import Translation from "../components/translation"
 
 /** SERVICES **/
 import campaignService from 'com_emundus/src/services/campaign';
+import EditorQuill from "../components/editorQuill";
 
 const qs = require("qs");
 
@@ -244,6 +245,7 @@ export default {
   name: "addCampaign",
 
   components: {
+    EditorQuill,
     Datetime,
     Editor,
     Autocomplete,
