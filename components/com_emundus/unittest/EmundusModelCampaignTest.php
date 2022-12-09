@@ -19,6 +19,7 @@ include_once ( JPATH_BASE . 'includes/framework.php' );
 include_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
 include_once(JPATH_SITE.'/components/com_emundus/models/campaign.php');
 include_once(JPATH_SITE.'/components/com_emundus/models/programme.php');
+include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
 include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
 jimport('joomla.user.helper');
@@ -38,6 +39,7 @@ class EmundusModelCampaignTest extends TestCase
 {
     private $m_campaign;
     private $m_programme;
+    private $m_profile;
     private $h_sample;
 
     public function __construct(?string $name = null, array $data = [], $dataName = '')
@@ -45,6 +47,7 @@ class EmundusModelCampaignTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_campaign = new EmundusModelCampaign;
         $this->m_programme = new EmundusModelProgramme;
+        $this->m_profile = new EmundusModelProfile;
         $this->h_sample = new EmundusUnittestHelperSamples;
     }
 
@@ -156,10 +159,42 @@ class EmundusModelCampaignTest extends TestCase
 
     public function testCreateWorkflow()
     {
+        $this->m_campaign->deleteWorkflows();
         $workflow_on_all = $this->m_campaign->createWorkflow(9, [0], 1, null, []);
         $this->assertNotEmpty($workflow_on_all);
-    }
 
+        $this->assertFalse($this->m_campaign->canCreateWorkflow(9, [0], []), 'On ne devrait pas pouvoir créer un workflow sur le même statut.');
+        $this->assertTrue($this->m_campaign->canCreateWorkflow(9, [1], []), 'On devrait pouvoir créer un workflow sur le même profile, mais un statut différent.');
+        $this->assertTrue($this->m_campaign->canCreateWorkflow(9, [0], ['campaigns' => [1]]), 'On devrait pouvoir créer un workflow sur le même statut mais en spécifiant une campagne.');
+        $this->assertTrue($this->m_campaign->canCreateWorkflow(9, [0], ['programs' => ['program-1']]), 'On devrait pouvoir créer un workflow sur le même statut mais en spécifiant une campagne.');
+
+        $program = $this->m_programme->addProgram(['label' => 'Programme Test Unitaire']);
+        $start_date = new DateTime();
+        $start_date->modify('-1 day');
+        $end_date = new DateTime();
+        $end_date->modify('+1 year');
+        $new_campaign_id = $this->m_campaign->createCampaign([
+            'label' =>  json_encode(['fr' => 'Campagne test unitaire', 'en' => 'Campagne test unitaire']),
+            'description' => 'Lorem ipsum',
+            'short_description' => 'Lorem ipsum',
+            'start_date' => $start_date->format('Y-m-d H:i:s'),
+            'end_date' => $end_date->format('Y-m-d H:i:s'),
+            'profile_id' => 9,
+            'training' => $program['programme_code'],
+            'year' => '2022-2023',
+            'published' => 1
+        ]);
+
+        $workflow_on_program = $this->m_campaign->createWorkflow(9, [0], 1, null, ['programs' => [$program['programme_code']]]);
+        $this->assertNotEmpty($workflow_on_program);
+        $this->assertFalse($this->m_campaign->canCreateWorkflow(9, [0], ['programs' => ['program-1', $program['programme_code']]]), 'On ne devrait plus pouvoir créer un workflow sur le même statut et en spécifiant un progamme commun.');
+        $this->assertTrue($this->m_campaign->canCreateWorkflow(9, [0], ['campaigns' => [1]]), 'On devrait toujours pouvoir créer un workflow sur le même statut mais en spécifiant une campagne.');
+
+        $workflow_on_campaign = $this->m_campaign->createWorkflow(9, [0], 1, null, ['campaigns' => [$new_campaign_id]]);
+        $this->assertNotEmpty($workflow_on_campaign);
+        $this->assertFalse($this->m_campaign->canCreateWorkflow(9, [0], ['campaigns' => [12, $new_campaign_id, 15]]), 'On ne devrait plus pouvoir créer un workflow sur le même statut-campagne.');
+        $this->assertFalse($this->m_campaign->canCreateWorkflow(9, [0], ['programs' => ['test-emundus'], 'campaigns' => [12, $new_campaign_id, 15]]), 'On ne devrait plus pouvoir créer un workflow sur le même statut-campagne. Même test avec des données de programme.');
+    }
 
     public function testDeleteWorkflow()
     {
@@ -168,6 +203,7 @@ class EmundusModelCampaignTest extends TestCase
 
     public function testGetCurrentCampaignWorkflow()
     {
+        $this->m_campaign->deleteWorkflows();
         $program = $this->m_programme->addProgram(['label' => 'Programme Test Unitaire']);
         $this->assertNotEmpty($program, 'La création de programme depuis un label fonctionne');
         $db = JFactory::getDbo();
@@ -209,6 +245,11 @@ class EmundusModelCampaignTest extends TestCase
                 $workflow_on_campaign = $this->m_campaign->createWorkflow(9, [0], 1, null, ['campaigns' => [$new_campaign_id]]);
                 $current_file_workflow = $this->m_campaign->getCurrentCampaignWorkflow($fnum);
                 $this->assertSame(intval($workflow_on_campaign), intval($current_file_workflow->id), 'Le dossier est impacté par le workflow qui a une campagne et un statut commun.');
+
+                $profile = $this->m_profile->getProfileByFnum($fnum);
+                $this->assertSame(intval($current_file_workflow->profile), intval($profile), 'La récupération de profile prend en compte le workflow');
+                $profileByStatus = $this->m_profile->getProfileByStatus($fnum);
+                $this->assertSame(intval($current_file_workflow->profile), intval($profileByStatus['profile']));
 
                 $new_workflow_id = $this->m_campaign->createWorkflow(9, [1], 2, null, ['campaigns' => [$new_campaign_id]]);
                 $current_file_workflow = $this->m_campaign->getCurrentCampaignWorkflow($fnum);

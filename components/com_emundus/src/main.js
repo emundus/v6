@@ -25,9 +25,7 @@ Vue.use(VWave);
 
 /** MIXINS **/
 import translate from './mixins/translate.js';
-import axiosDefaultBaseUrl from "./mixins/axiosDefaultBaseUrl";
 Vue.mixin(translate);
-Vue.mixin(axiosDefaultBaseUrl);
 
 /** STORE **/
 import store from './store';

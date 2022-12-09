@@ -11,7 +11,7 @@
         </div>
       </div>
       <div v-if="testPassed && quizTesting">
-        <p>{{ translations.ready }}</p>
+        <p class="em-mb-8">{{ translations.ready }}</p>
         <div class="em-print-button">
           <a class="btn btn-info btn-xs" @click="startQcm">{{ translations.startingQcm }}</a>
         </div>
@@ -43,7 +43,6 @@ export default {
     questions: String,
     formid: Number,
     step: Number,
-    intro: String,
     pending: Number,
     module: Number,
     tierstemps: Number,
@@ -55,13 +54,14 @@ export default {
       count: 0,
       testing_question: {
         code: "TEST",
-        proposals: "Noir|Blanc|Rouge|Vert",
+        proposals: Joomla.JText._("MOD_EM_QCM_TEST_QUESTION_PROPOSAL_1") + '|' + Joomla.JText._("MOD_EM_QCM_TEST_QUESTION_PROPOSAL_2") + '|' + Joomla.JText._("MOD_EM_QCM_TEST_QUESTION_PROPOSAL_3") + '|' + Joomla.JText._("MOD_EM_QCM_TEST_QUESTION_PROPOSAL_4"),
         proposals_id: "1,2,3,4",
-        proposals_text: "Noir|Blanc|Rouge|Vert",
-        question: "De quelle couleur est le cheval blanc d'Henri IV ?",
+        proposals_text: Joomla.JText._("MOD_EM_QCM_TEST_QUESTION_PROPOSAL_1") + '|' + Joomla.JText._("MOD_EM_QCM_TEST_QUESTION_PROPOSAL_2") + '|' + Joomla.JText._("MOD_EM_QCM_TEST_QUESTION_PROPOSAL_3") + '|' + Joomla.JText._("MOD_EM_QCM_TEST_QUESTION_PROPOSAL_4"),
+        question: Joomla.JText._('MOD_EM_QCM_TEST_QUESTION_PROPOSAL'),
         time: "10",
         type: "radiobutton"
       },
+      intro: '',
       quizStarting: false,
       quizTesting: false,
       testPassed: false,
@@ -133,11 +133,29 @@ export default {
       }).then((result) => {
 
       });
+    },
+    getIntro(){
+      axios({
+        method: "post",
+        url:
+            "index.php?option=com_emundus&controller=qcm&task=getintro",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          module: this.module,
+        })
+      }).then((result) => {
+          this.intro = result.data.scalar;
+
+          console.log(result);
+      });
     }
   },
   created() {
     const elem = document.querySelector('form[name="form_' + this.formid + '"');
     elem.remove();
+    this.getIntro();
     this.getQuestions();
   }
 }

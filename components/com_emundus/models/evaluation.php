@@ -3463,6 +3463,10 @@ class EmundusModelEvaluation extends JModelList {
             $query = $db->getQuery(true);
             $user =  JFactory::getUser();
 
+            if(is_array($fnum)){
+                $fnum = $fnum['value'];
+            }
+
             $create_access = EmundusHelperAccess::asAccessAction(5, 'c', $user->id, $fnum);
             $update_access = EmundusHelperAccess::asAccessAction(5, 'u', $user->id, $fnum);
             $read_access = EmundusHelperAccess::asAccessAction(5, 'r', $user->id, $fnum);
@@ -3566,6 +3570,7 @@ class EmundusModelEvaluation extends JModelList {
             }
         } catch (Exception $e) {
             $message = 'COM_EMUNDUS_ERROR';
+            echo '<pre>'; var_dump($query->__toString()); echo '</pre>'; die;
             $url = '';
         }
 

@@ -28,10 +28,9 @@ JText::script('MOD_EM_QCM_CONFIRM_ANSWER');
      questions="<?= $qcm_applicant->questions ?>"
      formid="<?= $formid ?>"
      step="<?= $qcm_applicant->step ?>"
-     intro="<?= $intro ?>"
      pending="<?= $qcm_applicant->pending ?>"
      module="<?= $module->id ?>"
      tierstemps="<?= $qcm_applicant->tiers_temps ?>"
-</div>
+></div>
 
 <script src="media/mod_emundus_qcm/app.js"></script>
