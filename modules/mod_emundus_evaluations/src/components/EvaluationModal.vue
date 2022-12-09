@@ -16,47 +16,56 @@
     </div>
 
     <div class="modal-grid">
-      <div id="modal-applicationform">
-        <div class="em-p-16-0">
-          <span class="em-h3 em-w-100 em-flex-row em-flex-center">{{ translate('MOD_EMUNDUS_EVALUATIONS_APPLICATION_FORM')}}</span>
-          <button class="btn btn-primary em-ml-16" @click="exportFile">{{ translate('MOD_EMUNDUS_EVALUATIONS_APPLICATION_DOWNLOAD')}}</button>
-        </div>
-        <div class="scrollable">
-          <div v-html="applicationform"></div>
-          <Attachments v-if="preview" :user="current_user" :fnum="file.fnum"></Attachments>
-          <div v-else :class="{ 'loading': loading }" class="em-p-16">
-            <h3 class="em-mb-8">{{ translate('MOD_EMUNDUS_EVALUATIONS_ATTACHMENTS') }}</h3>
-            <table aria-describedby="Table of files attachments" class="em-mt-16">
-              <thead>
-              <tr>
-                <th v-for="column in activeAttachmentColumns" :key="column.name" :id="column.name">
-                  {{ translate(column.label) }}
-                </th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr v-for="attachment in attachments" class="file-row em-pointer" :key="attachment.id" @click="downloadAttachment(attachment)">
-                <td class="td-file" v-for="column in activeAttachmentColumns" :key="column.name" :id="'value_'+column.name">
-                  <span v-if="column.name === 'timedate'">{{ formattedDate(attachment[column.name]) }}</span>
-                  <a v-else-if="column.name === 'value'" style="text-decoration: underline;">
-                    {{ attachment[column.name] }}
-                  </a>
-                  <span v-else>{{ attachment[column.name] }}</span>
-                </td>
-              </tr>
-              </tbody>
-            </table>
+      <DragCol
+          width="100vw"
+          height="auto"
+      >
+        <template #left>
+          <div id="modal-applicationform">
+            <div class="em-p-16-0">
+              <span class="em-h3 em-w-100 em-flex-row em-flex-center">{{ translate('MOD_EMUNDUS_EVALUATIONS_APPLICATION_FORM')}}</span>
+              <button class="btn btn-primary em-ml-16" @click="exportFile">{{ translate('MOD_EMUNDUS_EVALUATIONS_APPLICATION_DOWNLOAD')}}</button>
+            </div>
+            <div class="scrollable">
+              <div v-html="applicationform"></div>
+              <Attachments v-if="preview" :user="current_user" :fnum="file.fnum"></Attachments>
+              <div v-else :class="{ 'loading': loading }" class="em-p-16">
+                <h3 class="em-mb-8">{{ translate('MOD_EMUNDUS_EVALUATIONS_ATTACHMENTS') }}</h3>
+                <table aria-describedby="Table of files attachments" class="em-mt-16">
+                  <thead>
+                  <tr>
+                    <th v-for="column in activeAttachmentColumns" :key="column.name" :id="column.name">
+                      {{ translate(column.label) }}
+                    </th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr v-for="attachment in attachments" class="file-row em-pointer" :key="attachment.id" @click="downloadAttachment(attachment)">
+                    <td class="td-file" v-for="column in activeAttachmentColumns" :key="column.name" :id="'value_'+column.name">
+                      <span v-if="column.name === 'timedate'">{{ formattedDate(attachment[column.name]) }}</span>
+                      <a v-else-if="column.name === 'value'" style="text-decoration: underline;">
+                        {{ attachment[column.name] }}
+                      </a>
+                      <span v-else>{{ attachment[column.name] }}</span>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </template>
 
-      <div id="modal-evaluationgrid">
-        <div class="em-p-16-0">
-          <span class="em-h3 em-w-100 em-flex-row em-flex-center">{{ translate('MOD_EMUNDUS_EVALUATIONS_EVALUATION_GRID') }}</span>
-        </div>
-        <iframe :src="url" class="iframe-evaluation" @load="loading = false;" id="iframe-evaluation" title="Evaluation form" />
-        <div class="em-page-loader" v-if="loading"></div>
-      </div>
+        <template #right>
+          <div id="modal-evaluationgrid">
+            <div class="em-p-16-0">
+              <span class="em-h3 em-w-100 em-flex-row em-flex-center">{{ translate('MOD_EMUNDUS_EVALUATIONS_EVALUATION_GRID') }}</span>
+            </div>
+            <iframe :src="url" class="iframe-evaluation" @load="loading = false;" id="iframe-evaluation" title="Evaluation form" />
+            <div class="em-page-loader" v-if="loading"></div>
+          </div>
+        </template>
+      </DragCol>
     </div>
   </modal>
 </template>
@@ -65,6 +74,14 @@
 /* IMPORT YOUR COMPONENTS */
 import axios from "axios";
 import Attachments from "../../../../components/com_emundus/src/views/Attachments";
+import {
+  DragCol,
+  DragRow,
+  ResizeCol,
+  ResizeRow,
+  Resize,
+} from "vue-resizer";
+
 
 /* IMPORT YOUR SERVICES */
 import attachmentService from "../../../../components/com_emundus/src/services/attachment.js";
@@ -73,7 +90,8 @@ import mixin from "../../../../components/com_emundus/src/mixins/mixin.js";
 export default {
   name: "EvaluationModal",
   components: {
-    Attachments
+    Attachments,
+    DragCol
   },
   props: {
     file: {
@@ -197,7 +215,6 @@ export default {
   height: 100vh;
   #modal-applicationform {
     grid-column: 1;
-    max-width: 50vw;
 
     .scrollable {
       height: calc(100vh - 184px);
@@ -218,7 +235,8 @@ export default {
   #modal-evaluationgrid{
     grid-column: 2;
     padding-right: 16px;
-    height: 90%;
+    height: 90vh;
+    margin-left: 48px;
   }
 }
 .em-modal-header{
@@ -269,5 +287,59 @@ export default {
 
 #em-switch-profiles {
   display: none;
+}
+
+.drager_col{
+  display: flex;
+}
+
+.drager_col > .slider_col {
+  transition: background 0.2s;
+  position: relative;
+  z-index: 1;
+  cursor: col-resize;
+  background: #f0f0f0;
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+  height: 90vh;
+  border-radius: 8px;
+}
+.drager_col > .slider_col:before {
+  transition: background-color 0.2s;
+  position: absolute;
+  top: 50%;
+  left: 31%;
+  transform: translateY(-50%);
+  content: "";
+  display: block;
+  width: 1px;
+  height: 24%;
+  min-height: 30px;
+  max-height: 70px;
+  background-color: #6f808d;
+}
+.drager_col > .slider_col:after {
+  transition: background-color 0.2s;
+  position: absolute;
+  top: 50%;
+  right: 31%;
+  transform: translateY(-50%);
+  content: "";
+  display: block;
+  width: 1px;
+  height: 24%;
+  min-height: 30px;
+  max-height: 70px;
+  background-color: #6f808d;
+}
+.drager_col > .slider_col:hover:before,
+.drager_col > .slider_col:hover:after,
+.drager_col > .slider_col:active:before,
+.drager_col > .slider_col:active:after {
+  background-color: #6f808d;
+}
+.drager_col > .slider_col:hover,
+.drager_col > .slider_col:active {
+  background: #e3e3e3;
 }
 </style>
