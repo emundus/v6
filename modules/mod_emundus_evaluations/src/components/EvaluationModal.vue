@@ -197,6 +197,7 @@ export default {
   height: 100vh;
   #modal-applicationform {
     grid-column: 1;
+    max-width: 50vw;
 
     .scrollable {
       height: calc(100vh - 184px);
