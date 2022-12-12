@@ -15,7 +15,6 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-
 class PlgHikashopEmundus_hikashop extends JPlugin {
 
     function __construct(&$subject, $config) {
@@ -27,16 +26,6 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
     public function onBeforeOrderCreate(&$order, &$do) {
         JPluginHelper::importPlugin('emundus','custom_event_handler');
         \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopBeforeOrderCreate', ['order' => $order, 'do' => $do]]);
-
-        $app = JFactory::getApplication();
-        $valid_session = $this->checkHikashopSession();
-
-        if (!$valid_session) {
-            $do = false;
-            $app->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
-            $app->redirect('index.php');
-            exit;
-        }
     }
 
     public function onAfterOrderCreate(&$order){
@@ -168,10 +157,6 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
     }
 
     public function onAfterOrderUpdate(&$order) {
-        $status_reset_session = ['cancelled', 'confirmed'];
-        if (in_array($order['order_status'], $status_reset_session)) {
-            JFactory::getSession()->set('emundusHikashopUser', null);
-        }
         $db         = JFactory::getDbo();
         $order_id = $order->order_parent_id ?: $order->order_id;
 
@@ -200,6 +185,9 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
             JLog::add('Could not get user session on order ID. -> ' . $order_id, JLog::ERROR, 'com_emundus');
             return false;
         }
+
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterOrderUpdate', ['order' => $order, 'em_order' => $em_order]]);
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
@@ -251,92 +239,18 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
             return false;
         }
 
-        JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterOrderUpdate', ['order' => $order, 'em_order' => $em_order]]);
-
         $this->onAfterOrderCreate($order);
     }
 
     public function onBeforeCartSave(&$element,&$do) {
-        $app = JFactory::getApplication();
-
-        if (!$this->checkHikashopSession()) {
-            $do = false;
-            $app->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
-            $app->redirect('index.php');
-            exit;
-        }
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopBeforeDisplayView', ['element' => $element, 'do' => $do]]);
     }
 
     public function onHikashopBeforeDisplayView(&$view)
     {
-        if (!$this->checkHikashopSession()) {
-            $app = JFactory::getApplication();
-            $app->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
-            $app->redirect('index.php');
-            exit;
-        }
-        $user = JFactory::getSession()->get('emundusUser');
-        echo '<h3 style="margin: 16px 0;">Récapitulatif</h3><p>Vous êtes sur le paiement de votre dossier ' . $user->fnum . ' de la campagne ' . $user->campaign_name . '</p>
-        <form id="quitPaymentForm" style="margin: 16px 0;">
-            <input id="goBackToForms" class="btn btn-primary" type="button" value="Revenir au formulaire">
-            <input id="goBackToHomepage" class="btn btn-primary" type="button" value="Revenir à la page d\'accueil" onclick="window.location.assign(window.location.origin)">
-        </form>
-        <script>
-            const fnum = "' . $user->fnum  . '";
-            const url = window.location.origin + \'/component/emundus/?task=openfile&fnum=\' + fnum;
-            document.querySelector("#goBackToForms").addEventListener("click", (e) => {
-                e.preventDefault();
-                
-                xhr = new XMLHttpRequest();
-                xhr.open("POST", "index.php?option=com_emundus&controller=payment&task=resetHikashopSession", true);
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState == 4) {
-                        if (xhr.status == 200) {
-                            window.location.assign(url);
-                        }
-                    }
-                };
-                xhr.send();
-            });
-            
-            document.querySelector("#goBackToHomepage").addEventListener("click", (e) => {
-                e.preventDefault();
-                
-                xhr = new XMLHttpRequest();
-                xhr.open("POST", "index.php?option=com_emundus&controller=payment&task=resetHikashopSession", true);
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState == 4) {
-                        if (xhr.status == 200) {
-                            window.location.assign(window.location.origin);
-                        }
-                    }
-                };
-                xhr.send();
-            });
-        </script>';
-    }
-
-    private function checkHikashopSession(): bool
-    {
-        $valid_session = true;
-
-        $hikashop_user = JFactory::getSession()->get('emundusHikashopUser');
-        $user = JFactory::getSession()->get('emundusUser');
-
-        if (empty($hikashop_user)) {
-            $hikashop_user = new StdClass();
-            $hikashop_user->user_id = $user->id;
-            $hikashop_user->fnum = $user->fnum;
-
-            JFactory::getSession()->set('emundusHikashopUser', $hikashop_user);
-        } else if ($hikashop_user->fnum != $user->fnum) {
-            $user->fnum = $hikashop_user->fnum;
-            JFactory::getSession()->set('emundusUser', $user);
-            $valid_session = false;
-        }
-
-        return $valid_session;
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopBeforeDisplayView', ['view' => $view]]);
     }
 
     public function onAfterOrderConfirm(&$order,&$methods,$method_id)
@@ -370,5 +284,46 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         // Nobody can see product list for the moment
         $app = JFactory::getApplication();
         $app->redirect('/');
+    }
+
+    public function onCheckoutStepList(&$list)
+    {
+        $list['emundus_return'] = array('name' => 'eMundus - Retour au dossier', 'params' => array('reset_session' => ['name' => JText::_('COM_EMUNDUS_RESET_SESSION_ON_QUIT'), 'type' => 'boolean', 'default' => 0]));
+    }
+
+    public function onCheckoutStepDisplay($layoutName, &$html, &$view, $pos = null, $options = null)
+    {
+        if ($layoutName != 'emundus_return')
+            return;
+
+        $user = JFactory::getSession()->get('emundusUser');
+        $layout = '<div><a id="go-back-button" data-fnum="'. $user->fnum . '" class="em-primary-button em-mt-16" style="width:fit-content;" href="' . JUri::base() . 'component/emundus/?task=openfile&fnum=' . $user->fnum . '"><span class="material-icons-outlined">arrow_back</span><span class="em-ml-8">Retour</span></a></div>';
+
+        if ($options['reset_session'] == 1) {
+            $layout .= "<script>
+                const formData = new FormData();
+                const goBack = document.querySelector('#go-back-button');
+                formData.append('fnum', goBack.getAttribute('data-fnum'));
+                goBack.addEventListener('click', function (e) {
+                  e.preventDefault();
+                  fetch(window.location.hostname + '/index.php?option=com_emundus&controller=payment&task=resetpaymentsession').then(function(response) {window.location.href = goBack.getAttribute('href');});
+                });
+                  
+                const submit = document.querySelector('#hikabtn_checkout_next');
+                document.addEventListener('click', function (e) {                    
+                    if (e.target.id == 'hikabtn_checkout_next') {
+                        e.preventDefault();
+                        fetch(window.location.hostname + '/index.php?option=com_emundus&controller=payment&task=checkpaymentsession', {body: formData, method: 'POST'}).then((response) => {window.location.href = goBack.getAttribute('href')}).then((response) => {return window.checkout.submitStep(submit);});
+                    }
+                });
+            </script>";
+        }
+
+        $html .= $layout;
+    }
+
+    public function onAfterCheckoutStep($controllerName, &$go_back, $original_go_back, &$controller) {
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterCheckoutStep', ['controllerName' => $controllerName, 'go_back' => &$go_back, 'original_go_back' => $original_go_back, 'controller' => &$controller]]);
     }
 }

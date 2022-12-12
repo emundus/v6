@@ -112,7 +112,16 @@ class EmundusControllerPayment extends JControllerLegacy
         exit;
     }
 
-    public function resetHikashopSession() {
-        JFactory::getSession()->set('emundusHikashopUser', null);
+    public function resetpaymentsession()
+    {
+        $app = JFactory::getApplication();
+        $jinput = $app->input;
+        $redirect = $jinput->get('redirect', false);
+        $model = $this->getModel('payment');
+        $model->resetPaymentSession();
+
+        if ($redirect) {
+            $app->redirect('/');
+        }
     }
 }
