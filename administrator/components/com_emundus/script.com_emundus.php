@@ -437,6 +437,12 @@ class com_emundusInstallerScript
                     ['label' => 'onBeforeSubmitEvaluation', 'category' => 'Evaluation'],
                     ['label' => 'onAfterSubmitEvaluation', 'category' => 'Evaluation']
                 ]);
+
+	            EmundusHelperUpdate::addYamlVariable('location','gantry-assets://custom/scss/quill.scss',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css',true,true);
+	            EmundusHelperUpdate::addYamlVariable('inline','',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+	            EmundusHelperUpdate::addYamlVariable('extra','{  }',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+	            EmundusHelperUpdate::addYamlVariable('priority','0',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+	            EmundusHelperUpdate::addYamlVariable('name','Quill',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
             }
 
             // Insert new translations in overrides files
