@@ -66,6 +66,7 @@ export default {
 	padding: 8px !important;
 	font-size: 6px;
 	background-color: #F1F1F1 !important;
+  overflow: hidden;
 
 	&.loading {
 		padding: 0 !important;

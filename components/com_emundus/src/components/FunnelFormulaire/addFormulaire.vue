@@ -18,7 +18,22 @@
       </button>
     </div>
 
-    <FormCarrousel
+    <div class="em-flex-row">
+      <div v-for="form in formList" :key="form.id"
+           v-if="form.link.includes('fabrik')"
+           class="card-wrapper em-mr-32"
+           :title="form.label"
+      >
+        <form-builder-preview-form
+            :form_id="Number(form.id)"
+            :form_label="form.label"
+            class="card em-shadow-cards model-preview em-pointer"
+        ></form-builder-preview-form>
+      </div>
+    </div>
+
+
+<!--    <FormCarrousel
       v-if="formList"
       :formList="formList"
       :documentsList="documentsList"
@@ -26,7 +41,7 @@
       :key="formListReload"
       @getEmitIndex="getEmitIndex"
       @formbuilder="formbuilder"
-    />
+    />-->
   </div>
 </template>
 
@@ -38,6 +53,7 @@ const qs = require("qs");
 
 import "@fortawesome/fontawesome-free/css/all.css";
 import "@fortawesome/fontawesome-free/js/all.js";
+import FormBuilderPreviewForm from "@/components/FormBuilder/FormBuilderPreviewForm.vue";
 
 export default {
   name: "addFormulaire",
@@ -50,6 +66,7 @@ export default {
     visibility: Number
   },
   components: {
+    FormBuilderPreviewForm,
     FormCarrousel
   },
 
@@ -174,11 +191,55 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 #select_profile{
   width: 23%;
   margin-right: 10px;
   height: 50px;
+}
+
+.card-wrapper {
+  width: 150px;
+
+  .em-shadow-cards {
+    background-color: white;
+    width: 150px;
+    border: 2px solid transparent;
+  }
+
+  .card {
+    margin: 24px 0 12px 0;
+  }
+
+  p {
+    text-align: center;
+    border-radius: 4px;
+    padding: 4px;
+    transition: all .3s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px;
+  }
+
+  input {
+    width: 200px;
+    height: 20px;
+    font-size: 12px;
+    border: 0;
+    text-align: center;
+  }
+
+  &.selected {
+    .em-shadow-cards {
+      border: 2px solid #20835F;
+    }
+
+    p, input {
+      color: white !important;
+      background-color: #20835F !important;
+    }
+  }
 }
 </style>
 
