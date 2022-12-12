@@ -37,17 +37,19 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
   padding: 0;
 }
 
+.ql-editor{
+  padding: 12px 15px;
+}
+
 #{$selectors}{
   box-sizing: border-box;
   line-height: 1.42;
   height: 100%;
   outline: none;
   overflow-y: auto;
-  padding: 12px 15px;
   tab-size: 4;
   -moz-tab-size: 4;
   text-align: left;
-  white-space: pre-wrap;
   word-wrap: break-word;
   > * {
     cursor: text;
