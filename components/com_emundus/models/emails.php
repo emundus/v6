@@ -677,7 +677,7 @@ class EmundusModelEmails extends JModelList {
      * @throws Exception
      * @since version v6
      */
-    public function setTagsFabrik($str, $fnums = array()) {
+    public function setTagsFabrik($str, $fnums = array(), $raw = false) {
         require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         $m_files = new EmundusModelFiles();
 
@@ -741,7 +741,7 @@ class EmundusModelEmails extends JModelList {
                         }
                         foreach ($index as $value) {
                             $key = array_search($value,$params->sub_options->sub_values);
-                            $elm[] = JText::_($params->sub_options->sub_labels[$key]);
+                            $elm[] = !$raw ? JText::_($params->sub_options->sub_labels[$key]) : $value;
                         }
                         $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $elm);
                     }

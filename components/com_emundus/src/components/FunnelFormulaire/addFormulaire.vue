@@ -2,7 +2,7 @@
   <div>
     <div class="em-mb-4 em-text-color">{{ChooseForm}} : </div>
     <div class="em-mb-8">
-      <select id="select_profile" v-model="$props.profileId" @change="updateProfileCampaign">
+      <select id="select_profile" class="form-control fabrikinput" v-model="$props.profileId" @change="updateProfileCampaign">
         <option v-for="(profile, index) in profiles" :key="index" :value="profile.id">
           {{profile.form_label}}
         </option>
@@ -13,11 +13,12 @@
       </div>
 
       <button @click="addNewForm" class="em-primary-button em-w-auto">
-          <span class="material-icons-outlined em-color-white em-mr-8">add</span>
           <span>{{ AddForm }}</span>
       </button>
     </div>
 
+    <hr/>
+    <p class="em-h5">{{ translate('COM_EMUNDUS_FORM_PAGES_PREVIEW')}}</p>
     <div class="em-flex-row">
       <div v-for="form in formList" :key="form.id"
            v-if="form.link.includes('fabrik')"
@@ -192,12 +193,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-#select_profile{
-  width: 23%;
-  margin-right: 10px;
-  height: 50px;
-}
-
 .card-wrapper {
   width: 150px;
 

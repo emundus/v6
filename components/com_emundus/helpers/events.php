@@ -532,7 +532,7 @@ class EmundusHelperEvents {
                         $checkout_url = $mApplication->getHikashopCheckoutUrl($user->profile . $scholarship_document_id);
 
                         if (strpos($checkout_url,'${') !== false) {
-                            $checkout_url = $mEmails->setTagsFabrik($checkout_url, [$user->fnum]);
+                            $checkout_url = $mEmails->setTagsFabrik($checkout_url, [$user->fnum], true);
                         }
                         // If $accept_other_payments is 2 : that means we do not redirect to the payment page.
                         if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments >= 100 && $forms >= 100) {
