@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 	<extension type="module" version ="2.5.0" method="upgrade">
-		<name>QCM eMundus</name>
+		<name>MOD_EMUNDUS_QCM_XML</name>
         <author>Brice HUBINET</author>
         <creationDate>February 2021</creationDate>
         <copyright>Copyright (C) 2021 eMundus. All rights reserved.</copyright>

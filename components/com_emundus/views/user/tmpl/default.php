@@ -4,6 +4,10 @@ defined('_JEXEC') or die('Restricted access');
 $email = $this->user;
 $current_user = JFactory::getUser();
 ?>
+<div class="em-activation-header">
+    <p><a class="em-back-button em-pointer em-w-auto em-float-left" style="text-decoration: unset" href="index.php?option=com_users&task=user.logout&<?php echo JSession::getFormToken() ?>=1"><span class="material-icons em-mr-4">navigate_before</span>Retour à la page d'accueil</a></p>
+</div>
+
     <section class="em-activation">
         <section class="info">
             <div class="infoContainer">
@@ -37,6 +41,10 @@ $current_user = JFactory::getUser();
         document.getElementById('g-page-surround').style.background = 'white';
         document.getElementById('g-footer').style.display = 'none';
         document.getElementById('header-c').style.display = 'none';
+
+        /*setTimeout(() => {
+            window.location.href = 'index.php';
+        },10000)*/
     });
 
     function activation(user) {

@@ -26,8 +26,8 @@
 
 a.btn.btn-info,
 button.btn.btn-primary {
-    background: #20835F;
-    border: 1px solid #20835F;
+    background: var(--main-500);
+    border: 1px solid var(--main-500);
     text-shadow: none;
     text-transform: initial;
     padding: 8px 12px;
@@ -36,9 +36,9 @@ button.btn.btn-primary {
 a.btn.btn-info:hover, a.btn.btn-info:focus, a.btn.btn-info:active,
 button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-primary:active {
     background-color: transparent;
-    color: #20835F;
+    color: var(--main-500);
     outline: none;
-    border: 1px solid #20835F;
+    border: 1px solid var(--main-500);
 }
 
 .panel-primary {
@@ -115,7 +115,7 @@ button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-prima
 
 
 .panel-primary > .panel-heading{
-    background-color: #20835F !important;
+    background-color: var(--main-500) !important;
     display: flex;
     align-items: center;
     justify-content: center;

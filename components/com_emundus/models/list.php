@@ -103,6 +103,7 @@ class EmundusModelList extends JModelList
         return $data;
     }
 
+
     public function getList($listId, $listParticularConditionalColumn, $listParticularConditionalColumnValues)
     {
         $data = [];
@@ -115,7 +116,7 @@ class EmundusModelList extends JModelList
                 ->leftJoin($this->db->quoteName('#__fabrik_groups', 'jfg') . ' ON ' . $this->db->quoteName('jffg.group_id') . ' = ' . $this->db->quoteName('jfg.id'))
                 ->leftJoin($this->db->quoteName('#__fabrik_elements', 'jfe') . ' ON ' . $this->db->quoteName('jfe.group_id') . ' = ' . $this->db->quoteName('jffg.group_id'))
                 ->where($this->db->quoteName('jfl.id') . ' = ' . $listId)
-                ->andWhere($this->db->quoteName('jfe.show_in_list_summary') . ' = 1 OR jfe.name = ' . $this->db->quote('id'))
+                ->andWhere($this->db->quoteName('jfe.show_in_list_summary') . ' = 1 OR jfe.name IN (' .$this->db->quote('id') . ',' . $this->db->quote("fnum") . ')')
                 ->andWhere($this->db->quoteName('jfe.published') . ' = ' . 1)
                 ->order($this->db->quoteName('jfe.ordering').' ASC');
             $this->db->setQuery($query);
@@ -152,7 +153,7 @@ class EmundusModelList extends JModelList
                 }
 
                 $query->clear()
-                    ->select($listColumns)
+                    ->select("DISTINCT " . implode(',', $listColumns))
                     ->from($this->db->quoteName($dbTableName));
 
                 if (!empty($databaseJoinsKeysAndColumns)) {
@@ -161,21 +162,23 @@ class EmundusModelList extends JModelList
                     }
                 }
 
+                $firstWhere = true;
+
                 /*** The code below before the try catch is used to get data from table with specific where clause column define in module configuration ******/
-                $firstWhere = false;
                 foreach ($listParticularConditionalColumn as $column) {
                     $values = explode(',', $column);
                     $values = '"' . join('", "', $values) . '"';
 
                     if (!empty($column)) {
-                        if (!$firstWhere) {
+                        if ($firstWhere) {
                             $query->where($this->db->quoteName($column) . ' IN (' .$values. ')');
-                            $firstWhere = true;
+                            $firstWhere = false;
                         } else {
                             $query->andWhere($this->db->quoteName($column) . ' IN (' . $values . ')');
                         }
                     }
                 }
+
 
                 $this->db->setQuery($query);
                 try {
@@ -185,12 +188,40 @@ class EmundusModelList extends JModelList
                     return 0;
                 }
 
+                require_once (JPATH_ROOT .'/components/com_emundus/helpers/access.php');
+                require_once (JPATH_ROOT .'/components/com_emundus/models/users.php');
+                require_once (JPATH_ROOT .'/components/com_emundus/models/campaign.php');
+                $m_users = new EmundusModelUsers();
+                $user_id = JFactory::getUser()->id;
+                $user_programs = $m_users->getUserGroupsProgramme($user_id);
+                foreach($listDataResult as $index => $listResult) {
+                    $query->clear()
+                        ->select('training')
+                        ->from('#__emundus_setup_campaigns as jesc')
+                        ->leftJoin('#__emundus_campaign_candidature as jecc ON jecc.campaign_id = jesc.id')
+                        ->where('jecc.fnum LIKE ' .  $this->db->quote($listResult->fnum));
+                    $this->db->setQuery($query);
+                    $program = $this->db->loadResult();
+
+                    if(!EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $listResult->fnum) && !in_array($program, $user_programs)) {
+                        unset($listDataResult[$index]);
+                    }
+                }
+
                 foreach ($result as $key => $res) {
                     $result[$key]['label'] = JText::_($res['label']);
                 }
 
                 $listData = $this->removeForeignKeyValueFormDataLoadedIfExistingDatabaseJoinElementInList($databaseJoinsKeysAndColumns, $listDataResult);
                 $data = ["listColumns" => $result, "listData" => $listData];
+            }
+        }
+
+        foreach($data['listColumns'] as $key => $column) {
+            if ($column['column_name'] == 'fnum') {
+                unset($data['listColumns'][$key]);
+                $data['listColumns'] = array_values($data['listColumns']);
+                break;
             }
         }
 

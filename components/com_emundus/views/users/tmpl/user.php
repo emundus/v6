@@ -8,6 +8,8 @@
 
 $document = JFactory::getDocument();
 $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
+
+require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
 ?>
 <style>
     .em-cell .material-icons{
@@ -107,6 +109,16 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
                                             <label for = "<?php echo $value?>_check">
                                                 <?php
                                                 echo ($l * 1 + 1 + $this->pagination->limitstart) .'#'.$value;
+                                                ?>
+                                            </label>
+                                        </div>
+                                    </td>
+                                <?php elseif ($k == 'registerDate' || $k == 'lastvisitDate') :?>
+                                    <td>
+                                        <div class="em-cell" >
+                                            <label for = "<?php echo $value?>_check">
+                                                <?php
+                                                echo EmundusHelperDate::displayDate($value, 'COM_EMUNDUS_DATE_FORMAT', 0);
                                                 ?>
                                             </label>
                                         </div>

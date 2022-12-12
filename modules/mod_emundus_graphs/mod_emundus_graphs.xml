@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 	<extension type="module" version ="2.5.0" method="upgrade">
-		<name>EmundusGraphs</name>
+		<name>MOD_EMUNDUS_GRAPHS_XML</name>
         <author>James Dean</author>
         <creationDate>June 2018</creationDate>
         <copyright>Copyright (C) 2018 eMundus. All rights reserved.</copyright>
@@ -19,60 +19,60 @@
 		<config>
 			<fields name="params">
 				<fieldset name="basic" addfieldpath="/modules/mod_emundus_graphs/tmpl" >
-					<field 
-						name="mod_em_list_id1" 
-						type="text" 
+					<field
+						name="mod_em_list_id1"
+						type="text"
 						label="MOD_EM_LIST_ID1"
-						description="MOD_EM_LIST_ID1_DESC" 
+						description="MOD_EM_LIST_ID1_DESC"
 						size="60"
 					/>
 
-					<field 
-						name="mod_em_list_id2" 
-						type="text" 
+					<field
+						name="mod_em_list_id2"
+						type="text"
 						label="MOD_EM_LIST_ID2"
-						description="MOD_EM_LIST_ID2_DESC" 
+						description="MOD_EM_LIST_ID2_DESC"
 						size="60"
 						default="index.php?option=com_emundus&amp;view=users&amp;Itemid=592"
 					/>
 
-					<field 
-						name="mod_em_list_id3" 
-						type="text" 
+					<field
+						name="mod_em_list_id3"
+						type="text"
 						label="MOD_EM_LIST_ID3"
-						description="MOD_EM_LIST_ID3_DESC" 
+						description="MOD_EM_LIST_ID3_DESC"
 						size="60"
 					/>
 
-					<field 
-						name="mod_em_list_id4" 
-						type="text" 
+					<field
+						name="mod_em_list_id4"
+						type="text"
 						label="MOD_EM_LIST_ID4"
-						description="MOD_EM_LIST_ID4_DESC" 
+						description="MOD_EM_LIST_ID4_DESC"
 						size="60"
 					/>
 
-					<field 
-						name="mod_em_list_id5" 
-						type="text" 
+					<field
+						name="mod_em_list_id5"
+						type="text"
 						label="MOD_EM_LIST_ID5"
-						description="MOD_EM_LIST_ID5_DESC" 
+						description="MOD_EM_LIST_ID5_DESC"
 						size="60"
 					/>
 
-					<field 
-						name="mod_em_list_id6" 
-						type="text" 
+					<field
+						name="mod_em_list_id6"
+						type="text"
 						label="MOD_EM_LIST_ID6"
-						description="MOD_EM_LIST_ID6_DESC" 
+						description="MOD_EM_LIST_ID6_DESC"
 						size="60"
 					/>
 
-					<field 
-						name="mod_em_list_id7" 
-						type="text" 
+					<field
+						name="mod_em_list_id7"
+						type="text"
 						label="MOD_EM_LIST_ID7"
-						description="MOD_EM_LIST_ID7_DESC" 
+						description="MOD_EM_LIST_ID7_DESC"
 						size="60"
 					/>
 

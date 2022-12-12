@@ -51,6 +51,7 @@
 
 <script>
 import Multiselect from 'vue-multiselect';
+import syncService from "../../../services/sync";
 
 export default {
   name: "FilesName",
@@ -88,41 +89,56 @@ export default {
     }
   },
   created() {
-    if(this.$props.name !== ''){
-      let regex = /(?<=[^\w-]|^)(?!-)([a-z_]+)(?<!-)(?=[^\w-]|$)/gi;
-      let tags_regex = this.$props.name.match(regex);
+	  syncService.getSetupTags().then(response => {
+			if (response.status) {
+				response.data.forEach((tag) => {
+					if (!this.tags.find((current_tag) => {
+						return current_tag.value == '[' + tag.tag + ']';
+					})) {
+						this.tags.push({
+							label: tag.description,
+							value: '[' + tag.tag + ']'
+						});
+					}
+				});
+			}
 
-      this.selectedSeparator = '-';
+			if (this.$props.name !== '') {
+			  let regex = /(?<=[^\w-]|^)(?!-)([a-z_]+)(?<!-)(?=[^\w-]|$)/gi;
+			  let tags_regex = this.$props.name.match(regex);
 
-      tags_regex.forEach((tag,index) => {
-        if(tag !== '_'){
-          tags_regex[index] = '[' + tag + ']';
+			  this.selectedSeparator = '-';
 
-          let tag_found = this.tags.findIndex(function(element, key) {
-            if(element.value === '[' + tag + ']')
-              return true;
-          });
+			  tags_regex.forEach((tag,index) => {
+				  if (tag !== '_') {
+					  tags_regex[index] = '[' + tag + ']';
 
-          if(tag_found !== -1) {
-            this.selectedTags.push(this.tags[tag_found]);
-          }
-        } else {
-          this.selectedSeparator = '_';
-        }
-      });
-    } else {
-      this.selectedSeparator = '-';
+					  let tag_found = this.tags.findIndex(function(element, key) {
+						  if(element.value === '[' + tag + ']')
+							  return true;
+					  });
 
-      if(this.selectedTags.length === 0){
-        this.resetName();
-      }
-    }
+					  if(tag_found !== -1) {
+						  this.selectedTags.push(this.tags[tag_found]);
+					  }
+				  } else {
+					  this.selectedSeparator = '_';
+				  }
+			  });
+		  } else {
+			  this.selectedSeparator = '-';
+
+			  if (this.selectedTags.length === 0) {
+				  this.resetName();
+			  }
+		  }
+	  });
   },
   methods: {
     addTag(newTag){
       const tag = {
         label: newTag,
-        value: newTag.toLowerCase()
+        value: newTag
       }
       this.tags.push(tag);
       this.selectedTags.push(tag);

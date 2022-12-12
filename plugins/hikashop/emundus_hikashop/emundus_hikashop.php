@@ -25,6 +25,9 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
     }
 
     public function onBeforeOrderCreate(&$order, &$do) {
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopBeforeOrderCreate', ['order' => $order, 'do' => $do]]);
+
         $app = JFactory::getApplication();
         $valid_session = $this->checkHikashopSession();
 
@@ -37,6 +40,9 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
     }
 
     public function onAfterOrderCreate(&$order){
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterOrderCreate', ['order' => $order]]);
+
         // We get the emundus payment type from the config
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $em_application_payment = $eMConfig->get('application_payment', 'user');
@@ -155,14 +161,18 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         }
     }
 
-    public function onAfterOrderUpdate(&$order)
+    public function onBeforeOrderUpdate(&$order,&$do)
     {
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopBeforeOrderUpdate', ['order' => $order, 'do' => $do]]);
+    }
+
+    public function onAfterOrderUpdate(&$order) {
         $status_reset_session = ['cancelled', 'confirmed'];
         if (in_array($order['order_status'], $status_reset_session)) {
             JFactory::getSession()->set('emundusHikashopUser', null);
         }
-
-        $db = JFactory::getDbo();
+        $db         = JFactory::getDbo();
         $order_id = $order->order_parent_id ?: $order->order_id;
 
         if ($order_id > 0) {
@@ -207,6 +217,18 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
             $m_files = new EmundusModelFiles();
             $m_files->updateState($fnum, $status_after_payment[$key]);
             JLog::add('Application file status updated to -> ' . $status_after_payment[$key], JLog::ERROR, 'com_emundus');
+
+            $query = $db->getQuery(true);
+            $query->update('#__emundus_campaign_candidature')
+                ->set('submitted = 1')
+                ->where('fnum LIKE ' . $db->quote($fnum));
+
+            try {
+                $db->setQuery($query);
+                $db->execute();
+            } catch (Exception $e) {
+                JLog::add('Failed to update file submitted after payment ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            }
         } else {
             $query = 'SELECT * FROM #__hikashop_order WHERE order_id=' . $order_id;
             $db->setQuery($query);
@@ -229,6 +251,9 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
             return false;
         }
 
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterOrderUpdate', ['order' => $order, 'em_order' => $em_order]]);
+
         $this->onAfterOrderCreate($order);
     }
 
@@ -243,7 +268,8 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         }
     }
 
-    public function onHikashopBeforeDisplayView(&$view) {
+    public function onHikashopBeforeDisplayView(&$view)
+    {
         if (!$this->checkHikashopSession()) {
             $app = JFactory::getApplication();
             $app->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
@@ -251,7 +277,6 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
             exit;
         }
         $user = JFactory::getSession()->get('emundusUser');
-
         echo '<h3 style="margin: 16px 0;">Récapitulatif</h3><p>Vous êtes sur le paiement de votre dossier ' . $user->fnum . ' de la campagne ' . $user->campaign_name . '</p>
         <form id="quitPaymentForm" style="margin: 16px 0;">
             <input id="goBackToForms" class="btn btn-primary" type="button" value="Revenir au formulaire">
@@ -312,5 +337,38 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         }
 
         return $valid_session;
+    }
+
+    public function onAfterOrderConfirm(&$order,&$methods,$method_id)
+    {
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterOrderConfirm',
+            ['order' => $order, 'methods' => $methods, 'method_id' => $method_id]
+        ]);
+    }
+
+    public function onAfterOrderDelete($elements)
+    {
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterOrderDelete', ['elements' => $elements]]);
+    }
+
+
+    public function onCheckoutWorkflowLoad(&$checkout_workflow, &$shop_closed, $cart_id) {
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopCheckoutWorkflowLoad',
+            ['checkout_workflow' => $checkout_workflow, 'shop_closed' => $shop_closed, 'cart_id' => $cart_id]
+        ]);
+    }
+
+    public function onBeforeProductListingLoad(&$filters,&$order,&$parent, &$select, &$select2, &$a, &$b, &$on) {
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopBeforeProductListingLoad',
+            ['filters' => $filters, 'order' => $order,'parent' => $parent, 'select' => $select, 'select2' => $select2, 'a' => $a, 'b' => $b, 'on' => $on]
+        ]);
+
+        // Nobody can see product list for the moment
+        $app = JFactory::getApplication();
+        $app->redirect('/');
     }
 }

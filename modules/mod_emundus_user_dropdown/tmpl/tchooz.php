@@ -12,7 +12,39 @@ $document = JFactory::getDocument();
 $document->addStyleSheet("modules/mod_emundus_user_dropdown/style/mod_emundus_user_dropdown.css" );
 // Note. It is important to remove spaces between elements.
 
+$guest = JFactory::getUser()->guest;
+
 if($user != null) {
+
+// background color of the home page
+    include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
+    $m_profiles = new EmundusModelProfile();
+    $app_prof = $m_profiles->getApplicantsProfilesArray();
+
+    $user = JFactory::getSession()->get('emundusUser');
+    if(in_array($user->profile,$app_prof)){
+
+?>
+        <style>
+          .gantry.homepage  #g-page-surround  {
+            background: var(--applicant-background-color);
+          }
+        </style>
+
+<?php
+}
+
+else {
+
+?>
+        <style>
+          .gantry.homepage  #g-page-surround  {
+            background: var(--background-color);
+          }
+        </style>
+
+<?php
+    }
 ?>
 
 <style>
@@ -76,6 +108,8 @@ if($user != null) {
         -webkit-appearance: none;
         width: 200px;
         color: #353544;
+        background-color: var( --neutral-50);
+        font-family: var(--font);
     }
     .select .profile-select:hover{
         background-color: white !important;
@@ -120,7 +154,7 @@ if($user != null) {
         }
     .em-user-dropdown-tip-link{
         float: right;
-        color: #20835F;
+        color: var(--main-500);
         cursor: pointer;
     }
 </style>
@@ -131,7 +165,7 @@ if($user != null) {
 <div class='dropdown <?php if($first_logged) : ?>userDropdown-tip<?php endif; ?>' id="userDropdown" style="float: right;">
     <?php if(!empty($profile_picture)): ?>
     <div class="em-profile-picture em-pointer em-user-dropdown-button" id="userDropdownLabel"
-         style="background-image:url('<?php echo $profile_picture ?>');right: 15px">
+         style="background-image:url('<?php echo $profile_picture ?>');">
     </div>
     <?php else : ?>
     <div class="em-user-dropdown-button <?php if($first_logged) : ?>userDropdownLabel-tip<?php endif; ?>" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
@@ -204,7 +238,7 @@ if($user != null) {
         var messageIcon = document.getElementById('messageDropdownIcon');
 
         if (dropdown.classList.contains('open')) {
-            jQuery("#userDropdownMenu").css("transform","translate(250px)")
+            jQuery("#userDropdownMenu").css("transform","translate(300px)")
             setTimeout(() => {
                 dropdown.classList.remove('open');
                 jQuery("#userDropdownMenu").css("transform","unset")
@@ -231,21 +265,6 @@ if($user != null) {
         e.stopPropagation();
         displayUserOptions();
     });
-
-    /*document.addEventListener('click', function (e) {
-        e.stopPropagation();
-        var dropdown = document.getElementById('userDropdown');
-        var icon = document.getElementById('userDropdownIcon');
-
-        if (dropdown.classList.contains('open')) {
-            jQuery("#userDropdownMenu").css("transform","translate(250px)")
-            setTimeout(() => {
-                dropdown.classList.remove('open');
-                jQuery("#userDropdownMenu").css("transform","unset")
-                icon.classList.remove('active');
-            },300);
-        }
-    });*/
 
     function postCProfile() {
         var current_fnum = document.getElementById("profile").value;
@@ -291,19 +310,48 @@ if($user != null) {
             }
         });
     }
+
+    document.addEventListener('click', function (e) {
+        let clickInsideModule = false;
+
+        e.composedPath().forEach((pathElement) => {
+            if (pathElement.id == "userDropdownMenu") {
+                clickInsideModule = true;
+            }
+        });
+
+        if (!clickInsideModule) {
+            const dropdown = document.getElementById('userDropdown');
+            const icon = document.getElementById('userDropdownIcon');
+
+            jQuery("#userDropdownMenu").css("transform","translate(250px)")
+            setTimeout(() => {
+                dropdown.classList.remove('open');
+                jQuery("#userDropdownMenu").css("transform","unset")
+                if(icon !== null) {
+                    icon.classList.remove('active');
+                }
+            }, 300);
+        }
+    });
 </script>
 <?php } else { ?>
 <div class="header-right" style="text-align: right;">
+    <?php if ($show_registration) { ?>
+        <a class="btn btn-danger btn-creer-compte" href="<?= $link_register; ?>" data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
+    <?php } ?>
 	<a class="btn btn-danger" href="<?= $link_login; ?>" data-toggle="sc-modal"><?= JText::_('CONNEXION_LABEL'); ?></a>
-	<?php if ($show_registration) { ?>
-		<a class="btn btn-danger btn-creer-compte" href="<?= $link_register; ?>" data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
-	<?php } ?>
 </div>
-    <a class="forgotten_password_header" href="<?= $link_forgotten_password; ?>"><?= JText::_('FORGOTTEN_PASSWORD_LABEL'); ?></a>
+    <!--<a class="forgotten_password_header" href="<?/*= $link_forgotten_password; */?>"><?/*= JText::_('FORGOTTEN_PASSWORD_LABEL'); */?></a>-->
 
     <script>
+        <?php if ($guest): ?>
         document.addEventListener('DOMContentLoaded', function () {
-            document.querySelector('#header-c .g-content').style.alignItems = 'start';
+            document.querySelector('#g-navigation .g-container').style.padding = '16px 72px';
         });
+        <?php endif; ?>
+        /*document.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('#header-c .g-content').style.alignItems = 'start';
+        });*/
     </script>
 <?php } ?>

@@ -1,99 +1,116 @@
-default:
-  retry:
-    max: 1
-
 services:
   - name: docker:20.10-dind
+
+default:
+  tags:
+    - k8s
 
 variables:
   GIT_SUBMODULE_STRATEGY: normal
   DOCKER_DRIVER: overlay2
   DOCKER_BUILDKIT: 1
   BUILDKIT_INLINE_CACHE: 1
-  COMPOSE_DOCKER_CLI_BUILD: 1
   DOCKER_TLS_CERTDIR: ""
-  DOCKER_CLIENT_TIMEOUT: 360
-  COMPOSE_HTTP_TIMEOUT: 360
 
 stages:
-  - check
+  - prepare
   - build
   - test
   - release
   - publish
 
 check-tchooz-version-job:
-  stage: check
+  stage: prepare
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
       when: always
     - when: never
-  image: debian:stable-slim
-  before_script: 
-    - apt update
-    - apt install curl jq -y
+  image: enix/ci-toolbox
   script:
     - .ci/file-search-in-gitlab-merge-request.sh "$CI_SERVER_URL" "$GITLAB_TOKEN" "$CI_PROJECT_ID" "$CI_MERGE_REQUEST_IID" "administrator/components/com_emundus/emundus.xml"
+
+vanilla-job:
+  stage: prepare
+  image: docker:20.10
+  script:
+    - cp -p configuration.php.dist configuration.php
+    - cp -p media/com_emundus_vanilla/v6/.htaccess .htaccess
+    - cp -pr media/com_emundus_vanilla/v6/language/overrides/* language/overrides/
+    - cp -pr media/com_emundus_vanilla/v6/templates/g5_helium/* templates/g5_helium/
+  artifacts:
+    paths:
+      - configuration.php
+      - .htaccess
+      - language/overrides/
+      - templates/g5_helium/
+    expire_in: 24h
+  only:
+    - merge_request
 
 build-app-to-test-job:
   stage: build
   image: docker:20.10
   before_script: 
-    - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+    - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
   script:
-    - docker pull $CI_REGISTRY/tchooz-build-app:latest || true
-    - docker build --cache-from $CI_REGISTRY/tchooz-build-app:latest -t $CI_REGISTRY/tchooz-build-app:latest -t $CI_REGISTRY/tchooz-build-app:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 --build-arg xdebug=1 --build-arg jest=1 .
-    - docker push $CI_REGISTRY/tchooz-build-app:$CI_COMMIT_SHORT_SHA
-    - docker push $CI_REGISTRY/tchooz-build-app:latest
-  only:
-    - merge_request
+    - docker pull emundus/tchooz-build-app:latest || true
+    - docker build --cache-from emundus/tchooz-build-app:latest --compress -t emundus/tchooz-build-app:latest --build-arg=BUILDKIT_INLINE_CACHE=1 --build-arg xdebug=1 --build-arg jest=1 .ci/php/7.4
+    - docker push emundus/tchooz-build-app:latest
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - .ci/php/7.4/*
 
 build-db-to-test-job:
   stage: build
   image: docker:20.10
   before_script: 
-    - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+    - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
   script:
-    - docker pull $CI_REGISTRY/tchooz-build-db:latest || true
-    - docker build --cache-from $CI_REGISTRY/tchooz-build-db:latest --compress -f Dockerfile.db -t $CI_REGISTRY/tchooz-build-db:latest -t $CI_REGISTRY/tchooz-build-db:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 --build-arg xdebug=1 --build-arg jest=1 .
-    - docker push $CI_REGISTRY/tchooz-build-db:$CI_COMMIT_SHORT_SHA
-    - docker push $CI_REGISTRY/tchooz-build-db:latest
-  only:
-    - merge_request
+    - docker pull emundus/tchooz-build-db:latest || true
+    - docker build --cache-from emundus/tchooz-build-db:latest --compress -f Dockerfile.db -t emundus/tchooz-build-db:latest --build-arg=BUILDKIT_INLINE_CACHE=1 .
+    - docker push emundus/tchooz-build-db:latest
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - media/com_emundus_vanilla
+        - Dockerfile.db
+        - .ci/mysql/*
 
 phpunit-job:
   stage: test
-  image: docker/compose:1.29.2
+  image: emundus/tchooz-build-app:latest
   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
-  before_script: 
-    - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
-    - docker-compose up -d
+  services:
+    - name: emundus/tchooz-build-db:latest
+      alias: database
+    - redis:latest
+  before_script:
+    - apache2-foreground &
+    - /scripts/entrypoint.sh
   script:
-    - docker exec web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID /bin/sh -c "/var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text --colors=never && echo $?"
-  after_script:
-    - docker logs database-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
-    - docker logs redis-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
-    - docker logs web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
-    - docker-compose down
+    - libraries/emundus/phpunit.phar -c phpunit.xml --coverage-text --colors=never
+  dependencies:
+    - vanilla-job
   only:
     - merge_request
 
 jest-job:
   stage: test
-  image: docker/compose:1.29.2
+  image: emundus/tchooz-build-app:latest
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
-  before_script: 
-    - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
-    - docker-compose up -d
-  script:
-    - docker exec web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID /bin/bash -c "cd /var/www/html/components && yarn run test:unit com_emundus/ --ci --coverage && echo $?"
-  after_script:
-    - docker logs database-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
-    - docker logs redis-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
-    - docker logs web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
-    - docker-compose down
-  needs:
-    - phpunit-job
+  services:
+    - name: emundus/tchooz-build-db:latest
+      alias: database
+    - redis:latest
+  before_script:
+    - apache2-foreground &
+    - /scripts/entrypoint.sh
+    - cd components && yarn
+  script: 
+    - yarn run test:unit com_emundus/ --ci --coverage
+  dependencies:
+    - vanilla-job
   only:
     - merge_request
 
@@ -105,7 +122,7 @@ release-job:
         - administrator/components/com_emundus/emundus.xml
       when: on_success
     - when: never
-  image: $CI_REGISTRY/emundus-semantic-release:latest
+  image: emundus/semantic-release:latest
   script:
     - semantic-release
   artifacts:
@@ -120,7 +137,7 @@ sync-documentation-job:
         - administrator/components/com_emundus/emundus.xml
       when: on_success
     - when: never
-  image: $CI_REGISTRY/emundus-sync-documentation:1.0.0
+  image: emundus/sync-documentation:latest
   script:
     - /go/generate-release-note.sh "$CI_SERVER_URL" "$CI_PROJECT_ID" "$GITLAB_TOKEN" "$ATLASSIAN_URL" "$ATLASSIAN_USER" "$ATLASSIAN_TOKEN" "$ATLASSIAN_SPACE" "$ATLASSIAN_PARENT_PAGE" "$ATLASSIAN_PAGE_TITLE"
   needs:
@@ -136,12 +153,12 @@ publish-app-image-job:
     - when: never
   image: docker:20.10
   before_script: 
-    - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+    - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
   script:
-    - docker pull $CI_REGISTRY/tchooz-app:latest || true
-    - docker build --cache-from $CI_REGISTRY/tchooz-app:latest --compress -t $CI_REGISTRY/tchooz-app:$NEW_VERSION -t $CI_REGISTRY/tchooz-app:latest .
-    - docker push $CI_REGISTRY/tchooz-app:$NEW_VERSION
-    - docker push $CI_REGISTRY/tchooz-app:latest
+    - docker pull emundus/tchooz-app:latest || true
+    - docker build --cache-from emundus/tchooz-app:latest --compress -t emundus/tchooz-app:$NEW_VERSION -t emundus/tchooz-app:latest .
+    - docker push emundus/tchooz-app:$NEW_VERSION
+    - docker push emundus/tchooz-app:latest
   needs:
     - release-job
 
@@ -155,11 +172,11 @@ publish-db-image-job:
     - when: never
   image: docker:20.10
   before_script: 
-    - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+    - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
   script:
-    - docker pull $CI_REGISTRY/tchooz-db:latest || true
-    - docker build --cache-from $CI_REGISTRY/tchooz-db:latest --compress -f Dockerfile.db -t $CI_REGISTRY/tchooz-db:$NEW_VERSION -t $CI_REGISTRY/tchooz-db:latest .
-    - docker push $CI_REGISTRY/tchooz-db:$NEW_VERSION
-    - docker push $CI_REGISTRY/tchooz-db:latest
+    - docker pull emundus/tchooz-db:latest || true
+    - docker build --cache-from emundus/tchooz-db:latest --compress -f Dockerfile.db -t emundus/tchooz-db:$NEW_VERSION -t emundus/tchooz-db:latest .
+    - docker push emundus/tchooz-db:$NEW_VERSION
+    - docker push emundus/tchooz-db:latest
   needs:
     - release-job

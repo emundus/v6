@@ -9,6 +9,8 @@
 // No direct access
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Table\Table;
+
 /**
  * Emundus helper.
  */
@@ -52,9 +54,9 @@ class EmundusHelperUpdate
         $query = $db->getQuery(true);
 
         try {
-            $query->update('#__extensions')
-                ->set('enabled = 0')
-                ->where("element LIKE " . $db->q('%'. $name .'%'));
+            $query->update($db->quoteName('#__extensions'))
+                ->set($db->quoteName('enabled') . ' = 0')
+                ->where($db->quoteName('element') . ' LIKE ' . $db->quote($name));
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e) {
@@ -62,6 +64,7 @@ class EmundusHelperUpdate
             return false;
         }
     }
+
 
     /**
      * Update a parameter of a Joomla module
@@ -99,6 +102,49 @@ class EmundusHelperUpdate
         catch (Exception $e) {
             echo $e->getMessage();
         }
+    }
+
+    public static function installExtension($name,$element,$manifest_cache,$type,$enabled = 1,$folder = ''){
+        $installed = false;
+
+        if (!empty($element)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            try {
+                $query->select('extension_id')
+                    ->from($db->quoteName('#__extensions'))
+                    ->where($db->quoteName('element') . ' LIKE ' . $db->quote($element));
+                $db->setQuery($query);
+                $is_existing = $db->loadResult();
+
+                if (empty($is_existing)) {
+                    $query->clear()
+                        ->insert($db->quoteName('#__extensions'))
+                        ->set($db->quoteName('name') . ' = ' . $db->quote($name))
+                        ->set($db->quoteName('type') . ' = ' . $db->quote($type))
+                        ->set($db->quoteName('element') . ' = ' . $db->quote($element))
+                        ->set($db->quoteName('folder') . ' = ' . $db->quote($folder))
+                        ->set($db->quoteName('client_id') . ' = ' . $db->quote(0))
+                        ->set($db->quoteName('enabled') . ' = ' . $db->quote($enabled))
+                        ->set($db->quoteName('manifest_cache') . ' = ' . $db->quote($manifest_cache))
+                        ->set($db->quoteName('params') . ' = ' . $db->quote('{}'))
+                        ->set($db->quoteName('custom_data') . ' = ' . $db->quote(''))
+                        ->set($db->quoteName('system_data') . ' = ' . $db->quote(''));
+                    $db->setQuery($query);
+                    $installed = $db->execute();
+                } else {
+                    echo "$element already installed.";
+                    $installed = true;
+                }
+            } catch (Exception $e) {
+                echo $e->getMessage();
+            }
+        } else {
+            echo 'Impossible to install extension without element specified';
+        }
+
+        return $installed;
     }
 
     /**
@@ -313,6 +359,17 @@ class EmundusHelperUpdate
         file_put_contents($file, $new_yaml);
     }
 
+    public static function updateFont($font = 'family=Maven+Pro:500,700,900,400&subset=latin,vietnamese,latin-ext') {
+        $yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents(JPATH_BASE . '/templates/g5_helium/custom/config/default/styles.yaml'));
+
+        $yaml['font']['family-default'] = $font;
+        $yaml['font']['family-title'] = $font;
+
+        $new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml, 5);
+
+        file_put_contents(JPATH_BASE . '/templates/g5_helium/custom/config/default/styles.yaml', $new_yaml);
+    }
+
     /**
      * @param $tag
      * @param $value
@@ -346,7 +403,7 @@ class EmundusHelperUpdate
                     ->set($db->quoteName('original_text') . ' = ' . $db->quote($value))
                     ->set($db->quoteName('original_md5') . ' = ' . $db->quote(md5($value)))
                     ->set($db->quoteName('override_md5') . ' = ' . $db->quote(md5($value)))
-                    ->set($db->quoteName('location') . ' = ' . $db->quote($lang . 'override.ini'))
+                    ->set($db->quoteName('location') . ' = ' . $db->quote($lang . '.override.ini'))
                     ->set($db->quoteName('type') . ' = ' . $db->quote($type))
                     ->set($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
                     ->set($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
@@ -726,7 +783,7 @@ class EmundusHelperUpdate
     }
 
     /**
-     * @return bool
+     * @return array
      *
      * @since version 1.33.0
      */
@@ -741,69 +798,72 @@ class EmundusHelperUpdate
         $old_workflows = [];
 
         $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
+        $db->setQuery("SHOW COLUMNS FROM `jos_emundus_campaign_workflow` LIKE 'output_status'");
+        $output_status_column = $db->loadObject();
 
-        $query->select('*')
-            ->from('#__emundus_campaign_workflow');
-        $db->setQuery($query);
-
-        try {
-            $old_workflows = $db->loadObjectList();
-        } catch (Exception $e) {
-            JLog::add('Error trying to get emundus campaign workflow rows', JLog::ERROR, 'com_emundus.cli');
-            $error = true;
-        }
-
-        if (!$error) {
-            $query->clear()
-                ->select('jff.group_id, jfl.id')
-                ->from('#__fabrik_formgroup AS jff')
-                ->leftJoin('#__fabrik_lists AS jfl ON jfl.form_id = jff.form_id')
-                ->where('jfl.db_table_name = ' . $db->quote('jos_emundus_campaign_workflow'));
+        if (empty($output_status_column->Field)) {
+            $query = $db->getQuery(true);
+            $query->select('*')
+                ->from('#__emundus_campaign_workflow');
+            $db->setQuery($query);
 
             try {
-                $data = $db->loadObject();
-                $group_id = $data->group_id;
-                $list_id = $data->id;
+                $old_workflows = $db->loadObjectList();
             } catch (Exception $e) {
-                JLog::add('Could not retrieve jos_emundus_campaign_workflow fabrik group and list ids', JLog::ERROR, 'com_emundus.cli');
+                JLog::add('Error trying to get emundus campaign workflow rows', JLog::ERROR, 'com_emundus.cli');
+                $error = true;
             }
 
-            if (!empty($group_id) && !empty($list_id)) {
+            if (!$error) {
                 $query->clear()
-                    ->select('id')
-                    ->from('#__fabrik_elements')
-                    ->where('group_id = ' . $group_id)
-                    ->andWhere('name = ' . $db->quote('status'));
-
-                $db->setQuery($query);
+                    ->select('jff.group_id, jfl.id')
+                    ->from('#__fabrik_formgroup AS jff')
+                    ->leftJoin('#__fabrik_lists AS jfl ON jfl.form_id = jff.form_id')
+                    ->where('jfl.db_table_name = ' . $db->quote('jos_emundus_campaign_workflow'));
 
                 try {
-                    $status_element_id = $db->loadResult();
+                    $data = $db->loadObject();
+                    $group_id = $data->group_id;
+                    $list_id = $data->id;
                 } catch (Exception $e) {
-                    JLog::add('Could not retrieve fabrik element id from name status and group_id ' . $group_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                    JLog::add('Could not retrieve jos_emundus_campaign_workflow fabrik group and list ids', JLog::ERROR, 'com_emundus.cli');
                 }
 
-                if (!empty($status_element_id)) {
-                    $params = '{"database_join_display_type":"multilist","join_conn_id":"1","join_db_name":"jos_emundus_setup_status","join_key_column":"step","join_val_column":"value","join_val_column_concat":"","database_join_where_sql":"","database_join_where_access":"1","database_join_where_access_invert":"0","database_join_where_when":"3","databasejoin_where_ajax":"0","databasejoin_where_ajax_default_eval":"","database_join_filter_where_sql":"","database_join_show_please_select":"1","database_join_noselectionvalue":"","database_join_noselectionlabel":"","placeholder":"","databasejoin_popupform":"275","fabrikdatabasejoin_frontend_add":"0","join_popupwidth":"","databasejoin_readonly_link":"0","fabrikdatabasejoin_frontend_select":"0","advanced_behavior":"1","dbjoin_options_per_row":"4","dbjoin_multiselect_max":"0","dbjoin_multilist_size":"6","dbjoin_autocomplete_size":"20","dbjoin_autocomplete_rows":"10","bootstrap_class":"input-large","dabase_join_label_eval":"","join_desc_column":"","dbjoin_autocomplete_how":"contains","clean_concat":"0","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"8","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"8","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"8","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"8","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","notempty-message":[""],"notempty-validation_condition":[""],"tip_text":[""],"icon":[""],"validations":{"plugin":["notempty"],"plugin_published":["1"],"validate_in":["both"],"validation_on":["both"],"validate_hidden":["0"],"must_validate":["0"],"show_icon":["1"]}}';
+                if (!empty($group_id) && !empty($list_id)) {
                     $query->clear()
-                        ->update('#__fabrik_elements')
-                        ->set('name = ' . $db->quote('entry_status'))
-                        ->set('params = ' . $db->quote($params))
-                        ->where('id = ' . $status_element_id);
+                        ->select('id')
+                        ->from('#__fabrik_elements')
+                        ->where('group_id = ' . $group_id)
+                        ->andWhere('name = ' . $db->quote('status'));
 
                     $db->setQuery($query);
 
                     try {
-                        $updated = $db->execute();
+                        $status_element_id = $db->loadResult();
                     } catch (Exception $e) {
-                        $updated = false;
-                        JLog::add('Error trying to update element ' . $status_element_id . ' params from group ' . $group_id, JLog::ERROR, 'com_emundus.cli');
-                        $update_campaign_workflow['message'] = 'Error trying to update element ' . $status_element_id . ' params from group ' . $group_id;
+                        JLog::add('Could not retrieve fabrik element id from name status and group_id ' . $group_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
                     }
 
-                    if ($updated) {
-                        $sql = 'CREATE TABLE IF NOT EXISTS `jos_emundus_campaign_workflow_repeat_entry_status` (
+                    if (!empty($status_element_id)) {
+                        $params = '{"database_join_display_type":"multilist","join_conn_id":"1","join_db_name":"jos_emundus_setup_status","join_key_column":"step","join_val_column":"value","join_val_column_concat":"","database_join_where_sql":"","database_join_where_access":"1","database_join_where_access_invert":"0","database_join_where_when":"3","databasejoin_where_ajax":"0","databasejoin_where_ajax_default_eval":"","database_join_filter_where_sql":"","database_join_show_please_select":"1","database_join_noselectionvalue":"","database_join_noselectionlabel":"","placeholder":"","databasejoin_popupform":"275","fabrikdatabasejoin_frontend_add":"0","join_popupwidth":"","databasejoin_readonly_link":"0","fabrikdatabasejoin_frontend_select":"0","advanced_behavior":"1","dbjoin_options_per_row":"4","dbjoin_multiselect_max":"0","dbjoin_multilist_size":"6","dbjoin_autocomplete_size":"20","dbjoin_autocomplete_rows":"10","bootstrap_class":"input-large","dabase_join_label_eval":"","join_desc_column":"","dbjoin_autocomplete_how":"contains","clean_concat":"0","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"8","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"8","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"8","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"8","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","notempty-message":[""],"notempty-validation_condition":[""],"tip_text":[""],"icon":[""],"validations":{"plugin":["notempty"],"plugin_published":["1"],"validate_in":["both"],"validation_on":["both"],"validate_hidden":["0"],"must_validate":["0"],"show_icon":["1"]}}';
+                        $query->clear()
+                            ->update('#__fabrik_elements')
+                            ->set('name = ' . $db->quote('entry_status'))
+                            ->set('params = ' . $db->quote($params))
+                            ->where('id = ' . $status_element_id);
+
+                        $db->setQuery($query);
+
+                        try {
+                            $updated = $db->execute();
+                        } catch (Exception $e) {
+                            $updated = false;
+                            JLog::add('Error trying to update element ' . $status_element_id . ' params from group ' . $group_id, JLog::ERROR, 'com_emundus.cli');
+                            $update_campaign_workflow['message'] = 'Error trying to update element ' . $status_element_id . ' params from group ' . $group_id;
+                        }
+
+                        if ($updated) {
+                            $sql = 'CREATE TABLE IF NOT EXISTS `jos_emundus_campaign_workflow_repeat_entry_status` (
                             `id` int NOT NULL AUTO_INCREMENT,
                             `parent_id` int DEFAULT NULL,
                             `entry_status` int DEFAULT NULL,
@@ -812,69 +872,69 @@ class EmundusHelperUpdate
                             KEY `fb_parent_fk_parent_id_INDEX` (`parent_id`),
                             KEY `fb_repeat_el_entry_status_INDEX` (`entry_status`))';
 
-                        $db->setQuery($sql);
+                            $db->setQuery($sql);
 
-                        try {
-                            $created = $db->execute();
-                        } catch (Execption $e) {
-                            JLog::add('Error trying to create jos_emundus_campaign_workflow_repeat_entry_status ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
-                            $update_campaign_workflow['message'] = 'Error trying to create jos_emundus_campaign_workflow_repeat_entry_status ' . $e->getMessage();
-                        }
+                            try {
+                                $created = $db->execute();
+                            } catch (Exception $e) {
+                                JLog::add('Error trying to create jos_emundus_campaign_workflow_repeat_entry_status ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                                $update_campaign_workflow['message'] = 'Error trying to create jos_emundus_campaign_workflow_repeat_entry_status ' . $e->getMessage();
+                            }
 
-                        $fields = array(
-                            $db->quoteName('list_id') . ' = ' . $list_id,
-                            $db->quoteName('join_from_table') . ' = ' . $db->quote('jos_emundus_campaign_workflow'),
-                            $db->quoteName('table_join') . ' = ' . $db->quote('jos_emundus_campaign_workflow_repeat_entry_status'),
-                            $db->quoteName('table_key') . ' = ' . $db->quote('entry_status'),
-                            $db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'),
-                            $db->quoteName('join_type') . ' = ' . $db->quote('left'),
-                            $db->quoteName('group_id') . ' = 0',
-                            $db->quoteName('params') . ' = ' . $db->quote('{"type":"repeatElement","pk":"`jos_emundus_campaign_workflow_repeat_entry_status`.`id`"}')
-                        );
+                            $fields = array(
+                                $db->quoteName('list_id') . ' = ' . $list_id,
+                                $db->quoteName('join_from_table') . ' = ' . $db->quote('jos_emundus_campaign_workflow'),
+                                $db->quoteName('table_join') . ' = ' . $db->quote('jos_emundus_campaign_workflow_repeat_entry_status'),
+                                $db->quoteName('table_key') . ' = ' . $db->quote('entry_status'),
+                                $db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'),
+                                $db->quoteName('join_type') . ' = ' . $db->quote('left'),
+                                $db->quoteName('group_id') . ' = 0',
+                                $db->quoteName('params') . ' = ' . $db->quote('{"type":"repeatElement","pk":"`jos_emundus_campaign_workflow_repeat_entry_status`.`id`"}')
+                            );
 
-                        $query->clear()
-                            ->update('#__fabrik_joins')
-                            ->set($fields)
-                            ->where('element_id = ' . $status_element_id);
+                            $query->clear()
+                                ->update('#__fabrik_joins')
+                                ->set($fields)
+                                ->where('element_id = ' . $status_element_id);
 
-                        $db->setQuery($query);
-                        try {
-                            $joined = $db->execute();
-                        } catch (Execption $e) {
-                            JLog::add('Cannot update fabrik element join with new table jos_emundus_campaign_workflow_repeat_entry_status ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
-                            $update_campaign_workflow['message'] = 'Cannot update fabrik element join with new table jos_emundus_campaign_workflow_repeat_entry_status ' . $e->getMessage();
+                            $db->setQuery($query);
+                            try {
+                                $joined = $db->execute();
+                            } catch (Exception $e) {
+                                JLog::add('Cannot update fabrik element join with new table jos_emundus_campaign_workflow_repeat_entry_status ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                                $update_campaign_workflow['message'] = 'Cannot update fabrik element join with new table jos_emundus_campaign_workflow_repeat_entry_status ' . $e->getMessage();
+                            }
                         }
                     }
-                }
 
-                $query->clear()
-                    ->select('id')
-                    ->from('#__fabrik_elements')
-                    ->where('group_id = ' . $group_id)
-                    ->andWhere('name = ' . $db->quote('campaign'));
-
-                $db->setQuery($query);
-                $campaign_element_id = $db->loadResult();
-
-                if (!empty($campaign_element_id)) {
-                    $params = '{"database_join_display_type":"multilist","join_conn_id":"1","join_db_name":"jos_emundus_setup_campaigns","join_key_column":"id","join_val_column":"label","join_val_column_concat":"","database_join_where_sql":"","database_join_where_access":"1","database_join_where_access_invert":"0","database_join_where_when":"3","databasejoin_where_ajax":"0","databasejoin_where_ajax_default_eval":"","database_join_filter_where_sql":"","database_join_show_please_select":"1","database_join_noselectionvalue":"","database_join_noselectionlabel":"","placeholder":"","databasejoin_popupform":"103","fabrikdatabasejoin_frontend_add":"0","join_popupwidth":"","databasejoin_readonly_link":"0","fabrikdatabasejoin_frontend_select":"0","advanced_behavior":"1","dbjoin_options_per_row":"4","dbjoin_multiselect_max":"0","dbjoin_multilist_size":"6","dbjoin_autocomplete_size":"20","dbjoin_autocomplete_rows":"10","bootstrap_class":"input-large","dabase_join_label_eval":"","join_desc_column":"","dbjoin_autocomplete_how":"contains","clean_concat":"0","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"8","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"8","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"8","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"8","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","notempty-message":[""],"notempty-validation_condition":[""],"tip_text":[""],"icon":[""],"validations":{"plugin":["notempty"],"plugin_published":["1"],"validate_in":["both"],"validation_on":["both"],"validate_hidden":["0"],"must_validate":["0"],"show_icon":["1"]}}';
                     $query->clear()
-                        ->update('#__fabrik_elements')
-                        ->set('params = ' . $db->quote($params))
-                        ->where('id = ' . $campaign_element_id);
+                        ->select('id')
+                        ->from('#__fabrik_elements')
+                        ->where('group_id = ' . $group_id)
+                        ->andWhere('name = ' . $db->quote('campaign'));
 
                     $db->setQuery($query);
+                    $campaign_element_id = $db->loadResult();
 
-                    try {
-                        $updated = $db->execute();
-                    } catch (Exception $e) {
-                        $updated = false;
-                        JLog::add('Error trying to update campaign element params from group ' . $group_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
-                        $update_campaign_workflow['message'] = 'Error trying to update campaign element params from group ' . $group_id . ' : ' . $e->getMessage();
-                    }
+                    if (!empty($campaign_element_id)) {
+                        $params = '{"database_join_display_type":"multilist","join_conn_id":"1","join_db_name":"jos_emundus_setup_campaigns","join_key_column":"id","join_val_column":"label","join_val_column_concat":"","database_join_where_sql":"","database_join_where_access":"1","database_join_where_access_invert":"0","database_join_where_when":"3","databasejoin_where_ajax":"0","databasejoin_where_ajax_default_eval":"","database_join_filter_where_sql":"","database_join_show_please_select":"1","database_join_noselectionvalue":"","database_join_noselectionlabel":"","placeholder":"","databasejoin_popupform":"103","fabrikdatabasejoin_frontend_add":"0","join_popupwidth":"","databasejoin_readonly_link":"0","fabrikdatabasejoin_frontend_select":"0","advanced_behavior":"1","dbjoin_options_per_row":"4","dbjoin_multiselect_max":"0","dbjoin_multilist_size":"6","dbjoin_autocomplete_size":"20","dbjoin_autocomplete_rows":"10","bootstrap_class":"input-large","dabase_join_label_eval":"","join_desc_column":"","dbjoin_autocomplete_how":"contains","clean_concat":"0","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"8","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"8","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"8","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"8","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","notempty-message":[""],"notempty-validation_condition":[""],"tip_text":[""],"icon":[""],"validations":{"plugin":["notempty"],"plugin_published":["1"],"validate_in":["both"],"validation_on":["both"],"validate_hidden":["0"],"must_validate":["0"],"show_icon":["1"]}}';
+                        $query->clear()
+                            ->update('#__fabrik_elements')
+                            ->set('params = ' . $db->quote($params))
+                            ->where('id = ' . $campaign_element_id);
 
-                    if ($updated) {
-                        $sql = 'CREATE TABLE IF NOT EXISTS `jos_emundus_campaign_workflow_repeat_campaign` (
+                        $db->setQuery($query);
+
+                        try {
+                            $updated = $db->execute();
+                        } catch (Exception $e) {
+                            $updated = false;
+                            JLog::add('Error trying to update campaign element params from group ' . $group_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                            $update_campaign_workflow['message'] = 'Error trying to update campaign element params from group ' . $group_id . ' : ' . $e->getMessage();
+                        }
+
+                        if ($updated) {
+                            $sql = 'CREATE TABLE IF NOT EXISTS `jos_emundus_campaign_workflow_repeat_campaign` (
                             `id` int NOT NULL AUTO_INCREMENT,
                             `parent_id` int DEFAULT NULL,
                             `campaign` int DEFAULT NULL,
@@ -883,183 +943,1088 @@ class EmundusHelperUpdate
                             KEY `fb_parent_fk_parent_id_INDEX` (`parent_id`),
                             KEY `fb_repeat_el_entry_status_INDEX` (`campaign`))';
 
-                        $db->setQuery($sql);
+                            $db->setQuery($sql);
 
-                        try {
-                            $created = $db->execute();
-                        } catch (Execption $e) {
-                            JLog::add('Error trying to create jos_emundus_campaign_workflow_repeat_campaign ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
-                            $update_campaign_workflow['message'] = 'Error trying to create jos_emundus_campaign_workflow_repeat_campaign ' . $e->getMessage();
-                        }
-
-                        $fields = array(
-                            $db->quoteName('list_id') . ' = ' . $list_id,
-                            $db->quoteName('join_from_table') . ' = ' . $db->quote('jos_emundus_campaign_workflow'),
-                            $db->quoteName('table_join') . ' = ' . $db->quote('jos_emundus_campaign_workflow_repeat_campaign'),
-                            $db->quoteName('table_key') . ' = ' . $db->quote('campaign'),
-                            $db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'),
-                            $db->quoteName('join_type') . ' = ' . $db->quote('left'),
-                            $db->quoteName('group_id') . ' = 0',
-                            $db->quoteName('params') . ' = ' . $db->quote('{"type":"repeatElement","pk":"`jos_emundus_campaign_workflow_repeat_campaign`.`id`"}')
-                        );
-
-                        $query->clear()
-                            ->update('#__fabrik_joins')
-                            ->set($fields)
-                            ->where('element_id = ' . $campaign_element_id);
-
-                        $db->setQuery($query);
-                        try {
-                            $joined = $db->execute();
-                        } catch (Execption $e) {
-                            JLog::add('Cannot update fabrik element join with new table jos_emundus_campaign_workflow_repeat_campaign ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
-                            $update_campaign_workflow['message'] = 'Cannot update fabrik element join with new table jos_emundus_campaign_workflow_repeat_campaign ' . $e->getMessage();
-                        }
-                    } else {
-                        JLog::add('campaign element from fabrik group ' . $group_id . ' has not been updated', JLog::WARNING, 'com_emundus.cli');
-                        $update_campaign_workflow['message'] = 'campaign element from fabrik group ' . $group_id . ' has not been updated';
-                    }
-                }
-
-                $params = '{"database_join_display_type":"dropdown","join_conn_id":"1","join_db_name":"jos_emundus_setup_status","join_key_column":"step","join_val_column":"value","join_val_column_concat":"","database_join_where_sql":"","database_join_where_access":"1","database_join_where_access_invert":"0","database_join_where_when":"3","databasejoin_where_ajax":"0","databasejoin_where_ajax_default_eval":"","database_join_filter_where_sql":"","database_join_show_please_select":"1","database_join_noselectionvalue":"","database_join_noselectionlabel":"","placeholder":"","databasejoin_popupform":"275","fabrikdatabasejoin_frontend_add":"0","join_popupwidth":"","databasejoin_readonly_link":"0","fabrikdatabasejoin_frontend_select":"0","advanced_behavior":"1","dbjoin_options_per_row":"4","dbjoin_multiselect_max":"0","dbjoin_multilist_size":"6","dbjoin_autocomplete_size":"20","dbjoin_autocomplete_rows":"10","bootstrap_class":"input-large","dabase_join_label_eval":"","join_desc_column":"","dbjoin_autocomplete_how":"contains","clean_concat":"0","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"8","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"8","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"8","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"8","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","notempty-message":[""],"notempty-validation_condition":[""],"tip_text":[""],"icon":[""],"validations":{"plugin":["notempty"],"plugin_published":["1"],"validate_in":["both"],"validation_on":["both"],"validate_hidden":["0"],"must_validate":["0"],"show_icon":["1"]}}';
-                $sql = 'INSERT INTO jos_fabrik_elements (name, group_id, plugin, label, checked_out, checked_out_time, created, created_by, created_by_alias, modified, modified_by, width, height, `default`, hidden, eval, ordering, show_in_list_summary, filter_type, filter_exact_match, published, link_to_detail, primary_key, auto_increment, access, use_in_page_title, parent_id, params) VALUES ("output_status",' . $group_id . ', "databasejoin", "Statut de sortie", DEFAULT, NOW(), NOW(), 62, "admin", NOW(), 62, 50, 6, " ", 0, 0, 9, 1, null, 0, 1, 0, 0, 0, 1, 0, 0, \'' . $params . '\')';
-                $db->setQuery($sql);
-
-                try {
-                    $output_status_inserted = $db->execute();
-                } catch (Exception $e) {
-                    $output_status_inserted = false;
-                    JLog::add('Error trying to insert output_status element in jos_fabrik_elements ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
-                    $update_campaign_workflow['message'] = 'Error trying to insert output_status element in jos_fabrik_elements ' . $e->getMessage();
-                }
-
-                if ($output_status_inserted) {
-                    $every_alter_succeed = true;
-                    // Add output status
-                    $db->setQuery("SHOW COLUMNS FROM `jos_emundus_campaign_workflow` LIKE 'output_status'");
-                    try {
-                        $output_status = $db->loadObject();
-
-                        if (empty($output_status->Field)) {
-                            $db->setQuery("ALTER TABLE jos_emundus_campaign_workflow ADD output_status int null;");
-                            $altered = $db->execute();
-
-                            if (!$altered) {
-                                $update_campaign_workflow['message'] = 'output_status column has not been added.';
-                                $every_alter_succeed = false;
+                            try {
+                                $created = $db->execute();
+                            } catch (Exception $e) {
+                                JLog::add('Error trying to create jos_emundus_campaign_workflow_repeat_campaign ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                                $update_campaign_workflow['message'] = 'Error trying to create jos_emundus_campaign_workflow_repeat_campaign ' . $e->getMessage();
                             }
-                        }
-                    } catch (Exception $e) {
-                        JLog::add('Error on output_status creation ' . $e->getMessage(),  JLog::ERROR, 'com_emundus.cli');
-                        $update_campaign_workflow['message'] = 'Error on output_status creation ' . $e->getMessage();
-                        $every_alter_succeed = false;
-                    }
 
-                    // change status column to entry_status
-                    $db->setQuery("SHOW COLUMNS FROM `jos_emundus_campaign_workflow` LIKE 'status'");
-                    try {
-                        $status = $db->loadObject();
+                            $fields = array(
+                                $db->quoteName('list_id') . ' = ' . $list_id,
+                                $db->quoteName('join_from_table') . ' = ' . $db->quote('jos_emundus_campaign_workflow'),
+                                $db->quoteName('table_join') . ' = ' . $db->quote('jos_emundus_campaign_workflow_repeat_campaign'),
+                                $db->quoteName('table_key') . ' = ' . $db->quote('campaign'),
+                                $db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'),
+                                $db->quoteName('join_type') . ' = ' . $db->quote('left'),
+                                $db->quoteName('group_id') . ' = 0',
+                                $db->quoteName('params') . ' = ' . $db->quote('{"type":"repeatElement","pk":"`jos_emundus_campaign_workflow_repeat_campaign`.`id`"}')
+                            );
 
-                        if (!empty($status->Field)) {
-                            $db->setQuery("ALTER TABLE jos_emundus_campaign_workflow CHANGE status entry_status int null");
-                            $altered = $db->execute();
+                            $query->clear()
+                                ->update('#__fabrik_joins')
+                                ->set($fields)
+                                ->where('element_id = ' . $campaign_element_id);
 
-                            if (!$altered) {
-                                $update_campaign_workflow['message'] = 'Cannot change jos_emundus_campaign_workflow status column to entry_status';
-                                $every_alter_succeed = false;
-                            }
-                        }
-                    } catch (Exception $e) {
-                        JLog::add('Error on status column change ' . $e->getMessage(),  JLog::ERROR, 'com_emundus.cli');
-                        $update_campaign_workflow['message'] = 'Error on status column ' . $e->getMessage();
-                        $every_alter_succeed = false;
-                    }
-
-                    if ($every_alter_succeed) {
-                        if (!empty(!empty($old_workflows))) {
-
-                            // before deleting, backup workflows
-                            JLog::add('JSON Save values : ' . json_encode($old_workflows), JLog::INFO, 'com_emundus.cli');
-                            $backup_file = fopen('libraries/emundus/custom/campaign_workflow_rows.json', 'w');
-                            if ($backup_file) {
-                                fwrite($backup_file, json_encode($old_workflows));
-                                fclose($backup_file);
-
-                                $query->clear()
-                                    ->update('#__emundus_campaign_workflow')
-                                    ->set('campaign = NULL')
-                                    ->set('entry_status = NULL');
-
-                                $db->setQuery($query);
-
-                                try {
-                                    $update = $db->execute();
-                                } catch (Exception $e) {
-                                    $update = false;
-                                    JLog::add('Failed to set null values on campaign and entry_status columns ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-                                    $update_campaign_workflow['message'] = 'Failed to set null values on campaign and entry_status columns ' . $e->getMessage();
-                                }
-
-                                $old_workflows_reinserted = true;
-                                foreach ($old_workflows as $workflow) {
-                                    if (!empty($workflow->id)) {
-                                        $query->clear()
-                                            ->insert('#__emundus_campaign_workflow_repeat_campaign')
-                                            ->columns($db->quoteName(['parent_id', 'campaign']))
-                                            ->values($workflow->id . ', ' . $workflow->campaign);
-                                        $db->setQuery($query);
-
-                                        try {
-                                            $repeat_campaign_inserted = $db->execute();
-                                        } catch (Exception $e) {
-                                            $repeat_campaign_inserted = false;
-                                            JLog::add('Failed to join new row in jos_emundus_campaign_workflow_repeat_campaign. ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
-                                            $update_campaign_workflow['message'] = 'Failed to join new row in jos_emundus_campaign_workflow_repeat_campaign. ' . $e->getMessage();
-                                        }
-
-                                        $query->clear()
-                                            ->insert('#__emundus_campaign_workflow_repeat_entry_status')
-                                            ->columns($db->quoteName(['parent_id', 'entry_status']))
-                                            ->values($workflow->id . ', ' . $workflow->status);
-
-                                        $db->setQuery($query);
-
-                                        try {
-                                            $repeat_status_inserted = $db->execute();
-                                        } catch (Exception $e) {
-                                            $repeat_status_inserted = false;
-                                            JLog::add('Failed to join new row in jos_emundus_campaign_workflow_repeat_entry_status. ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
-                                            $update_campaign_workflow['message'] = 'Failed to join new row in jos_emundus_campaign_workflow_repeat_entry_status. ' . $e->getMessage();
-                                        }
-
-                                        if (!$repeat_status_inserted || !$repeat_campaign_inserted) {
-                                            $old_workflows_reinserted = false;
-                                        }
-                                    }
-                                }
-
-                                $update_campaign_workflow['status'] = $old_workflows_reinserted;
-                            } else {
-                                JLog::add('Unable to save old workflows to backup file, stop deletion', JLog::ERROR, 'com_emundus.cli');
-                                $update_campaign_workflow['message'] = 'Unable to save old workflows to backup file, stop update';
+                            $db->setQuery($query);
+                            try {
+                                $joined = $db->execute();
+                            } catch (Exception $e) {
+                                JLog::add('Cannot update fabrik element join with new table jos_emundus_campaign_workflow_repeat_campaign ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                                $update_campaign_workflow['message'] = 'Cannot update fabrik element join with new table jos_emundus_campaign_workflow_repeat_campaign ' . $e->getMessage();
                             }
                         } else {
-                            $update_campaign_workflow['status'] = true;
+                            JLog::add('campaign element from fabrik group ' . $group_id . ' has not been updated', JLog::WARNING, 'com_emundus.cli');
+                            $update_campaign_workflow['message'] = 'campaign element from fabrik group ' . $group_id . ' has not been updated';
                         }
                     }
+
+                    $params = '{"database_join_display_type":"dropdown","join_conn_id":"1","join_db_name":"jos_emundus_setup_status","join_key_column":"step","join_val_column":"value","join_val_column_concat":"","database_join_where_sql":"","database_join_where_access":"1","database_join_where_access_invert":"0","database_join_where_when":"3","databasejoin_where_ajax":"0","databasejoin_where_ajax_default_eval":"","database_join_filter_where_sql":"","database_join_show_please_select":"1","database_join_noselectionvalue":"","database_join_noselectionlabel":"","placeholder":"","databasejoin_popupform":"275","fabrikdatabasejoin_frontend_add":"0","join_popupwidth":"","databasejoin_readonly_link":"0","fabrikdatabasejoin_frontend_select":"0","advanced_behavior":"1","dbjoin_options_per_row":"4","dbjoin_multiselect_max":"0","dbjoin_multilist_size":"6","dbjoin_autocomplete_size":"20","dbjoin_autocomplete_rows":"10","bootstrap_class":"input-large","dabase_join_label_eval":"","join_desc_column":"","dbjoin_autocomplete_how":"contains","clean_concat":"0","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"8","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"8","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"8","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"8","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","notempty-message":[""],"notempty-validation_condition":[""],"tip_text":[""],"icon":[""],"validations":{"plugin":["notempty"],"plugin_published":["1"],"validate_in":["both"],"validation_on":["both"],"validate_hidden":["0"],"must_validate":["0"],"show_icon":["1"]}}';
+                    $sql = 'INSERT INTO jos_fabrik_elements (name, group_id, plugin, label, checked_out, checked_out_time, created, created_by, created_by_alias, modified, modified_by, width, height, `default`, hidden, eval, ordering, show_in_list_summary, filter_type, filter_exact_match, published, link_to_detail, primary_key, auto_increment, access, use_in_page_title, parent_id, params) VALUES ("output_status",' . $group_id . ', "databasejoin", "Statut de sortie", DEFAULT, NOW(), NOW(), 62, "admin", NOW(), 62, 50, 6, " ", 0, 0, 9, 1, null, 0, 1, 0, 0, 0, 1, 0, 0, \'' . $params . '\')';
+                    $db->setQuery($sql);
+
+                    try {
+                        $output_status_inserted = $db->execute();
+                    } catch (Exception $e) {
+                        $output_status_inserted = false;
+                        JLog::add('Error trying to insert output_status element in jos_fabrik_elements ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                        $update_campaign_workflow['message'] = 'Error trying to insert output_status element in jos_fabrik_elements ' . $e->getMessage();
+                    }
+
+                    if ($output_status_inserted) {
+                        $every_alter_succeed = true;
+                        // Add output status
+                        $db->setQuery("SHOW COLUMNS FROM `jos_emundus_campaign_workflow` LIKE 'output_status'");
+                        try {
+                            $output_status = $db->loadObject();
+
+                            if (empty($output_status->Field)) {
+                                $db->setQuery("ALTER TABLE jos_emundus_campaign_workflow ADD output_status int null;");
+                                $altered = $db->execute();
+
+                                if (!$altered) {
+                                    $update_campaign_workflow['message'] = 'output_status column has not been added.';
+                                    $every_alter_succeed = false;
+                                }
+                            }
+                        } catch (Exception $e) {
+                            JLog::add('Error on output_status creation ' . $e->getMessage(),  JLog::ERROR, 'com_emundus.cli');
+                            $update_campaign_workflow['message'] = 'Error on output_status creation ' . $e->getMessage();
+                            $every_alter_succeed = false;
+                        }
+
+                        // change status column to entry_status
+                        $db->setQuery("SHOW COLUMNS FROM `jos_emundus_campaign_workflow` LIKE 'status'");
+                        try {
+                            $status = $db->loadObject();
+
+                            if (!empty($status->Field)) {
+                                $db->setQuery("ALTER TABLE jos_emundus_campaign_workflow CHANGE status entry_status int null");
+                                $altered = $db->execute();
+
+                                if (!$altered) {
+                                    $update_campaign_workflow['message'] = 'Cannot change jos_emundus_campaign_workflow status column to entry_status';
+                                    $every_alter_succeed = false;
+                                }
+                            }
+                        } catch (Exception $e) {
+                            JLog::add('Error on status column change ' . $e->getMessage(),  JLog::ERROR, 'com_emundus.cli');
+                            $update_campaign_workflow['message'] = 'Error on status column ' . $e->getMessage();
+                            $every_alter_succeed = false;
+                        }
+
+                        if ($every_alter_succeed) {
+                            if (!empty(!empty($old_workflows))) {
+
+                                // before deleting, backup workflows
+                                JLog::add('JSON Save values : ' . json_encode($old_workflows), JLog::INFO, 'com_emundus.cli');
+                                $backup_file = fopen('libraries/emundus/custom/campaign_workflow_rows.json', 'w');
+                                if ($backup_file) {
+                                    fwrite($backup_file, json_encode($old_workflows));
+                                    fclose($backup_file);
+
+                                    $query->clear()
+                                        ->update('#__emundus_campaign_workflow')
+                                        ->set('campaign = NULL')
+                                        ->set('entry_status = NULL');
+
+                                    $db->setQuery($query);
+
+                                    try {
+                                        $update = $db->execute();
+                                    } catch (Exception $e) {
+                                        $update = false;
+                                        JLog::add('Failed to set null values on campaign and entry_status columns ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                                        $update_campaign_workflow['message'] = 'Failed to set null values on campaign and entry_status columns ' . $e->getMessage();
+                                    }
+
+                                    $old_workflows_reinserted = true;
+                                    foreach ($old_workflows as $workflow) {
+                                        if (!empty($workflow->id)) {
+                                            $query->clear()
+                                                ->insert('#__emundus_campaign_workflow_repeat_campaign')
+                                                ->columns($db->quoteName(['parent_id', 'campaign']))
+                                                ->values($workflow->id . ', ' . $workflow->campaign);
+                                            $db->setQuery($query);
+
+                                            try {
+                                                $repeat_campaign_inserted = $db->execute();
+                                            } catch (Exception $e) {
+                                                $repeat_campaign_inserted = false;
+                                                JLog::add('Failed to join new row in jos_emundus_campaign_workflow_repeat_campaign. ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                                                $update_campaign_workflow['message'] = 'Failed to join new row in jos_emundus_campaign_workflow_repeat_campaign. ' . $e->getMessage();
+                                            }
+
+                                            $query->clear()
+                                                ->insert('#__emundus_campaign_workflow_repeat_entry_status')
+                                                ->columns($db->quoteName(['parent_id', 'entry_status']))
+                                                ->values($workflow->id . ', ' . $workflow->status);
+
+                                            $db->setQuery($query);
+
+                                            try {
+                                                $repeat_status_inserted = $db->execute();
+                                            } catch (Exception $e) {
+                                                $repeat_status_inserted = false;
+                                                JLog::add('Failed to join new row in jos_emundus_campaign_workflow_repeat_entry_status. ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                                                $update_campaign_workflow['message'] = 'Failed to join new row in jos_emundus_campaign_workflow_repeat_entry_status. ' . $e->getMessage();
+                                            }
+
+                                            if (!$repeat_status_inserted || !$repeat_campaign_inserted) {
+                                                $old_workflows_reinserted = false;
+                                            }
+                                        }
+                                    }
+
+                                    $update_campaign_workflow['status'] = $old_workflows_reinserted;
+                                } else {
+                                    JLog::add('Unable to save old workflows to backup file, stop deletion', JLog::ERROR, 'com_emundus.cli');
+                                    $update_campaign_workflow['message'] = 'Unable to save old workflows to backup file, stop update';
+                                }
+                            } else {
+                                $update_campaign_workflow['status'] = true;
+                            }
+                        }
+                    } else {
+                        JLog::add('output_status element in jos_fabrik_elements has not been inserted', JLog::WARNING, 'com_emundus.cli');
+                        $update_campaign_workflow['message'] = 'output_status element in jos_fabrik_elements has not been inserted';
+                    }
                 } else {
-                    JLog::add('output_status element in jos_fabrik_elements has not been inserted', JLog::WARNING, 'com_emundus.cli');
-                    $update_campaign_workflow['message'] = 'output_status element in jos_fabrik_elements has not been inserted';
+                    JLog::add('Did not find group_id nor list_id', JLog::WARNING, 'com_emundus.cli');
+                    $update_campaign_workflow['message'] = 'Did not find group_id nor list_id';
                 }
-            } else {
-                JLog::add('Did not find group_id nor list_id', JLog::WARNING, 'com_emundus.cli');
-                $update_campaign_workflow['message'] = 'Did not find group_id nor list_id';
             }
+        } else {
+            $update_campaign_workflow['status'] = true;
+            echo "\n output_status column already exists in table, no need to run update_campaign_workflow script";
         }
 
         $state_msg =  $update_campaign_workflow['status'] ? "\033[32mSUCCESS\033[0m" : "\033[31mFAILED\033[0m";
         echo "\n-> Finish update jos_emundus_campaign_workflow_table [$state_msg]";
 
         return $update_campaign_workflow;
+    }
+
+    /**
+     * @return array
+     *
+     * @since version  1.34.0
+     */
+    public static function addProgramToCampaignWorkflow(): array
+    {
+        $update = ['status' => false, 'message' => ''];
+
+        $db = JFactory::getDBO();
+
+        $db->setQuery("SHOW COLUMNS FROM `jos_emundus_campaign_workflow` LIKE 'programs'");
+
+
+        $programs = $db->loadObject();
+
+        if (empty($programs->Field)) {
+            $db->setQuery("ALTER TABLE jos_emundus_campaign_workflow ADD programs varchar(50) null;");
+
+            try {
+                $added = $db->execute();
+            } catch (Exception $e) {
+                $added = false;
+                JLog::add('Failed to add programs column to campaign workflow' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                $update['message'] = 'Failed to add programs column to campaign workflow ' . $e->getMessage();
+            }
+
+            if ($added) {
+                $query = $db->getQuery(true);
+
+                $query->select('jff.group_id, jfl.id')
+                    ->from('#__fabrik_formgroup AS jff')
+                    ->leftJoin('#__fabrik_lists AS jfl ON jfl.form_id = jff.form_id')
+                    ->where('jfl.db_table_name = ' . $db->quote('jos_emundus_campaign_workflow'));
+
+                $group_id = 0;
+                $list_id = 0;
+
+                try {
+                    $db->setQuery($query);
+                    $data = $db->loadObject();
+                    $group_id = $data->group_id;
+                    $list_id = $data->id;
+                } catch (Exception $e) {
+                    JLog::add('Could not retrieve jos_emundus_campaign_workflow fabrik group and list ids ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                }
+
+                if (!empty($group_id) && !empty($list_id)) {
+                    $params = '{"database_join_display_type":"multilist","join_conn_id":"1","join_db_name":"jos_emundus_setup_programmes","join_key_column":"code","join_val_column":"label","join_val_column_concat":"","database_join_where_sql":"","database_join_where_access":"1","database_join_where_access_invert":"0","database_join_where_when":"3","databasejoin_where_ajax":"0","databasejoin_where_ajax_default_eval":"","database_join_filter_where_sql":"","database_join_show_please_select":"1","database_join_noselectionvalue":"","database_join_noselectionlabel":"","placeholder":"","databasejoin_popupform":"108","fabrikdatabasejoin_frontend_add":"0","join_popupwidth":"","databasejoin_readonly_link":"0","fabrikdatabasejoin_frontend_select":"0","advanced_behavior":"1","dbjoin_options_per_row":"4","dbjoin_multiselect_max":"0","dbjoin_multilist_size":"6","dbjoin_autocomplete_size":"20","dbjoin_autocomplete_rows":"10","bootstrap_class":"input-large","dabase_join_label_eval":"","join_desc_column":"","dbjoin_autocomplete_how":"contains","clean_concat":"0","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"1","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"1","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"1","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"1","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","validations":[]}';
+                    $sql = 'INSERT INTO jos_fabrik_elements (name, group_id, plugin, label, checked_out, checked_out_time, created, created_by, created_by_alias, modified, modified_by, width, height, `default`, hidden, eval, ordering, show_in_list_summary, filter_type, filter_exact_match, published, link_to_detail, primary_key, auto_increment, access, use_in_page_title, parent_id, params) VALUES ("programs",' . $group_id . ', "databasejoin", "Programmes", DEFAULT, NOW(), NOW(), 62, "admin", NOW(), 62, 50, 6, " ", 0, 0, 4, 1, null, 0, 1, 0, 0, 0, 1, 0, 0, \'' . $params . '\')';
+                    $db->setQuery($sql);
+
+                    try {
+                        $element_created  = $db->execute();
+                        $program_element_id = $db->insertid();
+                    } catch (Exception $e) {
+                        $element_created = false;
+                        JLog::add('Failed to create fabrik_element \'programs\' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                        $update['message'] =  'Failed to create fabrik_element \'programs\' ' . $e->getMessage();
+                    }
+
+                    if ($element_created && !empty($program_element_id)) {
+                        $sql = 'CREATE TABLE IF NOT EXISTS `jos_emundus_campaign_workflow_repeat_programs` (
+                            `id` int NOT NULL AUTO_INCREMENT,
+                            `parent_id` int DEFAULT NULL,
+                            `programs` varchar(50) DEFAULT NULL,
+                            `params` text,
+                            PRIMARY KEY (`id`),
+                            KEY `fb_parent_fk_parent_id_INDEX` (`parent_id`),
+                            KEY `fb_repeat_el_programs_INDEX` (`programs`))';
+
+                        $db->setQuery($sql);
+
+                        try {
+                            $table_created  = $db->execute();
+                        } catch (Exception $e) {
+                            $table_created = false;
+                            JLog::add('Failed to create fabrik_element \'programs\' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                            $update['message'] =  'Failed to add create table jos_emundus_campaign_workflow_repeat_programs ' . $e->getMessage();
+                        }
+
+                        if ($table_created) {
+                            $db->setQuery('INSERT INTO jos_fabrik_joins (list_id, element_id, join_from_table, table_join, table_key, table_join_key, join_type, group_id, params) VALUES ('. $list_id .', ' . $program_element_id . ', "jos_emundus_campaign_workflow", "jos_emundus_campaign_workflow_repeat_programs", "programs", "parent_id", "left", 0, \'{"type":"repeatElement","pk":"`jos_emundus_campaign_workflow_repeat_programs`.`id`"}\')');
+
+                            try {
+                                $joined = $db->execute();
+                            } catch (Exception $e) {
+                                $joined = false;
+                                JLog::add('Failed to update fabrik element join with new table jos_emundus_campaign_workflow_repeat_programs ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                                $update['message'] = 'Failed to update fabrik element join with new table jos_emundus_campaign_workflow_repeat_programs ' . $e->getMessage();
+                            }
+
+                            if ($joined) {
+                                $update['status'] = true;
+                            } else {
+                                $update['message'] = !empty($update['message']) ? $update['message'] : 'Failed to update fabrik element join with new table jos_emundus_campaign_workflow_repeat_programs ';
+                            }
+                        } else {
+                            $update['message'] = !empty($update['message']) ? $update['message'] : 'Failed to add create table jos_emundus_campaign_workflow_repeat_programs';
+                        }
+                    } else {
+                        $update['message'] = !empty($update['message']) ? $update['message'] : 'Failed to create fabrik element \'programs\' ';
+                    }
+                } else {
+                    $update['message'] = 'Could not retrieve jos_emundus_campaign_workflow fabrik group and list ids ' . $query->__toString();
+                }
+            } else {
+                $update['message'] = !empty($update['message']) ? $update['message'] : 'Failed to add programs column to campaign workflow ';
+            }
+        } else {
+            $update['status'] = true;
+        }
+
+        $state_msg =  $update['status'] ? "\033[32mSUCCESS\033[0m" : "\033[31mFAILED\033[0m";
+        echo "\n-> Finish add programs to jos_emundus_campaign_workflow_table [$state_msg]";
+
+        return $update;
+    }
+
+    /**
+     * @param $params
+     * @param $parent_id
+     * @param $published
+     *
+     * Params available : menutype,title,alias,path,type,link,component_id
+     *
+     * @return array
+     *
+     * @since version 1.33.0
+     */
+    public static function addJoomlaMenu($params, $parent_id = 1, $published = 1, $position='last-child', $modules = []) {
+        $result = ['status' => false, 'message' => '', 'id' => 0];
+        $menu_table = JTableNested::getInstance('Menu');
+
+        if(empty($params['menutype'])){
+            $result['message'] = 'INSERTING JOOMLA MENU : Please pass a menutype.';
+            return $result;
+        }
+        if(empty($params['title'])){
+            $result['message'] = 'INSERTING JOOMLA MENU : Please indicate a title.';
+            return $result;
+        }
+
+        try {
+            // Initialize again Joomla database to fix problem with Falang (or other plugins) that override default mysql driver
+            JFactory::$database = null;
+
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $alias = $params['alias'] ?: $params['menutype'] . '-' . str_replace(' ','-',strtolower($params['title']));
+
+            $query->clear()
+                ->select('id')
+                ->from($db->quoteName('#__menu'))
+                ->where($db->quoteName('menutype') . ' = ' . $db->quote($params['menutype']));
+            if(!empty($params['link'])) {
+                $query->andWhere($db->quoteName('link') . ' = ' . $db->quote($params['link']));
+            }
+            if(!empty($params['alias'])) {
+                $query->andWhere($db->quoteName('alias') . ' = ' . $db->quote($alias));
+            }
+            $db->setQuery($query);
+            $is_existing = $db->loadResult();
+
+            if(empty($is_existing)) {
+                if($params['client_id'] != 1) {
+                    $default_params = [
+                        'menu-anchor_title' => '',
+                        'menu-anchor_css' => '',
+                        'menu-anchor_rel' => '',
+                        'menu_image_css' => '',
+                        'menu_text' => 1,
+                        'menu_show' => 1
+                    ];
+                    $params['params'] = array_merge($default_params, $params['params']);
+                }
+
+                $menu_data = array(
+                    'menutype' => $params['menutype'],
+                    'title' => $params['title'],
+                    'alias' => $alias,
+                    'path' => $params['path'] ?: $alias,
+                    'type' => $params['type'] ?: 'url',
+                    'link' => $params['link'] ?: '#',
+                    'access' => $params['access'] ?: 1,
+                    'component_id' => $params['component_id'] ?: 0,
+                    'template_style_id' => $params['template_style_id'] ?: 22,
+                    'language' => '*',
+                    'published' => $published,
+                    'params' => json_encode($params['params']),
+                    'client_id' => $params['client_id'] ?: 0,
+                    'img' => $params['img'] ?: ''
+                );
+
+                if($parent_id <= 0){
+                    $parent_id = 1;
+                }
+
+                $menu_table->setLocation($parent_id, $position);
+
+                if (!$menu_table->save($menu_data)) {
+                    $result['message'] = 'INSERTING JOOMLA MENU : Error at saving menu.';
+                    return $result;
+                }
+                $result['id'] = $menu_table->id;
+
+                if(!empty($modules)){
+                    foreach ($modules as $module) {
+                        $query->clear()
+                            ->insert($db->quoteName('#__modules_menu'))
+                            ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
+                            ->set($db->quoteName('menuid') . ' = ' . $db->quote($result['id']));
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
+            } else {
+                $result['id'] = $is_existing;
+            }
+
+            $result['status'] = true;
+        } catch (Exception $e) {
+            JLog::add('Failed to insert menu ' . $params['title'] . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            $result['status'] = false;
+            $result['message'] = 'INSERTING MENU : ' . $e->getMessage();
+        }
+
+        return $result;
+    }
+
+    public static function addJoomlaModule($data, $published = 1, $all_pages = false) {
+        $result = ['status' => false, 'message' => '', 'id' => 0];
+        $module_table = \Joomla\CMS\Table\Table::getInstance('module');
+
+        if(empty($data['title'])) {
+            $result['message'] = 'INSERTING JOOMLA MODULE : Please pass a title.';
+            return $result;
+        }
+        if(empty($data['position'])) {
+            $result['message'] = 'INSERTING JOOMLA MODULE : Please indicate a position.';
+            return $result;
+        }
+        if(empty($data['module'])) {
+            $result['message'] = 'INSERTING JOOMLA MODULE : Please indicate a module.';
+            return $result;
+        }
+        if(!isset($data['params'])){
+            $data['params'] = [];
+        }
+
+        $default_params = [
+            'module_tag' => 'div',
+            'bootstrap_size' => 0,
+            'header_tag' => 'h3',
+            'header_class' => '',
+            'style' => 0,
+        ];
+        $data['params'] = array_merge($default_params, $data['params']);
+
+        try {
+            // Initialize again Joomla database to fix problem with Falang (or other plugins) that override default mysql driver
+            JFactory::$database = null;
+            $db = JFactory::getDbo();
+
+            $module_data = array(
+                'title' => $data['title'],
+                'note' => $data['note'] ?: '',
+                'content' => $data['content'] ?: null,
+                'position' => $data['position'],
+                'module' => $data['module'],
+                'showtitle' => $data['showtitle'] ?: 0,
+                'access' => $data['access'] ?: 1,
+                'published' => $published,
+                'client_id' => 0,
+                'language' => '*',
+                'params' => json_encode($data['params'])
+            );
+
+            if (!$module_table->save($module_data)) {
+                $result['message'] = 'INSERTING JOOMLA MODULE : Error at saving module.';
+                return $result;
+            }
+            $result['id'] = $module_table->id;
+
+            if (!empty($result['id']) && $all_pages) {
+                $query = $db->getQuery(true);
+
+                $query->clear()
+                    ->insert($db->quoteName('#__modules_menu'))
+                    ->set($db->quoteName('moduleid') . ' = ' . $db->quote($result['id']))
+                    ->set($db->quoteName('menuid') . ' = ' . $db->quote(0));
+                $db->setQuery($query);
+                $db->execute();
+            }
+
+            $result['status'] = true;
+        } catch (Exception $e) {
+            $result['status'] = false;
+            $result['message'] = 'INSERTING MODULE : ' . $e->getMessage();
+        }
+
+        return $result;
+    }
+
+    public static function addFabrikForm($datas,$params = [], $published = 1) {
+        $result = ['status' => false, 'message' => '', 'id' => 0];
+
+        if(empty($datas['label'])){
+            $result['message'] = 'INSERTING FABRIK FORM : Please indicate a label.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('id')
+                ->from($db->quoteName('#__fabrik_forms'))
+                ->where($db->quoteName('label') . ' LIKE ' . $db->quote($datas['label']));
+            $db->setQuery($query);
+            $is_existing = $db->loadResult();
+
+            if(!$is_existing) {
+                require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
+
+                $default_params = EmundusHelperFabrik::prepareFormParams(false);
+                $params = array_merge($default_params, $params);
+
+                $publish_up = new DateTime();
+                $publish_up->modify('-1 day');
+
+                $inserting_datas = [
+                    'label' => $datas['label'],
+                    'record_in_database' => $datas['record_in_database'] ?: 1,
+                    'error' => $datas['error'] ?: 'FORM_ERROR',
+                    'intro' => $datas['intro'] ?: '',
+                    'created' => date('Y-m-d H:i:s'),
+                    'created_by' => 62,
+                    'created_by_alias' => 'admin',
+                    'modified' => date('Y-m-d H:i:s'),
+                    'modified_by' => 0,
+                    'checked_out' => 0,
+                    'checked_out_time' => date('Y-m-d H:i:s'),
+                    'published' => $published,
+                    'publish_up' => $publish_up->format('Y-m-d H:i:s'),
+                    'publish_down' => '2099-01-01 00:00:00',
+                    'reset_button_label' => $datas['reset_button_label'] ?: 'RESET',
+                    'submit_button_label' => $datas['submit_button_label'] ?: 'SAVE_CONTINUE',
+                    'form_template' => $datas['form_template'] ?: 'bootstrap',
+                    'view_only_template' => $datas['view_only_template'] ?: 'bootstrap',
+                    'params' => json_encode($params),
+                ];
+
+                $query->clear()
+                    ->insert($db->quoteName('#__fabrik_forms'))
+                    ->columns($db->quoteName(array_keys($inserting_datas)))
+                    ->values(implode(',',$db->quote(array_values($inserting_datas))));
+                $db->setQuery($query);
+                $db->execute();
+
+                $result['id'] = $db->insertid();
+            } else {
+                $result['id'] = $is_existing;
+            }
+        } catch (Exception $e) {
+            $result['message'] = 'INSERTING FABRIK FORM : Error : ' . $e->getMessage();
+            return $result;
+        }
+
+        $result['status'] = true;
+        return $result;
+    }
+
+    public static function addFabrikList($datas,$params = [], $published = 1) {
+        $result = ['status' => false, 'message' => '', 'id' => 0];
+
+        if(empty($datas['label'])){
+            $result['message'] = 'INSERTING FABRIK LIST : Please indicate a label.';
+            return $result;
+        }
+        if(empty($datas['form_id'])){
+            $result['message'] = 'INSERTING FABRIK LIST : Please pass a form_id.';
+            return $result;
+        }
+        if(empty($datas['db_table_name'])){
+            $result['message'] = 'INSERTING FABRIK LIST : Please indicate a table name.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('id')
+            ->from($db->quoteName('#__fabrik_lists'))
+            ->where($db->quoteName('label') . ' LIKE ' . $db->quote($datas['label']))
+            ->andWhere($db->quoteName('db_table_name') . ' LIKE ' . $db->quote($datas['db_table_name']));
+        $db->setQuery($query);
+        $is_existing = $db->loadResult();
+
+        if(!$is_existing) {
+            require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
+
+            $default_params = EmundusHelperFabrik::prepareListParams();
+            $params = array_merge($default_params, $params);
+
+            try {
+                $publish_up = new DateTime();
+                $publish_up->modify('-1 day');
+
+                $inserting_datas = [
+                    'label' => $datas['label'],
+                    'introduction' => $datas['introduction'] ?: '',
+                    'form_id' => $datas['form_id'],
+                    'db_table_name' => $datas['db_table_name'],
+                    'db_primary_key' => $datas['db_primary_key'] ?: $datas['db_table_name'] . '.id',
+                    'auto_inc' => $datas['auto_inc'] ?: 1,
+                    'connection_id' => $datas['connection_id'] ?: 1,
+                    'created' => date('Y-m-d H:i:s'),
+                    'created_by' => 62,
+                    'created_by_alias' => 'admin',
+                    'modified' => date('Y-m-d H:i:s'),
+                    'modified_by' => 0,
+                    'checked_out' => 0,
+                    'checked_out_time' => date('Y-m-d H:i:s'),
+                    'published' => $published,
+                    'publish_up' => $publish_up->format('Y-m-d H:i:s'),
+                    'publish_down' => '2099-01-01 00:00:00',
+                    'access' => $datas['access'] ?: 1,
+                    'hits' => 0,
+                    'rows_per_page' => $datas['rows_per_page'] ?: 10,
+                    'template' => $datas['template'] ?: 'bootstrap',
+                    'order_by' => $datas['order_by'] ?: '[]',
+                    'order_dir' => $datas['order_dir'] ?: '[]',
+                    'filter_action' => $datas['filter_action'] ?: 'onchange',
+                    'group_by' => $datas['group_by'] ?: '',
+                    'params' => json_encode($params)
+                ];
+
+                $query->clear()
+                    ->insert($db->quoteName('#__fabrik_lists'))
+                    ->columns($db->quoteName(array_keys($inserting_datas)))
+                    ->values(implode(',',$db->quote(array_values($inserting_datas))));
+                $db->setQuery($query);
+                $db->execute();
+
+                $result['id'] = $db->insertid();
+            } catch (Exception $e) {
+                $result['message'] = 'INSERTING FABRIK LIST : Error : ' . $e->getMessage();
+                return $result;
+            }
+        } else {
+            $result['id'] = $is_existing;
+        }
+
+        $result['status'] = true;
+        return $result;
+    }
+
+    public static function addFabrikGroup($datas,$params = [], $published = 1) {
+        $result = ['status' => false, 'message' => '', 'id' => 0];
+
+        if(empty($datas['name'])){
+            $result['message'] = 'INSERTING FABRIK GROUP : Please indicate a name.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('id')
+            ->from($db->quoteName('#__fabrik_groups'))
+            ->where($db->quoteName('name') . ' LIKE ' . $db->quote($datas['name']));
+        $db->setQuery($query);
+        $is_existing = $db->loadResult();
+
+        if(!$is_existing) {
+            require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
+
+            $default_params = EmundusHelperFabrik::prepareGroupParams();
+            $params = array_merge($default_params, $params);
+
+            try {
+                $inserting_datas = [
+                    'name' => $datas['name'],
+                    'css' => $datas['css'] ?: '',
+                    'label' => $datas['label'] ?: $datas['name'],
+                    'created' => date('Y-m-d H:i:s'),
+                    'created_by' => 62,
+                    'created_by_alias' => 'admin',
+                    'modified' => date('Y-m-d H:i:s'),
+                    'modified_by' => 0,
+                    'checked_out' => 0,
+                    'checked_out_time' => date('Y-m-d H:i:s'),
+                    'published' => $published,
+                    'is_join' => $datas['is_join'] ?: 0,
+                    'params' => json_encode($params)
+                ];
+
+                $query->clear()
+                    ->insert($db->quoteName('#__fabrik_groups'))
+                    ->columns($db->quoteName(array_keys($inserting_datas)))
+                    ->values(implode(',',$db->quote(array_values($inserting_datas))));
+                $db->setQuery($query);
+                $db->execute();
+
+                $result['id'] = $db->insertid();
+            } catch (Exception $e) {
+                $result['message'] = 'INSERTING FABRIK GROUP : Error : ' . $e->getMessage();
+                return $result;
+            }
+        } else {
+            $result['id'] = $is_existing;
+        }
+
+        $result['status'] = true;
+        return $result;
+    }
+
+    public static function joinFormGroup($form_id,$groups_id) {
+        $result = ['status' => false, 'message' => ''];
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            foreach ($groups_id as $group){
+                $query->clear()
+                    ->select('id')
+                    ->from($db->quoteName('#__fabrik_formgroup'))
+                    ->where($db->quoteName('form_id') . ' = ' . $form_id)
+                    ->andWhere($db->quoteName('group_id') . ' = ' . $group);
+                $db->setQuery($query);
+                $is_existing = $db->loadResult();
+
+                if(!$is_existing){
+                    $query->clear()
+                        ->insert($db->quoteName('#__fabrik_formgroup'))
+                        ->set($db->quoteName('form_id') . ' = ' . $db->quote($form_id))
+                        ->set($db->quoteName('group_id') . ' = ' . $db->quote($group));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+            }
+        } catch (Exception $e) {
+            $result['message'] = 'JOIN FABRIK FORM WITH GROUPS : Error : ' . $e->getMessage();
+            return $result;
+        }
+
+        $result['status'] = true;
+        return $result;
+    }
+
+    public static function addFabrikJoin($datas,$params) {
+        $result = ['status' => false, 'message' => ''];
+
+        if(empty($datas['table_join'])){
+            $result['message'] = 'INSERTING FABRIK JOIN : Please indicate a table_join.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $inserting_datas = [
+                'list_id' => $datas['list_id'] ?: 0,
+                'element_id' => $datas['element_id'] ?: 0,
+                'join_from_table' => $datas['join_from_table'] ?: '',
+                'table_join' => $datas['table_join'],
+                'table_key' => $datas['table_key'],
+                'table_join_key' => $datas['table_join_key'] ?: 'id',
+                'join_type' => $datas['join_type'] ?: 'left',
+                'group_id' => $datas['group_id'] ?: 0,
+                'params' => json_encode($params)
+            ];
+
+            $query->clear()
+                ->insert($db->quoteName('#__fabrik_joins'))
+                ->columns($db->quoteName(array_keys($inserting_datas)))
+                ->values(implode(',',$db->quote(array_values($inserting_datas))));
+            $db->setQuery($query);
+            $db->execute();
+        } catch (Exception $e) {
+            $result['message'] = 'INSERTING FABRIK JOIN : Error : ' . $e->getMessage();
+            return $result;
+        }
+
+        $result['status'] = true;
+        return $result;
+    }
+
+    public static function addColumn($table,$name,$type = 'VARCHAR',$length = 255,$null = 1){
+        $result = ['status' => false, 'message' => ''];
+
+        if (empty($table)) {
+            $result['message'] = 'ADDING COLUMN : Please refer a database table.';
+            return $result;
+        }
+
+        if (empty($name)) {
+            $result['message'] = 'ADDING COLUMN : Please refer a column name.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $column_existing = $db->setQuery('SHOW COLUMNS FROM ' . $table . ' WHERE ' . $db->quoteName('Field') . ' = ' . $db->quote($name))->loadResult();
+
+        if (empty($column_existing)) {
+            $null_query = $null == 0 ? 'NOT NULL' : 'NULL';
+
+            try {
+                $query = 'ALTER TABLE ' . $table . ' ADD COLUMN ' . $db->quoteName($name) . ' ' . $type . '(' . $length . ') ' . $null_query;
+                $db->setQuery($query);
+                $result['status'] = $db->execute();
+            } catch (Exception $e) {
+                $result['message'] = 'ADDING COLUMN : Error : ' . $e->getMessage();
+            }
+        }
+
+        return $result;
+    }
+
+    public static function addFabrikElement($datas,$params = null) {
+        $result = ['status' => false, 'message' => ''];
+
+        if(empty($datas['name'])){
+            $result['message'] = 'INSERTING FABRIK ELEMENT : Please indicate a name.';
+            return $result;
+        }
+        if(empty($datas['group_id'])){
+            $result['message'] = 'INSERTING FABRIK ELEMENT : Please provide a group.';
+            return $result;
+        }
+        if(empty($datas['plugin'])){
+            $result['message'] = 'INSERTING FABRIK ELEMENT : Please provide a plugin.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('id')
+            ->from($db->quoteName('#__fabrik_elements'))
+            ->where($db->quoteName('name') . ' LIKE ' . $db->quote($datas['name']))
+            ->andWhere($db->quoteName('group_id') . ' LIKE ' . $db->quote($datas['group_id']));
+        $db->setQuery($query);
+        $is_existing = $db->loadResult();
+
+        if(!$is_existing) {
+            require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
+
+            $default_params = EmundusHelperFabrik::prepareElementParameters($datas['plugin']);
+            $params = array_merge($default_params, $params);
+
+            try {
+                $query->clear()
+                    ->select('max(ordering)')
+                    ->from($db->quoteName('#__fabrik_elements'))
+                    ->where($db->quoteName('group_id') . ' = ' . $db->quote($datas['group_id']));
+                $db->setQuery($query);
+                $ordering = $db->loadResult();
+
+                if (!is_null($ordering)) {
+                    $ordering += 1;
+                } else {
+                    $ordering = 0;
+                }
+
+                $inserting_datas = [
+                    'name' => $datas['name'],
+                    'group_id' => $datas['group_id'],
+                    'plugin' => $datas['plugin'],
+                    'label' => $datas['label'] ?: '',
+                    'checked_out' => 0,
+                    'checked_out_time' => date('Y-m-d H:i:s'),
+                    'created' => date('Y-m-d H:i:s'),
+                    'created_by' => 62,
+                    'created_by_alias' => 'sysadmin',
+                    'modified' => date('Y-m-d H:i:s'),
+                    'modified_by' => 62,
+                    'width' => $datas['width'] ?: 30,
+                    'height' => $datas['height'] ?: 6,
+                    'default' => $datas['default'] ?: '',
+                    'hidden' => $datas['hidden'] ?: 0,
+                    'eval' => $datas['eval'] ?: 0,
+                    'ordering' => $ordering,
+                    'show_in_list_summary' => $datas['show_in_list_summary'] ?: 0,
+                    'filter_type' => $datas['filter_type'] ?: '',
+                    'filter_exact_match' => $datas['filter_exact_match'] ?: 0,
+                    'published' => $datas['published'] ?: 1,
+                    'link_to_detail' => $datas['link_to_detail'] ?: 0,
+                    'primary_key' => $datas['primary_key'] ?: 0,
+                    'auto_increment' => $datas['auto_increment'] ?: 0,
+                    'access' => $datas['access'] ?: 1,
+                    'use_in_page_title' => $datas['use_in_page_title'] ?: 0,
+                    'parent_id' => $datas['parent_id'] ?: 0,
+                    'params' => json_encode($params)
+                ];
+
+                $query->clear()
+                    ->insert($db->quoteName('#__fabrik_elements'))
+                    ->columns($db->quoteName(array_keys($inserting_datas)))
+                    ->values(implode(',', $db->quote(array_values($inserting_datas))));
+                $db->setQuery($query);
+                $db->execute();
+
+                $result['id'] = $db->insertid();
+            } catch (Exception $e) {
+                $result['message'] = 'INSERTING FABRIK ELEMENT : Error : ' . $e->getMessage();
+                return $result;
+            }
+        } else {
+            $result['id'] = $is_existing;
+        }
+
+        $result['status'] = true;
+        return $result;
+    }
+
+    public static function addJsAction($datas,$params = null) {
+        $result = ['status' => false, 'message' => ''];
+
+        if(empty($datas['element_id'])){
+            $result['message'] = 'INSERTING FABRIK JSACTION : Please provide an element.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            if(empty($params)){
+                $params = [
+                    'js_e_event' => '',
+                    'js_e_trigger' => '',
+                    'js_e_condition' => '',
+                    'js_e_value' => '',
+                    'js_published' => '1',
+                ];
+            }
+            $inserting_datas = [
+                'element_id' => $datas['element_id'],
+                'action' => $datas['action'] ?: 'load',
+                'code' => $datas['code'] ?: '',
+                'params' => json_encode($params)
+            ];
+
+            $query->clear()
+                ->insert($db->quoteName('#__fabrik_jsactions'))
+                ->columns($db->quoteName(array_keys($inserting_datas)))
+                ->values(implode(',',$db->quote(array_values($inserting_datas))));
+            $db->setQuery($query);
+            $db->execute();
+        } catch (Exception $e) {
+            $result['message'] = 'INSERTING FABRIK JSACTION : Error : ' . $e->getMessage();
+            return $result;
+        }
+
+        $result['status'] = true;
+        return $result;
+    }
+
+    public static function addCustomEvents($events) {
+        $response = [
+            'status' => false,
+            'message' => 'Empty events'
+        ];
+
+        if (!empty($events)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $rows = [];
+            foreach($events as $event) {
+                if (!empty($event['label'])) {
+                    $query->clear()
+                        ->select('id')
+                        ->from('#__emundus_plugin_events')
+                        ->where('label = ' . $db->quote($event['label']));
+
+                    try {
+                        $event_id = $db->loadResult();
+                    } catch (Exception $e) {
+                        JLog::add('Failed to check if event does not already exists ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                        $event_id = 0;
+                    }
+
+                    if (empty($event_id)) {
+                        $row = $db->quote($event['label']);
+
+                        if (isset($event['published'])) {
+                            $row .= ', ' . $event['published'];
+                        } else {
+                            $row .= ', 0';
+                        }
+
+                        if (isset($event['category'])) {
+                            $row .= ', ' .  $db->quote($event['category']);
+                        } else {
+                            $row .= ', ' .  $db->quote('default');
+                        }
+
+                        if (isset($event['description'])) {
+                            $row .= ', ' .  $db->quote($event['description']);
+                        } else {
+                            $row .= ', ' .  $db->quote('');
+                        }
+
+                        $rows[] = $row;
+                    }
+                }
+            }
+
+            if (!empty($rows)) {
+                $columns = ['label', 'published', 'category', 'description'];
+                $query->clear()
+                    ->insert('#__emundus_plugin_events')
+                    ->columns($columns)
+                    ->values($rows);
+
+                $db->setQuery($query);
+                try {
+                    $inserted = $db->execute();
+                } catch (Exception $e) {
+                    $inserted = false;
+                    JLog::add('Failed addCustomEvents ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                }
+
+                if (!$inserted) {
+                    $response['message'] = 'Custom events have not been inserted in database';
+                    JLog::add('Custom events have not been inserted in database', JLog::WARNING, 'com_emundus.error');
+                } else {
+                    $response['status'] = true;
+                    $response['message'] = 'Success';
+                }
+            }
+        }
+
+        return $response;
+    }
+
+    public static function createModule($title, $position, $module, $params, $published = 0, $all_pages = 0, $access = 1, $showtitle = 0, $client_id = 0)
+    {
+        $created = false;
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('id')
+                ->from($db->quoteName('#__modules'))
+                ->where($db->quoteName('title') . ' LIKE ' . $db->quote($title))
+                ->andWhere($db->quoteName('module') . ' LIKE ' . $db->quote($module));
+            $db->setQuery($query);
+            $is_existing = $db->loadResult();
+
+            if (empty($is_existing)) {
+                $publish_up = new DateTime(); // For today/now, don't pass an arg.
+                $publish_up->modify('-1 day');
+
+                $query->clear()
+                    ->insert($db->quoteName('#__modules'))
+                    ->set($db->quoteName('title') . ' = ' . $db->quote($title))
+                    ->set($db->quoteName('note') . ' = ' . $db->quote(''))
+                    ->set($db->quoteName('ordering') . ' = ' . $db->quote(1))
+                    ->set($db->quoteName('position') . ' = ' . $db->quote($position))
+                    ->set($db->quoteName('checked_out') . ' = ' . $db->quote(62))
+                    ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('publish_up') . ' = ' . $db->quote($publish_up->format('Y-m-d H:i:s')))
+                    ->set($db->quoteName('publish_down') . ' = ' . $db->quote('2099-01-01 00:00:00'))
+                    ->set($db->quoteName('published') . ' = ' . $db->quote($published))
+                    ->set($db->quoteName('module') . ' = ' . $db->quote($module))
+                    ->set($db->quoteName('access') . ' = ' . $db->quote($access))
+                    ->set($db->quoteName('showtitle') . ' = ' . $db->quote($showtitle))
+                    ->set($db->quoteName('params') . ' = ' . $db->quote($params))
+                    ->set($db->quoteName('client_id') . ' = ' . $db->quote($client_id))
+                    ->set($db->quoteName('language') . ' = ' . $db->quote('*'));
+                $db->setQuery($query);
+                $db->execute();
+                $module_id = $db->insertid();
+
+                if (!empty($module_id) && $all_pages) {
+                    $query->clear()
+                        ->insert($db->quoteName('#__modules_menu'))
+                        ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module_id))
+                        ->set($db->quoteName('menuid') . ' = ' . $db->quote(0));
+                    $db->setQuery($query);
+                    $created = $db->execute();
+                }
+            } else {
+                echo "$title module already exists.";
+                $created = true;
+            }
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        }
+
+        return $created;
     }
 }

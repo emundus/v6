@@ -17,7 +17,7 @@
 			        v-model="section.label[shortDefaultLang]"
 			        @focusout="updateTitle"
 			        @keyup.enter="blurElement('#section-title')"
-			        maxlength="50"
+			        maxlength="100"
 	        />
           <div class="section-actions-wrapper">
             <span class="material-icons-outlined em-pointer hover-opacity" @click="moveSection('up')" title="Move section upwards">keyboard_double_arrow_up</span>
@@ -57,7 +57,7 @@
                 </form-builder-page-section-element>
               </transition-group>
             </draggable>
-            <div v-if="elements.length < 1" class="empty-section-element">
+            <div v-if="publishedElements.length < 1" class="empty-section-element">
               <draggable
                   :list="emptySection"
                   group="form-builder-section-elements"
@@ -123,6 +123,7 @@ export  default {
           "text": "COM_EMUNDUS_FORM_BUILDER_EMPTY_SECTION",
         }
       ],
+      elementsDeletedPending: [],
     };
   },
 
@@ -131,8 +132,7 @@ export  default {
   },
   methods: {
     getElements() {
-      const elements = Object.values(this.section.elements);
-      this.elements = elements.length > 0 ? elements : [];
+      this.elements = Object.values(this.section.elements).length > 0 ? Object.values(this.section.elements) : [];
     },
     updateTitle() {
       this.section.label[this.shortDefaultLang] = this.section.label[this.shortDefaultLang].trim();
@@ -179,6 +179,11 @@ export  default {
         const movedElement = this.elements[e.newIndex];
         formBuilderService.updateOrder(elements, this.section.group_id, movedElement).then((response) => {
 	        this.updateLastSave();
+          let obj = {};
+          this.elements.forEach((elem, i) => {
+            obj['element'+elem.id] = elem
+          });
+          this.section.elements = obj;
         });
       } else {
         this.$emit('move-element', e, this.section.group_id, toGroup);
@@ -186,10 +191,13 @@ export  default {
     },
     deleteElement(elementId) {
       this.section.elements['element'+elementId].publish = -2;
-      this.updateLastSave();
+      this.elementsDeletedPending.push(elementId);
+	    this.getElements();
+	    this.updateLastSave();
     },
     cancelDeleteElement(elementId) {
       this.section.elements['element'+elementId].publish = true;
+	    this.getElements();
     },
     deleteSection() {
       this.swalConfirm(
@@ -215,7 +223,14 @@ export  default {
       },
       deep: true
     }
-  }
+  },
+	computed: {
+		publishedElements() {
+			return this.elements && this.elements.length > 0 ? this.elements.filter((element) => {
+				return element.publish === true;
+			}) : [];
+		}
+	}
 }
 </script>
 
@@ -235,7 +250,7 @@ export  default {
     }
 
     .section-content {
-      border-top: 4px solid #20835F;
+      border-top: 4px solid var(--main-500);
       background-color: white;
       transition: all 0.3s ease-in-out;
 

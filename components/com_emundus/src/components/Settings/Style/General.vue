@@ -11,7 +11,7 @@
       <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
         <div class="em-flex-row">
           <div>
-            <h3 style="margin: 0">Logo</h3>
+            <h3 class="em-text-neutral-800" style="margin: 0">Logo</h3>
             <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png, gif</em></span>
           </div>
           <span class="material-icons em-pointer" style="margin-left: 125px" v-if="logo_updating" @click="logo_updating = !logo_updating">close</span>
@@ -44,7 +44,7 @@
       <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
         <div class="em-flex-row">
           <div>
-            <h3 style="margin: 0">{{ translate("COM_EMUNDUS_ONBOARD_ICON") }}</h3>
+            <h3 class="em-text-neutral-800" style="margin: 0">{{ translate("COM_EMUNDUS_ONBOARD_ICON") }}</h3>
             <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png, gif</em></span>
           </div>
           <span class="material-icons em-pointer" style="margin-left: 125px" v-if="favicon_updating" @click="favicon_updating = !favicon_updating">close</span>
@@ -76,7 +76,7 @@
       <!-- COLORS -->
       <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
         <div class="em-flex-row">
-            <h3 style="margin: 0">{{ translate("COM_EMUNDUS_ONBOARD_COLORS") }}</h3>
+            <h3 class="em-text-neutral-800" style="margin: 0">{{ translate("COM_EMUNDUS_ONBOARD_COLORS") }}</h3>
         </div>
 
         <div class="em-logo-box pointer em-mt-16" @click="$modal.show('modalUpdateColors')">
@@ -123,7 +123,7 @@ export default {
       logo_updating: false,
       favicon_updating: false,
 
-      imageLink: 'images/custom/logo_custom.png',
+      imageLink: '',
       iconLink: 'images/custom/favicon.png',
       primary: '',
       secondary: '',
@@ -174,10 +174,20 @@ export default {
     this.loading = true;
     this.changes = false;
 
-    this.imageExists(this.imageLink, (exists) => {
-      if(!exists){
+    axios({
+      method: "get",
+      url: 'index.php?option=com_emundus&controller=settings&task=getlogo',
+    }).then((rep) => {
+      if(rep.data.filename == null){
         this.imageLink = 'images/custom/logo.png';
+      } else {
+        this.imageLink = 'images/custom/' + rep.data.filename;
       }
+
+      setTimeout(() => {
+        this.changes = true;
+      },1000);
+      this.loading = false;
     });
 
     axios({
@@ -194,8 +204,8 @@ export default {
   },
 
   methods:{
-    updateView() {
-      this.imageLink = 'images/custom/logo_custom.png?' + new Date().getTime();
+    updateView(ext = 'png') {
+      this.imageLink = 'images/custom/logo_custom.'+ext+'?' + new Date().getTime();
       this.$forceUpdate();
     },
     updateIcon() {
@@ -253,10 +263,11 @@ export default {
       }
     },
     onComplete: function(response){
+      const ext = response.name.split('.').pop();
       if(response.status == 'success'){
         if(this.logo_updating) {
           this.logo_updating = false;
-          this.updateView();
+          this.updateView(ext);
         }
         if(this.favicon_updating) {
           this.favicon_updating = false;

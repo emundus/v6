@@ -7,6 +7,7 @@ require_once JPATH_CONFIGURATION . '/configuration.php';
 class com_emundusInstallerScript
 {
     protected $manifest_cache;
+    protected $schema_version;
 
     public function __construct() {
         // Get component manifest cache
@@ -18,6 +19,13 @@ class com_emundusInstallerScript
             ->where("element = 'com_emundus'");
         $db->setQuery($query);
         $this->manifest_cache = json_decode($db->loadObject()->manifest_cache);
+
+        $query->clear()
+            ->select('version_id')
+            ->from($db->quoteName('#__schemas'))
+            ->where($db->quoteName('extension_id') . ' = ' . $db->quote(700));
+        $db->setQuery($query);
+        $this->schema_version = $db->loadResult();
 
         require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
     }
@@ -73,16 +81,13 @@ class com_emundusInstallerScript
                 # Delete emundus sql files in con_admin
                 #$this->deleteOldSqlFiles();
 
-                EmundusHelperUpdate::updateModulesParams('mod_emundusflow','show_programme' , '0');
-                EmundusHelperUpdate::updateFabrikCronParams('emundusrecall',array('log','log_email','cron_rungate') , array('0','mail@emundus.fr','1'));
-
                 # Update SCP params
                 EmundusHelperUpdate::updateSCPParams('pro_plugin', array('email_active','email_on_admin_login'), array('0','0'));
 
                 EmundusHelperUpdate::genericUpdateParams('#__modules', 'module', 'mod_emundusflow', array('show_programme'), array('0'));
                 EmundusHelperUpdate::genericUpdateParams('#__fabrik_cron', 'plugin', 'emundusrecall', array('log', 'log_email', 'cron_rungate') , array('0', 'mail@emundus.fr', '1'));
 
-                EmundusHelperUpdate::updateConfigurationFile('lifetime', '180');
+                EmundusHelperUpdate::updateConfigurationFile('lifetime', '45');
 
                 # Insert translations in override file
                 EmundusHelperUpdate::insertTranslationsTag('CREATE_A_NEW_FILE','Créer un nouveau dossier pour un utilisateur existant','override',null,'fabrik_elements','label');
@@ -203,9 +208,217 @@ class com_emundusInstallerScript
                 EmundusHelperUpdate::addYamlVariable('extra','{  }',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','javascript');
                 EmundusHelperUpdate::addYamlVariable('priority','0',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','javascript');
                 EmundusHelperUpdate::addYamlVariable('name','Fabrik',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','javascript');
+
+                EmundusHelperUpdate::addYamlVariable('location','https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css',true,true);
+                EmundusHelperUpdate::addYamlVariable('inline','',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+                EmundusHelperUpdate::addYamlVariable('extra','{  }',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+                EmundusHelperUpdate::addYamlVariable('priority','0',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+                EmundusHelperUpdate::addYamlVariable('name','Material Icons',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+
+                EmundusHelperUpdate::updateFont('family=Inter:300,400,500,600,700,800,900,400&subset=latin,vietnamese,latin-ext');
+
+                $datas = [
+                    'menutype' => 'usermenu',
+                    'title' => 'Informations de compte',
+                    'alias' => 'informations-de-compte',
+                    'path' => 'informations-de-compte',
+                    'link' => 'index.php?option=com_users&view=profile&layout=edit',
+                    'type' => 'component',
+                    'component_id' => 25,
+                    'params' => [
+                        'menu_show' => 0
+                    ]
+                ];
+                EmundusHelperUpdate::addJoomlaMenu($datas);
             }
 
+            if((version_compare($cache_version, '1.33.28', '<') || $firstrun)) {
+                EmundusHelperUpdate::installExtension('PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE','custom_event_handler','{"name":"PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE","type":"plugin","creationDate":"18 August 2021","author":"James Dean","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"james@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"1.22.1","description":"PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE_DESC","group":"","filename":"custom_event_handler"}','plugin', 1, 'emundus');
+            }
+
+            if((version_compare($cache_version, '1.33.32', '<') || $firstrun)) {
+                EmundusHelperUpdate::disableEmundusPlugins('emundus_su');
+            }
+
+            if (version_compare($cache_version, '1.34.0', '<') || $firstrun) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns','pinned','TINYINT',1);
+                EmundusHelperUpdate::addColumn('jos_emundus_setup_programmes','color','VARCHAR',10);
+
+                EmundusHelperUpdate::genericUpdateParams('#__modules', 'module', 'mod_falang', array('advanced_dropdown','full_name'), array('0','0'));
+
+                // Add back button to login, register and reset view
+                $datas = [
+                    'title' => 'eMundus - Back button',
+                    'note' => 'Back button available on login and register views',
+                    'content' => '<p><a class="em-back-button em-pointer" href="/"><span class="material-icons em-mr-4">navigate_before</span>Retour à la page d\'accueil</a></p>',
+                    'position' => 'header-a',
+                    'module' => 'mod_custom',
+                    'access' => 9,
+                    'params' => [
+                        'prepare_content' => 0,
+                        'backgroundimage' => '',
+                        'layout' => '_:default',
+                        'moduleclass_sfx' => '',
+                        'cache' => 1,
+                        'cache_time' => 900,
+                        'cachemode' => 'static',
+                    ]
+                ];
+                $moduleid = EmundusHelperUpdate::addJoomlaModule($datas);
+                if(!empty($moduleid)) {
+                    $query->clear()
+                        ->select('id')
+                        ->from($db->quoteName('#__menu'))
+                        ->where($db->quoteName('link') . ' IN (' . $db->quote('index.php?option=com_users&view=login').',' . $db->quote('index.php?option=com_fabrik&view=form&formid=307') . ',' . $db->quote('index.php?option=com_users&view=reset') . ')');
+                    $db->setQuery($query);
+                    $menus = $db->loadColumn();
+
+                    foreach ($menus as $menu) {
+                        $query->clear()
+                            ->select('moduleid')
+                            ->from($db->quoteName('#__modules_menu'))
+                            ->where($db->quoteName('menuid') . ' = ' . $db->quote($menu))
+                            ->andWhere($db->quoteName('moduleid') . ' = ' . $db->quote($moduleid['id']));
+                        $db->setQuery($query);
+                        $is_existing = $db->loadResult();
+
+                        if(!$is_existing){
+                            $query->clear()
+                                ->insert($db->quoteName('#__modules_menu'))
+                                ->set($db->quoteName('moduleid') . ' = ' . $db->quote($moduleid['id']))
+                                ->set($db->quoteName('menuid') . ' = ' . $db->quote($menu));
+                            $db->setQuery($query);
+                            $db->execute();
+                        }
+                    }
+                }
+                //
+
+                // Setup our new layouts
+                $query->clear()
+                    ->update($db->quoteName('#__fabrik_forms'))
+                    ->set($db->quoteName('form_template') . ' = ' . $db->quote('_emundus'))
+                    ->where($db->quoteName('form_template') . ' = ' . $db->quote('bootstrap'));
+                $db->setQuery($query);
+                $db->execute();
+
+                $query->clear()
+                    ->update($db->quoteName('#__menu'))
+                    ->set($db->quoteName('params') . ' = JSON_REPLACE(params,"$.fabriklayout","_emundus")')
+                    ->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_fabrik&view=form&formid=307'));
+                $db->setQuery($query);
+                $db->execute();
+
+                EmundusHelperUpdate::insertTranslationsTag('HIKA_BILLING_DESCRIPTION','Afin de poursuivre, vous devrez régler les frais de dossier liés à l’inscription');
+                EmundusHelperUpdate::insertTranslationsTag('HIKA_BILLING_DESCRIPTION','In order to continue, you will need to pay the registration fee.','override',null,null,null,'en-GB');
+                EmundusHelperUpdate::insertTranslationsTag('HIKASHOP_PAYMENT_METHOD_SENTENCE','Vous souhaitez payer par');
+                EmundusHelperUpdate::insertTranslationsTag('HIKASHOP_PAYMENT_METHOD_SENTENCE','You wish to pay by','override',null,null,null,'en-GB');
+                EmundusHelperUpdate::insertTranslationsTag('HIKASHOP_NEW_BILLING_ADDRESS','Adresse de facturation');
+                EmundusHelperUpdate::insertTranslationsTag('MAKE_THIS_ADDRESS_THE_DEFAULT_BILLING_ADDRESS','Enregistrer cette adresse');
+                EmundusHelperUpdate::insertTranslationsTag('HIKASHOP_CONFIRM_MY_ADDRESS','Valider mon adresse');
+                EmundusHelperUpdate::insertTranslationsTag('HIKASHOP_CONFIRM_MY_ADDRESS','Validate my address','override',null,null,null,'en-GB');
+                EmundusHelperUpdate::insertTranslationsTag('HIKASHOP_COUPON_TITLE','Code de réduction');
+                EmundusHelperUpdate::insertTranslationsTag('HIKASHOP_COUPON_TITLE','Discount code','override',null,null,null,'en-GB');
+                EmundusHelperUpdate::insertTranslationsTag('CHECKOUT_BUTTON_FINISH','Procéder au paiement');
+                EmundusHelperUpdate::insertTranslationsTag('CHECKOUT_BUTTON_FINISH','Process to payment','override',null,null,null,'en-GB');
+                EmundusHelperUpdate::insertTranslationsTag('HIKA_NEW','Ajouter une adresse');
+                EmundusHelperUpdate::insertTranslationsTag('HIKA_NEW','Add an address','override',null,null,null,'en-GB');
+                //
+
+                $succeed['campaign_workflow'] = EmundusHelperUpdate::addProgramToCampaignWorkflow();
+
+                // Install announcement module
+                //TODO : Install a module or a plugin via folder (parse xml file and insert necessary datas)
+                EmundusHelperUpdate::installExtension('MOD_EMUNDUS_ANNOUNCEMENTS_SYS_XML','mod_emundus_announcements','{"name":"MOD_EMUNDUS_ANNOUNCEMENTS_SYS_XML","type":"module","creationDate":"September 2022","author":"eMundus","copyright":"Copyright (C) 2022 eMundus. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"1.0.0","description":"MOD_EMUNDUS_ANNOUNCEMENTS_XML_DESCRIPTION","group":"","filename":"mod_emundus_announcements"}','module');
+                EmundusHelperUpdate::createModule('Announcement','top-b','mod_emundus_announcements','{"announcement_content":"Cette plateforme de préproduction est une copie de la production datant du [DATE]. Les mails sont désactivés. Elle est isolée du web.","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}',0,1);
+
+                $datas = [
+                    'title' => 'Announcement',
+                    'note' => 'Back button available on login and register views',
+                    'position' => 'top-b',
+                    'module' => 'mod_emundus_announcements',
+                    'params' => [
+                        'announcement_content' => 'Cette plateforme de préproduction est une copie de la production datant du [DATE]. Les mails sont désactivés. Elle est isolée du web.'
+                    ]
+                ];
+                EmundusHelperUpdate::addJoomlaModule($datas,0,true);
+                //
+
+                // Install smart search menu
+                $query->clear()
+                    ->select('extension_id')
+                    ->from($db->quoteName('#__extensions'))
+                    ->where($db->quoteName('element') . ' LIKE ' . $db->quote('com_finder'));
+                $db->setQuery($query);
+                $ext_id = $db->loadResult();
+
+                $datas = [
+                    'menutype' => 'main',
+                    'title' => 'COM_FINDER',
+                    'alias' => 'com-finder',
+                    'path' => 'com-finder',
+                    'link' => 'index.php?option=com_finder',
+                    'type' => 'component',
+                    'component_id' => $ext_id,
+                    'params' => [],
+                    'client_id' => 1,
+                    'img' => 'class:finder'
+                ];
+                EmundusHelperUpdate::addJoomlaMenu($datas);
+                //
+
+                EmundusHelperUpdate::installExtension('Smart Search - eMundus','emundus','{"name":"Smart Search - eMundus","type":"plugin","creationDate":"November 2022","author":"HUBINET Brice","copyright":"Copyright (C) 2016 eMundus. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"","description":"This plugin indexes applications in eMundus extension.","group":"","filename":"emundus"}','plugin',1,'finder');
+                $datas = [
+                    'title' => 'Spotlight eMundus',
+                    'note' => 'Advanced search based on Joomla indexing',
+                    'position' => 'drawer',
+                    'module' => 'mod_finder',
+                    'access' => 7,
+                    'params' => [
+                        'searchfilter' => '',
+                        'show_autosuggest' => 0,
+                        'show_advanced' => 0,
+                        'field_size' => 25,
+                        'show_label' => 1,
+                        'label_pos' => 'left',
+                        'alt_label' => '',
+                        'show_button' => 0,
+                        'button_pos' => 'left',
+                        'opensearch' => 1,
+                        'opensearch_title' => '',
+                        'set_itemid' => 0,
+                        'layout' => '_:tchooz',
+                    ]
+                ];
+                EmundusHelperUpdate::addJoomlaModule($datas,1,true);
+
+                $succeed['hikashop_events_added'] = EmundusHelperUpdate::addCustomEvents([['label' => 'onHikashopBeforeOrderCreate', 'category' => 'Hikashop'],
+                    ['label' => 'onHikashopAfterOrderCreate', 'category' => 'Hikashop'],
+                    ['label' => 'onHikashopBeforeOrderUpdate', 'category' => 'Hikashop'],
+                    ['label' => 'onHikashopAfterOrderUpdate', 'category' => 'Hikashop'],
+                    ['label' => 'onHikashopAfterOrderConfirm', 'category' => 'Hikashop'],
+                    ['label' => 'onHikashopAfterOrderDelete', 'category' => 'Hikashop'],
+                    ['label' => 'onHikashopCheckoutWorkflowLoad', 'category' => 'Hikashop'],
+                    ['label' => 'onHikashopBeforeProductListingLoad', 'category' => 'Hikashop']
+                ]);
+            }
+
+            // Insert new translations in overrides files
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
+
+
+            // Recompile Gantry5 css at each update
+            $dir = JPATH_BASE . '/templates/g5_helium/custom/css-compiled';
+            if(!empty($dir)) {
+                foreach (glob($dir . '/*') as $file) {
+                    unlink($file);
+                }
+
+                rmdir($dir);
+            }
         }
 
         return $succeed;
@@ -221,8 +434,13 @@ class com_emundusInstallerScript
      */
     public function preflight($type, $parent)
     {
-        if(version_compare(PHP_VERSION, '7.4.0', '<')) {
-            echo 'This extension works with PHP 7.4.0 or newer.Please contact your web hosting provider to update your PHP version.';
+        if(version_compare(PHP_VERSION, '7.2.0', '<')) {
+            echo "\033[31mThis extension works with PHP 7.2.0 or newer.Please contact your web hosting provider to update your PHP version. \033[0m\n";
+            exit;
+        }
+
+        if($this->schema_version != '3.10.9-2022-10-05-em') {
+            echo "\033[31mYou have to run update-db.sh before CLI ! \033[0m\n";
             exit;
         }
     }

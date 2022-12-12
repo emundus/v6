@@ -61,7 +61,7 @@ class EmundusControllerList extends JControllerLegacy {
         $user = JFactory::getUser();
         $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
             $listId = $jinput->getInt('listId');
             $lisActionColumnId=  $jinput->getInt('listActionColumnId');
@@ -82,7 +82,7 @@ class EmundusControllerList extends JControllerLegacy {
         $user = JFactory::getUser();
         $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
             $rowId = $jinput->getString('row_id');
             $value = $jinput->getString('value');
@@ -106,7 +106,7 @@ class EmundusControllerList extends JControllerLegacy {
         $user = JFactory::getUser();
         $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
             $newValue = $jinput->getString('newValue');
             $rows = json_decode($jinput->getString('rows'), true);

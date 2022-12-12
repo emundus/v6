@@ -156,6 +156,25 @@ export default {
             };
         }
     },
+    async getPageGroups(formId) {
+        if (typeof formId == 'number' && formId > 0) {
+            try {
+                const response = await client().get(baseUrl + '&task=getpagegroups&form_id=' + formId);
+
+                return response.data;
+            } catch (error) {
+                return {
+                    status: false,
+                    error: error
+                };
+            }
+        } else {
+            return {
+                status: false,
+                msg: 'MISSING_PARAMS'
+            };
+        }
+    },
     async reorderDocuments(documents)
     {
         try {

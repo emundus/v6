@@ -1,3 +1,8 @@
+#more-opt-popover {
+  position: relative;
+  top: 25px;
+  left: -10px;
+}
 .custom-em-popover {
   position: absolute;
   width: 100px;
@@ -6,6 +11,8 @@
 }
 .custom-em-popover .trigger {
   width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 .custom-em-popover .opt-popover span {
   padding: 4px 0;
@@ -29,14 +36,14 @@
   background: #F2F2F3;
 }
 .list-row span.tag.done[data-v-513a62da] {
-  background: #DFF5E9;
+  background: #80d5a7;
 }
 .list-row span.tag.todo[data-v-513a62da] {
   color: black;
-  background: #FFEEEE;
+  background: #f28d8d;
 }
 .list-row span.tag.inprogress[data-v-513a62da] {
-  background: #FFFBDB;
+  background: #ffeb47;
   color: black;
 }
 .list-row span.tag.default[data-v-513a62da] {
@@ -296,6 +303,14 @@ body ::-webkit-scrollbar-track {
   background: #E3E5E8 !important;
   padding: 16px;
   border-radius: 4px;
+}
+.v-popover .trigger{
+  display: -webkit-box !important;
+  display: -ms-flexbox !important;
+  display: flex !important;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
 
 
