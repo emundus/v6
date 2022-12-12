@@ -57,6 +57,16 @@ export default {
         this.$emit("input", this.editor.root.innerHTML);
       }
     });
+
+    this.editor.on('selection-change', (range, oldRange, source) => {
+      if(range) {
+        if (range.length) {
+          //...
+        } else {
+          this.$emit('focusout');
+        }
+      }
+    });
   },
   methods: {}
 }
@@ -79,6 +89,5 @@ export default {
 }
 .ql-snow .ql-editor p{
   line-height: 160%;
-  color: #727272 !important;
 }
 </style>
