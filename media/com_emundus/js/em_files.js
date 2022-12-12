@@ -168,7 +168,7 @@ function addElement() {
                 $('#nb-adv-filter').val(num);
                 var newId = 'em-adv-father-' + num;
                 ni.append('<fieldset id="' + newId + '" class="em-nopadding em-flex-row">' +
-                    '<select class="chzn-select em-filt-select" name="elements" id="elements">' +
+                    '<select class="chzn-select em-filt-select" name="elements" id="elements-'+num+'">' +
                     '<option value="">' + result.default +'</option>' +
                     '</select> ' +
                     '<button id="suppr-filt" class="em-tertiary-button em-flex-start">' +
@@ -223,7 +223,7 @@ function addElement() {
 
                     options += '<option class="emundus_search_elm" value="' + result.options[i].id + '">'+eltLabel+'</option>';
                 }
-                $('#' + newId + ' #elements').append(options);
+                $('#' + newId + ' #elements-'+num).append(options);
                 $('.chzn-select').chosen({width:'75%'});
 
             }
@@ -696,14 +696,13 @@ function getProgramCampaigns(code) {
 
 function setFiltersSumo(event){
     $.ajaxQ.abortAll();
-
     if (event.handle !== true) {
         event.handle = true;
 
         var id = event.currentTarget.id;
         const my_element = $('#' + id);
 
-        if (id !== 'elements') {
+        if (!id.includes('elements-')) {
             var multi = false;
             if (typeof my_element.attr('multiple') !== 'undefined') {
                 multi = true;
@@ -740,6 +739,8 @@ function setFiltersSumo(event){
             search();
         } else {
             var father = my_element.parent('fieldset').attr('id');
+            console.log(my_element);
+            console.log(father);
             getSearchBox(my_element.val(), father);
         }
     }
@@ -4779,6 +4780,9 @@ $(document).ready(function() {
     });
 
     $(document).on('change', '#elements.em-filt-select', function(event) {
+        setFiltersSumo(event);
+    });
+    $(document).on('change', 'select[id^="elements-"].em-filt-select', function(event) {
         setFiltersSumo(event);
     });
     $(document).on('change', 'select[id^="em-adv"].em-filt-select', function(event) {
