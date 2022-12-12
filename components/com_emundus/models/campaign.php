@@ -1167,8 +1167,6 @@ class EmundusModelCampaign extends JModelList {
             $campaign_columns = $this->_db->loadColumn();
 
             $data['label'] = json_decode($data['label'], true);
-            $data['start_date'] = date('Y-m-d H:i:s',strtotime(str_replace('+01:00','+00:00',$data['start_date'])));
-            $data['end_date'] = date('Y-m-d H:i:s',strtotime(str_replace('+01:00','+00:00',$data['end_date'])));
 
             $dispatcher = JEventDispatcher::getInstance();
             $dispatcher->trigger('onBeforeCampaignCreate', $data);
