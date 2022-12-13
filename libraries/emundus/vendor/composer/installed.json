@@ -3815,6 +3815,63 @@
             "install-path": "../setasign/fpdi_pdf-parser"
         },
         {
+            "name": "svrnm/exceldatatables",
+            "version": "dev-master",
+            "version_normalized": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/svrnm/exceldatatables.git",
+                "reference": "cc3511c6573da8a9900a22043990047ecb7dce9a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/svrnm/exceldatatables/zipball/cc3511c6573da8a9900a22043990047ecb7dce9a",
+                "reference": "cc3511c6573da8a9900a22043990047ecb7dce9a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "1.3.*@dev",
+                "phpspec/phpspec": "~2.0"
+            },
+            "time": "2020-07-05T15:28:36+00:00",
+            "default-branch": true,
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-0": {
+                    "Svrnm\\ExcelDataTables": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Severin Neumann",
+                    "email": "severin.neumann@altmuehlnet.de"
+                }
+            ],
+            "description": "Replace a worksheet within an Excel workbook (.xlsx) without changing any other properties of the file",
+            "keywords": [
+                "datatables",
+                "excel",
+                "php",
+                "spreadsheet",
+                "workbook",
+                "worksheet",
+                "xls"
+            ],
+            "support": {
+                "issues": "https://github.com/svrnm/exceldatatables/issues",
+                "source": "https://github.com/svrnm/exceldatatables/tree/master"
+            },
+            "install-path": "../svrnm/exceldatatables"
+        },
+        {
             "name": "symfony/polyfill-intl-idn",
             "version": "v1.27.0",
             "version_normalized": "1.27.0.0",

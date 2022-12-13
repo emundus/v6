@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7a1aa164cddea6791378abd1913f85aa",
+    "content-hash": "39c233c300688f24e42a3638145539db",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -1746,6 +1746,60 @@
                 "email": "support@setasign.com"
             },
             "time": "2021-12-06T00:00:00+00:00"
+        },
+        {
+            "name": "svrnm/exceldatatables",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/svrnm/exceldatatables.git",
+                "reference": "cc3511c6573da8a9900a22043990047ecb7dce9a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/svrnm/exceldatatables/zipball/cc3511c6573da8a9900a22043990047ecb7dce9a",
+                "reference": "cc3511c6573da8a9900a22043990047ecb7dce9a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "1.3.*@dev",
+                "phpspec/phpspec": "~2.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Svrnm\\ExcelDataTables": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Severin Neumann",
+                    "email": "severin.neumann@altmuehlnet.de"
+                }
+            ],
+            "description": "Replace a worksheet within an Excel workbook (.xlsx) without changing any other properties of the file",
+            "keywords": [
+                "datatables",
+                "excel",
+                "php",
+                "spreadsheet",
+                "workbook",
+                "worksheet",
+                "xls"
+            ],
+            "support": {
+                "issues": "https://github.com/svrnm/exceldatatables/issues",
+                "source": "https://github.com/svrnm/exceldatatables/tree/master"
+            },
+            "time": "2020-07-05T15:28:36+00:00"
         },
         {
             "name": "symfony/polyfill-intl-idn",
@@ -4158,7 +4212,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "svrnm/exceldatatables": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

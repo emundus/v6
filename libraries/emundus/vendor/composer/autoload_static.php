@@ -226,6 +226,13 @@ class ComposerStaticInit7c845154b423844d5f35db2057893c89
     );
 
     public static $prefixesPsr0 = array (
+        'S' => 
+        array (
+            'Svrnm\\ExcelDataTables' => 
+            array (
+                0 => __DIR__ . '/..' . '/svrnm/exceldatatables/src',
+            ),
+        ),
         'H' => 
         array (
             'HTMLPurifier' => 

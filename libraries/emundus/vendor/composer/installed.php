@@ -5,7 +5,7 @@
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '2012882572246ee20107ae7b3624b109d3e9fb88',
+        'reference' => 'f88934686e78f59d2c6c9b02545375f82b57f2d9',
         'name' => 'benj/emundus',
         'dev' => true,
     ),
@@ -16,7 +16,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '2012882572246ee20107ae7b3624b109d3e9fb88',
+            'reference' => 'f88934686e78f59d2c6c9b02545375f82b57f2d9',
             'dev_requirement' => false,
         ),
         'clue/stream-filter' => array(
@@ -560,6 +560,17 @@
             'install_path' => __DIR__ . '/../setasign/fpdi_pdf-parser',
             'aliases' => array(),
             'reference' => NULL,
+            'dev_requirement' => false,
+        ),
+        'svrnm/exceldatatables' => array(
+            'pretty_version' => 'dev-master',
+            'version' => 'dev-master',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../svrnm/exceldatatables',
+            'aliases' => array(
+                0 => '9999999-dev',
+            ),
+            'reference' => 'cc3511c6573da8a9900a22043990047ecb7dce9a',
             'dev_requirement' => false,
         ),
         'symfony/polyfill-intl-idn' => array(
