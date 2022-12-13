@@ -107,9 +107,9 @@ export default {
         this.$props.name.replace('[', '');
         this.$props.name.replace(']', '');
 
-        let tags_regex = this.$props.name.split('-');
+        let tags_regex = this.$props.name.split('-')
 
-        this.selectedSeparator = '-';
+			  this.selectedSeparator = '-';
 
 			  tags_regex.forEach((tag,index) => {
 				  if (tag !== '_') {

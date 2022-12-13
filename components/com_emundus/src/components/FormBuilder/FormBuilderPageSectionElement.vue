@@ -19,7 +19,7 @@
 	      />
       </label>
       <div id="element-action-icons" class="em-flex-row">
-        <span class="icon-handle"><span class="material-icons-outlined handle em-grab">drag_indicator</span></span>
+        <span class="material-icons-outlined handle em-grab">drag_indicator</span>
         <span id="delete-element" class="material-icons-outlined em-red-500-color em-pointer" @click="deleteElement">delete</span>
         <span v-if="sysadmin" class="material-icons-outlined em-pointer em-ml-8" @click="openAdmin">content_copy</span>
       </div>
@@ -157,10 +157,12 @@ export default {
       return parseInt(this.$store.state.global.sysadminAccess);
     },
     displayOptions: function(){
-      return this.$parent.$parent.$parent.$parent.$parent.$parent.optionsSelectedElement;
+      return this.$parent.$parent.$parent.$parent.$parent.$parent.optionsSelectedElement
+        && this.$parent.$parent.$parent.$parent.$parent.$parent.selectedElement !== null
+        && this.$parent.$parent.$parent.$parent.$parent.$parent.selectedElement.id == this.element.id;
     },
     propertiesOpened: function(){
-      if(this.$parent.$parent.$parent.$parent.$parent.$parent.selectedElement !== null) {
+      if (this.$parent.$parent.$parent.$parent.$parent.$parent.selectedElement !== null) {
         return this.$parent.$parent.$parent.$parent.$parent.$parent.selectedElement.id;
       } else {
         return 0;
@@ -196,6 +198,44 @@ export default {
 
   .element-field:not(.fabrikElementdisplay) {
     @include fabrik-elements;
+
+    .fabrikgrid_1.btn-default{
+      padding: 12px;
+      box-shadow: none;
+      cursor: pointer;
+      border: 1px solid var(--main-500);
+      background: var(--main-500);
+      border-radius: var(--em-border-radius) !important;
+      width: 100% !important;
+      max-width: 250px;
+      display: flex;
+      justify-content: center;
+
+      span {
+        @include body-16-medium;
+        margin-top: 0;
+        color: var(--neutral-50) !important;
+      }
+    }
+
+    .fabrikgrid_0.btn-default {
+      padding: 12px;
+      box-shadow: none;
+      cursor: pointer;
+      border: 1px solid var(--red-500);
+      background: var(--red-500);
+      border-radius: var(--em-border-radius) !important;
+      width: 100% !important;
+      max-width: 250px;
+      display: flex;
+      justify-content: center;
+
+      span {
+        @include body-16-medium;
+        margin-top: 0;
+        color: var(--neutral-50) !important;
+      }
+    }
   }
 
   &.unpublished {
@@ -207,7 +247,7 @@ export default {
   }
 
   &:hover {
-    border: 2px solid #20835F;
+    border: 2px solid var(--main-500);
 
     #element-action-icons {
       opacity: 1;

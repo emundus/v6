@@ -70,21 +70,6 @@ export default {
           ],
           value: 0,
         },
-        copy_application_form: {
-          label: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_COPY_APPLICATION_FORM"),
-          param: 'copy_application_form',
-          options: [
-            {
-              label: this.translate("JNO"),
-              value: 0,
-            },
-            {
-              label: this.translate("JYES"),
-              value: 1,
-            },
-          ],
-          value: 0,
-        },
         can_submit_encrypted: {
           label: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_SUBMIT_ENCRYPTED"),
           param: 'can_submit_encrypted',

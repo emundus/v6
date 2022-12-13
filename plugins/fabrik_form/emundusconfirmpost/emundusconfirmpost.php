@@ -125,7 +125,7 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 			echo $e->getMessage() . '<br />';
 		}
 
-        $current_phase = $m_campaign->getCurrentCampaignWorkflow($student);
+        $current_phase = $m_campaign->getCurrentCampaignWorkflow($student->fnum);
         if (!empty($current_phase) && !empty($current_phase->end_date)) {
             if (!is_null($current_phase->output_status)) {
                 $new_status = $current_phase->output_status;
@@ -203,16 +203,17 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 		} catch (Exception $e) {
 			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
+
+        $student->candidature_posted = 1;
+
+        // Send emails defined in trigger
+        $step = $this->getParam('emundusconfirmpost_status', '1');
+        $code = array($student->code);
+        $to_applicant = '0,1';
+        $m_emails->sendEmailTrigger($step, $code, $to_applicant, $student);
+
 		$dispatcher->trigger('onAfterSubmitFile', [$student->id, $student->fnum]);
         $dispatcher->trigger('callEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
-
-		$student->candidature_posted = 1;
-
-		// Send emails defined in trigger
-		$step = $this->getParam('emundusconfirmpost_status', '1');
-		$code = array($student->code);
-		$to_applicant = '0,1';
-		$m_emails->sendEmailTrigger($step, $code, $to_applicant, $student);
 
 		// If pdf exporting is activated
 		if ($export_pdf == 1) {

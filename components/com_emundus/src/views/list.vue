@@ -1,10 +1,6 @@
 <template>
   <div id="list">
-    <list-head
-        v-if="type !== 'files'"
-        :data="actions"
-    >
-    </list-head>
+    <list-head v-if="type !== 'files'" :data="actions"></list-head>
 
     <div class="search em-mb-16 em-flex-row">
       <span class="material-icons-outlined em-mr-8">search</span>
@@ -19,28 +15,21 @@
       <div class="em-list-filters" v-if="type === 'campaign'">
         <select v-model="selectedProgram" name="selectProgram" class="list-vue-select" @change="validateFilters">
           <option value="all">{{ translate('COM_EMUNDUS_ONBOARD_ALL_PROGRAMS') }} </option>
-          <option v-for="program in allPrograms" :value="program.code" :key="program.code">
-            {{ program.label }}
-          </option>
+          <option v-for="program in allPrograms" :value="program.code" :key="program.code">{{ program.label }}</option>
         </select>
       </div>
-
-      <div class="em-list-filters em-ml-8" v-if="type === 'campaign'">
+      <div class="em-list-filters em-ml-8" v-else-if="type === 'campaign'">
         <select v-model="selectedSession" name="selectedSession" class="list-vue-select" @change="validateFilters">
           <option value="all">{{ translate('COM_EMUNDUS_ONBOARD_ALL_SESSIONS') }} </option>
-          <option v-for="session in allSessions" :value="session" :key="session">
-            {{ session }}
-          </option>
+          <option v-for="session in allSessions" :value="session" :key="session">{{ session }}</option>
         </select>
       </div>
-
-      <div class="em-list-filters" v-if="type === 'email'">
+      <div class="em-list-filters" v-else-if="type === 'email'">
         <select class="list-vue-select" v-model="menuEmail">
           <option value="0">{{ translate('COM_EMUNDUS_ONBOARD_ALL') }}</option>
           <option v-for="(cat, index) in notEmptyEmailCategories" :value="cat" :key="'cat_' + index">{{ cat }}</option>
         </select>
       </div>
-
 
       <filters
           :data="actions"
@@ -59,18 +48,11 @@
           <a @click="nbpages(pages - 1)" class="pagination-arrow arrow-left">
             <em class="fas fa-chevron-left"></em>
           </a>
-          <li v-show="countPages <= 10 ||
-            index < 4 ||
-            index > countPages - 3 ||
-            (index > pages - 3 && index < pages + 3) ||
-            index == pages - 3 ||
-            index == pages + 3"
+          <li v-show="countPages <= 10 || index < 4 || index > countPages - 3 || (index > pages - 3 && index < pages + 3) || index == pages - 3 || index == pages + 3"
               v-for="index in countPages"
               :key="index"
               class="pagination-number">
-            <a @click="nbpages(index)"
-               class="pagination-number"
-               :class="index == pages ? 'current-number' : ''">
+            <a @click="nbpages(index)" class="pagination-number" :class="index == pages ? 'current-number' : ''">
               {{ paginationNumber(index) }}
             </a>
           </li>
@@ -82,19 +64,63 @@
     </transition>
 
     <div v-show="total > 0 || type == 'files'">
-
-      <list-body
-          :type="type"
-          :actions="actions"
-          :params="params"
-          @validateFilters="validateFilters"
-          @updateLoading="updateLoading"
-      ></list-body>
+	    <div v-if="type !== 'form' && type !== 'formulaire'">
+		    <list-body
+				    :type="type"
+				    :actions="actions"
+				    :params="params"
+				    :items="list"
+				    @validateFilters="validateFilters"
+				    @updateLoading="updateLoading"
+		    ></list-body>
+	    </div>
+	    <div v-else>
+		    <nav id="form-nav">
+			    <ul class="em-flex-row-start">
+				    <li
+						    class="em-pointer em-p-8 em-font-weight-600 em-p-16"
+						    :class="{
+									'em-main-500-color em-border-bottom-main-500 ': selectedListTab === 'formulaire',
+						      'em-border-bottom-neutral-300': selectedListTab !== 'formulaire'
+								}"
+						    @click="selectedListTab = 'formulaire'"
+				    >
+					    {{ translate('COM_EMUNDUS_FORM_MY_FORMS') }}
+				    </li>
+				    <li
+						    class="em-pointer em-p-8 em-font-weight-600 em-p-16"
+						    :class="{
+									'em-main-500-color em-border-bottom-main-500': selectedListTab === 'formModels',
+									'em-border-bottom-neutral-300': selectedListTab !== 'formModels'
+								}"
+						    @click="selectedListTab = 'formModels'"
+				    >
+					    {{ translate('COM_EMUNDUS_FORM_PAGE_MODELS') }}
+				    </li>
+			    </ul>
+		    </nav>
+		    <list-body
+				    v-if="selectedListTab === 'formModels'"
+				    type="formModels"
+				    :actions="{}"
+				    :params="{}"
+				    :items="formModelsItems"
+				    @validateFilters="validateFilters"
+				    @updateLoading="updateLoading"
+		    ></list-body>
+		    <list-body
+				    v-else
+				    :type="type"
+				    :actions="actions"
+				    :params="params"
+				    :items="list"
+				    @validateFilters="validateFilters"
+				    @updateLoading="updateLoading"
+		    ></list-body>
+	    </div>
     </div>
 
-    <div v-show="total == 0 && type != 'files' && !loading" class="noneDiscover">
-      {{ noneDiscoverTranslation }}
-    </div>
+    <div v-show="total == 0 && type != 'files' && !loading" class="noneDiscover" v-html="noneDiscoverTranslation"></div>
     <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
@@ -104,6 +130,7 @@ import axios from "axios";
 import filters from "../components/ListComponents/filters_menu";
 import ListHead from "../components/List/ListHead.vue";
 import ListBody from "../components/List/ListBody.vue";
+import formBuilderService from '../services/formbuilder';
 
 export default {
   components: {
@@ -111,7 +138,6 @@ export default {
     ListHead,
     ListBody,
   },
-
   name: "List",
   data: () => ({
     loading: false,
@@ -165,32 +191,9 @@ export default {
 
     menuEmail: 0,
     email_categories: [],
+	  formModelsItems: [],
+	  selectedListTab: 'formulaire'
   }),
-
-  computed: {
-    list() {
-      return list.getters.list;
-    },
-    isEmpty: () => {
-      return list.getters.isSomething;
-    },
-    noneDiscoverTranslation() {
-      if (this.type === "campaign") {
-        return this.translations.noCampaign;
-      } else if (this.type === "program") {
-        return this.translations.noProgram;
-      } else if (this.type === "email") {
-        return this.translations.noEmail;
-      } else if (this.type === "formulaire") {
-        return this.translations.noForm;
-      } else {
-        return this.translations.noFiles;
-      }
-    },
-    notEmptyEmailCategories() {
-      return this.email_categories.filter(category => category !== "");
-    },
-  },
   created() {
     this.datas = this.$store.getters['global/datas'];
     this.type = this.datas.type.value;
@@ -203,7 +206,7 @@ export default {
       this.actualLanguage = response.data.msg;
     });
 
-    if(this.type === 'campaign') {
+    if (this.type === 'campaign') {
       // Get programs to filters
       axios.get("index.php?option=com_emundus&controller=programme&task=getallprogram")
           .then(response => {
@@ -242,37 +245,11 @@ export default {
           }).catch(e => {
         console.log(e);
       });
+    } else if (this.type == 'form') {
+	    this.getFormModels();
     }
-
     this.getFiltersByType();
   },
-
-  watch: {
-    type: function (val) {
-      this.actions.type = val;
-      this.typeForAdd = val === 'formulaire' ? 'form' : val;
-
-      if (this.typeForAdd === "form") {
-        this.type = "formulaire";
-      }
-
-      let view= this.typeForAdd === 'grilleEval' ? 'form' : this.typeForAdd
-      if(this.type == 'email' || this.type == 'campaign') {
-        this.actions.add_url = 'index.php?option=com_emundus&view=' + this.type + 's&layout=add'
-      } else {
-        this.actions.add_url = 'index.php?option=com_emundus&view=' + view + '&layout=add'
-      }
-
-      this.validateFilters();
-    },
-    menuEmail: function (val) {
-      this.type = "email";
-      this.params = {
-        email_category: val,
-      };
-    },
-  },
-
   methods: {
     updateLoading(value) {
       this.loading = value;
@@ -281,20 +258,13 @@ export default {
     getFiltersByType() {
       switch (this.type){
         case 'campaign':
-          this.filter_columns = [
-              'label',
-              'short_description'
-          ];
+          this.filter_columns = ['label', 'short_description'];
           break;
         case 'email':
-          this.filter_columns = [
-            'subject'
-          ];
+          this.filter_columns = ['subject'];
           break;
         case 'form':
-          this.filter_columns = [
-            'label'
-          ];
+          this.filter_columns = ['label'];
           break;
         default:
       }
@@ -302,19 +272,16 @@ export default {
 
     validateFilters() {
       this.updateLoading(true);
-      this.filtersCount =
-          this.filtersCountFilter +
-          this.filtersCountSearch;
-      this.filters =
-          this.filtersFilter +
-          this.filtersSort +
-          this.filtersSearch +
-          this.filtersLim +
-          this.filtersPage;
-      if(this.type === 'campaign') {
+      this.filtersCount = this.filtersCountFilter + this.filtersCountSearch;
+      this.filters = this.filtersFilter + this.filtersSort + this.filtersSearch + this.filtersLim + this.filtersPage;
+      if (this.type === 'campaign') {
         this.filtersCount += "&program=" + this.selectedProgram + "&session=" + this.selectedSession;
         this.filters += "&program=" + this.selectedProgram + "&session=" + this.selectedSession;
       }
+
+			if (this.type == 'formulaire') {
+				this.getFormModels();
+			}
 
       this.allFilters();
     },
@@ -379,28 +346,31 @@ export default {
       let controller = this.typeForAdd === 'grilleEval' ? 'form' : this.typeForAdd;
 
       if (this.type !== "files") {
-          axios.get(
-              "index.php?option=com_emundus&controller=" +
-              controller +
-              "&task=getall" +
-              this.typeForAdd +
-              this.filters
-          ).then(rep => {
-            this.total = rep.data.data.count;
-            if(this.all_datas.length === 0) {
-              this.all_datas = rep.data.data.datas;
+          axios.get("index.php?option=com_emundus&controller=" + controller + "&task=getall" + this.typeForAdd + this.filters).then(rep => {
+            if(typeof rep.data.data.datas !== 'undefined') {
+              this.total = rep.data.data.count;
+              if (this.all_datas.length === 0) {
+                this.all_datas = rep.data.data.datas;
+              }
+              this.limited_datas = rep.data.data.datas;
             }
-            this.limited_datas = rep.data.data.datas;
             this.$store.commit("lists/listUpdate", this.limited_datas);
 
             this.countPages = Math.ceil(this.total / this.limit);
-            if (this.type == 'email') {
 
+            if (this.type == 'email') {
               axios.get("index.php?option=com_emundus&controller=email&task=getemailcategories")
-                  .then(catrep => {
+		              .then(catrep => {
                     this.email_categories = catrep.data.data;
                   });
-
+            }
+            if (this.type == 'campaign') {
+              this.$store.commit('campaign/setAllowPinnedCampaign',rep.data.allow_pinned_campaigns);
+              this.limited_datas.forEach((campaign) => {
+                if(campaign.pinned == 1){
+                  this.$store.commit('campaign/setPinned',campaign.id);
+                }
+              })
             }
             this.loading = false;
           }).catch(e => {
@@ -423,8 +393,84 @@ export default {
     },
     selectItem(id) {
       this.$store.commit("lists/selectItem", id);
-    }
-  }
+    },
+	  getFormModels() {
+			formBuilderService.getModels().then((response) => {
+				if (response.status && Array.isArray(response.data)) {
+					this.formModelsItems = [];
+					response.data.forEach((model) => {
+						this.formModelsItems.push({
+							id: model.id,
+							label: model.label[this.shortDefaultLang]
+						});
+					});
+				}
+			});
+
+			return this.formModelsItems;
+	  }
+  },
+	computed: {
+		isEmpty: () => {
+			return list.getters.isSomething;
+		},
+		noneDiscoverTranslation() {
+			if (this.type === "campaign") {
+				return this.translations.noCampaign;
+			} else if (this.type === "program") {
+				return this.translations.noProgram;
+			} else if (this.type === "email") {
+				return this.translations.noEmail;
+			} else if (this.type === "formulaire") {
+				return this.translations.noForm;
+			} else {
+				return this.translations.noFiles;
+			}
+		},
+		notEmptyEmailCategories() {
+			return this.email_categories.filter(category => category !== "");
+		},
+		list() {
+			let listItems = this.$store.getters['lists/list'];
+
+			if (this.params.email_category) {
+				listItems = listItems.filter((item) => {
+					if (this.params.email_category == 0) {
+						return true;
+					} else {
+						return item.category === this.params.email_category;
+					}
+				});
+			}
+
+			return listItems;
+		}
+	},
+	watch: {
+		type: function (val) {
+			this.actions.type = val;
+			this.typeForAdd = val === 'formulaire' ? 'form' : val;
+
+			if (this.typeForAdd === 'form') {
+				this.type = 'formulaire';
+			}
+
+			let view= this.typeForAdd === 'grilleEval' ? 'form' : this.typeForAdd
+			if (this.type == 'email' || this.type == 'campaign') {
+				this.actions.add_url = 'index.php?option=com_emundus&view=' + this.type + 's&layout=add'
+			} else {
+				this.actions.add_url = 'index.php?option=com_emundus&view=' + view + '&layout=add'
+			}
+
+			this.validateFilters();
+		},
+		menuEmail: function (val) {
+			this.type = "email";
+			this.params = {
+				email_category: val
+			};
+		},
+	}
 }
 
 </script>
@@ -452,6 +498,7 @@ h2 {
     margin-bottom: 0;
     border: unset;
     background: transparent;
+    color: var(--neutral-800);
     &:focus{
       outline: unset;
     }
@@ -479,6 +526,7 @@ h2 {
   border-bottom: solid 1px black;
   background: transparent;
   border-radius: 0;
+  font-family: var(--font);
 
   &:hover {
     border-top: unset;
@@ -567,6 +615,18 @@ h2 {
 }
 .material-icons, .material-icons-outlined{
   font-size: 24px !important;
+}
+
+#form-nav {
+	ul {
+		list-style-type: none;
+		margin-left: 0;
+		margin-bottom: 0;
+
+		li {
+			transition: all .3s;
+		}
+	}
 }
 
 </style>

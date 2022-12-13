@@ -103,9 +103,12 @@ echo <<<EOT
 }
 
 
-.view-form .fabrikForm .fabrikActions.form-actions, .view-details .fabrikForm .fabrikActions.form-actions{
-    padding: 0;
+.view-form:not(.view-registration) .fabrikForm .fabrikActions.form-actions,
+.view-details .fabrikForm .fabrikActions.form-actions{
+    padding: 16px 0 0 0;
     margin-bottom: 0;
+    border-top: solid 1px #EDEDED;
+    padding-top: 16px;
 }
 
 
@@ -500,12 +503,12 @@ form#member-profile .form-horizontal .control-label {
 .view-registration .login.em-formRegistrationCenter .em-heading-registration h1, 
 .view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) .em-heading-registration h1 {
     margin-top: 0px !important; 
-    font-family:'Inter', sans-serif;
     font-size: 32px;
     font-style: normal;
     font-weight: 600;
     line-height: 39px;
     letter-spacing: 0;
+    color: var(--em-applicant-title-color);
 }
 
 .view-form.view-registration .span12. .login.em-formRegistrationCenter  p:first-of-type, 
@@ -524,7 +527,14 @@ form#member-profile .form-horizontal .control-label {
     margin-top: 0;
     margin-bottom: 64px;
     border-radius: 16px;
+    margin-top: 68px;
+    padding: 80px 64px 80px 64px;
 }
+
+.view-registration .view-registration.login.em-formRegistrationCenter p.em-h3 {
+   font-family:  var(--applicant-title-font);
+}
+
 
  .view-form.em-formRegistrationCenter:not(.view-registration) .em-formRegistrationCenter:not(.componentheading) {
     display: flex !important;
@@ -740,7 +750,7 @@ button.register {
 }
 /* --------- Créez votre espace -------------- */
 .fabrikActions.form-actions .row-fluid .span4 {
-    width: auto !important;
+    width: 100% !important;
     margin-bottom: 0 !important;
 }
 
@@ -1028,7 +1038,7 @@ a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
     border: 1px solid #4e5b6d;
     border-radius: 4px !important;
     padding: 10px 12px !important;
-   font-family: 'Inter', sans-serif;
+   font-family:  var(--applicant-default-font);
     font-weight: 500;
 }
 .span4 > .btn-group > button.save-btn:hover, .span4 > .btn-group > button.save:hover {
@@ -1393,8 +1403,9 @@ form.fabrikForm .row-fluid .control-group.plg-textarea label.fabrikTip {
 .form-actions .row-fluid {
     text-align: center;
     display: flex;
-    justify-content: center;
     flex-direction: row-reverse;
+    justify-content: space-between;
+    padding: 0 32px;
 }
 
 .form-actions .row-fluid .span4 {

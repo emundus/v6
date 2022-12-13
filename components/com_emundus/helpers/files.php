@@ -1835,9 +1835,9 @@ class EmundusHelperFiles
 
             $group = '';
             if (!$hidden) {
-                $group .= '<div id="group">
+                $group .= '<div id="group" class="em-filter">
                     		<div class="em_label">
-                    			<label class="control-label em_filters_other_label">'.JText::_('COM_EMUNDUS_USERS_GROUP_FILTER').' &ensp;
+                    			<label class="control-label em_filter_label">'.JText::_('COM_EMUNDUS_USERS_GROUP_FILTER').' &ensp;
                     				<a href="javascript:clearchosen(\'#select_multiple_groups\')"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a>
                     			</label>
                             </div>
@@ -2342,7 +2342,7 @@ class EmundusHelperFiles
                             if (strpos($element->element_name, 'comment') !== false) {
                                 $str .= '<td colspan="2"><b>'.JText::_(trim($element->element_label)).'</b> <br>'.JText::_($eval[$k]).'</td>';
                             } else {
-                                $str .= '<td width="70%"><b>'.JText::_(trim($element->element_label)).'</b> </td><td width="30%">'.JText::_($eval[$k]).'</td>';
+                                $str .= '<td width="30%"><b>'.JText::_(trim($element->element_label)).'</b> </td><td width="70%">'.JText::_($eval[$k]).'</td>';
                             }
                             $str .= '</tr>';
                         }

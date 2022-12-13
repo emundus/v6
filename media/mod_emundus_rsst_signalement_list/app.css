@@ -174,7 +174,7 @@ table thead tr th .material-icons[data-v-264bddce] {
 .material-icons, .material-icons-outlined {
   -webkit-transition: all 0.3s;
   transition: all 0.3s;
-  font-size: 18px !important;
+  font-size: 18px;
   color: var(--grey-color);
 }
 .btn-icon-text {

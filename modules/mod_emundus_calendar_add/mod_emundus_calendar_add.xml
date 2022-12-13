@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 	<extension type="module" version ="2.5.0" method="upgrade">
-		<name>EmundusCalendarAdd</name>
+		<name>MOD_EM_CALENDAR_ADD_XML</name>
         <author>Hugo Moracchini</author>
         <creationDate>September 2017</creationDate>
         <copyright>Copyright (C) 2017 eMundus. All rights reserved.</copyright>

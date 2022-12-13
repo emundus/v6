@@ -11,7 +11,7 @@
       <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
         <div class="em-flex-row">
           <div>
-            <h3 style="margin: 0">Logo</h3>
+            <h3 class="em-text-neutral-800" style="margin: 0">Logo</h3>
             <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png, gif</em></span>
           </div>
           <span class="material-icons em-pointer" style="margin-left: 125px" v-if="logo_updating" @click="logo_updating = !logo_updating">close</span>
@@ -44,7 +44,7 @@
       <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
         <div class="em-flex-row">
           <div>
-            <h3 style="margin: 0">{{ translate("COM_EMUNDUS_ONBOARD_ICON") }}</h3>
+            <h3 class="em-text-neutral-800" style="margin: 0">{{ translate("COM_EMUNDUS_ONBOARD_ICON") }}</h3>
             <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png, gif</em></span>
           </div>
           <span class="material-icons em-pointer" style="margin-left: 125px" v-if="favicon_updating" @click="favicon_updating = !favicon_updating">close</span>
@@ -76,7 +76,7 @@
       <!-- COLORS -->
       <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
         <div class="em-flex-row">
-            <h3 style="margin: 0">{{ translate("COM_EMUNDUS_ONBOARD_COLORS") }}</h3>
+            <h3 class="em-text-neutral-800" style="margin: 0">{{ translate("COM_EMUNDUS_ONBOARD_COLORS") }}</h3>
         </div>
 
         <div class="em-logo-box pointer em-mt-16" @click="$modal.show('modalUpdateColors')">

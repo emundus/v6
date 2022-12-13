@@ -1,10 +1,11 @@
 <template>
 	<div class="list-actions-menu">
-    <v-popover
-        v-if="showTootlip === true"
-        class="em-pointer"
-        :popoverArrowClass="'custom-popover-arrow'"
-    >
+        <span v-if="type == 'campaign' && allowPinnedCampaign == 1"
+              :title="translate('COM_EMUNDUS_CAMPAIGNS_PIN')"
+              @click="pinCampaign"
+              :class="pinned == 1 ? 'material-icons' : 'material-icons-outlined em-text-neutral-500'"
+              class="em-pointer">push_pin</span>
+    <v-popover v-if="showTootlip === true" class="em-pointer" :popoverArrowClass="'custom-popover-arrow'">
       <span class="tooltip-target b3 material-icons-outlined">more_vert</span>
       <template slot="popover">
         <actions
@@ -31,6 +32,7 @@
 
 <script>
 import actions from "../ListComponents/action_menu.vue";
+import campaignService from "../../services/campaign";
 
 export default {
 	components: { actions },
@@ -54,6 +56,10 @@ export default {
     nb_files : {
       type: Number,
       default: 0
+    },
+    pinned : {
+      type: Number,
+      default: 0
     }
 	},
 	data() {
@@ -73,7 +79,34 @@ export default {
 		updateLoading(value) {
       this.$emit('updateLoading',value);
     },
-	}
+    pinCampaign() {
+      campaignService.pinCampaign(this.itemId).then((result) => {
+        if(result.data.status == 1){
+          this.$store.dispatch('campaign/setPinned', this.itemId);
+          Swal.fire({
+            title: this.translate('COM_EMUNDUS_ONBOARD_CAMPAIGNS_CAMPAIGN_PINNED'),
+            text: this.translate('COM_EMUNDUS_ONBOARD_CAMPAIGNS_CAMPAIGN_PINNED_TEXT'),
+            type: "success",
+            showCancelButton: false,
+            showConfirmButton: false,
+            customClass: {
+              title: 'em-swal-title',
+            },
+            timer: 2000,
+          });
+        }
+      });
+    }
+	},
+
+  computed: {
+    pinned: function(){
+      return this.$store.getters['campaign/pinned'] === this.itemId;
+    },
+    allowPinnedCampaign: function(){
+      return this.$store.getters['campaign/allowPinnedCampaign'];
+    }
+  }
 }
 </script>
 

@@ -188,12 +188,16 @@ class EmundusModelList extends JModelList
                     return 0;
                 }
 
-                require_once (JPATH_ROOT .'/components/com_emundus/helpers/access.php');
                 require_once (JPATH_ROOT .'/components/com_emundus/models/users.php');
-                require_once (JPATH_ROOT .'/components/com_emundus/models/campaign.php');
+                require_once (JPATH_ROOT .'/components/com_emundus/models/profile.php');
                 $m_users = new EmundusModelUsers();
+                $m_profile = new EmundusModelProfile();
                 $user_id = JFactory::getUser()->id;
                 $user_programs = $m_users->getUserGroupsProgramme($user_id);
+                $groups = $m_users->getUserGroups($user_id, 'Column');
+                $fnum_assoc_to_groups = $m_users->getApplicationsAssocToGroups($groups);
+                $fnum_assoc = $m_users->getApplicantsAssoc($user_id);
+
                 foreach($listDataResult as $index => $listResult) {
                     $query->clear()
                         ->select('training')
@@ -203,17 +207,26 @@ class EmundusModelList extends JModelList
                     $this->db->setQuery($query);
                     $program = $this->db->loadResult();
 
-                    if(!EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $listResult->fnum) && !in_array($program, $user_programs)) {
+                    if (!in_array($listResult->fnum, $fnum_assoc_to_groups) && !in_array($listResult->fnum, $fnum_assoc) && !in_array($program, $user_programs)) {
                         unset($listDataResult[$index]);
+                    } elseif (!empty($listResult->num_signalement)) {
+                        $emundusUser = JFactory::getSession()->get('emundusUser');
+                        $profile_id = $emundusUser->profile;
+                        $files_menu_path = $m_profile->getFilesMenuPathByProfile($profile_id);
+                        $listDataResult[$index]->num_signalement = '<div class="em-flex-row">
+                            <span>' . $listResult->num_signalement . '</span>
+                            <a class="em-ml-8" target="_blank" href="' . $files_menu_path .  '#' . $listResult->fnum . '|open"><span class="material-icons-outlined">open_in_new</span></a>
+                            </div>';
                     }
                 }
 
                 foreach ($result as $key => $res) {
                     $result[$key]['label'] = JText::_($res['label']);
+                    $result[$key]['display_type'] = $res['column_name'] === 'num_signalement' ? 'html' : 'text';
                 }
 
                 $listData = $this->removeForeignKeyValueFormDataLoadedIfExistingDatabaseJoinElementInList($databaseJoinsKeysAndColumns, $listDataResult);
-                $data = ["listColumns" => $result, "listData" => $listData];
+                $data = ['listColumns' => $result, 'listData' => $listData];
             }
         }
 
@@ -233,7 +246,7 @@ class EmundusModelList extends JModelList
         $elementDatas = [];
 
         $query = $this->db->getQuery(true);
-        $query->select("table_join,table_key,table_join_key,join_type, params")
+        $query->select('table_join, table_key, table_join_key, join_type, params')
             ->from('#__fabrik_joins')
             ->where($this->db->quoteName('element_id') . '=' . $elementId);
 

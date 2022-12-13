@@ -37,6 +37,7 @@ JText::script('COM_EMUNDUS_USERS_MY_DOCUMENTS_EXPIRES_DATE');
 JText::script('COM_EMUNDUS_USERS_MY_DOCUMENTS_STATE_WAITING');
 JText::script('COM_EMUNDUS_USERS_MY_DOCUMENTS_STATE_OK');
 JText::script('COM_EMUNDUS_USERS_MY_DOCUMENTS_STATE_INVALID');
+JText::script('COM_EMUNDUS_USERS_BACK_TO_FILES');
 
 $lang = JFactory::getLanguage();
 $short_lang = substr($lang->getTag(), 0 , 2);

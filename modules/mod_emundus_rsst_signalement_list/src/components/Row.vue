@@ -4,6 +4,7 @@
 		<td v-for="column in showingListColumns" :key="column.label">
 			<div v-if="!badgeForColumn(column.column_name) ">
 				<div v-if="column.plugin =='date'">{{ formattedDate(rowData[column.column_name]) }}</div>
+				<div v-else-if="column.display_type == 'html'" v-html="rowData[column.column_name]"></div>
 				<div v-else>{{ rowData[column.column_name] }}</div>
 			</div>
 			<div v-else><span :class="classFromValue(rowData[column.column_name])">{{ texteFromValue(rowData[column.column_name]) }}</span></div>

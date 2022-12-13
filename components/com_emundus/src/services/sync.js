@@ -334,5 +334,27 @@ export default {
                 msg: e.message
             };
         }
+    },
+
+    async getAttachmentSyncNodeId(uploadId) {
+        let nodeId = null;
+
+        if (typeof uploadId != 'undefined' && uploadId !== null) {
+            try {
+                const response = await client().get(`index.php?option=com_emundus&controller=sync&task=getnodeid`, {
+                    params: {
+                        uploadId: uploadId
+                    }
+                });
+
+                if (response.status && response.data.status) {
+                    nodeId = response.data.data;
+                }
+            } catch (e) {
+                console.log('Error occurred trying to get upload sync node id ' + uploadId);
+            }
+        }
+
+        return nodeId;
     }
 };

@@ -19,9 +19,13 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_use
 <div class="reset-complete<?php echo $this->pageclass_sfx; ?>">
 	<?php if ($this->params->get('show_page_heading')) : ?>
 		<div class="page-header">
-            <h1>
-				<?php echo $this->escape($this->params->get('page_heading')); ?>
-			</h1>
+            <?php if (file_exists('images/custom/favicon.png')) : ?>
+                <a href="/" class="em-profile-picture em-mb-32" style="width: 50px;height: 50px;background-image: url('images/custom/favicon.png')">
+                </a>
+            <?php endif; ?>
+            <p class="em-mb-8 em-h3">
+                <?php echo $this->escape($this->params->get('page_heading')); ?>
+            </p>
 		</div>
 	<?php endif; ?>
 	<form action="<?php echo JRoute::_('index.php?option=com_users&task=reset.complete'); ?>" method="post" class="form-validate form-horizontal well">

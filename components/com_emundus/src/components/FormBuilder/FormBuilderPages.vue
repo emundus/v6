@@ -2,7 +2,7 @@
   <div id="form-builder-pages">
     <p class="form-builder-title em-flex-row em-s-justify-content-center em-flex-space-between em-p-16">
       <span>{{ translate('COM_EMUNDUS_FORM_BUILDER_EVERY_PAGE') }}</span>
-      <span class="material-icons em-pointer" @click="$emit('open-page-properties')"> add </span>
+      <span class="material-icons em-pointer" @click="$emit('open-page-create')"> add </span>
     </p>
     <draggable v-model="pages" group="form-builder-pages" :sort="true" class="draggables-list" @end="onDragEnd">
       <transition-group>
@@ -15,7 +15,7 @@
           <div class="em-flex-row em-flex-space-between" @mouseover="pageOptionsShown = page.id" @mouseleave="pageOptionsShown = 0">
             <p @click="selectPage(page.id)" class="em-w-100 em-p-16">{{ page.label }}</p>
             <div class="em-flex-row em-p-16" :style="pageOptionsShown === page.id ? 'opacity:1' : 'opacity: 0'">
-              <v-popover :popoverArrowClass="'custom-popover-arraow'">
+	            <v-popover :popoverArrowClass="'custom-popover-arraow'">
                 <span class="material-icons">more_horiz</span>
 
                 <template slot="popover">
@@ -106,12 +106,14 @@ export default {
         }).then(result => {
           if (result.value) {
             formBuilderService.deletePage(page.id).then(response => {
-              let deletedPage = this.pages.findIndex(p => p.id === page.id);
-              this.pages.splice(deletedPage, 1);
-              if (this.selected == page.id) {
-                this.$emit('delete-page');
-              }
-              this.updateLastSave();
+							if (response.status) {
+								let deletedPage = this.pages.findIndex(p => p.id === page.id);
+								this.pages.splice(deletedPage, 1);
+								if (this.selected == page.id) {
+									this.$emit('delete-page');
+								}
+								this.updateLastSave();
+							}
             });
           }
         });
@@ -180,5 +182,11 @@ export default {
   #form-builder-pages-sections-list {
     list-style: none;
   }
+
+	.save {
+		&.already-saved {
+			color: #20835f;
+		}
+	}
 }
 </style>

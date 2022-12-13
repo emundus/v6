@@ -20,7 +20,6 @@
     <p>{{ TheCandidateDescription }}</p>
 
     <button class="em-primary-button em-w-auto em-mt-8" @click="$modal.show('modalAddTriggercandidate'); triggerSelected = null">
-      <span class="material-icons-outlined em-mr-8 em-color-white">add</span>
       {{ addTrigger }}
     </button>
 
@@ -64,7 +63,6 @@
     <p>{{ ManualDescription }}</p>
 
     <button class="em-primary-button em-w-auto em-mt-8" @click="$modal.show('modalAddTriggermanual'); triggerSelected = null">
-      <span class="material-icons-outlined em-mr-8 em-color-white">add</span>
       {{ addTrigger }}
     </button>
 

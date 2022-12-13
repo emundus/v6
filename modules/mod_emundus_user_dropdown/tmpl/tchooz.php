@@ -12,7 +12,39 @@ $document = JFactory::getDocument();
 $document->addStyleSheet("modules/mod_emundus_user_dropdown/style/mod_emundus_user_dropdown.css" );
 // Note. It is important to remove spaces between elements.
 
+$guest = JFactory::getUser()->guest;
+
 if($user != null) {
+
+// background color of the home page
+    include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
+    $m_profiles = new EmundusModelProfile();
+    $app_prof = $m_profiles->getApplicantsProfilesArray();
+
+    $user = JFactory::getSession()->get('emundusUser');
+    if(in_array($user->profile,$app_prof)){
+
+?>
+        <style>
+          .gantry.homepage  #g-page-surround  {
+            background: var(--applicant-background-color);
+          }
+        </style>
+
+<?php
+}
+
+else {
+
+?>
+        <style>
+          .gantry.homepage  #g-page-surround  {
+            background: var(--background-color);
+          }
+        </style>
+
+<?php
+    }
 ?>
 
 <style>
@@ -76,6 +108,8 @@ if($user != null) {
         -webkit-appearance: none;
         width: 200px;
         color: #353544;
+        background-color: var( --neutral-50);
+        font-family: var(--font);
     }
     .select .profile-select:hover{
         background-color: white !important;
@@ -120,7 +154,7 @@ if($user != null) {
         }
     .em-user-dropdown-tip-link{
         float: right;
-        color: #20835F;
+        color: var(--main-500);
         cursor: pointer;
     }
 </style>
@@ -173,7 +207,7 @@ if($user != null) {
         <li class="dropdown-header"><?= $user->name; ?></li>
         <li class="dropdown-header"><?= $user->email; ?></li>
         <?php if ($show_logout == '1') :?>
-            <?= '<li><a class="logout-button-user" href="index.php?option=com_users&task=user.logout&'.JSession::getFormToken().'=1">'.JText::_('LOGOUT').'</a></li>'; ?>
+            <?= '<li><a class="logout-button-user" href="/index.php?option=com_users&task=user.logout&'.JSession::getFormToken().'=1">'.JText::_('LOGOUT').'</a></li>'; ?>
         <?php endif; ?>
         <?php if ($show_update == '1') :?>
             <hr style="width: 100%">
@@ -204,7 +238,7 @@ if($user != null) {
         var messageIcon = document.getElementById('messageDropdownIcon');
 
         if (dropdown.classList.contains('open')) {
-            jQuery("#userDropdownMenu").css("transform","translate(250px)")
+            jQuery("#userDropdownMenu").css("transform","translate(300px)")
             setTimeout(() => {
                 dropdown.classList.remove('open');
                 jQuery("#userDropdownMenu").css("transform","unset")
@@ -303,16 +337,21 @@ if($user != null) {
 </script>
 <?php } else { ?>
 <div class="header-right" style="text-align: right;">
+    <?php if ($show_registration) { ?>
+        <a class="btn btn-danger btn-creer-compte" href="<?= $link_register; ?>" data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
+    <?php } ?>
 	<a class="btn btn-danger" href="<?= $link_login; ?>" data-toggle="sc-modal"><?= JText::_('CONNEXION_LABEL'); ?></a>
-	<?php if ($show_registration) { ?>
-		<a class="btn btn-danger btn-creer-compte" href="<?= $link_register; ?>" data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
-	<?php } ?>
 </div>
-    <a class="forgotten_password_header" href="<?= $link_forgotten_password; ?>"><?= JText::_('FORGOTTEN_PASSWORD_LABEL'); ?></a>
+    <!--<a class="forgotten_password_header" href="<?/*= $link_forgotten_password; */?>"><?/*= JText::_('FORGOTTEN_PASSWORD_LABEL'); */?></a>-->
 
     <script>
+        <?php if ($guest): ?>
         document.addEventListener('DOMContentLoaded', function () {
-            document.querySelector('#header-c .g-content').style.alignItems = 'start';
+            document.querySelector('#g-navigation .g-container').style.padding = '16px 72px';
         });
+        <?php endif; ?>
+        /*document.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('#header-c .g-content').style.alignItems = 'start';
+        });*/
     </script>
 <?php } ?>

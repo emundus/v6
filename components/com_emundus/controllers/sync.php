@@ -333,11 +333,38 @@ class EmundusControllerSync extends JControllerLegacy
                 $tab = array('status' => 1, 'msg' => JText::_('ATTACHMENT_ASPECTS_CONFIG_SAVED'));
                 $tab['data'] = $this->m_sync->saveAttachmentAspectsConfig($attachmentId, $config);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('MISSING_ATTACHMENT_ID'));
+                $tab = array('status' => 0, 'msg' => JText::_('MISSING_PARAMS'));
             }
         }
 
         echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function getnodeid()
+    {
+        $response = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
+        $user = JFactory::getUser();
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $upload_id = JFactory::getApplication()->input->getInt('uploadId', 0);
+
+            if (!empty($upload_id)) {
+                $node_id = $this->m_sync->getNodeId($upload_id);
+
+                $eMConfig = JComponentHelper::getParams('com_emundus');
+                $external_storage_ged_alfresco_base_url = $eMConfig->get('external_storage_ged_alfresco_base_url', '');
+                $external_storage_ged_alfresco_site = $eMConfig->get('external_storage_ged_alfresco_site', '');
+
+                $response['data'] =  $external_storage_ged_alfresco_base_url . 'share/page/site/' . $external_storage_ged_alfresco_site . '/document-details?nodeRef=workspace://SpacesStore/' . $node_id;
+                $response['status'] = 1;
+                $response['msg'] = 'Success';
+            } else {
+                $response['msg'] = JText::_('MISSING_PARAMS');
+            }
+        }
+
+        echo json_encode((object)$response);
         exit;
     }
 }
