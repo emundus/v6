@@ -120,7 +120,7 @@
 	    </div>
     </div>
 
-    <div v-show="total == 0 && type != 'files' && !loading" class="noneDiscover">{{ noneDiscoverTranslation }}</div>
+    <div v-show="total == 0 && type != 'files' && !loading" class="noneDiscover" v-html="noneDiscoverTranslation"></div>
     <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
@@ -347,11 +347,13 @@ export default {
 
       if (this.type !== "files") {
           axios.get("index.php?option=com_emundus&controller=" + controller + "&task=getall" + this.typeForAdd + this.filters).then(rep => {
-            this.total = rep.data.data.count;
-            if (this.all_datas.length === 0) {
-              this.all_datas = rep.data.data.datas;
+            if(typeof rep.data.data.datas !== 'undefined') {
+              this.total = rep.data.data.count;
+              if (this.all_datas.length === 0) {
+                this.all_datas = rep.data.data.datas;
+              }
+              this.limited_datas = rep.data.data.datas;
             }
-            this.limited_datas = rep.data.data.datas;
             this.$store.commit("lists/listUpdate", this.limited_datas);
 
             this.countPages = Math.ceil(this.total / this.limit);

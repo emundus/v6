@@ -308,6 +308,9 @@ ul {
 }
 
 /* ARTICLE */
+.g-grid .span12 {
+  min-height: 0;
+}
 
 .view-article #g-main-mainbody .span12 .item-page {
   margin-top: 40px;
@@ -1289,9 +1292,6 @@ body>.g-container {
 
 /* PAGE ACCUEIL */
 .homepage {
-  .content-bottom-a{
-    margin-top: -30px;
-  }
   h1:first-child {
     margin-bottom: 25px;
   }

@@ -1219,21 +1219,18 @@ div.forms-emails-editor .menubar[data-v-18686cfd] {
 }
 
 
-.ql-toolbar{
+.ql-toolbar {
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   background-color: white;
 }
-.ql-container{
+.ql-container {
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
   background-color: white;
   height: 90%;
 }
-.ql-snow .ql-editor h1{
-  margin-bottom: 25px;
-}
-.ql-snow .ql-editor p{
+.ql-snow .ql-editor p {
   line-height: 160%;
 }
 
@@ -5112,4 +5109,13 @@ body ::-webkit-scrollbar-track {
 .view-settings #g-container-main .g-container,
 .view-users #g-container-main .g-container {
   width: 90%;
+}
+@media all and (max-width: 1366px) {
+.view-campaigns #g-container-main .g-container,
+.view-emails #g-container-main .g-container,
+.view-form #g-container-main .g-container,
+.view-settings #g-container-main .g-container,
+.view-users #g-container-main .g-container {
+    width: 85%;
+}
 }

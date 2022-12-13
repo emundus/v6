@@ -1,15 +1,13 @@
 <template>
-  <div class="campaigns__add-campaign">
+  <div class="campaigns__add-campaign em-w-100">
     <div v-if="typeof campaignId == 'undefined' || campaignId == 0">
       <div class="em-flex-row em-mt-16 em-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
         <span class="material-icons-outlined">arrow_back</span>
         <p class="em-ml-8">{{ translate('BACK') }}</p>
       </div>
 
-      <div class="em-flex-row em-mt-16">
-        <h2>{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS') }}</h2>
-      </div>
-      <p style="margin-top: 20px">{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC') }}</p>
+      <div class="em-h3 em-mt-16">{{ translate('COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN') }}</div>
+      <p class="em-mt-16">{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC') }}</p>
 
       <hr>
     </div>
@@ -102,9 +100,9 @@
 
         <hr/>
 
-        <div>
+        <div class="em-mb-16">
           <div class="em-mb-16">
-            <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION') }}</h2>
+            <div class="em-h4">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION') }}</div>
           </div>
 
           <div class="em-mb-16">
@@ -125,7 +123,7 @@
           <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
           <div class="em-mb-16" v-if="typeof form.description != 'undefined'">
             <editor-quill
-                style="height: 30em"
+                style="height: 25em"
                 :text="form.description"
                 v-model="form.description"
                 :enable_variables="false"
@@ -137,7 +135,7 @@
           </div>
         </div>
 
-        <hr/>
+        <hr class="em-mt-64"/>
 
         <div class="em-mt-32">
           <div class="em-mb-16">
@@ -193,7 +191,7 @@
                            :class="index != 0 ? 'em-ml-8' : ''"
                            :style="selectedColor == color.text ? 'background-color:' + color.text + ';border: 2px solid ' + color.background : 'background-color:' + color.text"
                            @click="programForm.color = color.text;selectedColor = color.text">
-                        <span v-if="selectedColor == color.text" class="material-icons-outlined" style="font-weight: bold;color: black">done</span>
+                        <span v-if="selectedColor == color.text" class="material-icons-outlined" style="font-weight: bold;color: black;filter: invert(1)">done</span>
                       </div>
                     </div>
                   </div>

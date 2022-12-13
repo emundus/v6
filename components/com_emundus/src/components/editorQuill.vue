@@ -10,6 +10,7 @@
 /* IMPORT YOUR SERVICES */
 
 import tinymce from "tinymce";
+import client from "@/services/axiosClient";
 
 export default {
   name: "editorQuill",
@@ -23,16 +24,16 @@ export default {
     toolbarOptions: [
       ['bold', 'italic', 'underline', 'strike'],
       ['blockquote'],
-      ['image','link'],
+      ['image', 'link'],
 
-      [{ 'header': 1 }, { 'header': 2 }],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      [{ 'indent': '-1'}, { 'indent': '+1' }],
-      [{ 'size': ['small', false, 'large', 'huge'] }],
+      [{'header': 1}, {'header': 2}],
+      [{'list': 'ordered'}, {'list': 'bullet'}],
+      [{'indent': '-1'}, {'indent': '+1'}],
+      [{'size': ['small', false, 'large', 'huge']}],
 
-      [{ 'color': [] }],
-      [{ 'font': [] }],
-      [{ 'align': [] }]
+      [{'color': []}],
+      [{'font': []}],
+      [{'align': []}]
     ]
   }),
   mounted() {
@@ -47,7 +48,7 @@ export default {
     };
 
     this.editor = new Quill('.editor', options);
-    if(this.text !== '' && this.text !== null && typeof this.text !== 'undefined') {
+    if (this.text !== '' && this.text !== null && typeof this.text !== 'undefined') {
       let delta = this.editor.clipboard.convert(this.text);
       this.editor.setContents(delta);
     }
@@ -59,7 +60,7 @@ export default {
     });
 
     this.editor.on('selection-change', (range, oldRange, source) => {
-      if(range) {
+      if (range) {
         if (range.length) {
           //...
         } else {
@@ -68,26 +69,46 @@ export default {
       }
     });
   },
-  methods: {}
+  methods: {
+    async imageHandler(image, callback) {
+      try {
+        const formData = new FormData();
+        formData.append('image', image);
+
+        return await client().post(`index.php?option=com_emundus&controller=settings&task=uploadimagetocustomfolder`,
+            formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            }
+        );
+      } catch (e) {
+        return {
+          status: false,
+          msg: e.message
+        };
+      }
+    }
+  }
 }
 </script>
 
 <style>
-.ql-toolbar{
+.ql-toolbar {
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   background-color: white;
 }
-.ql-container{
+
+.ql-container {
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
   background-color: white;
   height: 90%;
 }
-.ql-snow .ql-editor h1{
-  margin-bottom: 25px;
-}
-.ql-snow .ql-editor p{
+
+.ql-snow .ql-editor p {
   line-height: 160%;
 }
 </style>
