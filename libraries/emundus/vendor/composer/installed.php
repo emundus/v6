@@ -5,7 +5,7 @@
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '0a1a1d70bc074037dc44d4e4848719c9e05b08fc',
+        'reference' => '2012882572246ee20107ae7b3624b109d3e9fb88',
         'name' => 'benj/emundus',
         'dev' => true,
     ),
@@ -16,7 +16,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '0a1a1d70bc074037dc44d4e4848719c9e05b08fc',
+            'reference' => '2012882572246ee20107ae7b3624b109d3e9fb88',
             'dev_requirement' => false,
         ),
         'clue/stream-filter' => array(
@@ -374,12 +374,12 @@
             ),
         ),
         'psr/simple-cache' => array(
-            'pretty_version' => '3.0.0',
-            'version' => '3.0.0.0',
+            'pretty_version' => '1.0.1',
+            'version' => '1.0.1.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../psr/simple-cache',
             'aliases' => array(),
-            'reference' => '764e0b3939f5ca87cb904f570ef9be2d78a07865',
+            'reference' => '408d5eafb83c57f6365a3ca330ff23aa4a5fa39b',
             'dev_requirement' => false,
         ),
         'ralouphie/getallheaders' => array(
