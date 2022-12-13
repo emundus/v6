@@ -416,6 +416,12 @@ class EmundusModelMessenger extends JModelList
         include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
         include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
 
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+
+        // get messenger config params 'messenger_notify_groups'
+        $notify_groups = $eMConfig->get('messenger_notify_groups', '');
+        $notify_users = explode(',', $eMConfig->get('messenger_notify_users', ''));
+
         $m_files = new EmundusModelFiles;
 
         $c_messages = new EmundusControllerMessages();
@@ -454,14 +460,31 @@ class EmundusModelMessenger extends JModelList
             }
             $users_to_send = array_unique(array_merge($groups_associated, $users_associated));
 
-            if (empty($users_to_send)) {
-                $query->clear()
-                    ->select('distinct eu.user_id')
-                    ->from($db->quoteName('#__emundus_users_profiles', 'eup'))
-                    ->leftJoin($db->quoteName('#__emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.user_id') . ' = ' . $db->quoteName('eup.user_id'))
-                    ->where($db->quoteName('profile_id') . ' = 2');
-                $db->setQuery($query);
-                $users_to_send = $db->loadColumn();
+            if(empty($users_to_send)) {
+                // [first] find all associate users of groups (jos_emundus_groups)
+                if (!empty($notify_groups)) {
+                    $query->clear()
+                        ->select('distinct gr.user_id')
+                        ->from($db->quoteName('#__emundus_groups', 'gr'))
+                        ->where($db->quoteName('gr.group_id') . 'IN (' . $notify_groups . ')');
+                    $db->setQuery($query);
+                    $assoc_users = $db->loadColumn();
+                }
+
+                $assoc_users = is_null($assoc_users) ? array() : $assoc_users;
+
+                // [second] merge $assoc_users vs $notify_users and get array_unique ++ remove all empty values
+                $users_to_send = array_filter(array_unique(array_merge($assoc_users,$notify_users)));
+
+                if (empty($users_to_send)) {
+                    $query->clear()
+                        ->select('distinct eu.user_id')
+                        ->from($db->quoteName('#__emundus_users_profiles', 'eup'))
+                        ->leftJoin($db->quoteName('#__emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.user_id') . ' = ' . $db->quoteName('eup.user_id'))
+                        ->where($db->quoteName('profile_id') . ' = 2');
+                    $db->setQuery($query);
+                    $users_to_send = $db->loadColumn();
+                }
             }
 
             if (!empty($users_to_send)) {
@@ -494,16 +517,40 @@ class EmundusModelMessenger extends JModelList
                         $to = $user_info->email;
 
                         $fnumList = '<ul>';
+                        $fnumListCampaign = '<ul>';
+                        $fnumListProgramme = '<ul>';
+
                         foreach ($fnums_no_readed as $fnum) {
+                            // get fnum info
+                            $finfo = $m_files->getFnumsTagsInfos([$fnum]);
+
+                            // only fnum
                             $fnumList .= '
                             <li>
                                 <a href="' . JURI::base() . '/dossiers#' . $fnum . '">' . $fnum . '</a>
                             </li>';
+
+                            // fnum + campaign
+                            $fnumListCampaign .= '
+                            <li>
+                                <a href="' . JURI::base() . '/dossiers#' . $fnum . '">' . $fnum . '</a>' . ' ('. $finfo[$fnum]['campaign_label'] . ')' . '
+                            </li>';
+
+                            // fnum + programme
+                            $fnumListProgramme .= '
+                            <li>
+                                <a href="' . JURI::base() . '/dossiers#' . $fnum . '">' . $fnum . '</a>' . ' ('. $finfo[$fnum]['training_programme'] . ')' . '
+                            </li>';
                         }
                         $fnumList .= '</ul>';
+                        $fnumListCampaign .= '</ul>';
+                        $fnumListProgramme .= '</ul>';
 
                         $post = array(
                             'FNUMS' => $fnumList,
+                            'FNUMS_CAMPAIGNS' => $fnumListCampaign,
+                            'FNUMS_TRAININGS' => $fnumListProgramme,
+                            'APPLICANT_NAME' => $finfo[$fnum]['applicant_name'],
                             'NAME' => $user_info->name,
                             'SITE_URL' => JURI::base(),
                         );
