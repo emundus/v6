@@ -80,7 +80,7 @@ class ExcelDataTable
 		 *
 		 * @var string
 		 */
-		protected $sheetName = 'Data';
+		protected $sheetName = 'data';
 
 		/**
 		 * If set, regenerates the range in the data table with the specified name

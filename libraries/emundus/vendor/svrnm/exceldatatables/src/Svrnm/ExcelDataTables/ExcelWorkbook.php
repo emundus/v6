@@ -69,7 +69,7 @@ class ExcelWorkbook implements \Countable
 		 *
 		 * @var string
 		 */
-		protected $sheetName = 'Data';
+		protected $sheetName = 'data';
 
 		/**
 		 * Instantiate a new object of the type ExcelWorkbook. Expects a filename which

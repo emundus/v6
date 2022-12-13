@@ -2414,59 +2414,82 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
-    public function export_letter() {
-        /// the main idea of this function is to use Stream of Buffer to pass data from CSV to Excel
-        /// params --> 1st: csv, 2nd: excel
-        require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
-        $jinput = JFactory::getApplication()->input;
+	public function export_letter() {
+		/// the main idea of this function is to use Stream of Buffer to pass data from CSV to Excel
+		/// params --> 1st: csv, 2nd: excel
+		require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+		$jinput = JFactory::getApplication()->input;
 
-        // get source, letter name
-        $source = $jinput->getVar('source', null);
-        $letter = $jinput->getVar('letter', null);
+		// get source, letter name
+		$source = $jinput->getVar('source', null);
+		$letter = $jinput->getVar('letter', null);
 
-        /// copy excel to excel
-        $_start = JPATH_SITE.DS."tmp".DS. $source;
-        $_end = JPATH_SITE . $letter;
+		/// copy excel to excel
+		$_start = JPATH_SITE.DS."tmp".DS. $source;
+		$_end = JPATH_SITE . $letter;
 
-        /// copy letter from /images/emundus/letters --> /tmp
-        $tmp_route = JPATH_SITE.DS."tmp".DS;
-        $randomString = JUserHelper::genRandomPassword(20);
+		/// copy letter from /images/emundus/letters --> /tmp
+		$tmp_route = JPATH_SITE.DS."tmp".DS;
+		$randomString = JUserHelper::genRandomPassword(20);
 
-        $array = explode('/', $letter);
-        $letter_file = end($array);
-        $letter_file_random = explode('.xlsx', $letter_file)[0] .'_' . $randomString;
+		$array = explode('/', $letter);
+		$letter_file = end($array);
+		$letter_file_random = explode('.xlsx', $letter_file)[0] .'_' . $randomString;
 
-        $_newLetter = JPATH_SITE.DS."tmp".DS.$letter_file_random.'.xlsx';
-        copy($_end, JPATH_SITE.DS."tmp".DS.$letter_file_random.'.xlsx');
+		$_newLetter = JPATH_SITE.DS."tmp".DS.$letter_file_random.'.xlsx';
+		copy($_end, JPATH_SITE.DS."tmp".DS.$letter_file_random.'.xlsx');
 
-        $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
-        $_readerSpreadSheet = $reader->load($_start);
+		$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+		$_readerSpreadSheet = $reader->load($_start);
 
-        $_readerData = $_readerSpreadSheet->getActiveSheet()->toArray();
+		$_readerData = $_readerSpreadSheet->getActiveSheet()->toArray();
 
-        $_destination = \PhpOffice\PhpSpreadsheet\IOFactory::load($_newLetter);
-        $_destination->setActiveSheetIndex(0);
+		try{
+			$dataTable = new Svrnm\ExcelDataTables\ExcelDataTable();
 
-        $_destination->getActiveSheet()->fromArray($_readerData,null,'A1');
+			$data = array();
+			$columns = array();
+			foreach ($_readerData[0] as $column){
+				$columns[] = $column;
+			}
+			foreach ($_readerData as $key => $reader){
+				if($key !== 0){
+					$row = new stdClass();
+					foreach ($columns as $index => $column){
+						$row->{$column} = $reader[$index];
+					}
+					array_push($data,$row);
+				}
+			}
 
-        $writer = new Xlsx($_destination);
+			$xlsx = $dataTable->showHeaders()->addRows($data)->attachToFile($_end, $_newLetter);
 
-        $_raw_output_file = explode('#', $_newLetter)[0] . '.xlsx';
-        $_output_file = explode('.xlsx', $_raw_output_file)[0];
+			$_raw_output_file = explode('#', $_newLetter)[0] . '.xlsx';
+			$_output_file = explode('.xlsx', $_raw_output_file)[0];
+			$_clean_output_file = explode(JPATH_SITE.DS."tmp".DS, $_output_file)[1] . '.xlsx';
+		} catch(Exception $e){
+			$_destination = \PhpOffice\PhpSpreadsheet\IOFactory::load($_newLetter);
+			$_destination->setActiveSheetIndex(0);
+			$_destination->getActiveSheet()->fromArray($_readerData,null,'A1');
 
-        $_clean_output_file = explode(JPATH_SITE.DS."tmp".DS, $_output_file)[1] . '.xlsx';
+			$writer = new Xlsx($_destination);
 
-        $writer->save($_raw_output_file);
+			$_raw_output_file = explode('#', $_newLetter)[0] . '.xlsx';
+			$_output_file = explode('.xlsx', $_raw_output_file)[0];
+			$_clean_output_file = explode(JPATH_SITE.DS."tmp".DS, $_output_file)[1] . '.xlsx';
 
-        copy($_raw_output_file, JPATH_SITE.DS."tmp".DS . $_clean_output_file);
+			$writer->save($_raw_output_file);
+		}
 
-        $result = array('status' => true, 'link' => $_clean_output_file);
+		copy($_raw_output_file, JPATH_SITE.DS."tmp".DS . $_clean_output_file);
 
-        echo json_encode((object) $result);
+		$result = array('status' => true, 'link' => $_clean_output_file);
 
-        unlink($_raw_output_file);
-        exit();
-    }
+		echo json_encode((object) $result);
+
+		unlink($_raw_output_file);
+		exit();
+	}
 
     public function export_xls_from_csv() {
         /** PHPExcel */
