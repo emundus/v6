@@ -123,7 +123,7 @@ export default {
             process(this.variables);
           }
         },
-        queryBy: 'tag',
+        queryBy: 'value',
         delay: 200,
         insert: (item) => {
           setTimeout(() => {

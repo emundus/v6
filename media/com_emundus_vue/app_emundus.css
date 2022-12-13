@@ -1233,6 +1233,13 @@ div.forms-emails-editor .menubar[data-v-18686cfd] {
 .ql-snow .ql-editor p {
   line-height: 160%;
 }
+.ql-mention-list{
+  overflow-y: scroll !important;
+  max-height: 250px;
+}
+.ql-mention-list-item {
+  padding: 8px !important;
+}
 
 .vdatetime-fade-enter-active,
 .vdatetime-fade-leave-active {

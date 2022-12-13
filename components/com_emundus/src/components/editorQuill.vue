@@ -11,13 +11,18 @@
 
 import tinymce from "tinymce";
 import client from "@/services/axiosClient";
+import axios from "axios";
 
 export default {
   name: "editorQuill",
   components: {},
   props: {
     placeholder: String,
-    text: String
+    text: String,
+    enable_variables: {
+      type: Boolean,
+      default: false
+    }
   },
   data: () => ({
     editor: null,
@@ -33,19 +38,65 @@ export default {
 
       [{'color': []}],
       [{'font': []}],
-      [{'align': []}]
+      [{'align': []}],
     ]
   }),
   mounted() {
+    axios({
+      method: "get",
+      url: "index.php?option=com_emundus&controller=settings&task=geteditorvariables"
+    }).then(response => {
+      this.variables = response.data.data;
+    });
+
     var options = {
       modules: {
         toolbar: this.toolbarOptions,
         imageResize: {},
-        imageDrop: true
+        mention: null
       },
       placeholder: this.$props.placeholder,
       theme: 'snow'
     };
+
+    if(this.$props.enable_variables){
+      options.modules.mention = {
+        allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
+        mentionDenotationChars: ["/"],
+        source: (searchTerm, renderList, mentionChar) => {
+          let values;
+
+          if (mentionChar === "/") {
+            values = this.variables;
+          }
+
+          if (searchTerm.length === 0) {
+            renderList(values, searchTerm);
+          } else {
+            const matches = [];
+            for (let i = 0; i < values.length; i++)
+              if (
+                  ~values[i].value.toLowerCase().indexOf(searchTerm.toLowerCase())
+              )
+                matches.push(values[i]);
+            renderList(matches, searchTerm);
+          }
+        },
+        onSelect: (item, insertItem) => {
+          insertItem(
+              {
+                denotationChar: "",
+                id: item.id,
+                value: "[" + item.value + ']',
+              },
+              true
+          );
+        },
+        renderItem: (item, searchTerm) => {
+          return `<div><p>${item.value}</p><p class="em-font-size-12">${item.description}</p></div>`;
+        }
+      }
+    }
 
     this.editor = new Quill('.editor', options);
     if (this.text !== '' && this.text !== null && typeof this.text !== 'undefined') {
@@ -68,21 +119,46 @@ export default {
         }
       }
     });
+
+    var toolbar = this.editor.getModule('toolbar');
+    toolbar.addHandler('image', this.imageHandler);
   },
   methods: {
-    async imageHandler(image, callback) {
+    async imageHandler() {
+      const input = document.createElement('input');
+
+      input.setAttribute('type', 'file');
+      input.setAttribute('accept', 'image/*');
+      input.click();
+
+      input.onchange = async () => {
+        var file = input.files[0];
+        var formData = new FormData();
+
+        formData.append('image', file);
+
+        var fileName = file.name;
+
+        const res = await this.uploadFiles(file, fileName);
+      }
+    },
+    async uploadFiles(file, fileName) {
       try {
         const formData = new FormData();
-        formData.append('image', image);
+        formData.append('image', file);
 
-        return await client().post(`index.php?option=com_emundus&controller=settings&task=uploadimagetocustomfolder`,
+        await client().post(`index.php?option=com_emundus&controller=settings&task=uploadimagetocustomfolder`,
             formData,
             {
               headers: {
                 'Content-Type': 'multipart/form-data'
               }
             }
-        );
+        ).then((response) => {
+          const range = this.editor.getSelection();
+
+          this.editor.insertEmbed(range.index, 'image', response.data.file);
+        });
       } catch (e) {
         return {
           status: false,
@@ -110,5 +186,14 @@ export default {
 
 .ql-snow .ql-editor p {
   line-height: 160%;
+}
+
+.ql-mention-list{
+  overflow-y: scroll !important;
+  max-height: 250px;
+}
+
+.ql-mention-list-item {
+  padding: 8px !important;
 }
 </style>
