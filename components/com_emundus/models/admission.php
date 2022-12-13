@@ -130,7 +130,7 @@ class EmundusModelAdmission extends JModelList
                     } else
                         $this->_elements_default[] = $def_elmt->tab_name . '.' . $def_elmt->element_name.' AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
 
-                } elseif ($def_elmt->element_plugin == 'databasejoin') {
+                } elseif ($def_elmt->element_plugin == 'databasejoin' or $def_elmt->element_plugin == 'emundusdatabasejoin') {
                     $attribs = json_decode($def_elmt->element_attribs);
                     $join_val_column_concat = str_replace('{thistable}', $attribs->join_db_name, $attribs->join_val_column_concat);
                     $join_val_column_concat = str_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $join_val_column_concat);

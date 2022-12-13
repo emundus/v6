@@ -1096,7 +1096,7 @@ class EmundusHelperEvents {
                             $diffs['new_data'] = $newsLabels;
                         }
 
-                        if (in_array($element['plugin'], ['databasejoin', 'cascadingdropdown'])) {
+                        if (in_array($element['plugin'], ['databasejoin', 'emundusdatabasejoin', 'cascadingdropdown'])) {
                             //TODO : HANDLE THE CONCAT LABEL OF DATABASE JOIN with {shortlang}, {thistable}
                             /* get label of this element by $diffs['old_data'] and $diffs['new_data'] */
                             $query->clear()
@@ -1123,7 +1123,7 @@ class EmundusHelperEvents {
                         $results[$iKey] = array_merge($element, $diffs);
                     } else {
                         /* group repeat is always an array nD with n >= 1 */
-                        if ($element['plugin'] != 'databasejoin' and $element['plugin'] != 'cascadingdropdown') {
+                        if ($element['plugin'] != 'databasejoin' and $element['plugin'] != 'emundusdatabasejoin' and $element['plugin'] != 'cascadingdropdown') {
                             //TODO : TIME, DATE PLUGIN WITH REPEAT GROUP
                             // check or select plugins //
                             if (in_array($element['plugin'], $checkElements) or in_array($element['plugin'], $multipleElements)) {

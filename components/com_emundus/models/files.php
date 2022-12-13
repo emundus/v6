@@ -154,7 +154,7 @@ class EmundusModelFiles extends JModelLegacy
                         $this->_elements_default[] = $def_elmt->tab_name.'.'.$def_elmt->element_name.' AS `'.$def_elmt->tab_name.'___'.$def_elmt->element_name.'`';
                     }
                 }
-                elseif ($def_elmt->element_plugin == 'databasejoin') {
+                elseif ($def_elmt->element_plugin == 'databasejoin' or $def_elmt->element_plugin == 'emundusdatabasejoin') {
                     $attribs = json_decode($def_elmt->element_attribs);
                     $join_val_column_concat = str_replace('{thistable}', $attribs->join_db_name, $attribs->join_val_column_concat);
                     $join_val_column_concat = str_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $join_val_column_concat);
@@ -1844,7 +1844,7 @@ class EmundusModelFiles extends JModelLegacy
                         throw $e;
                     }
                     if ($methode == 1) {
-                        if ($elt->element_plugin == 'databasejoin') {
+                        if ($elt->element_plugin == 'databasejoin' or $elt->element_plugin == 'emundusdatabasejoin') {
                             $element_attribs = json_decode($elt->element_attribs);
 
                             if ($element_attribs->database_join_display_type == "checkbox") {
@@ -1949,7 +1949,7 @@ class EmundusModelFiles extends JModelLegacy
                         }
                         $lastTab[] = $elt->table_join;
                     } else {
-                        if ($elt->element_plugin == 'databasejoin') {
+                        if ($elt->element_plugin == 'databasejoin' or $elt->element_plugin == 'emundusdatabasejoin') {
 
                             $element_attribs = json_decode($elt->element_attribs);
 
@@ -2114,7 +2114,7 @@ class EmundusModelFiles extends JModelLegacy
                             $endif .= ')';
                             $select = implode(',', $if) . ',' . $select . $endif;
                         }
-                    } elseif ($elt->element_plugin == 'databasejoin') {
+                    } elseif ($elt->element_plugin == 'databasejoin' or $elt->element_plugin == 'emundusdatabasejoin') {
 
                         $element_attribs = json_decode($elt->element_attribs);
 
@@ -2969,7 +2969,7 @@ class EmundusModelFiles extends JModelLegacy
         $name = $elt['name'];
         $plugin = $elt['plugin'];
         $isFnumsNull = ($fnums === null);
-        $isDatabaseJoin = ($plugin === 'databasejoin');
+        $isDatabaseJoin = ($plugin === 'databasejoin' or $plugin === 'emundusdatabasejoin');
         $isMulti = (@$params->database_join_display_type == "multilist" || @$params->database_join_display_type == "checkbox");
         $dbo = $this->getDbo();
 

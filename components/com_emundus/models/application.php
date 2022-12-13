@@ -1096,7 +1096,7 @@ class EmundusModelApplication extends JModelList
                                         }
                                     }
 
-                                } elseif ($element->plugin == 'databasejoin') {
+                                } elseif ($element->plugin == 'databasejoin' or $element->plugin == 'emundusdatabasejoin') {
                                     $params = json_decode($element->params);
                                     $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
 
@@ -1231,7 +1231,7 @@ class EmundusModelApplication extends JModelList
                                                 }
                                             }
 
-                                        } elseif ($elements[$j]->plugin == 'databasejoin') {
+                                        } elseif ($elements[$j]->plugin == 'databasejoin' or $elements[$j]->plugin == 'emundusdatabasejoin') {
 
                                             $params = json_decode($elements[$j]->params);
                                             $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
@@ -1350,7 +1350,7 @@ class EmundusModelApplication extends JModelList
                                             $elt = JHtml::_('date', $element->content, $format);
                                         }
                                     }
-                                } elseif ($element->plugin == 'databasejoin') {
+                                } elseif ($element->plugin == 'databasejoin' or $element->plugin == 'emundusdatabasejoin') {
 
                                     $params = json_decode($element->params);
                                     $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
@@ -1631,7 +1631,7 @@ class EmundusModelApplication extends JModelList
                                                                 $elt = JHtml::_('date', $r_elt, $format);
                                                             }
                                                         }
-                                                    } elseif ($elements[$j]->plugin == 'databasejoin') {
+                                                    } elseif ($elements[$j]->plugin == 'databasejoin' or $elements[$j]->plugin == 'emundusdatabasejoin') {
                                                         $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
 
                                                         if ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist') {
@@ -1798,7 +1798,7 @@ class EmundusModelApplication extends JModelList
 
                                         if (!empty(trim($element->label))) {
                                             // TODO : If databasejoin checkbox or multilist get value from children table. Add a query to get join table from jos_fabrik_joins where element_id = $element->id
-                                            if ($element->plugin == 'databasejoin'){
+                                            if ($element->plugin == 'databasejoin' or $element->plugin == 'emundusdatabasejoin'){
                                                 $params = json_decode($element->params);
                                                 if($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist'){
                                                     $query = 'SELECT t.id, jd.'.$element->name.' FROM `' .$itemt->db_table_name  . '` as t LEFT JOIN `'.$itemt->db_table_name.'_repeat_' . $element->name.'` as jd ON jd.parent_id = t.id WHERE fnum like ' . $this->_db->Quote($fnum);
@@ -1885,7 +1885,7 @@ class EmundusModelApplication extends JModelList
                                                         $elt = JHtml::_('date', $element->content, $format);
                                                     }
                                                 }
-                                            } elseif ($element->plugin == 'databasejoin') {
+                                            } elseif ($element->plugin == 'databasejoin' or $element->plugin == 'emundusdatabasejoin') {
                                                 $params = json_decode($element->params);
                                                 $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
 
@@ -2244,7 +2244,7 @@ class EmundusModelApplication extends JModelList
                                                     $elt = EmundusHelperDate::displayDate($r_elt, $params->date_table_format, (int)$params->date_store_as_local);
                                                 } elseif (($elements[$j]->plugin == 'birthday' || $elements[$j]->plugin == 'birthday_remove_slashes') && $r_elt > 0) {
                                                     $elt = EmundusHelperDate::displayDate($r_elt, $params->list_date_format);
-                                                } elseif ($elements[$j]->plugin == 'databasejoin') {
+                                                } elseif ($elements[$j]->plugin == 'databasejoin' or $elements[$j]->plugin == 'emundusdatabasejoin') {
                                                     $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
 
                                                     if ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist') {
@@ -2423,7 +2423,7 @@ class EmundusModelApplication extends JModelList
                                                     $elt = EmundusHelperDate::displayDate($r_elt, $params->date_table_format, (int)$params->date_store_as_local);
                                                 }  elseif (($elements[$j]->plugin == 'birthday' || $elements[$j]->plugin == 'birthday_remove_slashes') && $r_elt > 0) {
                                                     $elt = EmundusHelperDate::displayDate($r_elt, $params->list_date_format);
-                                                } elseif ($elements[$j]->plugin == 'databasejoin') {
+                                                } elseif ($elements[$j]->plugin == 'databasejoin' or $elements[$j]->plugin == 'emundusdatabasejoin') {
                                                     $params = json_decode($elements[$j]->params);
                                                     $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
 
@@ -2637,7 +2637,7 @@ class EmundusModelApplication extends JModelList
                                                 }
                                             } elseif (($element->plugin == 'birthday' || $element->plugin == 'birthday_remove_slashes') && $element->content > 0) {
                                                 $elt = EmundusHelperDate::displayDate($element->content, $params->list_date_format);
-                                            } elseif ($element->plugin == 'databasejoin') {
+                                            } elseif ($element->plugin == 'databasejoin' or $element->plugin == 'emundusdatabasejoin') {
                                                 $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
 
                                                 if ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist') {
@@ -2922,7 +2922,7 @@ class EmundusModelApplication extends JModelList
                                                     $elt = JHtml::_('date', $r_elt, $format);
                                                 }
                                             }
-                                        } elseif ($elements[$j]->plugin == 'databasejoin') {
+                                        } elseif ($elements[$j]->plugin == 'databasejoin' or $elements[$j]->plugin == 'emundusdatabasejoin') {
                                             $params = json_decode($elements[$j]->params);
                                             $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
 
@@ -3015,7 +3015,7 @@ class EmundusModelApplication extends JModelList
                                                 $elt = JHtml::_('date', $element->content, $format);
                                             }
                                         }
-                                    } elseif ($element->plugin == 'databasejoin') {
+                                    } elseif ($element->plugin == 'databasejoin' or $element->plugin == 'emundusdatabasejoin') {
                                         $params = json_decode($element->params);
                                         $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
 
@@ -5022,6 +5022,7 @@ class EmundusModelApplication extends JModelList
                 ];
                 break;
             case 'databasejoin':
+            case 'emundusdatabasejoin':
             case 'dropdown':
             case 'user':
             case 'date':
@@ -5046,6 +5047,27 @@ class EmundusModelApplication extends JModelList
 
         switch($element['plugin']) {
             case 'databasejoin':
+                $params = json_decode($element['params'], true);
+
+                $table  = $params['join_db_name'];
+                $key = $params['join_key_column'];
+                $value = $params['join_val_column'];
+
+                $db = $this->getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select(array("el.$key", "el.$value"))
+                    ->from($db->quoteName($table, 'el'));
+
+                $db->setQuery($query);
+
+                $results = $db->loadAssocList();
+
+                foreach($results as $result) {
+                    $values[$result[$key]] = $result[$value];
+                }
+                break;
+            case 'emundusdatabasejoin':
                 $params = json_decode($element['params'], true);
 
                 $table  = $params['join_db_name'];
@@ -5294,6 +5316,50 @@ class EmundusModelApplication extends JModelList
                         }
                         break;
                     case 'databasejoin':
+                        $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
+
+                        if ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist') {
+
+                            $parent_id = strlen($element->id) > 0 ? $element->id : 0;
+                            $select = $params->join_val_column;
+                            if (!empty($params->join_val_column_concat)) {
+                                $select = $params->join_val_column_concat;
+                                $select = preg_replace('#{thistable}#', 'jd', $select);
+                                $select = preg_replace('#{shortlang}#', $this->locales, $select);
+                            }
+
+                            $query->clear()
+                                ->select($db->quoteName($select))
+                                ->from($db->quoteName($table . '_repeat_' . $element->name, 't'))
+                                ->leftJoin($db->quoteName($params->join_db_name, 'jd') . ' ON ' . $db->quoteName('jd.' . $params->join_key_column) . ' = ' . $db->quoteName('t.' . $element->name))
+                                ->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent_id));
+
+                            try {
+                                $this->_db->setQuery($query);
+                                $res = $this->_db->loadColumn();
+                                $elt = "<ul><li>" . implode("</li><li>", $res) . "</li></ul>";
+                            } catch (Exception $e) {
+                                JLog::add('Line 997 - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+                                throw $e;
+                            }
+                        } else {
+                            $from = $params->join_db_name;
+                            $where = $params->join_key_column . '=' . $this->_db->Quote($value);
+                            $query = "SELECT " . $select . " FROM " . $from . " WHERE " . $where;
+
+                            $query = preg_replace('#{thistable}#', $from, $query);
+                            $query = preg_replace('#{my->id}#', $aid, $query);
+                            $query = preg_replace('#{shortlang}#', $this->locales, $query);
+
+                            $this->_db->setQuery($query);
+                            $ret = $this->_db->loadResult();
+                            if (empty($ret)) {
+                                $ret = $value;
+                            }
+                            $elt = JText::_($ret);
+                        }
+                        break;
+                    case 'emundusdatabasejoin':
                         $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
 
                         if ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist') {

@@ -711,7 +711,7 @@ class EmundusModelEmails extends JModelList {
                 $params = json_decode($elt['params']);
                 $groupParams = json_decode($elt['group_params']);
                 $isDate = ($elt['plugin'] == 'date');
-                $isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
+                $isDatabaseJoin = ($elt['plugin'] === 'databasejoin' or $elt['plugin'] === 'emundusdatabasejoin');
 
                 if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
                     $fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnumsArray, $params, @$groupParams->repeat_group_button == 1);
