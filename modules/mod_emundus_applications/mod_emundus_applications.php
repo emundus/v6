@@ -27,6 +27,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
     $document = JFactory::getDocument();
     $document->addStyleSheet("media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
@@ -133,6 +134,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $m_application = new EmundusModelApplication();
     $m_email = new EmundusModelEmails();
     $m_files = new EmundusModelFiles();
+    $m_campaign = new EmundusModelCampaign();
 
 
 	$fnums = array_keys($applications);

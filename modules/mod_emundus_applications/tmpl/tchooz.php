@@ -160,6 +160,8 @@ ksort($applications);
                                         $file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($application->fnum));
                                     }
 
+	                                $current_phase = $m_campaign->getCurrentCampaignWorkflow($application->fnum);
+
                                     ?>
                                     <div class="row em-border-neutral-300 mod_emundus_applications___content_app em-pointer" id="application_content<?php echo $application->fnum ?>" onclick="openFile(event,'<?php echo $first_page_url ?>')">
                                         <div class="em-w-100">
@@ -259,7 +261,11 @@ ksort($applications);
                                             <?php if ($mod_emundus_applications_show_end_date == 1) : ?>
                                                 <?php
                                                 $displayInterval = false;
-                                                $interval = date_create($now)->diff(date_create($application->end_date));
+                                                $end_date = $application->end_date;
+                                                if(!empty($current_phase)){
+	                                                $end_date = $current_phase->end_date;
+                                                }
+                                                $interval = date_create($now)->diff(date_create($end_date));
                                                 if($interval->d == 0){
                                                     $displayInterval = true;
                                                 }
@@ -267,7 +273,7 @@ ksort($applications);
                                                 <div class="mod_emundus_applications___date em-mt-8">
                                                     <?php if (!$displayInterval) : ?>
                                                         <span class="material-icons em-text-neutral-600 em-font-size-16 em-mr-8">schedule</span>
-                                                        <p class="em-applicant-text-color em-font-size-16 em-applicant-default-font"> <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_END_DATE'); ?> <?php echo JFactory::getDate(new JDate($application->end_date, $site_offset))->format($date_format); ?></p>
+                                                        <p class="em-applicant-text-color em-font-size-16 em-applicant-default-font"> <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_END_DATE'); ?> <?php echo JFactory::getDate(new JDate($end_date, $site_offset))->format($date_format); ?></p>
                                                     <?php else : ?>
                                                         <span class="material-icons-outlined em-text-neutral-600 em-font-size-16 em-red-500-color em-mr-8">schedule</span>
                                                         <p class="em-red-500-color"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_LAST_DAY'); ?>
