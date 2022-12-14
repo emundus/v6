@@ -61,6 +61,7 @@ class plgEmundusSetup_category extends JPlugin {
 
                 $data = array();
                 $data['path'] = $nom;
+                $data['alias'] = $nom . '-' . rand(1000,99999);
                 $data['title'] = $label;
                 $data['parent_id'] = 1;
                 $data['extension'] = "com_dropfiles";
@@ -70,24 +71,26 @@ class plgEmundusSetup_category extends JPlugin {
                 $table->bind($data);
 				
                 if (!$table->store()) {
-                    JLog::add('Could not Insert data into jos_categories.', JLog::ERROR, 'com_emundus_setupCategory');
-                    return false;
+                    JLog::add('Could not Insert data into jos_categories with error : ' . $table->getError(), JLog::ERROR, 'com_emundus_setupCategory');
                 }
 
-                // Insert columns.
-                $columns = array('id', 'type', 'path', 'params', 'theme');
+				if(!empty($table->id))
+				{
+					// Insert columns.
+					$columns = array('id', 'type', 'path', 'params', 'theme');
 
-                // Insert values.
-                $values = array($table->id, $this->db->quote('default'), $this->db->quote(''), $this->db->quote('{\"usergroup\":[\"1\"],\"ordering\":\"ordering\",\"orderingdir\":\"asc\",\"marginleft\":\"10\",\"margintop\":\"10\",\"marginright\":\"10\",\"marginbottom\":\"10\",\"columns\":\"2\",\"showsize\":\"1\",\"showtitle\":\"1\",\"showversion\":\"1\",\"showhits\":\"1\",\"showdownload\":\"1\",\"bgdownloadlink\":\"#76bc58\",\"colordownloadlink\":\"#ffffff\",\"showdateadd\":\"1\",\"showdatemodified\":\"0\",\"showsubcategories\":\"1\",\"showcategorytitle\":\"1\",\"showbreadcrumb\":\"1\",\"showfoldertree\":\"0\"}'), $this->db->quote(''));
+					// Insert values.
+					$values = array($table->id, $this->db->quote('default'), $this->db->quote(''), $this->db->quote('{\"usergroup\":[\"1\"],\"ordering\":\"ordering\",\"orderingdir\":\"asc\",\"marginleft\":\"10\",\"margintop\":\"10\",\"marginright\":\"10\",\"marginbottom\":\"10\",\"columns\":\"2\",\"showsize\":\"1\",\"showtitle\":\"1\",\"showversion\":\"1\",\"showhits\":\"1\",\"showdownload\":\"1\",\"bgdownloadlink\":\"#76bc58\",\"colordownloadlink\":\"#ffffff\",\"showdateadd\":\"1\",\"showdatemodified\":\"0\",\"showsubcategories\":\"1\",\"showcategorytitle\":\"1\",\"showbreadcrumb\":\"1\",\"showfoldertree\":\"0\"}'), $this->db->quote(''));
 
-                // Prepare the insert query.
-                $this->query
-                    ->clear()
-                    ->insert($this->db->quoteName('#__dropfiles'))
-                    ->columns($this->db->quoteName($columns))
-                    ->values(implode(',', $values));
-                $this->db->setQuery($this->query);
-                $this->db->execute();
+					// Prepare the insert query.
+					$this->query
+						->clear()
+						->insert($this->db->quoteName('#__dropfiles'))
+						->columns($this->db->quoteName($columns))
+						->values(implode(',', $values));
+					$this->db->setQuery($this->query);
+					$this->db->execute();
+				}
 
             } else {
 
