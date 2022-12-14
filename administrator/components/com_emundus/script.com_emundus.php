@@ -443,6 +443,8 @@ class com_emundusInstallerScript
 	            EmundusHelperUpdate::addYamlVariable('extra','{  }',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
 	            EmundusHelperUpdate::addYamlVariable('priority','0',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
 	            EmundusHelperUpdate::addYamlVariable('name','Quill',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+
+	            EmundusHelperUpdate::disableEmundusPlugins('emundus_profile');
             }
 
             // Insert new translations in overrides files
