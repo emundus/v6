@@ -1,6 +1,5 @@
 <template>
   <div>
-    <transition :name="'slide-down'" type="transition">
       <div class="w-form">
         <vue-dropzone
             ref="dropzone"
@@ -59,7 +58,8 @@
           </transition-group>
         </draggable>
       </div>
-    </transition>
+
+    <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
 
@@ -126,11 +126,13 @@ export default {
       Error: this.translate("COM_EMUNDUS_ONBOARD_ERROR"),
       DocumentName: this.translate("COM_EMUNDUS_ONBOARD_DOCUMENT_NAME"),
       drag: false,
+      loading: false,
     };
   },
 
   methods: {
     getDocumentsDropfiles() {
+      this.loading = true;
       axios({
         method: "get",
         url: "index.php?option=com_emundus&controller=campaign&task=getdocumentsdropfiles",
@@ -141,6 +143,7 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
+        this.loading = false;
         this.documents = response.data.documents;
       });
     },

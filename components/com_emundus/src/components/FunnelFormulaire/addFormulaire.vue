@@ -33,16 +33,7 @@
       </div>
     </div>
 
-
-<!--    <FormCarrousel
-      v-if="formList"
-      :formList="formList"
-      :documentsList="documentsList"
-      :visibility="visibility"
-      :key="formListReload"
-      @getEmitIndex="getEmitIndex"
-      @formbuilder="formbuilder"
-    />-->
+    <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
 
@@ -78,7 +69,7 @@ export default {
       EmitIndex: "0",
       formList: [],
       documentsList: [],
-      formListReload: 0,
+      loading: false,
 
       form: {
         label: "Nouveau formulaire",
@@ -94,6 +85,7 @@ export default {
       this.EmitIndex = value;
     },
     getForms(profile_id) {
+      this.loading = true;
       axios({
         method: "get",
         url:
@@ -107,7 +99,7 @@ export default {
       })
         .then(response => {
           this.formList = response.data.data;
-          this.formListReload += 1;
+          this.loading = false;
         })
         .catch(e => {
           console.log(e);
@@ -187,7 +179,7 @@ export default {
   },
   created() {
     this.getForms(this.profileId);
-    this.getDocuments(this.profileId);
+    //this.getDocuments(this.profileId);
   },
 };
 </script>

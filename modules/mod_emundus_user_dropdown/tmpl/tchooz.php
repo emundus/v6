@@ -93,6 +93,7 @@ else {
 
     .select{
         text-align: left;
+        width: 100%;
     }
     .select .profile-select{
         height: 35px;
@@ -106,7 +107,7 @@ else {
         background-repeat: no-repeat;
         -moz-appearance: none;
         -webkit-appearance: none;
-        width: 200px;
+        width: 100%;
         color: #353544;
         background-color: var( --neutral-50);
         font-family: var(--font);

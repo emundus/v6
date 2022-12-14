@@ -52,6 +52,11 @@ class plgEmundusSetup_category extends JPlugin {
             $cat_id = $this->db->loadResult();
 
             if(!$cat_id) {
+	            JFactory::$database = null;
+
+	            $this->db = JFactory::getDbo();
+	            $this->query = $this->db->getQuery(true);
+
                 $table = JTable::getInstance('category');
 
                 $data = array();
@@ -63,10 +68,8 @@ class plgEmundusSetup_category extends JPlugin {
                 $data['params'] = json_encode(array("idCampaign" =>"".$id));
                 $table->setLocation($data['parent_id'], 'last-child');
                 $table->bind($data);
-
-                if ($table->check()) {
-                    $table->store();
-                } else {
+				
+                if (!$table->store()) {
                     JLog::add('Could not Insert data into jos_categories.', JLog::ERROR, 'com_emundus_setupCategory');
                     return false;
                 }
@@ -83,7 +86,6 @@ class plgEmundusSetup_category extends JPlugin {
                     ->insert($this->db->quoteName('#__dropfiles'))
                     ->columns($this->db->quoteName($columns))
                     ->values(implode(',', $values));
-
                 $this->db->setQuery($this->query);
                 $this->db->execute();
 
