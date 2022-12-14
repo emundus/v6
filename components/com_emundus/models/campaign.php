@@ -2311,13 +2311,15 @@ class EmundusModelCampaign extends JModelList {
         $workflows = [];
 
         if (!empty($campaign_id)) {
+            $excluded_entry_statuses = [];
             $campaign_workflows_by_campaign = [];
             $query = $this->_db->getQuery(true);
             $query->select('DISTINCT ecw.*, GROUP_CONCAT(ecw_status.entry_status separator ",") as entry_status')
                 ->from('#__emundus_campaign_workflow as ecw')
                 ->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecw_camp ON ecw_camp.parent_id = ecw.id')
                 ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
-                ->where('ecw_camp.campaign = ' . $this->_db->quote($campaign_id));
+                ->where('ecw_camp.campaign = ' . $this->_db->quote($campaign_id))
+                ->group('ecw.profile');
             $this->_db->setQuery($query);
 
             try {
@@ -2325,6 +2327,8 @@ class EmundusModelCampaign extends JModelList {
                 foreach($campaign_workflows_by_campaign as $key => $wf) {
                     if (empty($wf->id)) {
                         unset($campaign_workflows_by_campaign[$key]);
+                    } else {
+                        $excluded_entry_statuses = array_merge(explode($wf->entry_status), $excluded_entry_statuses);
                     }
                 }
             } catch (Exception $e) {
@@ -2339,6 +2343,12 @@ class EmundusModelCampaign extends JModelList {
                 ->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$this->_db->quoteName('esc.id').' = '.$this->_db->quote($campaign_id))
                 ->leftJoin($this->_db->quoteName('#__emundus_campaign_workflow_repeat_programs','ecwrp').' ON '.$this->_db->quoteName('ecwrp.parent_id').' = '.$this->_db->quoteName('ecw.id'))
                 ->where($this->_db->quoteName('ecwrp.programs') . ' = ' . $this->_db->quoteName('esc.training'));
+
+            if (!empty($excluded_entry_statuses)) {
+                $query->andWhere('ecw_status.entry_status NOT IN (' . implode(',', $excluded_entry_statuses)  . ')');
+            }
+
+            $query->group(['ecwrp.programs', 'ecw.profile']);
             $this->_db->setQuery($query);
 
             try {
@@ -2346,6 +2356,8 @@ class EmundusModelCampaign extends JModelList {
                 foreach($campaign_workflows_by_campaign_program as $key => $wf) {
                     if (empty($wf->id)) {
                         unset($campaign_workflows_by_campaign_program[$key]);
+                    } else {
+                        $excluded_entry_statuses = array_merge(explode($wf->entry_status), $excluded_entry_statuses);
                     }
                 }
             } catch (Exception $e) {
@@ -2362,6 +2374,12 @@ class EmundusModelCampaign extends JModelList {
                             UNION
                             SELECT parent_id
                             FROM jos_emundus_campaign_workflow_repeat_campaign)');
+
+            if (!empty($excluded_entry_statuses)) {
+                $query->andWhere('ecw_status.entry_status NOT IN (' . implode(',', $excluded_entry_statuses)  . ')');
+            }
+
+            $query->group('ecw.profile');
             $this->_db->setQuery($query);
 
             try {
