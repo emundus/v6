@@ -834,9 +834,9 @@ class EmundusModelUsers extends JModelList {
     public function addEmundusUser($user_id, $params) {
 
         $db = JFactory::getDBO();
-        $config     = JFactory::getConfig();
-
-        $timezone = new DateTimeZone( $config->get('offset') );
+        $config = JFactory::getConfig();
+        $offset = !empty($config->get('offset')) ? $config->get('offset') : 'Europe/Paris';
+        $timezone = new DateTimeZone($offset);
         $now = JFactory::getDate()->setTimezone($timezone);
 
 	    JPluginHelper::importPlugin('emundus');

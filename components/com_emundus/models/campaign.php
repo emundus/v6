@@ -2533,10 +2533,15 @@ class EmundusModelCampaign extends JModelList {
                         ->where('ecw_status.entry_status IN (' . implode(',', $entry_status) . ')')
                         ->andWhere('ecw_programs.programs IN (' . implode(',', $db->quote($params['programs'])) . ')');
                     $db->setQuery($query);
-                    $nbWorkflows = $db->loadResult();
 
-                    if ($nbWorkflows > 0) {
-                        $canCreate = false;
+                    try {
+                        $nbWorkflows = $db->loadResult();
+
+                        if ($nbWorkflows > 0) {
+                            $canCreate = false;
+                        }
+                    } catch (Exception $e) {
+                        JLog::add('Failed to check if can create workflow ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                     }
                 }
 
@@ -2549,10 +2554,14 @@ class EmundusModelCampaign extends JModelList {
                         ->where('ecw_status.entry_status IN (' . implode(',', $entry_status) . ')')
                         ->andWhere('ecw_campaign.campaign IN (' . implode(',', $params['campaigns']) . ')');
                     $db->setQuery($query);
-                    $nbWorkflows = $db->loadResult();
+                    try {
+                        $nbWorkflows = $db->loadResult();
 
-                    if ($nbWorkflows > 0) {
-                        $canCreate = false;
+                        if ($nbWorkflows > 0) {
+                            $canCreate = false;
+                        }
+                    } catch (Exception $e) {
+                        JLog::add('Failed to check if can create workflow ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                     }
                 }
 
@@ -2570,9 +2579,14 @@ class EmundusModelCampaign extends JModelList {
                             FROM jos_emundus_campaign_workflow_repeat_campaign)');
                 $db->setQuery($query);
 
-                $nbWorkflows = $db->loadResult();
-                if ($nbWorkflows > 0) {
-                    $canCreate = false;
+                try {
+                    $nbWorkflows = $db->loadResult();
+
+                    if ($nbWorkflows > 0) {
+                        $canCreate = false;
+                    }
+                } catch (Exception $e) {
+                    JLog::add('Failed to check if can create workflow ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                 }
             }
         } else {
