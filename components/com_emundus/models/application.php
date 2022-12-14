@@ -1798,22 +1798,15 @@ class EmundusModelApplication extends JModelList
 
                                         if (!empty(trim($element->label))) {
                                             // TODO : If databasejoin checkbox or multilist get value from children table. Add a query to get join table from jos_fabrik_joins where element_id = $element->id
-                                            if ($element->plugin == 'databasejoin'){
-                                                $params = json_decode($element->params);
-                                                if($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist'){
-                                                    $query = 'SELECT t.id, jd.'.$element->name.' FROM `' .$itemt->db_table_name  . '` as t LEFT JOIN `'.$itemt->db_table_name.'_repeat_' . $element->name.'` as jd ON jd.parent_id = t.id WHERE fnum like ' . $this->_db->Quote($fnum);
-
-                                                    $this->_db->setQuery($query);
-                                                    $res = $this->_db->loadRow();
-                                                }
-
-                                            }
-                                            else{
+                                            $params = json_decode($element->params);
+                                            if ($element->plugin == 'databasejoin' && $params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist'){
+                                                $query = 'SELECT t.id, jd.'.$element->name.' FROM `' .$itemt->db_table_name  . '` as t LEFT JOIN `'.$itemt->db_table_name.'_repeat_' . $element->name.'` as jd ON jd.parent_id = t.id WHERE fnum like ' . $this->_db->Quote($fnum);
+                                            } else {
                                                 $query = 'SELECT `id`, `' . $element->name . '` FROM `' . $itemt->db_table_name . '` WHERE fnum like ' . $this->_db->Quote($fnum);
-                                                $this->_db->setQuery($query);
-
-                                                $res = $this->_db->loadRow();
                                             }
+
+                                            $this->_db->setQuery($query);
+                                            $res = $this->_db->loadRow();
 
                                             if (count($res) > 1) {
                                                 $element->content = $res[1];
