@@ -96,7 +96,8 @@ class EmundusModelCampaignTest extends TestCase
                 'profile_id' => 9,
                 'training' => $created_program['programme_code'],
                 'year' => '2022-2023',
-                'published' => 1
+                'published' => 1,
+                'is_limited' => 0
             ];
 
             $new_campaign_id = $this->m_campaign->createCampaign($inserting_datas);
@@ -182,7 +183,8 @@ class EmundusModelCampaignTest extends TestCase
             'profile_id' => 9,
             'training' => $program['programme_code'],
             'year' => '2022-2023',
-            'published' => 1
+            'published' => 1,
+            'is_limited' => 0
         ]);
 
         if (!empty($new_campaign_id)) {
@@ -225,7 +227,8 @@ class EmundusModelCampaignTest extends TestCase
                 'profile_id' => 9,
                 'training' => $program['programme_code'],
                 'year' => '2022-2023',
-                'published' => 1
+                'published' => 1,
+                'is_limited' => 0
             ]);
 
             $this->assertGreaterThan(0, $new_campaign_id);
