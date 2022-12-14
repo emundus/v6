@@ -2328,7 +2328,7 @@ class EmundusModelCampaign extends JModelList {
                     if (empty($wf->id)) {
                         unset($campaign_workflows_by_campaign[$key]);
                     } else {
-                        $excluded_entry_statuses = array_merge(explode($wf->entry_status), $excluded_entry_statuses);
+                        $excluded_entry_statuses = array_merge(explode(',', $wf->entry_status), $excluded_entry_statuses);
                     }
                 }
             } catch (Exception $e) {
@@ -2357,7 +2357,7 @@ class EmundusModelCampaign extends JModelList {
                     if (empty($wf->id)) {
                         unset($campaign_workflows_by_campaign_program[$key]);
                     } else {
-                        $excluded_entry_statuses = array_merge(explode($wf->entry_status), $excluded_entry_statuses);
+                        $excluded_entry_statuses = array_merge(explode(',', $wf->entry_status), $excluded_entry_statuses);
                     }
                 }
             } catch (Exception $e) {
