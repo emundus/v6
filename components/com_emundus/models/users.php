@@ -890,7 +890,7 @@ class EmundusModelUsers extends JModelList {
             }
         }
 
-        if (!empty($campaigns)) {
+        if (!empty($campaigns) && is_array($campaigns)) {
             $connected = JFactory::getUser()->id;
             foreach ($campaigns as $campaign) {
 	            $dispatcher->trigger('onBeforeCampaignCandidature', [$user_id, $connected, $campaign]);
@@ -903,7 +903,6 @@ class EmundusModelUsers extends JModelList {
 
 	            $dispatcher->trigger('onAfterCampaignCandidature', [$user_id, $connected, $campaign]);
                 $dispatcher->trigger('callEventHandler', ['onAfterCampaignCandidature', ['user_id' => $user_id, 'connected' => $connected, 'campaign' => $campaign]]);
-
             }
         }
 
