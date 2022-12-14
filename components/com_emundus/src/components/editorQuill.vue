@@ -10,7 +10,7 @@
 /* IMPORT YOUR SERVICES */
 
 import tinymce from "tinymce";
-import client from "@/services/axiosClient";
+import client from "../services/axiosClient";
 import axios from "axios";
 
 export default {
