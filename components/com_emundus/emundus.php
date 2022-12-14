@@ -658,8 +658,9 @@ JHTML::styleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Materi
 
 /** QUILL */
 JHTML::script('https://cdn.quilljs.com/1.3.6/quill.min.js');
-JHtml::script('components/com_emundus/src/assets/js/image-resize.min.js');
-JHtml::script('components/com_emundus/src/assets/js/image-drop.min.js');
+JHtml::script('components/com_emundus/src/assets/js/quill/image-resize.min.js');
+JHtml::styleSheet('components/com_emundus/src/assets/js/quill/quill-mention/quill.mention.min.css');
+JHtml::script('components/com_emundus/src/assets/js/quill/quill-mention/quill.mention.min.js');
 
 // The task 'getproductpdf' can be executed as public (when not signed in and form any view).
 if ($task == 'getproductpdf') {

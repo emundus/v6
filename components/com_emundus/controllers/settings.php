@@ -943,7 +943,7 @@ class EmundusControllersettings extends JControllerLegacy {
         exit;
     }
 
-	/*public function uploadimagetocustomfolder(){
+	public function uploadimagetocustomfolder(){
 		$user = JFactory::getUser();
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
@@ -977,7 +977,7 @@ class EmundusControllersettings extends JControllerLegacy {
 
 				if (move_uploaded_file($image["tmp_name"], $target_file)) {
 					$result = 1;
-					echo json_encode(array('status' => $result, 'msg' => JText::_("UPLOAD_SUCCESS")));
+					echo json_encode(array('status' => $result, 'msg' => JText::_("UPLOAD_SUCCESS"), 'file' => $target_file));
 				} else {
 					echo json_encode(array('msg' => 'ERROR WHILE UPLOADING YOUR DOCUMENT'));
 				}
@@ -986,6 +986,6 @@ class EmundusControllersettings extends JControllerLegacy {
 			}
 			exit;
 		}
-	}*/
+	}
 }
 

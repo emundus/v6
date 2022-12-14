@@ -60,7 +60,7 @@ class EmundusUnittestHelperSamples
             $other_param['em_oprofiles'] 	= '';
             $other_param['univ_id'] 		= 0;
             $other_param['em_groups'] 		= '';
-            $other_param['em_campaigns'] 	= '1';
+            $other_param['em_campaigns'] 	= [];
             $other_param['news'] 			= '';
             $m_users->addEmundusUser($user_id, $other_param);
         }

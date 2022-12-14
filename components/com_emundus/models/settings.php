@@ -700,7 +700,7 @@ class EmundusModelsettings extends JModelList {
             $language = 1;
         }
 
-        $query->select('st.id as id,st.tag as tag,fc.value as description')
+        $query->select('st.id as id,st.tag as `value`,fc.value as description')
             ->from($db->quoteName('#__emundus_setup_tags','st'))
             ->leftJoin($db->quoteName('#__falang_content','fc').' ON '.$db->quoteName('fc.reference_id').' = '.$db->quoteName('st.id'))
             ->where($db->quoteName('st.published') . ' = ' . $db->quote(1))

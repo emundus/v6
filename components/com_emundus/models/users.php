@@ -834,9 +834,9 @@ class EmundusModelUsers extends JModelList {
     public function addEmundusUser($user_id, $params) {
 
         $db = JFactory::getDBO();
-        $config     = JFactory::getConfig();
-
-        $timezone = new DateTimeZone( $config->get('offset') );
+        $config = JFactory::getConfig();
+        $offset = !empty($config->get('offset')) ? $config->get('offset') : 'Europe/Paris';
+        $timezone = new DateTimeZone($offset);
         $now = JFactory::getDate()->setTimezone($timezone);
 
 	    JPluginHelper::importPlugin('emundus');
@@ -890,7 +890,7 @@ class EmundusModelUsers extends JModelList {
             }
         }
 
-        if (!empty($campaigns)) {
+        if (!empty($campaigns) && is_array($campaigns)) {
             $connected = JFactory::getUser()->id;
             foreach ($campaigns as $campaign) {
 	            $dispatcher->trigger('onBeforeCampaignCandidature', [$user_id, $connected, $campaign]);
@@ -903,7 +903,6 @@ class EmundusModelUsers extends JModelList {
 
 	            $dispatcher->trigger('onAfterCampaignCandidature', [$user_id, $connected, $campaign]);
                 $dispatcher->trigger('callEventHandler', ['onAfterCampaignCandidature', ['user_id' => $user_id, 'connected' => $connected, 'campaign' => $campaign]]);
-
             }
         }
 

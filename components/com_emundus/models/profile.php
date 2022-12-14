@@ -783,16 +783,13 @@ class EmundusModelProfile extends JModelList {
      * @return array The profile list for the campaigns
      */
     function getProfilesIDByCampaign(array $campaign_id, $return = 'column') : array {
-
         $res = [];
 
         if (!empty($campaign_id)) {
             if (in_array('%', $campaign_id)) {
                 $where = '';
-                $where_jecw = '';
             } else {
                 $where = 'WHERE esc.id IN ('.implode(',', $campaign_id).')';
-                $where_jecw = 'WHERE jecw_camp.campaign IN ('.implode(',', $campaign_id).')';
             }
 
             $query = 'SELECT DISTINCT (esc.profile_id) AS pid,
@@ -802,27 +799,52 @@ class EmundusModelProfile extends JModelList {
                         FROM  #__emundus_setup_campaigns AS esc 
                         LEFT JOIN #__emundus_setup_profiles AS jesp ON jesp.id = esc.profile_id
                     '
-                . $where .
-                ' union 
-                        SELECT DISTINCT (jecw.profile) AS pid, 
-                        jesp.label, jesp.description, jesp.published, jesp.schoolyear, jesp.candidature_start, jesp.candidature_end, jesp.menutype, 
-                        jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class, step AS step, null AS phase, null AS lbl
-                        
-                        FROM  #__emundus_campaign_workflow AS jecw 
-                        LEFT JOIN #__emundus_setup_profiles AS jesp ON jesp.id = jecw.profile
-                        LEFT JOIN #__emundus_campaign_workflow_repeat_campaign AS jecw_camp ON jecw_camp.parent_id = jecw.id
-                '
-                . $where_jecw;
+                . $where;
 
             try {
                 $this->_db->setQuery($query);
-                if($return == 'column'){
+                if ($return == 'column') {
                     $res = $this->_db->loadColumn();
                 } else {
                     $res = $this->_db->loadObjectList();
                 }
             } catch(Exception $e) {
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
+            }
+
+            $workflow_profiles = [];
+            foreach ($campaign_id as $cid) {
+                $workflow_profiles = array_unique(array_merge($this->getWorkflowProfilesByCampaign($cid), $workflow_profiles));
+            }
+
+            if (!empty($workflow_profiles)) {
+                foreach($workflow_profiles as $key => $profile) {
+                    if ($return == 'column') {
+                        if (in_array($profile, $res)) {
+                            unset($workflow_profiles[$key]);
+                        }
+                    } else {
+                        foreach ($res as $res_profile) {
+                            if ($profile == $res_profile->pid) {
+                                unset($workflow_profiles[$key]);
+                            }
+                        }
+                    }
+                }
+
+                $query = $this->_db->getQuery(true);
+                $query->select('DISTINCT (jesp.id) AS pid, jesp.label, jesp.description, jesp.published, jesp.schoolyear, jesp.candidature_start, jesp.candidature_end, jesp.menutype, jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class, null AS step, null AS phase, null AS lbl')
+                    ->from($this->_db->quoteName('#__emundus_setup_profiles', 'jesp') )
+                    ->where('jesp.id IN (' . implode(',', $workflow_profiles) . ')');
+                $this->_db->setQuery($query);
+
+                if ($return == 'column') {
+                    $wf_profiles = $this->_db->loadColumn();
+                } else {
+                    $wf_profiles = $this->_db->loadObjectList();
+                }
+
+                $res = array_merge($wf_profiles, $res);
             }
         }
 
