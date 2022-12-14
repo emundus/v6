@@ -172,7 +172,7 @@ class EmundusModelUsers extends JModelList {
         $showJoomlagroups   = $eMConfig->get('showJoomlagroups',0);
         $showNewsletter     = $eMConfig->get('showNewsletter');
 
-        $query = 'SELECT DISTINCT(u.id), e.lastname, e.firstname, u.email, u.username,  espr.label as profile, ';
+        $query = 'SELECT DISTINCT(u.id), e.lastname, e.firstname, u.email, u.username,  espr.label as profile, espr.published as is_applicant_profile, ';
 
         if ($showNewsletter == 1)
             $query .= 'up.profile_value as newsletter, ';
@@ -523,7 +523,7 @@ class EmundusModelUsers extends JModelList {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
-        $query->select('*, esp.label as programme, sc.id as campaign_id')
+        $query->select('sc.*, esp.label as programme, sc.id as campaign_id')
             ->from($db->quoteName('#__emundus_setup_campaigns', 'sc'))
             ->leftJoin($db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON sc.training = esp.code')
             ->order('sc.start_date DESC')
@@ -834,9 +834,9 @@ class EmundusModelUsers extends JModelList {
     public function addEmundusUser($user_id, $params) {
 
         $db = JFactory::getDBO();
-        $config     = JFactory::getConfig();
-
-        $timezone = new DateTimeZone( $config->get('offset') );
+        $config = JFactory::getConfig();
+        $offset = !empty($config->get('offset')) ? $config->get('offset') : 'Europe/Paris';
+        $timezone = new DateTimeZone($offset);
         $now = JFactory::getDate()->setTimezone($timezone);
 
 	    JPluginHelper::importPlugin('emundus');
@@ -890,7 +890,7 @@ class EmundusModelUsers extends JModelList {
             }
         }
 
-        if (!empty($campaigns)) {
+        if (!empty($campaigns) && is_array($campaigns)) {
             $connected = JFactory::getUser()->id;
             foreach ($campaigns as $campaign) {
 	            $dispatcher->trigger('onBeforeCampaignCandidature', [$user_id, $connected, $campaign]);
@@ -903,7 +903,6 @@ class EmundusModelUsers extends JModelList {
 
 	            $dispatcher->trigger('onAfterCampaignCandidature', [$user_id, $connected, $campaign]);
                 $dispatcher->trigger('callEventHandler', ['onAfterCampaignCandidature', ['user_id' => $user_id, 'connected' => $connected, 'campaign' => $campaign]]);
-
             }
         }
 

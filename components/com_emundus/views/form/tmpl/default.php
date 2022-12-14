@@ -89,6 +89,8 @@ JText::script('COM_EMUNDUS_ONBOARD_STATUS');
 JText::script('COM_EMUNDUS_FORM_DELETE_MODEL_SUCCESS');
 JText::script('COM_EMUNDUS_FORM_DELETE_MODEL_FAILURE');
 
+JText::script('COM_EMUNDUS_ONBOARD_NO_PAGE_MODELS');
+
 $lang = JFactory::getLanguage();
 $short_lang = substr($lang->getTag(), 0 , 2);
 $current_lang = $lang->getTag();

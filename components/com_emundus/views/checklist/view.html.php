@@ -197,7 +197,7 @@ class EmundusViewChecklist extends JViewLegacy {
 
                 // Check campaign limit, if the limit is obtained, then we set the deadline to true
                 $m_campaign = new EmundusModelCampaign;
-                $current_phase = $m_campaign->getCurrentCampaignWorkflow($this->_user);
+                $current_phase = $m_campaign->getCurrentCampaignWorkflow($this->_user->fnum);
 
                 if (!empty($current_phase) && !empty($current_phase->end_date)) {
                     $current_end_date = $current_phase->end_date;

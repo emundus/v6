@@ -22,7 +22,7 @@
       </div>
 
       <div class="form-group controls">
-        <editor :height="'30em'" :text="form.content" :lang="actualLanguage" :enable_variables="false" :id="'editor'" :key="dynamicComponent" v-model="form.content" @focusout="saveContent"></editor>
+        <editor-quill :height="'30em'" :text="form.content" :enable_variables="false" :id="'editor'" :key="dynamicComponent" v-model="form.content" @focusout="saveContent"></editor-quill>
       </div>
     </div>
 
@@ -39,11 +39,13 @@ import Multiselect from 'vue-multiselect';
 import client from "com_emundus/src/services/axiosClient";
 import translationsService from "com_emundus/src/services/translations";
 import mixin from "com_emundus/src/mixins/mixin";
+import EditorQuill from "@/components/editorQuill.vue";
 
 export default {
   name: "editArticle",
 
   components: {
+    EditorQuill,
     Editor,
     Multiselect
   },

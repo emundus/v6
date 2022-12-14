@@ -1,33 +1,36 @@
 <template>
-  <div id="qcm" v-if="!loading">
-    <div v-if="!finishedQcm">
-      <div v-if="!quizStarting && !quizTesting">
-        <p v-html="intro"></p>
-        <div class="em-print-button" v-if="step == 0">
-          <a class="btn btn-info btn-xs" @click="startQcm">{{ translations.startingQcm }}</a>
+  <div id="qcm">
+    <div v-if="!loading">
+      <div v-if="!finishedQcm">
+        <div v-if="!quizStarting && !quizTesting">
+          <p v-html="intro"></p>
+          <div class="em-print-button" v-if="step == 0">
+            <a class="btn btn-info btn-xs" @click="startQcm">{{ translations.startingQcm }}</a>
+          </div>
+          <div class="em-print-button" v-else>
+            <a class="btn btn-info btn-xs" @click="quizStarting = true;">{{ translations.restartQcm }}</a>
+          </div>
         </div>
-        <div class="em-print-button" v-else>
-          <a class="btn btn-info btn-xs" @click="quizStarting = true;">{{ translations.restartQcm }}</a>
+        <div v-if="testPassed && quizTesting">
+          <p class="em-mb-8">{{ translations.ready }}</p>
+          <div class="em-print-button">
+            <a class="btn btn-info btn-xs" @click="startQcm">{{ translations.startingQcm }}</a>
+          </div>
+        </div>
+        <div v-if="quizTesting && !testPassed">
+          <question :question="testing_question" :updateProposal="updateProposal" :tierstemps="tierstemps" :pending="pending" :formid="formid" @nextQuestion="testPassed = true;"></question>
+        </div>
+        <div v-if="quizStarting">
+          <p style="text-align: center;">{{parseInt(step)+1}} / {{count}}</p>
+          <question :question="applicant_questions[step]" :updateProposal="updateProposal" :pending="pending" :formid="formid" :tierstemps="tierstemps" @nextQuestion="nextQuestion" @resetPending="pending = 0" @saveAnswer="saveAnswer"></question>
         </div>
       </div>
-      <div v-if="testPassed && quizTesting">
-        <p>{{ translations.ready }}</p>
-        <div class="em-print-button">
-          <a class="btn btn-info btn-xs" @click="startQcm">{{ translations.startingQcm }}</a>
-        </div>
-      </div>
-      <div v-if="quizTesting && !testPassed">
-        <question :question="testing_question" :updateProposal="updateProposal" :tierstemps="tierstemps" :pending="pending" :formid="formid" @nextQuestion="testPassed = true;"></question>
-      </div>
-      <div v-if="quizStarting">
-        <p style="text-align: center;">{{parseInt(step)+1}} / {{count}}</p>
-        <question :question="applicant_questions[step]" :updateProposal="updateProposal" :pending="pending" :formid="formid" :tierstemps="tierstemps" @nextQuestion="nextQuestion" @resetPending="pending = 0" @saveAnswer="saveAnswer"></question>
+      <div v-else>
+        <label>{{ translations.qcmCompleted }}</label>
+        <p>{{ translations.qcmSuccesfull }}</p>
       </div>
     </div>
-    <div v-else>
-      <label>{{ translations.qcmCompleted }}</label>
-      <p>{{ translations.qcmSuccesfull }}</p>
-    </div>
+    <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
 
@@ -43,7 +46,6 @@ export default {
     questions: String,
     formid: Number,
     step: Number,
-    intro: String,
     pending: Number,
     module: Number,
     tierstemps: Number,
@@ -55,19 +57,20 @@ export default {
       count: 0,
       testing_question: {
         code: "TEST",
-        proposals: "Noir|Blanc|Rouge|Vert",
+        proposals: Joomla.JText._("MOD_EM_QCM_TEST_QUESTION_PROPOSAL_1") + '|' + Joomla.JText._("MOD_EM_QCM_TEST_QUESTION_PROPOSAL_2") + '|' + Joomla.JText._("MOD_EM_QCM_TEST_QUESTION_PROPOSAL_3") + '|' + Joomla.JText._("MOD_EM_QCM_TEST_QUESTION_PROPOSAL_4"),
         proposals_id: "1,2,3,4",
-        proposals_text: "Noir|Blanc|Rouge|Vert",
-        question: "De quelle couleur est le cheval blanc d'Henri IV ?",
+        proposals_text: Joomla.JText._("MOD_EM_QCM_TEST_QUESTION_PROPOSAL_1") + '|' + Joomla.JText._("MOD_EM_QCM_TEST_QUESTION_PROPOSAL_2") + '|' + Joomla.JText._("MOD_EM_QCM_TEST_QUESTION_PROPOSAL_3") + '|' + Joomla.JText._("MOD_EM_QCM_TEST_QUESTION_PROPOSAL_4"),
+        question: Joomla.JText._('MOD_EM_QCM_TEST_QUESTION_PROPOSAL'),
         time: "10",
         type: "radiobutton"
       },
+      intro: '',
       quizStarting: false,
       quizTesting: false,
       testPassed: false,
       finishedQcm: false,
       updateProposal: 0,
-      loading: true,
+      loading: false,
       translations: {
         startingQcm: Joomla.JText._("MOD_EM_QCM_STARTING"),
         restartQcm: Joomla.JText._("MOD_EM_QCM_RESTART"),
@@ -130,14 +133,30 @@ export default {
           formid: this.formid,
           module: this.module,
         })
+      });
+    },
+    getIntro(){
+      this.loading = true;
+      axios({
+        method: "post",
+        url:
+            "index.php?option=com_emundus&controller=qcm&task=getintro",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          module: this.module,
+        })
       }).then((result) => {
-
+          this.intro = result.data.scalar;
+          this.loading = false;
       });
     }
   },
   created() {
-    const elem = document.querySelector('form[name="form_' + this.formid + '"');
+    let elem = document.querySelector('form[name="form_' + this.formid + '"').parentElement;
     elem.remove();
+    this.getIntro();
     this.getQuestions();
   }
 }

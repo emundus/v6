@@ -245,6 +245,7 @@ class com_emundusInstallerScript
                 $query = $db->getQuery(true);
 
                 EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns','pinned','TINYINT',1);
+                EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns','eval_start_date','DATETIME');
                 EmundusHelperUpdate::addColumn('jos_emundus_setup_programmes','color','VARCHAR',10);
 
                 EmundusHelperUpdate::genericUpdateParams('#__modules', 'module', 'mod_falang', array('advanced_dropdown','full_name'), array('0','0'));
@@ -335,6 +336,21 @@ class com_emundusInstallerScript
                 //
 
                 $succeed['campaign_workflow'] = EmundusHelperUpdate::addProgramToCampaignWorkflow();
+                $query->clear()
+                    ->select('jfe.id')
+                    ->from($db->quoteName('jos_fabrik_elements', 'jfe'))
+                    ->leftJoin($db->quoteName('jos_fabrik_formgroup', 'jffg') . ' ON jfe.group_id = jffg.group_id')
+                    ->leftJoin($db->quoteName('jos_fabrik_lists', 'jfl') .' ON jffg.form_id = jfl.form_id')
+                    ->where('jfl.db_table_name = ' . $db->quote('jos_emundus_campaign_workflow'))
+                    ->andWhere($db->quoteName('jfe.name') . ' IN (' . $db->quote('campaign') . ', ' .$db->quote('end_date') . ')');
+                $db->setQuery($query);
+                $campaign_elements = $db->loadColumn();
+
+                if (!empty($campaign_elements)) {
+                    foreach($campaign_elements as $campaign_element) {
+                        EmundusHelperUpdate::genericUpdateParams('#__fabrik_elements', 'id', $campaign_element, ['validations'], [], null, true);
+                    }
+                }
 
                 // Install announcement module
                 //TODO : Install a module or a plugin via folder (parse xml file and insert necessary datas)
@@ -416,6 +432,17 @@ class com_emundusInstallerScript
                 $succeed['generate_letter_events_added'] = EmundusHelperUpdate::addCustomEvents([
                     ['label' => 'onAfterGenerateLetters', 'category' => 'Files']
                 ]);
+                $succeed['evaluation_events_added'] = EmundusHelperUpdate::addCustomEvents([
+                    ['label' => 'onRenderEvaluation', 'category' => 'Evaluation'],
+                    ['label' => 'onBeforeSubmitEvaluation', 'category' => 'Evaluation'],
+                    ['label' => 'onAfterSubmitEvaluation', 'category' => 'Evaluation']
+                ]);
+
+	            EmundusHelperUpdate::addYamlVariable('location','gantry-assets://custom/scss/quill.scss',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css',true,true);
+	            EmundusHelperUpdate::addYamlVariable('inline','',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+	            EmundusHelperUpdate::addYamlVariable('extra','{  }',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+	            EmundusHelperUpdate::addYamlVariable('priority','0',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+	            EmundusHelperUpdate::addYamlVariable('name','Quill',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
             }
 
             // Insert new translations in overrides files

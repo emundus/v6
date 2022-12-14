@@ -15,9 +15,21 @@ defined('_JEXEC') or die('Restricted access');
 $form = $this->form;
 if ($this->hasActions) : ?>
 <div class="fabrikActions form-actions">
-	<div class="row-fluid">
+	<div class="em-grid-2 em-p-0-32">
+        <?php if ( $form->gobackButton || $form->resetButton || $form->deleteButton || $form->clearMultipageSessionButton): ?>
+        <div>
+            <div class="btn-group">
+                <?php
+                echo $form->gobackButton;
+                echo $form->resetButton;
+                echo $form->deleteButton;
+                echo $form->clearMultipageSessionButton;
+                ?>
+            </div>
+        </div>
+        <?php endif; ?>
 		<?php if ( $form->submitButton || $form->applyButton || $form->copyButton ): ?>
-			<div class="<?php echo FabrikHelperHTML::getGridSpan(4); ?>">
+			<div class="em-submit-form-button">
 				<div class="btn-group">
 					<?php
 					echo $form->submitButton . ' ';
@@ -35,27 +47,12 @@ if ($this->hasActions) : ?>
 			</div>
 		<?php endif; ?>
 		<?php if ( $form->prevButton || $form->nextButton ): ?>
-			<div class="offset1 <?php echo FabrikHelperHTML::getGridSpan(2); ?>">
+			<div>
 				<div class="btn-group">
 					<?php echo $form->prevButton . ' ' . $form->nextButton; ?>
 				</div>
 			</div>
 		<?php endif; ?>
-		<?php if ( $form->gobackButton || $form->resetButton || $form->deleteButton || $form->clearMultipageSessionButton): ?>
-			<div class="offset1 <?php echo FabrikHelperHTML::getGridSpan(4); ?>">
-				<div class="pull-right btn-group">
-					<?php
-					echo $form->gobackButton;
-					echo $form->resetButton;
-					echo $form->deleteButton;
-					echo $form->clearMultipageSessionButton;
-					?>
-				</div>
-			</div>
-		<?php
-
-		endif;
-		 ?>
 	</div>
 </div>
 <?php

@@ -262,7 +262,7 @@ button[class ^= 'em-']{
   top: 0;
   left: 0;
   width: 100% !important;
-  height: 100%;
+  height: auto;
   opacity: 0;
   z-index: 6;
   &:checked {
@@ -848,6 +848,10 @@ input:focus + .em-slider {
   padding: 32px;
 }
 
+.em-p-0-32{
+  padding: 0 32px;
+}
+
 .em-pt-16{
   padding-top: 16px;
 }
@@ -958,6 +962,9 @@ input:focus + .em-slider {
 }
 .em-mt-48{
   margin-top: $m-48;
+}
+.em-mt-64{
+  margin-top: 64px;
 }
 .em-mt-80{
   margin-top: $m-80;

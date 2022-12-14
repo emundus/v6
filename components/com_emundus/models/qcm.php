@@ -360,4 +360,23 @@ class EmundusModelQcm extends JModelList {
             return new stdClass();
         }
     }
+
+    public function getIntro($module){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query
+                ->select('params')
+                ->from($db->quoteName('#__modules'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($module));
+            $db->setQuery($query);
+            $qcm_module = json_decode($db->loadResult(), true);
+
+             return $qcm_module['mod_em_qcm_intro'];
+        } catch (Exception $e){
+            JLog::add('component/com_emundus/models/qcm | Error when try to get intro of qcm with query ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return '';
+        }
+    }
 }

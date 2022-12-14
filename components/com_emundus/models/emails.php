@@ -677,7 +677,7 @@ class EmundusModelEmails extends JModelList {
      * @throws Exception
      * @since version v6
      */
-    public function setTagsFabrik($str, $fnums = array()) {
+    public function setTagsFabrik($str, $fnums = array(), $raw = false) {
         require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         $m_files = new EmundusModelFiles();
 
@@ -741,7 +741,7 @@ class EmundusModelEmails extends JModelList {
                         }
                         foreach ($index as $value) {
                             $key = array_search($value,$params->sub_options->sub_values);
-                            $elm[] = JText::_($params->sub_options->sub_labels[$key]);
+                            $elm[] = !$raw ? JText::_($params->sub_options->sub_labels[$key]) : $value;
                         }
                         $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $elm);
                     }
@@ -1364,6 +1364,10 @@ class EmundusModelEmails extends JModelList {
      * @since version v6
      */
     public function logEmail($row) {
+        $logged = false;
+
+        // log email to admin user if user_id_from is empty
+        $row['user_id_from'] = !empty($row['user_id_from']) ? $row['user_id_from'] : 62;
 
         $offset = JFactory::getConfig()->get('offset', 'UTC');
         try {
@@ -1377,7 +1381,6 @@ class EmundusModelEmails extends JModelList {
         $query = $this->_db->getQuery(true);
 
         $columns = ['user_id_from', 'user_id_to', 'subject', 'message' , 'date_time'];
-
         $values = [$row['user_id_from'], $row['user_id_to'], $this->_db->quote($row['subject']), $this->_db->quote($row['message']), $this->_db->quote($now)];
 
         // If we are logging the email type as well, this allows us to put them in separate folders.
@@ -1393,12 +1396,13 @@ class EmundusModelEmails extends JModelList {
         try {
 
             $this->_db->setQuery($query);
-            $this->_db->execute();
+            $logged = $this->_db->execute();
 
         } catch (Exception $e) {
-            JLog::add('Error logging email in model/emails : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Error logging email in model/emails : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.email.error');
         }
 
+        return $logged;
     }
 
     //////////////////////////  SET FILES REQUEST  /////////////////////////////
@@ -2395,7 +2399,7 @@ class EmundusModelEmails extends JModelList {
     function createTrigger($trigger, $users, $user) {
         $created = false;
 
-        if (!empty($user->id) && !empty($trigger['model']) && is_int($trigger['model']) && isset($trigger['status'])) {
+        if (!empty($user->id) && !empty($trigger['model']) && isset($trigger['status'])) {
             $email = $this->getEmailById($trigger['model']);
 
             if (!empty($email) && !empty($email->id)) {
@@ -2417,6 +2421,7 @@ class EmundusModelEmails extends JModelList {
                         ->set($this->_db->quoteName('email_id') . ' = ' . $this->_db->quote($trigger['model']))
                         ->set($this->_db->quoteName('to_current_user') . ' = ' . $this->_db->quote($to_current_user))
                         ->set($this->_db->quoteName('to_applicant') . ' = ' . $this->_db->quote($to_applicant));
+
 
                     $this->_db->setQuery($query);
                     $this->_db->execute();
@@ -2448,10 +2453,11 @@ class EmundusModelEmails extends JModelList {
                             ->set($this->_db->quoteName('programme_id') . ' = ' . $this->_db->quote($trigger['program']));
 
                         $this->_db->setQuery($query);
-                        $created = $this->_db->execute();
+                        $trigger_assoc_prog = $this->_db->execute();
+                        $created = true;
                     }
                 } catch(Exception $e) {
-                    JLog::add('component/com_emundus/models/email | Cannot create a trigger : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                    JLog::add('component/com_emundus/models/email | Cannot create a trigger : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
                 }
             }
         }

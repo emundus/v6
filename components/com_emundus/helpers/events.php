@@ -152,7 +152,6 @@ class EmundusHelperEvents {
             $copy_exclude_forms = $eMConfig->get('copy_exclude_forms', []);
             $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
             $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
-            $current_phase = $m_campaign->getCurrentCampaignWorkflow($emundusUser);
 
             $id_applicants = $eMConfig->get('id_applicants', '0');
             $applicants = explode(',',$id_applicants);
@@ -170,14 +169,12 @@ class EmundusHelperEvents {
             $jinput = $mainframe->input;
             $view = $jinput->get('view');
             $fnum = $jinput->get->get('rowid', null);
-            if(empty($fnum)){
-                $fnum = $jinput->get('rowid', null);
-            }
             $itemid = $jinput->get('Itemid');
             $reload = $jinput->get('r', 0);
             $reload++;
 
             $current_fnum = !empty($fnum) ? $fnum : $user->fnum;
+            $current_phase = $m_campaign->getCurrentCampaignWorkflow($current_fnum);
             if (!empty($current_phase) && !empty($current_phase->end_date)) {
                 $current_end_date = $current_phase->end_date;
                 $current_start_date = $current_phase->start_date;
@@ -528,15 +525,21 @@ class EmundusHelperEvents {
                 $accept_other_payments = $params->get('accept_other_payments', 0);
 
                 if (count($fnumInfos) > 0) {
-                    $checkout_url = $mApplication->getHikashopCheckoutUrl($user->profile . $scholarship_document_id);
-                    if(strpos($checkout_url,'${') !== false) {
-                        $checkout_url = $mEmails->setTagsFabrik($checkout_url, [$user->fnum]);
-                    }
-                    // If $accept_other_payments is 2 : that means we do not redirect to the payment page.
-                    if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments >= 100 && $forms >= 100) {
-                        // Profile number and document ID are concatenated, this is equal to the menu corresponding to the free option (or the paid option in the case of document_id = NULL)
-                        $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($checkout_url));
-                        $mainframe->redirect($checkout_url);
+                    $checkout_cart_url = $mApplication->getHikashopCartUrl($user->profile);
+                    if (!empty($checkout_cart_url)) {
+                        $mainframe->redirect($checkout_cart_url);
+                    } else {
+                        $checkout_url = $mApplication->getHikashopCheckoutUrl($user->profile . $scholarship_document_id);
+
+                        if (strpos($checkout_url,'${') !== false) {
+                            $checkout_url = $mEmails->setTagsFabrik($checkout_url, [$user->fnum], true);
+                        }
+                        // If $accept_other_payments is 2 : that means we do not redirect to the payment page.
+                        if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments >= 100 && $forms >= 100) {
+                            // Profile number and document ID are concatenated, this is equal to the menu corresponding to the free option (or the paid option in the case of document_id = NULL)
+                            $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($checkout_url));
+                            $mainframe->redirect($checkout_url);
+                        }
                     }
                 } else {
                     $mainframe->redirect('index.php');
@@ -731,7 +734,7 @@ class EmundusHelperEvents {
         $now = $dateTime->format('Y-m-d H:i:s');
 
 
-        $current_phase = $mCampaign->getCurrentCampaignWorkflow($student);
+        $current_phase = $mCampaign->getCurrentCampaignWorkflow($student->fnum);
         if (!empty($current_phase) && !empty($current_phase->id)) {
             if (!is_null($current_phase->output_status)) {
                 $new_status = $current_phase->output_status;
@@ -908,9 +911,10 @@ class EmundusHelperEvents {
 
         EmundusModelLogs::log($student->id, $applicant_id, $student->fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'COM_EMUNDUS_ACCESS_FILE_SENT_BY_APPLICANT');
 
-        $app->enqueueMessage(JText::_('APPLICATION_SENT'), 'success');
-        $app->redirect('index.php');
-
+        $redirect_message = !empty($params['plugin_options']) && !empty($params['plugin_options']->get('trigger_confirmpost_success_msg')) ? JText::_($params['plugin_options']->get('trigger_confirmpost_success_msg')) : JText::_('APPLICATION_SENT');
+        $redirect_url = !empty($params['plugin_options']) && !empty($params['plugin_options']->get('trigger_confirmpost_redirect_url')) ? JText::_($params['plugin_options']->get('trigger_confirmpost_redirect_url')) : 'index.php';
+        $app->enqueueMessage($redirect_message, 'success');
+        $app->redirect($redirect_url);
 
         return true;
     }

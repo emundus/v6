@@ -446,6 +446,13 @@ JText::script('EMAIL_TAGS');
 JText::script('SEND_EMAIL_TOOLTIPS');
 JText::script('COM_EMUNDUS_UNAVAILABLE_FEATURES');
 JText::script('COM_EMUNDUS_EMAILS_SENDING_EMAILS');
+JText::script('COM_EMUNDUS_AURION_EXPORT');
+JText::script('EXPORT_CHANGE_STATUS');
+JText::script('EXPORT_SET_TAG');
+JText::script('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS');
+JText::script('EVALUATION_PERIOD_NOT_STARTED');
+JText::script('EVALUATION_PERIOD_PASSED');
+
 
 // EXPORT EXCEL MODEL
 JText::script('COM_EMUNDUS_CHOOSE_LETTER');
@@ -649,6 +656,11 @@ JHTML::script('media/com_emundus_vue/chunk-vendors_emundus.js');
 JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
 JHTML::styleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined');
 
+/** QUILL */
+JHTML::script('https://cdn.quilljs.com/1.3.6/quill.min.js');
+JHtml::script('components/com_emundus/src/assets/js/quill/image-resize.min.js');
+JHtml::styleSheet('components/com_emundus/src/assets/js/quill/quill-mention/quill.mention.min.css');
+JHtml::script('components/com_emundus/src/assets/js/quill/quill-mention/quill.mention.min.js');
 
 // The task 'getproductpdf' can be executed as public (when not signed in and form any view).
 if ($task == 'getproductpdf') {

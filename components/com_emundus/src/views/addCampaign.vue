@@ -1,15 +1,13 @@
 <template>
-  <div class="campaigns__add-campaign">
+  <div class="campaigns__add-campaign em-w-100">
     <div v-if="typeof campaignId == 'undefined' || campaignId == 0">
       <div class="em-flex-row em-mt-16 em-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
         <span class="material-icons-outlined">arrow_back</span>
         <p class="em-ml-8">{{ translate('BACK') }}</p>
       </div>
 
-      <div class="em-flex-row em-mt-16">
-        <h2>{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS') }}</h2>
-      </div>
-      <p style="margin-top: 20px">{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC') }}</p>
+      <div class="em-h3 em-mt-16">{{ translate('COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN') }}</div>
+      <p class="em-mt-16">{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC') }}</p>
 
       <hr>
     </div>
@@ -102,9 +100,9 @@
 
         <hr/>
 
-        <div>
+        <div class="em-mb-16">
           <div class="em-mb-16">
-            <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION') }}</h2>
+            <div class="em-h4">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION') }}</div>
           </div>
 
           <div class="em-mb-16">
@@ -124,8 +122,8 @@
 
           <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
           <div class="em-mb-16" v-if="typeof form.description != 'undefined'">
-            <editor
-                :height="'30em'"
+            <editor-quill
+                style="height: 25em"
                 :text="form.description"
                 v-model="form.description"
                 :enable_variables="false"
@@ -133,13 +131,13 @@
                 :id="'campaign_description'"
                 :key="editorKey"
                 @focusout="onFormChange"
-            ></editor>
+            ></editor-quill>
           </div>
         </div>
 
-        <hr/>
+        <hr class="em-mt-64"/>
 
-        <div>
+        <div class="em-mt-32">
           <div class="em-mb-16">
             <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM') }}</h2>
           </div>
@@ -193,7 +191,7 @@
                            :class="index != 0 ? 'em-ml-8' : ''"
                            :style="selectedColor == color.text ? 'background-color:' + color.text + ';border: 2px solid ' + color.background : 'background-color:' + color.text"
                            @click="programForm.color = color.text;selectedColor = color.text">
-                        <span v-if="selectedColor == color.text" class="material-icons-outlined" style="font-weight: bold;color: black">done</span>
+                        <span v-if="selectedColor == color.text" class="material-icons-outlined" style="font-weight: bold;color: black;filter: invert(1)">done</span>
                       </div>
                     </div>
                   </div>
@@ -237,6 +235,7 @@ import Translation from "../components/translation"
 
 /** SERVICES **/
 import campaignService from 'com_emundus/src/services/campaign';
+import EditorQuill from "../components/editorQuill";
 
 const qs = require("qs");
 
@@ -244,6 +243,7 @@ export default {
   name: "addCampaign",
 
   components: {
+    EditorQuill,
     Datetime,
     Editor,
     Autocomplete,
@@ -475,14 +475,14 @@ export default {
           });
     },
 
-    createCampaignWithExistingProgram(form_data){
+	  createCampaign(form_data){
       campaignService.createCampaign(form_data).then((response) => {
         this.campaignId = response.data.data;
         this.quitFunnelOrContinue(this.quit);
       });
     },
 
-    createCampainWithNoExistingProgram(programForm){
+	  createCampaignWithNoExistingProgram(programForm){
       axios({
         method: "post",
         url: "index.php?option=com_emundus&controller=programme&task=createprogram",
@@ -497,10 +497,7 @@ export default {
           this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
           this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
 
-          campaignService.createCampaign(this.form).then((response) => {
-            this.campaignId = response.data.data;
-            this.quitFunnelOrContinue(this.quit);
-          });
+					this.createCampaign(this.form);
         } else {
           Swal.fire({
             title: this.translate(rep.data.msg),
@@ -607,62 +604,28 @@ export default {
 
       this.submitted = true;
 
-      if (typeof this.campaignId !== 'undefined' && this.campaignId !== null && this.campaignId !== "") {
-        let task = 'createprogram';
-        let params = {body: this.programForm}
+      if (typeof this.campaignId !== 'undefined' && this.campaignId !== null && this.campaignId !== "" && this.campaignId !== 0) {
+        if (this.form.training != '') {
+          this.updateCampaign();
+        } else {
+	        axios({
+		        method: "post",
+		        url: "index.php?option=com_emundus&controller=programme&task=createprogram",
+		        headers: {
+			        "Content-Type": "application/x-www-form-urlencoded"
+		        },
+		        data: qs.stringify( {body: this.programForm})
+	        }).then((response) => {
+		        if (task === 'createprogram') {
+			        this.programForm.code = response.data.data.programme_code;
+			        this.form.progid = response.data.data.programme_id;
+		        }
 
-        if (this.form.training != "") {
-          task = 'updateprogram';
-          params = { body: this.programForm, id: this.form.progid };
+						this.updateCampaign();
+	        }).catch(error => {
+		        console.log(error);
+	        });
         }
-        axios({
-          method: "post",
-          url: "index.php?option=com_emundus&controller=programme&task=" + task,
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify(params)
-        }).then((response) => {
-          if (task === 'createprogram') {
-            this.programForm.code = response.data.data.programme_code;
-            this.form.progid = response.data.data.programme_id;
-          }
-
-          this.form.training = this.programForm.code;
-          this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
-          this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
-
-          axios({
-            method: "post",
-            url: "index.php?option=com_emundus&controller=campaign&task=updatecampaign",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({ body: this.form, cid: this.campaignId })
-          }).then((response) => {
-						if (!response.status) {
-							Swal.fire({
-								type: 'error',
-								title: this.translate('COM_EMUNDUS_ADD_CAMPAIGN_ERROR'),
-								reverseButtons: true,
-								customClass: {
-									title: 'em-swal-title',
-									confirmButton: 'em-swal-confirm-button',
-									actions: "em-swal-single-action",
-								},
-							});
-							this.submitted = false;
-							return 0;
-						} else {
-							this.$emit('nextSection');
-							this.$emit('updateHeader',this.form);
-						}
-          }).catch(error => {
-            console.log(error);
-          });
-        }).catch(error => {
-          console.log(error);
-        });
       } else {
         // get program code if there is training value
         if (this.form.training !== "")  {
@@ -670,12 +633,47 @@ export default {
           this.form.training = this.programForm.code;
           this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
           this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
-          this.createCampaignWithExistingProgram(this.form);
+          this.createCampaign(this.form);
         } else {
-          this.createCampainWithNoExistingProgram(this.programForm);
+          this.createCampaignWithNoExistingProgram(this.programForm);
         }
       }
     },
+
+	  updateCampaign() {
+		  this.form.training = this.programForm.code;
+		  this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
+		  this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
+
+		  axios({
+			  method: 'post',
+			  url: 'index.php?option=com_emundus&controller=campaign&task=updatecampaign',
+			  headers: {
+				  'Content-Type': 'application/x-www-form-urlencoded'
+			  },
+			  data: qs.stringify({ body: this.form, cid: this.campaignId })
+		  }).then((response) => {
+			  if (!response.status) {
+				  Swal.fire({
+					  type: 'error',
+					  title: this.translate('COM_EMUNDUS_ADD_CAMPAIGN_ERROR'),
+					  reverseButtons: true,
+					  customClass: {
+						  title: 'em-swal-title',
+						  confirmButton: 'em-swal-confirm-button',
+						  actions: "em-swal-single-action",
+					  },
+				  });
+				  this.submitted = false;
+				  return 0;
+			  } else {
+				  this.$emit('nextSection');
+				  this.$emit('updateHeader',this.form);
+			  }
+		  }).catch(error => {
+			  console.log(error);
+		  });
+	  },
 
     quitFunnelOrContinue(quit) {
       if (quit === 0) {
@@ -705,12 +703,12 @@ export default {
       } else {
         this.old_training = this.form.training;
         this.old_program_form = this.programForm;
-        this.form.training = "";
+        this.form.training = '';
         this.programForm = {
-          code: "",
-          label: "",
-          notes: "",
-          programmes: "",
+          code: '',
+          label: '',
+          notes: '',
+          programmes: '',
           published: 1,
           apply_online: 1
         }

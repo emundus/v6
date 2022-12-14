@@ -190,7 +190,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
         }
     }
 
-    $current_phase = $m_campaign->getCurrentCampaignWorkflow($user);
+    $current_phase = $m_campaign->getCurrentCampaignWorkflow($user->fnum);
     $current_phase = !empty($current_phase->id) ? $current_phase : null;
     $attachments_progress = $m_application->getAttachmentsProgress($user->fnum);
     $forms_progress 	= $m_application->getFormsProgress($user->fnum);

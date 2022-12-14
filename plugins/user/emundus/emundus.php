@@ -460,6 +460,13 @@ class plgUserEmundus extends JPlugin
                         $db->execute();
                     }
 
+                    $query->clear()
+                        ->update('#__users')
+                        ->set($db->quoteName('activation') . ' = 1')
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($user_id));
+                    $db->setQuery($query);
+                    $db->execute();
+
 
                     if(isset($user['other_properties'])){
                         if (!empty($user['other_properties'])) {
