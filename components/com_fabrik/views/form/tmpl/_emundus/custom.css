@@ -1090,6 +1090,7 @@ ol li {
     text-transform: initial;
     width:100%;
     padding: 8px 12px;
+    margin: 0 !important;
 }
 
 .view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid .controls input:not([type="radio"]) {

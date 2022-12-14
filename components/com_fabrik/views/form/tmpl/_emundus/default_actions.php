@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 $form = $this->form;
 if ($this->hasActions) : ?>
 <div class="fabrikActions form-actions">
-	<div class="em-grid-2 em-p-0-32">
+	<div <?php if ($form->id != 307) : ?>class="em-grid-2 em-p-0-32"<?php endif; ?>>
         <?php if ( $form->gobackButton || $form->resetButton || $form->deleteButton || $form->clearMultipageSessionButton): ?>
         <div>
             <div class="btn-group">
