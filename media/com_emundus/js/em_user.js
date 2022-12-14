@@ -935,6 +935,10 @@ $(document).ready(function () {
 						oprofiles += ',';
 					}
 				}
+				if($('#same_login_email').is(':checked')){
+					$('#login').val($('#mail').val());
+				}
+
 				var login = $('#login').val();
 				var fn = $('#fname').val();
 				var ln = $('#lname').val();
@@ -948,6 +952,7 @@ $(document).ready(function () {
 					$('#profiles').after('<span class="help-block">' + Joomla.JText._('SELECT_A_VALUE') + '</span>');
 					return false;
 				}
+
 				addLoader();
 				$.ajax({
 					type: 'POST',

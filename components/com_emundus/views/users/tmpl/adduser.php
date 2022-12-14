@@ -440,11 +440,6 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
 			}
 		});
 
-        $(document).on('keyup', '#mail', function() {
-            if($('#same_login_email').is(':checked')){
-                $('#login').val($('#mail').val());
-            }
-        });
 
         function renderingSelects(value = null){
             if(value == null){
