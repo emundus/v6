@@ -761,7 +761,7 @@ function runAction(action, url = '', option = '') {
     switch (id) {
         // Export Excel
         case 6:
-            export_excel(checkInput);
+            export_excel(checkInput, option);
             break;
 
         // Export ZIP
@@ -1690,6 +1690,8 @@ $(document).ready(function() {
                 swal_actions_class = 'em-actions-fixed'
                 swal_confirm_button = 'COM_EMUNDUS_EXPORTS_EXPORT';
 
+                preconfirm = "return $('#em-export-letter').val();"
+
                 $.ajax({
                     type:'get',
                     url: url,
@@ -1806,18 +1808,6 @@ $(document).ready(function() {
 
                             checkInput = getUserCheck();
 
-                            getAllLetters().then(function(letters) {
-                                letters.forEach(letter => {
-                                    if (letter.template_type == '4') {
-                                        $('#em-export-letter').append('<option value="' + letter.id + '">' + letter.title + '</option>');
-                                        $('#em-export-letter').trigger("chosen:updated");
-                                        $('#letter').show();
-                                    }
-                                });
-                            }).catch(function(error) {
-                                console.log(error);
-                            });
-
                             $.ajax({
                                 type:'post',
                                 url: 'index.php?option=com_emundus&controller=files&task=getPDFProgrammes',
@@ -1826,33 +1816,6 @@ $(document).ready(function() {
 
                                 success: function(result) {
                                     if (result.status) {
-                                        // get export excel saved filter
-                                        $.ajax({
-                                            type:'get',
-                                            url: 'index.php?option=com_emundus&controller=files&task=getExportExcelFilter',
-                                            dataType:'json',
-                                            success: function (result) {
-                                                if (result.status) {
-
-                                                    for (var d in result.filter) {
-                                                        if (isNaN(parseInt(d)))
-                                                            break;
-                                                        $('#filt_save').append('<option value="' + result.filter[d].id + '">' + result.filter[d].name + '</option>');
-                                                        $('#filt_save').trigger("chosen:updated");
-                                                    }
-
-                                                } else {
-                                                    $('#err-filter').show();
-                                                    setTimeout(function() {
-                                                        $('#err-filter').hide();
-                                                    }, 600);
-                                                }
-                                            },
-                                            error: function(jqXHR) {
-                                                console.log(jqXHR.responseText);
-                                            }
-                                        });
-
                                         $('#em-export-prg').append(result.html);
                                         $('#em-export-prg').chosen('destroy').chosen({width: "100%"});
                                         nbprg = $('#em-export-prg option').size();
@@ -2947,9 +2910,46 @@ $(document).ready(function() {
 
                             $('#em-export-prg').chosen({width: "100%"});
                             $('#em-export-camp').chosen({width: "100%"});
-                            $('#em-export-letter').chosen({width: "100%"});
-                            $('#filt_save').chosen({width: "100%"});
                             $('#em-export-form').chosen({width: "100%"});
+
+                            getAllLetters().then(function(letters) {
+                                letters.forEach(letter => {
+                                    if (letter.template_type == '4') {
+                                        $('#em-export-letter').append('<option value="' + letter.id + '">' + letter.title + '</option>');
+                                        $('#em-export-letter').chosen({width: "100%"});
+                                        $('#letter').show();
+                                    }
+                                });
+                            }).catch(function(error) {
+                                console.log(error);
+                            });
+
+                            // get export excel saved filter
+                            $.ajax({
+                                type:'get',
+                                url: 'index.php?option=com_emundus&controller=files&task=getExportExcelFilter',
+                                dataType:'json',
+                                success: function (result) {
+                                    if (result.status) {
+
+                                        for (var d in result.filter) {
+                                            if (isNaN(parseInt(d)))
+                                                break;
+                                            $('#filt_save').append('<option value="' + result.filter[d].id + '">' + result.filter[d].name + '</option>');
+                                            $('#filt_save').chosen({width: "100%"});
+                                        }
+
+                                    } else {
+                                        $('#err-filter').show();
+                                        setTimeout(function() {
+                                            $('#err-filter').hide();
+                                        }, 600);
+                                    }
+                                },
+                                error: function(jqXHR) {
+                                    console.log(jqXHR.responseText);
+                                }
+                            });
                         }
                     },
                     error: function (jqXHR) {
