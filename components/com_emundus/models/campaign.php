@@ -2656,4 +2656,124 @@ class EmundusModelCampaign extends JModelList {
 
         return $deleted;
     }
+
+    public function getWorkflows($ids = null)
+    {
+        $workflows = [];
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('*')
+            ->from($db->quoteName('#__emundus_campaign_workflow'));
+
+        if (!empty($ids)) {
+            $query->where('id IN (' . implode(',', $ids) . ')');
+        }
+
+        try {
+            $db->setQuery($query);
+            $workflows = $db->loadObjectList();
+
+            if (!empty($workflows)) {
+                foreach ($workflows as $key => $workflow) {
+                    $query->clear()
+                        ->select('entry_status')
+                        ->from('#__emundus_campaign_workflow_repeat_entry_status')
+                        ->where('parent_id = ' . $workflow->id);
+
+                    $db->setQuery($query);
+                    $workflows[$key]->entry_status = $db->loadColumn();
+
+                    $query->clear()
+                        ->select('campaign')
+                        ->from('#__emundus_campaign_workflow_repeat_campaign')
+                        ->where('parent_id = ' . $workflow->id);
+
+                    $db->setQuery($query);
+                    $workflows[$key]->campaigns = $db->loadColumn();
+
+                    $query->clear()
+                        ->select('programs')
+                        ->from('#__emundus_campaign_workflow_repeat_programs')
+                        ->where('parent_id = ' . $workflow->id);
+
+                    $db->setQuery($query);
+                    $workflows[$key]->programs = $db->loadColumn();
+                }
+            }
+        } catch (Exception $e) {
+            $workflows = [];
+            JLog::add('Failed to getAllWorkflows ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+        }
+
+        return $workflows;
+    }
+
+    /**
+     * @return void
+     */
+    public function findWorkflowIncoherences()
+    {
+        $incoherences = [];
+        $workflows = $this->getWorkflows();
+
+        if (!empty($workflows)) {
+            $similar_pairs = [];
+
+            foreach($workflows as $key => $workflow) {
+                $other_workflows = $workflows;
+                unset($other_workflows[$key]);
+
+                foreach ($other_workflows as $other_workflow) {
+                    if (!in_array($other_workflow->id . '-' . $workflow->id, $similar_pairs)) {
+                        // must contain same entry status to produce incoherence
+                        $similar_statuses = array_intersect($other_workflow->entry_status, $workflow->entry_status);
+                        if (!empty($similar_statuses)) {
+                            // are they on every program and every campaign ?
+                            if (empty($workflow->campaigns) && empty($workflow->programs) && empty($other_workflow->campaigns) && empty($other_workflow->programs)) {
+                                $incoherences[] = [
+                                    'workflow' => $workflow->id,
+                                    'similar_workflow' => $other_workflow->id,
+                                    'similarities' => [
+                                        'status' => $similar_statuses
+                                    ]
+                                ];
+
+                                $similar_pairs[] = $workflow->id . '-' . $other_workflow->id;
+                            } else {
+                                // is it on similar campaign
+                                $similar_campaigns = array_intersect($other_workflow->campaigns, $workflow->campaigns);
+
+                                if (!empty($similar_campaigns)) {
+                                    $incoherences[] = [
+                                        'workflow' => $workflow->id,
+                                        'similar_workflow' => $other_workflow->id,
+                                        'similarities' => [
+                                            'status' => $similar_statuses,
+                                            'campaigns' => $similar_campaigns
+                                        ]
+                                    ];
+                                    $similar_pairs[] = $workflow->id . '-' . $other_workflow->id;
+                                } else {
+                                    // is it on similar program
+                                    $similar_programs = array_intersect($other_workflow->programs, $workflow->programs);
+                                    $incoherences[] = [
+                                        'workflow' => $workflow->id,
+                                        'similar_workflow' => $other_workflow->id,
+                                        'similarities' => [
+                                            'status' => $similar_statuses,
+                                            'campaigns' => $similar_programs
+                                        ]
+                                    ];
+                                    $similar_pairs[] = $workflow->id . '-' . $other_workflow->id;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $incoherences;
+    }
 }
