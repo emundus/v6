@@ -4,12 +4,11 @@ header('Content-Type: text/html; charset=utf-8');
 ?>
 
 <p><?php echo JText::_('SORTABLE_GRAPHS'); ?><p>
-<center>
+<div>
 	<div class="filter">
 		<form action="" method="" onsubmit="return false;">
 			<div class="inputFilter">
 				<label><?php echo JText::_('PROGRAM'); ?> :</label>
-				<br />
 				<select name="prog" id="progFilter" onchange="progAction()">
 					<option value="-1"><?php echo JText::_('SELECT_ALL'); ?></option>
 					<?php
@@ -21,7 +20,6 @@ header('Content-Type: text/html; charset=utf-8');
 			
 			<div class="inputFilter">
 				<label><?php echo JText::_('YEARS_CAMPAIGN'); ?> :</label>
-				<br />
 				<select name="years" id="yearsFilter" onchange="yearAction()">
 					<option value="-1"><?php echo JText::_('SELECT_ALL'); ?></option>
 					<?php
@@ -33,7 +31,6 @@ header('Content-Type: text/html; charset=utf-8');
 			
 			<div class="inputFilter">
 				<label><?php echo JText::_('CAMPAIGN'); ?> :</label>
-				<br />
 				<select name="campaign" id="campaignFilter" onchange="campaignAction()">
 					<option value="-1"><?php echo JText::_('SELECT_ALL'); ?></option>
 					<?php
@@ -44,7 +41,7 @@ header('Content-Type: text/html; charset=utf-8');
 			</div>
 		</form>
 	</div>
-</center>
+</div>
 
 <script>
 	// Allows the display in the filter of years and campaigns associated with the chosen program

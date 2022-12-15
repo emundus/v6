@@ -4003,16 +4003,6 @@ div#em-appli-block {
 /* MODULE EMUNDUS QUERY BUILDER */
 
 .indicateurs-page {
-  .informationStatistique {
-    background-color: var(--neutral-50);
-    color: var( --neutral-900) !important;
-    box-shadow: 0 1px 2px 0 hsla(0, 0%, 41.2%, .19);
-    border-radius: var(--em-border-radius);
-
-    * {
-      font-family: var(--font);
-    }
-  }
 
   .item-pageindicateurs-page {
     h1 {
@@ -4103,6 +4093,7 @@ div#em-appli-block {
   .input .modif,
   .input .delete {
     color: var(--night-blue);
+    border: unset;
   }
 
   .btnConsulter:hover a {
