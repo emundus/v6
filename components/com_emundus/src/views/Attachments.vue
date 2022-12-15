@@ -644,6 +644,10 @@ export default {
           }
         }
       });
+
+	    this.displayedAttachments = this.attachments.filter((attachment) => {
+		    return ((attachment.show === true || typeof attachment.show == 'undefined' || attachment.show == null ));
+	    });
     },
     updateAllCheckedAttachments(e) {
       if (e.target.checked) {
