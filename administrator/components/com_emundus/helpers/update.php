@@ -1169,9 +1169,7 @@ class EmundusHelperUpdate
         $update = ['status' => false, 'message' => ''];
 
         $db = JFactory::getDBO();
-
         $db->setQuery("SHOW COLUMNS FROM `jos_emundus_campaign_workflow` LIKE 'programs'");
-
 
         $programs = $db->loadObject();
 

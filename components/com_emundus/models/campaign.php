@@ -2757,15 +2757,18 @@ class EmundusModelCampaign extends JModelList {
                                 } else {
                                     // is it on similar program
                                     $similar_programs = array_intersect($other_workflow->programs, $workflow->programs);
-                                    $incoherences[] = [
-                                        'workflow' => $workflow->id,
-                                        'similar_workflow' => $other_workflow->id,
-                                        'similarities' => [
-                                            'status' => $similar_statuses,
-                                            'campaigns' => $similar_programs
-                                        ]
-                                    ];
-                                    $similar_pairs[] = $workflow->id . '-' . $other_workflow->id;
+
+                                    if (!empty($similar_programs)) {
+                                        $incoherences[] = [
+                                            'workflow' => $workflow->id,
+                                            'similar_workflow' => $other_workflow->id,
+                                            'similarities' => [
+                                                'status' => $similar_statuses,
+                                                'programs' => $similar_programs
+                                            ]
+                                        ];
+                                        $similar_pairs[] = $workflow->id . '-' . $other_workflow->id;
+                                    }
                                 }
                             }
                         }
