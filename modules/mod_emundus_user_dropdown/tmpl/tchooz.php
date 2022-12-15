@@ -205,7 +205,7 @@ else {
             }
         ?>
         <hr style="width: 100%">
-        <li class="dropdown-header"><?= $user->name; ?></li>
+        <li class="dropdown-header"><?= $user->lastname . ' ' . $user->firstname; ?></li>
         <li class="dropdown-header"><?= $user->email; ?></li>
         <?php if ($show_logout == '1') :?>
             <?= '<li><a class="logout-button-user" href="/index.php?option=com_users&task=user.logout&'.JSession::getFormToken().'=1">'.JText::_('LOGOUT').'</a></li>'; ?>

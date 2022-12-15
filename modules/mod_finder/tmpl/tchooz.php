@@ -102,7 +102,7 @@ if ($params->get('show_autosuggest', 1))
     }
     .mod-finder-modal input{
         width: 100%;
-        border-radius: 0;
+        border-radius: 0 !important;
         border: unset;
         background: #f0f8ff !important;
         margin-bottom: 0;
