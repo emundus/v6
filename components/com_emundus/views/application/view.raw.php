@@ -290,7 +290,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $userComments = $m_application->getFileComments($fnum);
 
                         foreach ($userComments as $key => $comment) {
-                            $comment->date = EmundusHelperDate::displayDate($comment->date, 'DATE_FORMAT_LC2', 0);
+                            $comment->date = EmundusHelperDate::displayDate($comment->date, 'DATE_FORMAT_LC2');
                         }
 
                         $this->assignRef('userComments', $userComments);
@@ -303,7 +303,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $userComments = $m_application->getFileOwnComments($fnum,$this->_user->id);
 
                         foreach ($userComments as $key => $comment) {
-                            $comment->date = EmundusHelperDate::displayDate($comment->date, 'DATE_FORMAT_LC2', 0);
+                            $comment->date = EmundusHelperDate::displayDate($comment->date, 'DATE_FORMAT_LC2');
                         }
 
                         $this->assignRef('userComments', $userComments);
