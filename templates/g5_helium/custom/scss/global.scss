@@ -90,7 +90,7 @@ h6 {
 .view-list, .g-back-office-emundus-tableau {
   h1,
   h2,
-  h3,
+  h3:not(.panel-title),
   h4,
   h5,
   h6 {
@@ -1561,7 +1561,8 @@ body>.g-container {
 /* VIEW DETAILS  */
 
 .view-details .fabrikGroup h3.legend {
-  margin-top: 30px !important;
+  margin-top: 24px !important;
+  margin-bottom: 16px !important;
 }
 
 
@@ -4002,16 +4003,6 @@ div#em-appli-block {
 /* MODULE EMUNDUS QUERY BUILDER */
 
 .indicateurs-page {
-  .informationStatistique {
-    background-color: var(--neutral-50);
-    color: var( --neutral-900) !important;
-    box-shadow: 0 1px 2px 0 hsla(0, 0%, 41.2%, .19);
-    border-radius: var(--em-border-radius);
-
-    * {
-      font-family: var(--font);
-    }
-  }
 
   .item-pageindicateurs-page {
     h1 {
@@ -4102,6 +4093,7 @@ div#em-appli-block {
   .input .modif,
   .input .delete {
     color: var(--night-blue);
+    border: unset;
   }
 
   .btnConsulter:hover a {
@@ -4322,7 +4314,7 @@ button.swal2-cancel.goback-btn {
 
 .view-details {
   .span12 h1{
-    margin: 48px 0;
+    margin: 12px 0;
     font-family: var(--font);
     color: var(--neutral-900);
   }

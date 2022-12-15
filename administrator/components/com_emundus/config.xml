@@ -505,6 +505,8 @@
 			<field name="axepta_merchant_id" label="COM_EMUNDUS_PAYMENT_AXEPTA_MERCHANT_ID" type="text"/>
 			<field name="axepta_hmac_key" label="COM_EMUNDUS_PAYMENT_AXEPTA_HMAC_KEY" type="text"/>
 			<field name="axepta_blowfish_key" label="COM_EMUNDUS_PAYMENT_AXEPTA_BLOWFISH_KEY" type="text"/>
+			<field name="axepta_success_mail" label="MOD_EMUNDUS_AXEPTA_SUCCESS_MAIL" type="text" default=""></field>
+			<field name="axepta_failed_mail" label="MOD_EMUNDUS_AXEPTA_FAILED_MAIL" type="text" default=""></field>
 		</fieldset>
 
 

@@ -4,7 +4,7 @@ header('Content-Type: text/html; charset=utf-8');
 ?>
 
 
-<center>
+<div>
 	<button id="buttonOpen" class="btnQueryBuilder" onclick="openCloseGraphManager()"><?php if(isset($_GET['gOpen'])) { echo JText::_('CLOSE_QUERY_BUILDER'); } else { echo JText::_('OPEN_QUERY_BUILDER'); } ?></button>
 	<br /><br />
 	<div class="queryBuilder" style="display:<?php if(isset($_GET['gOpen'])) { echo "block;"; } else { echo "none;"; } ?>" >
@@ -54,7 +54,7 @@ header('Content-Type: text/html; charset=utf-8');
             <?php endif; ?>
 		</form>
 	</div>
-</center>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>

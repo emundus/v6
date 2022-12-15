@@ -62,7 +62,7 @@
 						<li v-for="(campaign, index) in campaignsByProgram" :key="'camp_progs_' + index">{{campaign.label}}</li>
 					</ul>
 				</div>
-				<transition name="slide-right">
+				<transition name="fade">
 					<add-campaign
 							v-if="menuHighlight == 0 && campaignId !== ''"
 							:campaign="campaignId"
@@ -414,6 +414,6 @@ export default {
 }
 
 #add-form-next-campaign{
-  width: 70%;
+  width: 100%;
 }
 </style>

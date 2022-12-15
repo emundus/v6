@@ -183,7 +183,7 @@
                   <span class="em-red-500-color">{{ translate('COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL') }}</span>
                 </p>
 
-                <div class="em-mb-16">
+                <div class="em-mb-16" style="display: none">
                   <label for="prog_color">{{ translate('COM_EMUNDUS_ONBOARD_PROGCOLOR') }}</label>
                   <div class="em-flex-row">
                     <div v-for="(color,index) in colors">
@@ -220,7 +220,7 @@
       </form>
     </div>
 
-    <div class="em-page-loader" v-if="submitted"></div>
+    <div class="em-page-loader" v-if="submitted || !ready"></div>
   </div>
 </template>
 
@@ -305,7 +305,7 @@ export default {
       programmes: "",
       published: 1,
       apply_online: 1,
-      color: ""
+      color: "#1C6EF2"
     },
 
     year: {
