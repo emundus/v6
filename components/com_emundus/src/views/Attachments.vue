@@ -2,7 +2,7 @@
   <div id="em-attachments" class="em-w-100">
     <div class="wrapper" :class="{loading: loading}">
       <div id="filters" class="em-flex-row em-flex-space-between">
-        <div class="searchbar-wrapper">
+        <div class="em-flex-row searchbar-wrapper">
           <input
               id="searchbar"
               type="text"
@@ -32,7 +32,7 @@
               @click="exportAttachments"
               :class="{ disabled: checkedAttachments.length < 1 }"
           >
-            <span class="material-icons-outlined export">file_upload</span>
+            <span class="material-icons-outlined export em-mr-8">file_upload</span>
             <span>{{ translate("COM_EMUNDUS_EXPORTS_EXPORT") }}</span>
           </div>
           <div
@@ -832,14 +832,12 @@ export default {
       position: relative;
       .material-icons-outlined.search {
         position: absolute;
-        top: 11px;
-        left: 18px;
+        left: 8px;
       }
 
       .material-icons-outlined.clear {
         position: absolute;
-        top: 11px;
-        right: 10px;
+        right: 8px;
       }
 
       #searchbar {
@@ -853,12 +851,8 @@ export default {
       align-items: center;
       justify-content: flex-end;
 
-      .export {
-        margin-right: 8px;
-      }
-
       select {
-        height: 37px;
+        height: 42px;
         border: 1px solid var(--border-color);
       }
 
@@ -879,7 +873,6 @@ export default {
 
     .refresh {
       transition: transform 0.6s;
-      margin: 0 0 0 8px;
 
       &:hover {
         transform: rotate(360deg);
