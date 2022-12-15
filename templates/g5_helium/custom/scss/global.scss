@@ -90,7 +90,7 @@ h6 {
 .view-list, .g-back-office-emundus-tableau {
   h1,
   h2,
-  h3,
+  h3:not(.panel-title),
   h4,
   h5,
   h6 {
