@@ -146,6 +146,9 @@ if ($params->get('show_autosuggest', 1))
     }
 </style>
 
+<?php if (in_array(JFactory::getUser()->id, [62,95])) : ?>
+    <span class="material-icons em-pointer" id="mod_finder_icon_open" style="color: black;margin-top: 4px" onclick="openSearch()">search</span>
+<?php endif; ?>
 <div class="mod-finder-modal" id="mod_finder_modal">
     <p class="em-h5 em-font-weight-200 em-mb-16"><?php echo  JText::_('MOD_FINDER_HOW_CAN_I_HELP_YOU') ?></p>
     <nav class="em-flex-row em-mb-12" style="display: none">
@@ -189,13 +192,25 @@ if ($params->get('show_autosuggest', 1))
         };
     }
 
+    function openSearch(){
+        let spotlight = document.getElementById('mod_finder_modal');
+
+        spotlight.style.display = 'block'
+        document.getElementById('mod-finder-searchword<?php echo $module->id ?>').focus();
+    }
+
+    function closeSearch(){
+        let spotlight = document.getElementById('mod_finder_modal');
+        spotlight.style.display = 'none'
+    }
+
     document.addEventListener('click', function (e) {
         let spotlight = document.getElementById('mod_finder_modal');
         let clickInsideModule = false;
 
         if(spotlight.style.display === 'block') {
             e.composedPath().forEach((pathElement) => {
-                if (pathElement.id == "mod_finder_modal" || pathElement.id == "mod-finder-searchword<?php echo $module->id ?>") {
+                if (pathElement.id == "mod_finder_modal" || pathElement.id == "mod-finder-searchword<?php echo $module->id ?>" || pathElement.id == 'mod_finder_icon_open') {
                     clickInsideModule = true;
                 }
             });
@@ -212,12 +227,11 @@ if ($params->get('show_autosuggest', 1))
 
         if ((keysPressed['Control'] || keysPressed['Meta']) && e.key === 'k') {
             e.preventDefault();
-            document.getElementsByClassName('mod-finder-modal')[0].style.display = 'block'
-            document.getElementById('mod-finder-searchword<?php echo $module->id ?>').focus();
+            openSearch();
             keysPressed = [];
         } else if(keysPressed['Escape']) {
             e.preventDefault();
-            document.getElementsByClassName('mod-finder-modal')[0].style.display = 'none'
+            closeSearch()
         }
     });
 
