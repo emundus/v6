@@ -401,7 +401,7 @@ class com_emundusInstallerScript
                     'access' => 7,
                     'params' => [
                         'searchfilter' => '',
-                        'show_autosuggest' => 0,
+                        'show_autosuggest' => 1,
                         'show_advanced' => 0,
                         'field_size' => 25,
                         'show_label' => 1,
