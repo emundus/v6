@@ -4,7 +4,7 @@
 
       <!--- MENU --->
       <transition name="slide-right">
-        <div class="em-grid-3" style="margin-left: 10%" v-if="menuHighlight === 0">
+        <div class="em-grid-3" v-if="menuHighlight === 0">
           <div v-for="(menu,index) in displayedMenus" :key="'menu_' + menu.index" class="em-shadow-cards col-md-3 em-hover-s-scale" v-wave @click="changeMenu(menu)">
             <span class="material-icons-outlined em-gradient-icons em-mb-16">{{menu.icon}}</span>
             <p class="em-body-16-semibold em-mb-8">{{translate(menu.title)}}</p>

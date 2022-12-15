@@ -217,6 +217,8 @@ JText::script('COM_EMUNDUS_DOCUMENTS_CAMPAIGNS_DESC');
 JText::script('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC');
 JText::script('COM_EMUNDUS_EMAILS');
 JText::script('COM_EMUNDUS_EMAILS_DESC');
+JText::script('COM_EMUNDUS_FORM_BUILDER_SECTION');
+JText::script('COM_EMUNDUS_FORM_PAGES_PREVIEW');
 
 $lang = JFactory::getLanguage();
 $short_lang = substr($lang->getTag(), 0 , 2);

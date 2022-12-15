@@ -22,10 +22,7 @@
     color: #de6339 !important;
 }
 .container-stat {
-	margin-left:5%;
-	margin-right:5%;
-	padding-right:1%;
-	padding-left:1%;
+	padding: 12px;
 }
 
 .g-back-office-emundus-tableau.indicateurs-page #g-page-surround #g-navigation #header-c .platform-content  {

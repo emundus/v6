@@ -1814,10 +1814,10 @@ class EmundusModelApplication extends JModelList
                                             }
                                             else{
                                                 $query = 'SELECT `id`, `' . $element->name . '` FROM `' . $itemt->db_table_name . '` WHERE fnum like ' . $this->_db->Quote($fnum);
-                                                $this->_db->setQuery($query);
-
-                                                $res = $this->_db->loadRow();
                                             }
+
+                                            $this->_db->setQuery($query);
+                                            $res = $this->_db->loadRow();
 
                                             if (count($res) > 1) {
                                                 $element->content = $res[1];
@@ -1900,12 +1900,12 @@ class EmundusModelApplication extends JModelList
                                                     $parent_id = strlen($element->content_id) > 0 ? $element->content_id : 0;
                                                     $select = $params->join_val_column;
                                                     if (!empty($params->join_val_column_concat)) {
-                                                        $select = $params->join_val_column_concat;
+                                                        $select = 'CONCAT(' . $params->join_val_column_concat . ')';
                                                         $select = preg_replace('#{thistable}#', 'jd', $select);
                                                         $select = preg_replace('#{shortlang}#', $this->locales, $select);
                                                     }
 
-                                                    $query->select($db->quoteName($select))
+                                                    $query->select($db->quote($select))
                                                         ->from($db->quoteName($itemt->db_table_name . '_repeat_' . $element->name, 't'))
                                                         ->leftJoin($db->quoteName($params->join_db_name, 'jd') . ' ON ' . $db->quoteName('jd.' . $params->join_key_column) . ' = ' . $db->quoteName('t.' . $element->name))
                                                         ->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent_id));

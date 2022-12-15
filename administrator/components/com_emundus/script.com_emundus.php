@@ -396,12 +396,12 @@ class com_emundusInstallerScript
                 $datas = [
                     'title' => 'Spotlight eMundus',
                     'note' => 'Advanced search based on Joomla indexing',
-                    'position' => 'drawer',
+                    'position' => 'header-c',
                     'module' => 'mod_finder',
                     'access' => 7,
                     'params' => [
                         'searchfilter' => '',
-                        'show_autosuggest' => 0,
+                        'show_autosuggest' => 1,
                         'show_advanced' => 0,
                         'field_size' => 25,
                         'show_label' => 1,
@@ -437,6 +437,14 @@ class com_emundusInstallerScript
                     ['label' => 'onBeforeSubmitEvaluation', 'category' => 'Evaluation'],
                     ['label' => 'onAfterSubmitEvaluation', 'category' => 'Evaluation']
                 ]);
+
+	            EmundusHelperUpdate::addYamlVariable('location','gantry-assets://custom/scss/quill.scss',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css',true,true);
+	            EmundusHelperUpdate::addYamlVariable('inline','',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+	            EmundusHelperUpdate::addYamlVariable('extra','{  }',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+	            EmundusHelperUpdate::addYamlVariable('priority','0',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+	            EmundusHelperUpdate::addYamlVariable('name','Quill',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+
+	            EmundusHelperUpdate::disableEmundusPlugins('emundus_profile');
             }
 
             // Insert new translations in overrides files

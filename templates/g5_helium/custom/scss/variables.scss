@@ -325,7 +325,7 @@ $font:'Inter', sans-serif;
   text-align: left;
   position: relative;
   top: -5px;
-  margin-right: -2px;
+  margin-right: -5px;
   color: var(--red-500);
 }
 
@@ -554,7 +554,7 @@ $font:'Inter', sans-serif;
   }
 
   /* SUCCESS */
-  &.success input, &.has-success input {
+  &.success input:not([name*="captcha"]), &.has-success input:not([name*="captcha"]) {
     @include input-valid;
     color: var(--neutral-800) !important;
   }
@@ -573,6 +573,12 @@ $font:'Inter', sans-serif;
       }
     }
   }
+
+  &.success .captcha_input input,
+  &.has-success .captcha_input input {
+    color: var(--neutral-800) !important;
+  }
+
 
   /* DISPLAY */
   &.plg-display .fabrikinput {
@@ -640,7 +646,7 @@ $font:'Inter', sans-serif;
     /* INPUT */
     .fabrikinput:not(textarea):not([type='checkbox']) {
       @include input-default;
-      background: $neutral-50;
+      background-color: $neutral-50;
 
       &:hover {
         @include input-hover;

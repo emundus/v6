@@ -36,7 +36,7 @@ $mod_em_campaign_show_camp_start_date = $params->get('mod_em_campaign_show_camp_
 $mod_em_campaign_show_camp_end_date = $params->get('mod_em_campaign_show_camp_end_date', 1);
 $mod_em_campaign_show_timezone = $params->get('mod_em_campaign_show_timezone', 1);
 $mod_em_campaign_list_sections = $params->get('mod_em_campaign_list_sections');
-$mod_em_campaign_intro = $params->get('mod_em_campaign_intro', '');
+$mod_em_campaign_intro = $params->get('mod_em_campaign_intro', null);
 if(empty($mod_em_campaign_intro) && $params->get('mod_em_campaign_layout') == 'default_tchooz'){
     $mod_em_campaign_intro = $m_settings->getArticle(JFactory::getLanguage()->getTag(),52)->introtext;
 }

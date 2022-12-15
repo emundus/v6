@@ -15,6 +15,11 @@
     background: #fff;
 }
 
+.mod_emundus_checklist___buttons{
+    margin-left: 32px;
+    margin-top: 24px;
+}
+
 .mod_emundus_checklist___grid{
     display: grid;
     grid-template-columns: 32px 90%;
@@ -68,5 +73,15 @@
     justify-content: center;
     font-family: var(--font);
     color: var(--neutral-800);
+}
+
+@media all and (max-width: 479px) {
+    .mod_emundus_checklist{
+        margin-left: 0;
+    }
+    .mod_emundus_checklist___buttons{
+        margin-left: 0;
+        width: 100%;
+    }
 }
 

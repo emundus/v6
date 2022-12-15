@@ -93,6 +93,7 @@ else {
 
     .select{
         text-align: left;
+        width: 100%;
     }
     .select .profile-select{
         height: 35px;
@@ -106,7 +107,7 @@ else {
         background-repeat: no-repeat;
         -moz-appearance: none;
         -webkit-appearance: none;
-        width: 200px;
+        width: 100%;
         color: #353544;
         background-color: var( --neutral-50);
         font-family: var(--font);
@@ -204,10 +205,10 @@ else {
             }
         ?>
         <hr style="width: 100%">
-        <li class="dropdown-header"><?= $user->name; ?></li>
+        <li class="dropdown-header"><?= $user->lastname . ' ' . $user->firstname; ?></li>
         <li class="dropdown-header"><?= $user->email; ?></li>
         <?php if ($show_logout == '1') :?>
-            <?= '<li><a class="logout-button-user" href="index.php?option=com_users&task=user.logout&'.JSession::getFormToken().'=1">'.JText::_('LOGOUT').'</a></li>'; ?>
+            <?= '<li><a class="logout-button-user" href="/index.php?option=com_users&task=user.logout&'.JSession::getFormToken().'=1">'.JText::_('LOGOUT').'</a></li>'; ?>
         <?php endif; ?>
         <?php if ($show_update == '1') :?>
             <hr style="width: 100%">

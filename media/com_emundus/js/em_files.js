@@ -168,7 +168,7 @@ function addElement() {
                 $('#nb-adv-filter').val(num);
                 var newId = 'em-adv-father-' + num;
                 ni.append('<fieldset id="' + newId + '" class="em-nopadding em-flex-row">' +
-                    '<select class="chzn-select em-filt-select" name="elements" id="elements">' +
+                    '<select class="chzn-select em-filt-select" name="elements" id="elements-'+num+'">' +
                     '<option value="">' + result.default +'</option>' +
                     '</select> ' +
                     '<button id="suppr-filt" class="em-tertiary-button em-flex-start">' +
@@ -223,7 +223,7 @@ function addElement() {
 
                     options += '<option class="emundus_search_elm" value="' + result.options[i].id + '">'+eltLabel+'</option>';
                 }
-                $('#' + newId + ' #elements').append(options);
+                $('#' + newId + ' #elements-'+num).append(options);
                 $('.chzn-select').chosen({width:'75%'});
 
             }
@@ -696,14 +696,13 @@ function getProgramCampaigns(code) {
 
 function setFiltersSumo(event){
     $.ajaxQ.abortAll();
-
     if (event.handle !== true) {
         event.handle = true;
 
         var id = event.currentTarget.id;
         const my_element = $('#' + id);
 
-        if (id !== 'elements') {
+        if (!id.includes('elements-')) {
             var multi = false;
             if (typeof my_element.attr('multiple') !== 'undefined') {
                 multi = true;
@@ -740,6 +739,8 @@ function setFiltersSumo(event){
             search();
         } else {
             var father = my_element.parent('fieldset').attr('id');
+            console.log(my_element);
+            console.log(father);
             getSearchBox(my_element.val(), father);
         }
     }
@@ -760,7 +761,7 @@ function runAction(action, url = '', option = '') {
     switch (id) {
         // Export Excel
         case 6:
-            export_excel(checkInput);
+            export_excel(checkInput, option);
             break;
 
         // Export ZIP
@@ -1689,6 +1690,8 @@ $(document).ready(function() {
                 swal_actions_class = 'em-actions-fixed'
                 swal_confirm_button = 'COM_EMUNDUS_EXPORTS_EXPORT';
 
+                preconfirm = "return $('#em-export-letter').val();"
+
                 $.ajax({
                     type:'get',
                     url: url,
@@ -1805,18 +1808,6 @@ $(document).ready(function() {
 
                             checkInput = getUserCheck();
 
-                            getAllLetters().then(function(letters) {
-                                letters.forEach(letter => {
-                                    if (letter.template_type == '4') {
-                                        $('#em-export-letter').append('<option value="' + letter.id + '">' + letter.title + '</option>');
-                                        $('#em-export-letter').trigger("chosen:updated");
-                                        $('#letter').show();
-                                    }
-                                });
-                            }).catch(function(error) {
-                                console.log(error);
-                            });
-
                             $.ajax({
                                 type:'post',
                                 url: 'index.php?option=com_emundus&controller=files&task=getPDFProgrammes',
@@ -1825,33 +1816,6 @@ $(document).ready(function() {
 
                                 success: function(result) {
                                     if (result.status) {
-                                        // get export excel saved filter
-                                        $.ajax({
-                                            type:'get',
-                                            url: 'index.php?option=com_emundus&controller=files&task=getExportExcelFilter',
-                                            dataType:'json',
-                                            success: function (result) {
-                                                if (result.status) {
-
-                                                    for (var d in result.filter) {
-                                                        if (isNaN(parseInt(d)))
-                                                            break;
-                                                        $('#filt_save').append('<option value="' + result.filter[d].id + '">' + result.filter[d].name + '</option>');
-                                                        $('#filt_save').trigger("chosen:updated");
-                                                    }
-
-                                                } else {
-                                                    $('#err-filter').show();
-                                                    setTimeout(function() {
-                                                        $('#err-filter').hide();
-                                                    }, 600);
-                                                }
-                                            },
-                                            error: function(jqXHR) {
-                                                console.log(jqXHR.responseText);
-                                            }
-                                        });
-
                                         $('#em-export-prg').append(result.html);
                                         $('#em-export-prg').chosen('destroy').chosen({width: "100%"});
                                         nbprg = $('#em-export-prg option').size();
@@ -2946,9 +2910,46 @@ $(document).ready(function() {
 
                             $('#em-export-prg').chosen({width: "100%"});
                             $('#em-export-camp').chosen({width: "100%"});
-                            $('#em-export-letter').chosen({width: "100%"});
-                            $('#filt_save').chosen({width: "100%"});
                             $('#em-export-form').chosen({width: "100%"});
+
+                            getAllLetters().then(function(letters) {
+                                letters.forEach(letter => {
+                                    if (letter.template_type == '4') {
+                                        $('#em-export-letter').append('<option value="' + letter.id + '">' + letter.title + '</option>');
+                                        $('#em-export-letter').chosen({width: "100%"});
+                                        $('#letter').show();
+                                    }
+                                });
+                            }).catch(function(error) {
+                                console.log(error);
+                            });
+
+                            // get export excel saved filter
+                            $.ajax({
+                                type:'get',
+                                url: 'index.php?option=com_emundus&controller=files&task=getExportExcelFilter',
+                                dataType:'json',
+                                success: function (result) {
+                                    if (result.status) {
+
+                                        for (var d in result.filter) {
+                                            if (isNaN(parseInt(d)))
+                                                break;
+                                            $('#filt_save').append('<option value="' + result.filter[d].id + '">' + result.filter[d].name + '</option>');
+                                            $('#filt_save').chosen({width: "100%"});
+                                        }
+
+                                    } else {
+                                        $('#err-filter').show();
+                                        setTimeout(function() {
+                                            $('#err-filter').hide();
+                                        }, 600);
+                                    }
+                                },
+                                error: function(jqXHR) {
+                                    console.log(jqXHR.responseText);
+                                }
+                            });
                         }
                     },
                     error: function (jqXHR) {
@@ -4779,6 +4780,9 @@ $(document).ready(function() {
     });
 
     $(document).on('change', '#elements.em-filt-select', function(event) {
+        setFiltersSumo(event);
+    });
+    $(document).on('change', 'select[id^="elements-"].em-filt-select', function(event) {
         setFiltersSumo(event);
     });
     $(document).on('change', 'select[id^="em-adv"].em-filt-select', function(event) {

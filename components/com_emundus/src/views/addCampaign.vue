@@ -1,15 +1,13 @@
 <template>
-  <div class="campaigns__add-campaign">
+  <div class="campaigns__add-campaign em-w-100">
     <div v-if="typeof campaignId == 'undefined' || campaignId == 0">
       <div class="em-flex-row em-mt-16 em-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
         <span class="material-icons-outlined">arrow_back</span>
         <p class="em-ml-8">{{ translate('BACK') }}</p>
       </div>
 
-      <div class="em-flex-row em-mt-16">
-        <h2>{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS') }}</h2>
-      </div>
-      <p style="margin-top: 20px">{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC') }}</p>
+      <div class="em-h3 em-mt-16">{{ translate('COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN') }}</div>
+      <p class="em-mt-16">{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC') }}</p>
 
       <hr>
     </div>
@@ -102,9 +100,9 @@
 
         <hr/>
 
-        <div>
+        <div class="em-mb-16">
           <div class="em-mb-16">
-            <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION') }}</h2>
+            <div class="em-h4">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION') }}</div>
           </div>
 
           <div class="em-mb-16">
@@ -124,8 +122,8 @@
 
           <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
           <div class="em-mb-16" v-if="typeof form.description != 'undefined'">
-            <editor
-                :height="'30em'"
+            <editor-quill
+                style="height: 25em"
                 :text="form.description"
                 v-model="form.description"
                 :enable_variables="false"
@@ -133,13 +131,13 @@
                 :id="'campaign_description'"
                 :key="editorKey"
                 @focusout="onFormChange"
-            ></editor>
+            ></editor-quill>
           </div>
         </div>
 
-        <hr/>
+        <hr class="em-mt-64"/>
 
-        <div>
+        <div class="em-mt-32">
           <div class="em-mb-16">
             <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM') }}</h2>
           </div>
@@ -185,7 +183,7 @@
                   <span class="em-red-500-color">{{ translate('COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL') }}</span>
                 </p>
 
-                <div class="em-mb-16">
+                <div class="em-mb-16" style="display: none">
                   <label for="prog_color">{{ translate('COM_EMUNDUS_ONBOARD_PROGCOLOR') }}</label>
                   <div class="em-flex-row">
                     <div v-for="(color,index) in colors">
@@ -193,7 +191,7 @@
                            :class="index != 0 ? 'em-ml-8' : ''"
                            :style="selectedColor == color.text ? 'background-color:' + color.text + ';border: 2px solid ' + color.background : 'background-color:' + color.text"
                            @click="programForm.color = color.text;selectedColor = color.text">
-                        <span v-if="selectedColor == color.text" class="material-icons-outlined" style="font-weight: bold;color: black">done</span>
+                        <span v-if="selectedColor == color.text" class="material-icons-outlined" style="font-weight: bold;color: black;filter: invert(1)">done</span>
                       </div>
                     </div>
                   </div>
@@ -222,7 +220,7 @@
       </form>
     </div>
 
-    <div class="em-page-loader" v-if="submitted"></div>
+    <div class="em-page-loader" v-if="submitted || !ready"></div>
   </div>
 </template>
 
@@ -237,6 +235,7 @@ import Translation from "../components/translation"
 
 /** SERVICES **/
 import campaignService from 'com_emundus/src/services/campaign';
+import EditorQuill from "../components/editorQuill";
 
 const qs = require("qs");
 
@@ -244,6 +243,7 @@ export default {
   name: "addCampaign",
 
   components: {
+    EditorQuill,
     Datetime,
     Editor,
     Autocomplete,
@@ -305,7 +305,7 @@ export default {
       programmes: "",
       published: 1,
       apply_online: 1,
-      color: ""
+      color: "#1C6EF2"
     },
 
     year: {

@@ -104,8 +104,10 @@ export default {
 			}
 
 			if (this.$props.name !== '') {
-			  let regex = /(?<=[^\w-]|^)(?!-)([a-z_]+)(?<!-)(?=[^\w-]|$)/gi;
-			  let tags_regex = this.$props.name.match(regex);
+        this.$props.name.replace('[', '');
+        this.$props.name.replace(']', '');
+
+        let tags_regex = this.$props.name.split('-')
 
 			  this.selectedSeparator = '-';
 

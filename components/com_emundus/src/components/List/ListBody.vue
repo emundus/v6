@@ -14,6 +14,7 @@
 			</span>
 		</div>
 	</div>
+  <div v-if="items.length === 0 && type == 'formModels'" class="em-h5 em-flex-column">{{ translate('COM_EMUNDUS_ONBOARD_NO_PAGE_MODELS') }}</div>
 	<list-table
 		key="list-table"
 		class="list-view"
