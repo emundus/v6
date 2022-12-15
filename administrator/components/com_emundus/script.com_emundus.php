@@ -396,7 +396,7 @@ class com_emundusInstallerScript
                 $datas = [
                     'title' => 'Spotlight eMundus',
                     'note' => 'Advanced search based on Joomla indexing',
-                    'position' => 'drawer',
+                    'position' => 'header-c',
                     'module' => 'mod_finder',
                     'access' => 7,
                     'params' => [
