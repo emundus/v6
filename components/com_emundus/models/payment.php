@@ -886,52 +886,73 @@ class EmundusModelPayment extends JModelList
         return $updated;
     }
 
-    public function updateAxeptaPaymentInfos($order, $status, $id)
-    {
-        $updated = false;
-        $fnum = $this->getFnumFromOrderId($order);
+	public function updateAxeptaPaymentInfos($order, $status, $id)
+	{
+		$updated = false;
+		$fnum = $this->getFnumFromOrderId($order);
+		$price = $this->getPrice($fnum);
 
-        JLog::add('[updateAxeptaPaymentInfos] Update file '.$fnum.' in order : ' . $order . ' with status ' . $status, JLog::INFO, 'com_emundus.payment');
+		JLog::add('[updateAxeptaPaymentInfos] Update file '.$fnum.' in order : ' . $order . ' with status ' . $status, JLog::INFO, 'com_emundus.payment');
 
-        if (!empty($fnum)) {
-            require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-            require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-            $m_files = new EmundusModelFiles();
-            $fnum_infos = $m_files->getFnumInfos($fnum);
+		if (!empty($fnum)) {
+			require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+			require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+			require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
+			$m_files = new EmundusModelFiles();
+			$c_messages = new EmundusControllerMessages();
+			$fnum_infos = $m_files->getFnumInfos($fnum);
 
-            $hikashop_status = '';
-            switch ($status) {
-                case 'OK':
-                case 'AUTHORIZED':
-                    $hikashop_status = 'confirmed';
+			$hikashop_status = '';
+			$eMConfig = JComponentHelper::getParams('com_emundus');
+			$mail_template = 0;
 
-                    $eMConfig = JComponentHelper::getParams('com_emundus');
-                    $status_after_payment = $eMConfig->get('status_after_payment');
+			switch ($status) {
+				case 'OK':
+				case 'AUTHORIZED':
+					$hikashop_status = 'confirmed';
 
-                    JLog::add('[updateAxeptaPaymentInfos] Update file status to '.$status_after_payment,JLog::INFO, 'com_emundus.payment');
-                    $m_files->updateState($fnum, $status_after_payment);
-                    break;
-                case 'FAILED':
-                case '':
-                    $hikashop_status = 'cancelled';
-                    break;
-                default:
-                    // do nothing, each case must be handled separately
-                    JLog::add('Error updating axepta payment infos : status ' . $status . ' is not handled', JLog::ERROR, 'com_emundus.payment');
-                    break;
-            }
+					$status_after_payment = $eMConfig->get('status_after_payment','');
 
-            if (!empty($hikashop_status)) {
-                $data['id'] = $id;
-                $updated = $this->updateHikashopPayment($fnum, $hikashop_status, $data, 'axepta');
-                EmundusModelLogs::log(95, $fnum_infos['applicant_id'], $fnum, 38, 'u', 'COM_EMUNDUS_PAYMENT_UPDATE_AXEPTA_PAYMENT_INFOS', json_encode($data));
-            } else {
-                EmundusModelLogs::log(95, $fnum_infos['applicant_id'], $fnum, 38, 'u', 'COM_EMUNDUS_PAYMENT_UPDATE_AXEPTA_PAYMENT_INFOS', 'Error updating axepta payment infos from given data ' . $status . ',' . $order . ',' . $id);
-            }
-        } else {
-            JLog::add('Error updating axepta payment infos : callback_id is not correct, could be a malicious attempt', JLog::ERROR, 'com_emundus.payment');
-        }
+					if($status_after_payment !== '')
+					{
+						JLog::add('[updateAxeptaPaymentInfos] Update file status to ' . $status_after_payment, JLog::INFO, 'com_emundus.payment');
+						$m_files->updateState($fnum, $status_after_payment);
+					}
 
-        return $updated;
-    }
+					$mail_template = $eMConfig->get('axepta_success_mail',0);
+					break;
+				case 'FAILED':
+				case '':
+					$mail_template = $eMConfig->get('axepta_failed_mail',0);
+
+					$hikashop_status = 'cancelled';
+					break;
+				default:
+					// do nothing, each case must be handled separately
+					JLog::add('Error updating axepta payment infos : status ' . $status . ' is not handled', JLog::ERROR, 'com_emundus.payment');
+					break;
+			}
+
+			if (!empty($hikashop_status)) {
+				$data['id'] = $id;
+				$updated = $this->updateHikashopPayment($fnum, $hikashop_status, $data, 'axepta');
+				EmundusModelLogs::log(95, $fnum_infos['applicant_id'], $fnum, 38, 'u', 'COM_EMUNDUS_PAYMENT_UPDATE_AXEPTA_PAYMENT_INFOS', json_encode($data));
+			} else {
+				EmundusModelLogs::log(95, $fnum_infos['applicant_id'], $fnum, 38, 'u', 'COM_EMUNDUS_PAYMENT_UPDATE_AXEPTA_PAYMENT_INFOS', 'Error updating axepta payment infos from given data ' . $status . ',' . $order . ',' . $id);
+			}
+
+			if(!empty($mail_template))
+			{
+				$post = [
+					'ORDER_NUMBER' => $order,
+					'ORDER_PRICE' => $price . ' €'
+				];
+				$c_messages->sendEmail($fnum, $mail_template, $post);
+			}
+		} else {
+			JLog::add('Error updating axepta payment infos : callback_id is not correct, could be a malicious attempt', JLog::ERROR, 'com_emundus.payment');
+		}
+
+		return $updated;
+	}
 }
