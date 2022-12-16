@@ -635,7 +635,9 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
     JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
     JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );
     JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
-    JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
+    //TODO : Stop use chosen replace by an other js native library
+    //JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
+    JHtml::script('media/jui/js/chosen.jquery.min.js');
     JHTML::script('media/com_emundus/js/em_files.js');
     JHTML::script('media/com_emundus/js/mixins/exports.js');
     JHTML::script('media/com_emundus/js/mixins/utilities.js');
@@ -644,7 +646,8 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
 
     JHtml::styleSheet('media/com_emundus/css/reset.css');
     JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
-    JHtml::styleSheet('media/com_emundus/lib/chosen/chosen.min.css');
+    //JHtml::styleSheet('media/com_emundus/lib/chosen/chosen.min.css');
+    JHtml::styleSheet('media/jui/css/chosen.min.css');
     JHtml::styleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
     JHtml::styleSheet('media/com_emundus/css/emundus_files.css');
     JHTML::stylesheet('libraries/emundus/selectize/dist/css/normalize.css' );
