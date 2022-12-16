@@ -149,12 +149,13 @@ class EmundusModelPayment extends JModelList
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
 
-            $columns = array('order_user_id', 'order_status', 'order_created', 'order_modified', 'order_type', 'order_payment_method', 'order_full_price');
-            $values = $db->quote($hikashop_user_id) . ', ' . $db->quote('created') . ', ' . $db->quote(time()) . ', ' . $db->quote(time()) . ', ' . $db->quote($type) . ', ' . $db->quote($type) . ', ' . $db->quote($price);
+            $columns = array('order_user_id', 'order_status', 'order_created', 'order_modified', 'order_type', 'order_payment_method', 'order_full_price', 'order_number');
+            $values = $db->quote($hikashop_user_id) . ', ' . $db->quote('created') . ', ' . $db->quote(time()) . ', ' . $db->quote(time()) . ', ' . $db->quote('sale') . ', ' . $db->quote($type) . ', ' . $db->quote($price);
 
             if ($order_number !== null) {
-                $columns[] = 'order_number';
                 $values .= ', ' . $db->quote($order_number);
+            } else {
+                $values .= ', ' . rand(100000, 999999);
             }
 
             $query->clear()
@@ -432,7 +433,7 @@ class EmundusModelPayment extends JModelList
                 }
 
                 if (!empty($hikashop_status)) {
-                    $updated = $this->updateHikashopPayment($fnum, $hikashop_status, $data);
+                    $updated = $this->updateHikashopPayment($fnum, $hikashop_status, $data, 'flywire', $data['id']);
                     $data['updated'] = $updated;
                     EmundusModelLogs::log(95, $fnum_infos['applicant_id'], $fnum, 38, 'u', 'COM_EMUNDUS_PAYMENT_UPDATE_FLYWIRE_PAYMENT_INFOS', json_encode($data));
                 } else {
@@ -529,7 +530,7 @@ class EmundusModelPayment extends JModelList
         return $correctAmount;
     }
 
-    private function updateHikashopPayment($fnum, $hikashop_status, $data, $type = 'flywire')
+    private function updateHikashopPayment($fnum, $hikashop_status, $data, $type = 'flywire', $order_number = null)
     {
         $updated = false;
         $db = JFactory::getDBO();
@@ -550,8 +551,13 @@ class EmundusModelPayment extends JModelList
             $query->clear();
             $query->update('#__hikashop_order')
                 ->set('order_status = ' . $db->quote($hikashop_status))
-                ->set('order_invoice_id = ' . $db->quote($data['id']))
-                ->where('order_id = ' . $hikashop->order_id);
+                ->set('order_invoice_id = ' . $db->quote($data['id']));
+
+            if (!empty($order_number())) {
+                $query->set('order_number = ' . $db->quote($order_number));
+            }
+
+            $query->where('order_id = ' . $hikashop->order_id);
             $db->setQuery($query);
 
             try {
@@ -866,7 +872,7 @@ class EmundusModelPayment extends JModelList
 
         $query->clear()
             ->update('#__hikashop_order')
-            ->set('order_type = ' . $db->quote($type))
+            ->set('order_payment_method = ' . $db->quote($type))
             ->set('order_status = ' . $db->quote('created'));
 
         if (!empty($order_number)) {
