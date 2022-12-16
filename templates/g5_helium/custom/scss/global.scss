@@ -3227,7 +3227,7 @@ ul.unstyled.em-linkForgot li a {
   .chzn-choices {
     background: var(--neutral-50) !important;
     box-shadow: unset;
-    border-color: var(--neutral-300);
+    border-color: var(--light-grey-3);
     border-radius: 4px;
     width: 100%;
   }
@@ -3247,7 +3247,7 @@ ul.unstyled.em-linkForgot li a {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-color: var(--neutral-300);
+    border-color: var(--light-grey-3);
   }
 
   .chzn-search {
@@ -3272,6 +3272,7 @@ ul.unstyled.em-linkForgot li a {
   .chzn-results li.highlighted {
     background-color: var(--neutral-300);
     background-image: unset !important;
+    color: black;
   }
 }
 
