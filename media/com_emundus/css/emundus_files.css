@@ -331,6 +331,7 @@ ul.pagination.pagination-sm a {
     width: 30px;
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 ul.pagination.pagination-sm a:active,
