@@ -4816,6 +4816,12 @@ screen and (max-height: 769px) {
     }
   }
 
+  .login.em-formRegistrationCenter {
+    .page-header {
+      text-align: center;
+    }
+  }
+
   .gantry.view-registration, .gantry.view-form.em-formRegistrationCenter {
     main#g-main-mainbody {
       padding: 0;
@@ -4823,7 +4829,7 @@ screen and (max-height: 769px) {
       .login.em-formRegistrationCenter, .em-formRegistrationCenter:not(.componentheading) {
         padding: 0;
         width: 100% !important;
-        margin-top: -13px;
+        margin-top: 5px;
 
         ol {
           width: 100%;
