@@ -173,6 +173,21 @@ class EmundusModelPayment extends JModelList
             }
 
             if ($created && !empty($order_id)) {
+                $hikashop_product = $this->getProductByFnum($fnum);
+                if (!empty($hikashop_product)) {
+                    $query->clear()
+                        ->insert('#__hikashop_order_product')
+                        ->columns(['order_id', 'product_id', 'order_product_name', 'order_product_code', 'order_product_price'])
+                        ->values($order_id . ', ' . $hikashop_product->product_id . ', ' . $db->quote($hikashop_product->product_name) . ',' . $db->quote($hikashop_product->product_code) . ',' . $db->quote($hikashop_product->product_sort_price));
+
+                    try {
+                        $db->setQuery($query);
+                        $inserted = $db->execute();
+                    } catch (Exception $e) {
+                        JLog::add('Error inserting payment order product row : ' . $e->getMessage(), JLog::WARNING, 'com_emundus.payment');
+                    }
+                }
+
                 $this->updateEmundusHikashopOrderId($fnum, $order_id);
             }
         } else {
@@ -340,7 +355,7 @@ class EmundusModelPayment extends JModelList
         return $inserted;
     }
 
-    public static function getPaymentInfos($fnum)
+    public function getPaymentInfos($fnum)
     {
         $payment = false;
 
@@ -368,7 +383,7 @@ class EmundusModelPayment extends JModelList
         return $payment;
     }
 
-    public static function getProduct($product_id)
+    public function getProduct($product_id)
     {
         $product = false;
 
@@ -388,6 +403,34 @@ class EmundusModelPayment extends JModelList
             }
         } else {
             JLog::add('Error getting product : product_id is empty', JLog::WARNING, 'com_emundus.payment');
+        }
+
+        return $product;
+    }
+
+    public function getProductByFnum($fnum)
+    {
+        $product = null;
+
+        if (!empty($fnum)) {
+            $payment = $this->getPaymentInfos($fnum);
+
+            if (!empty($payment)) {
+                $isScholarshipHolder = $this->isScholarshipStudent($fnum);
+                if ($isScholarshipHolder) {
+                    $product = $this->getProduct($payment->scholarship_holder_product_id);
+                } else {
+                    $product = $this->getProduct($payment->product_id);
+                }
+
+                if (!empty($product)) {
+                    $sort_price = str_replace(',', '', $product->product_sort_price);
+                    $price = number_format((double)$sort_price, 2, ',', '');
+                    $product->displayed_price = $price;
+                }
+            } else {
+                JLog::add('Error getting product : payment infos are empty', JLog::WARNING, 'com_emundus.payment');
+            }
         }
 
         return $product;
