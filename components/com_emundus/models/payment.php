@@ -596,7 +596,7 @@ class EmundusModelPayment extends JModelList
                 ->set('order_status = ' . $db->quote($hikashop_status))
                 ->set('order_invoice_id = ' . $db->quote($data['id']));
 
-            if (!empty($order_number())) {
+            if (!empty($order_number)) {
                 $query->set('order_number = ' . $db->quote($order_number));
             }
 
