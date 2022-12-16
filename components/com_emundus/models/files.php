@@ -945,7 +945,7 @@ class EmundusModelFiles extends JModelLegacy
                 $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
             }
         }
-        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
+        $pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent + 1) . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
 
         return $pageNavigation;
     }
