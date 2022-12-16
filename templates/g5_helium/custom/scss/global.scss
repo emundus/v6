@@ -3230,6 +3230,11 @@ ul.unstyled.em-linkForgot li a {
     border-color: var(--light-grey-3);
     border-radius: 4px;
     width: 100%;
+    li.search-field{
+      input[type="text"]{
+        width: auto !important;
+      }
+    }
   }
   .chzn-drop{
     border-color: var(--neutral-300);
