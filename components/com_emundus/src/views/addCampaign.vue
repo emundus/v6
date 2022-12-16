@@ -581,8 +581,19 @@ export default {
         if (this.isHiddenProgram) {
           if (this.programForm.label == "") {
             this.errors.progLabel = true;
-            document.getElementById('prog_label').focus();
-            return 0;
+	          document.getElementById('prog_label').focus();
+	          return 0;
+          } else {
+						// does this label already exists
+						const similarProgram = this.programs.find((program) => {
+							return program.label == this.programForm.label;
+						});
+
+						if (similarProgram != undefined) {
+							this.errors.progLabel = true;
+							document.getElementById('prog_label').focus();
+							return 0;
+						}
           }
         } else {
           document.getElementById('select_prog').focus();
@@ -616,10 +627,8 @@ export default {
 		        },
 		        data: qs.stringify( {body: this.programForm})
 	        }).then((response) => {
-		        if (task === 'createprogram') {
-			        this.programForm.code = response.data.data.programme_code;
-			        this.form.progid = response.data.data.programme_id;
-		        }
+		        this.programForm.code = response.data.data.programme_code;
+		        this.form.progid = response.data.data.programme_id;
 
 						this.updateCampaign();
 	        }).catch(error => {
