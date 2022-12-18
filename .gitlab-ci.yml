@@ -181,3 +181,4 @@ publish-db-image-job:
     - docker push emundus/tchooz-db:latest
   needs:
     - release-job
+    
