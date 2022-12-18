@@ -2,6 +2,7 @@ services:
   - name: docker:20.10-dind
 
 default:
+  retry: 1
   tags:
     - k8s
 
