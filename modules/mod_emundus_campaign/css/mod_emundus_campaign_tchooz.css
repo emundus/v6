@@ -257,11 +257,11 @@ a.em-blue-400-color:hover {
     min-height: 46px;
     font-family: var(--applicant-title-font) !important;
 }
-
-.mod_emundus_campaign__date * {
+/*
+.mod_emundus_campaign__date *{
     margin-right: 8px;
     margin-bottom: 8px !important;
-}
+}*/
 
 .mod_emundus_campaign__programme_tag {
     border-radius: 8px;
