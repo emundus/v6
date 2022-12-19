@@ -19,6 +19,9 @@ stages:
   - release
   - publish
 
+include:
+  - template: Security/Secret-Detection.gitlab-ci.yml
+
 check-tchooz-version-job:
   stage: prepare
   rules:
