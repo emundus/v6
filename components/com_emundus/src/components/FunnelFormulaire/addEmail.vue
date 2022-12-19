@@ -20,7 +20,6 @@
     <p>{{ TheCandidateDescription }}</p>
 
     <button class="em-primary-button em-w-auto em-mt-8" @click="$modal.show('modalAddTriggercandidate'); triggerSelected = null">
-      <span class="material-icons-outlined em-mr-8 em-color-white">add</span>
       {{ addTrigger }}
     </button>
 
@@ -64,7 +63,6 @@
     <p>{{ ManualDescription }}</p>
 
     <button class="em-primary-button em-w-auto em-mt-8" @click="$modal.show('modalAddTriggermanual'); triggerSelected = null">
-      <span class="material-icons-outlined em-mr-8 em-color-white">add</span>
       {{ addTrigger }}
     </button>
 
@@ -101,6 +99,8 @@
         </div>
       </div>
     </transition-group>
+
+    <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
 
@@ -124,6 +124,8 @@ export default {
       triggerSelected: null,
       manual_trigger: 0,
       candidate_trigger: 0,
+      loading: false,
+
       addTrigger: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_ADDTRIGGER"),
       removeTrig: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_REMOVETRIGGER"),
       affectTriggers: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_AFFECTTRIGGERS"),
@@ -171,6 +173,7 @@ export default {
       axios.get("index.php?option=com_emundus&controller=email&task=gettriggersbyprogram&pid=" + this.prog)
           .then(response => {
             this.triggers = response.data.data;
+            this.loading = false;
           });
     },
     triggerUsersWithProfile(trigger) {
@@ -197,6 +200,7 @@ export default {
     }
   },
   created() {
+    this.loading = true;
     this.getTriggers();
   }
 };

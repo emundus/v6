@@ -1,30 +1,3 @@
-.page-header h1 {
-  margin-top: 50px !important;
-  margin-bottom: 30px !important;
-}
-.fabrikForm {
-  margin-top: 0 !important;
-  overflow: visible;
-}
-.fabrikGroup {
-  background: #fff;
-  margin-bottom: 20px;
-  border-radius: 5px !important;
-  padding: 20px;
-  margin-top: 20px;
-}
-.fabrikForm fieldset {
-  position: relative;
-}
-legend {
-  margin: 10px 0 20px 0 !important;
-}
-.fabrikForm fieldset > .row-fluid{
-  padding: 5px 30px;
-}
-.fabrikLabel {
-  margin-top: 10px;
-}
 .row-fluid .control-group.fabrikElementContainer label.fabrikLabel.control-label.fabrikTip i.icon-star.small {
   top: -5px;
 }
@@ -35,52 +8,4 @@ legend {
   padding-left: 2px;
   color: #c30505;
   font-size: 5px;
-}
-.fabrikForm input[type="text"], .fabrikForm input[type="tel"], .fabrikForm input[type="number"], .fabrikForm textarea, .fabrikForm input[type="email"], .fabrikForm select {
-  border-radius: 4px !important;
-  height: 50px !important;
-  margin-bottom: 0 !important;
-}
-
-.fabrikSubElementContainer fieldset.btn-group {
-  width: 100px !important;
-  height: 38px !important;
-  display: flex !important;
-}
-.fabrikSubElementContainer fieldset.btn-group label {
-  height: 38px !important;
-  display: block !important;
-  width: 50% !important;
-  color: black !important;
-  border: solid 1px #E3E5E8;
-  background: #E3E5E8;
-}
-.fabrikSubElementContainer fieldset.btn-group .fabrikgrid_0{
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
-}
-.fabrikSubElementContainer fieldset.btn-group .fabrikgrid_1{
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-}
-.fabrikSubElementContainer fieldset.btn-group label span{
-  color: black !important;
-  width: 100% !important;
-  display: flex !important;
-  height: 100% !important;
-  background: transparent !important;
-  font-size: 16px !important;
-  justify-content: center !important;
-  align-items: center !important;
-}
-.fabrikSubElementContainer .radio{
-  display: flex;
-  align-items: center;
-}
-.fabrikSubElementContainer .radio input{
-  width: 16px !important;
-  height: 16px !important;
-}
-.fabrikSubElementContainer .radio span{
-    margin-top: 0 !important;
 }

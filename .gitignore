@@ -1,7 +1,5 @@
 /.gitignore.*
-/.idea/*
-.idea/*
-.idea/workspace.xml
+.idea
 .scannerwork
 workspace.xml
 /cache/*

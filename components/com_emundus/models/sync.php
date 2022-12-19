@@ -472,4 +472,28 @@ class EmundusModelSync extends JModelList {
 
         return $saved;
     }
+
+    public function getNodeId($upload_id)
+    {
+        $node_id = 0;
+
+        if (!empty($upload_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('node_id')
+                ->from($db->quoteName('#__emundus_uploads_sync'))
+                ->where('upload_id = ' . $upload_id);
+
+            $db->setQuery($query);
+
+            try {
+                $node_id = $db->loadResult();
+            } catch (Exception $e) {
+                JLog::add('Failed to found node id from upload id ' . $upload_id, JLog::ERROR, 'com_emundus.sync');
+            }
+        }
+
+        return $node_id;
+    }
 }

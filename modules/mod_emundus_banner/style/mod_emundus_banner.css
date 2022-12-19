@@ -1,0 +1,11 @@
+.mod_emundus_banner__banner{
+    background-image: url("/images/custom/default_banner.png");
+    height: 200px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+}
+
+#g-utility .g-container{
+    width: 100%;
+}

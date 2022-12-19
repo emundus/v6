@@ -71,11 +71,14 @@ function watch(elementId, attachId) {
                             link.appendChild(linkText);
 
                             var deleteButton = document.createElement('a');
-                            deleteButton.setAttribute("class", 'btn goback-btn em-deleteFile far fa-times-circle');
+                            deleteButton.setAttribute("class", 'em-pointer em-deleteFile em-ml-8');
                             deleteButton.setAttribute('value', result.files[i].filename);
 
-                            var icon = document.createElement('i');
-                            icon.setAttribute('class', 'far fa-times-circle');
+                            var deleteIcon = document.createElement('span');
+                            deleteIcon.setAttribute("class", 'material-icons-outlined');
+                            deleteIcon.setAttribute("style",'font-size: 16px');
+                            deleteIcon.appendChild(document.createTextNode('clear'));
+                            deleteButton.appendChild(deleteIcon);
 
                             divLink.appendChild(deleteButton);
 

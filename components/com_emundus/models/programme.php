@@ -420,69 +420,70 @@ class EmundusModelProgramme extends JModelList {
      * @since version 1.0
      */
     function getAllPrograms($lim, $page, $filter, $sort, $recherche) {
+        $all_programs = [];
+
         // Get affected programs
         $user = JFactory::getUser();
         $programs = $this->getUserPrograms($user->id);
         //
 
-        if (empty($lim)) {
-            $limit = 25;
-        } else {
-            $limit = $lim;
-        }
+        if (!empty($programs)) {
+            $limit = empty($lim) ? 25 : $lim;
 
-        if (empty($page)) {
-            $offset = 0;
-        } else {
-            $offset = ($page-1) * $limit;
-        }
-
-        if (empty($sort)) {
-            $sort = 'DESC';
-        }
-
-        $sortDb = 'p.id ';
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        if ($filter == 'Publish') {
-            $filterDate = $db->quoteName('p.published') . ' LIKE 1';
-        } else if ($filter == 'Unpublish') {
-            $filterDate = $db->quoteName('p.published') . ' LIKE 0';
-        } else {
-            $filterDate = ('1');
-        }
-
-        if (empty($recherche)) {
-            $fullRecherche = 1;
-        } else {
-            $rechercheLbl = $db->quoteName('p.label') . ' LIKE ' . $db->quote('%'.$recherche.'%');
-            $rechercheNotes = $db->quoteName('p.notes') . ' LIKE ' . $db->quote('%'.$recherche.'%');
-            $rechercheCategory = $db->quoteName('p.programmes') . ' LIKE ' . $db->quote('%'.$recherche.'%');
-            $fullRecherche = $rechercheLbl.' OR '.$rechercheNotes.' OR '.$rechercheCategory;
-        }
-
-        $query->select(['p.*', 'COUNT(sc.id) AS nb_campaigns'])
-            ->from($db->quoteName('#__emundus_setup_programmes', 'p'))
-            ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $db->quoteName('sc.training') . ' LIKE ' . $db->quoteName('p.code'))
-            ->where($filterDate)
-            ->where($fullRecherche)
-            ->andWhere($db->quoteName('p.code') . ' IN (' . implode(',',$db->quote($programs)) . ')')
-            ->group($sortDb)
-            ->order($sortDb.$sort);
-
-        try {
-            if(empty($lim)) {
-                $db->setQuery($query, $offset);
+            if (empty($page)) {
+                $offset = 0;
             } else {
-                $db->setQuery($query, $offset, $limit);
+                $offset = ($page-1) * $limit;
             }
-            return $db->loadObjectList();
-        } catch(Exception $e) {
-            JLog::add('component/com_emundus/models/program | Error at getting list of programs : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return new stdClass();
+
+            if (empty($sort)) {
+                $sort = 'DESC';
+            }
+
+            $sortDb = 'p.id ';
+
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            if ($filter == 'Publish') {
+                $filterDate = $db->quoteName('p.published') . ' LIKE 1';
+            } else if ($filter == 'Unpublish') {
+                $filterDate = $db->quoteName('p.published') . ' LIKE 0';
+            } else {
+                $filterDate = ('1');
+            }
+
+            if (empty($recherche)) {
+                $fullRecherche = 1;
+            } else {
+                $rechercheLbl = $db->quoteName('p.label') . ' LIKE ' . $db->quote('%'.$recherche.'%');
+                $rechercheNotes = $db->quoteName('p.notes') . ' LIKE ' . $db->quote('%'.$recherche.'%');
+                $rechercheCategory = $db->quoteName('p.programmes') . ' LIKE ' . $db->quote('%'.$recherche.'%');
+                $fullRecherche = $rechercheLbl.' OR '.$rechercheNotes.' OR '.$rechercheCategory;
+            }
+
+            $query->select(['p.*', 'COUNT(sc.id) AS nb_campaigns'])
+                ->from($db->quoteName('#__emundus_setup_programmes', 'p'))
+                ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $db->quoteName('sc.training') . ' LIKE ' . $db->quoteName('p.code'))
+                ->where($filterDate)
+                ->where($fullRecherche)
+                ->andWhere($db->quoteName('p.code') . ' IN (' . implode(',', $db->quote($programs)) . ')')
+                ->group($sortDb)
+                ->order($sortDb.$sort);
+
+            try {
+                if(empty($lim)) {
+                    $db->setQuery($query, $offset);
+                } else {
+                    $db->setQuery($query, $offset, $limit);
+                }
+                $all_programs =  $db->loadObjectList();
+            } catch(Exception $e) {
+                JLog::add('component/com_emundus/models/program | Error at getting list of programs : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            }
         }
+
+        return $all_programs;
     }
 
     /**
@@ -585,102 +586,101 @@ class EmundusModelProgramme extends JModelList {
      * @since version 1.0
      */
     public function addProgram($data) {
-
+        $response = false;
         $user = JFactory::getUser();
+        $user_id = !empty($user->id) ? $user->id : 62;
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        if (array_values($data)[1] == "") {
-            $data = null;
-        }
+        if (!empty($data) && !empty($data['label'])) {
+            $data['code'] = preg_replace('/[^A-Za-z0-9]/', '', $data['label']);
+            $data['code'] = str_replace(' ', '_', $data['code']);
+            $data['code'] = substr($data['code'], 0, 10);
+            $data['code'] = strtolower($data['code']);
+            $data['code'] = uniqid($data['code']. '-');
 
-        $data['code'] = preg_replace('/[^A-Za-z0-9]/', '', $data['label']);
-        $data['code'] = str_replace(' ', '_', $data['code']);
-        $data['code'] = substr($data['code'], 0, 10);
-        $data['code'] = strtolower($data['code']);
-        $data['code'] = uniqid($data['code']. '-');
+            JPluginHelper::importPlugin('emundus');
+            $dispatcher = JEventDispatcher::getInstance();
+            $dispatcher->trigger('callEventHandler', ['onBeforeProgramCreate', ['data' => $data]]);
 
-        JPluginHelper::importPlugin('emundus');
-        $dispatcher = JEventDispatcher::getInstance();
-        $dispatcher->trigger('callEventHandler', ['onBeforeProgramCreate', ['data' => $data]]);
+            if (count($data) > 0) {
+                $query->insert($db->quoteName('#__emundus_setup_programmes'))
+                    ->columns($db->quoteName(array_keys($data)))
+                    ->values(implode(',', $db->Quote(array_values($data))));
 
-        if (count($data) > 0) {
-            $query->insert($db->quoteName('#__emundus_setup_programmes'))
-                ->columns($db->quoteName(array_keys($data)))
-                ->values(implode(',', $db->Quote(array_values($data))));
+                try {
+                    $db->setQuery($query);
+                    $db->execute();
+                    $prog_id = $db->insertid();
 
-            try {
-                $db->setQuery($query);
-                $db->execute();
-                $prog_id = $db->insertid();
+                    $query->clear()
+                        ->select('*')
+                        ->from($db->quoteName('#__emundus_setup_programmes'))
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($prog_id));
+                    $db->setQuery($query);
+                    $programme = $db->loadObject();
 
-                $query->clear()
-                    ->select('*')
-                    ->from($db->quoteName('#__emundus_setup_programmes'))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($prog_id));
-                $db->setQuery($query);
-                $programme = $db->loadObject();
+                    // Create user group
+                    $query->clear()
+                        ->insert($db->quoteName('#__emundus_setup_groups'))
+                        ->set($db->quoteName('label') . ' = ' . $db->quote($programme->label))
+                        ->set($db->quoteName('published') . ' = 1')
+                        ->set($db->quoteName('class') . ' = ' . $db->quote('label-default'));
+                    $db->setQuery($query);
+                    $db->execute();
+                    $group_id = $db->insertid();
+                    //
 
-                // Create user group
-                $query->clear()
-                    ->insert($db->quoteName('#__emundus_setup_groups'))
-                    ->set($db->quoteName('label') . ' = ' . $db->quote($programme->label))
-                    ->set($db->quoteName('published') . ' = 1')
-                    ->set($db->quoteName('class') . ' = ' . $db->quote('label-default'));
-                $db->setQuery($query);
-                $db->execute();
-                $group_id = $db->insertid();
-                //
+                    // Link group with programme
+                    $query->clear()
+                        ->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
+                        ->set($db->quoteName('parent_id') . ' = ' . $group_id)
+                        ->set($db->quoteName('course') . ' = ' . $db->quote($programme->code));
+                    $db->setQuery($query);
+                    $db->execute();
+                    //
 
-                // Link group with programme
-                $query->clear()
-                    ->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
-                    ->set($db->quoteName('parent_id') . ' = ' . $group_id)
-                    ->set($db->quoteName('course') . ' = ' . $db->quote($programme->code));
-                $db->setQuery($query);
-                $db->execute();
-                //
+                    // Affect coordinator to the group of the program
+                    $query->clear()
+                        ->insert($db->quoteName('#__emundus_groups'))
+                        ->set($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
+                        ->set($db->quoteName('group_id') . ' = ' . $group_id);
+                    $db->setQuery($query);
+                    $db->execute();
+                    //
 
-                // Affect coordinator to the group of the program
-                $query->clear()
-                    ->insert($db->quoteName('#__emundus_groups'))
-                    ->set($db->quoteName('user_id') . ' = ' . $db->quote($user->id))
-                    ->set($db->quoteName('group_id') . ' = ' . $group_id);
-                $db->setQuery($query);
-                $db->execute();
-                //
+                    // Link All rights group with programme
+                    $eMConfig = JComponentHelper::getParams('com_emundus');
+                    $all_rights_group_id = $eMConfig->get('all_rights_group', 1);
+                    $query->clear()
+                        ->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
+                        ->set($db->quoteName('parent_id') . ' = ' . $db->quote($all_rights_group_id))
+                        ->set($db->quoteName('course') . ' = ' . $db->quote($programme->code));
+                    $db->setQuery($query);
+                    $db->execute();
+                    //
 
-                // Link All rights group with programme
-                $eMConfig = JComponentHelper::getParams('com_emundus');
-                $all_rights_group_id = $eMConfig->get('all_rights_group', 1);
-                $query->clear()
-                    ->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
-                    ->set($db->quoteName('parent_id') . ' = ' . $db->quote($all_rights_group_id))
-                    ->set($db->quoteName('course') . ' = ' . $db->quote($programme->code));
-                $db->setQuery($query);
-                $db->execute();
-                //
+                    // Create evaluator and manager group
+                    $this->addGroupToProgram($programme->label,$programme->code,2);
+                    $this->addGroupToProgram($programme->label,$programme->code,3);
+                    //
 
-                // Create evaluator and manager group
-                $this->addGroupToProgram($programme->label,$programme->code,2);
-                $this->addGroupToProgram($programme->label,$programme->code,3);
-                //
+                    // Call plugin triggers
+                    $dispatcher->trigger('callEventHandler', ['onAfterProgramCreate', ['programme' => $programme]]);
 
-                // Call plugin triggers
-                $dispatcher->trigger('callEventHandler', ['onAfterProgramCreate', ['programme' => $programme]]);
+                    $response = array(
+                        'programme_id' => $prog_id,
+                        'programme_code' => $programme->code
+                    );
+                } catch(Exception $e) {
+                    JLog::add('component/com_emundus/models/program | Error when creating a program : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                    $response = $e->getMessage();
+                }
 
-                return array(
-                    'programme_id' => $prog_id,
-                    'programme_code' => $programme->code
-                );
-            } catch(Exception $e) {
-                JLog::add('component/com_emundus/models/program | Error when creating a program : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-                return $e->getMessage();
             }
-
-        } else {
-            return false;
         }
+
+        return $response;
     }
 
     /**
@@ -692,44 +692,49 @@ class EmundusModelProgramme extends JModelList {
      * @since version 1.0
      */
     public function updateProgram($id, $data) {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $updated = false;
 
-        JPluginHelper::importPlugin('emundus');
-        $dispatcher = JEventDispatcher::getInstance();
-        $dispatcher->trigger('callEventHandler', ['onBeforeProgramUpdate', ['id' => $id, 'data' => $data]]);
+        if (!empty($id) && !empty($data)) {
+            $db = JFactory::getDbo();
 
-        if (count($data) > 0) {
+            JPluginHelper::importPlugin('emundus');
+            $dispatcher = JEventDispatcher::getInstance();
+            $dispatcher->trigger('callEventHandler', ['onBeforeProgramUpdate', ['id' => $id, 'data' => $data]]);
 
-            $fields = [];
-
-            foreach ($data as $key => $val) {
-                $insert = $db->quoteName($key) . ' = ' . $db->quote($val);
-                $fields[] = $insert;
-            }
-
-            $query->update($db->quoteName('#__emundus_setup_programmes'))
-                ->set($fields)
-                ->where($db->quoteName('id') . ' = '.$db->quote($id));
-
-            try {
+            if (!empty($data)) {
+                $query = 'SELECT DISTINCT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = ' . $db->quote('jos_emundus_setup_programmes');
                 $db->setQuery($query);
-                $res = $db->execute();
+                $table_columns = $db->loadColumn();
 
-                if ($res) {
-                    $dispatcher = JEventDispatcher::getInstance();
-                    $dispatcher->trigger('callEventHandler', ['onAfterProgramUpdate', ['id' => $id, 'data' => $data]]);
+                $fields = [];
+                foreach ($data as $key => $val) {
+                    if (in_array($key, $table_columns) && $key != 'id' && $key != 'code') {
+                        $fields[] = $db->quoteName($key) . ' = ' . $db->quote($val);
+                    }
                 }
 
-                return $res;
-            } catch(Exception $e) {
-                JLog::add('component/com_emundus/models/program | Error when updating the program ' . $id . ': ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-                return $e->getMessage();
-            }
+                if (!empty($fields)) {
+                    $query = $db->getQuery(true);
+                    $query->update($db->quoteName('#__emundus_setup_programmes'))
+                        ->set($fields)
+                        ->where($db->quoteName('id') . ' = '.$db->quote($id));
 
-        } else {
-            return false;
+                    try {
+                        $db->setQuery($query);
+                        $updated = $db->execute();
+
+                        if ($updated) {
+                            $dispatcher = JEventDispatcher::getInstance();
+                            $dispatcher->trigger('callEventHandler', ['onAfterProgramUpdate', ['id' => $id, 'data' => $data]]);
+                        }
+                    } catch(Exception $e) {
+                        JLog::add('component/com_emundus/models/program | Error when updating the program ' . $id . ': ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
+                    }
+                }
+            }
         }
+
+        return $updated;
     }
 
     /**
@@ -756,7 +761,7 @@ class EmundusModelProgramme extends JModelList {
                 $query->select($db->qn('sc.id'))
                     ->from($db->qn('#__emundus_setup_campaigns', 'sc'))
                     ->leftJoin($db->quoteName('#__emundus_setup_programmes', 'sp').' ON '.$db->quoteName('sc.training').' LIKE '.$db->quoteName('sp.code'))
-                    ->where($db->quoteName('sp.id') . ' IN (' . implode(", ",array_values($data)) . ')');
+                    ->where($db->quoteName('sp.id') . ' IN (' . implode(", ", array_values($data)) . ')');
 
                 $db->setQuery($query);
                 $campaigns = $db->loadColumn();
@@ -779,7 +784,7 @@ class EmundusModelProgramme extends JModelList {
                 if ($res) {
                     // Call plugin event after we delete the programme
                     $dispatcher = JEventDispatcher::getInstance();
-                    $dispatcher->trigger('callEventHandler', ['onAfterProgramDelete', ['id' => $id, 'data' => $data]]);
+                    $dispatcher->trigger('callEventHandler', ['onAfterProgramDelete', ['id' => JFactory::getUser()->id, 'data' => $data]]);
                 }
 
                 return $res;
@@ -2059,7 +2064,7 @@ class EmundusModelProgramme extends JModelList {
             $db->execute();
             //
 
-            $formbuilder->createHiddenGroup($formid,1);
+            //$formbuilder->createHiddenGroup($formid,1);
             $group = $formbuilder->createGroup($label,$formid);
 
             // Link groups to program
@@ -2125,33 +2130,38 @@ class EmundusModelProgramme extends JModelList {
      *
      * @since version 1.0
      */
-    function getUserPrograms($user_id){
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+    function getUserPrograms($user_id) {
+        $user_programs = [];
 
-        $query->select('distinct sp.code')
-            ->from($db->quoteName('#__emundus_groups','g'))
-            ->leftJoin($db->quoteName('#__emundus_setup_groups', 'sg'). ' ON '. $db->quoteName('g.group_id').' = '.$db->quoteName('sg.id'))
-            ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'sgr'). ' ON '. $db->quoteName('sg.id').' = '.$db->quoteName('sgr.parent_id'))
-            ->leftJoin($db->quoteName('#__emundus_setup_programmes', 'sp'). ' ON '. $db->quoteName('sgr.course').' = '.$db->quoteName('sp.code'))
-            ->where($db->quoteName('g.user_id') . ' = ' . $db->quote($user_id));
-        $db->setQuery($query);
+        if (!empty($user_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-        try {
-            $programs = $db->loadObjectList();
+            $query->select('distinct sp.code')
+                ->from($db->quoteName('#__emundus_groups','g'))
+                ->leftJoin($db->quoteName('#__emundus_setup_groups', 'sg'). ' ON '. $db->quoteName('g.group_id').' = '.$db->quoteName('sg.id'))
+                ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'sgr'). ' ON '. $db->quoteName('sg.id').' = '.$db->quoteName('sgr.parent_id'))
+                ->leftJoin($db->quoteName('#__emundus_setup_programmes', 'sp'). ' ON '. $db->quoteName('sgr.course').' = '.$db->quoteName('sp.code'))
+                ->where($db->quoteName('g.user_id') . ' = ' . $db->quote($user_id));
+            $db->setQuery($query);
 
-            $progs = [];
-            foreach ($programs as $program){
-                if($program->code != null){
-                    $progs[] = $program->code;
+            try {
+                $programs = $db->loadObjectList();
+
+                $progs = [];
+                foreach ($programs as $program) {
+                    if ($program->code != null) {
+                        $progs[] = $program->code;
+                    }
                 }
-            }
 
-            return $progs;
-        }  catch (Exception $e) {
-            JLog::add('component/com_emundus/models/program | Error at getting programs of the user ' . $user_id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
+                $user_programs = $progs;
+            }  catch (Exception $e) {
+                JLog::add('component/com_emundus/models/program | Error at getting programs of the user ' . $user_id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            }
         }
+
+        return $user_programs;
     }
 
     /**

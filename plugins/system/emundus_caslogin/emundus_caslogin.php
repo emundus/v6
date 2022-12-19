@@ -240,11 +240,26 @@ class plgSystemEmundus_caslogin extends JPlugin
                     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, $certificateFile || $certificatePath);
                     curl_setopt($curl, CURLOPT_CAINFO, $certificateFile);
                     curl_setopt($curl, CURLOPT_CAPATH, $certificatePath);
+                    if($params->get('ssl_cipher',0) == 1) {
+                        curl_setopt($curl, CURLOPT_SSL_CIPHER_LIST, 'DEFAULT:!DH');
+                    }
                     $result = curl_exec($curl);
+                    if(!$result){
+                        $error = curl_error($curl);
+                        JLog::add(
+                            new ExternalloginLogEntry(
+                                'Error at verification of server ' . $sid . "\n" . $error,
+                                JLog::ERROR,
+                                'system-emundus_caslogin-verify'
+                            )
+                        );
+                    }
                     curl_close($curl);
 
                     // Result is not empty
                     if (!empty($result)) {
+                        $malformed_attributes = $params->get('attributes_trim',0);
+
                         // Log message
                         if ($params->get('log_verify', 0)) {
                             JLog::add(
@@ -283,7 +298,10 @@ class plgSystemEmundus_caslogin extends JPlugin
 
                             $xpath = new DOMXPath($dom);
                             $xpath->registerNamespace('cas', 'http://www.yale.edu/tp/cas');
-                            $success = $xpath->query('/cas:serviceResponse/cas:authenticationSuccess[1]');
+                            $success = $xpath->query('/cas:serviceResponse/cas:authenticationSuccess')[1];
+                            if($success->length != 1){
+                                $success = $xpath->query('/cas:serviceResponse/cas:authenticationSuccess');
+                            }
 
                             if ($success && $success->length == 1) {
                                 // Store the xpath
@@ -295,15 +313,27 @@ class plgSystemEmundus_caslogin extends JPlugin
                                 // Store the server
                                 $this->server = $server;
 
-                                // Get username
-                                $userName = $this->xpath->evaluate($params->get('username_xpath') ?: 'string(cas:user)', $this->success);
+                                // Get email & username
+                                if($malformed_attributes == 1) {
+                                    // REGEX
+                                    $re = '/\s/m';
+                                    $re2 = '/\----/m';
+                                    $subst = '';
 
-                                // Get email
-                                $userEmail = str_replace(
-                                    array('<', '>', '"', "'", '%', ';', '(', ')', '&', '\\'),
-                                    '',
-                                    $this->xpath->evaluate($params->get('email_xpath'), $this->success)
-                                );
+                                    $userName = trim(preg_replace($re2, $subst, preg_replace($re, $subst, $this->xpath->evaluate($params->get('username_xpath') ?: 'string(cas:user)', $this->success))));
+                                    $userEmail = str_replace(
+                                        array('<', '>', '"', "'", '%', ';', '(', ')', '&', '\\'),
+                                        '',
+                                        trim(preg_replace($re2, $subst, preg_replace($re, $subst, $this->xpath->evaluate($params->get('email_xpath'), $this->success))))
+                                    );
+                                } else {
+                                    $userName = $this->xpath->evaluate($params->get('username_xpath') ?: 'string(cas:user)', $this->success);
+                                    $userEmail = str_replace(
+                                        array('<', '>', '"', "'", '%', ';', '(', ')', '&', '\\'),
+                                        '',
+                                        $this->xpath->evaluate($params->get('email_xpath'), $this->success)
+                                    );
+                                }
 
                                 // Log message
                                 if ($params->get('log_xml', 0)) {
@@ -385,9 +415,14 @@ class plgSystemEmundus_caslogin extends JPlugin
                                                 $app->enqueueMessage(JText::_('PLG_SYSTEM_CASLOGIN_NO_ACTIVATED_SERVER'), 'error');
                                             }
                                         } else {
-                                            // No server is activated for this user - no access
-                                            $app->enqueueMessage(JText::_('PLG_SYSTEM_CASLOGIN_NO_ACTIVATED_SERVER'), 'error');
-                                            $access = false;
+                                            $query->clear()
+                                                ->insert("#__externallogin_users");
+                                            $query->set($db->quoteName("server_id") . ' = ' . $db->quote($sid));
+                                            $query->set($db->quoteName("user_id") . ' = ' . $db->quote($uID));
+                                            $db->setQuery($query);
+                                            $db->execute();
+
+                                            $access = true;
                                         }
                                     } catch (Exception $exc) {
                                         $app->enqueueMessage($exc->getMessage(), 'error');
@@ -520,7 +555,20 @@ class plgSystemEmundus_caslogin extends JPlugin
                         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, $certificateFile || $certificatePath);
                         curl_setopt($curl, CURLOPT_CAINFO, $certificateFile);
                         curl_setopt($curl, CURLOPT_CAPATH, $certificatePath);
+                        if($params->get('ssl_cipher',0) == 1) {
+                            curl_setopt($curl, CURLOPT_SSL_CIPHER_LIST, 'DEFAULT:!DH');
+                        }
                         $result = curl_exec($curl);
+                        if(!$result){
+                            $error = curl_error($curl);
+                            JLog::add(
+                                new ExternalloginLogEntry(
+                                    'Error at verification of server ' . $sid . "\n" . $error,
+                                    JLog::ERROR,
+                                    'system-emundus_caslogin-verify'
+                                )
+                            );
+                        }
                         curl_close($curl);
 
                         // Result is not empty
@@ -632,24 +680,52 @@ class plgSystemEmundus_caslogin extends JPlugin
             $response->type = 'system.emundus_caslogin';
             $response->message = '';
 
-            // Compute sanitized username. See libraries/src/Table/User.php (check function)
-            $response->username = str_replace(
-                array('<', '>', '"', "'", '%', ';', '(', ')', '&', '\\'),
-                '',
-                $this->xpath->evaluate($params->get('username_xpath'), $this->success)
-            );
+            $malformed_attributes = $params->get('attributes_trim',0);
 
-            // Compute sanitized email. See libraries/src/Table/User.php (check function)
-            $response->email = str_replace(
-                array('<', '>', '"', "'", '%', ';', '(', ')', '&', '\\'),
-                '',
-                $this->xpath->evaluate($params->get('email_xpath'), $this->success)
-            );
+            // Compute attributes
+            if($malformed_attributes == 1) {
+                // REGEX
+                $re = '/\s/m';
+                $re2 = '/\----/m';
+                $subst = '';
 
-            // Compute name
-            $response->fullname = $this->xpath->evaluate($params->get('name_xpath'), $this->success);
-            $response->firstname = !empty($params->get('firstname_xpath')) ? $this->xpath->evaluate($params->get('firstname_xpath'), $this->success) : '';
-            $response->lastname = !empty($params->get('lastname_xpath')) ? $this->xpath->evaluate($params->get('lastname_xpath'), $this->success) : '';
+                $response->username = str_replace(
+                    array('<', '>', '"', "'", '%', ';', '(', ')', '&', '\\'),
+                    '',
+                    trim(preg_replace($re2, $subst, preg_replace($re, $subst, $this->xpath->evaluate($params->get('username_xpath'), $this->success))))
+                );
+                $response->email = str_replace(
+                    array('<', '>', '"', "'", '%', ';', '(', ')', '&', '\\'),
+                    '',
+                    trim(preg_replace($re2, $subst, preg_replace($re, $subst, $this->xpath->evaluate($params->get('email_xpath'), $this->success))))
+                );
+                $response->firstname = !empty($params->get('firstname_xpath')) ? trim(preg_replace($re2, $subst, preg_replace($re, $subst, $this->xpath->evaluate($params->get('firstname_xpath'), $this->success)))) : '';
+                $response->lastname = !empty($params->get('lastname_xpath')) ? trim(preg_replace($re2, $subst, preg_replace($re, $subst, $this->xpath->evaluate($params->get('lastname_xpath'), $this->success)))) : '';
+                if(!empty($params->get('name_xpath',''))) {
+                    $response->fullname = trim(preg_replace($re2, $subst, preg_replace($re, $subst, $this->xpath->evaluate($params->get('name_xpath'), $this->success))));
+                } else {
+                    $response->fullname = $response->lastname . ' ' . $response->firstname;
+                }
+            } else {
+                $response->username = str_replace(
+                    array('<', '>', '"', "'", '%', ';', '(', ')', '&', '\\'),
+                    '',
+                    $this->xpath->evaluate($params->get('username_xpath'), $this->success)
+                );
+                $response->email = str_replace(
+                    array('<', '>', '"', "'", '%', ';', '(', ')', '&', '\\'),
+                    '',
+                    $this->xpath->evaluate($params->get('email_xpath'), $this->success)
+                );
+                $response->firstname = !empty($params->get('firstname_xpath')) ? $this->xpath->evaluate($params->get('firstname_xpath'), $this->success) : '';
+                $response->lastname = !empty($params->get('lastname_xpath')) ? $this->xpath->evaluate($params->get('lastname_xpath'), $this->success) : '';
+                if(!empty($params->get('name_xpath',''))) {
+                    $response->fullname = $this->xpath->evaluate($params->get('name_xpath'), $this->success);
+                } else {
+                    $response->fullname = $response->lastname . ' ' . $response->firstname;
+                }
+            }
+
 
             // Compute groups
             if ($params->get('group_xpath')) {
@@ -767,7 +843,11 @@ class plgSystemEmundus_caslogin extends JPlugin
                 foreach ($other_properties->name as $key => $db_column){
                     $xpath = $other_properties->code_xpath[$key];
 
-                    $responses = $this->xpath->query($xpath, $this->success);
+                    if($malformed_attributes == 1) {
+                        $responses = trim(preg_replace($re2, $subst, preg_replace($re, $subst, $this->xpath->query($xpath, $this->success))));
+                    } else {
+                        $responses = $this->xpath->query($xpath, $this->success);
+                    }
 
                     $values = array();
                     if($responses->length > 0) {

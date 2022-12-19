@@ -14,9 +14,9 @@ JHTML::_('script', 'system/multiselect.js', false, true);
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
-$document->addStyleSheet(JURI::base()."media/com_emundus/lib/chosen/chosen.min.css");
+$document->addStyleSheet(JURI::base()."media/jui/css/chosen.min.css");
 $document->addScript(JURI::base() . 'media/jui/js/jquery.min.js');
-$document->addScript(JURI::base()."media/com_emundus/lib/chosen/chosen.jquery.min.js");
+$document->addScript(JURI::base()."media/jui/js/chosen.jquery.min.js");
 $document->addScript('media/editors/tinymce4/tinymce.min.js');
 $document->addScript('media/com_jcrm/js/angular.js');
 $document->addScript('media/com_jcrm/js/angular-ui-tinymce/tinymce.js');

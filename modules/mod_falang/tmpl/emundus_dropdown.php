@@ -17,34 +17,40 @@ foreach ($list as $key=> $language) {
     $list[$key]->display = true;
 }
 ?>
-<form name="lang" method="post" action="<?php echo htmlspecialchars(JUri::current()); ?>">
+<form name="lang" method="post" action="<?php echo htmlspecialchars(JUri::current()); ?>" style="margin-bottom: 0">
     <?php if (!$params->get('advanced_dropdown',0)) : ?>
-    	<select class="inputbox" onchange="document.location.replace(this.value);" >
-            <?php foreach($list as $language):?>
-                <?php if ($language->display) { ?>
-                    <option value="<?php echo $language->link;?>" <?php echo !empty($language->active) ? 'selected="selected"' : ''?>><?php echo $language->title_native;?></option>
-                <?php } else { ?>
-                    <option disabled="disabled" style="opacity: 0.5" value="<?php echo $language->link;?>" <?php echo !empty($language->active) ? 'selected="selected"' : ''?>><?php echo $language->title_native;?></option>
-                <?php } ?>
-            <?php endforeach; ?>
-        </select>
-    <?php else : ?>
+        <?php foreach($list as $language):?>
+            <?php if (!empty($language->active)) : ?>
+            <button type="button" id="mod_falang_emundus___button" class="mod_falang_emundus___button" onclick="displayOtherLanguages()">
+                <?php if ($params->get('show_name', 1)):?>
+                    <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
+                <?php endif; ?>
+                <span class="material-icons" style="font-size: 30px">expand_more</span>
+            </button>
+            <?php endif; ?>
+        <?php endforeach; ?>
 
-        <script type="application/javascript">
-            jQuery(function() {
-                var speed = 150;
-                jQuery('div.advanced-dropdown').hover(
-                    function()
-                    {
-                        jQuery(this).find('ul').filter(':not(:animated)').slideDown({duration: speed});
-                    },
-                    function()
-                    {
-                        jQuery(this).find('ul').filter(':not(:animated)').slideUp({duration: speed});
-                    }
-                );
-            });
-        </script>
+    <div id="mod_falang_emundus___other_languages" class="mod_falang_emundus___other_languages em-border-neutral-400" style="display: none">
+        <?php foreach($list as $language):?>
+        <span <?php if (!empty($language->active)) : ?>class="mod_falang_emundus___other_languages_selected"<?php endif; ?> onclick="document.location.replace('<?php echo $language->link; ?>');">
+            <?php echo $language->title_native; ?>
+        </span>
+        <?php endforeach; ?>
+    </div>
+
+    	<!--<select class="inputbox mod_emundus_falang___select" onchange="document.location.replace(this.value);" >
+            <?php /*foreach($list as $language):*/?>
+                <?php /*if ($language->display) { */?>
+                    <option value="<?php /*echo $language->link;*/?>" <?php /*echo !empty($language->active) ? 'selected="selected"' : ''*/?>>
+                        <?php /*if ($params->get('show_name', 1)):*/?>
+                            <?php /*echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);*/?>
+                        <?php /*endif; */?></option>
+                <?php /*} else { */?>
+                    <option disabled="disabled" style="opacity: 0.5" value="<?php /*echo $language->link;*/?>" <?php /*echo !empty($language->active) ? 'selected="selected"' : ''*/?>><?php /*echo $language->title_native;*/?></option>
+                <?php /*} */?>
+            <?php /*endforeach; */?>
+        </select>-->
+    <?php else : ?>
 
         <!-- >>> [PAID] >>> -->
     <?php foreach($list as $language):?>
@@ -62,6 +68,7 @@ foreach ($list as $key=> $language) {
         </a>
     <?php endif; ?>
     <?php endforeach;?>
+
         <ul class="<?php echo $params->get('inline', 1) ? 'lang-inline' : 'lang-block';?>" style="display: none">
             <?php foreach($list as $language):?>
                 <?php if ($params->get('show_active', 0) || !$language->active):?>
@@ -95,4 +102,32 @@ foreach ($list as $key=> $language) {
 
     <?php endif; ?>
 </form>
+
+<script>
+    function displayOtherLanguages(){
+        let other_languages = document.getElementById('mod_falang_emundus___other_languages');
+        if(other_languages.style.display === 'none'){
+            other_languages.style.display = 'flex';
+        } else {
+            other_languages.style.display = 'none';
+        }
+    }
+
+    document.addEventListener('click', function (e) {
+        let other_languages = document.getElementById('mod_falang_emundus___other_languages');
+        let clickInsideModule = false;
+
+        if(other_languages.style.display === 'flex') {
+            e.composedPath().forEach((pathElement) => {
+                if (pathElement.id == "mod_falang_emundus___other_languages" || pathElement.id == "mod_falang_emundus___button") {
+                    clickInsideModule = true;
+                }
+            });
+
+            if (!clickInsideModule) {
+                other_languages.style.display = 'none';
+            }
+        }
+    });
+</script>
 

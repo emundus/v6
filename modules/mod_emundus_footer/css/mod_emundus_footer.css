@@ -41,7 +41,6 @@
 }
 
 .em-container-footer-cand .em-col-3-footer a {
-    color: #000 !important;
     text-decoration: none;
     font-weight: 500 ;
     text-align: end;
@@ -81,6 +80,10 @@ hr.footer-separation {
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
+}
+
+.em-container-footer-gest .em-block-footer p {
+    color: var(--neutral-900);
 }
 
 .em-container-footer-gest .em-block-footer a {

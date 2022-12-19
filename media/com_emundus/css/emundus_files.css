@@ -1,8 +1,8 @@
 /*boutons*/
 
 .em-user-personal-filter .btn-xs, *.btn, a.btn-attach, .xclsform .panel-body button, button.close {
-    border-radius: 4px !important;
-    padding: 6px 8px;
+    border-radius: 8px !important;
+    padding: 10px 24px;
     color: #fff;
     text-shadow: none !important;
     line-height: normal !important;
@@ -214,6 +214,18 @@ button.close {
     background: #F2F2F2 !important;
 }
 
+th {
+    position: sticky;
+    background: white !important;
+    z-index: 5;
+    box-shadow: 0px 0px 0px rgba(5, 47, 55, 0.07), 0px 1px 0px rgba(5, 47, 55, 0.06), 0px 2px 0px rgba(5, 47, 55, 0.1);
+}
+.container-result {
+    position: sticky;
+    background: white;
+    z-index: 6;
+}
+
 
 td:first-child > .em-cell {
     display: flex;
@@ -319,6 +331,7 @@ ul.pagination.pagination-sm a {
     width: 30px;
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 ul.pagination.pagination-sm a:active,
@@ -331,21 +344,16 @@ ul.pagination.pagination-sm a:hover {
 #check {
     min-width: 150px !important;
     max-width: 220px !important;
-    display: flex;
-    height: 69px;
 }
 
-#check label {
+#check label:not(.check-box) {
     margin-bottom: 0 !important;
-    min-width: 75px;
+    padding: 10px 24px;
+    width: 100%;
 }
 
 #check input[type="checkbox"] {
     margin: 0 !important;
-}
-
-#check label.em-check-all-all{
-    padding-left:10px;
 }
 
 table > thead > tr > th {
@@ -806,7 +814,7 @@ div#em-modal-actions #form-element{
 div#em-modal-actions #savePDFfilter, div#em-modal-actions #savefilter{
     margin-left: 0;
     margin-right: 1%;
-    border-radius: 4px;
+    border-radius: var(--em-border-radius);
     margin-top: 10px;
     background: #5a5a72;
     border: solid 1px #5a5a72;
@@ -840,6 +848,7 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 
 .g-back-office-emundus-tableau .col-md-3.side-panel {
     padding: 0;
+    position: sticky;
 }
 
 .g-back-office-emundus-tableau .col-md-9.main-panel {
@@ -1244,16 +1253,6 @@ div#em-appli-block .panel-body {
     background: #ffffff;
 }
 
-#em-export-elts{
-    padding:0!important;
-    margin:0!important;
-}
-
-#em-export-elts #em-export{
-    padding:0!important;
-    margin:0!important;
-}
-
 #comment-body{
     margin:10px 0!important;
 }
@@ -1315,8 +1314,10 @@ p {
 }*/
 
 #check {
-    min-width: 85px !important;
+    width: 80px !important;
+    min-width: 80px !important;
     max-width: 100px !important;
+    z-index: 7;
 }
 
 .em-excel_elts {
@@ -1329,11 +1330,6 @@ p {
     overflow-x: auto;
     overflow-y: auto;
     text-overflow: ellipsis;
-}
-
-.em-data-container {
-    width: 100%;
-    overflow: auto;
 }
 
 th>.em-cell {
@@ -1429,7 +1425,6 @@ textarea>.input-group-btn>.btn {
 
 label {
     color: #000;
-    margin-bottom: 8px !important;
     font-weight: bold;
     display: inline;
 }
@@ -2090,31 +2085,25 @@ label[for="em-file_to_upload"]:hover {
 .selectContainer{
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: start;
     align-items: center;
     position: relative;
-    width: 40px;
-    height: 40px;
+    padding: 6px;
+    border-radius: 8px;
 }
 .selectPage{
-    height: 35px;
-    width: 30px;
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: start;
     align-items: center;
+    margin-top: -5px;
 }
 .selectPage>.check-box{
     color: #9EA4AB !important;
-    margin-bottom: 5px !important;
+    margin-bottom: 0 !important;
     font-weight: bold !important;
     display: inline;
     min-width: 0 !important;
-}
-.selectPage:hover{
-    background-color: #dadada;
-    border-radius: 5px;
-
 }
 .selectPage > input[type=checkbox] { display:none; } /* to hide the checkbox itself */
 .selectPage > input[type=checkbox] + label:before {
@@ -2129,12 +2118,13 @@ label[for="em-file_to_upload"]:hover {
 .selectPage > input[type=checkbox]:checked + label:before { content: "\f046"; font-size: 1.2rem; } /* checked icon */
 
 .selectDropdown{
-    height: 35px;
-    width: 20px;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    margin-left: 10px;
+    width: 20px;
+    height: 20px;
 }
 .selectDropdown:hover{
     background-color: #dadada;
@@ -2145,17 +2135,17 @@ label[for="em-file_to_upload"]:hover {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-    border-radius: 10px;
+    align-items: start;
+    border-radius: 8px;
     background-color:white;
     height: auto;
-    width: 150px;
+    width: 100px;
     position: absolute;
+    box-shadow: 0px 8px 10px 1px rgba(0,0,0,.14),0px 3px 14px 2px rgba(0,0,0,.12),0px 5px 5px -3px rgba(0,0,0,.2);
+    padding: 4px 0 4px 0;
 }
 .selectAll>label{
     color: black;
-    width: 150px;
-    margin-top: 5px;
     margin-bottom: 5px;
 }
 .selectAll > label > input[type=checkbox]{
@@ -2194,7 +2184,27 @@ label[for="em-file_to_upload"]:hover {
     justify-content: space-between;
     align-items: center;
     padding-bottom: 0 !important;
+    flex-wrap: wrap;
+    padding-left: 0 !important;
 }
+
+.countCheckedCheckbox{
+    width: 100%;
+    height: 36px;
+    margin-bottom: 8px;
+    text-align: center;
+    padding: 8px;
+    background: transparent;
+}
+
+.countCheckedCheckbox a.em-pointer{
+    color: var(--main-500);
+}
+
+.countCheckedCheckbox a.em-pointer:hover {
+    color: var(--main-600);
+}
+
 
 .tooltipSelectAttachments{
     display:none;
@@ -2385,6 +2395,7 @@ div#em-assoc-files .panel > .panel-heading {
 }
 
 .glyphicon {
+    z-index: 4;
     display: inline-flex;
     align-items: center;
 }
@@ -2394,7 +2405,7 @@ div#em-assoc-files .panel > .panel-heading {
     text-shadow: none;
     color: #FFFFFF;
     padding: 0px 12px !important;
-    border-radius: 4px !important;
+    border-radius: var(--em-border-radius) !important;
 }
 
 .g-back-office-emundus-tableau #em_select_filter #del-filter {

@@ -19,16 +19,26 @@ class EmundusControllerSamples extends JControllerLegacy
 
     function generate(){
         if(EmundusHelperAccess::asAdministratorAccessLevel(JFactory::getUser()->id)) {
-            $datas = JFactory::getApplication()->input->getArray();
+            $app = JFactory::getApplication();
+            $datas = $app->input->getArray();
 
             include_once(JPATH_SITE.'/administrator/components/com_emundus/models/samples.php');
             $mSamples = new EmundusModelSamples();
+
+            if($datas['samples_programs']){
+                $i = 0;
+                $codes = [];
+                while($i < $datas['samples_programs']) {
+                    $codes[] = $mSamples->createSampleProgram('Programme ' . $i,'prog-' . $i);
+                    $i++;
+                }
+            }
 
             if($datas['samples_campaigns']){
                 $i = 0;
                 $campaigns = [];
                 while($i < $datas['samples_campaigns']) {
-                    $campaigns[] = $mSamples->createSampleCampaign('Campagne de test ' . $i);
+                    $campaigns[] = $mSamples->createSampleCampaign('Campagne ' . $i);
                     $i++;
                 }
             }
@@ -36,24 +46,35 @@ class EmundusControllerSamples extends JControllerLegacy
             if($datas['samples_users']){
                 $i = 0;
                 $j = 0;
+                $nb_files_created = 0;
+
                 while($i < $datas['samples_users']) {
                     $user = $mSamples->createSampleUser(9,'user'.$i.'.test@emundus.fr');
                     $i++;
-                    if($datas['samples_files']){
+                    if ($datas['samples_files']) {
                         while($j < $datas['samples_files']) {
-                            $mSamples->createSampleFile($user->id);
+                            $nb_files_created += $mSamples->createSampleFile($user->id);
                             $j++;
                         }
                     }
                 }
+
+                if ($datas['samples_files']) {
+                    $app->enqueueMessage($nb_files_created . ' dossiers ont été créés.');
+                }
             } elseif ($datas['samples_files']){
+                $nb_files_created = 0;
                 $j = 0;
                 while($j < $datas['samples_files']) {
-                    $mSamples->createSampleFile();
+                    sleep(1);
+                    $nb_files_created += $mSamples->createSampleFile();
                     $j++;
                 }
-            }
-        }
 
+                $app->enqueueMessage($nb_files_created . ' dossiers ont été créés.');
+            }
+
+            $app->redirect(JURI::base() . 'index.php?option=com_emundus&controller=samples');
+        }
     }
 }

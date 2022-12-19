@@ -25,12 +25,12 @@
 
       <div class="em-modal-content">
         <div class="em-modal-menu__sidebar">
-          <div v-for="(menu,index) in menus" :key="'menu_' + menu.index" @click="currentMenu = menu.index" class="translation-menu-item em-p-16 em-flex-row em-flex-space-between em-pointer" :class="currentMenu === menu.index ? 'em-modal-menu__current' : ''">
+          <div v-for="menu in menus" :key="'menu_' + menu.index" @click="currentMenu = menu.index" class="translation-menu-item em-p-16 em-flex-row em-flex-space-between em-pointer" :class="currentMenu === menu.index ? 'em-modal-menu__current' : ''">
             <p class="em-font-size-16">{{translate(menu.title)}}</p>
           </div>
         </div>
 
-        <transition name="fade">
+        <transition name="fade" mode="out-in">
           <Configuration v-if="currentMenu === 1" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></Configuration>
           <Storage v-if="currentMenu === 2" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></Storage>
         </transition>
@@ -69,7 +69,7 @@ export default {
     }
   },
   methods:{
-    beforeClose(event) {
+    beforeClose() {
       this.$emit('resetMenuIndex');
     },
 
