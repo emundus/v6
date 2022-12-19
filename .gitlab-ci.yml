@@ -180,3 +180,6 @@ publish-db-image-job:
     - docker push emundus/tchooz-db:latest
   needs:
     - release-job
+
+include:
+  - template: Security/Secret-Detection.gitlab-ci.yml
