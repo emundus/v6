@@ -67,6 +67,20 @@ class PlgEmundusReferent_status extends JPlugin {
                 $email = $m_emails->getEmail('referent_letter');
             }
 
+            // Récupération de la pièce jointe : modele de lettre
+            $query = 'SELECT esp.reference_letter
+                FROM #__emundus_setup_profiles as esp
+                LEFT JOIN #__emundus_setup_campaigns as esc on esc.profile_id = esp.id 
+                LEFT JOIN #__emundus_campaign_candidature as ecc on ecc.campaign_id = esc.id 
+                WHERE ecc.fnum LIKE '. $db->quote($fnum);
+            $db->setQuery($query);
+            $obj_letter = $db->loadRowList();
+
+            $attachment = array();
+            if (!empty($obj_letter[0][0])) {
+                $attachment[] = JPATH_BASE.str_replace("\\", "/", $obj_letter[0][0]);
+            }
+
             if ($this->getFilesExist($applicant->fnum, $attachments_id) != sizeof(explode(',', $attachments_id))) {
                 $mailer = JFactory::getMailer();
                 $mailer->SMTPDebug = true;
@@ -154,6 +168,9 @@ class PlgEmundusReferent_status extends JPlugin {
                         $mailer->isHTML(true);
                         $mailer->Encoding = 'base64';
                         $mailer->setBody($body);
+                        if(!empty($attachment)){
+                            $mailer->addAttachment($attachment);
+                        }
 
                         // Send emails
                         $send = $mailer->Send();
