@@ -43,9 +43,11 @@ class EmundusModelApplicationTest extends TestCase
     }
 
     public function testGetApplicantInfos(){
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $applicant_infos = $this->m_application->getApplicantInfos(0, []);
+        $this->assertSame([], $applicant_infos);
+
+        $applicant_infos = $this->m_application->getApplicantInfos(62, ['jos_users.id']);
+        $this->assertNotEmpty($applicant_infos);
+        $this->assertSame(intval($applicant_infos['id']), 62);
     }
 }

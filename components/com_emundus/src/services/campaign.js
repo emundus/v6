@@ -14,7 +14,7 @@ export default {
                 'index.php?option=com_emundus&controller=campaign&task=' + task,
                 formData
             );
-            
+
             return response.data;
         } catch (e) {
             return {
@@ -44,7 +44,7 @@ export default {
             };
         }
     },
-    
+
     async getAllCampaigns(filter = '',sort = 'DESC',recherche = '',lim = 9999,page = 0,program = 'all') {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=campaign&task=getallcampaign', {
@@ -98,4 +98,25 @@ export default {
             };
         }
     },
+
+    async pinCampaign(cid){
+        try {
+            const formData = new FormData();
+            formData.append('cid', cid);
+
+            return await client().post(`index.php?option=com_emundus&controller=campaign&task=pincampaign`,
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            );
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    }
 }

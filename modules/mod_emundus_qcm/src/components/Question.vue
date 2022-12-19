@@ -1,11 +1,11 @@
 <template>
   <div>
     <div :class="finish ? 'finished' : ''" style="padding: 10px">
-      <label v-html="question.question"></label>
+      <label v-html="question.question" class="em-mb-24"></label>
       <div>
         <div v-for="(proposal,index) in proposals" :class="'proposals'">
           <input type="checkbox" style="margin-right: 10px" :id="'proposal'+index" :name="question.code" v-model="answer" :value="proposal" :disabled="finish">
-          <label :for="'proposal'+index" v-html="">{{ proposals_text[index] }}</label><br/>
+          <label class="em-flex-row" :for="'proposal'+index" v-html="proposals_text[index]"></label><br/>
         </div>
       </div>
       <k-progress

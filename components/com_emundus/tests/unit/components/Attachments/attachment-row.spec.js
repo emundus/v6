@@ -36,7 +36,7 @@ describe('AttachmentRow.vue', () => {
 	});
 
 	it('should format date', () => {
-		expect(wrapper.vm.formattedDate("2021-12-01 08:04:32")).toBe('Wednesday, December 1, 2021 8:04 AM');
+		expect(wrapper.vm.formattedDate('2021-12-01 08:04:32')).toBe('Wednesday, December 1, 2021 8:04 AM');
 	});
 
 	it('onClick .td-document should emit open-modal', () => {
@@ -51,7 +51,7 @@ describe('AttachmentRow.vue', () => {
 
 	it('onChange attachment-check should emit update-checked-attachments with an array as parameter', () => {
 		wrapper.find('.attachment-check').trigger('change');
-		expect(wrapper.emitted('update-checked-attachments')[0][0]).toEqual(["3"]);
+		expect(wrapper.emitted('update-checked-attachments')[0][0]).toEqual(['3']);
 	});
 
 	it('onChange .status select should emit update-status', () => {
@@ -73,7 +73,7 @@ describe('AttachmentRow.vue', () => {
 	it('onClick .visibility-permission should emit change-permission with correct parameters', () => {
 		wrapper.find('.visibility-permission').trigger('click');
 		expect(wrapper.emitted('change-permission')).toBeTruthy();
-		expect(wrapper.emitted('change-permission')[0][0]).toBe("can_be_viewed");
+		expect(wrapper.emitted('change-permission')[0][0]).toBe('can_be_viewed');
 		expect(wrapper.emitted('change-permission')[0][1]).toBe(wrapper.vm.attachment);
 	});
 });

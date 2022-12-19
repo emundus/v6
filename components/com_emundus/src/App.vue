@@ -31,7 +31,7 @@ import editprofile from "./views/Users/Edit"
 
 export default {
 	props: {
-    datas: Object,
+    datas: NamedNodeMap,
     currentLanguage: String,
     shortLang: String,
     manyLanguages: String,
@@ -43,11 +43,11 @@ export default {
 		},
 		component: {
 			type: String,
-			required: true,
+			required: true
 		},
 		data: {
 			type: Object,
-			default: {},
+      default: () => ({})
 		},
 	},
 	components: {
@@ -160,6 +160,16 @@ export default {
 .view-settings #g-container-main .g-container,
 .view-users #g-container-main .g-container{
   width: 90%;
+}
+
+@media all and (max-width: 1366px) {
+  .view-campaigns #g-container-main .g-container,
+  .view-emails #g-container-main .g-container,
+  .view-form #g-container-main .g-container,
+  .view-settings #g-container-main .g-container,
+  .view-users #g-container-main .g-container{
+    width: 85%;
+  }
 }
 
 
