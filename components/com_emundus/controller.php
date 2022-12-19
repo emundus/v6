@@ -1523,7 +1523,8 @@ class EmundusController extends JControllerLegacy {
                 } else {
                     $query .= " WHERE user_id = " . $uid;
                 }
-                $query .= " OR filename like " . $db->Quote($file);
+                // TODO: adapt for all cases, KIT needs OR filename (ROAD-918)
+                $query .= " AND filename like " . $db->Quote($file);
             }
             $db->setQuery($query);
             $fileInfo = $db->loadObject();
