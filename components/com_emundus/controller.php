@@ -87,9 +87,14 @@ class EmundusController extends JControllerLegacy {
         );
 
         $infos 		= $m_profile->getFnumDetails($fnum);
+        $workflow_infos = $m_campaign->getCurrentCampaignWorkflow($user);
 
         if($profile == null) {
             $profile 	= !empty($infos['profile']) ? $infos['profile'] : $infos['profile_id'];
+        }
+
+        if($workflow_infos->profile !== null)  {
+            $profile = $workflow_infos->profile;
         }
 
         $h_menu = new EmundusHelperMenu;
@@ -1518,7 +1523,8 @@ class EmundusController extends JControllerLegacy {
                 } else {
                     $query .= " WHERE user_id = " . $uid;
                 }
-                $query .= " OR filename like " . $db->Quote($file);
+                // TODO: adapt for all cases, KIT needs OR filename (ROAD-918)
+                $query .= " AND filename like " . $db->Quote($file);
             }
             $db->setQuery($query);
             $fileInfo = $db->loadObject();
