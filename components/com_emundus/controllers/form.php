@@ -783,5 +783,33 @@ class EmundusControllerForm extends JControllerLegacy {
         echo json_encode((object)$response);
         exit;
     }
+
+    public function getpagegroups()
+    {
+        $user = JFactory::getUser();
+        $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $jinput = JFactory::getApplication()->input;
+            $formId = $jinput->getInt('form_id');
+
+            if (!empty($formId)) {
+                $groups = $this->m_form->getGroupsByForm($formId);
+
+                if ($groups !== false) {
+                    $response['msg'] = JText::_('SUCCESS');
+                    $response['status'] = true;
+                    $response['data'] = ['groups' => $groups];
+                } else {
+                    $response['msg'] = JText::_('FAILED');
+                }
+            } else {
+                $response['msg'] = JText::_('MISSING_PARAMS');
+            }
+        }
+
+        echo json_encode((object)$response);
+        exit;
+    }
 }
 

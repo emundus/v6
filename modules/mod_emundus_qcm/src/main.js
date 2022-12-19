@@ -13,7 +13,6 @@ if (document.getElementById('em-qcm-vue')) {
           questions: this.$el.attributes.questions.value,
           formid: this.$el.attributes.formid.value,
           step: this.$el.attributes.step.value,
-          intro: this.$el.attributes.intro.value,
           pending: this.$el.attributes.pending.value,
           module: this.$el.attributes.module.value,
           tierstemps: this.$el.attributes.tierstemps.value,

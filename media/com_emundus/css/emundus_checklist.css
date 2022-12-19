@@ -1,4 +1,5 @@
 /*view-checklist*/
+
 button.save-btn, .btn-success, button.save, button.save_continue, button.send, a.btn-attach, #trombi_preview, #trombi_generate,
 .indicateurs-page .btn, .fabrik_filter_submit, button.importation, a.btn-warning, a.btn-info, .header-right .btn-danger, button.btn-primary,
 .em-generated-docs .em-doc-zip, .xclsform .panel-body button#savefilter, .modal-dialog #chargement a.btn, a#em-doc-zip,
@@ -215,6 +216,7 @@ button#back:hover, button#back:active, button#back:focus,
     border-bottom: 1px solid #ccc;
     padding-bottom: 10px;
     color: #333;
+    font-family: var(--applicant-title-font);
 }
 
 #g-sidebar .platform-content {
@@ -249,6 +251,12 @@ button#back:hover, button#back:active, button#back:focus,
 #g-sidebar .platform-content li:hover, #g-sidebar .platform-content li.active {
     background: #f2f2f2;
 }
+
+#g-sidebar .platform-content li:hover, #g-sidebar .platform-content li a  {
+    color: var(--neutral-800);
+    font-family: var(--applicant-default-font);
+}
+
 
 #g-sidebar ul {
     margin: 0 !important;
@@ -287,6 +295,11 @@ button#back:hover, button#back:active, button#back:focus,
     padding: 32px 24px 32px 24px;
     border-radius: 16px !important;
     height: auto;
+}
+
+#attachment_list_mand fieldset p,
+#attachment_list_opt fieldset p {
+    color: var(--em-applicant-text-color);
 }
 
 .view-checklist .table {
@@ -505,6 +518,7 @@ body.view-reset label#jform_username-lbl::after,
     display: flex;
     align-items: center;
 }
+
 
 
 .applicant-form #g-sidebar .platform-content a:hover {

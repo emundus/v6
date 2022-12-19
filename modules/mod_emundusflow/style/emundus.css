@@ -140,6 +140,7 @@
 
 .ui.steps .step .description {
 	font-size: 12px;
+	font-family: var(--font);
 }
 
 .step i.arrow {
@@ -157,6 +158,11 @@
 .ui.bottom.attached.steps .step:first-child {
 	justify-content: center;
 	background: transparent;
+}
+
+.ui.bottom.attached.steps .step:first-child a {
+	color: var(--neutral-800);
+	font-family: var(--font);
 }
 
 .registration form > div {
@@ -179,8 +185,9 @@
 	flex-direction: row;
 }
 
-.view-form .attached p, .view-details .attached p {
+.view-form .attached p, .view-details .attached p, .view-checklist .attached p {
 	color: white;
+	font-family: var(--font);
 }
 @media all and (max-width: 767px) {
 	 .ui.attached.segment p {

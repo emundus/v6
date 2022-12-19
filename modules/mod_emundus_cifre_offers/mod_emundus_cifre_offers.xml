@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="3.8.8" client="site" method="upgrade">
-	<name>mod_emundus_cifre_offers</name>
+	<name>MOD_EMUNDUS_CIFRE_OFFERS_XML</name>
     <author>Hugo Moracchini</author>
     <creationDate>August 2018</creationDate>
     <copyright>Copyright (C) 2018 eMundus. All rights reserved.</copyright>
@@ -8,7 +8,7 @@
     <authorEmail>hugo.moracchini@emundus.fr</authorEmail>
     <authorUrl>www.emundus.fr</authorUrl>
     <version>6.0</version>
-	<description>Displays the list of CIFRE contact requests the user has received.</description>
+	<description>MOD_EMUNDUS_CIFRE_OFFERS_XML_DESCRIPTION</description>
 	<files>
 		<filename module="mod_emundus_cifre_offers">mod_emundus_cifre_offers.php</filename>
 		<folder>tmpl</folder>

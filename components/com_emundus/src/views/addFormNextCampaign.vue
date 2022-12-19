@@ -20,15 +20,15 @@
 
 				<hr>
 
-				<div class="em-flex-row em-mb-32">
-					<p>
-						<b style="color: #20835F; font-weight: 700 !important;"> {{form.label}}</b>
-						{{translations.From}}
-						<strong>{{ form.start_date }}</strong>
-						{{translations.To}}
-						<strong>{{ form.end_date }}</strong>
-					</p>
-				</div>
+      <div class="em-flex-row em-mb-32">
+        <p>
+          <b style="color: var(--main-500); font-weight: 700 !important;"> {{form.label}}</b>
+          {{translations.From}}
+          <strong>{{ form.start_date }}</strong>
+          {{translations.To}}
+          <strong>{{ form.end_date }}</strong>
+        </p>
+      </div>
 
 				<!--- start Menu --->
 				<div class="em-flex-row" >
@@ -62,7 +62,7 @@
 						<li v-for="(campaign, index) in campaignsByProgram" :key="'camp_progs_' + index">{{campaign.label}}</li>
 					</ul>
 				</div>
-				<transition name="slide-right">
+				<transition name="fade">
 					<add-campaign
 							v-if="menuHighlight == 0 && campaignId !== ''"
 							:campaign="campaignId"
@@ -401,11 +401,11 @@ export default {
 }
 
 .w--current:hover{
-  color: #20835F;
+  color: var(--main-500);
 }
 
 .em-pointer:hover{
-  color: #20835F;
+  color: var(--main-500);
 }
 
 .em-w-custom {
@@ -414,6 +414,6 @@ export default {
 }
 
 #add-form-next-campaign{
-  width: 70%;
+  width: 100%;
 }
 </style>

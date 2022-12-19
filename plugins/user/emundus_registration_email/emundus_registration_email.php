@@ -130,8 +130,24 @@ class plgUserEmundus_registration_email extends JPlugin {
             }
         }
 
+        if (JPluginHelper::getPlugin('authentication','miniorangesaml')) {
+            require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+            $m_users = new EmundusModelusers();
+            $isSamlUser = $m_users->isSamlUser($userId);
+
+            if ($isSamlUser) {
+                return;
+            }
+        }
+
         // if saving user's data was successful
         if ($result && !$error) {
+            // for anonym sessions
+            $allow_anonym_files = $eMConfig->get('allow_anonym_files', 0);
+            if ($allow_anonym_files && preg_match('/^fake.*@emundus\.io$/', $user->email)) {
+                $user->setParam('skip_activation', true);
+                $user->setParam('send_mail', false);
+            }
 
             // Generate the activation token.
             $activation = md5(mt_rand());
@@ -141,6 +157,7 @@ class plgUserEmundus_registration_email extends JPlugin {
 
             // Get the raw User Parameters
             $params = $user->getParameters();
+            $user->set('params', $params);
 
             // Set the user table instance to include the new token.
             $table = JTable::getInstance('user', 'JTable');
@@ -239,7 +256,6 @@ class plgUserEmundus_registration_email extends JPlugin {
      * @throws Exception
      */
     private function sendActivationEmail($data, $token) {
-
         if (json_decode($data['params'])->skip_activation) {
             return false;
         }

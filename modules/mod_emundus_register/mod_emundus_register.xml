@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 	<extension type="module" version ="2.5.0" method="upgrade">
-		<name>Emundus Register</name>
+		<name>MOD_EM_REGISTER_XML</name>
         <author>Benjamin Rivalland</author>
         <creationDate>June 2015</creationDate>
         <copyright>Copyright (C) 2015 eMundus. All rights reserved.</copyright>
