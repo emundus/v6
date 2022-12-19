@@ -623,12 +623,8 @@ p,
       align-items: center;
 
       .platform-content {
-        margin: 0 10px;
+        margin: 0 12px;
         padding: 0;
-      }
-
-      .platform-content:nth-child(2) {
-        order: 3;
       }
     }
   }
@@ -926,7 +922,6 @@ body>.g-container {
     display: flex;
     justify-content: center;
     border: unset !important;
-    margin: 0 10px 0 10px;
   }
 
   #userDropdownMenu {

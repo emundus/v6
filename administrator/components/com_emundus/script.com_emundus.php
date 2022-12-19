@@ -445,6 +445,38 @@ class com_emundusInstallerScript
 	            EmundusHelperUpdate::addYamlVariable('name','Quill',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
 
 	            EmundusHelperUpdate::disableEmundusPlugins('emundus_profile');
+
+	            $query->clear()
+		            ->update('#__modules')
+		            ->set($db->quoteName('ordering') . ' = 1')
+		            ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_falang'))
+		            ->andWhere($db->quoteName('position') . ' LIKE ' . $db->quote('header-c'));
+	            $db->setQuery($query);
+	            $db->execute();
+
+	            $query->clear()
+		            ->update('#__modules')
+		            ->set($db->quoteName('ordering') . ' = 2')
+		            ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_messenger_notifications'))
+		            ->andWhere($db->quoteName('position') . ' LIKE ' . $db->quote('header-c'));
+	            $db->setQuery($query);
+	            $db->execute();
+
+	            $query->clear()
+		            ->update('#__modules')
+		            ->set($db->quoteName('ordering') . ' = 3')
+		            ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_finder'))
+		            ->andWhere($db->quoteName('position') . ' LIKE ' . $db->quote('header-c'));
+	            $db->setQuery($query);
+	            $db->execute();
+
+	            $query->clear()
+		            ->update('#__modules')
+		            ->set($db->quoteName('ordering') . ' = 4')
+		            ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_user_dropdown'))
+		            ->andWhere($db->quoteName('position') . ' LIKE ' . $db->quote('header-c'));
+	            $db->setQuery($query);
+	            $db->execute();
             }
 
             // Insert new translations in overrides files
