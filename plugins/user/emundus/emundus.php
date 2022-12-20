@@ -392,14 +392,30 @@ class plgUserEmundus extends JPlugin
 
                 // Insert the eMundus user info into the DB.
                 if ($user['isnew']) {
-                    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
-                    $m_users = new EmundusModelUsers();
-                    $user_params = [
-                        'firstname' => $user['firstname'],
-                        'lastname' => $user['lastname'],
-                        'profile' => $user['profile']
-                    ];
-                    $m_users->addEmundusUser(JFactory::getUser()->id, $user_params);
+                    $db = JFactory::getDBO();
+                    $query = $db->getQuery(true);
+
+                    $query->select('*')
+                        ->from('#__emundus_users')
+                        ->where('user_id = ' . JFactory::getUser()->id);
+
+                    try {
+                        $db->setQuery($query);
+                        $result = $db->loadObject();
+                    } catch (Exception $e) {
+                        JLog::add('Error checking if user is not already in emundus users', JLog::ERROR, 'com_emundus.error');
+                    }
+
+                    if (empty($result) && empty($result->id)) {
+                        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+                        $m_users = new EmundusModelUsers();
+                        $user_params = [
+                            'firstname' => $user['firstname'],
+                            'lastname' => $user['lastname'],
+                            'profile' => $user['profile']
+                        ];
+                        $m_users->addEmundusUser(JFactory::getUser()->id, $user_params);
+                    }
 
                     $o_user = new JUser(JUserHelper::getUserId($user['username']));
                     $pass = bin2hex(openssl_random_pseudo_bytes(4));
@@ -408,7 +424,6 @@ class plgUserEmundus extends JPlugin
                     $o_user->save();
                     $user['password'] = $pass;
                     unset($pass, $password);
-
                     // Set the user table instance to not block the user.
                     $table = JTable::getInstance('user', 'JTable');
                     $table->load(JFactory::getUser()->id);
@@ -419,7 +434,7 @@ class plgUserEmundus extends JPlugin
 
                     JPluginHelper::importPlugin('authentication');
                     $dispatcher = JEventDispatcher::getInstance();
-                    $dispatcher->trigger('onOAuthAfterRegister', $user);
+                    $dispatcher->trigger('onOAuthAfterRegister', ['user' => $user]);
                 }
 
                 // Add the Oauth provider type to the Joomla user params.
@@ -436,7 +451,6 @@ class plgUserEmundus extends JPlugin
                 }
 
             }
-
             if ($user['type'] == 'externallogin') {
                 try {
                     $db = JFactory::getDbo();
