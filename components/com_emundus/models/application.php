@@ -1868,7 +1868,7 @@ class EmundusModelApplication extends JModelList
                                             }
                                             //
 
-                                            if ($element->plugin == 'date' && $element->content > 0) {
+                                            if ($element->plugin == 'date' && !empty($element->content)) {
                                                 if (!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
                                                     $date_params = json_decode($element->params);
                                                     $elt = date($date_params->date_form_format, strtotime($element->content));
