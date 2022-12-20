@@ -4533,52 +4533,69 @@ class EmundusModelApplication extends JModelList
      * @return bool
      *
      */
-    public function checkEmptyGroups($elements, $parent_table, $fnum) {
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
+	public function checkEmptyGroups($elements, $parent_table, $fnum) {
+		$db = $this->getDbo();
+		$query = $db->getQuery(true);
 
-        $eMConfig = JComponentHelper::getParams('com_emundus');
-        $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$show_empty_fields = $eMConfig->get('show_empty_fields', 1);
 
-        $elements = array_map(function($obj) {return $obj->name;}, $elements);
+		$databases_join_params = [];
+		$elements_name = array_map(function($obj) use ($db,$parent_table,&$databases_join_params) {
+			if($obj->plugin == 'databasejoin'){
+				$params = json_decode($obj->params);
+				if($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist'){
+					$databases_join_params[] = $db->quoteName($parent_table.'_repeat_' . $obj->name).' ON '.$db->quoteName($parent_table.'_repeat_' . $obj->name).'.parent_id = t.id';
 
-        $query
-            ->select(implode(',', $db->quoteName($elements)))
-            ->from($db->quoteName($parent_table))
-            ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+					return $parent_table.'_repeat_' . $obj->name.'.'.$obj->name;
+				}
+			}
+			return 't.'.$obj->name;
+		}, $elements);
 
-        try {
-            $db->setQuery($query);
-            $db->execute();
-            if ($db->getNumRows() == 1) {
-                $res = $db->loadAssoc();
+		$query->select(implode(',', $db->quoteName($elements_name)))
+			->from($db->quoteName($parent_table,'t'));
+		if(!empty($databases_join_params)){
+			foreach ($databases_join_params as $db_join)
+			{
+				$query->leftJoin($db_join);
+			}
+		}
+		$query->where($db->quoteName('t.fnum') . ' LIKE ' . $db->quote($fnum));
 
-                $elements = array_map(function($arr) {
-                    if (is_numeric($arr)) {
-                        return (empty(floatval($arr)));
-                    } else {
-                        if ($arr == "0000-00-00 00:00:00") {
-                            return true;
-                        }
-                        return empty($arr);
-                    }
-                }, $res);
+		try {
+			$db->setQuery($query);
+			$db->execute();
+			if ($db->getNumRows() == 1) {
+				$res = $db->loadAssoc();
 
-                $elements = array_filter($elements, function($el) {return $el === false;});
-                return !empty($elements);
-            } else {
-                if($show_empty_fields == 0){
-                    return false;
-                }
-            }
+				$elements = array_map(function($arr) {
+					if (is_numeric($arr)) {
+						return (empty(floatval($arr)));
+					} else {
+						if ($arr == "0000-00-00 00:00:00") {
+							return true;
+						}
 
-            return true;
+						return empty($arr);
+					}
+				}, $res);
 
-        } catch (Exception $e ) {
-            JLog::add('Error checking if group is empty at model/application in query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-            return false;
-        }
-    }
+				$elements = array_filter($elements, function($el) {return $el === false;});
+				return !empty($elements);
+			} else {
+				if($show_empty_fields == 0){
+					return false;
+				}
+			}
+
+			return true;
+
+		} catch (Exception $e ) {
+			JLog::add('Error checking if group is empty at model/application in query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+	}
 
     /// get count uploaded files
     public function getCountUploadedFile($fnum,$user_id, $profile = null) {
