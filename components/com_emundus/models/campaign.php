@@ -1185,6 +1185,9 @@ class EmundusModelCampaign extends JModelList {
                         $labels->en = !empty($data['label']['en']) ? $data['label']['en'] : '';
                         $data['label'] = $data['label'][$actualLanguage];
                     }
+					if($key == 'description' && $data['description'] == 'null'){
+						$data['description'] = '';
+					}
                     if ($key == 'limit_status') {
                         $limit_status = $data['limit_status'];
                         array_splice($data, $i, 1);

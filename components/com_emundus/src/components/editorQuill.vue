@@ -106,6 +106,9 @@ export default {
 
     this.editor.on('editor-change', (eventName, ...args) => {
       if (eventName === 'text-change') {
+        if(this.editor.root.innerHTML === null){
+          this.editor.root.innerHTML = '';
+        }
         this.$emit("input", this.editor.root.innerHTML);
       }
     });

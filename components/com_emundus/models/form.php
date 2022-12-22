@@ -1829,7 +1829,7 @@ class EmundusModelForm extends JModelList {
         $query = $db->getQuery(true);
 
         try {
-            $query->select('sa.id as docid,sa.value as label,sap.*')
+            $query->select('sa.id as docid,sa.value as label,sap.*,sa.allowed_types')
                 ->from($db->quoteName('#__emundus_setup_attachment_profiles','sap'))
                 ->leftJoin($db->quoteName('#__emundus_setup_attachments','sa').' ON '.$db->quoteName('sa.id').' = '.$db->quoteName('sap.attachment_id'))
                 ->where($db->quoteName('profile_id') . ' = ' . $db->quote($prid))

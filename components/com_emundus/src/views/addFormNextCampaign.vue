@@ -100,6 +100,15 @@
 				</transition>
 			</div>
 
+      <div class="em-flex-row em-flex-space-between em-float-right" v-if="menuHighlight !== 0 && menuHighlightProg !== 0">
+        <button
+            type="button"
+            class="em-primary-button em-w-auto"
+            @click="next">
+          {{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
+        </button>
+      </div>
+
 			<div class="em-page-loader" v-if="loading"></div>
 		</div>
 	</div>
@@ -347,10 +356,12 @@ export default {
     },
 
     next() {
-      if (this.menuHighlight < 1) {
-        this.menuHighlight++;
-      } else {
-        this.redirectJRoute('index.php?option=com_emundus&view=campaign');
+      if (this.menuHighlight < 2) {
+        let index = this.menuHighlight + 1;
+        console.log(index);
+        this.changeToCampMenu(index)
+      } else if(this.menuHighlightProg < 1) {
+        this.changeToProgMenu(0)
       }
     },
 

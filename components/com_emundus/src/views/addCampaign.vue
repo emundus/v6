@@ -203,13 +203,7 @@
 
         <hr/>
 
-        <div class="em-flex-row em-flex-space-between">
-          <button
-              type="button"
-              class="em-secondary-button em-w-auto"
-              onclick="history.back()">
-            {{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}
-          </button>
+        <div class="em-flex-row em-flex-space-between em-float-right">
           <button
               type="button"
               class="em-primary-button em-w-auto"
@@ -688,7 +682,7 @@ export default {
       if (quit === 0) {
         this.redirectJRoute('index.php?option=com_emundus&view=campaign');
       } else if (quit === 1) {
-        document.cookie = 'campaign_'+this.campaignId+'_menu = 2; expires=Session; path=/';
+        document.cookie = 'campaign_'+this.campaignId+'_menu = 1; expires=Session; path=/';
         this.redirectJRoute('index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' + this.campaignId + '&index=0')
       }
     },
