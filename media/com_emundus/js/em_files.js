@@ -5037,6 +5037,10 @@ $(document).ready(function() {
                         }
                     )[0].split('-')[2];
 
+                    var url = window.location.href;
+                    url = url.split('#');
+                    window.history.pushState('','', url[0]+'#'+fnum.fnum+'|open');
+
                     $.ajax({
                         type: 'get',
                         url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnuminfos',
@@ -5094,6 +5098,10 @@ $(document).ready(function() {
                         )[0].split('-')[2];
                     }
 
+                    var url = window.location.href;
+                    url = url.split('#');
+                    window.history.pushState('','', url[0]+'#'+fnum.fnum+'|open');
+
                     $.ajax({
                         type: 'get',
                         url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnuminfos',
@@ -5124,6 +5132,10 @@ $(document).ready(function() {
                     fnum.cid = parseInt(fnum.fnum.substr(14, 7));
                     $('.em-check:checked').prop('checked', false);
                     $('#'+fnum.fnum+'_check').prop('checked', true);
+
+                    var url = window.location.href;
+                    url = url.split('#');
+                    window.history.pushState('','', url[0]+'#'+fnum.fnum+'|open');
 
                     $.ajax({
                         type:'get',
