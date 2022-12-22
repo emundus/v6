@@ -39,7 +39,7 @@
       <div v-if="principalContainer === 'default'" class="body em-flex-row em-flex-space-between">
         <aside class="left-panel em-flex-row em-flex-start em-h-100">
           <div class="tabs em-flex-column em-flex-start em-h-100">
-            <div class="tab" v-for="tab in displayedLeftPanels" :key="title" :class="{ active: tab.active }">
+            <div class="tab" v-for="(tab,i) in displayedLeftPanels" :key="title + '_' + i" :class="{ active: tab.active }">
               <span
                   class="material-icons-outlined em-p-16"
                   @click="tab.url ? goTo(tab.url, 'blank') : selectTab(tab.title)"
@@ -65,7 +65,7 @@
               ref="formBuilderPage"
               v-if="currentPage && showInSection === 'page'"
               :key="currentPage.id"
-              :profile_id="profile_id"
+              :profile_id="parseInt(profile_id)"
               :page="currentPage"
               @open-element-properties="onOpenElementProperties"
               @open-section-properties="onOpenSectionProperties"
@@ -75,8 +75,8 @@
             <form-builder-document-list
               ref="formBuilderDocumentList"
               v-else-if="showInSection === 'documents'"
-              :profile_id="profile_id"
-              :campaign_id="campaign_id"
+              :profile_id="parseInt(profile_id)"
+              :campaign_id="parseInt(campaign_id)"
               @add-document="onOpenCreateDocument"
               @edit-document="onEditDocument"
               @delete-document="onDeleteDocument"
@@ -88,8 +88,8 @@
             <div id="form-hierarchy" v-if="showInRightPanel === 'hierarchy'" class="em-w-100">
               <form-builder-pages
                   :pages="pages"
-                  :selected="selectedPage"
-                  :profile_id="profile_id"
+                  :selected="parseInt(selectedPage)"
+                  :profile_id="parseInt(profile_id)"
                   @select-page="selectPage($event)"
                   @add-page="getPages(currentPage.id)"
                   @delete-page="selectedPage = pages[0].id;"
@@ -98,8 +98,8 @@
               <hr>
               <form-builder-documents
                   ref="formBuilderDocuments"
-                  :profile_id="profile_id"
-                  :campaign_id="campaign_id"
+                  :profile_id="parseInt(profile_id)"
+                  :campaign_id="parseInt(campaign_id)"
                   @show-documents="setSectionShown('documents')"
                   @open-create-document="onOpenCreateDocument"
               ></form-builder-documents>
@@ -108,13 +108,13 @@
                 v-if="showInRightPanel === 'element-properties'"
                 @close="onCloseElementProperties"
                 :element="selectedElement"
-                :profile_id="profile_id"
+                :profile_id="parseInt(profile_id)"
             ></form-builder-element-properties>
             <form-builder-section-properties
                 v-if="showInRightPanel === 'section-properties'"
                 @close="onCloseSectionProperties"
                 :section_id="selectedSection.group_id"
-                :profile_id="profile_id"
+                :profile_id="parseInt(profile_id)"
             ></form-builder-section-properties>
 	          <form-builder-create-model
 			          v-if="showInRightPanel === 'create-model'"
@@ -124,7 +124,7 @@
             <form-builder-create-document
                 v-if="showInRightPanel === 'create-document'"
                 ref="formBuilderCreateDocument"
-                :profile_id="profile_id"
+                :profile_id="parseInt(profile_id)"
                 :current_document="selectedDocument ? selectedDocument : null"
                 :mandatory="createDocumentMandatory"
                 :mode="createDocumentMode"
@@ -135,7 +135,7 @@
         </aside>
       </div>
 	    <div v-else-if="principalContainer === 'create-page'">
-		    <form-builder-create-page :profile_id="profile_id" @close="onCloseCreatePage"></form-builder-create-page>
+		    <form-builder-create-page :profile_id="parseInt(profile_id)" @close="onCloseCreatePage"></form-builder-create-page>
 	    </div>
     </modal>
   </div>
