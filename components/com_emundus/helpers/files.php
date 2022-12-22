@@ -752,9 +752,15 @@ class EmundusHelperFiles
 
                 $fnums[] = $fnum;
                 $photos = $m_files->getPhotos($fnums);
+
                 foreach ($photos as $photo) {
                     $folder = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
-                    return '<img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></img>';
+                    //return '<img class="img-responsive" src="' . $folder . '/tn_' . $photo['filename'] . '" width="60" /></img>';
+                    if(file_exists($folder . '/tn_'. $photo['filename'])) {
+                        return '<img class="img-responsive" src="' . $folder . '/tn_' . $photo['filename'] . '" width="60" /></img>';
+                    } else {
+                        return '<img class="img-responsive" src="' . $folder . DS. $photo['filename'] . '" width="60" /></img>';
+                    }
                 }
 
             } else {
@@ -762,7 +768,12 @@ class EmundusHelperFiles
                 $photos = $m_files->getPhotos();
                 foreach ($photos as $photo) {
                     $folder = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
-                    $pictures[$photo['fnum']] = '<img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></img>';
+
+                    if(file_exists($folder . '/tn_'. $photo['filename'])) {
+                        $pictures[$photo['fnum']] = '<img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></img>';
+                    } else {
+                        $pictures[$photo['fnum']] = '<img class="img-responsive" src="'.$folder . DS . $photo['filename'] . '" width="60" /></img>';
+                    }
                 }
                 return $pictures;
 

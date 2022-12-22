@@ -1500,7 +1500,8 @@ class EmundusModelFiles extends JModelLegacy
             $query = 'select emu.id, emu.user_id, c.fnum, emu.filename
                         from #__emundus_uploads as emu
                         left join #__emundus_campaign_candidature as c on c.applicant_id = emu.user_id
-                        where attachment_id = 10';
+                        left join #__emundus_setup_attachments as esa on emu.attachment_id = esa.id
+                        where attachment_id = 10 and esa.lbl like "_photo"';
             if (count($fnums) > 0) {
                 $query .= ' AND emu.fnum IN ('.implode(',', $db->quote($fnums)).') GROUP BY emu.fnum';
             }
