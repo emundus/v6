@@ -18,7 +18,7 @@
 
     <div id="general-properties" class="em-p-16" v-if="tabs[0].active">
       <div class="em-mb-16 em-flex-row em-flex-space-between">
-        <label class="em-font-weight-400">{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_REQUIRED") }}</label>
+        <label class="em-font-weight-500">{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_REQUIRED") }}</label>
         <div class="em-toggle">
           <input type="checkbox" class="em-toggle-check" v-model="isMandatory" @click="toggleDocumentMandatory">
           <strong class="b em-toggle-switch"></strong>
@@ -27,7 +27,7 @@
       </div>
 
       <div class="em-mb-16">
-        <label for="title" class="em-font-weight-400">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_NAME") }}</label>
+        <label for="title" class="em-font-weight-500">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_NAME") }}</label>
         <incremental-select
 		        v-if="models.length > 0"
 		        :options="documentList"
@@ -39,16 +39,17 @@
       </div>
 
 	    <div class="em-mb-16">
-		    <label class="em-font-weight-400">{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_DESCRIPTION') }}</label>
+		    <label class="em-font-weight-500">{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_DESCRIPTION') }}</label>
 		    <textarea id="" name="" rows="5" v-model="document.description[shortDefaultLang]">{{ document.description[shortDefaultLang] }}</textarea>
 	    </div>
 
       <div class="em-mb-16">
-        <label class="em-font-weight-400">{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_TYPES') }}</label>
-        <div v-for="(filetype, index) in fileTypes" :key="filetype.value" class="em-flex-row em-mb-4">
+        <label class="em-font-weight-500">{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_TYPES') }}</label>
+        <div v-for="(filetype, index) in fileTypes" :key="filetype.value" class="em-flex-row em-mb-4 em-flex-align-start">
           <input
             type="checkbox"
             name="filetypes"
+            style="height: auto;"
             :id="filetype.value"
             :value="filetype.value"
             v-model="document.selectedTypes[filetype.value]"
@@ -59,12 +60,12 @@
       </div>
 
       <div class="em-mb-16">
-        <label for="nbmax" class="em-font-weight-400">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_NBMAX") }}</label>
+        <label for="nbmax" class="em-font-weight-500">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_NBMAX") }}</label>
         <input type="number" id="nbmax" class="em-w-100" v-model="document.nbmax">
       </div>
 
 	    <div v-show="hasImg" id="resolution" class="em-mb-16">
-		    <p>{{ translate('COM_EMUNDUS_ONBOARD_IMAGE_WIDTH') }}</p>
+		    <label class="em-font-weight-500">{{ translate('COM_EMUNDUS_ONBOARD_IMAGE_WIDTH') }}</label>
 		    <div class="em-w-100 em-flex-row em-flex-space-between">
 			    <div class="em-w-50 em-mr-4">
 				    <label for="minResolutionW" class="em-font-weight-400">{{ translate("COM_EMUNDUS_ONBOARD_MIN_RESOLUTION_PLACEHOLDER") }}</label>
@@ -76,7 +77,7 @@
 			    </div>
 		    </div>
 
-		    <p>{{ translate('COM_EMUNDUS_ONBOARD_IMAGE_HEIGHT') }}</p>
+		    <label class="em-font-weight-500">{{ translate('COM_EMUNDUS_ONBOARD_IMAGE_HEIGHT') }}</label>
 		    <div class="em-w-100 em-flex-row em-flex-space-between">
 			    <div class="em-w-50 em-mr-4">
 				    <label for="minResolutionH" class="em-font-weight-400">{{ translate("COM_EMUNDUS_ONBOARD_MIN_RESOLUTION_PLACEHOLDER") }}</label>

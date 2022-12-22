@@ -12,7 +12,6 @@ defined('_JEXEC') or die;
 JHtml::addIncludePath(JPATH_SITE . '/components/com_finder/helpers/html');
 
 JHtml::_('jquery.framework');
-JHtml::_('formbehavior.chosen');
 JHtml::_('bootstrap.tooltip');
 
 $route .= '&format=feed';

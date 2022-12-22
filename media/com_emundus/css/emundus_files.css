@@ -367,7 +367,7 @@ table > thead > tr > th {
 }
 
 #em-assoc-files #em-see-files{
-    margin-right: 10px !important;
+    margin-right: 4px !important;
 }
 /* FILTRES */
 
@@ -1202,6 +1202,11 @@ div#em-assoc-files .panel.panel-default {
     background: #6E7887;
 }
 
+div#em-assoc-files .panel.panel-primary.current-file{
+    border-radius: 4px;
+    border: solid 2px #20835F;
+}
+
 div#em-assoc-files .panel.panel-primary ul,
 div#em-assoc-files .panel.panel-default ul {
     margin: 1px 1px 1px 5px;
@@ -1274,7 +1279,7 @@ div#em-appli-block .panel-body {
     height: auto;
 }
 .panel-body #em-delete-files{
-    margin-left:10px;
+    margin-left:4px;
 }
 
 p {
@@ -1514,7 +1519,7 @@ thead th:hover {
 
 .label {
     display: inline !important;
-    padding: .2em .6em .3em !important;
+    padding: 6px 10px !important;
     font-size: 100% !important;
     font-weight: bold !important;
     line-height: 1 !important;
@@ -2391,7 +2396,7 @@ div#em-assoc-files  .panel-body .panel-body {
 div#em-assoc-files .panel > .panel-heading {
     background: #fafafa;
     border-radius: 5px 5px 0 0;
-    border-bottom: 1px solid #fafafa;
+    border-bottom: 2px solid #fff;
 }
 
 .glyphicon {
