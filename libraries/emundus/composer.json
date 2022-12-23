@@ -25,7 +25,8 @@
         "tecnickcom/tcpdf": "6.2.*",
         "setasign/fpdi_pdf-parser": "^2.0",
         "psr/simple-cache": "^1.0",
-        "svrnm/exceldatatables": "dev-master"
+        "svrnm/exceldatatables": "dev-master",
+        "dompdf/dompdf": "^2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "9.5.7"
