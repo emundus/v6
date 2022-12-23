@@ -269,7 +269,10 @@ class PlgFinderEmundus extends FinderIndexerAdapter
         $item->metadata = new Registry($item->metadata);
 
         // Trigger the onContentPrepare event.
-        $item->summary = FinderIndexerHelper::prepareContent($item->summary, $item->params, $item);
+	    $item->summary = array(
+			'fnum' => $item->fnum
+	    );
+        $item->summary = FinderIndexerHelper::prepareContent(json_encode($item->summary), $item->params, $item);
 
         // Build the necessary route and path information.
         $item->url = '/dossiers#'.$item->fnum.'|open';
@@ -345,8 +348,10 @@ class PlgFinderEmundus extends FinderIndexerAdapter
 
         // Check if we can use the supplied SQL query.
         $query = $query instanceof JDatabaseQuery ? $query : $db->getQuery(true)
-            ->select('cc.id, concat(u.name," - ",cc.fnum) as name,cc.fnum, concat(cc.fnum,",",u.email) AS summary, ss.value as status')
+            ->select('cc.id, u.name as name, ss.value as status')
             ->select('u.name AS author')
+            ->select('cc.date_time AS publish_start_date')
+            ->select('cc.fnum AS fnum')
             ->from('#__emundus_campaign_candidature AS cc')
             ->join('LEFT', '#__users AS u ON u.id = cc.applicant_id')
             ->join('LEFT', '#__emundus_setup_status AS ss ON ss.step = cc.status');

@@ -162,6 +162,11 @@
 					<option value="1">JYES</option>
 				</field>
 
+				<field showon="layout:_:tchooz" name="mod_em_applications_show_hello_text" type="radio" default="1" label="MOD_EMUNDUS_APPLICATIONS_SHOW_HELLO_TEXT" description="MOD_EMUNDUS_APPLICATIONS_SHOW_HELLO_TEXT_DESC">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+
 				<!-- SINGLE APPLICATION PARAMETERS -->
 				<field name="spacer" type="spacer" hr="true"/>
 				<field name="application_parameters"
@@ -169,11 +174,38 @@
 					   label="MOD_EMUNDUS_APPLICATIONS_APPLICATION_PARAMETERS"
 				/>
 
+				<field name="mod_em_application_date_format"
+					   type="text"
+					   default="d/m/Y H:i"
+					   label="MOD_EMUNDUS_APPLICATIONS_DATE_FORMAT"
+					   description="">
+				</field>
+
 				<field name="show_fnum"
 					   type="radio"
 					   default="0"
 					   label="MOD_EMUNDUS_APPLICATIONS_SHOW_FNUM"
 					   description="">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+
+				<field showon="layout:_:tchooz"
+					   name="mod_emundus_applications_show_programme"
+					   type="radio"
+					   default="1"
+					   label="MOD_EMUNDUS_APPLICATIONS_SHOW_PROGRAMME"
+					   description="MOD_EMUNDUS_APPLICATIONS_SHOW_PROGRAMME_DESC">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+
+				<field showon="layout:_:tchooz"
+					   name="mod_emundus_applications_show_end_date"
+					   type="radio"
+					   default="1"
+					   label="MOD_EMUNDUS_APPLICATIONS_SHOW_END_DATE"
+					   description="MOD_EMUNDUS_APPLICATIONS_SHOW_END_DATE_DESC">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
 				</field>

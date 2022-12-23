@@ -33,10 +33,10 @@ class EmundusViewEvaluation extends JViewLegacy
     {
 	   /* JHtml::script(JURI::base() . 'media/com_emundus/lib/jquery-1.10.2.min.js');
     	JHtml::script(JURI::base() . 'media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
-		JHtml::script(JURI::base() . 'media/com_emundus/lib/chosen/chosen.jquery.min.js' );
+		JHtml::script(JURI::base() . 'media/jui/js/chosen.jquery.min.js' );
 	    JHTML::script(JURI::base() . 'media/com_emundus/js/em_files.js');
 
-    	JHtml::styleSheet( 'media/com_emundus/lib/chosen/chosen.min.css');
+    	JHtml::styleSheet( 'media/jui/css/chosen.min.css');
 	    JHtml::styleSheet( 'media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
 	    JHtml::styleSheet( 'media/com_emundus/css/emundus_files.css');
 */

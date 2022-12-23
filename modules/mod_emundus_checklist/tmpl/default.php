@@ -25,8 +25,9 @@ foreach ($forms as $index => $form){
     <div id="mod_emundus_checklist___content" class="em-mt-24">
         <?php if ($show_forms == 1 && count($forms) > 0) : ?>
             <?php
-            $index_doc = count($forms) + 1;
-            $index_opt_doc = count($forms) + 2;
+            $index_doc = !empty($mandatory_documents) && $show_mandatory_documents ? count($forms) + 1 : count($forms);
+            $index_opt_doc = !empty($optional_documents) && $show_optional_documents ? $index_doc + 1 : $index_doc;
+            $index_payment = !empty($checkout_url) ? $index_opt_doc + 1 : $index_opt_doc;
             ?>
             <div>
                 <?php foreach ($forms as $index => $form) : ?>
@@ -42,7 +43,7 @@ foreach ($forms as $index => $form){
                             <div class="mod_emundus_checklist___step_count"><?php echo $step ?></div>
                             <a href="<?php echo $form->link ?>"><?php echo JText::_($form->title); ?></a>
                         </div>
-                        <?php if ($index != (sizeof($forms) - 1) || ($show_mandatory_documents == 1 && (!empty($mandatory_documents)) || !empty($optional_documents))) : ?>
+                        <?php if ($index != (sizeof($forms) - 1) || ($show_mandatory_documents == 1 && !empty($mandatory_documents)) || ($show_optional_documents == 1 && !empty($optional_documents))) : ?>
                             <div class="mod_emundus_checklist___border_item"></div>
                         <?php endif ?>
                     </div>
@@ -58,15 +59,15 @@ foreach ($forms as $index => $form){
                 </div>
                 <div style="margin-top: -8px">
                     <?php foreach ($uploads as $upload) : ?>
-                    <div class="em-flex-row mod_emundus_checklist___attachment">
-                        <span class="material-icons-outlined em-main-500-color" style="font-size: 16px">check_circle</span>
-                        <a class="em-font-size-12 em-ml-8 mod_emundus_checklist___attachment_links"  href="<?php echo $itemid['link'].'&Itemid='.$itemid['id'].'#a'.$upload->attachment_id ?>">
-                            <?php echo $upload->attachment_name ?>
-                            <?php if($upload->filesize > 0) :?>
-                                <span class="em-ml-4 em-text-neutral-600"><?php echo $upload->filesize  ?></span>
-                            <?php endif; ?>
-                        </a>
-                    </div>
+                        <div class="em-flex-row mod_emundus_checklist___attachment">
+                            <span class="material-icons-outlined em-main-500-color" style="font-size: 16px">check_circle</span>
+                            <a class="em-font-size-12 em-ml-8 mod_emundus_checklist___attachment_links"  href="<?php echo $itemid['link'].'&Itemid='.$itemid['id'].'#a'.$upload->attachment_id ?>">
+                                <?php echo $upload->attachment_name ?>
+                                <?php if($upload->filesize > 0) :?>
+                                    <span class="em-ml-4 em-text-neutral-600"><?php echo $upload->filesize  ?></span>
+                                <?php endif; ?>
+                            </a>
+                        </div>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -80,6 +81,15 @@ foreach ($forms as $index => $form){
                 </div>
             </div>
         <?php endif; ?>
+
+        <?php if (!empty($checkout_url)) : ?>
+            <div class="mod_emundus_checklist_<?php echo $class; ?> mod_emundus_checklist___form_item em-mt-32">
+                <div class="mod_emundus_checklist___grid">
+                    <div class="mod_emundus_checklist___step_count"><?php echo $index_payment ?></div>
+                    <p><?php echo JText::_('MOD_EMUNDUS_CHECKLIST_PAYMENT') ?></p>
+                </div>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -89,7 +99,7 @@ $url = explode('&',$uri->toString());
 $details_view = array_search('view=details',$url);
 ?>
 
-<div class="em-ml-32 em-mt-24">
+<div class="mod_emundus_checklist___buttons">
     <?php if ($show_send && $details_view === false && $is_confirm_url === false) :?>
         <a class="btn btn-success btn-xs em-w-100"
             <?php if (((int)($attachments_progress) >= 100 && (int)($forms_progress) >= 100 && in_array($application->status, $status_for_send) && (!$is_dead_line_passed || ($is_dead_line_passed && $can_edit_after_deadline))) || in_array($user->id, $applicants)) :?>
@@ -113,6 +123,12 @@ $details_view = array_search('view=details',$url);
 </div>
 
 <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if(window.innerWidth < 480){
+            expandForms();
+        }
+    });
+
     function expandForms(){
         let content = document.getElementById('mod_emundus_checklist___content');
         let icon = document.getElementById('mod_emundus_checklist___expand_icon');

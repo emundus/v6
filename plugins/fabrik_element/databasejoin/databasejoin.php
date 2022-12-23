@@ -1776,7 +1776,8 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 		$targetIds  = $this->multiOptionTargetIds($data, $repeatCounter);
 		$class      = 'fabrikinput inputbox ' . $params->get('bootstrap_class', '');
 
-		if (!FArrayHelper::emptyIsh($targetIds, true))
+        // TODO: PR Fabrik, emptyIsh second paremeter set to false
+		if (!FArrayHelper::emptyIsh($targetIds, false))
 		{
 			$default = $targetIds;
 		}

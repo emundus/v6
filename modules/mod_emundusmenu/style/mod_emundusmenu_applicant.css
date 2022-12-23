@@ -17,3 +17,15 @@
 #header-b{
     justify-content: start;
 }
+
+@media all and (max-width: 767px) {
+    #em_user_menu{
+        margin-top: 24px;
+    }
+}
+
+@media all and (min-width: 768px) and (max-width: 959px) {
+    #em_user_menu {
+        margin-top: 24px;
+    }
+}

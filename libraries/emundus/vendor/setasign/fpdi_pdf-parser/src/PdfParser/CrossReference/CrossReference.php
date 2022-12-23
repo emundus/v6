@@ -4,7 +4,7 @@
  * This file is part of FPDI PDF-Parser
  *
  * @package   setasign\FpdiPdfParser
- * @copyright Copyright (c) 2020 Setasign GmbH & Co. KG (https://www.setasign.com)
+ * @copyright Copyright (c) 2021 Setasign GmbH & Co. KG (https://www.setasign.com)
  * @license   FPDI PDF-Parser Commercial Developer License Agreement (see LICENSE.txt file within this package)
  */
 
@@ -39,12 +39,14 @@ class CrossReference extends FpdiCrossReference
     /**
      * Data of object streams.
      *
-     * @var array<int,array{streamOffsets: array, objectStreamParser: PdfParser}>
+     * @var array
+     * @phpstan-var array<int,array{streamOffsets: array, objectStreamParser: PdfParser}>
      */
     protected $objectStreams = [];
 
     /**
-     * @var array<CompressedReader|false>
+     * @var array
+     * @phpstan-var array<CompressedReader|false>
      */
     protected $compressedXrefs = [];
 
@@ -61,7 +63,11 @@ class CrossReference extends FpdiCrossReference
         try {
             parent::__construct($parser, $fileHeaderOffset);
         } catch (CrossReferenceException $e) {
-            if ($e->getCode() !== CrossReferenceException::NO_XREF_FOUND) {
+            $eCode = $e->getCode();
+            if (
+                $eCode !== CrossReferenceException::NO_XREF_FOUND &&
+                $eCode !== CrossReferenceException::NO_STARTXREF_FOUND
+            ) {
                 throw $e;
             }
 

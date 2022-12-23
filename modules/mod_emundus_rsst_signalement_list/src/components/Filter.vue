@@ -77,7 +77,7 @@ export default {
     computed: {
         filterDataGroupBy() {
             return this.filterDatas.filter((data) => {
-                return JSON.parse(data.params).filter_groupby != -1;
+                return JSON.parse(data.params).filter_groupby != -1 &&  data.data.column_name !='id';
             });
         }
     },

@@ -43,7 +43,7 @@
 						<tr @click="(e) => {toggle(rowGroupByRowKeyName(group), e); retrieveGroupeClassColor(group)}" :class="retrieveGroupeClassColor(group)">
 							<td :colspan="showingListColumns.length+1">
 								<input type="checkbox" class="em-switch input" style="margin-top: -2px;" @change="(e) => toggleCheckGroupRows(e, group)">
-								<span class="em-ml-32"><b>{{ rowGroupByRowKeyName(group) }}</b></span>
+								<div class="em-ml-32" style="display: inline-block;"><b v-html="rowGroupByRowKeyName(group)"></b></div>
 							</td>
 							<td style="border-left: none;text-align: end">
 								<div>

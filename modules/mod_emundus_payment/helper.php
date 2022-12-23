@@ -74,7 +74,7 @@ class modEmundusPaymentHelper
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
-        $query->select('jeh.*, jho.order_status, jho.order_type')
+        $query->select('jeh.*, jho.order_status, jho.order_type, jho.order_id as hikashop_order')
             ->from('#__emundus_hikashop as jeh')
             ->leftJoin('#__hikashop_order as jho ON jho.order_id = jeh.order_id')
             ->where('jeh.fnum = ' . $db->quote($fnum));
@@ -415,5 +415,89 @@ class modEmundusPaymentHelper
             finfo_close($finfo);
             return $mimetype;
         } else return 'application/octet-stream';
+    }
+
+    function getAxeptaConfig($params,$fnum,$product): string {
+        require_once JPATH_ROOT . '/components/com_emundus/models/payment.php';
+        require_once JPATH_ROOT . '/components/com_emundus/payment/Axepta.php';
+        $m_payment = new EmundusModelPayment();
+        $axepta = new Axepta();
+
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+
+        $currentPayment = $this->didIStartPayment($fnum);
+        if(empty($currentPayment)) {
+            $order = $m_payment->createPaymentOrder($fnum, 'axepta');
+        } else {
+            $order = $currentPayment->hikashop_order;
+        }
+
+        $amount = number_format($product->product_sort_price,2)*100;
+        $test_mode = $params->get('axepta_test_mode',0);
+        $merchant_id = $eMConfig->get('axepta_merchant_id','BNP_DEMO_AXEPTA');
+        $currency = $params->get('axepta_currency','EUR');
+        $hmac_key = $eMConfig->get('axepta_hmac_key','4n!BmF3_?9oJ2Q*z(iD7q6[RSb5)a]A8');
+        $blowfish_key = $eMConfig->get('axepta_blowfish_key','Tc5*2D_xs7B[6E?w');
+        $notify_url = $params->get('axepta_notify_url',JUri::base() . '/notify');
+        $success_url = $params->get('axepta_success_url',JUri::base());
+        $failed_url = $params->get('axepta_failed_url',JUri::base());
+
+        /* BUILD payment_url */
+        $mac_value = $axepta->ctHMAC('',$order,$merchant_id,$amount,$currency,$hmac_key);
+
+        $blowfish_parameters = [
+            'MerchantID' => $merchant_id,
+            'MsgVer' => '2.0',
+            'TransID' => $order,
+            'RefNr' => '0000000AB123',
+            'Amount' => $amount,
+            'Currency' => $currency,
+            'URLNotify' => $notify_url,
+            'URLSuccess' => $success_url,
+            'URLFailure' => $failed_url,
+            'MAC' => $mac_value
+        ];
+        if($test_mode){
+            $blowfish_parameters['OrderDesc'] = 'Test:0000';
+        }
+        $blowfish_string = '';
+        foreach ($blowfish_parameters as $key => $parameter){
+            $value          = $parameter;
+            $blowfish_string .= $key.'='.$value.'&';
+        }
+        $blowfish_string = rtrim($blowfish_string, '&');
+        $len = strlen($blowfish_string);
+
+        $datas = $axepta->ctEncrypt($blowfish_string,$len,$blowfish_key);
+
+        // Get logo
+        $logo_module = JModuleHelper::getModuleById('90');
+        preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+        $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+                                    (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
+                                    (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
+                                    (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+
+        if ((bool) preg_match($pattern, $tab[1])) {
+            $tab[1] = parse_url($tab[1], PHP_URL_PATH);
+        }
+        $logo = JURI::base().$tab[1];
+        //
+
+        // Display Price
+        $sort_price = str_replace(',', '', $product->product_sort_price);
+        $price = number_format((double)$sort_price, 2, '.', ' ');
+        if($currency == 'EUR'){
+            $currency_icon = '€';
+        }
+        //
+
+        // Order description
+        $desc = $params->get('axepta_order_desc','');
+        //
+
+        $payment_url = 'https://paymentpage.axepta.bnpparibas/payssl.aspx' . '?MerchantID=' . $merchant_id . '&CustomField1='.$price.$currency_icon.'&CustomField3='.$logo.'&CustomField4='.$desc.'&URLBack='.JUri::base().'&Len='.$len.'&Data='.$datas;
+
+        return $payment_url;
     }
 }

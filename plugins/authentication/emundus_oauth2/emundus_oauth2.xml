@@ -40,10 +40,21 @@
 					   description=""
 					   label="Attributs"
 				>
-					<field name="user_column_name"
+					<field name="table_name"
+						   type="text"
+						   default="jos_users"
+						   label="Table" description=""/>
+
+					<field name="column_name"
 						   type="text"
 						   default=""
 						   label="Colonne à compléter" description=""/>
+
+					<field showon="table_name!:jos_users"
+						   name="column_join_user_id"
+						   type="text"
+						   default=""
+						   label="Colonne Identifiant utilisateur" description=""/>
 
 					<field name="attribute_name"
 						   type="text"

@@ -1,5 +1,5 @@
 <template>
-  <div class="em-w-90 em-container-profile-view" v-if="user">
+  <div class="em-w-90 em-container-profile-view em-mt-24" v-if="user">
     <div class="em-mb-32" style="width: max-content" v-if="isapplicant == 1">
       <a class="em-back-button em-pointer" :title="translate('COM_EMUNDUS_USERS_BACK_TO_FILES')" href="/"><span class="material-icons em-mr-4">navigate_before</span>{{ translate('COM_EMUNDUS_USERS_BACK_TO_FILES') }}</a>
     </div>

@@ -22,16 +22,21 @@ JText::script('MOD_EM_QCM_ARE_YOU_READY');
 JText::script('MOD_EM_QCM_COMPLETED');
 JText::script('MOD_EM_QCM_SUCCESSFULL');
 JText::script('MOD_EM_QCM_CONFIRM_ANSWER');
+
+JText::script('MOD_EM_QCM_TEST_QUESTION_PROPOSAL');
+JText::script('MOD_EM_QCM_TEST_QUESTION_PROPOSAL_1');
+JText::script('MOD_EM_QCM_TEST_QUESTION_PROPOSAL_2');
+JText::script('MOD_EM_QCM_TEST_QUESTION_PROPOSAL_3');
+JText::script('MOD_EM_QCM_TEST_QUESTION_PROPOSAL_4');
 ?>
 
 <div id="em-qcm-vue"
      questions="<?= $qcm_applicant->questions ?>"
      formid="<?= $formid ?>"
      step="<?= $qcm_applicant->step ?>"
-     intro="<?= $intro ?>"
      pending="<?= $qcm_applicant->pending ?>"
      module="<?= $module->id ?>"
      tierstemps="<?= $qcm_applicant->tiers_temps ?>"
-</div>
+></div>
 
 <script src="media/mod_emundus_qcm/app.js"></script>
