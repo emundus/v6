@@ -1,3 +1,8 @@
+.mod_emundus_campaign__list_content_head.blue,
+.em-applicant-text-color.blue {
+   background: transparent;
+}
+
 .mod_emundus_campaign__intro{
     width: 66%;
     max-width: 750px;
@@ -12,7 +17,6 @@
     color: var(--em-applicant-text-color);
     font-size: 18px;
 }
-
 
 .mod_emundus_campaign__intro a{
     color: #2B2B2B;
@@ -70,6 +74,37 @@
 .mod_emundus_campaign__header_filter a.em-pointer:hover {
     color: var(--neutral-600);
 }
+
+.mod_emundus_campaign__campagne_properties {
+    display: grid;
+    grid-template-columns: 80% 14%;
+    grid-template-rows: auto;
+    grid-template-areas: "titre logo";
+    column-gap: 6%;
+    align-items: center;
+}
+
+.mod_emundus_campaign__programme_properties {
+    display: grid;
+    grid-template-columns: 80% 14%;
+    grid-template-rows: auto;
+    grid-template-areas: "titre logo";
+    column-gap: 6%;
+    margin-bottom: 8px;
+    align-items: center;
+    height: 35px;
+}
+
+.mod_emundus_campaign__programme_properties .em-programme-tag{
+    margin-bottom: 0px;
+}
+
+.mod_emundus_campaign__campagne_properties img,
+.mod_emundus_campaign__programme_properties img{
+    max-height: 38px;
+    justify-self: flex-end;
+}
+
 
 .mod_emundus_campaign__list_content{
     box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
@@ -222,11 +257,11 @@ a.em-blue-400-color:hover {
     min-height: 46px;
     font-family: var(--applicant-title-font) !important;
 }
-
-.mod_emundus_campaign__date * {
+/*
+.mod_emundus_campaign__date *{
     margin-right: 8px;
     margin-bottom: 8px !important;
-}
+}*/
 
 .mod_emundus_campaign__programme_tag {
     border-radius: 8px;
@@ -427,6 +462,10 @@ a.em-blue-400-color:hover {
     .mod_emundus_campaign__header_filter,  .mod_emundus_campaign__header input[name="searchword"] {
       margin-top: 4px;
     }
+
+     body.gantry .mod_emundus_campaign__grid .em-flex-row .em-font-size-16 {
+        flex-basis: auto;
+    }
 }
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
@@ -437,5 +476,11 @@ a.em-blue-400-color:hover {
     .mod_emundus_campaign__content .mod_emundus_campaign__list_content,
     .mod_emundus_campaign__header {
         width: 94%;
+    }
+}
+
+@media screen and (min-width: 1081px) and (max-width: 1199px) {
+    .mod_emundus_campaign__content .mod_emundus_campaign__list_items {
+        grid-template-columns: repeat(2,1fr);
     }
 }

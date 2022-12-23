@@ -25,7 +25,7 @@ check-tchooz-version-job:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
       when: always
     - when: never
-  image: enix/ci-toolbox
+  image: enix/ci-toolbox:1.19
   script:
     - .ci/file-search-in-gitlab-merge-request.sh "$CI_SERVER_URL" "$GITLAB_TOKEN" "$CI_PROJECT_ID" "$CI_MERGE_REQUEST_IID" "administrator/components/com_emundus/emundus.xml"
 
@@ -50,7 +50,7 @@ vanilla-job:
 build-app-to-test-job:
   stage: build
   image: docker:20.10
-  before_script: 
+  before_script:
     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
   script:
     - docker pull emundus/tchooz-build-app:latest || true
@@ -64,7 +64,7 @@ build-app-to-test-job:
 build-db-to-test-job:
   stage: build
   image: docker:20.10
-  before_script: 
+  before_script:
     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
   script:
     - docker pull emundus/tchooz-build-db:latest || true
@@ -107,7 +107,7 @@ jest-job:
     - apache2-foreground &
     - /scripts/entrypoint.sh
     - cd components && yarn
-  script: 
+  script:
     - yarn run test:unit com_emundus/ --ci --coverage
   dependencies:
     - vanilla-job
@@ -152,7 +152,7 @@ publish-app-image-job:
       when: on_success
     - when: never
   image: docker:20.10
-  before_script: 
+  before_script:
     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
   script:
     - docker pull emundus/tchooz-app:latest || true
@@ -171,7 +171,7 @@ publish-db-image-job:
       when: on_success
     - when: never
   image: docker:20.10
-  before_script: 
+  before_script:
     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
   script:
     - docker pull emundus/tchooz-db:latest || true
@@ -180,3 +180,6 @@ publish-db-image-job:
     - docker push emundus/tchooz-db:latest
   needs:
     - release-job
+
+include:
+  - template: Security/Secret-Detection.gitlab-ci.yml

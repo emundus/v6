@@ -127,7 +127,7 @@ export default {
 }
 
 .autocomplete input {
-	height: 50px;
+	height: 48px;
 	margin-bottom: 0px;
 }
 
@@ -150,7 +150,7 @@ export default {
 
 .autocomplete-result.is-active,
 .autocomplete-result:hover {
-  background-color: #1B1F3C;
+  background-color: #EDEDED;
   color: white;
 }
 </style>

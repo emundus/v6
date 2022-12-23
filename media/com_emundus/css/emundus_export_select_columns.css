@@ -71,6 +71,7 @@ button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-prima
 
 #program-categories-group {
     display: flex;
+    flex-direction: column;
     justify-content: space-around;
 }
 

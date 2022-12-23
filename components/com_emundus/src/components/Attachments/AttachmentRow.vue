@@ -35,10 +35,7 @@
 				error: attachment.is_validated == 0,
 			}"
 		>
-			<select
-				@change="(e) => updateStatus(e)"
-				:disabled="canUpdate === false ? true : false"
-			>
+			<select @change="(e) => updateStatus(e)" :disabled="canUpdate === false ? true : false">
 				<option value="1" :selected="attachment.is_validated == 1">
 					{{ translate("VALID") }}
 				</option>
@@ -48,12 +45,7 @@
 				<option value="2" :selected="attachment.is_validated == 2">
 					{{ translate("COM_EMUNDUS_ATTACHMENTS_WARNING") }}
 				</option>
-				<option
-					value="-2"
-					:selected="
-						attachment.is_validated == -2 || attachment.is_validated === null
-					"
-				>
+				<option value="-2" :selected="attachment.is_validated == -2 || attachment.is_validated === null">
 					{{ translate("COM_EMUNDUS_ATTACHMENTS_WAITING") }}
 				</option>
 			</select>
@@ -63,14 +55,14 @@
 		<td class="date">{{ formattedDate(attachment.modified) }}</td>
 		<td class="permissions">
 			<span
-				class="material-icons-outlined visibility-permission"
+				class="material-icons-outlined visibility-permission em-pointer"
 				:class="{ active: attachment.can_be_viewed == '1' }"
 				@click="changePermission('can_be_viewed', attachment)"
 				:title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_VIEW')"
 				>visibility</span
 			>
 			<span
-				class="material-icons-outlined delete-permission"
+				class="material-icons-outlined delete-permission em-pointer"
 				:class="{ active: attachment.can_be_deleted == '1' }"
 				@click="changePermission('can_be_deleted', attachment)"
 				:title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE')"
@@ -81,7 +73,7 @@
       <div v-if="attachment.sync > 0">
         <span
             v-if="attachment.sync_method == 'write' && !syncLoading"
-            class="material-icons sync"
+            class="material-icons sync em-pointer"
             :class="{
               success: synchronizeState == 1,
               error: synchronizeState != 1,
@@ -93,7 +85,7 @@
         </span>
         <span
             v-else-if="attachment.sync_method == 'read' && !syncLoading"
-            class="material-icons sync"
+            class="material-icons sync em-pointer"
             :class="{
               success: synchronizeState == 1,
               error: synchronizeState != 1,
@@ -222,7 +214,7 @@ export default {
     "$store.state.attachment.categories": function () {
       this.categories = this.$store.state.attachment.categories;
       this.category = this.categories[this.attachment.category] ? this.categories[this.attachment.category] : "";
-    },
+    }
 	},
 };
 </script>
@@ -243,8 +235,8 @@ export default {
 		select {
 			padding: 4px 8px;
 			border-radius: 4px;
-			background-color: var(--grey-bg-color);
-			color: var(--grey-color);
+			background-color: var(--grey-bg-color) !important;
+			color: var(--grey-color) !important;
 			border: none;
 			width: max-content;
 		}
@@ -255,22 +247,22 @@ export default {
 
 		&.warning {
 			select {
-				color: var(--warning-color);
-				background-color: var(--warning-bg-color);
+				color: var(--warning-color) !important;
+				background-color: var(--warning-bg-color) !important;
 			}
 		}
 
 		&.success {
 			select {
-				color: var(--success-color);
-				background-color: var(--success-bg-color);
+				color: var(--success-color) !important;
+				background-color: var(--success-bg-color) !important;
 			}
 		}
 
 		&.error {
 			select {
-				color: var(--error-color);
-				background-color: var(--error-bg-color);
+				color: var(--error-color) !important;
+				background-color: var(--error-bg-color) !important;
 			}
 		}
 	}

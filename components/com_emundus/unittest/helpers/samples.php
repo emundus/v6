@@ -42,8 +42,8 @@ class EmundusUnittestHelperSamples
         $query = $db->getQuery(true);
 
         $query->insert('#__users')
-            ->columns('name, email, password')
-            ->values($db->quote('Test USER') . ', ' . $db->quote($username) . ',' .  $db->quote(md5('test1234')));
+            ->columns('name, username, email, password')
+            ->values($db->quote('Test USER') . ', ' . $db->quote($username) .  ', ' . $db->quote($username) . ',' .  $db->quote(md5('test1234')));
 
         try {
             $db->setQuery($query);
@@ -60,7 +60,7 @@ class EmundusUnittestHelperSamples
             $other_param['em_oprofiles'] 	= '';
             $other_param['univ_id'] 		= 0;
             $other_param['em_groups'] 		= '';
-            $other_param['em_campaigns'] 	= '1';
+            $other_param['em_campaigns'] 	= [];
             $other_param['news'] 			= '';
             $m_users->addEmundusUser($user_id, $other_param);
         }

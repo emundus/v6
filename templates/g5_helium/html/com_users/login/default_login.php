@@ -78,13 +78,15 @@ $eMConfig = JComponentHelper::getParams('com_emundus');
                         </div>
                     </div>
                 <?php endif; ?>
+                <?php if($this->displayForgotten) : ?>
                 <div class="control-group em-float-right">
                     <div class="control-label">
-                        <a class="em-text-underline" href="<?php echo JRoute::_('index.php?option=com_users&view=reset'); ?>">
+                        <a class="em-text-underline" href="<?php echo JRoute::_($this->forgottenLink); ?>">
                             <?php echo JText::_('COM_USERS_LOGIN_RESET'); ?>
                         </a>
                     </div>
                 </div>
+                <?php endif; ?>
             </div>
             <div class="control-group em-w-100">
                 <div class="controls">
@@ -100,18 +102,12 @@ $eMConfig = JComponentHelper::getParams('com_emundus');
     </form>
 
     <?php $usersConfig = JComponentHelper::getParams('com_users'); ?>
-    <?php if ($usersConfig->get('allowUserRegistration')) : ?>
+    <?php if ($usersConfig->get('allowUserRegistration') && $this->displayRegistration) : ?>
         <div>
             <?php echo JText::_('COM_USERS_LOGIN_NO_ACCOUNT'); ?>
-            <?php if(!empty($this->campaign) && !empty($this->course)) :?>
-                <a class="em-text-underline" href="<?php echo JRoute::_('index.php?option=com_users&view=registration&course=' . $this->course . '&cid=' . $this->campaign); ?>">
-                    <?php echo JText::_('COM_USERS_LOGIN_REGISTER'); ?>
-                </a>
-            <?php else: ?>
-                <a class="em-text-underline" href="<?php echo JRoute::_('index.php?option=com_users&view=registration'); ?>">
-                    <?php echo JText::_('COM_USERS_LOGIN_REGISTER'); ?>
-                </a>
-            <?php endif; ?>
+            <a class="em-text-underline" href="<?php echo JRoute::_($this->registrationLink); ?>">
+                <?php echo JText::_('COM_USERS_LOGIN_REGISTER'); ?>
+            </a>
         </div>
     <?php endif; ?>
 </div>

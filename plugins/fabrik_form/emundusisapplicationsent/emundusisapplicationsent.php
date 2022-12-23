@@ -106,7 +106,6 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
             $copy_exclude_forms = $eMConfig->get('copy_exclude_forms', []);
             $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
             $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
-            $current_phase = $m_campaign->getCurrentCampaignWorkflow($user);
 
             $id_applicants = $eMConfig->get('id_applicants', '0');
             $applicants = explode(',',$id_applicants);
@@ -129,6 +128,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
             $reload++;
 
             $current_fnum = !empty($fnum) ? $fnum : $user->fnum;
+            $current_phase = $m_campaign->getCurrentCampaignWorkflow($current_fnum);
             if (!empty($current_phase) && !empty($current_phase->end_date)) {
                 $current_end_date = $current_phase->end_date;
                 $current_start_date = $current_phase->start_date;
@@ -297,7 +297,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                             if (count($groups) > 0) {
                                 foreach ($groups as $group) {
                                     $group_params = json_decode($group->gparams);
-                                    if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
+                                    if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1 && !in_array($group->name,['id','parent_id','fnum','user','date_time'])) {
                                         $query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id = ' . $group->group_id . ' AND table_key LIKE "id" AND table_join_key LIKE "parent_id"';
                                         $db->setQuery($query);
                                         try {

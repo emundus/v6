@@ -13,12 +13,26 @@ $cookieLogin = $this->user->get('cookieLogin');
 $app = JFactory::getApplication();
 $jinput = JFactory::getApplication()->input;
 $redirect = base64_decode($jinput->get->getBase64('redirect'));
+
+$eMConfig = JComponentHelper::getParams('com_emundus');
+
 if (!empty($cookieLogin) || $this->user->get('guest'))
 {
     // Get campaign ID and course from url
     $this->campaign = $jinput->get('cid');
     $this->course   = $jinput->get('course');
+    $this->displayRegistration   = $eMConfig->get('display_registration_link',1);
+    $this->registrationLink   = $eMConfig->get('registration_link','');
+	$this->displayForgotten   = $eMConfig->get('display_forgotten_password_link',1);
+	$this->forgottenLink   = $eMConfig->get('forgotten_password_link','index.php?option=com_users&view=reset') ?: 'index.php?option=com_users&view=reset';
 
+	if(empty($this->registrationLink)){
+		if(!empty($this->campaign) && !empty($this->course)){
+			$this->registrationLink = 'index.php?option=com_users&view=registration&course=' . $this->course . '&cid=' . $this->campaign;
+		} else {
+			$this->registrationLink = 'index.php?option=com_users&view=registration';
+		}
+	}
     JFactory::getSession()->set('cid',$this->campaign);
     JFactory::getSession()->set('course', $this->course);
 

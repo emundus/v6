@@ -23,6 +23,18 @@ $now = $dateTime->format('Y-m-d H:i:s');
     .btn-primary.mod_emundus_flow___print{
         background: transparent;
     }
+    .mod_emundus_flow___infos{
+        flex-wrap: wrap;
+        grid-gap: 24px;
+    }
+    @media all and (max-width: 767px) {
+        .mod_emundus_flow___infos{
+            grid-gap: 0;
+        }
+        .mod_emundus_flow___infos div:first-child{
+            margin-bottom: 6px;
+        }
+    }
 </style>
 
 <div class="em-mt-48" style="padding: 0 20px">
@@ -59,7 +71,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
                 <button class="btn btn-primary em-mr-16" style="height: 41px"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
             </a>
             <?php endif; ?>
-            <a href="/component/emundus/?task=pdf&amp;fnum=2022101914533400001650000100" target="_blank" title="Imprimer">
+            <a href="/component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>" target="_blank" title="Imprimer">
                 <button class="btn btn-primary mod_emundus_flow___print">
                     <span class="material-icons-outlined" style="font-size: 16px">print</span>
                 </button>
@@ -67,16 +79,16 @@ $now = $dateTime->format('Y-m-d H:i:s');
         </div>
     </div>
     <?php if ($show_deadline == 1 || $show_status == 1) :?>
-    <div class="em-flex-row em-mt-8">
+    <div class="em-flex-row em-mt-8 mod_emundus_flow___infos">
         <?php if ($show_deadline == 1) : ?>
         <div class="em-flex-row">
             <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EMUNDUS_FLOW_END_DATE'); ?></p>
-            <span class="em-ml-6"><?php echo JFactory::getDate(new JDate($deadline, $site_offset))->format('d/m/Y H:i'); ?></span>
+            <span class="em-ml-6" style="white-space: nowrap"><?php echo JFactory::getDate(new JDate($deadline, $site_offset))->format('d/m/Y H:i'); ?></span>
         </div>
         <?php endif; ?>
 
         <?php if($show_status == 1) : ?>
-        <div class="em-flex-row em-ml-24">
+        <div class="em-flex-row">
             <p class="em-text-neutral-600"><?= JText::_('MOD_EMUNDUS_FLOW_STATUS'); ?></p>
             <div class="mod_emundus_flow___status_<?= $current_application->class; ?> em-flex-row">
                 <span class="mod_emundus_flow___circle em-mr-8 em-ml-6 label-<?= $current_application->class; ?>"></span>

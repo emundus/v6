@@ -435,29 +435,26 @@ class EmundusModelLogs extends JModelList {
         return false;
     }
 
-    /* get all #users #logs by fnum [make left join with table jos_users] */
     public function getUsersLogsByFnum($fnum) {
+        $logs = [];
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        /* if no fnum is set ==> return empty array */
-        if(empty($fnum)) {
-            return [];
-        } else {
+        if(!empty($fnum)) {
+            $query->clear()
+                ->select('distinct(ju.id) as uid, ju.name')
+                ->from($db->quoteName('jos_users', 'ju'))
+                ->leftJoin($db->quoteName('#__emundus_logs', 'jel') . ' ON ' . $db->quoteName('jel.user_id_from') . ' = ' . $db->quoteName('ju.id'))
+                ->where($db->quoteName('jel.fnum_to') . ' = ' . $db->quote($fnum));
+
             try {
-                $query->clear()
-                    ->select('distinct(ju.id) as uid, ju.name')
-                    ->from($db->quoteName('jos_users', 'ju'))
-                    ->leftJoin($db->quoteName('#__emundus_logs', 'jel') . ' ON ' . $db->quoteName('jel.user_id_from') . ' = ' . $db->quoteName('ju.id'))
-                    ->where($db->quoteName('jel.fnum_to') . ' = ' . $db->quote($fnum));
-
                 $db->setQuery($query);
-                $results = $db->loadObjectList();
-
-                return $results;
+                $logs = $db->loadObjectList();
             } catch(Exception $e) {
                 JLog::add('component/com_emundus/models/files | Error when get all affected user by fnum' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage() . '#fnum = ' . $fnum), JLog::ERROR, 'com_emundus');
             }
         }
+
+        return $logs;
     }
 }

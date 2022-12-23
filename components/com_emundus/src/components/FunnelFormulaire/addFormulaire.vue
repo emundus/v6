@@ -1,32 +1,51 @@
 <template>
   <div>
-    <div class="em-mb-4 em-text-color">{{ChooseForm}} : </div>
-    <div class="em-mb-8">
+    <a class="em-pointer" @click="addNewForm">{{ translate('COM_EMUNDUS_ONBOARD_NO_FORM_FOUND_ADD_FORM') }}</a>
+
+    <div class="em-mb-4 em-mt-16 em-text-color">{{ChooseForm}} : </div>
+    <div class="em-mb-4">
       <select id="select_profile" v-model="$props.profileId" @change="updateProfileCampaign">
         <option v-for="(profile, index) in profiles" :key="index" :value="profile.id">
           {{profile.form_label}}
         </option>
       </select>
+    </div>
+    <a class="em-pointer" @click="formbuilder">{{ translate('COM_EMUNDUS_ONBOARD_EDIT_FORM') }}</a>
 
-      <div class="em-mb-8 em-mt-8">
-        <span class="em-text-color">{{ translate('COM_EMUNDUS_OR').toUpperCase() }}</span>
+    <hr/>
+    <p class="em-h5">{{ translate('COM_EMUNDUS_FORM_PAGES_PREVIEW')}}</p>
+    <div class="em-flex-row">
+      <div v-for="form in formList" :key="form.id"
+           v-if="form.link.includes('fabrik')"
+           class="card-wrapper em-mr-32"
+           :title="form.label"
+      >
+        <form-builder-preview-form
+            :form_id="Number(form.id)"
+            :form_label="form.label"
+            class="card em-shadow-cards model-preview em-pointer"
+        ></form-builder-preview-form>
       </div>
-
-      <button @click="addNewForm" class="em-primary-button em-w-auto">
-          <span class="material-icons-outlined em-color-white em-mr-8">add</span>
-          <span>{{ AddForm }}</span>
-      </button>
     </div>
 
-    <FormCarrousel
-      v-if="formList"
-      :formList="formList"
-      :documentsList="documentsList"
-      :visibility="visibility"
-      :key="formListReload"
-      @getEmitIndex="getEmitIndex"
-      @formbuilder="formbuilder"
-    />
+    <div v-if="documentsList.length > 0">
+      <p class="em-h5 em-mt-12">{{ translate('COM_EMUNDUS_FORM_ATTACHMENTS_PREVIEW')}}</p>
+      <div class="em-flex-row">
+        <div v-for="document in documentsList" :key="document.id"
+             class="card-wrapper em-mr-32"
+             :title="document.label"
+        >
+          <form-builder-preview-attachments
+              :document_id="Number(document.id)"
+              :document_label="document.label"
+              class="card em-shadow-cards model-preview em-pointer"
+          ></form-builder-preview-attachments>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
 
@@ -38,6 +57,8 @@ const qs = require("qs");
 
 import "@fortawesome/fontawesome-free/css/all.css";
 import "@fortawesome/fontawesome-free/js/all.js";
+import FormBuilderPreviewForm from "@/components/FormBuilder/FormBuilderPreviewForm.vue";
+import FormBuilderPreviewAttachments from "@/components/FormBuilder/FormBuilderPreviewAttachments";
 
 export default {
   name: "addFormulaire",
@@ -50,6 +71,8 @@ export default {
     visibility: Number
   },
   components: {
+    FormBuilderPreviewAttachments,
+    FormBuilderPreviewForm,
     FormCarrousel
   },
 
@@ -60,7 +83,7 @@ export default {
       EmitIndex: "0",
       formList: [],
       documentsList: [],
-      formListReload: 0,
+      loading: false,
 
       form: {
         label: "Nouveau formulaire",
@@ -76,6 +99,7 @@ export default {
       this.EmitIndex = value;
     },
     getForms(profile_id) {
+      this.loading = true;
       axios({
         method: "get",
         url:
@@ -89,7 +113,7 @@ export default {
       })
         .then(response => {
           this.formList = response.data.data;
-          this.formListReload += 1;
+          this.loading = false;
         })
         .catch(e => {
           console.log(e);
@@ -152,19 +176,13 @@ export default {
     },
 
     formbuilder(index) {
-      axios.get("index.php?option=com_emundus&controller=form&task=getfilesbyform&pid=" + this.profileId)
-          .then(response => {
-            if(response.data.data != 0){
-              this.$modal.show('modalWarningFormBuilder');
-            } else {
-              this.redirectJRoute('index.php?option=com_emundus&view=form&layout=formbuilder&prid=' +
-                  this.profileId +
-                  '&index=' +
-                  index +
-                  '&cid=' +
-                  this.campaignId)
-            }
-          });
+      index = 0;
+      this.redirectJRoute('index.php?option=com_emundus&view=form&layout=formbuilder&prid=' +
+          this.profileId +
+          '&index=' +
+          index +
+          '&cid=' +
+          this.campaignId)
     },
   },
   created() {
@@ -174,11 +192,54 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+.card-wrapper {
+  width: 150px;
+
+  .em-shadow-cards {
+    background-color: white;
+    width: 150px;
+    border: 2px solid transparent;
+  }
+
+  .card {
+    margin: 24px 0 12px 0;
+  }
+
+  p {
+    text-align: center;
+    border-radius: 4px;
+    padding: 4px;
+    transition: all .3s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px;
+  }
+
+  input {
+    width: 200px;
+    height: 20px;
+    font-size: 12px;
+    border: 0;
+    text-align: center;
+  }
+
+  &.selected {
+    .em-shadow-cards {
+      border: 2px solid #20835F;
+    }
+
+    p, input {
+      color: white !important;
+      background-color: #20835F !important;
+    }
+  }
+}
 #select_profile{
-  width: 23%;
-  margin-right: 10px;
-  height: 50px;
+  min-width: 250px;
+  width: max-content;
+  max-width: 350px;
 }
 </style>
 

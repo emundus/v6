@@ -41,7 +41,7 @@ if (!empty($user->fnum)) {
     $m_files = new EmundusModelFiles;
     $m_campaign = new EmundusModelCampaign;
 
-    $current_phase = $m_campaign->getCurrentCampaignWorkflow($user);
+    $current_phase = $m_campaign->getCurrentCampaignWorkflow($user->fnum);
     $attachments = $m_application->getAttachmentsProgress($user->fnum);
     $forms 	= $m_application->getFormsProgress($user->fnum);
     $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
@@ -85,7 +85,7 @@ if (!empty($user->fnum)) {
         }
     }
 
-    if (!empty($current_phase)) {
+    if (!empty($current_phase) && !is_null($current_phase->entry_status)) {
         $is_app_sent = !in_array($user->status, $current_phase->entry_status);
 
         $status_for_send = array_merge($status_for_send, $current_phase->entry_status);

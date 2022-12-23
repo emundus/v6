@@ -1,4 +1,4 @@
-function export_excel(fnums) {
+function export_excel(fnums, letter) {
     var eltJson = {};
     var i = 0;
     var objclass = [];
@@ -111,7 +111,7 @@ function export_excel(fnums) {
                             } else {
                                 $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>0</p></div>');
                             }
-                            generate_csv(json, eltJson, objJson, options, objclass);
+                            generate_csv(json, eltJson, objJson, options, objclass, letter);
                         }
                     },
                     error: function (jqXHR) {
@@ -128,10 +128,9 @@ function export_excel(fnums) {
     });
 }
 
-function generate_csv(json, eltJson, objJson, options, objclass) {
+function generate_csv(json, eltJson, objJson, options, objclass, letter) {
     const maxcsv = 65000;
     const maxxls = 65000;
-    let letter = $('#em-export-letter').val();
     var start = json.start;
     var limit = json.limit;
     var totalfile = json.totalfile;
@@ -169,7 +168,7 @@ function generate_csv(json, eltJson, objJson, options, objclass) {
 
                     }
                     if (start != json.start) {
-                        generate_csv(json, eltJson, objJson, options, objclass);
+                        generate_csv(json, eltJson, objJson, options, objclass, letter);
                     } else {
                         $('#extractstep').replaceWith('<div id="extractstep"><p>' + Joomla.JText._('COM_EMUNDUS_XLS_GENERATION') + '</p></div>');
                         $.ajax(

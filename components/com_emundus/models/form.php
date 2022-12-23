@@ -231,7 +231,7 @@ class EmundusModelForm extends JModelList {
         $falang = new EmundusModelFalang;
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
-        $modules = $eMConfig->get('form_buider_page_creation_modules', [93,102,103,104,168,170]);
+        $modules = $eMConfig->get('form_builder_page_creation_modules', [93,102,103,104,168,170]);
 
         if (count($data) > 0) {
             $sp_conditions = array(
@@ -838,10 +838,7 @@ class EmundusModelForm extends JModelList {
                     'fr' => 'Décrivez votre page de formulaire avec une introduction',
                     'en' => 'Describe your form page with an introduction'
                 ];
-                $first_page_res = $formbuilder->createApplicantMenu($label, $intro, $newprofile, 'false');
-                if ($first_page_res['status'] !== true){
-                    return false;
-                }
+                $formbuilder->createApplicantMenu($label, $intro, $newprofile, 'false');
             }
 
             // Create submittion page
@@ -859,10 +856,8 @@ class EmundusModelForm extends JModelList {
             }
 
             // Create checklist menu
-            $checklist_menu = $this->addChecklistMenu($newprofile);
-            if(empty($checklist_menu)){
-                return false;
-            }
+            $this->addChecklistMenu($newprofile);
+            //
 
             $user = JFactory::getUser();
             $settings->onAfterCreateForm($user->id);
@@ -1402,7 +1397,7 @@ class EmundusModelForm extends JModelList {
         $query = $db->getQuery(true);
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
-        $modules = $eMConfig->get('form_buider_page_creation_modules', [93,102,103,104,168,170]);
+        $modules = $eMConfig->get('form_builder_page_creation_modules', [93,102,103,104,168,170]);
 
         try {
             // Create the menu
@@ -1508,7 +1503,7 @@ class EmundusModelForm extends JModelList {
         $query = $db->getQuery(true);
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
-        $modules = $eMConfig->get('form_buider_page_creation_modules', [93,102,103,104,168,170]);
+        $modules = $eMConfig->get('form_builder_page_creation_modules', [93,102,103,104,168,170]);
 
         $query->clear()
             ->select('*')
@@ -1834,7 +1829,7 @@ class EmundusModelForm extends JModelList {
         $query = $db->getQuery(true);
 
         try {
-            $query->select('sa.id as docid,sa.value as label,sap.*')
+            $query->select('sa.id as docid,sa.value as label,sap.*,sa.allowed_types')
                 ->from($db->quoteName('#__emundus_setup_attachment_profiles','sap'))
                 ->leftJoin($db->quoteName('#__emundus_setup_attachments','sa').' ON '.$db->quoteName('sa.id').' = '.$db->quoteName('sap.attachment_id'))
                 ->where($db->quoteName('profile_id') . ' = ' . $db->quote($prid))

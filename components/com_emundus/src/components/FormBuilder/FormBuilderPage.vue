@@ -30,8 +30,8 @@
       <form-builder-page-section
         v-for="(section, index) in sections"
         :key="section.group_id"
-        :profile_id="profile_id"
-        :page_id="page.id"
+        :profile_id="parseInt(profile_id)"
+        :page_id="parseInt(page.id)"
         :section="section"
         :index="index+1"
         :totalSections="sections.length"

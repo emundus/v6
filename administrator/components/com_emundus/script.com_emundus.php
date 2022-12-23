@@ -245,29 +245,36 @@ class com_emundusInstallerScript
                 $query = $db->getQuery(true);
 
                 EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns','pinned','TINYINT',1);
+                EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns','eval_start_date','DATETIME');
                 EmundusHelperUpdate::addColumn('jos_emundus_setup_programmes','color','VARCHAR',10);
 
                 EmundusHelperUpdate::genericUpdateParams('#__modules', 'module', 'mod_falang', array('advanced_dropdown','full_name'), array('0','0'));
 
                 // Add back button to login, register and reset view
-                $datas = [
-                    'title' => 'eMundus - Back button',
-                    'note' => 'Back button available on login and register views',
-                    'content' => '<p><a class="em-back-button em-pointer" href="/"><span class="material-icons em-mr-4">navigate_before</span>Retour à la page d\'accueil</a></p>',
-                    'position' => 'header-a',
-                    'module' => 'mod_custom',
-                    'access' => 9,
-                    'params' => [
-                        'prepare_content' => 0,
-                        'backgroundimage' => '',
-                        'layout' => '_:default',
-                        'moduleclass_sfx' => '',
-                        'cache' => 1,
-                        'cache_time' => 900,
-                        'cachemode' => 'static',
-                    ]
-                ];
-                $moduleid = EmundusHelperUpdate::addJoomlaModule($datas);
+                $back_module = EmundusHelperUpdate::getModule(0, 'eMundus - Back button');
+                if (!empty($back_module) && !empty($back_module['id'])) {
+                    $moduleid = $back_module['id'];
+                } else {
+                    $datas = [
+                        'title' => 'eMundus - Back button',
+                        'note' => 'Back button available on login and register views',
+                        'content' => '<p><a class="em-back-button em-pointer" href="/"><span class="material-icons em-mr-4">navigate_before</span>Retour à la page d\'accueil</a></p>',
+                        'position' => 'header-a',
+                        'module' => 'mod_custom',
+                        'access' => 9,
+                        'params' => [
+                            'prepare_content' => 0,
+                            'backgroundimage' => '',
+                            'layout' => '_:default',
+                            'moduleclass_sfx' => '',
+                            'cache' => 1,
+                            'cache_time' => 900,
+                            'cachemode' => 'static',
+                        ]
+                    ];
+                    $moduleid = EmundusHelperUpdate::addJoomlaModule($datas);
+                }
+
                 if(!empty($moduleid)) {
                     $query->clear()
                         ->select('id')
@@ -329,6 +336,21 @@ class com_emundusInstallerScript
                 //
 
                 $succeed['campaign_workflow'] = EmundusHelperUpdate::addProgramToCampaignWorkflow();
+                $query->clear()
+                    ->select('jfe.id')
+                    ->from($db->quoteName('jos_fabrik_elements', 'jfe'))
+                    ->leftJoin($db->quoteName('jos_fabrik_formgroup', 'jffg') . ' ON jfe.group_id = jffg.group_id')
+                    ->leftJoin($db->quoteName('jos_fabrik_lists', 'jfl') .' ON jffg.form_id = jfl.form_id')
+                    ->where('jfl.db_table_name = ' . $db->quote('jos_emundus_campaign_workflow'))
+                    ->andWhere($db->quoteName('jfe.name') . ' IN (' . $db->quote('campaign') . ', ' .$db->quote('end_date') . ')');
+                $db->setQuery($query);
+                $campaign_elements = $db->loadColumn();
+
+                if (!empty($campaign_elements)) {
+                    foreach($campaign_elements as $campaign_element) {
+                        EmundusHelperUpdate::genericUpdateParams('#__fabrik_elements', 'id', $campaign_element, ['validations'], [], null, true);
+                    }
+                }
 
                 // Install announcement module
                 //TODO : Install a module or a plugin via folder (parse xml file and insert necessary datas)
@@ -374,12 +396,12 @@ class com_emundusInstallerScript
                 $datas = [
                     'title' => 'Spotlight eMundus',
                     'note' => 'Advanced search based on Joomla indexing',
-                    'position' => 'drawer',
+                    'position' => 'header-c',
                     'module' => 'mod_finder',
                     'access' => 7,
                     'params' => [
                         'searchfilter' => '',
-                        'show_autosuggest' => 0,
+                        'show_autosuggest' => 1,
                         'show_advanced' => 0,
                         'field_size' => 25,
                         'show_label' => 1,
@@ -404,6 +426,57 @@ class com_emundusInstallerScript
                     ['label' => 'onHikashopCheckoutWorkflowLoad', 'category' => 'Hikashop'],
                     ['label' => 'onHikashopBeforeProductListingLoad', 'category' => 'Hikashop']
                 ]);
+
+                EmundusHelperUpdate::disableEmundusPlugins('J2top');
+
+                $succeed['generate_letter_events_added'] = EmundusHelperUpdate::addCustomEvents([
+                    ['label' => 'onAfterGenerateLetters', 'category' => 'Files']
+                ]);
+                $succeed['evaluation_events_added'] = EmundusHelperUpdate::addCustomEvents([
+                    ['label' => 'onRenderEvaluation', 'category' => 'Evaluation'],
+                    ['label' => 'onBeforeSubmitEvaluation', 'category' => 'Evaluation'],
+                    ['label' => 'onAfterSubmitEvaluation', 'category' => 'Evaluation']
+                ]);
+
+	            EmundusHelperUpdate::addYamlVariable('location','gantry-assets://custom/scss/quill.scss',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css',true,true);
+	            EmundusHelperUpdate::addYamlVariable('inline','',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+	            EmundusHelperUpdate::addYamlVariable('extra','{  }',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+	            EmundusHelperUpdate::addYamlVariable('priority','0',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+	            EmundusHelperUpdate::addYamlVariable('name','Quill',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+
+	            EmundusHelperUpdate::disableEmundusPlugins('emundus_profile');
+
+	            $query->clear()
+		            ->update('#__modules')
+		            ->set($db->quoteName('ordering') . ' = 1')
+		            ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_falang'))
+		            ->andWhere($db->quoteName('position') . ' LIKE ' . $db->quote('header-c'));
+	            $db->setQuery($query);
+	            $db->execute();
+
+	            $query->clear()
+		            ->update('#__modules')
+		            ->set($db->quoteName('ordering') . ' = 2')
+		            ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_messenger_notifications'))
+		            ->andWhere($db->quoteName('position') . ' LIKE ' . $db->quote('header-c'));
+	            $db->setQuery($query);
+	            $db->execute();
+
+	            $query->clear()
+		            ->update('#__modules')
+		            ->set($db->quoteName('ordering') . ' = 3')
+		            ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_finder'))
+		            ->andWhere($db->quoteName('position') . ' LIKE ' . $db->quote('header-c'));
+	            $db->setQuery($query);
+	            $db->execute();
+
+	            $query->clear()
+		            ->update('#__modules')
+		            ->set($db->quoteName('ordering') . ' = 4')
+		            ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_user_dropdown'))
+		            ->andWhere($db->quoteName('position') . ' LIKE ' . $db->quote('header-c'));
+	            $db->setQuery($query);
+	            $db->execute();
             }
 
             // Insert new translations in overrides files

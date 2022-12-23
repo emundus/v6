@@ -27,6 +27,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
     $document = JFactory::getDocument();
     $document->addStyleSheet("media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
@@ -61,6 +62,8 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 
     $description = JText::_($params->get('description', ''));
     $show_fnum = $params->get('show_fnum', 0);
+    $mod_emundus_applications_show_programme = $params->get('mod_emundus_applications_show_programme',1);
+    $mod_emundus_applications_show_end_date = $params->get('mod_emundus_applications_show_end_date',1);
     $show_add_application = $params->get('show_add_application', 1);
     $show_show_campaigns = $params->get('show_show_campaigns', 0);
     $campaigns_list_url = $params->get('show_campaigns_url', 'liste-des-campagnes');
@@ -97,6 +100,8 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 
     $groups = $params->get('mod_em_application_group', null);
     $title_other_section = $params->get('mod_em_application_group_title_other', 'MOD_EMUNDUS_APPLICATIONS_OTHER_FILES');
+    $date_format = $params->get('mod_em_application_date_format', 'd/m/Y H:i');
+    $mod_em_applications_show_hello_text = $params->get('mod_em_applications_show_hello_text',1);
 
 
     // Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
@@ -129,6 +134,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $m_application = new EmundusModelApplication();
     $m_email = new EmundusModelEmails();
     $m_files = new EmundusModelFiles();
+    $m_campaign = new EmundusModelCampaign();
 
 
 	$fnums = array_keys($applications);

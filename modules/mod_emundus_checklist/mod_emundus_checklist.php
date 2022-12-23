@@ -1,15 +1,15 @@
 <?php
 /**
-* @version		$Id: mod_emundus_checklist.php
-* @package		Joomla
-* @copyright	Copyright (C) 2016 emundus.fr. All rights reserved.
-* @license		GNU/GPL, see LICENSE.php
-* Joomla! is free software. This version may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
-* See COPYRIGHT.php for copyright notices and details.
-*/
+ * @version		$Id: mod_emundus_checklist.php
+ * @package		Joomla
+ * @copyright	Copyright (C) 2016 emundus.fr. All rights reserved.
+ * @license		GNU/GPL, see LICENSE.php
+ * Joomla! is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ * See COPYRIGHT.php for copyright notices and details.
+ */
 
 // no direct access
 defined('_JEXEC') or die('Restricted access');
@@ -27,11 +27,13 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
     require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
     require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
     $m_checklist = new EmundusModelChecklist();
     $m_application = new EmundusModelApplication();
     $m_campaign = new EmundusModelCampaign();
     $m_profile = new EmundusModelProfile();
     $m_files = new EmundusModelFiles();
+    $m_emails = new EmundusModelEmails();
 
     $db = JFactory::getDBO();
     $app = JFactory::getApplication();
@@ -52,32 +54,95 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
     $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
+    $application_fee = $eMConfig->get('application_fee', 0);
 
-	$menuid = $app->getMenu()->getActive()->id;
-	$query='SELECT id, link FROM #__menu WHERE alias like "checklist%" AND menutype like "%'.$user->menutype.'"';
-	$db->setQuery( $query );
-	$itemid = $db->loadAssoc();
+    $checkout_url = null;
+    if ($application_fee) {
+        $fnumInfos = $m_files->getFnumInfos($user->fnum);
+        $order = $m_application->getHikashopOrder($fnumInfos);
+        $paid = !empty($order);
+        $cart = $m_application->getHikashopCartUrl($user->profile);
+        $cartorder = null;
 
-	$and = ($show_duplicate_documents != -1)?' AND esap.duplicate='.$show_duplicate_documents:'';
-	$query = 'SELECT esa.value, esap.id, esa.id as _id, esap.mandatory, esap.duplicate
+        if (!$paid || !empty($cart)) {
+
+            // If students with a scholarship have a different fee.
+            // The form ID will be appended to the URL, taking him to a different checkout page.
+            if (isset($scholarship_document)) {
+
+                // See if applicant has uploaded the required scolarship form.
+                try {
+
+                    $query = 'SELECT count(id) FROM #__emundus_uploads
+								WHERE attachment_id = ' . $scholarship_document . '
+								AND fnum LIKE ' . $db->Quote($user->fnum);
+
+                    $db->setQuery($query);
+                    $uploaded_document = $db->loadResult();
+
+                } catch (Exception $e) {
+                    JLog::Add('Error in plugin/isApplicationCompleted at SQL query : ' . $query, Jlog::ERROR, 'plugins');
+                }
+
+                // If he hasn't, no discount for him.
+                if ($uploaded_document == 0) {
+                    $scholarship_document = NULL;
+                } else {
+                    $scholarship = true;
+                }
+
+            }
+            if (!empty($cart)) {
+                $cartorder = $m_application->getHikashopCart($fnumInfos);
+                $checkout_url = 'cart' . $user->profile;
+            } elseif (!$paid) {
+                $orderCancelled = false;
+
+                $checkout_url = $m_application->getHikashopCheckoutUrl($user->profile . $scholarship_document);
+                if (strpos($checkout_url, '${') !== false) {
+                    $checkout_url = $m_emails->setTagsFabrik($checkout_url, [$user->fnum]);
+                }
+                if(!empty($checkout_url)) {
+                    $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($checkout_url)) . '&usekey=fnum&rowid=' . $user->fnum;
+                }
+
+                $cancelled_orders = $m_application->getHikashopOrder($fnumInfos, true);
+
+                if (!empty($cancelled_orders)) {
+                    $orderCancelled = true;
+                }
+            }
+
+        } else {
+            $checkout_url = 'index.php';
+        }
+    }
+
+    $menuid = $app->getMenu()->getActive()->id;
+    $query='SELECT id, link FROM #__menu WHERE alias like "checklist%" AND menutype like "%'.$user->menutype.'"';
+    $db->setQuery( $query );
+    $itemid = $db->loadAssoc();
+
+    $and = ($show_duplicate_documents != -1)?' AND esap.duplicate='.$show_duplicate_documents:'';
+    $query = 'SELECT esa.value, esap.id, esa.id as _id, esap.mandatory, esap.duplicate
 		FROM #__emundus_setup_attachment_profiles esap
 		JOIN #__emundus_setup_attachments esa ON esa.id = esap.attachment_id
 		WHERE esap.displayed = 1 '.$and.' AND esap.profile_id ='.$user->profile.'
 		ORDER BY esa.ordering';
-	$db->setQuery( $query );
-	$documents = $db->loadObjectList();
+    $db->setQuery( $query );
+    $documents = $db->loadObjectList();
 
-	$mandatory_documents = array();
-	$optional_documents = array();
+    $mandatory_documents = array();
+    $optional_documents = array();
 
-	if (count($documents) > 0) {
-		foreach ($documents as $document) {
-			if ($document->mandatory == 1)
-				$mandatory_documents[] = $document;
-			else
-				$optional_documents[] = $document;
-		}
-	}
+    if (count($documents) > 0) {
+        foreach ($documents as $document) {
+            if ($document->mandatory == 1)
+                $mandatory_documents[] = $document;
+            else
+                $optional_documents[] = $document;
+        }
+    }
 
     $query = $db->getQuery(true);
 
@@ -85,12 +150,12 @@ if (isset($user->fnum) && !empty($user->fnum)) {
         ->from($db->quoteName('#__emundus_uploads','eu'))
         ->leftJoin($db->quoteName('#__emundus_setup_attachment_profiles','esap').' ON '.$db->quoteName('eu.attachment_id').' = '.$db->quoteName('esap.attachment_id'))
         ->leftJoin($db->quoteName('#__emundus_setup_attachments','esa').' ON '.$db->quoteName('esap.attachment_id').' = '.$db->quoteName('esa.id'))
-        ->where($db->quoteName('esap.mandatory') . ' = 1')
-        ->andWhere($db->quoteName('esap.displayed') . ' = 1')
+        ->where($db->quoteName('esap.displayed') . ' = 1')
         ->andWhere($db->quoteName('esap.profile_id') . ' = ' . $db->quote($user->profile))
         ->andWhere($db->quoteName('eu.fnum') . ' like ' . $db->quote($user->fnum))
         ->andWhere($db->quoteName('eu.user_id') . ' = ' . $db->quote($user->id))
-        ->group('esa.id');
+        ->group('esap.mandatory,esap.ordering,esa.id')
+        ->order('esap.mandatory DESC,esap.ordering');
     $db->setQuery($query);
     $uploads = $db->loadObjectList();
 
@@ -125,7 +190,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
         }
     }
 
-    $current_phase = $m_campaign->getCurrentCampaignWorkflow($user);
+    $current_phase = $m_campaign->getCurrentCampaignWorkflow($user->fnum);
     $current_phase = !empty($current_phase->id) ? $current_phase : null;
     $attachments_progress = $m_application->getAttachmentsProgress($user->fnum);
     $forms_progress 	= $m_application->getFormsProgress($user->fnum);
@@ -167,5 +232,5 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     }
     //
 
-	require(JModuleHelper::getLayoutPath('mod_emundus_checklist'));
+    require(JModuleHelper::getLayoutPath('mod_emundus_checklist'));
 }

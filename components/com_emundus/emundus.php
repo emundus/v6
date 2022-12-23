@@ -446,6 +446,13 @@ JText::script('EMAIL_TAGS');
 JText::script('SEND_EMAIL_TOOLTIPS');
 JText::script('COM_EMUNDUS_UNAVAILABLE_FEATURES');
 JText::script('COM_EMUNDUS_EMAILS_SENDING_EMAILS');
+JText::script('COM_EMUNDUS_AURION_EXPORT');
+JText::script('EXPORT_CHANGE_STATUS');
+JText::script('EXPORT_SET_TAG');
+JText::script('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS');
+JText::script('EVALUATION_PERIOD_NOT_STARTED');
+JText::script('EVALUATION_PERIOD_PASSED');
+
 
 // EXPORT EXCEL MODEL
 JText::script('COM_EMUNDUS_CHOOSE_LETTER');
@@ -503,7 +510,7 @@ JText::script('COM_EMUNDUS_ATTACHMENTS_SYNC_READ');
 JText::script('COM_EMUNDUS_ONBOARD_DOCUMENTS');
 JText::script('COM_EMUNDUS_ATTACHMENTS_NAME');
 JText::script('COM_EMUNDUS_ATTACHMENTS_DESCRIPTION');
-
+JText::script('COM_EMUNDUS_ATTACHMENTS_OPEN_IN_GED');
 JText::script('COM_EMUNDUS_ATTACHMENTS_EXPORT_LINK');
 JText::script('COM_EMUNDUS_ATTACHMENTS_SELECT_CATEGORY');
 JText::script('COM_EMUNDUS_EMAILS_SELECT_CATEGORY');
@@ -628,7 +635,9 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
     JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
     JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );
     JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
-    JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
+    //TODO : Stop use chosen replace by an other js native library
+    //JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
+    JHtml::script('media/jui/js/chosen.jquery.min.js');
     JHTML::script('media/com_emundus/js/em_files.js');
     JHTML::script('media/com_emundus/js/mixins/exports.js');
     JHTML::script('media/com_emundus/js/mixins/utilities.js');
@@ -637,7 +646,8 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
 
     JHtml::styleSheet('media/com_emundus/css/reset.css');
     JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
-    JHtml::styleSheet('media/com_emundus/lib/chosen/chosen.min.css');
+    //JHtml::styleSheet('media/com_emundus/lib/chosen/chosen.min.css');
+    JHtml::styleSheet('media/jui/css/chosen.css');
     JHtml::styleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
     JHtml::styleSheet('media/com_emundus/css/emundus_files.css');
     JHTML::stylesheet('libraries/emundus/selectize/dist/css/normalize.css' );
@@ -649,6 +659,11 @@ JHTML::script('media/com_emundus_vue/chunk-vendors_emundus.js');
 JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
 JHTML::styleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined');
 
+/** QUILL */
+JHTML::script('https://cdn.quilljs.com/1.3.6/quill.min.js');
+JHtml::script('components/com_emundus/src/assets/js/quill/image-resize.min.js');
+JHtml::styleSheet('components/com_emundus/src/assets/js/quill/quill-mention/quill.mention.min.css');
+JHtml::script('components/com_emundus/src/assets/js/quill/quill-mention/quill.mention.min.js');
 
 // The task 'getproductpdf' can be executed as public (when not signed in and form any view).
 if ($task == 'getproductpdf') {

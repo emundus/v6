@@ -1,19 +1,27 @@
 <template>
 	<div id="form-builder-create-page" class="em-w-100 em-p-32 em-pt-16">
 		<div>
-			<h3 class="em-mb-4">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE') }}</h3>
+			<h3 class="em-mb-4 em-text-neutral-800">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE') }}</h3>
 			<p>{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_INTRO') }}</p>
 			<section id="new-page">
 				<div class="em-mt-16 em-mb-16 card-wrapper" :class="{selected: -1 === selected}" @click="selected = -1;">
 					<div class="card em-shadow-cards em-pointer em-flex-row">
-						<span class="add_circle material-icons-outlined">add_circle</span>
+						<span class="add_circle material-icons-outlined em-main-500-color">add_circle</span>
 					</div>
-					<input class="em-p-4" type="text" v-model="page.label[shortDefaultLang]">
+					<input
+							type="text"
+							v-model="page.label[shortDefaultLang]"
+							class="em-p-4"
+							:class="{
+								'em-color-white': -1 === selected,
+								'em-bg-main-500':  -1 === selected
+							}"
+					>
 				</div>
 			</section>
 			<div class="separator em-mt-32">
-				<p class="line-head em-mt-4 em-p-8">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_FROM_MODEL') }}</p>
-				<div class="line"></div>
+				<p class="line-head em-mt-4 em-p-8 em-color-white em-bg-main-500">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_FROM_MODEL') }}</p>
+				<div class="line em-bg-main-500"></div>
 			</div>
 			<section id="models" class="em-flex-row em-w-100">
 				<p v-if="models.length < 1 && !loading" class="em-w-100 em-text-align-center empty-model-message">{{ translate('COM_EMUNDUS_FORM_BUILDER_EMPTY_PAGE_MODELS') }}</p>
@@ -22,10 +30,10 @@
 						<input id="search-model" class="em-mt-16" type="text" v-model="search" placeholder="Rechercher"/>
 						<span class="reset-search material-icons-outlined em-pointer" @click="search = ''">close</span>
 					</div>
-					<div class="models-card em-grid">
+					<div class="models-card em-flex-row">
 						<div
 							v-for="model in models" :key="model.id"
-							class="card-wrapper"
+							class="card-wrapper em-mr-32"
 							:class="{selected: model.id === selected, hidden: !model.displayed}"
 							:title="model.label[shortDefaultLang]"
 							@click="selected = model.id"
@@ -34,9 +42,18 @@
 								:form_id="Number(model.form_id)"
 								:form_label="model.label[shortDefaultLang]"
 								class="card em-shadow-cards model-preview em-pointer"
+								:class="{
+									'em-color-white': model.id === selected,
+									'em-bg-main-500': model.id === selected
+								}"
 							>
 							</form-builder-preview-form>
-							<p class="em-p-4"> {{ model.label[shortDefaultLang] }}</p>
+							<p class="em-p-4" :class="{
+								'em-color-white': model.id === selected,
+								'em-bg-main-500': model.id === selected
+							}">
+								{{ model.label[shortDefaultLang] }}
+							</p>
 						</div>
 
 						<div v-if="displayedModels.length < 1" class="empty-model-message em-w-100 em-text-align-center">
@@ -157,13 +174,16 @@ export default {
 					});
 					this.close(false);
 				} else {
-					this.close();
+					this.close(true, response.data.id);
 				}
 			});
 		},
-		close(reload = true)
+		close(reload = true, newSelected = 0)
 		{
-			this.$emit('close', reload);
+			this.$emit('close', {
+				'reload': reload,
+				'newSelected': newSelected
+			});
 		}
 	},
 	computed: {
@@ -189,21 +209,15 @@ export default {
 	overflow-y: auto;
 	background-color: #F2F2F3;
 
-	.add_circle {
-		color: #20835F;
-	}
-
 	.line-head {
-		background-color: #20835F;
 		border-top-left-radius: 4px;
 		border-top-right-radius: 4px;
-		color: white;
 		width: fit-content;
+		color: white !important;
 	}
 
 	.line {
 		height: 4px;
-		background-color: #20835f;
 	}
 
 	.card-wrapper {
@@ -235,7 +249,6 @@ export default {
 			height: 20px;
 			font-size: 12px;
 			border: 0;
-			background-color: transparent;
 			text-align: center;
 		}
 
@@ -245,8 +258,8 @@ export default {
 			}
 
 			p, input {
-				color: white;
-				background-color: #20835F;
+				color: white !important;
+				background-color: #20835F !important;
 			}
 		}
 	}
@@ -271,7 +284,7 @@ export default {
 
 		.reset-search {
 			position: absolute;
-			top: 28px;
+			top: 25px;
 			left: 180px;
 		}
 	}
@@ -293,3 +306,4 @@ export default {
 	}
 }
 </style>
+

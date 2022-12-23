@@ -19,7 +19,7 @@ $template_type = array(
     </br>
 
     <label class="em-switch">
-        <input type="checkbox" name="type" id="em-doc-cansee">
+        <input type="checkbox" name="type" id="em-doc-cansee" checked="checked">
         <span class="em-slider em-round"></span>
     </label>
 
