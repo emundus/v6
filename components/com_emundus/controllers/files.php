@@ -1792,119 +1792,149 @@ class EmundusControllerFiles extends JControllerLegacy
             }
         }
 
-        // On parcours les fnums
-        foreach ($fnumsArray as $fnum) {
-            // On traite les données du fnum
-            foreach ($fnum as $k => $v) {
-                if ($k != 'code' && strpos($k, 'campaign_id') === false) {
+        if (!empty($fnumsArray)) {
+            $encrypted_tables = $h_files->getEncryptedTables();
+            if (!empty($encrypted_tables)) {
+                $cipher = 'aes-128-cbc';
+                $encryption_key = JFactory::getConfig()->get('secret');
+            }
+            
+            // On parcours les fnums
+            foreach ($fnumsArray as $fnum) {
+                // On traite les données du fnum
+                foreach ($fnum as $k => $v) {
+                    if ($k != 'code' && strpos($k, 'campaign_id') === false) {
 
-                    if ($k === 'fnum') {
-                        $line .= "'".$v."\t";
-                        $line .= $status[$v]['value']."\t";
-                        $uid = intval(substr($v, 21, 7));
-                        if (!$anonymize_data) {
-                            $userProfil = $m_users->getUserById($uid)[0];
-                            $line .= $userProfil->lastname."\t";
-                            $line .= $userProfil->firstname."\t";
-                        }
-
-                    } else {
-
-                        if ($v == "") {
-                            $line .= " "."\t";
-                        } elseif ($v[0] == "=" || $v[0] == "-") {
-                            if (count($opts) > 0 && in_array("upper-case", $opts)) {
-                                $line .= " ".mb_strtoupper($v)."\t";
-                            } else {
-                                $line .= " ".$v."\t";
+                        if ($k === 'fnum') {
+                            $line .= "'".$v."\t";
+                            $line .= $status[$v]['value']."\t";
+                            $uid = intval(substr($v, 21, 7));
+                            if (!$anonymize_data) {
+                                $userProfil = $m_users->getUserById($uid)[0];
+                                $line .= $userProfil->lastname."\t";
+                                $line .= $userProfil->firstname."\t";
                             }
                         } else {
-
-                            if (!empty($date_elements[$k])) {
-                                if ($v === '0000-00-00 00:00:00') {
-                                    $v = '';
-                                } else {
-                                    $v = date($date_elements[$k], strtotime($v));
-                                }
-                                $line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
-                            } elseif(!empty($textarea_elements[$k])){
-                                if($textarea_elements[$k] == 1){
-                                    $v = strip_tags($v);
-                                }
-                                $line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
-                            } elseif (count($opts) > 0 && in_array("upper-case", $opts)) {
-                                $line .= JText::_(preg_replace("/\r|\n|\t/", "", mb_strtoupper($v)))."\t";
+                            if ($v == "") {
+                                $line .= " "."\t";
                             } else {
-                                $line .= JText::_(preg_replace("/\r|\n|\t/", "", $v))."\t";
+                                if (!empty($encrypted_tables)) {
+                                    list($key_table, $key_element) = explode('___', $k);
+                                    if (!empty($key_table) && in_array($key_table, $encrypted_tables)) {
+                                        $decoded_value = json_decode($v, true);
+
+                                        if (!empty($decoded_value)) {
+                                            $all_decrypted_data = [];
+                                            foreach ($decoded_value as $decoded_sub_value) {
+                                                $decrypted_data = openssl_decrypt($decoded_sub_value, $cipher, $encryption_key, 0);
+                                                if ($decrypted_data !== false) {
+                                                    $all_decrypted_data[] = $decrypted_data;
+                                                }
+                                            }
+
+                                            $v = '[' . implode(',', $all_decrypted_data) . ']';
+                                        } else {
+                                            $decrypted_data = openssl_decrypt($v, $cipher, $encryption_key, 0);
+                                            if ($decrypted_data !== false) {
+                                                $v = $decrypted_data;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if ($v[0] == "=" || $v[0] == "-") {
+                                    if (count($opts) > 0 && in_array("upper-case", $opts)) {
+                                        $line .= " ".mb_strtoupper($v)."\t";
+                                    } else {
+                                        $line .= " ".$v."\t";
+                                    }
+                                } else {
+                                    if (!empty($date_elements[$k])) {
+                                        if ($v === '0000-00-00 00:00:00') {
+                                            $v = '';
+                                        } else {
+                                            $v = date($date_elements[$k], strtotime($v));
+                                        }
+                                        $line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
+                                    } elseif(!empty($textarea_elements[$k])){
+                                        if($textarea_elements[$k] == 1){
+                                            $v = strip_tags($v);
+                                        }
+                                        $line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
+                                    } elseif (count($opts) > 0 && in_array("upper-case", $opts)) {
+                                        $line .= JText::_(preg_replace("/\r|\n|\t/", "", mb_strtoupper($v)))."\t";
+                                    } else {
+                                        $line .= JText::_(preg_replace("/\r|\n|\t/", "", $v))."\t";
+                                    }
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            // On ajoute les données supplémentaires
-            foreach ($colOpt as $kOpt => $vOpt) {
-                switch ($kOpt) {
-                    case "PHOTO":
-                    case "forms":
-                    case "attachment":
-                    case 'evaluators':
-                        if (array_key_exists($fnum['fnum'], $vOpt)) {
-                            $line .= $vOpt[$fnum['fnum']]."\t";
-                        } else {
-                            $line .= "\t";
-                        }
-                        break;
-
-                    case "assessment":
-                        $eval = '';
-                        if (array_key_exists($fnum['fnum'],$vOpt)) {
-                            $evaluations = $vOpt[$fnum['fnum']];
-                            foreach ($evaluations as $evaluation) {
-                                $eval .= $evaluation;
-                                $eval .= chr(10) . '______' . chr(10);
+                // On ajoute les données supplémentaires
+                foreach ($colOpt as $kOpt => $vOpt) {
+                    switch ($kOpt) {
+                        case "PHOTO":
+                        case "forms":
+                        case "attachment":
+                        case 'evaluators':
+                            if (array_key_exists($fnum['fnum'], $vOpt)) {
+                                $line .= $vOpt[$fnum['fnum']]."\t";
+                            } else {
+                                $line .= "\t";
                             }
-                            $line .= $eval . "\t";
-                        } else {
-                            $line .= "\t";
-                        }
-                        break;
+                            break;
 
-                    case "comment":
-                        $comments = "";
-                        if (!empty($vOpt)) {
-                            foreach ($colOpt['comment'] as $comment) {
-                                if ($comment['fnum'] == $fnum['fnum']) {
-                                    $comments .= $comment['reason'] . " | " . $comment['comment_body'] . "\rn";
+                        case "assessment":
+                            $eval = '';
+                            if (array_key_exists($fnum['fnum'],$vOpt)) {
+                                $evaluations = $vOpt[$fnum['fnum']];
+                                foreach ($evaluations as $evaluation) {
+                                    $eval .= $evaluation;
+                                    $eval .= chr(10) . '______' . chr(10);
+                                }
+                                $line .= $eval . "\t";
+                            } else {
+                                $line .= "\t";
+                            }
+                            break;
+
+                        case "comment":
+                            $comments = "";
+                            if (!empty($vOpt)) {
+                                foreach ($colOpt['comment'] as $comment) {
+                                    if ($comment['fnum'] == $fnum['fnum']) {
+                                        $comments .= $comment['reason'] . " | " . $comment['comment_body'] . "\rn";
+                                    }
+                                }
+                                $line .= $comments . "\t";
+                            } else {
+                                $line .= "\t";
+                            }
+                            break;
+
+                        case "tags":
+                            $tags = "";
+
+                            foreach ($colOpt['tags'] as $tag) {
+                                if ($tag['fnum'] == $fnum['fnum']) {
+                                    $tags .= $tag['label'] . ", ";
                                 }
                             }
-                            $line .= $comments . "\t";
-                        } else {
-                            $line .= "\t";
-                        }
-                        break;
+                            $line .= $tags . "\t";
+                            break;
 
-                    case "tags":
-                        $tags = "";
-
-                        foreach ($colOpt['tags'] as $tag) {
-                            if ($tag['fnum'] == $fnum['fnum']) {
-                                $tags .= $tag['label'] . ", ";
-                            }
-                        }
-                        $line .= $tags . "\t";
-                        break;
-
-                    default:
-                        $line .= $vOpt[$fnum['fnum']]."\t";
-                        break;
+                        default:
+                            $line .= $vOpt[$fnum['fnum']]."\t";
+                            break;
+                    }
                 }
+                // On met les données du fnum dans le CSV
+                $element_csv[] = $line;
+                $line = "";
+                $i++;
             }
-            // On met les données du fnum dans le CSV
-            $element_csv[] = $line;
-            $line = "";
-            $i++;
-
         }
 
         // On remplit le fichier CSV

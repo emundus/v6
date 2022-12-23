@@ -3679,5 +3679,27 @@ class EmundusHelperFiles
         $q['q'][] = $query;
         return $q;
     }
+
+    public function getEncryptedTables()
+    {
+        $table_names = [];
+
+        $db = JFactory::getDBO();
+        $query= $db->getQuery(true);
+
+        $query->select($db->quoteName('fl.db_table_name'))
+            ->from($db->quoteName('#__fabrik_lists', 'fl'))
+            ->leftJoin($db->quoteName('#__fabrik_forms', 'fm') . ' ON fl.form_id = fm.id')
+            ->where('JSON_EXTRACT(fm.params, "$.note") = "encrypted"');
+
+        try {
+            $db->setQuery($query);
+            $table_names = $db->loadColumn();
+        } catch (Exception $e) {
+            JLog::add('Failed to get encrypted table names ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+        }
+
+        return $table_names;
+    }
 }
 
