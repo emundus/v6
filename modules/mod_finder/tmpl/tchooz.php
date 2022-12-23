@@ -145,7 +145,7 @@ if ($params->get('show_autosuggest', 1))
     }
 </style>
 
-<?php if (in_array(JFactory::getUser()->id, [62,95])) : ?>
+<?php if (JFactory::getUser()->id == [62]) : ?>
     <span class="material-icons em-pointer" id="mod_finder_icon_open" style="color: black;margin-top: 4px; font-size: 30px" onclick="openSearch()">search</span>
 <?php endif; ?>
 <div class="mod-finder-modal" id="mod_finder_modal">
