@@ -129,11 +129,11 @@ export default {
           setTimeout(() => {
             this.$emit("input", tinymce.activeEditor.getContent());
           },500);
-          return '<span>[' + item.tag + ']</span>';
+          return '<span>[' + item.value + ']</span>';
         },
         render: function(item) {
           return '<li class="email-tags">' +
-              '<a href="javascript:;"><span>' + item.tag + '</span><p>' + item.description + '</p></a>' +
+              '<a href="javascript:;"><span>' + item.value + '</span><p>' + item.description + '</p></a>' +
               '</li>';
         },
         renderDropdown: function() {
