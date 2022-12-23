@@ -42,7 +42,7 @@ class modEmundusMenuHelper
 			$cache = JFactory::getCache('mod_emundusmenu', '');
 			$items = $cache->get($key);
 		}
-		if (isset($user->menutype) && empty($items)) {
+		if ((isset($user->menutype) || !empty($default_menutype)) && empty($items)) {
 			// Initialise variables.
 			$list		= array();
 			$db			= JFactory::getDbo();

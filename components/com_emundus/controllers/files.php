@@ -877,7 +877,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
                 // Log the update
                 $logsParams = array('updated' => []);
-                array_push($logsParams['updated'], ['old' => $fnum['value'], 'new' => $status[$state]['value']]);
+                array_push($logsParams['updated'], ['old' => $fnum['value'], 'new' => $status[$state]['value'], 'old_id' => $fnum['step'], 'new_id' => $state]);
                 EmundusModelLogs::log($this->_user->id, (int)substr($fnum['fnum'], -7), $fnum['fnum'], 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
             }
 
@@ -959,11 +959,29 @@ class EmundusControllerFiles extends JControllerLegacy
                                                     }
                                                 }
                         */
+
+                        require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+                        $h_emails = new EmundusHelperEmails();
+
                         if ($trigger['to']['to_applicant'] == 1) {
 
                             // Manage with selected fnum
                             foreach ($fnumsInfos as $file) {
                                 if ($file['training'] != $code) {
+                                    continue;
+                                }
+
+                                $toAttach = [];
+                                if(!empty($trigger['tmpl']['attachments'])){
+                                    $attachments = $m_application->getAttachmentsByFnum($file['fnum'],null,explode(',',$trigger['tmpl']['attachments']));
+
+                                    foreach ($attachments as $attachment){
+                                        $toAttach[] = EMUNDUS_PATH_ABS.$file['applicant_id'].'/'.$attachment->filename;
+                                    }
+                                }
+
+                                $can_send_mail = $h_emails->assertCanSendMailToUser($file['applicant_id'], $file['fnum']);
+                                if (!$can_send_mail) {
                                     continue;
                                 }
 
@@ -978,7 +996,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
                                 $mailer = JFactory::getMailer();
 
-                                $post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['label'], 'CAMPAIGN_END' => $file['end_date']);
+                                $post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['label'], 'CAMPAIGN_END' => JHTML::_('date', $file['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null));
                                 $tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum'], '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
 
                                 $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
@@ -1063,6 +1081,11 @@ class EmundusControllerFiles extends JControllerLegacy
                         }
 
                         foreach ($trigger['to']['recipients'] as $key => $recipient) {
+                            $can_send_mail = $h_emails->assertCanSendMailToUser($recipient['id']);
+                            if (!$can_send_mail) {
+                                continue;
+                            }
+
                             $mailer = JFactory::getMailer();
 
                             $post = array();
@@ -1769,119 +1792,149 @@ class EmundusControllerFiles extends JControllerLegacy
             }
         }
 
-        // On parcours les fnums
-        foreach ($fnumsArray as $fnum) {
-            // On traite les données du fnum
-            foreach ($fnum as $k => $v) {
-                if ($k != 'code' && strpos($k, 'campaign_id') === false) {
+        if (!empty($fnumsArray)) {
+            $encrypted_tables = $h_files->getEncryptedTables();
+            if (!empty($encrypted_tables)) {
+                $cipher = 'aes-128-cbc';
+                $encryption_key = JFactory::getConfig()->get('secret');
+            }
+            
+            // On parcours les fnums
+            foreach ($fnumsArray as $fnum) {
+                // On traite les données du fnum
+                foreach ($fnum as $k => $v) {
+                    if ($k != 'code' && strpos($k, 'campaign_id') === false) {
 
-                    if ($k === 'fnum') {
-                        $line .= "'".$v."\t";
-                        $line .= $status[$v]['value']."\t";
-                        $uid = intval(substr($v, 21, 7));
-                        if (!$anonymize_data) {
-                            $userProfil = $m_users->getUserById($uid)[0];
-                            $line .= $userProfil->lastname."\t";
-                            $line .= $userProfil->firstname."\t";
-                        }
-
-                    } else {
-
-                        if ($v == "") {
-                            $line .= " "."\t";
-                        } elseif ($v[0] == "=" || $v[0] == "-") {
-                            if (count($opts) > 0 && in_array("upper-case", $opts)) {
-                                $line .= " ".mb_strtoupper($v)."\t";
-                            } else {
-                                $line .= " ".$v."\t";
+                        if ($k === 'fnum') {
+                            $line .= "'".$v."\t";
+                            $line .= $status[$v]['value']."\t";
+                            $uid = intval(substr($v, 21, 7));
+                            if (!$anonymize_data) {
+                                $userProfil = $m_users->getUserById($uid)[0];
+                                $line .= $userProfil->lastname."\t";
+                                $line .= $userProfil->firstname."\t";
                             }
                         } else {
-
-                            if (!empty($date_elements[$k])) {
-                                if ($v === '0000-00-00 00:00:00') {
-                                    $v = '';
-                                } else {
-                                    $v = date($date_elements[$k], strtotime($v));
-                                }
-                                $line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
-                            } elseif(!empty($textarea_elements[$k])){
-                                if($textarea_elements[$k] == 1){
-                                    $v = strip_tags($v);
-                                }
-                                $line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
-                            } elseif (count($opts) > 0 && in_array("upper-case", $opts)) {
-                                $line .= JText::_(preg_replace("/\r|\n|\t/", "", mb_strtoupper($v)))."\t";
+                            if ($v == "") {
+                                $line .= " "."\t";
                             } else {
-                                $line .= JText::_(preg_replace("/\r|\n|\t/", "", $v))."\t";
+                                if (!empty($encrypted_tables)) {
+                                    list($key_table, $key_element) = explode('___', $k);
+                                    if (!empty($key_table) && in_array($key_table, $encrypted_tables)) {
+                                        $decoded_value = json_decode($v, true);
+
+                                        if (!empty($decoded_value)) {
+                                            $all_decrypted_data = [];
+                                            foreach ($decoded_value as $decoded_sub_value) {
+                                                $decrypted_data = openssl_decrypt($decoded_sub_value, $cipher, $encryption_key, 0);
+                                                if ($decrypted_data !== false) {
+                                                    $all_decrypted_data[] = $decrypted_data;
+                                                }
+                                            }
+
+                                            $v = '[' . implode(',', $all_decrypted_data) . ']';
+                                        } else {
+                                            $decrypted_data = openssl_decrypt($v, $cipher, $encryption_key, 0);
+                                            if ($decrypted_data !== false) {
+                                                $v = $decrypted_data;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if ($v[0] == "=" || $v[0] == "-") {
+                                    if (count($opts) > 0 && in_array("upper-case", $opts)) {
+                                        $line .= " ".mb_strtoupper($v)."\t";
+                                    } else {
+                                        $line .= " ".$v."\t";
+                                    }
+                                } else {
+                                    if (!empty($date_elements[$k])) {
+                                        if ($v === '0000-00-00 00:00:00') {
+                                            $v = '';
+                                        } else {
+                                            $v = date($date_elements[$k], strtotime($v));
+                                        }
+                                        $line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
+                                    } elseif(!empty($textarea_elements[$k])){
+                                        if($textarea_elements[$k] == 1){
+                                            $v = strip_tags($v);
+                                        }
+                                        $line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
+                                    } elseif (count($opts) > 0 && in_array("upper-case", $opts)) {
+                                        $line .= JText::_(preg_replace("/\r|\n|\t/", "", mb_strtoupper($v)))."\t";
+                                    } else {
+                                        $line .= JText::_(preg_replace("/\r|\n|\t/", "", $v))."\t";
+                                    }
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            // On ajoute les données supplémentaires
-            foreach ($colOpt as $kOpt => $vOpt) {
-                switch ($kOpt) {
-                    case "PHOTO":
-                    case "forms":
-                    case "attachment":
-                    case 'evaluators':
-                        if (array_key_exists($fnum['fnum'], $vOpt)) {
-                            $line .= $vOpt[$fnum['fnum']]."\t";
-                        } else {
-                            $line .= "\t";
-                        }
-                        break;
-
-                    case "assessment":
-                        $eval = '';
-                        if (array_key_exists($fnum['fnum'],$vOpt)) {
-                            $evaluations = $vOpt[$fnum['fnum']];
-                            foreach ($evaluations as $evaluation) {
-                                $eval .= $evaluation;
-                                $eval .= chr(10) . '______' . chr(10);
+                // On ajoute les données supplémentaires
+                foreach ($colOpt as $kOpt => $vOpt) {
+                    switch ($kOpt) {
+                        case "PHOTO":
+                        case "forms":
+                        case "attachment":
+                        case 'evaluators':
+                            if (array_key_exists($fnum['fnum'], $vOpt)) {
+                                $line .= $vOpt[$fnum['fnum']]."\t";
+                            } else {
+                                $line .= "\t";
                             }
-                            $line .= $eval . "\t";
-                        } else {
-                            $line .= "\t";
-                        }
-                        break;
+                            break;
 
-                    case "comment":
-                        $comments = "";
-                        if (!empty($vOpt)) {
-                            foreach ($colOpt['comment'] as $comment) {
-                                if ($comment['fnum'] == $fnum['fnum']) {
-                                    $comments .= $comment['reason'] . " | " . $comment['comment_body'] . "\rn";
+                        case "assessment":
+                            $eval = '';
+                            if (array_key_exists($fnum['fnum'],$vOpt)) {
+                                $evaluations = $vOpt[$fnum['fnum']];
+                                foreach ($evaluations as $evaluation) {
+                                    $eval .= $evaluation;
+                                    $eval .= chr(10) . '______' . chr(10);
+                                }
+                                $line .= $eval . "\t";
+                            } else {
+                                $line .= "\t";
+                            }
+                            break;
+
+                        case "comment":
+                            $comments = "";
+                            if (!empty($vOpt)) {
+                                foreach ($colOpt['comment'] as $comment) {
+                                    if ($comment['fnum'] == $fnum['fnum']) {
+                                        $comments .= $comment['reason'] . " | " . $comment['comment_body'] . "\rn";
+                                    }
+                                }
+                                $line .= $comments . "\t";
+                            } else {
+                                $line .= "\t";
+                            }
+                            break;
+
+                        case "tags":
+                            $tags = "";
+
+                            foreach ($colOpt['tags'] as $tag) {
+                                if ($tag['fnum'] == $fnum['fnum']) {
+                                    $tags .= $tag['label'] . ", ";
                                 }
                             }
-                            $line .= $comments . "\t";
-                        } else {
-                            $line .= "\t";
-                        }
-                        break;
+                            $line .= $tags . "\t";
+                            break;
 
-                    case "tags":
-                        $tags = "";
-
-                        foreach ($colOpt['tags'] as $tag) {
-                            if ($tag['fnum'] == $fnum['fnum']) {
-                                $tags .= $tag['label'] . ", ";
-                            }
-                        }
-                        $line .= $tags . "\t";
-                        break;
-
-                    default:
-                        $line .= $vOpt[$fnum['fnum']]."\t";
-                        break;
+                        default:
+                            $line .= $vOpt[$fnum['fnum']]."\t";
+                            break;
+                    }
                 }
+                // On met les données du fnum dans le CSV
+                $element_csv[] = $line;
+                $line = "";
+                $i++;
             }
-            // On met les données du fnum dans le CSV
-            $element_csv[] = $line;
-            $line = "";
-            $i++;
-
         }
 
         // On remplit le fichier CSV
@@ -1939,20 +1992,18 @@ class EmundusControllerFiles extends JControllerLegacy
                 $title = !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0]));
 
                 if ($i < count($pages)/2) {
-                    $html1 .= '<input class="em-ex-check" type="checkbox" value="'.$page->form_id.'|'.$code[0].'|'.$camp[0].'" name="'.$page->label.'" id="'.$page->form_id.'|'.$code[0].'|'.$camp[0].'|'. $profile .'" /><label for="'.$page->form_id.'|'.$code[0].'|'.$camp[0].'|'. $profile .'">'.JText::_($title).'</label><br/>';
+                    $html1 .= '<div class="em-flex-row"><input class="em-ex-check" type="checkbox" value="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '" name="' . $page->label . '" id="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '|' . $profile . '" /><label class="em-mb-0-important" for="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '|' . $profile . '">' . JText::_($title) . '</label></div>';
                 } else {
-                    $html2 .= '<input class="em-ex-check" type="checkbox" value="'.$page->form_id.'|'.$code[0].'|'.$camp[0].'" name="'.$page->label.'" id="'.$page->form_id.'|'.$code[0].'|'.$camp[0].'|'. $profile .'" /><label for="'.$page->form_id.'|'.$code[0].'|'.$camp[0].'|'. $profile .'">'.JText::_($title).'</label><br/>';
+                    $html2 .= '<div class="em-flex-row"><input class="em-ex-check" type="checkbox" value="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '" name="' . $page->label . '" id="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '|' . $profile . '" /><label class="em-mb-0-important" for="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '|' . $profile . '">' . JText::_($title) . '</label></div>';
                 }
             }
 
-            $html .= '<div class="panel panel-default pdform">
-                    <div class="panel-heading">
-                        <button type="button" class="btn btn-info btn-xs" title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" style="float:left;" onclick="showelts(this, '."'felts-".$code[0].$camp[0]. '-' . $profile . "'".')">
-                        <span class="glyphicon glyphicon-plus"></span>
-                        </button>&ensp;&ensp;
-                        <b>'.$campaign['label'].' ('.$campaign['year'].' | ' . $profile_data->label . ')</b>
+            $html .= '<div class="em-mt-12">
+                    <div class="em-flex-row em-pointer em-mb-4" onclick="showelts(this, '."'felts-".$code[0].$camp[0]."-".$profile."'".')">
+                       <span title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" id="felts-'.$code[0].$camp[0]. '-' . $profile.'-icon" class="material-icons em-mr-4" style="transform: rotate(-90deg)">expand_more</span>
+                       <p>'.$campaign['label'].' ('.$campaign['year'].' | ' . $profile_data->label . ')</p>
                     </div>
-                    <div class="panel-body" id="felts-'.$code[0].$camp[0]. '-' . $profile . '" style="display:none;">
+                    <div id="felts-'.$code[0].$camp[0]. '-' . $profile . '" style="display:none;">
                         <table><tr><td>'.$html1.'</td><td style="padding-left:80px;">'.$html2.'</td></tr></table>
                     </div>
                 </div>';
@@ -2005,21 +2056,19 @@ class EmundusControllerFiles extends JControllerLegacy
         $html2 = '';
         for ($i = 0; $i < count($docs); $i++) {
             if ($i < count($docs) / 2) {
-                $html1 .= '<input class="em-ex-check" type="checkbox" value="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" name="'.$docs[$i]->value.'" id="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" /><label for="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'">'.JText::_($docs[$i]->value).'</label><br/>';
+                $html1 .= '<div class="em-flex-row"><input class="em-ex-check" type="checkbox" value="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" name="'.$docs[$i]->value.'" id="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" /><label class="em-mb-0-important" for="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'">'.JText::_($docs[$i]->value).'</label></div>';
             } else {
-                $html2 .= '<input class="em-ex-check" type="checkbox" value="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" name="'.$docs[$i]->value.'" id="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" /><label for="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'">'.JText::_($docs[$i]->value).'</label><br/>';
+                $html2 .= '<div class="em-flex-row"><input class="em-ex-check" type="checkbox" value="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" name="'.$docs[$i]->value.'" id="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" /><label class="em-mb-0-important" for="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'">'.JText::_($docs[$i]->value).'</label></div>';
             }
         }
 
-        $html = '<div class="panel panel-default pdform">
-                    <div class="panel-heading">
-                        <button type="button" class="btn btn-info btn-xs" title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" style="float:left;" onclick="showelts(this, '."'aelts-".$code[0].$camp[0]."'".')">
-                        <span class="glyphicon glyphicon-plus"></span>
-                        </button>&ensp;&ensp;
-                        <b>'.$campaign['label'].' ('.$campaign['year'].')</b>
+        $html = '<div class="em-mt-12">
+                    <div class="em-flex-row em-pointer em-mb-4" onclick="showelts(this, '."'aelts-".$code[0].$camp[0]."'".')">
+                    <span title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" id="aelts-'.$code[0].$camp[0].'-icon" class="material-icons em-mr-4" style="transform: rotate(-90deg)">expand_more</span>
+                        <p>'.$campaign['label'].' ('.$campaign['year'].')</p>
                     </div>
-                    <div class="panel-body" id="aelts-'.$code[0].$camp[0].'" style="display:none;">
-                        <table><tr><td>'.$html1.'</td><td style="padding-left:80px;">'.$html2.'</td></tr></table>
+                    <div id="aelts-'.$code[0].$camp[0].'" style="display:none;">
+                        <table><tr><td>'.$html1.'</td><td>'.$html2.'</td></tr></table>
                     </div>
                 </div>';
 
@@ -2414,59 +2463,82 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
-    public function export_letter() {
-        /// the main idea of this function is to use Stream of Buffer to pass data from CSV to Excel
-        /// params --> 1st: csv, 2nd: excel
-        require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
-        $jinput = JFactory::getApplication()->input;
+	public function export_letter() {
+		/// the main idea of this function is to use Stream of Buffer to pass data from CSV to Excel
+		/// params --> 1st: csv, 2nd: excel
+		require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+		$jinput = JFactory::getApplication()->input;
 
-        // get source, letter name
-        $source = $jinput->getVar('source', null);
-        $letter = $jinput->getVar('letter', null);
+		// get source, letter name
+		$source = $jinput->getVar('source', null);
+		$letter = $jinput->getVar('letter', null);
 
-        /// copy excel to excel
-        $_start = JPATH_SITE.DS."tmp".DS. $source;
-        $_end = JPATH_SITE . $letter;
+		/// copy excel to excel
+		$_start = JPATH_SITE.DS."tmp".DS. $source;
+		$_end = JPATH_SITE . $letter;
 
-        /// copy letter from /images/emundus/letters --> /tmp
-        $tmp_route = JPATH_SITE.DS."tmp".DS;
-        $randomString = JUserHelper::genRandomPassword(20);
+		/// copy letter from /images/emundus/letters --> /tmp
+		$tmp_route = JPATH_SITE.DS."tmp".DS;
+		$randomString = JUserHelper::genRandomPassword(20);
 
-        $array = explode('/', $letter);
-        $letter_file = end($array);
-        $letter_file_random = explode('.xlsx', $letter_file)[0] .'_' . $randomString;
+		$array = explode('/', $letter);
+		$letter_file = end($array);
+		$letter_file_random = explode('.xlsx', $letter_file)[0] .'_' . $randomString;
 
-        $_newLetter = JPATH_SITE.DS."tmp".DS.$letter_file_random.'.xlsx';
-        copy($_end, JPATH_SITE.DS."tmp".DS.$letter_file_random.'.xlsx');
+		$_newLetter = JPATH_SITE.DS."tmp".DS.$letter_file_random.'.xlsx';
+		copy($_end, JPATH_SITE.DS."tmp".DS.$letter_file_random.'.xlsx');
 
-        $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
-        $_readerSpreadSheet = $reader->load($_start);
+		$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+		$_readerSpreadSheet = $reader->load($_start);
 
-        $_readerData = $_readerSpreadSheet->getActiveSheet()->toArray();
+		$_readerData = $_readerSpreadSheet->getActiveSheet()->toArray();
 
-        $_destination = \PhpOffice\PhpSpreadsheet\IOFactory::load($_newLetter);
-        $_destination->setActiveSheetIndex(0);
+		try{
+			$dataTable = new Svrnm\ExcelDataTables\ExcelDataTable();
 
-        $_destination->getActiveSheet()->fromArray($_readerData,null,'A1');
+			$data = array();
+			$columns = array();
+			foreach ($_readerData[0] as $column){
+				$columns[] = $column;
+			}
+			foreach ($_readerData as $key => $reader){
+				if($key !== 0){
+					$row = new stdClass();
+					foreach ($columns as $index => $column){
+						$row->{$column} = $reader[$index];
+					}
+					array_push($data,$row);
+				}
+			}
 
-        $writer = new Xlsx($_destination);
+			$xlsx = $dataTable->showHeaders()->addRows($data)->attachToFile($_end, $_newLetter);
 
-        $_raw_output_file = explode('#', $_newLetter)[0] . '.xlsx';
-        $_output_file = explode('.xlsx', $_raw_output_file)[0];
+			$_raw_output_file = explode('#', $_newLetter)[0] . '.xlsx';
+			$_output_file = explode('.xlsx', $_raw_output_file)[0];
+			$_clean_output_file = explode(JPATH_SITE.DS."tmp".DS, $_output_file)[1] . '.xlsx';
+		} catch(Exception $e){
+			$_destination = \PhpOffice\PhpSpreadsheet\IOFactory::load($_newLetter);
+			$_destination->setActiveSheetIndex(0);
+			$_destination->getActiveSheet()->fromArray($_readerData,null,'A1');
 
-        $_clean_output_file = explode(JPATH_SITE.DS."tmp".DS, $_output_file)[1] . '.xlsx';
+			$writer = new Xlsx($_destination);
 
-        $writer->save($_raw_output_file);
+			$_raw_output_file = explode('#', $_newLetter)[0] . '.xlsx';
+			$_output_file = explode('.xlsx', $_raw_output_file)[0];
+			$_clean_output_file = explode(JPATH_SITE.DS."tmp".DS, $_output_file)[1] . '.xlsx';
 
-        copy($_raw_output_file, JPATH_SITE.DS."tmp".DS . $_clean_output_file);
+			$writer->save($_raw_output_file);
+		}
 
-        $result = array('status' => true, 'link' => $_clean_output_file);
+		copy($_raw_output_file, JPATH_SITE.DS."tmp".DS . $_clean_output_file);
 
-        echo json_encode((object) $result);
+		$result = array('status' => true, 'link' => $_clean_output_file);
 
-        unlink($_raw_output_file);
-        exit();
-    }
+		echo json_encode((object) $result);
+
+		unlink($_raw_output_file);
+		exit();
+	}
 
     public function export_xls_from_csv() {
         /** PHPExcel */
@@ -2907,7 +2979,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_emails = new EmundusModelEmails;
 
         $zip = new ZipArchive();
-        $nom = date("Y-m-d").'_'.rand(1000,9999).'_x'.(count($fnums)-1).'.zip';
+        $nom = date("Y-m-d").'_'.rand(1000,9999).'_x'.(count($fnums)).'.zip';
 
         $path = JPATH_SITE.DS.'tmp'.DS.$nom;
         $m_files = $this->getModel('Files');
@@ -4409,7 +4481,11 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $letters = $_mEval->generateLetters($fnums,$templates,$canSee,$showMode,$mergeMode);
 
-        if($letters) {
+        if ($letters) {
+            $dispatcher = JEventDispatcher::getInstance();
+            $dispatcher->trigger('onAfterGenerateLetters', ['letters' => $letters]);
+            $dispatcher->trigger('callEventHandler', ['onAfterGenerateLetters', ['letters' => $letters]]);
+
             echo json_encode((object)(array('status' => true, 'data' => $letters)));
         } else {
             echo json_encode((object)(array('status' => false, 'data' => null)));

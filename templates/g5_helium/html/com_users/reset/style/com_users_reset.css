@@ -8,6 +8,7 @@
     margin-bottom: 16px !important;
     text-align: justify;
     background: #FFFFFF;
+    font-family: var(--applicant-default-font);
 }
 
 .view-reset #user-registration .controls,
@@ -42,7 +43,7 @@ form#user-registration.form-validate.form-horizontal.well,
 form#user-registration.form-validate.form-horizontal.well label,
 .reset-confirm .form-validate.form-horizontal.well label,
 .reset-complete .form-validate.form-horizontal.well  label {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font);
     font-size: 16px;
     font-style: normal;
     font-weight: 500;
@@ -51,6 +52,7 @@ form#user-registration.form-validate.form-horizontal.well label,
     text-align: left;
     margin-bottom: 0px;
     color: #2B2B2B;
+    width: 100%;
 }
 
 form#user-registration.form-validate.form-horizontal.well label.invalid,
@@ -165,26 +167,22 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     color: #e5283B;
 }
 
-.view-reset .reset .page-header h1,
-.view-reset .reset-confirm .page-header h1,
-.view-reset .reset-complete .page-header h1{
+.view-reset .reset .page-header p.em-h3,
+.view-reset .reset-confirm .page-header p.em-h3,
+.view-reset .reset-complete .page-header p.em-h3{
     margin-top: 0px;
-    font-family:'Inter', sans-serif;
     font-size: 32px;
     font-style: normal;
     font-weight: 600;
     line-height: 39px;
     letter-spacing: 0;
     text-align: center;
-    color: #000;
+    font-family: var(--applicant-title-font);
+    color: var(--em-applicant-title-color);
 }
 
 
 .view-reset .reset .page-header,  .view-reset .reset-confirm .page-header, .view-reset .reset-complete .page-header {
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    flex-direction: row;
     width: 100%;
     padding: 80px 64px 0px 64px;
 }
@@ -222,6 +220,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     .view-reset .reset-complete {
         width: 100% !important;
         padding-bottom: 0px !important;
+        margin-top: -33px;
     }
 
     .view-reset form#user-registration.form-validate.form-horizontal.well,

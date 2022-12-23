@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import App from './App.vue';
 
-Vue.config.productionTip = false;
-Vue.config.devtools = true;
+Vue.config.productionTip = true;
+Vue.config.devtools = false;
 
 /** COMPONENTS **/
 import VModal from 'vue-js-modal';
@@ -25,9 +25,7 @@ Vue.use(VWave);
 
 /** MIXINS **/
 import translate from './mixins/translate.js';
-import axiosDefaultBaseUrl from "./mixins/axiosDefaultBaseUrl";
 Vue.mixin(translate);
-Vue.mixin(axiosDefaultBaseUrl);
 
 /** STORE **/
 import store from './store';

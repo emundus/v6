@@ -11,6 +11,9 @@ defined('_JEXEC') or die('RESTRICTED');
 <html><body bgcolor="#FFFFFF">
 <h4><?php echo JText::_('COM_EMUNDUS_SAMPLES_GENERATE_SAMPLES_INTRODUCTION'); ?></h4>
 <form method="post" action="index.php?option=com_emundus&controller=samples&task=generate">
+    <label for="samples_programs"><?php echo JText::_('COM_EMUNDUS_SAMPLES_GENERATE_PROGRAMS'); ?></label>
+    <input type="number" value="0" name="samples_programs"/>
+
     <label for="samples_campaigns"><?php echo JText::_('COM_EMUNDUS_SAMPLES_GENERATE_CAMPAIGNS'); ?></label>
     <input type="number" value="0" name="samples_campaigns"/>
 

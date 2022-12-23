@@ -1,7 +1,7 @@
 <template>
 	<div id="list-head">
 		<div class="list-head-container">
-			<h2> {{ translations['title_' + data.type] }}</h2>
+			<h2 class="em-text-neutral-800"> {{ translations['title_' + data.type] }}</h2>
 			<a :href="data.add_url" v-if="data.type !== 'form' && data.type !== 'formulaire'" class="em-primary-button em-w-auto">
 					{{ translations['add_' + data.type] }}
 			</a>
@@ -72,13 +72,13 @@ export default {
 	margin-bottom: 15px;
 
 	.em-primary-button {
-		border: 1px solid #20835F;
+		border: 1px solid var(--main-500);
 		cursor: pointer;
 		transition: all 0.3s ease;
 
 		&:hover {
 			background-color: white;
-			color: #20835F;
+			color: var(--main-500);
 		}
 	}
 

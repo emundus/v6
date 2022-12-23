@@ -4,14 +4,14 @@
 	<author>miniOrange Security Software Pvt. Ltd.</author>
 	<authorEmail>info@xecurify.com</authorEmail>
 	<authorUrl>www.miniorange.com</authorUrl>
-	<creationDate>May 2017</creationDate>
-	<copyright>Copyright 2017 miniOrange. All Rights Reserved.</copyright>
-	<license>GNU General Public License version 3</license>
-	<version>6.5</version>
+	<creationDate>April 2015</creationDate>
+	<copyright>Copyright 2015 miniOrange. All Rights Reserved.</copyright>
+	<license>http://miniorange.com/usecases/miniOrange_User_Agreement.pdf</license>
+	<version>41.1</version>
 	<description>PLG_SYSTEM_SAMLREDIRECT_XML_DESCRIPTION</description>
-
 	<files>
 		<filename plugin="samlredirect">samlredirect.php</filename>
+		<filename>index.html</filename>
 	</files>
 	<scriptfile>my_script.php</scriptfile>
 	<config />

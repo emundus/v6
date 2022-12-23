@@ -4,6 +4,8 @@ $user = JFactory::getSession()->get('emundusUser');
 
 if (!empty($user) && !empty($user->fnum)) {
     require_once dirname(__FILE__).'/helper.php';
+    require_once (JPATH_SITE . '/components/com_emundus/models/payment.php');
+    $m_payment = new EmundusModelPayment();
     $helper = new modEmundusPaymentHelper();
     $app = JFactory::getApplication();
 
@@ -117,6 +119,13 @@ if (!empty($user) && !empty($user->fnum)) {
                                 break;
                             case 'transfer':
                                 $layout = 'transfer';
+                            case 'axepta':
+                                $sort_price = str_replace(',', '', $product->product_sort_price);
+                                $price = number_format((double)$sort_price, 2, '.', ' ');
+
+                                $payment_url = $helper->getAxeptaConfig($params,$user->fnum,$product);
+
+                                $layout = 'axepta';
                             case 'hikashop':
                             default:
                                 // TODO: integration  of hikashop payment within the module

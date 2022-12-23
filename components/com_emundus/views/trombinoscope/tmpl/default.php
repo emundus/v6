@@ -12,6 +12,8 @@ $document = JFactory::getDocument();
 $document->addStyleSheet(JURI::base()."media/com_emundus/css/emundus_trombinoscope.css" );
 $document->addStyleSheet(JURI::base()."media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css" );
 unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css']);
+
+if (!empty($this->htmlLetters)) {
 ?>
 
 <form action="" method="post" enctype="multipart/form-data" name="adminForm" id="job-form" class="form-validate">
@@ -61,7 +63,7 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
                 </label>
             </div>
             <input type="hidden" id="selected_format" name="selected_format" value="<?= $this->selected_format; ?>" />
-            <input type="hidden" id="string_fnums" name="string_fnums" value="<?= $this->string_fnums; ?>" />
+            <p id="string_fnums" class="hidden" name="string_fnums"> <?= $this->string_fnums; ?> </p>
             <input type="hidden" id="string_generate" name="string_generate" value="0" />
             <input type="hidden" id="trombi_header" name="trombi_header" value="" />
             <input type="hidden" id="trombi_footer" name="trombi_footer" value="" />
@@ -70,15 +72,6 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
             <button onclick="window.location.hash='preview';" type="button" id="trombi_preview" class="btn btn-info trombi_button"><?= JText::_('COM_EMUNDUS_TROMBI_PREVIEW'); ?>
                 <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
             </button>
-            <button type="button" id="trombi_generate" class="btn btn-primary trombi_button"><?= JText::_('COM_EMUNDUS_TROMBI_GENERATE'); ?>
-                <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
-            </button>
-            <div id="div-download">
-                <a class="btn btn-link trombi_download" id="trombi_download" title="<?= JText::_('COM_EMUNDUS_TROMBI_DOWNLOAD'); ?>" href="" target="_blank">
-                    <span class="glyphicon glyphicon-download-alt"></span>
-                    <span><?= JText::_('COM_EMUNDUS_TROMBI_DOWNLOAD'); ?></span>
-                </a>
-            </div>
         </div>
     </div>
 
@@ -110,7 +103,6 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
     </div>
 
 </form>
-
 
 <script>
 
@@ -218,69 +210,15 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
             }
         });
     });
-
-    $('#trombi_generate').click(function (e) {
-        e.preventDefault();
-        tinyMCE.execCommand('mceToggleEditor', false, 'trombi_head');
-        tinyMCE.execCommand('mceToggleEditor', false, 'trombi_foot');
-
-        let string_fnums;
-        if ('<?= $this->string_fnums; ?>' === 'all') {
-            string_fnums = '["all"]';;
-        } else {
-            string_fnums = JSON.stringify(<?= $this->string_fnums; ?>);
-        }
-        const selected_grid_width = $('#trombi_grid_width').val();
-        const selected_grid_height = $('#trombi_grid_height').val();
-        const selected_margin = $('#trombi_margin').val();
-        const selected_tmpl = $('#trombi_tmpl').val();
-        const header = $('#trombi_head').val();
-        const header_height = $('#trombi_header_height').val();
-        const footer = $('#trombi_foot').val();
-
-        const format = $('#selected_format').val();
-
-        const selected_check = $('#trombi_check').val();
-        const selected_border = $('#trombi_border').val();
-
-        $('#string_generate').val(1); //For display the header and footer only for the pdf
-        const string_generate = $('#string_generate').val();
-
-        $(this).prop('disabled', true);
-
-        $.ajax({
-            type: 'POST',
-            url: 'index.php?option=com_emundus&controller=trombinoscope&task=generate_pdf',
-            async: false,
-            dataType: "json",
-            data : {
-                string_fnums: string_fnums,
-                gridL: selected_grid_width,
-                gridH: selected_grid_height,
-                margin: selected_margin,
-                template: selected_tmpl,
-                header: header,
-                footer: footer,
-                format: format,
-                generate: string_generate,
-                checkHeader: selected_check,
-                border: selected_border,
-                headerHeight : header_height
-            },
-            success: function (data) {
-                const $pdf_url = data.pdf_url;
-                $('#trombi_download').attr("href", $pdf_url);
-                $('#div-download').css({
-                    'display':'block',
-                    'textAlign':'left'
-                });
-                $('#div-preview').hide();
-                $(this).prop('disabled', false);
-            },
-            error: function (xhr) {
-                console.log(xhr.responseText);
-                //alert('ERROR');
-            }
-        });
-    });
 </script>
+<?php
+} else {
+?>
+    <div class="em-container-trombi">
+        <div class="em-col-trombi">
+            <p><?= JText::_('COM_EMUNDUS_TROMBINOSCOPE_GENERATE_UNAVAILABLE') ?></p>
+        </div>
+    </div>
+<?php
+}
+?>

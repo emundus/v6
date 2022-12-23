@@ -313,19 +313,18 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     }
 
     public function getJTEXTA() {
+        $response = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $getJtext = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $jinput = JFactory::getApplication()->input;
-
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $app = JFactory::getApplication();
+            $jinput = $app->input;
             $toJTEXT = $jinput->getString('toJTEXT');
 
-            $getJtext = $this->m_formbuilder->getJTEXTA($toJTEXT);
+            $response = $this->m_formbuilder->getJTEXTA($toJTEXT);
         }
-        echo json_encode((object)$getJtext);
+
+        echo json_encode((object)$response);
         exit;
     }
 
@@ -343,25 +342,24 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function getalltranslations() {
         $user = JFactory::getUser();
 
-        // Prepare languages
-        $path_to_file = basename(__FILE__) . '/../language/overrides/';
-        $path_to_files = array();
-        $Content_Folder = array();
-
-        $languages = JLanguageHelper::getLanguages();
-
-        foreach ($languages as $language) {
-            $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
-            $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
-        }
-
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $getJtext = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $jinput = JFactory::getApplication()->input;
-
             $toJTEXT = $jinput->getString('toJTEXT');
+
+            // Prepare languages
+            $path_to_file = basename(__FILE__) . '/../language/overrides/';
+            $path_to_files = array();
+            $Content_Folder = array();
+
+            $languages = JLanguageHelper::getLanguages();
+
+            foreach ($languages as $language) {
+                $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
+                $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+            }
 
             $getJtext = new stdClass();
             foreach ($languages as $language) {
@@ -375,11 +373,9 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 
     public function createMenu() {
         $user = JFactory::getUser();
+        $response = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
 
             $label = $jinput->getRaw('label');
@@ -388,13 +384,16 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
             $modelid = $jinput->getInt('modelid');
             $template = $jinput->getString('template');
 
+            $label = json_decode($label, true);
+            $intro = json_decode($intro, true);
             if ($modelid != -1) {
-                $changeresponse = $this->m_formbuilder->createMenuFromTemplate($label, $intro, $modelid, $prid);
+                $response = $this->m_formbuilder->createMenuFromTemplate($label, $intro, $modelid, $prid);
             } else {
-                $changeresponse = $this->m_formbuilder->createApplicantMenu($label, $intro, $prid, $template);
+                $response = $this->m_formbuilder->createApplicantMenu($label, $intro, $prid, $template);
             }
         }
-        echo json_encode((object)$changeresponse);
+
+        echo json_encode((object)$response);
         exit;
     }
 
@@ -1091,6 +1090,86 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
          echo json_encode((object)$tab);
          exit;
      }
+
+     public function getpagemodels()
+     {
+         $user = JFactory::getUser();
+         $response = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
+         if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+             $models = $this->m_formbuilder->getPagesModel();
+             $response['status'] = true;
+             $response['data'] = $models;
+             $response['msg'] = 'Succès';
+         }
+
+         echo json_encode((object)$response);
+         exit;
+     }
+
+    public function addformmodel()
+    {
+        $user = JFactory::getUser();
+        $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $jinput = JFactory::getApplication()->input;
+            $form_id = $jinput->getInt('form_id');
+            $label = $jinput->getString('label');
+
+            if (!empty($form_id) && !empty($label)) {
+                $response['status'] = $this->m_formbuilder->addFormModel($form_id, $label);
+                $response['msg'] = $response['status'] ? JText::_('SUCCESS') :  JText::_('FAILED');
+            } else {
+                $response['msg'] = JText::_('MISSING_PARAMS');
+            }
+        }
+
+        echo json_encode((object)$response);
+        exit;
+    }
+
+    public function deleteformmodel()
+    {
+        $user = JFactory::getUser();
+        $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $jinput = JFactory::getApplication()->input;
+            $form_id = $jinput->getInt('form_id');
+
+            if (!empty($form_id)) {
+                $response['status'] = $this->m_formbuilder->deleteFormModel($form_id);
+                $response['msg'] = $response['status'] ? JText::_('SUCCESS') :  JText::_('FAILED');
+            } else {
+                $response['msg'] = JText::_('MISSING_PARAMS');
+            }
+        }
+
+        echo json_encode((object)$response);
+        exit;
+    }
+
+    public function deleteformmodelfromids()
+    {
+        $user = JFactory::getUser();
+        $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $jinput = JFactory::getApplication()->input;
+            $model_ids = $jinput->getString('model_ids');
+            $model_ids = json_decode($model_ids, true);
+
+            if (!empty($model_ids) && is_array($model_ids)) {
+                $response['status'] = $this->m_formbuilder->deleteFormModelFromIds($model_ids);
+                $response['msg'] = $response['status'] ? JText::_('SUCCESS') :  JText::_('FAILED');
+            } else {
+                $response['msg'] = JText::_('MISSING_PARAMS');
+            }
+        }
+
+        echo json_encode((object)$response);
+        exit;
+    }
 }
 
 
