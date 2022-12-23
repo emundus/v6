@@ -2573,7 +2573,7 @@ class EmundusModelApplication extends JModelList
                                 } else {
                                     $forms .= '<p></p><br/>';
                                 }
-                                $forms .= '<table>';
+                                $forms .= '<table class="pdf-forms">';
                                 foreach ($elements as $element) {
                                     $params = json_decode($element->params);
                                     if (empty($params->store_in_db)) {

@@ -1049,6 +1049,13 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                     td[colspan='1']{
                        min-width: 250px;
                     }
+                    .pdf-forms{
+                   	   border-spacing: 0;
+                    }
+                    .pdf-forms td{
+                       border: solid 1px black;
+                       padding: 8px;
+                    }
                     @media print {
                         .breaker{
                             page-break-before: always;
