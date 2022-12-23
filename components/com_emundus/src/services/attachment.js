@@ -143,6 +143,7 @@ export default {
   },
   exportAttachments(student, fnum, attachment_ids) {
     const formData = new FormData();
+    formData.append('attachments_only', true);
     formData.append('student_id', student);
     formData.append('fnum', fnum);
     attachment_ids.forEach(id => {
