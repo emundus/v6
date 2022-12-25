@@ -26,23 +26,23 @@ check-tchooz-version-job:
   script:
     - .ci/file-search-in-gitlab-merge-request.sh "$CI_SERVER_URL" "$GITLAB_TOKEN" "$CI_PROJECT_ID" "$CI_MERGE_REQUEST_IID" "administrator/components/com_emundus/emundus.xml"
 
-vanilla-job:
-  stage: prepare
-  image: docker:20.10
-  script:
-    - cp -p configuration.php.dist configuration.php
-    - cp -p media/com_emundus_vanilla/v6/.htaccess .htaccess
-    - cp -pr media/com_emundus_vanilla/v6/language/overrides/* language/overrides/
-    - cp -pr media/com_emundus_vanilla/v6/templates/g5_helium/* templates/g5_helium/
-  artifacts:
-    paths:
-      - configuration.php
-      - .htaccess
-      - language/overrides/
-      - templates/g5_helium/
-    expire_in: 24h
-  only:
-    - merge_request
+# vanilla-job:
+#   stage: prepare
+#   image: docker:20.10
+#   script:
+#     - cp -p configuration.php.dist configuration.php
+#     - cp -p media/com_emundus_vanilla/v6/.htaccess .htaccess
+#     - cp -pr media/com_emundus_vanilla/v6/language/overrides/* language/overrides/
+#     - cp -pr media/com_emundus_vanilla/v6/templates/g5_helium/* templates/g5_helium/
+#   artifacts:
+#     paths:
+#       - configuration.php
+#       - .htaccess
+#       - language/overrides/
+#       - templates/g5_helium/
+#     expire_in: 24h
+#   only:
+#     - merge_request
 
 build-app-to-test-job:
   stage: build
@@ -79,13 +79,15 @@ phpunit-job:
   image: emundus/tchooz-build-app:latest
   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
   services:
-    - emundus/tchooz-build-app:latest
     - name: emundus/tchooz-build-db:latest
       alias: database
     - redis:latest
-  # before_script:
-  #   - apache2-foreground &
-  #   - /scripts/entrypoint.sh
+  before_script:
+    - cp -p configuration.php.dist configuration.php
+    - cp -p media/com_emundus_vanilla/v6/.htaccess .htaccess
+    - cp -pr media/com_emundus_vanilla/v6/language/overrides/* language/overrides/
+    - cp -pr media/com_emundus_vanilla/v6/templates/g5_helium/* templates/g5_helium/
+    - /scripts/entrypoint.sh
   script:
     - libraries/emundus/phpunit.phar -c phpunit.xml --coverage-text --colors=never
   dependencies:
@@ -102,6 +104,10 @@ jest-job:
       alias: database
     - redis:latest
   before_script:
+    - cp -p configuration.php.dist configuration.php
+    - cp -p media/com_emundus_vanilla/v6/.htaccess .htaccess
+    - cp -pr media/com_emundus_vanilla/v6/language/overrides/* language/overrides/
+    - cp -pr media/com_emundus_vanilla/v6/templates/g5_helium/* templates/g5_helium/
     - apache2-foreground &
     - /scripts/entrypoint.sh
     - cd components && yarn
