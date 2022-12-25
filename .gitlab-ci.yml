@@ -79,12 +79,13 @@ phpunit-job:
   image: emundus/tchooz-build-app:latest
   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
   services:
+    - emundus/tchooz-build-app:latest
     - name: emundus/tchooz-build-db:latest
       alias: database
     - redis:latest
-  before_script:
-    - apache2-foreground &
-    - /scripts/entrypoint.sh
+  # before_script:
+  #   - apache2-foreground &
+  #   - /scripts/entrypoint.sh
   script:
     - libraries/emundus/phpunit.phar -c phpunit.xml --coverage-text --colors=never
   dependencies:
