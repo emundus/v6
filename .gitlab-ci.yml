@@ -26,24 +26,6 @@ check-tchooz-version-job:
   script:
     - .ci/file-search-in-gitlab-merge-request.sh "$CI_SERVER_URL" "$GITLAB_TOKEN" "$CI_PROJECT_ID" "$CI_MERGE_REQUEST_IID" "administrator/components/com_emundus/emundus.xml"
 
-# vanilla-job:
-#   stage: prepare
-#   image: docker:20.10
-#   script:
-#     - cp -p configuration.php.dist configuration.php
-#     - cp -p media/com_emundus_vanilla/v6/.htaccess .htaccess
-#     - cp -pr media/com_emundus_vanilla/v6/language/overrides/* language/overrides/
-#     - cp -pr media/com_emundus_vanilla/v6/templates/g5_helium/* templates/g5_helium/
-#   artifacts:
-#     paths:
-#       - configuration.php
-#       - .htaccess
-#       - language/overrides/
-#       - templates/g5_helium/
-#     expire_in: 24h
-#   only:
-#     - merge_request
-
 build-app-to-test-job:
   stage: build
   image: docker:20.10
@@ -81,7 +63,7 @@ phpunit-job:
   services:
     - name: emundus/tchooz-build-db:latest
       alias: database
-    - redis:latest
+    - redis:7
   before_script:
     - cp -p configuration.php.dist configuration.php
     - cp -p media/com_emundus_vanilla/v6/.htaccess .htaccess
@@ -90,8 +72,6 @@ phpunit-job:
     - /scripts/entrypoint.sh
   script:
     - libraries/emundus/phpunit.phar -c phpunit.xml --coverage-text --colors=never
-  # dependencies:
-  #   - vanilla-job
   only:
     - merge_request
 
@@ -102,7 +82,7 @@ jest-job:
   services:
     - name: emundus/tchooz-build-db:latest
       alias: database
-    - redis:latest
+    - redis:7
   before_script:
     - cp -p configuration.php.dist configuration.php
     - cp -p media/com_emundus_vanilla/v6/.htaccess .htaccess
@@ -113,8 +93,6 @@ jest-job:
     - cd components && yarn
   script:
     - yarn run test:unit com_emundus/ --ci --coverage
-  # dependencies:
-  #   - vanilla-job
   only:
     - merge_request
 
