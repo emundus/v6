@@ -90,8 +90,8 @@ phpunit-job:
     - /scripts/entrypoint.sh
   script:
     - libraries/emundus/phpunit.phar -c phpunit.xml --coverage-text --colors=never
-  dependencies:
-    - vanilla-job
+  # dependencies:
+  #   - vanilla-job
   only:
     - merge_request
 
@@ -113,8 +113,8 @@ jest-job:
     - cd components && yarn
   script:
     - yarn run test:unit com_emundus/ --ci --coverage
-  dependencies:
-    - vanilla-job
+  # dependencies:
+  #   - vanilla-job
   only:
     - merge_request
 
