@@ -9,6 +9,9 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use Dompdf\Css;
 
+use Gotenberg\Gotenberg;
+use Gotenberg\Stream;
+
 function get_mime_type($filename, $mimePath = '../etc') {
     $fileext = substr(strrchr($filename, '.'), 1);
 
@@ -800,49 +803,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         $file_lbl = "_application";
     }
 
-	/* GET LOGO */
-	$template = $app->getTemplate(true);
-	$params = $template->params;
-
-	if (!empty($params->get('logo')->custom->image)) {
-
-		$logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-		$logo = !empty($logo['path']) ? JPATH_ROOT . DS . $logo['path'] : "";
-
-	} else {
-
-		if (file_exists(JPATH_ROOT . DS . 'images' . DS . 'custom' . DS . $item->training . '.png')) {
-			$logo = JPATH_ROOT . DS . 'images' . DS . 'custom' . DS . $item->training . '.png';
-		} else {
-
-			$logo_module = JModuleHelper::getModuleById('90');
-			preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
-
-			$pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
-            (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
-            (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
-            (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
-
-			if ((bool) preg_match($pattern, $tab[1])) {
-				$tab[1] = parse_url($tab[1], PHP_URL_PATH);
-			}
-
-			$logo = JPATH_SITE . DS . $tab[1];
-
-		}
-	}
-
-	// manage logo by programme
-	$ext = substr($logo, -3);
-	$logo_prg = substr($logo, 0, -4) . '-' . $item->training . '.' . $ext;
-	if (is_file($logo_prg)) {
-		$logo = $logo_prg;
-	}
-	$type = pathinfo($logo, PATHINFO_EXTENSION);
-	$data = file_get_contents($logo);
-	$logo_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
-	/* END LOGO */
-
     $eMConfig = JComponentHelper::getParams('com_emundus');
     $cTitle = $eMConfig->get('export_application_pdf_title_color', '#ee1c25'); //déclaration couleur principale
     $profile_color = '#20835F';
@@ -865,34 +825,85 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 //    if ($form_post == 1 && (empty($form_ids) || is_null($form_ids)) && !empty($elements) && !is_null($elements)) {
     if (isset($form_post)) {
-        $htmldata = '';
-        $forms = '';
+	    try {
+		    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
 
-		$htmldata .= '<html>
-			<head>
-			  <title>'.$title = $config->get('sitename').'</title>
-			  <meta name="author" content="eMundus">
-			</head>
-			<body>';
-		$htmldata .= '<header><img src="'. $logo_base64 .'" width="auto" height="60"/><hr/></header>';
+		    // Users informations
+		    $query = 'SELECT u.id AS user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ecc.date_submitted
+	                        FROM #__emundus_campaign_candidature AS ecc
+	                        LEFT JOIN #__users AS u ON u.id=ecc.applicant_id
+	                        LEFT JOIN #__emundus_users AS c ON u.id = c.user_id
+	                        LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = ' . $campaign_id . '
+	                        LEFT JOIN #__emundus_uploads AS a ON a.user_id=u.id AND a.attachment_id = ' . EMUNDUS_PHOTO_AID . ' AND a.fnum like ' . $db->Quote($fnum) . '
+	                        LEFT JOIN #__emundus_setup_profiles AS p ON p.id = esc.profile_id
+	                        LEFT JOIN #__emundus_personal_detail AS epd ON epd.user = u.id AND epd.fnum like ' . $db->Quote($fnum) . '
+	                        LEFT JOIN #__emundus_declaration AS ed ON ed.user = u.id AND ed.fnum like ' . $db->Quote($fnum) . '
+	                        WHERE ecc.fnum like ' . $db->Quote($fnum) . '
+	                        ORDER BY esc.id DESC';
+		    $db->setQuery($query);
+		    $item = $db->loadObject();
 
-        try {
-            // Users informations
-            $query = 'SELECT u.id AS user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ecc.date_submitted
-                        FROM #__emundus_campaign_candidature AS ecc
-                        LEFT JOIN #__users AS u ON u.id=ecc.applicant_id
-                        LEFT JOIN #__emundus_users AS c ON u.id = c.user_id
-                        LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = ' . $campaign_id . '
-                        LEFT JOIN #__emundus_uploads AS a ON a.user_id=u.id AND a.attachment_id = ' . EMUNDUS_PHOTO_AID . ' AND a.fnum like ' . $db->Quote($fnum) . '
-                        LEFT JOIN #__emundus_setup_profiles AS p ON p.id = esc.profile_id
-                        LEFT JOIN #__emundus_personal_detail AS epd ON epd.user = u.id AND epd.fnum like ' . $db->Quote($fnum) . '
-                        LEFT JOIN #__emundus_declaration AS ed ON ed.user = u.id AND ed.fnum like ' . $db->Quote($fnum) . '
-                        WHERE ecc.fnum like ' . $db->Quote($fnum) . '
-                        ORDER BY esc.id DESC';
-            $db->setQuery($query);
-            $item = $db->loadObject();
+		    /* GET LOGO */
+		    $template = $app->getTemplate(true);
+		    $params = $template->params;
 
-            $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+		    if (!empty($params->get('logo')->custom->image)) {
+
+			    $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+			    $logo = !empty($logo['path']) ? JPATH_ROOT . DS . $logo['path'] : "";
+
+		    } else {
+
+			    if (file_exists(JPATH_ROOT . DS . 'images' . DS . 'custom' . DS . $item->training . '.png')) {
+				    $logo = JPATH_ROOT . DS . 'images' . DS . 'custom' . DS . $item->training . '.png';
+			    } else {
+				    $logo_module = JModuleHelper::getModuleById('90');
+				    preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+
+				    $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+	            (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
+	            (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
+	            (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+
+				    if ((bool) preg_match($pattern, $tab[1])) {
+					    $tab[1] = parse_url($tab[1], PHP_URL_PATH);
+				    }
+
+					if(empty($tab[1])){
+						$tab[1] = 'images/custom/logo_custom.png';
+					}
+				    $logo = JPATH_SITE . DS . $tab[1];
+			    }
+		    }
+
+		    // manage logo by programme
+		    $ext = substr($logo, -3);
+		    $logo_prg = substr($logo, 0, -4) . '-' . $item->training . '.' . $ext;
+		    if (is_file($logo_prg)) {
+			    $logo = $logo_prg;
+		    }
+		    $type = pathinfo($logo, PATHINFO_EXTENSION);
+		    $data = file_get_contents($logo);
+		    $logo_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+		    /* END LOGO */
+
+	        $htmldata = '';
+	        $forms = '';
+		    if (!$anonymize_data) {
+				$title = strtoupper(@$item->lastname) . ' ' . @$item->firstname;
+		    } else {
+				$title = $config->get('sitename');
+		    }
+
+
+			$htmldata .= '<html>
+				<head>
+				  <title>'.$title.'</title>
+				  <meta name="author" content="eMundus">
+				</head>
+				<body>';
+			$htmldata .= '<header><img src="'. $logo_base64 .'" width="auto" height="60"/><hr/></header>';
+
             $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
 
             if ($options[0] !== "0" && !$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
@@ -926,7 +937,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 						$htmldata .= '<tr><td><img src="'. $avatar_base64 .'" width="auto" height="60" align="right"/></td></tr>';
 					}
 				}
-                $htmldata .= '<tr><td class="name" colspan="2">' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</td></tr>';
+				if (!$anonymize_data) {
+					$htmldata .= '<tr><td class="name" colspan="2">' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</td></tr>';
+				}
 
                 if (!$anonymize_data && in_array("aemail", $options)) {
                     $htmldata .= '<tr class="birthday">
@@ -1071,8 +1084,20 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                     .pdf-forms{
                    	   border-spacing: 0;
                     }
+                    .pdf-forms th{
+                       font-size: 12px;
+                    }
+                    .pdf-forms th.background{
+                       background-color: #EDEDED;
+                       border-top: solid 1px #A4A4A4;
+                    }
                     table.pdf-forms{
                        width: 100%;
+                       page-break-inside:auto
+                    }
+                    .pdf-forms tr{
+                       page-break-inside:avoid; 
+                       page-break-after:auto
                     }
                     .pdf-forms td{
                        border-collapse: collapse;
@@ -1088,8 +1113,17 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                        width:70%; 
                        border-right: solid 1px #A4A4A4;
                     }
+                    .pdf-forms td.background-light{
+                       width: auto;
+                    }
+                    .pdf-forms tr td[colspan='2']{
+                       border-right: solid 1px #A4A4A4;
+                    }
                     .pdf-forms tr:last-child td{
                        border-bottom: solid 1px #A4A4A4;
+                    }
+                    .pdf-forms tr:last-child td.background-light{
+                       border-right: solid 1px #A4A4A4 !important;
                     }
                     .pdf-attachments{
                        font-size: 14px;
@@ -1167,16 +1201,18 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     			</script>';
 	    $htmldata .= '</body></html>';
 
+	    $filename = EMUNDUS_PATH_ABS . @$item->user_id . DS . $fnum . $file_lbl . '.pdf';
+
 		/** DOMPDF */
 	    $options = new Options();
 	    $options->set('defaultFont', 'helvetica');
 		$options->set('isPhpEnabled', true);
 	    $dompdf = new Dompdf($options);
 
+		//echo '<pre>'; var_dump($htmldata); echo '</pre>'; die;
 	    $dompdf->loadHtml($htmldata);
 	    $dompdf->render();
 
-		$filename = EMUNDUS_PATH_ABS . @$item->user_id . DS . $fnum . $file_lbl . '.pdf';
 		if($output) {
 			$dompdf->stream($filename, array("Attachment" => false));
 		} else {

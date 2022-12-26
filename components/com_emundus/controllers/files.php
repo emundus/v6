@@ -14,6 +14,9 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 //use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
+use Gotenberg\Gotenberg;
+use Gotenberg\Stream;
+
 jimport('joomla.application.component.controller');
 jimport( 'joomla.user.helper' );
 
@@ -2266,6 +2269,15 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
             }
             $pdf->Output(JPATH_SITE . DS . 'tmp' . DS . $file, 'F');
+
+	        /*$got_files = [];
+	        foreach ($files_list as $item){
+		        $got_files[] = Stream::path($item);
+	        }
+	        $request = Gotenberg::pdfEngines('https://gotenberg.microservices.tchooz.app')
+		        ->merge(...$got_files);
+	        $response = Gotenberg::send($request);
+			file_put_contents(JPATH_SITE . DS . 'tmp' . DS . $file,$response->getBody()->getContents());*/
 
             $start = $i;
 

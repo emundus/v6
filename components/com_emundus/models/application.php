@@ -2110,7 +2110,7 @@ class EmundusModelApplication extends JModelList
                 }
 
                 if (count($groupes) > 0) {
-                    $forms .= '<h2' . $breaker . '>';
+                    $forms .= '<h2 ' . $breaker . '>';
                     $title = explode('-', JText::_($itemt->label));
                     if (empty($title[1])) {
                         $form_label = preg_replace('/\s+/', ' ', JText::_(trim($itemt->label)));
@@ -2206,7 +2206,7 @@ class EmundusModelApplication extends JModelList
                                 if(!empty($group_label)){
                                     $forms .= '<h3 class="group">' . $group_label . '</h3>';
                                 }
-                                $forms .= '<p><table class="adminlist"><thead><tr  class="background"> ';
+                                $forms .= '<p><table class="pdf-forms"><thead><tr class="background"> ';
                                 foreach ($elements as &$element) {
                                     $forms .= '<th scope="col" class="background"><strong>' . JText::_($element->label) . '</strong></th>';
                                 }
@@ -2362,7 +2362,7 @@ class EmundusModelApplication extends JModelList
 
                                                 // trick to prevent from blank value in PDF when string is to long without spaces (usually emails)
                                                 $elt = str_replace('@', '<br>@', $elt);
-                                                $forms .= '<td class="background-light" style="border-right: 1px solid black;"><div id="em_training_' . $r_element->id . '" class="course ' . $r_element->id . '">' . (($elements[$j]->plugin != 'field') ? JText::_($elt) : $elt) . '</div></td>';
+                                                $forms .= '<td class="background-light"><div id="em_training_' . $r_element->id . '" class="course ' . $r_element->id . '">' . (($elements[$j]->plugin != 'field') ? JText::_($elt) : $elt) . '</div></td>';
                                             }
                                             $j++;
                                         }
@@ -2411,7 +2411,7 @@ class EmundusModelApplication extends JModelList
                                     foreach ($repeated_elements as $r_element) {
                                         $j = 0;
                                         $forms .= '<br>---- ' . $i . ' ----<br>';
-                                        $forms .= '<table>';
+                                        $forms .= '<table class="pdf-forms">';
                                         foreach ($r_element as $key => $r_elt) {
                                             $params = json_decode($elements[$j]->params);
 
