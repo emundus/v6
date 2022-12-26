@@ -2110,7 +2110,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $ids        = $jinput->getVar('ids', null);
         $formid     = $jinput->getVar('formids', null);
         $attachid   = $jinput->getVar('attachids', null);
-        $option     = $jinput->getVar('options', null);
+        $options     = $jinput->getVar('options', null);
 
         $profiles = $jinput->getRaw('profiles', null);                          // default NULL
         $tables = $jinput->getRaw('tables', null);                          // default NULL
@@ -2125,7 +2125,9 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $formids    = explode(',', $formid);
         $attachids  = explode(',', $attachid);
-        $options    = explode(',', $option);
+		if(!is_array($options)) {
+			$options = explode(',', $options);
+		}
 
         $validFnums = array();
         foreach ($fnums_post as $fnum) {
@@ -2269,7 +2271,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
             $dataresult = [
                 'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
-                'options' => $option, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
+                'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
                 'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
             ];
             $result = array('status' => true, 'json' => $dataresult);
@@ -2278,7 +2280,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
             $dataresult = [
                 'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
-                'options' => $option, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
+                'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
                 'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND')
             ];
 

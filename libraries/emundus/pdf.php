@@ -840,7 +840,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	}
 	$type = pathinfo($logo, PATHINFO_EXTENSION);
 	$data = file_get_contents($logo);
-	$base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+	$logo_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
 	/* END LOGO */
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
@@ -874,7 +874,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 			  <meta name="author" content="eMundus">
 			</head>
 			<body>';
-		$htmldata .= '<img src="'. $base64 .'" width="auto" height="60"/>';
+		$htmldata .= '<header><img src="'. $logo_base64 .'" width="auto" height="60"/><hr/></header>';
 
         try {
             // Users informations
@@ -906,60 +906,71 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 $htmldata .= '<table width="100%"><tr>';
 
                 $htmldata .= '<td><h3>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . '</h3></td></tr>';
-                if (file_exists(EMUNDUS_PATH_ABS . @$item->user_id . '/tn_' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
-                    $htmldata .=
-                        '<tr><td>
-                                        <img src="'.EMUNDUS_PATH_ABS . @$item->user_id . '/tn_' . @$item->avatar . '" width="100" align="right" />
-                                    </td></tr>';
-                } elseif (file_exists(EMUNDUS_PATH_ABS . @$item->user_id . '/' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
-                    $htmldata .=
-                        '<tr><td>
-                                        <img src="' . EMUNDUS_PATH_ABS . @$item->user_id . '/' . @$item->avatar . '" width="100" align="right" />
-                                    </td></tr>';
-                }
+				if(!empty($item->avatar) && is_image_ext($item->avatar))
+				{
+					if (file_exists(EMUNDUS_PATH_ABS . @$item->user_id . '/tn_' . @$item->avatar))
+					{
+						$avatar        = EMUNDUS_PATH_ABS . @$item->user_id . '/tn_' . @$item->avatar;
+					}
+					elseif (file_exists(EMUNDUS_PATH_ABS . @$item->user_id . '/' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar))
+					{
+						$avatar        = EMUNDUS_PATH_ABS . @$item->user_id . '/' . @$item->avatar;
+					}
+
+					if(!empty($avatar)) 
+					{
+						$type          = pathinfo($avatar, PATHINFO_EXTENSION);
+						$data          = file_get_contents($avatar);
+						$avatar_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+
+						$htmldata .= '<tr><td><img src="'. $avatar_base64 .'" width="auto" height="60" align="right"/></td></tr>';
+					}
+				}
                 $htmldata .= '<tr><td class="name" colspan="2">' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</td></tr>';
 
                 if (!$anonymize_data && in_array("aemail", $options)) {
                     $htmldata .= '<tr class="birthday">
-                                    <td>' . JText::_('EMAIL') . ' : ' . @$item->email . '</td>
+                                    <td><b>' . JText::_('EMAIL') . ' :</b> ' . @$item->email . '</td>
                                 </tr>';
                 }
 
                 if (in_array("aid", $options)) {
                     $htmldata .=
                         '<tr>
-                                    <td class="idcandidat">' . JText::_('ID_CANDIDAT') . ' : ' . @$item->user_id . '</td>
+                                    <td class="idcandidat"><b>' . JText::_('ID_CANDIDAT') . ' :</b> ' . @$item->user_id . '</td>
                                 </tr>';
                 }
 
                 $htmldata .= '<tr><td><h3>' . JText::_('PDF_HEADER_INFO_DOSSIER') . '</h3></td></tr><tr><td class="name">' . @$item->label . ' (' . @$item->cb_schoolyear . ')</td></tr>';
 
                 if (in_array("afnum", $options)) {
-                    $htmldata .= '<tr class="nationality"><td>' . JText::_('FNUM') . ' : ' . $fnum . '</td></tr>';
+                    $htmldata .= '<tr class="nationality"><td><b>' . JText::_('FNUM') . ' :</b> ' . $fnum . '</td></tr>';
                 }
 
                 if (in_array("aapp-sent", $options)) {
-                    $htmldata .= '<tr><td class="statut">' . JText::_('APPLICATION_SENT_ON') . ' : ' . $date_submitted . '</td></tr>';
+                    $htmldata .= '<tr><td class="statut"><b>' . JText::_('APPLICATION_SENT_ON') . ' :</b> ' . $date_submitted . '</td></tr>';
                 }
 
                 if (in_array("adoc-print", $options)) {
-                    $htmldata .= '<tr class="sent"><td>' . JText::_('DOCUMENT_PRINTED_ON') . ' : ' . $date_printed . '</td></tr>';
+                    $htmldata .= '<tr class="sent"><td><b>' . JText::_('DOCUMENT_PRINTED_ON') . ' :</b> ' . $date_printed . '</td></tr>';
                 }
 
                 if (in_array("status", $options)) {
                     $status = $m_files->getStatusByFnums(explode(',', $fnum));
-                    $htmldata .= '<tr class="sent"><td>' . JText::_('PDF_STATUS') . ' : ' . $status[$fnum]['value'] . '</td></tr>';
+                    $htmldata .= '<tr class="sent"><td><b>' . JText::_('PDF_STATUS') . ' :</b> ' . $status[$fnum]['value'] . '</td></tr>';
                 }
+
+				$htmldata .= '</table>';
 
                 if (in_array("tags", $options)) {
                     $tags = $m_files->getTagsByFnum(explode(',', $fnum));
-                    $htmldata .= '<br/><table><tr><td style="display: inline"> ';
+                    $htmldata .= '<table style="margin-top: 8px"><tr><td style="display: inline"> ';
                     foreach ($tags as $tag) {
                         $htmldata .= '<span class="label ' . $tag['class'] . '">' . $tag['label'] . '</span>&nbsp;';
                     }
                     $htmldata .= '</td></tr></table>';
                 }
-                $htmldata .= '<tr><td><hr></td></tr>';
+                $htmldata .= '<hr>';
             }
         } catch (Exception $e) {
             JLog::add('SQL error in emundus pdf library at query : ' . $query, JLog::ERROR, 'com_emundus');
@@ -979,7 +990,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
                 if(sizeof($profile_menu) > 1) {
                     if($key != 0) {
-                        $forms .= '<br pagebreak="true"/>';
+                        $forms .= '<br pagebreak="true" class="page-break"/>';
                     }
                     $forms .= '<h1>' . $m_form->getProfileLabelByProfileId($profile_id)->label . '</h1>';
                 }
@@ -1030,8 +1041,19 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         /*** Applicant   ***/
 	    $htmldata .= "
 			<style>
+					@page { margin: 120px 25px; }
+					header { position: fixed; top: -90px; left: 0px; right: 0px;height: 70px; }
+					header hr {
+						border: none;
+						height: 1px;
+						background-color: #A4A4A4;
+					}
+					.page-break { page-break-before: always; }
+					hr {
+						border: solid 1px black;
+					}
 					h2 {
-						font-size: 24px;
+						font-size: 18px;
 						line-height: 16px;
 						margin-top: 4px;
 						margin-bottom: 0;
@@ -1039,29 +1061,48 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 					h3 {
 					  font-style: normal;
 					  font-weight: 600;
-					  font-size: 18px;
+					  font-size: 16px;
 					  line-height: 14px;
-					  margin-bottom: 4px;
+					  margin-bottom: 6px;
                     }
                     td{
                     	font-size: 12px;
                     }
-                    td[colspan='1']{
-                       min-width: 250px;
-                    }
                     .pdf-forms{
                    	   border-spacing: 0;
                     }
+                    table.pdf-forms{
+                       width: 100%;
+                    }
                     .pdf-forms td{
-                       border: solid 1px black;
+                       border-collapse: collapse;
                        padding: 8px;
+                       width: 100%;
+                       border-left: solid 1px #A4A4A4;
+  					   border-top: solid 1px #A4A4A4;
+                    }
+                    .pdf-forms tr td:first-child {
+  					   width: 30%;
+					}
+                    .pdf-forms tr td:nth-child(2){
+                       width:70%; 
+                       border-right: solid 1px #A4A4A4;
+                    }
+                    .pdf-forms tr:last-child td{
+                       border-bottom: solid 1px #A4A4A4;
+                    }
+                    .pdf-attachments{
+                       font-size: 14px;
+                    }
+                    .pdf-attachments li {
+                       margin-bottom: 6px;
                     }
                     @media print {
                         .breaker{
                             page-break-before: always;
                         }
                     }
-                    .label {color:black;}
+                    .label {color:black;padding: 6px 12px;border-radius: 4px;color: white;}
 		            .label-default {background-color:#999999;}
 		            .label-primary {background-color:#337ab7;}
 		            .label-success {background-color:#5cb85c;}
@@ -1091,11 +1132,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		            .label-darkpink { background-color: #db0a5b; }
 			</style>";
 
-        if (!empty($options) && $options[0] != "" && $options[0] != "0") {
-
-            $htmldata .= '</table><br/>';
-        }
-
 //
         /**  END APPLICANT   ****/
 
@@ -1115,18 +1151,38 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             chmod(EMUNDUS_PATH_ABS . $item->user_id, 0777);
         }
 
+	    $htmldata .= '<script type="text/php">
+			        if ( isset($pdf) ) {
+			            $x = 570;
+			            $y = 760;
+			            $text = "{PAGE_NUM} / {PAGE_COUNT}";
+			            $font = $fontMetrics->get_font("helvetica", "bold");
+			            $size = 8;
+			            $color = array(0,0,0);
+			            $word_space = 0.0;  //  default
+			            $char_space = 0.0;  //  default
+			            $angle = 0.0;   //  default
+			            $pdf->page_text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);
+			        }
+    			</script>';
+	    $htmldata .= '</body></html>';
+
 		/** DOMPDF */
 	    $options = new Options();
 	    $options->set('defaultFont', 'helvetica');
+		$options->set('isPhpEnabled', true);
 	    $dompdf = new Dompdf($options);
 
-		$tmp_html = '';
-	    $htmldata .= '</body></html>';
 	    $dompdf->loadHtml($htmldata);
 	    $dompdf->render();
 
 		$filename = EMUNDUS_PATH_ABS . @$item->user_id . DS . $fnum . $file_lbl . '.pdf';
-	    $dompdf->stream($filename, array("Attachment" => false));
+		if($output) {
+			$dompdf->stream($filename, array("Attachment" => false));
+		} else {
+			file_put_contents($filename, $dompdf->output());
+			return $filename;
+		}
 	    /** END */
 
         @chdir('tmp');

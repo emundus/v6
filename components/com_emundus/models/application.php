@@ -2571,7 +2571,7 @@ class EmundusModelApplication extends JModelList
                                 if (!empty($group_label)) {
                                     $forms .= '<h3 class="group">' . $group_label . '</h3>';
                                 } else {
-                                    $forms .= '<p></p><br/>';
+                                    $forms .= '<h3 class="group"></h3>';
                                 }
                                 $forms .= '<table class="pdf-forms">';
                                 foreach ($elements as $element) {
@@ -2772,11 +2772,13 @@ class EmundusModelApplication extends JModelList
         $forms .= '</p></p>';
 
         if($attachments) {
+			$forms .= '<div class="page-break pdf-attachments">';
             $upload_files = $this->getCountUploadedFile($fnum, $aid, $profile_id);
             $forms .= $upload_files;
 
             $list_upload_files = $this->getListUploadedFile($fnum, $aid, $profile_id);
             $forms .= $list_upload_files;
+			$forms .= '</div>';
         }
         return $forms;
     }
