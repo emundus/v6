@@ -4082,43 +4082,6 @@ $(document).ready(function() {
                                 }
                             });
 
-                            $('#em-ex-forms').click(function(e) {
-                                if ($('#em-ex-forms').is(":checked")){
-                                    $('[id^=felts-]').hide();
-                                    $('#felts input').attr('checked', false);
-                                    $('#felts button').removeClass("btn btn-elements-success").addClass("btn btn-info");
-                                    $('#felts span').removeClass("glyphicon-minus").addClass("glyphicon-plus");
-                                } else {
-                                    $('[id^=felts-]').show();
-                                    $('#felts button').removeClass("btn btn-info").addClass("btn btn-elements-success");
-                                    $('#felts span').removeClass("glyphicon-plus").addClass("glyphicon-minus");
-                                }
-                            });
-
-                            $('#em-ex-attachment').click(function(e) {
-                                if ($('#em-ex-attachment').is(":checked")){
-                                    $('[id^=aelts-]').hide();
-                                    $('#aelts input').attr('checked', false);
-                                    $('#aelts button').removeClass("btn btn-elements-success").addClass("btn btn-info");
-                                    $('#aelts span').removeClass("glyphicon-minus").addClass("glyphicon-plus");
-                                } else {
-                                    $('[id^=aelts-]').show();
-                                    $('#aelts button').removeClass("btn btn-info").addClass("btn btn-elements-success");
-                                    $('#aelts span').removeClass("glyphicon-plus").addClass("glyphicon-minus");
-                                }
-                            });
-
-
-                            $('#felts').click(function(e) {
-                                if ($(".em-ex-check").is(":checked"))
-                                    $('#em-ex-forms').attr('checked', false);
-                            });
-
-                            $('#aelts').click(function(e) {
-                                if ($(".em-ex-check").is(":checked"))
-                                    $('#em-ex-attachment').attr('checked', false);
-                            });
-
                             $('#em-add-header').click(function(e) {
                                 if ($("#em-add-header").is(":checked"))
                                     $('#exp-opt').show();
