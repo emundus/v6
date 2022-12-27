@@ -7,68 +7,63 @@ $template_type = array(
 );
 ?>
 <input name="em-doc-fnums" type="hidden" value="<?= $this->fnums ?>"/>
-<br style="padding-left:30px" id="em-documents">
-    <label for="em-doc-tmpl-label"><?= JText::_('DOCUMENT_TYPE'); ?></label>
-    <div id="exp-document" >
-        <select name="docs" id="em-doc-tmpl" class="chzn-select" multiple></select>
+
+<div id="em-documents" style="display:none;">
+    <div>
+        <label for="em-doc-tmpl-label"><?= JText::_('DOCUMENT_TYPE'); ?></label>
+        <div id="exp-document" >
+            <select name="docs" id="em-doc-tmpl" class="chzn-select" multiple></select>
+        </div>
     </div>
 
-    </br>
-
-    <label for="em-doc-cansee"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_ACTIONS_CAN_BE_VIEWED'); ?></label>
-    </br>
-
-    <label class="em-switch">
-        <input type="checkbox" name="type" id="em-doc-cansee" checked="checked">
-        <span class="em-slider em-round"></span>
-    </label>
-
-    </br>
+    <div class="em-mt-16" id="doc_can_see">
+        <label for="em-doc-cansee"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_ACTIONS_CAN_BE_VIEWED'); ?></label>
+        <label class="em-switch">
+            <input type="checkbox" name="type" id="em-doc-cansee" checked="checked">
+            <span class="em-slider em-round"></span>
+        </label>
+    </div>
 
     <hr id='breaking-line' style="border: 1.5px dashed #ccc"/>
 
     <div id="export-div" style="display: none">
-        <label for="em-export-mode"><?= JText::_('COM_EMUNDUS_EXPORT_MODE'); ?></label>
 
-        </br>
+        <div>
+            <label for="em-export-mode"><?= JText::_('COM_EMUNDUS_EXPORT_MODE'); ?></label>
+            <select name="mode" id="em-doc-export-mode" class="form-control">
+                <option value="0"><?= JText::_('COM_EMUNDUS_EXPORT_BY_CANDIDAT'); ?></option>
+                <option value="1"><?= JText::_('COM_EMUNDUS_EXPORT_BY_DOCUMENT'); ?></option>
+                <option value="2" selected><?= JText::_('COM_EMUNDUS_EXPORT_BY_FILES'); ?></option>
+            </select>
+        </div>
 
-        <select name="mode" id="em-doc-export-mode" class="form-control">
-            <option value="0"><?= JText::_('COM_EMUNDUS_EXPORT_BY_CANDIDAT'); ?></option>
-            <option value="1"><?= JText::_('COM_EMUNDUS_EXPORT_BY_DOCUMENT'); ?></option>
-            <option value="2" selected><?= JText::_('COM_EMUNDUS_EXPORT_BY_FILES'); ?></option>
-        </select>
-
-        </br>
-        <div id="export-tooltips"></div>
+        <div id="export-tooltips" class="em-mt-8"></div>
     </div>
 
-    </br>
+    <div id="merge-div" class="em-mt-8" style="display: none">
+        <div>
+            <label for="em-combine-pdf"><?= JText::_('COM_EMUNDUS_PDF_MERGE'); ?></label>
+            <label class="em-switch">
+                <input type="checkbox" name="type" id="em-doc-pdf-merge">
+                <span class="em-slider em-round"></span>
+            </label>
+        </div>
 
-    <div id="merge-div" style="display: none">
-        <label for="em-combine-pdf"><?= JText::_('COM_EMUNDUS_PDF_MERGE'); ?></label>
-
-        </br>
-
-        <label class="em-switch">
-            <input type="checkbox" name="type" id="em-doc-pdf-merge">
-            <span class="em-slider em-round"></span>
-        </label>
-
-        </br>
-        <div id="merge-tooltips"></div>
+        <div id="merge-tooltips" class="em-mt-8"></div>
     </div>
-
-    </div>
+</div>
 
 <script type="text/javascript">
-    var fnums = $('input:hidden[name="em-doc-fnums"]').val();
+    addLoader();
+    let fnums = document.querySelector('input[name="em-doc-fnums"]').value;
 
     if(fnums.split(',').length === 1) {
-        $('#merge-div').remove();
-        $("#em-doc-export-mode option[value='0']").remove();
-        $("#em-doc-export-mode option[value='1']").remove();
+        document.getElementById('merge-div').remove();
+        document.querySelector("#em-doc-export-mode option[value='0']").remove();
+        document.querySelector("#em-doc-export-mode option[value='1']").remove();
     }
 
+    const select = document.getElementById("em-doc-tmpl");
     $.ajax({
         type: 'post',
         url: 'index.php?option=com_emundus&controller=evaluation&task=getattachmentletters',
@@ -77,18 +72,37 @@ $template_type = array(
         success: function(result) {
             if(result.status) {
                 let attachment_letters = result.attachment_letters;
-                $('#export-div').show();
-                attachment_letters.forEach(letter => {
-                    $('#em-doc-tmpl').append('<option value="' + letter.id + '">' + letter.value + '</option>');           /// append data
+                document.getElementById('export-div').show();
+
+                attachment_letters.forEach((letter,index) => {
+                    const opt = document.createElement("option");
+                    opt.value = letter.id;
+                    opt.text = letter.value;
+                    if(index == 0){
+                        opt.selected = true;
+                    }
+
+                    select.add(opt, select.options[1]);
                 })
-                $('#em-doc-tmpl option:first').prop('selected', true);
             } else {
-                $('#em-doc-tmpl').append('<option value="-1" selected disabled>' + Joomla.JText._('NO_LETTER_FOUND') + '</option>');
-                $('#export-div').remove();
-                $('#merge-div').remove();
+                const opt = document.createElement("option");
+                opt.value = -1;
+                opt.disabled = true;
+                opt.selected = true;
+                opt.text = Joomla.JText._('NO_LETTER_FOUND');
+
+                select.add(opt, select.options[1]);
+                document.getElementById('doc_can_see').remove();
+                document.getElementById('export-div').remove();
+                const merge_div = document.getElementById('merge-div');
+                if(merge_div != null) {
+                    document.getElementById('merge-div').remove();
+                }
+                document.getElementsByClassName('swal2-confirm')[0].remove();
             }
 
             $('#em-doc-tmpl').chosen({width:'100%'});
+            document.getElementById('em-documents').style.display = 'block';
         }
     })
 

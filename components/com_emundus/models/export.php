@@ -85,6 +85,7 @@ class EmundusModelExport extends JModelList {
 
 	                Gotenberg::save($request, $dest_path .'/');
                 }
+				$res->file = $dest_path .'/' . $dest_file . '.pdf';
             } catch (\Gotenberg\Exceptions\GotenbergApiErroed $e) {
                 $res->status = false;
                 $res->msg = JText::_('COM_EMUNDUS_ERROR_EXPORT_MARGIN').' GOTEMBERG ERROR ('.$e->getCode().'): '.$e->getResponse();

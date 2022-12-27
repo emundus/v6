@@ -721,10 +721,10 @@ function generate_letter() {
                 /// render recapitulatif
                 var recal = result.data.recapitulatif_count;
                 var table =
-                    "<h4>" +
+                    "<p class='em-h4'>" +
                     Joomla.JText._('AFFECTED_CANDIDATS') + result.data.affected_users +
-                    "</h4>" +
-                    "<table class='table table-striped' id='em-generated-docs' style='border: 1px solid #c1c7d0'>" +
+                    "</p>" +
+                    "<table class='table table-striped em-mt-12' id='em-generated-docs' style='border: 1px solid #c1c7d0'>" +
                     "<thead>" +
                     "<th>" + Joomla.JText._('GENERATED_DOCUMENTS_LABEL') + "</th>" +
                     "<th>" + Joomla.JText._('GENERATED_DOCUMENTS_COUNT') + "</th>" +
@@ -744,10 +744,10 @@ function generate_letter() {
                 if (showMode == 0) {
                     var zip = result.data.zip_data_by_candidat;
 
-                    table += "<h3>" +
+                    table += "<p class='em-h4'>" +
                         Joomla.JText._('CANDIDAT_GENERATED') +
-                        "</h3>" +
-                        "<table class='table table-striped' id='em-generated-docs'>" +
+                        "</p>" +
+                        "<table class='table table-striped em-mt-12' id='em-generated-docs' style='border: 1px solid #c1c7d0'>" +
                         "<thead>" +
                         "<tr>" +
                         "<th>" + Joomla.JText._('CANDIDATE_NAME') + "</th>" +
@@ -785,10 +785,10 @@ function generate_letter() {
                     var letters = result.data.letter_dir;
 
                     table +=
-                        "<h3>" +
+                        "<p class='em-h4'>" +
                         Joomla.JText._('DOCUMENT_GENERATED') +
-                        "</h3>" +
-                        "<table class='table table-striped' id='em-generated-docs'>" +
+                        "</p>" +
+                        "<table class='table table-striped em-mt-12' id='em-generated-docs' style='border: 1px solid #c1c7d0'>" +
                         "<thead>" +
                         "<tr>" +
                         "<th>" + Joomla.JText._('DOCUMENT_NAME') + "</th>" +
@@ -827,8 +827,8 @@ function generate_letter() {
                     var files = result.data.files;
                     if (files && files.length > 0) {
                         var zipUrl = 'index.php?option=com_emundus&controller=files&task=exportzipdoc&ids=';
-                        table += '<p class="em-h5">' + Joomla.JText._('COM_EMUNDUS_LETTERS_FILES_GENERATED') + '</p>' +
-                            '<table class="table table-striped" id="em-generated-docs">' +
+                        table += '<p class="em-h4">' + Joomla.JText._('COM_EMUNDUS_LETTERS_FILES_GENERATED') + '</p>' +
+                            '<table class="table table-striped em-mt-12" id="em-generated-docs" style="border: 1px solid #c1c7d0">' +
                             '<thead>' +
                             '<tr>' +
                             '<th>' + Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_FILE_NAME') + '</th>' +

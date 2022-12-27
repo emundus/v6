@@ -916,7 +916,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
                 $htmldata .= '<table width="100%"><tr>';
 
-                $htmldata .= '<td><h3>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . '</h3></td></tr>';
+                //$htmldata .= '<td><h3>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . '</h3></td></tr>';
 				if(!empty($item->avatar) && is_image_ext($item->avatar))
 				{
 					if (file_exists(EMUNDUS_PATH_ABS . @$item->user_id . '/tn_' . @$item->avatar))
@@ -938,7 +938,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 					}
 				}
 				if (!$anonymize_data) {
-					$htmldata .= '<tr><td class="name" colspan="2">' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</td></tr>';
+					$htmldata .= '<tr><td class="name" colspan="2"><b>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . ' :</b> ' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</td></tr>';
 				}
 
                 if (!$anonymize_data && in_array("aemail", $options)) {
@@ -1086,10 +1086,13 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                     }
                     .pdf-forms th{
                        font-size: 12px;
+                       font-weight: 400;
                     }
                     .pdf-forms th.background{
                        background-color: #EDEDED;
                        border-top: solid 1px #A4A4A4;
+                       border-left: solid 1px #A4A4A4;
+                       border-right: solid 1px #A4A4A4;
                     }
                     table.pdf-forms{
                        width: 100%;
