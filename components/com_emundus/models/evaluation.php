@@ -2395,7 +2395,7 @@ class EmundusModelEvaluation extends JModelList {
 
 	                            $query->clear()
 		                            ->delete($this->_db->quoteName('#__emundus_uploads'))
-		                            ->where($this->_db->quoteName('filename') . ' LIKE ' . $this->_db->quote($name))
+		                            ->where($this->_db->quoteName('filename') . ' LIKE ' . $this->_db->quote($filename))
 		                            ->andWhere('DATE(timedate) = CURRENT_DATE()')
 		                            ->andWhere($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
 	                            $this->_db->setQuery($query);
