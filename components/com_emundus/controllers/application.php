@@ -490,6 +490,7 @@ class EmundusControllerApplication extends JControllerLegacy
         $ids = $jinput->post->getString('ids', null);
         $sid = $jinput->post->getInt('student_id', null);
         $form_post = $jinput->post->getVar('forms', null);
+        $attachments_only = $jinput->post->getBool('attachments_only', false);
 
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
@@ -501,13 +502,15 @@ class EmundusControllerApplication extends JControllerLegacy
         $fnumInfos = $m_files->getFnumInfos($fnum);
         $profile = $m_profile->getProfileByCampaign($fnumInfos['campaign_id']);
 
-        if(empty($form_post)){
-            $form_post = array();
+        if (!$attachments_only) {
+            if(empty($form_post)){
+                $form_post = array();
 
-            $forms = $m_form->getFormsByProfileId($profile['profile_id']);
-            foreach ($forms as $form){
-                if(!in_array($form->id,$form_post)){
-                    $form_post[] = $form->id;
+                $forms = $m_form->getFormsByProfileId($profile['profile_id']);
+                foreach ($forms as $form){
+                    if(!in_array($form->id,$form_post)){
+                        $form_post[] = $form->id;
+                    }
                 }
             }
         }
