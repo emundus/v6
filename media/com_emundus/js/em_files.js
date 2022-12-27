@@ -1177,17 +1177,14 @@ function runAction(action, url = '', option = '') {
 
         case 15:
         case 16:
-            // TODO : make thiw work
+            // TODO : make this work
 
             const iframeFastMails = document.querySelector('#iframe-fast-emails');
             const fastMailForm = iframeFastMails.contentWindow.document.querySelector('#adminForm');
             fastMailForm.submit();
             break;
 
-        // TODO : Generate letter
         case 27:
-            addLoader();
-
             generate_letter();
             break;
 

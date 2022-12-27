@@ -848,12 +848,11 @@ function generate_letter() {
 
                         table += "</tbody></table>";
 
-                        var href_collections = $('[id^=em_download_doc_]');
-                        var href_array = Array.prototype.slice.call(href_collections);
                         var urls = [];
-                        href_array.forEach(url => {
-                            urls.push(url.id.split('em_download_doc_')[1]);
+                        files.forEach(file => {
+                            urls.push(file.upload);
                         })
+                        console.log(urls);
 
                         $('#em-download-all').attr('href', zipUrl + urls.toString());
                     }

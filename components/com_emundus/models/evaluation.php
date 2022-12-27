@@ -1808,6 +1808,7 @@ class EmundusModelEvaluation extends JModelList {
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'emails.php');
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'users.php');
         require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
+	    require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
         $_mEval = new EmundusModelEvaluation();
         $_mFile = new EmundusModelFiles();
@@ -1837,6 +1838,20 @@ class EmundusModelEvaluation extends JModelList {
                 $available_fnums[] = $fnum;
             }
 
+	        $post = [
+		        'TRAINING_CODE' => $fnumInfo[$fnum]['campaign_code'],
+		        'TRAINING_PROGRAMME' => $fnumInfo[$fnum]['campaign_label'],
+		        'CAMPAIGN_LABEL' => $fnumInfo[$fnum]['campaign_label'],
+		        'CAMPAIGN_YEAR' => $fnumInfo[$fnum]['campaign_year'],
+		        'USER_NAME' => $fnumInfo[$fnum]['applicant_name'],
+		        'USER_EMAIL' => $fnumInfo[$fnum]['applicant_email'],
+		        'FNUM' => $fnum
+	        ];
+	        $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
+	        $special = ['user_dob_age'];
+
+	        $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+
             foreach($generated_letters as $key => $letter) {
                 $attachInfo = $_mFile->getAttachmentInfos($letter->attachment_id);
 
@@ -1862,25 +1877,12 @@ class EmundusModelEvaluation extends JModelList {
                 switch ((int)$type) {
                     case 1:
                         $file = JPATH_SITE . $letter->file;
+
                         if (file_exists($file)) {
                             $res->status = true;
-                            $rand = rand(0, 1000000);
-                            $post = [
-                                'TRAINING_CODE' => $fnumInfo[$fnum]['campaign_code'],
-                                'TRAINING_PROGRAMME' => $fnumInfo[$fnum]['campaign_label'],
-                                'CAMPAIGN_LABEL' => $fnumInfo[$fnum]['campaign_label'],
-                                'CAMPAIGN_YEAR' => $fnumInfo[$fnum]['campaign_year'],
-                                'USER_NAME' => $fnumInfo[$fnum]['applicant_name'],
-                                'USER_EMAIL' => $fnumInfo[$fnum]['applicant_email'],
-                                'FNUM' => $fnum
-                            ];
-                            // make file name --- logically, we should avoid to generate many files which have same contents but different name --> fnum will distinguish the file name
-                            $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
 
+                            $rand = rand(0, 1000000);
                             if (!$anonymize_data) {
-                                //$name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_.' . pathinfo($file)['extension'];
-                                $eMConfig = JComponentHelper::getParams('com_emundus');
-                                $generated_doc_name = $eMConfig->get('generated_doc_name', "");
                                 if (!empty($generated_doc_name)) {
                                     require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
                                     $m_checklist = new EmundusModelChecklist;
@@ -1893,45 +1895,34 @@ class EmundusModelEvaluation extends JModelList {
                                 $name = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_.' . pathinfo($file)['extension'];
                             }
 
-                            // get file path --> original path + file path, e.g: images/emundus/files/95
                             $original_path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'];
                             $original_name = $original_path . DS . $name;
 
-                            // get file path --> letter path + letter file path, e.g: images/emundus/files/95--letters (they will be removed after using)
                             $path = EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'];               /// temp path (remove '_tmp')
                             $path_name = $path . DS . $name;
 
-                            // get url of both original and letter cases
                             $original_url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
                             $url = JURI::base() . EMUNDUS_PATH_REL . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'] . '_tmp' . DS;               /// temp url
 
-                            // mkdir original folder if does not exist
                             if(!file_exists($original_path)) { mkdir($original_path, 0755, true); }
 
-                            // mkdir letter folder if does not exist
                             if (!file_exists($path)) { mkdir($path, 0755, true); }
 
-                            /// if exists
                             if (file_exists($original_name) or file_exists($path_name))   {
-                                /// remove this file and then create new file (good idea?)
                                 unlink($path_name);
                                 unlink($original_name);
 
-                                /// remove it in database
-
-                                $query = 'DELETE FROM #__emundus_uploads 
-                                                WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
-                                                    ' AND #__emundus_uploads.filename = ' . $this->_db->quote($name) .
-                                                        ' AND DATE(#__emundus_uploads.timedate) = current_date()';
-
+	                            $query->clear()
+		                            ->delete($this->_db->quoteName('#__emundus_uploads'))
+		                            ->where($this->_db->quoteName('filename') . ' LIKE ' . $this->_db->quote($name))
+		                            ->andWhere('DATE(timedate) = CURRENT_DATE()')
+		                            ->andWhere($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
                                 $this->_db->setQuery($query);
                                 $this->_db->execute();
 
-                                /// recopy
                                 copy($file, $path_name);
                                 copy($file, $original_name);
 
-                                /// reupdate in database
                                 $upId = $_mFile->addAttachment($fnum, $name, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
                                 $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
                             } else {
@@ -1949,17 +1940,6 @@ class EmundusModelEvaluation extends JModelList {
 
                     case 2:
                         if (isset($fnumInfo)) {
-                            $post = [
-                                'TRAINING_CODE' => $fnumInfo[$fnum]['campaign_code'],
-                                'TRAINING_PROGRAMME' => $fnumInfo[$fnum]['campaign_label'],
-                                'CAMPAIGN_LABEL' => $fnumInfo[$fnum]['campaign_label'],
-                                'CAMPAIGN_YEAR' => $fnumInfo[$fnum]['campaign_year'],
-                                'USER_NAME' => $fnumInfo[$fnum]['applicant_name'],
-                                'USER_EMAIL' => $fnumInfo[$fnum]['applicant_email'],
-                                'FNUM' => $fnum
-                            ];
-
-                            // Generate PDF
                             $tags = $_mEmail->setTags($fnumInfo[$fnum]['applicant_id'], $post, $fnum, '', $letter->title.$letter->body.$letter->footer);
 
                             require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'MYPDF.php');
@@ -1969,7 +1949,7 @@ class EmundusModelEvaluation extends JModelList {
                             $pdf->SetTitle($letter->title);
 
                             // Set margins
-                            $pdf->SetMargins(5, 40, 5);
+                            $pdf->SetMargins(5, 20, 5);
                             $pdf->footer = $letter->footer;
 
                             // Get logo
@@ -2017,13 +1997,7 @@ class EmundusModelEvaluation extends JModelList {
                             $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $htmldata, $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = '', $autopadding = true);
 
                             $rand = rand(0, 1000000);
-
-                            // make file name --- logically, we should avoid to generate many files which have same contents but different name --> fnum will distinguish the file name
-                            $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                             if (!$anonymize_data) {
-                                //$name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".pdf";
-                                $eMConfig = JComponentHelper::getParams('com_emundus');
-                                $generated_doc_name = $eMConfig->get('generated_doc_name', "");
                                 if (!empty($generated_doc_name)) {
                                     require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
                                     $m_checklist = new EmundusModelChecklist;
@@ -2045,26 +2019,23 @@ class EmundusModelEvaluation extends JModelList {
                             $original_url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
                             $url = JURI::base() . EMUNDUS_PATH_REL . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'] . '_tmp' . DS;     /// tmp path
 
-                            ///@ mkdir original folder if does not exists
                             if(!file_exists($original_path)) { mkdir($original_path, 0755, true); }
 
-                            ///@ mkdir new folder which contains only the generated documents
                             if (!file_exists($path)) { mkdir($path, 0755, true); }
 
                             if (file_exists($path_name) or file_exists($original_name)) {
-                                // remove old file and reupdate in database
                                 unlink($original_name);
                                 unlink($path_name);
 
-                                $query = 'DELETE FROM #__emundus_uploads 
-                                                WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
-                                                    ' AND #__emundus_uploads.filename = ' . $this->_db->quote($name) .
-                                                        ' AND DATE(#__emundus_uploads.timedate) = current_date()';
-
-                                $this->_db->setQuery($query);
-                                $this->_db->execute();
+	                            $query->clear()
+		                            ->delete($this->_db->quoteName('#__emundus_uploads'))
+		                            ->where($this->_db->quoteName('filename') . ' LIKE ' . $this->_db->quote($name))
+		                            ->andWhere('DATE(timedate) = CURRENT_DATE()')
+		                            ->andWhere($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
+	                            $this->_db->setQuery($query);
+	                            $this->_db->execute();
                             }
-                            /// copy generated letter to --letters folder
+
                             $upId = $_mFile->addAttachment($fnum, $name, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);         ////
 
                             $pdf->Output($path_name, 'F');
@@ -2076,22 +2047,8 @@ class EmundusModelEvaluation extends JModelList {
                         break;
 
                     case 3:
-                        require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'export.php');
-
                         $m_Export = new EmundusModelExport();
-
-                        $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
-                        $post = [
-                            'TRAINING_CODE' => $fnumInfo[$fnum]['campaign_code'],
-                            'TRAINING_PROGRAMME' => $fnumInfo[$fnum]['campaign_label'],
-                            'CAMPAIGN_LABEL' => $fnumInfo[$fnum]['campaign_label'],
-                            'CAMPAIGN_YEAR' => $fnumInfo[$fnum]['campaign_year'],
-                            'USER_NAME' => $fnumInfo[$fnum]['applicant_name'],
-                            'USER_EMAIL' => $fnumInfo[$fnum]['applicant_email'],
-                            'FNUM' => $fnum
-                        ];
-                        $special = ['user_dob_age', 'evaluation_radar'];
 
                         try {
                             $phpWord = new \PhpOffice\PhpWord\PhpWord();
@@ -2230,7 +2187,6 @@ class EmundusModelEvaluation extends JModelList {
                                 }
 
                                 $rand = rand(0, 1000000);
-                                $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                                 if (!$anonymize_data) {
                                     if (!empty($generated_doc_name)) {
                                         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
@@ -2309,28 +2265,12 @@ class EmundusModelEvaluation extends JModelList {
                         break;
 
                     case 4:
-
-                        require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
-
                         $inputFileName = JPATH_SITE . $letter->file;
                         $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($inputFileName);
                         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
 
                         $reader->setIncludeCharts(true);
                         $spreadsheet = $reader->load($inputFileName);
-
-                        $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
-                        $post = [
-                            'TRAINING_CODE' => $fnumInfo[$fnum]['campaign_code'],
-                            'TRAINING_PROGRAMME' => $fnumInfo[$fnum]['campaign_label'],
-                            'CAMPAIGN_LABEL' => $fnumInfo[$fnum]['campaign_label'],
-                            'CAMPAIGN_YEAR' => $fnumInfo[$fnum]['campaign_year'],
-                            'USER_NAME' => $fnumInfo[$fnum]['applicant_name'],
-                            'USER_EMAIL' => $fnumInfo[$fnum]['applicant_email'],
-                            'FNUM' => $fnum
-                        ];
-
-                        $special = ['user_dob_age'];
 
                         if (isset($fnumInfo[$fnum])) {
                             $preprocess = $spreadsheet->getAllSheets(); //Search in each sheet of the workbook
@@ -2423,12 +2363,7 @@ class EmundusModelEvaluation extends JModelList {
                             }
                             $rand = rand(0, 1000000);
 
-                            /// check if the filename is anonymized -- logically, we should avoid to generate many files which have the same contents, but different name --> bad performance
-                            $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                             if (!$anonymize_data) {
-                                //$filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".xlsx";
-                                $eMConfig = JComponentHelper::getParams('com_emundus');
-                                $generated_doc_name = $eMConfig->get('generated_doc_name', "");
                                 if (!empty($generated_doc_name)) {
                                     require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
                                     $m_checklist = new EmundusModelChecklist;
@@ -2444,7 +2379,7 @@ class EmundusModelEvaluation extends JModelList {
                             $original_path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'];
                             $original_name = $original_path . DS . $filename;
 
-                            $path = EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'];            /// tmp path (remove '_tmp')
+                            $path = EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'];
                             $path_name = $path . DS . $filename;
 
                             $original_url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
@@ -2454,18 +2389,17 @@ class EmundusModelEvaluation extends JModelList {
 
                             if (!file_exists($original_path)) { mkdir($original_path, 0755, true); }
 
-                            /// check if file exists or not
                             if (file_exists($original_name) or file_exists($path_name)) {
                                 unlink($original_name);
                                 unlink($path_name);
 
-                                $query = 'DELETE FROM #__emundus_uploads 
-                                                    WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
-                                                        ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
-                                                            ' AND DATE(#__emundus_uploads.timedate) = current_date()';
-
-                                $this->_db->setQuery($query);
-                                $this->_db->execute();
+	                            $query->clear()
+		                            ->delete($this->_db->quoteName('#__emundus_uploads'))
+		                            ->where($this->_db->quoteName('filename') . ' LIKE ' . $this->_db->quote($name))
+		                            ->andWhere('DATE(timedate) = CURRENT_DATE()')
+		                            ->andWhere($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
+	                            $this->_db->setQuery($query);
+	                            $this->_db->execute();
 
                                 $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
                                 $writer->setIncludeCharts(true);
