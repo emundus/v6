@@ -2270,14 +2270,22 @@ class EmundusControllerFiles extends JControllerLegacy
             }
             $pdf->Output(JPATH_SITE . DS . 'tmp' . DS . $file, 'F');
 
-	        /*$got_files = [];
-	        foreach ($files_list as $item){
-		        $got_files[] = Stream::path($item);
+	        /*
+	        $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
+            $gotenberg_url = $eMConfig->get('gotenberg_url', 'http://localhost:3000');
+
+	        if($gotenberg_activation && !empty($gotenberg_url))
+	        {
+		        $got_files = [];
+		        foreach ($files_list as $item){
+			        $got_files[] = Stream::path($item);
+		        }
+		        $request = Gotenberg::pdfEngines($gotenberg_url)
+			        ->merge(...$got_files);
+		        $response = Gotenberg::send($request);
+				file_put_contents(JPATH_SITE . DS . 'tmp' . DS . $file,$response->getBody()->getContents());
 	        }
-	        $request = Gotenberg::pdfEngines('https://gotenberg.microservices.tchooz.app')
-		        ->merge(...$got_files);
-	        $response = Gotenberg::send($request);
-			file_put_contents(JPATH_SITE . DS . 'tmp' . DS . $file,$response->getBody()->getContents());*/
+	        */
 
             $start = $i;
 

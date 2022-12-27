@@ -1792,14 +1792,14 @@ class EmundusModelEvaluation extends JModelList {
         }
     }
 
-    /// generate letters
     public function generateLetters($fnums, $templates, $canSee, $showMode, $mergeMode) {
+		$query = $this->_db->getQuery(true);
         $user = JFactory::getUser();
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
-
-        /* replace old documents by the latest */
         $replace_document = $eMConfig->get('export_replace_doc', 0);
+	    $generated_doc_name = $eMConfig->get('generated_doc_name', "");
+	    $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
 
         $tmp_path = JPATH_SITE . DS . 'tmp' . DS;
 
@@ -1809,38 +1809,25 @@ class EmundusModelEvaluation extends JModelList {
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'users.php');
         require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
 
-        $_mEval = new EmundusModelEvaluation;
-        $_mFile = new EmundusModelFiles;
-        $_mEmail = new EmundusModelEmails;
-        $_mUser = new EmundusModelUsers;
+        $_mEval = new EmundusModelEvaluation();
+        $_mFile = new EmundusModelFiles();
+        $_mEmail = new EmundusModelEmails();
+        $_mUsers = new EmundusModelUsers();
 
-        $user = JFactory::getUser();
-
-        $fnum_Array = explode(',', $fnums);
+        $fnum_array = explode(',', $fnums);
+	    $available_fnums = [];
 
         $res = new stdClass();
         $res->status = true;
         $res->files = [];
 
         $letters_ids = $_mEval->getLettersByFnumsTemplates($fnums,$templates);
-
-        $letter_count = [];
-
-        foreach($letters_ids as $key => $letter) {
-            foreach($letter as $data => $value) {
-                $letter_count[] = $value->id;
-            }
-        }
-
-        $available_fnums = [];
-
-        /// a partir de $fnums + $templates --> generer les lettres qui correspondent
-        foreach($fnum_Array as $key => $fnum) {
-            $generated_letters = $_mEval->getLetterTemplateForFnum($fnum,$templates); // return :: Array
+		
+        foreach($fnum_array as $fnum) {
+            $generated_letters = $_mEval->getLetterTemplateForFnum($fnum,$templates);
             $fnumInfo = $_mFile->getFnumsTagsInfos([$fnum]);
 
             if(empty($generated_letters)) {
-
                 $path = EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'] . '_tmp';
                 $url = JURI::base() . EMUNDUS_PATH_REL . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'] . '_tmp' . DS;
 
@@ -1851,25 +1838,29 @@ class EmundusModelEvaluation extends JModelList {
             }
 
             foreach($generated_letters as $key => $letter) {
-                // get attachment info
                 $attachInfo = $_mFile->getAttachmentInfos($letter->attachment_id);
 
-                /* before to generate letter, refresh all previous generated letters of current day - if $replace_document = true */
                 if($replace_document == 1) {
-                    $refreshQuery = 'DELETE FROM #__emundus_uploads WHERE #__emundus_uploads.attachment_id = ' . $attachInfo['id'] .
-                        ' AND DATE(#__emundus_uploads.timedate) = current_date() ' .
-                        ' AND #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum);
+					$refreshQuery = $this->_db->getQuery(true);
 
+					$refreshQuery->delete($this->_db->quoteName('#__emundus_uploads'))
+						->where($this->_db->quoteName('attachment_id') . ' = ' . $attachInfo['id'])
+						->andWhere('DATE(timedate) = CURRENT_DATE()')
+						->andWhere($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
                     $this->_db->setQuery($refreshQuery);
                     $this->_db->execute();
                 }
 
                 $type = $letter->template_type;
 
+	            /**
+	             * 1: Generate simple file without conversion
+	             * 2: Generate PDF file from HTML
+	             * 3: Generate PDF file from DOCX (need Gotenberg)
+	             * 4: Generate XLSX file
+	             */
                 switch ((int)$type) {
-                    case 1:     // simple file
-                        /*@unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".pdf");          //// remove existing file
-                        @unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_.' . ".pdf");*/                                                    //// remove existing file
+                    case 1:
                         $file = JPATH_SITE . $letter->file;
                         if (file_exists($file)) {
                             $res->status = true;
@@ -1956,11 +1947,7 @@ class EmundusModelEvaluation extends JModelList {
                         }
                         break;
 
-                    /// end of case 1 ///
-
-                    case 2:     /// pdf file from html (tinymce)
-                        /*@unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".pdf");
-                        @unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".pdf");*/
+                    case 2:
                         if (isset($fnumInfo)) {
                             $post = [
                                 'TRAINING_CODE' => $fnumInfo[$fnum]['campaign_code'],
@@ -2088,21 +2075,11 @@ class EmundusModelEvaluation extends JModelList {
                         unset($pdf, $original_name, $name, $original_url, $upIdn);
                         break;
 
-                    /// end of case 2
-
-                    case 3: /// generate pdf from docx --> using Gotenberg
-                        /*@unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".docx");
-                        @unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".pdf");
-
-                        @unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".docx");
-                        @unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".pdf");*/
-
+                    case 3:
                         require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'export.php');
 
-                        $m_Export = new EmundusModelExport;
-                        $eMConfig = JComponentHelper::getParams('com_emundus');
-                        $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
+                        $m_Export = new EmundusModelExport();
 
                         $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
                         $post = [
@@ -2114,7 +2091,6 @@ class EmundusModelEvaluation extends JModelList {
                             'USER_EMAIL' => $fnumInfo[$fnum]['applicant_email'],
                             'FNUM' => $fnum
                         ];
-
                         $special = ['user_dob_age', 'evaluation_radar'];
 
                         try {
@@ -2123,9 +2099,8 @@ class EmundusModelEvaluation extends JModelList {
                             $preprocess = $phpWord->loadTemplate(JPATH_SITE . $letter->file);
                             $tags = $preprocess->getVariables();
 
-                            $idFabrik = array();
-                            $setupTags = array();
-
+                            $idFabrik = [];
+                            $setupTags = [];
                             foreach ($tags as $i => $val) {
                                 $tag = strip_tags($val);
                                 if (is_numeric($tag)) {
@@ -2139,33 +2114,31 @@ class EmundusModelEvaluation extends JModelList {
                                 }
                             }
 
+	                        $fabrikElts = [];
                             if (!empty($idFabrik)) {
                                 $fabrikElts = $_mFile->getValueFabrikByIds($idFabrik);
-                            } else {
-                                $fabrikElts = array();
                             }
 
-                            $fabrikValues = array();
+                            $fabrikValues = [];
+
+							// TODO: Move this to a global method by passing the fabrik element
                             foreach ($fabrikElts as $elt) {
                                 $params = json_decode($elt['params']);
                                 $groupParams = json_decode($elt['group_params']);
-                                $isDate = ($elt['plugin'] == 'date');
-                                $isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
 
-                                if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
+                                if (@$groupParams->repeat_group_button == 1 || $elt['plugin'] === 'databasejoin') {
                                     $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
                                 } else {
-                                    if ($isDate) {
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);                   /// $fnum_Array or $fnum ???
+                                    if ($elt['plugin'] == 'date') {
+                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);
                                     } else {
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);                                              /// $fnum_Array or $fnum ???
+                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
                                     }
                                 }
 
                                 if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
 
                                     foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-
                                         if ($elt['plugin'] == "checkbox") {
                                             $val = json_decode($val['val']);
                                         } else {
@@ -2196,14 +2169,14 @@ class EmundusModelEvaluation extends JModelList {
                                     }
 
                                 } else {
-                                    if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);              /// $fnum_Array or $fnum ???
+                                    if (@$groupParams->repeat_group_button == 1 || $elt['plugin'] === 'databasejoin') {
+                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
                                     } else {
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);                                                  /// $fnum_Array or $fnum ???
+                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
                                     }
                                 }
                             }
-
+							
                             $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_SITE . $letter->file);
                             if (isset($fnumInfo[$fnum])) {
                                 $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
@@ -2230,7 +2203,6 @@ class EmundusModelEvaluation extends JModelList {
                                     } elseif (!empty(@$fnumInfo[$fnum][$lowerTag])) {
                                         $preprocess->setValue($tag, @$fnumInfo[$fnum][$lowerTag]);
                                     } else {
-                                        //$tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
                                         $i = 0;
                                         foreach ($tags['patterns'] as $value) {
                                             if ($value == $tag) {
@@ -2239,16 +2211,15 @@ class EmundusModelEvaluation extends JModelList {
                                             }
                                             $i++;
                                         }
-                                        // replace tag by image if tag name start by IMG_
-                                       if(strpos($tag, 'IMG_') !== false) {
+
+                                        if(strpos($tag, 'IMG_') !== false) {
                                             $preprocess->setImageValue($tag, $val);
                                         } else {
                                             $preprocess->setValue($tag, htmlspecialchars($val));
-                                       }
+                                        }
                                     }
                                 }
 
-                                /// foreach
                                 foreach ($idFabrik as $id) {
                                     if (isset($fabrikValues[$id][$fnum])) {
                                         $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
@@ -2259,16 +2230,11 @@ class EmundusModelEvaluation extends JModelList {
                                 }
 
                                 $rand = rand(0, 1000000);
-
-                                /// check if the filename is anonymized -- logically, we should avoid to generate many files which have the same contents, but different name --> bad performance
                                 $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                                 if (!$anonymize_data) {
-//                                    $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".docx";
-                                    $eMConfig = JComponentHelper::getParams('com_emundus');
-                                    $generated_doc_name = $eMConfig->get('generated_doc_name', "");
                                     if (!empty($generated_doc_name)) {
                                         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
-                                        $m_checklist = new EmundusModelChecklist;
+                                        $m_checklist = new EmundusModelChecklist();
                                         $filename = $m_checklist->formatFileName($generated_doc_name, $fnum, $post);
                                     } else {
                                         $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']);
@@ -2291,13 +2257,12 @@ class EmundusModelEvaluation extends JModelList {
 
                                 if (!file_exists($path)) { mkdir($path, 0755, true); }
 
-                                /// check if file exists or not
                                 if (file_exists($path_name) or file_exists($original_path)) {
-                                    $query = 'DELETE FROM #__emundus_uploads 
-                                                    WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
-                                                        ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
-                                                            ' AND DATE(#__emundus_uploads.timedate) = current_date()';
-
+	                                $query->clear()
+		                                ->delete($this->_db->quoteName('#__emundus_uploads'))
+		                                ->where($this->_db->quoteName('filename') . ' LIKE ' . $this->_db->quote($filename))
+		                                ->andWhere('DATE(timedate) = CURRENT_DATE()')
+		                                ->andWhere($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
                                     $this->_db->setQuery($query);
                                     $this->_db->execute();
 
@@ -2306,10 +2271,11 @@ class EmundusModelEvaluation extends JModelList {
                                 }
 
                                 $preprocess->saveAs($original_name);
+
                                 if ($gotenberg_activation == 1 && $letter->pdf == 1) {
-                                    //convert to PDF
-                                    $dest = str_replace('.docx', '.pdf', $original_name);
+                                    $dest = str_replace('.docx', '', $original_name);
                                     $filename = str_replace('.docx', '.pdf', $filename);
+
                                     try {
                                         $m_Export->toPdf($original_name, $dest, 'docx', $fnum);
                                     } catch(Exception $e) {
@@ -2322,13 +2288,13 @@ class EmundusModelEvaluation extends JModelList {
                                     unlink($path . $original_name);
                                     unlink($original_path . DS . $original_name);
 
-                                    $query = 'DELETE FROM #__emundus_uploads 
-                                                    WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
-                                                        ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
-                                                            ' AND DATE(#__emundus_uploads.timedate) = current_date()';
-
-                                    $this->_db->setQuery($query);
-                                    $this->_db->execute();
+	                                $query->clear()
+		                                ->delete($this->_db->quoteName('#__emundus_uploads'))
+		                                ->where($this->_db->quoteName('filename') . ' LIKE ' . $this->_db->quote($filename))
+		                                ->andWhere('DATE(timedate) = CURRENT_DATE()')
+		                                ->andWhere($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
+	                                $this->_db->setQuery($query);
+	                                $this->_db->execute();
                                 } else {
                                     copy($original_name, $path_name);
                                 }
@@ -2342,11 +2308,7 @@ class EmundusModelEvaluation extends JModelList {
                         }
                         break;
 
-                    /// end of case 3
-
                     case 4:
-                        /*@unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".xlsx");
-                        @unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".xlsx");*/
 
                         require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
@@ -2565,7 +2527,7 @@ class EmundusModelEvaluation extends JModelList {
 
             $availableFilesName = [];
 
-            $getAllUploadsQuery = 'SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.fnum IN (' . implode(',', $fnum_Array) . ') AND DATE(#__emundus_uploads.timedate) = current_date() AND #__emundus_uploads.attachment_id IN (' . implode(',', $templates) . ' )';
+            $getAllUploadsQuery = 'SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.fnum IN (' . implode(',', $fnum_array) . ') AND DATE(#__emundus_uploads.timedate) = current_date() AND #__emundus_uploads.attachment_id IN (' . implode(',', $templates) . ' )';
             $this->_db->setQuery($getAllUploadsQuery);
             $_upAttachments = $this->_db->loadObjectList();
 
@@ -2575,7 +2537,7 @@ class EmundusModelEvaluation extends JModelList {
                 $availableFilesName[] = $_upload->filename;
             }
 
-            foreach ($fnum_Array as $fnum) {
+            foreach ($fnum_array as $fnum) {
                 $fnumInfo = $_mFile->getFnumsTagsInfos([$fnum]);
                 $files = glob(EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] . '_' . $fnumInfo[$fnum]['applicant_id'] . DS . '*');
 
@@ -2592,7 +2554,7 @@ class EmundusModelEvaluation extends JModelList {
             foreach($templates as $tmpl) {
                 $getLastUploadIdQuery = 'SELECT MAX(#__emundus_uploads.id) as uid
                                             FROM #__emundus_uploads 
-                                                WHERE #__emundus_uploads.fnum IN (' . implode(',', $fnum_Array) . ') 
+                                                WHERE #__emundus_uploads.fnum IN (' . implode(',', $fnum_array) . ') 
                                                     AND DATE(#__emundus_uploads.timedate) = current_date() 
                                                         AND #__emundus_uploads.attachment_id IN (' . $tmpl . ' ) 
                                                             GROUP BY fnum';
@@ -2617,7 +2579,7 @@ class EmundusModelEvaluation extends JModelList {
 
         // group letters by candidat
 
-        $fnumsInfos = $_mFile->getFnumsInfos($fnum_Array);
+        $fnumsInfos = $_mFile->getFnumsInfos($fnum_array);
 
         $res->zip_data_by_candidat = [];
         $res->zip_all_data_by_candidat = [];
@@ -2634,7 +2596,7 @@ class EmundusModelEvaluation extends JModelList {
             unset($res->zip_all_data_by_document);
 
             foreach ($applicant_id as $key => $uid) {
-                $user_info = $_mUser->getUsersById($uid);           /// change "getUserById" to "getUsersById"
+                $user_info = $_mUsers->getUsersById($uid);           /// change "getUserById" to "getUsersById"
 
                 if($mergeMode == 0) {
                     $_zipName = $user_info[0]->name . '_' . $user_info[0]->id . '_' . date("Y-m-d") . '_' . '.zip';            // make zip file name
@@ -2808,7 +2770,7 @@ class EmundusModelEvaluation extends JModelList {
                     if($mergeMode == 1) { if (!file_exists($dir_Merge_Path)) { mkdir($dir_Merge_Path, 0755, true); } }
                 }
 
-                $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_Array);                    // get uploaded file by fnums
+                $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_array);                    // get uploaded file by fnums
 
                 foreach ($uploaded_Files as $key => $file) {
                     $_uRaw = $_mFile->getFnumInfos($file->fnum);                                                // get applicant id (not evaluator id)
@@ -2914,7 +2876,7 @@ class EmundusModelEvaluation extends JModelList {
         }
 
         // remove temporary folders in images/emundus/files/tmp
-        foreach($fnum_Array as $key => $fnum) {
+        foreach($fnum_array as $key => $fnum) {
             $fnum_info = $_mFile->getFnumInfos($fnum);
 
             $_tmpFolders = glob(EMUNDUS_PATH_ABS . 'tmp' . DS . '*');
