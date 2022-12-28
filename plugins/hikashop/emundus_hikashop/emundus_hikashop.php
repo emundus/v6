@@ -283,4 +283,9 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
             $app->redirect('/');
         }
     }
+
+    public function onAfterCartProductsLoad(&$cart) {
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterCartProductsLoad', ['cart' => &$cart]]);
+    }
 }

@@ -1966,7 +1966,7 @@ class EmundusHelperUpdate
                         if (isset($event['published'])) {
                             $row .= ', ' . $event['published'];
                         } else {
-                            $row .= ', 0';
+                            $row .= ', 1';
                         }
 
                         if (isset($event['category'])) {

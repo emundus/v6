@@ -479,9 +479,16 @@ class com_emundusInstallerScript
 	            $db->execute();
             }
 
+            if (version_compare($cache_version, '1.35.0', '<') || $firstrun) {
+                EmundusHelperUpdate::addCustomEvents([
+                    ['label' => 'onBeforeEmundusRedirectToHikashopCart', 'category' => 'Hikashop'],
+                    ['label' => 'onBeforeEmundusRedirectToHikashopCheckout', 'category' => 'Hikashop'],
+                    ['label' => 'onHikashopAfterCartProductsLoad', 'category' => 'Hikashop']
+                ]);
+            }
+
             // Insert new translations in overrides files
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
-
 
             // Recompile Gantry5 css at each update
             $dir = JPATH_BASE . '/templates/g5_helium/custom/css-compiled';
