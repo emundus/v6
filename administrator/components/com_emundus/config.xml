@@ -517,6 +517,17 @@
 			<field name="saml_default_profile" label="COM_EMUNDUS_SAML_INTEGRATION_DEFAULT_PROFILE" type="text"></field>
 		</fieldset>
 
+
+		<field name="spacer11" type="spacer" hr="true"/>
+		<field name="smart_agenda" type="note" label="COM_EMUNDUS_SMART_AGENDA"/>
+		<fieldset label="COM_EMUNDUS_SMART_AGENDA">
+			<field name="smart_agenda_login" type="text" label="COM_EMUNDUS_SMART_AGENDA_LOGIN"/>
+			<field name="smart_agenda_pwd" type="password" label="COM_EMUNDUS_SMART_AGENDA_PWD"/>
+			<field name="smart_agenda_api_id" type="text" label="COM_EMUNDUS_SMART_AGENDA_API_ID"/>
+			<field name="smart_agenda_api_key" type="password" label="COM_EMUNDUS_SMART_AGENDA_API_KEY"/>
+			<field name="smart_agenda_base_url" type="text" label="COM_EMUNDUS_SMART_AGENDA_BASE_URL"/>
+		</fieldset>
+
 	</fieldset>
 	<fieldset
 			name="permissions"

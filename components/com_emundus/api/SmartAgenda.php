@@ -155,7 +155,7 @@ class SmartAgenda
         $added = false;
 
         if (!empty($json)) {
-            $accepted_json_entries = ["mail", "nom", "prenom", "adresse", "code_postal", "ville", "telephone", "portable", "sexe", "date_naissance", "infos", "sms_actif", "mail_actif", "cc1"];
+            $accepted_json_entries = ['mail', 'nom', 'prenom', 'adresse', 'code_postal', 'ville', 'telephone', 'portable', 'sexe', 'date_naissance', 'infos', 'sms_actif', 'mail_actif', 'cc1'];
             $diff = array_diff(array_keys($json), $accepted_json_entries);
 
             if (empty($diff) && !empty($json['nom']) && !empty($json['prenom']) && !empty($json['mail'])) {
