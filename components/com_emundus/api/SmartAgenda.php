@@ -9,6 +9,8 @@
 
 use GuzzleHttp\Client as GuzzleClient;
 
+defined( '_JEXEC' ) or die( 'Restricted access' );
+
 class SmartAgenda
 {
     /**
@@ -27,16 +29,16 @@ class SmartAgenda
     private $baseUrl = '';
 
     /**
-     * @var string token
+     * @var string $token
      */
     private $token = '';
 
     /**
-     * @param $client GuzzleClient
+     * @param GuzzleClient $client
      */
     private $client = null;
 
-    public function __construct($type = 'ged')
+    public function __construct()
     {
         JLog::addLogger(['text_file' => 'com_emundus.smart_agenda.php'], JLog::ERROR, 'com_emundus.smart_agenda');
         $this->setAuth();
@@ -47,6 +49,7 @@ class SmartAgenda
             'headers' => $this->getHeaders()
         ]);
         $this->client = $client;
+        $this->generateToken();
     }
 
     private function setAuth()
@@ -166,5 +169,11 @@ class SmartAgenda
         }
 
         return $added;
+    }
+
+    public function getEventsList() {
+        $list = $this->get('pdo_events');
+
+        return $list;
     }
 }
