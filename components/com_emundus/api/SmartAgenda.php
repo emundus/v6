@@ -38,18 +38,30 @@ class SmartAgenda
      */
     private $client = null;
 
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
         JLog::addLogger(['text_file' => 'com_emundus.smart_agenda.php'], JLog::ERROR, 'com_emundus.smart_agenda');
         $this->setAuth();
-        $this->setHeaders();
-        $this->setBaseUrl();
-        $client = new GuzzleClient([
-            'base_uri' => $this->getBaseUrl(),
-            'headers' => $this->getHeaders()
-        ]);
-        $this->client = $client;
-        $this->generateToken();
+
+        if (empty($this->auth['login']) || empty($this->auth['pwd']) || empty($this->auth['api_id']) || empty($this->auth['api_key'])) {
+            throw new Exception('Auth params are not properly set.');
+        } else {
+            $this->setHeaders();
+            $this->setBaseUrl();
+            $client = new GuzzleClient([
+                'base_uri' => $this->getBaseUrl(),
+                'headers' => $this->getHeaders()
+            ]);
+            $this->client = $client;
+            $this->generateToken();
+
+            if (empty($this->token)) {
+                throw new Exception('Failed to generate API token. Please check Smart Agenda configuration.');
+            }
+        }
     }
 
     private function setAuth()
@@ -90,6 +102,20 @@ class SmartAgenda
         return $this->baseUrl;
     }
 
+    private function getToken()
+    {
+        if (empty($this->token)) {
+            $this->generateToken();
+        }
+
+        return $this->token;
+    }
+
+    private function setToken($token)
+    {
+        $this->token = $token;
+    }
+
     private function get($url, $params = array())
     {
         if (empty($params)) {
@@ -126,20 +152,6 @@ class SmartAgenda
         }
 
         return $response;
-    }
-
-    private function getToken()
-    {
-        if (empty($this->token)) {
-            $this->generateToken();
-        }
-
-        return $this->token;
-    }
-
-    private function setToken($token)
-    {
-        $this->token = $token;
     }
 
     private function generateToken()
