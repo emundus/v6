@@ -479,6 +479,10 @@ class com_emundusInstallerScript
 	            $db->execute();
             }
 
+	        if (version_compare($cache_version, '1.35.0', '<') || $firstrun) {
+				EmundusHelperUpdate::updateEmundusParam('gotenberg_url','https://gotenberg.microservices.tchooz.app','https://docs.emundus.app');
+	        }
+
             // Insert new translations in overrides files
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
 
