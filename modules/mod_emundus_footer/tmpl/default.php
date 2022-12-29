@@ -87,7 +87,7 @@ if($applicant = !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
         <?php endif; ?>
         </div>
         </div>
-          <?php if(empty($mod_emundus_footer_texte_col_1) && empty($mod_emundus_footer_texte_col_2)) : ?>
+          <?php if(empty($mod_emundus_footer_texte_col_1) && empty($mod_emundus_footer_texte_col_2) && $mod_emundus_footer_display_powered_by == 1) : ?>
           <p style="width: auto;white-space: nowrap;"><?= JText::_('MOD_EM_FOOTER_COPYRIGHT') ?><a href="<?= JText::_('MOD_EM_FOOTER_LINK') ?>" target="_blank">eMundus</a></p>
           <?php endif; ?>
       </div>
