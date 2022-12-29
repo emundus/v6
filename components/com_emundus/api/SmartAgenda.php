@@ -133,6 +133,24 @@ class SmartAgenda
         }
     }
 
+    private function put($url, $json)
+    {
+        $response = 'Missing api token';
+        $token = $this->getToken();
+
+        if (!empty($token)) {
+            try {
+                $response = $this->client->put($url . '?' . http_build_query(['token' => $this->getToken()]), ['json' => $json]);
+                $response = json_decode($response->getBody());
+            } catch (\Exception $e) {
+                JLog::add('[POST] ' .$e->getMessage(), JLog::ERROR, 'com_emundus.smart_agenda');
+                $response = $e->getMessage();
+            }
+        }
+
+        return $response;
+    }
+
     private function post($url, $json)
     {
         $response = '';
@@ -165,6 +183,61 @@ class SmartAgenda
         }
     }
 
+    public function getClientFromFnum($fnum)
+    {
+        $client_id = 0;
+
+        if (!empty($fnum)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('eu.smart_agenda_client_id, eu.email')
+                ->from('#__emundus_users AS eu')
+                ->leftJoin('#__emundus_campaign_candidature AS ecc ON ecc.applicant_id = eu.user_id')
+                ->where('ecc.fnum LIKE ' . $db->quote($fnum));
+
+            try {
+                $db->setQuery($query);
+                $user_data = $db->loadObject();
+            } catch (Exception $e) {
+                JLog::add('Failed to get smart agenda client id from fnum ' . $fnum . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.smart_agenda');
+            }
+
+            if (!empty($user_data->smart_agenda_client_id)) {
+                // assert id exists and correspond to user
+                $response = $this->get('pdo_client/' . $user_data->smart_agenda_client_id);
+
+                if (!empty($response) && $response->id == $user_data->smart_agenda_client_id && $response->mail == $user_data->email) {
+                    $client_id = $user_data->smart_agenda_client_id;
+                }
+            }
+        }
+
+        return $client_id;
+    }
+
+    public function updateClient($client_id, $json)
+    {
+        $updated = false;
+
+        if (!empty($client_id) && !empty($json)) {
+            $response = $this->put('pdo_client/' . $client_id, $json);
+
+            if (!empty($response)) {
+                $values_updated = [];
+                foreach($json as $key => $value) {
+                    $values_updated[] = $response->{$key} == $value;
+                }
+
+                if(!in_array(false, $values_updated)) {
+                    $updated = true;
+                }
+            }
+        }
+
+        return $updated;
+    }
+
     public function addClient($json)
     {
         $added = false;
@@ -174,7 +247,29 @@ class SmartAgenda
             $diff = array_diff(array_keys($json), $accepted_json_entries);
 
             if (empty($diff) && !empty($json['nom']) && !empty($json['prenom']) && !empty($json['mail'])) {
-                $added = $this->post('pdo_client', $json);
+                $response = $this->post('pdo_client', $json);
+
+                if (!empty($response->id) && $response->mail == $json['mail']) {
+                    $added = true;
+
+                    $db = JFactory::getDbo();
+                    $query = $db->getQuery(true);
+
+                    $query->update('#__emundus_users')
+                        ->set('smart_agenda_client_id = ' . $response->id)
+                        ->where('email LIKE ' . $db->quote($json['mail']));
+
+                    try {
+                        $db->setQuery($query);
+                        $updated = $db->execute();
+
+                        if (!$updated) {
+                            JLog::add('Failed to save smart agenda user_id ' . $response->id . ' for user with mail ' . $json['mail'] . ' and fnum ' . $json['cc1'], JLog::WARNING, 'com_emundus.smart_agenda');
+                        }
+                    } catch (Exception $e) {
+                        JLog::add('Failed to save smart agenda user_id ' . $response->id . ' for user with mail ' . $json['mail'] . ' and fnum ' . $json['cc1'] . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.smart_agenda');
+                    }
+                }
             } else {
                 JLog::add('Tried to ad client without necessary parameters ' . json_encode($json), JLog::WARNING, 'com_emundus.smart_agenda');
             }
