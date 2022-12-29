@@ -750,7 +750,7 @@ function generate_letter() {
                         "<table class='table table-striped em-mt-12' id='em-generated-docs' style='border: 1px solid #c1c7d0'>" +
                         "<thead>" +
                         "<tr>" +
-                        "<th>" + Joomla.JText._('CANDIDATE_NAME') + "</th>" +
+                        "<th>" + Joomla.JText._('CANDIDATE') + "</th>" +
                         "</tr>" +
                         "</thead>" +
                         "<tbody>";
@@ -759,8 +759,8 @@ function generate_letter() {
                         zip.forEach(file => {
                             table += "<tr>" +
                                 "<td>" + file.applicant_name +
-                                "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + file.zip_url + "'>" +
-                                "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
+                                "<a id='em_zip_download' target='_blank' class='em-float-right' href='" + file.zip_url + "'>" +
+                                "<span class='material-icons'>file_download</span>" +
                                 "</a>" +
                                 "</td>" +
                                 "</tr>";
@@ -770,8 +770,8 @@ function generate_letter() {
                         zip.forEach(file => {
                             table += "<tr>" +
                                 "<td>" + file.applicant_name +
-                                "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + file.merge_zip_url + "'>" +
-                                "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
+                                "<a id='em_zip_download' target='_blank' class='em-float-right' href='" + file.merge_zip_url + "'>" +
+                                "<span class='material-icons'>file_download</span>" +
                                 "</a>" +
                                 "</td>" +
                                 "</tr>";
@@ -801,8 +801,8 @@ function generate_letter() {
                             table +=
                                 "<tr>" +
                                 "<td>" + letter.letter_name +
-                                "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + letter.zip_dir + "'>" +
-                                "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
+                                "<a id='em_zip_download' target='_blank' class='em-float-right' href='" + letter.zip_dir + "'>" +
+                                "<span class='material-icons'>file_download</span>" +
                                 "</a>" +
                                 "</td>" +
                                 "</tr>";
@@ -812,8 +812,8 @@ function generate_letter() {
                             table +=
                                 "<tr>" +
                                 "<td>" + letter.letter_name +
-                                "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + letter.zip_merge_dir + "'>" +
-                                "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
+                                "<a id='em_zip_download' target='_blank' class='em-float-right' href='" + letter.zip_merge_dir + "'>" +
+                                "<span class='material-icons'>file_download</span>" +
                                 "</a>" +
                                 "</td>" +
                                 "</tr>";

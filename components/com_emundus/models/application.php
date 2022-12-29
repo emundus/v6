@@ -2115,12 +2115,12 @@ class EmundusModelApplication extends JModelList
                     if (empty($title[1])) {
                         $form_label = preg_replace('/\s+/', ' ', JText::_(trim($itemt->label)));
                         if(!empty($form_label)) {
-                            $forms .= '<b><h2>' . $form_label . '</h2></b>';
+                            $forms .= '<b><h2 class="pdf-page-title">' . $form_label . '</h2></b>';
                         }
                     } else {
                         $form_label = preg_replace('/\s+/', ' ', JText::_(trim($title[1])));
                         if(!empty($form_label)) {
-                            $forms .= '<b><h2>' . $form_label . '</h2></b>';
+                            $forms .= '<b><h2 class="pdf-page-title">' . $form_label . '</h2></b>';
                         }
                     }
                 }
@@ -2410,7 +2410,7 @@ class EmundusModelApplication extends JModelList
 
                                     foreach ($repeated_elements as $r_element) {
                                         $j = 0;
-                                        $forms .= '<br>---- ' . $i . ' ----<br>';
+                                        $forms .= '<p class="pdf-repeat-count">---- ' . $i . ' ----</p>';
                                         $forms .= '<table class="pdf-forms">';
                                         foreach ($r_element as $key => $r_elt) {
                                             $params = json_decode($elements[$j]->params);

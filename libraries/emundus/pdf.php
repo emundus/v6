@@ -902,7 +902,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 				  <meta name="author" content="eMundus">
 				</head>
 				<body>';
-			$htmldata .= '<header><img src="'. $logo_base64 .'" width="auto" height="60"/><hr/></header>';
+			$htmldata .= '<header><table style="width: 100%"><tr><td><img src="'. $logo_base64 .'" width="auto" height="60"/></td><td style="text-align: right">';
 
             $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
 
@@ -913,6 +913,18 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 $date_printed = new Date();
                 //Use helper date function to set timezone an format
                 $date_printed = HtmlHelper::date($date_printed, Text::_('DATE_FORMAT_LC2'));
+
+	            if (!$anonymize_data) {
+		            $htmldata .= '<p><b>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . ' :</b> ' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</p>';
+	            }
+
+	            if (!$anonymize_data && in_array("aemail", $options)) {
+		            $htmldata .= '<p><b>' . JText::_('EMAIL') . ' :</b> ' . @$item->email . '</p>';
+	            }
+	            if (in_array("afnum", $options)) {
+		            $htmldata .= '<p><b>' . JText::_('FNUM') . ' :</b> ' . $fnum . '</p>';
+	            }
+				$htmldata .= '</td></table><hr/></header>';
 
                 $htmldata .= '<table width="100%"><tr>';
 
@@ -937,15 +949,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 						$htmldata .= '<tr><td><img src="'. $avatar_base64 .'" width="auto" height="60" align="right"/></td></tr>';
 					}
 				}
-				if (!$anonymize_data) {
-					$htmldata .= '<tr><td class="name" colspan="2"><b>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . ' :</b> ' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</td></tr>';
-				}
-
-                if (!$anonymize_data && in_array("aemail", $options)) {
-                    $htmldata .= '<tr class="birthday">
-                                    <td><b>' . JText::_('EMAIL') . ' :</b> ' . @$item->email . '</td>
-                                </tr>';
-                }
 
                 if (in_array("aid", $options)) {
                     $htmldata .=
@@ -1054,8 +1057,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         /*** Applicant   ***/
 	    $htmldata .= "
 			<style>
-					@page { margin: 120px 25px; }
-					header { position: fixed; top: -90px; left: 0px; right: 0px;height: 70px; }
+					@page { margin: 130px 25px; }
+					header { position: fixed; top: -120px; left: 0px; right: 0px; }
 					header hr {
 						border: none;
 						height: 1px;
@@ -1071,18 +1074,32 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 						margin-top: 4px;
 						margin-bottom: 0;
 					}
+					h2.pdf-page-title{
+					    background-color: #EAEAEA;
+					    padding: 10px 12px;
+					    border-radius: 2px;
+					    margin-right: 16px;
+					}
 					h3 {
 					  font-style: normal;
 					  font-weight: 600;
 					  font-size: 16px;
 					  line-height: 14px;
-					  margin-bottom: 6px;
+					  margin-bottom: 8px;
+                    }
+                    h3.group{
+                      padding-left: 16px;
                     }
                     td{
                     	font-size: 12px;
                     }
                     .pdf-forms{
                    	   border-spacing: 0;
+                    }
+                    .pdf-repeat-count{
+                       margin-top: 12px;
+                       margin-bottom: 6px;
+                       padding-left: 16px; 
                     }
                     .pdf-forms th{
                        font-size: 12px;
@@ -1096,7 +1113,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                     }
                     table.pdf-forms{
                        width: 100%;
-                       page-break-inside:auto
+                       page-break-inside:auto;
+                       padding: 0 16px;
                     }
                     .pdf-forms tr{
                        page-break-inside:avoid; 
