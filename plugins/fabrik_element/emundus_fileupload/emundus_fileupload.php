@@ -276,46 +276,41 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
      * @throws Exception
      */
     public function onAjax_delete() {
-
-        $jinput = $this->app->input;
+        $status = false;
         $current_user = JFactory::getSession()->get('emundusUser');
 
-        $fileName = $jinput->post->get('filename');
-        $attachId = $jinput->post->get('attachId');
+        if (EmundusHelperAccess::isApplicant($current_user->id)) {
+            $jinput = $this->app->input;
+            $fileName = $jinput->post->get('filename');
+            $attachId = $jinput->post->get('attachId');
+            $fnum = $jinput->post->get('fnum');
+            $user = (int)substr($fnum, -7);
+            $cid = $this->getCampaignId($fnum);
+            $uploadResult = $this->getUploads($attachId, $user, $cid, $fnum);
 
-        if (!EmundusHelperAccess::isApplicant($current_user->id)) {
-            return false;
+            if (!empty($uploadResult)) {
+                $target = $this->getPath($user, $fileName);
+
+                if (file_exists($target)) {
+                    unlink($target);
+                }
+
+                $status = $this->deleteFile($fileName, $fnum, $cid, $attachId);
+                if ($status) {
+                    // track the LOGS (ATTACHMENT_DELETE)
+                    $user = JFactory::getSession()->get('emundusUser'); # logged user #
+
+                    require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+                    $mFile = new EmundusModelFiles();
+                    $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+                    if (!empty($applicant_id)) {
+                        require_once(JPATH_SITE . '/components/com_emundus/models/logs.php');
+                        EmundusModelLogs::log($user->id, $applicant_id, $fnum, 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE');
+                    }
+                }
+            }
         }
-
-        $fnum = $jinput->post->get('fnum');
-        $user = (int)substr($fnum, -7);
-
-        $cid = $this->getCampaignId($fnum);
-        $uploadResult = $this->getUploads($attachId, $user, $cid, $fnum);
-        $target = $this->getPath($user, $fileName);
-
-        if (file_exists($target) && !empty($uploadResult)) {
-            unlink($target);
-            $this->deleteFile($fileName, $fnum, $cid, $attachId);
-            $status = true;
-        }
-        if (!file_exists($target) && !empty($uploadResult)) {
-            $this->deleteFile($fileName, $fnum, $cid, $attachId);
-            $status = true;
-        }
-        if (!file_exists($target) && empty($uploadResult)) {
-            $status = false;
-        }
-
-        // track the LOGS (ATTACHMENT_DELETE)
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-        $user = JFactory::getSession()->get('emundusUser'); # logged user #
-
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-        $mFile = new EmundusModelFiles();
-        $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
-
-        EmundusModelLogs::log($user->id, $applicant_id, $fnum, 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE');
 
         echo json_encode(['status' => $status]);
         return true;
@@ -644,6 +639,8 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         JText::script('PLG_ELEMENT_FIELD_CANCEL');
         JText::script('PLG_ELEMENT_FIELD_DELETE');
         JText::script('PLG_ELEMENT_FIELD_DELETE_TEXT');
+        JText::script('PLG_ELEMENT_FIELD_DELETE_FAILED');
+        JText::script('PLG_ELEMENT_FIELD_DELETE_TEXT_FAILED');
         JText::script('PLG_ELEMENT_FIELD_ACCESS');
         JText::script('PLG_ELEMENT_FIELD_UPLOAD');
         JText::script('PLG_ELEMENT_FILEUPLOAD_UPLOADED_FILES');
@@ -803,20 +800,29 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
      *
      * @throws Exception
      */
-    public function deleteFile($fileName,$fnum, $cid, $attachId) {
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
+    public function deleteFile($fileName, $fnum, $cid, $attachId) {
+        $deleted = false;
 
-        $query->delete($db->quoteName('#__emundus_uploads'))
-            ->where($db->quoteName('filename'). " LIKE " . $db->quote($fileName) . ' AND ' .$db->quoteName('campaign_id') . ' = ' . $cid . " AND " . $db->quoteName('attachment_id') . " = " . $attachId . " AND " . $db->quoteName('fnum') . " LIKE " . $db->quote($fnum));
-        $db->setQuery($query);
+        if (!empty($fnum) && !empty($fileName) && !empty($attachId) && !empty($cid)) {
+            $db = JFactory::getDBO();
+            $query = $db->getQuery(true);
 
-        try {
-            $db->execute();
-        } catch (Exception $e) {
-            JFactory::getApplication()->enqueueMessage('Problème survenu à la suppression des fichiers', 'message');
+            $query->delete($db->quoteName('#__emundus_uploads'))
+                ->where($db->quoteName('filename'). ' LIKE ' . $db->quote($fileName))
+                ->andWhere( $db->quoteName('campaign_id') . ' = ' . $cid)
+                ->andWhere( $db->quoteName('attachment_id') . ' = ' . $attachId)
+                ->andWhere( $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+
+            try {
+                $db->setQuery($query);
+                $deleted = $db->execute();
+            } catch (Exception $e) {
+                JLog::add("Failed to delete file for fnum $fnum, filename $fileName, campaign $cid, attachment $attachId : " . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                JFactory::getApplication()->enqueueMessage('Problème survenu à la suppression des fichiers', 'message');
+            }
         }
 
+        return $deleted;
     }
 
 
