@@ -39,7 +39,7 @@ if ($jinput->get('view') == 'form') {
 	$attachments = $m_application->getAttachmentsProgress($user->fnum);
 	$forms = $m_application->getFormsProgress($user->fnum);
 
-	if ($attachments < 100 || $forms < 100) {
+	if ($attachments < 100 || $forms < 100 || !$validations) {
 		$mainframe->redirect( "index.php?option=com_emundus&view=checklist&Itemid=".$itemid, JText::_('INCOMPLETE_APPLICATION'));
 	}
 
