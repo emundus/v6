@@ -911,7 +911,7 @@ class EmundusModelApplication extends JModelList
         return $this->_db->execute();
     }
 
-    public function  checkFabrikValidations($fnum) {
+    public function  checkFabrikValidations($fnum, $redirect = false, $itemId = null) {
         $validate = true;
 
         if (!empty($fnum)) {
@@ -919,59 +919,64 @@ class EmundusModelApplication extends JModelList
             $m_profile = new EmundusModelProfile;
             $profile = $m_profile->getProfileByStatus($fnum);
 
-
             if (!empty($profile['profile'])) {
                 require_once (JPATH_COMPONENT . '/models/form.php');
                 $m_form = new EmundusModelForm;
                 $forms = $m_form->getFormsByProfileId($profile['profile']);
 
                 if (!empty($forms)) {
+                    $form_ids = array_map(function($form) {return $form->id;}, $forms);
+
                     $query = $this->_db->getQuery(true);
-                    foreach ($forms as $form)
-                    {
-                        $query->clear();
+                    $query->select('jfe.label, jfe.params, jff.form_id')
+                        ->from('jos_fabrik_elements as jfe')
+                        ->leftJoin('jos_fabrik_formgroup jff on jfe.group_id = jff.group_id')
+                        ->where('jff.form_id IN (' . implode(',', $form_ids) . ')')
+                        ->andWhere('jfe.plugin = ' . $this->_db->quote('emundus_fileupload'))
+                        ->andWhere('jfe.published = 1')
+                        ->andWhere('JSON_SEARCH(jfe.params, "one", "notempty")  != ""');
 
-                        $query->select('jfe.label, jfe.params')
-                            ->from('jos_fabrik_elements as jfe')
-                            ->leftJoin('jos_fabrik_formgroup jff on jfe.group_id = jff.group_id')
-                            ->where('jff.form_id = ' . $form->id)
-                            ->andWhere('jfe.plugin = ' . $this->_db->quote('emundus_fileupload'))
-                            ->andWhere('jfe.published = 1')
-                            ->andWhere('JSON_SEARCH(jfe.params, "one", "notempty")  != ""');
+                    try {
+                        $this->_db->setQuery($query);
+                        $elements_params = $this->_db->loadObjectList();
+                    } catch (Exception $e) {
+                        JLog::add('Failed to check if emundus fileuploads fields are correctly filled ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                    }
 
-                        try {
-                            $this->_db->setQuery($query);
-                            $elements_params = $this->_db->loadObjectList();
-                        } catch (Exception $e) {
-                            JLog::add('Failed to check if emundus fileuploads fields are correctly filled ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-                        }
+                    if (!empty($elements_params)) {
+                        foreach ($elements_params as $element) {
+                            $params = json_decode($element->params, true);
+                            $notempty_key = array_search('notempty', $params['validations']['plugin']);
 
-                        if (!empty($elements_params)) {
-                            foreach ($elements_params as $element) {
-                                $params = json_decode($element->params, true);
+                            if ($params['validations']['plugin_published'][$notempty_key] == 1) {
+                                // check user uploaded file
+                                $query->clear()
+                                    ->select('id')
+                                    ->from('#__emundus_uploads')
+                                    ->where('fnum LIKE ' . $this->_db->quote($fnum))
+                                    ->andWhere('attachment_id = ' . $params['attachmentId']);
 
-                                $notempty_key = array_search('notempty', $params['validations']['plugin']);
-
-                                if ($params['validations']['plugin_published'][$notempty_key] == 1) {
-                                    // check user uploaded file
-                                    $query->clear()
-                                        ->select('id')
-                                        ->from('#__emundus_uploads')
-                                        ->where('fnum LIKE ' . $this->_db->quote($fnum))
-                                        ->andWhere('attachment_id = ' . $params['attachmentId']);
-
-                                    try {
-                                        $this->_db->setQuery($query);
-                                        $is_uploaded =  $this->_db->loadResult();
-
-                                        if (empty($is_uploaded)) {
-                                            $app = JFactory::getApplication();
-                                            $app->enqueueMessage(sprintf(JText::_('COM_EMUNDUS_MISSING_MANDATORY_FILE_UPLOAD'), $element->label, $form->label)  , 'warning');
-                                            return false;
+                                try {
+                                    $this->_db->setQuery($query);
+                                    $is_uploaded =  $this->_db->loadResult();
+                                    if (empty($is_uploaded)) {
+                                        $form_label = '';
+                                        foreach($forms as $form) {
+                                            if ($form->id == $element->form_id) {
+                                                $form_label = JText::_($form->label);
+                                                break;
+                                            }
                                         }
-                                    } catch (Exception $e) {
-                                        JLog::add('Failed to check if emundus fileuploads fields are correctly filled ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+
+                                        $app = JFactory::getApplication();
+                                        $app->enqueueMessage(sprintf(JText::_('COM_EMUNDUS_MISSING_MANDATORY_FILE_UPLOAD'), '<b>' . JText::_($element->label) . '</b>', '<b>' . $form_label . '</b>')  , 'warning');
+                                        if ($redirect && !empty($itemId)) {
+                                            $app->redirect("index.php?option=com_fabrik&view=form&formid=" . $element->form_id . "&Itemid=$itemId&usekey=fnum&rowid=$fnum");
+                                        }
+                                        return false;
                                     }
+                                } catch (Exception $e) {
+                                    JLog::add('Failed to check if emundus fileuploads fields are correctly filled ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                                 }
                             }
                         }

@@ -478,7 +478,7 @@ class EmundusHelperEvents {
             $mFiles = new EmundusModelFiles;
             $application_fee = (!empty($application_fee) && !empty($mProfile->getHikashopMenu($user->profile)));
 
-            $validations = $mApplication->checkFabrikValidations($user->fnum);
+            $validations = $mApplication->checkFabrikValidations($user->fnum, true, $itemid);
             $attachments = $mApplication->getAttachmentsProgress($user->fnum);
             $forms = $mApplication->getFormsProgress($user->fnum);
 

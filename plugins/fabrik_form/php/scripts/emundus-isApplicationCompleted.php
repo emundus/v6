@@ -35,8 +35,13 @@ if ($jinput->get('view') == 'form') {
 
 	$m_application = new EmundusModelApplication;
     $m_emails = new EmundusModelEmails;
+	$validations = $m_application->checkFabrikValidations($user->fnum, true, $itemid);
 	$attachments = $m_application->getAttachmentsProgress($user->fnum);
 	$forms = $m_application->getFormsProgress($user->fnum);
+
+	if ($attachments < 100 || $forms < 100) {
+		$mainframe->redirect( "index.php?option=com_emundus&view=checklist&Itemid=".$itemid, JText::_('INCOMPLETE_APPLICATION'));
+	}
 
 	if ($application_fee) {
         $m_files = new EmundusModelFiles;
@@ -97,10 +102,6 @@ if ($jinput->get('view') == 'form') {
 		} else {
 			$mainframe->redirect('index.php');
 		}
-	}
-
-	if ($attachments < 100 || $forms < 100) {
-		$mainframe->redirect( "index.php?option=com_emundus&view=checklist&Itemid=".$itemid, JText::_('INCOMPLETE_APPLICATION'));
 	}
 }
 
