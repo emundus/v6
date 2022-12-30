@@ -518,6 +518,18 @@ class com_emundusInstallerScript
             echo "\033[31mYou have to run update-db.sh before CLI ! \033[0m\n";
             exit;
         }
+
+	    if(version_compare(PHP_VERSION, '8.1.0', '=')) {
+		    $db = JFactory::getDbo();
+		    $query = $db->getQuery(true);
+
+		    $query->clear()
+			    ->update('#__extensions')
+			    ->set($db->quoteName('enabled') . ' = 0')
+			    ->where($db->quoteName('name') . ' LIKE ' . $db->quote('%dpcalendar%'));
+		    $db->setQuery($query);
+		    $db->execute();
+	    }
     }
 
 
