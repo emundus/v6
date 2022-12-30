@@ -2162,7 +2162,7 @@ class EmundusModelEvaluation extends JModelList {
                                     }
                                 }
 
-                                if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown") {
+                                if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
 
                                     foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
 
@@ -2174,7 +2174,7 @@ class EmundusModelEvaluation extends JModelList {
 
                                         if (count($val) > 0) {
                                             foreach ($val as $k => $v) {
-                                                $index = array_search(trim($v), $params->sub_options->sub_values);
+                                                $index = array_search($v, $params->sub_options->sub_values);
                                                 $val[$k] = JText::_($params->sub_options->sub_labels[$index]);
                                             }
                                             $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
@@ -3158,7 +3158,57 @@ class EmundusModelEvaluation extends JModelList {
             $db->setQuery($query);
             $files_groups_associated = $db->loadObjectList();
 
-            $files_associated = array_merge($files_users_associated, $files_groups_associated);
+            /* */
+            $query->clear()
+                ->select('DISTINCT ecc.fnum,ecc.applicant_id,ecc.campaign_id,u.name')
+                ->from($db->quoteName('#__emundus_groups','eg'))
+                ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course','esgrc').' ON '.$db->quoteName('esgrc.parent_id').' = '.$db->quoteName('eg.group_id'))
+                ->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.training').' = '.$db->quoteName('esgrc.course'))
+                ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
+                ->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('ecc.applicant_id').' = '.$db->quoteName('u.id'))
+                ->where($db->quoteName('eg.user_id') . ' = ' . $db->quote($user))
+                ->andWhere($db->quoteName('ecc.campaign_id') . ' = ' . $db->quote($campaign))
+                ->andWhere($db->quoteName('ecc.published') . ' = 1');
+
+            if (isset($params->status) && $params->status !== '') {
+                $query->andWhere($db->quoteName('ecc.status') . ' IN (' . implode(',',$params->status) . ')');
+            }
+
+            if (isset($params->tags) && $params->tags !== '') {
+                $query->leftJoin($db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum'))
+                    ->andWhere($db->quoteName('eta.id_tag') . ' IN (' . implode(',',$params->tags) . ')');
+            }
+
+            if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
+                $query->andWhere($db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')');
+            }
+
+            if (!empty($params->status_to_exclude)) {
+                $query->andWhere($db->quoteName('ecc.status') . ' NOT IN (' . implode(',',$params->status_to_exclude) . ')');
+            }
+
+            if (!empty($params->tags_to_exclude)) {
+                $exclude_query = $db->getQuery(true);
+
+                $exclude_query->select('eta.fnum')
+                    ->from('jos_emundus_tag_assoc eta')
+                    ->where('eta.id_tag IN (' . implode(',', $params->tags_to_exclude) . ')');
+
+                $db->setQuery($exclude_query);
+
+                $fnums_to_exclude = $db->loadColumn();
+
+                if (!empty($fnums_to_exclude)) {
+                    $query->where('ecc.fnum NOT IN (' . implode(',', $fnums_to_exclude) . ')');
+                }
+            }
+
+            $query->order('ecc.date_submitted');
+            $db->setQuery($query);
+            $files_groups_programmes_associated = $db->loadObjectList();
+            /* */
+
+            $files_associated = array_merge($files_users_associated, $files_groups_associated, $files_groups_programmes_associated);
 
             foreach ($files_associated as $file) {
                 if (!in_array($file->fnum, $fnums)) {
@@ -3348,7 +3398,55 @@ class EmundusModelEvaluation extends JModelList {
             $db->setQuery($query);
             $campaigns_groups_assoc = $db->loadObjectList();
 
-            $campaigns = array_merge($campaigns_users_assoc,$campaigns_groups_assoc);
+            // Get files associated to my groups +++ programmes
+            $query->clear()
+                ->select('DISTINCT esc.id,esc.label,count(distinct ecc.fnum) as files')
+                ->from($db->quoteName('#__emundus_groups','eg'))
+                ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course','esgrc').' ON '.$db->quoteName('esgrc.parent_id').' = '.$db->quoteName('eg.group_id'))
+                ->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.training').' = '.$db->quoteName('esgrc.course'))
+                ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
+                ->where($db->quoteName('eg.user_id') . ' = ' . $db->quote($user))
+                ->andWhere($db->quoteName('ecc.published') . ' = 1');
+
+            if (isset($params->status) && $params->status !== '') {
+                $query->andWhere($db->quoteName('ecc.status') . ' IN (' . implode(',',$params->status) . ')');
+            }
+
+            if (isset($params->tags) && $params->tags !== '') {
+                $query->leftJoin($db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum'))
+                    ->andWhere($db->quoteName('eta.id_tag') . ' IN (' . implode(',',$params->tags) . ')');
+            }
+
+            if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
+                $query->andWhere($db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')');
+            }
+
+            if (!empty($params->status_to_exclude)) {
+                $query->andWhere($db->quoteName('ecc.status') . ' NOT IN (' . implode(',',$params->status_to_exclude) . ')');
+            }
+
+            if (!empty($params->tags_to_exclude)) {
+                $exclude_query = $db->getQuery(true);
+
+                $exclude_query->select('eta.fnum')
+                    ->from('jos_emundus_tag_assoc eta')
+                    ->where('eta.id_tag IN (' . implode(',', $params->tags_to_exclude) . ')');
+
+                $db->setQuery($exclude_query);
+
+                $fnums_to_exclude = $db->loadColumn();
+
+                if (!empty($fnums_to_exclude)) {
+                    $query->where('ecc.fnum NOT IN (' . implode(',', $fnums_to_exclude) . ')');
+                }
+            }
+
+            $query->group('esc.id');
+            $db->setQuery($query);
+            $campaigns_groups_programmes = $db->loadObjectList();
+
+            $campaigns = array_merge($campaigns_users_assoc,$campaigns_groups_assoc, $campaigns_groups_programmes);
+
             return $h_array->mergeAndSumPropertyOfSameObjects($campaigns,'id','files');
         } catch (Exception $e) {
             JLog::add('Problem to get campaigns to evaluate for user '.$user.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
@@ -3356,27 +3454,160 @@ class EmundusModelEvaluation extends JModelList {
         }
     }
 
-    public function getEvaluationReasons($eid){
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+	public function getEvaluationReasons($eid){
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try {
+			$tables = $db->setQuery('SHOW TABLES')->loadColumn();
+
+			if(in_array('jos_emundus_evaluations_repeat_reason',$tables)) {
+				$query->select('esr.reason')
+					->from($db->quoteName('#__emundus_evaluations', 'ee'))
+					->leftJoin($db->quoteName('#__emundus_evaluations_repeat_reason', 'eerr') . ' ON ' . $db->quoteName('ee.id') . ' = ' . $db->quoteName('eerr.parent_id'))
+					->leftJoin($db->quoteName('#__emundus_setup_reasons', 'est') . ' ON ' . $db->quoteName('esr.id') . ' = ' . $db->quoteName('eerr.reason'))
+					->where($db->quoteName('ee.id') . ' = ' . $db->quote($eid));
+				$db->setQuery($query);
+				return $db->loadColumn();
+			} else {
+				return [];
+			}
+		} catch (Exception $e) {
+			JLog::add('Cannot get reasons for evaluation | '.$eid.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			return [];
+		}
+	}
+
+    public function getEvaluationUrl($fnum,$formid,$rowid = 0,$student_id = 0,$redirect = 0){
+        $url = 'index.php';
+        $message = '';
 
         try {
-            $tables = $db->setQuery('SHOW TABLES')->loadColumn();
+            $app = JFactory::getApplication();
+            $db = JFactory::getDBO();
+            $query = $db->getQuery(true);
+            $user =  JFactory::getUser();
 
-            if(in_array('jos_emundus_evaluations_repeat_reason',$tables)) {
-                $query->select('esr.reason')
-                    ->from($db->quoteName('#__emundus_evaluations', 'ee'))
-                    ->leftJoin($db->quoteName('#__emundus_evaluations_repeat_reason', 'eerr') . ' ON ' . $db->quoteName('ee.id') . ' = ' . $db->quoteName('eerr.parent_id'))
-                    ->leftJoin($db->quoteName('#__emundus_setup_reasons', 'est') . ' ON ' . $db->quoteName('esr.id') . ' = ' . $db->quoteName('eerr.reason'))
-                    ->where($db->quoteName('ee.id') . ' = ' . $db->quote($eid));
-                $db->setQuery($query);
-                return $db->loadColumn();
-            } else {
-                return [];
+            if(is_array($fnum)){
+                $fnum = $fnum['value'];
+            }
+	        if(is_array($student_id)){
+		        $student_id = $student_id['value'];
+	        }
+
+            $create_access = EmundusHelperAccess::asAccessAction(5, 'c', $user->id, $fnum);
+            $update_access = EmundusHelperAccess::asAccessAction(5, 'u', $user->id, $fnum);
+            $read_access = EmundusHelperAccess::asAccessAction(5, 'r', $user->id, $fnum);
+
+            $offset = $app->get('offset', 'UTC');
+            $date_time = new DateTime(gmdate('Y-m-d H:i:s'), new DateTimeZone('UTC'));
+            $date_time = $date_time->setTimezone(new DateTimeZone($offset));
+            $now = $date_time->format('Y-m-d H:i:s');
+
+            $params = JComponentHelper::getParams('com_emundus');
+            $multi_eval = $params->get('multi_eval', 0);
+
+            $query->select('esc.eval_start_date,esc.eval_end_date,ecc.applicant_id as student_id')
+                ->from($db->quoteName('#__emundus_setup_campaigns','esc'))
+                ->leftJoin($db->quoteName('#__emundus_campaign_candidature','ecc').' ON '.$db->quoteName('ecc.campaign_id').' = '.$db->quoteName('esc.id'))
+                ->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
+            $db->setQuery($query);
+            $eval_dates = $db->loadObject();
+            if(empty($student_id)) {
+                $student_id = $eval_dates->student_id;
+            }
+
+            $passed = false;
+            $started = true;
+            if(!empty($eval_dates->eval_end_date) && $eval_dates->eval_end_date !== '0000-00-00 00:00:00') {
+                $passed = strtotime($now) > strtotime($eval_dates->eval_end_date);
+            }
+            if(!empty($eval_dates->eval_start_date) && $eval_dates->eval_start_date !== '0000-00-00 00:00:00') {
+                $started = strtotime($now) > strtotime($eval_dates->eval_start_date);
+            }
+
+            // If we try to open an evaluation with rowid in url
+            if(!empty($rowid) ) {
+                // If we open an evaluation
+                $query->clear()
+                    ->select('id,user')
+                    ->from($db->quoteName('#__emundus_evaluations'))
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($rowid));
+            }
+            // If multi evaluation is allowed we search for our evaluation
+            elseif($multi_eval == 1) {
+                $query->clear()
+                    ->select('id,user')
+                    ->from($db->quoteName('#__emundus_evaluations'))
+                    ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
+                    ->andWhere($db->quoteName('user') . ' = ' . $db->quote($user->id));
+            }
+            // If multi evaluation is not allowed we search for the evaluation of file
+            else {
+                $query->clear()
+                    ->select('id,user')
+                    ->from($db->quoteName('#__emundus_evaluations'))
+                    ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+            }
+            $db->setQuery($query);
+            $evaluation = $db->loadObject();
+
+            $form_url = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&jos_emundus_evaluations___student_id='.$student_id.'&jos_emundus_evaluations___fnum='.$fnum.'&tmpl=component&iframe=1';
+            $details_url = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&jos_emundus_evaluations___student_id='.$student_id.'&jos_emundus_evaluations___fnum='.$fnum.'&tmpl=component&iframe=1';
+
+            if(!empty($evaluation)) {
+                $form_url = 'index.php?option=com_fabrik&c=form&view=form&formid=' . $formid . '&jos_emundus_evaluations___student_id=' . $student_id . '&jos_emundus_evaluations___fnum=' . $fnum . '&tmpl=component&iframe=1&rowid=' . $evaluation->id;
+                $details_url = 'index.php?option=com_fabrik&c=form&view=details&formid=' . $formid . '&jos_emundus_evaluations___student_id=' . $student_id . '&jos_emundus_evaluations___fnum=' . $fnum . '&rowid=' . $evaluation->id . '&tmpl=component&iframe=1';
+
+                // If evaluation period is passed
+                if ($passed) {
+                    $message = 'EVALUATION_PERIOD_PASSED';
+                    $url = $details_url;
+                }
+                // If evaluation period started and not passed and we have update rights
+                elseif ($update_access || $create_access) {
+                    $url = $form_url;
+                }
+                // If evaluation period started and not passed and we have read rights
+                elseif ($read_access){
+                    $url = $details_url;
+                }
+                // If we do not have any rights on evaluation
+                else {
+                    $message = 'COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS';
+                    $url = 'index.php';
+                }
+            }
+            // If no evaluation found but period is not started or passed
+            elseif(($passed || !$started) && $read_access) {
+                if($passed){
+                    $message = 'EVALUATION_PERIOD_PASSED';
+                } elseif (!$started){
+                    $message = 'EVALUATION_PERIOD_NOT_STARTED';
+                }
+                $url = $details_url;
+            }
+            // If no evaluation and period is started and not passed and I have create rights
+            elseif ((!$passed && $started) && $create_access) {
+                $url = $form_url;
+            }
+            // I don't have rights to evaluate
+            else {
+                $message = 'COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS';
+                $url = '';
             }
         } catch (Exception $e) {
-            JLog::add('Cannot get reasons for evaluation | '.$eid.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-            return [];
+            $message = 'COM_EMUNDUS_ERROR';
+            $url = '';
+	        JLog::add('Cannot get evaluation URL with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
         }
+
+        if(!empty($url)){
+            if($redirect === 1) {
+                $url .= '&r=1';
+            }
+        }
+
+        return ['url' => $url, 'message' => $message];
     }
 }

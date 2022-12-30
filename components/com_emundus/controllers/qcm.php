@@ -81,4 +81,16 @@ class EmundusControllerQcm extends JControllerLegacy {
         exit;
     }
 
+    public function getintro() {
+        $m_qcm = $this->model;
+
+        $jinput = JFactory::getApplication()->input;
+        $module = $jinput->getInt('module');
+
+        $results = $m_qcm->getIntro($module);
+
+        echo json_encode((object)$results);
+        exit;
+    }
+
 }

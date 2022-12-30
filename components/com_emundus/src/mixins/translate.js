@@ -1,8 +1,7 @@
 export default {
     data() {
         return {
-            defaultLang: '',
-            shortDefaultLang: ''
+            shortDefaultLang: 'fr'
         };
     },
     beforeMount() {
@@ -13,8 +12,7 @@ export default {
         }
     },
     mounted() {
-      this.defaultLang = this.$store.getters['global/defaultLang'];
-      this.shortDefaultLang = this.defaultLang.substring(0, 2);
+        this.shortDefaultLang = this.$store.getters['global/defaultLang'].substring(0, 2);
     },
     methods: {
         translate(key) {

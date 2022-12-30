@@ -139,6 +139,7 @@ class EmundusModelPayment extends JModelList
 
     public function createPaymentOrder($fnum, $type, $order_number = null)
     {
+        $order_id = 0;
         $created = false;
         $user_id = $this->getUserIdFromFnum($fnum);
         $hikashop_user_id = $this->getHikashopUserId($user_id);
@@ -148,12 +149,13 @@ class EmundusModelPayment extends JModelList
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
 
-            $columns = array('order_user_id', 'order_status', 'order_created', 'order_modified', 'order_type', 'order_payment_method', 'order_full_price');
-            $values = $db->quote($hikashop_user_id) . ', ' . $db->quote('created') . ', ' . $db->quote(time()) . ', ' . $db->quote(time()) . ', ' . $db->quote($type) . ', ' . $db->quote($type) . ', ' . $db->quote($price);
+            $columns = array('order_user_id', 'order_status', 'order_created', 'order_modified', 'order_type', 'order_payment_method', 'order_full_price', 'order_number');
+            $values = $db->quote($hikashop_user_id) . ', ' . $db->quote('created') . ', ' . $db->quote(time()) . ', ' . $db->quote(time()) . ', ' . $db->quote('sale') . ', ' . $db->quote($type) . ', ' . $db->quote($price);
 
             if ($order_number !== null) {
-                $columns[] = 'order_number';
                 $values .= ', ' . $db->quote($order_number);
+            } else {
+                $values .= ', ' . rand(100000, 999999);
             }
 
             $query->clear()
@@ -171,13 +173,28 @@ class EmundusModelPayment extends JModelList
             }
 
             if ($created && !empty($order_id)) {
+                $hikashop_product = $this->getProductByFnum($fnum);
+                if (!empty($hikashop_product)) {
+                    $query->clear()
+                        ->insert('#__hikashop_order_product')
+                        ->columns(['order_id', 'product_id', 'order_product_name', 'order_product_code', 'order_product_price'])
+                        ->values($order_id . ', ' . $hikashop_product->product_id . ', ' . $db->quote($hikashop_product->product_name) . ',' . $db->quote($hikashop_product->product_code) . ',' . $db->quote($hikashop_product->product_sort_price));
+
+                    try {
+                        $db->setQuery($query);
+                        $inserted = $db->execute();
+                    } catch (Exception $e) {
+                        JLog::add('Error inserting payment order product row : ' . $e->getMessage(), JLog::WARNING, 'com_emundus.payment');
+                    }
+                }
+
                 $this->updateEmundusHikashopOrderId($fnum, $order_id);
             }
         } else {
             JLog::add('Error creating payment order : user is empty', JLog::WARNING, 'com_emundus.payment');
         }
 
-        return $created;
+        return $order_id;
     }
 
     private function getUserIdFromFnum($fnum)
@@ -338,7 +355,7 @@ class EmundusModelPayment extends JModelList
         return $inserted;
     }
 
-    public static function getPaymentInfos($fnum)
+    public function getPaymentInfos($fnum)
     {
         $payment = false;
 
@@ -366,7 +383,7 @@ class EmundusModelPayment extends JModelList
         return $payment;
     }
 
-    public static function getProduct($product_id)
+    public function getProduct($product_id)
     {
         $product = false;
 
@@ -386,6 +403,34 @@ class EmundusModelPayment extends JModelList
             }
         } else {
             JLog::add('Error getting product : product_id is empty', JLog::WARNING, 'com_emundus.payment');
+        }
+
+        return $product;
+    }
+
+    public function getProductByFnum($fnum)
+    {
+        $product = null;
+
+        if (!empty($fnum)) {
+            $payment = $this->getPaymentInfos($fnum);
+
+            if (!empty($payment)) {
+                $isScholarshipHolder = $this->isScholarshipStudent($fnum);
+                if ($isScholarshipHolder) {
+                    $product = $this->getProduct($payment->scholarship_holder_product_id);
+                } else {
+                    $product = $this->getProduct($payment->product_id);
+                }
+
+                if (!empty($product)) {
+                    $sort_price = str_replace(',', '', $product->product_sort_price);
+                    $price = number_format((double)$sort_price, 2, ',', '');
+                    $product->displayed_price = $price;
+                }
+            } else {
+                JLog::add('Error getting product : payment infos are empty', JLog::WARNING, 'com_emundus.payment');
+            }
         }
 
         return $product;
@@ -431,7 +476,7 @@ class EmundusModelPayment extends JModelList
                 }
 
                 if (!empty($hikashop_status)) {
-                    $updated = $this->updateHikashopPayment($fnum, $hikashop_status, $data);
+                    $updated = $this->updateHikashopPayment($fnum, $hikashop_status, $data, 'flywire', $data['id']);
                     $data['updated'] = $updated;
                     EmundusModelLogs::log(95, $fnum_infos['applicant_id'], $fnum, 38, 'u', 'COM_EMUNDUS_PAYMENT_UPDATE_FLYWIRE_PAYMENT_INFOS', json_encode($data));
                 } else {
@@ -483,6 +528,32 @@ class EmundusModelPayment extends JModelList
         return $fnum;
     }
 
+    /**
+     * Find callback_id in emundus_hikashop table and return fnum
+     * @param string $callback_id
+     * @return string|false
+     */
+    private function getFnumFromOrderId($order)
+    {
+        $fnum = false;
+
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        $query->select('fnum')
+            ->from('#__emundus_hikashop')
+            ->where($db->quoteName('order_id') . ' = ' . $order);
+        $db->setQuery($query);
+
+        try {
+            $fnum = $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('Error getting fnum from callback id : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.payment');
+        }
+
+        return $fnum;
+    }
+
     private function checkAmountCoherence($fnum, $amount)
     {
         $correctAmount = false;
@@ -502,7 +573,7 @@ class EmundusModelPayment extends JModelList
         return $correctAmount;
     }
 
-    private function updateHikashopPayment($fnum, $hikashop_status, $data)
+    private function updateHikashopPayment($fnum, $hikashop_status, $data, $type = 'flywire', $order_number = null)
     {
         $updated = false;
         $db = JFactory::getDBO();
@@ -523,8 +594,13 @@ class EmundusModelPayment extends JModelList
             $query->clear();
             $query->update('#__hikashop_order')
                 ->set('order_status = ' . $db->quote($hikashop_status))
-                ->set('order_invoice_id = ' . $db->quote($data['id']))
-                ->where('order_id = ' . $hikashop->order_id);
+                ->set('order_invoice_id = ' . $db->quote($data['id']));
+
+            if (!empty($order_number)) {
+                $query->set('order_number = ' . $db->quote($order_number));
+            }
+
+            $query->where('order_id = ' . $hikashop->order_id);
             $db->setQuery($query);
 
             try {
@@ -535,17 +611,18 @@ class EmundusModelPayment extends JModelList
 
             if ($updated) {
                 $params = json_decode($hikashop->params, true);
-                $params['flywire_id'] = $data['id'];
-                $params['flywire_status'] = $data['status'];
-                $params['flywire_amount'] = $data['amount'];
-                $params['flywire_at'] = $data['at'];
-                $params['initiator'] = 'flywire';
+                if($type == 'flywire') {
+                    $params['flywire_id'] = $data['id'];
+                    $params['flywire_status'] = $data['status'];
+                    $params['flywire_amount'] = $data['amount'];
+                    $params['flywire_at'] = $data['at'];
+                    $params['initiator'] = 'flywire';
+                }
 
                 $query->clear();
                 $query->update('#__emundus_hikashop')
                     ->set('params = ' . $db->quote(json_encode($params)))
                     ->where('fnum = ' . $db->quote($fnum));
-
                 $db->setQuery($query);
 
                 try {
@@ -836,7 +913,7 @@ class EmundusModelPayment extends JModelList
 
         $query->clear()
             ->update('#__hikashop_order')
-            ->set('order_type = ' . $db->quote($type))
+            ->set('order_payment_method = ' . $db->quote($type))
             ->set('order_status = ' . $db->quote('created'));
 
         if (!empty($order_number)) {
@@ -855,4 +932,74 @@ class EmundusModelPayment extends JModelList
 
         return $updated;
     }
+
+	public function updateAxeptaPaymentInfos($order, $status, $id)
+	{
+		$updated = false;
+		$fnum = $this->getFnumFromOrderId($order);
+		$price = $this->getPrice($fnum);
+
+		JLog::add('[updateAxeptaPaymentInfos] Update file '.$fnum.' in order : ' . $order . ' with status ' . $status, JLog::INFO, 'com_emundus.payment');
+
+		if (!empty($fnum)) {
+			require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+			require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+			require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
+			$m_files = new EmundusModelFiles();
+			$c_messages = new EmundusControllerMessages();
+			$fnum_infos = $m_files->getFnumInfos($fnum);
+
+			$hikashop_status = '';
+			$eMConfig = JComponentHelper::getParams('com_emundus');
+			$mail_template = 0;
+
+			switch ($status) {
+				case 'OK':
+				case 'AUTHORIZED':
+					$hikashop_status = 'confirmed';
+
+					$status_after_payment = $eMConfig->get('status_after_payment','');
+
+					if($status_after_payment !== '')
+					{
+						JLog::add('[updateAxeptaPaymentInfos] Update file status to ' . $status_after_payment, JLog::INFO, 'com_emundus.payment');
+						$m_files->updateState($fnum, $status_after_payment);
+					}
+
+					$mail_template = $eMConfig->get('axepta_success_mail',0);
+					break;
+				case 'FAILED':
+				case '':
+					$mail_template = $eMConfig->get('axepta_failed_mail',0);
+
+					$hikashop_status = 'cancelled';
+					break;
+				default:
+					// do nothing, each case must be handled separately
+					JLog::add('Error updating axepta payment infos : status ' . $status . ' is not handled', JLog::ERROR, 'com_emundus.payment');
+					break;
+			}
+
+			if (!empty($hikashop_status)) {
+				$data['id'] = $id;
+				$updated = $this->updateHikashopPayment($fnum, $hikashop_status, $data, 'axepta');
+				EmundusModelLogs::log(95, $fnum_infos['applicant_id'], $fnum, 38, 'u', 'COM_EMUNDUS_PAYMENT_UPDATE_AXEPTA_PAYMENT_INFOS', json_encode($data));
+			} else {
+				EmundusModelLogs::log(95, $fnum_infos['applicant_id'], $fnum, 38, 'u', 'COM_EMUNDUS_PAYMENT_UPDATE_AXEPTA_PAYMENT_INFOS', 'Error updating axepta payment infos from given data ' . $status . ',' . $order . ',' . $id);
+			}
+
+			if(!empty($mail_template))
+			{
+				$post = [
+					'ORDER_NUMBER' => $order,
+					'ORDER_PRICE' => $price . ' €'
+				];
+				$c_messages->sendEmail($fnum, $mail_template, $post);
+			}
+		} else {
+			JLog::add('Error updating axepta payment infos : callback_id is not correct, could be a malicious attempt', JLog::ERROR, 'com_emundus.payment');
+		}
+
+		return $updated;
+	}
 }

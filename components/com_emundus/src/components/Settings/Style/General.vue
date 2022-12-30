@@ -11,8 +11,8 @@
       <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
         <div class="em-flex-row">
           <div>
-            <h3 style="margin: 0">Logo</h3>
-            <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png, gif</em></span>
+            <h3 class="em-text-neutral-800" style="margin: 0">Logo</h3>
+            <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png, gif, svg</em></span>
           </div>
           <span class="material-icons em-pointer" style="margin-left: 125px" v-if="logo_updating" @click="logo_updating = !logo_updating">close</span>
         </div>
@@ -44,8 +44,8 @@
       <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
         <div class="em-flex-row">
           <div>
-            <h3 style="margin: 0">{{ translate("COM_EMUNDUS_ONBOARD_ICON") }}</h3>
-            <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png, gif</em></span>
+            <h3 class="em-text-neutral-800" style="margin: 0">{{ translate("COM_EMUNDUS_ONBOARD_ICON") }}</h3>
+            <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png</em></span>
           </div>
           <span class="material-icons em-pointer" style="margin-left: 125px" v-if="favicon_updating" @click="favicon_updating = !favicon_updating">close</span>
         </div>
@@ -76,7 +76,7 @@
       <!-- COLORS -->
       <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
         <div class="em-flex-row">
-            <h3 style="margin: 0">{{ translate("COM_EMUNDUS_ONBOARD_COLORS") }}</h3>
+            <h3 class="em-text-neutral-800" style="margin: 0">{{ translate("COM_EMUNDUS_ONBOARD_COLORS") }}</h3>
         </div>
 
         <div class="em-logo-box pointer em-mt-16" @click="$modal.show('modalUpdateColors')">
@@ -158,7 +158,7 @@ export default {
         thumbnailWidth: null,
         thumbnailHeight: null,
         resizeMimeType: 'image/png',
-        acceptedFiles: 'image/*',
+        acceptedFiles: 'image/png,image/jpeg',
         previewTemplate: getTemplate(),
         dictCancelUpload: this.translate("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD"),
         dictCancelUploadConfirmation: this.translate("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD_CONFIRMATION"),

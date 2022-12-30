@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="1.6.0" client="site" method="upgrade">
-    <name>Dashboard Tchooz</name>
+    <name>MOD_EMUNDUS_DASHBOARD_VUE_SYS_XML</name>
     <author>HUBINET Brice</author>
     <creationDate>2020 December</creationDate>
-    <description>Affectation des différents widgets sur la page d'accueil</description>
+    <description>MOD_EMUNDUS_DASHBOARD_VUE_SYS_XML_DESC</description>
 
     <files>
         <filename module="mod_emundus_dashboard_vue">helper.php</filename>

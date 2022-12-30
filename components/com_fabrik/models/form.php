@@ -703,6 +703,10 @@ class FabrikFEModelForm extends FabModelForm
 		{
 			$scripts[$scriptsKey] = 'components/com_fabrik/js/' . $view . '_' . $this->getId() . '.js';
 		}
+        elseif (JFile::exists(COM_FABRIK_FRONTEND . '/js/custom_' . $view . '.js'))
+        {
+            $scripts[$scriptsKey] = 'components/com_fabrik/js/custom_' . $view . '.js';
+        }
 	}
 
 	/**

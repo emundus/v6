@@ -160,9 +160,6 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
     }
 
     public function onAfterOrderUpdate(&$order) {
-        JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterOrderUpdate', ['order' => $order]]);
-
         $db         = JFactory::getDbo();
         $order_id = $order->order_parent_id ?: $order->order_id;
 
@@ -208,7 +205,20 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
             require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
             $m_files = new EmundusModelFiles();
             $m_files->updateState($fnum, $status_after_payment[$key]);
-            JLog::add('Application file status updated to -> '.$status_after_payment[$key], JLog::ERROR, 'com_emundus');
+
+            JLog::add('Application file status updated to -> '.$status_after_payment[$key], JLog::INFO, 'com_emundus');
+
+            $query = $db->getQuery(true);
+            $query->update('#__emundus_campaign_candidature')
+                ->set('submitted = 1')
+                ->where('fnum LIKE ' . $db->quote($fnum));
+
+            try {
+                $db->setQuery($query);
+                $db->execute();
+            } catch (Exception $e) {
+                JLog::add('Failed to update file submitted after payment ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            }
         }
         else {
             $query = 'SELECT * FROM #__hikashop_order WHERE order_id='.$order_id;
@@ -231,6 +241,9 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
             JLog::add('Could not set application file status on order ID -> '. $order_id, JLog::ERROR, 'com_emundus');
             return false;
         }
+
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterOrderUpdate', ['order' => $order, 'em_order' => $em_order]]);
 
         $this->onAfterOrderCreate($order);
     }
@@ -255,5 +268,19 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopCheckoutWorkflowLoad',
             ['checkout_workflow' => $checkout_workflow, 'shop_closed' => $shop_closed, 'cart_id' => $cart_id]
         ]);
+    }
+
+    public function onBeforeProductListingLoad(&$filters,&$order,&$parent, &$select, &$select2, &$a, &$b, &$on) {
+        $app = JFactory::getApplication();
+
+        if(!$app->isAdmin()) {
+            JPluginHelper::importPlugin('emundus','custom_event_handler');
+            \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopBeforeProductListingLoad',
+                ['filters' => $filters, 'order' => $order,'parent' => $parent, 'select' => $select, 'select2' => $select2, 'a' => $a, 'b' => $b, 'on' => $on]
+            ]);
+
+            // Nobody can see product list for the moment
+            $app->redirect('/');
+        }
     }
 }

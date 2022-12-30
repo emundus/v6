@@ -231,7 +231,7 @@ class EmundusModelForm extends JModelList {
         $falang = new EmundusModelFalang;
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
-        $modules = $eMConfig->get('form_buider_page_creation_modules', [93,102,103,104,168,170]);
+        $modules = $eMConfig->get('form_builder_page_creation_modules', [93,102,103,104,168,170]);
 
         if (count($data) > 0) {
             $sp_conditions = array(
@@ -581,7 +581,7 @@ class EmundusModelForm extends JModelList {
 
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'formbuilder.php');
 
-        $formbuilder = new EmundusModelFormbuilder;
+        $formbuilder = new EmundusModelFormbuilder();
 
         if (!is_array($data)) {
             $data = array($data);
@@ -594,7 +594,6 @@ class EmundusModelForm extends JModelList {
                     $query->select('*')
                         ->from($db->quoteName('#__emundus_setup_profiles'))
                         ->where($db->quoteName('id') . ' = ' . $db->quote($pid));
-
                     $db->setQuery($query);
                     $oldprofile = $db->loadObject();
 
@@ -606,14 +605,15 @@ class EmundusModelForm extends JModelList {
                         ->set($db->quoteName('menutype') . ' = ' . $db->quote($oldprofile->menutype))
                         ->set($db->quoteName('acl_aro_groups') . ' = ' . $db->quote($oldprofile->acl_aro_groups))
                         ->set($db->quoteName('status') . ' = ' . $db->quote($oldprofile->status));
-
                     $db->setQuery($query);
                     $db->execute();
                     $newprofile = $db->insertid();
-
                     $newmenutype = 'menu-profile' . $newprofile;
 
-                    $this->createMenuType($newmenutype,$oldprofile->label . ' - Copy');
+                    $newmenutype = $this->createMenuType($newmenutype,$oldprofile->label . ' - Copy');
+                    if(empty($newmenutype)){
+                        return false;
+                    }
 
                     $query->clear()
                         ->update('#__emundus_setup_profiles')
@@ -633,21 +633,23 @@ class EmundusModelForm extends JModelList {
                     $db->setQuery($query);
                     $heading_to_duplicate = $db->loadObject();
 
-                    $query->clear();
-                    $query->insert($db->quoteName('#__menu'));
-                    foreach ($heading_to_duplicate as $key => $val) {
-                        if ($key != 'id' && $key != 'menutype' && $key != 'alias' && $key != 'path') {
-                            $query->set($key . ' = ' . $db->quote($val));
-                        } elseif ($key == 'menutype') {
-                            $query->set($key . ' = ' . $db->quote($newmenutype));
-                        } elseif ($key == 'path') {
-                            $query->set($key . ' = ' . $db->quote($newmenutype));
-                        } elseif ($key == 'alias') {
-                            $query->set($key . ' = ' . $db->quote(str_replace($formbuilder->getSpecialCharacters(), '-', strtolower($oldprofile->label . '-Copy')) . '-' . $newprofile));
+                    if(!empty($heading_to_duplicate)) {
+                        $query->clear();
+                        $query->insert($db->quoteName('#__menu'));
+                        foreach ($heading_to_duplicate as $key => $val) {
+                            if ($key != 'id' && $key != 'menutype' && $key != 'alias' && $key != 'path') {
+                                $query->set($key . ' = ' . $db->quote($val));
+                            } elseif ($key == 'menutype') {
+                                $query->set($key . ' = ' . $db->quote($newmenutype));
+                            } elseif ($key == 'path') {
+                                $query->set($key . ' = ' . $db->quote($newmenutype));
+                            } elseif ($key == 'alias') {
+                                $query->set($key . ' = ' . $db->quote(str_replace($formbuilder->getSpecialCharacters(), '-', strtolower($oldprofile->label . '-Copy')) . '-' . $newprofile));
+                            }
                         }
+                        $db->setQuery($query);
+                        $db->execute();
                     }
-                    $db->setQuery($query);
-                    $db->execute();
                     //
 
                     // Get fabrik_lists
@@ -728,23 +730,24 @@ class EmundusModelForm extends JModelList {
 
 
     public function createApplicantProfile($first_page = true) {
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
-
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'formbuilder.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'settings.php');
+        require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'update.php');
 
-        $formbuilder = new EmundusModelFormbuilder;
-        $settings = new EmundusModelSettings;
+        $formbuilder = new EmundusModelFormbuilder();
+        $settings = new EmundusModelSettings();
 
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
-        $query->select('id')
+        // Create profile
+        $query->clear()
+            ->select('id')
             ->from($db->quoteName('#__emundus_setup_profiles'))
             ->order('id DESC');
         $db->setQuery($query);
         $lastprofile = $db->loadObjectList()[0];
 
-        // Insert columns.
         $columns = array(
             'label',
             'description',
@@ -762,7 +765,6 @@ class EmundusModelForm extends JModelList {
             'status',
             'class');
 
-        // Insert values.
         $values = array(
             'Nouveau formulaire',
             '',
@@ -794,41 +796,64 @@ class EmundusModelForm extends JModelList {
             $db->setQuery($query);
             $db->execute();
             $newprofile = $db->insertid();
+            if (empty($newprofile)){
+                return false;
+            }
 
-            $this->createMenuType('menu-profile' . $newprofile,'Nouveau formulaire');
+            // Create menutype
+            $menutype = $this->createMenuType('menu-profile' . $newprofile,'Nouveau formulaire');
+            if (empty($menutype)) {
+                return false;
+            }
 
             $query->clear()
                 ->update($db->quoteName('#__emundus_setup_profiles'))
-                ->set($db->quoteName('menutype') . ' = ' . $db->quote('menu-profile' . $newprofile))
+                ->set($db->quoteName('menutype') . ' = ' . $db->quote($menutype))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($newprofile));
             $db->setQuery($query);
             $db->execute();
 
-            $formbuilder->createApplicantHeadingMenu('menu-profile' . $newprofile,'Nouveau formulaire',$newprofile);
 
-            if($first_page) {
-                // Create a first page
-                $label = array(
+            // Create heading menu
+            $datas = [
+                'menutype' => 'menu-profile' . $newprofile,
+                'title' => 'Nouveau formulaire',
+                'link' => '#',
+                'type' => 'heading',
+                'component_id' => 0,
+                'params' => []
+            ];
+            $heading_menu = EmundusHelperUpdate::addJoomlaMenu($datas);
+            if ($heading_menu['status'] !== true){
+                return false;
+            }
+
+            // Create first page
+            if ($first_page) {
+                $label = [
                     'fr' => 'Ma première page',
                     'en' => 'My first page'
-                );
-                $intro = array(
+                ];
+                $intro = [
                     'fr' => 'Décrivez votre page de formulaire avec une introduction',
                     'en' => 'Describe your form page with an introduction'
-                );
+                ];
                 $formbuilder->createApplicantMenu($label, $intro, $newprofile, 'false');
             }
 
             // Create submittion page
-            $label = array(
+            $label = [
                 'fr' => "Confirmation d'envoi de dossier",
                 'en' => 'Data & disclaimer confirmation'
-            );
-            $intro = array(
+            ];
+            $intro = [
                 'fr' => '',
                 'en' => ''
-            );
-            $formbuilder->createSubmittionPage($label,$intro,$newprofile);
+            ];
+            $submittion_page_res = $formbuilder->createSubmittionPage($label,$intro,$newprofile);
+            if($submittion_page_res['status'] !== true){
+                return false;
+            }
 
             // Create checklist menu
             $this->addChecklistMenu($newprofile);
@@ -844,39 +869,41 @@ class EmundusModelForm extends JModelList {
         }
     }
 
-
     public function createMenuType($menutype, $title) {
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
-
-        // Insert columns.
-        $columns = array(
-            'asset_id',
-            'menutype',
-            'title',
-            'description',
-            'client_id'
-        );
-
-        // Insert values.
-        $values = array(
-            0,
-            $menutype,
-            $title,
-            '',
-            0
-        );
-
-        $query->insert($db->quoteName('#__menu_types'))
-            ->columns($db->quoteName($columns))
-            ->values(implode(',', $db->Quote($values)));
+        $menutype_table = JTableNested::getInstance('MenuType');
 
         try {
+            JFactory::$database = null;
+
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+
+            $query->clear()
+                ->select('menutype')
+                ->from($db->quoteName('#__menu_types'))
+                ->where($db->quoteName('menutype') . ' LIKE ' . $db->quote($menutype));
             $db->setQuery($query);
-            return $db->execute();
+            $is_existing = $db->loadResult();
+
+            if(empty($is_existing)) {
+                $data = array(
+                    'menutype' => $menutype,
+                    'title' => $title,
+                    'description' => '',
+                    'client_id' => 0,
+                );
+
+                if (!$menutype_table->save($data)) {
+                    return '';
+                }
+                return $menutype;
+            } else {
+                return $is_existing;
+            }
         } catch (Exception $e) {
-            JLog::add('component/com_emundus/models/form | Cannot create the menutype ' . $menutype . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
+            JLog::add('component/com_emundus/models/form | Cannot create the menutype ' . $menutype . ' : -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return '';
         }
     }
 
@@ -1370,10 +1397,12 @@ class EmundusModelForm extends JModelList {
         $query = $db->getQuery(true);
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
-        $modules = $eMConfig->get('form_buider_page_creation_modules', [93,102,103,104,168,170]);
+        $modules = $eMConfig->get('form_builder_page_creation_modules', [93,102,103,104,168,170]);
 
         try {
             // Create the menu
+            $submittion_page = $this->getSubmittionPage($prid);
+
             $params = array(
                 'custom_title' => "",
                 'show_info_panel' => "0",
@@ -1399,76 +1428,59 @@ class EmundusModelForm extends JModelList {
                 'robots' => "",
                 'secure' => 0,
             );
-            $datas = array(
-                'menutype' => $db->quote("menu-profile" . $prid),
-                'title' => $db->quote('Documents'),
-                'alias' => $db->quote('checklist-' . $prid),
-                'note' => $db->quote(''),
-                'path' => $db->quote('checklist-' . $prid),
-                'link' => $db->quote('index.php?option=com_emundus&view=checklist'),
-                'type' => $db->quote('component'),
-                'published' => 1,
-                'parent_id' => 1,
-                'level' => 1,
+
+            $datas = [
+                'menutype' => 'menu-profile' . $prid,
+                'title' => 'Documents',
+                'alias' => 'checklist-' . $prid,
+                'path' => 'checklist-' . $prid,
+                'link' => 'index.php?option=com_emundus&view=checklist',
+                'type' => 'component',
                 'component_id' => 11369,
-                'checked_out' => 0,
-                'checked_out_time' => $db->quote(date('Y-m-d h:i:s')),
-                'browserNav' => 0,
-                'access' => 1,
-                'img' => $db->quote(''),
-                'template_style_id' => 22,
-                'params' => $db->quote(json_encode($params)),
-                'lft' => 0,
-                'rgt' => 0,
-                'home' => 0,
-                'language' => $db->quote('*'),
-                'client_id' => 0,
-            );
+                'params' => $params
+            ];
+            $checklist_menu = EmundusHelperUpdate::addJoomlaMenu($datas,$submittion_page->id,1,'before',$modules);
+            if($checklist_menu['status'] !== true){
+                return false;
+            }
 
+            $newmenuid = $checklist_menu['id'];
+
+            // Affect documents module to each menus of profile
             $query->clear()
-                ->insert($db->quoteName('#__menu'))
-                ->columns($db->quoteName(array_keys($datas)))
-                ->values(implode(',',array_values($datas)));
+                ->select('*')
+                ->from($db->quoteName('#__menu'))
+                ->where($db->quoteName('menutype') . ' = ' . $db->quote('menu-profile' . $prid));
             $db->setQuery($query);
+            $menus = $db->loadObjectList();
 
-            if ($db->execute()) {
-                $newmenuid = $db->insertid();
-                $submittion_page = $this->getSubmittionPage($prid);
-
+            foreach ($menus as $menu) {
                 $query->clear()
-                    ->update($db->quoteName('#__menu'))
-                    ->set($db->quoteName('lft') . ' = ' . $db->quote($submittion_page->rgt-3))
-                    ->set($db->quoteName('rgt') . ' = ' . $db->quote($submittion_page->rgt-2))
-                    ->where($db->quoteName('id') . ' = ' . $newmenuid);
+                    ->select('moduleid')
+                    ->from($db->quoteName('#__modules_menu'))
+                    ->where($db->quoteName('moduleid') . ' = 103')
+                    ->andWhere($db->quoteName('menuid') . ' = ' . $db->quote($menu->id));
                 $db->setQuery($query);
-                $db->execute();
+                $is_existing = $db->loadResult();
 
-                // Affect modules to this menu
-                foreach ($modules as $module) {
-                    $query->clear()
-                        ->insert($db->quoteName('#__modules_menu'))
-                        ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
-                        ->set($db->quoteName('menuid') . ' = ' . $db->quote($newmenuid));
-                    $db->setQuery($query);
-                    $db->execute();
-                }
-
-                // Affect documents module to each menus of profile
-                $query->clear()
-                    ->select('*')
-                    ->from($db->quoteName('#__menu'))
-                    ->where($db->quoteName('menutype') . ' = ' . $db->quote('menu-profile' . $prid));
-                $db->setQuery($query);
-                $menus = $db->loadObjectList();
-
-                foreach ($menus as $menu) {
+                if(!$is_existing) {
                     $query->clear()
                         ->insert($db->quoteName('#__modules_menu'))
                         ->set($db->quoteName('moduleid') . ' = 103')
                         ->set($db->quoteName('menuid') . ' = ' . $db->quote($menu->id));
                     $db->setQuery($query);
                     $db->execute();
+                }
 
+                $query->clear()
+                    ->select('moduleid')
+                    ->from($db->quoteName('#__modules_menu'))
+                    ->where($db->quoteName('moduleid') . ' = 104')
+                    ->andWhere($db->quoteName('menuid') . ' = ' . $db->quote($menu->id));
+                $db->setQuery($query);
+                $is_existing = $db->loadResult();
+
+                if(!$is_existing) {
                     $query->clear()
                         ->insert($db->quoteName('#__modules_menu'))
                         ->set($db->quoteName('moduleid') . ' = 104')
@@ -1476,12 +1488,10 @@ class EmundusModelForm extends JModelList {
                     $db->setQuery($query);
                     $db->execute();
                 }
-                //
-                return $newmenuid;
-            } else {
-                JLog::add('component/com_emundus/models/form | Error at menu creation of the profile ' . $prid, JLog::ERROR, 'com_emundus');
-                return false;
             }
+            //
+
+            return $newmenuid;
         } catch (Exception $e) {
             JLog::add('component/com_emundus/models/form | Error to add the checklist module to form (' . $prid . ') menus : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
@@ -1493,7 +1503,7 @@ class EmundusModelForm extends JModelList {
         $query = $db->getQuery(true);
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
-        $modules = $eMConfig->get('form_buider_page_creation_modules', [93,102,103,104,168,170]);
+        $modules = $eMConfig->get('form_builder_page_creation_modules', [93,102,103,104,168,170]);
 
         $query->clear()
             ->select('*')
@@ -1567,7 +1577,7 @@ class EmundusModelForm extends JModelList {
             $db->setQuery($query);
             $forms = $db->loadObjectList();
 
-            foreach ($forms as $form){
+            foreach ($forms as $form) {
                 $link = explode('=', $form->link);
                 $form->id = $link[sizeof($link) - 1];
 
@@ -1578,6 +1588,15 @@ class EmundusModelForm extends JModelList {
                 $db->setQuery($query);
                 $form->label = $formbuilder->getJTEXT($db->loadResult());
                 print_r($forms->label);
+
+
+                $query->clear()
+                    ->select('id')
+                    ->from('#__emundus_template_form')
+                    ->where('form_id = ' . $form->id);
+
+                $db->setQuery($query);
+                $modelId = $db->loadResult();
             }
 
             return $forms;
@@ -1595,7 +1614,7 @@ class EmundusModelForm extends JModelList {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->select(['g.id' , 'g.label', 'g.params'])
+        $query->select(['g.id' , 'g.label', 'g.params', 'g.published'])
             ->from ($db->quoteName('#__fabrik_formgroup', 'fg'))
             ->leftJoin($db->quoteName('#__fabrik_groups', 'g').' ON '.$db->quoteName('g.id').' = '.$db->quoteName('fg.group_id'))
             ->where($db->quoteName('fg.form_id') . ' = '.$form_id)
@@ -1629,7 +1648,7 @@ class EmundusModelForm extends JModelList {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->select(['menu.link','menu.rgt'])
+        $query->select(['menu.link','menu.rgt','menu.id'])
             ->from ($db->quoteName('#__menu', 'menu'))
             ->leftJoin($db->quoteName('#__menu_types', 'mt').' ON '.$db->quoteName('mt.menutype').' = '.$db->quoteName('menu.menutype'))
             ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'sp').' ON '.$db->quoteName('sp.menutype').' = '.$db->quoteName('mt.menutype'))
@@ -1654,6 +1673,7 @@ class EmundusModelForm extends JModelList {
                     if($submittion > 0){
                         $sub_page->link = $menu->link;
                         $sub_page->rgt = $menu->rgt;
+                        $sub_page->id = $menu->id;
                     }
                 }
             }
@@ -1809,7 +1829,7 @@ class EmundusModelForm extends JModelList {
         $query = $db->getQuery(true);
 
         try {
-            $query->select('sa.id as docid,sa.value as label,sap.*')
+            $query->select('sa.id as docid,sa.value as label,sap.*,sa.allowed_types')
                 ->from($db->quoteName('#__emundus_setup_attachment_profiles','sap'))
                 ->leftJoin($db->quoteName('#__emundus_setup_attachments','sa').' ON '.$db->quoteName('sa.id').' = '.$db->quoteName('sap.attachment_id'))
                 ->where($db->quoteName('profile_id') . ' = ' . $db->quote($prid))

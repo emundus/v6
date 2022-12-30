@@ -20,7 +20,16 @@ if($applicant = !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 ?>
 
     <div class="em-container-footer-cand">
+        <?php if (!empty($mod_emundus_footer_texte_col_1) || !empty($mod_emundus_footer_texte_col_2)) : ?>
        <div class="row">
+
+        <?php if ($mod_emundus_footer_merge_two_columns == 1) : ?>
+           <div class="em-big-col-footer">
+               <p><?= $mod_emundus_footer_texte_col_1; ?></p>
+           </div>
+
+        <?php else : ?>
+
             <div class="em-col-1-footer">
                 <p><?= $mod_emundus_footer_texte_col_1; ?></p>
             </div>
@@ -31,20 +40,32 @@ if($applicant = !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
                 </div>
             </div>
 
+        <?php endif; ?>
+
            <div class="em-col-3-footer">
+               <?php if ($mod_emundus_footer_display_tchooz_logo == 1) : ?>
                     <a target="_blank" href="https://www.tchooz.io/" data-bcup-haslogintext="no">
                         <img class="logo" src="/images/emundus/tchooz_black.png" alt="Logo">
                     </a>
+                <?php endif; ?>
 
-                        <p><?= JText::_('MOD_EM_FOOTER_COPYRIGHT') ?><a href="<?= JText::_('MOD_EM_FOOTER_LINK') ?>" target="_blank">eMundus</a></p>
+               <?php if ($mod_emundus_footer_display_powered_by == 1) : ?>
+                   <p><?= JText::_('MOD_EM_FOOTER_COPYRIGHT') ?><a href="<?= JText::_('MOD_EM_FOOTER_LINK') ?>" target="_blank">eMundus</a></p>
+               <?php endif; ?>
+
+
             </div>
       </div>
+    <?php endif; ?>
 
-      <div class="row">
+      <div class="em-flex-row">
+        <?php if((empty($mod_emundus_footer_texte_col_1) && empty($mod_emundus_footer_texte_col_2)) && !empty($mod_emundus_footer_client_link)) : ?>
+            <a href="<?php echo $mod_emundus_footer_client_link ?>" target="_blank"><img style="width: 250px" src="<?php echo $logo ?>"/></a>
+        <?php endif; ?>
         <div class="footer-rgpd">
         <?php if ($mod_emundus_footer_legal_info == '0' && $mod_emundus_footer_data_privacy == '0' && $mod_emundus_footer_rights == '0' && $mod_emundus_footer_cookies == '0' ) :?>
 
-        <?php else : ?>
+        <?php elseif(!empty($mod_emundus_footer_texte_col_1) || !empty($mod_emundus_footer_texte_col_2)) : ?>
             <hr class="footer-separation"/>
         <?php endif; ?>
 
@@ -66,6 +87,9 @@ if($applicant = !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
         <?php endif; ?>
         </div>
         </div>
+          <?php if(empty($mod_emundus_footer_texte_col_1) && empty($mod_emundus_footer_texte_col_2) && $mod_emundus_footer_display_powered_by == 1) : ?>
+          <p style="width: auto;white-space: nowrap;"><?= JText::_('MOD_EM_FOOTER_COPYRIGHT') ?><a href="<?= JText::_('MOD_EM_FOOTER_LINK') ?>" target="_blank">eMundus</a></p>
+          <?php endif; ?>
       </div>
 
     </div>

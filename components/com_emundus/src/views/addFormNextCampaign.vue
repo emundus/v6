@@ -20,15 +20,15 @@
 
 				<hr>
 
-				<div class="em-flex-row em-mb-32">
-					<p>
-						<b style="color: #20835F; font-weight: 700 !important;"> {{form.label}}</b>
-						{{translations.From}}
-						<strong>{{ form.start_date }}</strong>
-						{{translations.To}}
-						<strong>{{ form.end_date }}</strong>
-					</p>
-				</div>
+      <div class="em-flex-row em-mb-32">
+        <p>
+          <b style="color: var(--main-500); font-weight: 700 !important;"> {{form.label}}</b>
+          {{translations.From}}
+          <strong>{{ form.start_date }}</strong>
+          {{translations.To}}
+          <strong>{{ form.end_date }}</strong>
+        </p>
+      </div>
 
 				<!--- start Menu --->
 				<div class="em-flex-row" >
@@ -62,7 +62,7 @@
 						<li v-for="(campaign, index) in campaignsByProgram" :key="'camp_progs_' + index">{{campaign.label}}</li>
 					</ul>
 				</div>
-				<transition name="slide-right">
+				<transition name="fade">
 					<add-campaign
 							v-if="menuHighlight == 0 && campaignId !== ''"
 							:campaign="campaignId"
@@ -99,6 +99,15 @@
 					></add-email>
 				</transition>
 			</div>
+
+      <div class="em-flex-row em-flex-space-between em-float-right" v-if="menuHighlight !== 0 && menuHighlightProg !== 0">
+        <button
+            type="button"
+            class="em-primary-button em-w-auto"
+            @click="next">
+          {{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
+        </button>
+      </div>
 
 			<div class="em-page-loader" v-if="loading"></div>
 		</div>
@@ -347,10 +356,12 @@ export default {
     },
 
     next() {
-      if (this.menuHighlight < 1) {
-        this.menuHighlight++;
-      } else {
-        this.redirectJRoute('index.php?option=com_emundus&view=campaign');
+      if (this.menuHighlight < 2) {
+        let index = this.menuHighlight + 1;
+        console.log(index);
+        this.changeToCampMenu(index)
+      } else if(this.menuHighlightProg < 1) {
+        this.changeToProgMenu(0)
       }
     },
 
@@ -401,11 +412,11 @@ export default {
 }
 
 .w--current:hover{
-  color: #20835F;
+  color: var(--main-500);
 }
 
 .em-pointer:hover{
-  color: #20835F;
+  color: var(--main-500);
 }
 
 .em-w-custom {
@@ -414,6 +425,6 @@ export default {
 }
 
 #add-form-next-campaign{
-  width: 70%;
+  width: 100%;
 }
 </style>

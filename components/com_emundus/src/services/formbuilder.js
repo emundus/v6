@@ -662,5 +662,72 @@ export default {
                 message: e.message
             };
         }
+    },
+    async getModels()
+    {
+        try {
+            const response = await client().get(
+                'index.php?option=com_emundus&controller=formbuilder&task=getpagemodels'
+            );
+
+            return response.data;
+        } catch (e) {
+            return {status: false, message: e.message};
+        }
+    },
+    async addFormModel(formId, modelLabel) {
+        if (formId > 0) {
+            const formData = new FormData();
+            formData.append('form_id', formId);
+            formData.append('label', modelLabel);
+
+            try {
+                const response = await client().post(
+                    'index.php?option=com_emundus&controller=formbuilder&task=addformmodel', formData
+                );
+
+                return response.data;
+            } catch (e) {
+                return {status: false, message: e.message};
+            }
+        } else {
+            return {status: false, message: 'MISSING_PARAMS'};
+        }
+    },
+    async deleteFormModel(formId) {
+        if (formId > 0) {
+            const formData = new FormData();
+            formData.append('form_id', formId);
+
+            try {
+                const response = await client().post(
+                    'index.php?option=com_emundus&controller=formbuilder&task=deleteformmodel', formData
+                );
+
+                return response.data;
+            } catch (e) {
+                return {status: false, message: e.message};
+            }
+        } else {
+            return {status: false, message: 'MISSING_PARAMS'};
+        }
+    },
+    async deleteFormModelFromId(modelIds) {
+        if (modelIds.length > 0) {
+            const formData = new FormData();
+            formData.append('model_ids', JSON.stringify(modelIds));
+
+            try {
+                const response = await client().post(
+                    'index.php?option=com_emundus&controller=formbuilder&task=deleteformmodelfromids', formData
+                );
+
+                return response.data;
+            } catch (e) {
+                return {status: false, message: e.message};
+            }
+        } else {
+            return {status: false, message: 'MISSING_PARAMS'};
+        }
     }
 };

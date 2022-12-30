@@ -49,9 +49,8 @@ class EmundusHelperExport {
 
         if (!file_exists($file) && !file_exists($file_custom)) {
             $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
-        }
-        else{
-            if (file_exists($file_custom)){
+        } else {
+            if (file_exists($file_custom)) {
                 $file = $file_custom;
             }
         }

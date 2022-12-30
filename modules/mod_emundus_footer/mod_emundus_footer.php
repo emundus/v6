@@ -20,8 +20,12 @@ include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 $params->def('greeting', 1);
 
 //Footer
+$mod_emundus_footer_merge_two_columns=$params->get('mod_emundus_footer_merge_two_columns',0);
 $mod_emundus_footer_texte_col_1=$params->get('mod_emundus_footer_texte_col_1', '');
 $mod_emundus_footer_texte_col_2=$params->get('mod_emundus_footer_texte_col_2', '');
+$mod_emundus_footer_display_tchooz_logo=$params->get('mod_emundus_footer_display_tchooz_logo',0);
+$mod_emundus_footer_display_powered_by=$params->get('mod_emundus_footer_display_powered_by',1);
+$mod_emundus_footer_client_link=$params->get('mod_emundus_footer_client_link','');
 
 // Gdpr articles
 $mod_emundus_footer_legal_info=$params->get('mod_emundus_footer_legal_info', '1');
@@ -42,11 +46,20 @@ if ($xmlDoc->load('administrator/components/com_emundus/emundus.xml')) {
     $file_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
 }
 
-/*Logged users must load the logout sublayout
-if (!$user->guest)
-{
-	$layout .= '_logout';
-}*/
+$logo = null;
+if(!empty($mod_emundus_footer_client_link)) {
+    $logo_module = JModuleHelper::getModuleById('90');
+    preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+    $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
+        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
+        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+
+    if ((bool)preg_match($pattern, $tab[1])) {
+        $tab[1] = parse_url($tab[1], PHP_URL_PATH);
+    }
+    $logo = JURI::base() . $tab[1];
+}
 
 $lang = JFactory::getLanguage();
 $actualLanguage = substr($lang->getTag(), 0 , 2);

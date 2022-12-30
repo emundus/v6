@@ -30,7 +30,7 @@
           </div>
         </div>
 
-        <transition name="fade">
+        <transition name="fade" mode="out-in">
           <EditStatus v-if="currentMenu === 1" :key="currentMenu" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving" />
           <EditTags v-if="currentMenu === 2" :key="currentMenu" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving" />
           <EditApplicants v-if="currentMenu === 3" :key="currentMenu" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving" />

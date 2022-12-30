@@ -16,10 +16,14 @@ $eMConfig = JComponentHelper::getParams('com_emundus');
 <div class="login<?php echo $this->pageclass_sfx; ?>">
     <?php if ($this->params->get('show_page_heading')) : ?>
         <div class="page-header">
-            <h1 class="em-titre-connectez-vous">
+            <?php if (file_exists('images/custom/favicon.png')) : ?>
+                <a href="/" class="em-profile-picture em-mb-32" style="width: 50px;height: 50px;background-image: url('images/custom/favicon.png')">
+                </a>
+            <?php endif; ?>
+            <p class="em-mb-8 em-h3">
                 <?php echo JText::_('JLOGIN'); ?>
-            </h1>
-            <p><?php echo JText::_('JLOGIN_DESC'); ?></p>
+            </p>
+            <p class="em-applicant-text-color em-applicant-default-font"><?php echo JText::_('JLOGIN_DESC'); ?></p>
         </div>
     <?php endif; ?>
     <?php if (($this->params->get('logindescription_show') == 1 && str_replace(' ', '', $this->params->get('login_description')) != '') || $this->params->get('login_image') != '') : ?>
@@ -74,13 +78,15 @@ $eMConfig = JComponentHelper::getParams('com_emundus');
                         </div>
                     </div>
                 <?php endif; ?>
+                <?php if($this->displayForgotten) : ?>
                 <div class="control-group em-float-right">
                     <div class="control-label">
-                        <a class="em-text-underline" href="<?php echo JRoute::_('index.php?option=com_users&view=reset'); ?>">
+                        <a class="em-text-underline" href="<?php echo JRoute::_($this->forgottenLink); ?>">
                             <?php echo JText::_('COM_USERS_LOGIN_RESET'); ?>
                         </a>
                     </div>
                 </div>
+                <?php endif; ?>
             </div>
             <div class="control-group em-w-100">
                 <div class="controls">
@@ -96,24 +102,20 @@ $eMConfig = JComponentHelper::getParams('com_emundus');
     </form>
 
     <?php $usersConfig = JComponentHelper::getParams('com_users'); ?>
-    <?php if ($usersConfig->get('allowUserRegistration')) : ?>
+    <?php if ($usersConfig->get('allowUserRegistration') && $this->displayRegistration) : ?>
         <div>
             <?php echo JText::_('COM_USERS_LOGIN_NO_ACCOUNT'); ?>
-            <?php if(!empty($this->campaign) && !empty($this->course)) :?>
-                <a class="em-text-underline" href="<?php echo JRoute::_('index.php?option=com_users&view=registration&course=' . $this->course . '&cid=' . $this->campaign); ?>">
-                    <?php echo JText::_('COM_USERS_LOGIN_REGISTER'); ?>
-                </a>
-            <?php else: ?>
-                <a class="em-text-underline" href="<?php echo JRoute::_('index.php?option=com_users&view=registration'); ?>">
-                    <?php echo JText::_('COM_USERS_LOGIN_REGISTER'); ?>
-                </a>
-            <?php endif; ?>
+            <a class="em-text-underline" href="<?php echo JRoute::_($this->registrationLink); ?>">
+                <?php echo JText::_('COM_USERS_LOGIN_REGISTER'); ?>
+            </a>
         </div>
     <?php endif; ?>
 </div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        document.querySelector('#header-a img').style.display = 'none';
+
         <?php if ($eMConfig['reveal_password']): ?>
             const spanVisibility = document.querySelector('#toggle-password-visibility');
             const inputPassword = document.querySelector('.controls #password');
@@ -148,7 +150,7 @@ $eMConfig = JComponentHelper::getParams('com_emundus');
                     return response.json();
                 }
             }).then((res) => {
-                if(res.username !== ''){
+                if(res.username !== '' && res.username !== null){
                     document.getElementsByName('username')[0].value = res.username;
                 }
 

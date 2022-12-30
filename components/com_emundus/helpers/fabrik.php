@@ -169,8 +169,8 @@ class EmundusHelperFabrik {
         );
     }
 
-    static function prepareFormParams() {
-        return array(
+    static function prepareFormParams($init_plugins = true) {
+        $params = array(
             'outro' => '',
             'copy_button' => '0',
             'copy_button_label' => 'Save as copy',
@@ -224,14 +224,22 @@ class EmundusHelperFabrik {
             'email' => '',
             'pdf' => '',
             'show-referring-table-releated-data' => '0',
-            'tiplocation' => 'above',
-            'process-jplugins' => '2',
-            'plugins' => array("emundustriggers"),
-            'plugin_state' => array("1"),
-            'plugin_locations' => array("both"),
-            'plugin_events' => array("both"),
-            'plugin_description' => array("emundus_events"),
+            'tiplocation' => 'above'
         );
+
+        $plugins = [];
+        if($init_plugins){
+            $plugins = [
+                'process-jplugins' => '2',
+                'plugins' => array("emundustriggers"),
+                'plugin_state' => array("1"),
+                'plugin_locations' => array("both"),
+                'plugin_events' => array("both"),
+                'plugin_description' => array("emundus_events"),
+            ];
+        }
+
+        return array_merge($params,$plugins);
     }
 
     function prepareSubmittionPlugin($params) {
@@ -399,10 +407,10 @@ class EmundusHelperFabrik {
 
         if ($plugin == 'databasejoin') {
             $params['database_join_display_type'] = 'dropdown';
-            $params['join_conn_id'] = '1';
             $params['join_db_name'] = '';
             $params['join_key_column'] = '';
             $params['join_val_column'] = '';
+            $params['join_conn_id'] = '1';
             $params['database_join_where_sql'] = '';
             $params['database_join_where_access'] = '1';
             $params['database_join_where_when'] = '3';
@@ -428,6 +436,26 @@ class EmundusHelperFabrik {
             $params['dbjoin_autocomplete_how'] = 'contains';
             $params['join_val_column_concat'] = '';
             $params['clean_concat'] = '0';
+
+            $ref_tables = ['data_nationality', 'data_country', 'data_departements'];
+            foreach($ref_tables as $table) {
+                $db = JFactory::getDbo();
+                $db->setQuery("SHOW TABLES LIKE " .$db->quote('data_nationality'));
+                $tableExists = $db->loadResult();
+
+                if (!empty($tableExists)) {
+                    $params['join_db_name'] = $table;
+
+                    if (in_array($table, ['data_nationality', 'data_country'])) {
+                        $params['join_key_column'] = 'id';
+                        $params['join_val_column'] = 'label_fr';
+                    } else if ($table == 'data_departements') {
+                        $params['join_key_column'] = 'departement_id';
+                        $params['join_val_column'] = 'departement_nom';
+                    }
+                    break;
+                }
+            }
         }
 
         if($plugin == 'user'){
@@ -609,7 +637,7 @@ class EmundusHelperFabrik {
     }
 
     static function prepareFabrikMenuParams(){
-        return array(
+        return [
             'rowid' => '',
             'usekey' => '',
             'random' => '0',
@@ -629,7 +657,7 @@ class EmundusHelperFabrik {
             'menu-meta_keywords' => '',
             'robots' => '',
             'secure' => '0',
-        );
+        ];
     }
 
     static function addOption($eid,$label,$value){

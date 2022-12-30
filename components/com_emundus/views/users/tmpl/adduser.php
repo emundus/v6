@@ -145,7 +145,7 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
 			<select name="campaigns" size="5" multiple="multiple" id="campaigns" class="em-chosen em-mt-4">
 				<option value="0" disabled="disabled"><?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
 				<?php foreach ($this->campaigns as $campaign) :?>
-				    <option value="<?= $campaign->id; ?>" <?= (($this->edit == 1) && (array_key_exists($campaign->id, $this->uCamps)))?'selected="true"':''; ?>><?= trim($campaign->label.' ('.$campaign->year.') - '.$campaign->programme.' | '.JText::_('COM_EMUNDUS_ONBOARD_START_DATE').' : '.EmundusHelperDate::displayDate($campaign->start_date, 'COM_EMUNDUS_DATE_FORMAT', 1));?></option>
+				    <option value="<?= $campaign->campaign_id; ?>" <?= (($this->edit == 1) && (array_key_exists($campaign->campaign_id, $this->uCamps)))?'selected="true"':''; ?>><?= trim($campaign->label.' ('.$campaign->year.') - '.$campaign->programme.' | '.JText::_('COM_EMUNDUS_ONBOARD_START_DATE').' : '.EmundusHelperDate::displayDate($campaign->start_date, 'COM_EMUNDUS_DATE_FORMAT', 1));?></option>
 				<?php endforeach;?>
 			</select>
 		</div>
@@ -417,7 +417,8 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
 			var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/;
 			if ($(this).val().length == 0 || !re.test($(this).val())) {
 				$(this).parent('.form-group').addClass('has-error');
-				$(this).after('<span class="help-block">'+Joomla.JText._('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_EMAIL')+'</span>');
+                $(this).siblings('.help-block').remove();
+                $(this).after('<span class="help-block">'+Joomla.JText._('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_EMAIL')+'</span>');
 			}
 		});
 
@@ -439,11 +440,6 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
 			}
 		});
 
-        $(document).on('keyup', '#mail', function() {
-            if($('#same_login_email').is(':checked')){
-                $('#login').val($('#mail').val());
-            }
-        });
 
         function renderingSelects(value = null){
             if(value == null){

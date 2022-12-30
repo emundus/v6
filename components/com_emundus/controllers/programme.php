@@ -251,23 +251,27 @@ class EmundusControllerProgramme extends JControllerLegacy {
 
 
     public function updateprogram() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        $tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $jinput = JFactory::getApplication()->input;
 
             $data = $jinput->getRaw('body');
             $id = $jinput->getString('id');
 
-            $result = $this->m_programme->updateProgram($id, $data);
+            if (!empty($id) && !empty($data)) {
+                $result = $this->m_programme->updateProgram($id, $data);
 
-            if ($result) {
-                $tab = array('status' => 1, 'msg' => JText::_('PROGRAMS_ADDED'), 'data' => $result);
+                if ($result) {
+                    $tab = array('status' => 1, 'msg' => JText::_('PROGRAMS_ADDED'), 'data' => $result);
+                } else {
+                    $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_PROGRAMS'), 'data' => $result);
+                }
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_PROGRAMS'), 'data' => $result);
+                $tab = array('status' => 0, 'msg' => JText::_('MISSING_PARAMS'));
             }
         }
+
         echo json_encode((object)$tab);
         exit;
     }

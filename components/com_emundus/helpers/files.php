@@ -472,6 +472,8 @@ class EmundusHelperFiles
     }
 
     public function getAttachmentsTypesByProfileID ($pid) {
+        $attachments_by_profile = [];
+
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
@@ -481,14 +483,18 @@ class EmundusHelperFiles
         $db->setQuery($query);
         $attachments = $db->loadColumn();
 
-        $query->clear()
-            ->select('*')
-            ->from($db->quoteName('#__emundus_setup_attachments'))
-            ->where($db->quoteName('id') . ' IN (' . implode(',', $attachments) . ')')
-            ->order('ordering');
+        if (!empty($attachments)) {
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__emundus_setup_attachments'))
+                ->where($db->quoteName('id') . ' IN (' . implode(',', $attachments) . ')')
+                ->order('ordering');
 
-        $db->setQuery($query);
-        return $db->loadObjectList();
+            $db->setQuery($query);
+            $attachments_by_profile = $db->loadObjectList();
+        }
+
+        return $attachments_by_profile;
     }
 
 	public function getEvaluation_doc($status) {
@@ -1835,9 +1841,9 @@ class EmundusHelperFiles
 
             $group = '';
             if (!$hidden) {
-                $group .= '<div id="group">
+                $group .= '<div id="group" class="em-filter">
                     		<div class="em_label">
-                    			<label class="control-label em_filters_other_label">'.JText::_('COM_EMUNDUS_USERS_GROUP_FILTER').' &ensp;
+                    			<label class="control-label em_filter_label">'.JText::_('COM_EMUNDUS_USERS_GROUP_FILTER').' &ensp;
                     				<a href="javascript:clearchosen(\'#select_multiple_groups\')"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a>
                     			</label>
                             </div>
@@ -3686,6 +3692,28 @@ class EmundusHelperFiles
 
         $q['q'][] = $query;
         return $q;
+    }
+
+    public function getEncryptedTables()
+    {
+        $table_names = [];
+
+        $db = JFactory::getDBO();
+        $query= $db->getQuery(true);
+
+        $query->select($db->quoteName('fl.db_table_name'))
+            ->from($db->quoteName('#__fabrik_lists', 'fl'))
+            ->leftJoin($db->quoteName('#__fabrik_forms', 'fm') . ' ON fl.form_id = fm.id')
+            ->where('JSON_EXTRACT(fm.params, "$.note") = "encrypted"');
+
+        try {
+            $db->setQuery($query);
+            $table_names = $db->loadColumn();
+        } catch (Exception $e) {
+            JLog::add('Failed to get encrypted table names ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+        }
+
+        return $table_names;
     }
 }
 

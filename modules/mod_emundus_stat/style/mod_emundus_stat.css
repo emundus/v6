@@ -22,10 +22,7 @@
     color: #de6339 !important;
 }
 .container-stat {
-	margin-left:5%;
-	margin-right:5%;
-	padding-right:1%;
-	padding-left:1%;
+	padding: 12px;
 }
 
 .g-back-office-emundus-tableau.indicateurs-page #g-page-surround #g-navigation #header-c .platform-content  {
@@ -35,7 +32,7 @@
 
 
 .btnConsulter {
-	border-radius:4px;
+	border-radius: var(--em-border-radius);
 	color:white;
 	font-size: 14px;
 	white-space: normal;

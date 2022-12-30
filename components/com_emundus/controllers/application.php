@@ -490,6 +490,7 @@ class EmundusControllerApplication extends JControllerLegacy
         $ids = $jinput->post->getString('ids', null);
         $sid = $jinput->post->getInt('student_id', null);
         $form_post = $jinput->post->getVar('forms', null);
+        $attachments_only = $jinput->post->getBool('attachments_only', false);
 
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
@@ -501,13 +502,15 @@ class EmundusControllerApplication extends JControllerLegacy
         $fnumInfos = $m_files->getFnumInfos($fnum);
         $profile = $m_profile->getProfileByCampaign($fnumInfos['campaign_id']);
 
-        if(empty($form_post)){
-            $form_post = array();
+        if (!$attachments_only) {
+            if(empty($form_post)){
+                $form_post = array();
 
-            $forms = $m_form->getFormsByProfileId($profile['profile_id']);
-            foreach ($forms as $form){
-                if(!in_array($form->id,$form_post)){
-                    $form_post[] = $form->id;
+                $forms = $m_form->getFormsByProfileId($profile['profile_id']);
+                foreach ($forms as $form){
+                    if(!in_array($form->id,$form_post)){
+                        $form_post[] = $form->id;
+                    }
                 }
             }
         }
@@ -703,7 +706,7 @@ class EmundusControllerApplication extends JControllerLegacy
 
         $attachments = $m_application->getUserAttachmentsByFnum($fnum, NULL);
 
-        echo json_encode(['status' => $attachments !== false ? true : false, 'attachments' => $attachments]);
+        echo json_encode(['status' => $attachments !== false, 'attachments' => $attachments]);
         exit;
     }
 
@@ -812,6 +815,31 @@ class EmundusControllerApplication extends JControllerLegacy
         $res = $m_application->mountQuery($listId, $filters);
 
         echo json_encode($res);
+        exit;
+    }
+
+    public function reorderapplications()
+    {
+        $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+        $current_user = JFactory::getUser();
+        $emundusUser = JFactory::getSession()->get('emundusUser');
+        $emundusUserFnums = array_keys($emundusUser->fnums);
+
+        $jinput = JFactory::getApplication()->input;
+        $fnum_from = $jinput->getString('fnum_from', '');
+        $fnum_to = $jinput->getString('fnum_to', '');
+        $order_column = $jinput->getString('order_column', 'ordering');
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id) || (in_array($fnum_from, $emundusUserFnums) && in_array($fnum_to, $emundusUserFnums))) {
+            $m_application = $this->getModel('Application');
+            $reordered = $m_application->invertFnumsOrderByColumn($fnum_from, $fnum_to, $order_column);
+
+            $response['status'] = $reordered;
+            $response['msg'] =  $reordered ? JText::_('SUCCESS') : JText::_('FAILED');
+        }
+
+        echo json_encode($response);
         exit;
     }
 }

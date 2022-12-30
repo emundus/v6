@@ -54,8 +54,8 @@ class EmundusViewEmail extends JViewLegacy {
 
 			$document = JFactory::getDocument();
 			$document->addStyleSheet("media/com_emundus/css/emundus.css");
-			$document->addStyleSheet("media/com_emundus/lib/chosen/chosen.min.css");
-			$document->addScript("media/com_emundus/lib/chosen/chosen.jquery.min.js");
+			$document->addStyleSheet("media/jui/css/chosen.min.css");
+			$document->addScript("media/jui/js/chosen.jquery.min.js");
 
 			if (!is_array($fnums) || $fnums == "all") {
 				$m_files = new EmundusModelFiles;
