@@ -2114,7 +2114,7 @@ class EmundusModelEvaluation extends JModelList {
 							                    $preprocess->setImageValue($tag, $val);
 						                    }
 						                    else {
-							                    $preprocess->setValue($tag, htmlspecialchars($val));
+							                    $preprocess->setValue($tag, $val);
 						                    }
 					                    }
 				                    }
@@ -2122,7 +2122,7 @@ class EmundusModelEvaluation extends JModelList {
 				                    foreach ($idFabrik as $id) {
 					                    if (isset($fabrikValues[$id][$fnum])) {
 						                    $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
-						                    $preprocess->setValue($id, htmlspecialchars($value));
+						                    $preprocess->setValue($id, $value);
 					                    }
 					                    else {
 						                    $preprocess->setValue($id, '');
