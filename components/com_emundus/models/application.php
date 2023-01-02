@@ -764,21 +764,19 @@ class EmundusModelApplication extends JModelList
      */
     public function getAttachmentsProgress($fnum = null)
     {
-        $session = JFactory::getSession();
-        $current_user = $session->get('emundusUser');
-
-        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
-        $m_profile = new EmundusModelProfile;
-
-
         if (empty($fnum) || (!is_array($fnum) && !is_numeric($fnum))) {
             return false;
         }
 
+        $session = JFactory::getSession();
+        $current_user = $session->get('emundusUser');
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
+        $m_profile = new EmundusModelProfile;
+
         if (!is_array($fnum)) {
             $profile_by_status = $m_profile->getProfileByStatus($fnum);
 
-            if (empty($profile_by_status["profile"])) {
+            if (empty($profile_by_status['profile'])) {
                 $query = 'SELECT esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id
                 FROM #__emundus_setup_campaigns AS esc
                 LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
@@ -788,22 +786,18 @@ class EmundusModelApplication extends JModelList
                 $profile_by_status = $this->_db->loadAssoc();
             }
 
-            $profile = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
+            $profile = !empty($profile_by_status['profile_id']) ? $profile_by_status['profile_id'] : $profile_by_status['profile'];
             $profile_id = (!empty($current_user->fnums[$fnum]) && $current_user->profile != $profile && $current_user->applicant === 1) ? $current_user->profile : $profile;
 
             $query = 'SELECT COUNT(profiles.id)
                 FROM #__emundus_setup_attachment_profiles AS profiles
-                WHERE profiles.campaign_id = ' . intval($profile_by_status["campaign_id"]) . ' AND profiles.displayed = 1';
+                WHERE profiles.campaign_id = ' . intval($profile_by_status['campaign_id']) . ' AND profiles.displayed = 1';
 
-            /*if (!empty($profile_id)) {
-                $query .= ' AND profile_id = ' . $profile_id;
-            }*/
 
             $this->_db->setQuery($query);
             $attachments = $this->_db->loadResult();
 
             if (intval($attachments) == 0) {
-
                 $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                 FROM #__emundus_setup_attachment_profiles AS profiles
                 LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like ' . $this->_db->Quote($fnum) . '
@@ -917,6 +911,82 @@ class EmundusModelApplication extends JModelList
         return $this->_db->execute();
     }
 
+    public function  checkFabrikValidations($fnum, $redirect = false, $itemId = null) {
+        $validate = true;
+
+        if (!empty($fnum)) {
+            require_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
+            $m_profile = new EmundusModelProfile;
+            $profile = $m_profile->getProfileByStatus($fnum);
+
+            if (!empty($profile['profile'])) {
+                require_once (JPATH_COMPONENT . '/models/form.php');
+                $m_form = new EmundusModelForm;
+                $forms = $m_form->getFormsByProfileId($profile['profile']);
+
+                if (!empty($forms)) {
+                    $form_ids = array_map(function($form) {return $form->id;}, $forms);
+
+                    $query = $this->_db->getQuery(true);
+                    $query->select('jfe.label, jfe.params, jff.form_id')
+                        ->from('jos_fabrik_elements as jfe')
+                        ->leftJoin('jos_fabrik_formgroup jff on jfe.group_id = jff.group_id')
+                        ->where('jff.form_id IN (' . implode(',', $form_ids) . ')')
+                        ->andWhere('jfe.plugin = ' . $this->_db->quote('emundus_fileupload'))
+                        ->andWhere('jfe.published = 1')
+                        ->andWhere('JSON_SEARCH(jfe.params, "one", "notempty")  != ""');
+
+                    try {
+                        $this->_db->setQuery($query);
+                        $elements_params = $this->_db->loadObjectList();
+                    } catch (Exception $e) {
+                        JLog::add('Failed to check if emundus fileuploads fields are correctly filled ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                    }
+
+                    if (!empty($elements_params)) {
+                        foreach ($elements_params as $element) {
+                            $params = json_decode($element->params, true);
+                            $notempty_key = array_search('notempty', $params['validations']['plugin']);
+
+                            if ($params['validations']['plugin_published'][$notempty_key] == 1) {
+                                // check user uploaded file
+                                $query->clear()
+                                    ->select('id')
+                                    ->from('#__emundus_uploads')
+                                    ->where('fnum LIKE ' . $this->_db->quote($fnum))
+                                    ->andWhere('attachment_id = ' . $params['attachmentId']);
+
+                                try {
+                                    $this->_db->setQuery($query);
+                                    $is_uploaded =  $this->_db->loadResult();
+                                    if (empty($is_uploaded)) {
+                                        $form_label = '';
+                                        foreach($forms as $form) {
+                                            if ($form->id == $element->form_id) {
+                                                $form_label = JText::_($form->label);
+                                                break;
+                                            }
+                                        }
+
+                                        $app = JFactory::getApplication();
+                                        $app->enqueueMessage(sprintf(JText::_('COM_EMUNDUS_MISSING_MANDATORY_FILE_UPLOAD'), '<b>' . JText::_($element->label) . '</b>', '<b>' . $form_label . '</b>')  , 'warning');
+                                        if ($redirect && !empty($itemId)) {
+                                            $app->redirect("index.php?option=com_fabrik&view=form&formid=" . $element->form_id . "&Itemid=$itemId&usekey=fnum&rowid=$fnum");
+                                        }
+                                        return false;
+                                    }
+                                } catch (Exception $e) {
+                                    JLog::add('Failed to check if emundus fileuploads fields are correctly filled ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $validate;
+    }
 
     /**
      * @param $aid
