@@ -223,6 +223,11 @@ class EmundusHelperFiles
             $params['programme'] = ["%"];
         }
 
+        // If there is no campaign value, set the campaign param as an empty array, for real
+        if (count($params['campaign']) == 1 && $params['campaign'][0] == '') {
+            $params['campaign'] = [];
+        }
+
 
         $session->set('filt_params', $params);
         $session->set('filt_menu', $filts_details);
@@ -551,7 +556,7 @@ class EmundusHelperFiles
         if (empty($code)) {
             $params = JFactory::getSession()->get('filt_params');
             $programme = $params['programme'];
-            $campaigns = @$params['campaign'];
+            $campaigns = $params['campaign'];
 
             if (empty($programme) && empty($campaigns)) {
                 $programme = $m_campaign->getLatestCampaign();
