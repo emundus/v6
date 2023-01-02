@@ -29,6 +29,8 @@ check-tchooz-version-job:
 
 build-app-to-test-job:
   stage: build
+  services:
+    - name: docker:20.10-dind
   image: docker:20.10
   before_script:
     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
@@ -43,6 +45,8 @@ build-app-to-test-job:
 
 build-db-to-test-job:
   stage: build
+  services:
+    - name: docker:20.10-dind
   image: docker:20.10
   before_script:
     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
@@ -128,6 +132,8 @@ sync-documentation-job:
 
 publish-app-image-job:
   stage: publish
+  services:
+    - name: docker:20.10-dind
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
@@ -147,6 +153,8 @@ publish-app-image-job:
 
 publish-db-image-job:
   stage: publish
+  services:
+    - name: docker:20.10-dind
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
