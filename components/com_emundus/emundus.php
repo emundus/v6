@@ -629,6 +629,12 @@ $task = $app->input->get('task', '', 'CMD');
 $format = $app->input->get('format', '', 'CMD');
 $token = $app->input->get('token', '', 'ALNUM');
 
+$xmlDoc = new DOMDocument();
+$release_version = '1.0.0';
+if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
+    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
+}
+
 if(!in_array($name,['settings','campaigns','emails','form'])) {
     JHTML::script("//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js");
     JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
@@ -638,9 +644,9 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
     //TODO : Stop use chosen replace by an other js native library
     //JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
     JHtml::script('media/jui/js/chosen.jquery.min.js');
-    JHTML::script('media/com_emundus/js/em_files.js');
-    JHTML::script('media/com_emundus/js/mixins/exports.js');
-    JHTML::script('media/com_emundus/js/mixins/utilities.js');
+    JFactory::getDocument()->addScript('media/com_emundus/js/em_files.js?' . $release_version);
+    JFactory::getDocument()->addScript('media/com_emundus/js/mixins/exports.js?' . $release_version);
+    JFactory::getDocument()->addScript('media/com_emundus/js/mixins/utilities.js?' . $release_version);
     JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
     JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
 
