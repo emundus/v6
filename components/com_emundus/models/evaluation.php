@@ -3466,6 +3466,9 @@ class EmundusModelEvaluation extends JModelList {
             if(is_array($fnum)){
                 $fnum = $fnum['value'];
             }
+	        if(is_array($student_id)){
+		        $student_id = $student_id['value'];
+	        }
 
             $create_access = EmundusHelperAccess::asAccessAction(5, 'c', $user->id, $fnum);
             $update_access = EmundusHelperAccess::asAccessAction(5, 'u', $user->id, $fnum);
@@ -3570,8 +3573,8 @@ class EmundusModelEvaluation extends JModelList {
             }
         } catch (Exception $e) {
             $message = 'COM_EMUNDUS_ERROR';
-            echo '<pre>'; var_dump($query->__toString()); echo '</pre>'; die;
             $url = '';
+	        JLog::add('Cannot get evaluation URL with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
         }
 
         if(!empty($url)){
