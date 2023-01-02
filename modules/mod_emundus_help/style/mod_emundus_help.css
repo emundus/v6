@@ -6,7 +6,6 @@
 }
 
 #mod_emundus_help .popover.top{
-    right: calc(100% - 240px) !important;
     left: 25px !important;
 }
 
