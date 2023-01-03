@@ -21,22 +21,25 @@ $query = $db->getQuery(true);
 $user = JFactory::getUser();
 
 try {
-    $jinput = JFactory::getApplication()->input;
     $data = new stdClass();
-    $data->campaign_id = $jinput->getInt('jos_emundus_setup_qcm_campaign___campaign')[0];
-    $data->label = $jinput->getString('jos_emundus_setup_qcm_campaign___label');
-    $data->status = $jinput->getInt('jos_emundus_setup_qcm_campaign___status')[0];
-    $data->type = $jinput->get('jos_emundus_setup_qcm_campaign___template')[0];
-    $data->profile = $jinput->getInt('jos_emundus_setup_qcm_campaign___profile')[0];
-    $data->categories = $jinput->getInt('jos_emundus_setup_qcm_campaign_1052_repeat___category_raw');
+    $data->campaign_id = $formModel->getElementData('jos_emundus_setup_qcm_campaign___campaign', true);
+    $data->campaign_id = is_array($data->campaign_id) ? (int)$data->campaign_id[0] : (int)$data->campaign_id;
+    $data->label = $formModel->getElementData('jos_emundus_setup_qcm_campaign___label');
+    $data->status = $formModel->getElementData('jos_emundus_setup_qcm_campaign___status', true);
+    $data->status = is_array($data->status) ? (int)$data->status[0] : (int)$data->status;
+    $data->type = (int)$formModel->getElementData('jos_emundus_setup_qcm_campaign___template');
+    $data->profile = $formModel->getElementData('jos_emundus_setup_qcm_campaign___profile');
+    $data->profile = is_array($data->profile) ? (int)$data->profile[0] : (int)$data->profile;
+    $data->categories = $formModel->getElementData('jos_emundus_setup_qcm_campaign_1052_repeat___category', true);
+    $data->count = (int)$formModel->getElementData('jos_emundus_setup_qcm_campaign___count');
 
     // Create a new QCM
-    if((int)$data->type === 2){
+    if($data->type === 2){
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'formbuilder.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'form.php');
 
-        $m_formbuilder = new EmundusModelformbuilder();
-        $m_form = new EmundusModelform();
+        $m_formbuilder = new EmundusModelFormbuilder();
+        $m_form = new EmundusModelForm();
 
         // Create a new profile
         $data_profile = [
@@ -370,7 +373,7 @@ try {
                 ->set($db->quoteName('date_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
                 ->set($db->quoteName('name') . ' = ' . $db->quote($section->name))
                 ->set($db->quoteName('form_id') . ' = ' . $db->quote($new_menu['id']))
-                ->set($db->quoteName('count') . ' = 10')
+                ->set($db->quoteName('count') . ' = ' . $db->quote($data->count))
                 ->set($db->quoteName('group_id') . ' = ' . $db->quote($group_id));
             $db->setQuery($query);
             $db->execute();
@@ -401,7 +404,7 @@ try {
                     'style' => '0',
                 );
                 $columns = ['asset_id', 'title', 'note', 'content', 'ordering', 'position', 'checked_out', 'checked_out_time', 'publish_up', 'publish_down', 'published', 'module', 'access', 'showtitle', 'params', 'client_id', 'language'];
-                $values = [0, 'QCM - ' . $new_menu['id'], '', null, 1, 'content-bottom-a', 0, date('Y-m-d H:i:s'), date('Y-m-d H:i:s'), '2029-04-09 13:02:54', 1, 'mod_emundus_qcm', 1, 0, json_encode($params), 0, '*'];
+                $values = [0, 'QCM - ' . $new_menu['id'], '', null, 1, 'content-bottom-a', 0, date('Y-m-d H:i:s'), date('Y-m-d H:i:s',strtotime('-1 hour')), '2029-04-09 13:02:54', 1, 'mod_emundus_qcm', 1, 0, json_encode($params), 0, '*'];
                 foreach ($columns as $key => $column) {
                     $columns[$key] = $db->quoteName($column);
                 }
@@ -437,10 +440,12 @@ try {
 
     // Création de la phase QCM
     $query->clear()
-        ->select('id')
-        ->from($db->quoteName('#__emundus_campaign_workflow'))
-        ->where($db->quoteName('entry_status') . ' = ' . $data->status)
-        ->andWhere($db->quoteName('campaign') . ' = ' . $data->campaign_id);
+        ->select('ecw.id')
+        ->from($db->quoteName('#__emundus_campaign_workflow','ecw'))
+        ->leftJoin($db->quoteName('#__emundus_campaign_workflow_repeat_entry_status','ecwres').' ON '.$db->quoteName('ecwres.parent_id').' = '.$db->quoteName('ecw.id'))
+        ->leftJoin($db->quoteName('#__emundus_campaign_workflow_repeat_campaign','ecwrc').' ON '.$db->quoteName('ecwrc.parent_id').' = '.$db->quoteName('ecw.id'))
+        ->where($db->quoteName('ecwres.entry_status') . ' = ' . $data->status)
+        ->andWhere($db->quoteName('ecwrc.campaign') . ' = ' . $data->campaign_id);
     $db->setQuery($query);
     $workflow = $db->loadResult();
 
@@ -456,15 +461,30 @@ try {
             ->insert($db->quoteName('#__emundus_campaign_workflow'))
             ->set($db->quoteName('date_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
             ->set($db->quoteName('updated') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-            ->set($db->quoteName('campaign') . ' = ' . $data->campaign_id)
             ->set($db->quoteName('profile') . ' = ' . $data->profile)
-            ->set($db->quoteName('entry_status') . ' = ' . $data->status)
+            ->set($db->quoteName('output_status') . ' = ' . $data->status)
             ->set($db->quoteName('step') . ' = 1');
+        $db->setQuery($query);
+        $db->execute();
+        $new_workflow = $db->insertid();
+
+        $query->clear()
+            ->insert($db->quoteName('#__emundus_campaign_workflow_repeat_campaign'))
+            ->set($db->quoteName('parent_id') . ' = ' . $db->quote($new_workflow))
+            ->set($db->quoteName('campaign') . ' = ' . $db->quote($data->campaign_id));
+        $db->setQuery($query);
+        $db->execute();
+
+        $query->clear()
+            ->insert($db->quoteName('#__emundus_campaign_workflow_repeat_entry_status'))
+            ->set($db->quoteName('parent_id') . ' = ' . $db->quote($new_workflow))
+            ->set($db->quoteName('entry_status') . ' = ' . $db->quote($data->status));
         $db->setQuery($query);
         $db->execute();
     }
 
 } catch(Exception $e) {
+    echo '<pre>'; var_dump($e->getMessage()); echo '</pre>'; die;
     JLog::add('plugins/fabrik_form/php/scripts/emundus-qcm-setup-campaign.php | Error at init qcm module : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 }
 ?>

@@ -37,6 +37,7 @@ JText::script('MOD_EM_QCM_TEST_QUESTION_PROPOSAL_4');
      pending="<?= $qcm_applicant->pending ?>"
      module="<?= $module->id ?>"
      tierstemps="<?= $qcm_applicant->tiers_temps ?>"
+     html="<?= $html ?>"
 ></div>
 
 <script src="media/mod_emundus_qcm/app.js"></script>
