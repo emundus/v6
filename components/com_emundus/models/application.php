@@ -920,7 +920,7 @@ class EmundusModelApplication extends JModelList
             $profile = $m_profile->getProfileByStatus($fnum);
 
             if (!empty($profile['profile'])) {
-                require_once (JPATH_COMPONENT . '/models/form.php');
+	            require_once(JPATH_SITE . '/components/com_emundus/models/form.php');
                 $m_form = new EmundusModelForm;
                 $forms = $m_form->getFormsByProfileId($profile['profile']);
 

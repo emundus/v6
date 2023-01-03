@@ -242,7 +242,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
                         <hr>
 
-                        <p class="mod_emundus_campaign__list_content_resume em-applicant-text-color em-font-size-16">
+                        <div class="mod_emundus_campaign__list_content_resume em-applicant-text-color em-font-size-16">
                             <?php
                             $text = '';
                             $textprog = '';
@@ -252,7 +252,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                             }
                             echo $textcamp;
                             ?>
-                        </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -600,7 +600,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
                                 <hr>
 
-                                <p class="mod_emundus_campaign__list_content_resume em-applicant-text-color em-font-size-16"
+                                <div class="mod_emundus_campaign__list_content_resume em-applicant-text-color em-font-size-16"
                                     <?php if (empty($mod_em_campaign_show_timezone) || (strtotime($now) > strtotime($result->end_date)) ) : ?> style="-webkit-line-clamp: 4;" <?php endif; ?>
                                 >
                                     <?php
@@ -612,7 +612,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                     }
                                     echo $textcamp;
                                     ?>
-                                </p>
+                                </div>
 
                                 <?php if ($mod_em_campaign_show_apply_button == 1) : ?>
                                     <div>
