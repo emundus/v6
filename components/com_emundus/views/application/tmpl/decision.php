@@ -51,7 +51,7 @@ JFactory::getSession()->set('application_layout', 'decision');
                     <?php endif; ?>
                 </div>
               </div>
-              <div class="evaluations" id="evaluations">-----------</div>
+              <div class="evaluations" id="evaluations" style="display: none">-----------</div>
             </div>
         </div>
     </div>
