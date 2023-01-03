@@ -9,6 +9,15 @@
 defined('_JEXEC') or die;
 ?>
 
-<div class="mod_emundus_banner__banner">
+<div class="mod_emundus_banner__banner" style="display: none">
 
 </div>
+
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+        <?php if(!empty($image_link)) : ?>
+            document.getElementsByClassName('mod_emundus_banner__banner')[0].style.backgroundImage = "url('<?php echo $image_link ?>')"
+            document.getElementsByClassName('mod_emundus_banner__banner')[0].style.display = 'block';
+        <?php endif; ?>
+    });
+</script>
