@@ -14,7 +14,6 @@ $document->addScript('media/mod_emundus_qcm/chunk-vendors.js');
 $document->addStyleSheet('media/mod_emundus_qcm/app.css');
 
 $intro = $params->get('mod_em_qcm_intro');
-$html = $params->get('mod_em_qcm_html',0);
 
 $model = new EmundusModelQcm;
 

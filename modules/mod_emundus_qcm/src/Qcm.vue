@@ -18,11 +18,11 @@
           </div>
         </div>
         <div v-if="quizTesting && !testPassed">
-          <question :question="testing_question" :updateProposal="updateProposal" :tierstemps="tierstemps" :pending="pending" :formid="formid" :html="html" @nextQuestion="testPassed = true;"></question>
+          <question :question="testing_question" :updateProposal="updateProposal" :tierstemps="tierstemps" :pending="pending" :formid="formid" @nextQuestion="testPassed = true;"></question>
         </div>
         <div v-if="quizStarting">
           <p style="text-align: center;">{{parseInt(step)+1}} / {{count}}</p>
-          <question :question="applicant_questions[step]" :updateProposal="updateProposal" :pending="pending" :formid="formid" :tierstemps="tierstemps" :html="html" @nextQuestion="nextQuestion" @resetPending="pending = 0" @saveAnswer="saveAnswer"></question>
+          <question :question="applicant_questions[step]" :updateProposal="updateProposal" :pending="pending" :formid="formid" :tierstemps="tierstemps" @nextQuestion="nextQuestion" @resetPending="pending = 0" @saveAnswer="saveAnswer"></question>
         </div>
       </div>
       <div v-else>
@@ -49,7 +49,6 @@ export default {
     pending: Number,
     module: Number,
     tierstemps: Number,
-    html: Number,
   },
   components: {Question},
   data() {

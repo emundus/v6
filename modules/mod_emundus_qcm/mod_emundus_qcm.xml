@@ -66,11 +66,6 @@
 							default="1"
 							label="MOD_EM_QCM_POINTS_MAXIMAL"
 							description="MOD_EM_QCM_POINTS_MAXIMAL_DESC"/>
-
-					<field type="list" name="mod_em_qcm_html" label="MOD_EM_QCM_HTML" description="MOD_EM_QCM_HTML_DESC">
-						<option value="0">JNO</option>
-						<option value="1">JYES</option>
-					</field>
 				</fieldset>
 			</fields>
 		</config>

@@ -1,8 +1,7 @@
 <template>
   <div>
     <div :class="finish ? 'finished' : ''" style="padding: 10px">
-      <label v-if="html == 1" v-html="question.question" class="em-mb-24"></label>
-      <label v-else class="em-mb-24">{{ question.question }}</label>
+      <label v-html="question.question" class="em-mb-24"></label>
       <div>
         <div v-for="(proposal,index) in proposals" :class="'proposals'">
           <input type="checkbox" style="margin-right: 10px" :id="'proposal'+index" :name="question.code" v-model="answer" :value="proposal" :disabled="finish">
@@ -46,7 +45,6 @@ export default {
     pending: Number,
     formid: Number,
     tierstemps: Number,
-    html: Number
   },
   components: {
     KProgress
