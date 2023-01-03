@@ -478,11 +478,11 @@ class EmundusHelperEvents {
             $mFiles = new EmundusModelFiles;
             $application_fee = (!empty($application_fee) && !empty($mProfile->getHikashopMenu($user->profile)));
 
-            $validations = $mApplication->checkFabrikValidations($user->fnum, true, $itemid);
+            //$validations = $mApplication->checkFabrikValidations($user->fnum, true, $itemid);
             $attachments = $mApplication->getAttachmentsProgress($user->fnum);
             $forms = $mApplication->getFormsProgress($user->fnum);
 
-            if ($attachments < 100 || $forms < 100 || !$validations) {
+            if ($attachments < 100 || $forms < 100) {
                 $mainframe->redirect( "index.php?option=com_emundus&view=checklist&Itemid=".$itemid, JText::_('INCOMPLETE_APPLICATION'));
             }
 
