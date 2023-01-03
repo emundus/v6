@@ -113,6 +113,7 @@ li>a:hover {
     align-items: center;
     z-index: 9999;
     position: relative;
+    width: 30px;
 }
 
 #g-navigation #header-c .header-right a.btn.btn-danger {
