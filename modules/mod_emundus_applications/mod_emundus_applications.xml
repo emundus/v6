@@ -305,7 +305,7 @@
 					   layout="joomla.form.field.subform.repeatable-table">
 					<form>
 						<field
-								name="mod_em_application_group_status"
+								name="mod_em_application_custom_action_status"
 								type="sql"
 								query="SELECT step, value FROM #__emundus_setup_status"
 								multiple="true"
