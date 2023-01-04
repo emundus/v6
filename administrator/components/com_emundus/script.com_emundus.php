@@ -444,12 +444,6 @@ class com_emundusInstallerScript
 	            EmundusHelperUpdate::addYamlVariable('priority','0',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
 	            EmundusHelperUpdate::addYamlVariable('name','Quill',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
 
-	            EmundusHelperUpdate::addYamlVariable('location','gantry-assets://custom/scss/quill.scss',JPATH_ROOT . '/templates/g5_helium/custom/config/22/page/assets.yaml','css',true,true);
-	            EmundusHelperUpdate::addYamlVariable('inline','',JPATH_ROOT . '/templates/g5_helium/custom/config/22/page/assets.yaml','css');
-	            EmundusHelperUpdate::addYamlVariable('extra','{  }',JPATH_ROOT . '/templates/g5_helium/custom/config/22/page/assets.yaml','css');
-	            EmundusHelperUpdate::addYamlVariable('priority','0',JPATH_ROOT . '/templates/g5_helium/custom/config/22/page/assets.yaml','css');
-	            EmundusHelperUpdate::addYamlVariable('name','Quill',JPATH_ROOT . '/templates/g5_helium/custom/config/22/page/assets.yaml','css');
-
 	            EmundusHelperUpdate::disableEmundusPlugins('emundus_profile');
 
 	            $query->clear()
@@ -488,6 +482,17 @@ class com_emundusInstallerScript
 	        if (version_compare($cache_version, '1.34.4', '<') || $firstrun) {
 		        EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_MISSING_MANDATORY_FILE_UPLOAD', 'Veuillez remplir le champ obligatoire %s du formulaire %s');
 		        EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_MISSING_MANDATORY_FILE_UPLOAD', 'Please fill the mandatory field %s of form %s', 'override', null, null, null, 'en-GB');
+	        }
+
+	        if (version_compare($cache_version, '1.34.10', '<') || $firstrun) {
+		        EmundusHelperUpdate::insertTranslationsTag('APPLICATION_CREATION_DATE', 'Dossier crée le');
+		        EmundusHelperUpdate::insertTranslationsTag('APPLICATION_CREATION_DATE', 'File created on', 'override', null, null, null, 'en-GB');
+
+		        EmundusHelperUpdate::insertTranslationsTag('CAMPAIGN_ID', 'Campagne');
+		        EmundusHelperUpdate::insertTranslationsTag('CAMPAIGN_ID', 'Campaign', 'override', null, null, null, 'en-GB');
+
+		        EmundusHelperUpdate::insertTranslationsTag('SEND_ON', 'Envoyé le');
+		        EmundusHelperUpdate::insertTranslationsTag('SEND_ON', 'Send on', 'override', null, null, null, 'en-GB');
 	        }
 
             // Insert new translations in overrides files
