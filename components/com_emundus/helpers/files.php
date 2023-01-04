@@ -760,7 +760,6 @@ class EmundusHelperFiles
 
                 foreach ($photos as $photo) {
                     $folder = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
-                    //return '<img class="img-responsive" src="' . $folder . '/tn_' . $photo['filename'] . '" width="60" /></img>';
                     if(file_exists($folder . '/tn_'. $photo['filename'])) {
                         return '<img class="img-responsive" src="' . $folder . '/tn_' . $photo['filename'] . '" width="60" /></img>';
                     } else {
