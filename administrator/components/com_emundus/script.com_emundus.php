@@ -484,6 +484,17 @@ class com_emundusInstallerScript
 		        EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_MISSING_MANDATORY_FILE_UPLOAD', 'Please fill the mandatory field %s of form %s', 'override', null, null, null, 'en-GB');
 	        }
 
+	        if (version_compare($cache_version, '1.34.10', '<') || $firstrun) {
+		        EmundusHelperUpdate::insertTranslationsTag('APPLICATION_CREATION_DATE', 'Dossier crée le');
+		        EmundusHelperUpdate::insertTranslationsTag('APPLICATION_CREATION_DATE', 'File created on', 'override', null, null, null, 'en-GB');
+
+		        EmundusHelperUpdate::insertTranslationsTag('CAMPAIGN_ID', 'Campagne');
+		        EmundusHelperUpdate::insertTranslationsTag('CAMPAIGN_ID', 'Campaign', 'override', null, null, null, 'en-GB');
+
+		        EmundusHelperUpdate::insertTranslationsTag('SEND_ON', 'Envoyé le');
+		        EmundusHelperUpdate::insertTranslationsTag('SEND_ON', 'Send on', 'override', null, null, null, 'en-GB');
+	        }
+
             // Insert new translations in overrides files
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
 

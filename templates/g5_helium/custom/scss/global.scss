@@ -4448,6 +4448,9 @@ button.swal2-cancel.goback-btn {
           .fabrikSubGroupElements td input {
             @include input-default;
           }
+          .fabrikSubGroupElements td select {
+            @include select-default;
+          }
         }
 
         /** DATABASEJOIN - RADIO - CHECKBOX - AUTRES **/
