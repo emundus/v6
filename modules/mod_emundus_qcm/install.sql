@@ -178,6 +178,8 @@ SET @template:= LAST_INSERT_ID();
 INSERT INTO jos_fabrik_elements (name, group_id, plugin, label, checked_out, checked_out_time, created, created_by, created_by_alias, modified, modified_by, width, height, `default`, hidden, eval, ordering, show_in_list_summary, filter_type, filter_exact_match, published, link_to_detail, primary_key, auto_increment, access, use_in_page_title, parent_id, params)
 VALUES ('profile', @group_setup_campaigns, 'databasejoin', 'QCM', 0, '0000-00-00 00:00:00', '2022-01-11 08:16:06.0', 62, 'sysadmin', '0000-00-00 00:00:00', 0, 0, 0, '', 0, 0, 7, 0, '', 1, 1, 0, 0, 0, 1, 0, 0, '{"database_join_display_type":"dropdown","join_conn_id":"1","join_db_name":"jos_emundus_setup_profiles","join_key_column":"id","join_val_column":"label","join_val_column_concat":"","database_join_where_sql":"WHERE label LIKE ''Tests%''","database_join_where_access":"1","database_join_where_when":"3","databasejoin_where_ajax":"0","databasejoin_where_ajax_default_eval":"","database_join_filter_where_sql":"","database_join_show_please_select":"1","database_join_noselectionvalue":"","database_join_noselectionlabel":"","placeholder":"","databasejoin_popupform":"","fabrikdatabasejoin_frontend_add":"0","join_popupwidth":"","databasejoin_readonly_link":"0","fabrikdatabasejoin_frontend_select":"0","advanced_behavior":"0","dbjoin_options_per_row":"4","dbjoin_multiselect_max":"0","dbjoin_multilist_size":"6","dbjoin_autocomplete_size":"20","dbjoin_autocomplete_rows":"10","bootstrap_class":"input-large","dabase_join_label_eval":"","join_desc_column":"","dbjoin_autocomplete_how":"contains","clean_concat":"0","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"1","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"1","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"1","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"1","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","validations":[]}');
 INSERT INTO jos_fabrik_elements (name, group_id, plugin, label, checked_out, checked_out_time, created, created_by, created_by_alias, modified, modified_by, width, height, `default`, hidden, eval, ordering, show_in_list_summary, filter_type, filter_exact_match, published, link_to_detail, primary_key, auto_increment, access, use_in_page_title, parent_id, params)
+VALUES ('count', @group_setup_campaigns, 'field', 'QCM_COUNT', 0, '0000-00-00 00:00:00', '2023-01-03 08:44:38', 62, 'sysadmin', '2023-01-03 09:07:58', 62, 0, 0, '10', 0, 1, 8, 0, '', 1, 1, 0, 0, 0, 1, 0, 0, '{"placeholder":"","password":"6","maxlength":"255","disable":"0","readonly":"0","autocomplete":"1","speech":"0","advanced_behavior":"0","bootstrap_class":"input-medium","text_format":"integer","integer_length":"11","decimal_length":"2","field_use_number_format":"0","field_thousand_sep":",","field_decimal_sep":".","text_format_string":"","field_format_string_blank":"1","text_input_mask":"","text_input_mask_autoclear":"0","text_input_mask_definitions":"","render_as_qrcode":"0","scan_qrcode":"0","guess_linktype":"0","link_target_options":"default","rel":"","link_title":"","link_attributes":"","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"1","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"1","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"1","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"1","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","notempty-message":[""],"notempty-validation_condition":[""],"tip_text":[""],"icon":[""],"validations":{"plugin":["notempty"],"plugin_published":["1"],"validate_in":["both"],"validation_on":["both"],"validate_hidden":["0"],"must_validate":["0"],"show_icon":["1"]}}');
+INSERT INTO jos_fabrik_elements (name, group_id, plugin, label, checked_out, checked_out_time, created, created_by, created_by_alias, modified, modified_by, width, height, `default`, hidden, eval, ordering, show_in_list_summary, filter_type, filter_exact_match, published, link_to_detail, primary_key, auto_increment, access, use_in_page_title, parent_id, params)
 VALUES ('id', @group_setup_campaigns_repeat, 'internalid', 'id', 0, '0000-00-00 00:00:00', '2022-01-11 08:16:42.0', 62, 'sysadmin', '0000-00-00 00:00:00', 0, 3, 0, '', 1, 0, 1, 0, null, null, 1, 1, 1, 1, 1, 0, 0, '{"rollover":"","comment":"","sub_default_value":"","sub_default_label":"","element_before_label":1,"allow_frontend_addtocheckbox":0,"database_join_display_type":"dropdown","joinType":"simple","join_conn_id":-1,"date_table_format":"Y-m-d","date_form_format":"Y-m-d H:i:s","date_showtime":0,"date_time_format":"H:i","date_defaulttotoday":1,"date_firstday":0,"multiple":0,"allow_frontend_addtodropdown":0,"password":0,"maxlength":255,"text_format":"text","integer_length":6,"decimal_length":2,"guess_linktype":0,"disable":0,"readonly":0,"ul_max_file_size":16000,"ul_email_file":0,"ul_file_increment":0,"upload_allow_folderselect":1,"fu_fancy_upload":0,"upload_delete_image":1,"make_link":0,"fu_show_image_in_table":0,"image_library":"gd2","make_thumbnail":0,"imagepath":"\\/","selectImage_root_folder":"\\/","image_front_end_select":0,"show_image_in_table":0,"image_float":"none","link_target":"_self","radio_element_before_label":0,"options_per_row":4,"ck_options_per_row":4,"allow_frontend_addtoradio":0,"use_wysiwyg":0,"my_table_data":"id","update_on_edit":0,"view_access":1,"show_in_rss_feed":0,"show_label_in_rss_feed":0,"icon_folder":-1,"use_as_row_class":0,"filter_access":1,"full_words_only":0,"inc_in_adv_search":1,"sum_on":0,"sum_access":0,"avg_on":0,"avg_access":0,"median_on":0,"median_access":0,"count_on":0,"count_access":0}');
 INSERT INTO jos_fabrik_elements (name, group_id, plugin, label, checked_out, checked_out_time, created, created_by, created_by_alias, modified, modified_by, width, height, `default`, hidden, eval, ordering, show_in_list_summary, filter_type, filter_exact_match, published, link_to_detail, primary_key, auto_increment, access, use_in_page_title, parent_id, params)
 VALUES ('parent_id', @group_setup_campaigns_repeat, 'field', 'parent_id', 0, '0000-00-00 00:00:00', '2022-01-11 08:16:42.0', 62, 'sysadmin', '0000-00-00 00:00:00', 0, 0, 0, '', 1, 0, 2, 0, null, null, 1, 1, 0, 0, 1, 0, 0, '{"rollover":"","comment":"","sub_default_value":"","sub_default_label":"","element_before_label":1,"allow_frontend_addtocheckbox":0,"database_join_display_type":"dropdown","joinType":"simple","join_conn_id":-1,"date_table_format":"Y-m-d","date_form_format":"Y-m-d H:i:s","date_showtime":0,"date_time_format":"H:i","date_defaulttotoday":1,"date_firstday":0,"multiple":0,"allow_frontend_addtodropdown":0,"password":0,"maxlength":255,"text_format":"text","integer_length":6,"decimal_length":2,"guess_linktype":0,"disable":0,"readonly":0,"ul_max_file_size":16000,"ul_email_file":0,"ul_file_increment":0,"upload_allow_folderselect":1,"fu_fancy_upload":0,"upload_delete_image":1,"make_link":0,"fu_show_image_in_table":0,"image_library":"gd2","make_thumbnail":0,"imagepath":"\\/","selectImage_root_folder":"\\/","image_front_end_select":0,"show_image_in_table":0,"image_float":"none","link_target":"_self","radio_element_before_label":0,"options_per_row":4,"ck_options_per_row":4,"allow_frontend_addtoradio":0,"use_wysiwyg":0,"my_table_data":"id","update_on_edit":0,"view_access":1,"show_in_rss_feed":0,"show_label_in_rss_feed":0,"icon_folder":-1,"use_as_row_class":0,"filter_access":1,"full_words_only":0,"inc_in_adv_search":1,"sum_on":0,"sum_access":0,"avg_on":0,"avg_access":0,"median_on":0,"median_access":0,"count_on":0,"count_access":0}');
@@ -244,37 +246,48 @@ if(value == 1){
 }', '{"js_e_event":"","js_e_trigger":"fabrik_trigger_group_group781","js_e_condition":"","js_e_value":"","js_published":"1"}');
 
 INSERT INTO jos_fabrik_jsactions (element_id, action, code, params) VALUES (@template, 'change', 'var value = this.get(&#039;value&#039;);
-var fab = this.form.elements;
-
-var elt1 = fab.get(&#039;jos_emundus_setup_qcm_campaign___profile&#039;);
+const fab = this.form.elements;
+let {
+    jos_emundus_setup_qcm_campaign___profile,
+    jos_emundus_setup_qcm_campaign___count,
+    jos_emundus_setup_qcm_campaign_1052_repeat___category_0
+} = fab;
 
 if(value == 1){
-  elt1.show();
-  document.getElementById(&#039;group1052&#039;).classList.add(&#039;fabrikHide&#039;);
+  showFabrikElt(jos_emundus_setup_qcm_campaign___profile);
+  hideFabrikElt(jos_emundus_setup_qcm_campaign___count);
+  hideFabrikGroupByElt(jos_emundus_setup_qcm_campaign_1052_repeat___category_0, true);
 } else if(value == 2) {
-  elt1.hide();
-  elt1.clear();
-  document.getElementById(&#039;group1052&#039;).classList.remove(&#039;fabrikHide&#039;);
+  hideFabrikElt(jos_emundus_setup_qcm_campaign___profile,true);
+  showFabrikElt(jos_emundus_setup_qcm_campaign___count);
+  showFabrikGroupByElt(jos_emundus_setup_qcm_campaign_1052_repeat___category_0);
 } else {
-  elt1.hide();
-  elt1.clear();
-  document.getElementById(&#039;group1052&#039;).classList.add(&#039;fabrikHide&#039;);
+  hideFabrikElt(jos_emundus_setup_qcm_campaign___profile,true);
+  hideFabrikElt(jos_emundus_setup_qcm_campaign___count);
+  showFabrikGroupByElt(jos_emundus_setup_qcm_campaign_1052_repeat___category_0);
 }', '{"js_e_event":"","js_e_trigger":"fabrik_trigger_group_group1051","js_e_condition":"","js_e_value":"","js_published":"1"}');
 INSERT INTO jos_fabrik_jsactions (element_id, action, code, params) VALUES (@template, 'load', 'var value = this.get(&#039;value&#039;);
-var fab = this.form.elements;
-
-var elt1 = fab.get(&#039;jos_emundus_setup_qcm_campaign___profile&#039;);
+const fab = this.form.elements;
+let {
+    jos_emundus_setup_qcm_campaign___profile,
+    jos_emundus_setup_qcm_campaign___count,
+    jos_emundus_setup_qcm_campaign_1052_repeat___category_0
+} = fab;
 
 if(value == 1){
-  elt1.show();
-  document.getElementById(&#039;group1052&#039;).classList.add(&#039;fabrikHide&#039;);
+  showFabrikElt(jos_emundus_setup_qcm_campaign___profile);
+  hideFabrikElt(jos_emundus_setup_qcm_campaign___count);
+  hideFabrikGroupByElt(jos_emundus_setup_qcm_campaign_1052_repeat___category_0, false);
 } else if(value == 2) {
-  elt1.hide();
-  document.getElementById(&#039;group1052&#039;).classList.remove(&#039;fabrikHide&#039;);
+  hideFabrikElt(jos_emundus_setup_qcm_campaign___profile);
+  showFabrikElt(jos_emundus_setup_qcm_campaign___count);
+  showFabrikGroupByElt(jos_emundus_setup_qcm_campaign_1052_repeat___category_0);
 } else {
-  elt1.hide();
-  document.getElementById(&#039;group1052&#039;).classList.add(&#039;fabrikHide&#039;);
+  hideFabrikElt(jos_emundus_setup_qcm_campaign___profile);
+  hideFabrikGroupByElt(jos_emundus_setup_qcm_campaign_1052_repeat___category_0);
+  hideFabrikElt(jos_emundus_setup_qcm_campaign___count);
 }', '{"js_e_event":"","js_e_trigger":"fabrik_trigger_group_group1051","js_e_condition":"","js_e_value":"","js_published":"1"}');
+
 INSERT INTO jos_fabrik_jsactions (element_id, action, code, params) VALUES (@qcm_setup_campaign_elt, 'change', 'var value = this.get(&#039;value&#039;);
 var fab = this.form.elements;
 
