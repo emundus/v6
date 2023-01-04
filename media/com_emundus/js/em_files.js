@@ -6156,7 +6156,7 @@ $(document).ready(function() {
         var id = $(this).attr('id').split('_')[1];
 
         var elements_block = document.getElementById('felts' + id);
-        if (elements_block.style.display == 'none') {
+        if (elements_block != null && elements_block.style.display == 'none') {
             $('#showelements_'+id+'_icon').css('transform', 'rotate(0deg)');
             $('#felts'+ id).toggle(300);
         } else {
