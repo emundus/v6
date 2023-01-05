@@ -35,7 +35,7 @@ endif;
 <div class="page-header">
     <h1>
         <?php
-        $title = explode('-', $form->label);
+        $title = explode(' - ', $form->label);
         echo !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0])); ?></h1>
 </div>
 <?php endif; ?>
