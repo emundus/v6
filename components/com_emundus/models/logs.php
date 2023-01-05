@@ -83,7 +83,7 @@ class EmundusModelLogs extends JModelList {
                         $db->setQuery($query);
                         $db->execute();
                     } catch (Exception $e) {
-                        JLog::add('Error logging at the following query: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+                        JLog::add('Error logging at the following query: ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                     }
                 }
             }
@@ -128,7 +128,7 @@ class EmundusModelLogs extends JModelList {
 		try {
 			return $this->db->loadObjectList();
 		} catch (Exception $e) {
-			JLog::add('Could not get logs in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Could not getUserActions in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -172,7 +172,7 @@ class EmundusModelLogs extends JModelList {
 		try {
 			return $this->db->loadObjectList();
 		} catch (Exception $e) {
-			JLog::add('Could not get logs in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Could not getActionsOnUser in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -225,7 +225,7 @@ class EmundusModelLogs extends JModelList {
                 $result->date = EmundusHelperDate::displayDate($result->timestamp,'DATE_FORMAT_LC2',0);
             }
 		} catch (Exception $e) {
-			JLog::add('Could not get logs in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Could not getActionsOnFnum in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 		}
 
         return $results;
@@ -271,7 +271,7 @@ class EmundusModelLogs extends JModelList {
 		try {
 			return $this->db->loadObjectList();
 		} catch (Exception $e) {
-			JLog::add('Could not get logs in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Could not getActionsBetweenUsers in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
