@@ -163,7 +163,7 @@ ksort($applications);
 	                                $current_phase = $m_campaign->getCurrentCampaignWorkflow($application->fnum);
 
                                     ?>
-                                    <div class="row em-border-neutral-300 mod_emundus_applications___content_app em-pointer" id="application_content<?php echo $application->fnum ?>">
+                                    <div class="row em-border-neutral-300 mod_emundus_applications___content_app em-pointer" id="application_content<?php echo $application->fnum ?>" onclick="openFile(event,'<?php echo $first_page_url ?>')">
                                         <div class="em-w-100">
                                             <div class="em-flex-row mod_emundus_applications___content_text">
                                                 <?php if ($show_fnum) : ?>
@@ -182,11 +182,11 @@ ksort($applications);
                                                                 <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
                                                             </a>
                                                             <?php
-                                                                foreach($custom_actions as $custom_action) {
+                                                                foreach($custom_actions as $custom_action_key => $custom_action) {
 
                                                                 if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)){
                                                                 ?>
-                                                                    <a class="em-text-neutral-900 em-pointer" href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?> ><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></a>
+                                                                    <a id="actions_button_custom_<?= $custom_action_key; ?>" class="em-text-neutral-900 em-pointer" href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?> ><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></a>
                                                                 <?php
                                                                 }
                                                             }
@@ -234,11 +234,11 @@ ksort($applications);
                                                                     </a>
                                                                 <?php endif; ?>
                                                                 <?php
-                                                                foreach($custom_actions as $custom_action) {
+                                                                foreach($custom_actions as $custom_action_key => $custom_action) {
 
                                                                     if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)){
                                                                         ?>
-                                                                        <a class="em-text-neutral-900 em-pointer" href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?> ><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></a>
+                                                                        <a id="actions_button_custom_<?= $custom_action_key; ?>" class="em-text-neutral-900 em-pointer" href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?> ><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></a>
                                                                         <?php
                                                                     }
                                                                 }
@@ -270,10 +270,11 @@ ksort($applications);
                                                                     </a>
                                                                 <?php endif; ?>
                                                                 <?php
-                                                                foreach($custom_actions as $custom_action) {
+                                                                foreach($custom_actions as $custom_action_key => $custom_action) {
+
                                                                     if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)){
                                                                         ?>
-                                                                        <a class="em-text-neutral-900 em-pointer" href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?> ><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></a>
+                                                                        <a id="actions_button_custom_<?= $custom_action_key; ?>" class="em-text-neutral-900 em-pointer" href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?> ><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></a>
                                                                         <?php
                                                                     }
                                                                 }
@@ -486,7 +487,7 @@ ksort($applications);
         }
     });
 
-    function openFile(e,url) {
+    function openFile(e, url) {
         let target = e.target.id;
 
         if(target.indexOf('actions_button_') !== -1 || target.indexOf('actions_block_delete_') !== -1){
