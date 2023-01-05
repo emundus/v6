@@ -186,7 +186,7 @@ ksort($applications);
 
                                                                 if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)){
                                                                 ?>
-                                                                    <a class="em-text-neutral-900 em-pointer" href="<?= $custom_action->mod_em_application_custom_action_link ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?> ><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></a>
+                                                                    <a class="em-text-neutral-900 em-pointer" href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?> ><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></a>
                                                                 <?php
                                                                 }
                                                             }
@@ -238,7 +238,7 @@ ksort($applications);
 
                                                                     if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)){
                                                                         ?>
-                                                                        <a class="em-text-neutral-900 em-pointer" href="<?= $custom_action->mod_em_application_custom_action_link ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?> ><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></a>
+                                                                        <a class="em-text-neutral-900 em-pointer" href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?> ><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></a>
                                                                         <?php
                                                                     }
                                                                 }
