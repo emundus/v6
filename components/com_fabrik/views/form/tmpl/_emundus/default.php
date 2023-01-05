@@ -33,8 +33,8 @@ endif;
 <div class="emundus-form">
 <?php if ($this->params->get('show-title', 1)) :?>
 <div class="page-header">
-    <?php $title = preg_replace('/^([^-]+ - )/', '', $form->label);?>
-    <h1><?= $title ?></h1>
+    <?php $title = trim(preg_replace('/^([^-]+ - )/', '', $form->label));?>
+    <h1><?= JText::_($title) ?></h1>
 </div>
 <?php endif; ?>
 
