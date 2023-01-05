@@ -169,7 +169,7 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
                                         </td>
 									<?php endif;?>
 								<?php else:?>
-                                    <td>
+                                    <td <?php if ($k == 'groupe') { echo 'class="em-cell-scroll"'; } ?>>
                                         <div class="em-cell" >
 									        <?php echo $value;?>
                                         </div>
