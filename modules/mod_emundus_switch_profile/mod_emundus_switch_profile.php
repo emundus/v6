@@ -36,7 +36,7 @@ if (!empty($user->fnums)) {
 
 $just_logged = $user->just_logged;
 
-if (!empty($user->emProfiles) && sizeof($user->emProfiles > 1) && (!$only_applicant)) {
+if (!empty($user->emProfiles) && (sizeof($user->emProfiles) > 1) && (!$only_applicant)) {
     $text = JText::_('MOD_EMUNDUS_SWITCH_PROFILE_INFO');
     $text .= '<div class=\"em-flex-row em-flex-center\" style=\"flex-wrap: wrap;\">';
 
