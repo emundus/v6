@@ -137,7 +137,7 @@ class EmundusHelperFiles
 
         foreach ($filts_names as $key => $filt_name) {
 
-            if (isset($filts_values[$key]) && !is_null($filts_values[$key]) && empty($params[$filt_name])) {
+            if (isset($filts_values[$key]) && empty($params[$filt_name])) {
                 if (in_array($filt_name, $filter_multi_list)) {
                     $params[$filt_name] = explode('|', $filts_values[$key]);
                     $params[$filt_name] = array_unique($params[$filt_name]);
@@ -170,14 +170,7 @@ class EmundusHelperFiles
             }
 
         }
-        /*
-        // on force avec la valeur du filtre défini dans les options de menu
-        if (count($filts_details['status'])>0 && isset($filts_details['status'][0]) && !empty($filts_details['status'][0])) {
-            $fd_with_param = $params['status'] + $filts_details['status'];
-            $params['status'] = $filts_details['status'];
-            $filts_details['status'] = $fd_with_param;
-        }
-        */
+		
         if (is_array($filts_details['group']) && count($filts_details['group']) > 0 && isset($filts_details['group'][0]) && !empty($filts_details['group'][0])) {
             $fd_with_param          = $params['group'] + $filts_details['group'];
             $params['group']        = $filts_details['group'];
@@ -216,17 +209,15 @@ class EmundusHelperFiles
             }*/
         }
 
-
         // Used for adding default columns when no programme is loaded.
         if (empty($params['programme'])) {
             $params['programme'] = ["%"];
         }
 
         // If there is no campaign value, set the campaign param as an empty array, for real
-        if (count($params['campaign']) == 1 && $params['campaign'][0] == '') {
+        if ((is_array($params['campaign']) && count($params['campaign']) == 1 && $params['campaign'][0] == '') || (is_string($params['campaign']) && empty($params['campaign']))) {
             $params['campaign'] = [];
         }
-
 
         $session->set('filt_params', $params);
         $session->set('filt_menu', $filts_details);
