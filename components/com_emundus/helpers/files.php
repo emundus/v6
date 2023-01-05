@@ -222,6 +222,11 @@ class EmundusHelperFiles
             $params['programme'] = ["%"];
         }
 
+        // If there is no campaign value, set the campaign param as an empty array, for real
+        if (count($params['campaign']) == 1 && $params['campaign'][0] == '') {
+            $params['campaign'] = [];
+        }
+
 
         $session->set('filt_params', $params);
         $session->set('filt_menu', $filts_details);
@@ -550,7 +555,7 @@ class EmundusHelperFiles
         if (empty($code)) {
             $params = JFactory::getSession()->get('filt_params');
             $programme = $params['programme'];
-            $campaigns = @$params['campaign'];
+            $campaigns = $params['campaign'];
 
             if (empty($programme) && empty($campaigns)) {
                 $programme = $m_campaign->getLatestCampaign();
@@ -758,9 +763,14 @@ class EmundusHelperFiles
 
                 $fnums[] = $fnum;
                 $photos = $m_files->getPhotos($fnums);
+
                 foreach ($photos as $photo) {
                     $folder = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
-                    return '<img class="img-responsive" alt="photo" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></img>';
+                    if(file_exists($folder . '/tn_'. $photo['filename'])) {
+                        return '<img class="img-responsive" alt="photo" src="' . $folder . '/tn_' . $photo['filename'] . '" width="60" /></img>';
+                    } else {
+                        return '<img class="img-responsive" alt="photo" src="' . $folder . DS. $photo['filename'] . '" width="60" /></img>';
+                    }
                 }
 
             } else {
@@ -768,7 +778,12 @@ class EmundusHelperFiles
                 $photos = $m_files->getPhotos();
                 foreach ($photos as $photo) {
                     $folder = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
-                    $pictures[$photo['fnum']] = '<img alt="photo" class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></img>';
+
+                    if(file_exists($folder . '/tn_'. $photo['filename'])) {
+                        $pictures[$photo['fnum']] = '<img class="img-responsive" alt="photo" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></img>';
+                    } else {
+                        $pictures[$photo['fnum']] = '<img class="img-responsive" alt="photo" src="'.$folder . DS . $photo['filename'] . '" width="60" /></img>';
+                    }
                 }
                 return $pictures;
 
@@ -778,6 +793,7 @@ class EmundusHelperFiles
             return false;
         }
     }
+
 
 
     /**

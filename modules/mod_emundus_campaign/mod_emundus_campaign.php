@@ -39,8 +39,8 @@ if($user->guest || in_array($e_user->profile,$app_prof))
         $document->addStyleSheet("modules/mod_emundus_campaign/css/mod_emundus_campaign_tchooz.css");
     }
 
-// PARAMS
-// TCHOOZ PARAMS
+    // PARAMS
+    // TCHOOZ PARAMS
     $mod_em_campaign_get_link             = $params->get('mod_em_campaign_get_link', 0);
     $mod_em_campaign_date_format          = $params->get('mod_em_campaign_date_format', 'd/m/Y H:i');
     $mod_em_campaign_show_camp_start_date = $params->get('mod_em_campaign_show_camp_start_date', 1);
@@ -78,7 +78,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     $mod_em_campaign_sort_list               = $params->get('mod_em_campaign_sort_list');
     $mod_em_campaign_groupby                 = $params->get('mod_em_campaign_groupby');
 
-// OLD PARAMS
+    // OLD PARAMS
     $mod_em_campaign_url                       = $params->get('mod_em_campaign_url');
     $mod_em_campaign_class                     = $params->get('mod_em_campaign_class');
     $mod_em_campaign_start_date                = $params->get('mod_em_campaign_start_date');
@@ -98,7 +98,9 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     $redirect_url                              = $params->get('mod_em_campaign_link', 'registration');
     $program_code                              = $params->get('mod_em_program_code');
     $modules_tabs                              = $params->get('mod_em_campaign_modules_tab');
-// END PARAMS
+    // END PARAMS
+
+    $links = $helper->getLinks();
 
     $condition = '';
 
