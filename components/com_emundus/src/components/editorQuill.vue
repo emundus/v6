@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="editor"></div>
+    <div :class="'editor_'+this.$attrs.id"></div>
   </div>
 </template>
 
@@ -22,24 +22,37 @@ export default {
     enable_variables: {
       type: Boolean,
       default: false
+    },
+    limit: {
+      type: Number,
+      default: null
+    },
+    toolbar: {
+      type: String,
+      default: 'complete'
     }
   },
   data: () => ({
     editor: null,
-    toolbarOptions: [
-      ['bold', 'italic', 'underline', 'strike'],
-      ['blockquote'],
-      ['image', 'link'],
+    toolbarOptions: {
+      complete: [
+        ['bold', 'italic', 'underline', 'strike'],
+        ['blockquote'],
+        ['image', 'link'],
 
-      [{'header': 1}, {'header': 2}],
-      [{'list': 'ordered'}, {'list': 'bullet'}],
-      [{'indent': '-1'}, {'indent': '+1'}],
-      [{'size': ['small', false, 'large', 'huge']}],
+        [{'header': 1}, {'header': 2}],
+        [{'list': 'ordered'}, {'list': 'bullet'}],
+        [{'indent': '-1'}, {'indent': '+1'}],
+        [{'size': ['small', false, 'large', 'huge']}],
 
-      [{'color': []}],
-      [{'font': []}],
-      [{'align': []}],
-    ]
+        [{'color': []}],
+        [{'font': []}],
+        [{'align': []}],
+      ],
+      light: [
+        ['bold', 'italic', 'underline', 'strike'],
+      ]
+    }
   }),
   mounted() {
     axios({
@@ -51,7 +64,7 @@ export default {
 
     var options = {
       modules: {
-        toolbar: this.toolbarOptions,
+        toolbar: this.toolbarOptions[this.$props.toolbar],
         imageResize: {},
         mention: null
       },
@@ -98,7 +111,7 @@ export default {
       }
     }
 
-    this.editor = new Quill('.editor', options);
+    this.editor = new Quill('.editor_'+this.$attrs.id, options);
     if (this.text !== '' && this.text !== null && typeof this.text !== 'undefined') {
       let delta = this.editor.clipboard.convert(this.text);
       this.editor.setContents(delta);
@@ -106,6 +119,11 @@ export default {
 
     this.editor.on('editor-change', (eventName, ...args) => {
       if (eventName === 'text-change') {
+        if(this.$props.limit){
+          if (this.editor.getLength() > this.$props.limit) {
+            this.editor.deleteText(this.$props.limit, this.editor.getLength());
+          }
+        }
         if(this.editor.root.innerHTML === null){
           this.editor.root.innerHTML = '';
         }
@@ -198,5 +216,9 @@ export default {
 
 .ql-mention-list-item {
   padding: 8px !important;
+}
+
+.editor_campResume{
+  max-height: 85px;
 }
 </style>

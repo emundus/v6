@@ -336,4 +336,27 @@ class modEmundusCampaignHelper {
 
         return $data;
     }
+
+	public function getLinks(){
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try {
+			$query->select('params')
+				->from($db->quoteName('#__modules'))
+				->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_user_dropdown'))
+				->andWhere($db->quoteName('published') . ' = 1');
+			$db->setQuery($query);
+			$params = $db->loadResult();
+
+			if(!empty($params)){
+				$params = json_decode($params);
+			}
+
+			return $params;
+		}
+		catch (Exception $e) {
+			return new stdClass();
+		}
+	}
 }

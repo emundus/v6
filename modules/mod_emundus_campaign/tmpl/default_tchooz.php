@@ -92,14 +92,20 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             <p class="em-applicant-text-color"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_2') ?></p><br/>
             <p class="em-text-neutral-900 em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_3') ?></p>
             <p class="em-applicant-text-color"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_4') ?></p>
+            <?php if (!empty($links)) :?>
             <div class="em-flex-row-justify-end mod_emundus_campaign__buttons em-mt-32">
-                <button class="em-secondary-button em-w-auto em-applicant-border-radius">
-                    <?php echo JText::_('MOD_EM_CAMPAIGN_REGISTRATION_URL') ?>
-                </button>
-                <button class="em-applicant-primary-button em-w-auto em-ml-8 em-applicant-border-radius">
-                    <?php echo JText::_('MOD_EM_CAMPAIGN_LOGIN_URL') ?>
-                </button>
+                <a href="<?php echo $links->link_register ?>">
+                    <button class="em-secondary-button em-w-auto em-applicant-border-radius" type="button">
+                            <?php echo JText::_('MOD_EM_CAMPAIGN_REGISTRATION_URL') ?>
+                    </button>
+                </a>
+                <a href="<?php echo $links->link_login ?>">
+                    <button class="em-applicant-primary-button em-w-auto em-ml-8 em-applicant-border-radius" type="button">
+                        <?php echo JText::_('MOD_EM_CAMPAIGN_LOGIN_URL') ?>
+                    </button>
+                </a>
             </div>
+            <?php endif; ?>
         </div>
     <?php else : ?>
     <div class="mod_emundus_campaign__content">
@@ -236,7 +242,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
                         <hr>
 
-                        <p class="mod_emundus_campaign__list_content_resume em-applicant-text-color em-font-size-16">
+                        <div class="mod_emundus_campaign__list_content_resume em-applicant-text-color em-font-size-16">
                             <?php
                             $text = '';
                             $textprog = '';
@@ -246,7 +252,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                             }
                             echo $textcamp;
                             ?>
-                        </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -594,7 +600,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
                                 <hr>
 
-                                <p class="mod_emundus_campaign__list_content_resume em-applicant-text-color em-font-size-16"
+                                <div class="mod_emundus_campaign__list_content_resume em-applicant-text-color em-font-size-16"
                                     <?php if (empty($mod_em_campaign_show_timezone) || (strtotime($now) > strtotime($result->end_date)) ) : ?> style="-webkit-line-clamp: 4;" <?php endif; ?>
                                 >
                                     <?php
@@ -606,7 +612,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                     }
                                     echo $textcamp;
                                     ?>
-                                </p>
+                                </div>
 
                                 <?php if ($mod_em_campaign_show_apply_button == 1) : ?>
                                     <div>
