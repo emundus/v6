@@ -32,6 +32,10 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
 
     public function onAfterOrderCreate(&$order)
     {
+        if ($order->order_type == 'subsale') {
+            return true;
+        }
+
         JPluginHelper::importPlugin('emundus','custom_event_handler');
         \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterOrderCreate', ['order' => $order]]);
 
@@ -160,6 +164,10 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
     }
 
     public function onAfterOrderUpdate(&$order) {
+        if ($order->order_type == 'subsale') {
+            return true;
+        }
+
         $db         = JFactory::getDbo();
         $order_id = $order->order_parent_id ?: $order->order_id;
 
