@@ -418,9 +418,10 @@ class EmundusModelMessenger extends JModelList
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
-        // get messenger config params 'messenger_notify_groups'
+        // get messenger config params 'messenger_notify_groups' (TODO: id = 0)
         $notify_groups = $eMConfig->get('messenger_notify_groups', '');
         $notify_users = explode(',', $eMConfig->get('messenger_notify_users', ''));
+        $notify_to_ms = $eMConfig->get('messenger_notify_ms', 0);
 
         $m_files = new EmundusModelFiles;
 
@@ -452,6 +453,7 @@ class EmundusModelMessenger extends JModelList
             $db->setQuery($query);
 
             $groups_associated = $db->loadColumn();
+
             $users_associated = $m_files->getAssessorsByFnums((array)$applicant_fnum, 'uids');
             foreach ($users_associated as $key => $user_associated) {
                 if (!is_string($user_associated)) {
@@ -461,7 +463,27 @@ class EmundusModelMessenger extends JModelList
             $users_to_send = array_unique(array_merge($groups_associated, $users_associated));
 
             if(empty($users_to_send)) {
-                // [first] find all associate users of groups (jos_emundus_groups)
+                $users_associated_ms = array();
+                $assoc_users = array();
+
+                if ($notify_to_ms === "1") {
+                    // get all users assign to the programme
+                    $query->clear()
+                        ->select('distinct(ju.id) as id')
+                        ->from($db->quoteName('jos_users', 'ju'))
+                        ->leftJoin($db->quoteName('jos_emundus_groups', 'jeg') . ' ON ' . $db->quoteName('ju.id') . ' = ' . $db->quoteName('jeg.user_id'))
+                        ->leftJoin($db->quoteName('jos_emundus_setup_groups', 'jesg') . ' ON ' . $db->quoteName('jeg.group_id') . ' = ' . $db->quoteName('jesg.id'))
+                        ->leftJoin($db->quoteName('jos_emundus_setup_groups_repeat_course', 'jesgrc') . ' ON ' . $db->quoteName('jesg.id') . ' = ' . $db->quoteName('jesgrc.parent_id'))
+                        ->leftJoin($db->quoteName('jos_emundus_setup_programmes', 'jespr') . ' ON ' . $db->quoteName('jespr.code') . ' = ' . $db->quoteName('jesgrc.course'))
+                        ->leftJoin($db->quoteName('jos_emundus_setup_campaigns', 'jesc') . ' ON ' . $db->quoteName('jespr.code') . ' = ' . $db->quoteName('jesc.training'))
+                        ->leftJoin($db->quoteName('jos_emundus_campaign_candidature', 'jecc') . ' ON ' . $db->quoteName('jesc.id') . ' = ' . $db->quoteName('jecc.campaign_id'))
+                        ->where($db->quoteName('jecc.fnum') . ' = ' . $db->quote($applicant_fnum));
+
+                    $db->setQuery($query);
+                    $users_associated_ms = $db->loadColumn();
+                }
+
+                // find all associate users of groups (jos_emundus_groups)
                 if (!empty($notify_groups)) {
                     $query->clear()
                         ->select('distinct gr.user_id')
@@ -471,9 +493,19 @@ class EmundusModelMessenger extends JModelList
                     $assoc_users = $db->loadColumn();
                 }
 
+                if ($notify_to_ms === "1") {
+                    if(empty($users_associated_ms) or empty($assoc_users)) {
+                        $assoc_users = array_filter(array_unique(array_merge($assoc_users,$users_associated_ms)));
+                    } else {
+                        $assoc_users = array_filter(array_unique(array_intersect($assoc_users,$users_associated_ms)));
+                    }
+                } else {
+                    $assoc_users = array_filter(array_unique(array_merge($assoc_users,$users_associated_ms)));
+                }
+
                 $assoc_users = is_null($assoc_users) ? array() : $assoc_users;
 
-                // [second] merge $assoc_users vs $notify_users and get array_unique ++ remove all empty values
+                // merge $assoc_users vs $notify_users (if any) and get array_unique ++ remove all empty values
                 $users_to_send = array_filter(array_unique(array_merge($assoc_users,$notify_users)));
 
                 if (empty($users_to_send)) {
