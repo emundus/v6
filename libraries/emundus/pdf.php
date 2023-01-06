@@ -785,11 +785,9 @@ function data_to_img($match) {
     return "$img$fn$end";  // new <img> tag
 }
 
-/// add $elements as optional params
 function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null, $attachments = true) {
-    jimport('joomla.html.parameter');
+	jimport('joomla.html.parameter');
     set_time_limit(0);
-    require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'tcpdf' . DS . 'tcpdf.php');
     require_once (JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'date.php');
 
     require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');

@@ -27,6 +27,7 @@ class EmundusController extends JControllerLegacy {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         include_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+        include_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
         include_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
         include_once (JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
 
@@ -76,8 +77,8 @@ class EmundusController extends JControllerLegacy {
         $profile = $jinput->get('profile', null, 'string');
 
         $fnum = !empty($fnum)?$fnum:$user->fnum;
-        $m_profile = $this->getModel('profile');
-        $m_campaign = $this->getModel('campaign');
+        $m_profile = new EmundusModelProfile();
+        $m_campaign = new EmundusModelCampaign();
 
         $options = array(
           'aemail',
@@ -100,6 +101,7 @@ class EmundusController extends JControllerLegacy {
         $h_menu = new EmundusHelperMenu;
         $getformids = $h_menu->getUserApplicationMenu($profile);
 
+	    $formid = [];
         foreach ($getformids as $getformid) {
             $formid[] = $getformid->form_id;
         }
@@ -127,15 +129,10 @@ class EmundusController extends JControllerLegacy {
 
         require_once($file);
 
-        // Here we call the profile by fnum function, which will get the candidate's profile in the status table
-//        $profile_id = $m_profile->getProfileByFnum($fnum);
-
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            //application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, $options, null, $profile_id,null,null);
             application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, $options, null, $profile,null,null);
             exit;
         } elseif (EmundusHelperAccess::isApplicant($user->id)) {
-            //application_form_pdf($user->id, $fnum, true, 1, $formid, $options, null, $profile_id,null,null);
             application_form_pdf($user->id, $fnum, true, 1, $formid, $options, null, $profile,null,null);
             exit;
         } else {
