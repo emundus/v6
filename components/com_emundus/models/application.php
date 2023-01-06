@@ -2183,7 +2183,9 @@ class EmundusModelApplication extends JModelList
                             }
                             $forms .= '</table>';
                             // TABLEAU DE PLUSIEURS LIGNES avec moins de 7 colonnes
-                        } elseif (((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1) && count($elements) < 4 && !$asTextArea) {
+                        }
+						elseif (((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1) && count($elements) < 4 && !$asTextArea)
+						{
                             //-- Entrée du tableau -- */
                             $t_elt = array();
                             foreach ($elements as &$element) {
@@ -2203,9 +2205,7 @@ class EmundusModelApplication extends JModelList
                             $check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum);
 
                             if ($check_repeat_groups) {
-                                if(!empty($group_label)){
-                                    $forms .= '<h3 class="group">' . $group_label . '</h3>';
-                                }
+								$forms .= '<h3 class="group">' . $group_label . '</h3>';
                                 $forms .= '<table class="pdf-forms"><thead><tr class="background"> ';
                                 foreach ($elements as &$element) {
                                     $forms .= '<th scope="col" class="background">' . JText::_($element->label) . '</th>';
@@ -2374,7 +2374,9 @@ class EmundusModelApplication extends JModelList
 
 
                             // TABLEAU DE PLUSIEURS LIGNES sans tenir compte du nombre de lignes
-                        } elseif ((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1) {
+                        }
+						elseif ((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1)
+						{
                             //-- Entrée du tableau -- */
                             $t_elt = array();
                             foreach ($elements as &$element) {
@@ -2389,9 +2391,8 @@ class EmundusModelApplication extends JModelList
                             $check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum);
 
                             if ($check_repeat_groups) {
-                                if(!empty($group_label)){
-                                    $forms .= '<h3 class="group">' . $group_label . '</h3>';
-                                }
+								$forms .= '<h3 class="group">' . $group_label . '</h3>';
+
                                 if ($itemg->group_id == 174) {
                                     $query = 'SELECT `' . implode("`,`", $t_elt) . '`, id FROM ' . $table . '
                                         WHERE parent_id=(SELECT id FROM ' . $itemt->db_table_name . ' WHERE fnum like ' . $this->_db->Quote($fnum) . ') OR applicant_id=' . $aid;
@@ -2568,9 +2569,8 @@ class EmundusModelApplication extends JModelList
                             $check_not_empty_group = $this->checkEmptyGroups($elements ,$itemt->db_table_name, $fnum);
 
                             if($check_not_empty_group) {
-                                if (!empty($group_label)) {
-                                    $forms .= '<h3 class="group">' . $group_label . '</h3>';
-                                }
+								$forms .= '<h3 class="group">' . $group_label . '</h3>';
+
                                 $forms .= '<table class="pdf-forms">';
                                 foreach ($elements as $element) {
                                     $params = json_decode($element->params);
