@@ -358,7 +358,7 @@ class EmundusModelCalendar extends JModelLegacy {
         $db     = JFactory::getDbo();
 
         require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
-        $h_emails = new EmundusModelEmails;
+        $h_emails = new EmundusHelperEmails();
         if (!$h_emails->assertCanSendMailToUser($user->id)) {
             return false;
         }
@@ -623,8 +623,10 @@ class EmundusModelCalendar extends JModelLegacy {
 
     // Helper function, gets all users that are coordinators to a program.
     function getProgramRecipients($program_name) {
+		$res = new stdClass();
 
         $db = JFactory::getDbo();
+
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $profilesToNotify = $eMConfig->get('mailRecipients');
 
@@ -633,7 +635,6 @@ class EmundusModelCalendar extends JModelLegacy {
         }
 
         try {
-
             $query = "SELECT eu.user_id, u.name, u.email FROM #__emundus_groups AS eg
                         LEFT JOIN #__emundus_users AS eu ON eu.user_id = eg.user_id
                         LEFT JOIN #__users AS u ON eu.user_id = u.id
@@ -644,11 +645,12 @@ class EmundusModelCalendar extends JModelLegacy {
                         )";
 
             $db->setQuery($query);
-            return $db->loadObjectList();
-
+	        $res = $db->loadObjectList();
         } catch (Exception $e) {
             JLog::add("SQL Query: ".$query." SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
         }
+
+		return $res;
 
     }
 

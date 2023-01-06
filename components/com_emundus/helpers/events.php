@@ -1087,7 +1087,7 @@ class EmundusHelperEvents {
 										$olds = explode(';', $olds);
 	
 										/* null condition */
-										$olds = empty(trim($olds)) !== false ? $olds : [''];
+										$olds = empty($olds) !== false ? $olds : [''];
 	
 										$olds = is_array($olds) === false ? array($olds) : $olds;
 										$news = is_array($diffs['new_data']) === false ? array($diffs['new_data']) : $diffs['new_data'];
@@ -1191,7 +1191,7 @@ class EmundusHelperEvents {
 	
 											////
 											$olds = array_map(function ($x) {
-												return empty(trim(explode(";", $x))) !== false ? explode(';', $x) : [''];
+												return empty(explode(";", $x)) !== false ? explode(';', $x) : [''];
 											}, array_values($olds));
 											$olds = call_user_func_array('array_merge', $olds);
 	

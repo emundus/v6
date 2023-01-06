@@ -270,7 +270,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
         $fnums      = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
-        $m_application = $this->getModel('Application');
+        $m_application = new EmundusModelApplication();
 
         if (is_array($fnums)) {
 
@@ -299,8 +299,8 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
         } elseif($fnums == 'all') {
             //all result find by the request
-            $m_files = $this->getmodel('Files');
-            $m_application = $this->getModel('application');
+            $m_files = new EmundusModelFiles();
+            $m_application = new EmundusModelApplication();
 
             $fnums = $m_files->getAllFnums();
             foreach ($fnums as $fnum) {
@@ -389,8 +389,8 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
          $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
-         $m_files = $this->getModel('Files');
-         $m_application = $this->getModel('application');
+         $m_files = new EmundusModelFiles();
+         $m_application = new EmundusModelApplication();
 
          if ($fnums == "all")
              $fnums = $m_files->getAllFnums();
@@ -602,7 +602,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $code = $jinput->getVar('code', null);
         $code = explode(',', $code);
 
-        $m_admission = $this->getModel('Admission');
+        $m_admission = new EmundusModelAdmission();
         $h_files = new EmundusHelperFiles;
 
         $defaultElements = $m_admission->getAdmissionElementsName(0, 1, $code);
@@ -691,8 +691,8 @@ class EmundusControllerAdmission extends JControllerLegacy {
             }
         }
 
-        $m_profile  = $this->getModel('profile');
-        $m_campaign = $this->getModel('campaign');
+        $m_profile  = new EmundusModelProfile();
+        $m_campaign = new EmundusModelCampaign();
 
         if (!empty($fnum)) {
             $candidature    = $m_profile->getFnumDetails($fnum);
@@ -816,8 +816,8 @@ class EmundusControllerAdmission extends JControllerLegacy {
         if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
             die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 
-        $m_files        = $this->getModel('Files');
-        $m_application  = $this->getModel('Application');
+        $m_files        = new EmundusModelFiles();
+        $m_application  = new EmundusModelApplication();
 
         $session = JFactory::getSession();
         $fnums = $session->get('fnums_export');
@@ -1539,8 +1539,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $fid    = $jinput->getString('fabrik_id', null);
         $value  = $jinput->getString('value', null);
 
-        $h_files = new EmundusHelperFiles;
-        $m_admission = $this->getModel("Admission");
+        $m_admission = new EmundusModelAdmission();
 
         // Check if fnum is found in DB table in order to determine if we do a create or update
         $exists = $m_admission->getAdmissionFnum($fnum);

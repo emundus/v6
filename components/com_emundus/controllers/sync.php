@@ -17,7 +17,6 @@ jimport('joomla.application.component.controller');
 class EmundusControllerSync extends JControllerLegacy
 {
     private $_user = null;
-    private $_db = null;
     private $m_sync = null;
 
     public function __construct($config = array())
@@ -28,7 +27,6 @@ class EmundusControllerSync extends JControllerLegacy
         require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
 
         $this->_user = JFactory::getSession()->get('emundusUser');
-        $this->_db = JFactory::getDBO();
         $this->m_sync = new EmundusModelSync();
     }
 

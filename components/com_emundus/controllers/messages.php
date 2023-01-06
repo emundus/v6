@@ -1830,7 +1830,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
     // get all documents being letters
     public function getalldocumentsletters() {
-        $_mMessages = $this->getModel('Messages');
+        $_mMessages = new EmundusModelMessages();
         $_documents = $_mMessages->getAllDocumentsLetters();
 
         if($_documents) {
@@ -1847,7 +1847,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         $fnums = explode(',', $jinput->post->getRaw('fnums'));
 
-        $_mMessages = $this->getModel('Messages');
+        $_mMessages = new EmundusModelMessages();
         $_results = $_mMessages->getAttachmentsByProfiles($fnums);
 
         if($_results) {
@@ -1860,7 +1860,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
     // get all attachments
     public function getallattachments() {
-        $_mMessages = $this->getModel('Messages');
+        $_mMessages = new EmundusModelMessages();
         $_documents = $_mMessages->getAllAttachments();
 
         if($_documents) {
@@ -1882,7 +1882,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         $fnums = explode(',', $data['recipients']);
         $email_tmpl = $data['template'];
 
-        $_mMessages = $this->getModel('Messages');
+        $_mMessages = new EmundusModelMessages();
 
         $_tags = $_mMessages->addTagsByFnums($fnums,$email_tmpl);
 

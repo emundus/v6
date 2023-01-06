@@ -138,6 +138,11 @@ if (!class_exists('JText'))
 		{
 			return '';
 		}
+
+		public static function _(string $string)
+		{
+			return '';
+		}
 	}
 }
 

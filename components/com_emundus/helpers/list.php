@@ -259,7 +259,7 @@ class EmundusHelperList{
     // @param   int profile id
     // @param   boolean checklevel : if true will check J! Access Level of logged user
     // @return  array Menu links of all forms needed to apply
-    function getFormsListByProfileID($profile_id, $checklevel=true){
+    static function getFormsListByProfileID($profile_id, $checklevel=true){
         require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
         return EmundusHelperMenu::buildMenuQuery($profile_id, null, $checklevel);
     }
@@ -382,18 +382,18 @@ class EmundusHelperList{
                     @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_gender" id="em_gender_'.$user['user_id'].'">';
                     @$actions[$user['user_id']][@$user['user']][@$user['campaign_id']] .= '<span class="editlinktip hasTip" title="'.JText::_('COM_EMUNDUS_MAILS_MAIL_TO').'::'.$user_info[0]->email.'">';
                     if (strtolower($user_info[0]->gender) == 'male')
-                        @$actions[$user['user_id']][@$user['user']][@$user['campaign_id']] .= '<a href="mailto:'.$user_info[0]->email.'"><img src="'.$baseurl.'/media/com_emundus/images/icones/user_male.png" width="22" height="22" align="bottom" /></a>';
+                        @$actions[$user['user_id']][@$user['user']][@$user['campaign_id']] .= '<a href="mailto:'.$user_info[0]->email.'"><img alt="user_male" src="'.$baseurl.'/media/com_emundus/images/icones/user_male.png" width="22" height="22" align="bottom" /></a>';
                     elseif (strtolower($user_info[0]->gender) == 'female')
-                        @$actions[$user['user_id']][@$user['user']][@$user['campaign_id']] .= '<a href="mailto:'.$user_info[0]->email.'"><img src="'.$baseurl.'/media/com_emundus/images/icones/user_female.png" width="22" height="22" align="bottom" /></a>';
+                        @$actions[$user['user_id']][@$user['user']][@$user['campaign_id']] .= '<a href="mailto:'.$user_info[0]->email.'"><img alt="user_female" src="'.$baseurl.'/media/com_emundus/images/icones/user_female.png" width="22" height="22" align="bottom" /></a>';
                     else
-                        @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<a href="mailto:'.$user_info[0]->email.'"><img src="'.$baseurl.'/media/com_emundus/images/icones/mailreminder.png" width="22" height="22" align="bottom" /></a>';
+                        @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<a href="mailto:'.$user_info[0]->email.'"><img alt="mailreminder" src="'.$baseurl.'/media/com_emundus/images/icones/mailreminder.png" width="22" height="22" align="bottom" /></a>';
                     @$actions[$user['user_id']][@$user['user']][@$user['campaign_id']] .= '</span>';
                     @$actions[$user['user_id']][@$user['user']][@$user['campaign_id']] .= '</div>';
                 }
                 if(in_array('email',$params)){
                     @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_email" id="em_email_'.$user['user_id'].'">';
                     @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<span class="editlinktip hasTip" title="'.JText::_('COM_EMUNDUS_MAILS_MAIL_TO').'::'.$user_info[0]->email.'">';
-                    @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<a href="mailto:'.$user_info[0]->email.'"><img src="'.$baseurl.'/media/com_emundus/images/icones/mailreminder.png" width="22" height="22" align="bottom" /></a>';
+                    @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<a href="mailto:'.$user_info[0]->email.'"><img alt="mailreminder" src="'.$baseurl.'/media/com_emundus/images/icones/mailreminder.png" width="22" height="22" align="bottom" /></a>';
                     @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '</span>';
                     @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '</div>';
                 }

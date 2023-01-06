@@ -63,9 +63,9 @@ class EmundusModelProfile extends JModelList {
      */
     public function getApplicantsProfilesArray() {
         $obj_profiles = $this->getApplicantsProfiles();
-        $array_p = array();
+        $array_p = [];
         foreach ($obj_profiles as $profile){
-            array_push($array_p, $profile->id);
+            $array_p[] = $profile->id;
         }
         return $array_p;
     }

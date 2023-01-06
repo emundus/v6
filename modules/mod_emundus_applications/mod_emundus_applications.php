@@ -18,6 +18,8 @@ $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 $specific_profiles = $params->get('for_specific_profiles', '');
 if (!empty($specific_profiles)) {
     $specific_profiles = explode(',',$specific_profiles);
+} else {
+	$specific_profiles = [];
 }
 
 if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!empty($specific_profiles) && in_array($user->profile, $specific_profiles))) {
@@ -47,7 +49,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
     $status_for_send = explode(',', $eMConfig->get('status_for_send', 0));
-    $status_for_delete = $eMConfig->get('status_for_delete', null);
+    $status_for_delete = $eMConfig->get('status_for_delete', 0);
     if (!empty($status_for_delete) || $status_for_delete == '0') {
         $status_for_delete = explode(',', $status_for_delete);
     }
@@ -56,9 +58,13 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $display_poll = $eMConfig->get('display_poll', 0);
     $display_poll_id = $eMConfig->get('display_poll_id', null);
     $id_applicants = $eMConfig->get('id_applicants', '0');
-    $id_profiles = $eMConfig->get('id_profiles', '0');
+    $id_profiles = $eMConfig->get('id_profiles', '');
     $applicants = explode(',', $id_applicants);
-    $id_profiles = explode(',', $id_profiles);
+	if(!empty($id_profiles)) {
+		$id_profiles = explode(',', $id_profiles);
+	} else {
+		$id_profiles = [];
+	}
 
     $description = JText::_($params->get('description', ''));
     $show_fnum = $params->get('show_fnum', 0);

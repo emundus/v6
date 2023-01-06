@@ -33,7 +33,7 @@ class EmundusControllerThesisForm extends EmundusController {
         $app->setUserState('com_emundus.edit.thesis.id', $editId);
 
         // Get the model.
-        $model = $this->getModel('ThesisForm', 'EmundusModel');
+        $model = new EmundusModelThesisForm();
 
         // Check out the item
         if ($editId) {
@@ -61,7 +61,7 @@ class EmundusControllerThesisForm extends EmundusController {
 
         // Initialise variables.
         $app = JFactory::getApplication();
-        $model = $this->getModel('ThesisForm', 'EmundusModel');
+        $model = new EmundusModelThesisForm();
 
         // Get the user data.
         $data = JFactory::getApplication()->input->get('jform', array(), 'array');
@@ -145,7 +145,7 @@ class EmundusControllerThesisForm extends EmundusController {
         $editId = (int) $app->getUserState('com_emundus.edit.thesis.id');
 
         // Get the model.
-        $model = $this->getModel('ThesisForm', 'EmundusModel');
+        $model = new EmundusModelThesisForm();
 
         // Check in the item
         if ($editId) {
@@ -169,7 +169,7 @@ class EmundusControllerThesisForm extends EmundusController {
 
         // Initialise variables.
         $app = JFactory::getApplication();
-        $model = $this->getModel('ThesisForm', 'EmundusModel');
+        $model = new EmundusModelThesisForm();
 
         // Get the user data.
         $data = array();

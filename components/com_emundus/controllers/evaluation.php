@@ -340,7 +340,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $title = $jinput->getString('title', '');
         $comment = $jinput->getString('comment', null);
         $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
-        $appModel = $this->getModel('Application');
+        $appModel = new EmundusModelApplication();
 
 
         if(is_array($fnums))
@@ -461,7 +461,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
          $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
          $m_files = $this->getModel('Files');
-         $m_application = $this->getModel('application');
+         $m_application = new EmundusModelApplication();
 
          if ($fnums == "all") {
              $fnums = $m_files->getAllFnums();
@@ -598,7 +598,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 	    $msg = '';
 
 	    if ($res !== false) {
-		    $m_application = $this->getModel('application');
+		    $m_application = new EmundusModelApplication();
 		    $status = $m_files->getStatus();
 		    // Get all codes from fnum
 		    $code = array();
@@ -819,7 +819,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $code   = $jinput->getVar('code', null);
         $code = explode(',', $code);
-        $m_evaluation = $this->getModel('Evaluation');
+        $m_evaluation = new EmundusModelEvaluation();
         $defaultElements = $m_evaluation->getEvaluationElementsName(0, 1, $code);
         if (!empty($defaultElements)) {
             foreach ($defaultElements as $kde => $de) {
@@ -883,7 +883,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
         if (isset($fromID, $fnum) && !empty($fromID) && !empty($fnum)) {
 
-            $m_evaluation = $this->getModel('evaluation');
+            $m_evaluation = new EmundusModelEvaluation();
             $res = $m_evaluation->copyEvaluation($fromID, $toID, $fnum, $studID, $user->id);
 
             $result = ['status' => $res];
@@ -939,8 +939,8 @@ class EmundusControllerEvaluation extends JControllerLegacy
         if (!EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum) )
             die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
-        $m_profile = $this->getModel('profile');
-        $m_campaign = $this->getModel('campaign');
+        $m_profile = new EmundusModelProfile();
+        $m_campaign = new EmundusModelCampaign();
 
         if (!empty($fnum)) {
             $candidature = $m_profile->getFnumDetails($fnum);
@@ -973,7 +973,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $ids = json_decode(stripslashes($ids));
         $res = new stdClass();
 
-        $m_evaluation = $this->getModel('evaluation');
+        $m_evaluation = new EmundusModelEvaluation();
         foreach($ids as $id)
         {
             $eval =   $m_evaluation->getEvaluationById($id);
@@ -1036,8 +1036,8 @@ class EmundusControllerEvaluation extends JControllerLegacy
         if( !EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum) )
             die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
-        $m_profile = $this->getModel('profile');
-        $m_campaign = $this->getModel('campaign');
+        $m_profile = new EmundusModelProfile();
+        $m_campaign = new EmundusModelCampaign();
 
         if (!empty($fnum)) {
             $candidature = $m_profile->getFnumDetails($fnum);
@@ -1161,7 +1161,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
             die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 
         $m_files = $this->getModel('Files');
-        $m_application = $this->getModel('Application');
+        $m_application = new EmundusModelApplication();
 
         $session = JFactory::getSession();
         $fnums = $session->get('fnums_export');
@@ -1507,8 +1507,8 @@ class EmundusControllerEvaluation extends JControllerLegacy
         //$filename = 'emundus_applicants_'.date('Y.m.d').'.xls';
 
         $m_files = $this->getModel('Files');
-        $modelApp = $this->getModel('Application');
-        $modelEval = $this->getModel('Evaluation');
+        $modelApp = new EmundusModelApplication();
+        $modelEval = new EmundusModelEvaluation();
 
         $eval_elements_id = array();
         $show_in_list_summary = 0;
@@ -1898,7 +1898,8 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $campaign = $jinput->getInt('campaign');
         $module = $jinput->getInt('module');
 
-        $files_to_evaluate = $this->getModel('Evaluation')->getMyEvaluations($current_user->id,$campaign,$module);
+		$m_evaluation = new EmundusModelEvaluation();
+        $files_to_evaluate = $m_evaluation->getMyEvaluations($current_user->id,$campaign,$module);
 
         if (!empty($files_to_evaluate)) {
             $result = array('status' => true, 'files' => $files_to_evaluate);
@@ -1914,7 +1915,8 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $module = $jinput->getInt('module');
 
-        $campaigns = $this->getModel('Evaluation')->getCampaignsToEvaluate($current_user->id,$module);
+		$m_evaluation = new EmundusModelEvaluation();
+        $campaigns = $m_evaluation->getCampaignsToEvaluate($current_user->id,$module);
 
         if (!empty($campaigns)) {
             $result = array('status' => true, 'campaigns' => $campaigns);

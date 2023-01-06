@@ -931,7 +931,7 @@ class EmundusModelCampaign extends JModelList {
         $query = $this->_db->getQuery(true);
 
         // TODO REPLACE BY TRANSLATION MODEL
-        $falang = JModelLegacy::getInstance('falang', 'EmundusModel');
+        $falang = new EmundusModelFalang();
 
         if (count($data) > 0) {
             try {
@@ -2717,7 +2717,7 @@ class EmundusModelCampaign extends JModelList {
     }
 
     /**
-     * @return void
+     * @return array
      */
     public function findWorkflowIncoherences()
     {

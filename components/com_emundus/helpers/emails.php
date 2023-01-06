@@ -305,7 +305,7 @@ class EmundusHelperEmails {
 									\'</div>\';
 								}
 					        },
-					        onDelete: function(val) {
+					        onDelete: function() {
 					            return true;
 					        },
 					        create: function(input) {

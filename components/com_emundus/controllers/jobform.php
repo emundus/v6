@@ -33,7 +33,7 @@ class EmundusControllerJobForm extends EmundusController {
         $app->setUserState('com_emundus.edit.job.id', $editId);
 
         // Get the model.
-        $model = $this->getModel('JobForm', 'EmundusModel');
+        $model = new EmundusModelJobForm();
 
         // Check out the item
         if ($editId) {
@@ -61,7 +61,7 @@ class EmundusControllerJobForm extends EmundusController {
 
         // Initialise variables.
         $app = JFactory::getApplication();
-        $model = $this->getModel('JobForm', 'EmundusModel');
+        $model = new EmundusModelJobForm();
 
         // Get the user data.
         $data = JFactory::getApplication()->input->get('jform', array(), 'array');
@@ -145,7 +145,7 @@ class EmundusControllerJobForm extends EmundusController {
         $editId = (int) $app->getUserState('com_emundus.edit.job.id');
 
         // Get the model.
-        $model = $this->getModel('JobForm', 'EmundusModel');
+        $model = new EmundusModelJobForm();
 
         // Check in the item
         if ($editId) {
@@ -169,7 +169,7 @@ class EmundusControllerJobForm extends EmundusController {
 
         // Initialise variables.
         $app = JFactory::getApplication();
-        $model = $this->getModel('JobForm', 'EmundusModel');
+        $model = new EmundusModelJobForm();
 
         // Get the user data.
         $data = array();

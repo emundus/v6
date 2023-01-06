@@ -107,7 +107,7 @@ class EmundusModelAmetys extends JModelLegacy
      * @param int $sort
      * @return array|int
      */
-    public function multi_array_sort($multi_array = array(), $sort_key, $sort = SORT_ASC)
+    public function multi_array_sort($multi_array, $sort_key, $sort = SORT_ASC)
     {
         if (is_array($multi_array))
         {

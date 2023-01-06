@@ -165,7 +165,7 @@ class EmundusControllerExport extends JControllerLegacy
             $code = explode(",", $code);
             $camp = explode(",", $camp);
 
-            $p_model = $this->getModel('profile');
+            $p_model = new EmundusModelProfile();
             $_profiles = $p_model->getProfileIDByCampaigns($camp,$code);
 
             echo json_encode((object) $_profiles);
