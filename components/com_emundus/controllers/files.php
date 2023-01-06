@@ -14,6 +14,9 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 //use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
+use Gotenberg\Gotenberg;
+use Gotenberg\Stream;
+
 jimport('joomla.application.component.controller');
 jimport( 'joomla.user.helper' );
 
@@ -2108,7 +2111,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $ids        = $jinput->getVar('ids', null);
         $formid     = $jinput->getVar('formids', null);
         $attachid   = $jinput->getVar('attachids', null);
-	    $options     = $jinput->getVar('options', null);
+        $options     = $jinput->getVar('options', null);
 
         $profiles = $jinput->getRaw('profiles', null);                          // default NULL
         $tables = $jinput->getRaw('tables', null);                          // default NULL
@@ -2264,6 +2267,23 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
             }
             $pdf->Output(JPATH_SITE . DS . 'tmp' . DS . $file, 'F');
+
+	        /*
+	        $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
+            $gotenberg_url = $eMConfig->get('gotenberg_url', 'http://localhost:3000');
+
+	        if($gotenberg_activation && !empty($gotenberg_url))
+	        {
+		        $got_files = [];
+		        foreach ($files_list as $item){
+			        $got_files[] = Stream::path($item);
+		        }
+		        $request = Gotenberg::pdfEngines($gotenberg_url)
+			        ->merge(...$got_files);
+		        $response = Gotenberg::send($request);
+				file_put_contents(JPATH_SITE . DS . 'tmp' . DS . $file,$response->getBody()->getContents());
+	        }
+	        */
 
             $start = $i;
 
@@ -2945,9 +2965,6 @@ class EmundusControllerFiles extends JControllerLegacy
             header('Pragma: anytextexeptno-cache', true);
             header('Cache-control: private');
             header('Expires: 0');
-            //header('Content-Transfer-Encoding: binary');
-            //header('Content-Length: ' . filesize($file));
-            //header('Accept-Ranges: bytes');
 
             ob_clean();
             ob_end_flush();
@@ -3165,9 +3182,6 @@ class EmundusControllerFiles extends JControllerLegacy
         return $nom;
     }
 
-    /*
-    *   Create a zip file containing all documents attached to application fil number
-    */
     /**
      * @param $fnums
      * @return string
@@ -3300,7 +3314,7 @@ class EmundusControllerFiles extends JControllerLegacy
     {
         $jinput = JFactory::getApplication()->input;
         $code = $jinput->getString('code', "");
-        $m_files = new EmundusModelFiles();
+        $m_files = $this->getModel('Files');
 
         $res = new stdClass();
         $res->status = true;
@@ -3323,7 +3337,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $fnumsArray = explode(",", $fnums);
 
-        $m_files = new EmundusModelFiles();
+        $m_files = $this->getModel('Files');
         $m_evaluation = $this->getModel('Evaluation');
         $m_emails = $this->getModel('Emails');
 
@@ -3781,6 +3795,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $idFiles = explode(',', $jinput->getString('ids', ''));
 
+	    $files = [];
         if (!empty($idFiles)) {
             $idFiles = array_unique($idFiles);
             $m_files = new EmundusModelFiles();
@@ -3838,54 +3853,6 @@ class EmundusControllerFiles extends JControllerLegacy
             readfile($path);
             exit;
         }
-    }
-
-    public function exportonedoc() {
-        require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
-
-        if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
-            $rendererName = \PhpOffice\PhpWord\Settings::PDF_RENDERER_TCPDF;
-            \PhpOffice\PhpWord\Settings::setPdfRenderer($rendererName, JPATH_LIBRARIES . DS . 'emundus' . DS . 'tcpdf');
-        }
-
-        $jinput = JFactory::getApplication()->input;
-        $idFiles = explode(",", $jinput->getStrings('ids', ""));
-        $m_files = new EmundusModelFiles();
-        $files = $m_files->getAttachmentsById($idFiles);
-        $nom = date("Y-m-d").'_'.md5(rand(1000,9999).time()).'_x'.(count($files)-1).'.pdf';
-        $path = JPATH_SITE.DS.'tmp'.DS.$nom;
-
-        $wordPHP = new \PhpOffice\PhpWord\PhpWord();
-
-        $docs = array();
-        foreach ($files as $key => $file) {
-            $filename = EMUNDUS_PATH_ABS.$file['applicant_id'].DS.$file['filename'];
-            $tmpName = JPATH_SITE.DS.'tmp'.DS.$file['filename'];
-            $document = $wordPHP->loadTemplate($filename);
-            $document->saveAs($tmpName); // Save to temp file
-
-            if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
-                $wordPHP = \PhpOffice\PhpWord\IOFactory::load($tmpName); // Read the temp file
-                $xmlWriter = \PhpOffice\PhpWord\IOFactory::createWriter($wordPHP, 'PDF');
-
-                $xmlWriter->save($tmpName.'.pdf');  // Save to PDF
-            }
-
-            $docs[] = $tmpName.'.pdf';
-            unlink($tmpName); // Delete the temp file
-        }
-        require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'fpdi.php');
-        $pdf = new ConcatPdf();
-        $pdf->setFiles($docs);
-        $pdf->concat();
-        if (isset($docs)) {
-            foreach ($docs as $fn) {
-                unlink($fn);
-            }
-        }
-        ob_end_clean();
-        $pdf->Output($path, 'I');
-        exit;
     }
 
     public function getPDFProgrammes() {
@@ -3997,6 +3964,7 @@ class EmundusControllerFiles extends JControllerLegacy
         echo json_encode((object)(array('status' => true, 'html' => $html, 'nbprg' => $nbprg)));
         exit;
     }
+
     public function getProgramCampaigns(){
         $html = '';
 
@@ -4441,7 +4409,6 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    /// get profiles from elements
     public function getfabrikdatabyelements() {
         $h_files = new EmundusHelperFiles;
         $jinput = JFactory::getApplication()->input;
@@ -4465,7 +4432,6 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    // generate letter by template --> apply for $fnums
     public function generateletter() {
         $jinput = JFactory::getApplication()->input;
 
@@ -4494,7 +4460,6 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    // get fabrik value by id --> need to integrate to KIT project
     public function getfabrikvaluebyid() {
         $jinput = JFactory::getApplication()->input;
 
@@ -4522,7 +4487,6 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    // Get actions on fnum with offset
     public function getactionsonfnum() {
         $jinput = JFactory::getApplication()->input;
         $user = JFactory::getUser()->id;
@@ -4662,7 +4626,6 @@ class EmundusControllerFiles extends JControllerLegacy
         return !empty($data) ? $data : false;
     }
 
-    /* get all logs */
     public function getalllogactions() {
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         $m_files = new EmundusModelFiles();
@@ -4676,7 +4639,6 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    /* get users logs by fnum */
     public function getuserslogbyfnum() {
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getString('fnum', '');

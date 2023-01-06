@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+
+.en-tete { width :100%;  }
+.candidat { width :80%;  }
+.avatar { width :20%;  }
+.dossier { width :100%;  }
+
+
+.card  { border: none; display:block; font-family: 'Roboto', sans-serif; }
+.name  { display: block;  display:block; font-family: 'Roboto', sans-serif; }
+.maidename  {display: block; font-family: 'Roboto', sans-serif; }
+.nationality { display: block; font-weight:normal!important; font-family: 'Roboto', sans-serif; }
+.idcandidat{ display: block; font-weight:normal!important;  color: " . $cTitle . "; font-family: 'Roboto', sans-serif;  }
+.sent { display: block; font-family: 'Roboto', sans-serif; text-align:left;  }
+.statut { display: block; font-family: 'Roboto', sans-serif; text-align:left; color: " . $cTitle . "  }
+.birthday { display: block; font-family: 'Roboto', sans-serif; }
+.label {color:black;}
+.label-default {background-color:#999999;}
+.label-primary {background-color:#337ab7;}
+.label-success {background-color:#5cb85c;}
+.label-info    {background-color:#033c73;}
+.label-warning {background-color:#dd5600;}
+.label-danger  {background-color:#c71c22;}
+.label-lightpurple { background-color: #DCC6E0 }
+.label-purple { background-color: #947CB0 }
+.label-darkpurple {background-color: #663399 }
+.label-lightblue { background-color: #6bb9F0 }
+.label-blue { background-color: #19B5FE }
+.label-darkblue { background-color: #013243 }
+.label-lightgreen { background-color: #00E640 }
+.label-green { background-color: #3FC380 }
+.label-darkgreen { background-color: #1E824C }
+.label-lightyellow { background-color: #FFFD7E }
+.label-yellow { background-color: #FFFD54 }
+.label-darkyellow { background-color: #F7CA18 }
+.label-lightorange { background-color: #FABE58 }
+.label-orange { background-color: #E87E04 }
+.label-darkorange {background-color: #D35400 }
+.label-lightred { background-color: #EC644B }
+.label-red { background-color: #CF000F }
+.label-darkred { background-color: #96281B }
+.label-lightpink { background-color: #e08283; }
+.label-pink { background-color: #d2527f; }
+.label-darkpink { background-color: #db0a5b; }
+h3 {  font-family: 'Roboto', sans-serif; font-size:35px;  color: #000000; text-align:left!important; font-weight:bold;}
+
+.group { color: black; }
+h1 {
+    font-family: 'Roboto';
+    font-size:75px;
+    color: " . $profile_color . ";
+    font-weight:550;
+}
+
+h2 {
+    font-family: 'Roboto';
+    font-size:45px;
+    color: " . $cTitle . ";
+    font-weight:500;
+
+}
+
+h3 {
+    font-size:35px;
+    color: #000000;
+    text-align:left!important;
+
+}
+
+h5 {
+    color: #000000;
+    font-size: 18px;
+    text-align: left;
+}
+
+th {
+    color: #000000;
+    font-size: 33px!important;
+}
+
+td {
+    color: #000000;
+    font-size: 33px!important;
+}
+
+.background {
+    background-color: #F7F7F7;
+}
+
+.background-light {
+    border-top: 0.5px solid #D3D3D3;
+    border-bottom: 0.5px solid #D3D3D3;
+}
+
+
+@media print {
+    .breaker{
+        page-break-before: always;
+    }
+}
