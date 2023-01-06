@@ -5367,7 +5367,7 @@ class EmundusModelApplication extends JModelList
 
                 switch ($element->plugin){
                     case 'date':
-                        $elt = date($params->date_form_format, strtotime($value));
+                        $elt = EmundusHelperDate::displayDate($value,$params->date_form_format,1);
                         break;
                     case 'birthday':
                         preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $value, $matches);
