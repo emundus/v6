@@ -893,7 +893,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
                 if (in_array("status", $options)) {
                     $status = $m_files->getStatusByFnums(explode(',', $fnum));
-                    $htmldata .= '<tr class="sent"><td>' . JText::_('PDF_STATUS') . ' : ' . $status[$fnum]['value'] . '</td></tr>';
+                    $htmldata .= '<tr class="sent"><td>' . JText::_('COM_EMUNDUS_EXPORTS_PDF_STATUS') . ' : ' . $status[$fnum]['value'] . '</td></tr>';
                 }
 
                 if (in_array("tags", $options)) {
@@ -1357,7 +1357,7 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
         }
         if (in_array("status", $options)) {
             $status = $m_files->getStatusByFnums(explode(',', $fnum));
-            $htmldata .= '<div class="sent">' . JText::_('PDF_STATUS') . ' : ' . $status[$fnum]['value'] . '</div>';
+            $htmldata .= '<div class="sent">' . JText::_('COM_EMUNDUS_EXPORTS_PDF_STATUS') . ' : ' . $status[$fnum]['value'] . '</div>';
         }
         if (in_array("tags", $options)) {
             $tags = $m_files->getTagsByFnum(explode(',', $fnum));

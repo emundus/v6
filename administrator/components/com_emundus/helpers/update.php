@@ -1952,7 +1952,7 @@ class EmundusHelperUpdate
                         ->select('id')
                         ->from('#__emundus_plugin_events')
                         ->where('label = ' . $db->quote($event['label']));
-
+	                $db->setQuery($query);
                     try {
                         $event_id = $db->loadResult();
                     } catch (Exception $e) {
@@ -2008,6 +2008,9 @@ class EmundusHelperUpdate
                     $response['status'] = true;
                     $response['message'] = 'Success';
                 }
+            } else {
+	            $response['status'] = true;
+	            $response['message'] = 'Events already inserted';
             }
         }
 

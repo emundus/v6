@@ -25,6 +25,7 @@
 	<config>
 		<fields name="params">
 			<fieldset name="basic">
+				<field type="media" name="mod_em_banner_image" label="MOD_EM_BANNER_IMAGE" description="MOD_EM_BANNER_IMAGE_DESC" />
 			</fieldset>
 		</fields>
 	</config>

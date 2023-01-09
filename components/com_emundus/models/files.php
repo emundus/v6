@@ -230,8 +230,7 @@ class EmundusModelFiles extends JModelLegacy
                         $element_attribs = json_decode($def_elmt->element_attribs);
                         $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
                         foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-                            $select = 'REPLACE(' . $select . ', "' . $value . '", "' .
-                                JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+                            $select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
                         }
                         $select = str_replace($def_elmt->tab_name . '.' . $def_elmt->element_name,'GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.' SEPARATOR ", ")',$select);
 
@@ -1939,9 +1938,9 @@ class EmundusModelFiles extends JModelLegacy
                             $element_attribs = json_decode($elt->element_attribs);
                             foreach ($element_attribs->sub_options->sub_values as $key => $value) {
                                 if(empty($first_replace)) {
-                                    $select = "REPLACE(" . $select . ",'" . $value . "','" . $element_attribs->sub_options->sub_labels[$key] . "')";
+                                    $select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
                                 } else {
-                                    $select .= ",REPLACE(" . $select . ",'" . $value . "','" . $element_attribs->sub_options->sub_labels[$key] . "')";
+                                    $select .= ',REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
                                 }
                             }
                             $query .= ', '.$select.' AS '. $elt->table_join.'___'.$elt->element_name;
@@ -2034,7 +2033,7 @@ class EmundusModelFiles extends JModelLegacy
                             } else{
                                 $element_attribs = json_decode($elt->element_attribs);
                                 foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-                                    $if[] = 'IF(' . $select . '="' . $value . '","' . $element_attribs->sub_options->sub_labels[$key] . '"';
+                                    $if[] = 'IF(' . $select . '="' . $value . '","' . JText::_($element_attribs->sub_options->sub_labels[$key]) . '"';
                                     $endif .= ')';
                                 }
                                 $select = implode(',', $if) . ',' . $select . $endif;
@@ -2092,11 +2091,9 @@ class EmundusModelFiles extends JModelLegacy
                             foreach ($element_attribs->sub_options->sub_values as $key => $value) {
                                 if($elt->element_plugin == 'checkbox'){
                                     if(empty($if)) {
-                                        $if = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' .
-                                            JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+                                        $if = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
                                     } else {
-                                        $if = 'REGEXP_REPLACE(' . $if . ', "\\\b' . $value . '\\\b", "' .
-                                            JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+                                        $if = 'REGEXP_REPLACE(' . $if . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
                                     }
                                 } else {
                                     $if[] = 'IF(' . $select . '="' . $value . '","' . $element_attribs->sub_options->sub_labels[$key] . '"';
@@ -2574,7 +2571,7 @@ class EmundusModelFiles extends JModelLegacy
      * @return array|bool
      */
     public function getAccessorByFnums($fnums) {
-        $query = "SELECT jecc.fnum, jesg.id, jesg.label, jesg.class FROM #__emundus_campaign_candidature as jecc
+        $query = "SELECT jecc.fnum, jesg.id, GROUP_CONCAT(jesg.label) as label, GROUP_CONCAT(jesg.class) as class FROM #__emundus_campaign_candidature as jecc
                   LEFT JOIN #__emundus_setup_campaigns as jesc on jesc.id = jecc.campaign_id
                   LEFT JOIN #__emundus_setup_programmes as jesp on jesp.code = jesc.training
                   LEFT JOIN #__emundus_setup_groups_repeat_course as jesgrc on jesgrc.course = jesp.code
@@ -2588,8 +2585,12 @@ class EmundusModelFiles extends JModelLegacy
             $res = $db->loadAssocList();
             $access = array();
             foreach ($res as $r) {
-                $assocTagcampaign = '<span class="label '.$r['class'].'" id="'.$r['id'].'">'.$r['label'].'</span>';
-                $access[$r['fnum']] = $assocTagcampaign;
+                $group_labels = explode(',',$r['label']);
+                $class_labels = explode(',',$r['class']);
+                foreach ($group_labels as $key => $g_label) {
+                    $assocTagcampaign = '<span class="label '.$class_labels[$key].'" id="'.$r['id'].'">'.$g_label.'</span>';
+                    $access[$r['fnum']] .= $assocTagcampaign;
+                }
             }
 
             $query = "SELECT jega.fnum, jesg.label, jesg.class FROM #__emundus_group_assoc as jega

@@ -2295,13 +2295,15 @@ class EmundusModelFormbuilder extends JModelList {
                 $rgt = $menu->rgt + $key + 3;
                 $lft = $menu->rgt + $key + 2;
 
-                $query->clear()
-                    ->update($db->quoteName('#__menu'))
-                    ->set('rgt = ' . $db->quote($rgt))
-                    ->set('lft = ' . $db->quote($lft))
-                    ->where('link = ' . $db->quote($menu->link));
-                $db->setQuery($query);
-                $db->execute();
+				if(!empty($menu->link)) {
+					$query->clear()
+						->update($db->quoteName('#__menu'))
+						->set('rgt = ' . $db->quote($rgt))
+						->set('lft = ' . $db->quote($lft))
+						->where('link = ' . $db->quote($menu->link));
+					$db->setQuery($query);
+					$db->execute();
+				}
             }
 
             $query->clear()

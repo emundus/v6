@@ -367,21 +367,8 @@ var FbFileUpload = {
     },
 
     delete: function(elementId, attachId) {
-
-        var myFormData = new FormData();
-        var xhr = new XMLHttpRequest();
-        var div = document.querySelector('div#'+elementId+'_attachment');
-        var input = document.querySelector('div#div_'+elementId+' > input#'+elementId);
-        var fnum = document.querySelector('input#'+elementId.split('___')[0]+'___fnum').value;
-
-
         var file = event.target;
-        var fileName = file.getAttribute('value');
-
-        myFormData.append('filename',fileName);
-        myFormData.append('attachId', attachId);
-        myFormData.append('fnum', fnum);
-
+        var fileName = file.parentElement.parentElement.firstChild.innerText;
         var parentDiv = file.parentNode;
 
         Swal.fire({
@@ -395,43 +382,61 @@ var FbFileUpload = {
             cancelButtonText: Joomla.JText._('PLG_ELEMENT_FIELD_CANCEL'),
             cancelButtonClass: 'btn goback-btn button',
         }).then(answser => {
-
             if (answser.value) {
-                xhr.open('POST', 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=emundus_fileupload&method=ajax_delete', true);
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState == 4 && xhr.status == 200) {
+                var div = document.querySelector('div#'+elementId+'_attachment');
+                var input = document.querySelector('div#div_'+elementId+' > input#'+elementId);
+                var fnum = document.querySelector('input#'+elementId.split('___')[0]+'___fnum').value;
 
-                        var result = JSON.parse(xhr.responseText);
-                        if (result.status == true) {
-                            parentDiv.remove();
+                const formData = new FormData();
+                formData.append('filename', fileName);
+                formData.append('attachId', attachId);
+                formData.append('fnum', fnum);
 
-                            var attachmentList = div.querySelectorAll('.em-fileAttachment-link').length;
-                            if (attachmentList === 0) {
-                                document.querySelector('div#'+elementId+'_attachment > .em-fileAttachmentTitle').remove();
-                            }
+                fetch('index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=emundus_fileupload&method=ajax_delete', {
+                    body: formData,
+                    method: 'post'
+                }).then((response) => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                }).then((res) => {
+                    if (res.status) {
+                        parentDiv.remove();
 
-                            input.value = "";
-                            Swal.fire({
-                                title: Joomla.JText._('PLG_ELEMENT_FIELD_DELETE'),
-                                text: Joomla.JText._('PLG_ELEMENT_FIELD_DELETE_TEXT'),
-                                type: 'success',
-                                customClass: {
-                                    title: 'em-swal-title',
-                                    confirmButton: 'em-swal-confirm-button',
-                                    actions: "em-swal-single-action",
-                                }
-                            });
+                        var attachmentList = div.querySelectorAll('.em-fileAttachment-link').length;
+                        if (attachmentList === 0) {
+                            document.querySelector('div#'+elementId+'_attachment > .em-fileAttachmentTitle').remove();
                         }
+
+                        input.value = '';
+                        Swal.fire({
+                            title: Joomla.JText._('PLG_ELEMENT_FIELD_DELETE'),
+                            text: Joomla.JText._('PLG_ELEMENT_FIELD_DELETE_TEXT'),
+                            type: 'success',
+                            customClass: {
+                                title: 'em-swal-title',
+                                confirmButton: 'em-swal-confirm-button',
+                                actions: 'em-swal-single-action',
+                            }
+                        });
+
                         document.querySelectorAll('div#'+elementId+'_attachment').forEach(element => {
                             element.remove();
                         });
+                    } else {
+                        Swal.fire({
+                            title: Joomla.JText._('PLG_ELEMENT_FIELD_DELETE_FAILED'),
+                            text: Joomla.JText._('PLG_ELEMENT_FIELD_DELETE_TEXT_FAILED'),
+                            type: 'error',
+                            customClass: {
+                                title: 'em-swal-title',
+                                confirmButton: 'em-swal-confirm-button',
+                                actions: 'em-swal-single-action',
+                            }
+                        });
                     }
-
-                    watch(elementId, attachId);
-
-                };
+                });
             }
-            xhr.send(myFormData);
         });
     },
 
