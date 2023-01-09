@@ -8,7 +8,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-if (empty($user) || empty($user->id) || empty($applications)) {
+if (empty($user) || empty($user->id)) {
     return;
 }
 
