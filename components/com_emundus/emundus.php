@@ -566,6 +566,7 @@ JText::script('COM_EMUNDUS_ACCESS_EXPORT_PDF');             # 8
 JText::script('COM_EMUNDUS_ACCESS_MAIL_APPLICANT');         # 9
 JText::script('COM_EMUNDUS_ACCESS_COMMENT_FILE');           # 10
 JText::script('COM_EMUNDUS_ACCESS_ACCESS_FILE');            # 11
+JText::script('COM_EMUNDUS_ACCESS_ACCESS_FILE_CREATE');     # 11
 JText::script('COM_EMUNDUS_ACCESS_USER');                   # 12
 JText::script('COM_EMUNDUS_ACCESS_STATUS');                 # 13
 JText::script('COM_EMUNDUS_ACCESS_TAGS');                   # 14

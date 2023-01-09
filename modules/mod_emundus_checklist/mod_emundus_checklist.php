@@ -50,7 +50,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $mandatory_documents_title = $params->get('mandatory_documents_title', JText::_('MANDATORY_DOCUMENTS'));
     $optional_documents_title = $params->get('optional_documents_title', JText::_('OPTIONAL_DOCUMENTS'));
     $admission = $params->get('admission', 0);
-    $show_send = $params->get('show_send', 1);
+    $show_send = $params->get('showsend', 1);
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
     $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
