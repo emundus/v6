@@ -538,6 +538,10 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+		<field name="messenger_notifications_on_send" type="list" default="1" label="COM_EMUNDUS_MESSENGER_NOTIFICATION_ON_SEND" description="COM_EMUNDUS_MESSENGER_NOTIFICATION_ON_SEND_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_MODULES" name="modules" description="COM_EMUNDUS_MODULES_DESC">
 		<field name="style" label="COM_EMUNDUS_MODULES_STYLE" type="radio" default="1" description="COM_EMUNDUS_MODULES_STYLE_DESC">
