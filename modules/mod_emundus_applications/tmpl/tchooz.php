@@ -313,6 +313,11 @@ ksort($applications);
                                             </div>
 
                                             <div>
+                                                <?php
+                                                if(empty($application->class)) {
+	                                                $application->class = 'default';
+                                                }
+                                                ?>
                                                 <?php if(empty($visible_status)) : ?>
                                                     <label class="em-applicant-text-color em-applicant-default-font"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_STATUS'); ?> :</label>
                                                     <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row" id="application_status_<?php echo $application->fnum ?>">
