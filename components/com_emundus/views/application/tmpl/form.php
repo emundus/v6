@@ -112,11 +112,11 @@ $user = $this->userid;
                 var form = result.data;
 
                 $('#loading').remove();
-                $('#show_profile').append(form.toString());
-                $('#download-pdf').attr('href', 'index.php?option=com_emundus&task=pdf&user=' + $('#user_hidden').attr('value') + '&fnum=' + $('#fnum_hidden').attr('value') + '&profile=' + profile);
 
-                /* $('#select_profile option[value="' + profile + '"]').prop('disabled', true);
-                $('#select_profile option[value="' + profile + '"]').css('font-style', 'italic'); */
+                if(form) {
+                    $('#show_profile').append(form.toString());
+                    $('#download-pdf').attr('href', 'index.php?option=com_emundus&task=pdf&user=' + $('#user_hidden').attr('value') + '&fnum=' + $('#fnum_hidden').attr('value') + '&profile=' + profile);
+                }
 
             }, error: function(jqXHR) {
                 console.log(jqXHR.responseText);
