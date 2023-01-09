@@ -756,6 +756,14 @@ export default {
   font-size: 14px;
   width: 100%;
 
+	#em-attachment-preview {
+		width: 75%;
+	}
+
+	#attachment-edit {
+		width: 25%;
+	}
+
 	.v--modal-box.v--modal {
 		height: 100vh !important;
 		width: 100vw !important;
@@ -941,7 +949,6 @@ export default {
     th {
       height: 49px;
       background: transparent;
-      background-color: transparent;
     }
 
     td,
