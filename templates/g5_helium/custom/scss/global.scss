@@ -4805,7 +4805,7 @@ screen and (max-height: 769px) {
   }
 
   .gantry #g-feature {
-    margin-top: 50px;
+    margin-top: 0;
   }
 
 
@@ -4829,6 +4829,10 @@ screen and (max-height: 769px) {
   .gantry.view-registration, .gantry.view-form.em-formRegistrationCenter {
     main#g-main-mainbody {
       padding: 0;
+
+      .view-registration.login.em-formRegistrationCenter{
+        margin-top: 50px;
+      }
 
       .login.em-formRegistrationCenter, .em-formRegistrationCenter:not(.componentheading) {
         padding: 0;
