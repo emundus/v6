@@ -166,6 +166,7 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 			if (isset($recipient['email']) && !empty($recipient['email'])) {
 
 				$attachment_id = $recipient['attachment_id']; //ID provenant de la table emundus_attachments
+                $flag = false;
 
                 // TODO : Check if we already sent a file request today, merge this query with query uploaded. If a file request is sent today OR already uploaded we don't send this email
                 $query = $db->getQuery(true);
@@ -179,94 +180,113 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
                 $db->setQuery($query);
                 $isSelectedReferent = $db->loadResult();
 
-                if ($isSelectedReferent > 0) {
-                    continue;
+                if($isSelectedReferent == 0) {
+                    $flag = true;
                 } else {
-                    $query = 'SELECT count(id) as cpt FROM #__emundus_files_request 
-							WHERE student_id=' . $student->id . ' AND attachment_id=' . $attachment_id . ' AND uploaded=1 AND fnum like ' . $db->Quote($fnum);
+                    // check if uploaded
+                    $query = 'SELECT count(id) as cpt 
+                                FROM #__emundus_files_request
+                                WHERE student_id=' . $student->id . ' AND attachment_id = ' . $attachment_id . ' AND uploaded = 1 AND fnum LIKE ' . $db->quote($fnum);
+
+                    $db->setQuery($query);
+                    $isUploaded = $db->loadResult();
+
+                    if($isUploaded == 0) {
+                        // check if the last request >= 60 minutes --> 3600 seconds
+                        $query = 'SELECT count(id) as cpts
+                                   FROM #__emundus_files_request
+                                    WHERE student_id=' . $student->id . ' AND attachment_id = ' . $attachment_id . ' AND fnum LIKE ' . $db->quote($fnum) . ' 
+                                    AND TIME_TO_SEC(TIMEDIFF(NOW(),(SELECT time_date FROM jos_emundus_files_request AS jefr WHERE jefr.email = ' . $db->quote($recipient['email']) . ' 
+                                    ORDER BY id DESC LIMIT 1))) >= 3600';
+
+                        $db->setQuery($query);
+                        $lastRequest = $db->loadResult();
+
+                        if($lastRequest > 0) {
+                            $flag = true;
+                        }
+                    }
+                }
+
+                if($flag) {
+                    $key = md5(date('Y-m-d h:m:i') . '::' . $fnum . '::' . $student_id . '::' . $attachment_id . '::' . rand());
+                    // 2. MAJ de la table emundus_files_request
+                    $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, campaign_id, fnum, email)
+                                VALUES (' . $db->Quote($now) . ', ' . $student->id . ', ' . $db->Quote($key) . ', ' . $attachment_id . ', ' . $fnum_detail['id'] . ', ' . $db->Quote($fnum) . ', ' . $db->Quote($recipient['email']) . ')';
 
                     $db->setQuery($query);
                     $db->execute();
-                    $is_uploaded = $db->loadResult();
+                    $request_id = $db->insertid();
 
-                    if ($is_uploaded == 0) {
-                        $key = md5(date('Y-m-d h:m:i') . '::' . $fnum . '::' . $student_id . '::' . $attachment_id . '::' . rand());
-                        // 2. MAJ de la table emundus_files_request
-                        $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, campaign_id, fnum, email) 
-                          VALUES (' . $db->Quote($now) . ', ' . $student->id . ', ' . $db->Quote($key) . ', ' . $attachment_id . ', ' . $fnum_detail['id'] . ', ' . $db->Quote($fnum) . ', ' . $db->Quote($recipient['email']) . ')';
-
-                        $db->setQuery($query);
-                        $db->execute();
-                        $request_id = $db->insertid();
-
-                        // 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
-                        if ($sef_url === 'true') {
-                            $link_upload = $baseurl . $url . '?keyid=' . $key . '&sid=' . $student->id;
-                        } else {
-                            $link_upload = $baseurl . $url . '&keyid=' . $key . '&sid=' . $student->id;
-                        }
-
-                        $post = [
-                            'ID' => $student->id,
-                            'NAME' => $student->name,
-                            'EMAIL' => $student->email,
-                            'UPLOAD_URL' => $link_upload,
-                            'PROGRAMME_NAME' => $fnum_detail['label'],
-                            'FNUM' => $fnum,
-                            'USER_NAME' => $fnum_detail['name'],
-                            'CAMPAIGN_LABEL' => $fnum_detail['label'],
-                            'SITE_URL' => JURI::base(),
-                            'USER_EMAIL' => $fnum_detail['email'],
-                            'REFERENT_NAME' => $recipient['name'],
-                            'REFERENT_FIRST_NAME' => $recipient['firstname']
-                        ];
-                        $tags = $m_emails->setTags($fnum_detail['applicant_id'], $post, $fnum, '', $obj[0]->subject . $obj[0]->message);
-                        $subject = preg_replace($tags['patterns'], $tags['replacements'], $obj[0]->subject);
-                        $body = preg_replace($tags['patterns'], $tags['replacements'], $obj[0]->message);
-
-                        $body = $m_emails->setTagsFabrik($body, [$fnum_detail['fnum']]);
-                        $subject = $m_emails->setTagsFabrik($subject, [$fnum_detail['fnum']]);
-
-                        if($obj[0]->Template) {
-                            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $obj[0]->Template);
-                        }
-
-                        $to = array($recipient['email']);
-
-                        $mailer = JFactory::getMailer();
-                        $mailer->setSender($sender);
-                        $mailer->addReplyTo($from, $fromname);
-                        $mailer->addRecipient($to);
-                        $mailer->setSubject($subject);
-                        $mailer->isHTML(true);
-                        $mailer->Encoding = 'base64';
-                        $mailer->setBody($body);
-                        $mailer->addAttachment($attachment);
-
-                        $send = $mailer->Send();
-                        if ($send !== true) {
-
-                            JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_NOT_SENT') . ' : ' . $recipient['email'], 'error');
-                            JLog::add($send, JLog::ERROR, 'com_emundus');
-
-                        } else {
-
-                            JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_SENT') . ' : ' . $recipient['email'], 'message');
-                            $body = JText::_('SENT_TO') . ' ' . $recipient['email'] . '<br><a href="index.php?option=com_fabrik&view=details&formid=264&rowid=' . $request_id . '&listid=273" target="_blank">' . JText::_('INVITATION_LINK') . '</a><br>' . $body;
-
-                            $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-                            VALUES ('62', '-1', " . $db->quote($subject) . ", " . $db->quote($body) . ", " . $db->quote($now) . ")";
-                            $db->setQuery($sql);
-                            try {
-                                $db->execute();
-                            } catch (Exception $e) {
-                                // catch any database errors.
-                            }
-
-                        }
-                        unset($replacements);
-                        unset($mailer);
+                    // 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
+                    if ($sef_url === 'true') {
+                        $link_upload = $baseurl . $url . '?keyid=' . $key . '&sid=' . $student->id;
+                    } else {
+                        $link_upload = $baseurl . $url . '&keyid=' . $key . '&sid=' . $student->id;
                     }
+
+                    $post = [
+                        'ID' => $student->id,
+                        'NAME' => $student->name,
+                        'EMAIL' => $student->email,
+                        'UPLOAD_URL' => $link_upload,
+                        'PROGRAMME_NAME' => $fnum_detail['label'],
+                        'FNUM' => $fnum,
+                        'USER_NAME' => $fnum_detail['name'],
+                        'CAMPAIGN_LABEL' => $fnum_detail['label'],
+                        'SITE_URL' => JURI::base(),
+                        'USER_EMAIL' => $fnum_detail['email'],
+                        'REFERENT_NAME' => $recipient['name'],
+                        'REFERENT_FIRST_NAME' => $recipient['firstname']
+                    ];
+
+                    $tags = $m_emails->setTags($fnum_detail['applicant_id'], $post, $fnum, '', $obj[0]->subject . $obj[0]->message);
+                    $subject = preg_replace($tags['patterns'], $tags['replacements'], $obj[0]->subject);
+                    $body = preg_replace($tags['patterns'], $tags['replacements'], $obj[0]->message);
+
+                    $body = $m_emails->setTagsFabrik($body, [$fnum_detail['fnum']]);
+                    $subject = $m_emails->setTagsFabrik($subject, [$fnum_detail['fnum']]);
+
+                    if($obj[0]->Template) {
+                        $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $obj[0]->Template);
+                    }
+
+                    $to = array($recipient['email']);
+
+                    $mailer = JFactory::getMailer();
+                    $mailer->setSender($sender);
+                    $mailer->addReplyTo($from, $fromname);
+                    $mailer->addRecipient($to);
+                    $mailer->setSubject($subject);
+                    $mailer->isHTML(true);
+                    $mailer->Encoding = 'base64';
+                    $mailer->setBody($body);
+                    $mailer->addAttachment($attachment);
+
+                    $send = $mailer->Send();
+                    if ($send !== true) {
+
+                        JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_NOT_SENT') . ' : ' . $recipient['email'], 'error');
+                        JLog::add($send, JLog::ERROR, 'com_emundus');
+
+                    } else {
+
+                        JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_SENT') . ' : ' . $recipient['email'], 'message');
+                        $body = JText::_('SENT_TO') . ' ' . $recipient['email'] . '<br><a href="index.php?option=com_fabrik&view=details&formid=264&rowid=' . $request_id . '&listid=273" target="_blank">' . JText::_('INVITATION_LINK') . '</a><br>' . $body;
+
+                        $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
+                            VALUES ('62', '-1', " . $db->quote($subject) . ", " . $db->quote($body) . ", " . $db->quote($now) . ")";
+                        $db->setQuery($sql);
+                        try {
+                            $db->execute();
+                        } catch (Exception $e) {
+                            // catch any database errors.
+                        }
+
+                    }
+                    unset($replacements);
+                    unset($mailer);
+
                 }
 			}
 		}
