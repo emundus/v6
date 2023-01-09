@@ -1090,6 +1090,12 @@ class EmundusModelFiles extends JModelLegacy
             $db->setQuery($query);
             $db->execute();
 
+	        foreach ($fnums as $fnum) {
+		        foreach ($users as $user) {
+			        EmundusModelLogs::log(JFactory::getUser()->id, (int) $user, $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE');
+		        }
+	        }
+
         } catch (Exception $e) {
             $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
             JLog::add($error, JLog::ERROR, 'com_emundus');
