@@ -1175,14 +1175,9 @@ class EmundusModelApplication extends JModelList
                                         $query = $db->getQuery(true);
 
                                         $parent_id = strlen($element->content_id) > 0 ? $element->content_id : 0;
-                                        $select = $params->join_val_column;
-                                        if (!empty($params->join_val_column_concat)) {
-                                            $select = $params->join_val_column_concat;
-                                            $select = preg_replace('#{thistable}#', 'jd', $select);
-                                            $select = preg_replace('#{shortlang}#', $this->locales, $select);
-                                        }
+                                        $select = $this->getSelectFromDBJoinElementParams($params);
 
-                                        $query->select($db->quoteName($select))
+                                        $query->select($select)
                                             ->from($db->quoteName($params->join_db_name . '_repeat_' . $element->name, 't'))
                                             ->leftJoin($db->quoteName($params->join_db_name, 'jd') . ' ON ' . $db->quoteName('jd.' . $params->join_key_column) . ' = ' . $db->quoteName('t.' . $element->name))
                                             ->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent_id));
@@ -1311,14 +1306,9 @@ class EmundusModelApplication extends JModelList
                                                 $query = $db->getQuery(true);
 
                                                 $parent_id = strlen($elements[$j]->content_id) > 0 ? $elements[$j]->content_id : 0;
-                                                $select = $params->join_val_column;
-                                                if (!empty($params->join_val_column_concat)) {
-                                                    $select = $params->join_val_column_concat;
-                                                    $select = preg_replace('#{thistable}#', 'jd', $select);
-                                                    $select = preg_replace('#{shortlang}#', $this->locales, $select);
-                                                }
+                                                $select = $this->getSelectFromDBJoinElementParams($params);
 
-                                                $query->select($db->quoteName($select))
+                                                $query->select($select)
                                                     ->from($db->quoteName($params->join_db_name . '_repeat_' . $elements[$j]->name, 't'))
                                                     ->leftJoin($db->quoteName($params->join_db_name, 'jd') . ' ON ' . $db->quoteName('jd.' . $params->join_key_column) . ' = ' . $db->quoteName('t.' . $elements[$j]->name))
                                                     ->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent_id));
@@ -1708,13 +1698,7 @@ class EmundusModelApplication extends JModelList
                                                             $db = $this->getDbo();
                                                             $query = $db->getQuery(true);
 
-                                                            $select = "CONCAT(" . $params->join_val_column . ")";
-                                                            if (!empty($params->join_val_column_concat)) {
-                                                                $select = $params->join_val_column_concat;
-                                                                $select = preg_replace('#{thistable}#', 'jd', $select);
-                                                                $select = preg_replace('#{shortlang}#', $this->locales, $select);
-                                                            }
-
+                                                            $select = $this->getSelectFromDBJoinElementParams($params);
                                                             $query->select($select)
                                                                 ->from($db->quoteName($params->join_db_name, 't'))
                                                                 ->leftJoin($db->quoteName($itemt->db_table_name . '_' . $itemg->id . '_repeat_repeat_' . $elements[$j]->name, 'checkbox_repeat') . ' ON ' . $db->quoteName('checkbox_repeat.' . $elements[$j]->name) . ' = ' . $db->quoteName('t.id'))
@@ -1968,14 +1952,8 @@ class EmundusModelApplication extends JModelList
                                                     $query = $db->getQuery(true);
 
                                                     $parent_id = strlen($element->content_id) > 0 ? $element->content_id : 0;
-                                                    $select = $params->join_val_column;
-                                                    if (!empty($params->join_val_column_concat)) {
-                                                        $select = 'CONCAT(' . $params->join_val_column_concat . ')';
-                                                        $select = preg_replace('#{thistable}#', 'jd', $select);
-                                                        $select = preg_replace('#{shortlang}#', $this->locales, $select);
-                                                    }
-
-                                                    $query->select($db->quote($select))
+                                                    $select = $this->getSelectFromDBJoinElementParams($params);
+                                                    $query->select($select)
                                                         ->from($db->quoteName($itemt->db_table_name . '_repeat_' . $element->name, 't'))
                                                         ->leftJoin($db->quoteName($params->join_db_name, 'jd') . ' ON ' . $db->quoteName('jd.' . $params->join_key_column) . ' = ' . $db->quoteName('t.' . $element->name))
                                                         ->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent_id));
@@ -2326,12 +2304,7 @@ class EmundusModelApplication extends JModelList
                                                         $query = $db->getQuery(true);
 
                                                         $parent_id = strlen($elements[$j]->content_id) > 0 ? $elements[$j]->content_id : 0;
-                                                        $select = $params->join_val_column;
-                                                        if (!empty($params->join_val_column_concat)) {
-                                                            $select = $params->join_val_column_concat;
-                                                            $select = preg_replace('#{thistable}#', 'jd', $select);
-                                                            $select = preg_replace('#{shortlang}#', $this->locales, $select);
-                                                        }
+                                                        $select = $this->getSelectFromDBJoinElementParams($params);
 
                                                         $query->select($select)
                                                             ->from($db->quoteName($params->join_db_name, 't'))
@@ -2506,12 +2479,7 @@ class EmundusModelApplication extends JModelList
                                                         $query = $db->getQuery(true);
 
                                                         $parent_id = strlen($elements[$j]->content_id) > 0 ? $elements[$j]->content_id : 0;
-                                                        $select = $params->join_val_column;
-                                                        if (!empty($params->join_val_column_concat)) {
-                                                            $select = $params->join_val_column_concat;
-                                                            $select = preg_replace('#{thistable}#', 'jd', $select);
-                                                            $select = preg_replace('#{shortlang}#', $this->locales, $select);
-                                                        }
+                                                        $select = $this->getSelectFromDBJoinElementParams($params);
 
                                                         $query->select($select)
                                                             ->from($db->quoteName($params->join_db_name, 't'))
@@ -2719,14 +2687,9 @@ class EmundusModelApplication extends JModelList
                                                     $query = $db->getQuery(true);
 
                                                     $parent_id = strlen($element->content_id) > 0 ? $element->content_id : 0;
-                                                    $select = $params->join_val_column;
-                                                    if (!empty($params->join_val_column_concat)) {
-                                                        $select = $params->join_val_column_concat;
-                                                        $select = preg_replace('#{thistable}#', 'jd', $select);
-                                                        $select = preg_replace('#{shortlang}#', $this->locales, $select);
-                                                    }
+                                                    $select = $this->getSelectFromDBJoinElementParams($params);
 
-                                                    $query->select($db->quoteName($select))
+                                                    $query->select($select)
                                                         ->from($db->quoteName($itemt->db_table_name . '_repeat_' . $element->name, 't'))
                                                         ->leftJoin($db->quoteName($params->join_db_name, 'jd') . ' ON ' . $db->quoteName('jd.' . $params->join_key_column) . ' = ' . $db->quoteName('t.' . $element->name))
                                                         ->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent_id));
@@ -3005,14 +2968,9 @@ class EmundusModelApplication extends JModelList
                                                 $query = $db->getQuery(true);
 
                                                 $parent_id = strlen($elements[$j]->content_id) > 0 ? $elements[$j]->content_id : 0;
-                                                $select = $params->join_val_column;
-                                                if (!empty($params->join_val_column_concat)) {
-                                                    $select = $params->join_val_column_concat;
-                                                    $select = preg_replace('#{thistable}#', 'jd', $select);
-                                                    $select = preg_replace('#{shortlang}#', $this->locales, $select);
-                                                }
+                                                $select = $this->getSelectFromDBJoinElementParams($params);
 
-                                                $query->select($db->quoteName($select))
+                                                $query->select($select)
                                                     ->from($db->quoteName($itemt->db_table_name . '_repeat_' . $elements[$j]->name, 't'))
                                                     ->leftJoin($db->quoteName($params->join_db_name, 'jd') . ' ON ' . $db->quoteName('jd.' . $params->join_key_column) . ' = ' . $db->quoteName('t.' . $elements[$j]->name))
                                                     ->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent_id));
@@ -3047,7 +3005,8 @@ class EmundusModelApplication extends JModelList
                                                 $elt = "";
                                             }
                                         } elseif ($elements[$j]->plugin == 'fileupload') {
-                                            $filename = end(explode('/', $r_elt));
+                                            $exploded_element = explode('/', $r_elt);
+                                            $filename = end($exploded_element);
                                             $elt = '<a href="' . JUri::base() . $elt . '" target="_blank">' . $filename . '</a>';
                                         } elseif ($elements[$j]->plugin == 'yesno') {
                                             $elt = ($r_elt == 1) ? JText::_("JYES") : JText::_("JNO");
@@ -3098,14 +3057,9 @@ class EmundusModelApplication extends JModelList
                                             $query = $db->getQuery(true);
 
                                             $parent_id = strlen($element->content_id) > 0 ? $element->content_id : 0;
-                                            $select = $params->join_val_column;
-                                            if (!empty($params->join_val_column_concat)) {
-                                                $select = $params->join_val_column_concat;
-                                                $select = preg_replace('#{thistable}#', 'jd', $select);
-                                                $select = preg_replace('#{shortlang}#', $this->locales, $select);
-                                            }
+                                            $select = $this->getSelectFromDBJoinElementParams($params);
 
-                                            $query->select($db->quoteName($select))
+                                            $query->select($select)
                                                 ->from($db->quoteName($itemt->db_table_name . '_repeat_' . $element->name, 't'))
                                                 ->leftJoin($db->quoteName($params->join_db_name, 'jd') . ' ON ' . $db->quoteName('jd.' . $params->join_key_column) . ' = ' . $db->quoteName('t.' . $element->name))
                                                 ->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent_id));
@@ -3156,7 +3110,8 @@ class EmundusModelApplication extends JModelList
                                             $elt = "";
                                         }
                                     } elseif ($element->plugin == 'fileupload') {
-                                        $filename = end(explode('/', @$element->content));
+                                        $exploded_element = explode('/', @$element->content);
+                                        $filename = end($exploded_element);
                                         $elt = '<a href="' . JUri::base() . $element->content . '" target="_blank">' . $filename . '</a>';
                                     } elseif ($element->plugin == 'yesno') {
                                         $elt = ($element->content == 1) ? JText::_("JYES") : JText::_("JNO");
@@ -5192,7 +5147,7 @@ class EmundusModelApplication extends JModelList
             case 'field':
                 // if (isset($params['database_join_display_type']) && $params['database_join_display_type'] == 'dropdown') {
                 // }
-                $params = json_decode($elements['params'], true);
+                $params = json_decode($element['params'], true);
 
                 if (!empty($element['default']) && preg_match("/\{jos\_(.+)\_\_\_(.*)\}$/", $element['default'], $matches)) {
                     $db = $this->getDbo();
@@ -5390,15 +5345,10 @@ class EmundusModelApplication extends JModelList
                         if ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist') {
 
                             $parent_id = strlen($element->id) > 0 ? $element->id : 0;
-                            $select = $params->join_val_column;
-                            if (!empty($params->join_val_column_concat)) {
-                                $select = $params->join_val_column_concat;
-                                $select = preg_replace('#{thistable}#', 'jd', $select);
-                                $select = preg_replace('#{shortlang}#', $this->locales, $select);
-                            }
+                            $select = $this->getSelectFromDBJoinElementParams($params);
 
                             $query->clear()
-                                ->select($db->quoteName($select))
+                                ->select($select)
                                 ->from($db->quoteName($table . '_repeat_' . $element->name, 't'))
                                 ->leftJoin($db->quoteName($params->join_db_name, 'jd') . ' ON ' . $db->quoteName('jd.' . $params->join_key_column) . ' = ' . $db->quoteName('t.' . $element->name))
                                 ->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent_id));
@@ -5566,5 +5516,18 @@ class EmundusModelApplication extends JModelList
         }
 
         return $reordered;
+    }
+
+    private function getSelectFromDBJoinElementParams($params) {
+        $db = JFactory::getDBO();
+
+        $select = $db->quoteName($params->join_val_column);
+        if (!empty($params->join_val_column_concat)) {
+            $select = 'CONCAT(' . $params->join_val_column_concat . ')';
+            $select = preg_replace('#{thistable}#', 'jd', $select);
+            $select = preg_replace('#{shortlang}#', $this->locales, $select);
+        }
+
+        return $select;
     }
 }

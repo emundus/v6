@@ -3105,13 +3105,13 @@ ul.unstyled.em-linkForgot li a {
     color: initial;
   }
 
-  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon){
+  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico){
     font-family: var(--font);
   }
 }
 
 .files-board.com_emundus, .view-list.com_fabrik {
-  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon){
+  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico){
     font-family: var(--font);
   }
 }
@@ -3120,7 +3120,7 @@ ul.unstyled.em-linkForgot li a {
   font-family: var(--font);
 }
 
-.indicateurs-page  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon) {
+.indicateurs-page  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico) {
   font-family: var(--font);
 }
 
