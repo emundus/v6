@@ -3755,8 +3755,8 @@ class EmundusModelFiles extends JModelLegacy
 
                             $send = $mailer->Send();
                             if ($send !== true) {
-                                $msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT').' : '.$to.' '.$send->__toString().'</div>';
-                                JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
+                                $msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT').' : '.$to.' '.$send.'</div>';
+                                JLog::add($send, JLog::ERROR, 'com_emundus.email');
                             } else {
                                 // Assoc tags if email has been sent
                                 if(!empty($trigger['tmpl']['tags'])){
@@ -3794,7 +3794,7 @@ class EmundusModelFiles extends JModelLegacy
                         }
                     }
 
-                    foreach ($trigger['to']['recipients'] as $key => $recipient) {
+                    foreach ($trigger['to']['recipients'] as $recipient) {
                         $can_send_mail = $h_emails->assertCanSendMailToUser($recipient['id']);
                         if (!$can_send_mail) {
                             continue;
