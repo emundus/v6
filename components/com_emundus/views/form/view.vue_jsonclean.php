@@ -94,7 +94,7 @@ class EmundusViewForm extends FabrikViewFormBase
             if ($getParams->get('show-title') == 1) :
                 $show_title = new stdClass();
                 $show_title->class = "page-header";
-                $title = explode('-', $form->getLabel());
+                $title = explode(' - ', $form->getLabel());
                 $show_title->titleraw = $form->form->label;
                 $show_title->value = $form->getLabel();
                 $show_title->label = new stdClass;
