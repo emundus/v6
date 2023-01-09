@@ -818,19 +818,12 @@ class EmundusControllerFiles extends JControllerLegacy
      *
      */
     public function updatestate() {
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'files.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
         $app    = JFactory::getApplication();
         $jinput = $app->input;
         $fnums  = $jinput->getString('fnums', null);
         $state  = $jinput->getInt('state', null);
 
-        $h_files    = new EmundusHelperFiles();
         $m_files = $this->getModel('Files');
-
-        $get_candidate_attachments = $h_files->tableExists('#__emundus_setup_emails_repeat_candidate_attachment');
-        $get_letters_attachments = $h_files->tableExists('#__emundus_setup_emails_repeat_letter_attachment');
-
 
         if($fnums == "all") {
             $fnums = $m_files->getAllFnums();
