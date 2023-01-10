@@ -131,6 +131,6 @@ foreach ($fnums_from as $fnum_from) {
 echo "<script>
       window.parent.$('html, body').animate({scrollTop : 0}, 300);  
       window.setTimeout(function() {
-		parent.$('#em-modal-actions').modal('hide');
+		parent.$('.em-modal-actions').modal('hide');
 	}, 1800);</script>";
 die('<div style="text-align: center"><img src="'.JURI::base().'images/emundus/animations/checked.gif" width="200" height="200" align="middle" /></div>');
