@@ -1269,8 +1269,11 @@ class EmundusControllerMessages extends JControllerLegacy {
 	function sendEmailNoFnum($email_address, $email, $post = null, $user_id = null, $attachments = [], $fnum = null) {
 
         include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
+        include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
+
         $m_email = new EmundusModelEmails;
 		$m_messages = new EmundusModelMessages();
+        $m_users = new EmundusModelUsers();
 
 		$config = JFactory::getConfig();
 
@@ -1312,6 +1315,19 @@ class EmundusControllerMessages extends JControllerLegacy {
 				'USER_EMAIL'    => $email_address
 			];
 		}
+
+        $cc = [];
+        // find cc if any
+        if($user_id != null) {
+            // find cc by userid if any
+            $emundus_user = $m_users->getUserById($user_id)[0];
+
+            if(isset($emundus_user->email_cc) && !empty($emundus_user->email_cc)) {
+                if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
+                    $cc[] = $emundus_user->email_cc;
+                }
+            }
+        }
 
         if($user_id != null) {
             $password = !empty($post['PASSWORD']) ? $post['PASSWORD'] : "";
@@ -1373,6 +1389,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 		$mailer->Encoding = 'base64';
 		$mailer->setBody($body);
         $mailer->AltBody = strip_tags($body_raw);
+        $mailer->addCC($cc);
 
 		if (!empty($toAttach)) {
 			$mailer->addAttachment($toAttach);
