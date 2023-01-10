@@ -541,7 +541,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 
         // Here we filter out any CC or BCC emails that have been entered that do not match the regex.
-        $cc = $jinput->post->getString('cc');
+        $cc = explode(',', $jinput->post->getString('cc'));
         if (!empty($cc)) {
             if (!is_array($cc)) {
                 $cc = [];
@@ -553,7 +553,7 @@ class EmundusControllerMessages extends JControllerLegacy {
             }
         }
 
-        $bcc = $jinput->post->getString('bcc');
+        $bcc = explode(',', $jinput->post->getString('bcc'));
         if (!empty($bcc)) {
             if (!is_array($bcc)) {
                 $bcc = [];
@@ -593,7 +593,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                     $cc_custom[] = $emundus_user->email_cc;
                 }
             }
-            $cc_final = array_merge($cc,$cc_custom);
+            $cc_final = array_filter(array_unique(array_merge($cc,$cc_custom)));
 
 
             $toAttach = [];
