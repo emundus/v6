@@ -103,7 +103,9 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 $this->db->quoteName('es.mail_excelia'),
                 $this->db->quoteName('es.is_hadicap'),
                 $this->db->quoteName('es.formation'),
-                $this->db->quoteName('win_sum_repeat.parent_id', 'win_parent_id')
+                $this->db->quoteName('win_sum_repeat.parent_id', 'win_parent_id'),
+                $this->db->quoteName('es.parent_diplome_excelia'),
+                $this->db->quoteName('es.nom_parent_diplome')
             ];
 
             $spe_columns = [
@@ -208,7 +210,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 ->leftJoin($this->db->quoteName('#__emundus_scholarship', 'es') . ' ON ' . $this->db->quoteName('ecc.fnum') . ' = '. $this->db->quoteName('es.fnum'))
                 ->leftJoin($this->db->quoteName('#__emundus_concours_sessions', 'econ') . ' ON ' . $this->db->quoteName('ecc.fnum') . ' = '. $this->db->quoteName('econ.fnum'))
 
-                ->leftJoin($this->db->quoteName('data_aurion_37736495', 'dau') . ' ON ' . $this->db->quoteName('es.mail_excelia') . ' = '. $this->db->quoteName('dau.MailEcole') . ' AND ' . $this->db->quoteName('dau.published') . ' = 1')
+                ->leftJoin($this->db->quoteName('data_aurion_37736495', 'dau') . ' ON ' . $this->db->quoteName('ecc.applicant_id') . ' = '. $this->db->quoteName('dau.emundus_id') . ' AND ' . $this->db->quoteName('dau.published') . ' = 1')
                 ->leftJoin($this->db->quoteName('data_aurion_39177663', 'deu') . ' ON ' . $this->db->quoteName('ecc.applicant_id') . ' = '. $this->db->quoteName('deu.emundus_id')  . ' AND ' . $this->db->quoteName('deu.published') . ' = 1')
                 ->leftJoin($this->db->quoteName('data_aurion_35347585', 'dac') . ' ON ' . $this->db->quoteName('epd.civility') . ' = '. $this->db->quoteName('dac.id_Titre') . ' AND ' . $this->db->quoteName('dac.published') . ' = 1')
                 ->leftJoin($this->db->quoteName('data_aurion_35584331', 'dacity') . ' ON ' . $this->db->quoteName('eq.city') . ' = '. $this->db->quoteName('dacity.id_Ville') . ' AND ' . $this->db->quoteName('dacity.published') . ' = 1')
@@ -361,6 +363,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 
         // $user_key = LASTNAME_FIRSTNAME_SEX_BIRTHDATE
         $user_key = strtoupper($this->replaceUserName($user->lastname)) . "_" . strtoupper($this->replaceUserName($user->firstname)) . "_" . $user->Sexe . "_" . date('dmY', strtotime($user->birth_date));
+        $parent_diplome_excelia = ($user->parent_diplome_excelia == 1) ? 'true' : 'false';
         // Check if the candidat is applying for the Winter/Summer school
         $winter_spes = $this->winterSummerSpes($user->win_parent_id);
 
@@ -438,7 +441,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
             }
 
             $inscription_module = "
-                <inscription_module ForceImport='true' key='" . $user->aurion_id . "_" . $user_key . "'  A3310='" . date('d-m-Y') . "' A87232='true' A46372499='" . $user->is_hadicap . "' " . $other_etabs . "  A37765709='" . $user->state. "' A37765733='" . $qualification_city . "' >
+                <inscription_module ForceImport='true' key='" . $user->aurion_id . "_" . $user_key . "'  A3310='" . date('d-m-Y') . "' A87232='true' A46372499='" . $user->is_hadicap . "' " . $other_etabs . "  A37765709='" . $user->state. "' A37765733='" . $qualification_city . "' A84153826='".$parent_diplome_excelia."' A84537344='".$user->nom_parent_diplome."'>
                     
                     <individu  key='" . $user_key . "' ForceDest='apprenant' Inverted='true' UpdateMode='none' >
                         <module objet_id='" . $user->aurion_id . "' ForceSource='apprenant'/>
@@ -469,6 +472,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     <statut_inscription objet_id='46311' ForceImport='true' />
                     
                 </inscription_module>";
+
         } else {
             $inscription_module ="";
         }
@@ -599,6 +603,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 
         // $user_key = LASTNAME_FIRSTNAME_SEX_DATE_BIRHTDATE
         $user_key = strtoupper($this->replaceUserName($user->lastname)) . "_" . strtoupper($this->replaceUserName($user->firstname)) . "_" . $user->Sexe . "_" . date('dmY', strtotime($user->birth_date));
+        $parent_diplome_excelia = ($user->parent_diplome_excelia == 1) ? 'true' : 'false';
         // Check if the candidat is applying for the Winter/Summer school
         $winter_spes = $this->winterSummerSpes($user->win_parent_id);
 
@@ -631,7 +636,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
             }
 
             $inscription_module = "
-                <inscription_module ForceImport='true' key='" . $user->aurion_id . "_" . $user_key . "'  A3310='" . date('d-m-Y') . "' A87232='true' A46372499='" . $user->is_hadicap . "' " . $other_etabs . "  A37765709='" . $user->state. "' A37765733='" . $qualification_city . "' >
+                <inscription_module ForceImport='true' key='" . $user->aurion_id . "_" . $user_key . "'  A3310='" . date('d-m-Y') . "' A87232='true' A46372499='" . $user->is_hadicap . "' " . $other_etabs . "  A37765709='" . $user->state. "' A37765733='" . $qualification_city . "' A84153826='".$parent_diplome_excelia."' A84537344='".$user->nom_parent_diplome."' >
 
                     <individu objet_id='" . $user_id . "' ForceDest='apprenant' Inverted='true' UpdateMode='none' >
                         <module objet_id='" . $user->aurion_id . "' ForceSource='apprenant'/>
