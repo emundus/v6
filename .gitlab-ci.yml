@@ -9,6 +9,7 @@ variables:
   DOCKER_BUILDKIT: 1
   BUILDKIT_INLINE_CACHE: 1
   DOCKER_TLS_CERTDIR: ""
+  SECRET_DETECTION_HISTORIC_SCAN: "true"
 
 stages:
   - prepare
