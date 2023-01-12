@@ -541,28 +541,38 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 
         // Here we filter out any CC or BCC emails that have been entered that do not match the regex.
-        $cc = explode(',', $jinput->post->getString('cc'));
-        if (!empty($cc)) {
-            if (!is_array($cc)) {
-                $cc = [];
-            }
-            foreach ($cc as $key => $cc_to_test) {
-                if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $cc_to_test) !== 1) {
-                    unset($cc[$key]);
+        $cc = $jinput->post->getString('cc');
+
+        if(!is_null($cc)) {
+            if (!empty($cc)) {
+                if (!is_array($cc)) {
+                    $cc = [];
+                }
+                foreach ($cc as $key => $cc_to_test) {
+                    if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $cc_to_test) !== 1) {
+                        unset($cc[$key]);
+                    }
                 }
             }
+        } else {
+            $cc = [];
         }
 
         $bcc = explode(',', $jinput->post->getString('bcc'));
-        if (!empty($bcc)) {
-            if (!is_array($bcc)) {
-                $bcc = [];
-            }
-            foreach ($bcc as $key => $bcc_to_test) {
-                if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $bcc_to_test) !== 1) {
-                    unset($bcc[$key]);
+
+        if(!is_null($bcc)) {
+            if (!empty($bcc)) {
+                if (!is_array($bcc)) {
+                    $bcc = [];
+                }
+                foreach ($bcc as $key => $bcc_to_test) {
+                    if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $bcc_to_test) !== 1) {
+                        unset($bcc[$key]);
+                    }
                 }
             }
+        } else {
+            $bcc = [];
         }
 
         // Get additional info for the fnums such as the user email.
@@ -594,7 +604,6 @@ class EmundusControllerMessages extends JControllerLegacy {
                 }
             }
             $cc_final = array_filter(array_unique(array_merge($cc,$cc_custom)));
-
 
             $toAttach = [];
             $post = [
