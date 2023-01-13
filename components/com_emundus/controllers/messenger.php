@@ -72,18 +72,20 @@ class EmundusControllerMessenger extends JControllerLegacy
         exit;
     }
 
-    public function getnotifications(){
-        $jinput = JFactory::getApplication()->input;
+	public function getnotifications(){
+		$res = array('data' => [], 'status' => false);
 
-        $user = $jinput->getString('user');
+		$jinput = JFactory::getApplication()->input;
+		$user = $jinput->getString('user');
 
-        $notifications = $this->m_messenger->getNotifications($user);
+		if (!empty($user)) {
+			$notifications = $this->m_messenger->getNotifications($user);
+			$res = array('data' => $notifications, 'status' => true);
+		}
 
-        $data = array('data' => $notifications, 'status' => true);
-
-        echo json_encode((object)$data);
-        exit;
-    }
+		echo json_encode((object)$res);
+		exit;
+	}
 
     public function getnotificationsbyfnum(){
         $jinput = JFactory::getApplication()->input;
