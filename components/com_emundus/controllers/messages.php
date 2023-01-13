@@ -1915,4 +1915,34 @@ class EmundusControllerMessages extends JControllerLegacy {
         }
         exit;
     }
+
+   public function getAllCategories() {
+		$res = ['status' => true, 'data' => []];
+		if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
+			$res['status'] = false;
+			echo json_encode($res);
+			exit;
+        }
+
+        $_mMessages = $this->getModel('Messages');
+        $res['data'] = $_mMessages->getAllCategories();
+
+        echo json_encode($res);
+        exit;
+    }
+
+	public function getAllMessages() {
+		$res = ['status' => true, 'data' => []];
+		if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
+			$res['status'] = false;
+			echo json_encode($res);
+            exit;
+        }
+
+        $_mMessages = $this->getModel('Messages');
+        $res['data'] = $_mMessages->getAllMessages();
+
+        echo json_encode($res);
+        exit;
+    }
 }

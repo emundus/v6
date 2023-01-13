@@ -1327,4 +1327,16 @@ class EmundusControllerUsers extends JControllerLegacy {
             JLog::add('WARNING! Attempt to activate anonym user without necessary parameters from ' . $_SERVER['REMOTE_ADDR'], JLog::WARNING, 'com_emundus.error');
         }
     }
+
+	public function getCurrentUser()
+    {
+        $currentUser = JFactory::getUser();
+
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($currentUser->id)) {
+            return false;
+        }
+
+        echo json_encode($currentUser);
+        exit;
+    }
 }
