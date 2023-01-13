@@ -161,7 +161,18 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
 
     public function onAfterOrderUpdate(&$order) {
         $db         = JFactory::getDbo();
-        $order_id = $order->order_parent_id ?: $order->order_id;
+
+	    if(isset($order->order_parent_id)){
+			$order_id = $order->order_parent_id;
+		} elseif (isset($order->hikamarket)){
+			if(isset($order->hikamarket->parent)){
+				$order_id = $order->hikamarket->parent->order_id;
+			} else {
+				$order_id = $order->order_id;
+			}
+        } else {
+			$order_id = $order->order_id;
+		}
 
         if ($order_id > 0) {
             $query = 'SELECT * FROM #__emundus_hikashop WHERE order_id='.$order_id;
@@ -204,9 +215,11 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         if ($status_after_payment[$key] > 0 && in_array($order->order_status, $confirmed_statuses)) {
             require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
             $m_files = new EmundusModelFiles();
-            $m_files->updateState($fnum, $status_after_payment[$key]);
 
-            JLog::add('Application file status updated to -> '.$status_after_payment[$key], JLog::INFO, 'com_emundus');
+			if(!empty($fnum)) {
+				$m_files->updateState($fnum, $status_after_payment[$key]);
+				JLog::add('Application file status updated to -> ' . $status_after_payment[$key], JLog::INFO, 'com_emundus');
+			}
 
             $query = $db->getQuery(true);
             $query->update('#__emundus_campaign_candidature')
