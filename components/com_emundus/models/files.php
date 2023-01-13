@@ -3650,16 +3650,24 @@ class EmundusModelFiles extends JModelLegacy
         $fnumsInfos = $this->getFnumsInfos($fnums);
         $status = $this->getStatus();
 
+		$current_user = JFactory::getUser();
+
         // Get all codes from fnum
         $code = array();
 
         foreach ($fnumsInfos as $fnum) {
             $code[] = $fnum['training'];
 
+	        if(empty($current_user)){
+				$user_from = $fnum['applicant_id'];
+			} else {
+		        $user_from = $current_user->id;
+	        }
+
             // Log the update
             $logsParams = array('updated' => []);
             $logsParams['updated'][] = ['old' => $fnum['value'], 'new' => $status[$state]['value'], 'old_id' => $fnum['step'], 'new_id' => $state];
-            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum['fnum'], -7), $fnum['fnum'], 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+            EmundusModelLogs::log($user_from, (int)substr($fnum['fnum'], -7), $fnum['fnum'], 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
         }
 
         //*********************************************************************
