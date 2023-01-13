@@ -74,6 +74,7 @@ echo $description;
                     $state = $application->published;
                     $confirm_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&confirm=1';
                     $first_page_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
+                    $desistement_status = array(4,6,8);
                     if ($state == '1' || $show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0' ) : ?>
                         <?php
                         if (!empty($file_tags)) {
@@ -110,10 +111,16 @@ echo $description;
 
                             <div class="col-xs-12 col-md-6 main-page-file-info">
                                 <p class="em-tags-display"><?= $file_tags_display; ?></i></p>
-                                <a class="btn btn-warning" href="<?php echo JRoute::_($first_page_url); ?>" role="button">
-                                    <i class="folder open outline icon"></i> <?= ($is_admission) ? JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_ADMISSION') : JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION'); ?>
-                                </a>
-                                <?php if ($application->status == 4 && $can_be_cancelled) :?>
+                                <?php if ($application->status != 9): ?>
+                                    <a class="btn btn-warning" href="<?php echo JRoute::_($first_page_url); ?>" role="button">
+                                        <i class="folder open outline icon"></i> <?= ($is_admission) ? JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_ADMISSION') : JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION'); ?>
+                                    </a>
+                                <?php else: ?>
+                                    <a class="btn btn-warning" href="<?php echo JRoute::_($first_page_url); ?>" role="button">
+                                        <i class="folder open outline icon"></i> <?= JText::_('MOD_EMUNDUS_SEND_APPLICATION_PROCESS_TO_PAYMENT') ?>
+                                    </a>
+                                <?php endif; ?>
+                                <?php if (in_array($application->status, $desistement_status) && $can_be_cancelled) :?>
                                     <a class="btn btn-info" href="#" onclick="unregisterApplication('<?= $application->fnum; ?>')" role="button">
                                         Me désister
                                     </a>
