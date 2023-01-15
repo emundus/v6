@@ -7,6 +7,11 @@
 			:defaultAttachments="data.attachments ? data.attachments : null"
 		></Attachments>
 
+    <Files
+        v-if="component === 'files'"
+        :type="data.type"
+    ></Files>
+
     <transition v-else name="slide-right">
       <component v-bind:is="$props.component"/>
     </transition>
@@ -17,6 +22,8 @@
 import moment from "moment";
 
 import Attachments from "./views/Attachments.vue";
+import Files from './views/Files/Files';
+
 import fileService from "./services/file.js";
 import list from "./views/list";
 import addcampaign from "./views/addCampaign"
@@ -27,7 +34,7 @@ import evaluationbuilder from "./views/evaluationBuilder"
 import settings from "./views/globalSettings"
 import messagescoordinator from "./components/Messages/MessagesCoordinator";
 import messages from "./components/Messages/Messages";
-import editprofile from "./views/Users/Edit"
+import editprofile from "./views/Users/Edit";
 
 export default {
 	props: {
@@ -62,6 +69,7 @@ export default {
     messagescoordinator,
     messages,
     editprofile,
+    Files
 	},
 
   created() {
@@ -158,6 +166,7 @@ export default {
 .view-emails #g-container-main .g-container,
 .view-form #g-container-main .g-container,
 .view-settings #g-container-main .g-container,
+.view-file #g-container-main .g-container,
 .view-users #g-container-main .g-container{
   width: 90%;
 }
@@ -167,6 +176,7 @@ export default {
   .view-emails #g-container-main .g-container,
   .view-form #g-container-main .g-container,
   .view-settings #g-container-main .g-container,
+  .view-file #g-container-main .g-container,
   .view-users #g-container-main .g-container{
     width: 85%;
   }

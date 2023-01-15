@@ -2,7 +2,7 @@ import Vue from 'vue';
 import App from './App.vue';
 
 Vue.config.productionTip = true;
-Vue.config.devtools = false;
+Vue.config.devtools = true;
 
 /** COMPONENTS **/
 import VModal from 'vue-js-modal';
@@ -48,6 +48,32 @@ if (document.getElementById('em-application-attachment')) {
 
     componentName = 'attachments';
     elementId = '#em-application-attachment';
+    mountApp = true;
+
+    if (mountApp) {
+        new Vue({
+            el: elementId,
+            store,
+            render(h) {
+                return h(App, {
+                    props: {
+                        component: componentName,
+                        data: data
+                    },
+                });
+            },
+        });
+    }
+}
+
+if (document.getElementById('em-files')) {
+    const element = document.getElementById('em-files');
+    Array.prototype.slice.call(element.attributes).forEach(function (attr) {
+        data[attr.name] = attr.value;
+    });
+
+    componentName = 'files';
+    elementId = '#em-files';
     mountApp = true;
 
     if (mountApp) {
