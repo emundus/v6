@@ -1043,14 +1043,11 @@ class EmundusModelPayment extends JModelList
                 $query->select('discount_code')
                     ->from($db->quoteName('#__hikashop_discount'))
                     ->where('discount_user_id = ' . $hikashop_user->user_id)
-                    ->andWhere('discount_published = 1')
                     ->andWhere('discount_code LIKE ' . $db->quote($fnum . '-REDUCTION-%'))
+                    ->andWhere('discount_published = 1')
+                    ->andWhere('discount_used_times < 1')
                     ->andWhere('discount_start <= ' . time())
                     ->andWhere('discount_end > '  . time());
-
-                if (!empty($hikashop_product_category)) {
-                    $query->andWhere('discount_category_id = '  . $hikashop_product_category);
-                }
 
                 try {
                     $db->setQuery($query);
@@ -1117,5 +1114,12 @@ class EmundusModelPayment extends JModelList
         }
 
         return $discount_code;
+    }
+
+    public function resetPaymentSession() {
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopResetSession', ['fnum' => JFactory::getSession()->get('emundusUser')->fnum]]);
+
+        JFactory::getSession()->set('emundusPayment', null);
     }
 }
