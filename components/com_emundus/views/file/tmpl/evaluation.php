@@ -14,6 +14,8 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 JText::script('COM_EMUNDUS_FILES_EVALUATION');
+JText::script('COM_EMUNDUS_FILES_TO_EVALUATE');
+JText::script('COM_EMUNDUS_FILES_EVALUATED');
 
 $xmlDoc = new DOMDocument();
 if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {

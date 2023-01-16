@@ -6830,3 +6830,15 @@ fieldset[disabled] .multiselect {
     margin-bottom: 64px;
   }
 }
+
+/** ELEMENT UI TABLE **/
+.el-table__header{
+  border: solid 1px var(--neutral-300);
+  border-top-left-radius: 8px !important;
+  border-collapse: separate;
+  border-top-right-radius: 8px !important;
+  background: white;
+  th{
+    background: transparent !important;
+  }
+}

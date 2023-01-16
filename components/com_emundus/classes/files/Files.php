@@ -2,7 +2,7 @@
 
 namespace classes\files;
 
-abstract class Files
+class Files
 {
     protected \Joomla\CMS\User\User $current_user;
     protected array $rights;
@@ -10,8 +10,6 @@ abstract class Files
     protected array $columns;
     protected int $page;
     protected int $limit;
-
-    abstract public function setFiles();
 
     /**
      * @return \Joomla\CMS\User\User
@@ -44,6 +42,11 @@ abstract class Files
     {
         $this->rights = $rights;
     }
+
+	public function setFiles(): void
+	{
+		$this->files = [];
+	}
 
     /**
      * @return array

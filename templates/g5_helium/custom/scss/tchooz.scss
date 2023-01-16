@@ -539,6 +539,14 @@ input:focus + .em-slider {
   grid-template-columns: repeat(4, 1fr);
 }
 
+.em-gap-4{
+  gap: 4px;
+}
+
+.em-gap-8{
+  gap: 8px;
+}
+
 .em-float-left{
   float: left;
 }
@@ -1119,11 +1127,23 @@ input:focus + .em-slider {
 .em-underline{
   text-decoration: underline;
 }
+
+/** BOXES **/
 .em-box-shadow{
   box-shadow: inset 0px -1px 0px #E3E5E8;
 }
 .em-neutral-100-box{
   background: #FAFAFA;
+}
+.em-tabs{
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #D4D6DF;
+  box-shadow: 0 1px 4px rgba(32, 35, 44, 0.05);
+}
+.em-selected-tab{
+  background: var(--main-50);
+  border: 1px solid var(--main-300);
 }
 
 /**

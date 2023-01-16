@@ -34,7 +34,6 @@ import store from './store';
 Vue.directive('tooltip', VTooltip);
 Vue.directive('close-popover', VClosePopover);
 
-
 let mountApp = false;
 let elementId = '';
 let data = {};
