@@ -27,5 +27,19 @@ export default {
         } catch (e) {
             return false;
         }
+    },
+
+    async getEvaluationFormByFnum(fnum) {
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=file&task=getevaluationformbyfnum', {
+                params: {
+                    fnum: fnum
+                }
+            });
+
+            return response.data;
+        } catch (e) {
+            return false;
+        }
     }
 }

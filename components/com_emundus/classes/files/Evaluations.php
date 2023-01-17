@@ -230,4 +230,34 @@ class Evaluations extends Files
             JLog::add('Problem to get files associated to user '.$this->current_user->id.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
         }
     }
+
+    public function getEvaluationFormByFnum($fnum){
+        try {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->clear()
+                ->select('distinct esp.fabrik_group_id')
+                ->from($db->quoteName('#__emundus_setup_programmes','esp'))
+                ->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esp.code').' = '.$db->quoteName('esc.training'))
+                ->leftJoin($db->quoteName('#__emundus_campaign_candidature','ecc').' ON '.$db->quoteName('esc.id').' = '.$db->quoteName('ecc.campaign_id'))
+                ->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
+            $db->setQuery($query);
+            $eval_groups = $db->loadColumn();
+            $eval_groups = array_filter($eval_groups, function($value) {
+                return !empty($value);
+            });
+
+            $query->clear()
+                ->select('form_id')
+                ->from($db->quoteName('#__fabrik_formgroup'))
+                ->where($db->quoteName('group_id') . ' IN (' . implode(',',$eval_groups) . ')');
+            $db->setQuery($query);
+            $form_id = $db->loadResult();
+
+            return $form_id;
+        } catch (Exception $e) {
+            JLog::add('Problem when get evaluation form of fnum '.$fnum.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
+        }
+    }
 }

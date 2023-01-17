@@ -66,4 +66,20 @@ class EmundusControllerFile extends JControllerLegacy
 		echo json_encode((object)$results);
 		exit;
 	}
+
+    public function getevaluationformbyfnum(){
+        $results = ['status' => 1, 'msg' => '', 'data' => []];
+
+        if(EmundusHelperAccess::asAccessAction(5,'r',JFactory::getUser()->id)){
+            $fnum = JFactory::getApplication()->input->getString('fnum',null);
+
+            $results['data'] = $this->files->getEvaluationFormByFnum($fnum);
+        } else {
+            $results['status'] = 0;
+            $results['msg'] = JText::_('ACCESS_DENIED');
+        }
+
+        echo json_encode((object)$results);
+        exit;
+    }
 }

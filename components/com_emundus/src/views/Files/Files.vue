@@ -56,7 +56,7 @@
       </el-table-column>
       <el-table-column width="50" fixed="right" class-name="em-open-application-cell">
         <template slot-scope="scope">
-          <span class="material-icons-outlined em-pointer" style="color: black">open_in_new</span>
+          <span class="material-icons-outlined em-pointer" @click="openModal(scope.row)" style="color: black">open_in_new</span>
         </template>
       </el-table-column>
     </el-table>
@@ -127,7 +127,15 @@ export default {
       });
     }
   },
-  methods: {}
+  methods: {
+    openModal(file){
+      this.currentFile = file;
+
+      setTimeout(() => {
+        this.$modal.show("application-modal");
+      },500)
+    },
+  }
 }
 </script>
 
