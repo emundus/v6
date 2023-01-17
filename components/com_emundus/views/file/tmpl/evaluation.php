@@ -16,11 +16,24 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 JText::script('COM_EMUNDUS_FILES_EVALUATION');
 JText::script('COM_EMUNDUS_FILES_TO_EVALUATE');
 JText::script('COM_EMUNDUS_FILES_EVALUATED');
+JText::script('COM_EMUNDUS_ONBOARD_FILE');
+JText::script('COM_EMUNDUS_ONBOARD_STATUS');
+
+JText::script('COM_EMUNDUS_ERROR_OCCURED');
+JText::script('COM_EMUNDUS_ACTIONS_CANCEL');
+JText::script('COM_EMUNDUS_OK');
+
+JHtml::styleSheet('components/com_emundus/src/assets/css/element-ui/theme-chalk/index.css');
 
 $xmlDoc = new DOMDocument();
 if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
     $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
 }
+
+$menu = JFactory::getApplication()->getMenu();
+$current_menu = $menu->getActive();
+
+JFactory::getSession()->set('current_menu_id',$current_menu->id);
 ?>
 
 <div id="em-files" type="evaluation"></div>

@@ -1145,6 +1145,14 @@ input:focus + .em-slider {
   background: var(--main-50);
   border: 1px solid var(--main-300);
 }
+.em-status{
+  width: fit-content;
+  border-radius: 54px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 8px;
+}
 
 /**
   TITLES

@@ -31,11 +31,11 @@ class Evaluations extends Files
         $h_array  = new EmundusHelperArray;
 
         try {
-            $menu = @JFactory::getApplication()->getMenu();
-            $current_menu = $menu->getActive();
+	        $Itemid = JFactory::getSession()->get('current_menu_id',0);
+	        $menu = JFactory::getApplication()->getMenu();
+			$params = $menu->getParams($Itemid)->get('params');
 
-            $Itemid = @JFactory::getApplication()->input->getInt('Itemid', $current_menu->id);
-            $params = $menu->getParams($Itemid);
+			$read_status_allowed = EmundusHelperAccess::asAccessAction(13,'r',JFactory::getUser()->id);
 
             $fnums = [];
 	        $groups_allowed = [];
@@ -48,22 +48,37 @@ class Evaluations extends Files
 				$groups_allowed = $db->loadColumn();
 			}
 
+	        $select = ['DISTINCT ecc.fnum', 'ecc.applicant_id', 'ecc.campaign_id as campaign', 'u.name'];
+	        $left_joins = [
+				$db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('ecc.applicant_id') . ' = ' . $db->quoteName('u.id'),
+	        ];
+			if($read_status_allowed) {
+				$select[] = 'ess.value as status,ess.class as status_color';
+				$left_joins[] = $db->quoteName('#__emundus_setup_status', 'ess') . ' ON ' . $db->quoteName('ess.step') . ' = ' . $db->quoteName('ecc.status');
+			}
+
+
+
 	        if(!empty($groups_allowed)) {
-		        $query_groups_program_associated->select('DISTINCT ecc.fnum,ecc.applicant_id,ecc.campaign_id,u.name')
+		        $query_groups_program_associated->select(implode(',',$select))
 			        ->from($db->quoteName('#__emundus_setup_groups', 'eg'))
 			        ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'esgrc') . ' ON ' . $db->quoteName('esgrc.parent_id') . ' = ' . $db->quoteName('eg.id'))
 			        ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.training') . ' = ' . $db->quoteName('esgrc.course'))
-			        ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
-			        ->leftJoin($db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('ecc.applicant_id') . ' = ' . $db->quoteName('u.id'))
-			        ->where($db->quoteName('eg.id') . ' IN (' . implode(',', $db->quote($groups_allowed)) .')')
+			        ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'));
+				foreach ($left_joins as $left_join){
+					$query_groups_program_associated->leftJoin($left_join);
+				}
+		        $query_groups_program_associated->where($db->quoteName('eg.id') . ' IN (' . implode(',', $db->quote($groups_allowed)) .')')
 			        ->andWhere($db->quoteName('ecc.published') . ' = 1');
 	        }
 
-            $query_users_associated->select('DISTINCT eua.fnum,ecc.applicant_id,ecc.campaign_id,u.name')
+            $query_users_associated->select(implode(',',$select))
                 ->from($db->quoteName('#__emundus_users_assoc','eua'))
-                ->leftJoin($db->quoteName('#__emundus_campaign_candidature','ecc').' ON '.$db->quoteName('eua.fnum').' = '.$db->quoteName('ecc.fnum'))
-                ->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('ecc.applicant_id').' = '.$db->quoteName('u.id'))
-                ->where($db->quoteName('eua.user_id') . ' = ' . $db->quote($this->current_user->id))
+                ->leftJoin($db->quoteName('#__emundus_campaign_candidature','ecc').' ON '.$db->quoteName('eua.fnum').' = '.$db->quoteName('ecc.fnum'));
+	        foreach ($left_joins as $left_join){
+		        $query_users_associated->leftJoin($left_join);
+	        }
+	        $query_users_associated->where($db->quoteName('eua.user_id') . ' = ' . $db->quote($this->current_user->id))
                 ->andWhere($db->quoteName('eua.action_id') . ' = ' . $db->quote(5) . ' AND ' . $db->quoteName('eua.r') . ' = ' . $db->quote(1))
                 ->andWhere($db->quoteName('ecc.published') . ' = 1');
 
@@ -71,12 +86,14 @@ class Evaluations extends Files
 		        $query_groups_associated->union($query_groups_program_associated);
 	        }
             $query_groups_associated->union($query_users_associated);
-	        $query_groups_associated->select('DISTINCT ega.fnum,ecc.applicant_id,ecc.campaign_id,u.name')
+	        $query_groups_associated->select(implode(',',$select))
                 ->from($db->quoteName('#__emundus_groups','eg'))
                 ->leftJoin($db->quoteName('#__emundus_group_assoc','ega').' ON '.$db->quoteName('ega.group_id').' = '.$db->quoteName('eg.group_id'))
-                ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ega.fnum') . ' = ' . $db->quoteName('ecc.fnum'))
-                ->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('ecc.applicant_id').' = '.$db->quoteName('u.id'))
-                ->where($db->quoteName('eg.user_id') . ' = ' . $db->quote($this->current_user->id))
+                ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ega.fnum') . ' = ' . $db->quoteName('ecc.fnum'));
+	        foreach ($left_joins as $left_join){
+		        $query_groups_associated->leftJoin($left_join);
+	        }
+	        $query_groups_associated->where($db->quoteName('eg.user_id') . ' = ' . $db->quote($this->current_user->id))
 	            ->andWhere($db->quoteName('ega.action_id') . ' = ' . $db->quote(5) . ' AND ' . $db->quoteName('ega.r') . ' = ' . $db->quote(1))
                 ->andWhere($db->quoteName('ecc.published') . ' = 1');
 
@@ -155,6 +172,10 @@ class Evaluations extends Files
                 $evaluation->student_id = $file->applicant_id;
                 $evaluation->campaign_id = $file->campaign_id;
                 $evaluation->applicant_name = $file->name;
+				if(isset($file->status)){
+					$evaluation->status = $file->status;
+					$evaluation->status_color = $file->status_color;
+				}
 
                 $key = false;
                 if(!empty($more_elements_by_campaign->campaign)) {
@@ -175,8 +196,8 @@ class Evaluations extends Files
 
                 foreach ($eval_elements as $elt) {
                     $elt->label = JText::_($elt->label);
-                    if (!in_array($elt->name,['fnum','student_id','campaign_id'])) {
-                        $evaluation->{$elt->name} = $m_application->getValuesByElementAndFnum($file->fnum,$elt->id,$elt->form_id);
+                    if (!in_array($elt->name,['fnum','student_id','campaign'])) {
+                        $evaluation->{$elt->name} = $m_application->getValuesByElementAndFnum($file->fnum,$elt->id,$elt->form_id,0);
                     }
                 }
 
@@ -198,6 +219,12 @@ class Evaluations extends Files
 
             $this->files = $final_evaluations;
 
+	        if($read_status_allowed) {
+				$status_column = new stdClass();
+				$status_column->name = 'status';
+				$status_column->show_in_list_summary = 0;
+				$eval_elements[] = $status_column;
+	        }
 			parent::setColumns($eval_elements);
         } catch (Exception $e) {
             JLog::add('Problem to get files associated to user '.$this->current_user->id.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');

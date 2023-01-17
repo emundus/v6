@@ -1801,113 +1801,180 @@ tr.fabrikFilterContainer{
 
 /* STATUS ET ETIQUETTES */
 
-.label-default {
+.label-default,.label-null {
   background-color: $neutral-600 !important;
   text-shadow: none;
 }
+.label-text-default,.label-text-null {
+  color: #fff !important;
+}
+
 .label-lightpurple {
   background-color: #DCC6E0 !important;
   text-shadow: none;
+}
+.label-text-lightpurple {
+  color: #fff !important;
 }
 
 .label-purple {
   background-color: #947CB0 !important;
   text-shadow: none;
 }
+.label-text-purple {
+  color: black !important;
+}
 
 .label-darkpurple {
   background-color: #663399 !important;
   text-shadow: none;
+}
+.label-text-darkpurple {
+  color: white !important;
 }
 
 .label-lightblue {
   background-color: #6bb9F0 !important;
   text-shadow: none;
 }
+.label-text-lightblue {
+  color: black !important;
+}
 
 .label-blue {
   background-color: #19B5FE !important;
   text-shadow: none;
+}
+.label-text-blue {
+  color: black;
 }
 
 .label-darkblue {
   background-color: #013243 !important;
   text-shadow: none;
 }
+.label-text-darkblue {
+  color: white !important;
+}
 
 .label-lightgreen {
   background-color: #7befb2 !important;
   text-shadow: none;
+}
+.label-text-lightgreen {
+  color: black !important;
 }
 
 .label-green {
   background-color: #3FC380 !important;
   text-shadow: none;
 }
+.label-text-green {
+  color: white !important;
+}
 
 .label-darkgreen {
   background-color: #1E824C !important;
   text-shadow: none;
+}
+.label-text-darkgreen {
+  color: white !important;
 }
 
 .label-lightyellow {
   background-color: #FFFD7E !important;
   text-shadow: none;
 }
+.label-text-lightyellow {
+  color: black !important;
+}
 
 .label-yellow {
   background-color: #FFFD54 !important;
   text-shadow: none;
+}
+.label-text-yellow {
+  color: black !important;
 }
 
 .label-darkyellow {
   background-color: #F7CA18 !important;
   text-shadow: none;
 }
+.label-text-darkyellow {
+  color: black !important;
+}
 
 .label-lightorange {
   background-color: #FABE58 !important;
   text-shadow: none;
+}
+.label-text-lightorange {
+  color: black !important;
 }
 
 .label-orange {
   background-color: #E87E04 !important;
   text-shadow: none;
 }
+.label-text-orange {
+  color: white !important;
+}
 
 .label-darkorange {
   background-color: #D35400 !important;
   text-shadow: none;
+}
+.label-text-darkorange{
+  color: white !important;
 }
 
 .label-lightred {
   background-color: #EC644B !important;
   text-shadow: none;
 }
+.label-text-lightred {
+  color: black !important;
+}
 
 .label-red {
   background-color: #CF000F !important;
   text-shadow: none;
+}
+.label-text-red {
+  color: white !important;
 }
 
 .label-darkred {
   background-color: #e5283b !important;
   text-shadow: none;
 }
+.label-darkred {
+  color: white !important;
+}
 
 .label-lightpink {
   background-color: #e08283 !important;
   text-shadow: none;
+}
+.label-text-lightpink {
+  color: black !important;
 }
 
 .label-pink {
   background-color: #d2527f !important;
   text-shadow: none;
 }
+.label-text-pink {
+  color: black !important;
+}
 
 .label-darkpink {
   background-color: #db0a5b !important;
   text-shadow: none;
+}
+.label-text-darkpink {
+  color: white !important;
 }
 
 /* ERROR PAGE 404 */
@@ -6839,6 +6906,68 @@ fieldset[disabled] .multiselect {
   border-top-right-radius: 8px !important;
   background: white;
   th{
-    background: transparent !important;
+    background: white !important;
+    .cell{
+      color: var(--neutral-700);
+      -webkit-line-clamp: 2;
+      white-space: pre-wrap;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      display: -webkit-box !important;
+    }
   }
+  th.el-table_1_column_2{
+    min-width: 270px;
+  }
+}
+.el-table__body{
+  border: solid 1px var(--neutral-300);
+  border-bottom-left-radius: 8px !important;
+  border-collapse: separate;
+  border-bottom-right-radius: 8px !important;
+  background: white;
+}
+.el-table__cell{
+  border-bottom: solid 1px var(--neutral-300);
+  border-right: unset;
+  border-left: unset;
+  position: static !important;
+}
+tbody .el-table__row:nth-child(even){
+  background-color: var(--neutral-50);
+}
+tbody .el-table__row:nth-child(odd){
+  background-color: var(--neutral-100);
+}
+
+.el-checkbox__inner{
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  &::after{
+    font-family: "Material Icons";
+    content: "\e5ca";
+    border: unset;
+    height: 20px;
+    width: 20px;
+    position: static;
+    transform: unset !important;
+    display: flex;
+    margin-left: 2px;
+    color: white;
+    visibility: hidden;
+  }
+}
+.el-checkbox__input.is-checked .el-checkbox__inner::after {
+  transform: unset !important;
+  visibility: visible;
+}
+.el-checkbox__input.is-indeterminate .el-checkbox__inner::before{
+  top: 8px;
+}
+
+.em-open-application-cell .cell{
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

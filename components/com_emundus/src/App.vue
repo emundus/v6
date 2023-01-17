@@ -178,7 +178,7 @@ export default {
   .view-settings #g-container-main .g-container,
   .view-file #g-container-main .g-container,
   .view-users #g-container-main .g-container{
-    width: 85%;
+    width: 90%;
   }
 }
 
