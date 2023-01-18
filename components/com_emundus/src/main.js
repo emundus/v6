@@ -23,12 +23,12 @@ Vue.use(VModal);
 Vue.use(VueSpinnersCss);
 Vue.use(VWave);
 
+/** STORE **/
+import store from './store';
+
 /** MIXINS **/
 import translate from './mixins/translate.js';
 Vue.mixin(translate);
-
-/** STORE **/
-import store from './store';
 
 /** DIRECTIVES **/
 Vue.directive('tooltip', VTooltip);

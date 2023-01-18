@@ -1,22 +1,26 @@
 <template>
   <div class="em-mt-16 em-ml-32 em-files">
-    <Application v-if="currentFile" :file="currentFile" :type="$props.type" />
+    <Application v-if="currentFile" :file="currentFile" :type="$props.type" :user="$props.user" @getFiles="getFiles(true)" />
 
-    <div class="em-mb-12">
+    <div class="em-mb-12 em-flex-row em-flex-space-between">
       <p class="em-h4">{{ translate('COM_EMUNDUS_FILES_'+type.toUpperCase()) }}</p>
+      <span class="material-icons-outlined" @click="getFiles(true)">refresh</span>
     </div>
 
     <div v-if="files">
-      <tabs v-if="$props.type === 'evaluation'" :counts="counts"></tabs>
+      <tabs v-if="$props.type === 'evaluation'" :counts="counts" @updateTab="updateTab"></tabs>
       <hr/>
     </div>
 
     <el-table
-        ref="multipleTable"
+        ref="tableFiles"
         style="width: 100%"
         max-height="500"
-        v-if="files && columns"
-        :data="files.to_evaluate">
+        v-if="files && columns && currentTab && files[currentTab].length > 0"
+        :data="files[currentTab]"
+        @select-all="selectRow"
+        @select="selectRow"
+        @cell-click="openApplication">
       <el-table-column
           fixed
           type="selection"
@@ -61,6 +65,19 @@
       </el-table-column>
     </el-table>
 
+    <div v-if="files && columns && currentTab && files[currentTab].length === 0">
+      <span class="em-h6">{{ translate('COM_EMUNDUS_ONBOARD_NOFILES') }}</span>
+    </div>
+
+    <div v-if="rows_selected.length > 0" class="selected-rows-tip">
+      <div class="selected-rows-tip__content em-flex-row">
+        <span>{{ rows_selected.length }} {{ translate('COM_EMUNDUS_FILES_ELEMENTS_SELECTED') }} :</span>
+        <a class="em-pointer em-ml-16" @click="toggleSelection()">{{ translate('COM_EMUNDUS_FILES_UNSELECT') }}</a>
+        <a class="em-pointer em-ml-16" @click="openInNewTab()">{{ translate('COM_EMUNDUS_FILES_OPEN_IN_NEW_TAB') }}</a>
+      </div>
+
+    </div>
+
     <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
@@ -83,7 +100,11 @@ export default {
     'el-table-column': TableColumn
   },
   props: {
-    type: String
+    type: String,
+    user: {
+      type: String,
+      required: true,
+    },
   },
   mixins: [errors],
   data: () => ({
@@ -98,36 +119,57 @@ export default {
     columns: null,
     display_status: false,
 
-    currentFile: null
+    currentFile: null,
+    currentTab: null,
+    rows_selected: [],
   }),
   created(){
-    this.loading = true;
-
+    this.getFiles();
     if(this.$props.type === 'evaluation') {
-      filesService.getFiles(this.$props.type).then((files) => {
-        if(files.status == 1) {
-          this.files = files.data;
-          this.counts.to_evaluate = this.files.to_evaluate.length;
-          this.counts.evaluated = this.files.evaluated.length;
-
-          filesService.getColumns(this.$props.type).then((columns) => {
-            this.columns = columns.data;
-
-            Object.values(this.columns).forEach((column) => {
-              if(column.name === 'status'){
-                this.display_status = true;
-              }
-            })
-          });
-        } else {
-          this.displayError('COM_EMUNDUS_ERROR_OCCURED',files.msg);
-        }
-
-        this.loading = false;
-      });
+      this.currentTab = 'to_evaluate';
     }
   },
   methods: {
+    getFiles(refresh = false){
+      this.loading = true;
+
+      let fnum = window.location.href.split('#')[1];
+      if(typeof fnum == 'undefined'){
+        fnum = '';
+      }
+
+      if(this.$props.type === 'evaluation') {
+        filesService.getFiles(this.$props.type,refresh).then((files) => {
+          if(files.status == 1) {
+            this.files = files.data;
+            this.counts.to_evaluate = this.files.to_evaluate.length;
+            this.counts.evaluated = this.files.evaluated.length;
+
+            filesService.getColumns(this.$props.type).then((columns) => {
+              this.columns = columns.data;
+
+              Object.values(this.columns).forEach((column) => {
+                if(column.name === 'status'){
+                  this.display_status = true;
+                }
+              });
+            });
+
+            if(fnum !== ''){
+              Object.values(this.files.all).forEach((file) => {
+                if(file.fnum === fnum && this.currentFile === null){
+                  this.openModal(file);
+                }
+              });
+            }
+          } else {
+            this.displayError('COM_EMUNDUS_ERROR_OCCURED',files.msg);
+          }
+
+          this.loading = false;
+        });
+      }
+    },
     openModal(file){
       this.currentFile = file;
 
@@ -135,6 +177,24 @@ export default {
         this.$modal.show("application-modal");
       },500)
     },
+    updateTab(tab){
+      this.currentTab = tab;
+    },
+    openApplication(row, column, cell, event){
+      this.openModal(row);
+    },
+    selectRow(selection,row){
+      this.rows_selected = selection;
+    },
+    toggleSelection(){
+      this.$refs.tableFiles.clearSelection();
+      this.rows_selected = [];
+    },
+    openInNewTab(){
+      this.rows_selected.forEach((row) => {
+        window.open(window.location.href+'#'+row.fnum, '_blank');
+      });
+    }
   }
 }
 </script>

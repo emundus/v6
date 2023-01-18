@@ -104,5 +104,15 @@ class Files
         $this->limit = $limit;
     }
 
+	public function checkAccess($fnum): bool
+	{
+		$can_access = false;
+		if(in_array($fnum,$this->files['fnums'])){
+			$can_access = true;
+		}
+
+		return $can_access;
+	}
+
 
 }

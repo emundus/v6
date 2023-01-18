@@ -2,17 +2,20 @@
   <modal
       id="application-modal"
       name="application-modal"
-      height="100vh"
-      width="100vw"
+      :height="'100vh'"
+      :width="'100vw'"
       styles="display:flex;flex-direction:column;justify-content:center;align-items:center;"
+      @before-open="beforeOpen"
+      @before-close="updateURL()"
+      @closed="$emit('getFiles')"
   >
-    <div class="em-modal-header em-w-100 em-h-50 em-p-12-16 em-border-bottom-neutral-300">
+    <div class="em-modal-header em-w-100 em-h-50 em-p-12-16 em-bg-main-900">
       <div class="em-flex-row em-pointer em-gap-8" id="evaluation-modal-close">
         <div class="em-w-max-content em-flex-row" @click="$modal.hide('application-modal')">
-          <span class="material-icons-outlined em-font-size-16">arrow_back</span>
+          <span class="material-icons-outlined em-font-size-16" style="color: white">arrow_back</span>
         </div>
-        <p class="em-text-neutral-500">|</p>
-        <p class="em-font-size-14">
+        <span class="em-text-neutral-500">|</span>
+        <p class="em-font-size-14" style="color: white">
           {{ file.applicant_name }} - {{ file.fnum }}
         </p>
       </div>
@@ -21,19 +24,32 @@
     <div class="modal-grid">
       <div id="modal-applicationform">
         <div class="scrollable">
-          <div class="em-flex-row em-flex-center em-gap-16 em-border-bottom-neutral-300">
+          <div class="em-flex-row em-flex-center em-gap-16 em-border-bottom-neutral-300 sticky-tab">
             <div v-for="tab in tabs" class="em-light-tabs em-pointer" @click="selected = tab.name" :class="selected === tab.name ? 'em-light-selected-tab' : ''">
-              <p class="em-font-size-14">{{ translate(tab.label) }}</p>
+              <span class="em-font-size-14">{{ translate(tab.label) }}</span>
             </div>
           </div>
 
           <div v-if="selected === 'application'" v-html="applicationform"></div>
-          <Attachments v-if="selected === 'attachments'" :fnum="file.fnum" :user="file.student_id" />
+          <Attachments
+              v-if="selected === 'attachments'"
+              :fnum="file.fnum"
+              :user="$props.user"
+              :columns="['name','date','category','status']"
+              :displayEdit="false"
+          />
         </div>
       </div>
 
       <div id="modal-evaluationgrid">
-        <iframe :src="url" class="iframe-evaluation" @load="loading = false;" id="iframe-evaluation" title="Evaluation form" />
+        <div class="em-flex-column" v-if="!loading" style="width: 40px;height: 40px;margin: 24px 0 12px 24px;">
+          <div class="em-circle-main-100 em-flex-column" style="width: 40px">
+            <div class="em-circle-main-200 em-flex-column" style="width: 24px">
+              <span class="material-icons-outlined em-main-400-color" style="font-size: 14px">troubleshoot</span>
+            </div>
+          </div>
+        </div>
+        <iframe v-if="url" :src="url" class="iframe-evaluation" id="iframe-evaluation" @load="iframeLoaded($event);" title="Evaluation form" />
         <div class="em-page-loader" v-if="loading"></div>
       </div>
     </div>
@@ -44,6 +60,7 @@
 import axios from "axios";
 import Attachments from "@/views/Attachments";
 import filesService from 'com_emundus/src/services/files';
+import errors from "@/mixins/errors";
 
 
 export default {
@@ -51,8 +68,13 @@ export default {
   components: {Attachments},
   props: {
     file: Object,
-    type: String
+    type: String,
+    user: {
+      type: String,
+      required: true,
+    },
   },
+  mixins: [errors],
   data: () => ({
     applicationform: '',
     selected: 'application',
@@ -71,25 +93,45 @@ export default {
       },
     ],
     evaluation_form: 0,
-    url: '',
+    url: null,
 
     loading: false
   }),
-  created(){
-    this.loading = true;
-    this.getApplicationForm();
-    if(this.$props.type === 'evaluation'){
-      this.getEvaluationForm();
-    }
-  },
+
   methods:{
+    beforeOpen(){
+      this.loading = true;
+
+      filesService.checkAccess(this.$props.file.fnum).then((result) => {
+        if(result.data === true){
+          this.updateURL(this.$props.file.fnum)
+          this.getApplicationForm();
+          if(this.$props.type === 'evaluation'){
+            this.getEvaluationForm();
+          }
+        } else {
+         this.displayError(
+             'COM_EMUNDUS_FILES_CANNOT_ACCESS',
+             'COM_EMUNDUS_FILES_CANNOT_ACCESS_DESC'
+         ).then((confirm) => {
+           if(confirm === true){
+             this.$modal.hide('application-modal');
+           }
+         });
+        }
+      });
+
+    },
+
     getApplicationForm(){
       axios({
         method: "get",
         url: "index.php?option=com_emundus&view=application&format=raw&layout=form&fnum="+this.file.fnum,
       }).then(response => {
         this.applicationform = response.data;
-        this.loading = false;
+        if(this.$props.type !== 'evaluation'){
+          this.loading = false;
+        }
       });
     },
     getEvaluationForm(){
@@ -107,6 +149,19 @@ export default {
         }
       });
     },
+    iframeLoaded(event){
+      this.loading = false;
+    },
+    updateURL(fnum = ''){
+      let url = window.location.href;
+      url = url.split('#');
+
+      if(fnum === '') {
+        window.history.pushState('', '', url[0]);
+      } else {
+        window.history.pushState('', '', url[0] + '#' + fnum);
+      }
+    }
   }
 }
 </script>
@@ -134,11 +189,32 @@ export default {
 }
 .iframe-evaluation{
   width: 100%;
-  height: 100%;
+  height: 90%;
   border: unset;
 }
 #modal-evaluationgrid{
   border-left: 1px solid #EBECF0;
   box-shadow: 0px 4px 16px rgba(32, 35, 44, 0.1);
+}
+.sticky-tab{
+  position: sticky;
+  top: 0;
+  background: white;
+}
+#em-attachments .v--modal-overlay{
+  height: 100% !important;
+  width: 67% !important;
+  margin-top: 50px;
+}
+#em-attachments .v--modal-box.v--modal{
+  width: 100% !important;
+  height: calc(100vh - 50px) !important;
+  box-shadow: unset;
+}
+#em-attachments .modal-body{
+  width: 100%;
+}
+#em-attachments #em-attachment-preview{
+  width: 100%;
 }
 </style>

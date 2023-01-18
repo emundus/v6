@@ -77,48 +77,48 @@
           <thead>
           <tr>
             <th id="check-th"><input class="attachment-check" type="checkbox" @change="updateAllCheckedAttachments"/></th>
-            <th id="name" @click="orderBy('value')">
+            <th v-if="columns.includes('name')" id="name" @click="orderBy('value')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_NAME") }}
               <span v-if="sort.orderBy == 'value' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
               <span v-if="sort.orderBy == 'value' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
-            <th id="date" class="date" @click="orderBy('timedate')">
+            <th v-if="columns.includes('date')" id="date" class="date" @click="orderBy('timedate')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_SEND_DATE") }}
               <span v-if="sort.orderBy == 'timedate' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
               <span v-if="sort.orderBy == 'timedate' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
-            <th id="desc" class="desc" @click="orderBy('upload_description')">
+            <th v-if="columns.includes('desc')" id="desc" class="desc" @click="orderBy('upload_description')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_DESCRIPTION") }}
               <span v-if="sort.orderBy == 'upload_description' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
               <span v-if="sort.orderBy == 'upload_description' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
-            <th id="category" class="category" @click="orderBy('category')">
+            <th v-if="columns.includes('category')" id="category" class="category" @click="orderBy('category')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY") }}
               <span v-if="sort.orderBy == 'category' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
               <span v-if="sort.orderBy == 'category' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
-            <th id="status" class="status" @click="orderBy('is_validated')">
+            <th v-if="columns.includes('status')" id="status" class="status" @click="orderBy('is_validated')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_CHECK") }}
               <span v-if="sort.orderBy == 'is_validated' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
               <span v-if="sort.orderBy == 'is_validated' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
-            <th v-if="canSee" id="user" @click="orderBy('user_id')">
+            <th v-if="canSee && columns.includes('user')" id="user" @click="orderBy('user_id')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY") }}
               <span v-if="sort.orderBy == 'user_id' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
               <span v-if="sort.orderBy == 'user_id' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
-            <th v-if="canSee" id="modified_by" @click="orderBy('modified_by')">
+            <th v-if="canSee && columns.includes('modified_by')" id="modified_by" @click="orderBy('modified_by')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY") }}
               <span v-if="sort.orderBy == 'modified_by' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
               <span v-if="sort.orderBy == 'modified_by' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
-            <th id="modified" class="date" @click="orderBy('modified')">
+            <th v-if="columns.includes('modified')" id="modified" class="date" @click="orderBy('modified')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE") }}
               <span v-if="sort.orderBy == 'modified' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
               <span v-if="sort.orderBy == 'modified' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
-            <th id="permissions" class="permissions">{{ translate("COM_EMUNDUS_ATTACHMENTS_PERMISSIONS") }}</th>
-            <th v-if="sync" id="sync" class="sync" @click="orderBy('sync')">
+            <th v-if="columns.includes('permissions')" id="permissions" class="permissions">{{ translate("COM_EMUNDUS_ATTACHMENTS_PERMISSIONS") }}</th>
+            <th v-if="sync && columns.includes('sync')" id="sync" class="sync" @click="orderBy('sync')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_SYNC") }}
             </th>
           </tr>
@@ -136,6 +136,7 @@
               @update-checked-attachments="updateCheckedAttachments"
               @update-status="updateStatus"
               @change-permission="changePermission"
+              :columns="$props.columns"
           >
           </AttachmentRow>
           </tbody>
@@ -189,6 +190,7 @@
         <div v-if="!modalLoading && displayedUser.user_id && displayedFnum" class="modal-body em-flex-row" :class="{'only-preview': onlyPreview}">
           <AttachmentPreview @fileNotFound="canDownload = false" @canDownload="canDownload = true" :user="displayedUser.user_id"></AttachmentPreview>
           <AttachmentEdit
+              v-if="displayEdit"
 		          :fnum="displayedFnum"
 							:is-displayed="!onlyPreview"
 		          @closeModal="closeModal"
@@ -236,7 +238,15 @@ export default {
 	  defaultRights: {
 			type: Object,
 		  default: null
-	  }
+	  },
+    columns: {
+      type: Array,
+      default: ['name','date','desc','category','status','user','modified_by','modified','permissions','sync']
+    },
+    displayEdit: {
+      type: Boolean,
+      default: true
+    }
   },
   mixins: [mixin],
   data() {

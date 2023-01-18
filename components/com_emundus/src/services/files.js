@@ -1,11 +1,12 @@
 import client from './axiosClient';
 
 export default {
-    async getFiles(type = 'default') {
+    async getFiles(type = 'default', refresh = false) {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=file&task=getfiles', {
                 params: {
-                    type: type
+                    type: type,
+                    refresh: refresh,
                 }
             });
 
@@ -32,6 +33,20 @@ export default {
     async getEvaluationFormByFnum(fnum) {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=file&task=getevaluationformbyfnum', {
+                params: {
+                    fnum: fnum
+                }
+            });
+
+            return response.data;
+        } catch (e) {
+            return false;
+        }
+    },
+
+    async checkAccess(fnum){
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=file&task=checkaccess', {
                 params: {
                     fnum: fnum
                 }

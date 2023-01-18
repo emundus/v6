@@ -208,8 +208,10 @@ class Evaluations extends Files
 			$final_evaluations = [];
 			$final_evaluations['to_evaluate'] = [];
 			$final_evaluations['evaluated'] = [];
+			$final_evaluations['fnums'] = [];
 
 			foreach ($evaluations as $evaluation){
+				$final_evaluations['fnums'][] = $evaluation->fnum;
 				if(!empty($evaluation->time_date)){
 					$final_evaluations['evaluated'][] = $evaluation;
 				} else {
@@ -258,6 +260,7 @@ class Evaluations extends Files
             return $form_id;
         } catch (Exception $e) {
             JLog::add('Problem when get evaluation form of fnum '.$fnum.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
+			return 0;
         }
     }
 }

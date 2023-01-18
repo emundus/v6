@@ -8,8 +8,9 @@
 		></Attachments>
 
     <Files
-        v-if="component === 'files'"
+        v-else-if="component === 'files'"
         :type="data.type"
+        :user="data.user"
     ></Files>
 
     <transition v-else name="slide-right">
@@ -46,7 +47,7 @@ export default {
     sysadminAccess: String,
 		defaultLang: {
 			type: String,
-			default: ''
+			default: 'fr'
 		},
 		component: {
 			type: String,

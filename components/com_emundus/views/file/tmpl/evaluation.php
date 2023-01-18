@@ -21,6 +21,12 @@ JText::script('COM_EMUNDUS_ONBOARD_STATUS');
 JText::script('COM_EMUNDUS_FILES_APPLICANT_FILE');
 JText::script('COM_EMUNDUS_FILES_ATTACHMENTS');
 JText::script('COM_EMUNDUS_FILES_COMMENTS');
+JText::script('COM_EMUNDUS_ONBOARD_NOFILES');
+JText::script('COM_EMUNDUS_FILES_ELEMENTS_SELECTED');
+JText::script('COM_EMUNDUS_FILES_UNSELECT');
+JText::script('COM_EMUNDUS_FILES_OPEN_IN_NEW_TAB');
+JText::script('COM_EMUNDUS_FILES_CANNOT_ACCESS');
+JText::script('COM_EMUNDUS_FILES_CANNOT_ACCESS_DESC');
 
 JText::script('COM_EMUNDUS_ERROR_OCCURED');
 JText::script('COM_EMUNDUS_ACTIONS_CANCEL');
@@ -37,9 +43,13 @@ $menu = JFactory::getApplication()->getMenu();
 $current_menu = $menu->getActive();
 
 JFactory::getSession()->set('current_menu_id',$current_menu->id);
+$user = JFactory::getUser();
 ?>
-
-<div id="em-files" type="evaluation"></div>
+<div id="em-files"
+     user=<?= $user->id ?>
+     type="evaluation"
+>
+</div>
 
 <script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>
 

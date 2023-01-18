@@ -1,6 +1,6 @@
 <template>
   <div class="em-flex-row em-gap-8">
-    <div v-for="tab in tabs" class="em-tabs em-pointer" :class="selected === tab.name ? 'em-selected-tab' : ''">
+    <div v-for="tab in tabs" class="em-tabs em-pointer" :class="selected === tab.name ? 'em-selected-tab' : ''" @click="selected = tab.name;$emit('updateTab',tab.name)">
       <p>{{ translate(tab.label) }} ({{ $props.counts[tab.name] }})</p>
     </div>
   </div>

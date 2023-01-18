@@ -3522,7 +3522,7 @@ ul.unstyled.em-linkForgot li a {
 /* DOSSIER CANDIDAT */
 
 .em-personalInfo > a {
-  background-color: $base-primary-color;
+  background-color: unset;
 }
 
 
@@ -6768,6 +6768,9 @@ fieldset[disabled] .multiselect {
 }
 
 /** Vue Modal - Translation tool **/
+.v--modal{
+  border-radius: 0 !important;
+}
 #translationTool,#contentTool,#filesTool,#attachmentStorage {
   .v--modal-overlay {
     background: #0000002e !important;
@@ -6971,3 +6974,32 @@ tbody .el-table__row:nth-child(odd){
   align-items: center;
   justify-content: center;
 }
+.el-table__cell.is-hidden .cell{
+  visibility: hidden;
+}
+/** **/
+
+.selected-rows-tip{
+  position: absolute;
+  margin: 0 auto;
+  width: 100%;
+  bottom: 10%;
+  z-index: 25;
+  left: 0;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .selected-rows-tip__content{
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: var(--main-900);
+    span{
+      color: var(--neutral-300);
+    }
+    a{
+      color: var(--main-400);
+    }
+  }
+}
+

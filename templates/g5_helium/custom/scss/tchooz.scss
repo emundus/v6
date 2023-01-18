@@ -800,6 +800,9 @@ input:focus + .em-slider {
 .em-bg-main-500{
   background: var(--main-500);
 }
+.em-bg-main-900{
+  background: $main-900;
+}
 .em-bg-neutral-100{
   background: $neutral-100;
 }
@@ -1141,9 +1144,15 @@ input:focus + .em-slider {
 }
 .em-light-tabs{
   padding: 12px 0;
+  span{
+    color: var(--neutral-500);
+  }
 }
 .em-light-selected-tab{
   border-bottom: 1px solid var(--main-400);
+  span{
+    color: var(--neutral-900);
+  }
 }
 .em-tabs{
   padding: 8px 12px;
@@ -1580,7 +1589,7 @@ button.em-swal-delete-button{
   background-position: center;
   border: solid 5px white;
   transition: all 0.3s ease-in-out;
-  &:hover{
+  &:hover:not(.no-hover){
     filter: brightness(80%);
   }
 }
