@@ -2888,6 +2888,7 @@ class EmundusModelUsers extends JModelList {
                             $this->login($user_id);
                             $user_session = JFactory::getSession()->get('emundusUser');
                             $user_session->id = $user_id;
+                            $user_session->anonym = true;
                             JFactory::getSession()->set('emundusUser', $user_session);
 
                             if (!empty($user_session->id)) {

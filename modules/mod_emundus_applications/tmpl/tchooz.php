@@ -62,7 +62,7 @@ ksort($applications);
 
 ?>
 <div class="mod_emundus_applications___header">
-    <?php if ($mod_em_applications_show_hello_text == 1) : ?>
+    <?php if ($mod_em_applications_show_hello_text == 1 && !$is_anonym_user) : ?>
         <p class="em-h3 em-mb-8"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_HELLO') . $user->firstname ?></p>
     <?php endif; ?>
 
@@ -160,7 +160,7 @@ ksort($applications);
                                         $file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($application->fnum));
                                     }
 
-	                                $current_phase = $m_campaign->getCurrentCampaignWorkflow($application->fnum);
+                                    $current_phase = $m_campaign->getCurrentCampaignWorkflow($application->fnum);
 
                                     ?>
                                     <div class="row em-border-neutral-300 mod_emundus_applications___content_app em-pointer" id="application_content<?php echo $application->fnum ?>" onclick="openFile(event,'<?php echo $first_page_url ?>')">
@@ -175,7 +175,7 @@ ksort($applications);
 
                                                         <!-- ACTIONS BLOCK -->
                                                         <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color" id="actions_block_<?php echo $application->fnum ?>" style="display: none">
-                                                            <a class="em-text-neutral-900 em-pointer" href="<?= JRoute::_($first_page_url); ?>" id="actions_block_open_<?php echo $application->fnum ?>">
+                                                            <a class="em-text-neutral-900 em-pointer" href="<?= $first_page_url; ?>" id="actions_block_open_<?php echo $application->fnum ?>">
                                                                 <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
                                                             </a>
                                                             <a class="em-text-neutral-900 em-pointer" onclick="deletefile('<?php echo $application->fnum; ?>');" id="actions_block_delete_<?php echo $application->fnum ?>">
@@ -215,7 +215,7 @@ ksort($applications);
 
                                                             <!-- ACTIONS BLOCK -->
                                                             <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color" id="actions_block_<?php echo $application->fnum ?>" style="display: none">
-                                                                <a class="em-text-neutral-900 em-pointer" href="<?= JRoute::_($first_page_url); ?>" id="actions_block_open_<?php echo $application->fnum ?>">
+                                                                <a class="em-text-neutral-900 em-pointer" href="<?= $first_page_url; ?>" id="actions_block_open_<?php echo $application->fnum ?>">
                                                                     <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
                                                                 </a>
                                                                 <?php if (in_array($application->status, $status_for_delete)) : ?>
@@ -227,12 +227,12 @@ ksort($applications);
                                                         </div>
                                                     <?php endif; ?>
                                                 </div>
-                                                <a href="<?= JRoute::_($first_page_url); ?>" class="em-h6 mod_emundus_applications___title" id="application_title_<?php echo $application->fnum ?>">
+                                                <a href="<?= $first_page_url; ?>" class="em-h6 mod_emundus_applications___title" id="application_title_<?php echo $application->fnum ?>">
                                                     <span><?= ($is_admission &&  $add_admission_prefix)?JText::_('COM_EMUNDUS_INSCRIPTION').' - '.$application->label:$application->label; ?></span>
                                                 </a>
                                             <?php else : ?>
                                                 <div class="em-flex-row em-flex-space-between em-flex-align-start em-mb-12">
-                                                    <a href="<?= JRoute::_($first_page_url); ?>" class="em-h6 mod_emundus_applications___title" id="application_title_<?php echo $application->fnum ?>">
+                                                    <a href="<?= $first_page_url; ?>" class="em-h6 mod_emundus_applications___title" id="application_title_<?php echo $application->fnum ?>">
                                                         <span><?= ($is_admission &&  $add_admission_prefix)?JText::_('COM_EMUNDUS_INSCRIPTION').' - '.$application->label:$application->label; ?></span>
                                                     </a>
                                                     <?php if (!$show_fnum) : ?>
@@ -241,7 +241,7 @@ ksort($applications);
 
                                                             <!-- ACTIONS BLOCK -->
                                                             <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color" id="actions_block_<?php echo $application->fnum ?>" style="display: none">
-                                                                <a class="em-text-neutral-900 em-pointer" href="<?= JRoute::_($first_page_url); ?>" id="actions_block_open_<?php echo $application->fnum ?>">
+                                                                <a class="em-text-neutral-900 em-pointer" href="<?= $first_page_url; ?>" id="actions_block_open_<?php echo $application->fnum ?>">
                                                                     <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
                                                                 </a>
                                                                 <?php if (in_array($application->status, $status_for_delete)) : ?>
@@ -260,19 +260,19 @@ ksort($applications);
                                         <div class="em-flex-row">
                                             <?php if ($mod_emundus_applications_show_end_date == 1) : ?>
                                                 <?php
-	                                            $closed = false;
+                                                $closed = false;
                                                 $displayInterval = false;
                                                 $end_date = $application->end_date;
                                                 if(!empty($current_phase)){
-	                                                $end_date = $current_phase->end_date;
+                                                    $end_date = $current_phase->end_date;
                                                 }
                                                 if($now < $end_date)
                                                 {
-	                                                $interval = date_create($now)->diff(date_create($end_date));
-	                                                if ($interval->d == 0)
-	                                                {
-		                                                $displayInterval = true;
-	                                                }
+                                                    $interval = date_create($now)->diff(date_create($end_date));
+                                                    if ($interval->d == 0)
+                                                    {
+                                                        $displayInterval = true;
+                                                    }
                                                 } else {
                                                     $closed = true;
                                                 }
@@ -307,15 +307,17 @@ ksort($applications);
                                         <hr/>
 
                                         <div class="mod_emundus_applications___informations">
-                                            <div>
-                                                <label class="em-applicant-text-color em-applicant-default-font"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_APPLICANT'); ?> :</label>
-                                                <p class="em-neutral-800-color em-applicant-default-font"><?php echo $user->name ?></p>
-                                            </div>
+                                            <?php if(!$is_anonym_user): ?>
+                                                <div>
+                                                    <label class="em-applicant-text-color em-applicant-default-font"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_APPLICANT'); ?> :</label>
+                                                    <p class="em-neutral-800-color em-applicant-default-font"><?php echo $user->name ?></p>
+                                                </div>
+                                            <?php endif; ?>
 
                                             <div>
                                                 <?php
                                                 if(empty($application->class)) {
-	                                                $application->class = 'default';
+                                                    $application->class = 'default';
                                                 }
                                                 ?>
                                                 <?php if(empty($visible_status)) : ?>

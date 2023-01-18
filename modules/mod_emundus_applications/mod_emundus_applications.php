@@ -46,6 +46,14 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $layout = $params->get('layout', 'default');
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
+
+    // Vérifier si il s'agit d'une session  anonyme et ci celles ci sont autorisés
+    $is_anonym_user = $user->anonym;
+    $allow_anonym_files = $eMConfig->get('allow_anonym_files', false);
+    if ($is_anonym_user && !$allow_anonym_files) {
+        return;
+    }
+
     $status_for_send = explode(',', $eMConfig->get('status_for_send', 0));
     $status_for_delete = $eMConfig->get('status_for_delete', null);
     if (!empty($status_for_delete) || $status_for_delete == '0') {
@@ -86,7 +94,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $show_payment_status = $params->get('show_payment_status', 0);
     $visible_status = $params->get('visible_status', '');
     if ($visible_status != "") {
-      $visible_status = explode(',', $params->get('visible_status', ''));
+        $visible_status = explode(',', $params->get('visible_status', ''));
     }
     $mod_em_applications_show_search = $params->get('mod_em_applications_show_search', 1);
 
@@ -137,7 +145,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $m_campaign = new EmundusModelCampaign();
 
 
-	$fnums = array_keys($applications);
+    $fnums = array_keys($applications);
 
     $progress = $m_application->getFilesProgress($fnums);
     $attachments = $progress['attachments'];
@@ -180,29 +188,29 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
         }
     }
 
-	if ($display_poll == 1 && $display_poll_id > 0 && isset($user->fnum) && !empty($user->fnum)) {
-		$filled_poll_id = modemundusApplicationsHelper::getPoll();
-		$poll_url = 'index.php?option=com_fabrik&view=form&formid='.$display_poll_id.'&usekey=fnum&rowid='.$user->fnum.'&tmpl=component';
-	} else {
-		$poll_url = '';
-		$filled_poll_id = 0;
-	}
+    if ($display_poll == 1 && $display_poll_id > 0 && isset($user->fnum) && !empty($user->fnum)) {
+        $filled_poll_id = modemundusApplicationsHelper::getPoll();
+        $poll_url = 'index.php?option=com_fabrik&view=form&formid='.$display_poll_id.'&usekey=fnum&rowid='.$user->fnum.'&tmpl=component';
+    } else {
+        $poll_url = '';
+        $filled_poll_id = 0;
+    }
 
-	$offset = $app->get('offset', 'UTC');
-	try {
-		$dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
-		$dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
-		$now = $dateTime->format('Y-m-d H:i:s');
-	} catch (Exception $e) {
-		echo $e->getMessage() . '<br />';
-	}
+    $offset = $app->get('offset', 'UTC');
+    try {
+        $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+        $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+        $now = $dateTime->format('Y-m-d H:i:s');
+    } catch (Exception $e) {
+        echo $e->getMessage() . '<br />';
+    }
 
-	if (!empty($user->end_date)) {
-		$is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date));
-	}
-	if (!empty($user->status)) {
-		$is_app_sent = ($user->status != 0);
-	}
+    if (!empty($user->end_date)) {
+        $is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date));
+    }
+    if (!empty($user->status)) {
+        $is_app_sent = ($user->status != 0);
+    }
 
     if (!empty($show_payment_status)) {
 
@@ -216,7 +224,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 
     $status = $m_files->getStatus();
 
-	require JModuleHelper::getLayoutPath('mod_emundus_applications', $layout);
+    require JModuleHelper::getLayoutPath('mod_emundus_applications', $layout);
 }
 
 
