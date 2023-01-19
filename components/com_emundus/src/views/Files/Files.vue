@@ -4,7 +4,26 @@
 
     <div class="em-mb-12 em-flex-row em-flex-space-between">
       <p class="em-h4">{{ translate('COM_EMUNDUS_FILES_'+type.toUpperCase()) }}</p>
-      <span class="material-icons-outlined" @click="getFiles(true)">refresh</span>
+<!--      <span class="material-icons-outlined" @click="getFiles(true)">refresh</span>-->
+    </div>
+
+    <div v-if="files">
+      <div class="em-flex-row em-flex-space-between em-mb-16">
+        <div class="em-flex-row">
+          <span>{{ translate('COM_EMUNDUS_FILES_DISPLAY_PAGE') }}</span>
+          <select class="em-select-no-border em-ml-8" style="width: 40px;height: 20px;" v-model="limit">
+            <option>10</option>
+            <option>25</option>
+            <option>50</option>
+            <option>100</option>
+          </select>
+        </div>
+        <div class="em-flex-row">
+          <span class="material-icons-outlined" @click="prevPage">chevron_left</span>
+          <span class="material-icons-outlined" @click="nextPage">navigate_next</span>
+        </div>
+      </div>
+
     </div>
 
     <div v-if="files">
@@ -129,18 +148,40 @@ export default {
     files: null,
     columns: null,
     display_status: false,
+    page: null,
+    limit: null,
 
     currentFile: null,
     currentTab: null,
     rows_selected: [],
   }),
   created(){
+    this.getLimit();
+    this.getPage();
     this.getFiles();
     if(this.$props.type === 'evaluation') {
       this.currentTab = 'to_evaluate';
     }
   },
   methods: {
+    getLimit(){
+      filesService.getLimit(this.$props.type).then((limit) => {
+        if(limit.status == 1) {
+          this.limit = limit.data;
+        } else {
+          this.displayError('COM_EMUNDUS_ERROR_OCCURED',limit.msg);
+        }
+      });
+    },
+    getPage(){
+      filesService.getPage(this.$props.type).then((page) => {
+        if(page.status == 1) {
+          this.page = page.data;
+        } else {
+          this.displayError('COM_EMUNDUS_ERROR_OCCURED',page.msg);
+        }
+      });
+    },
     getFiles(refresh = false){
       this.loading = true;
 
@@ -150,7 +191,7 @@ export default {
       }
 
       if(this.$props.type === 'evaluation') {
-        filesService.getFiles(this.$props.type,refresh).then((files) => {
+        filesService.getFiles(this.$props.type,refresh,this.limit,this.page).then((files) => {
           if(files.status == 1) {
             this.files = files.data;
             this.counts.to_evaluate = this.files.to_evaluate.length;
@@ -164,23 +205,59 @@ export default {
                   this.display_status = true;
                 }
               });
-            });
 
-            if(fnum !== ''){
-              Object.values(this.files.all).forEach((file) => {
-                if(file.fnum === fnum && this.currentFile === null){
-                  this.openModal(file);
-                }
-              });
-            }
+              if(fnum !== ''){
+                Object.values(this.files.all).forEach((file) => {
+                  if(file.fnum === fnum && this.currentFile === null){
+                    this.openModal(file);
+                  }
+                });
+              }
+
+              this.loading = false;
+            });
           } else {
+            this.loading = false;
             this.displayError('COM_EMUNDUS_ERROR_OCCURED',files.msg);
           }
-
-          this.loading = false;
         });
       }
     },
+    updateLimit(limit){
+      this.loading = true;
+      filesService.updateLimit(limit).then((result) => {
+        if(result.status == 1) {
+          this.getFiles(true);
+        } else {
+          this.loading = false;
+          this.displayError('COM_EMUNDUS_ERROR_OCCURED',result.msg);
+        }
+
+        this.loading = false;
+      });
+    },
+    prevPage(){
+      this.page--;
+      this.updatePage();
+    },
+    nextPage(){
+      this.page++;
+      this.updatePage();
+    },
+    updatePage(){
+      this.loading = true;
+      filesService.updatePage(this.page).then((result) => {
+        if(result.status == 1) {
+          this.getFiles(true);
+        } else {
+          this.loading = false;
+          this.displayError('COM_EMUNDUS_ERROR_OCCURED',result.msg);
+        }
+
+        this.loading = false;
+      });
+    },
+
     openModal(file){
       this.currentFile = file;
 
@@ -232,6 +309,14 @@ export default {
       clearInterval(this.scrolling);
       this.scrolling = null;
     }
+  },
+  watch: {
+    limit: function(value, oldVal){
+      console.log(oldVal);
+      if(oldVal !== null) {
+        this.updateLimit(value);
+      }
+    }
   }
 }
 </script>
@@ -246,5 +331,8 @@ export default {
   border-radius: 8px;
   background: white;
   width: 24px;
+}
+select.em-select-no-border{
+  background-color: transparent !important;
 }
 </style>

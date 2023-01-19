@@ -127,7 +127,7 @@ class Evaluations extends Files
 	                $query_groups_associated->where('ecc.fnum NOT IN (' . implode(',', $fnums_to_exclude) . ')');
                 }
             }
-            $db->setQuery($query_groups_associated);
+            $db->setQuery($query_groups_associated,$this->getOffset(),$this->getLimit());
             $files_associated = $db->loadObjectList();
 
             foreach ($files_associated as $file) {

@@ -1,7 +1,7 @@
 import client from './axiosClient';
 
 export default {
-    async getFiles(type = 'default', refresh = false) {
+    async getFiles(type = 'default', refresh = false, limit = 25, page = 0) {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=file&task=getfiles', {
                 params: {
@@ -49,6 +49,62 @@ export default {
             const response = await client().get('index.php?option=com_emundus&controller=file&task=checkaccess', {
                 params: {
                     fnum: fnum
+                }
+            });
+
+            return response.data;
+        } catch (e) {
+            return false;
+        }
+    },
+
+    async getLimit(type = 'default'){
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=file&task=getlimit', {
+                params: {
+                    type: type
+                }
+            });
+
+            return response.data;
+        } catch (e) {
+            return false;
+        }
+    },
+
+    async getPage(type = 'default'){
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=file&task=getpage', {
+                params: {
+                    type: type
+                }
+            });
+
+            return response.data;
+        } catch (e) {
+            return false;
+        }
+    },
+
+    async updateLimit(limit){
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=file&task=updatelimit', {
+                params: {
+                    limit: limit
+                }
+            });
+
+            return response.data;
+        } catch (e) {
+            return false;
+        }
+    },
+
+    async updatePage(page){
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=file&task=updatepage', {
+                params: {
+                    page: page
                 }
             });
 

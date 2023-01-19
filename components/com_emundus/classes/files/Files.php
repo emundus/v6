@@ -8,8 +8,8 @@ class Files
     protected array $rights;
     protected array $files;
     protected array $columns;
-    protected int $page;
-    protected int $limit;
+    protected int $page = 0;
+    protected int $limit = 10;
 
     /**
      * @return \Joomla\CMS\User\User
@@ -112,6 +112,14 @@ class Files
 		}
 
 		return $can_access;
+	}
+
+	public function getOffset(){
+		if(!empty($this->page)) {
+			return $this->page * $this->limit;
+		} else {
+			return $this->page;
+		}
 	}
 
 

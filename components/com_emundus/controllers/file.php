@@ -25,17 +25,20 @@ class EmundusControllerFile extends JControllerLegacy
 			$this->files = $files_session;
 		}
 
-		if(empty($this->files) || $refresh == true){
-			if($type == 'evaluation') {
+		if(empty($this->files)) {
+			if ($type == 'evaluation') {
 				$this->files = new Evaluations();
-			} else {
+			}
+			else {
 				$this->files = new Files();
 			}
-
-			$this->files->setFiles();
-
-			JFactory::getSession()->set('files',serialize($this->files));
 		}
+
+		if($refresh == true) {
+			$this->files->setFiles();
+		}
+
+	    JFactory::getSession()->set('files',serialize($this->files));
 
         parent::__construct($config);
     }
@@ -68,6 +71,34 @@ class EmundusControllerFile extends JControllerLegacy
 		exit;
 	}
 
+	public function getlimit(){
+		$results = ['status' => 1, 'msg' => '', 'data' => []];
+
+		if(EmundusHelperAccess::asAccessAction(1,'r',JFactory::getUser()->id)){
+			$results['data'] = $this->files->getLimit();
+		} else {
+			$results['status'] = 0;
+			$results['msg'] = JText::_('ACCESS_DENIED');
+		}
+
+		echo json_encode((object)$results);
+		exit;
+	}
+
+	public function getpage(){
+		$results = ['status' => 1, 'msg' => '', 'data' => []];
+
+		if(EmundusHelperAccess::asAccessAction(1,'r',JFactory::getUser()->id)){
+			$results['data'] = $this->files->getPage();
+		} else {
+			$results['status'] = 0;
+			$results['msg'] = JText::_('ACCESS_DENIED');
+		}
+
+		echo json_encode((object)$results);
+		exit;
+	}
+
     public function getevaluationformbyfnum(){
         $results = ['status' => 1, 'msg' => '', 'data' => []];
 
@@ -91,6 +122,42 @@ class EmundusControllerFile extends JControllerLegacy
 			$fnum = JFactory::getApplication()->input->getString('fnum',null);
 
 			$results['data'] = $this->files->checkAccess($fnum);
+		} else {
+			$results['status'] = 0;
+			$results['msg'] = JText::_('ACCESS_DENIED');
+		}
+
+		echo json_encode((object)$results);
+		exit;
+	}
+
+	public function updatelimit(){
+		$results = ['status' => 1, 'msg' => ''];
+
+		if(EmundusHelperAccess::asAccessAction(5,'r',JFactory::getUser()->id)){
+			$limit = JFactory::getApplication()->input->getInt('limit',5);
+
+			$this->files->setLimit($limit);
+
+			JFactory::getSession()->set('files',serialize($this->files));
+		} else {
+			$results['status'] = 0;
+			$results['msg'] = JText::_('ACCESS_DENIED');
+		}
+
+		echo json_encode((object)$results);
+		exit;
+	}
+
+	public function updatepage(){
+		$results = ['status' => 1, 'msg' => ''];
+
+		if(EmundusHelperAccess::asAccessAction(5,'r',JFactory::getUser()->id)){
+			$page = JFactory::getApplication()->input->getInt('page',0);
+
+			$this->files->setPage($page);
+
+			JFactory::getSession()->set('files',serialize($this->files));
 		} else {
 			$results['status'] = 0;
 			$results['msg'] = JText::_('ACCESS_DENIED');
