@@ -23,7 +23,7 @@
 import moment from "moment";
 
 import Attachments from "./views/Attachments.vue";
-import Files from './views/Files/Files';
+import Files from './views/Files/Files.vue';
 
 import fileService from "./services/file.js";
 import list from "./views/list";
@@ -169,7 +169,7 @@ export default {
 .view-settings #g-container-main .g-container,
 .view-file #g-container-main .g-container,
 .view-users #g-container-main .g-container{
-  width: 90%;
+  width: 95%;
 }
 
 @media all and (max-width: 1366px) {
@@ -179,7 +179,7 @@ export default {
   .view-settings #g-container-main .g-container,
   .view-file #g-container-main .g-container,
   .view-users #g-container-main .g-container{
-    width: 90%;
+    width: 95%;
   }
 }
 

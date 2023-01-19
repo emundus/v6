@@ -209,8 +209,10 @@ class Evaluations extends Files
 			$final_evaluations['to_evaluate'] = [];
 			$final_evaluations['evaluated'] = [];
 			$final_evaluations['fnums'] = [];
+			$final_evaluations['all'] = [];
 
 			foreach ($evaluations as $evaluation){
+				$final_evaluations['all'][] = $evaluation;
 				$final_evaluations['fnums'][] = $evaluation->fnum;
 				if(!empty($evaluation->time_date)){
 					$final_evaluations['evaluated'][] = $evaluation;

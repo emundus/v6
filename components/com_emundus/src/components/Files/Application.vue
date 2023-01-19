@@ -9,7 +9,7 @@
       @before-close="updateURL()"
       @closed="$emit('getFiles')"
   >
-    <div class="em-modal-header em-w-100 em-h-50 em-p-12-16 em-bg-main-900">
+    <div class="em-modal-header em-w-100 em-h-50 em-p-12-16 em-bg-main-900 em-flex-row">
       <div class="em-flex-row em-pointer em-gap-8" id="evaluation-modal-close">
         <div class="em-w-max-content em-flex-row" @click="$modal.hide('application-modal')">
           <span class="material-icons-outlined em-font-size-16" style="color: white">arrow_back</span>

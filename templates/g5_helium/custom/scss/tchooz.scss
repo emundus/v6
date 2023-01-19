@@ -164,6 +164,12 @@
 button[class ^= 'em-']{
   transition: all 0.3s ease-in-out;
 }
+.em-disabled-state{
+  background: var(--neutral-100) !important;
+  span{
+    color: var(--neutral-300);
+  }
+}
 
 /** INPUTS **/
 .em-input{
@@ -1166,11 +1172,9 @@ input:focus + .em-slider {
 }
 .em-status{
   width: fit-content;
-  border-radius: 54px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 4px 8px;
 }
 
 /**
@@ -1557,6 +1561,7 @@ button.em-swal-delete-button{
   border-radius: 50%;
   padding: 12px;
   background: $main-200;
+  box-shadow: 0 1px 4px rgba(32, 35, 44, 0.05);
 }
 /** **/
 

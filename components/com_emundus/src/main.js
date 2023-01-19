@@ -13,6 +13,7 @@ import { TableComponent, TableColumn } from 'vue-table-component';
 import Notifications from 'vue-notification';
 import velocity from 'velocity-animate';
 import VWave from 'v-wave';
+import Vuex from "vuex";
 
 Vue.component('v-popover', VPopover);
 Vue.component('table-component', TableComponent);
@@ -22,6 +23,7 @@ Vue.use(Notifications, { velocity });
 Vue.use(VModal);
 Vue.use(VueSpinnersCss);
 Vue.use(VWave);
+Vue.use(Vuex);
 
 /** STORE **/
 import store from './store';
@@ -39,40 +41,23 @@ let elementId = '';
 let data = {};
 let componentName = '';
 
-if (document.getElementById('em-application-attachment')) {
-    const element = document.getElementById('em-application-attachment');
-    Array.prototype.slice.call(element.attributes).forEach(function (attr) {
-        data[attr.name] = attr.value;
-    });
-
+if (document.getElementById('em-application-attachment') || document.getElementById('em-files'))
+{
+    let element = document.getElementById('em-application-attachment');
     componentName = 'attachments';
     elementId = '#em-application-attachment';
-    mountApp = true;
 
-    if (mountApp) {
-        new Vue({
-            el: elementId,
-            store,
-            render(h) {
-                return h(App, {
-                    props: {
-                        component: componentName,
-                        data: data
-                    },
-                });
-            },
-        });
+    if(document.getElementById('em-files')) {
+        element = document.getElementById('em-files');
+        componentName = 'files';
+        elementId = '#em-files';
     }
-}
 
-if (document.getElementById('em-files')) {
-    const element = document.getElementById('em-files');
     Array.prototype.slice.call(element.attributes).forEach(function (attr) {
         data[attr.name] = attr.value;
     });
 
-    componentName = 'files';
-    elementId = '#em-files';
+
     mountApp = true;
 
     if (mountApp) {
@@ -90,8 +75,7 @@ if (document.getElementById('em-files')) {
         });
     }
 }
-
-if (document.getElementById("em-component-vue")) {
+else if (document.getElementById("em-component-vue")) {
     new Vue({
         el: '#em-component-vue',
         store,

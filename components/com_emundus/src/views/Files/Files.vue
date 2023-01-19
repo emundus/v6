@@ -12,58 +12,66 @@
       <hr/>
     </div>
 
-    <el-table
-        ref="tableFiles"
-        style="width: 100%"
-        max-height="500"
-        v-if="files && columns && currentTab && files[currentTab].length > 0"
-        :data="files[currentTab]"
-        @select-all="selectRow"
-        @select="selectRow"
-        @cell-click="openApplication">
-      <el-table-column
-          fixed
-          type="selection"
-          width="55">
-      </el-table-column>
-      <el-table-column
-          fixed
-          :label="translate('COM_EMUNDUS_ONBOARD_FILE')"
-          width="270"
-      >
-        <template slot-scope="scope">
-          <div>
-            <p class="em-font-weight-500">{{ scope.row.applicant_name }}</p>
-            <p class="em-neutral-700-color em-font-size-14">{{ scope.row.fnum }}</p>
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column
-          width="170"
-          v-if="display_status"
-          :label="translate('COM_EMUNDUS_ONBOARD_STATUS')"
-      >
-        <template slot-scope="scope">
-          <p :class="'label-text-'+scope.row.status_color + ' label-'+scope.row.status_color" class="em-status">{{ scope.row.status }}</p>
-        </template>
-      </el-table-column>
-      <el-table-column
-          v-for="column in columns"
-          v-if="column.show_in_list_summary == 1"
-          width="170">
-        <template slot="header" slot-scope="scope">
-          <span :title="column.label" class="em-neutral-700-color">{{column.label}}</span>
-        </template>
-        <template slot-scope="scope">
-          <p>{{scope.row[column.name]}}</p>
-        </template>
-      </el-table-column>
-      <el-table-column width="50" fixed="right" class-name="em-open-application-cell">
-        <template slot-scope="scope">
-          <span class="material-icons-outlined em-pointer" @click="openModal(scope.row)" style="color: black">open_in_new</span>
-        </template>
-      </el-table-column>
-    </el-table>
+    <div class="em-flex-row" v-if="files && columns && currentTab && files[currentTab].length > 0">
+      <div id="table_columns_move_right" :class="moveRight ? '' : 'em-disabled-state'" class="table-columns-move em-flex-column em-mr-4" @mouseover="scrollToRight"  @mouseleave="stopScrolling">
+        <span class="material-icons" style="font-size: 16px">arrow_back</span>
+      </div>
+
+      <el-table
+          ref="tableFiles"
+          style="width: 100%"
+          height="500"
+          :data="files[currentTab]"
+          @select-all="selectRow"
+          @select="selectRow">
+        <el-table-column
+            fixed
+            type="selection"
+            width="55">
+        </el-table-column>
+        <el-table-column
+            fixed
+            :label="translate('COM_EMUNDUS_ONBOARD_FILE')"
+            width="270"
+        >
+          <template slot-scope="scope">
+            <div @click="openApplication(scope.row)" class="em-pointer">
+              <p class="em-font-weight-500">{{ scope.row.applicant_name }}</p>
+              <span class="em-text-neutral-500 em-font-size-14">{{ scope.row.fnum }}</span>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column
+            width="170"
+            v-if="display_status"
+            :label="translate('COM_EMUNDUS_ONBOARD_STATUS')"
+        >
+          <template slot-scope="scope">
+            <p :class="'label-text-'+scope.row.status_color + ' label-'+scope.row.status_color" class="em-status">{{ scope.row.status }}</p>
+          </template>
+        </el-table-column>
+        <el-table-column
+            v-for="column in columns"
+            v-if="column.show_in_list_summary == 1"
+            min-width="180">
+          <template slot="header" slot-scope="scope">
+            <span :title="column.label" class="em-neutral-700-color">{{column.label}}</span>
+          </template>
+          <template slot-scope="scope">
+            <p>{{scope.row[column.name]}}</p>
+          </template>
+        </el-table-column>
+<!--        <el-table-column width="50" fixed="right" class-name="em-open-application-cell">
+          <template slot-scope="scope">
+            <span class="material-icons-outlined em-pointer" @click="openModal(scope.row)" style="color: black">open_in_new</span>
+          </template>
+        </el-table-column>-->
+      </el-table>
+
+      <div id="table_columns_move_left" v-if="moveLeft" class="table-columns-move em-flex-column em-ml-4" @mouseover="scrollToLeft" @mouseleave="stopScrolling">
+        <span class="material-icons" style="font-size: 16px">arrow_forward</span>
+      </div>
+    </div>
 
     <div v-if="files && columns && currentTab && files[currentTab].length === 0">
       <span class="em-h6">{{ translate('COM_EMUNDUS_ONBOARD_NOFILES') }}</span>
@@ -83,7 +91,7 @@
 </template>
 
 <script>
-import Tabs from "@/components/Files/Tabs";
+import Tabs from "@/components/Files/Tabs.vue";
 import { Table,TableColumn } from 'element-ui';
 
 /** SERVICES **/
@@ -109,6 +117,9 @@ export default {
   mixins: [errors],
   data: () => ({
     loading: false,
+    moveRight: false,
+    moveLeft: true,
+    scrolling: null,
 
     total_count: 0,
     counts: {
@@ -180,7 +191,7 @@ export default {
     updateTab(tab){
       this.currentTab = tab;
     },
-    openApplication(row, column, cell, event){
+    openApplication(row){
       this.openModal(row);
     },
     selectRow(selection,row){
@@ -194,6 +205,32 @@ export default {
       this.rows_selected.forEach((row) => {
         window.open(window.location.href+'#'+row.fnum, '_blank');
       });
+    },
+    scrollToLeft(){
+      this.moveRight = true;
+
+      if(this.scrolling == null) {
+        this.scrolling = setInterval(() => {
+          let tableScroll = document.getElementsByClassName('el-table__body-wrapper')[0];
+          tableScroll.scrollLeft += 40;
+        }, 10);
+      }
+    },
+    scrollToRight(){
+      if(this.scrolling == null) {
+        this.scrolling = setInterval(() => {
+          let tableScroll = document.getElementsByClassName('el-table__body-wrapper')[0];
+          tableScroll.scrollLeft -= 40;
+          if(tableScroll.scrollLeft == 0){
+            this.moveRight = false;
+          }
+        }, 10);
+      }
+    },
+
+    stopScrolling(){
+      clearInterval(this.scrolling);
+      this.scrolling = null;
     }
   }
 }
@@ -203,5 +240,11 @@ export default {
 .em-files{
   width: calc(100% - 75px) !important;
   margin-left: auto;
+}
+.table-columns-move{
+  height: 500px;
+  border-radius: 8px;
+  background: white;
+  width: 24px;
 }
 </style>
