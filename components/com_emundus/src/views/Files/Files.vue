@@ -19,8 +19,10 @@
           </select>
         </div>
         <div class="em-flex-row">
-          <span class="material-icons-outlined" @click="prevPage">chevron_left</span>
-          <span class="material-icons-outlined" @click="nextPage">navigate_next</span>
+          <span>{{ translate('COM_EMUNDUS_FILES_PAGE') }} {{ displayPage }}</span>
+          <span class="em-ml-8 em-mr-8">|</span>
+          <span class="material-icons-outlined em-pointer" v-if="page != 0" @click="prevPage">chevron_left</span>
+          <span class="material-icons-outlined em-pointer" @click="nextPage">navigate_next</span>
         </div>
       </div>
 
@@ -316,6 +318,11 @@ export default {
       if(oldVal !== null) {
         this.updateLimit(value);
       }
+    }
+  },
+  computed: {
+    displayPage() {
+      return this.page + 1;
     }
   }
 }
