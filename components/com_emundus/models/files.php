@@ -3088,10 +3088,22 @@ class EmundusModelFiles extends JModelLegacy
     }
 
     public function getStatus() {
+        $all_status = [];
+
         $db = JFactory::getDBO();
-        $query = 'SELECT *  FROM #__emundus_setup_status ORDER BY ordering';
-        $db->setQuery( $query );
-        return $db->loadAssocList('step');
+        $query = $db->getQuery(true);
+        $query->select('*')
+            ->from('#__emundus_setup_status')
+            ->order('ordering ASC');
+
+        try {
+            $db->setQuery($query);
+            $all_status = $db->loadAssocList('step');
+        } catch (Exception $e) {
+            JLog::add('Failed to get all status ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+        }
+
+        return $all_status;
     }
 
     /**
