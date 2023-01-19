@@ -1413,10 +1413,11 @@ class EmundusModelFiles extends JModelLegacy
                 $db->setQuery($query);
                 $res = $db->execute();
 
-                // track the log
-                $logsParams = array('updated' => [['old' => $old_status_lbl, 'new' => $new_status_lbl, 'old_id' => $old_status_step, 'new_id' => $new_status_step]]);
-                EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                // track the log when update status == success
+                if($res) {
+                    $logsParams = array('updated' => [['old' => $old_status_lbl, 'new' => $new_status_lbl, 'old_id' => $old_status_step, 'new_id' => $new_status_step]]);
+                    EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+                }
 
                 $dispatcher->trigger('onAfterStatusChange', [$fnum, $state]);
                 $dispatcher->trigger('callEventHandler', ['onAfterStatusChange', ['fnum' => $fnum, 'state' => $state]]);
