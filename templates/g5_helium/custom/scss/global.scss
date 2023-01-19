@@ -7032,7 +7032,7 @@ tbody .el-table__row:nth-child(odd){
   position: absolute;
   margin: 0 auto;
   width: 100%;
-  bottom: 10%;
+  bottom: 20%;
   z-index: 25;
   left: 0;
   height: 40px;
@@ -7049,6 +7049,12 @@ tbody .el-table__row:nth-child(odd){
     a{
       color: var(--main-400);
     }
+  }
+}
+
+@media screen and (max-width: 1366px){
+  .selected-rows-tip{
+    bottom: 15%;
   }
 }
 

@@ -100,7 +100,8 @@
 
     <div v-if="rows_selected.length > 0" class="selected-rows-tip">
       <div class="selected-rows-tip__content em-flex-row">
-        <span>{{ rows_selected.length }} {{ translate('COM_EMUNDUS_FILES_ELEMENTS_SELECTED') }} :</span>
+        <span v-if="rows_selected.length === 1">{{ rows_selected.length }} {{ translate('COM_EMUNDUS_FILES_ELEMENT_SELECTED') }} :</span>
+        <span v-else-if="rows_selected.length > 1">{{ rows_selected.length }} {{ translate('COM_EMUNDUS_FILES_ELEMENTS_SELECTED') }} :</span>
         <a class="em-pointer em-ml-16" @click="toggleSelection()">{{ translate('COM_EMUNDUS_FILES_UNSELECT') }}</a>
         <a class="em-pointer em-ml-16" @click="openInNewTab()">{{ translate('COM_EMUNDUS_FILES_OPEN_IN_NEW_TAB') }}</a>
       </div>

@@ -3310,4 +3310,26 @@ class EmundusModelUsers extends JModelList {
 
         return $isSamlUser;
     }
+
+	public function getIdentityPhoto($fnum,$applicant_id){
+		try {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('filename')
+				->from($db->quoteName('#__emundus_uploads'))
+				->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
+				->andWhere($db->quoteName('attachment_id') . ' = 10');
+			$db->setQuery($query);
+			$filename = $db->loadResult();
+
+			if(!empty($filename)){
+				return EMUNDUS_PATH_REL . $applicant_id . '/' . $filename;
+			}
+		}
+		catch (Exception $e) {
+			JLog::add(' com_emundus/models/users.php | Failed to get identity photo : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			return '';
+		}
+	}
 }

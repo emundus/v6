@@ -201,20 +201,20 @@ export default {
   top: 0;
   background: white;
 }
-#em-attachments .v--modal-overlay{
+#modal-applicationform #em-attachments .v--modal-overlay{
   height: 100% !important;
   width: 67% !important;
   margin-top: 50px;
 }
-#em-attachments .v--modal-box.v--modal{
+#modal-applicationform #em-attachments .v--modal-box.v--modal{
   width: 100% !important;
   height: calc(100vh - 50px) !important;
   box-shadow: unset;
 }
-#em-attachments .modal-body{
+#modal-applicationform #em-attachments .modal-body{
   width: 100%;
 }
-#em-attachments #em-attachment-preview{
+#modal-applicationform #em-attachments #em-attachment-preview{
   width: 100%;
 }
 </style>
