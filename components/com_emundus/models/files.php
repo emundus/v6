@@ -1357,35 +1357,21 @@ class EmundusModelFiles extends JModelLegacy
     public function updateState($fnums, $state) {
         $res = false;
 
-        // get all status
-        $status = $this->getStatus();
+        if (!empty($fnums)) {
+            $db = $this->getDbo();
+            $query = $db->getQuery(true);
 
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
+            try {
+                $query->select($db->quoteName('profile'))
+                    ->from($db->quoteName('#__emundus_setup_status'))
+                    ->where($db->quoteName('step') . ' = ' . $state);
+                $db->setQuery($query);
+                $profile = $db->loadResult();
 
-        try {
-            $query->select($db->quoteName('profile'))
-                ->from($db->quoteName('#__emundus_setup_status'))
-                ->where($db->quoteName('step').' = '.$state);
-            $db->setQuery($query);
-            $profile = $db->loadResult();
-
-            $fnums = is_array($fnums) ? $fnums : [$fnums];
-
-            $dispatcher = JEventDispatcher::getInstance();
-            $dispatcher->trigger('onBeforeMultipleStatusChange', [$fnums, $state]);
-            $trigger = $dispatcher->trigger('callEventHandler', ['onBeforeMultipleStatusChange', ['fnums' => $fnums, 'state' => $state]]);
-            foreach($trigger as $responses) {
-                foreach($responses as $response) {
-                    if (!empty($response) && isset($response['status']) && $response['status'] === false) {
-                        return $response;
-                    }
-                }
-            }
-
-            foreach ($fnums as $fnum) {
-                $dispatcher->trigger('onBeforeStatusChange', [$fnum, $state]);
-                $trigger = $dispatcher->trigger('callEventHandler', ['onBeforeStatusChange', ['fnum' => $fnum, 'state' => $state]]);
+                $fnums = is_array($fnums) ? $fnums : [$fnums];
+                $dispatcher = JEventDispatcher::getInstance();
+                $dispatcher->trigger('onBeforeMultipleStatusChange', [$fnums, $state]);
+                $trigger = $dispatcher->trigger('callEventHandler', ['onBeforeMultipleStatusChange', ['fnums' => $fnums, 'state' => $state]]);
                 foreach($trigger as $responses) {
                     foreach($responses as $response) {
                         if (!empty($response) && isset($response['status']) && $response['status'] === false) {
@@ -1394,53 +1380,63 @@ class EmundusModelFiles extends JModelLegacy
                     }
                 }
 
-                // get fnum info
-                $finfo = self::getFnumInfos($fnum);
-
-                // get old status [step, label]
-                $old_status_step = $finfo['status'];
-                $old_status_lbl = $status[$finfo['status']]['value'];
-
-                // get new status [step, label]
-                $new_status_step = $state;
-                $new_status_lbl = $status[$state]['value'];
-
-                $query->clear()
-                    ->update($db->quoteName('#__emundus_campaign_candidature'))
-                    ->set($db->quoteName('status').' = '. $state)
-                    ->where($db->quoteName('fnum').' LIKE '. $db->Quote($fnum));
-
-                $db->setQuery($query);
-                $res = $db->execute();
-
-                // track the log when update status == success
-                if($res) {
-                    $logsParams = array('updated' => [['old' => $old_status_lbl, 'new' => $new_status_lbl, 'old_id' => $old_status_step, 'new_id' => $new_status_step]]);
-                    EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
-                }
-
-                $dispatcher->trigger('onAfterStatusChange', [$fnum, $state]);
-                $dispatcher->trigger('callEventHandler', ['onAfterStatusChange', ['fnum' => $fnum, 'state' => $state]]);
-
-                if (!empty($profile)) {
+                $all_status = $this->getStatus();
+                foreach ($fnums as $fnum) {
                     $query->clear()
-                        ->update($db->quoteName('#__emundus_users'))
-                        ->set($db->quoteName('profile').' = '.$profile)
-                        ->where($db->quoteName('user_id').' = '.substr($fnum, -7));
-                    $db->setQuery($query);
-                    $db->execute();
-                }
-            }
-        } catch (Exception $e) {
-            echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-        }
+                        ->select('status')
+                        ->from('#__emundus_campaign_candidature')
+                        ->where('fnum = ' . $db->quote($fnum));
 
-        if ($res) {
-            $res = [
-                'status' => true,
-                'msg' => $this->sendEmailAfterUpdateState($fnums, $state)
-            ];
+                    $db->setQuery($query);
+                    $old_status_step = $db->loadResult();
+
+                    $dispatcher->trigger('onBeforeStatusChange', [$fnum, $state]);
+                    $trigger = $dispatcher->trigger('callEventHandler', ['onBeforeStatusChange', ['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]]);
+                    foreach($trigger as $responses) {
+                        foreach($responses as $response) {
+                            if (!empty($response) && isset($response['status']) && $response['status'] === false) {
+                                return $response;
+                            }
+                        }
+                    }
+
+                    $query->clear()
+                        ->update($db->quoteName('#__emundus_campaign_candidature'))
+                        ->set($db->quoteName('status').' = '. $state)
+                        ->where($db->quoteName('fnum').' LIKE '. $db->Quote($fnum));
+
+                    $db->setQuery($query);
+                    $res = $db->execute();
+
+                    if ($res) {
+                        $old_status_lbl = $all_status[$old_status_step]['value'];
+                        $logs_params = ['updated' => [['old' => $old_status_lbl, 'new' => $all_status[$state]['value'], 'old_id' => $old_status_step, 'new_id' => $state]]];
+                        EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+                    }
+
+                    $dispatcher->trigger('onAfterStatusChange', [$fnum, $state]);
+                    $dispatcher->trigger('callEventHandler', ['onAfterStatusChange', ['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]]);
+
+                    if (!empty($profile)) {
+                        $query->clear()
+                            ->update($db->quoteName('#__emundus_users'))
+                            ->set($db->quoteName('profile').' = '.$profile)
+                            ->where($db->quoteName('user_id').' = '.substr($fnum, -7));
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
+            } catch (Exception $e) {
+                echo $e->getMessage();
+                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+
+            if ($res) {
+                $res = [
+                    'status' => true,
+                    'msg' => $this->sendEmailAfterUpdateState($fnums, $state)
+                ];
+            }
         }
 
         return $res;
