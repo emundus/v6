@@ -10,13 +10,20 @@
     <div v-if="files">
       <div class="em-flex-row em-flex-space-between em-mb-16">
         <div class="em-flex-row">
-          <span>{{ translate('COM_EMUNDUS_FILES_DISPLAY_PAGE') }}</span>
-          <select class="em-select-no-border em-ml-8" style="width: 40px;height: 20px;" v-model="limit">
-            <option>10</option>
-            <option>25</option>
-            <option>50</option>
-            <option>100</option>
-          </select>
+          <div class="em-flex-row">
+            <span>{{ translate('COM_EMUNDUS_FILES_TOTAL') }}</span>
+            <span class="em-ml-4">{{ total_count }}</span>
+          </div>
+          <span class="em-ml-8 em-mr-8">|</span>
+          <div class="em-flex-row">
+            <span>{{ translate('COM_EMUNDUS_FILES_DISPLAY_PAGE') }}</span>
+            <select class="em-select-no-border em-ml-8" style="width: 40px;height: 20px;" v-model="limit">
+              <option>10</option>
+              <option>25</option>
+              <option>50</option>
+              <option>100</option>
+            </select>
+          </div>
         </div>
         <div class="em-flex-row">
           <span>{{ translate('COM_EMUNDUS_FILES_PAGE') }} {{ displayPage }}</span>
@@ -196,6 +203,7 @@ export default {
       if(this.$props.type === 'evaluation') {
         filesService.getFiles(this.$props.type,refresh,this.limit,this.page).then((files) => {
           if(files.status == 1) {
+            this.total_count = files.total;
             this.files = files.data;
             this.counts.to_evaluate = this.files.to_evaluate.length;
             this.counts.evaluated = this.files.evaluated.length;

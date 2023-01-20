@@ -44,10 +44,11 @@ class EmundusControllerFile extends JControllerLegacy
     }
 
     public function getfiles(){
-        $results = ['status' => 1, 'msg' => '', 'data' => []];
+        $results = ['status' => 1, 'msg' => '', 'data' => [], 'total' => 0];
 
         if(EmundusHelperAccess::asAccessAction(1,'r',JFactory::getUser()->id)){
             $results['data'] = $this->files->getFiles();
+            $results['total'] = $this->files->getTotal();
         } else {
             $results['status'] = 0;
             $results['msg'] = JText::_('ACCESS_DENIED');

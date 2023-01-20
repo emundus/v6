@@ -5,6 +5,9 @@ use classes\files\Files;
 
 class Evaluations extends Files
 {
+	protected int $total_to_evaluate = 0;
+	protected int $total_evaluated = 0;
+
     public function __construct(){
         JLog::addLogger(['text_file' => 'com_emundus.evaluations.php'], JLog::ERROR, 'com_emundus.evaluations');
 
@@ -15,14 +18,11 @@ class Evaluations extends Files
 
     public function setFiles(): void
     {
-	    $em_session = JFactory::getSession()->get('emundusUser');
-
         $db = JFactory::getDbo();
 	    $query = $db->getQuery(true);
-        $query_groups_allowed = $db->getQuery(true);
-        $query_users_associated = $db->getQuery(true);
-        $query_groups_associated = $db->getQuery(true);
-        $query_groups_program_associated = $db->getQuery(true);
+
+		$read_access_evaluation = $db->quoteName('action_id') . ' = ' . $db->quote(5) . ' AND ' . $db->quoteName('r') . ' = ' . $db->quote(1);
+		$create_access_evaluation = $db->quoteName('action_id') . ' = ' . $db->quote(5) . ' AND ' . $db->quoteName('c') . ' = ' . $db->quote(1);
 
         require_once (JPATH_SITE.'/components/com_emundus/models/application.php');
         $m_application  = new EmundusModelApplication;
@@ -38,17 +38,9 @@ class Evaluations extends Files
 			$read_status_allowed = EmundusHelperAccess::asAccessAction(13,'r',JFactory::getUser()->id);
 
             $fnums = [];
-	        $groups_allowed = [];
-			if(!empty($em_session->emGroups)) {
-				$query_groups_allowed->select('acl.group_id')
-					->from($db->quoteName('#__emundus_acl', 'acl'))
-					->where($db->quoteName('acl.action_id') . ' = ' . $db->quote(5) . ' AND ' . $db->quoteName('acl.r') . ' = ' . $db->quote(1))
-					->andWhere($db->quoteName('acl.group_id') . ' IN (' . implode(',', $db->quote($em_session->emGroups)) . ')');
-				$db->setQuery($query_groups_allowed);
-				$groups_allowed = $db->loadColumn();
-			}
 
 	        $select = ['DISTINCT ecc.fnum', 'ecc.applicant_id', 'ecc.campaign_id as campaign', 'u.name'];
+	        $select_count = ['count(DISTINCT ecc.fnum) as total'];
 	        $left_joins = [
 				$db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('ecc.applicant_id') . ' = ' . $db->quoteName('u.id'),
 	        ];
@@ -56,79 +48,50 @@ class Evaluations extends Files
 				$select[] = 'ess.value as status,ess.class as status_color';
 				$left_joins[] = $db->quoteName('#__emundus_setup_status', 'ess') . ' ON ' . $db->quoteName('ess.step') . ' = ' . $db->quoteName('ecc.status');
 			}
+			$wheres = [];
+	        $wheres_to_evaluate = ['ecc.fnum NOT IN (SELECT fnum from jos_emundus_evaluations WHERE user = '.$db->quote(JFactory::getUser()->id).')'];
 
-
-
-	        if(!empty($groups_allowed)) {
-		        $query_groups_program_associated->select(implode(',',$select))
-			        ->from($db->quoteName('#__emundus_setup_groups', 'eg'))
-			        ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'esgrc') . ' ON ' . $db->quoteName('esgrc.parent_id') . ' = ' . $db->quoteName('eg.id'))
-			        ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.training') . ' = ' . $db->quoteName('esgrc.course'))
-			        ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'));
-				foreach ($left_joins as $left_join){
-					$query_groups_program_associated->leftJoin($left_join);
-				}
-		        $query_groups_program_associated->where($db->quoteName('eg.id') . ' IN (' . implode(',', $db->quote($groups_allowed)) .')')
-			        ->andWhere($db->quoteName('ecc.published') . ' = 1');
+	        if (isset($params->status) && $params->status !== '') {
+		        $wheres[] = $db->quoteName('ecc.status') . ' IN (' . implode(',',$params->status) . ')';
 	        }
 
-            $query_users_associated->select(implode(',',$select))
-                ->from($db->quoteName('#__emundus_users_assoc','eua'))
-                ->leftJoin($db->quoteName('#__emundus_campaign_candidature','ecc').' ON '.$db->quoteName('eua.fnum').' = '.$db->quoteName('ecc.fnum'));
-	        foreach ($left_joins as $left_join){
-		        $query_users_associated->leftJoin($left_join);
+	        if (isset($params->tags) && $params->tags !== '') {
+		        $wheres[] = $db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum');
+		        $wheres[] = $db->quoteName('eta.id_tag') . ' IN (' . implode(',',$params->tags) . ')';
 	        }
-	        $query_users_associated->where($db->quoteName('eua.user_id') . ' = ' . $db->quote($this->current_user->id))
-                ->andWhere($db->quoteName('eua.action_id') . ' = ' . $db->quote(5) . ' AND ' . $db->quoteName('eua.r') . ' = ' . $db->quote(1))
-                ->andWhere($db->quoteName('ecc.published') . ' = 1');
 
-	        if(!empty($groups_allowed)) {
-		        $query_groups_associated->union($query_groups_program_associated);
+	        if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
+		        $wheres[] = $db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')';
 	        }
-            $query_groups_associated->union($query_users_associated);
-	        $query_groups_associated->select(implode(',',$select))
-                ->from($db->quoteName('#__emundus_groups','eg'))
-                ->leftJoin($db->quoteName('#__emundus_group_assoc','ega').' ON '.$db->quoteName('ega.group_id').' = '.$db->quoteName('eg.group_id'))
-                ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ega.fnum') . ' = ' . $db->quoteName('ecc.fnum'));
-	        foreach ($left_joins as $left_join){
-		        $query_groups_associated->leftJoin($left_join);
+
+	        if (!empty($params->status_to_exclude)) {
+		        $wheres[] = $db->quoteName('ecc.status') . ' NOT IN (' . implode(',',$params->status_to_exclude) . ')';
 	        }
-	        $query_groups_associated->where($db->quoteName('eg.user_id') . ' = ' . $db->quote($this->current_user->id))
-	            ->andWhere($db->quoteName('ega.action_id') . ' = ' . $db->quote(5) . ' AND ' . $db->quoteName('ega.r') . ' = ' . $db->quote(1))
-                ->andWhere($db->quoteName('ecc.published') . ' = 1');
 
-            if (isset($params->status) && $params->status !== '') {
-	            $query_groups_associated->andWhere($db->quoteName('ecc.status') . ' IN (' . implode(',',$params->status) . ')');
-            }
+	        if (!empty($params->tags_to_exclude)) {
+		        $exclude_query = $db->getQuery(true);
 
-            if (isset($params->tags) && $params->tags !== '') {
-	            $query_groups_associated->leftJoin($db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum'))
-                    ->andWhere($db->quoteName('eta.id_tag') . ' IN (' . implode(',',$params->tags) . ')');
-            }
+		        $exclude_query->select('eta.fnum')
+			        ->from('jos_emundus_tag_assoc eta')
+			        ->where('eta.id_tag IN (' . implode(',', $params->tags_to_exclude) . ')');
+		        $db->setQuery($exclude_query);
+		        $fnums_to_exclude = $db->loadColumn();
 
-            if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
-	            $query_groups_associated->andWhere($db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')');
-            }
+		        if (!empty($fnums_to_exclude)) {
+			        $wheres[] = 'ecc.fnum NOT IN (' . implode(',', $fnums_to_exclude) . ')';
+		        }
+	        }
 
-            if (!empty($params->status_to_exclude)) {
-	            $query_groups_associated->andWhere($db->quoteName('ecc.status') . ' NOT IN (' . implode(',',$params->status_to_exclude) . ')');
-            }
+			$total_files_count = $this->buildQuery($select_count,$left_joins,$wheres,$read_access_evaluation);
+			$total_files_to_evaluate = $this->buildQuery($select_count,$left_joins,$wheres_to_evaluate,$create_access_evaluation);
+			$total_files_evaluated = $this->buildQuery($select_count,$left_joins,$wheres,$create_access_evaluation);
+			$files_associated = $this->buildQuery($select,$left_joins,$wheres,$read_access_evaluation,$this->getLimit(),$this->getOffset());
 
-            if (!empty($params->tags_to_exclude)) {
-                $exclude_query = $db->getQuery(true);
-
-                $exclude_query->select('eta.fnum')
-                    ->from('jos_emundus_tag_assoc eta')
-                    ->where('eta.id_tag IN (' . implode(',', $params->tags_to_exclude) . ')');
-                $db->setQuery($exclude_query);
-                $fnums_to_exclude = $db->loadColumn();
-
-                if (!empty($fnums_to_exclude)) {
-	                $query_groups_associated->where('ecc.fnum NOT IN (' . implode(',', $fnums_to_exclude) . ')');
-                }
-            }
-            $db->setQuery($query_groups_associated,$this->getOffset(),$this->getLimit());
-            $files_associated = $db->loadObjectList();
+	        $total_count = 0;
+			foreach ($total_files_count as $total){
+				$total_count += $total->total;
+			}
+			parent::setTotal($total_count);
 
             foreach ($files_associated as $file) {
                 if (!in_array($file->fnum, $fnums)) {
