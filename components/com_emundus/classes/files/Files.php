@@ -10,8 +10,9 @@ class Files
 {
     protected \Joomla\CMS\User\User $current_user;
     protected array $rights;
-    protected array $files;
-    protected array $columns;
+    protected array $files = [];
+	protected array $fnums = [];
+    protected array $columns = [];
     protected int $page = 0;
     protected int $limit = 10;
 	protected int $total = 0;
@@ -67,6 +68,19 @@ class Files
     {
         return $this->files;
     }
+
+	public function setFnums(array $fnums): void
+	{
+		$this->fnums = $fnums;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getFnums(): array
+	{
+		return $this->fnums;
+	}
 
     /**
      * @return array
@@ -150,6 +164,69 @@ class Files
 		}
 	}
 
+	public function buildSelect($status_access): array{
+		$select = ['DISTINCT ecc.fnum', 'ecc.applicant_id', 'ecc.campaign_id as campaign', 'u.name'];
+
+		if($status_access) {
+			$select[] = 'ess.value as status,ess.class as status_color';
+		}
+
+		return $select;
+	}
+
+	public function buildLeftJoin($params,$status_access): array{
+		$db = JFactory::getDbo();
+
+		$left_joins = [
+			$db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('ecc.applicant_id') . ' = ' . $db->quoteName('u.id'),
+		];
+		if($status_access) {
+			$left_joins[] = $db->quoteName('#__emundus_setup_status', 'ess') . ' ON ' . $db->quoteName('ess.step') . ' = ' . $db->quoteName('ecc.status');
+		}
+		if (isset($params->tags) && $params->tags !== '') {
+			$left_joins[] = $db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum');
+		}
+
+		return $left_joins;
+	}
+
+	public function buildWhere($params): array{
+		$db = JFactory::getDbo();
+
+		$wheres = [];
+		if (isset($params->status) && $params->status !== '') {
+			$wheres[] = $db->quoteName('ecc.status') . ' IN (' . implode(',',$params->status) . ')';
+		}
+
+		if (isset($params->tags) && $params->tags !== '') {
+			$wheres[] = $db->quoteName('eta.id_tag') . ' IN (' . implode(',',$params->tags) . ')';
+		}
+
+		if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
+			$wheres[] = $db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')';
+		}
+
+		if (!empty($params->status_to_exclude)) {
+			$wheres[] = $db->quoteName('ecc.status') . ' NOT IN (' . implode(',',$params->status_to_exclude) . ')';
+		}
+
+		if (!empty($params->tags_to_exclude)) {
+			$exclude_query = $db->getQuery(true);
+
+			$exclude_query->select('eta.fnum')
+				->from('jos_emundus_tag_assoc eta')
+				->where('eta.id_tag IN (' . implode(',', $params->tags_to_exclude) . ')');
+			$db->setQuery($exclude_query);
+			$fnums_to_exclude = $db->loadColumn();
+
+			if (!empty($fnums_to_exclude)) {
+				$wheres[] = 'ecc.fnum NOT IN (' . implode(',', $fnums_to_exclude) . ')';
+			}
+		}
+
+		return $wheres;
+	}
+
 	public function buildQuery($select,$left_joins = [],$wheres = [],$access = '',$limit = 0,$offset = 0,$return = 'object'){
 		$em_session = JFactory::getSession()->get('emundusUser');
 
@@ -226,8 +303,10 @@ class Files
 			$db->setQuery($query_groups_associated,$offset,$limit);
 			if($return == 'object'){
 				return $db->loadObjectList();
-			} else {
+			} elseif ($return == 'assoc') {
 				return $db->loadAssocList();
+			} elseif ($return == 'column') {
+				return $db->loadColumn();
 			}
 		}
 		catch (Exception $e) {

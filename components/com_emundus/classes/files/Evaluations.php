@@ -7,6 +7,7 @@ class Evaluations extends Files
 {
 	protected int $total_to_evaluate = 0;
 	protected int $total_evaluated = 0;
+	protected string $selected_tab = 'to_evaluate';
 
     public function __construct(){
         JLog::addLogger(['text_file' => 'com_emundus.evaluations.php'], JLog::ERROR, 'com_emundus.evaluations');
@@ -21,8 +22,11 @@ class Evaluations extends Files
         $db = JFactory::getDbo();
 	    $query = $db->getQuery(true);
 
+		$read_access_file = $db->quoteName('action_id') . ' = ' . $db->quote(1) . ' AND ' . $db->quoteName('r') . ' = ' . $db->quote(1);
 		$read_access_evaluation = $db->quoteName('action_id') . ' = ' . $db->quote(5) . ' AND ' . $db->quoteName('r') . ' = ' . $db->quote(1);
 		$create_access_evaluation = $db->quoteName('action_id') . ' = ' . $db->quote(5) . ' AND ' . $db->quoteName('c') . ' = ' . $db->quote(1);
+
+		$selected_tab = $this->getSelectedTab();
 
         require_once (JPATH_SITE.'/components/com_emundus/models/application.php');
         $m_application  = new EmundusModelApplication;
@@ -31,68 +35,34 @@ class Evaluations extends Files
         $h_array  = new EmundusHelperArray;
 
         try {
-	        $Itemid = JFactory::getSession()->get('current_menu_id',0);
-	        $menu = JFactory::getApplication()->getMenu();
-			$params = $menu->getParams($Itemid)->get('params');
-
 			$read_status_allowed = EmundusHelperAccess::asAccessAction(13,'r',JFactory::getUser()->id);
 
-            $fnums = [];
+	        $Itemid = JFactory::getSession()->get('current_menu_id',0);
+	        $menu = JFactory::getApplication()->getMenu();
+	        $params = $menu->getParams($Itemid)->get('params');
 
-	        $select = ['DISTINCT ecc.fnum', 'ecc.applicant_id', 'ecc.campaign_id as campaign', 'u.name'];
-	        $select_count = ['count(DISTINCT ecc.fnum) as total'];
-	        $left_joins = [
-				$db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('ecc.applicant_id') . ' = ' . $db->quoteName('u.id'),
-	        ];
-			if($read_status_allowed) {
-				$select[] = 'ess.value as status,ess.class as status_color';
-				$left_joins[] = $db->quoteName('#__emundus_setup_status', 'ess') . ' ON ' . $db->quoteName('ess.step') . ' = ' . $db->quoteName('ecc.status');
+	        $select_all = ['DISTINCT ecc.fnum'];
+
+			$select = $this->buildSelect($read_status_allowed);
+			$left_joins = $this->buildLeftJoin($params,$read_status_allowed);
+			$wheres = $this->buildWhere($params);
+
+			parent::setFnums($this->buildQuery($select_all,[],$wheres,$read_access_file,0,0,'column'));
+	        parent::setTotal(count($this->getFnums()));
+
+	        $files_associated = [];
+			if($selected_tab == 'to_evaluate') {
+				$wheres_to_evaluate = ['ecc.fnum NOT IN (SELECT fnum from jos_emundus_evaluations WHERE user = '.$db->quote(JFactory::getUser()->id).')'];
+				$wheres_to_evaluate[] = 'ecc.fnum IN ('.implode(',',$db->quote($this->getFnums())).')';
+
+				$files_associated = $this->getEvaluations($select, $left_joins, $wheres_to_evaluate, $create_access_evaluation, $this->getLimit(), $this->getOffset());
+			} elseif ($selected_tab == 'evaluated') {
+				$wheres_evaluated = ['ecc.fnum IN (SELECT fnum from jos_emundus_evaluations WHERE user = '.$db->quote(JFactory::getUser()->id).')'];
+
+				$files_associated = $this->getEvaluations($select, $left_joins, $wheres_evaluated, $create_access_evaluation, $this->getLimit(), $this->getOffset());
 			}
-			$wheres = [];
-	        $wheres_to_evaluate = ['ecc.fnum NOT IN (SELECT fnum from jos_emundus_evaluations WHERE user = '.$db->quote(JFactory::getUser()->id).')'];
 
-	        if (isset($params->status) && $params->status !== '') {
-		        $wheres[] = $db->quoteName('ecc.status') . ' IN (' . implode(',',$params->status) . ')';
-	        }
-
-	        if (isset($params->tags) && $params->tags !== '') {
-		        $wheres[] = $db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum');
-		        $wheres[] = $db->quoteName('eta.id_tag') . ' IN (' . implode(',',$params->tags) . ')';
-	        }
-
-	        if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
-		        $wheres[] = $db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')';
-	        }
-
-	        if (!empty($params->status_to_exclude)) {
-		        $wheres[] = $db->quoteName('ecc.status') . ' NOT IN (' . implode(',',$params->status_to_exclude) . ')';
-	        }
-
-	        if (!empty($params->tags_to_exclude)) {
-		        $exclude_query = $db->getQuery(true);
-
-		        $exclude_query->select('eta.fnum')
-			        ->from('jos_emundus_tag_assoc eta')
-			        ->where('eta.id_tag IN (' . implode(',', $params->tags_to_exclude) . ')');
-		        $db->setQuery($exclude_query);
-		        $fnums_to_exclude = $db->loadColumn();
-
-		        if (!empty($fnums_to_exclude)) {
-			        $wheres[] = 'ecc.fnum NOT IN (' . implode(',', $fnums_to_exclude) . ')';
-		        }
-	        }
-
-			$total_files_count = $this->buildQuery($select_count,$left_joins,$wheres,$read_access_evaluation);
-			$total_files_to_evaluate = $this->buildQuery($select_count,$left_joins,$wheres_to_evaluate,$create_access_evaluation);
-			$total_files_evaluated = $this->buildQuery($select_count,$left_joins,$wheres,$create_access_evaluation);
-			$files_associated = $this->buildQuery($select,$left_joins,$wheres,$read_access_evaluation,$this->getLimit(),$this->getOffset());
-
-	        $total_count = 0;
-			foreach ($total_files_count as $total){
-				$total_count += $total->total;
-			}
-			parent::setTotal($total_count);
-
+	        $fnums = [];
             foreach ($files_associated as $file) {
                 if (!in_array($file->fnum, $fnums)) {
                     $fnums[] = $file->fnum;
@@ -169,20 +139,8 @@ class Evaluations extends Files
 
             $evaluations = $h_array->removeDuplicateObjectsByProperty($evaluations,'fnum');
 			$final_evaluations = [];
-			$final_evaluations['to_evaluate'] = [];
-			$final_evaluations['evaluated'] = [];
-			$final_evaluations['fnums'] = [];
-			$final_evaluations['all'] = [];
-
-			foreach ($evaluations as $evaluation){
-				$final_evaluations['all'][] = $evaluation;
-				$final_evaluations['fnums'][] = $evaluation->fnum;
-				if(!empty($evaluation->time_date)){
-					$final_evaluations['evaluated'][] = $evaluation;
-				} else {
-					$final_evaluations['to_evaluate'][] = $evaluation;
-				}
-			}
+			$final_evaluations['fnums'] = $this->getFnums();
+			$final_evaluations['all'] = $evaluations;
 
             $this->files = $final_evaluations;
 
@@ -197,6 +155,38 @@ class Evaluations extends Files
             JLog::add('Problem to get files associated to user '.$this->current_user->id.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
         }
     }
+
+	public function getEvaluations($select,$left_joins = [],$wheres = [],$access = '',$limit = 0,$offset = 0,$return = 'object'){
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try {
+			$query->select(implode(',',$select))
+				->from($db->quoteName('#__emundus_campaign_candidature','ecc'));
+			foreach ($left_joins as $left_join){
+				$query->leftJoin($left_join);
+			}
+			$query->where($db->quoteName('ecc.published') . ' = 1');
+			foreach ($wheres as $where){
+				$query->andWhere($where);
+			}
+
+			$db->setQuery($query,$offset,$limit);
+
+			if($return == 'object'){
+				return $db->loadObjectList();
+			} elseif ($return == 'assoc') {
+				return $db->loadAssocList();
+			} elseif ($return == 'column') {
+				return $db->loadColumn();
+			}
+		}
+		catch (Exception $e) {
+			JLog::add('Problem when build query with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
+			return 0;
+		}
+
+	}
 
     public function getEvaluationFormByFnum($fnum){
         try {
@@ -228,4 +218,20 @@ class Evaluations extends Files
 			return 0;
         }
     }
+
+	/**
+	 * @return string
+	 */
+	public function getSelectedTab(): string
+	{
+		return $this->selected_tab;
+	}
+
+	/**
+	 * @param string $selected_tab
+	 */
+	public function setSelectedTab(string $selected_tab): void
+	{
+		$this->selected_tab = $selected_tab;
+	}
 }

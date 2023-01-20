@@ -40,7 +40,7 @@
       <hr/>
     </div>
 
-    <div class="em-flex-row" v-if="files && columns && currentTab && files[currentTab].length > 0">
+    <div class="em-flex-row" v-if="files && columns && currentTab && files.length > 0">
       <div id="table_columns_move_right" :class="moveRight ? '' : 'em-disabled-state'" class="table-columns-move em-flex-column em-mr-4" @mouseover="scrollToRight"  @mouseleave="stopScrolling">
         <span class="material-icons" style="font-size: 16px">arrow_back</span>
       </div>
@@ -49,7 +49,7 @@
           ref="tableFiles"
           style="width: 100%"
           height="500"
-          :data="files[currentTab]"
+          :data="files"
           @select-all="selectRow"
           @select="selectRow">
         <el-table-column
@@ -101,7 +101,7 @@
       </div>
     </div>
 
-    <div v-if="files && columns && currentTab && files[currentTab].length === 0">
+    <div v-if="files && columns && currentTab && files.length === 0">
       <span class="em-h6">{{ translate('COM_EMUNDUS_ONBOARD_NOFILES') }}</span>
     </div>
 
@@ -204,9 +204,7 @@ export default {
         filesService.getFiles(this.$props.type,refresh,this.limit,this.page).then((files) => {
           if(files.status == 1) {
             this.total_count = files.total;
-            this.files = files.data;
-            this.counts.to_evaluate = this.files.to_evaluate.length;
-            this.counts.evaluated = this.files.evaluated.length;
+            this.files = files.data.all;
 
             filesService.getColumns(this.$props.type).then((columns) => {
               this.columns = columns.data;
@@ -218,8 +216,8 @@ export default {
               });
 
               if(fnum !== ''){
-                Object.values(this.files.all).forEach((file) => {
-                  if(file.fnum === fnum && this.currentFile === null){
+                Object.values(this.files.fnums).forEach((file) => {
+                  if(file === fnum && this.currentFile === null){
                     this.openModal(file);
                   }
                 });
