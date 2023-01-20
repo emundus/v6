@@ -36,11 +36,11 @@
     </div>
 
     <div v-if="files">
-      <tabs v-if="$props.type === 'evaluation'" :counts="counts" @updateTab="updateTab"></tabs>
+      <tabs v-if="$props.type === 'evaluation'" :tabs="tabs" @updateTab="updateTab"></tabs>
       <hr/>
     </div>
 
-    <div class="em-flex-row" v-if="files && columns && currentTab && files.length > 0">
+    <div class="em-flex-row" v-if="files && columns && files.length > 0">
       <div id="table_columns_move_right" :class="moveRight ? '' : 'em-disabled-state'" class="table-columns-move em-flex-column em-mr-4" @mouseover="scrollToRight"  @mouseleave="stopScrolling">
         <span class="material-icons" style="font-size: 16px">arrow_back</span>
       </div>
@@ -101,7 +101,7 @@
       </div>
     </div>
 
-    <div v-if="files && columns && currentTab && files.length === 0">
+    <div v-if="files && columns && files.length === 0">
       <span class="em-h6">{{ translate('COM_EMUNDUS_ONBOARD_NOFILES') }}</span>
     </div>
 
@@ -151,10 +151,22 @@ export default {
     scrolling: null,
 
     total_count: 0,
-    counts: {
-      to_evaluate: 0,
-      evaluated: 0,
-    },
+    tabs: [
+      {
+        label: 'COM_EMUNDUS_FILES_TO_EVALUATE',
+        name: 'to_evaluate',
+        total: 0,
+        page: 0,
+        limit: 10
+      },
+      {
+        label: 'COM_EMUNDUS_FILES_EVALUATED',
+        name: 'evaluated',
+        total: 0,
+        page: 0,
+        limit: 10
+      },
+    ],
     files: null,
     columns: null,
     display_status: false,
@@ -162,16 +174,12 @@ export default {
     limit: null,
 
     currentFile: null,
-    currentTab: null,
     rows_selected: [],
   }),
   created(){
     this.getLimit();
     this.getPage();
     this.getFiles();
-    if(this.$props.type === 'evaluation') {
-      this.currentTab = 'to_evaluate';
-    }
   },
   methods: {
     getLimit(){
@@ -201,10 +209,16 @@ export default {
       }
 
       if(this.$props.type === 'evaluation') {
+
         filesService.getFiles(this.$props.type,refresh,this.limit,this.page).then((files) => {
           if(files.status == 1) {
             this.total_count = files.total;
             this.files = files.data.all;
+            this.tabs.forEach((tab,i) => {
+              if(files[tab.name]){
+                this.tabs[i].total = files[tab.name].total;
+              }
+            })
 
             filesService.getColumns(this.$props.type).then((columns) => {
               this.columns = columns.data;
@@ -275,7 +289,9 @@ export default {
       },500)
     },
     updateTab(tab){
-      this.currentTab = tab;
+      filesService.setSelectedTab(tab).then(() => {
+        this.getFiles(true);
+      })
     },
     openApplication(row){
       this.openModal(row);

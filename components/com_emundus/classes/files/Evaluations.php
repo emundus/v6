@@ -5,8 +5,9 @@ use classes\files\Files;
 
 class Evaluations extends Files
 {
-	protected int $total_to_evaluate = 0;
-	protected int $total_evaluated = 0;
+	protected array $to_evaluate = [];
+	protected array $evaluated = [];
+	protected array $in_progress = [];
 	protected string $selected_tab = 'to_evaluate';
 
     public function __construct(){
@@ -19,6 +20,8 @@ class Evaluations extends Files
 
     public function setFiles(): void
     {
+	    $files_associated = [];
+
         $db = JFactory::getDbo();
 	    $query = $db->getQuery(true);
 
@@ -42,6 +45,7 @@ class Evaluations extends Files
 	        $params = $menu->getParams($Itemid)->get('params');
 
 	        $select_all = ['DISTINCT ecc.fnum'];
+			$select_count = ['COUNT(DISTINCT ecc.id) as total'];
 
 			$select = $this->buildSelect($read_status_allowed);
 			$left_joins = $this->buildLeftJoin($params,$read_status_allowed);
@@ -50,17 +54,39 @@ class Evaluations extends Files
 			parent::setFnums($this->buildQuery($select_all,[],$wheres,$read_access_file,0,0,'column'));
 	        parent::setTotal(count($this->getFnums()));
 
-	        $files_associated = [];
-			if($selected_tab == 'to_evaluate') {
-				$wheres_to_evaluate = ['ecc.fnum NOT IN (SELECT fnum from jos_emundus_evaluations WHERE user = '.$db->quote(JFactory::getUser()->id).')'];
-				$wheres_to_evaluate[] = 'ecc.fnum IN ('.implode(',',$db->quote($this->getFnums())).')';
 
+			// Build WHERE to get differents groups of files
+	        $wheres_to_evaluate = ['ecc.fnum NOT IN (SELECT fnum from jos_emundus_evaluations WHERE user = '.$db->quote(JFactory::getUser()->id).')'];
+	        $wheres_to_evaluate[] = 'ecc.fnum IN ('.implode(',',$db->quote($this->getFnums())).')';
+
+	        $wheres_evaluated = ['ecc.fnum IN (SELECT fnum from jos_emundus_evaluations WHERE user = '.$db->quote(JFactory::getUser()->id).')'];
+			//
+
+	        if($selected_tab == 'to_evaluate') {
 				$files_associated = $this->getEvaluations($select, $left_joins, $wheres_to_evaluate, $create_access_evaluation, $this->getLimit(), $this->getOffset());
 			} elseif ($selected_tab == 'evaluated') {
-				$wheres_evaluated = ['ecc.fnum IN (SELECT fnum from jos_emundus_evaluations WHERE user = '.$db->quote(JFactory::getUser()->id).')'];
-
 				$files_associated = $this->getEvaluations($select, $left_joins, $wheres_evaluated, $create_access_evaluation, $this->getLimit(), $this->getOffset());
 			}
+
+			// Get count of differents groups
+	        $total_files_to_evaluate = $this->buildQuery($select_count,[],$wheres_to_evaluate,$read_access_file,0,0,'column');
+	        $to_evaluate = $this->getToEvaluate();
+			if(empty($to_evaluate)){
+				$to_evaluate['limit'] = 10;
+				$to_evaluate['page'] = 0;
+			}
+	        $to_evaluate['total'] = array_sum(array_filter($total_files_to_evaluate,function($file) { return $file != 0;}));
+			$this->setToEvaluate($to_evaluate);
+
+	        $total_files_evaluated = $this->buildQuery($select_count,[],$wheres_evaluated,$read_access_file,0,0,'column');
+	        $evaluated = $this->getEvaluated();
+	        if(empty($evaluated)){
+		        $evaluated['limit'] = 10;
+		        $evaluated['page'] = 0;
+	        }
+	        $evaluated['total'] = array_sum(array_filter($total_files_evaluated,function($file) { return $file != 0;}));
+	        $this->setEvaluated($evaluated);
+			//
 
 	        $fnums = [];
             foreach ($files_associated as $file) {
@@ -234,4 +260,54 @@ class Evaluations extends Files
 	{
 		$this->selected_tab = $selected_tab;
 	}
+
+	/**
+	 * @return array
+	 */
+	public function getToEvaluate(): array
+	{
+		return $this->to_evaluate;
+	}
+
+	/**
+	 * @param   array  $to_evaluate
+	 */
+	public function setToEvaluate(array $to_evaluate): void
+	{
+		$this->to_evaluate = $to_evaluate;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getEvaluated(): array
+	{
+		return $this->evaluated;
+	}
+
+	/**
+	 * @param   array  $evaluated
+	 */
+	public function setEvaluated(array $evaluated): void
+	{
+		$this->evaluated = $evaluated;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getInProgress(): array
+	{
+		return $this->in_progress;
+	}
+
+	/**
+	 * @param   array  $in_progress
+	 */
+	public function setInProgress(array $in_progress): void
+	{
+		$this->in_progress = $in_progress;
+	}
+
+
 }
