@@ -1381,6 +1381,9 @@ class EmundusModelFiles extends JModelLegacy
                 }
 
                 $all_status = $this->getStatus();
+                $user = JFactory::getUser();
+                $user_id = !empty($user->id) ? $user->id : 62;
+
                 foreach ($fnums as $fnum) {
                     $query->clear()
                         ->select('status')
@@ -1408,10 +1411,13 @@ class EmundusModelFiles extends JModelLegacy
                     $db->setQuery($query);
                     $res = $db->execute();
 
+                    $old_status_lbl = $all_status[$old_status_step]['value'];
                     if ($res) {
-                        $old_status_lbl = $all_status[$old_status_step]['value'];
                         $logs_params = ['updated' => [['old' => $old_status_lbl, 'new' => $all_status[$state]['value'], 'old_id' => $old_status_step, 'new_id' => $state]]];
-                        EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+                        EmundusModelLogs::log($user_id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+                    } else {
+                        $logs_params = ['error' => [['old' => $old_status_lbl, 'new' => $all_status[$state]['value'], 'old_id' => $old_status_step, 'new_id' => $state]]];
+                        EmundusModelLogs::log($user_id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE_FAILED', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
                     }
 
                     $dispatcher->trigger('onAfterStatusChange', [$fnum, $state]);
