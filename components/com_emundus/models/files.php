@@ -1357,9 +1357,10 @@ class EmundusModelFiles extends JModelLegacy
     public function updateState($fnums, $state) {
         $res = false;
 
-        if (!empty($fnums)) {
+        if (!empty($fnums) && isset($state)) {
             $db = $this->getDbo();
             $query = $db->getQuery(true);
+            $fnums = is_array($fnums) ? $fnums : [$fnums];
 
             try {
                 $query->select($db->quoteName('profile'))
@@ -1368,7 +1369,6 @@ class EmundusModelFiles extends JModelLegacy
                 $db->setQuery($query);
                 $profile = $db->loadResult();
 
-                $fnums = is_array($fnums) ? $fnums : [$fnums];
                 $dispatcher = JEventDispatcher::getInstance();
                 $dispatcher->trigger('onBeforeMultipleStatusChange', [$fnums, $state]);
                 $trigger = $dispatcher->trigger('callEventHandler', ['onBeforeMultipleStatusChange', ['fnums' => $fnums, 'state' => $state]]);
