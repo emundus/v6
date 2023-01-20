@@ -82,7 +82,7 @@ class Evaluations extends Files
 			});
 
             $query->clear()
-                ->select('fe.id,fe.name,fe.label,fe.show_in_list_summary,ffg.form_id')
+                ->select('fe.id, fe.name, fe.label, fe.show_in_list_summary, fe.plugin, ffg.form_id')
                 ->from($db->quoteName('#__fabrik_elements','fe'))
                 ->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
                 ->where($db->quoteName('fe.group_id') . ' IN (' . implode(',',$eval_groups) . ')');
@@ -117,14 +117,14 @@ class Evaluations extends Files
 
                 if($key !== false){
                     $query->clear()
-                        ->select('fe.id,fe.name,fe.label,fe.show_in_list_summary,ffg.form_id')
+                        ->select('fe.id, fe.name, fe.label, fe.show_in_list_summary, fe.plugin, ffg.form_id')
                         ->from($db->quoteName('#__fabrik_elements','fe'))
                         ->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
                         ->where($db->quoteName('fe.id') . ' IN (' . $more_elements_by_campaign->elements[$key] . ')');
                     $db->setQuery($query);
                     $more_elements = $db->loadObjectList('name');
 
-                    $eval_elements = array_merge($eval_elements,$more_elements);
+                    $eval_elements = array_merge($eval_elements, $more_elements);
                 }
 
                 foreach ($eval_elements as $elt) {
@@ -156,7 +156,7 @@ class Evaluations extends Files
         }
     }
 
-	public function getEvaluations($select,$left_joins = [],$wheres = [],$access = '',$limit = 0,$offset = 0,$return = 'object'){
+	public function getEvaluations($select, $left_joins = [],$wheres = [], $access = '', $limit = 0,$offset = 0,$return = 'object'){
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
@@ -171,7 +171,9 @@ class Evaluations extends Files
 				$query->andWhere($where);
 			}
 
-			$db->setQuery($query,$offset,$limit);
+            $query = $this->addQueryFilters($query);
+
+			$db->setQuery($query, $offset, $limit);
 
 			if($return == 'object'){
 				return $db->loadObjectList();
