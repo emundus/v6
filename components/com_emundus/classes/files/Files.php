@@ -14,7 +14,7 @@ class Files
     protected array $columns;
     protected int $page = 0;
     protected int $limit = 10;
-	protected int $total;
+	protected int $total = 0;
 
 	public function __construct(){
 		JLog::addLogger(['text_file' => 'com_emundus.evaluations.php'], JLog::ERROR, 'com_emundus.evaluations');
