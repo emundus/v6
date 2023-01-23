@@ -156,12 +156,12 @@ if (!empty($this->custom_title)) :?>
                     if ($item->can_be_viewed == 1) {
                         $div .= '<a class="em-flex-row em-mr-16" href="'.$chemin.$this->user->id .'/'.$item->filename .'" target="_blank"><span class="material-icons-outlined em-mr-4">visibility</span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_VIEW').'</a>';
                     } else {
-                        $div .= JText::_('COM_EMUNDUS_ATTACHMENTS_CANT_VIEW');
+                        $div .= JText::_('COM_EMUNDUS_ATTACHMENTS_CANT_VIEW') . '</br>';
                     }
                     if (($item->can_be_deleted == 1 || $item->is_validated == "0") && !$block_upload) {
                         $div .= '<a class="em-flex-row em-red-500-color" href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="material-icons-outlined em-red-500-color em-mr-4">delete_outline</span> '.JText::_('COM_EMUNDUS_ACTIONS_DELETE').'</a>';
                     } else {
-                        $div .= JText::_('COM_EMUNDUS_ATTACHMENTS_CANT_DELETE');
+                        $div .= JText::_('COM_EMUNDUS_ATTACHMENTS_CANT_DELETE') . '</br>';
                     }
                     $div .= '</td></tr><tr><td>';
                     $div .= JString::ucfirst(JHTML::Date(strtotime($item->timedate), "DATE_FORMAT_LC2"));
