@@ -94,6 +94,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
 
             $formModel = $this->getModel();
             $listModel =  $formModel->getListModel();
+            $form_id = $formModel->id;
 
             $user = JFactory::getSession()->get('emundusUser');
 
@@ -126,6 +127,21 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
             $itemid = $jinput->get('Itemid');
             $reload = $jinput->get('r', 0);
             $reload++;
+
+            if (empty($fnum)) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('db_table_name')
+                    ->from($db->quoteName('#__fabrik_lists'))
+                    ->where($db->quoteName('form_id') . ' = ' . $db->quote($form_id));
+                $db->setQuery($query);
+                $db_table_name = $db->loadResult();
+
+                if(!empty($db_table_name)){
+                    $fnum = $jinput->get->get($db_table_name.'___fnum', null);
+                }
+            }
 
             $current_fnum = !empty($fnum) ? $fnum : $user->fnum;
             $current_phase = $m_campaign->getCurrentCampaignWorkflow($current_fnum);
@@ -197,6 +213,10 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                     if ($view == 'form') {
                         if ($can_edit) {
                             $reload_url = false;
+                            if ($reload < 3) {
+                                $reload++;
+                                $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum."&r=".$reload);
+                            }
                         }
                     } else {
                         //try to access detail view or other
