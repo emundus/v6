@@ -266,7 +266,7 @@ class EmundusHelperEvents {
                             $reload_url = false;
                             if ($reload < 3) {
                                 $reload++;
-                                $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$form_id."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum."&r=".$reload);
+                                $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum."&r=".$reload);
                             }
                         }
                     } else {
