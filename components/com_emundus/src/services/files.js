@@ -127,5 +127,19 @@ export default {
         } catch (e) {
             return false;
         }
+    },
+
+    async getFile(fnum){
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=file&task=getfile', {
+                params: {
+                    fnum: fnum
+                }
+            });
+
+            return response.data;
+        } catch (e) {
+            return false;
+        }
     }
 }

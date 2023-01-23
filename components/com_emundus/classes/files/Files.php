@@ -165,7 +165,7 @@ class Files
 	}
 
 	public function buildSelect($status_access): array{
-		$select = ['DISTINCT ecc.fnum', 'ecc.applicant_id', 'ecc.campaign_id as campaign', 'u.name'];
+		$select = ['DISTINCT ecc.fnum', 'ecc.applicant_id', 'ecc.campaign_id as campaign', 'u.name as applicant_name'];
 
 		if($status_access) {
 			$select[] = 'ess.value as status,ess.class as status_color';
@@ -307,6 +307,41 @@ class Files
 				return $db->loadAssocList();
 			} elseif ($return == 'column') {
 				return $db->loadColumn();
+			} elseif ($return == 'single_object') {
+				return $db->loadObject();
+			}
+		}
+		catch (Exception $e) {
+			JLog::add('Problem when build query with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
+			return 0;
+		}
+	}
+
+	public function getFilesQuery($select,$left_joins = [],$wheres = [],$access = '',$limit = 0,$offset = 0,$return = 'object'){
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try {
+			$query->select(implode(',',$select))
+				->from($db->quoteName('#__emundus_campaign_candidature','ecc'));
+			foreach ($left_joins as $left_join){
+				$query->leftJoin($left_join);
+			}
+			$query->where($db->quoteName('ecc.published') . ' = 1');
+			foreach ($wheres as $where){
+				$query->andWhere($where);
+			}
+
+			$db->setQuery($query,$offset,$limit);
+
+			if($return == 'object'){
+				return $db->loadObjectList();
+			} elseif ($return == 'assoc') {
+				return $db->loadAssocList();
+			} elseif ($return == 'column') {
+				return $db->loadColumn();
+			} elseif ($return == 'single_object') {
+				return $db->loadObject();
 			}
 		}
 		catch (Exception $e) {
@@ -314,6 +349,16 @@ class Files
 			return 0;
 		}
 
+	}
+
+	public function getFile($fnum){
+		$db = JFactory::getDbo();
+
+		$select = $this->buildSelect(false);
+		$left_joins = $this->buildLeftJoin(null,false);
+		$wheres[] = $db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum);
+
+		return $this->getFilesQuery($select, $left_joins, $wheres,'',0,0,'single_object');
 	}
 
 

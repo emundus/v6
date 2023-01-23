@@ -1809,29 +1809,29 @@ tr.fabrikFilterContainer{
 }
 .label-default,.label-null,.label- {
   background-color: var(--neutral-100) !important;
-  color: var(--neutral-500) !important;
+  color: var(--neutral-600) !important;
   text-shadow: none;
 }
 .label-text-default,.label-text-null {
-  color: var(--neutral-500) !important;
+  color: var(--neutral-600) !important;
 }
 
 .label-lightpurple {
-  background-color: var(--fuchsia-50) !important;
-  color: var(--fuchsia-500) !important;
+  background-color: var(--fuchsia-100) !important;
+  color: var(--fuchsia-800) !important;
   text-shadow: none;
 }
 .label-text-lightpurple {
-  color: var(--fuchsia-500) !important;
+  color: var(--fuchsia-800) !important;
 }
 
 .label-purple {
-  background-color: var(--purple-50) !important;
-  color: var(--purple-500) !important;
+  background-color: var(--purple-100) !important;
+  color: var(--purple-800) !important;
   text-shadow: none;
 }
 .label-text-purple {
-  color: var(--purple-500) !important;
+  color: var(--purple-800) !important;
 }
 
 /** DEPRECATED **/
@@ -1845,57 +1845,57 @@ tr.fabrikFilterContainer{
 /** **/
 
 .label-lightblue {
-  background-color: var(--light-blue-50) !important;
-  color: var(--light-blue-500) !important;
+  background-color: var(--light-blue-100) !important;
+  color: var(--light-blue-800) !important;
   text-shadow: none;
 }
 .label-text-lightblue {
-  color: var(--light-blue-500) !important;
+  color: var(--light-blue-800) !important;
 }
 
 .label-blue {
-  background-color: var(--blue-50) !important;
-  color: var(--blue-500) !important;
+  background-color: var(--blue-100) !important;
+  color: var(--blue-800) !important;
   text-shadow: none;
 }
 .label-text-blue {
-  color: var(--blue-500) !important;
+  color: var(--blue-800) !important;
 }
 
 .label-darkblue {
-  background-color: var(--dark-blue-50) !important;
-  color: var(--dark-blue-500) !important;
+  background-color: var(--dark-blue-100) !important;
+  color: var(--dark-blue-800) !important;
   text-shadow: none;
 }
 .label-text-darkblue {
-  color: var(--dark-blue-500) !important;
+  color: var(--dark-blue-800) !important;
 }
 
 .label-lightgreen {
-  background-color: var(--light-green-50) !important;
-  color: var(--light-green-500) !important;
+  background-color: var(--light-green-100) !important;
+  color: var(--light-green-800) !important;
   text-shadow: none;
 }
 .label-text-lightgreen {
-  color: var(--light-green-500) !important;
+  color: var(--light-green-800) !important;
 }
 
 .label-green {
-  background-color: var(--secondary-main-50) !important;
-  color: var(--secondary-main-500) !important;
+  background-color: var(--secondary-main-100) !important;
+  color: var(--secondary-main-800) !important;
   text-shadow: none;
 }
 .label-text-green {
-  color: var(--secondary-main-500) !important;
+  color: var(--secondary-main-800) !important;
 }
 
 .label-darkgreen {
   background-color: var(--main-50) !important;
-  color: var(--main-500) !important;
+  color: var(--main-700) !important;
   text-shadow: none;
 }
 .label-text-darkgreen {
-  color: var(--main-500) !important;
+  color: var(--main-700) !important;
 }
 
 /** DEPRECATED **/
@@ -1909,21 +1909,21 @@ tr.fabrikFilterContainer{
 /** **/
 
 .label-yellow {
-  background-color: var(--yellow-50) !important;
-  color: var(--yellow-500) !important;
+  background-color: var(--yellow-100) !important;
+  color: var(--yellow-800) !important;
   text-shadow: none;
 }
 .label-text-yellow {
-  color: var(--yellow-500) !important;
+  color: var(--yellow-800) !important;
 }
 
 .label-darkyellow {
-  background-color: var(--warning-50) !important;
-  color: var(--warning-500) !important;
+  background-color: var(--warning-100) !important;
+  color: var(--warning-800) !important;
   text-shadow: none;
 }
 .label-text-darkyellow {
-  color: var(--warning-500) !important;
+  color: var(--warning-800) !important;
 }
 
 /** DEPRECATED **/
@@ -1938,21 +1938,21 @@ tr.fabrikFilterContainer{
 /** **/
 
 .label-orange {
-  background-color: var(--orange-50) !important;
-  color: var(--orange-500) !important;
+  background-color: var(--orange-100) !important;
+  color: var(--orange-800) !important;
   text-shadow: none;
 }
 .label-text-orange {
-  color: var(--orange-500) !important;
+  color: var(--orange-800) !important;
 }
 
 .label-darkorange {
-  background-color: var(--dark-orange-50) !important;
-  color: var(--dark-orange-500) !important;
+  background-color: var(--dark-orange-100) !important;
+  color: var(--dark-orange-800) !important;
   text-shadow: none;
 }
 .label-text-darkorange{
-  color: var(--dark-orange-500) !important;
+  color: var(--dark-orange-800) !important;
 }
 
 .label-lightred {
@@ -1964,12 +1964,12 @@ tr.fabrikFilterContainer{
 }
 
 .label-red {
-  background-color: var(--red-50) !important;
-  color: var(--red-500) !important;
+  background-color: var(--red-100) !important;
+  color: var(--red-700) !important;
   text-shadow: none;
 }
 .label-text-red {
-  color: var(--red-500) !important;
+  color: var(--red-700) !important;
 }
 
 .label-darkred {
@@ -1992,21 +1992,21 @@ tr.fabrikFilterContainer{
 /** **/
 
 .label-pink {
-  background-color: var(--pink-50) !important;
-  color: var(--pink-500) !important;
+  background-color: var(--pink-100) !important;
+  color: var(--pink-800) !important;
   text-shadow: none;
 }
 .label-text-pink {
-  color: var(--pink-500) !important;
+  color: var(--pink-800) !important;
 }
 
 .label-darkpink {
-  background-color: var(--dark-pink-50) !important;
-  color: var(--dark-pink-500) !important;
+  background-color: var(--dark-pink-100) !important;
+  color: var(--dark-pink-800) !important;
   text-shadow: none;
 }
 .label-text-darkpink {
-  color: var(--dark-pink-500) !important;
+  color: var(--dark-pink-800) !important;
 }
 
 /* ERROR PAGE 404 */
@@ -7029,10 +7029,10 @@ tbody .el-table__row:nth-child(odd){
 /** **/
 
 .selected-rows-tip{
-  position: absolute;
+  position: fixed;
   margin: 0 auto;
   width: 100%;
-  bottom: 20%;
+  bottom: 15%;
   z-index: 25;
   left: 0;
   height: 40px;
@@ -7054,7 +7054,7 @@ tbody .el-table__row:nth-child(odd){
 
 @media screen and (max-width: 1366px){
   .selected-rows-tip{
-    bottom: 15%;
+    bottom: 10%;
   }
 }
 

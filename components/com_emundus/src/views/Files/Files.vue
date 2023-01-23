@@ -41,7 +41,7 @@
     </div>
 
     <div class="em-flex-row" v-if="files && columns && files.length > 0">
-      <div id="table_columns_move_right" :class="moveRight ? '' : 'em-disabled-state'" class="table-columns-move em-flex-column em-mr-4" @mouseover="scrollToRight"  @mouseleave="stopScrolling">
+      <div id="table_columns_move_right" :class="moveRight ? '' : 'em-disabled-state'" class="table-columns-move em-flex-column em-mr-4" @click="scrollToRight">
         <span class="material-icons" style="font-size: 16px">arrow_back</span>
       </div>
 
@@ -70,7 +70,7 @@
           </template>
         </el-table-column>
         <el-table-column
-            width="170"
+            width="180"
             v-if="display_status"
             :label="translate('COM_EMUNDUS_ONBOARD_STATUS')"
         >
@@ -96,7 +96,7 @@
         </el-table-column>-->
       </el-table>
 
-      <div id="table_columns_move_left" v-if="moveLeft" class="table-columns-move em-flex-column em-ml-4" @mouseover="scrollToLeft" @mouseleave="stopScrolling">
+      <div id="table_columns_move_left" v-if="moveLeft" class="table-columns-move em-flex-column em-ml-4" @click="scrollToLeft">
         <span class="material-icons" style="font-size: 16px">arrow_forward</span>
       </div>
     </div>
@@ -212,6 +212,7 @@ export default {
 
         filesService.getFiles(this.$props.type,refresh,this.limit,this.page).then((files) => {
           if(files.status == 1) {
+            console.log(files);
             this.total_count = files.total;
             this.files = files.data.all;
             this.tabs.forEach((tab,i) => {
@@ -230,11 +231,7 @@ export default {
               });
 
               if(fnum !== ''){
-                Object.values(this.files.fnums).forEach((file) => {
-                  if(file === fnum && this.currentFile === null){
-                    this.openModal(file);
-                  }
-                });
+                this.openModal(fnum);
               }
 
               this.loading = false;
@@ -311,23 +308,32 @@ export default {
     scrollToLeft(){
       this.moveRight = true;
 
-      if(this.scrolling == null) {
+      let tableScroll = document.getElementsByClassName('el-table__body-wrapper')[0];
+      tableScroll.scrollLeft += 180;
+
+      /*if(this.scrolling == null) {
         this.scrolling = setInterval(() => {
           let tableScroll = document.getElementsByClassName('el-table__body-wrapper')[0];
-          tableScroll.scrollLeft += 40;
+          tableScroll.scrollLeft += 100;
         }, 10);
-      }
+      }*/
     },
     scrollToRight(){
-      if(this.scrolling == null) {
+      let tableScroll = document.getElementsByClassName('el-table__body-wrapper')[0];
+      tableScroll.scrollLeft -= 180;
+      if(tableScroll.scrollLeft == 0){
+        this.moveRight = false;
+      }
+
+      /*if(this.scrolling == null) {
         this.scrolling = setInterval(() => {
           let tableScroll = document.getElementsByClassName('el-table__body-wrapper')[0];
-          tableScroll.scrollLeft -= 40;
+          tableScroll.scrollLeft -= 150;
           if(tableScroll.scrollLeft == 0){
             this.moveRight = false;
           }
         }, 10);
-      }
+      }*/
     },
 
     stopScrolling(){

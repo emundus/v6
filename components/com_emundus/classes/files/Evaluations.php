@@ -63,9 +63,9 @@ class Evaluations extends Files
 			//
 
 	        if($selected_tab == 'to_evaluate') {
-				$files_associated = $this->getEvaluations($select, $left_joins, $wheres_to_evaluate, $create_access_evaluation, $this->getLimit(), $this->getOffset());
+				$files_associated = $this->getFilesQuery($select, $left_joins, $wheres_to_evaluate, $create_access_evaluation, $this->getLimit(), $this->getOffset());
 			} elseif ($selected_tab == 'evaluated') {
-				$files_associated = $this->getEvaluations($select, $left_joins, $wheres_evaluated, $create_access_evaluation, $this->getLimit(), $this->getOffset());
+				$files_associated = $this->getFilesQuery($select, $left_joins, $wheres_evaluated, $create_access_evaluation, $this->getLimit(), $this->getOffset());
 			}
 
 			// Get count of differents groups
@@ -130,7 +130,7 @@ class Evaluations extends Files
                 $evaluation->fnum = $file->fnum;
                 $evaluation->student_id = $file->applicant_id;
                 $evaluation->campaign_id = $file->campaign_id;
-                $evaluation->applicant_name = $file->name;
+                $evaluation->applicant_name = $file->applicant_name;
 				if(isset($file->status)){
 					$evaluation->status = $file->status;
 					$evaluation->status_color = $file->status_color;
@@ -181,38 +181,6 @@ class Evaluations extends Files
             JLog::add('Problem to get files associated to user '.$this->current_user->id.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
         }
     }
-
-	public function getEvaluations($select,$left_joins = [],$wheres = [],$access = '',$limit = 0,$offset = 0,$return = 'object'){
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		try {
-			$query->select(implode(',',$select))
-				->from($db->quoteName('#__emundus_campaign_candidature','ecc'));
-			foreach ($left_joins as $left_join){
-				$query->leftJoin($left_join);
-			}
-			$query->where($db->quoteName('ecc.published') . ' = 1');
-			foreach ($wheres as $where){
-				$query->andWhere($where);
-			}
-
-			$db->setQuery($query,$offset,$limit);
-
-			if($return == 'object'){
-				return $db->loadObjectList();
-			} elseif ($return == 'assoc') {
-				return $db->loadAssocList();
-			} elseif ($return == 'column') {
-				return $db->loadColumn();
-			}
-		}
-		catch (Exception $e) {
-			JLog::add('Problem when build query with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
-			return 0;
-		}
-
-	}
 
     public function getEvaluationFormByFnum($fnum){
         try {
