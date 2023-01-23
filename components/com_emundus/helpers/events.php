@@ -141,6 +141,8 @@ class EmundusHelperEvents {
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'date.php');
+
             $m_campaign = new EmundusModelCampaign;
 
             $formModel = $params['formModel'];
@@ -345,6 +347,26 @@ class EmundusHelperEvents {
                             unset($stored['fnum']);
 
                             foreach ($stored as $key => $store) {
+                                // get the element plugin, and params
+                                $query = "SELECT jfe.plugin, jfe.params 
+                                        FROM jos_fabrik_elements AS jfe 
+                                        LEFT JOIN jos_fabrik_groups AS jfg ON jfe.group_id = jfg.id
+                                        LEFT JOIN jos_fabrik_formgroup AS jffg ON jffg.group_id = jfg.id
+                                        LEFT JOIN jos_fabrik_forms AS jff ON jffg.form_id = jff.id
+                                        WHERE jff.id = " . $db->quote($formModel->getId()) . " AND jfe.hidden != 1 AND jfe.published = 1 AND jfe.name LIKE " . $db->quote($key);
+
+                                $db->setQuery($query);
+                                $elt = $db->loadObject();
+
+                                // if this element is date plugin, we need to check the time storage format (UTC of Local time)
+                                if($elt->plugin === 'date') {
+                                    // storage format (UTC [0], Local [1])
+                                    $timeStorageFormat = json_decode($elt->params)->date_store_as_local;                               // (0) is UTC, (1) is Local time
+
+                                    $store = EmundusHelperDate::displayDate($store, 'Y-m-d H:i:s', $timeStorageFormat);
+                                }
+
+
                                 $formModel->data[$table->db_table_name . '___' . $key] = $store;
                                 $formModel->data[$table->db_table_name . '___' . $key . '_raw'] = $store;
                             }
