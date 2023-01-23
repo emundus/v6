@@ -167,13 +167,13 @@ function addElement() {
                 var num = ($('#nb-adv-filter').val() - 1) + 2;
                 $('#nb-adv-filter').val(num);
                 var newId = 'em-adv-father-' + num;
-                ni.append('<fieldset id="' + newId + '" class="em-nopadding em-flex-row">' +
-                    '<select class="chzn-select em-filt-select" name="elements" id="elements-'+num+'">' +
+                ni.append('<fieldset id="' + newId + '" class="em-nopadding">' +
+                    '<a id="suppr-filt" class="em-mb-4 em-flex-start">' +
+                    '<span class="em-font-size-14 em-red-500-color">' + Joomla.JText._('COM_EMUNDUS_DELETE_ADVANCED_FILTERS') + '</span>' +
+                    '</a>' +
+                    '<select class="chzn-select em-filt-select em-mb-4" name="elements" id="elements-'+num+'">' +
                     '<option value="">' + result.default +'</option>' +
                     '</select> ' +
-                    '<button id="suppr-filt" class="em-tertiary-button em-flex-start">' +
-                    '<span class="material-icons em-red-500-color">delete_outline</span>' +
-                    '</button>'+
                     '</fieldset>');
 
                 var options = '';
