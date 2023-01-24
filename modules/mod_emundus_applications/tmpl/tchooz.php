@@ -299,7 +299,7 @@ ksort($applications);
                                                 if($now < $end_date)
                                                 {
 	                                                $interval = date_create($now)->diff(date_create($end_date));
-	                                                if ($interval->d == 0)
+	                                                if ($interval->y == 0 && $interval->m == 0 && $interval->d == 0)
 	                                                {
 		                                                $displayInterval = true;
 	                                                }
