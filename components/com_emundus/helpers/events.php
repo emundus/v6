@@ -390,6 +390,11 @@ class EmundusHelperEvents {
 
                                         if (!empty($stored)) {
                                             foreach ($stored as $store) {
+	                                            $formModel->data[$repeat_table . '___id'][] = "";
+	                                            $formModel->data[$repeat_table . '___id_raw'][] = "";
+	                                            $formModel->data[$repeat_table . '___parent_id'][] = "";
+	                                            $formModel->data[$repeat_table . '___parent_id_raw'][] = "";
+
                                                 $formModel->data[$repeat_table . '___' . $group->name][] = $store;
                                                 $formModel->data[$repeat_table . '___' . $group->name . '_raw'][] = $store;
                                             }
