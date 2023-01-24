@@ -536,11 +536,11 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
                                         <?php if($mod_em_campaign_show_camp_end_date && strtotime($now) < strtotime($result->end_date)  && strtotime($now) > strtotime($result->start_date) ) : //en cours ?>
                                             <?php
-                                            $displayInterval = false;
-                                            $interval = date_create($now)->diff(date_create($result->end_date));
-                                            if($interval->d == 0){
-                                                $displayInterval = true;
-                                            }
+	                                        $displayInterval = false;
+	                                        $interval = date_create($now)->diff(date_create($result->end_date));
+	                                        if($interval->y == 0 && $interval->m == 0 && $interval->d == 0){
+		                                        $displayInterval = true;
+	                                        }
                                             ?>
                                             <div class="mod_emundus_campaign__date em-flex-row">
                                                 <?php if (!$displayInterval) : ?>
