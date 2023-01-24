@@ -61,7 +61,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
             ?>
             <?php if ($show_programme==1) : ?>
             <p class="em-programme-tag em-ml-16" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
-                <?php  echo $current_application->training; ?>
+                <?php  echo $current_application->prog_label; ?>
             </p>
             <?php endif; ?>
         </div>
