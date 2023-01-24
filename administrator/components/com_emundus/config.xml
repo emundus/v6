@@ -25,6 +25,18 @@
 			<option value="1">JYES</option>
 		</field>
 
+		<!-- show time format for log view (#UTC, #LocalTime) -->
+		<field name="log_show_timeformat" type="list" default="1" label="COM_EMUNDUS_LOG_SHOW_TIMEFORMAT" description="COM_EMUNDUS_LOG_SHOW_TIMEFORMAT_DESC">
+			<option value="0">UTC_FORMAT</option>
+			<option value="1">LOCAL_FORMAT</option>
+		</field>
+
+		<!-- set chrono show log ordering (ASC, DESC) -->
+		<field name="log_show_timeorder" type="list" default="DESC" label="COM_EMUNDUS_LOG_SHOW_TIMEORDER" description="COM_EMUNDUS_LOG_SHOW_TIMEORDER_DESC">
+			<option value="ASC">ASC</option>
+			<option value="DESC">DESC</option>
+		</field>
+
 		<field name="display_other_user_editing_same_file" type="list" default="0" label="DISPLAY_OTHER_USER_EDITING_SAME_FILE" description="DISPLAY_OTHER_USER_EDITING_SAME_FILE_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
