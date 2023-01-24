@@ -495,6 +495,10 @@ class com_emundusInstallerScript
 		        EmundusHelperUpdate::insertTranslationsTag('SEND_ON', 'Send on', 'override', null, null, null, 'en-GB');
 	        }
 
+	        if (version_compare($cache_version, '1.34.33', '<') || $firstrun) {
+		        EmundusHelperUpdate::addColumn('jos_emundus_uploads', 'local_filename', 'VARCHAR', 255);
+	        }
+
             // Insert new translations in overrides files
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
 
