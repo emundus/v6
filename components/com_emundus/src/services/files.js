@@ -6,7 +6,7 @@ export default {
             const response = await client().get('index.php?option=com_emundus&controller=file&task=getfiles', {
                 params: {
                     type: type,
-                    refresh: refresh,
+                    refresh: refresh
                 }
             });
 
@@ -105,6 +105,35 @@ export default {
             const response = await client().get('index.php?option=com_emundus&controller=file&task=updatepage', {
                 params: {
                     page: page
+                }
+            });
+
+            return response.data;
+        } catch (e) {
+            return false;
+        }
+    },
+
+    async setSelectedTab(tab,type = 'evaluation'){
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=file&task=setselectedtab', {
+                params: {
+                    tab: tab,
+                    type: type
+                }
+            });
+
+            return response.data;
+        } catch (e) {
+            return false;
+        }
+    },
+
+    async getFile(fnum){
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=file&task=getfile', {
+                params: {
+                    fnum: fnum
                 }
             });
 

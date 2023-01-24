@@ -67,7 +67,7 @@ export default {
   name: "Application",
   components: {Attachments},
   props: {
-    file: Object,
+    file: Object|String,
     type: String,
     user: {
       type: String,
@@ -101,26 +101,54 @@ export default {
   methods:{
     beforeOpen(){
       this.loading = true;
+      let fnum = '';
 
-      filesService.checkAccess(this.$props.file.fnum).then((result) => {
-        if(result.data === true){
-          this.updateURL(this.$props.file.fnum)
-          this.getApplicationForm();
-          if(this.$props.type === 'evaluation'){
-            this.getEvaluationForm();
+      if(typeof this.$props.file == 'string'){
+        fnum = this.$props.file;
+      } else {
+        fnum = this.$props.file.fnum;
+      }
+
+      if(typeof this.$props.file == 'string'){
+        filesService.getFile(fnum).then((result) => {
+          if(result.status == 1){
+            this.$props.file = result.data;
+            this.updateURL(this.$props.file.fnum)
+            this.getApplicationForm();
+            if(this.$props.type === 'evaluation'){
+              this.getEvaluationForm();
+            }
+          } else {
+            this.displayError(
+                'COM_EMUNDUS_FILES_CANNOT_ACCESS',
+                'COM_EMUNDUS_FILES_CANNOT_ACCESS_DESC'
+            ).then((confirm) => {
+              if(confirm === true){
+                this.$modal.hide('application-modal');
+              }
+            });
           }
-        } else {
-         this.displayError(
-             'COM_EMUNDUS_FILES_CANNOT_ACCESS',
-             'COM_EMUNDUS_FILES_CANNOT_ACCESS_DESC'
-         ).then((confirm) => {
-           if(confirm === true){
-             this.$modal.hide('application-modal');
-           }
-         });
-        }
-      });
-
+        });
+      } else {
+        filesService.checkAccess(fnum).then((result) => {
+          if(result.data === true){
+            this.updateURL(this.$props.file.fnum)
+            this.getApplicationForm();
+            if(this.$props.type === 'evaluation'){
+              this.getEvaluationForm();
+            }
+          } else {
+            this.displayError(
+                'COM_EMUNDUS_FILES_CANNOT_ACCESS',
+                'COM_EMUNDUS_FILES_CANNOT_ACCESS_DESC'
+            ).then((confirm) => {
+              if(confirm === true){
+                this.$modal.hide('application-modal');
+              }
+            });
+          }
+        });
+      }
     },
 
     getApplicationForm(){
