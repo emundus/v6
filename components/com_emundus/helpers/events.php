@@ -969,26 +969,37 @@ class EmundusHelperEvents {
             }
 
             if (!empty($fnum)) {
-                $form_elements = $this->getFormElements($form_data['formid']);
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+                $query->select('applicant_id')
+                    ->from('#__emundus_campaign_candidature as ecc')
+                    ->where('fnum = ' . $db->quote($fnum));
 
-                if (!empty($form_elements)) {
-                    $db = JFactory::getDbo();
-                    $query = $db->getQuery(true);
-                    $query->select('applicant_id')
-                        ->from('#__emundus_campaign_candidature as ecc')
-                        ->where('fnum = ' . $db->quote($fnum));
+                try {
+                    $db->setQuery($query);
+                    $applicant_id = $db->loadResult();
+                } catch (Exception $e) {
+                    JLog::add("Failed to get applicant_id from fnum $fnum : " . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                }
 
-                    try {
-                        $db->setQuery($query);
-                        $applicant_id = $db->loadResult();
-                    } catch (Exception $e) {
-                        JLog::add("Failed to get applicant_id from fnum $fnum : " . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-                    }
+                if (!empty($applicant_id)) {
+                    $form_elements = $this->getFormElements($form_data['formid']);
 
-                    if (!empty($applicant_id)) {
+                    if (!empty($form_elements)) {
                         include_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
-
                         if (class_exists('EmundusModelApplication')) {
+                            $query->clear()
+                                ->select('label')
+                                ->from('#__fabrik_forms')
+                                ->where('id = ' . $form_data['formid']);
+
+                            try {
+                                $db->setQuery($query);
+                                $form_label = JText::_($db->loadResult());
+                            } catch (Exception $e) {
+                                JLog::add("Failed to get applicant_id from fnum $fnum : " . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                            }
+
                             $m_application = new EmundusModelApplication();
                             $user = JFactory::getUser();
                             $logged_elements = [];
@@ -997,7 +1008,6 @@ class EmundusHelperEvents {
                                 $element_key = $element->db_table_name . '___' . $element->name;
                                 $new_value = $form_data[$element_key];
                                 $raw_element_key = $element_key . '_raw';
-
 
                                 switch ($element->plugin) {
                                     case 'checkbox':
@@ -1021,9 +1031,10 @@ class EmundusHelperEvents {
 
                                 $old_value = $m_application->getValuesByElementAndFnum($fnum, $element->id, $form_data['formid']);
                                 $new_value = $m_application->formatElementValue($element, $new_value, $element->db_table_name, $applicant_id);
+
                                 if ($old_value != $new_value) {
                                     $log_params = [
-                                        'description' => '[' . $form_data['formid'] . ']',
+                                        'description' => '[' . $form_label . ']',
                                         'element' =>  JText::_($element->label),
                                         'old' => $old_value,
                                         'new' => $new_value
