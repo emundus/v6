@@ -1377,6 +1377,7 @@ td:first-child>.em-cell {
     width:100%;
     overflow:hidden;
     text-overflow:ellipsis;
+    margin: 2px 0 !important;
 }
 .em-cell-scroll > .em-cell::-webkit-scrollbar {
     display: none;
