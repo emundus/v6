@@ -17,7 +17,7 @@ div#frame.outline {
   border-radius: 16px !important;
   background: var(--neutral-50);
   border: 1px solid var(--neutral-300);
-  box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+  box-shadow: 0 1px 1px rgba(5, 47, 55, 0.07), 0 2px 1px rgba(5, 47, 55, 0.06), 0 1px 3px rgba(5, 47, 55, 0.1);
 
   p, h1, a {
     font-family: var(--font);
@@ -340,9 +340,10 @@ ul {
 
 .gantry.g-back-office-emundus-tableau .swal2-popup iframe {
   padding-top: 30px;
-  .span12 .emundus-form {
-    margin-top: 0px !important;
-  }
+}
+
+.contentpane.modal .span12 .emundus-form {
+    margin-top: 0 !important;
 }
 
 .modal-header {
@@ -535,7 +536,7 @@ p,
 
 .view-list .table .fabrikFilterContainer .fabrikDateListFilterRange button.btn.calendarbutton {
   height: 40px;
-  border-radius: 0px 4px 4px 0px !important;
+  border-radius: 0 4px 4px 0 !important;
   background: var(--neutral-50);
   color: var(--neutral-900);
   border: 1px solid #e0e0e5;
@@ -583,7 +584,7 @@ p,
 .view-details #g-container-main {
   .page-header {
     background: transparent;
-    margin: 32px 32px 0 0px;
+    margin: 32px 32px 0 0;
   }
 }
 
@@ -692,7 +693,7 @@ p,
   flex-wrap: wrap;
   width: 100%;
   p {
-    padding: 0px 10px;
+    padding: 0 10px;
   }
 }
 
@@ -903,7 +904,7 @@ body>.g-container {
         }
       }
 
-      &:not(btn-creer-compte) {
+      &:not(.btn-creer-compte) {
         background: transparent;
         border: 1px solid $base-primary-color;
         color: $base-primary-color;
@@ -1008,7 +1009,7 @@ body>.g-container {
   color: var(--neutral-50);
   border-color: $base-primary-color;
   text-transform: initial;
-  margin-left: 0px !important;
+  margin-left: 0 !important;
   font-family: var(--applicant-default-font);
 
   &:hover,
@@ -1085,7 +1086,7 @@ body>.g-container {
   }
 
   .right-side.campaingapply {
-    padding-left: 0px !important;
+    padding-left: 0 !important;
   }
 
   .below-content {
@@ -1093,7 +1094,7 @@ body>.g-container {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding: 0px;
+    padding: 0;
     margin-bottom: 50px;
 
     .btn.btn-plein {
@@ -4396,7 +4397,7 @@ button.swal2-cancel.goback-btn {
       border-radius: 16px !important;
       background: #FFFFFF;
       border: 1px solid #EDEDED;
-      box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+      box-shadow: 0 1px 1px rgba(5, 47, 55, 0.07), 0 2px 1px rgba(5, 47, 55, 0.06), 0 1px 3px rgba(5, 47, 55, 0.1);
 
       .em-form-intro {
         margin: 8px 32px 0 32px;
@@ -4414,7 +4415,7 @@ button.swal2-cancel.goback-btn {
       border-radius: 16px !important;
       background: #FFFFFF;
       border: 1px solid #EDEDED;
-      box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+      box-shadow: 0 1px 1px rgba(5, 47, 55, 0.07), 0 2px 1px rgba(5, 47, 55, 0.06), 0 1px 3px rgba(5, 47, 55, 0.1);
 
       p:first-of-type:not(.accept_terms),
       p.form-intro {
@@ -4865,7 +4866,7 @@ screen and (max-height: 769px) {
 
         div.em-heading-registration {
           width: 100%;
-            padding: 80px 0px 32px 0px;
+            padding: 80px 0 32px 0;
           text-align: center;
         }
 
@@ -5976,7 +5977,7 @@ fieldset[disabled] .multiselect {
   transition: border .1s ease !important;
   -webkit-box-sizing: border-box;
   box-sizing: border-box !important;
-  margin-bottom: 0px !important;
+  margin-bottom: 0 !important;
   vertical-align: top !important;
   padding: 0 !important;
   left: 0 !important;
@@ -6318,7 +6319,7 @@ fieldset[disabled] .multiselect {
 }
 
 *[dir="rtl"] .multiselect__tags {
-  padding: 8px 8px 0px 40px;
+  padding: 8px 8px 0 40px;
 }
 
 *[dir="rtl"] .multiselect__content {
