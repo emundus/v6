@@ -338,6 +338,13 @@ ul {
   padding-top: 20%;
 }
 
+.gantry.g-back-office-emundus-tableau .swal2-popup iframe {
+  padding-top: 30px;
+  .span12 .emundus-form {
+    margin-top: 0px !important;
+  }
+}
+
 .modal-header {
   background: var(--neutral-50);
   padding: 10px 20px;
