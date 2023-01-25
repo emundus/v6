@@ -58,7 +58,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                                     </div>
                                 </div>
 
-                                <div class="selectAll" id="selectAll">
+                                <div class="selectAll" id="selectAll_decision">
                                         <label>
                                             <input value="-1" id="em-check-all-page" class="em-check-all-page" type="checkbox" />
                                         <span id="span-check-all"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL');?></span>
@@ -221,7 +221,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
 
 <script>
-    const selectDropdownContainer = document.querySelector('.selectAll');
+    const selectDropdownContainer = document.querySelector('#selectAll_decision');
     const countFiles = document.querySelector('#countCheckedCheckbox');
     selectDropdownContainer.style.display = 'none';
 
@@ -287,8 +287,8 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
     }
 
 
-    $('.selectAll>span').click(function() {
-        $('.selectAll').slideUp();
+    $('#selectAll_decision>span').click(function() {
+        $('#selectAll_decision').slideUp();
     });
 
     $('#span-check-none').click(function(){
