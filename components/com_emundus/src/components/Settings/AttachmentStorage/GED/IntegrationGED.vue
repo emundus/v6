@@ -61,7 +61,6 @@ export default {
   },
   created() {
     syncService.getConfig('ged').then((response) => {
-			console.log(response);
       if (response.data.data !== null) {
         this.nodes = response.data.data.tree;
         this.name = response.data.data.name;
