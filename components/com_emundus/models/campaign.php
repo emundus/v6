@@ -2290,6 +2290,13 @@ class EmundusModelCampaign extends JModelList {
             if (!empty($current_phase->id)) {
                 $current_phase->entry_status = !empty($current_phase->entry_status) ? explode(',', $current_phase->entry_status) : [];
 
+	            if (empty($current_phase->start_date) || $current_phase->start_date === '0000-00-00 00:00:00') {
+					$campaign = $this->getCampaignByID($fnumInfos['campaign_id']);
+
+					if (!empty($campaign)) {
+						$current_phase->start_date = $campaign['start_date'];
+					}
+                }
                 if (empty($current_phase->end_date) || $current_phase->end_date === '0000-00-00 00:00:00') {
                     $campaign = $this->getCampaignByID($fnumInfos['campaign_id']);
 
