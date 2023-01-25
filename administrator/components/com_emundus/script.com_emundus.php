@@ -499,7 +499,7 @@ class com_emundusInstallerScript
 		        EmundusHelperUpdate::addColumn('jos_emundus_uploads', 'local_filename', 'VARCHAR', 255);
 	        }
 
-	        if (version_compare($cache_version, '1.34.35', '<') || $firstrun) {
+	        if (version_compare($cache_version, '1.34.36', '<') || $firstrun) {
 				$db = JFactory::getDbo();
 				$query = $db->getQuery(true);
 
