@@ -31,6 +31,7 @@
 				<field name="redirection_url" type="text" size="5" default="waiting-room.html" label="Waiting page URL" description="The URL for the waiting room page, you can put a JText tag here for SEF URls that are translated."/>
 				<field name="message_displayed" type="text" size="5" default="PLG_EMUNDUSWAITINGROOM_MAX_SESSIONS_REACHED" label="Message displayed if Force redirection is set to No" description="Display a warning message if max session is reached."/>
 				<field name="max_sessions" type="text" size="5" default="5000" label="Max activated sessions" description="The number of max activated sessions allowed."/>
+				<field name="ips_allowed" type="text" size="5" default="" label="IPs to exclude of waiting room" description=""/>
 			</fieldset>
 		</fields>
 	</config>
