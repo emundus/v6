@@ -21,7 +21,7 @@
       </div>
     </div>
 
-    <div class="modal-grid">
+    <div class="modal-grid" :style="'grid-template-columns:' + this.ratioStyle">
       <div id="modal-applicationform">
         <div class="scrollable">
           <div class="em-flex-row em-flex-center em-gap-16 em-border-bottom-neutral-300 sticky-tab">
@@ -72,6 +72,10 @@ export default {
     user: {
       type: String,
       required: true,
+    },
+    ratio: {
+      type: String,
+      default: '66/33'
     },
   },
   mixins: [errors],
@@ -190,6 +194,12 @@ export default {
         window.history.pushState('', '', url[0] + '#' + fnum);
       }
     }
+  },
+  computed:{
+    ratioStyle(){
+      let ratio_array = this.$props.ratio.split('/');
+      return ratio_array[0]+'% '+ratio_array[1]+'%';
+    }
   }
 }
 </script>
@@ -197,7 +207,6 @@ export default {
 <style>
 .modal-grid {
   display: grid;
-  grid-template-columns: 66% 33%;
   grid-gap: 16px;
   width: 100%;
   height: 100vh;

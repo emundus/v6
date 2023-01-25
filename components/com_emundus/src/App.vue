@@ -11,6 +11,7 @@
         v-else-if="component === 'files'"
         :type="data.type"
         :user="data.user"
+        :ratio="data.ratio"
     ></Files>
 
     <transition v-else name="slide-right">

@@ -1,6 +1,6 @@
 <template>
   <div class="em-mt-16 em-ml-32 em-files">
-    <Application v-if="currentFile" :file="currentFile" :type="$props.type" :user="$props.user" @getFiles="getFiles(true)" />
+    <Application v-if="currentFile" :file="currentFile" :type="$props.type" :user="$props.user" :ratio="$props.ratio" @getFiles="getFiles(true)" />
 
     <div class="em-mb-12 em-flex-row em-flex-space-between">
       <p class="em-h4">{{ translate('COM_EMUNDUS_FILES_'+type.toUpperCase()) }}</p>
@@ -25,7 +25,7 @@
             </select>
           </div>
         </div>
-        <div class="em-flex-row">
+        <div class="em-flex-row" v-if="displayPagination">
           <span>{{ translate('COM_EMUNDUS_FILES_PAGE') }} {{ displayPage }}</span>
           <span class="em-ml-8 em-mr-8">|</span>
           <span class="material-icons-outlined em-pointer" v-if="page != 0" @click="prevPage">chevron_left</span>
@@ -138,6 +138,10 @@ export default {
   },
   props: {
     type: String,
+    ratio: {
+      type: String,
+      default: '66/33'
+    },
     user: {
       type: String,
       required: true,
@@ -162,6 +166,13 @@ export default {
       {
         label: 'COM_EMUNDUS_FILES_EVALUATED',
         name: 'evaluated',
+        total: 0,
+        page: 0,
+        limit: 10
+      },
+      {
+        label: 'COM_EMUNDUS_FILES_ALL',
+        name: 'all',
         total: 0,
         page: 0,
         limit: 10
@@ -286,6 +297,7 @@ export default {
       },500)
     },
     updateTab(tab){
+      this.loading =true;
       filesService.setSelectedTab(tab).then(() => {
         this.getFiles(true);
       })
@@ -352,6 +364,9 @@ export default {
   computed: {
     displayPage() {
       return this.page + 1;
+    },
+    displayPagination() {
+      return this.files.length * (this.page + 1) < this.total_count;
     }
   }
 }

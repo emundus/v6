@@ -7,6 +7,7 @@ class Evaluations extends Files
 {
 	protected array $to_evaluate = [];
 	protected array $evaluated = [];
+	protected array $all = [];
 	protected array $in_progress = [];
 	protected string $selected_tab = 'to_evaluate';
 
@@ -60,13 +61,16 @@ class Evaluations extends Files
 	        $wheres_to_evaluate[] = 'ecc.fnum IN ('.implode(',',$db->quote($this->getFnums())).')';
 
 	        $wheres_evaluated = ['ecc.fnum IN (SELECT fnum from jos_emundus_evaluations WHERE user = '.$db->quote(JFactory::getUser()->id).')'];
+	        $wheres_evaluated[] = 'ecc.fnum IN ('.implode(',',$db->quote($this->getFnums())).')';
 			//
 
 	        if($selected_tab == 'to_evaluate') {
 				$files_associated = $this->getFilesQuery($select, $left_joins, $wheres_to_evaluate, $create_access_evaluation, $this->getLimit(), $this->getOffset());
 			} elseif ($selected_tab == 'evaluated') {
 				$files_associated = $this->getFilesQuery($select, $left_joins, $wheres_evaluated, $create_access_evaluation, $this->getLimit(), $this->getOffset());
-			}
+			} elseif ($selected_tab == 'all') {
+		        $files_associated = $this->getFilesQuery($select, $left_joins, $wheres, $read_access_evaluation, $this->getLimit(), $this->getOffset());
+	        }
 
 			// Get count of differents groups
 	        $total_files_to_evaluate = $this->buildQuery($select_count,[],$wheres_to_evaluate,$read_access_file,0,0,'column');
@@ -86,88 +90,102 @@ class Evaluations extends Files
 	        }
 	        $evaluated['total'] = array_sum(array_filter($total_files_evaluated,function($file) { return $file != 0;}));
 	        $this->setEvaluated($evaluated);
+
+	        $total_files_all = $this->buildQuery($select_count,[],$wheres,$read_access_file,0,0,'column');
+	        $all = $this->getAll();
+	        if(empty($all)){
+		        $all['limit'] = 10;
+		        $all['page'] = 0;
+	        }
+	        $all['total'] = array_sum(array_filter($total_files_all,function($file) { return $file != 0;}));
+	        $this->setAll($all);
 			//
 
-	        $fnums = [];
-            foreach ($files_associated as $file) {
-                if (!in_array($file->fnum, $fnums)) {
-                    $fnums[] = $file->fnum;
-                }
-            }
+	        if(!empty($files_associated)) {
+		        $fnums = [];
+		        foreach ($files_associated as $file) {
+			        if (!in_array($file->fnum, $fnums)) {
+				        $fnums[] = $file->fnum;
+			        }
+		        }
 
-            $query->clear()
-                ->select('distinct esp.fabrik_group_id')
-                ->from($db->quoteName('#__emundus_setup_programmes','esp'))
-                ->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esp.code').' = '.$db->quoteName('esc.training'))
-                ->leftJoin($db->quoteName('#__emundus_campaign_candidature','ecc').' ON '.$db->quoteName('esc.id').' = '.$db->quoteName('ecc.campaign_id'))
-                ->where($db->quoteName('ecc.fnum') . ' IN (' . implode(',',$db->quote($fnums)) . ')');
-            $db->setQuery($query);
-            $eval_groups = $db->loadColumn();
-			$eval_groups = array_filter($eval_groups, function($value) {
-				return !empty($value);
-			});
+		        $query->clear()
+			        ->select('distinct esp.fabrik_group_id')
+			        ->from($db->quoteName('#__emundus_setup_programmes', 'esp'))
+			        ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'))
+			        ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
+			        ->where($db->quoteName('ecc.fnum') . ' IN (' . implode(',', $db->quote($fnums)) . ')');
+		        $db->setQuery($query);
+		        $eval_groups = $db->loadColumn();
+		        $eval_groups = array_filter($eval_groups, function ($value) {
+			        return !empty($value);
+		        });
 
-            $query->clear()
-                ->select('fe.id, fe.name, fe.label, fe.show_in_list_summary, fe.plugin, ffg.form_id')
-                ->from($db->quoteName('#__fabrik_elements','fe'))
-                ->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
-                ->where($db->quoteName('fe.group_id') . ' IN (' . implode(',',$eval_groups) . ')');
-            if (isset($params->more_elements) && $params->more_elements !== '') {
-                $query->orWhere($db->quoteName('fe.id') . ' IN (' . $params->more_elements . ')');
-            }
-            $query->andWhere($db->quoteName('fe.published') . ' = 1');
-            $db->setQuery($query);
-            $eval_elements = $db->loadObjectList('name');
+		        $query->clear()
+			        ->select('fe.id, fe.name, fe.label, fe.show_in_list_summary, fe.plugin, ffg.form_id')
+			        ->from($db->quoteName('#__fabrik_elements', 'fe'))
+			        ->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
+			        ->where($db->quoteName('fe.group_id') . ' IN (' . implode(',', $eval_groups) . ')');
+		        if (isset($params->more_elements) && $params->more_elements !== '') {
+			        $query->orWhere($db->quoteName('fe.id') . ' IN (' . $params->more_elements . ')');
+		        }
+		        $query->andWhere($db->quoteName('fe.published') . ' = 1');
+		        $db->setQuery($query);
+		        $eval_elements = $db->loadObjectList('name');
 
-            $evaluations = array();
-            $more_elements_by_campaign = new stdClass;
-            if(isset($params->more_elements_campaign)) {
-                $more_elements_by_campaign = json_decode($params->more_elements_campaign);
-            }
+		        $evaluations               = array();
+		        $more_elements_by_campaign = new stdClass;
+		        if (isset($params->more_elements_campaign)) {
+			        $more_elements_by_campaign = json_decode($params->more_elements_campaign);
+		        }
 
-            foreach ($files_associated as $file) {
-                $evaluation = new stdClass;
-                $evaluation->fnum = $file->fnum;
-                $evaluation->student_id = $file->applicant_id;
-                $evaluation->campaign_id = $file->campaign_id;
-                $evaluation->applicant_name = $file->applicant_name;
-				if(isset($file->status)){
-					$evaluation->status = $file->status;
-					$evaluation->status_color = $file->status_color;
-				}
+		        foreach ($files_associated as $file) {
+			        $evaluation                 = new stdClass;
+			        $evaluation->fnum           = $file->fnum;
+			        $evaluation->student_id     = $file->applicant_id;
+			        $evaluation->campaign_id    = $file->campaign_id;
+			        $evaluation->applicant_name = $file->applicant_name;
+			        if (isset($file->status)) {
+				        $evaluation->status       = $file->status;
+				        $evaluation->status_color = $file->status_color;
+			        }
 
-                $key = false;
-                if(!empty($more_elements_by_campaign->campaign)) {
-                    $key = array_search($file->campaign_id,$more_elements_by_campaign->campaign);
-                }
+			        $key = false;
+			        if (!empty($more_elements_by_campaign->campaign)) {
+				        $key = array_search($file->campaign_id, $more_elements_by_campaign->campaign);
+			        }
 
-                if($key !== false){
-                    $query->clear()
-                        ->select('fe.id, fe.name, fe.label, fe.show_in_list_summary, fe.plugin, ffg.form_id')
-                        ->from($db->quoteName('#__fabrik_elements','fe'))
-                        ->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
-                        ->where($db->quoteName('fe.id') . ' IN (' . $more_elements_by_campaign->elements[$key] . ')');
-                    $db->setQuery($query);
-                    $more_elements = $db->loadObjectList('name');
+			        if ($key !== false) {
+				        $query->clear()
+					        ->select('fe.id, fe.name, fe.label, fe.show_in_list_summary, fe.plugin, ffg.form_id')
+					        ->from($db->quoteName('#__fabrik_elements', 'fe'))
+					        ->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
+					        ->where($db->quoteName('fe.id') . ' IN (' . $more_elements_by_campaign->elements[$key] . ')');
+				        $db->setQuery($query);
+				        $more_elements = $db->loadObjectList('name');
 
-                    $eval_elements = array_merge($eval_elements, $more_elements);
-                }
+				        $eval_elements = array_merge($eval_elements, $more_elements);
+			        }
 
-                foreach ($eval_elements as $elt) {
-                    $elt->label = JText::_($elt->label);
-                    if (!in_array($elt->name,['fnum','student_id','campaign'])) {
-                        $evaluation->{$elt->name} = $m_application->getValuesByElementAndFnum($file->fnum,$elt->id,$elt->form_id,0);
-                    }
-                }
+			        foreach ($eval_elements as $elt) {
+				        $elt->label = JText::_($elt->label);
+				        if (!in_array($elt->name, ['fnum', 'student_id', 'campaign'])) {
+					        $evaluation->{$elt->name} = $m_application->getValuesByElementAndFnum($file->fnum, $elt->id, $elt->form_id, 0);
+				        }
+			        }
 
-                $evaluations[] = $evaluation;
-            }
+			        $evaluations[] = $evaluation;
+		        }
 
-            $evaluations = $h_array->removeDuplicateObjectsByProperty($evaluations,'fnum');
-			$final_evaluations = [];
-			$final_evaluations['fnums'] = $this->getFnums();
-			$final_evaluations['all'] = $evaluations;
-
+		        $evaluations                = $h_array->removeDuplicateObjectsByProperty($evaluations, 'fnum');
+		        $final_evaluations          = [];
+		        $final_evaluations['fnums'] = $this->getFnums();
+		        $final_evaluations['all']   = $evaluations;
+	        } else {
+		        $final_evaluations          = [];
+		        $final_evaluations['fnums'] = $this->getFnums();
+		        $final_evaluations['all']   = [];
+	        }
             $this->files = $final_evaluations;
 
 	        if($read_status_allowed) {
@@ -275,6 +293,22 @@ class Evaluations extends Files
 	public function setInProgress(array $in_progress): void
 	{
 		$this->in_progress = $in_progress;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getAll(): array
+	{
+		return $this->all;
+	}
+
+	/**
+	 * @param   array  $all
+	 */
+	public function setAll(array $all): void
+	{
+		$this->all = $all;
 	}
 
 

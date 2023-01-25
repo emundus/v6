@@ -32,6 +32,7 @@ JText::script('COM_EMUNDUS_FILES_DISPLAY_PAGE');
 JText::script('COM_EMUNDUS_FILES_NEXT_PAGE');
 JText::script('COM_EMUNDUS_FILES_PAGE');
 JText::script('COM_EMUNDUS_FILES_TOTAL');
+JText::script('COM_EMUNDUS_FILES_ALL');
 
 JText::script('COM_EMUNDUS_ERROR_OCCURED');
 JText::script('COM_EMUNDUS_ACTIONS_CANCEL');
@@ -46,12 +47,14 @@ if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml'
 
 $menu = JFactory::getApplication()->getMenu();
 $current_menu = $menu->getActive();
+$params = $menu->getParams($current_menu->id)->get('params');
 
 JFactory::getSession()->set('current_menu_id',$current_menu->id);
 $user = JFactory::getUser();
 ?>
 <div id="em-files"
      user=<?= $user->id ?>
+     ratio=<?= $params->ratio_modal ?>
      type="evaluation"
 >
 </div>

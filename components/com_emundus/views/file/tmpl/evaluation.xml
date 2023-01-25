@@ -10,12 +10,6 @@
 		<fieldset addfieldpath="/administrator/components/com_emundus/models/fields" name="basic">
 			<fields name="params">
 				<fieldset name="basic">
-					<field name="label"
-						   type="text"
-						   default=""
-						   label="Titre"
-						   description="">
-					</field>
 					<field name="intro"
 						   type="textarea"
 						   default=""
@@ -96,6 +90,13 @@
 					>
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
+					</field>
+
+					<field name="ratio_modal"
+						   type="text"
+						   default="66/33"
+						   label="Ratio entre le dossier et l'évaluation"
+						   description="">
 					</field>
 				</fieldset>
 			</fields>

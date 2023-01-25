@@ -587,7 +587,6 @@
 
 .modal-grid {
   display: grid;
-  grid-template-columns: 66% 33%;
   grid-gap: 16px;
   width: 100%;
   height: 100vh;
@@ -4015,6 +4014,9 @@ font-weight: 600;
 }
 .em-xs-input[data-v-6b9378a1]:focus{
   border-width: 1px;
+}
+.tree-branch[data-v-6b9378a1] {
+	margin-bottom: 0;
 }
 
 

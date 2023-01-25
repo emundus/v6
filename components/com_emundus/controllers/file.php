@@ -51,6 +51,7 @@ class EmundusControllerFile extends JControllerLegacy
             $results['data'] = $this->files->getFiles();
             $results['total'] = $this->files->getTotal();
 	        if($this->type == 'evaluation'){
+				$results['all'] = $this->files->getAll();
 				$results['to_evaluate'] = $this->files->getToEvaluate();
 				$results['evaluated'] = $this->files->getEvaluated();
 	        }
