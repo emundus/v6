@@ -4327,6 +4327,35 @@ button.swal2-cancel.goback-btn {
 
 /******************************* FORMULAIRES ***********************************/
 
+/* INDICATIFS TEL */
+
+div[class*="indicatif"].control-group,
+div[class*="indicatif_2"].control-group {
+  width: 130px !important;
+}
+
+[id*="indicatif"] .chzn-single {
+  width: 130px;
+}
+
+[id*="indicatif"] .chzn-single span {
+  font-size: 13px !important;
+  position: relative;
+  bottom: 6px;
+}
+
+.view-details .fabrikForm [class*="indicatif"] .fabrikElementReadOnly {
+  background-repeat: no-repeat;
+  background-position: 5%;
+}
+
+.view-form .chzn-container-single .chzn-single div b,
+.view-form .chzn-container-active.chzn-with-drop .chzn-single div b {
+  top: 13px;
+}
+
+/* VIEW DETAILS */
+
 .view-details {
   .span12 h1{
     margin: 12px 0;
