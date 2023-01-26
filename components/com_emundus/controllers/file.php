@@ -123,14 +123,14 @@ class EmundusControllerFile extends JControllerLegacy
     }
 
 	public function checkaccess(){
-		$results = ['status' => 1, 'msg' => '', 'data' => []];
+		$results = ['status' => 0, 'msg' => '', 'data' => []];
 
 		if(EmundusHelperAccess::asAccessAction(5,'r',JFactory::getUser()->id)){
 			$fnum = JFactory::getApplication()->input->getString('fnum',null);
 
-			$results['data'] = $this->files->checkAccess($fnum);
+			$results['status'] = $this->files->checkAccess($fnum);
+			$results['data'] = $this->files->getAccess($fnum);
 		} else {
-			$results['status'] = 0;
 			$results['msg'] = JText::_('ACCESS_DENIED');
 		}
 
@@ -139,7 +139,7 @@ class EmundusControllerFile extends JControllerLegacy
 	}
 
 	public function getfile(){
-		$results = ['status' => 1, 'msg' => '', 'data' => []];
+		$results = ['status' => 1, 'msg' => '', 'data' => [],'rights' => []];
 
 		if(EmundusHelperAccess::asAccessAction(5,'r',JFactory::getUser()->id)){
 			$fnum = JFactory::getApplication()->input->getString('fnum',null);
@@ -147,6 +147,9 @@ class EmundusControllerFile extends JControllerLegacy
 			$access = $this->files->checkAccess($fnum);
 			if($access){
 				$results['data']  = $this->files->getFile($fnum);
+				$results['rights']  = $this->files->getAccess($fnum);
+			} else {
+				$results['status'] = 0;
 			}
 		} else {
 			$results['status'] = 0;

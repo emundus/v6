@@ -196,6 +196,27 @@ class Files
 		return $can_access;
 	}
 
+	public function getAccess($fnum): array
+	{
+		$actions = [
+			1 => [
+				'r' => \EmundusHelperAccess::asAccessAction(1,'r',$this->current_user->id,$fnum)
+			],
+			4 => [
+				'r' => \EmundusHelperAccess::asAccessAction(4,'r',$this->current_user->id,$fnum),
+				'u' => \EmundusHelperAccess::asAccessAction(4,'u',$this->current_user->id,$fnum),
+				'c' => \EmundusHelperAccess::asAccessAction(4,'c',$this->current_user->id,$fnum),
+			],
+			10 => [
+				'r' => \EmundusHelperAccess::asAccessAction(10,'r',$this->current_user->id,$fnum),
+				'c' => \EmundusHelperAccess::asAccessAction(10,'c',$this->current_user->id,$fnum),
+				'u' => \EmundusHelperAccess::asAccessAction(10,'u',$this->current_user->id,$fnum),
+			]
+		];
+
+		return $actions;
+	}
+
 	public function getOffset(){
 		if(!empty($this->page)) {
 			return $this->page * $this->limit;

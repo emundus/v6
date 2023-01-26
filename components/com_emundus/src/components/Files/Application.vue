@@ -21,11 +21,11 @@
       </div>
     </div>
 
-    <div class="modal-grid" :style="'grid-template-columns:' + this.ratioStyle">
+    <div class="modal-grid" :style="'grid-template-columns:' + this.ratioStyle" v-if="access">
       <div id="modal-applicationform">
         <div class="scrollable">
           <div class="em-flex-row em-flex-center em-gap-16 em-border-bottom-neutral-300 sticky-tab">
-            <div v-for="tab in tabs" class="em-light-tabs em-pointer" @click="selected = tab.name" :class="selected === tab.name ? 'em-light-selected-tab' : ''">
+            <div v-for="tab in tabs" v-if="access[tab.access].r" class="em-light-tabs em-pointer" @click="selected = tab.name" :class="selected === tab.name ? 'em-light-selected-tab' : ''">
               <span class="em-font-size-14">{{ translate(tab.label) }}</span>
             </div>
           </div>
@@ -38,6 +38,12 @@
               :columns="['name','date','category','status']"
               :displayEdit="false"
           />
+          <Comments
+              v-if="selected === 'comments'"
+              :fnum="file.fnum"
+              :user="$props.user"
+              :access="access['10']"
+            />
         </div>
       </div>
 
@@ -61,11 +67,12 @@ import axios from "axios";
 import Attachments from "@/views/Attachments";
 import filesService from 'com_emundus/src/services/files';
 import errors from "@/mixins/errors";
+import Comments from "@/components/Files/Comments";
 
 
 export default {
   name: "Application",
-  components: {Attachments},
+  components: {Comments, Attachments},
   props: {
     file: Object|String,
     type: String,
@@ -85,19 +92,23 @@ export default {
     tabs: [
       {
         label: 'COM_EMUNDUS_FILES_APPLICANT_FILE',
-        name: 'application'
+        name: 'application',
+        access: '1'
       },
       {
         label: 'COM_EMUNDUS_FILES_ATTACHMENTS',
-        name: 'attachments'
+        name: 'attachments',
+        access: '4'
       },
       {
         label: 'COM_EMUNDUS_FILES_COMMENTS',
-        name: 'comments'
+        name: 'comments',
+        access: '10'
       },
     ],
     evaluation_form: 0,
     url: null,
+    access: null,
 
     loading: false
   }),
@@ -117,6 +128,7 @@ export default {
         filesService.getFile(fnum).then((result) => {
           if(result.status == 1){
             this.$props.file = result.data;
+            this.access = result.rights;
             this.updateURL(this.$props.file.fnum)
             this.getApplicationForm();
             if(this.$props.type === 'evaluation'){
@@ -135,9 +147,18 @@ export default {
         });
       } else {
         filesService.checkAccess(fnum).then((result) => {
-          if(result.data === true){
+          if(result.status == true){
+            this.access = result.data;
             this.updateURL(this.$props.file.fnum)
-            this.getApplicationForm();
+            if(this.access['1'].r) {
+              this.getApplicationForm();
+            } else {
+              if(this.access['4'].r) {
+                this.selected = 'attachments';
+              } else if(this.access['10'].r){
+                this.selected = 'comments';
+              }
+            }
             if(this.$props.type === 'evaluation'){
               this.getEvaluationForm();
             }
