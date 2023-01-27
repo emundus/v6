@@ -631,7 +631,7 @@
 }
 #modal-applicationform #em-attachments .v--modal-overlay{
   height: 100% !important;
-  width: 67% !important;
+  width: var(--attachment-width) !important;
   margin-top: 50px;
 }
 #modal-applicationform #em-attachments .v--modal-box.v--modal{
@@ -2333,6 +2333,7 @@ font-weight: 600;
 }
 /** VARIABLES **/
 :root {
+  --attachment-width: 75%;
   --neutral-25: #FEFEFE;
   --neutral-50: #FAFAFB;
   --neutral-100: #EBECF0;
