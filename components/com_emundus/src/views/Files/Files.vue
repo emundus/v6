@@ -39,24 +39,29 @@
       <tabs v-if="$props.type === 'evaluation'" :tabs="tabs" @updateTab="updateTab"></tabs>
       <hr/>
 
-	    <div class="em-flex-row em-mb-16">
-		    <div id="default-filters" v-if="defaultFilters.length > 0">
-			    <div class="em-tabs em-pointer em-flex-row em-s-justify-content-center" @click="openedFilters = !openedFilters">
-				    <span>{{ translate('COM_EMUNDUS_FILES_FILTER') }}</span>
-				    <span class="material-icons-outlined">filter_list</span>
+	    <div class="em-flex-row em-flex-space-between em-mb-16">
+		    <div class="em-flex-row">
+			    <div id="default-filters" v-if="defaultFilters.length > 0">
+				    <div class="em-tabs em-pointer em-flex-row em-s-justify-content-center" @click="openedFilters = !openedFilters">
+					    <span>{{ translate('COM_EMUNDUS_FILES_FILTER') }}</span>
+					    <span class="material-icons-outlined">filter_list</span>
+				    </div>
+				    <ul :class="{'hidden': !openedFilters, 'em-input': true}">
+					    <li v-for="filter in defaultFilters" :key="filter.id" @click="addFilter(filter)" class="em-pointer">{{ filter.label }}</li>
+				    </ul>
 			    </div>
-			    <ul :class="{'hidden': !openedFilters, 'em-input': true}">
-				    <li v-for="filter in defaultFilters" :key="filter.id" @click="addFilter(filter)" class="em-pointer">{{ filter.label }}</li>
-			    </ul>
+			    <div id="applied-filters" v-if="filters.length > 0" class="em-flex-row">
+				    <div v-for="filter in filters" :key="filter.key" class="em-ml-8">
+					    <input v-if="filter.type == 'field'" type="text" :placeholder="filter.label" v-model="filter.selectedValue"/>
+					    <input v-else-if="filter.type == 'date'" type="date" v-model="filter.selectedValue">
+					    <select v-else-if="filter.type == 'select'" v-model="filter.selectedValue">
+						    <option v-for="value in filter.values" :key="value.value" :value="value.value">{{ value.label }}</option>
+					    </select>
+				    </div>
+			    </div>
 		    </div>
-		    <div id="applied-filters" v-if="filters.length > 0" class="em-flex-row">
-			    <div v-for="filter in filters" :key="filter.id" class="em-ml-8">
-				    <input v-if="filter.type == 'field'" type="text" :placeholder="filter.label" />
-				    <input v-else-if="filter.type == 'date'" type="date">
-				    <select v-else-if="filter.type == 'select'">
-					    <option v-for="value in filter.values" :key="value.value">{{ value.label }}</option>
-				    </select>
-			    </div>
+		    <div>
+			    <span class="em-primary-button em-pointer" :class="{'disbaled': filters.length < 1}" @click="applyFilters">{{ translate('COM_EMUNDUS_FILES_APPLY_FILTER') }}</span>
 		    </div>
 	    </div>
     </div>
@@ -202,6 +207,7 @@ export default {
         limit: 10
       },
     ],
+	  tab: 'to_evaluate',
     files: null,
     columns: null,
     display_status: false,
@@ -288,11 +294,19 @@ export default {
 	  },
 	  addFilter(filter) {
 			this.filters.push({
-				id: filter.id + '-' + Math.random(),
+				id: filter.id,
+				key: Math.random(),
 				type: filter.type,
 				values: filter.values,
-				label: filter.label
+				label: filter.label,
+				selectedValue: null
 			});
+	  },
+	  applyFilters()
+	  {
+			filesService.applyFilters(this.filters, this.tab).then((response) => {
+				this.getFiles(true);
+			})
 	  },
     updateLimit(limit){
       this.loading = true;
@@ -338,9 +352,10 @@ export default {
     },
     updateTab(tab){
       this.loading =true;
-      filesService.setSelectedTab(tab).then(() => {
+	    this.tab = tab.name
+	    filesService.setSelectedTab(tab).then(() => {
         this.getFiles(true);
-      })
+      });
     },
     openApplication(row){
       this.openModal(row);

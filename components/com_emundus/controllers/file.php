@@ -39,7 +39,7 @@ class EmundusControllerFile extends JControllerLegacy
 			$this->files->setFiles();
 		}
 
-	    JFactory::getSession()->set('files',serialize($this->files));
+	    JFactory::getSession()->set('files', serialize($this->files));
 
         parent::__construct($config);
     }
@@ -219,6 +219,28 @@ class EmundusControllerFile extends JControllerLegacy
 
         if (EmundusHelperAccess::asAccessAction(5,'r', JFactory::getUser()->id)) {
             $response['data'] = array_values($this->files->getDefaultFilters());
+        } else {
+            $response['status'] = 0;
+            $response['msg'] = JText::_('ACCESS_DENIED');
+        }
+
+        echo json_encode((object)$response);
+        exit;
+    }
+
+    public function applyfilters()
+    {
+        $response = ['status' => 1, 'msg' => ''];
+
+        if (EmundusHelperAccess::asAccessAction(5,'r', JFactory::getUser()->id)) {
+            $jinput = JFactory::getApplication()->input;
+            $filters = $jinput->getString('filters');
+            $filters = json_decode($filters, true);
+
+            $tab = $jinput->getString('tab');
+            $this->files->applyFilters($filters, $tab);
+
+            JFactory::getSession()->set('files', serialize($this->files));
         } else {
             $response['status'] = 0;
             $response['msg'] = JText::_('ACCESS_DENIED');

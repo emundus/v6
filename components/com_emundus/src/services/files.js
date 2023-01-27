@@ -150,5 +150,18 @@ export default {
         } catch (e) {
             return false;
         }
+    },
+
+    async applyFilters(filters, tab) {
+        const formData = new FormData();
+        formData.append('filters', JSON.stringify(filters));
+        formData.append('tab', tab);
+
+        try {
+            const response = await client().post('index.php?option=com_emundus&controller=file&task=applyfilters', formData);
+            return response.data;
+        } catch (e) {
+            return false;
+        }
     }
 };

@@ -13,7 +13,7 @@ class Files
     protected array $files = [];
 	protected array $fnums = [];
     protected array $columns = [];
-    protected array $filters = [];
+    protected array $filters = ['default_filters' => [], 'applied_filters' => []];
     protected int $page = 0;
     protected int $limit = 10;
 	protected int $total = 0;
@@ -23,10 +23,6 @@ class Files
 
 		$this->current_user = JFactory::getUser();
 		$this->files = [];
-        $this->filters = [
-            'default_filters' => [],
-            'applied_filters' => []
-        ];
 	}
 
     /**
@@ -395,7 +391,9 @@ class Files
 		$query = $db->getQuery(true);
 
 		try {
-			$query->select(implode(',',$select))
+            $this->addQueryFilters($left_joins, $wheres);
+
+            $query->select(implode(',',$select))
 				->from($db->quoteName('#__emundus_campaign_candidature','ecc'));
 			foreach ($left_joins as $left_join){
 				$query->leftJoin($left_join);
@@ -527,4 +525,48 @@ class Files
         return $this->getFilesQuery($select, $left_joins, $wheres,'',0,0,'single_object');
     }
 
+
+    private function addQueryFilters(&$left_joins, &$wheres): void
+    {
+        $filters = $this->getFilters();
+
+        if (!empty($filters['applied_filters'])) {
+            $selected_tab = $this->getSelectedTab();
+
+            if (!empty($filters['applied_filters'][$selected_tab])) {
+                foreach($filters['applied_filters'][$selected_tab] as $filter) {
+                    if (!empty($filter['id'] && isset($filter['selectedValue']))) {
+                        // get element table + name
+                        $db = JFactory::getDBO();
+                        $query = $db->getQuery(true);
+
+                        $query->select('jfe.name, jfl.db_table_name')
+                            ->from('#__fabrik_elements as jfe')
+                            ->join('inner', '#__fabrik_formgroup as jff ON jff.group_id = jfe.group_id')
+                            ->join('inner', '#__fabrik_lists as jfl ON jfl.form_id = jff.form_id')
+                            ->where('jfe.id = ' . $filter['id']);
+
+
+                        try {
+                            $db->setQuery($query);
+                            $element_data = $db->loadAssoc();
+                        } catch (Exception $e) {
+                            $element_data = [];
+                        }
+
+                        if (!empty($element_data)) {
+                            $filter_operator = '=';
+
+                            if ($element_data['db_table_name'] == 'jos_emundus_campaign_candidature') {
+                                $wheres[] = $db->quoteName('ecc.' . $element_data['name']) . " $filter_operator " . $db->quote($filter['selectedValue']);
+                            } else {
+                                $left_joins[] = $db->quoteName($element_data['db_table_name']) . 'AS left_join_' . $filter['id'] . ' ON left_join_' . $filter['id'] . '.fnum = ecc.fnum';
+                                $wheres[] = $db->quoteName('left_join_' . $filter['id'] . '.' . $element_data['name']) . " $filter_operator " . $db->quote($filter['selectedValue']);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
