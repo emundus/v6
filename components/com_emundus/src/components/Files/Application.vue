@@ -9,7 +9,7 @@
       @before-close="updateURL()"
       @closed="$emit('getFiles')"
   >
-    <div class="em-modal-header em-w-100 em-h-50 em-p-12-16 em-bg-main-900 em-flex-row">
+    <div class="em-modal-header em-w-100 em-h-50 em-p-12-16 em-bg-main-900 em-flex-row" :style="cssVars">
       <div class="em-flex-row em-pointer em-gap-8" id="evaluation-modal-close">
         <div class="em-w-max-content em-flex-row" @click="$modal.hide('application-modal')">
           <span class="material-icons-outlined em-font-size-16" style="color: white">arrow_back</span>
@@ -115,6 +115,10 @@ export default {
 
   methods:{
     beforeOpen(){
+      var r = document.querySelector(':root');
+      let ratio_array = this.$props.ratio.split('/');
+      r.style.setProperty('--attachment-width', ratio_array[0]+'%');
+
       this.loading = true;
       let fnum = '';
 
@@ -220,7 +224,7 @@ export default {
     ratioStyle(){
       let ratio_array = this.$props.ratio.split('/');
       return ratio_array[0]+'% '+ratio_array[1]+'%';
-    }
+    },
   }
 }
 </script>
@@ -261,7 +265,7 @@ export default {
 }
 #modal-applicationform #em-attachments .v--modal-overlay{
   height: 100% !important;
-  width: 67% !important;
+  width: var(--attachment-width) !important;
   margin-top: 50px;
 }
 #modal-applicationform #em-attachments .v--modal-box.v--modal{

@@ -68,7 +68,7 @@
 
     <div class="em-flex-row" v-if="files && columns && files.length > 0">
       <div id="table_columns_move_right" :class="moveRight ? '' : 'em-disabled-state'" class="table-columns-move em-flex-column em-mr-4" @click="scrollToRight">
-        <span class="material-icons" style="font-size: 16px">arrow_back</span>
+        <span class="material-icons-outlined em-pointer" style="font-size: 16px">arrow_back</span>
       </div>
 
       <el-table
@@ -105,6 +105,19 @@
           </template>
         </el-table-column>
         <el-table-column
+            width="200"
+            height="50"
+            v-if="display_assocs"
+            :label="translate('COM_EMUNDUS_FILES_ASSOCS')"
+        >
+          <template slot-scope="scope">
+            <div class="em-group-assoc-column">
+              <span v-for="group in scope.row.assocs" :class="group.class" class="em-status em-mb-4">{{ group.label }}</span>
+
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column
             v-for="column in columns"
             v-if="column.show_in_list_summary == 1"
             min-width="180">
@@ -123,7 +136,7 @@
       </el-table>
 
       <div id="table_columns_move_left" v-if="moveLeft" class="table-columns-move em-flex-column em-ml-4" @click="scrollToLeft">
-        <span class="material-icons" style="font-size: 16px">arrow_forward</span>
+        <span class="material-icons-outlined em-pointer" style="font-size: 16px">arrow_forward</span>
       </div>
     </div>
 
@@ -211,6 +224,7 @@ export default {
     files: null,
     columns: null,
     display_status: false,
+    display_assocs: false,
     page: null,
     limit: null,
 	  defaultFilters: [],
@@ -268,6 +282,9 @@ export default {
               Object.values(this.columns).forEach((column) => {
                 if(column.name === 'status'){
                   this.display_status = true;
+                }
+                if(column.name === 'assocs'){
+                  this.display_assocs = true;
                 }
               });
 
@@ -429,8 +446,9 @@ export default {
 
 <style lang="scss" scoped>
 .em-files{
-  width: calc(100% - 75px) !important;
+  width: calc(100% - 40px) !important;
   margin-left: auto;
+  margin-right: 20px;
 }
 .table-columns-move{
   height: 500px;
@@ -458,5 +476,15 @@ select.em-select-no-border{
 			padding: 8px;
 		}
 	}
+}
+.em-group-assoc-column{
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  height: 75px;
+  scrollbar-width: none;
+}
+.em-group-assoc-column::-webkit-scrollbar{
+  display: none;
 }
 </style>

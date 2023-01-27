@@ -80,10 +80,10 @@
 							   description="Ids des éléments fabrik. Les tables doivent contenir la colonne fnum afin de retrouver la donnée">
 						</field>
 					</field>
-					<field name="readonly_eval"
+					<field name="display_group_assoc"
 						   type="radio"
-						   label="Lecture seule du formulaire d'évaluation"
-						   description="Mettre en lecture seule le formulaire d'évaluation quand on ouvre un dossier"
+						   label="Afficher les groupes associés"
+						   description=""
 						   class="btn-group btn-group-yesno"
 						   default="0"
 						   filter="integer"
