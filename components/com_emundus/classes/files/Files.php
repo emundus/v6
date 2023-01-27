@@ -211,6 +211,7 @@ class Files
 				'r' => \EmundusHelperAccess::asAccessAction(10,'r',$this->current_user->id,$fnum),
 				'c' => \EmundusHelperAccess::asAccessAction(10,'c',$this->current_user->id,$fnum),
 				'u' => \EmundusHelperAccess::asAccessAction(10,'u',$this->current_user->id,$fnum),
+				'd' => \EmundusHelperAccess::asAccessAction(10,'d',$this->current_user->id,$fnum),
 			]
 		];
 
@@ -511,5 +512,111 @@ class Files
 
         return $this->getFilesQuery($select, $left_joins, $wheres,'',0,0,'single_object');
     }
+
+	/**
+	 * @return array
+	 */
+	public function getComments($fnum): array
+	{
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$comments = [];
+
+		try {
+			$query->select('ec.id,ec.reason,ec.comment_body,ec.date,concat(eu.lastname," ",eu.firstname) as user,ec.user_id')
+				->from($db->quoteName('#__emundus_comments','ec'))
+				->leftJoin($db->quoteName('#__emundus_users','eu').' ON '.$db->quoteName('eu.user_id').' = '.$db->quoteName('ec.user_id'))
+				->where($db->quoteName('ec.fnum') . ' = ' . $db->quote($fnum));
+			$db->setQuery($query);
+			$comments = $db->loadObjectList();
+		}
+		catch (Exception $e) {
+			JLog::add('Problem when get comments : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
+		}
+
+		return $comments;
+	}
+
+	public function getComment($cid): object
+	{
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$comment = new \stdClass();
+
+		try {
+			$query->select('ec.reason,ec.comment_body,ec.date,concat(eu.lastname," ",eu.firstname) as user')
+				->from($db->quoteName('#__emundus_comments','ec'))
+				->leftJoin($db->quoteName('#__emundus_users','eu').' ON '.$db->quoteName('eu.user_id').' = '.$db->quoteName('ec.user_id'))
+				->where($db->quoteName('ec.id') . ' = ' . $db->quote($cid));
+			$db->setQuery($query);
+			$comment = $db->loadObject();
+		}
+		catch (Exception $e) {
+			JLog::add('Problem when get comment : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
+		}
+
+		return $comment;
+	}
+
+	public function saveComment($fnum,$reason,$comment_body): object
+	{
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$comment = new \stdClass();
+
+		try {
+			$query->select('applicant_id')
+				->from($db->quoteName('#__emundus_campaign_candidature','ecc'))
+				->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+			$db->setQuery($query);
+			$aid = $db->loadResult();
+
+
+			$query->clear()
+				->insert($db->quoteName('#__emundus_comments'))
+				->set($db->quoteName('applicant_id') . ' = ' . $db->quote($aid))
+				->set($db->quoteName('user_id') . ' = ' . $db->quote($this->current_user->id))
+				->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
+				->set($db->quoteName('reason') . ' = ' . $db->quote($reason))
+				->set($db->quoteName('date') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+				->set($db->quoteName('comment_body') . ' = ' . $db->quote($comment_body));
+			$db->setQuery($query);
+			$result = $db->execute();
+
+			if($result){
+				$last_comment_id = $db->insertid();
+
+				$comment = $this->getComment($last_comment_id);
+			}
+		}
+		catch (Exception $e) {
+			JLog::add('Problem when save comment : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
+		}
+
+		return $comment;
+	}
+
+	public function deleteComment($cid): bool{
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$result = false;
+
+		try {
+			$query->delete($db->quoteName('#__emundus_comments'))
+				->where($db->quoteName('id') . ' = ' . $cid);
+			$db->setQuery($query);
+			$result = $db->execute();
+		}
+		catch (Exception $e) {
+			JLog::add('Problem when delete comment : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
+		}
+
+		return $result;
+	}
+
 
 }

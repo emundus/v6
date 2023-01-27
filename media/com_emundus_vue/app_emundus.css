@@ -585,6 +585,16 @@
   display: none;
 }
 
+.em-comment-option[data-v-2a51d248]{
+  position: absolute;
+  border-radius: var(--em-border-radius);
+  padding: 12px 16px;
+  height: auto;
+  background: #fff;
+  border: 1px solid #E3E3E3;
+}
+
+
 .modal-grid {
   display: grid;
   grid-gap: 16px;

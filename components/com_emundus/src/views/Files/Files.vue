@@ -42,7 +42,7 @@
 
     <div class="em-flex-row" v-if="files && columns && files.length > 0">
       <div id="table_columns_move_right" :class="moveRight ? '' : 'em-disabled-state'" class="table-columns-move em-flex-column em-mr-4" @click="scrollToRight">
-        <span class="material-icons" style="font-size: 16px">arrow_back</span>
+        <span class="material-icons-outlined em-pointer" style="font-size: 16px">arrow_back</span>
       </div>
 
       <el-table
@@ -97,7 +97,7 @@
       </el-table>
 
       <div id="table_columns_move_left" v-if="moveLeft" class="table-columns-move em-flex-column em-ml-4" @click="scrollToLeft">
-        <span class="material-icons" style="font-size: 16px">arrow_forward</span>
+        <span class="material-icons-outlined em-pointer" style="font-size: 16px">arrow_forward</span>
       </div>
     </div>
 

@@ -213,4 +213,54 @@ class EmundusControllerFile extends JControllerLegacy
 		echo json_encode((object)$results);
 		exit;
 	}
+
+	public function getcomments(){
+		$results = ['status' => 1, 'msg' => '', 'data' => []];
+		$fnum = JFactory::getApplication()->input->getString('fnum','');
+
+		if(!empty($fnum) && (EmundusHelperAccess::asAccessAction(10,'r',JFactory::getUser()->id,$fnum) || EmundusHelperAccess::asAccessAction(10,'c',JFactory::getUser()->id,$fnum))){
+			$results['data'] = $this->files->getComments($fnum);
+		} else {
+			$results['status'] = 0;
+			$results['msg'] = JText::_('ACCESS_DENIED');
+		}
+
+		echo json_encode((object)$results);
+		exit;
+	}
+
+	public function savecomment(){
+		$results = ['status' => 1, 'msg' => '', 'data' => []];
+		$jinput = JFactory::getApplication()->input;
+		$fnum = $jinput->getString('fnum','');
+
+		if(!empty($fnum) && EmundusHelperAccess::asAccessAction(10,'c',JFactory::getUser()->id,$fnum)){
+			$reason = $jinput->getString('reason','');
+			$comment_body = $jinput->getString('comment_body','');
+
+			$results['data'] = $this->files->saveComment($fnum,$reason,$comment_body);
+		} else {
+			$results['status'] = 0;
+			$results['msg'] = JText::_('ACCESS_DENIED');
+		}
+
+		echo json_encode((object)$results);
+		exit;
+	}
+
+	public function deletecomment(){
+		$results = ['status' => 1, 'msg' => ''];
+		$jinput = JFactory::getApplication()->input;
+		$cid = $jinput->getString('cid','');
+
+		if(!empty($cid) && EmundusHelperAccess::asAccessAction(10,'c',JFactory::getUser()->id)){
+			$results['status'] = $this->files->deleteComment($cid);
+		} else {
+			$results['status'] = 0;
+			$results['msg'] = JText::_('ACCESS_DENIED');
+		}
+
+		echo json_encode((object)$results);
+		exit;
+	}
 }

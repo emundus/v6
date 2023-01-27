@@ -33,8 +33,10 @@ import translate from './mixins/translate.js';
 Vue.mixin(translate);
 
 /** DIRECTIVES **/
+import clickOutside from './directives/clickOutside';
 Vue.directive('tooltip', VTooltip);
 Vue.directive('close-popover', VClosePopover);
+Vue.directive('click-outside', clickOutside);
 
 let mountApp = false;
 let elementId = '';

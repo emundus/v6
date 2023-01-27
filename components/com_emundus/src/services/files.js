@@ -141,5 +141,58 @@ export default {
         } catch (e) {
             return false;
         }
+    },
+
+    async getComments(fnum){
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=file&task=getcomments', {
+                params: {
+                    fnum: fnum
+                }
+            });
+
+            return response.data;
+        } catch (e) {
+            return false;
+        }
+    },
+
+    async saveComment(fnum,comment){
+        const formData = new FormData();
+        formData.append('fnum', fnum);
+        Object.keys(comment).forEach(key => {
+            formData.append(key, comment[key]);
+        });
+
+        try {
+            const response = await client().post(
+                'index.php?option=com_emundus&controller=file&task=savecomment',
+                formData
+            );
+
+            return response.data;
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    },
+
+    async deleteComment(cid){
+        try {
+            const response = await client().delete('index.php?option=com_emundus&controller=file&task=deletecomment', {
+                params: {
+                    cid: cid,
+                }
+            });
+
+            return response.data;
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
     }
 }
