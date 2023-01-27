@@ -406,6 +406,7 @@ class Files
 				$query->andWhere($where);
 			}
 
+			$query->group($db->quoteName('ecc.fnum'));
 			$db->setQuery($query,$offset,$limit);
 
 			if($return == 'object'){
@@ -434,26 +435,44 @@ class Files
 				$users = [];
 
 				if(!empty($file->programs_groups)) {
-					$groups = array_unique(array_merge(explode(',',$file->programs_groups),explode(',',$file->fnums_groups)));
+					if(empty($file->programs_groups)){
+						$file->programs_groups = [];
+					} else {
+						$file->programs_groups = explode(',',$file->programs_groups);
+					}
+					if(empty($file->fnums_groups)){
+						$file->fnums_groups = [];
+					} else {
+						$file->fnums_groups = explode(',',$file->fnums_groups);
+					}
 
-					$query->clear()
-						->select('label,class')
-						->from($db->quoteName('#__emundus_setup_groups'))
-						->where($db->quoteName('id') . ' IN (' . implode(',', $groups) . ')');
-					$db->setQuery($query);
-					$groups = $db->loadObjectList();
+					$groups = array_unique(array_merge($file->programs_groups,$file->fnums_groups));
+					$groups = array_filter($groups, function($group){ return !empty($group); });
+
+					if(!empty($groups)) {
+						$query->clear()
+							->select('label,class')
+							->from($db->quoteName('#__emundus_setup_groups'))
+							->where($db->quoteName('id') . ' IN (' . implode(',', $groups) . ')');
+						$db->setQuery($query);
+						$groups = $db->loadObjectList();
+					}
 				}
 
 				if(!empty($file->users_assoc)){
 					$users = explode(',',$file->users_assoc);
+					$users = array_filter($users, function($user){ return !empty($user); });
 
-					$query->clear()
-						->select('concat(lastname," ",firstname) as label,"label-default" as class')
-						->from($db->quoteName('#__emundus_users'))
-						->where($db->quoteName('user_id') . ' IN (' . implode(',', $users) . ')');
-					$db->setQuery($query);
-					$users = $db->loadObjectList();
+					if(!empty($users)) {
+						$query->clear()
+							->select('concat(lastname," ",firstname) as label,"label-default" as class')
+							->from($db->quoteName('#__emundus_users'))
+							->where($db->quoteName('user_id') . ' IN (' . implode(',', $users) . ')');
+						$db->setQuery($query);
+						$users = $db->loadObjectList();
+					}
 				}
+				
 				$file->assocs = array_merge($groups,$users);
 			}
 
