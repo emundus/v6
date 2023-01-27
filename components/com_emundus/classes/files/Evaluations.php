@@ -48,7 +48,7 @@ class Evaluations extends Files
 	        $select_all = ['DISTINCT ecc.fnum'];
 			$select_count = ['COUNT(DISTINCT ecc.id) as total'];
 
-			$select = $this->buildSelect($read_status_allowed);
+			$select = $this->buildSelect($params,$read_status_allowed);
 			$left_joins = $this->buildLeftJoin($params,$read_status_allowed);
 			$wheres = $this->buildWhere($params);
 
@@ -71,6 +71,11 @@ class Evaluations extends Files
 			} elseif ($selected_tab == 'all') {
 		        $files_associated = $this->getFilesQuery($select, $left_joins, $wheres, $read_access_evaluation, $this->getLimit(), $this->getOffset());
 	        }
+
+	        if(isset($params->display_group_assoc) && $params->display_group_assoc == 1){
+		        $files_associated = $this->buildAssocGroups($files_associated);
+	        }
+
 
 			// Get count of differents groups
 	        $total_files_to_evaluate = $this->buildQuery($select_count,[],$wheres_to_evaluate,$read_access_file,0,0,'column');
@@ -145,6 +150,9 @@ class Evaluations extends Files
 			        $evaluation->student_id     = $file->applicant_id;
 			        $evaluation->campaign_id    = $file->campaign_id;
 			        $evaluation->applicant_name = $file->applicant_name;
+					if(isset($file->assocs)){
+						$evaluation->assocs = $file->assocs;
+					}
 			        if (isset($file->status)) {
 				        $evaluation->status       = $file->status;
 				        $evaluation->status_color = $file->status_color;
@@ -193,6 +201,12 @@ class Evaluations extends Files
 				$status_column->name = 'status';
 				$status_column->show_in_list_summary = 0;
 				$eval_elements[] = $status_column;
+	        }
+	        if(isset($params->display_group_assoc) && $params->display_group_assoc == 1) {
+		        $assoc_column = new stdClass();
+		        $assoc_column->name = 'assocs';
+		        $assoc_column->show_in_list_summary = 0;
+		        $eval_elements[] = $assoc_column;
 	        }
 			parent::setColumns($eval_elements);
         } catch (Exception $e) {

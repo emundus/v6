@@ -226,11 +226,17 @@ class Files
 		}
 	}
 
-	public function buildSelect($status_access): array{
+	public function buildSelect($params,$status_access): array{
 		$select = ['DISTINCT ecc.fnum', 'ecc.applicant_id', 'ecc.campaign_id as campaign', 'u.name as applicant_name'];
 
 		if($status_access) {
 			$select[] = 'ess.value as status,ess.class as status_color';
+		}
+
+		if(isset($params->display_group_assoc) && $params->display_group_assoc == 1){
+			$select[] = 'group_concat(distinct esgrc.parent_id) as programs_groups';
+			$select[] = 'group_concat(distinct ega.group_id) as fnums_groups';
+			$select[] = 'group_concat(distinct eua.user_id) as users_assoc';
 		}
 
 		return $select;
@@ -247,6 +253,12 @@ class Files
 		}
 		if (isset($params->tags) && $params->tags !== '') {
 			$left_joins[] = $db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum');
+		}
+		if(isset($params->display_group_assoc) && $params->display_group_assoc == 1){
+			$left_joins[] = $db->quoteName('#__emundus_group_assoc','ega').' ON '.$db->quoteName('ega.fnum').' = '.$db->quoteName('ecc.fnum');
+			$left_joins[] = $db->quoteName('#__emundus_users_assoc','eua').' ON '.$db->quoteName('eua.fnum').' = '.$db->quoteName('ecc.fnum');
+			$left_joins[] = $db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.id').' = '.$db->quoteName('ecc.campaign_id');
+			$left_joins[] = $db->quoteName('#__emundus_setup_groups_repeat_course','esgrc').' ON '.$db->quoteName('esgrc.course').' LIKE '.$db->quoteName('esc.training');
 		}
 
 		return $left_joins;
@@ -390,7 +402,7 @@ class Files
 				$query->leftJoin($left_join);
 			}
 			$query->where($db->quoteName('ecc.published') . ' = 1');
-			foreach ($wheres as $where){
+			foreach ($wheres as $where) {
 				$query->andWhere($where);
 			}
 
@@ -409,6 +421,47 @@ class Files
 		catch (Exception $e) {
 			JLog::add('Problem when build query with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
 			return 0;
+		}
+	}
+
+	public function buildAssocGroups($files){
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try {
+			foreach ($files as $file) {
+				$groups = [];
+				$users = [];
+
+				if(!empty($file->programs_groups)) {
+					$groups = array_unique(array_merge(explode(',',$file->programs_groups),explode(',',$file->fnums_groups)));
+
+					$query->clear()
+						->select('label,class')
+						->from($db->quoteName('#__emundus_setup_groups'))
+						->where($db->quoteName('id') . ' IN (' . implode(',', $groups) . ')');
+					$db->setQuery($query);
+					$groups = $db->loadObjectList();
+				}
+
+				if(!empty($file->users_assoc)){
+					$users = explode(',',$file->users_assoc);
+
+					$query->clear()
+						->select('concat(lastname," ",firstname) as label,"label-default" as class')
+						->from($db->quoteName('#__emundus_users'))
+						->where($db->quoteName('user_id') . ' IN (' . implode(',', $users) . ')');
+					$db->setQuery($query);
+					$users = $db->loadObjectList();
+				}
+				$file->assocs = array_merge($groups,$users);
+			}
+
+			return $files;
+		}
+		catch (Exception $e) {
+			JLog::add('Problem when build query with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
+			return $files;
 		}
 	}
 

@@ -79,6 +79,19 @@
           </template>
         </el-table-column>
         <el-table-column
+            width="200"
+            height="50"
+            v-if="display_assocs"
+            :label="translate('COM_EMUNDUS_FILES_ASSOCS')"
+        >
+          <template slot-scope="scope">
+            <div class="em-group-assoc-column">
+              <span v-for="group in scope.row.assocs" :class="group.class" class="em-status em-mb-4">{{ group.label }}</span>
+
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column
             v-for="column in columns"
             v-if="column.show_in_list_summary == 1"
             min-width="180">
@@ -181,6 +194,7 @@ export default {
     files: null,
     columns: null,
     display_status: false,
+    display_assocs: false,
     page: null,
     limit: null,
 
@@ -223,7 +237,6 @@ export default {
 
         filesService.getFiles(this.$props.type,refresh,this.limit,this.page).then((files) => {
           if(files.status == 1) {
-            console.log(files);
             this.total_count = files.total;
             this.files = files.data.all;
             this.tabs.forEach((tab,i) => {
@@ -238,6 +251,9 @@ export default {
               Object.values(this.columns).forEach((column) => {
                 if(column.name === 'status'){
                   this.display_status = true;
+                }
+                if(column.name === 'assocs'){
+                  this.display_assocs = true;
                 }
               });
 
@@ -374,8 +390,9 @@ export default {
 
 <style scoped>
 .em-files{
-  width: calc(100% - 75px) !important;
+  width: calc(100% - 40px) !important;
   margin-left: auto;
+  margin-right: 20px;
 }
 .table-columns-move{
   height: 500px;
@@ -385,5 +402,15 @@ export default {
 }
 select.em-select-no-border{
   background-color: transparent !important;
+}
+.em-group-assoc-column{
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  height: 75px;
+  scrollbar-width: none;
+}
+.em-group-assoc-column::-webkit-scrollbar{
+  display: none;
 }
 </style>
