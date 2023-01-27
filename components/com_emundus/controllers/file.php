@@ -213,4 +213,18 @@ class EmundusControllerFile extends JControllerLegacy
 		echo json_encode((object)$results);
 		exit;
 	}
+
+    public function getdefaultfilters() {
+        $response = ['status' => 1, 'msg' => ''];
+
+        if (EmundusHelperAccess::asAccessAction(5,'r', JFactory::getUser()->id)) {
+            $response['data'] = array_values($this->files->getDefaultFilters());
+        } else {
+            $response['status'] = 0;
+            $response['msg'] = JText::_('ACCESS_DENIED');
+        }
+
+        echo json_encode((object)$response);
+        exit;
+    }
 }

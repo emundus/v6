@@ -23,6 +23,10 @@ class Files
 
 		$this->current_user = JFactory::getUser();
 		$this->files = [];
+        $this->filters = [
+            'default_filters' => [],
+            'applied_filters' => []
+        ];
 	}
 
     /**
@@ -97,7 +101,7 @@ class Files
     public function setColumns(array $columns): void
     {
         $this->columns = $columns;
-        $this->setFilters($columns);
+        $this->setFilters();
     }
 
     /**
@@ -143,28 +147,25 @@ class Files
     /**
      * @param array $filters
      */
-    public function setFilters(array $columns)
+    public function setFilters(): void
     {
-
-        if (empty($this->filters)) {
-            $this->filters = [
-                'default_filters' => [],
-                'selected_filters' => []
-            ];
-        }
+        $columns = $this->getColumns();
 
         if (!empty($columns)) {
             foreach ($columns as $column) {
-                if (!array_key_exists($column->id, $this->filters['default_filters'])) {
+                if (!empty($column->id) && !array_key_exists($column->id, $this->filters['default_filters'])) {
                     $type = $this->getFilterTypeFromFabrikElementPlugin($column->plugin);
-                    $values = $this->getValuesFromFabrikElement($column->id, $column->plugin, $type);
+                    if (!empty($type)) {
+                        $values = $this->getValuesFromFabrikElement($column->id, $column->plugin, $type);
 
-                    $this->filters['default_filters'][$column->id] = [
-                        'type' => $type,
-                        'label' => $column->label,
-                        'values' => $values,
-                        'operators' => [] // todo: handle operators in filters
-                    ];
+                        $this->filters['default_filters'][$column->id] = [
+                            'id' => $column->id,
+                            'type' => $type,
+                            'label' => $column->label,
+                            'values' => $values,
+                            'operators' => ['='] // todo: handle operators in filters
+                        ];
+                    }
                 }
             }
         }
@@ -176,6 +177,17 @@ class Files
     public function getFilters()
     {
         return $this->filters;
+    }
+
+    public function getDefaultFilters()
+    {
+        $this->setFilters();
+
+        return $this->filters['default_filters'];
+    }
+
+    public function applyFilters($filters) {
+        $this->filters['applied_filters'] = $filters;
     }
 
 	/**
@@ -465,28 +477,37 @@ class Files
                     $params = $db->loadResult();
 
                     if (!empty($params)) {
-                        $select = $params['join_key_column'] . ' as key';
                         $params = json_decode($params, true);
 
                         if (!empty($params['join_db_name']) && !empty($params['join_key_column'])) {
+                            $select = $params['join_key_column'] . ' AS value';
+
                             if (!empty($params['join_val_column_concat'])) {
                                 $lang = substr(JFactory::getLanguage()->getTag(), 0, 2);
-                                $params['join_val_column_concat'] = 'CONCAT(' . $params['join_val_column_concat'] . ') as value';
                                 $params['join_val_column_concat'] = str_replace('{thistable}', $params['join_db_name'], $params['join_val_column_concat']);
                                 $params['join_val_column_concat'] = str_replace('{shortlang}', $lang, $params['join_val_column_concat']);
+                                $params['join_val_column_concat'] = 'CONCAT(' . $params['join_val_column_concat'] . ') as label';
 
+                                if (preg_match_all('/[#_a-z]+\.[_a-z]+/', $params['join_val_column_concat'], $matches)) {
+                                    foreach($matches[0] as $match) {
+                                        $params['join_val_column_concat'] = str_replace($match, $db->quoteName($match), $params['join_val_column_concat']);
+                                    }
+                                }
                                 $select .= ', ' . $params['join_val_column_concat'];
                             } else {
-                                $select = ', ' . $db->quoteName($params['join_val_column'], 'value');
+                                $select .= ', ' . $db->quoteName($params['join_val_column'], 'label');
                             }
-
 
                             $query->clear()
                                 ->select($select)
                                 ->from($params['join_db_name']);
 
-                            $db->setQuery($query);
-                            $values = $db->loadAssocList($params['join_key_column'], 'value');
+                            try {
+                                $db->setQuery($query);
+                                $values = $db->loadAssocList();
+                            } catch (Exception $e) {
+                                JLog::add('Failed to get filter values ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                            }
                         }
                     }
                    break;
@@ -494,12 +515,6 @@ class Files
         }
 
         return $values;
-    }
-
-    public function addQueryFilters($query) {
-        $filters = $this->getFilters();
-
-        return $query;
     }
 
     public function getFile($fnum){

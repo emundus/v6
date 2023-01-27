@@ -1,5 +1,4 @@
 const state = {
-    lang: '',
     datas: [],
     currentLanguage: '',
     shortLang: '',
@@ -30,10 +29,6 @@ const actions = {
 };
 
 const mutations = {
-    setLang(state, lang) {
-        state.lang = lang;
-    },
-
     initDatas(state, datas) {
         state.datas = datas;
         return state.datas;

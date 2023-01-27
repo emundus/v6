@@ -87,40 +87,35 @@ export default {
 		  this.data.attachments = JSON.parse(atob(this.data.attachments));
 	  }
 
-    if(typeof this.$props.datas != 'undefined') {
+    if (typeof this.$props.datas != 'undefined') {
       this.$store.commit("global/initDatas", this.$props.datas);
     }
-    if(typeof this.$props.currentLanguage != 'undefined') {
-      this.$store.commit("global/initCurrentLanguage", this.$props.currentLanguage);
+    if (typeof this.$props.currentLanguage != 'undefined') {
+      this.$store.commit('global/initCurrentLanguage', this.$props.currentLanguage);
+	    moment.locale(this.$store.state.global.currentLanguage);
+    } else {
+	    this.$store.commit('global/initCurrentLanguage', 'fr');
     }
-    if(typeof this.$props.shortLang != 'undefined') {
-      this.$store.commit("global/initShortLang", this.$props.shortLang);
+    if (typeof this.$props.shortLang != 'undefined') {
+      this.$store.commit('global/initShortLang', this.$props.shortLang);
     }
-    if(typeof this.$props.manyLanguages != 'undefined') {
+    if (typeof this.$props.manyLanguages != 'undefined') {
       this.$store.commit("global/initManyLanguages", this.$props.manyLanguages);
     }
-	  if(typeof this.$props.defaultLang != 'undefined') {
+	  if (typeof this.$props.defaultLang != 'undefined') {
 		  this.$store.commit("global/initDefaultLang", this.$props.defaultLang);
 	  }
-    if(typeof this.$props.coordinatorAccess != 'undefined') {
+    if (typeof this.$props.coordinatorAccess != 'undefined') {
       this.$store.commit("global/initCoordinatorAccess", this.$props.coordinatorAccess);
     }
-    if(typeof this.$props.coordinatorAccess != 'undefined') {
+    if (typeof this.$props.coordinatorAccess != 'undefined') {
       this.$store.commit("global/initSysadminAccess", this.$props.sysadminAccess);
     }
   },
 
   mounted() {
-		if (this.data.lang) {
-			this.$store.dispatch("global/setLang", this.data.lang.split("-")[0]);
-		} else {
-			this.$store.dispatch("global/setLang", "fr");
-		}
-
-		moment.locale(this.$store.state.global.lang);
-
 		if (this.data.base) {
-			this.$store.dispatch("attachment/setAttachmentPath", this.data.base + "/images/emundus/files/");
+			this.$store.dispatch('attachment/setAttachmentPath', this.data.base + '/images/emundus/files/');
 		}
 	},
 };

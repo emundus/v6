@@ -38,6 +38,27 @@
     <div v-if="files">
       <tabs v-if="$props.type === 'evaluation'" :tabs="tabs" @updateTab="updateTab"></tabs>
       <hr/>
+
+	    <div class="em-flex-row em-mb-16">
+		    <div id="default-filters" v-if="defaultFilters.length > 0">
+			    <div class="em-tabs em-pointer em-flex-row em-s-justify-content-center" @click="openedFilters = !openedFilters">
+				    <span>{{ translate('COM_EMUNDUS_FILES_FILTER') }}</span>
+				    <span class="material-icons-outlined">filter_list</span>
+			    </div>
+			    <ul :class="{'hidden': !openedFilters, 'em-input': true}">
+				    <li v-for="filter in defaultFilters" :key="filter.id" @click="addFilter(filter)" class="em-pointer">{{ filter.label }}</li>
+			    </ul>
+		    </div>
+		    <div id="applied-filters" v-if="filters.length > 0" class="em-flex-row">
+			    <div v-for="filter in filters" :key="filter.id" class="em-ml-8">
+				    <input v-if="filter.type == 'field'" type="text" :placeholder="filter.label" />
+				    <input v-else-if="filter.type == 'date'" type="date">
+				    <select v-else-if="filter.type == 'select'">
+					    <option v-for="value in filter.values" :key="value.value">{{ value.label }}</option>
+				    </select>
+			    </div>
+		    </div>
+	    </div>
     </div>
 
     <div class="em-flex-row" v-if="files && columns && files.length > 0">
@@ -137,7 +158,10 @@ export default {
     'el-table-column': TableColumn
   },
   props: {
-    type: String,
+    type: {
+			String,
+	    default: ''
+    },
     ratio: {
       type: String,
       default: '66/33'
@@ -183,7 +207,9 @@ export default {
     display_status: false,
     page: null,
     limit: null,
-
+	  defaultFilters: [],
+	  filters: [],
+	  openedFilters: false,
     currentFile: null,
     rows_selected: [],
   }),
@@ -219,11 +245,9 @@ export default {
         fnum = '';
       }
 
-      if(this.$props.type === 'evaluation') {
-
+      if (this.$props.type === 'evaluation') {
         filesService.getFiles(this.$props.type,refresh,this.limit,this.page).then((files) => {
           if(files.status == 1) {
-            console.log(files);
             this.total_count = files.total;
             this.files = files.data.all;
             this.tabs.forEach((tab,i) => {
@@ -245,6 +269,7 @@ export default {
                 this.openModal(fnum);
               }
 
+	            this.getDefaultFilters();
               this.loading = false;
             });
           } else {
@@ -254,6 +279,21 @@ export default {
         });
       }
     },
+	  getDefaultFilters() {
+			filesService.getDefaultFilters().then((response) => {
+				if (response.status == 1) {
+					this.defaultFilters = response.data;
+				}
+			});
+	  },
+	  addFilter(filter) {
+			this.filters.push({
+				id: filter.id + '-' + Math.random(),
+				type: filter.type,
+				values: filter.values,
+				label: filter.label
+			});
+	  },
     updateLimit(limit){
       this.loading = true;
       filesService.updateLimit(limit).then((result) => {
@@ -372,7 +412,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .em-files{
   width: calc(100% - 75px) !important;
   margin-left: auto;
@@ -385,5 +425,23 @@ export default {
 }
 select.em-select-no-border{
   background-color: transparent !important;
+}
+
+#default-filters {
+	position: relative;
+
+	ul {
+		position: absolute;
+		top: 50px;
+		z-index: 4;
+		background-color: white;
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+
+		li {
+			padding: 8px;
+		}
+	}
 }
 </style>

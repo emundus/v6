@@ -13,7 +13,13 @@ import { TableComponent, TableColumn } from 'vue-table-component';
 import Notifications from 'vue-notification';
 import velocity from 'velocity-animate';
 import VWave from 'v-wave';
-import Vuex from "vuex";
+import Vuex from 'vuex';
+
+/** STORE **/
+import store from './store';
+
+/** MIXINS **/
+import translate from './mixins/translate.js';
 
 Vue.component('v-popover', VPopover);
 Vue.component('table-component', TableComponent);
@@ -25,42 +31,37 @@ Vue.use(VueSpinnersCss);
 Vue.use(VWave);
 Vue.use(Vuex);
 
-/** STORE **/
-import store from './store';
-
-/** MIXINS **/
-import translate from './mixins/translate.js';
 Vue.mixin(translate);
 
 /** DIRECTIVES **/
 Vue.directive('tooltip', VTooltip);
 Vue.directive('close-popover', VClosePopover);
 
-let mountApp = false;
 let elementId = '';
 let data = {};
 let componentName = '';
 
-if (document.getElementById('em-application-attachment') || document.getElementById('em-files'))
-{
-    let element = document.getElementById('em-application-attachment');
-    componentName = 'attachments';
-    elementId = '#em-application-attachment';
+const attachmentElement = document.getElementById('em-application-attachment');
+const filesElement = document.getElementById('em-files');
 
-    if(document.getElementById('em-files')) {
-        element = document.getElementById('em-files');
+if (attachmentElement || filesElement) {
+    let element = null;
+
+    if (attachmentElement) {
+        element = attachmentElement;
+        componentName = 'attachments';
+        elementId = '#em-application-attachment';
+    } else if (filesElement) {
+        element = filesElement;
         componentName = 'files';
         elementId = '#em-files';
     }
 
-    Array.prototype.slice.call(element.attributes).forEach(function (attr) {
-        data[attr.name] = attr.value;
-    });
+    if (element !== null) {
+        Array.prototype.slice.call(element.attributes).forEach(function (attr) {
+            data[attr.name] = attr.value;
+        });
 
-
-    mountApp = true;
-
-    if (mountApp) {
         new Vue({
             el: elementId,
             store,
@@ -74,8 +75,7 @@ if (document.getElementById('em-application-attachment') || document.getElementB
             },
         });
     }
-}
-else if (document.getElementById("em-component-vue")) {
+} else if (document.getElementById('em-component-vue')) {
     new Vue({
         el: '#em-component-vue',
         store,

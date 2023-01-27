@@ -141,5 +141,14 @@ export default {
         } catch (e) {
             return false;
         }
+    },
+
+    async getDefaultFilters() {
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=file&task=getdefaultfilters');
+            return response.data;
+        } catch (e) {
+            return false;
+        }
     }
-}
+};
