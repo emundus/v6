@@ -44,6 +44,20 @@ export default {
         }
     },
 
+    async getMyEvaluation(fnum) {
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=file&task=getmyevaluation', {
+                params: {
+                    fnum: fnum
+                }
+            });
+
+            return response.data;
+        } catch (e) {
+            return false;
+        }
+    },
+
     async checkAccess(fnum){
         try {
             const response = await client().get('index.php?option=com_emundus&controller=file&task=checkaccess', {

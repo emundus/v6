@@ -122,6 +122,22 @@ class EmundusControllerFile extends JControllerLegacy
         exit;
     }
 
+	public function getmyevaluation(){
+		$results = ['status' => 1, 'msg' => '', 'data' => []];
+
+		if(EmundusHelperAccess::asAccessAction(5,'r',JFactory::getUser()->id)){
+			$fnum = JFactory::getApplication()->input->getString('fnum',null);
+
+			$results['data'] = $this->files->getMyEvaluation($fnum);
+		} else {
+			$results['status'] = 0;
+			$results['msg'] = JText::_('ACCESS_DENIED');
+		}
+
+		echo json_encode((object)$results);
+		exit;
+	}
+
 	public function checkaccess(){
 		$results = ['status' => 0, 'msg' => '', 'data' => []];
 

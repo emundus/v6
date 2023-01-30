@@ -148,7 +148,7 @@ class Evaluations extends Files
 			        $evaluation                 = new stdClass;
 			        $evaluation->fnum           = $file->fnum;
 			        $evaluation->student_id     = $file->applicant_id;
-			        $evaluation->campaign_id    = $file->campaign_id;
+			        $evaluation->campaign       = $file->campaign;
 			        $evaluation->applicant_name = $file->applicant_name;
 					if(isset($file->assocs)){
 						$evaluation->assocs = $file->assocs;
@@ -160,7 +160,7 @@ class Evaluations extends Files
 
 			        $key = false;
 			        if (!empty($more_elements_by_campaign->campaign)) {
-				        $key = array_search($file->campaign_id, $more_elements_by_campaign->campaign);
+				        $key = array_search($file->campaign, $more_elements_by_campaign->campaign);
 			        }
 
 			        if ($key !== false) {
@@ -199,14 +199,14 @@ class Evaluations extends Files
 	        if($read_status_allowed) {
 				$status_column = new stdClass();
 				$status_column->name = 'status';
-				$status_column->show_in_list_summary = 0;
+				$status_column->show_in_list_summary = 1;
 				$eval_elements[] = $status_column;
 	        }
 	        if(isset($params->display_group_assoc) && $params->display_group_assoc == 1) {
 		        $assoc_column = new stdClass();
 		        $assoc_column->name = 'assocs';
-		        $assoc_column->show_in_list_summary = 0;
-		        $eval_elements[] = $assoc_column;
+		        $assoc_column->show_in_list_summary = 1;
+		        $eval_elements['assocs'] = $assoc_column;
 	        }
 			parent::setColumns($eval_elements);
         } catch (Exception $e) {
@@ -244,6 +244,25 @@ class Evaluations extends Files
 			return 0;
         }
     }
+
+	public function getMyEvaluation($fnum){
+		try {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->clear()
+				->select('id')
+				->from($db->quoteName('#__emundus_evaluations'))
+				->where($db->quoteName('user') . ' = ' . JFactory::getUser()->id)
+				->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+			$db->setQuery($query);
+			return $db->loadResult();
+		}
+		catch (Exception $e) {
+			JLog::add('Problem when get evaluation form of fnum '.$fnum.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
+			return "";
+		}
+	}
 
 	/**
 	 * @return string
@@ -323,6 +342,15 @@ class Evaluations extends Files
 	public function setAll(array $all): void
 	{
 		$this->all = $all;
+	}
+	
+	public function getLimit(): int{
+		return !empty($this->{$this->selected_tab}['limit']) ? $this->{$this->selected_tab}['limit'] : 10;
+	}
+
+	public function setLimit(int $limit): void
+	{
+		$this->{$this->selected_tab}['limit'] = $limit;
 	}
 
 
