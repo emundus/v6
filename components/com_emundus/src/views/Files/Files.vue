@@ -290,7 +290,6 @@ export default {
       this.updatePage();
     },
     updatePage(){
-      this.loading = true;
       filesService.updatePage(this.page).then((result) => {
         if(result.status == 1) {
           this.getFiles(true);
@@ -298,8 +297,6 @@ export default {
           this.loading = false;
           this.displayError('COM_EMUNDUS_ERROR_OCCURED',result.msg);
         }
-
-        this.loading = false;
       });
     },
 
@@ -372,7 +369,7 @@ export default {
 <style scoped>
 .em-files{
   width: calc(100% - 40px) !important;
-  margin-left: auto;
+  margin-left: 50px;
   margin-right: 20px;
 }
 .table-columns-move{
