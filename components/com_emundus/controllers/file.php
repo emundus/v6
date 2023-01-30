@@ -212,6 +212,20 @@ class EmundusControllerFile extends JControllerLegacy
 		exit;
 	}
 
+	public function getselectedtab(){
+		$results = ['status' => 1, 'msg' => '', 'data' => ''];
+
+		if(EmundusHelperAccess::asAccessAction(5,'r',JFactory::getUser()->id)){
+			$results['data'] = $this->files->getSelectedTab();
+		} else {
+			$results['status'] = 0;
+			$results['msg'] = JText::_('ACCESS_DENIED');
+		}
+
+		echo json_encode((object)$results);
+		exit;
+	}
+
 	public function setselectedtab(){
 		$results = ['status' => 1, 'msg' => ''];
 

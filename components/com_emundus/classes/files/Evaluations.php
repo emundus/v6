@@ -62,6 +62,8 @@ class Evaluations extends Files
 
 	        $wheres_evaluated = ['ecc.fnum IN (SELECT fnum from jos_emundus_evaluations WHERE user = '.$db->quote(JFactory::getUser()->id).')'];
 	        $wheres_evaluated[] = 'ecc.fnum IN ('.implode(',',$db->quote($this->getFnums())).')';
+
+	        $wheres_all = ['ecc.fnum IN ('.implode(',',$db->quote($this->getFnums())).')'];
 			//
 
 	        if($selected_tab == 'to_evaluate') {
@@ -69,7 +71,7 @@ class Evaluations extends Files
 			} elseif ($selected_tab == 'evaluated') {
 				$files_associated = $this->getFilesQuery($select, $left_joins, $wheres_evaluated, $create_access_evaluation, $this->getLimit(), $this->getOffset());
 			} elseif ($selected_tab == 'all') {
-		        $files_associated = $this->getFilesQuery($select, $left_joins, $wheres, $read_access_evaluation, $this->getLimit(), $this->getOffset());
+		        $files_associated = $this->getFilesQuery($select, $left_joins, $wheres_all, $read_access_evaluation, $this->getLimit(), $this->getOffset());
 	        }
 
 	        if(isset($params->display_group_assoc) && $params->display_group_assoc == 1){
@@ -351,6 +353,15 @@ class Evaluations extends Files
 	public function setLimit(int $limit): void
 	{
 		$this->{$this->selected_tab}['limit'] = $limit;
+	}
+
+	public function getPage(): int{
+		return !empty($this->{$this->selected_tab}['page']) ? $this->{$this->selected_tab}['page'] : 0;
+	}
+
+	public function setPage(int $page): void
+	{
+		$this->{$this->selected_tab}['page'] = $page;
 	}
 
 

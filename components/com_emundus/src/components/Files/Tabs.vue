@@ -14,8 +14,15 @@ export default {
     tabs: Array
   },
   data: () => ({
-    selected: 'to_evaluate',
-  })
+    selected: '',
+  }),
+  created(){
+    this.$props.tabs.forEach((tab) => {
+      if(tab.selected){
+        this.selected = tab.name;
+      }
+    })
+  }
 }
 </script>
 
