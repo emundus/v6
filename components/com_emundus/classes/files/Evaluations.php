@@ -353,5 +353,14 @@ class Evaluations extends Files
 		$this->{$this->selected_tab}['limit'] = $limit;
 	}
 
+	public function getPage(): int{
+		return !empty($this->{$this->selected_tab}['page']) ? $this->{$this->selected_tab}['page'] : 0;
+	}
+
+	public function setPage(int $page): void
+	{
+		$this->{$this->selected_tab}['page'] = $page;
+	}
+
 
 }

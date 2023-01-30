@@ -4,7 +4,7 @@
 
     <div class="em-mb-12 em-flex-row em-flex-space-between">
       <p class="em-h4">{{ translate('COM_EMUNDUS_FILES_'+type.toUpperCase()) }}</p>
-<!--      <span class="material-icons-outlined" @click="getFiles(true)">refresh</span>-->
+      <!--      <span class="material-icons-outlined" @click="getFiles(true)">refresh</span>-->
     </div>
 
     <div v-if="files">
@@ -17,7 +17,7 @@
           <span class="em-ml-8 em-mr-8">|</span>
           <div class="em-flex-row">
             <span>{{ translate('COM_EMUNDUS_FILES_DISPLAY_PAGE') }}</span>
-            <select class="em-select-no-border em-ml-8" style="width: 40px;height: 20px;" v-model="limit">
+            <select class="em-select-no-border em-ml-8" style="width: 50px;height: 20px;" v-model="limit">
               <option>10</option>
               <option>25</option>
               <option>50</option>
@@ -25,12 +25,19 @@
             </select>
           </div>
         </div>
-        <div class="em-flex-row" v-if="displayPagination">
-          <span>{{ translate('COM_EMUNDUS_FILES_PAGE') }} {{ displayPage }}</span>
-          <span class="em-ml-8 em-mr-8">|</span>
-          <span class="material-icons-outlined em-pointer" v-if="page != 0" @click="prevPage">chevron_left</span>
-          <span class="material-icons-outlined em-pointer" @click="nextPage">navigate_next</span>
-        </div>
+        <template v-if="pages !== null">
+          <div class="em-flex-row" v-if="pages.length > 1">
+            <span>{{ translate('COM_EMUNDUS_FILES_PAGE') }}</span>
+            <select class="em-select-no-border em-ml-8" style="width: 40px;height: 20px;" v-model="page">
+              <option v-for="no_page in pages" :value="no_page">{{ displayPage(no_page) }}</option>
+            </select>
+            <span class="em-ml-8">{{ translate('COM_EMUNDUS_FILES_PAGE_ON') }}</span>
+            <span class="em-ml-8 em-mr-8">{{ pages.length }}</span>
+            <span class="em-ml-8 em-mr-8">|</span>
+            <span class="material-icons-outlined em-pointer" v-if="page != 0" @click="prevPage">chevron_left</span>
+            <span class="material-icons-outlined em-pointer" v-if="pages.length < displayPage(page)" @click="nextPage">navigate_next</span>
+          </div>
+        </template>
       </div>
 
     </div>
@@ -40,7 +47,7 @@
       <hr/>
     </div>
 
-    <div class="em-flex-row" v-if="files && columns && files.length > 0">
+    <div class="em-flex-row" v-if="files && columns && files.length > 0" :key="reloadFiles">
       <div id="table_columns_move_right" :class="moveRight ? '' : 'em-disabled-state'" class="table-columns-move em-flex-column em-mr-4" @click="scrollToRight">
         <span class="material-icons-outlined em-pointer" style="font-size: 16px">arrow_back</span>
       </div>
@@ -97,12 +104,12 @@
           <el-table-column
               v-else
               min-width="180">
-              <template slot="header" slot-scope="scope" >
-                <span :title="column.label" class="em-neutral-700-color">{{column.label}}</span>
-              </template>
-              <template slot-scope="scope">
-                <p>{{scope.row[column.name]}}</p>
-              </template>
+            <template slot="header" slot-scope="scope" >
+              <span :title="column.label" class="em-neutral-700-color">{{column.label}}</span>
+            </template>
+            <template slot-scope="scope">
+              <p>{{scope.row[column.name]}}</p>
+            </template>
           </el-table-column>
         </template>
       </el-table>
@@ -164,6 +171,7 @@ export default {
     moveRight: false,
     moveLeft: true,
     scrolling: null,
+    reloadFiles: 0,
 
     total_count: 0,
     tabs: [
@@ -171,27 +179,26 @@ export default {
         label: 'COM_EMUNDUS_FILES_TO_EVALUATE',
         name: 'to_evaluate',
         total: 0,
-        page: 0,
-        limit: 10
+        selected: false,
       },
       {
         label: 'COM_EMUNDUS_FILES_EVALUATED',
         name: 'evaluated',
         total: 0,
-        page: 0,
-        limit: 10
+        selected: false,
       },
       {
         label: 'COM_EMUNDUS_FILES_ALL',
         name: 'all',
         total: 0,
-        page: 0,
-        limit: 10
+        selected: false,
       },
     ],
+    selected_tab: 0,
     files: null,
     columns: null,
     page: null,
+    pages: null,
     limit: null,
 
     currentFile: null,
@@ -200,7 +207,19 @@ export default {
   created(){
     this.getLimit();
     this.getPage();
-    this.getFiles();
+    if(this.$props.type === 'evaluation') {
+      filesService.getSelectedTab().then((tab) => {
+        this.tabs.forEach((value, i) => {
+          if (value.name === tab.data) {
+            this.tabs[i].selected = true;
+            this.selected_tab = i;
+          }
+        });
+
+        this.getFiles();
+      });
+    }
+
   },
   methods: {
     getLimit(){
@@ -230,7 +249,6 @@ export default {
       }
 
       if(this.$props.type === 'evaluation') {
-
         filesService.getFiles(this.$props.type,refresh,this.limit,this.page).then((files) => {
           if(files.status == 1) {
             this.total_count = files.total;
@@ -253,7 +271,13 @@ export default {
               }
 
               this.loading = false;
+              this.reloadFiles++;
+
+              let total_pages = Math.ceil(this.tabs[this.selected_tab].total/this.limit);
+              this.pages = Array.from(Array(total_pages).keys())
             });
+
+
           } else {
             this.loading = false;
             this.displayError('COM_EMUNDUS_ERROR_OCCURED',files.msg);
@@ -270,8 +294,6 @@ export default {
           this.loading = false;
           this.displayError('COM_EMUNDUS_ERROR_OCCURED',result.msg);
         }
-
-        this.loading = false;
       });
     },
     prevPage(){
@@ -282,8 +304,8 @@ export default {
       this.page++;
       this.updatePage();
     },
-    updatePage(){
-      filesService.updatePage(this.page).then((result) => {
+    updatePage(page){
+      filesService.updatePage(page).then((result) => {
         if(result.status == 1) {
           this.getFiles(true);
         } else {
@@ -301,8 +323,11 @@ export default {
       },500)
     },
     updateTab(tab){
-      this.loading =true;
+      this.selected_tab = this.tabs.map(e => e.name).indexOf(tab);
+
       filesService.setSelectedTab(tab).then(() => {
+        this.getLimit();
+        this.getPage();
         this.getFiles(true);
       })
     },
@@ -338,23 +363,24 @@ export default {
     stopScrolling(){
       clearInterval(this.scrolling);
       this.scrolling = null;
-    }
+    },
+
+    displayPage(page) {
+      return page + 1;
+    },
   },
   watch: {
     limit: function(value, oldVal){
-      if(oldVal !== null) {
+      if(oldVal !== null && !this.loading) {
         this.updateLimit(value);
+      }
+    },
+    page: function(value, oldVal){
+      if(oldVal !== null && !this.loading) {
+        this.updatePage(value);
       }
     }
   },
-  computed: {
-    displayPage() {
-      return this.page + 1;
-    },
-    displayPagination() {
-      return this.files.length * (this.page + 1) < this.total_count;
-    }
-  }
 }
 </script>
 

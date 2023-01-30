@@ -128,6 +128,20 @@ export default {
         }
     },
 
+    async getSelectedTab(type){
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=file&task=getselectedtab', {
+                params: {
+                    type: type
+                }
+            });
+
+            return response.data;
+        } catch (e) {
+            return false;
+        }
+    },
+
     async setSelectedTab(tab,type = 'evaluation'){
         try {
             const response = await client().get('index.php?option=com_emundus&controller=file&task=setselectedtab', {

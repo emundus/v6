@@ -218,11 +218,11 @@ class Files
 		return $actions;
 	}
 
-	public function getOffset(){
-		if(!empty($this->page)) {
-			return $this->page * $this->limit;
+	public function getOffset(): int{
+		if(!empty($this->getPage())) {
+			return $this->getPage() * $this->getLimit();
 		} else {
-			return $this->page;
+			return $this->getPage();
 		}
 	}
 
