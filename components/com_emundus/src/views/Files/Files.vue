@@ -108,7 +108,7 @@
               <span :title="column.label" class="em-neutral-700-color">{{column.label}}</span>
             </template>
             <template slot-scope="scope">
-              <p>{{scope.row[column.name]}}</p>
+              <p v-html="scope.row[column.name]"></p>
             </template>
           </el-table-column>
         </template>

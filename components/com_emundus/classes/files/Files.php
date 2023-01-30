@@ -303,6 +303,7 @@ class Files
 
 	public function buildQuery($select,$left_joins = [],$wheres = [],$access = '',$limit = 0,$offset = 0,$return = 'object'){
 		$em_session = JFactory::getSession()->get('emundusUser');
+		$user = JFactory::getUser();
 
 		$db = JFactory::getDbo();
 		$query_groups_allowed = $db->getQuery(true);
@@ -345,7 +346,7 @@ class Files
 			foreach ($left_joins as $left_join){
 				$query_users_associated->leftJoin($left_join);
 			}
-			$query_users_associated->where($db->quoteName('eua.user_id') . ' = ' . $db->quote($this->current_user->id));
+			$query_users_associated->where($db->quoteName('eua.user_id') . ' = ' . $db->quote($user->id));
 			if(!empty($access)) {
 				$query_users_associated->andWhere($access);
 			}
@@ -365,7 +366,7 @@ class Files
 			foreach ($left_joins as $left_join){
 				$query_groups_associated->leftJoin($left_join);
 			}
-			$query_groups_associated->where($db->quoteName('eg.user_id') . ' = ' . $db->quote($this->current_user->id));
+			$query_groups_associated->where($db->quoteName('eg.user_id') . ' = ' . $db->quote($user->id));
 			if(!empty($access)) {
 				$query_groups_associated->andWhere($access);
 			}
