@@ -636,12 +636,12 @@ class Files
                         $db = JFactory::getDBO();
                         $query = $db->getQuery(true);
 
-                        $query->select('jfe.name, jfl.db_table_name')
+                        $query->select('jfe.plugin, jfe.name, jfl.db_table_name, jfe.params, jfg.params as group_params')
                             ->from('#__fabrik_elements as jfe')
                             ->join('inner', '#__fabrik_formgroup as jff ON jff.group_id = jfe.group_id')
+                            ->join('inner', '#__fabrik_groups as jfg ON jff.group_id = jfg.id')
                             ->join('inner', '#__fabrik_lists as jfl ON jfl.form_id = jff.form_id')
                             ->where('jfe.id = ' . $filter['id']);
-
 
                         try {
                             $db->setQuery($query);
