@@ -633,6 +633,8 @@ class Files
                 $db = JFactory::getDBO();
                 $query = $db->getQuery(true);
 
+                $left_joins_already_used = [];
+
                 foreach($filters['applied_filters'][$selected_tab] as $f_key => $filter) {
                     if (!empty($filter['id'] && isset($filter['selectedValue']))) {
                         // get element table + name
@@ -656,7 +658,6 @@ class Files
                             $filter_operator = '=';
 
                             $group_params = json_decode($element_data['group_params'], true);
-
                             if ($group_params['repeat_group_button'] == '1') {
                                 // get join table
                                 $query->clear()
@@ -673,11 +674,18 @@ class Files
                                 }
 
                                 if (!empty($join)) {
-                                    $join_parent_key = 'lj_parent_' . $filter['id'] . '_' . $f_key;
-                                    $join_child_key = 'lj_child_' . $filter['id'] . '_' . $f_key;
+                                    $join_parent_key = 'lj_parent_' . $join['join_from_table'];
+                                    $join_child_key = 'lj_child_' . $join['table_join'];
 
-                                    $left_joins[] = $db->quoteName($join['join_from_table']) . 'AS ' . $join_parent_key .  ' ON  ' . $join_parent_key . '.fnum = ecc.fnum';
-                                    $left_joins[] = $db->quoteName($join['table_join']) . 'AS ' . $join_child_key .  ' ON  ' . $join_child_key . '.' . $join['table_join_key'] . ' = ' . $join_parent_key . '.' . $join['table_key'];
+                                    if (!in_array($join['join_from_table'], $left_joins_already_used)) {
+                                        $left_joins[] = $db->quoteName($join['join_from_table']) . 'AS ' . $join_parent_key .  ' ON  ' . $join_parent_key . '.fnum = ecc.fnum';
+                                        $left_joins_already_used[] = $join['join_from_table'];
+                                    }
+
+                                    if (!in_array($join['table_join'], $left_joins_already_used)) {
+                                        $left_joins[] = $db->quoteName($join['table_join']) . 'AS ' . $join_child_key .  ' ON  ' . $join_child_key . '.' . $join['table_join_key'] . ' = ' . $join_parent_key . '.' . $join['table_key'];
+                                        $left_joins_already_used[] = $join['table_join'];
+                                    }
 
                                     $wheres[] = $db->quoteName($join_child_key . '.' . $element_data['name']) . " $filter_operator " . $db->quote($filter['selectedValue']);
                                 }
@@ -685,9 +693,13 @@ class Files
                                 if ($element_data['db_table_name'] == 'jos_emundus_campaign_candidature') {
                                     $wheres[] = $db->quoteName('ecc.' . $element_data['name']) . " $filter_operator " . $db->quote($filter['selectedValue']);
                                 } else {
-                                    $join_key = 'lj_' . $filter['id'] . '_' . $f_key;
+                                    $join_key = 'lj_' . $element_data['db_table_name'];
 
-                                    $left_joins[] = $db->quoteName($element_data['db_table_name']) . 'AS ' . $join_key .  ' ON  ' . $join_key . '.fnum = ecc.fnum';
+                                    if (!in_array($element_data['db_table_name'], $left_joins_already_used)) {
+                                        $left_joins[] = $db->quoteName($element_data['db_table_name']) . 'AS ' . $join_key .  ' ON  ' . $join_key . '.fnum = ecc.fnum';
+                                        $left_joins_already_used[] = $element_data['db_table_name'];
+                                    }
+
                                     $wheres[] = $db->quoteName($join_key . '.' . $element_data['name']) . " $filter_operator " . $db->quote($filter['selectedValue']);
                                 }
                             }
@@ -696,7 +708,6 @@ class Files
                 }
             }
         }
-
     }
 
 	/**
