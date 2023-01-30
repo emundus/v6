@@ -33,9 +33,9 @@
             </select>
             <span class="em-ml-8">{{ translate('COM_EMUNDUS_FILES_PAGE_ON') }}</span>
             <span class="em-ml-8 em-mr-8">{{ pages.length }}</span>
-            <span class="em-ml-8 em-mr-8">|</span>
-            <span class="material-icons-outlined em-pointer" v-if="page != 0" @click="prevPage">chevron_left</span>
-            <span class="material-icons-outlined em-pointer" v-if="pages.length < displayPage(page)" @click="nextPage">navigate_next</span>
+<!--            <span class="em-ml-8 em-mr-8">|</span>-->
+<!--            <span class="material-icons-outlined em-pointer" v-if="page != 0" @click="prevPage">chevron_left</span>
+            <span class="material-icons-outlined em-pointer" v-if="pages.length < displayPage(page)" @click="nextPage">navigate_next</span>-->
           </div>
         </template>
       </div>
@@ -208,7 +208,7 @@ export default {
     this.getLimit();
     this.getPage();
     if(this.$props.type === 'evaluation') {
-      filesService.getSelectedTab().then((tab) => {
+      filesService.getSelectedTab(this.$props.type).then((tab) => {
         this.tabs.forEach((value, i) => {
           if (value.name === tab.data) {
             this.tabs[i].selected = true;
