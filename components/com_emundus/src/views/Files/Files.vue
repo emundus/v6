@@ -60,8 +60,7 @@
         <el-table-column
             fixed
             :label="translate('COM_EMUNDUS_ONBOARD_FILE')"
-            width="270"
-        >
+            width="270">
           <template slot-scope="scope">
             <div @click="openApplication(scope.row)" class="em-pointer">
               <p class="em-font-weight-500">{{ scope.row.applicant_name }}</p>
@@ -69,44 +68,43 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column
-            width="180"
-            v-if="display_status"
-            :label="translate('COM_EMUNDUS_ONBOARD_STATUS')"
-        >
-          <template slot-scope="scope">
-            <p :class="'label-text-'+scope.row.status_color + ' label-'+scope.row.status_color" class="em-status">{{ scope.row.status }}</p>
-          </template>
-        </el-table-column>
-        <el-table-column
-            width="200"
-            height="50"
-            v-if="display_assocs"
-            :label="translate('COM_EMUNDUS_FILES_ASSOCS')"
-        >
-          <template slot-scope="scope">
-            <div class="em-group-assoc-column">
-              <span v-for="group in scope.row.assocs" :class="group.class" class="em-status em-mb-4">{{ group.label }}</span>
 
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column
-            v-for="column in columns"
-            v-if="column.show_in_list_summary == 1"
-            min-width="180">
-          <template slot="header" slot-scope="scope">
-            <span :title="column.label" class="em-neutral-700-color">{{column.label}}</span>
-          </template>
-          <template slot-scope="scope">
-            <p>{{scope.row[column.name]}}</p>
-          </template>
-        </el-table-column>
-<!--        <el-table-column width="50" fixed="right" class-name="em-open-application-cell">
-          <template slot-scope="scope">
-            <span class="material-icons-outlined em-pointer" @click="openModal(scope.row)" style="color: black">open_in_new</span>
-          </template>
-        </el-table-column>-->
+        <template v-for="column in columns" v-if="column.show_in_list_summary == 1">
+          <el-table-column
+              v-if="column.name === 'status'"
+              min-width="180">
+            <template slot="header" slot-scope="scope" >
+              <span :title="translate('COM_EMUNDUS_ONBOARD_STATUS')" class="em-neutral-700-color">{{translate('COM_EMUNDUS_ONBOARD_STATUS')}}</span>
+            </template>
+            <template slot-scope="scope">
+              <p :class="'label-text-'+scope.row.status_color + ' label-'+scope.row.status_color" class="em-status">{{ scope.row.status }}</p>
+            </template>
+          </el-table-column>
+
+          <el-table-column
+              v-else-if="column.name === 'assocs'"
+              min-width="180">
+            <template slot="header" slot-scope="scope" >
+              <span :title="translate('COM_EMUNDUS_FILES_ASSOCS')" class="em-neutral-700-color">{{translate('COM_EMUNDUS_FILES_ASSOCS')}}</span>
+            </template>
+            <template slot-scope="scope">
+              <div class="em-group-assoc-column">
+                <span v-for="group in scope.row.assocs" :class="group.class" class="em-status em-mb-4">{{ group.label }}</span>
+              </div>
+            </template>
+          </el-table-column>
+
+          <el-table-column
+              v-else
+              min-width="180">
+              <template slot="header" slot-scope="scope" >
+                <span :title="column.label" class="em-neutral-700-color">{{column.label}}</span>
+              </template>
+              <template slot-scope="scope">
+                <p>{{scope.row[column.name]}}</p>
+              </template>
+          </el-table-column>
+        </template>
       </el-table>
 
       <div id="table_columns_move_left" v-if="moveLeft" class="table-columns-move em-flex-column em-ml-4" @click="scrollToLeft">
@@ -338,13 +336,6 @@ export default {
 
       let tableScroll = document.getElementsByClassName('el-table__body-wrapper')[0];
       tableScroll.scrollLeft += 180;
-
-      /*if(this.scrolling == null) {
-        this.scrolling = setInterval(() => {
-          let tableScroll = document.getElementsByClassName('el-table__body-wrapper')[0];
-          tableScroll.scrollLeft += 100;
-        }, 10);
-      }*/
     },
     scrollToRight(){
       let tableScroll = document.getElementsByClassName('el-table__body-wrapper')[0];
@@ -352,16 +343,6 @@ export default {
       if(tableScroll.scrollLeft == 0){
         this.moveRight = false;
       }
-
-      /*if(this.scrolling == null) {
-        this.scrolling = setInterval(() => {
-          let tableScroll = document.getElementsByClassName('el-table__body-wrapper')[0];
-          tableScroll.scrollLeft -= 150;
-          if(tableScroll.scrollLeft == 0){
-            this.moveRight = false;
-          }
-        }, 10);
-      }*/
     },
 
     stopScrolling(){

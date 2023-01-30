@@ -199,13 +199,13 @@ class Evaluations extends Files
 	        if($read_status_allowed) {
 				$status_column = new stdClass();
 				$status_column->name = 'status';
-				$status_column->show_in_list_summary = 0;
+				$status_column->show_in_list_summary = 1;
 				$eval_elements[] = $status_column;
 	        }
 	        if(isset($params->display_group_assoc) && $params->display_group_assoc == 1) {
 		        $assoc_column = new stdClass();
 		        $assoc_column->name = 'assocs';
-		        $assoc_column->show_in_list_summary = 0;
+		        $assoc_column->show_in_list_summary = 1;
 		        $eval_elements[] = $assoc_column;
 	        }
 			parent::setColumns($eval_elements);

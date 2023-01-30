@@ -9,7 +9,7 @@
       @before-close="updateURL()"
       @closed="$emit('getFiles')"
   >
-    <div class="em-modal-header em-w-100 em-h-50 em-p-12-16 em-bg-main-900 em-flex-row" :style="cssVars">
+    <div class="em-modal-header em-w-100 em-h-50 em-p-12-16 em-bg-main-900 em-flex-row">
       <div class="em-flex-row em-pointer em-gap-8" id="evaluation-modal-close">
         <div class="em-w-max-content em-flex-row" @click="$modal.hide('application-modal')">
           <span class="material-icons-outlined em-font-size-16" style="color: white">arrow_back</span>
@@ -195,14 +195,11 @@ export default {
       if (this.$props.file.id != null) {
         this.rowid = this.$props.file.id;
       }
-      if (this.$props.file.student_id != null) {
-        this.student_id = this.$props.file.student_id;
-      }
       let view = 'form';
 
       filesService.getEvaluationFormByFnum(this.$props.file.fnum).then((response) => {
         if(response.data !== 0) {
-          this.url = 'index.php?option=com_fabrik&c=form&view=' + view + '&formid=' + response.data + '&rowid=' + this.rowid + '&jos_emundus_evaluations___student_id[value]=' + this.student_id + '&jos_emundus_evaluations___campaign_id[value]=' + this.$props.file.campaign_id + '&jos_emundus_evaluations___fnum[value]=' + this.$props.file.fnum + '&student_id=' + this.student_id + '&tmpl=component&iframe=1'
+          this.url = 'index.php?option=com_fabrik&c=form&view=' + view + '&formid=' + response.data + '&rowid=' + this.rowid + '&jos_emundus_evaluations___student_id[value]=' + this.$props.file.applicant_id + '&jos_emundus_evaluations___campaign_id[value]=' + this.$props.file.campaign + '&jos_emundus_evaluations___fnum[value]=' + this.$props.file.fnum + '&student_id=' + this.$props.file.applicant_id + '&tmpl=component&iframe=1'
         }
       });
     },

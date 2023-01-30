@@ -226,7 +226,7 @@ class Files
 		}
 	}
 
-	public function buildSelect($params,$status_access): array{
+	public function buildSelect($params,$status_access = false): array{
 		$select = ['DISTINCT ecc.fnum', 'ecc.applicant_id', 'ecc.campaign_id as campaign', 'u.name as applicant_name'];
 
 		if($status_access) {
