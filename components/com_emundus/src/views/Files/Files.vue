@@ -52,11 +52,15 @@
 			    </div>
 			    <div id="applied-filters" v-if="filters.length > 0" class="em-flex-row">
 				    <div v-for="filter in filters" :key="filter.key" class="em-ml-8">
-					    <input v-if="filter.type == 'field'" type="text" :placeholder="filter.label" v-model="filter.selectedValue"/>
-					    <input v-else-if="filter.type == 'date'" type="date" v-model="filter.selectedValue">
-					    <select v-else-if="filter.type == 'select'" v-model="filter.selectedValue">
+					    <label class="filter-label" :for="filter.id + '-' + filter.key" :title="filter.label">{{ filter.label }}</label>
+
+					    <input v-if="filter.type == 'field'" :name="filter.id + '-' + filter.key" type="text" :placeholder="filter.label" v-model="filter.selectedValue"/>
+					    <input v-else-if="filter.type == 'date'" :name="filter.id + '-' + filter.key" type="date" v-model="filter.selectedValue">
+					    <select v-else-if="filter.type == 'select'" :name="filter.id + '-' + filter.key" v-model="filter.selectedValue">
 						    <option v-for="value in filter.values" :key="value.value" :value="value.value">{{ value.label }}</option>
 					    </select>
+
+					    <span class="material-icons-outlined" @click="removeFilter(filter)">delete</span>
 				    </div>
 			    </div>
 		    </div>
@@ -310,6 +314,13 @@ export default {
 				selectedValue: null
 			});
 	  },
+	  removeFilter(filterToRemove) {
+		  this.filters.find((filter, index) => {
+				if (filter.key == filterToRemove.key) {
+					this.filters.splice(index, 1);
+				}
+		  });
+	  },
 	  applyFilters()
 	  {
 			filesService.applyFilters(this.filters, this.tab).then((response) => {
@@ -436,17 +447,26 @@ select.em-select-no-border{
 	ul {
 		position: absolute;
 		top: 50px;
-		z-index: 4;
+		z-index: 5;
 		background-color: white;
 		margin: 0;
 		padding: 0;
 		list-style-type: none;
+		min-width: 300px;
 
 		li {
 			padding: 8px;
 		}
 	}
 }
+
+.filter-label {
+	max-width: 220px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 .em-group-assoc-column{
   display: flex;
   flex-direction: column;

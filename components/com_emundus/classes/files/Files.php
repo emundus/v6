@@ -582,6 +582,29 @@ class Files
                         }
                     }
                    break;
+                case 'dropdown':
+                case 'radiobutton':
+                case 'checkbox':
+                    $query->select('params')
+                        ->from('#__fabrik_elements')
+                        ->where('id = ' . $element_id);
+
+                    $db->setQuery($query);
+                    $params = $db->loadResult();
+
+                    if (!empty($params)) {
+                        $params = json_decode($params, true);
+
+                        if (!empty($params['sub_options'])) {
+                            foreach($params['sub_options']['sub_values'] as $sub_opt_key => $sub_opt) {
+                                $values[] = [
+                                    'value' => $sub_opt,
+                                    'label' => JText::_($params['sub_options']['sub_labels'][$sub_opt_key])
+                                ];
+                            }
+                        }
+                    }
+                    break;
             }
         }
 
