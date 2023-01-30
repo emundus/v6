@@ -191,8 +191,6 @@ export default {
     ],
     files: null,
     columns: null,
-    display_status: false,
-    display_assocs: false,
     page: null,
     limit: null,
 
@@ -249,15 +247,6 @@ export default {
 
             filesService.getColumns(this.$props.type).then((columns) => {
               this.columns = columns.data;
-
-              Object.values(this.columns).forEach((column) => {
-                if(column.name === 'status'){
-                  this.display_status = true;
-                }
-                if(column.name === 'assocs'){
-                  this.display_assocs = true;
-                }
-              });
 
               if(fnum !== ''){
                 this.openModal(fnum);
@@ -353,7 +342,6 @@ export default {
   },
   watch: {
     limit: function(value, oldVal){
-      console.log(oldVal);
       if(oldVal !== null) {
         this.updateLimit(value);
       }

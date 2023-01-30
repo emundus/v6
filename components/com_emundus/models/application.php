@@ -5283,7 +5283,7 @@ class EmundusModelApplication extends JModelList
         }
     }
 
-	public function getValuesByElementAndFnum($fnum,$eid,$fid,$raw=1){
+	public function getValuesByElementAndFnum($fnum,$eid,$fid,$raw=1,$wheres = []){
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
@@ -5310,6 +5310,15 @@ class EmundusModelApplication extends JModelList
 			$element = $db->loadObject();
 			$group_params = json_decode($element->group_params);
 
+			if($table == 'jos_emundus_evaluations'){
+				$params = JComponentHelper::getParams('com_emundus');
+				$multi_eval = $params->get('multi_eval', 0);
+
+				if($multi_eval == 1) {
+					$wheres[] = $db->quoteName('user') . ' = ' . $db->quote(JFactory::getUser()->id);
+				}
+			}
+
 			if($group_params->repeat_group_button == 1){
 				$query->clear()
 					->select('join_from_table,table_join,table_key,table_join_key')
@@ -5324,6 +5333,9 @@ class EmundusModelApplication extends JModelList
 					->from($db->quoteName($join_params->join_from_table,'p'))
 					->leftJoin($db->quoteName($join_params->table_join,'r').' ON '.$db->quoteName('r.'.$join_params->table_join_key).' = '.$db->quoteName('p.'.$join_params->table_key))
 					->where($db->quoteName('p.fnum') . ' LIKE ' . $db->quote($fnum));
+				foreach ($wheres as $where){
+					$query->where($where);
+				}
 				$db->setQuery($query);
 				$values = $db->loadColumn();
 			} else {
@@ -5331,6 +5343,9 @@ class EmundusModelApplication extends JModelList
 					->select($db->quoteName($element->name))
 					->from($db->quoteName($table))
 					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+				foreach ($wheres as $where){
+					$query->where($where);
+				}
 				$db->setQuery($query);
 				$values = $db->loadResult();
 			}
