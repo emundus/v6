@@ -206,7 +206,7 @@ class Evaluations extends Files
 		        $assoc_column = new stdClass();
 		        $assoc_column->name = 'assocs';
 		        $assoc_column->show_in_list_summary = 1;
-		        $eval_elements[] = $assoc_column;
+		        $eval_elements['assocs'] = $assoc_column;
 	        }
 			parent::setColumns($eval_elements);
         } catch (Exception $e) {

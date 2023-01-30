@@ -236,7 +236,11 @@ export default {
         filesService.getFiles(this.$props.type,refresh,this.limit,this.page).then((files) => {
           if(files.status == 1) {
             this.total_count = files.total;
-            this.files = files.data.all;
+            if(typeof files.data.all !== 'undefined') {
+              this.files = files.data.all;
+            } else {
+              this.files = [];
+            }
             this.tabs.forEach((tab,i) => {
               if(files[tab.name]){
                 this.tabs[i].total = files[tab.name].total;
