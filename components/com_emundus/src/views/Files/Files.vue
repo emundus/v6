@@ -68,12 +68,12 @@
 							    <option v-for="value in filter.values" :key="value.value" :value="value.value">{{ value.label }}</option>
 						    </select>
 					    </div>
-					    <span class="material-icons-outlined" @click="removeFilter(filter)">close</span>
+					    <span class="material-icons-outlined em-pointer" @click="removeFilter(filter)">close</span>
 				    </div>
 			    </div>
 		    </div>
 		    <div>
-			    <span class="em-primary-button em-pointer" :class="{'disbaled': filters.length < 1}" @click="applyFilters">{{ translate('COM_EMUNDUS_FILES_APPLY_FILTER') }}</span>
+			    <button class="em-primary-button em-pointer" @click="applyFilters">{{ translate('COM_EMUNDUS_FILES_APPLY_FILTER') }}</button>
 		    </div>
 	    </div>
     </div>
@@ -348,9 +348,21 @@ export default {
 	  },
 	  applyFilters()
 	  {
-			filesService.applyFilters(this.filters, this.tabs[this.selected_tab].name).then((response) => {
-				this.getFiles(true);
-			})
+			const filtersToApply = this.filters.map((filter) => {
+				if (filter.selectedValue !== null) {
+					return {
+						id: filter.id,
+						type: filter.type,
+						selectedValue: filter.selectedValue
+					}
+				}
+			});
+
+			if(filtersToApply.length > 0) {
+				filesService.applyFilters(filtersToApply, this.tabs[this.selected_tab].name).then((response) => {
+					this.getFiles(true);
+				});
+			}
 	  },
     updateLimit(limit){
       this.loading = true;

@@ -419,7 +419,7 @@ class Files
 			$query->group($db->quoteName('ecc.fnum'));
 			$db->setQuery($query,$offset,$limit);
 
-			if($return == 'object'){
+            if($return == 'object'){
 				return $db->loadObjectList();
 			} elseif ($return == 'assoc') {
 				return $db->loadAssocList();
@@ -599,7 +599,7 @@ class Files
                             foreach($params['sub_options']['sub_values'] as $sub_opt_key => $sub_opt) {
                                 $values[] = [
                                     'value' => $sub_opt,
-                                    'label' => JText::_($params['sub_options']['sub_labels'][$sub_opt_key])
+                                    'label' => \JText::_($params['sub_options']['sub_labels'][$sub_opt_key])
                                 ];
                             }
                         }
@@ -630,13 +630,15 @@ class Files
             $selected_tab = $this->getSelectedTab();
 
             if (!empty($filters['applied_filters'][$selected_tab])) {
-                foreach($filters['applied_filters'][$selected_tab] as $filter) {
+                $db = JFactory::getDBO();
+                $query = $db->getQuery(true);
+
+                foreach($filters['applied_filters'][$selected_tab] as $f_key => $filter) {
                     if (!empty($filter['id'] && isset($filter['selectedValue']))) {
                         // get element table + name
-                        $db = JFactory::getDBO();
-                        $query = $db->getQuery(true);
 
-                        $query->select('jfe.plugin, jfe.name, jfl.db_table_name, jfe.params, jfg.params as group_params')
+                        $query->clear()
+                            ->select('jfe.plugin, jfe.name, jfe.group_id, jfl.db_table_name, jfe.params, jfg.params as group_params, jfl.id as list_id')
                             ->from('#__fabrik_elements as jfe')
                             ->join('inner', '#__fabrik_formgroup as jff ON jff.group_id = jfe.group_id')
                             ->join('inner', '#__fabrik_groups as jfg ON jff.group_id = jfg.id')
@@ -653,17 +655,48 @@ class Files
                         if (!empty($element_data)) {
                             $filter_operator = '=';
 
-                            if ($element_data['db_table_name'] == 'jos_emundus_campaign_candidature') {
-                                $wheres[] = $db->quoteName('ecc.' . $element_data['name']) . " $filter_operator " . $db->quote($filter['selectedValue']);
+                            $group_params = json_decode($element_data['group_params'], true);
+
+                            if ($group_params['repeat_group_button'] == '1') {
+                                // get join table
+                                $query->clear()
+                                    ->select('join_from_table, table_join, table_key, table_join_key')
+                                    ->from($db->quoteName('#__fabrik_joins'))
+                                    ->where('list_id = ' . $element_data['list_id'])
+                                    ->andWhere('group_id = ' . $element_data['group_id']);
+
+                                try {
+                                    $db->setQuery($query);
+                                    $join = $db->loadAssoc();
+                                } catch (Exception $e) {
+                                    $join = [];
+                                }
+
+                                if (!empty($join)) {
+                                    $join_parent_key = 'lj_parent_' . $filter['id'] . '_' . $f_key;
+                                    $join_child_key = 'lj_child_' . $filter['id'] . '_' . $f_key;
+
+                                    $left_joins[] = $db->quoteName($join['join_from_table']) . 'AS ' . $join_parent_key .  ' ON  ' . $join_parent_key . '.fnum = ecc.fnum';
+                                    $left_joins[] = $db->quoteName($join['table_join']) . 'AS ' . $join_child_key .  ' ON  ' . $join_child_key . '.' . $join['table_join_key'] . ' = ' . $join_parent_key . '.' . $join['table_key'];
+
+                                    $wheres[] = $db->quoteName($join_child_key . '.' . $element_data['name']) . " $filter_operator " . $db->quote($filter['selectedValue']);
+                                }
                             } else {
-                                $left_joins[] = $db->quoteName($element_data['db_table_name']) . 'AS left_join_' . $filter['id'] . ' ON left_join_' . $filter['id'] . '.fnum = ecc.fnum';
-                                $wheres[] = $db->quoteName('left_join_' . $filter['id'] . '.' . $element_data['name']) . " $filter_operator " . $db->quote($filter['selectedValue']);
+                                if ($element_data['db_table_name'] == 'jos_emundus_campaign_candidature') {
+                                    $wheres[] = $db->quoteName('ecc.' . $element_data['name']) . " $filter_operator " . $db->quote($filter['selectedValue']);
+                                } else {
+                                    $join_key = 'lj_' . $filter['id'] . '_' . $f_key;
+
+                                    $left_joins[] = $db->quoteName($element_data['db_table_name']) . 'AS ' . $join_key .  ' ON  ' . $join_key . '.fnum = ecc.fnum';
+                                    $wheres[] = $db->quoteName($join_key . '.' . $element_data['name']) . " $filter_operator " . $db->quote($filter['selectedValue']);
+                                }
                             }
                         }
                     }
                 }
             }
         }
+
     }
 
 	/**
