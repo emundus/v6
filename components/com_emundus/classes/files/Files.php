@@ -150,27 +150,6 @@ class Files
         $params = $menu->getParams($Itemid)->get('params');
 
         if ($params->display_filters == 1) {
-            $columns = $this->getColumns();
-
-            if (!empty($columns)) {
-                foreach ($columns as $column) {
-                    if (!empty($column->id) && $column->show_in_list_summary == 1 && !array_key_exists($column->id, $this->filters['default_filters'])) {
-                        $type = $this->getFilterTypeFromFabrikElementPlugin($column->plugin);
-                        if (!empty($type)) {
-                            $values = $this->getValuesFromFabrikElement($column->id, $column->plugin, $type);
-
-                            $this->filters['default_filters'][$column->id] = [
-                                'id' => $column->id,
-                                'type' => $type,
-                                'label' => $column->label,
-                                'values' => $values,
-                                'operators' => ['='] // todo: handle operators in filters
-                            ];
-                        }
-                    }
-                }
-            }
-
             if ($params->display_filter_campaigns) {
                 $campaigns = [];
 
@@ -220,6 +199,26 @@ class Files
                         'label' => \JText::_('STATUS'),
                         'values' => $status
                     ];
+                }
+            }
+
+            $columns = $this->getColumns();
+            if (!empty($columns)) {
+                foreach ($columns as $column) {
+                    if (!empty($column->id) && $column->show_in_list_summary == 1 && !array_key_exists($column->id, $this->filters['default_filters'])) {
+                        $type = $this->getFilterTypeFromFabrikElementPlugin($column->plugin);
+                        if (!empty($type)) {
+                            $values = $this->getValuesFromFabrikElement($column->id, $column->plugin, $type);
+
+                            $this->filters['default_filters'][$column->id] = [
+                                'id' => $column->id,
+                                'type' => $type,
+                                'label' => $column->label,
+                                'values' => $values,
+                                'operators' => ['='] // todo: handle operators in filters
+                            ];
+                        }
+                    }
                 }
             }
         } else {
@@ -704,9 +703,7 @@ class Files
 
                     foreach($filters['applied_filters'][$selected_tab] as $f_key => $filter) {
                         if (!empty($filter['id'] && isset($filter['selectedValue']))) {
-                            // get element table + name
-
-                            if (is_int($filter['id'])) {
+                            if (is_numeric($filter['id'])) {
                                 $query->clear()
                                     ->select('jfe.plugin, jfe.name, jfe.group_id, jfl.db_table_name, jfe.params, jfg.params as group_params, jfl.id as list_id')
                                     ->from('#__fabrik_elements as jfe')
@@ -768,8 +765,10 @@ class Files
                                     }
 
                                     if ($element_data['db_table_name'] == 'jos_emundus_campaign_candidature') {
-                                        $wheres[] = $db->quoteName('ecc.' . $element_data['name']) . " $filter_operator " . $db->quote($filter['selectedValue']);
-                                    } else if (!empty($join_key)) {
+                                        $join_key = 'ecc';
+                                    }
+
+                                    if (!empty($join_key)) {
                                         if ($filter['type'] == 'select') {
                                             $values = [];
                                             foreach($filter['selectedValue'] as $selected_value) {
