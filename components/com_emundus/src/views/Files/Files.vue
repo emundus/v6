@@ -57,7 +57,6 @@
 				    <div v-for="filter in filters" :key="filter.key" class="em-ml-8 em-flex-row">
 					    <div>
 						    <label class="filter-label" :for="filter.id + '-' + filter.key" :title="filter.label">{{ filter.label }}</label>
-
 						    <input v-if="filter.type == 'field'" :name="filter.id + '-' + filter.key" type="text" :placeholder="filter.label" v-model="filter.selectedValue"/>
 						    <input v-else-if="filter.type == 'date'" :name="filter.id + '-' + filter.key" type="date" v-model="filter.selectedValue">
 						    <multiselect v-else-if="filter.type == 'select'"
@@ -76,15 +75,12 @@
 								    :searchable="true"
 								    :allow-empty="true"
 						    ></multiselect>
-						    <!--<select v-else-if="filter.type == 'select'" :name="filter.id + '-' + filter.key" v-model="filter.selectedValue">
-							    <option v-for="value in filter.values" :key="value.value" :value="value.value">{{ value.label }}</option>
-						    </select>-->
 					    </div>
 					    <span class="material-icons-outlined em-pointer" @click="removeFilter(filter)">close</span>
 				    </div>
 			    </div>
 		    </div>
-		    <div>
+		    <div v-if="defaultFilters.length > 0">
 			    <button class="em-primary-button em-pointer" @click="applyFilters">{{ translate('COM_EMUNDUS_FILES_APPLY_FILTER') }}</button>
 		    </div>
 	    </div>

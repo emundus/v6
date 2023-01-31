@@ -91,6 +91,39 @@
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
+					<field name="display_filters"
+						   type="radio"
+						   label="Afficher les filtres"
+						   description=""
+						   class="btn-group btn-group-yesno"
+						   default="1"
+						   filter="integer"
+					>
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
+					<field name="display_filter_steps"
+						   type="radio"
+						   label="Filtre sur les statuts"
+						   description=""
+						   class="btn-group btn-group-yesno"
+						   default="0"
+						   filter="integer"
+					>
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
+					<field name="display_filter_campaigns"
+						   type="radio"
+						   label="Filtre sur les campagnes"
+						   description=""
+						   class="btn-group btn-group-yesno"
+						   default="0"
+						   filter="integer"
+					>
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
 
 					<field name="ratio_modal"
 						   type="text"
