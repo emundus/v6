@@ -36,6 +36,7 @@ function watch(elementId, attachId) {
                 var result = JSON.parse(xhr.responseText);
 
                 if (result != null) {
+
                     if (result.limitObtained) {
                         div.querySelector('button').hide();
                         div.querySelector('input#'+elementId).hide();
