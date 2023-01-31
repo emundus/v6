@@ -134,34 +134,33 @@ class EmundusModelEmails extends JModelList {
 
         $emails_tmpl = array();
 
-        if (!empty($triggers) && !empty($triggers[0]->id)) {
+        if (!empty($triggers) && !empty($triggers[0]->trigger_id)) {
             foreach ($triggers as $trigger) {
                 // email tmpl
-                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['subject'] = $trigger->subject;
-                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['emailfrom'] = $trigger->emailfrom;
-                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['message'] = $trigger->message;
-                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['name'] = $trigger->name;
-                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['tags'] = $trigger->tags;
-                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['attachments'] = $trigger->attachments;
+                $emails_tmpl[$trigger->trigger_id][$trigger->code]['tmpl']['subject'] = $trigger->subject;
+                $emails_tmpl[$trigger->trigger_id][$trigger->code]['tmpl']['emailfrom'] = $trigger->emailfrom;
+                $emails_tmpl[$trigger->trigger_id][$trigger->code]['tmpl']['message'] = $trigger->message;
+                $emails_tmpl[$trigger->trigger_id][$trigger->code]['tmpl']['name'] = $trigger->name;
+                $emails_tmpl[$trigger->trigger_id][$trigger->code]['tmpl']['tags'] = $trigger->tags;
 
                 // This is the email template model, the HTML structure that makes the email look good.
-                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['template'] = $trigger->Template;
+                $emails_tmpl[$trigger->trigger_id][$trigger->code]['tmpl']['template'] = $trigger->Template;
 
                 // default recipients
                 if (isset($trigger->profile_id) && !empty($trigger->profile_id)) {
-                    $emails_tmpl[$trigger->id][$trigger->code]['to']['profile'][] = $trigger->profile_id;
+                    $emails_tmpl[$trigger->trigger_id][$trigger->code]['to']['profile'][] = $trigger->profile_id;
                 }
 
                 if (isset($trigger->group_id) && !empty($trigger->group_id)) {
-                    $emails_tmpl[$trigger->id][$trigger->code]['to']['group'][] = $trigger->group_id;
+                    $emails_tmpl[$trigger->trigger_id][$trigger->code]['to']['group'][] = $trigger->group_id;
                 }
 
                 if (isset($trigger->user_id) && !empty($trigger->user_id)) {
-                    $emails_tmpl[$trigger->id][$trigger->code]['to']['user'][] = $trigger->user_id;
+                    $emails_tmpl[$trigger->trigger_id][$trigger->code]['to']['user'][] = $trigger->user_id;
                 }
 
-                $emails_tmpl[$trigger->id][$trigger->code]['to']['to_applicant'] = $trigger->to_applicant;
-                $emails_tmpl[$trigger->id][$trigger->code]['to']['to_current_user'] = $trigger->to_current_user;
+                $emails_tmpl[$trigger->trigger_id][$trigger->code]['to']['to_applicant'] = $trigger->to_applicant;
+                $emails_tmpl[$trigger->trigger_id][$trigger->code]['to']['to_current_user'] = $trigger->to_current_user;
             }
 
             // generate list of default recipient email + name
