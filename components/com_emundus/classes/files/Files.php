@@ -172,11 +172,55 @@ class Files
             }
 
             if ($params->display_filter_campaigns) {
+                $campaigns = [];
 
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('id as value, label')
+                    ->from($db->quoteName('#__emundus_setup_campaigns'))
+                    ->where('published = 1');
+
+                try {
+                    $db->setQuery($query);
+                    $campaigns = $db->loadAssocList();
+                } catch (Exception $e) {
+                    JLog::add('Failed to get campaigns for filters ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                }
+
+                if (!empty($campaigns)) {
+                    $this->filters['default_filters']['campaign_id'] = [
+                        'id' => 'campaign_id',
+                        'type' => 'select',
+                        'label' => \JText::_('CAMPAIGN'),
+                        'values' => $campaigns
+                    ];
+                }
             }
 
             if ($params->display_filter_steps) {
+                $status = [];
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
 
+                $query->select('step as value, value as label')
+                    ->from($db->quoteName('#__emundus_setup_status'));
+
+                try {
+                    $db->setQuery($query);
+                    $status = $db->loadAssocList();
+                } catch (Exception $e) {
+                    JLog::add('Failed to get campaigns for filters ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                }
+
+                if (!empty($status)) {
+                    $this->filters['default_filters']['status'] = [
+                        'id' => 'status',
+                        'type' => 'select',
+                        'label' => \JText::_('STATUS'),
+                        'values' => $status
+                    ];
+                }
             }
         } else {
             $this->filters['default_filters'] = [];
@@ -662,80 +706,96 @@ class Files
                         if (!empty($filter['id'] && isset($filter['selectedValue']))) {
                             // get element table + name
 
-                            $query->clear()
-                                ->select('jfe.plugin, jfe.name, jfe.group_id, jfl.db_table_name, jfe.params, jfg.params as group_params, jfl.id as list_id')
-                                ->from('#__fabrik_elements as jfe')
-                                ->join('inner', '#__fabrik_formgroup as jff ON jff.group_id = jfe.group_id')
-                                ->join('inner', '#__fabrik_groups as jfg ON jff.group_id = jfg.id')
-                                ->join('inner', '#__fabrik_lists as jfl ON jfl.form_id = jff.form_id')
-                                ->where('jfe.id = ' . $filter['id']);
+                            if (is_int($filter['id'])) {
+                                $query->clear()
+                                    ->select('jfe.plugin, jfe.name, jfe.group_id, jfl.db_table_name, jfe.params, jfg.params as group_params, jfl.id as list_id')
+                                    ->from('#__fabrik_elements as jfe')
+                                    ->join('inner', '#__fabrik_formgroup as jff ON jff.group_id = jfe.group_id')
+                                    ->join('inner', '#__fabrik_groups as jfg ON jff.group_id = jfg.id')
+                                    ->join('inner', '#__fabrik_lists as jfl ON jfl.form_id = jff.form_id')
+                                    ->where('jfe.id = ' . $filter['id']);
 
-                            try {
-                                $db->setQuery($query);
-                                $element_data = $db->loadAssoc();
-                            } catch (Exception $e) {
-                                $element_data = [];
-                            }
+                                try {
+                                    $db->setQuery($query);
+                                    $element_data = $db->loadAssoc();
+                                } catch (Exception $e) {
+                                    $element_data = [];
+                                }
 
-                            if (!empty($element_data)) {
-                                $join_key = '';
-                                $filter_operator = '=';
+                                if (!empty($element_data)) {
+                                    $join_key = '';
+                                    $filter_operator = '=';
 
-                                $group_params = json_decode($element_data['group_params'], true);
-                                if ($group_params['repeat_group_button'] == '1') {
-                                    // get join table
-                                    $query->clear()
-                                        ->select('join_from_table, table_join, table_key, table_join_key')
-                                        ->from($db->quoteName('#__fabrik_joins'))
-                                        ->where('list_id = ' . $element_data['list_id'])
-                                        ->andWhere('group_id = ' . $element_data['group_id']);
+                                    $group_params = json_decode($element_data['group_params'], true);
+                                    if ($group_params['repeat_group_button'] == '1') {
+                                        // get join table
+                                        $query->clear()
+                                            ->select('join_from_table, table_join, table_key, table_join_key')
+                                            ->from($db->quoteName('#__fabrik_joins'))
+                                            ->where('list_id = ' . $element_data['list_id'])
+                                            ->andWhere('group_id = ' . $element_data['group_id']);
 
-                                    try {
-                                        $db->setQuery($query);
-                                        $join = $db->loadAssoc();
-                                    } catch (Exception $e) {
-                                        $join = [];
-                                    }
-
-                                    if (!empty($join)) {
-                                        $join_parent_key = 'lj_parent_' . $join['join_from_table'];
-                                        $join_key = 'lj_child_' . $join['table_join'];
-
-                                        if (!in_array($join['join_from_table'], $left_joins_already_used)) {
-                                            $left_joins[] = $db->quoteName($join['join_from_table']) . 'AS ' . $join_parent_key .  ' ON  ' . $join_parent_key . '.fnum = ecc.fnum';
-                                            $left_joins_already_used[] = $join['join_from_table'];
+                                        try {
+                                            $db->setQuery($query);
+                                            $join = $db->loadAssoc();
+                                        } catch (Exception $e) {
+                                            $join = [];
                                         }
 
-                                        if (!in_array($join['table_join'], $left_joins_already_used)) {
-                                            $left_joins[] = $db->quoteName($join['table_join']) . 'AS ' . $join_key .  ' ON  ' . $join_key . '.' . $join['table_join_key'] . ' = ' . $join_parent_key . '.' . $join['table_key'];
-                                            $left_joins_already_used[] = $join['table_join'];
+                                        if (!empty($join)) {
+                                            $join_parent_key = 'lj_parent_' . $join['join_from_table'];
+                                            $join_key = 'lj_child_' . $join['table_join'];
+
+                                            if (!in_array($join['join_from_table'], $left_joins_already_used)) {
+                                                $left_joins[] = $db->quoteName($join['join_from_table']) . 'AS ' . $join_parent_key .  ' ON  ' . $join_parent_key . '.fnum = ecc.fnum';
+                                                $left_joins_already_used[] = $join['join_from_table'];
+                                            }
+
+                                            if (!in_array($join['table_join'], $left_joins_already_used)) {
+                                                $left_joins[] = $db->quoteName($join['table_join']) . 'AS ' . $join_key .  ' ON  ' . $join_key . '.' . $join['table_join_key'] . ' = ' . $join_parent_key . '.' . $join['table_key'];
+                                                $left_joins_already_used[] = $join['table_join'];
+                                            }
+                                        }
+                                    } else {
+                                        if ($element_data['db_table_name'] != 'jos_emundus_campaign_candidature') {
+                                            $join_key = 'lj_' . $element_data['db_table_name'];
+
+                                            if (!in_array($element_data['db_table_name'], $left_joins_already_used)) {
+                                                $left_joins[] = $db->quoteName($element_data['db_table_name']) . 'AS ' . $join_key .  ' ON  ' . $join_key . '.fnum = ecc.fnum';
+                                                $left_joins_already_used[] = $element_data['db_table_name'];
+                                            }
                                         }
                                     }
-                                } else {
-                                    if ($element_data['db_table_name'] != 'jos_emundus_campaign_candidature') {
-                                        $join_key = 'lj_' . $element_data['db_table_name'];
 
-                                        if (!in_array($element_data['db_table_name'], $left_joins_already_used)) {
-                                            $left_joins[] = $db->quoteName($element_data['db_table_name']) . 'AS ' . $join_key .  ' ON  ' . $join_key . '.fnum = ecc.fnum';
-                                            $left_joins_already_used[] = $element_data['db_table_name'];
+                                    if ($element_data['db_table_name'] == 'jos_emundus_campaign_candidature') {
+                                        $wheres[] = $db->quoteName('ecc.' . $element_data['name']) . " $filter_operator " . $db->quote($filter['selectedValue']);
+                                    } else if (!empty($join_key)) {
+                                        if ($filter['type'] == 'select') {
+                                            $values = [];
+                                            foreach($filter['selectedValue'] as $selected_value) {
+                                                $values[] = $selected_value['value'];
+                                            }
+
+                                            $imploded_values = implode(',', $db->quote($values));
+                                            $wheres[] = $db->quoteName($join_key . '.' . $element_data['name']) . ' IN (' . $imploded_values . ')';
+                                        } else {
+                                            $wheres[] = $db->quoteName($join_key . '.' . $element_data['name']) . " $filter_operator " . $db->quote($filter['selectedValue']);
                                         }
                                     }
                                 }
-
-                                if ($element_data['db_table_name'] == 'jos_emundus_campaign_candidature') {
-                                    $wheres[] = $db->quoteName('ecc.' . $element_data['name']) . " $filter_operator " . $db->quote($filter['selectedValue']);
-                                } else if (!empty($join_key)) {
-                                    if ($filter['type'] == 'select') {
+                            } else {
+                                switch($filter['id']) {
+                                    case 'status':
+                                    case 'campaign_id':
                                         $values = [];
                                         foreach($filter['selectedValue'] as $selected_value) {
                                             $values[] = $selected_value['value'];
                                         }
 
-                                        $imploded_values = implode(',', $db->quote($values));
-                                        $wheres[] = $db->quoteName($join_key . '.' . $element_data['name']) . ' IN (' . $imploded_values . ')';
-                                    } else {
-                                        $wheres[] = $db->quoteName($join_key . '.' . $element_data['name']) . " $filter_operator " . $db->quote($filter['selectedValue']);
-                                    }
+                                        if (!empty($values)) {
+                                            $wheres[] = $db->quoteName('ecc.' . $filter['id']) . ' IN (' .  implode(',', $db->quote($values)) . ')';
+                                        }
+                                        break;
                                 }
                             }
                         }
