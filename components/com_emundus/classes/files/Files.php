@@ -775,8 +775,21 @@ class Files
                                                 $values[] = $selected_value['value'];
                                             }
 
-                                            $imploded_values = implode(',', $db->quote($values));
-                                            $wheres[] = $db->quoteName($join_key . '.' . $element_data['name']) . ' IN (' . $imploded_values . ')';
+                                            if ($element_data['plugin'] == 'checkbox') {
+                                                $where = $db->quoteName($join_key . '.' . $element_data['name']);
+                                                foreach ($values as $i => $value) {
+                                                    if ($i == 0) {
+                                                        $where .= " LIKE '%\"" . $value .  "\"%'";
+                                                    } else {
+                                                        $where .= " OR LIKE '%\"" . $value .  "\"%'";
+                                                    }
+                                                }
+
+                                                $wheres[] = $where;
+                                            } else {
+                                                $imploded_values = implode(',', $db->quote($values));
+                                                $wheres[] = $db->quoteName($join_key . '.' . $element_data['name']) . ' IN (' . $imploded_values . ')';
+                                            }
                                         } else {
                                             $wheres[] = $db->quoteName($join_key . '.' . $element_data['name']) . " $filter_operator " . $db->quote($filter['selectedValue']);
                                         }
