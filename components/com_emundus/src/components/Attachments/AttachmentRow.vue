@@ -130,7 +130,8 @@ export default {
       default: true,
     },
     columns: {
-      type: Array
+      type: Array,
+	    default: ['name','date','desc','category','status','user','modified_by','modified','permissions','sync']
     }
 	},
 	mixins: [mixin],
