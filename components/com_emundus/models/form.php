@@ -1833,7 +1833,7 @@ class EmundusModelForm extends JModelList {
                 ->from($db->quoteName('#__emundus_setup_attachment_profiles','sap'))
                 ->leftJoin($db->quoteName('#__emundus_setup_attachments','sa').' ON '.$db->quoteName('sa.id').' = '.$db->quoteName('sap.attachment_id'))
                 ->where($db->quoteName('profile_id') . ' = ' . $db->quote($prid))
-                ->order('sap.ordering');
+                ->order('sap.mandatory DESC, sap.ordering, sa.value ASC');
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch (Exception $e){
