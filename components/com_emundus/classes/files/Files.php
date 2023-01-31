@@ -149,7 +149,7 @@ class Files
 
         if (!empty($columns)) {
             foreach ($columns as $column) {
-                if (!empty($column->id) && !array_key_exists($column->id, $this->filters['default_filters'])) {
+                if (!empty($column->id) && $column->show_in_list_summary == 1 && !array_key_exists($column->id, $this->filters['default_filters'])) {
                     $type = $this->getFilterTypeFromFabrikElementPlugin($column->plugin);
                     if (!empty($type)) {
                         $values = $this->getValuesFromFabrikElement($column->id, $column->plugin, $type);
@@ -311,6 +311,7 @@ class Files
 
 	public function buildQuery($select,$left_joins = [],$wheres = [],$access = '',$limit = 0,$offset = 0,$return = 'object'){
 		$em_session = JFactory::getSession()->get('emundusUser');
+		$user = JFactory::getUser();
 
 		$db = JFactory::getDbo();
 		$query_groups_allowed = $db->getQuery(true);
@@ -353,7 +354,7 @@ class Files
 			foreach ($left_joins as $left_join){
 				$query_users_associated->leftJoin($left_join);
 			}
-			$query_users_associated->where($db->quoteName('eua.user_id') . ' = ' . $db->quote($this->current_user->id));
+			$query_users_associated->where($db->quoteName('eua.user_id') . ' = ' . $db->quote($user->id));
 			if(!empty($access)) {
 				$query_users_associated->andWhere($access);
 			}
@@ -373,7 +374,7 @@ class Files
 			foreach ($left_joins as $left_join){
 				$query_groups_associated->leftJoin($left_join);
 			}
-			$query_groups_associated->where($db->quoteName('eg.user_id') . ' = ' . $db->quote($this->current_user->id));
+			$query_groups_associated->where($db->quoteName('eg.user_id') . ' = ' . $db->quote($user->id));
 			if(!empty($access)) {
 				$query_groups_associated->andWhere($access);
 			}
@@ -687,7 +688,17 @@ class Files
                                         $left_joins_already_used[] = $join['table_join'];
                                     }
 
-                                    $wheres[] = $db->quoteName($join_child_key . '.' . $element_data['name']) . " $filter_operator " . $db->quote($filter['selectedValue']);
+                                    if ($filter['type'] == 'select') {
+                                        $values = [];
+                                        foreach($filter['selectedValue'] as $selected_value) {
+                                            $values[] = $selected_value['value'];
+                                        }
+
+                                        $imploded_values = implode(',', $db->quote($values));
+                                        $wheres[] = $db->quoteName($join_child_key . '.' . $element_data['name']) . ' IN (' . $imploded_values .  ')';
+                                    } else {
+                                        $wheres[] = $db->quoteName($join_child_key . '.' . $element_data['name']) . " $filter_operator " . $db->quote($filter['selectedValue']);
+                                    }
                                 }
                             } else {
                                 if ($element_data['db_table_name'] == 'jos_emundus_campaign_candidature') {
@@ -700,7 +711,17 @@ class Files
                                         $left_joins_already_used[] = $element_data['db_table_name'];
                                     }
 
-                                    $wheres[] = $db->quoteName($join_key . '.' . $element_data['name']) . " $filter_operator " . $db->quote($filter['selectedValue']);
+                                    if ($filter['type'] == 'select') {
+                                        $values = [];
+                                        foreach($filter['selectedValue'] as $selected_value) {
+                                            $values[] = $selected_value['value'];
+                                        }
+
+                                        $imploded_values = implode(',', $db->quote($values));
+                                        $wheres[] = $db->quoteName($join_key . '.' . $element_data['name']) . ' IN (' . $imploded_values . ')';
+                                    } else {
+                                        $wheres[] = $db->quoteName($join_key . '.' . $element_data['name']) . " $filter_operator " . $db->quote($filter['selectedValue']);
+                                    }
                                 }
                             }
                         }

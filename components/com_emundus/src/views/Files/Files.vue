@@ -4,7 +4,6 @@
 
     <div class="em-mb-12 em-flex-row em-flex-space-between">
       <p class="em-h4">{{ translate('COM_EMUNDUS_FILES_'+type.toUpperCase()) }}</p>
-      <!--      <span class="material-icons-outlined" @click="getFiles(true)">refresh</span>-->
     </div>
 
     <div v-if="files">
@@ -33,9 +32,6 @@
             </select>
             <span class="em-ml-8">{{ translate('COM_EMUNDUS_FILES_PAGE_ON') }}</span>
             <span class="em-ml-8 em-mr-8">{{ pages.length }}</span>
-<!--            <span class="em-ml-8 em-mr-8">|</span>-->
-<!--            <span class="material-icons-outlined em-pointer" v-if="page != 0" @click="prevPage">chevron_left</span>
-            <span class="material-icons-outlined em-pointer" v-if="pages.length < displayPage(page)" @click="nextPage">navigate_next</span>-->
           </div>
         </template>
       </div>
@@ -64,9 +60,25 @@
 
 						    <input v-if="filter.type == 'field'" :name="filter.id + '-' + filter.key" type="text" :placeholder="filter.label" v-model="filter.selectedValue"/>
 						    <input v-else-if="filter.type == 'date'" :name="filter.id + '-' + filter.key" type="date" v-model="filter.selectedValue">
-						    <select v-else-if="filter.type == 'select'" :name="filter.id + '-' + filter.key" v-model="filter.selectedValue">
+						    <multiselect v-else-if="filter.type == 'select'"
+								    v-model="filter.selectedValue"
+								    label="label"
+								    track-by="value"
+								    :options="filter.values"
+								    :multiple="true"
+								    :taggable="false"
+								    select-label=""
+								    :placeholder="filter.label"
+								    selected-label=""
+								    deselect-label=""
+								    :close-on-select="true"
+								    :clear-on-select="false"
+								    :searchable="true"
+								    :allow-empty="true"
+						    ></multiselect>
+						    <!--<select v-else-if="filter.type == 'select'" :name="filter.id + '-' + filter.key" v-model="filter.selectedValue">
 							    <option v-for="value in filter.values" :key="value.value" :value="value.value">{{ value.label }}</option>
-						    </select>
+						    </select>-->
 					    </div>
 					    <span class="material-icons-outlined em-pointer" @click="removeFilter(filter)">close</span>
 				    </div>
@@ -139,7 +151,7 @@
               <span :title="column.label" class="em-neutral-700-color">{{column.label}}</span>
             </template>
             <template slot-scope="scope">
-              <p>{{scope.row[column.name]}}</p>
+              <p v-html="scope.row[column.name]"></p>
             </template>
           </el-table-column>
         </template>
@@ -174,16 +186,18 @@ import { Table,TableColumn } from 'element-ui';
 
 /** SERVICES **/
 import filesService from 'com_emundus/src/services/files';
-import errors from "@/mixins/errors";
-import Application from "@/components/Files/Application";
+import errors from '@/mixins/errors';
+import Application from '@/components/Files/Application';
+import multiselect from 'vue-multiselect';
 
 export default {
-  name: "Files",
+  name: 'Files',
   components: {
     Application,
     Tabs,
     'el-table': Table,
-    'el-table-column': TableColumn
+    'el-table-column': TableColumn,
+	  multiselect
   },
   props: {
     type: {
