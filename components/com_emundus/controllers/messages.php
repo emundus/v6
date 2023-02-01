@@ -852,9 +852,6 @@ class EmundusControllerMessages extends JControllerLegacy {
                     'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $fnum->email . '</i><br>' . $body . $files,
                     'type' => (empty($template->type))?'':$template->type
                 ];
-                if (!empty($cc_final)) {
-                    $log['email_cc'] = implode(',',$cc_final);
-                }
                 $m_emails->logEmail($log);
                 // Log the email in the eMundus logging system.
                 $logsParams = array('created' => [$subject]);
