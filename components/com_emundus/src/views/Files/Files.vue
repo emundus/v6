@@ -319,7 +319,7 @@ export default {
                 this.openModal(fnum);
               }
 
-	            this.getDefaultFilters();
+	            this.getFilters();
               this.loading = false;
               this.reloadFiles++;
 
@@ -335,23 +335,37 @@ export default {
         });
       }
     },
-	  getDefaultFilters() {
-			filesService.getDefaultFilters().then((response) => {
+	  getFilters() {
+			filesService.getFilters().then((response) => {
 				if (response.status == 1) {
-					this.defaultFilters = response.data;
+					const currentTabName = this.tabs[this.selected_tab].name;
+
+					if (this.filters.length == 0 && response.data.applied_filters[currentTabName] && response.data.applied_filters[currentTabName].length > 0 ) {
+						response.data.applied_filters[currentTabName].forEach((applied_filter) => {
+							const filter = response.data.default_filters.find((default_filter) => {
+								return default_filter.id == applied_filter.id;
+							});
+
+							this.addFilter(filter, applied_filter.selectedValue, applied_filter.selectedOperator);
+						});
+					}
+
+					this.defaultFilters = response.data.default_filters;
+				} else {
+					this.displayError('COM_EMUNDUS_ERROR_OCCURED', response.msg);
 				}
 			});
 	  },
-	  addFilter(filter) {
+	  addFilter(filter, selectedValue = null, selectedOperator = null) {
 			this.filters.push({
 				id: filter.id,
 				key: Math.random(),
 				type: filter.type,
 				values: filter.values,
 				label: filter.label,
-				selectedValue: null,
+				selectedValue: selectedValue,
 				operators: filter.operators,
-				selectedOperator: filter.operators[0]
+				selectedOperator: selectedOperator === null ? filter.operators[0] : selectedOperator
 			});
 	  },
 	  removeFilter(filterToRemove) {

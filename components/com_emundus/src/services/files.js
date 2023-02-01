@@ -171,9 +171,9 @@ export default {
         }
     },
 
-    async getDefaultFilters() {
+    async getFilters() {
         try {
-            const response = await client().get('index.php?option=com_emundus&controller=file&task=getdefaultfilters');
+            const response = await client().get('index.php?option=com_emundus&controller=file&task=getfilters');
             return response.data;
         } catch (e) {
             return false;

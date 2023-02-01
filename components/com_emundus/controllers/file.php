@@ -294,11 +294,13 @@ class EmundusControllerFile extends JControllerLegacy
 		exit;
 	}
 
-    public function getdefaultfilters() {
+    public function getfilters() {
         $response = ['status' => 1, 'msg' => ''];
 
         if (EmundusHelperAccess::asAccessAction(5,'r', JFactory::getUser()->id)) {
-            $response['data'] = array_values($this->files->getDefaultFilters());
+            $filters = $this->files->getFilters();
+            $filters['default_filters'] = array_values($filters['default_filters']);
+            $response['data'] = $filters;
         } else {
             $response['status'] = 0;
             $response['msg'] = JText::_('ACCESS_DENIED');
