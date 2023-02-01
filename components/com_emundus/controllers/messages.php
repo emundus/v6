@@ -848,11 +848,13 @@ class EmundusControllerMessages extends JControllerLegacy {
                 $log = [
                     'user_id_from' => $user->id,
                     'user_id_to' => $fnum->applicant_id,
-                    'email_cc' => implode(',',$cc_final),
                     'subject' => $subject,
                     'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $fnum->email . '</i><br>' . $body . $files,
                     'type' => (empty($template->type))?'':$template->type
                 ];
+                if (!empty($cc_final)) {
+                    $log['email_cc'] = implode(',',$cc_final);
+                }
                 $m_emails->logEmail($log);
                 // Log the email in the eMundus logging system.
                 $logsParams = array('created' => [$subject]);
