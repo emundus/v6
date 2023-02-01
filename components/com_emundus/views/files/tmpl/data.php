@@ -231,7 +231,6 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
         $('#rt-mainbody-surround').children().addClass('mainemundus');
         $('#rt-main').children().addClass('mainemundus');
         $('#rt-main').children().children().addClass('mainemundus');
-		//$('.em-data-container').doubleScroll();
 
         menuAction = document.querySelector('.em-menuaction');
         headerNav = document.querySelector('#g-navigation .g-container');

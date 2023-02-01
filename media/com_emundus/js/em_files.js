@@ -6597,30 +6597,33 @@ function sendMail(data)
     });
 }
 
+//TODO : Add event listener to resize scrollbar when resize window
 function DoubleScroll(element) {
-    var scrollbar= document.createElement('div');
-    scrollbar.appendChild(document.createElement('div'));
-    scrollbar.style.overflow = 'auto';
-    scrollbar.style.overflowY = 'hidden';
-    scrollbar.firstChild.style.height = '1px';
-    scrollbar.firstChild.style.width = element.scrollWidth+'px';
-    scrollbar.firstChild.appendChild(document.createTextNode('\xA0'));
-    var running = false;
-    scrollbar.onscroll= function() {
-        if(running) {
-            running = false;
-            return;
-        }
-        running = true;
-        element.scrollLeft= scrollbar.scrollLeft;
-    };
-    element.onscroll= function() {
-        if (running) {
-            running = false;
-            return;
-        }
-        running = true;
-        scrollbar.scrollLeft= element.scrollLeft;
-    };
-    element.parentNode.insertBefore(scrollbar, element);
+    if(element.scrollWidth > element.offsetWidth) {
+        var scrollbar = document.createElement('div');
+        scrollbar.appendChild(document.createElement('div'));
+        scrollbar.style.overflowX = 'auto';
+        scrollbar.style.overflowY = 'hidden';
+        scrollbar.firstChild.style.height = '1px';
+        scrollbar.firstChild.style.width = element.scrollWidth + 'px';
+        scrollbar.firstChild.appendChild(document.createTextNode('\xA0'));
+        var running = false;
+        scrollbar.onscroll = function () {
+            if (running) {
+                running = false;
+                return;
+            }
+            running = true;
+            element.scrollLeft = scrollbar.scrollLeft;
+        };
+        element.onscroll = function () {
+            if (running) {
+                running = false;
+                return;
+            }
+            running = true;
+            scrollbar.scrollLeft = element.scrollLeft;
+        };
+        element.parentNode.insertBefore(scrollbar, element);
+    }
 }
