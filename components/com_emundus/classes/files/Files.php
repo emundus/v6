@@ -168,20 +168,7 @@ class Files
             }
 
             if ($params->display_filter_campaigns) {
-                $campaigns = [];
-                $db = JFactory::getDbo();
-                $query = $db->getQuery(true);
-
-                $query->select('id as value, label')
-                    ->from($db->quoteName('#__emundus_setup_campaigns'))
-                    ->where('published = 1');
-
-                try {
-                    $db->setQuery($query);
-                    $campaigns = $db->loadAssocList();
-                } catch (Exception $e) {
-                    JLog::add('Failed to get campaigns for filters ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-                }
+                $campaigns = $this->getMyCampaigns();
 
                 if (!empty($campaigns)) {
                     $this->filters['default_filters']['campaign_id'] = [
@@ -959,5 +946,27 @@ class Files
 		return $result;
 	}
 
+    private function getMyCampaigns(): array
+    {
+        $campaigns = [];
 
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('DISTINCT esc.id as value, esc.label')
+            ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
+            ->join('inner', $db->quoteName('#__emundus_setup_groups_repeat_course', 'esgrc') . ' ON esgrc.course = esc.training')
+            ->join('inner', $db->quoteName('#__emundus_groups', 'eg') . ' ON eg.group_id = esgrc.parent_id')
+            ->where('eg.user_id = ' . JFactory::getUser()->id)
+            ->andWhere('esc.published = 1');
+
+        try {
+            $db->setQuery($query);
+            $campaigns = $db->loadAssocList();
+        } catch (Exception $e) {
+            JLog::add('Problem when getting my campaigns : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
+        }
+
+        return $campaigns;
+    }
 }
