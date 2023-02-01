@@ -44,7 +44,7 @@
 
 	    <div class="em-flex-row em-flex-space-between em-mb-16">
 		    <div class="em-flex-row">
-			    <div id="default-filters" v-if="defaultFilters.length > 0">
+			    <div id="default-filters" v-if="defaultFilters.length > 0" v-click-outside="onDefaultFiltersClickOutside">
 				    <div class="em-tabs em-pointer em-flex-row em-s-justify-content-center" @click="openedFilters = !openedFilters">
 					    <span>{{ translate('COM_EMUNDUS_FILES_FILTER') }}</span>
 					    <span class="material-icons-outlined">filter_list</span>
@@ -54,28 +54,31 @@
 				    </ul>
 			    </div>
 			    <div id="applied-filters" v-if="filters.length > 0" class="em-flex-row">
-				    <div v-for="filter in filters" :key="filter.key" class="em-ml-8 em-flex-row">
-					    <div>
-						    <label class="filter-label" :for="filter.id + '-' + filter.key" :title="filter.label">{{ filter.label }}</label>
-						    <input v-if="filter.type == 'field'" :name="filter.id + '-' + filter.key" type="text" :placeholder="filter.label" v-model="filter.selectedValue"/>
-						    <input v-else-if="filter.type == 'date'" :name="filter.id + '-' + filter.key" type="date" v-model="filter.selectedValue">
-						    <multiselect v-else-if="filter.type == 'select'"
-								    v-model="filter.selectedValue"
-								    label="label"
-								    track-by="value"
-								    :options="filter.values"
-								    :multiple="true"
-								    :taggable="false"
-								    select-label=""
-								    :placeholder="filter.label"
-								    selected-label=""
-								    deselect-label=""
-								    :close-on-select="true"
-								    :clear-on-select="false"
-								    :searchable="true"
-								    :allow-empty="true"
-						    ></multiselect>
-					    </div>
+				    <div v-for="filter in filters" :key="filter.key" class="applied-filter em-ml-8 em-flex-row">
+					    <label class="filter-label em-mr-8" :for="filter.id + '-' + filter.key" :title="filter.label">{{ filter.label }}</label>
+					    <select class="em-mr-8" v-model="filter.selectedOperator">
+							    <option v-for="operator in filter.operators" :key="operator">{{ operator }}</option>
+					    </select>
+					    <input v-if="filter.type == 'field'" :name="filter.id + '-' + filter.key" type="text" :placeholder="filter.label" v-model="filter.selectedValue"/>
+					    <input v-else-if="filter.type == 'date'" :name="filter.id + '-' + filter.key" type="date" v-model="filter.selectedValue">
+					    <multiselect
+							  v-else-if="filter.type == 'select'"
+								v-model="filter.selectedValue"
+							  label="label"
+							  track-by="value"
+							  :options="filter.values"
+							  :multiple="true"
+							  :taggable="false"
+							  select-label=""
+							  :placeholder="filter.label"
+							  selected-label=""
+							  deselect-label=""
+							  :close-on-select="true"
+							  :clear-on-select="false"
+							  :searchable="true"
+							  :allow-empty="true"
+							  width="250px"
+					    ></multiselect>
 					    <span class="material-icons-outlined em-pointer" @click="removeFilter(filter)">close</span>
 				    </div>
 			    </div>
@@ -346,7 +349,9 @@ export default {
 				type: filter.type,
 				values: filter.values,
 				label: filter.label,
-				selectedValue: null
+				selectedValue: null,
+				operators: filter.operators,
+				selectedOperator: '='
 			});
 	  },
 	  removeFilter(filterToRemove) {
@@ -363,7 +368,8 @@ export default {
 					return {
 						id: filter.id,
 						type: filter.type,
-						selectedValue: filter.selectedValue
+						selectedValue: filter.selectedValue,
+						selectedOperator: filter.selectedOperator
 					}
 				}
 			});
@@ -457,6 +463,13 @@ export default {
     displayPage(page) {
       return page + 1;
     },
+
+	  onDefaultFiltersClickOutside()
+	  {
+			if (this.openedFilters) {
+				this.openedFilters = false;
+			}
+	  }
   },
   watch: {
     limit: function(value, oldVal){
@@ -501,14 +514,22 @@ select.em-select-no-border{
 		padding: 0;
 		list-style-type: none;
 		min-width: 300px;
+		max-height: 500px;
+		overflow-y: scroll;
 
 		li {
 			padding: 8px;
+			transition: all .3s;
+
+			&:hover {
+				background: ghostwhite;
+			}
 		}
 	}
 }
 
 .filter-label {
+	min-width: 100px;
 	max-width: 220px;
 	overflow: hidden;
 	text-overflow: ellipsis;

@@ -102,7 +102,20 @@
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
-					<field name="display_filter_steps"
+					<field showon="display_filters:1"
+						   name="display_filter_fnum"
+						   type="radio"
+						   label="Filtre sur les numéro de dossier"
+						   description=""
+						   class="btn-group btn-group-yesno"
+						   default="0"
+						   filter="integer"
+					>
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
+					<field showon="display_filters:1"
+						   name="display_filter_steps"
 						   type="radio"
 						   label="Filtre sur les statuts"
 						   description=""
@@ -113,7 +126,8 @@
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
-					<field name="display_filter_campaigns"
+					<field showon="display_filters:1"
+						   name="display_filter_campaigns"
 						   type="radio"
 						   label="Filtre sur les campagnes"
 						   description=""
@@ -124,7 +138,6 @@
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
-
 					<field name="ratio_modal"
 						   type="text"
 						   default="66/33"

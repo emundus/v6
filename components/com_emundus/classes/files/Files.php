@@ -150,9 +150,25 @@ class Files
         $params = $menu->getParams($Itemid)->get('params');
 
         if ($params->display_filters == 1) {
+            $operators = ['='];
+
+            if ($params->display_filter_fnum) {
+                $fnums = $this->getFnums();
+
+                if (!empty($fnums)) {
+                    $values = array_map(function($fnum) {return ['value' => $fnum, 'label' => $fnum];}, $fnums);
+                    $this->filters['default_filters']['fnum'] = [
+                        'id' => 'fnum',
+                        'type' => 'select',
+                        'label' => \JText::_('FNUM'),
+                        'values' => $values,
+                        'operators' => ['IN', 'NOT IN']
+                    ];
+                }
+            }
+
             if ($params->display_filter_campaigns) {
                 $campaigns = [];
-
                 $db = JFactory::getDbo();
                 $query = $db->getQuery(true);
 
@@ -172,7 +188,8 @@ class Files
                         'id' => 'campaign_id',
                         'type' => 'select',
                         'label' => \JText::_('CAMPAIGN'),
-                        'values' => $campaigns
+                        'values' => $campaigns,
+                        'operators' => ['IN', 'NOT IN']
                     ];
                 }
             }
@@ -183,7 +200,8 @@ class Files
                 $query = $db->getQuery(true);
 
                 $query->select('step as value, value as label')
-                    ->from($db->quoteName('#__emundus_setup_status'));
+                    ->from($db->quoteName('#__emundus_setup_status'))
+                    ->order('ordering ASC');
 
                 try {
                     $db->setQuery($query);
@@ -197,7 +215,8 @@ class Files
                         'id' => 'status',
                         'type' => 'select',
                         'label' => \JText::_('STATUS'),
-                        'values' => $status
+                        'values' => $status,
+                        'operators' => ['IN', 'NOT IN']
                     ];
                 }
             }
@@ -205,17 +224,30 @@ class Files
             $columns = $this->getColumns();
             if (!empty($columns)) {
                 foreach ($columns as $column) {
+                    $operators = ['='];
+
                     if (!empty($column->id) && $column->show_in_list_summary == 1 && !array_key_exists($column->id, $this->filters['default_filters'])) {
                         $type = $this->getFilterTypeFromFabrikElementPlugin($column->plugin);
                         if (!empty($type)) {
                             $values = $this->getValuesFromFabrikElement($column->id, $column->plugin, $type);
+                            if ($type == 'date') {
+                                $operators = ['=', '<', '<=', '>=', '>'];
+                            } else if ($type == 'field') {
+                                $operators = ['=', '!=', 'LIKE', 'NOT LIKE'];
+                            } else if ($type == 'select') {
+                                if ($column->plugin == 'checkbox') {
+                                   $operators = ['LIKE'];
+                                } else {
+                                    $operators = ['IN', 'NOT IN'];
+                                }
+                            }
 
                             $this->filters['default_filters'][$column->id] = [
                                 'id' => $column->id,
                                 'type' => $type,
                                 'label' => $column->label,
                                 'values' => $values,
-                                'operators' => ['='] // todo: handle operators in filters
+                                'operators' => $operators
                             ];
                         }
                     }
@@ -721,7 +753,6 @@ class Files
 
                                 if (!empty($element_data)) {
                                     $join_key = '';
-                                    $filter_operator = '=';
 
                                     $group_params = json_decode($element_data['group_params'], true);
                                     if ($group_params['repeat_group_button'] == '1') {
@@ -788,10 +819,15 @@ class Files
                                                 $wheres[] = $where;
                                             } else {
                                                 $imploded_values = implode(',', $db->quote($values));
-                                                $wheres[] = $db->quoteName($join_key . '.' . $element_data['name']) . ' IN (' . $imploded_values . ')';
+                                                $wheres[] = $db->quoteName($join_key . '.' . $element_data['name']) . ' ' . $filter['selectedOperator'] . ' (' . $imploded_values . ')';
                                             }
                                         } else {
-                                            $wheres[] = $db->quoteName($join_key . '.' . $element_data['name']) . " $filter_operator " . $db->quote($filter['selectedValue']);
+                                            $value = $db->quote($filter['selectedValue']);
+                                            if (in_array($filter['selectedOperator'], ['LIKE', 'NOT LIKE'])) {
+                                                $value = '"%'.  $filter['selectedValue'] .'%"';
+                                            }
+
+                                            $wheres[] = $db->quoteName($join_key . '.' . $element_data['name']) . ' ' . $filter['selectedOperator'] . ' ' . $value;
                                         }
                                     }
                                 }
@@ -799,13 +835,14 @@ class Files
                                 switch($filter['id']) {
                                     case 'status':
                                     case 'campaign_id':
+                                    case 'fnum':
                                         $values = [];
                                         foreach($filter['selectedValue'] as $selected_value) {
                                             $values[] = $selected_value['value'];
                                         }
 
                                         if (!empty($values)) {
-                                            $wheres[] = $db->quoteName('ecc.' . $filter['id']) . ' IN (' .  implode(',', $db->quote($values)) . ')';
+                                            $wheres[] = $db->quoteName('ecc.' . $filter['id']). ' ' . $filter['selectedOperator'] . ' (' .  implode(',', $db->quote($values)) . ')';
                                         }
                                         break;
                                 }
