@@ -384,6 +384,7 @@ export default {
       this.loading = true;
       filesService.updateLimit(limit).then((result) => {
         if(result.status == 1) {
+          this.page = 0;
           this.getFiles(true);
         } else {
           this.loading = false;

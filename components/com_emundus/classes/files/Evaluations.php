@@ -353,6 +353,7 @@ class Evaluations extends Files
 	public function setLimit(int $limit): void
 	{
 		$this->{$this->selected_tab}['limit'] = $limit;
+		$this->setPage(0);
 	}
 
 	public function getPage(): int{
