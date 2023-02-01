@@ -23,11 +23,20 @@
 			<fieldset name="basic"
 				addfieldpath="/administrator/components/com_menus/models/fields"
 			>
+
 				<field
-						name="mod_emundus_footer_display_tchooz_logo"
+						name="mod_emundus_footer_client_link"
+						type="text"
+						default=""
+						label="MOD_EM_FOOTER_CLIENT_LINK"
+						description="MOD_EM_FOOTER_CLIENT_LINK_DESC">
+				</field>
+
+				<field
+						name="mod_emundus_footer_merge_two_columns"
 						type="radio"
-						label="MOD_EM_FOOTER_DISPLAY_TCHOOZ_LOGO"
-						description="MOD_EM_FOOTER_DISPLAY_TCHOOZ_LOGO"
+						label="MOD_EM_FOOTER_MERGE_TWO_COLUMNS"
+						description="MOD_EM_FOOTER_BIG_COL_DESC"
 						class="btn-group btn-group-yesno"
 						default="0"
 						filter="integer">
@@ -41,7 +50,6 @@
 						label="MOD_EM_FOOTER_COL_1"
 						description="MOD_EM_FOOTER_COL_1">
 				</field>
-				<field class="text" label="spacer1" name="spacer1" type="spacer" hr="true"/>
 				<field
 						name="mod_emundus_footer_texte_col_2"
 						type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
@@ -49,13 +57,31 @@
 						label="MOD_EM_FOOTER_COL_2"
 						description="MOD_EM_FOOTER_COL_2">
 				</field>
+
 				<field
-						name="mod_emundus_footer_client_link"
-						type="text"
-						default=""
-						label="MOD_EM_FOOTER_CLIENT_LINK"
-						description="MOD_EM_FOOTER_CLIENT_LINK_DESC">
+						name="mod_emundus_footer_display_tchooz_logo"
+						type="radio"
+						label="MOD_EM_FOOTER_DISPLAY_TCHOOZ_LOGO"
+						description="MOD_EM_FOOTER_DISPLAY_TCHOOZ_LOGO"
+						class="btn-group btn-group-yesno"
+						default="0"
+						filter="integer">
+					<option value="1">JYES</option>
+					<option value="0">JNO</option>
 				</field>
+
+				<field
+						name="mod_emundus_footer_display_powered_by"
+						type="radio"
+						label="MOD_EM_FOOTER_DISPLAY_POWERED_BY"
+						description="MOD_EM_FOOTER_DISPLAY_POWERED_BY"
+						class="btn-group btn-group-yesno"
+						default="1"
+						filter="integer">
+					<option value="1">JYES</option>
+					<option value="0">JNO</option>
+				</field>
+
 
 				<field class="text" label="spacer2" name="spacer2" type="spacer" hr="true"/>
 
