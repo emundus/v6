@@ -1,5 +1,5 @@
 <template>
-  <div class="em-mt-16 em-ml-32 em-files">
+  <div class="em-ml-32 em-files">
     <Application v-if="currentFile" :file="currentFile" :type="$props.type" :user="$props.user" :ratio="$props.ratio" @getFiles="getFiles(true)" />
 
     <div class="em-mb-12 em-flex-row em-flex-space-between">
@@ -89,7 +89,7 @@
 	    </div>
     </div>
 
-    <div class="em-flex-row" v-if="files && columns && files.length > 0" :key="reloadFiles">
+    <div class="em-flex-row em-align-start" v-if="files && columns && files.length > 0" :key="reloadFiles">
       <div id="table_columns_move_right" :class="moveRight ? '' : 'em-disabled-state'" class="table-columns-move em-flex-column em-mr-4" @click="scrollToRight">
         <span class="material-icons-outlined em-pointer" style="font-size: 16px">arrow_back</span>
       </div>
@@ -97,7 +97,7 @@
       <el-table
           ref="tableFiles"
           style="width: 100%"
-          height="500"
+          height="calc(100vh - 250px)"
           :data="files"
           @select-all="selectRow"
           @select="selectRow">
@@ -488,12 +488,12 @@ export default {
 
 <style lang="scss" scoped>
 .em-files{
-  width: calc(100% - 40px) !important;
+  width: calc(100%) !important;
   margin-left: 50px;
-  margin-right: 20px;
+  margin-right: -30px;
 }
 .table-columns-move{
-  height: 500px;
+  height: calc(100vh - 250px);
   border-radius: 8px;
   background: white;
   width: 24px;
