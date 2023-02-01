@@ -374,11 +374,9 @@ export default {
 				}
 			});
 
-			if(filtersToApply.length > 0) {
-				filesService.applyFilters(filtersToApply, this.tabs[this.selected_tab].name).then((response) => {
-					this.getFiles(true);
-				});
-			}
+		  filesService.applyFilters(filtersToApply, this.tabs[this.selected_tab].name).then((response) => {
+			  this.getFiles(true);
+		  });
 	  },
     updateLimit(limit){
       this.loading = true;
