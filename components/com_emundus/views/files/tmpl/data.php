@@ -240,9 +240,13 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
             $('.container-result').css('top', (headerNav.offsetHeight + menuAction.offsetHeight) + 'px');
             $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
         },2000);
+
+        const dataContainer = document.querySelector('.em-data-container')
+        if (dataContainer) {
+            DoubleScroll(document.querySelector('.em-data-container'));
+        }
 	});
     window.parent.$("html, body").animate({scrollTop : 0}, 300);
-
 </script>
 
 
