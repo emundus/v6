@@ -488,9 +488,8 @@ export default {
 
 <style lang="scss" scoped>
 .em-files{
-  width: calc(100%) !important;
-  margin-left: 50px;
-  margin-right: -30px;
+  width: 98% !important;
+  margin: auto;
 }
 .table-columns-move{
   height: calc(100vh - 250px);
