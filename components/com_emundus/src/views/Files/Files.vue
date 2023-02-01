@@ -43,7 +43,7 @@
       <hr/>
 
 	    <div class="em-flex-row em-flex-space-between em-mb-16">
-		    <div class="em-flex-row">
+		    <div id="filters" class="em-flex-row-start">
 			    <div id="default-filters" v-if="defaultFilters.length > 0" v-click-outside="onDefaultFiltersClickOutside">
 				    <div class="em-tabs em-pointer em-flex-row em-s-justify-content-center" @click="openedFilters = !openedFilters">
 					    <span>{{ translate('COM_EMUNDUS_FILES_FILTER') }}</span>
@@ -351,7 +351,7 @@ export default {
 				label: filter.label,
 				selectedValue: null,
 				operators: filter.operators,
-				selectedOperator: '='
+				selectedOperator: filter.operators[0]
 			});
 	  },
 	  removeFilter(filterToRemove) {
@@ -502,29 +502,39 @@ select.em-select-no-border{
   background-color: transparent !important;
 }
 
-#default-filters {
-	position: relative;
+#filters {
+	align-items: flex-start;
 
-	ul {
-		position: absolute;
-		top: 50px;
-		z-index: 5;
-		background-color: white;
-		margin: 0;
-		padding: 0;
-		list-style-type: none;
-		min-width: 300px;
-		max-height: 500px;
-		overflow-y: scroll;
+	#default-filters {
+		position: relative;
 
-		li {
-			padding: 8px;
-			transition: all .3s;
+		ul {
+			position: absolute;
+			top: 50px;
+			z-index: 5;
+			background-color: white;
+			margin: 0;
+			padding: 0;
+			list-style-type: none;
+			min-width: 300px;
+			max-height: 500px;
+			overflow-y: scroll;
 
-			&:hover {
-				background: ghostwhite;
+			li {
+				padding: 8px;
+				transition: all .3s;
+
+				&:hover {
+					background: ghostwhite;
+				}
 			}
 		}
+	}
+
+	#applied-filters {
+		max-width: 90%;
+		flex-wrap: wrap;
+		row-gap: 16px;
 	}
 }
 
