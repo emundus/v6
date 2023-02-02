@@ -6597,7 +6597,6 @@ function sendMail(data)
     });
 }
 
-//TODO : Add event listener to resize scrollbar when resize window
 function DoubleScroll(element) {
     if(element.scrollWidth > element.offsetWidth) {
         var scrollbar = document.createElement('div');
