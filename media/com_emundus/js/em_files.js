@@ -6603,10 +6603,14 @@ function DoubleScroll(element) {
         createScrollbarForElement(element, id);
     }
 
-    element.addEventListener('resize', function () {
+    window.addEventListener('resize', function () {
        let scrollbar = document.getElementById(id);
        if (scrollbar) {
-           scrollbar.firstChild.style.width = element.scrollWidth + 'px';
+           if (element.scrollWidth > element.offsetWidth) {
+               scrollbar.firstChild.style.width = element.scrollWidth + 'px';
+           } else {
+               scrollbar.remove();
+           }
        } else {
            if (element.scrollWidth > element.offsetWidth) {
                createScrollbarForElement(element, id);
