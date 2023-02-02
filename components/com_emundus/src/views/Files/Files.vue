@@ -547,6 +547,22 @@ select.em-select-no-border{
 		max-width: 90%;
 		flex-wrap: wrap;
 		row-gap: 16px;
+
+		.multiselect {
+			height: 40px !important;
+
+			.multiselect__tags {
+				height: 40px !important;
+
+				.multiselect__tags-wrap {
+					height: 24px !important;
+				}
+			}
+		}
+
+		input.multiselect__input {
+			height: 34px !important;
+		}
 	}
 }
 

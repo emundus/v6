@@ -6110,7 +6110,7 @@ fieldset[disabled] .multiselect {
 }
 
 .multiselect__tags {
-  height: 48px;
+  height: 100%;
   display: flex;
   align-items: center;
   padding: 0 24px 0 12px;
@@ -6207,7 +6207,7 @@ fieldset[disabled] .multiselect {
   background-image: url(/images/emundus/arrow.svg);
   background-size: 8px;
   background-repeat: no-repeat;
-  height: 48px !important;
+  height: 100% !important;
 }
 
 
