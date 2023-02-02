@@ -161,7 +161,10 @@ class Files
                         'type' => 'select',
                         'label' => \JText::_('FNUM'),
                         'values' => $values,
-                        'operators' => ['IN', 'NOT IN']
+                        'operators' => [
+                            ['label' => \JText::_('COM_EMUNDUS_FILES_LIKE'), 'value' => 'IN'],
+                            ['label' => \JText::_('COM_EMUNDUS_FILES_NOT_LIKE'), 'value' => 'NOT IN'],
+                        ]
                     ];
                 }
             }
@@ -175,7 +178,10 @@ class Files
                         'type' => 'select',
                         'label' => \JText::_('CAMPAIGN'),
                         'values' => $campaigns,
-                        'operators' => ['IN', 'NOT IN']
+                        'operators' => [
+                            ['label' => \JText::_('COM_EMUNDUS_FILES_LIKE'), 'value' => 'IN'],
+                            ['label' => \JText::_('COM_EMUNDUS_FILES_NOT_LIKE'), 'value' => 'NOT IN'],
+                        ]
                     ];
                 }
             }
@@ -202,7 +208,10 @@ class Files
                         'type' => 'select',
                         'label' => \JText::_('STATUS'),
                         'values' => $status,
-                        'operators' => ['IN', 'NOT IN']
+                        'operators' => [
+                            ['label' => \JText::_('COM_EMUNDUS_FILES_LIKE'), 'value' => 'IN'],
+                            ['label' => \JText::_('COM_EMUNDUS_FILES_NOT_LIKE'), 'value' => 'NOT IN'],
+                        ]
                     ];
                 }
             }
@@ -210,21 +219,35 @@ class Files
             $columns = $this->getColumns();
             if (!empty($columns)) {
                 foreach ($columns as $column) {
-                    $operators = ['='];
+                    $operators = [['label' => \JText::_('EQUALS'), 'value' => '=']];
 
                     if (!empty($column->id) && $column->show_in_list_summary == 1 && !array_key_exists($column->id, $this->filters['default_filters'])) {
                         $type = $this->getFilterTypeFromFabrikElementPlugin($column->plugin);
                         if (!empty($type)) {
                             $values = $this->getValuesFromFabrikElement($column->id, $column->plugin, $type);
                             if ($type == 'date') {
-                                $operators = ['=', '<', '<=', '>=', '>'];
+                                $operators = [
+                                    ['label' => \JText::_('COM_EMUNDUS_FILES_EQUALS'), 'value' => '='],
+                                    ['label' => \JText::_('COM_EMUNDUS_FILES_INFERIOR'), 'value' => '<'],
+                                    ['label' => \JText::_('COM_EMUNDUS_FILES_INFERIOR_OR_EQUAL'), 'value' => '<='],
+                                    ['label' => \JText::_('COM_EMUNDUS_FILES_GREATER_OR_EQUAL'), 'value' => '>='],
+                                    ['label' => \JText::_('COM_EMUNDUS_FILES_GREATER_THAN'), 'value' => '>']
+                                ];
                             } else if ($type == 'field') {
-                                $operators = ['=', '!=', 'LIKE', 'NOT LIKE'];
+                                $operators = [
+                                    ['label' => \JText::_('COM_EMUNDUS_FILES_EQUALS'), 'value' => '='],
+                                    ['label' => \JText::_('COM_EMUNDUS_FILES_NOT_EQUALS'), 'value' => '!='],
+                                    ['label' => \JText::_('COM_EMUNDUS_FILES_LIKE'), 'value' => 'LIKE'],
+                                    ['label' => \JText::_('COM_EMUNDUS_FILES_NOT_LIKE'), 'value' => 'NOT LIKE']
+                                ];
                             } else if ($type == 'select') {
                                 if ($column->plugin == 'checkbox') {
-                                   $operators = ['LIKE'];
+                                   $operators = [['label' => \JText::_('COM_EMUNDUS_FILES_LIKE'), 'value' => 'LIKE']];
                                 } else {
-                                    $operators = ['IN', 'NOT IN'];
+                                    $operators = [
+                                        ['label' => \JText::_('COM_EMUNDUS_FILES_LIKE'), 'value' => 'IN'],
+                                        ['label' => \JText::_('COM_EMUNDUS_FILES_NOT_LIKE'), 'value' => 'NOT IN'],
+                                    ];
                                 }
                             }
 

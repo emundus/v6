@@ -57,7 +57,7 @@
 				    <div v-for="filter in filters" :key="filter.key" class="applied-filter em-ml-8 em-flex-row">
 					    <label class="filter-label em-mr-8" :for="filter.id + '-' + filter.key" :title="filter.label">{{ filter.label }}</label>
 					    <select class="em-mr-8" v-model="filter.selectedOperator">
-							    <option v-for="operator in filter.operators" :key="operator">{{ operator }}</option>
+							    <option v-for="operator in filter.operators" :key="operator.value" :value="operator.value">{{ operator.label }}</option>
 					    </select>
 					    <input v-if="filter.type == 'field'" :name="filter.id + '-' + filter.key" type="text" :placeholder="filter.label" v-model="filter.selectedValue"/>
 					    <input v-else-if="filter.type == 'date'" :name="filter.id + '-' + filter.key" type="date" v-model="filter.selectedValue">
@@ -365,7 +365,7 @@ export default {
 				label: filter.label,
 				selectedValue: selectedValue,
 				operators: filter.operators,
-				selectedOperator: selectedOperator === null ? filter.operators[0] : selectedOperator
+				selectedOperator: selectedOperator === null ? filter.operators[0].value : selectedOperator
 			});
 	  },
 	  removeFilter(filterToRemove) {
