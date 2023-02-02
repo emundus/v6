@@ -237,7 +237,10 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script>
      $(document).ready(function(){
-        $('.em-data-container').doubleScroll();
+         const dataContainer = document.querySelector('.em-data-container')
+         if (dataContainer) {
+             DoubleScroll(dataContainer);
+         }
     });
 </script>
 
