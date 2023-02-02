@@ -6597,33 +6597,49 @@ function sendMail(data)
     });
 }
 
-//TODO : Add event listener to resize scrollbar when resize window
 function DoubleScroll(element) {
-    if(element.scrollWidth > element.offsetWidth) {
-        var scrollbar = document.createElement('div');
-        scrollbar.appendChild(document.createElement('div'));
-        scrollbar.style.overflowX = 'auto';
-        scrollbar.style.overflowY = 'hidden';
-        scrollbar.firstChild.style.height = '1px';
-        scrollbar.firstChild.style.width = element.scrollWidth + 'px';
-        scrollbar.firstChild.appendChild(document.createTextNode('\xA0'));
-        var running = false;
-        scrollbar.onscroll = function () {
-            if (running) {
-                running = false;
-                return;
-            }
-            running = true;
-            element.scrollLeft = scrollbar.scrollLeft;
-        };
-        element.onscroll = function () {
-            if (running) {
-                running = false;
-                return;
-            }
-            running = true;
-            scrollbar.scrollLeft = element.scrollLeft;
-        };
-        element.parentNode.insertBefore(scrollbar, element);
+    const id = Math.random();
+    if (element.scrollWidth > element.offsetWidth) {
+        createScrollbarForElement(element, id);
     }
+
+    element.addEventListener('resize', function () {
+       let scrollbar = document.getElementById(id);
+       if (scrollbar) {
+           scrollbar.firstChild.style.width = element.scrollWidth + 'px';
+       } else {
+           if (element.scrollWidth > element.offsetWidth) {
+               createScrollbarForElement(element, id);
+           }
+       }
+    });
+}
+
+function createScrollbarForElement(element, id) {
+    let new_scrollbar = document.createElement('div');
+    new_scrollbar.appendChild(document.createElement('div'));
+    new_scrollbar.style.overflowX = 'auto';
+    new_scrollbar.style.overflowY = 'hidden';
+    new_scrollbar.firstChild.style.height = '1px';
+    new_scrollbar.firstChild.style.width = element.scrollWidth + 'px';
+    new_scrollbar.firstChild.appendChild(document.createTextNode('\xA0'));
+    new_scrollbar.id = id;
+    let running = false;
+    new_scrollbar.onscroll = function () {
+        if (running) {
+            running = false;
+            return;
+        }
+        running = true;
+        element.scrollLeft = new_scrollbar.scrollLeft;
+    };
+    element.onscroll = function () {
+        if (running) {
+            running = false;
+            return;
+        }
+        running = true;
+        new_scrollbar.scrollLeft = element.scrollLeft;
+    };
+    element.parentNode.insertBefore(new_scrollbar, element);
 }
