@@ -532,7 +532,7 @@ class com_emundusInstallerScript
 				}
 	        }
 
-            if (version_compare($cache_version, '1.34.45', '<') || $firstrun) {
+            if (version_compare($cache_version, '1.34.49', '<') || $firstrun) {
                 EmundusHelperUpdate::addCustomEvents([
                     ['label' => 'onHikashopAfterCheckoutStep', 'category' => 'Hikashop', 'published' => 1],
                     ['label' => 'onHikashopAfterCartProductsLoad', 'category' => 'Hikashop', 'published' => 1],
