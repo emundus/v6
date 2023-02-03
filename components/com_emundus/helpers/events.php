@@ -390,6 +390,11 @@ class EmundusHelperEvents {
 
                                         if (!empty($stored)) {
                                             foreach ($stored as $store) {
+	                                            $formModel->data[$repeat_table . '___id'][] = "";
+	                                            $formModel->data[$repeat_table . '___id_raw'][] = "";
+	                                            $formModel->data[$repeat_table . '___parent_id'][] = "";
+	                                            $formModel->data[$repeat_table . '___parent_id_raw'][] = "";
+
                                                 $formModel->data[$repeat_table . '___' . $group->name][] = $store;
                                                 $formModel->data[$repeat_table . '___' . $group->name . '_raw'][] = $store;
                                             }
@@ -513,6 +518,18 @@ class EmundusHelperEvents {
             }
 
             if ($application_fee) {
+                if($params->get('hikashop_session', 0)) {
+                    // check if there is not another cart open
+                    $hikashop_user = JFactory::getSession()->get('emundusPayment');
+                    if (!empty($hikashop_user->fnum) && $hikashop_user->fnum != $user->fnum) {
+                        $user->fnum = $hikashop_user->fnum;
+                        JFactory::getSession()->set('emundusUser', $user);
+
+                        $mainframe->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
+                        $mainframe->redirect('/');
+                    }
+                }
+
                 $fnumInfos = $mFiles->getFnumInfos($user->fnum);
 
                 // If students with a scholarship have a different fee.
