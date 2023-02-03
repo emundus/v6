@@ -490,6 +490,19 @@ form#member-profile .form-horizontal .control-label {
 /* ---- ALLOW * TO BE AT THE END OF TEXT ----- */
 
 /* Inscription */
+
+.view-registration form a {
+    text-decoration: underline;
+}
+.view-registration form a:hover {
+ text-decoration: none;
+}
+
+.view-registration.view-form h1 {
+    font-family: var(--applicant-title-font);
+    color: var(--em-applicant-title-color);
+}
+
 .view-registration .login.em-formRegistrationCenter .emundus-form{
     border: unset !important;
     box-shadow: unset !important;
