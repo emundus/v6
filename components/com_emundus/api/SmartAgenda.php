@@ -43,7 +43,7 @@ class SmartAgenda
      */
     public function __construct()
     {
-        JLog::addLogger(['text_file' => 'com_emundus.smart_agenda.php'], JLog::ERROR, 'com_emundus.smart_agenda');
+        JLog::addLogger(['text_file' => 'com_emundus.smart_agenda.php'], JLog::ALL, 'com_emundus.smart_agenda');
         $this->setAuth();
 
         if (empty($this->auth['login']) || empty($this->auth['pwd']) || empty($this->auth['api_id']) || empty($this->auth['api_key'])) {
@@ -243,7 +243,7 @@ class SmartAgenda
         $added = false;
 
         if (!empty($json)) {
-            $accepted_json_entries = ['mail', 'nom', 'prenom', 'adresse', 'code_postal', 'ville', 'telephone', 'portable', 'sexe', 'date_naissance', 'infos', 'sms_actif', 'mail_actif', 'cc1'];
+            $accepted_json_entries = ['mail', 'nom', 'prenom', 'adresse', 'code_postal', 'ville', 'telephone', 'portable', 'sexe', 'date_naissance', 'infos', 'sms_actif', 'mail_actif', 'cc1', 'cc2'];
             $diff = array_diff(array_keys($json), $accepted_json_entries);
 
             if (empty($diff) && !empty($json['nom']) && !empty($json['prenom']) && !empty($json['mail'])) {
@@ -271,7 +271,7 @@ class SmartAgenda
                     }
                 }
             } else {
-                JLog::add('Tried to ad client without necessary parameters ' . json_encode($json), JLog::WARNING, 'com_emundus.smart_agenda');
+                JLog::add('Tried to add client with unknown parameters ' . json_encode($json), JLog::WARNING, 'com_emundus.smart_agenda');
             }
         }
 
