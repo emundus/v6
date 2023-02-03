@@ -538,29 +538,28 @@ class EmundusControllerMessages extends JControllerLegacy {
         $mail_message = $jinput->post->get('message', null, 'RAW');
         $attachments = $jinput->post->get('attachments', null, null);
         $tags_str = $jinput->post->getString('tags', null, null);
+        $cc = $jinput->post->get('cc');
+	    $bcc = $jinput->post->get('bcc');
 
-
-        // Here we filter out any CC or BCC emails that have been entered that do not match the regex.
-        $cc = $jinput->post->getString('cc');
-
-        if(!is_null($cc) && !empty($cc) && is_array($cc)) {
+        if(!empty($cc) && is_array($cc)) {
             foreach ($cc as $key => $cc_to_test) {
                 if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $cc_to_test) !== 1) {
                     unset($cc[$key]);
                 }
             }
+	        $cc = array_unique($cc);
         } else {
             $cc = [];
         }
 
-        $bcc = explode(',', $jinput->post->getString('bcc'));
 
-        if(!is_null($bcc) && !empty($bcc) && is_array($bcc)) {
+        if(!empty($bcc) && is_array($bcc)) {
             foreach ($bcc as $key => $bcc_to_test) {
                 if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $bcc_to_test) !== 1) {
                     unset($bcc[$key]);
                 }
             }
+	        $bcc = array_unique($bcc);
         } else {
             $bcc = [];
         }
@@ -586,14 +585,13 @@ class EmundusControllerMessages extends JControllerLegacy {
 
             $programme = $m_campaign->getProgrammeByTraining($fnum->training);
 
-            $cc_custom = [];
+	        $cc_final = $cc;
             $emundus_user = $m_users->getUserById($fnum->applicant_id)[0];
-            if(isset($emundus_user->email_cc) && !empty($emundus_user->email_cc)) {
-                if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
-                    $cc_custom[] = $emundus_user->email_cc;
+            if(!empty($emundus_user->email_cc)) {
+                if (!in_array($emundus_user->email_cc,$cc_final) && preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
+	                $cc_final[] = $emundus_user->email_cc;
                 }
             }
-            $cc_final = array_filter(array_unique(array_merge($cc,$cc_custom)));
 
             $toAttach = [];
             $post = [
@@ -633,19 +631,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 	        $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
 	        $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
-
-            /* DEPRECATED */
-	        // If the email sender has the same domain as the system sender address.
-	        /*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
-		        $mail_from_address = $mail_from;
-	        } else {
-            $mail_from_address = $mail_from_sys;
-	        }*/
-
             $mail_from_address = $mail_from_sys;
 
-
-            // Set sender
 	        $sender = [
 		        $mail_from_address,
 		        $mail_from_name
