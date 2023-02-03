@@ -538,8 +538,8 @@ class EmundusControllerMessages extends JControllerLegacy {
         $mail_message = $jinput->post->get('message', null, 'RAW');
         $attachments = $jinput->post->get('attachments', null, null);
         $tags_str = $jinput->post->getString('tags', null, null);
-        $cc = $jinput->post->get('cc');
-	    $bcc = $jinput->post->get('bcc');
+        $cc = $jinput->post->getString('cc');
+	    $bcc = $jinput->post->getString('bcc');
 
         if(!empty($cc) && is_array($cc)) {
             foreach ($cc as $key => $cc_to_test) {
