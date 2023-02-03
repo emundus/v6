@@ -768,25 +768,4 @@ class EmundusControllerWebhook extends JControllerLegacy {
         echo json_encode(array('status' => $realstatus, 'msg' => $msg));
         exit;
     }
-
-    public function smart_agenda_evaluation_date()
-    {
-        JLog::addLogger(['text_file' => 'com_emundus.smart_agenda.php'], JLog::ALL, array('com_emundus.smart_agenda'));
-        JLog::add('[eventSmartAgenda] Start to get info from Smart Agenda', JLog::INFO, 'com_emundus.smart_agenda');
-
-        // TODO: check with client infos
-        $fnum = filter_input(INPUT_POST, 'fnum', FILTER_SANITIZE_STRING);
-        $client_id = filter_input(INPUT_POST, 'client_id', FILTER_VALIDATE_INT);
-        $event_start_date = filter_input(INPUT_POST, 'event_start_date', FILTER_SANITIZE_STRING);
-
-        if (!empty($client_id) && !empty($event_start_date) && !empty($fnum)) {
-            // TODO: check client_id and fnum corresponds
-            // TODO: update eval date
-        } else {
-            JLog::add('[eventSmartAgenda] BAD_REQUEST_OR_MISSING_PARAMS - Malicious attempt ? Sender : ' . $_SERVER['REMOTE_ADDR'], JLog::ERROR, 'com_emundus.smart_agenda');
-            header('HTTP/1.1 400 Bad Request');
-            echo 'Error 400 - Bad Request';
-            die();
-        }
-    }
 }
