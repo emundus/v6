@@ -64,7 +64,6 @@ class PlgFabrik_Cronemundusrecallmissingdoc extends PlgFabrik_Cron {
 
 		// Get list of applicants to notify
 		//AND jesc.admission_start_date <= NOW() AND jesc.admission_end_date >= NOW()
-		//AND jesetc.month_start <= MONTH(NOW()) AND jesetc.month_end >= MONTH(NOW()) ';
 		$db = FabrikWorker::getDbo();
 		$query = 'SELECT jecc.applicant_id, GROUP_CONCAT(jecc.fnum SEPARATOR ",") as fnum, GROUP_CONCAT(jesa.id SEPARATOR ",") as attachment_id, GROUP_CONCAT(jesa.value SEPARATOR "|") as attachment_label
 			FROM jos_emundus_campaign_candidature as jecc
@@ -74,12 +73,10 @@ class PlgFabrik_Cronemundusrecallmissingdoc extends PlgFabrik_Cron {
 			LEFT JOIN jos_emundus_setup_attachments jesa on jesetc.attachment_id = jesa.id
 			WHERE jesetc.id IS NOT NULL AND jeu.attachment_id IS NULL
 			AND jesetc.date = CURDATE()';
-			  
 
 		if (!empty($reminder_programme_code)) {
 			$query .= ' AND jesc.training IN ('.$reminder_programme_code.')';
 		}
-
 		$query .= ' GROUP BY jecc.applicant_id';
 
 		$db->setQuery($query);
@@ -87,22 +84,20 @@ class PlgFabrik_Cronemundusrecallmissingdoc extends PlgFabrik_Cron {
 		try {
 			$applicants = $db->loadObjectList();
 		} catch (Exception $e) {
-			JLog::add('Error getting applicants to be notify: '.$query, JLog::ERROR, 'com_emundus.emundusrecallmissingdoc');
+			JLog::add('Error getting applicants to be notify with error '.$e->getMessage().' and query : '.$query, JLog::ERROR, 'com_emundus.emundusrecallmissingdoc');
 			return false;
 		}
 
 		// Generate emails from template and store it in message table
 		if (!empty($applicants)) {
 			include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
-			$m_emails = new EmundusModelEmails;
-			$email = $m_emails->getEmailById($reminder_mail_id);
+			include_once(JPATH_SITE.'/components/com_emundus/controllers/messages.php');
+			$c_messages = new EmundusControllerMessages();
 
 			foreach ($applicants as $applicant) {
-				$mailer = JFactory::getMailer();
-
 				$missing_doc = explode('|', $applicant->attachment_label);
-				$student = JFactory::getUser($applicant->applicant_id);
 
+				$missing_doc_html = '';
 				if (count($applicant->attachment_label) > 0) {
 					$missing_doc_html = '<ul>';
 					foreach ($missing_doc as $doc) {
@@ -112,8 +107,6 @@ class PlgFabrik_Cronemundusrecallmissingdoc extends PlgFabrik_Cron {
 				}
 
 				$applicant->fnum = explode(',', $applicant->fnum)[0];
-				$applicant->email = $student->email;
-				$applicant->id = $student->id;
 
 				$post = array(
 					'FNUM' => $applicant->fnum,
@@ -121,56 +114,9 @@ class PlgFabrik_Cronemundusrecallmissingdoc extends PlgFabrik_Cron {
 	                'FIRSTNAME' => explode(',', $applicant->firstname)[0],
 	                'LASTNAME' => explode(',', strtoupper($applicant->lastname))[0]
 				);
-				$tags = $m_emails->setTags($applicant->id, $post, $applicant->fnum);
 
-				$from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
-                $from_id = 62;
-                $fromname = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
-                $to = $applicant->email;
-                $to_id = $applicant->id;
-                $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
-                $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
-                $body = $m_emails->setTagsFabrik($body, [$applicant->fnum]);
+				$c_messages->sendEmail($applicant->fnum,$reminder_mail_id,$post);
 
-                $config = JFactory::getConfig();
-                $email_from_sys = $config->get('mailfrom');
-				$email_from = $email->emailfrom;
-
-				// If the email sender has the same domain as the system sender address.
-				if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
-					$mail_from_address = $email_from;
-				} else {
-					$mail_from_address = $email_from_sys;
-				}
-
-				// Set sender
-				$sender = [
-					$mail_from_address,
-					$fromname
-				];
-
-                $mailer->setSender($sender);
-				$mailer->addReplyTo($from, $fromname);
-                $mailer->addRecipient($to);
-                $mailer->setSubject($subject);
-                $mailer->isHTML(true);
-                $mailer->Encoding = 'base64';
-                $mailer->setBody($body);
-
-				// Send emails
-               	$send = $mailer->Send();
-                if ($send !== true) {
-                    $this->log .= "\n Error sending email : " . $to;
-                } else {
-                    $message = array(
-                        'user_id_from' => $from_id,
-                        'user_id_to' => $to_id,
-                        'subject' => $subject,
-                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
-                    );
-                    $m_emails->logEmail($message);
-                    $this->log .= '\n' . JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.' :: '.$body;
-                }
                 // to avoid been considered as a spam process or DDoS
                 sleep(0.1);
 
