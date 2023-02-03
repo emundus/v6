@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.0.0
+ * @version    4.1.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -45,7 +45,9 @@ function displayDoc(){
 		$doc->addScriptDeclaration($js);
 		if(!HIKASHOP_BACK_RESPONSIVE)
 			return '<a href="' . $url . '" target="_blank" onclick="return displayDoc();" class="toolbar"><span class="icon-32-help" title="' . JText::_('HIKA_HELP', true) . '"></span>' . JText::_('HIKA_HELP') . '</a>';
-		return '<button class="btn btn-small" onclick="return displayDoc();"><i class="icon-help"></i> ' . JText::_('HIKA_HELP') . '</button>';
+
+		$btnClass = (HIKASHOP_J40) ? 'btn btn-info' : 'btn btn-small';
+		return '<button class="'.$btnClass.'" onclick="return displayDoc();"><i class="icon-help"></i> ' . JText::_('HIKA_HELP') . '</button>';
 	}
 
 	public function fetchId($type = 'Pophelp', $html = '', $id = 'pophelp') {

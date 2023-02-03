@@ -6,7 +6,7 @@
 }
 
 #mod_emundus_help .popover.top{
-    left: calc(100% - 200px) !important;
+    left: 25px !important;
 }
 
 #mod_emundus_help .popover-content{
@@ -56,7 +56,7 @@
 #mod_emundus_help .mod_emundus_help__popover{
     z-index: 20;
     position: fixed;
-    right: 30px;
+    left: 25px;
     bottom: 70px;
     cursor: pointer;
 }

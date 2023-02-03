@@ -11,6 +11,8 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Extension\ExtensionHelper;
 use Joomla\CMS\Filter\InputFilter;
+use Joomla\CMS\Http\HttpFactory;
+use Joomla\Registry\Registry;
 
 jimport('joomla.filesystem.folder');
 jimport('joomla.filesystem.file');
@@ -172,6 +174,7 @@ class JoomlaupdateModelDefault extends JModelLegacy
 			'latest'    => null,
 			'object'    => null,
 			'hasUpdate' => false,
+			'current'   => JVERSION, // This is deprecated please use 'installed' or JVERSION directly
 		);
 
 		// Fetch the update information from the database.
@@ -199,15 +202,6 @@ class JoomlaupdateModelDefault extends JModelLegacy
 			return $this->updateInformation;
 		}
 
-		$this->updateInformation['latest']    = $updateObject->version;
-		$this->updateInformation['current']   = JVERSION;
-
-		// Check whether this is an update or not.
-		if (version_compare($updateObject->version, JVERSION, '>'))
-		{
-			$this->updateInformation['hasUpdate'] = true;
-		}
-
 		$minimumStability      = JUpdater::STABILITY_STABLE;
 		$comJoomlaupdateParams = JComponentHelper::getParams('com_joomlaupdate');
 
@@ -221,7 +215,15 @@ class JoomlaupdateModelDefault extends JModelLegacy
 		$update = new JUpdate;
 		$update->loadFromXML($updateObject->detailsurl, $minimumStability);
 
+		// Make sure we use the current information we got from the detailsurl
 		$this->updateInformation['object'] = $update;
+		$this->updateInformation['latest'] = $updateObject->version;
+
+		// Check whether we have got an update from the detailsurl or not.
+		if (version_compare($this->updateInformation['latest'], JVERSION, '>'))
+		{
+			$this->updateInformation['hasUpdate'] = true;
+		}
 
 		return $this->updateInformation;
 	}
@@ -298,13 +300,39 @@ class JoomlaupdateModelDefault extends JModelLegacy
 		$updateInfo = $this->getUpdateInformation();
 		$packageURL = trim($updateInfo['object']->downloadurl->_data);
 		$sources    = $updateInfo['object']->get('downloadSources', array());
-		$headers    = get_headers($packageURL, 1);
+
+		// We have to manually follow the redirects here so we set the option to false.
+		$httpOptions = new Registry;
+		$httpOptions->set('follow_location', false);
+
+		try
+		{
+			$head = HttpFactory::getHttp($httpOptions)->head($packageURL);
+		}
+		catch (RuntimeException $e)
+		{
+			// Passing false here -> download failed message
+			$response['basename'] = false;
+
+			return $response;
+		}
 
 		// Follow the Location headers until the actual download URL is known
-		while (isset($headers['Location']))
+		while (isset($head->headers['location']))
 		{
-			$packageURL = $headers['Location'];
-			$headers    = get_headers($packageURL, 1);
+			$packageURL = $head->headers['location'];
+
+			try
+			{
+				$head = HttpFactory::getHttp($httpOptions)->head($packageURL);
+			}
+			catch (RuntimeException $e)
+			{
+				// Passing false here -> download failed message
+				$response['basename'] = false;
+
+				return $response;
+			}
 		}
 
 		// Remove protocol, path and query string from URL
@@ -1798,5 +1826,64 @@ ENDDATA;
 
 		// Translate the extension name if possible
 		$item->name = strip_tags(JText::_($item->name));
+	}
+
+	/**
+	 * Checks whether a given template is active
+	 *
+	 * @param   string  $template  The template name to be checked
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.10.4
+	 */
+	public function isTemplateActive($template)
+	{
+		$db = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select(
+			$db->qn(
+				array(
+					'id',
+					'home'
+				)
+			)
+		)->from(
+			$db->qn('#__template_styles')
+		)->where(
+			$db->qn('template') . ' = ' . $db->q($template)
+		);
+
+		$templates = $db->setQuery($query)->loadObjectList();
+
+		$home = array_filter(
+			$templates,
+			function($value)
+			{
+				return $value->home > 0;
+			}
+		);
+
+		$ids = JArrayHelper::getColumn($templates, 'id');
+
+		$menu = false;
+
+		if (count($ids))
+		{
+			$query = $db->getQuery(true);
+
+			$query->select(
+				'COUNT(*)'
+			)->from(
+				$db->qn('#__menu')
+			)->where(
+				$db->qn('template_style_id') . ' IN(' . implode(',', $ids) . ')'
+			);
+
+			$menu = $db->setQuery($query)->loadResult() > 0;
+		}
+
+		return $home || $menu;
 	}
 }

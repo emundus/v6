@@ -35,7 +35,6 @@ class PlgEmundusHopitaux_paris_auto_final_grade extends JPlugin {
         $status_to_check = explode(',',$this->params->get('final_grade_status_step', ''));
         $elts_to_complete = explode(';',$this->params->get('final_grade_elts_to_complete', ''));
         $elt_values = explode(';',$this->params->get('final_grade_elts_values', ''));
-        $campaigns = $this->params->get('final_grade_campaigns', '');
 
         $user = JFactory::getUser();
 
@@ -49,12 +48,6 @@ class PlgEmundusHopitaux_paris_auto_final_grade extends JPlugin {
 
         if ($status === false || empty($elts_to_complete)) {
             return false;
-        }
-
-        if(!empty($campaigns)){
-            if(!in_array($file->campaign_id,explode(',',$campaigns))){
-                return false;
-            }
         }
 
         $elts = explode(',',$elts_to_complete[$status]);
@@ -91,7 +84,7 @@ class PlgEmundusHopitaux_paris_auto_final_grade extends JPlugin {
                     $db->setQuery($query);
                     $value_exist = $db->loadResult();
 
-                    if(is_null($value_exist) || $value_exist == '') {
+                    if(is_null($value_exist) || $value_exist == '' || $value_exist == 0.00) {
                         $query->clear()
                             ->update($db->quoteName($table))
                             ->set($db->quoteName($element) . ' = ' . $db->quote($value_expected))

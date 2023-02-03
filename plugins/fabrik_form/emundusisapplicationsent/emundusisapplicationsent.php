@@ -87,12 +87,16 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'date.php');
+
+            $m_campaign = new EmundusModelCampaign;
 
             jimport('joomla.log.log');
             JLog::addLogger(['text_file' => 'com_emundus.isApplicationSent.php'], JLog::ALL, ['com_emundus']);
 
             $formModel = $this->getModel();
             $listModel =  $formModel->getListModel();
+            $form_id = $formModel->id;
 
             $user = JFactory::getSession()->get('emundusUser');
 
@@ -102,6 +106,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
 
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $copy_application_form = $eMConfig->get('copy_application_form', 0);
+            $copy_exclude_forms = $eMConfig->get('copy_exclude_forms', []);
             $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
             $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
 
@@ -125,28 +130,49 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
             $reload = $jinput->get('r', 0);
             $reload++;
 
-            if ($this->getParam('admission', 0) == 1) {
-                if(!empty($fnum)) {
-                    $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->fnums[$fnum]->admission_end_date) || strtotime(date($now)) < strtotime(@$user->fnums[$fnum]->admission_start_date)) ? true : false;
-                    $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->fnums[$fnum]->admission_start_date)) ? true : false;
-                }
-                else{
-                    $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->fnums[$user->fnum]->admission_end_date) || strtotime(date($now)) < strtotime(@$user->fnums[$user->fnum]->admission_start_date)) ? true : false;
-                    $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->fnums[$user->fnum]->admission_start_date)) ? true : false;
-                }
-            }
-            else {
-                if(!empty($fnum)) {
-                    $is_dead_line_passed = (strtotime(date($now)) > (!empty(@$user->fnums[$fnum]->end_date) ? strtotime(@$user->fnums[$fnum]->end_date) : strtotime(@$user->end_date))) ? true : false;
-                    $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->fnums[$fnum]->start_date)) ? true : false;
-                }
-                else{
-                    $is_dead_line_passed = (strtotime(date($now)) > (!empty(@$user->fnums[$user->fnum]->end_date) ? strtotime(@$user->fnums[$user->fnum]->end_date) : strtotime(@$user->end_date))) ? true : false;
-                    $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->fnums[$user->fnum]->start_date)) ? true : false;
+            if (empty($fnum)) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('db_table_name')
+                    ->from($db->quoteName('#__fabrik_lists'))
+                    ->where($db->quoteName('form_id') . ' = ' . $db->quote($form_id));
+                $db->setQuery($query);
+                $db_table_name = $db->loadResult();
+
+                if(!empty($db_table_name)){
+                    $fnum = $jinput->get->get($db_table_name.'___fnum', null);
                 }
             }
 
-            $is_app_sent = !in_array(@$user->status, explode(',', $this->getParam('applicationsent_status', 0)));
+            $current_fnum = !empty($fnum) ? $fnum : $user->fnum;
+            $current_phase = $m_campaign->getCurrentCampaignWorkflow($current_fnum);
+            if (!empty($current_phase) && !empty($current_phase->end_date)) {
+                $current_end_date = $current_phase->end_date;
+                $current_start_date = $current_phase->start_date;
+            }  else if ($this->getParam('admission', 0) == 1) {
+                $current_end_date = @$user->fnums[$current_fnum]->admission_end_date;
+                $current_start_date = @$user->fnums[$current_fnum]->admission_start_date;
+            } else {
+                $current_end_date = !empty(@$user->fnums[$current_fnum]->end_date) ? @$user->fnums[$current_fnum]->end_date : @$user->end_date;
+                $current_start_date = @$user->fnums[$current_fnum]->start_date;
+            }
+
+            $is_campaign_started = strtotime(date($now)) >= strtotime($current_start_date);
+            if (!$is_campaign_started && !in_array($user->id, $applicants)) {
+                // STOP HERE, the campaign or step is not started yet. Redirect to main page
+                $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_NOT_STARTED'), 'error');
+                $mainframe->redirect('/');
+            }
+
+            $is_dead_line_passed = strtotime(date($now)) > strtotime($current_end_date);
+
+            $edit_status = array();
+            if (!empty($current_phase) && !empty($current_phase->entry_status)) {
+                $edit_status = $current_phase->entry_status;
+            }
+            $edit_status = array_merge(explode(',', $this->getParam('applicationsent_status', 0)), $edit_status);
+            $is_app_sent = !in_array(@$user->status, $edit_status);
             $can_edit = EmundusHelperAccess::asAccessAction(1, 'u', $user->id, $fnum);
             $can_read = EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum);
 
@@ -157,7 +183,6 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
             if (!empty($fnum)) {
 
                 // Check campaign limit, if the limit is obtained, then we set the deadline to true
-                $m_campaign = new EmundusModelCampaign;
                 $m_profile = new EmundusModelProfile;
                 $fnumDetail = $m_profile->getFnumDetails($fnum);
 
@@ -172,14 +197,12 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                     }
                     //try to access detail view or other
                     else {
-                        if(!$can_edit && $is_app_sent){
+                        if (!$can_edit && $is_app_sent) {
                             $mainframe->enqueueMessage(JText::_('APPLICATION_READ_ONLY'), 'error');
-                        } elseif ($fnumDetail['published'] = -1){
+                        } else if ($fnumDetail['published'] == -1) {
                             $mainframe->enqueueMessage(JText::_('DELETED_FILE'), 'error');
-                        } elseif ($is_dead_line_passed){
+                        } else if ($is_dead_line_passed) {
                             $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_PASSED'), 'error');
-                        } elseif (!$is_campaign_started){
-                            $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_NOT_STARTED'), 'error');
                         }
                         $reload_url = false;
                     }
@@ -192,6 +215,10 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                     if ($view == 'form') {
                         if ($can_edit) {
                             $reload_url = false;
+                            if ($reload < 3) {
+                                $reload++;
+                                $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum."&r=".$reload);
+                            }
                         }
                     } else {
                         //try to access detail view or other
@@ -212,7 +239,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
 
                 } else {
 
-                    if (($is_dead_line_passed && $can_edit_after_deadline == 0) || !$is_campaign_started || $isLimitObtained === true) {
+                    if (($is_dead_line_passed && $can_edit_after_deadline == 0) || $isLimitObtained === true) {
                         if ($reload_url) {
                             if ($isLimitObtained === true) {
                                 $mainframe->enqueueMessage(JText::_('APPLICATION_LIMIT_OBTAINED'), 'error');
@@ -260,7 +287,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                 }
             }
 
-            if ($copy_application_form == 1 && isset($user->fnum)) {
+            if ($copy_application_form == 1 && isset($user->fnum) && !in_array($formModel->getId(), $copy_exclude_forms)) {
                 if (empty($formModel->getRowId())) {
                     $db = JFactory::getDBO();
                     $table = $listModel->getTable();
@@ -268,145 +295,168 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                     $rowid = $formModel->data["rowid"];
 
                     $elements = array();
-                    foreach ($table_elements as $key => $element) {
+                    foreach ($table_elements as $element) {
                         $elements[] = $element->value;
                     }
 
                     // check if data stored for current user
                     try {
-                        $query = 'SELECT '.implode(',', $db->quoteName($elements)).' FROM '.$table->db_table_name.' WHERE user='.$user->id;
+						$query = $db->getQuery(true);
+						$query->select(implode(',', $db->quoteName($elements)))
+							->from($db->quoteName($table->db_table_name))
+							->where($db->quoteName('user') . ' = ' . $user->id);
                         $db->setQuery($query);
                         $stored = $db->loadAssoc();
-                        if (count($stored) > 0) {
+
+						$query->clear()
+							->select('count(id)')
+							->from($db->quoteName($table->db_table_name))
+							->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($user->fnum));
+                        $db->setQuery($query);
+                        $already_cloned = $db->loadResult();
+
+						$query->clear()
+							->select('count(id)')
+							->from($db->quoteName('#__emundus_uploads'))
+							->where($db->quoteName('user_id') . ' = ' . $user->id)
+							->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($user->fnum));
+                        $db->setQuery($query);
+                        $attachments_already_cloned = $db->loadResult();
+
+                        if (!empty($stored) && $already_cloned == 0) {
                             // update form data
                             $parent_id = $stored['id'];
                             unset($stored['id']);
                             unset($stored['fnum']);
 
-                            try {
-                                $query = 'INSERT INTO '.$table->db_table_name.' (`fnum`, `'.implode('`,`', array_keys($stored)).'`) VALUES('.$db->Quote($rowid).', '.implode(',', $db->Quote($stored)).')';
+                            foreach ($stored as $key => $store) {
+                                // get the element plugin, and params
+	                            $query->clear()
+		                            ->select('fe.plugin,fe.params')
+		                            ->from($db->quoteName('#__fabrik_elements','fe'))
+		                            ->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
+		                            ->where($db->quoteName('ffg.form_id') . ' = ' . $form_id)
+		                            ->where($db->quoteName('fe.name') . ' = ' . $db->quote($key))
+		                            ->where($db->quoteName('fe.published') . ' = 1');
                                 $db->setQuery($query);
-                                $db->execute();
-                                $id = $db->insertid();
+                                $elt = $db->loadObject();
 
-                            } catch (Exception $e) {
-                                $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
-                                JLog::add($error, JLog::ERROR, 'com_emundus');
+                                // if this element is date plugin, we need to check the time storage format (UTC of Local time)
+                                if($elt->plugin === 'date') {
+                                    // storage format (UTC [0], Local [1])
+                                    $timeStorageFormat = json_decode($elt->params)->date_store_as_local;
+
+                                    $store = EmundusHelperDate::displayDate($store, 'Y-m-d H:i:s', $timeStorageFormat);
+                                }
+                                
+                                $formModel->data[$table->db_table_name . '___' . $key] = $store;
+                                $formModel->data[$table->db_table_name . '___' . $key . '_raw'] = $store;
                             }
 
-                            // get data and update current form
                             $groups = $formModel->getFormGroups(true);
-                            $data = array();
                             if (count($groups) > 0) {
-                                foreach ($groups as $key => $group) {
+                                foreach ($groups as $group) {
                                     $group_params = json_decode($group->gparams);
-                                    if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
-
-                                        $query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id = '.$group->group_id.' AND table_key LIKE "id" AND table_join_key LIKE "parent_id"';
+                                    if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1 && !in_array($group->name,['id','parent_id','fnum','user','date_time'])) {
+                                        $query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id = ' . $group->group_id . ' AND table_key LIKE "id" AND table_join_key LIKE "parent_id"';
                                         $db->setQuery($query);
                                         try {
                                             $repeat_table = $db->loadResult();
                                         } catch (Exception $e) {
-                                            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+                                            $error = JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage();
                                             JLog::add($error, JLog::ERROR, 'com_emundus');
-                                            $repeat_table = $table->db_table_name.'_'.$group->group_id.'_repeat';
+                                            $repeat_table = $table->db_table_name . '_' . $group->group_id . '_repeat';
                                         }
 
-                                        $data[$group->group_id]['repeat_group'] = $group_params->repeat_group_button;
-                                        $data[$group->group_id]['group_id'] = $group->group_id;
-                                        $data[$group->group_id]['element_name'][] = $group->name;
-                                        $data[$group->group_id]['table'] = $repeat_table;
-                                    }
-                                }
-                                if (count($data) > 0) {
-                                    foreach ($data as $key => $d) {
+                                        $query = 'SELECT ' . $db->quoteName($group->name) . ' FROM ' . $repeat_table . ' WHERE parent_id=' . $parent_id;
+                                        $db->setQuery($query);
+                                        $stored = $db->loadColumn();
 
-                                        try {
-                                            $query = 'SELECT '.implode(',', $db->quoteName($d['element_name'])).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
-                                            $db->setQuery( $query );
-                                            $stored = $db->loadAssoc();
+                                        if (!empty($stored)) {
+                                            foreach ($stored as $store) {
+												$formModel->data[$repeat_table . '___id'][] = "";
+	                                            $formModel->data[$repeat_table . '___id_raw'][] = "";
+	                                            $formModel->data[$repeat_table . '___parent_id'][] = "";
+	                                            $formModel->data[$repeat_table . '___parent_id_raw'][] = "";
 
-                                            if (count($stored) > 0) {
-                                                // update form data
-                                                unset($stored['id']);
-                                                unset($stored['parent_id']);
-
-                                                try {
-                                                    $query = 'INSERT INTO '.$d['table'].' (`parent_id`, `'.implode('`,`', array_keys($stored)).'`) VALUES('.$id.', '.implode(',', $db->Quote($stored)).')';
-                                                    $db->setQuery( $query );
-                                                    $db->execute();
-                                                } catch (Exception $e) {
-                                                    $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
-                                                    JLog::add($error, JLog::ERROR, 'com_emundus');
-                                                }
+                                                $formModel->data[$repeat_table . '___' . $group->name][] = $store;
+                                                $formModel->data[$repeat_table . '___' . $group->name . '_raw'][] = $store;
                                             }
-
-                                        } catch (Exception $e) {
-                                            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
-                                            JLog::add($error, JLog::ERROR, 'com_emundus');
                                         }
                                     }
                                 }
                             }
-                            // sync documents uploaded
-                            // 1. get list of uploaded documents for previous file defined as duplicated
-                            $fnums = $user->fnums;
-                            unset($fnums[$user->fnum]);
+                        }
 
-                            if (count($fnums) > 0) {
-                                $previous_fnum = array_keys($fnums);
-                                $query = 'SELECT eu.*, esa.nbmax
+                        // sync documents uploaded
+                        // 1. get list of uploaded documents for previous file defined as duplicated
+                        $fnums = $user->fnums;
+                        unset($fnums[$user->fnum]);
+
+                        if (!empty($fnums) && $attachments_already_cloned == 0) {
+                            $previous_fnum = array_keys($fnums);
+                            $query = 'SELECT eu.*, esa.nbmax
 											FROM #__emundus_uploads as eu
 											LEFT JOIN #__emundus_setup_attachments as esa on esa.id=eu.attachment_id
 											LEFT JOIN #__emundus_setup_attachment_profiles as esap on esap.attachment_id=eu.attachment_id AND esap.profile_id='.$user->profile.'
 											WHERE eu.user_id='.$user->id.'
 											AND eu.fnum like '.$db->Quote($previous_fnum[0]).'
 											AND esap.duplicate=1';
-                                $db->setQuery( $query );
-                                $stored = $db->loadAssocList();
+                            $db->setQuery( $query );
+                            $stored = $db->loadAssocList();
 
-                                if (count($stored) > 0) {
-                                    // 2. copy DB définition and duplicate files in applicant directory
-                                    foreach ($stored as $key => $row) {
-                                        $src = $row['filename'];
-                                        $ext = explode('.', $src);
-                                        $ext = $ext[count($ext)-1];;
-                                        $cpt = 0-(int)(strlen($ext)+1);
-                                        $dest = substr($row['filename'], 0, $cpt).'-'.$row['id'].'.'.$ext;
-                                        $nbmax = $row['nbmax'];
-                                        $row['filename'] = $dest;
-                                        unset($row['id']);
-                                        unset($row['fnum']);
-                                        unset($row['nbmax']);
+                            if (!empty($stored)) {
+                                // 2. copy DB définition and duplicate files in applicant directory
+                                foreach ($stored as $row) {
+                                    $src = $row['filename'];
+                                    $ext = explode('.', $src);
+                                    $ext = $ext[count($ext)-1];;
+                                    $cpt = 0-(int)(strlen($ext)+1);
+                                    $dest = substr($row['filename'], 0, $cpt).'-'.$row['id'].'.'.$ext;
+                                    $nbmax = $row['nbmax'];
+                                    $row['filename'] = $dest;
+                                    $row['campaign_id'] = $fnumDetail['campaign_id'];
+                                    unset($row['id']);
+                                    unset($row['fnum']);
+                                    unset($row['nbmax']);
+                                    unset($row['inform_applicant_by_email']);
+                                    unset($row['is_validated']);
+                                    $row['can_be_deleted'] = 1;
+                                    if(empty($row['modified_by'])){
+                                        unset($row['modified_by']);
+                                    }
+                                    $row['pdf_pages_count'] = (int)$row['pdf_pages_count'];
 
-                                        try {
-                                            $query = 'SELECT count(id) FROM #__emundus_uploads WHERE user_id='.$user->id.' AND attachment_id='.$row['attachment_id'].' AND fnum like '.$db->Quote($user->fnum);
+                                    try {
+                                        $query = 'SELECT count(id) FROM #__emundus_uploads WHERE user_id='.$user->id.' AND attachment_id='.$row['attachment_id'].' AND fnum like '.$db->Quote($user->fnum);
+                                        $db->setQuery($query);
+                                        $cpt = $db->loadResult();
+
+                                        if ($cpt < $nbmax) {
+                                            $query = 'INSERT INTO #__emundus_uploads (`fnum`, `'.implode('`,`', array_keys($row)).'`) VALUES('.$db->Quote($user->fnum).', '.implode(',', $db->Quote($row)).')';
                                             $db->setQuery($query);
-                                            $cpt = $db->loadResult();
+                                            $db->execute();
+                                            $id = $db->insertid();
+                                            $path = EMUNDUS_PATH_ABS.$user->id.DS;
 
-                                            if ($cpt < $nbmax) {
-                                                $query = 'INSERT INTO #__emundus_uploads (`fnum`, `'.implode('`,`', array_keys($row)).'`) VALUES('.$db->Quote($user->fnum).', '.implode(',', $db->Quote($row)).')';
+                                            if (!copy($path.$src, $path.$dest)) {
+                                                $query = 'UPDATE #__emundus_uploads SET filename='.$src.' WHERE id='.$id;
                                                 $db->setQuery($query);
                                                 $db->execute();
-                                                $id = $db->insertid();
-                                                $path = EMUNDUS_PATH_ABS.$user->id.DS;
-
-                                                if (!copy($path.$src, $path.$dest)) {
-                                                    $query = 'UPDATE #__emundus_uploads SET filename='.$src.' WHERE id='.$id;
-                                                    $db->setQuery($query);
-                                                    $db->execute();
-                                                }
                                             }
-
-                                        } catch (Exception $e) {
-                                            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
-                                            JLog::add($error, JLog::ERROR, 'com_emundus');
                                         }
+
+                                    } catch (Exception $e) {
+                                        $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+                                        JLog::add($error, JLog::ERROR, 'com_emundus');
                                     }
                                 }
                             }
-                            $reload++;
-                            $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
+                        }
+
+                        $reload++;
+                        if ($reload_url) {
+                            $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&usekey=fnum&rowid=" . $fnum . "&r=" . $reload);
                         }
                     } catch (Exception $e) {
                         $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();

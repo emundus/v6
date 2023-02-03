@@ -4,57 +4,57 @@ header('Content-Type: text/html; charset=utf-8');
 ?>
 
 
-<center>
+<div>
 	<button id="buttonOpen" class="btnQueryBuilder" onclick="openCloseGraphManager()"><?php if(isset($_GET['gOpen'])) { echo JText::_('CLOSE_QUERY_BUILDER'); } else { echo JText::_('OPEN_QUERY_BUILDER'); } ?></button>
 	<br /><br />
 	<div class="queryBuilder" style="display:<?php if(isset($_GET['gOpen'])) { echo "block;"; } else { echo "none;"; } ?>" >
 		<form action="" method="POST" onsubmit="return false;">
 			<?php echo $showModule; ?>
 			<div class="createModule" id="createModule" style="display:none;" >
-				<input type="text" id="titleModule" placeholder="<?php echo JText::_('TITLE_MODULE'); ?>*" />
+				<input type="text" id="titleModule" placeholder="<?php echo JText::_('MOD_EMUNDUS_QUERY_BUILDER_TITLE_MODULE'); ?>*" />
 				<div class="flexS">
-					<label><?php echo JText::_('TYPE_MODULE'); ?>*</label>
+					<label><?php echo JText::_('MOD_EMUNDUS_QUERY_BUILDER_TYPE_MODULE'); ?>*</label>
 					<select id="typeModule">
-						<option value=""><?php echo JText::_('PLEASE_SELECT'); ?></option>
-						<option value="timeseries"><?php echo JText::_("LINE_TIME_LABEL") ?></option>
-						<option value="column2d"><?php echo JText::_("COLUMN_LABEL") ?></option>
-						<option value="column3d"><?php echo JText::_("COLUMN_3D_LABEL") ?></option>
-						<option value="scrollcolumn2d"><?php echo JText::_("COLUMN_SCROLL_LABEL") ?></option>
-						<option value="line"><?php echo JText::_("LINE_LABEL") ?></option>
-						<option value="scrollline2d"><?php echo JText::_("LINE_SCROLL_LABEL") ?></option>
-						<option value="area2d"><?php echo JText::_("AREA_LABEL") ?></option>
-						<option value="scrollarea2d"><?php echo JText::_("AREA_SCROLL_LABEL") ?></option>
-						<option value="bar2d"><?php echo JText::_("BAR_LABEL") ?></option>
-						<option value="bar3d"><?php echo JText::_("BAR_3D_LABEL") ?></option>
-						<option value="scrollbar2d"><?php echo JText::_("BAR_SCROLL_LABEL") ?></option>
-						<option value="pie2d"><?php echo JText::_("PIE_LABEL") ?></option>
-						<option value="pie3d"><?php echo JText::_("PIE_3D_LABEL") ?></option>
-						<option value="doughnut2d"><?php echo JText::_("DOUGHNUT_LABEL") ?></option>
-						<option value="doughnut3d"><?php echo JText::_("DOUGHNUT_3D_LABEL") ?></option>
-						<option value="pareto2d"><?php echo JText::_("PARETO_LABEL") ?></option>
-						<option value="pareto3d"><?php echo JText::_("PARETO_3D_LABEL") ?></option>
+						<option value=""><?php echo JText::_('MOD_EMUNDUS_QUERY_BUILDER_PLEASE_SELECT'); ?></option>
+						<option value="timeseries"><?php echo JText::_("MOD_EMUNDUS_QUERY_BUILDER_LINE_TIME_LABEL") ?></option>
+						<option value="column2d"><?php echo JText::_("MOD_EMUNDUS_QUERY_BUILDER_COLUMN_LABEL") ?></option>
+						<option value="column3d"><?php echo JText::_("MOD_EMUNDUS_QUERY_BUILDER_COLUMN_3D_LABEL") ?></option>
+						<option value="scrollcolumn2d"><?php echo JText::_("MOD_EMUNDUS_QUERY_BUILDER_COLUMN_SCROLL_LABEL") ?></option>
+						<option value="line"><?php echo JText::_("MOD_EMUNDUS_QUERY_BUILDER_LINE_LABEL") ?></option>
+						<option value="scrollline2d"><?php echo JText::_("MOD_EMUNDUS_QUERY_BUILDER_LINE_SCROLL_LABEL") ?></option>
+						<option value="area2d"><?php echo JText::_("MOD_EMUNDUS_QUERY_BUILDER_AREA_LABEL") ?></option>
+						<option value="scrollarea2d"><?php echo JText::_("MOD_EMUNDUS_QUERY_BUILDER_AREA_SCROLL_LABEL") ?></option>
+						<option value="bar2d"><?php echo JText::_("MOD_EMUNDUS_QUERY_BUILDER_BAR_LABEL") ?></option>
+						<option value="bar3d"><?php echo JText::_("MOD_EMUNDUS_QUERY_BUILDER_BAR_3D_LABEL") ?></option>
+						<option value="scrollbar2d"><?php echo JText::_("MOD_EMUNDUS_QUERY_BUILDER_BAR_SCROLL_LABEL") ?></option>
+						<option value="pie2d"><?php echo JText::_("MOD_EMUNDUS_QUERY_BUILDER_PIE_LABEL") ?></option>
+						<option value="pie3d"><?php echo JText::_("MOD_EMUNDUS_QUERY_BUILDER_PIE_3D_LABEL") ?></option>
+						<option value="doughnut2d"><?php echo JText::_("MOD_EMUNDUS_QUERY_BUILDER_DOUGHNUT_LABEL") ?></option>
+						<option value="doughnut3d"><?php echo JText::_("MOD_EMUNDUS_QUERY_BUILDER_DOUGHNUT_3D_LABEL") ?></option>
+						<option value="pareto2d"><?php echo JText::_("MOD_EMUNDUS_QUERY_BUILDER_PARETO_LABEL") ?></option>
+						<option value="pareto3d"><?php echo JText::_("MOD_EMUNDUS_QUERY_BUILDER_PARETO_3D_LABEL") ?></option>
 					</select>
 					<?php echo $selectIndicateur; ?>
 				</div>
 				<div class="flexS">
-					<input type="text" id="axeXModule" placeholder="<?php echo JText::_('AXE_X_MODULE'); ?>*"  />
-					<input type="text" id="axeYModule" placeholder="<?php echo JText::_('AXE_Y_MODULE'); ?>*" />
+					<input type="text" id="axeXModule" placeholder="<?php echo JText::_('MOD_EMUNDUS_QUERY_BUILDER_AXE_X_MODULE'); ?>*"  />
+					<input type="text" id="axeYModule" placeholder="<?php echo JText::_('MOD_EMUNDUS_QUERY_BUILDER_AXE_Y_MODULE'); ?>*" />
 				</div>
-				<input type="text" id="progModule" placeholder="<?php echo JText::_('PROGRAM_LABEL'); ?>" />
+				<input type="text" id="progModule" placeholder="<?php echo JText::_('MOD_EMUNDUS_QUERY_BUILDER_PROGRAM_LABEL'); ?>" />
 				<div class="flexS">
-					<input type="text" id="yearModule" placeholder="<?php echo JText::_('YEAR_LABEL'); ?>" />
-					<input type="text" id="campaignModule" placeholder="<?php echo JText::_('CAMPAIGN_LABEL'); ?>" />
+					<input type="text" id="yearModule" placeholder="<?php echo JText::_('MOD_EMUNDUS_QUERY_BUILDER_YEAR_LABEL'); ?>" />
+					<input type="text" id="campaignModule" placeholder="<?php echo JText::_('MOD_EMUNDUS_QUERY_BUILDER_CAMPAIGN_LABEL'); ?>" />
 				</div>
 				<div id="errorCreateModule"></div>
 			</div>
-            <input type="button" name="validation" class="btnQueryBuilder" id="validation" style="float:right;display:none;" value="<?php echo JText::_('VALIDATION'); ?>" onclick="createModule()"/>
-			<input type="button" id="createButton" class="btnQueryBuilder" style="float:right;" value="<?php echo JText::_('CREATE_MODULE'); ?>" onclick="buttonCreateModule()"/>
+            <input type="button" name="validation" class="btnQueryBuilder" id="validation" style="float:right;display:none;" value="<?php echo JText::_('MOD_EMUNDUS_QUERY_BUILDER_VALIDATION'); ?>" onclick="createModule()"/>
+			<input type="button" id="createButton" class="btnQueryBuilder" style="float:right;" value="<?php echo JText::_('MOD_EMUNDUS_QUERY_BUILDER_CREATE_MODULE'); ?>" onclick="buttonCreateModule()"/>
             <?php if (!empty($gotenberg_activation)) :?>
-			    <button onclick="getExport()" class="btnExport" style="float:left;"> <?php echo JText::_('EXPORT_MODULE'); ?></button>
+			    <button onclick="getExport()" class="btnExport" style="float:left;"> <?php echo JText::_('MOD_EMUNDUS_QUERY_BUILDER_EXPORT_MODULE'); ?></button>
             <?php endif; ?>
 		</form>
 	</div>
-</center>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
@@ -73,14 +73,14 @@ jQuery(document).ready(function(){
 	var wrapper2 = document.createElement('div');
 	wrapper1.parentNode.insertBefore(wrapper2, wrapper1);
 	wrapper2.classList.add("informationStatistique");
-	wrapper2.innerHTML = "<a class='closeButtonWelcomeStat' onclick='deleteWelcomeStat()'></a><?php echo JText::_('TEXT_WELCOME_STAT'); ?>";
+	wrapper2.innerHTML = "<a class='closeButtonWelcomeStat' onclick='deleteWelcomeStat()'></a><?php echo JText::_('MOD_EMUNDUS_QUERY_BUILDER_TEXT_WELCOME_STAT'); ?>";
 
 	jQuery('.g-content').has('.etiquette').attr('style', 'margin:auto!important');
 	jQuery('.g-content').has('.etiquette').attr('style', 'display:grid;grid-column-gap:15px;grid-row-gap:15px;grid-template-columns:repeat(3, 1fr);margin-bottom:15px!important;');
 	jQuery('.platform-content').attr('style', 'width:100%!important');
 	jQuery('.platform-content').has('.container-stat').attr('style', 'margin-bottom:50px;background-color:white;padding-bottom:1%;box-shadow: 0 1px 2px 0 hsla(0,0%,41.2%,.19);');
 	jQuery('.etiquette').attr('style', 'grid-column-end:span 3;');
-	jQuery('.informationStatistique').attr('style', 'grid-column-end:span 3;');
+	jQuery('.informationStatistique').attr('style', 'grid-column-end:span 3;margin-top: 32px');
 	jQuery('#g-container-main').attr('style', 'padding-left:5%!important;padding-right:5%!important');
 
 	taillerEtiquette();
@@ -148,12 +148,12 @@ jQuery(document).ready(function(){
 	// Request the stats modules to export
 	function getExport() {
 		Swal.mixin({
-			confirmButtonText: '<?php echo JText::_("EXPORT_MODULE_2"); ?>',
+			confirmButtonText: '<?php echo JText::_("MOD_EMUNDUS_QUERY_BUILDER_EXPORT_MODULE_2"); ?>',
 			cancelButtonText: '<?php echo JText::_("CANCEL"); ?>',
 			showCancelButton: true
 		}).queue([
 			{
-				title: "<?php echo JText::_('CHOOSE_EXPORT_MODULE'); ?>",
+				title: "<?php echo JText::_('MOD_EMUNDUS_QUERY_BUILDER_CHOOSE_EXPORT_MODULE'); ?>",
 				html: "<?php echo addslashes(str_replace(CHR(10),"",str_replace(CHR(13),"",$exportModule))) ?>"
 			}
 		]).then((result) => {
@@ -259,7 +259,7 @@ jQuery(document).ready(function(){
 			document.getElementById('buttonOpen').innerHTML = "<?php echo JText::_('CLOSE_QUERY_BUILDER'); ?>";
 			document.getElementsByClassName('queryBuilder')[0].style.display = 'block';
 		} else {
-			document.getElementById("createButton").value = "<?php echo JText::_('CREATE_MODULE'); ?>";
+			document.getElementById("createButton").value = "<?php echo JText::_('MOD_EMUNDUS_QUERY_BUILDER_CREATE_MODULE'); ?>";
 			document.getElementById("createButton").classList.replace("btnExport", "btnQueryBuilder");
 			document.getElementById("createButton").style.float = "right";
 			document.getElementById('buttonOpen').innerHTML = "<?php echo JText::_('OPEN_QUERY_BUILDER'); ?>";
@@ -330,7 +330,7 @@ jQuery(document).ready(function(){
 			button.style.float = "left";
 		} else {
 			elt.style.display = "none";
-			button.value = "<?php echo JText::_('CREATE_MODULE'); ?>";
+			button.value = "<?php echo JText::_('MOD_EMUNDUS_QUERY_BUILDER_CREATE_MODULE'); ?>";
 			button.classList.replace("btnExport", "btnQueryBuilder");
 			document.getElementById('sortable').style.display = "block";
 			document.getElementById('validation').style.display = "none";
@@ -368,12 +368,12 @@ jQuery(document).ready(function(){
 							console.log(msg.msg);
 						}
 					} else {
-						document.getElementById('errorCreateModule').innerHTML = "<?= JText::_('ERROR_CREATE_MODULE_2'); ?>";
+						document.getElementById('errorCreateModule').innerHTML = "<?= JText::_('MOD_EMUNDUS_QUERY_BUILDER_ERROR_CREATE_MODULE_2'); ?>";
 					}
 				}
 			});
 		} else {
-			document.getElementById('errorCreateModule').innerHTML = "<?= JText::_('ERROR_CREATE_MODULE'); ?>";
+			document.getElementById('errorCreateModule').innerHTML = "<?= JText::_('MOD_EMUNDUS_QUERY_BUILDER_ERROR_CREATE_MODULE'); ?>";
 		}
 	}
 
@@ -405,34 +405,34 @@ jQuery(document).ready(function(){
 			progressSteps: ['1', '2']
 		}).queue([
 			{
-				title: "<?php echo JText::_('TITLE_MODULE'); ?>",
+				title: "<?php echo JText::_('MOD_EMUNDUS_QUERY_BUILDER_TITLE_MODULE'); ?>",
 				inputValue: ''+titleModule,
-				confirmButtonText: '<?php echo JText::_("NEXT"); ?> &rarr;',
+				confirmButtonText: '<?php echo JText::_("MOD_EMUNDUS_QUERY_BUILDER_NEXT"); ?> &rarr;',
 			},
 			{
-				title: "<?= JText::_('TYPE_MODULE'); ?>",
+				title: "<?= JText::_('MOD_EMUNDUS_QUERY_BUILDER_TYPE_MODULE'); ?>",
 				input: 'select',
 				inputOptions: {
-					timeseries: '<?= JText::_("LINE_TIME_LABEL") ?>',
-					column2d: '<?= JText::_("COLUMN_LABEL") ?>',
-					column3d: '<?= JText::_("COLUMN_3D_LABEL") ?>',
-					scrollcolumn2d: '<?= JText::_("COLUMN_SCROLL_LABEL") ?>',
-					line: '<?= JText::_("LINE_LABEL") ?>',
-					scrollline2d: '<?= JText::_("LINE_SCROLL_LABEL") ?>',
-					area2d: '<?= JText::_("AREA_LABEL") ?>',
-					scrollarea2d: '<?= JText::_("AREA_SCROLL_LABEL") ?>',
-					bar2d: '<?= JText::_("BAR_LABEL") ?>',
-					bar3d: '<?= JText::_("BAR_3D_LABEL") ?>',
-					scrollbar2d: '<?= JText::_("BAR_SCROLL_LABEL") ?>',
-					pie2d: '<?= JText::_("PIE_LABEL") ?>',
-					pie3d: '<?= JText::_("PIE_3D_LABEL") ?>',
-					doughnut2d: '<?= JText::_("DOUGHNUT_LABEL") ?>',
-					doughnut3d: '<?= JText::_("DOUGHNUT_3D_LABEL") ?>',
-					pareto2d: '<?= JText::_("PARETO_LABEL") ?>',
-					pareto3d: '<?= JText::_("PARETO_3D_LABEL") ?>'
+					timeseries: '<?= JText::_("MOD_EMUNDUS_QUERY_BUILDER_LINE_TIME_LABEL") ?>',
+					column2d: '<?= JText::_("MOD_EMUNDUS_QUERY_BUILDER_COLUMN_LABEL") ?>',
+					column3d: '<?= JText::_("MOD_EMUNDUS_QUERY_BUILDER_COLUMN_3D_LABEL") ?>',
+					scrollcolumn2d: '<?= JText::_("MOD_EMUNDUS_QUERY_BUILDER_COLUMN_SCROLL_LABEL") ?>',
+					line: '<?= JText::_("MOD_EMUNDUS_QUERY_BUILDER_LINE_LABEL") ?>',
+					scrollline2d: '<?= JText::_("MOD_EMUNDUS_QUERY_BUILDER_LINE_SCROLL_LABEL") ?>',
+					area2d: '<?= JText::_("MOD_EMUNDUS_QUERY_BUILDER_AREA_LABEL") ?>',
+					scrollarea2d: '<?= JText::_("MOD_EMUNDUS_QUERY_BUILDER_AREA_SCROLL_LABEL") ?>',
+					bar2d: '<?= JText::_("MOD_EMUNDUS_QUERY_BUILDER_BAR_LABEL") ?>',
+					bar3d: '<?= JText::_("MOD_EMUNDUS_QUERY_BUILDER_BAR_3D_LABEL") ?>',
+					scrollbar2d: '<?= JText::_("MOD_EMUNDUS_QUERY_BUILDER_BAR_SCROLL_LABEL") ?>',
+					pie2d: '<?= JText::_("MOD_EMUNDUS_QUERY_BUILDER_PIE_LABEL") ?>',
+					pie3d: '<?= JText::_("MOD_EMUNDUS_QUERY_BUILDER_PIE_3D_LABEL") ?>',
+					doughnut2d: '<?= JText::_("MOD_EMUNDUS_QUERY_BUILDER_DOUGHNUT_LABEL") ?>',
+					doughnut3d: '<?= JText::_("MOD_EMUNDUS_QUERY_BUILDER_DOUGHNUT_3D_LABEL") ?>',
+					pareto2d: '<?= JText::_("MOD_EMUNDUS_QUERY_BUILDER_PARETO_LABEL") ?>',
+					pareto3d: '<?= JText::_("MOD_EMUNDUS_QUERY_BUILDER_PARETO_3D_LABEL") ?>'
 				},
 				inputValue: typeModule,
-				confirmButtonText: '<?php echo JText::_("VALIDATION"); ?>',
+				confirmButtonText: '<?php echo JText::_("MOD_EMUNDUS_QUERY_BUILDER_VALIDATION"); ?>',
 			}
 		]).then((result) => {
 			if (result.value) {

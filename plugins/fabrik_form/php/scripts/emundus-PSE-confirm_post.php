@@ -34,18 +34,19 @@ $campaign = $campaigns->getCampaignByID($student->campaign_id);
 
 $emails = new EmundusModelEmails;
 
-$post = array(  'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($campaign['end_date'])),
+$post = array(  'DEADLINE' => JHTML::_('date', $campaign['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
 				'APPLICANTS_LIST' => '',
 				'EVAL_CRITERIAS' => '',
 				'EVAL_PERIOD' => '',
 				'CAMPAIGN_LABEL' => $campaign['label'],
 				'CAMPAIGN_YEAR' => $campaign['year'],
-				'CAMPAIGN_START' => $campaign['start_date'],
-				'CAMPAIGN_END' => $campaign['end_date'],
+				'CAMPAIGN_START' => JHTML::_('date', $campaign['start_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
+				'CAMPAIGN_END' => JHTML::_('date', $campaign['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
 				'CAMPAIGN_CODE' => $campaign['training']
 			);
-$tags = $emails->setTags($student->id, $post);
+
 $email = $emails->getEmail("confirm_post");
+$tags = $emails->setTags($student->id, $post, $student->fnum, '', $email->message);
 
 // Apllicant cannot delete this attachments now
 $query = 'UPDATE #__emundus_uploads SET can_be_deleted = 0 WHERE user_id = '.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
@@ -147,7 +148,7 @@ if ($alert_new_applicant == 1) {
 			$mailer = JFactory::getMailer();
 
 			$eval_user = & JFactory::getUser($evaluator);
-			$tags = $emails->setTags($eval_user->id, $post);
+			$tags = $emails->setTags($eval_user->id, $post, null, '', $email->message);
 			// Mail 
 			$from = $email->emailfrom;
 			$from_id = 62;

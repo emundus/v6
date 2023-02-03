@@ -245,6 +245,14 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
             JError::raiseError(500, $query);
         }
 
+        // track the LOGS (1 | c | COM_EMUNDUS_ACCESS_FILE_CREATE)
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        $user = JFactory::getSession()->get('emundusUser');
+        // if user_id is null -> there is no session data because the account is not activated yet, so don't log
+        if ($user->id) {
+            EmundusModelLogs::log($user->id, $user->id, $fnum, 1, 'c', 'COM_EMUNDUS_ACCESS_FILE_CREATE');
+        }
+
         if ($form_type == 'cc') {
             $app->redirect($this->getParam('emunduscampaign_redirect_url', null) ?: 'index.php?option=com_emundus&task=openfile&fnum='.$fnum, JText::_('FILE_OK'));
         }

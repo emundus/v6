@@ -19,10 +19,13 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_use
 <div class="reset-confirm<?php echo $this->pageclass_sfx; ?>">
 
 		<div class="page-header">
-            <div class="icon-title resetpwd"></div>
-                <h1>
-                    <?php echo $this->escape($this->params->get('page_heading')); ?>
-                </h1>
+            <?php if (file_exists('images/custom/favicon.png')) : ?>
+                <a href="/" class="em-profile-picture em-mb-32" style="width: 50px;height: 50px;background-image: url('images/custom/favicon.png')">
+                </a>
+            <?php endif; ?>
+            <p class="em-mb-8 em-h3">
+                <?php echo $this->escape($this->params->get('page_heading')); ?>
+            </p>
 		</div>
 
         <form action="<?php echo JRoute::_('index.php?option=com_users&task=reset.confirm'); ?>" method="post" class="form-validate form-horizontal well">

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -297,7 +297,7 @@ class hikashopProductClass extends hikashopClass{
 			$this->updateRelated($element,$status,'options');
 			$this->updateRelated($element,$status,'bundle');
 			$this->updateCharacteristics($element,$status);
-			$translationHelper->handleTranslations('product',$status,$element);
+			$translationHelper->handleTranslations('product',$status,$element, 'hikashop_', null, true);
 
 			if($new)
 				$app->triggerEvent( 'onAfterProductCreate', array( & $element ) );
@@ -319,6 +319,7 @@ class hikashopProductClass extends hikashopClass{
 	}
 
 	public function backSaveForm() {
+		$this->_saveAreas('product');
 		$app = JFactory::getApplication();
 		if(empty($this->db))
 			$this->db = JFactory::getDBO();
@@ -381,7 +382,11 @@ class hikashopProductClass extends hikashopClass{
 		if(!hikashop_acl('product/edit/keywords')) { unset($product->product_keywords); }
 		if(!hikashop_acl('product/edit/alias')) { unset($product->product_alias); }
 		if(!hikashop_acl('product/edit/acl')) { unset($product->product_access); }
-		if(!hikashop_acl('product/edit/msrp')) { unset($product->product_msrp); }
+		if(!hikashop_acl('product/edit/msrp')) {
+			unset($product->product_msrp);
+		} else {
+			$product->product_msrp = hikashop_toFloat($product->product_msrp);
+		}
 		if(!hikashop_acl('product/edit/canonical')) { unset($product->product_canonical); }
 		if(!hikashop_acl('product/edit/warehouse'))
 			unset($product->product_warehouse_id);
@@ -749,7 +754,37 @@ class hikashopProductClass extends hikashopClass{
 		return $status;
 	}
 
+	private function _saveAreas($type, $parent = '') {
+		$config = hikashop_config();
+		if(!hikashop_isAllowed($config->get('acl_product_customize','all')))
+			return true;
+
+		$inputs = array('order', 'fields');
+		$config = hikashop_config();
+		$configData = array();
+		$reset = hikaInput::get()->getInt($type.'_reset_custom', 0);
+		foreach($inputs as $input) {
+			if($reset) {
+				$configData['product_areas_'.$input] = '';
+				$configData['variant_areas_'.$input] = '';
+			} else {
+				$areas_order = hikaInput::get()->getString($type.'_areas_'.$input, '');
+				if(!empty($areas_order)) {
+					if(!empty($parent)) {
+						$main_order = $config->get($parent.'_areas_'.$input);
+						if($main_order == $areas_order)
+							continue;
+					}
+					$configData[$type.'_areas_'.$input] = $areas_order;
+				}
+			}
+		}
+		if(count($configData))
+			$config->save($configData);
+	}
+
 	public function backSaveVariantForm() {
+		$this->_saveAreas('variant', 'product');
 		$app = JFactory::getApplication();
 		$config = hikashop_config();
 		if(empty($this->db))
@@ -878,7 +913,7 @@ class hikashopProductClass extends hikashopClass{
 
 		$removeFields = array(
 			'manufacturer_id', 'page_title', 'url', 'meta_description', 'keywords', 'alias', 'canonical',
-			'contact', 'delay_id', 'tax_id', 'waitlist', 'display_quantity_field',
+			'contact', 'delay_id', 'waitlist', 'display_quantity_field',
 			'status', 'hit', 'created', 'modified', 'last_seen_date', 'sales', 'layout', 'average_score', 'total_vote',
 			'warehouse_id',
 		);
@@ -971,7 +1006,7 @@ class hikashopProductClass extends hikashopClass{
 				if(!empty($value['price_end_date']))
 					$product->prices[$k]->price_end_date = hikashop_getTime($value['price_end_date']);
 				else
-					$product->prices[$k]->price_start_date = '';
+					$product->prices[$k]->price_end_date = '';
 				if($acls['acl'] && isset($value['price_users']))
 					$product->prices[$k]->price_users = preg_replace('#[^0-9,]#i', '', $value['price_users']);
 				if($acls['currency'] && isset($value['price_currency_id']))
@@ -1701,12 +1736,16 @@ class hikashopProductClass extends hikashopClass{
 		}
 	}
 
-	function addAlias(&$element){
-		if(empty($element->product_alias)){
+	function addAlias(&$element, $language_code = null){
+		if(empty($element->product_alias)) {
 			$element->alias = strip_tags(preg_replace('#<span class="hikashop_product_variant_subname">.*</span>#isU','',$element->product_name));
-		}else{
+		} else {
 			$element->alias = $element->product_alias;
 		}
+
+		$translationHelper = hikashop_get('helper.translation');
+		$translationHelper->translateAlias($element, 'product', $language_code);
+
 		$config = JFactory::getConfig();
 		if(!$config->get('unicodeslugs')){
 			$lang = JFactory::getLanguage();
@@ -1837,7 +1876,7 @@ class hikashopProductClass extends hikashopClass{
 		global $Itemid;
 		$url_itemid = (!empty($Itemid) ? '&Itemid='.$Itemid : '');
 		$orders = null;
-		$download_time_limit = 0;
+		$main_download_time_limit = 0;
 		$main_download_number_limit = 0;
 		$config = hikashop_config();
 
@@ -1853,7 +1892,8 @@ class hikashopProductClass extends hikashopClass{
 				$user = hikashop_loadUser(true);
 				if(!empty($user->user_cms_id)) {
 
-					$download_time_limit = $config->get('download_time_limit', 0);
+					$main_download_time_limit = $config->get('download_time_limit', 0);
+
 					$main_download_number_limit = $config->get('download_number_limit', 0);
 
 					$statuses = array();
@@ -1903,6 +1943,12 @@ class hikashopProductClass extends hikashopClass{
 			} else {
 				$download_number_limit = $main_download_number_limit;
 			}
+
+			if(!empty($file->file_time_limit))
+				$download_time_limit = $file->file_time_limit;
+			else
+				$download_time_limit = $main_download_time_limit;
+
 			$downloads = array();
 			if(!empty($download_number_limit) && count($orders)) {
 				$db->setQuery('SELECT * FROM #__hikashop_download WHERE order_id IN ('.implode(',', array_keys($orders)).') AND file_id = '.(int)$file->file_id);
@@ -2063,7 +2109,7 @@ class hikashopProductClass extends hikashopClass{
 			$waitlist = $mainProduct->product_waitlist;
 		$wishlist = $config->get('enable_wishlist', 1);
 		foreach($variants as $k => $variant) {
-			$isNeeded = $variant->product_published && ($variant->product_quantity != 0 || $waitlist || $wishlist);
+			$isNeeded = $variant->product_published && $variant->product_id != $variant->product_parent_id && ($variant->product_quantity != 0 || $waitlist || $wishlist);
 			if(!$isNeeded) {
 				continue;
 			}
@@ -2473,11 +2519,13 @@ class hikashopProductClass extends hikashopClass{
 						' FROM '.hikashop_table('product_related').' AS pr '.
 						' INNER JOIN '.hikashop_table('product').' AS p ON pr.product_related_id = p.product_id '.
 						' WHERE pr.product_id IN ('.implode(',', $pids).') AND pr.product_related_type = '.$this->database->quote('bundle').
-							' AND p.product_quantity >= 0';
+							' AND p.product_quantity >= 0 GROUP BY pr.product_id';
 				$this->database->setQuery($query);
 				$relations = $this->database->loadObjectList('product_id');
 
 				foreach($rows as $k => $row) {
+					if($row->product_quantity>=0)
+						continue;
 					if(!isset($relations[(int)$row->product_id]))
 						continue;
 					$rows[$k]->product_quantity = floor($relations[(int)$row->product_id]->qty);
@@ -2490,8 +2538,12 @@ class hikashopProductClass extends hikashopClass{
 		if(!$options['load_custom_item_fields'])
 			return true;
 
-		if(empty($fieldsClass))
-			$fieldsClass = hikashop_get('class.field');
+		$this->loadCustomItemFieldsForProductsListing($rows, $options);
+		return true;
+	}
+
+	function loadCustomItemFieldsForProductsListing(&$rows, $options = array()) {
+		$fieldsClass = hikashop_get('class.field');
 
 		$this->itemFields = $fieldsClass->getFields('frontcomp', $rows, 'item', 'checkout&task=state');
 		if(empty($this->itemFields))
@@ -2524,7 +2576,7 @@ class hikashopProductClass extends hikashopClass{
 				array_unique($item_cats);
 			}
 
-			$isListingField = $options['load_custom_item_fields'] && (strpos($itemField->field_display, ';front_product_listing=1;') !== false);
+			$isListingField = strpos($itemField->field_display, ';front_product_listing=1;') !== false;
 
 			if(!$isListingField && empty($itemField->field_required))
 				continue;
@@ -2919,9 +2971,21 @@ class hikashopProductClass extends hikashopClass{
 		if(empty($publicPrices))
 			$publicPrices = $pricesArray;
 
+		$select_method = $config->get('sort_price_select_mode', 'unit');
+
 		foreach($publicPrices as $price) {
-			if($price->price_min_quantity <= 1)
+			if((empty($select_method) || $select_method == 'auto') && $price->price_min_quantity <= 1) {
 				$selectedPrice = $price;
+				continue;
+			}
+			if($select_method == 'cheapest' && (empty($selectedPrice) || $selectedPrice->price_value > $price->price_value)) {
+				$selectedPrice = $price;
+				continue;
+			}
+			if($select_method == 'expensive' && (empty($selectedPrice) || $selectedPrice->price_value < $price->price_value)) {
+				$selectedPrice = $price;
+				continue;
+			}
 		}
 		if(empty($selectedPrice))
 			$selectedPrice = reset($publicPrices);
@@ -3785,6 +3849,9 @@ class hikashopProductClass extends hikashopClass{
 		if(!$do)
 			return false;
 
+		$fieldClass = hikashop_get('class.field');
+		$fieldClass->handleBeforeDelete($elements, 'product');
+
 		$status = parent::delete($elements);
 		if($status) {
 			$app->triggerEvent('onAfterProductDelete', array(&$elements));
@@ -3795,6 +3862,9 @@ class hikashopProductClass extends hikashopClass{
 			$fileClass = hikashop_get('class.file');
 			$fileClass->deleteFiles('product', $elements, $ignoreFile);
 			$fileClass->deleteFiles('file', $elements, $ignoreFile);
+
+			$fieldClass->handleAfterDelete($elements, 'product');
+
 			$translationHelper = hikashop_get('helper.translation');
 			$translationHelper->deleteTranslations('product', $elements);
 			return count($elements);
@@ -3963,31 +4033,47 @@ class hikashopProductClass extends hikashopClass{
 			$separator = ' ';
 		$product_price_percentage = (float) @$variant->product_price_percentage;
 		foreach($checkfields as $field) {
-			if(!empty($variant->$field) && $field != 'product_name' && (!is_numeric($variant->$field) || bccomp($variant->$field,0,5)))
+			if($field == 'images') {
+				$image_mode = $config->get('variant_images_behavior', 'replace_main_product_images');
+				if(empty($variant->$field) && !empty($element->$field)) {
+					$variant->$field = hikashop_copy($element->$field);
+				} elseif($image_mode != 'replace_main_product_images' && !empty($element->$field)) {
+					if($image_mode == 'display_along_main_product_images')
+						$variant->$field = array_merge(hikashop_copy($element->$field), $variant->$field);
+					else
+						$variant->$field = array_merge($variant->$field, hikashop_copy($element->$field));
+				}
+				continue;
+			}
+			if(!empty($variant->$field) && $field != 'product_name' && (!is_numeric($variant->$field) || bccomp(sprintf('%F',$variant->$field),0,5)))
 				continue;
 
 			if(isset($element->$field) && (is_array($element->$field) && count($element->$field) || is_object($element->$field))) {
-				$variant->$field = hikashop_copy($element->$field);
+				switch($field) {
+					case 'prices':
+						$variant->$field = hikashop_copy($element->$field);
 
-				if($field != 'prices')
-					continue;
-
-				if(!empty($variant->cart_product_total_variants_quantity)) {
-					$variant->cart_product_total_quantity = $variant->cart_product_total_variants_quantity;
-				}
-				if($product_price_percentage <= 0)
-					continue;
-
-				foreach($variant->$field as $k => $v) {
-					foreach(get_object_vars($v) as $key => $value) {
-						if(in_array($key, array('taxes_without_discount', 'taxes', 'taxes_orig'))) {
-							foreach($value as $taxKey => $tax) {
-								$variant->prices[$k]->taxes[$taxKey]->tax_amount = @$tax->tax_amount * $product_price_percentage / 100;
-							}
-						} elseif(is_numeric($value) && !in_array($key,array('price_currency_id','price_orig_currency_id','price_min_quantity','price_access', 'price_users'))) {
-							$variant->prices[$k]->$key = $value * $product_price_percentage / 100;
+						if(!empty($variant->cart_product_total_variants_quantity)) {
+							$variant->cart_product_total_quantity = $variant->cart_product_total_variants_quantity;
 						}
-					}
+						if($product_price_percentage <= 0)
+							break;
+
+						foreach($variant->$field as $k => $v) {
+							foreach(get_object_vars($v) as $key => $value) {
+								if(in_array($key, array('taxes_without_discount', 'taxes', 'taxes_orig'))) {
+									foreach($value as $taxKey => $tax) {
+										$variant->prices[$k]->taxes[$taxKey]->tax_amount = @$tax->tax_amount * $product_price_percentage / 100;
+									}
+								} elseif(is_numeric($value) && !in_array($key,array('price_currency_id','price_orig_currency_id','price_min_quantity','price_access', 'price_users'))) {
+									$variant->prices[$k]->$key = $value * $product_price_percentage / 100;
+								}
+							}
+						}
+						break;
+					default:
+						$variant->$field = hikashop_copy($element->$field);
+						break;
 				}
 			} else if($field == 'product_name') {
 				if(!empty($variant->characteristics)) {
@@ -4209,10 +4295,44 @@ class hikashopProductClass extends hikashopClass{
 			$product_elements = $this->db->loadObjectList();
 
 		} else if(!empty($search)) {
+
+			$columns = array('product_code', 'product_name');
+
+			$joins = array(
+				'INNER JOIN ' . hikashop_table('product_category') . ' AS pc ON p.product_id = pc.product_id',
+				'INNER JOIN ' . hikashop_table('category') . ' AS c ON c.category_id = pc.category_id',
+			);
+			if($load_variants) {
+				$searchMap[] = 'v.product_code';
+				$searchMap[] = 'v.product_name';
+				$joins[] = 'LEFT JOIN ' . hikashop_table('product') . ' AS v ON p.product_id = v.product_parent_id';
+			}
+
+			if(hikashop_level(1)) {
+				$cat = null;
+				$fieldsClass = hikashop_get('class.field');
+				$fields = $fieldsClass->getData('all', 'product', false, $cat);
+
+				if(!empty($fields)) {
+					foreach($fields as $field) {
+						if($field->field_type == "customtext")
+							continue;
+						$columns[] = $field->field_namekey;
+					}
+				}
+			}
+			$searchMap = array();
+			foreach($columns as $column) {
+				$searchMap[] = 'p.'.$column;
+				if($load_variants) {
+					$searchMap[] = 'v.'.$column;
+				}
+			}
+			$search_filter = '('.implode(" LIKE $searchStr OR ",$searchMap)." LIKE $searchStr".')';
+
 			$query = 'SELECT p.*, c.category_id, c.category_right, c.category_left FROM ' . hikashop_table('product') . ' AS p '.
-				' INNER JOIN ' . hikashop_table('product_category') . ' AS pc ON p.product_id = pc.product_id '.
-				' INNER JOIN ' . hikashop_table('category') . ' AS c ON c.category_id = pc.category_id '.
-				' WHERE (p.product_name LIKE '.$searchStr.' OR p.product_code LIKE '.$searchStr.') AND p.product_type != \'trash\''.
+				implode(' ', $joins).
+				' WHERE '.$search_filter.' AND p.product_type != \'trash\''.
 				' ORDER BY p.product_name ASC';
 			$this->db->setQuery($query, 0, $limit);
 			$product_elements = $this->db->loadObjectList();
@@ -4233,38 +4353,47 @@ class hikashopProductClass extends hikashopClass{
 			if($start > 0)
 				$base = '(c.category_left >= ' . (int)$category_elements[$start]->category_left . ' AND c.category_right <= ' . (int)$category_elements[$start]->category_right . ') AND ';
 
-			$query = 'SELECT c.* ' .
+			if(!empty($lookup_categories))
+				$base .=  '((c.category_left <= '.implode(') OR (c.category_left <= ', $lookup_categories) . '))';
+
+			$category_tree = null;
+			if(!empty($base)) {
+				$query = 'SELECT c.* ' .
 				' FROM ' . hikashop_table('category') . ' AS c ' .
-				' WHERE ' . $base . '((c.category_left <= '.implode(') OR (c.category_left <= ', $lookup_categories) . '))';
-			$this->db->setQuery($query);
-			$category_tree = $this->db->loadObjectList('category_id');
+				' WHERE ' . $base;
+				$this->db->setQuery($query);
+				$category_tree = $this->db->loadObjectList('category_id');
+			}
 
-			foreach($category_tree as $k => $v) {
-				if($k == $start && !$is_root)
-					continue;
 
-				$o = new stdClass();
-				$o->status = 2;
-				$o->name = hikashop_translate($v->category_name);
-				$o->value = $k;
-				$o->data = array();
-				if($set_no_selection)
-					$o->noselection = 1;
+			if(!empty($category_tree)) {
+				foreach($category_tree as $k => $v) {
+					if($k == $start && !$is_root)
+						continue;
 
-				if(isset($category_elements[$k]) && empty($category_elements[$k]->isproduct))
-					$o->status = 3;
+					$o = new stdClass();
+					$o->status = 2;
+					$o->name = hikashop_translate($v->category_name);
+					$o->value = $k;
+					$o->data = array();
+					if($set_no_selection)
+						$o->noselection = 1;
 
-				if(empty($v->category_parent_id) || $k == $start) {
-					$o->status = 5;
-					$o->icon = 'world';
-					$ret[0][] =& $o;
-				} else if((int)$v->category_parent_id == 1 || (int)$v->category_parent_id == $start || !isset($categories[(int)$v->category_parent_id])) {
-					$ret[0][] =& $o;
-				} else {
-					$categories[(int)$v->category_parent_id]->data[] =& $o;
+					if(isset($category_elements[$k]) && empty($category_elements[$k]->isproduct))
+						$o->status = 3;
+
+					if(empty($v->category_parent_id) || $k == $start) {
+						$o->status = 5;
+						$o->icon = 'world';
+						$ret[0][] =& $o;
+					} else if((int)$v->category_parent_id == 1 || (int)$v->category_parent_id == $start || !isset($categories[(int)$v->category_parent_id])) {
+						$ret[0][] =& $o;
+					} else {
+						$categories[(int)$v->category_parent_id]->data[] =& $o;
+					}
+					$categories[$k] =& $o;
+					unset($o);
 				}
-				$categories[$k] =& $o;
-				unset($o);
 			}
 		} else {
 			$product_types = array();
@@ -4292,6 +4421,10 @@ class hikashopProductClass extends hikashopClass{
 		foreach($product_elements as $k => $p) {
 			if(!empty($p->product_name))
 				$product_elements[$k]->product_name = hikashop_translate($p->product_name);
+			if(!preg_match('!!u', $product_elements[$k]->product_name))
+				$product_elements[$k]->product_name = htmlentities(utf8_encode($product_elements[$k]->product_name), ENT_QUOTES, "UTF-8");
+			else
+				$product_elements[$k]->product_name = htmlentities($product_elements[$k]->product_name, ENT_QUOTES, "UTF-8");
 		}
 
 		if(!empty($product_elements) && $tree_mode) {
@@ -4313,6 +4446,7 @@ class hikashopProductClass extends hikashopClass{
 					$product_ids[ (int)$v->product_parent_id ][] = (int)$v->product_id;
 					if(!empty($v->product_name))
 						$variants[$k]->product_name = hikashop_translate($v->product_name);
+					$variants[$k]->product_name = htmlentities( ((!preg_match('!!u', $variants[$k]->product_name)) ? utf8_encode($variants[$k]->product_name) : $variants[$k]->product_name), ENT_QUOTES, "UTF-8");
 				}
 
 				$characteristics = $this->getCharacteristics(array_keys($product_ids), array_keys($variants));
@@ -4324,15 +4458,19 @@ class hikashopProductClass extends hikashopClass{
 					$variant_separator = ' ';
 			}
 
+			$done = array();
+
 			foreach($product_elements as $p) {
+				$key = $p->category_id . '_'.$p->product_id;
+				if(isset($done[$key]))
+					continue;
+				$done[$key] = $key;
+
 				$o = new stdClass();
 				$o->status = 0;
 				$o->value = (int)$p->product_id;
 
-				if(!preg_match('!!u', $p->product_name))
-					$product_name = htmlentities(utf8_encode($p->product_name), ENT_QUOTES, "UTF-8");
-				else
-					$product_name = htmlentities($p->product_name, ENT_QUOTES, "UTF-8");
+				$product_name = $p->product_name;
 
 				if(!empty($displayFormat) && !empty($displayFormat_tags)) {
 					if($p->product_quantity == -1)
@@ -4371,7 +4509,7 @@ class hikashopProductClass extends hikashopClass{
 						$o2->value = (int)$id;
 						$v = $variants[$id];
 
-						$variant_name = htmlentities( ((!preg_match('!!u', $v->product_name)) ? utf8_encode($v->product_name) : $v->product_name), ENT_QUOTES, "UTF-8");
+						$variant_name = $v->product_name;
 						if(empty($variant_name)) {
 							$variant_name = $product_name . $characteristic_separator;
 							foreach($characteristics[ (int)$p->product_id ] as $k => $c) {
@@ -4441,6 +4579,7 @@ class hikashopProductClass extends hikashopClass{
 			foreach($products_data as $k => $p) {
 				if(!empty($p->product_name))
 					$products_data[$k]->product_name = hikashop_translate($p->product_name);
+				$products_data[$k]->product_name = htmlentities( ((!preg_match('!!u', $products_data[$k]->product_name)) ? utf8_encode($products_data[$k]->product_name) : $products_data[$k]->product_name), ENT_QUOTES, "UTF-8");
 			}
 
 			$products = array();
@@ -4470,6 +4609,7 @@ class hikashopProductClass extends hikashopClass{
 				foreach($parents as $k => $p) {
 					if(!empty($p->product_name))
 						$parents[$k]->product_name = hikashop_translate($p->product_name);
+					$parents[$k]->product_name = htmlentities( ((!preg_match('!!u', $parents[$k]->product_name)) ? utf8_encode($parents[$k]->product_name) : $parents[$k]->product_name), ENT_QUOTES, "UTF-8");
 				}
 
 				$characteristics = $this->getCharacteristics($variant_data['product'], $variant_data['variant']);
@@ -4486,7 +4626,7 @@ class hikashopProductClass extends hikashopClass{
 						continue;
 
 					$parent = isset($parents[ $p->product_parent_id ]) ? $parents[ $p->product_parent_id ] : $p;
-					$product_name = htmlentities( ((!preg_match('!!u', $parent->product_name)) ? utf8_encode($parent->product_name) : $parent->product_name), ENT_QUOTES, "UTF-8");
+					$product_name = $parent->product_name;
 
 					$variant_name = $product_name . $characteristic_separator;
 					foreach($characteristics[ (int)$p->product_parent_id ] as $k => $c) {

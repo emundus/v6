@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright     Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
+ * @copyright     Copyright (c) 2009-2021 Ryan Demmer. All rights reserved
  * @license       GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -683,6 +683,23 @@ abstract class WFMimeType
         return null;
     }
 
+    private static function isSupported($extension)
+    {
+        // get mimetype array
+        $mimes = self::getMimes();
+
+        $supported = false;
+
+        foreach(array_values($mimes) as $mime) {
+            if (in_array($extension, explode(' ', $mime))) {
+                $supported = true;
+                break;
+            }
+        };
+
+        return $supported;
+    }
+
     /**
      * Check file mime type.
      *
@@ -692,10 +709,15 @@ abstract class WFMimeType
      *
      * @return bool
      */
-    public function check($name, $path)
+    public static function check($name, $path)
     {
         $extension = strtolower(substr($name, strrpos($name, '.') + 1));
         $mimetype = null;
+
+        // if the extension is allowed, but no mimetype reference is found, let it through...
+        if (self::isSupported($extension) === false) {
+            return true;
+        }
 
         if (function_exists('finfo_open')) {
             if (!$finfo = new finfo(FILEINFO_MIME_TYPE)) {

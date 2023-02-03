@@ -21,7 +21,7 @@ defined('_JEXEC') or die;
 
                     <!-- Calendar to add timeslots to -->
                     <div class="form-group">
-                        <label for="em-timeslots-calendar"><?php echo JText::_("MOD_EM_CALENDAR_TITLE"); ?></label>
+                        <label for="em-timeslots-calendar"><?php echo JText::_("MOD_EM_CALENDAR_TIMESLOTS_TITLE"); ?></label>
                         <select class="form-control" id="em-timeslots-calendar">
                             <option value=""><?php echo JText::_("MOD_EM_CALENDAR_PICK_A_CALENDAR"); ?></option>
                             <?php foreach ($calendars as $calendar) :?>

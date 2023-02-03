@@ -28,18 +28,47 @@ use Joomla\CMS\HTML\HTMLHelper;
  * @since 1.5
  */
 class EmundusHelperDate {
-    static function displayDate($date,$format = 'DATE_FORMAT_LC2', $local = 1) {
-        $config = JFactory::getConfig();
 
-         if ($local) {
-            $offset = $config->get('offset');
+    /**
+     * Return date formatted
+     * @param $date
+     * @param $format
+     * @param $local
+     *
+     * @return string
+     *
+     * @throws Exception
+     * @since version 1.28.0
+     */
+    static function displayDate($date, $format = 'DATE_FORMAT_LC2', $local = 1) {
+        $display_date = '';
 
-            $date_time = new DateTime($date, new DateTimeZone($offset));
-            $date_time->setTimezone(new DateTimeZone("UTC"));
-         } else {
-            $date_time = new DateTime($date);
-         }
-    
-        return HtmlHelper::date($date_time->format("Y-m-d H:i:s"), Text::_($format));
+        if (!EmundusHelperDate::isNull($date)) {
+            if ($local) {
+                $config = JFactory::getConfig();
+                $offset = $config->get('offset');
+
+                $date_time = new DateTime($date, new DateTimeZone($offset));
+                $date_time->setTimezone(new DateTimeZone('UTC'));
+            } else {
+                $date_time = new DateTime($date);
+            }
+
+            $display_date = HtmlHelper::date($date_time->format('Y-m-d H:i:s'), Text::_($format));
+        }
+
+        return $display_date;
+    }
+
+    /**
+     * Check if date is null
+     * @param $date
+     *
+     * @return bool
+     *
+     * @since version 1.34.0
+     */
+    static function isNull($date) {
+        return (empty($date) || $date === '0000-00-00 00:00:00' || $date === '0000-00-00');
     }
 }

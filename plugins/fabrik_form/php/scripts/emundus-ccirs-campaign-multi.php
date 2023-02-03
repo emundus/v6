@@ -399,7 +399,7 @@ if (!empty($fnums)) {
 						$post = [
 							'FNUM' => $file['fnum'],
 							'CAMPAIGN_LABEL' => $file['label'],
-							'CAMPAIGN_END' => $file['end_date'],
+							'CAMPAIGN_END' => JHTML::_('date', $file['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
 							'SESSION_CODE' => $session->session_code,
 							'PRODUCT' => $file['training'],
 							'COMPANY' => $data['jos_emundus_campaign_candidature___company_id'][0],
@@ -418,7 +418,7 @@ if (!empty($fnums)) {
 							'DE' => $usr->de_number,
 							'OPCO' => $usr->opco
 						];
-						$tags = $m_emails->setTags($file['applicant_id'], $post, $file['fnum']);
+						$tags = $m_emails->setTags($file['applicant_id'], $post, $file['fnum'], '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
 
 						$from = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
 						$from_id = 62;
@@ -504,7 +504,7 @@ if (!empty($fnums)) {
 						$post = [
 							'FNUM' => $file['fnum'],
 							'CAMPAIGN_LABEL' => $file['label'],
-							'CAMPAIGN_END' => $file['end_date'],
+							'CAMPAIGN_END' => JHTML::_('date', $file['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
 							'PRODUCT' => $file['training'],
 							'SESSION_CODE' => $session->session_code,
 							'COMPANY' => $data['jos_emundus_campaign_candidature___company_id'][0],

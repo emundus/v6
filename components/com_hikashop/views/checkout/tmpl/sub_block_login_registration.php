@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -14,27 +14,34 @@ $inputcolumnclass = 'hkc-sm-8';
 
 if(!empty($this->options['registration_registration'])) {
 ?>
+<!-- NAME -->
 	<div class="hkform-group control-group hikashop_registration_name_line" id="hikashop_registration_name_line">
 		<label id="namemsg" for="register_name" class="<?php echo $labelcolumnclass;?> hkcontrol-label" title=""><?php echo JText::_('HIKA_USER_NAME'); ?>*</label>
 		<div class="<?php echo $inputcolumnclass;?>">
 			<input type="text" name="data[register][name]" id="register_name" value="<?php echo $this->escape($this->mainUser->get( 'name' ));?>" class="hkform-control" size="30" maxlength="50"/>
 		</div>
 	</div>
+<!-- EO NAME -->
+<!-- USERNAME -->
 	<div class="hkform-group control-group hikashop_registration_username_line" id="hikashop_registration_username_line">
 		<label id="usernamemsg" for="register_username" class="<?php echo $labelcolumnclass;?> hkcontrol-label" title=""><?php echo JText::_('HIKA_USERNAME'); ?>*</label>
 		<div class="<?php echo $inputcolumnclass;?>">
 			<input type="text" name="data[register][username]" id="register_username" value="<?php echo $this->escape($this->mainUser->get( 'username' ));?>" class="hkform-control validate-username" maxlength="25" size="30" />
 		</div>
 	</div>
+<!-- EO USERNAME -->
 <?php
 }
 ?>
+<!-- EMAIL -->
 	<div class="hkform-group control-group hikashop_registration_email_line">
 		<label id="emailmsg" for="register_email" class="<?php echo $labelcolumnclass;?> hkcontrol-label" title=""><?php echo JText::_('HIKA_EMAIL'); ?>*</label>
 		<div class="<?php echo $inputcolumnclass;?>">
 			<input<?php if($this->config->get('show_email_confirmation_field',0)){echo ' autocomplete="off"';} ?> type="text" name="data[register][email]" id="register_email" value="<?php echo $this->escape($this->mainUser->get( 'email' ));?>" class="hkform-control validate-email" maxlength="100" size="30" />
 		</div>
 	</div>
+<!-- EO EMAIL -->
+<!-- EMAIL CONFIRMATION -->
 <?php
 if(!empty($this->options['registration_email_confirmation'])) {
 ?>
@@ -46,10 +53,14 @@ if(!empty($this->options['registration_email_confirmation'])) {
 	</div>
 <?php
 }
-
-if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$this->module_position]->top)) { echo implode("\r\n", $this->extraData[$this->module_position]->top); }
-
 ?>
+<!-- EO EMAIL CONFIRMATION -->
+<!-- TOP EXTRA DATA -->
+<?php
+if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$this->module_position]->top)) { echo implode("\r\n", $this->extraData[$this->module_position]->top); }
+?>
+<!-- EO TOP EXTRA DATA -->
+<!-- PASSWORD -->
 <?php
 if(!empty($this->options['registration_registration']) || !empty($this->options['registration_password'])) {
 ?>
@@ -67,12 +78,35 @@ if(!empty($this->options['registration_registration']) || !empty($this->options[
 	</div>
 <?php
 }
-
+?>
+<!-- EO PASSWORD -->
+<!-- MIDDLE EXTRA DATA -->
+<?php
 if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$this->module_position]->middle)) { echo implode("\r\n", $this->extraData[$this->module_position]->middle); }
-
+?>
+<!-- EO MIDDLE EXTRA DATA -->
+<!-- CUSTOM USER FIELDS -->
+<?php
 $type = 'user';
 if(!empty($this->extraFields[$type])) {
+	$after = array();
 	foreach($this->extraFields[$type] as $fieldName => $field) {
+		$onWhat = ($field->field_type == 'radio') ? 'onclick' : 'onchange';
+		$html = $this->fieldsClass->display(
+			$field,
+			@$this->$type->$fieldName,
+			'data['.$type.']['.$fieldName.']',
+			false,
+			' class="hkform-control" '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\''.$type . '_' . $this->step . '_' . $this->module_position.'\',0,\'hikashop_\');"',
+			false,
+			$this->extraFields[$type],
+			@$this->$type,
+			false
+		);
+		if($field->field_type == 'hidden') {
+			$after[] = $html;
+			continue;
+		}
 ?>
 	<div class="hkform-group control-group hikashop_registration_<?php echo $fieldName;?>_line" id="hikashop_<?php echo $type . '_' . $this->step . '_' . $this->module_position . '_' . $field->field_namekey; ?>">
 		<?php
@@ -81,24 +115,20 @@ if(!empty($this->extraFields[$type])) {
 		?>
 		<div class="<?php echo $inputcolumnclass;?>">
 <?php
-		$onWhat = ($field->field_type == 'radio') ? 'onclick' : 'onchange';
-		echo $this->fieldsClass->display(
-				$field,
-				@$this->$type->$fieldName,
-				'data['.$type.']['.$fieldName.']',
-				false,
-				' class="hkform-control" '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\''.$type . '_' . $this->step . '_' . $this->module_position.'\',0,\'hikashop_\');"',
-				false,
-				$this->extraFields[$type],
-				@$this->$type,
-				false
-		);
+			echo $html;
 ?>
 		</div>
 	</div>
 <?php
 	}
+	if(count($after)) {
+		echo implode("\r\n", $after);
+	}
 }
+?>
+<!-- EO CUSTOM USER FIELDS -->
+<!-- AFFILIATE -->
+<?php
 if(!empty($this->options['affiliate_registration'])) {
 	$plugin = JPluginHelper::getPlugin('system', 'hikashopaffiliate');
 	if(!empty($plugin)) {
@@ -131,16 +161,23 @@ if(!empty($this->options['affiliate_registration'])) {
 <?php
 	}
 }
-
+?>
+<!-- EO AFFILIATE -->
+<?php
 if(!empty($this->options['address_on_registration']) && !empty($this->extraFields['address'])) {
 	$type = 'address';
 ?>
+<!-- BILLING ADDRESS TITLE -->
 	<div class="">
 		<legend><?php echo JText::_( 'ADDRESS_INFORMATION' ); ?></legend>
 	</div>
+<!-- EO BILLING ADDRESS TITLE -->
+<!-- BILLING ADDRESS TOP EXTRA DATA -->
 <?php
 if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$this->module_position]->address_top)) { echo implode("\r\n", $this->extraData[$this->module_position]->address_top); }
 ?>
+<!-- EO BILLING ADDRESS TOP EXTRA DATA -->
+<!-- CUSTOM BILLING ADDRESS FIELDS -->
 <?php
 	foreach($this->extraFields[$type] as $fieldName => $oneExtraField) {
 ?>
@@ -168,8 +205,14 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 	</div>
 <?php
 	}
+?>
+<!-- EO CUSTOM BILLING ADDRESS FIELDS -->
+<!-- BILLING ADDRESS BOTTOM EXTRA DATA -->
+<?php
 	if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$this->module_position]->address_bottom)) { echo implode("\r\n", $this->extraData[$this->module_position]->address_bottom); }
-
+?>
+<!-- EO BILLING ADDRESS BOTTOM EXTRA DATA -->
+<?php
 	if(!empty($this->options['same_address'])) {
 		$checked = '';
 		$attribute = '';
@@ -177,7 +220,9 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 			$checked = ' checked';
 			$attribute = ' style="display:none;"';
 		}
+		$type = 'shipping_address';
 ?>
+<!-- SAME ADDRESS CHECKBOX -->
 	<div class="hkform-group control-group hikashop_registration_same_address_line" id="hikashop_address_<?php echo $this->step . '_' . $this->module_position . '_same_address'; ?>">
 		<div class="<?php echo $labelcolumnclass;?> hkcontrol-label"></div>
 		<div class="<?php echo $inputcolumnclass;?>">
@@ -185,14 +230,20 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 			<label for="hikashop_address_<?php echo $this->step . '_' . $this->module_position . '_same_address_input'; ?>"><?php echo JText::_('SAME_FOR_SHIPPING'); ?></label>
 		</div>
 	</div>
+<!-- EO SAME ADDRESS CHECKBOX -->
+<!-- SHIPPING ADDRESS TITLE -->
 	<div class="hikashop_registration_shipping_address_title" id="hikashop_registration_shipping_address_<?php echo $this->step . '_' . $this->module_position; ?>_title" <?php echo $attribute; ?>>
 		<legend><?php echo JText::_( 'HIKASHOP_SHIPPING_ADDRESS' ); ?></legend>
 	</div>
+<!-- EO SHIPPING ADDRESS TITLE -->
 	<div class="hikashop_registration_shipping_address" id="hikashop_registration_shipping_address_<?php echo $this->step . '_' . $this->module_position; ?>" <?php echo $attribute; ?>>
+<!-- SHIPPING ADDRESS TOP EXTRA DATA -->
 <?php
-		$type = 'shipping_address';
 		if(!empty($this->extraFields[$type]) && !empty($this->extraData[$this->module_position]) && !empty($this->extraData[$this->module_position]->address_shipping_top)) { echo implode("\r\n", $this->extraData[$this->module_position]->address_shipping_top); }
-
+?>
+<!-- EO SHIPPING ADDRESS TOP EXTRA DATA -->
+<!-- CUSTOM SHIPPING ADDRESS FIELDS -->
+<?php
 		foreach($this->extraFields[$type] as $fieldName => $oneExtraField) {
 ?>
 		<div class="hkform-group control-group hikashop_registration_<?php echo $fieldName;?>_line" id="hikashop_address_shipping_<?php echo $this->step . '_' . $this->module_position . '_' . $oneExtraField->field_namekey; ?>">
@@ -220,14 +271,21 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 		</div>
 <?php
 	}
+?>
+<!-- EO CUSTOM SHIPPING ADDRESS FIELDS -->
+<!-- SHIPPING ADDRESS BOTTOM EXTRA DATA -->
+<?php
 	if(!empty($this->extraFields[$type]) && !empty($this->extraData[$this->module_position]) && !empty($this->extraData[$this->module_position]->address_shipping_bottom)) { echo implode("\r\n", $this->extraData[$this->module_position]->address_shipping_bottom); }
 ?>
+<!-- EO SHIPPING ADDRESS BOTTOM EXTRA DATA -->
 	</div>
 <?php
 
 	}
 }
-
+?>
+<!-- PRIVACY CONSENT -->
+<?php
 if(!empty($this->options['privacy'])) {
 ?>
 <fieldset id="hikashop_registration_privacy_area">
@@ -244,7 +302,7 @@ if(!empty($this->options['privacy'])) {
 		<div class="<?php echo $labelcolumnclass;?> hkcontrol-label">
 <?php
 	$text = JText::_('PLG_SYSTEM_PRIVACYCONSENT_FIELD_LABEL').'<span class="hikashop_field_required_label">*</span>';
-	if(!empty($this->options['privacy_id'])) {
+	if(!empty($this->options['privacy_id']) || !empty($this->options['privacy_url'])) {
 		$popupHelper = hikashop_get('helper.popup');
 		$text = $popupHelper->display(
 			$text,
@@ -266,13 +324,17 @@ if(!empty($this->options['privacy'])) {
 </fieldset>
 <?php
 }
+?>
+<!-- EO PRIVACY CONSENT -->
+<!-- PRIVACY CONSENT GUEST -->
+<?php
 if(!empty($this->options['privacy_guest'])) {
 ?>
 	<div class="hkform-group control-group" id="hikashop_registration_privacy_guest_area">
 		<div class="<?php echo $labelcolumnclass;?> hkcontrol-label">
 <?php
 	$text = JText::_( 'PLG_CONTENT_CONFIRMCONSENT_CONSENTBOX_LABEL' ) . '<span class="hikashop_field_required_label">*</span>';
-	if(!empty($this->options['privacy_guest_id'])) {
+	if(!empty($this->options['privacy_guest_id']) || !empty($this->options['privacy_guest_url'])) {
 		$popupHelper = hikashop_get('helper.popup');
 		$text = $popupHelper->display(
 			$text,
@@ -295,16 +357,21 @@ if(!empty($this->options['privacy_guest'])) {
 </fieldset>
 <?php
 }
-
+?>
+<!-- EO PRIVACY CONSENT GUEST -->
+<!-- BOTTOM EXTRA DATA -->
+<?php
 if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$this->module_position]->bottom)) { echo implode("\r\n", $this->extraData[$this->module_position]->bottom); }
 
 ?>
+<!-- EO BOTTOM EXTRA DATA -->
+<!-- REQUIRED FIELDS TEXT -->
 	<div class="hkform-group control-group hikashop_registration_required_info_line">
 		<div class="<?php echo $labelcolumnclass;?> hkcontrol-label"></div>
 		<div class="<?php echo $inputcolumnclass;?>"><?php echo JText::_('HIKA_REGISTER_REQUIRED'); ?></div>
 	</div>
-	<input type="hidden" name="data[register][id]" value="<?php echo (int)$this->mainUser->get('id');?>" />
-	<input type="hidden" name="data[register][gid]" value="<?php echo (int)$this->mainUser->get('gid');?>" />
+<!-- EO REQUIRED FIELDS TEXT -->
+<!-- NEXT BUTTON -->
 <?php
 	if(!empty($this->options['show_submit'])) {
 ?>
@@ -319,6 +386,9 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 <?php
 	}
 ?>
+<!-- EO NEXT BUTTON -->
+	<input type="hidden" name="data[register][id]" value="<?php echo (int)$this->mainUser->get('id');?>" />
+	<input type="hidden" name="data[register][gid]" value="<?php echo (int)$this->mainUser->get('gid');?>" />
 </fieldset>
 <?php
 	if(!empty($this->options['js'])) {

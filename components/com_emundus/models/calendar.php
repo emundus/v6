@@ -105,7 +105,7 @@ class EmundusModelCalendar extends JModelLegacy {
         );
 
         // An array containing the tag names is created.
-        $tags = $m_emails->setTags($user->id, $post);
+        $tags = $m_emails->setTags($user->id, $post, null, '', $booked_prefix);
 
         $booked_prefix = preg_replace($tags['patterns'], $tags['replacements'], $booked_prefix);
 
@@ -286,7 +286,7 @@ class EmundusModelCalendar extends JModelLegacy {
         $m_emails = new EmundusModelEmails;
 
         // An array containing the tag names is created.
-        $tags = $m_emails->setTags($user->id, $post);
+        $tags = $m_emails->setTags($user->id, $post, null, '', $booked_prefix);
 
         $booked_prefix = preg_replace($tags['patterns'], $tags['replacements'], $booked_prefix);
 
@@ -357,6 +357,12 @@ class EmundusModelCalendar extends JModelLegacy {
         $user   = JFactory::getSession()->get('emundusUser');
         $db     = JFactory::getDbo();
 
+        require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+        $h_emails = new EmundusModelEmails;
+        if (!$h_emails->assertCanSendMailToUser($user->id)) {
+            return false;
+        }
+
         $m_emails = new EmundusModelEmails;
 
         try {
@@ -409,9 +415,6 @@ class EmundusModelCalendar extends JModelLegacy {
             'PROGRAM'       => $label
         );
 
-        // An array containing the tag names is created.
-        $tags = $m_emails->setTags($user->id, $post, $user->fnum);
-
         $from_id = 62;
 
         if ($booked) {
@@ -419,6 +422,9 @@ class EmundusModelCalendar extends JModelLegacy {
         } else {
             $email = $m_emails->getEmail('booking_deleted_user');
         }
+
+        // An array containing the tag names is created.
+        $tags = $m_emails->setTags($user->id, $post, $user->fnum, '', $email->emailfrom . $email->subject . $email->message);
 
         // Tags are replaced with their corresponding values using the PHP preg_replace function.
         $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
@@ -468,7 +474,7 @@ class EmundusModelCalendar extends JModelLegacy {
                 'user_id_from' => $from_id,
                 'user_id_to' => $user->id,
                 'subject' => $subject,
-                'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$user->email.'</i><br>'.$body
+                'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$user->email.'</i><br>'.$body
             );
             $m_emails->logEmail($message);
         }
@@ -496,7 +502,7 @@ class EmundusModelCalendar extends JModelLegacy {
                 );
 
                 // An array containing the tag names is created.
-                $tags = $m_emails->setTags($recipient->id, $post, $user->fnum);
+                $tags = $m_emails->setTags($recipient->id, $post, $user->fnum, '', $email->emailfrom.$email->subject.$email->message);
 
                 // Tags are replaced with their corresponding values using the PHP preg_replace function.
                 $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
@@ -547,7 +553,7 @@ class EmundusModelCalendar extends JModelLegacy {
                         'user_id_from' => $from_id,
                         'user_id_to' => $recipient->id,
                         'subject' => $subject,
-                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$recipient->email.'</i><br>'.$body
+                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$recipient->email.'</i><br>'.$body
                     );
                     $m_emails->logEmail($message);
                 }
@@ -692,7 +698,7 @@ class EmundusModelCalendar extends JModelLegacy {
             'APPLICATION_PROGRESS' => $fnum
         );
 
-        $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum);
+        $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum, '', $program->synthesis);
 
         $synthesis = new stdClass();
         $synthesis->program = $program;

@@ -1,4 +1,5 @@
 /*view-checklist*/
+
 button.save-btn, .btn-success, button.save, button.save_continue, button.send, a.btn-attach, #trombi_preview, #trombi_generate,
 .indicateurs-page .btn, .fabrik_filter_submit, button.importation, a.btn-warning, a.btn-info, .header-right .btn-danger, button.btn-primary,
 .em-generated-docs .em-doc-zip, .xclsform .panel-body button#savefilter, .modal-dialog #chargement a.btn, a#em-doc-zip,
@@ -74,7 +75,9 @@ button#back:hover, button#back:active, button#back:focus,
     display: flex;
     justify-content: center;
 }
-.em_module.need_ok a::before {
+.em_module.need_ok a::before,
+#attachment_list legend .need_ok::before
+{
     font-family: FontAwesome;
     content: "\f058";
     color: #55ce47;
@@ -138,6 +141,15 @@ button#back:hover, button#back:active, button#back:focus,
     justify-content: center;
     align-items: center;
 }
+
+.view-checklist .dropzone .dz-preview  {
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .need_ok {
     background: none;
 }
@@ -162,7 +174,6 @@ button#back:hover, button#back:active, button#back:focus,
     color: #000 !important;
 }
 #attachment_list {
-    margin-bottom: 1em;
     width: 100%;
     margin: 20px 0;
 }
@@ -205,6 +216,7 @@ button#back:hover, button#back:active, button#back:focus,
     border-bottom: 1px solid #ccc;
     padding-bottom: 10px;
     color: #333;
+    font-family: var(--applicant-title-font);
 }
 
 #g-sidebar .platform-content {
@@ -240,6 +252,12 @@ button#back:hover, button#back:active, button#back:focus,
     background: #f2f2f2;
 }
 
+#g-sidebar .platform-content li:hover, #g-sidebar .platform-content li a  {
+    color: var(--neutral-800);
+    font-family: var(--applicant-default-font);
+}
+
+
 #g-sidebar ul {
     margin: 0 !important;
     list-style: none;
@@ -273,12 +291,14 @@ button#back:hover, button#back:active, button#back:focus,
 #attachment_list_opt fieldset {
     background-color: #fff;
     box-shadow: none;
+    padding: 8px 16px 24px 16px;
+    border-radius: 16px !important;
+    height: auto;
 }
 
-#attachment_list fieldset {
-    padding: 10px;
-    margin: 0 0 40px;
-    height: auto;
+#attachment_list_mand fieldset p,
+#attachment_list_opt fieldset p {
+    color: var(--em-applicant-text-color);
 }
 
 .view-checklist .table {
@@ -287,12 +307,6 @@ button#back:hover, button#back:active, button#back:focus,
 
 .view-checklist .table-responsive {
     color: #2E2E2E;
-}
-
-#g-sidebar .platform-content a {
-    color: #000;
-    display: flex;
-    align-items: center;
 }
 
 #g-sidebar a:focus {
@@ -316,6 +330,22 @@ button#back:hover, button#back:active, button#back:focus,
     color: #2E2E2E;
 }
 
+
+#attachment_list_mand .em-added-files > td,
+#attachment_list_opt .em-added-files > td {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: -12px;
+}
+
+
+.view-checklist #attachment_list_mand a.btn ,
+.view-checklist #attachment_list_opt a.btn {
+    display: flex !important;
+    align-items: center !important;
+}
+
 #attachment_list_mand .description,
 #attachment_list_opt .description {
     color: #2E2E2E;
@@ -325,10 +355,7 @@ button#back:hover, button#back:active, button#back:focus,
 #attachment_list_mand table td, #attachment_list_opt table td {
     border-top: none;
     white-space: normal;
-}
-
-#attachment_list_mand fieldset:hover, #attachment_list_opt fieldset:hover {
-    background-color: #fcfcfc;
+    padding-bottom: 4px;
 }
 
 #attachment_list_opt fieldset .description {
@@ -488,6 +515,15 @@ body.view-reset label#jform_username-lbl::after,
     border-bottom: 1px solid #ccc;
     padding: 10px 0;
     line-height: 1.2rem;
+    color: #000;
+    display: flex;
+    align-items: center;
+}
+
+
+
+.applicant-form #g-sidebar .platform-content a:hover {
+  text-decoration: none;
 }
 
 .em-print-button, .em-send-button {
@@ -528,6 +564,11 @@ body.view-reset label#jform_username-lbl::after,
 #attachment_list_mand legend a,
 .view-checklist #attachment_list_opt legend a {
     color: #000 !important;
+}
+
+#attachment_list_mand legend a:hover,
+.view-checklist #attachment_list_opt legend a:hover {
+    text-decoration: none;
 }
 
 .need_missing.active a::before {

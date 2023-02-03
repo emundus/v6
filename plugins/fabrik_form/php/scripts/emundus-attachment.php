@@ -41,7 +41,7 @@ $student = JFactory::getUser($upload->user_id);
 $query = 'SELECT profile FROM #__emundus_users WHERE user_id='.$upload->user_id;
 $db->setQuery( $query );
 $profile=$db->loadResult();
-$query = 'SELECT ap.displayed, attachment.lbl 
+$query = 'SELECT ap.displayed, attachment.lbl, attachment.value
 			FROM #__emundus_setup_attachments AS attachment
 			LEFT JOIN #__emundus_setup_attachment_profiles AS ap ON attachment.id = ap.attachment_id AND ap.profile_id='.$profile.'
 			WHERE attachment.id ='.$aid.' ';
@@ -51,12 +51,6 @@ $attachment_params = $db->loadObject();
 //$nom = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($student->name,ENT_NOQUOTES,'UTF-8'))));
 $fnumInfos = $m_files->getFnumInfos($fnum);
 $nom = $m_checklist->setAttachmentName($upload->filename, $attachment_params->lbl, $fnumInfos);
-
-/*
-if(!isset($attachment_params->displayed) || $attachment_params->displayed === '0') {
-    $nom.= "_locked";
-}
-*/
 
 //$nom .= $attachment_params->lbl.rand().'.'.end(explode('.', $upload->filename));
 
@@ -99,6 +93,28 @@ if ($attachment_params->lbl=="_photo") {
     imagejpeg( $tmp_img, EMUNDUS_PATH_ABS.$student->id.DS.'tn_'.$nom);
     $student->avatar = $nom;
 }
+
+# get fnum                $fnum
+# get logged user id      JFactory::getUser()->id
+# get applicant id        $upload->user_id
+
+// TRACK THE LOGS
+require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+$user = JFactory::getSession()->get('emundusUser'); # logged user #
+
+require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+$mFile = new EmundusModelFiles();
+$applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+// stock the attachment name
+$logsStd = new stdClass();
+
+$logsStd->element = '[' . $attachment_params->value . '] ';
+$logsStd->details = str_replace("/tmp/", "", $_FILES['jos_emundus_uploads___filename']['name']);
+
+$logsParams = array('created' => [$logsStd]);
+
+EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE', json_encode($logsParams,JSON_UNESCAPED_UNICODE));
 
 // Pour tous les mails
 $user = JFactory::getUser();

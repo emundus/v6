@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fields name="params">
+        <fieldset
+                name="logging"
+        >
+            <field
+                    type="spacer"
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_SPACER_LABEL"
+            />
+            <field
+                    name="log_autologin"
+                    type="radio"
+                    default="0"
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_SERVER_LOG_AUTOLOGIN_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_SERVER_LOG_AUTOLOGIN_DESC"
+            >
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+            <field
+                    name="log_login"
+                    type="radio"
+                    default="0"
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_SERVER_LOG_LOGIN_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_SERVER_LOG_LOGIN_DESC"
+            >
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+            <field
+                    name="log_logout"
+                    type="radio"
+                    default="0"
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_SERVER_LOG_LOGOUT_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_SERVER_LOG_LOGOUT_DESC"
+            >
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+            <field
+                    name="log_verify"
+                    type="radio"
+                    default="0"
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_SERVER_LOG_VERIFY_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_SERVER_LOG_VERIFY_DESC"
+            >
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+            <field
+                    name="log_xml"
+                    type="radio"
+                    default="0"
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_SERVER_LOG_XML_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_SERVER_LOG_XML_DESC"
+            >
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+            <field
+                    name="log_groups"
+                    type="radio"
+                    default="0"
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_SERVER_LOG_GROUPS_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_SERVER_LOG_GROUPS_DESC"
+            >
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+        </fieldset>
+        <fieldset
+                name="params"
+                label="PLG_SYSTEM_CASLOGIN_FIELDSET_EXTERNAL_URL_LABEL"
+                description="PLG_SYSTEM_CASLOGIN_FIELDSET_EXTERNAL_URL_DESC"
+        >
+            <field
+                    name="ssl"
+                    type="radio"
+                    default="1"
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_SSL_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_SSL_DESC"
+            >
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+
+            <field
+                    name="ssl_cipher"
+                    type="radio"
+                    default="0"
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_SSL_CIPHER_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_SSL_CIPHER_DESC"
+            >
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+
+            <field
+                    name="url"
+                    type="text"
+                    size="30"
+                    default=""
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_URL_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_URL_DESC"
+                    required="true"
+            />
+
+            <field
+                    name="dir"
+                    type="text"
+                    size="30"
+                    default=""
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_DIR_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_DIR_DESC"
+            />
+
+            <field
+                    name="cas_v3"
+                    type="radio"
+                    default="0"
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_CAS_V3_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_CAS_V3_DESC"
+            >
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+
+            <field
+                    name="port"
+                    type="text"
+                    size="10"
+                    default="443"
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_PORT_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_PORT_DESC"
+            />
+
+            <field
+                    name="locale"
+                    type="radio"
+                    default="0"
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_LOCALE_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_LOCALE_DESC"
+            >
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+
+        </fieldset>
+        <fieldset
+                name="attributes"
+                label="PLG_SYSTEM_CASLOGIN_FIELDSET_ATTRIBUTES_LABEL"
+                description="PLG_SYSTEM_CASLOGIN_FIELDSET_ATTRIBUTES_DESC"
+        >
+            <field
+                    name="attributes_trim"
+                    type="radio"
+                    default="0"
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_ATTRIBUTES_TRIM_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_ATTRIBUTES_TRIM_DESC"
+            >
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+
+            <field
+                    name="username_xpath"
+                    type="textarea"
+                    required="true"
+                    cols="50"
+                    rows="5"
+                    default="string(cas:user)"
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_USERNAME_XPATH_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_USERNAME_XPATH_DESC"
+            />
+
+            <field
+                    name="name_xpath"
+                    type="textarea"
+                    required="false"
+                    cols="50"
+                    rows="5"
+                    default=""
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_NAME_XPATH_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_NAME_XPATH_DESC"
+            />
+
+            <field
+                    name="firstname_xpath"
+                    type="textarea"
+                    required="false"
+                    cols="50"
+                    rows="5"
+                    default=""
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_FIRSTNAME_XPATH_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_FIRSTNAME_XPATH_DESC"
+            />
+
+            <field
+                    name="lastname_xpath"
+                    type="textarea"
+                    required="false"
+                    cols="50"
+                    rows="5"
+                    default=""
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_LASTNAME_XPATH_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_LASTNAME_XPATH_DESC"
+            />
+
+            <field
+                    name="email_xpath"
+                    type="textarea"
+                    required="true"
+                    cols="50"
+                    rows="5"
+                    default="concat(cas:user, substring('@localhost.org', 1 div not(contains(cas:user, '@'))))"
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_EMAIL_XPATH_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_EMAIL_XPATH_DESC"
+            />
+
+            <field
+                    name="group_xpath"
+                    type="textarea"
+                    cols="50"
+                    rows="5"
+                    default=""
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_GROUP_XPATH_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_GROUP_XPATH_DESC"
+            />
+
+            <field
+                    name="group_integer"
+                    type="radio"
+                    default="0"
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_GROUP_INTEGER_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_GROUP_INTEGER_DESC"
+            >
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+
+            <field
+                    name="group_separator"
+                    type="text"
+                    size="10"
+                    default=""
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_GROUP_SEPARATOR_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_GROUP_SEPARATOR_DESC"
+            />
+
+            <field name="other_properties"
+                   type="repeatable"
+                   icon="list"
+                   description="PLG_SYSTEM_CASLOGIN_FIELD_OTHER_PROPERTIES_DESC"
+                   label="PLG_SYSTEM_CASLOGIN_FIELD_OTHER_PROPERTIES_LABEL"
+            >
+
+                <fieldset hidden="true" name="list_other_properties_modal" repeat="true">
+                    <field name="name"
+                           label="PLG_SYSTEM_CASLOGIN_FIELD_DATABASE_COLUMN_LABEL" description="PLG_SYSTEM_CASLOGIN_FIELD_DATABASE_COLUMN_DESC"/>
+                    <field name="insert_update"
+                           label="Insertion/Mise à jour" description=""/>
+                    <field name="code_xpath"
+                           label="PLG_SYSTEM_CASLOGIN_FIELD_OTHER_PROPERTY_XPATH_LABEL"
+                           description="PLG_SYSTEM_CASLOGIN_FIELD_OTHER_PROPERTY_XPATH_DESC"
+                           size="50"
+                           type="textarea"
+                    />
+                </fieldset>
+            </field>
+        </fieldset>
+        <fieldset
+                name="connection"
+                label="PLG_SYSTEM_CASLOGIN_FIELDSET_CONNECTION_LABEL"
+                description="PLG_SYSTEM_CASLOGIN_FIELDSET_CONNECTION_DESC"
+        >
+
+            <field
+                    name="autologin"
+                    type="radio"
+                    default="0"
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_AUTOMATIC_LOGIN_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_AUTOMATIC_LOGIN_DESC"
+            >
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+
+            <field
+                    name="autologout"
+                    type="radio"
+                    default="0"
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_AUTOMATIC_LOGOUT_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_AUTOMATIC_LOGOUT_DESC"
+            >
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+
+            <field
+                    name="logouturl"
+                    type="text"
+                    size="30"
+                    default=""
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_LOGOUTURL_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_LOGOUTURL_DESC"
+            />
+
+            <field
+                    name="timeout"
+                    type="text"
+                    size="10"
+                    default="1"
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_TIMEOUT_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_TIMEOUT_DESC"
+            />
+
+            <field
+                    name="certificate_file"
+                    type="text"
+                    size="50"
+                    default=""
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_CERTIFICATE_FILE_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_CERTIFICATE_FILE_DESC"
+            />
+
+            <field
+                    name="certificate_path"
+                    type="text"
+                    size="50"
+                    default=""
+                    label="PLG_SYSTEM_CASLOGIN_FIELD_CERTIFICATE_PATH_LABEL"
+                    description="PLG_SYSTEM_CASLOGIN_FIELD_CERTIFICATE_PATH_DESC"
+            />
+
+        </fieldset>
+    </fields>
+</form>

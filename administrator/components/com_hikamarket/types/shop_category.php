@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.0.0
+ * @version    4.1.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -66,93 +66,20 @@ class hikamarketShop_categoryType {
 
 		$ret .= '<div id="'.$id.'_otree" class="oTree"></div>
 <script type="text/javascript">
-var options = {rootImg:"'.HIKAMARKET_IMAGES.'otree/", showLoading:false};
-var data = '.$this->getDataFull($type, $root, $displayRoot, $selectRoot).';
-var '.$id.' = new window.oTree("'.$id.'",options,null,data,false);
-'.$id.'.addIcon("world","world.png");
-'.$id.'.render(true);
+var '.$id.' = null;
+function otree_init_'.$id.'() {
+	var options = {rootImg:"'.HIKAMARKET_IMAGES.'otree/", showLoading:false};
+	var data = '.$this->getDataFull($type, $root, $displayRoot, $selectRoot).';
+	'.$id.' = new window.oTree("'.$id.'",options,null,data,false);
+	'.$id.'.addIcon("world","world.png");
+	'.$id.'.render(true);
+}
+if(document.getElementById('.$id.')!==null)
+	otree_init_'.$id.'();
+else
+	window.hikashop.ready(otree_init_'.$id.');
 </script>';
 		return $ret;
-	}
-
-	private function getData($type = 'product', $root = 0, $displayRoot = false, $selectRoot = false, $value = null) {
-		$categoryClass = hikamarket::get('class.category');
-		$shopCategoryClass = hikamarket::get('shop.class.category');
-		if($root == 1)
-			$root = 0;
-		if(empty($root)) {
-			if(!is_array($type))
-				$type = array($type);
-			$type[] = 'root';
-		}
-		$typeConfig = array('params' => array('category_type' => $type), 'mode' => 'tree');
-		$fullLoad = false;
-		$config = hikamarket::config();
-		$options = array('depth' => $config->get('explorer_default_depth', 3), 'start' => $root);
-
-		list($elements,$values) = $categoryClass->getNameboxData($typeConfig, $fullLoad, null, null, null, $options);
-
-		if($value !== null) {
-			$parents = $shopCategoryClass->getParents($value);
-			$parents = array_reverse($parents);
-		}
-
-		$data = array();
-		if(!empty($parents)) {
-			$first = true;
-			foreach($parents as $p) {
-				$o = new stdClass();
-				$o->status = 2;
-				if($first) {
-					if($p->category_left + 1 == $p->category_right) {
-						$o->status = 4;
-					} else {
-						$o->status = 3;
-					}
-					$first = false;
-				}
-
-				$o->name = JText::_($p->category_name);
-				$o->value = (int)$p->category_id;
-				$o->data = $data;
-
-				$s = new stdClass();
-				$s->status = 4;
-				$s->name = '...';
-				$s->value = -(int)$p->category_parent_id;
-				$s->data = array();
-				$data = array($o, $s);
-			}
-		}
-
-	var_dump($data);
-	var_dump($elements);
-	return json_encode($elements);
-
-		foreach($elements as $k => $el) {
-			if($el->value != $data[0]->data[0]->value)
-				continue;
-
-			if(count($el->data)) {
-				$found = false;
-				foreach($el->data as $j => $e) {
-					if($e->value == $data[0]->data[0]->data[0]->value) {
-						$elements[$k]->data[$j]->data = $data[0]->data[0]->data[0]->data;
-						$elements[$k]->data[$j]->status = 2;
-						$found = true;
-					}
-				}
-				if(!$found) {
-					$elements[$k]->data[] = $data[0]->data[0]->data[0];
-				}
-			} else {
-				$elements[$k]->data = $data[0]->data[0]->data;
-				$elements[$k]->status = 2;
-			}
-			break;
-		}
-
-		return json_encode($elements);
 	}
 
 	private function getDataFull($type = 'product', $root = 0, $displayRoot = false, $selectRoot = false) {

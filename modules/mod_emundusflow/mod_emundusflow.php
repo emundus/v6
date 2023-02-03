@@ -24,25 +24,15 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
     require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
     require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
     // Load Joomla framework classes
     $document = JFactory::getDocument();
     $jinput = JFactory::getApplication()->input;
     $db = JFactory::getDBO();
 
-    // overide css
-    $document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
-    $document->addStyleSheet("modules/mod_emundusflow/style/emundus.css" );
-    $header_class = $params->get('header_class', '');
-    if (!empty($header_class)) {
-        $document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$header_class.".css" );
-    }
-
-    // Jinput
-    $option = $jinput->get('option');
-    $view = $jinput->get('view');
-
-    // module params
+    // Parameters
     $show_programme = $params->get('show_programme', 1);
     $show_back_button = $params->get('show_back_button', 1);
     $show_document_step = $params->get('show_document_step', 1);
@@ -54,10 +44,10 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $layout = $params->get('layout', 'default');
     $offset = JFactory::getConfig()->get('offset');
     $home_link = $params->get('home_link', 'index.php');
-	$add_to_cart_icon = $params->get('add_to_cart_icon', 'large add to cart icon');
-	$scholarship_icon = $params->get('scholarship_icon', 'large student icon');
+    $add_to_cart_icon = $params->get('add_to_cart_icon', 'large add to cart icon');
+    $scholarship_icon = $params->get('scholarship_icon', 'large student icon');
 
-    // eMundus params
+    // eMundus parameters
     $params_emundus = JComponentHelper::getParams('com_emundus');
     $applicant_can_renew = $params_emundus->get('applicant_can_renew', 0);
     $application_fee = $params_emundus->get('application_fee', 0);
@@ -65,6 +55,20 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $id_profiles = $params_emundus->get('id_profiles', '0');
     $id_profiles = explode(',', $id_profiles);
 
+
+    if($layout != '_:tchooz') {
+        $document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
+        $document->addStyleSheet("modules/mod_emundusflow/style/emundus.css" );
+    }
+
+    $header_class = $params->get('header_class', '');
+    if (!empty($header_class)) {
+        $document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$header_class.".css" );
+    }
+
+    // Jinput
+    $option = $jinput->get('option');
+    $view = $jinput->get('view');
     if (EmundusHelperAccess::asAccessAction(1, 'c')) {
         $applicant_can_renew = 1;
     } else {
@@ -77,70 +81,77 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     }
 
     // Models
-    $m_checklist = new EmundusModelChecklist;
-    $m_application = new EmundusModelApplication;
-    $m_files = new EmundusModelFiles;
-    $m_profile = new EmundusModelProfile;
+    $m_checklist = new EmundusModelChecklist();
+    $m_application = new EmundusModelApplication();
+    $m_files = new EmundusModelFiles();
+    $m_profile = new EmundusModelProfile();
+    $m_emails = new EmundusModelEmails();
+    $m_campaign = new EmundusModelCampaign();
 
-    $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
-    $paid = null;
+    $current_application = $m_application->getApplication($user->fnum);
 
-    if ($application_fee) {
-        $fnumInfos = $m_files->getFnumInfos($user->fnum);
+    if($layout != '_:tchooz') {
+        $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
+        $paid = null;
 
-        $order = $m_application->getHikashopOrder($fnumInfos);
-        $paid = !empty($order);
-        $cart = $m_application->getHikashopCartUrl($user->profile);
-        $cartorder = null;
+        if ($application_fee) {
+            $fnumInfos = $m_files->getFnumInfos($user->fnum);
+            $order = $m_application->getHikashopOrder($fnumInfos);
+            $paid = !empty($order);
+            $cart = $m_application->getHikashopCartUrl($user->profile);
+            $cartorder = null;
 
-        if (!$paid || !empty($cart)) {
+            if (!$paid || !empty($cart)) {
 
-            // If students with a scholarship have a different fee.
-            // The form ID will be appended to the URL, taking him to a different checkout page.
-            if (isset($scholarship_document)) {
+                // If students with a scholarship have a different fee.
+                // The form ID will be appended to the URL, taking him to a different checkout page.
+                if (isset($scholarship_document)) {
 
-                // See if applicant has uploaded the required scolarship form.
-                try {
+                    // See if applicant has uploaded the required scolarship form.
+                    try {
 
-                    $query = 'SELECT count(id) FROM #__emundus_uploads
-								WHERE attachment_id = '.$scholarship_document.'
-								AND fnum LIKE '.$db->Quote($user->fnum);
+                        $query = 'SELECT count(id) FROM #__emundus_uploads
+								WHERE attachment_id = ' . $scholarship_document . '
+								AND fnum LIKE ' . $db->Quote($user->fnum);
 
-                    $db->setQuery($query);
-                    $uploaded_document = $db->loadResult();
+                        $db->setQuery($query);
+                        $uploaded_document = $db->loadResult();
 
-                } catch (Exception $e) {
-                    JLog::Add('Error in plugin/isApplicationCompleted at SQL query : '.$query, Jlog::ERROR, 'plugins');
+                    } catch (Exception $e) {
+                        JLog::Add('Error in plugin/isApplicationCompleted at SQL query : ' . $query, Jlog::ERROR, 'plugins');
+                    }
+
+                    // If he hasn't, no discount for him.
+                    if ($uploaded_document == 0) {
+                        $scholarship_document = NULL;
+                    } else {
+                        $scholarship = true;
+                    }
+
+                }
+                if (!empty($cart)) {
+                    $cartorder = $m_application->getHikashopCart($fnumInfos);
+                    $checkout_url = 'cart' . $user->profile;
+                } elseif (!$paid) {
+                    $orderCancelled = false;
+
+                    $checkout_url = $m_application->getHikashopCheckoutUrl($user->profile . $scholarship_document);
+                    if (strpos($checkout_url, '${') !== false) {
+                        $checkout_url = $m_emails->setTagsFabrik($checkout_url, [$user->fnum]);
+                    }
+                    $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($checkout_url)) . '&usekey=fnum&rowid=' . $user->fnum;
+
+                    $cancelled_orders = $m_application->getHikashopOrder($fnumInfos, true);
+
+                    if (!empty($cancelled_orders)) {
+                        $orderCancelled = true;
+                    }
                 }
 
-                // If he hasn't, no discount for him.
-                if ($uploaded_document == 0) {
-                    $scholarship_document = NULL;
-                } else {
-                    $scholarship = true;
-                }
-
+            } else {
+                $checkout_url = 'index.php';
             }
-            if(!empty($cart)){
-                $cartorder = $m_application->getHikashopCart($fnumInfos);
-                $checkout_url = 'cart' . $user->profile;
-            } elseif (!$paid) {
-                $orderCancelled = false;
-                $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($m_application->getHikashopCheckoutUrl($user->profile . $scholarship_document))) . '&usekey=fnum&rowid=' . $user->fnum;
-
-                $cancelled_orders = $m_application->getHikashopOrder($fnumInfos, true);
-
-                if (!empty($cancelled_orders)) {
-                    $orderCancelled = true;
-                }
-            }
-
-        } else {
-            $checkout_url = 'index.php';
         }
-    }
-
-    if (isset($user->fnum) && !empty($user->fnum)) {
 
         $attachments = $m_application->getAttachmentsProgress($user->fnum);
         $attachment_list = !empty($m_profile->getAttachments($user->profile, true));
@@ -148,10 +159,9 @@ if (isset($user->fnum) && !empty($user->fnum)) {
         $forms = $m_application->getFormsProgress($user->fnum);
         $form_list = !empty($m_checklist->getFormsList());
 
-        $current_application = $m_application->getApplication($user->fnum);
         $sent = $m_checklist->getSent();
 
-        $confirm_form_url = $m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
+        $confirm_form_url = $m_checklist->getConfirmUrl() . '&usekey=fnum&rowid=' . $user->fnum;
 
         $app = JFactory::getApplication();
         $offset = $app->get('offset', 'UTC');
@@ -164,8 +174,15 @@ if (isset($user->fnum) && !empty($user->fnum)) {
         }
 
         if (!empty($user->end_date)) {
-            $is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date))?true:false;
+            $is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date)) ? true : false;
         }
+    }
+
+    $current_phase = $m_campaign->getCurrentCampaignWorkflow($user->fnum);
+    if (!empty($current_phase) && !empty($current_phase->end_date)) {
+        $deadline = new JDate($current_phase->end_date);
+    } else {
+        $deadline = !empty($admission) ? new JDate($user->fnums[$user->fnum]->admission_end_date) : new JDate($user->end_date);
     }
 
     require(JModuleHelper::getLayoutPath('mod_emundusflow', $layout));

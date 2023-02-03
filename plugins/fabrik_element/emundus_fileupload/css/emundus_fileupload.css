@@ -12,7 +12,11 @@
     flex-direction: row;
     justify-content: space-between;
     padding-top: 10px;
+    align-items: center;
 }
 .em-fileAttachment-link > a {
-    align-self: center;
+    display: flex;
+    align-items: center;
+    min-height: 20px;
 }
+

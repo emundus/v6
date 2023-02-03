@@ -35,11 +35,8 @@
 
 .queryBuilder {
 	text-align:left;
-	padding-top:1%;
-	padding-bottom:1%;
-	margin:auto;
+	padding: 12px;
 	min-width:500px;
-	max-width:60%;
 }
 .queryBuilder input[type="checkbox"]:checked {
 	background-color:transparent!important;
@@ -103,6 +100,13 @@
 .createModule select {
 	margin-right:1%;
 }
+#sortable{
+	width: max-content;
+}
+.editModule tr{
+	display: flex;
+	align-items: center;
+}
 .editModule, .editModule td {
 	border:none;
 }
@@ -111,7 +115,19 @@
 	text-align:center;
 }
 .radioModule {
-	width:75%;
+	display: flex;
+	align-items: center;
+	width:100%;
+}
+.radioModule input{
+	margin-top: 0 !important;
+	margin-right: 8px !important;
+}
+.radioModule a{
+	white-space: nowrap;
+}
+.radioModule a label{
+	margin-bottom: 0 !important;
 }
 .exportModule, .exportModule td {
 	text-align:left;
@@ -121,15 +137,15 @@
 	margin-right:1%;
 }
 .btnExport, .btnQueryBuilder:hover, .swal2-confirm:hover, .swal2-cancel {
-	border-radius:25px;
+	border-radius: var(--em-border-radius);
 	background:transparent;
-	padding:5px 30px;
+	padding: 8px 12px;
 	white-space: normal;
 }
 .btnExport:hover, .btnQueryBuilder, .swal2-confirm, .swal2-cancel:hover {
-	border-radius:25px;
+	border-radius: var(--em-border-radius);
 	color:white;
-	padding:5px 30px;
+	padding: 8px 12px;
 	white-space: normal;
 }
 .btnExport:focus, .btnQueryBuilder:focus, .queryBuilder input[type="button"]:focus, .queryBuilder input[type="submit"]:focus, .swal2-confirm:focus, .swal2-cancel:focus {
@@ -152,8 +168,9 @@
 	width:100%!important;
 	margin:0!important;
 	background-color:white;
-	padding:2%;
+	padding:16px;
 	box-shadow: 0 1px 2px 0 hsla(0,0%,41.2%,.19);
+	border-radius: 8px;
 }
 .etiquette label {
 	font-weight:normal!important;
@@ -163,25 +180,24 @@
 }
 .etiquette select {
 	border-radius:4px!important;
+	color: #353544;
 }
+
 .etiquette select:focus {
 	outline: 2px solid -webkit-focus-ring-color;
+}
+.etiquette .filter form{
+	display: grid;
+	grid-template-columns: repeat(3,1fr);
+	width: max-content;
+	gap: 16px;
+	margin-top: 24px;
 }
 .etiquette .filter .inputFilter {
 	display:inline-block;
 	text-align:left;
-	margin:3% 5% 0 5%;
 }
-.informationStatistique {
-	width:100%!important;
-	margin:0!important;
-	padding:2%;
-	padding-top:1%;
-	color:white!important;
-}
-.informationStatistique h4 {
-	color:#000!important;
-}
+
 .closeButtonWelcomeStat {
 	float:right;
 	cursor:pointer;

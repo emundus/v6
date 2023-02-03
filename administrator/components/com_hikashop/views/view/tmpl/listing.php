@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -68,7 +68,7 @@ $doc->addScriptDeclaration($js);
 					<?php echo JText::_('HIKA_FILE'); ?>
 				</th>
 				<th class="title titletoggle">
-					<?php echo JText::_('REMOVE_CUSTOMIZATION'); ?>
+					<?php echo JText::_('HIKASHOP_ACTIONS'); ?>
 				</th>
 			</tr>
 		</thead>
@@ -76,7 +76,6 @@ $doc->addScriptDeclaration($js);
 			<tr>
 				<td colspan="6">
 					<?php echo $this->pagination->getListFooter(); ?>
-					<?php echo $this->pagination->getResultsCounter(); ?>
 				</td>
 			</tr>
 		</tfoot>
@@ -124,9 +123,12 @@ $doc->addScriptDeclaration($js);
 					</td>
 					<td class="hk_center">
 					<?php if($row->overriden){ ?>
+							<a class="hikabtn hikabtn-primary badge" href="<?php echo hikashop_completeLink('view&task=diff&id='.str_replace('.','%2E',strip_tags($row->id))); ?>">
+								<i class="far fa-file-code"></i> <?php echo JText::_('SEE_MODIFICATIONS'); ?>
+							</a>
 						<?php if($this->delete){ ?>
-							<a href="<?php echo hikashop_completeLink('view&task=remove&cid='.$row->id); ?>" onclick="return hikashopRemoveCustom('<?php echo $row->id?>');">
-								<img src="<?php echo HIKASHOP_IMAGES; ?>delete.png" />
+							<a class="hikabtn hikabtn-error badge" href="<?php echo hikashop_completeLink('view&task=remove&cid='.$row->id); ?>" onclick="return hikashopRemoveCustom('<?php echo $row->id?>');">
+								<i class="fas fa-times"></i> <?php echo JText::_('REMOVE_CUSTOMIZATION'); ?>
 							</a>
 						<?php } ?>
 					<?php } ?>

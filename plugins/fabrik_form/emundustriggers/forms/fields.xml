@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-form-emundustriggers" label="PLG_FABRIK_FORM_EMUNDUSTRIGGERS_FIELDS">
+			<field type="text" name="trigger_confirmpost_success_msg" label="PLG_FABRIK_FORM_EMUNDUSTRIGGERS_CONFIRMPOST_REDIRECT_MSG" default=""></field>
+			<field type="text" name="trigger_confirmpost_redirect_url" label="PLG_FABRIK_FORM_EMUNDUSTRIGGERS_CONFIRMPOST_REDIRECT_URL" default=""></field>
+		</fieldset>
+	</fields>
+</form>

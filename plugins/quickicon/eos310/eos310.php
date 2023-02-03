@@ -205,13 +205,13 @@ class PlgQuickiconEos310 extends CMSPlugin
 				'messageType'   => 'error',
 				'image'         => 'minus-circle',
 				'messageLink'   => 'https://docs.joomla.org/Special:MyLanguage/Planning_for_Mini-Migration_-_Joomla_3.10.x_to_4.x',
-				'groupText'     => Text::_('PLG_QUICKICON_EOS310_GROUPNAME_EOS'),
+				'groupText'     => 'PLG_QUICKICON_EOS310_GROUPNAME_EOS',
 				'snoozable'     => false,
 			);
 		}
 
 		// The security support is ending in 6 months
-		if ($monthsUntilEOS <= 6)
+		if ($monthsUntilEOS < 6)
 		{
 			return array(
 				'id'            => 4,
@@ -220,13 +220,13 @@ class PlgQuickiconEos310 extends CMSPlugin
 				'messageType'   => 'warning',
 				'image'         => 'warning-circle',
 				'messageLink'   => 'https://docs.joomla.org/Special:MyLanguage/Planning_for_Mini-Migration_-_Joomla_3.10.x_to_4.x',
-				'groupText'     => Text::_('PLG_QUICKICON_EOS310_GROUPNAME_WARNING'),
+				'groupText'     => 'PLG_QUICKICON_EOS310_GROUPNAME_WARNING',
 				'snoozable'     => true,
 			);
 		}
 
 		// We are in security only mode now, 12 month to go from now on
-		if ($monthsUntilEOS <= 12)
+		if ($monthsUntilEOS < 12)
 		{
 			return array(
 				'id'            => 3,
@@ -235,13 +235,13 @@ class PlgQuickiconEos310 extends CMSPlugin
 				'messageType'   => 'warning',
 				'image'         => 'warning-circle',
 				'messageLink'   => 'https://docs.joomla.org/Special:MyLanguage/Planning_for_Mini-Migration_-_Joomla_3.10.x_to_4.x',
-				'groupText'     => Text::_('PLG_QUICKICON_EOS310_GROUPNAME_WARNING'),
+				'groupText'     => 'PLG_QUICKICON_EOS310_GROUPNAME_WARNING',
 				'snoozable'     => true,
 			);
 		}
 
 		// We still have 16 month to go, lets remind our users about the pre upgrade checker
-		if ($monthsUntilEOS <= 16)
+		if ($monthsUntilEOS < 16)
 		{
 			return array(
 				'id'            => 2,
@@ -250,13 +250,13 @@ class PlgQuickiconEos310 extends CMSPlugin
 				'messageType'   => 'info',
 				'image'         => 'info-circle',
 				'messageLink'   => 'https://docs.joomla.org/Special:MyLanguage/Pre-Update_Check',
-				'groupText'     => Text::_('PLG_QUICKICON_EOS310_GROUPNAME_INFO'),
+				'groupText'     => 'PLG_QUICKICON_EOS310_GROUPNAME_INFO',
 				'snoozable'     => true,
 			);
 		}
 
 		// Lets start our messages 2 month after the initial release, still 22 month to go
-		if ($monthsUntilEOS <= 22)
+		if ($monthsUntilEOS < 22)
 		{
 			return array(
 				'id'            => 1,
@@ -265,7 +265,7 @@ class PlgQuickiconEos310 extends CMSPlugin
 				'messageType'   => 'info',
 				'image'         => 'info-circle',
 				'messageLink'   => 'https://www.joomla.org/4/#features',
-				'groupText'     => Text::_('PLG_QUICKICON_EOS310_GROUPNAME_INFO'),
+				'groupText'     => 'PLG_QUICKICON_EOS310_GROUPNAME_INFO',
 				'snoozable'     => true,
 			);
 		}

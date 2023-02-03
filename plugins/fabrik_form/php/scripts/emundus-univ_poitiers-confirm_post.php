@@ -52,11 +52,11 @@ try {
 $emails = new EmundusModelEmails;
 
 $post = array(  'FNUM'      => $student->fnum,
-                'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($campaign['end_date'])),
+                'DEADLINE' => JHTML::_('date', $campaign['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
                 'CAMPAIGN_LABEL' => $campaign['label'],
                 'CAMPAIGN_YEAR' => $campaign['year'],
-                'CAMPAIGN_START' => $campaign['start_date'],
-                'CAMPAIGN_END' => $campaign['end_date'],
+                'CAMPAIGN_START' => JHTML::_('date', $campaign['start_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
+                'CAMPAIGN_END' => JHTML::_('date', $campaign['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
                 'CAMPAIGN_CODE' => $campaign['training'],
                 'FIRSTNAME' => $student->firstname,
                 'LASTNAME' => strtoupper($student->lastname)
@@ -144,7 +144,7 @@ if (count($trigger_emails) > 0) {
 
             // only for logged user or Theisis director and ED director
             if ($student->id == $recipient['id'] || in_array($recipient['id'], $mail_to)) {
-                $tags = $emails->setTags($recipient['id'], $post);
+                $tags = $emails->setTags($recipient['id'], $post, $student->fnum, '', $trigger_email[$student->code]['tmpl']['emailfrom'].$trigger_email[$student->code]['tmpl']['name'].$trigger_email[$student->code]['tmpl']['subject'].$trigger_email[$student->code]['tmpl']['message']);
 
                 $from = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['emailfrom']);
                 $from_id = 62;
@@ -188,7 +188,7 @@ $mailer->addReplyTo($from, $fromname);
                     $emails->logEmail($message);
                     JLog::add($to.' '.$body, JLog::INFO, 'com_emundus');
                 }
-                
+
             }
         }
     }

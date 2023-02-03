@@ -94,9 +94,6 @@ try {
 	$fnumInfos = $m_files->getFnumInfos($fnum);
 	$nom = $m_checklist->setAttachmentName($upload->filename, $attachement_params->lbl, $fnumInfos);
 
-	if (!isset($attachement_params->displayed) || $attachement_params->displayed === '0') {
-		$nom .= "_locked";
-	}
 	//$nom .= $attachement_params->lbl.rand().'.'.end(explode('.', $upload->filename));
 
 	if (!file_exists(EMUNDUS_PATH_ABS.$user_id) && (!mkdir(EMUNDUS_PATH_ABS.$user_id, 0777, true) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user_id.DS.'index.html'))) {
@@ -132,7 +129,7 @@ try {
         'ID'             => $student->id,
         'NAME'           => $student->name,
     ];
-    $tags = $m_emails->setTags($student->id, $post, $fnum);
+    $tags = $m_emails->setTags($student->id, $post, $fnum, '', $obj->subject.$obj->message);
 
 	$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/','/\n/');
 	$replacements = array ($student->id, $student->name, $student->email, '<br />');

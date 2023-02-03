@@ -6,10 +6,10 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
     require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 
-    require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
-    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
-    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
+    include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+    include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+    include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 
     $m_profile = new EmundusModelProfile;
     $m_files = new EmundusModelFiles;
@@ -18,11 +18,11 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     $app = JFactory::getApplication();
     $config = JFactory::getConfig();
     $user = $m_profile->getEmundusUser($user_id);
-    $fnum = empty($fnum)?$user->fnum:$fnum;
-    
+    $fnum = empty($fnum) ? $user->fnum : $fnum;
+
     $infos = $m_profile->getFnumDetails($fnum);
     $campaign_id = $infos['campaign_id'];
-    
+
     // Get form HTML
     $htmldata = '';
 
@@ -53,7 +53,6 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     } catch (Exception $e) {
         throw $e;
     }
-   
 
     //get logo
     $template = $app->getTemplate(true);
@@ -74,7 +73,7 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
 		    $tab[1] = parse_url($tab[1], PHP_URL_PATH);
 	    }
 
-        $logo = JPATH_BASE.DS.$tab[1];
+        $logo = JPATH_SITE.DS.$tab[1];
     }
 
     //get title
@@ -84,7 +83,7 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     }
     unset($logo);
     unset($title);
-    
+
     $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
     $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, 'I', PDF_FONT_SIZE_DATA));
     $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
@@ -94,7 +93,7 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
     $pdf->SetFont('helvetica', '', 10);
     $pdf->AddPage();
-    
+
     /*** Applicant ***/
     $htmldata .=
     '<style>
@@ -241,20 +240,21 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
 		$htmldata .= '<p>'.JText::_('COM_EMUNDUS_NO_EVALUATIONS_FOUND').'</p>';
 	}
 
+    $pdf->startTransaction();
+    $start_y = $pdf->GetY();
+    if (!$anonymize_data) {
+        $pdf->Bookmark($item->lastname.' '.$item->firstname, 0);
+    }
+    $pdf->writeHTMLCell(0,'','',$start_y, $htmldata,'B', 1);
+
     foreach ($data as $evals) {
         foreach ($evals as $user => $html) {
-            $htmldata .= $html;
+            $start_y = $pdf->GetY();
+            $pdf->writeHTMLCell(0,'','',$start_y, $html,'B', 1);
+            if($user != array_key_last($evals)) {
+                $pdf->addPage();
+            }
         }
-    }
-
-    if (!empty($htmldata)) {
-        $pdf->startTransaction();
-        $start_y = $pdf->GetY();
-        $start_page = $pdf->getPage();
-        if (!$anonymize_data) {
-            $pdf->Bookmark($item->lastname.' '.$item->firstname, 0);
-        }
-        $pdf->writeHTMLCell(0,'','',$start_y, $htmldata,'B', 1);
     }
 
     if (is_null($name)) {
@@ -262,7 +262,7 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     } else {
         $path = $name;
     }
-    
+
     @chdir('tmp');
     if ($output) {
         $pdf->Output($path, 'FI');

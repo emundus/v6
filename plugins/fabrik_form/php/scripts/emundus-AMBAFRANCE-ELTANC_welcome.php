@@ -35,20 +35,19 @@ if (count($recipients) > 0) {
     $emails = new EmundusModelEmails;
 
     $post = array('FIRSTNAME' => $first_name, 'LASTNAME' => strtoupper($last_name));
-    $tags = $emails->setTags($user->id, $post);
 
     foreach ($recipients as $recipient) {
         $email = $emails->getEmail($recipient->email_tmpl);
 
         $mailer = JFactory::getMailer();
-        //$tags = $emails->setTags($recipient->id, $post);
-        // Mail 
+        // Mail
         $from = $email->emailfrom;
         $from_id = 62;
         $fromname =$email->name;
         $to = $recipient->email;
         $subject = $email->subject;
-        $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message); 
+        $tags = $emails->setTags($user->id, $post, null, '', $email->message);
+        $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
         $mode = 1;
 
         //$attachment[] = $path_file;

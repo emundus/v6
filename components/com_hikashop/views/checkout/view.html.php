@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -102,18 +102,27 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 		$type = hikaInput::get()->getString('type', 'registration');
 		$userClass = hikashop_get('class.user');
 		$privacy = $userClass->getPrivacyConsentSettings($type);
-
-		if (empty($privacy) || empty($privacy['id']))
+		if (empty($privacy))
 			return;
 
-		$db = JFactory::getDBO();
-		$sql = 'SELECT * FROM #__content WHERE id = ' . intval($privacy['id']);
-		$db->setQuery($sql);
-		$data = $db->loadObject();
+		if($privacy['type'] == 'menu_item') {
+			if(empty($privacy['url']))
+				return;
+			$app = JFactory::getApplication();
+			$app->redirect($privacy['url']);
+		} else {
+			if (empty($privacy['id']))
+				return;
 
-		if (is_object($data))
-			$data->text = $data->introtext . $data->fulltext;
-		$this->assignRef('article', $data);
+			$db = JFactory::getDBO();
+			$sql = 'SELECT * FROM #__content WHERE id = ' . intval($privacy['id']);
+			$db->setQuery($sql);
+			$data = $db->loadObject();
+
+			if (is_object($data))
+				$data->text = $data->introtext . $data->fulltext;
+			$this->assignRef('article', $data);
+		}
 	}
 
 	public function show() {
@@ -144,7 +153,7 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 		$this->step = ($this->workflow_step + 1);
 
 		$tmpl = hikaInput::get()->getCmd('tmpl', '');
-		if(in_array($tmpl, array('ajax', 'raw')))
+		if(in_array($tmpl, array('ajax', 'raw', 'component')))
 			$this->ajax = true;
 
 		$this->workflow = $checkoutHelper->checkout_workflow;
@@ -199,7 +208,7 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 		$this->initItemid();
 
 		$tmpl = hikaInput::get()->getCmd('tmpl', '');
-		if(in_array($tmpl, array('ajax', 'raw')))
+		if(in_array($tmpl, array('ajax', 'raw', 'component')))
 			$this->ajax = true;
 
 		$this->workflow = $checkoutHelper->checkout_workflow;

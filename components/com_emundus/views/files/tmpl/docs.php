@@ -15,11 +15,11 @@ $template_type = array(
 
     </br>
 
-    <label for="em-doc-cansee"><?= JText::_('CAN_BE_VIEWED'); ?></label>
+    <label for="em-doc-cansee"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_ACTIONS_CAN_BE_VIEWED'); ?></label>
     </br>
 
     <label class="em-switch">
-        <input type="checkbox" name="type" id="em-doc-cansee">
+        <input type="checkbox" name="type" id="em-doc-cansee" checked="checked">
         <span class="em-slider em-round"></span>
     </label>
 
@@ -61,15 +61,12 @@ $template_type = array(
     </div>
 
 <script type="text/javascript">
-    $('#em-doc-tmpl').chosen({width:'100%'});
-
-    // get all letters from fnums
     var fnums = $('input:hidden[name="em-doc-fnums"]').val();
 
     if(fnums.split(',').length === 1) {
         $('#merge-div').remove();
-        $("#em-doc-export-mode option[value='0']").remove();        /// remove "regrouper par candidat"
-        $("#em-doc-export-mode option[value='1']").remove();        /// remove "regrouper par type de document"
+        $("#em-doc-export-mode option[value='0']").remove();
+        $("#em-doc-export-mode option[value='1']").remove();
     }
 
     $.ajax({
@@ -80,26 +77,18 @@ $template_type = array(
         success: function(result) {
             if(result.status) {
                 let attachment_letters = result.attachment_letters;
-                $('#can-val').append('<button id="em-generate" style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('GENERATE_DOCUMENT')+'</button>');
                 $('#export-div').show();
                 attachment_letters.forEach(letter => {
                     $('#em-doc-tmpl').append('<option value="' + letter.id + '">' + letter.value + '</option>');           /// append data
-                    $('#em-doc-tmpl').trigger("chosen:updated");
                 })
-
-                //// should select by default the first option
                 $('#em-doc-tmpl option:first').prop('selected', true);
-                $('#em-doc-tmpl').trigger("chosen:updated");
-
-                /// uncomment this line to hide btn "Generer le(s) document(s)" if needed
-                //$('#em-generate').remove();
             } else {
                 $('#em-doc-tmpl').append('<option value="-1" selected disabled>' + Joomla.JText._('NO_LETTER_FOUND') + '</option>');
-                $('#em-doc-tmpl').trigger("chosen:updated");
                 $('#export-div').remove();
                 $('#merge-div').remove();
-                $('.modal-body').append('<span id="unavailable-msg" style="color: red">' + Joomla.JText._('COM_EMUNDUS_UNAVAILABLE_FEATURES') + '</span');
             }
+
+            $('#em-doc-tmpl').chosen({width:'100%'});
         }
     })
 
@@ -109,17 +98,11 @@ $template_type = array(
             $('#em-generate').remove();
             $('#export-div').hide();
             $('#merge-div').hide();
-            $('.modal-body').append('<span id="unavailable-msg" style="color: red">' + Joomla.JText._('COM_EMUNDUS_UNAVAILABLE_FEATURES') + '</span');
         } else {
-            if($('#em-generate').length == 0){ $('#can-val').append('<button id="em-generate" style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('GENERATE_DOCUMENT')+'</button>');}
-
             $('#export-div').show();
 
-            /// reset to default option of #export-div
             $('#em-doc-export-mode option[value="2"]').prop('selected', true);
             $('#em-doc-export-mode').trigger("change");
-
-            $('#unavailable-msg').remove();
         }
     })
 </script>

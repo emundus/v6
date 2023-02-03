@@ -104,16 +104,16 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
             foreach ($applicants as $applicant) {
                 $mailer = JFactory::getMailer();
 
-                $post = array(
-                    'FNUM' => $applicant->fnum,
-                    'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($applicant->end_date)),
-                    'CAMPAIGN_LABEL' => $applicant->label,
-                    'CAMPAIGN_START' => $applicant->start_date,
-                    'CAMPAIGN_END' => $applicant->end_date,
-                    'FIRSTNAME' => $applicant->firstname,
-                    'LASTNAME' => strtoupper($applicant->lastname)
-                );
-                $tags = $m_emails->setTags($applicant->id, $post, $applicant->fnum);
+				$post = array(
+					'FNUM' => $applicant->fnum,
+	                'DEADLINE' => JHTML::_('date', $applicant->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+	                'CAMPAIGN_LABEL' => $applicant->label,
+	                'CAMPAIGN_START' => JHTML::_('date', $applicant->start_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+	                'CAMPAIGN_END' => JHTML::_('date', $applicant->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+	                'FIRSTNAME' => $applicant->firstname,
+	                'LASTNAME' => strtoupper($applicant->lastname)
+				);
+                $tags = $m_emails->setTags($applicant->id, $post, $applicant->fnum, '', $email->emailfrom.$email->name.$email->subject.$email->message);
 
                 $from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
                 $from_id = 62;

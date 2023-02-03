@@ -1,4 +1,134 @@
 <?php die() ?>
+Admin Tools 6.1.5
+================================================================================
+# [LOW] Fixed default enable/disable values of some WAF features
+
+Admin Tools 6.1.4
+================================================================================
+- Removed “Convert all links to HTTPS” feature; it has stopped making sense since circa 2015.
+# [HIGH] Cannot edit component Options on PHP 8 if the site had Admin Tools 5.1.0 to 5.7.2 installed in the past
+
+Admin Tools 6.1.3
+================================================================================
+# [MEDIUM] Possible PHP error on PHP 8 if the .htaccess/NginX Conf/web.config Maker configuration had empty exception files
+# [MEDIUM] UploadShield: Fixed fatal under PHP 8.0 when an empty file is uploaded
+
+Admin Tools 6.1.2
+================================================================================
++ Support improved Joomla Update in Joomla 4.0.4
+~ Improve language string
+# [HIGH] “Neutralise SVG execution” in NginX Conf Maker would cause a server error.
+
+Admin Tools 6.1.1
+================================================================================
+~ Changes in Joomla 4.0.0-RC5 broke the date and time input fields. Now using native HTML 5 controls.
+# [HIGH] Uninstallation broken on Joomla 4 due to different installation script event handling.
+# [LOW] Optimise Tables fails on Joomla 3 when you're using the PDO MySQL database driver.
+
+Admin Tools 6.1.0
+================================================================================
++ Added default rules to not block DuckDuckGo, Baidu, Yahoo and Yandex indexers
++ Repair and Optimize tables is now possible again on Joomla 4
++ You can now choose the protection mode for the Administrator password protection
++ .htaccess Maker: Disable client-side risky behavior in static content
++ Explicitly allowed domain names
+~ Updated the default offline.html file contents with modern CSS
+~ Admin password protection will now reset error pages using an even more aggressive method
+~ Clean temp folder: only files and folders over 60 seconds old will be deleted.
+# [MEDIUM] The system plugin would perform temporary redirections with HTTP 301 (permanent redirection), causing problem with CDNs and proxies
+# [LOW] NginX Conf Maker: Missing 'noserversignature'
+# [LOW] PHP File Change Scanner reports: the scan start was no longer reported
+# [LOW] Backend blocked requests graph would not reload correctly
+
+Admin Tools 6.0.6
+================================================================================
+# [HIGH] Fixed wrongly detection of unauthorised security settings modification under NginX and IIS
+# [MEDIUM] The print view of the PHP File Change Scanner report is missing information
+# [LOW] Default email templates still had GeoIP information even though we removed this feature in January 2020
+# [LOW] The system plugin is incompatible with the Joomla 4 API application
+
+Admin Tools 6.0.5
+================================================================================
+~ Update Chart.js
+# [LOW] The server configuration file was detected as changed when it hasn't.
+# [LOW] The Quick Setup Wizard didn't enable the “Reset custom error pages” option when applying the administrator password protection.
+
+Admin Tools 6.0.4
+================================================================================
+~ Rewritten installer plugin
+~ Converted all tables to InnoDB for better performance
+# [LOW] Administrator Exclusive Allow IP List displayed ordering instead of checkboxes, making it impossible to delete entries
+# [LOW] Error dialog if you click on a feature button before the security exceptions graph is fully loaded
+
+Admin Tools 6.0.3
+================================================================================
+~ Rewritten installer plugin
+# [LOW] Marking a file as safe/unsafe redirects you to an empty scan results page
+# [LOW] Master Password causes Javascript message box while loading graphs (gh-240)
+
+Admin Tools 6.0.2
+================================================================================
+# [MEDIUM] Could not delete records using an IP as their primary key
+# [LOW] Joomla was printing out a lot of warnings when installing the extension
+
+Admin Tools 6.0.1
+================================================================================
+! Update could fail on sites with old plugins we have removed years ago still installed
+
+Admin Tools 6.0.0
+================================================================================
++ Rewritten with FOF 4
++ Renamed ViewTemplates to tmpl (Joomla 4 convention, with fallback code for Joomla 3)
++ Yes/No options in the component and plugin options now work correctly under Joomla 4.0 beta 7 and later
+# [LOW] QuickStart Wizard: Inherit default configuration before applying per-site optimizations
+
+Admin Tools 5.9.2
+================================================================================
++ WAF Exceptions and Deny List will consider the URL parameter 'controller' as an alias for 'view' on Joomla 4
++ Multiple selection fields in Configure WAF now use Chosen (J3) or Choices.js (J4) for easier selections.
+~ All tables now have a PRIMARY KEY
+~ Improve the layout in the Unblock an IP page
+~ Improved CHANGELOG layout in the Control Panel page
+# [MEDIUM] Delete Inactive users feature was deleting users waiting for activation
+# [LOW] ActionLog and Installer plugins showed the wrong version in Extensions, Manage
+# [LOW] Htaccess Maker: Blocking malicious user agents is now case insensitive
+
+Admin Tools 5.9.1
+================================================================================
+- Dropped support for PHP 7.1.0
+~ Add PHP 8.0 in the list of known PHP versions, recommend PHP 7.4 or later
+# [LOW] Fixed HTML block page when original request format wasn't HTML
+
+Admin Tools 5.9.0
+================================================================================
++ .htaccess and NginX Conf Maker: Better support for more file types in setting the expiration time
++ .htaccess, NginX and WebConfig Maker: added option to reset all the options to default values
+- Removed update notifications inside the component
+~ Improved unhandled PHP exception error page
+~ Using nullable DATETIME instead of zero dates
+# [HIGH] web.config Maker would block some Joomla index.php URLs whose last parameter ended in ".php"
+# [HIGH] template=something blocked for com_ajax requests (they must always be allowed)
+# [LOW] Remote file change scanner with frontend URL would fail if the secret word contained the plus sign character due to a PHP bug.
+# [LOW] Wrong version query to the namespace.js
+# [LOW] Temporary Super Users were blocked by the Monitor Super Users feature
+# [LOW] Session Cleaner was running only when backend users accessed to the site
+
+Admin Tools 5.8.0
+================================================================================
++ .htaccess Maker: Automatically compress static resources will now use Brotli compression with priority if it's supported by both the server (mod_brotli) and the client (accepts encoding "br").
++ .htaccess and NginX Conf Maker: Neutralise SVG script execution. There are major caveats! Please do read the documentation before enabling this option.
++ Inherit the base font size instead of defining a fixed one
+- Removed support for Internet Explorer
+~ Adjust size of control panel icons
+~ Improve the UX of the URL Redirect form page
+~ More clarity in the in-component update notifications, explaining they come from Joomla itself
+~ Improve "Redirect index.php to the site's root" code
+# [LOW] web.config Maker: 1 year option for the expiration time did not take effect
+# [LOW] Auto-compression and expiration time didn't work on .js files served with MIME type text/javascript
+# [LOW] There were leftover, non-functional dismiss buttons in some information and warning messages in the backend
+# [LOW] Removed obsolete country and continent information from the default email templates for new installations.
+# [LOW] Rescue URL would trigger an Admin Query String blocked request before sending the email (just annoying, not really causing a functional problem)
+
 Admin Tools 5.7.4
 ================================================================================
 + .htaccess/NginX Conf/web.config Maker: more options for the expiration time

@@ -1,7 +1,10 @@
 /* view export select columns */
 .view-export_select_columns .panel-info > .panel-heading label{
-    color:#fff!important;
+    color:#353544 !important;
     margin:0!important;
+}
+.panel{
+    box-shadow: unset;
 }
 .component-content legend {
     border: 0px;
@@ -20,12 +23,31 @@
 .panel-info.excel {
     min-height: inherit!important;
 }
+
+a.btn.btn-info,
+button.btn.btn-primary {
+    background: var(--main-500);
+    border: 1px solid var(--main-500);
+    text-shadow: none;
+    text-transform: initial;
+    padding: 8px 12px;
+}
+
+a.btn.btn-info:hover, a.btn.btn-info:focus, a.btn.btn-info:active,
+button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-primary:active {
+    background-color: transparent;
+    color: var(--main-500);
+    outline: none;
+    border: 1px solid var(--main-500);
+}
+
 .panel-primary {
     border-color: #00316b;
 }
 .panel-primary.excel>.panel-heading {
-    background-color: #00316b;
+    background-color: #353544;
 }
+
 .panel-heading label {
     color: #FFFFFF!important;
     font-weight: bold!important;
@@ -49,6 +71,7 @@
 
 #program-categories-group {
     display: flex;
+    flex-direction: column;
     justify-content: space-around;
 }
 
@@ -84,4 +107,30 @@
 #result h1,
 #other-result h1 {
     font-size: 20px;
+    color: #353544;
+}
+
+.view-export_select_columns h1 {
+   color: #353544;
+}
+
+
+.panel-primary > .panel-heading{
+    background-color: var(--main-500) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+legend{
+    margin: unset !important;
+}
+legend label{
+    color: white;
+}
+.panel-info > .panel-heading{
+    background-color: #E3E5E8;
+}
+label[for ^='emundus_checkall_grp_']{
+    color: black;
 }

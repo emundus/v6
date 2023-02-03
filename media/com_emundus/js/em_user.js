@@ -2,43 +2,30 @@
  * Created by yoan on 16/09/14.
  */
 
-/* load Menu action */
+var lastIndex = 0;
+var loading;
+
 function reloadActions(view) {
-	var mutli = 0;
-	multi = $('.em-check:checked').length;
+	var multi = $('.em-check:checked').length;
 	$.ajax({
-		type: "GET",
+		type: 'GET',
 		url: 'index.php?option=com_emundus&view=files&layout=menuactions&format=raw&Itemid=' + itemId + '&display=inline&multi=' + multi,
 		dataType: 'html',
 		success: function (data) {
-			$(".navbar.navbar-inverse").empty();
-			$(".navbar.navbar-inverse").append(data);
+			let navbar = $('.navbar.navbar-inverse');
+			navbar.empty();
+			navbar.append(data);
 		},
-		error: function (jqXHR, textStatus, errorThrown) {
+		error: function (jqXHR) {
 			console.log(jqXHR.responseText);
 		}
-	})
+	});
 }
-
-
 
 function clearchosen(cible) {
 	$(cible).val("%");
 	$(cible).trigger('chosen:updated');
 }
-
-function getCookie(cname) {
-	var name = cname + "=";
-	var ca = document.cookie.split(';');
-	for (var i = 0; i < ca.length; i++) {
-		var c = ca[i].trim();
-		if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
-	}
-	return "";
-}
-
-var lastIndex = 0;
-var loading;
 
 function getUserCheck() {
 	var id = parseInt($('.modal-body').attr('act-id'));
@@ -66,9 +53,11 @@ function getUserCheck() {
 
 function formCheck(id) {
 	if ($('#' + id).val().trim().length == 0) {
-		$('#' + id).parent('.form-group').addClass('has-error');
-		$('#' + id + ' help-block').remove();
-		$('#' + id).after('<span class="help-block">' + Joomla.JText._('REQUIRED') + '</span>');
+		let field = $('#' + id);
+		field.parent('.form-group').addClass('has-error');
+		field.siblings('.help-block').remove();
+		field.after('<span class="help-block">' + Joomla.JText._('REQUIRED') + '</span>');
+
 		return false;
 	} else {
 		var re = /^[0-9a-zA-Z\_\@\-\.\+]+$/;
@@ -98,29 +87,26 @@ function formCheck(id) {
 }
 
 function reloadData() {
-	addDimmer();
+	addLoader();
 	$.ajax({
-		type: "GET",
+		type: 'GET',
 		url: 'index.php?option=com_emundus&view=users&format=raw&layout=user&Itemid=' + itemId,
 		dataType: 'html',
 		success: function (data) {
-			$('.em-dimmer').remove();
-			$(".col-md-9 .panel.panel-default").empty();
-			$(".col-md-9 .panel.panel-default").append(data);
+			removeLoader();
+			$('.col-md-9 .panel.panel-default').empty();
+			$('.col-md-9 .panel.panel-default').append(data);
 		},
-		error: function (jqXHR, textStatus, errorThrown) {
+		error: function (jqXHR) {
+			removeLoader();
 			console.log(jqXHR.responseText);
 		}
-	})
-}
-
-function addDimmer() {
-	$('.row').before('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+	});
 }
 
 function refreshFilter() {
 	$.ajax({
-		type: "GET",
+		type: 'GET',
 		url: 'index.php?option=com_emundus&view=users&format=raw&layout=filter&Itemid=' + itemId,
 		dataType: 'html',
 		success: function (data) {
@@ -129,7 +115,7 @@ function refreshFilter() {
 			$('.chzn-select').chosen();
 			reloadData();
 		},
-		error: function (jqXHR, textStatus, errorThrown) {
+		error: function (jqXHR) {
 			console.log(jqXHR.responseText);
 		}
 	});
@@ -148,10 +134,10 @@ function tableOrder(order) {
 				reloadData();
 			}
 		},
-		error: function (jqXHR, textStatus, errorThrown) {
+		error: function (jqXHR) {
 			console.log(jqXHR.responseText);
 		}
-	})
+	});
 }
 
 function exist(fnum) {
@@ -161,7 +147,7 @@ function exist(fnum) {
 			exist = true;
 			return;
 		}
-	})
+	});
 
 	return exist;
 }
@@ -169,13 +155,13 @@ function exist(fnum) {
 function search() {
 
 	var quick = [];
-	$("div[data-value]").each( function () {
-		quick.push($(this).attr("data-value")) ;
+	$('div[data-value]').each( function () {
+		quick.push($(this).attr('data-value'));
 	});
 	var inputs = [{
 		name: 's',
 		value: quick,
-		adv_fil : false
+		adv_fil: false
 	}];
 
 	$('.em_filters_filedset .testSelAll').each(function () {
@@ -190,7 +176,7 @@ function search() {
 		inputs.push({
 			name: $(this).attr('name'),
 			value: $(this).val(),
-			adv_fil : false
+			adv_fil: false
 		});
 	});
 
@@ -207,12 +193,10 @@ function search() {
 			if (result.status) {
 				reloadData($('#view').val());
 			}
-
 		},
-		error: function (jqXHR, textStatus, errorThrown) {
+		error: function (jqXHR) {
 			console.log(jqXHR.responseText);
 		}
-
 	});
 }
 
@@ -233,17 +217,7 @@ $(document).ready(function () {
 			search();
 		}
 	});
-	/*$(document).on('click', '#em-data thead th strong', function(e) {
-		                  if (e.handle !== true)
-		                  {
-			                  var id = $(this).parent('th').attr('id');
-			                  e.handle = true;
-                              alert(id);
-                              if (id != 'check') {
-                                  tableOrder(id);
-                              }
-		                  }
-	                  });*/
+
 	$(document).on('click', 'input:button', function (e) {
 		if (e.event !== true) {
 			e.handle = true;
@@ -278,7 +252,7 @@ $(document).ready(function () {
 			e.handle = true;
 			var id = $(this).attr('id');
 			$.ajax({
-				type: "POST",
+				type: 'POST',
 				url: 'index.php?option=com_emundus&controller=users&task=setlimitstart',
 				dataType: 'json',
 				data: ({
@@ -306,7 +280,7 @@ $(document).ready(function () {
 			$.ajax({
 				type: 'get',
 				url: 'index.php?option=com_emundus&controller=users&task=getfnuminfos',
-				dataType: "json",
+				dataType: 'json',
 				data: ({
 					fnum: fnum.fnum
 				}),
@@ -318,12 +292,12 @@ $(document).ready(function () {
 						openFiles(fnum);
 					}
 				},
-				error: function (jqXHR, textStatus, errorThrown) {
+				error: function (jqXHR) {
 					console.log(jqXHR.responseText);
 				}
-			})
+			});
 		}
-	})
+	});
 	$(document).on('click', 'button', function (e) {
 		if (e.handle != true) {
 			e.handle = true;
@@ -331,7 +305,7 @@ $(document).ready(function () {
 			switch (id) {
 				case 'save-filter':
 					var filName = prompt(filterName);
-					if (filName != "") {
+					if (filName != '') {
 						$.ajax({
 							type: 'POST',
 							url: 'index.php?option=com_emundus&controller=users&task=savefilters&Itemid=' + itemId,
@@ -355,13 +329,13 @@ $(document).ready(function () {
 									}, 600);
 								}
 							},
-							error: function (jqXHR, textStatus, errorThrown) {
+							error: function (jqXHR) {
 								console.log(jqXHR.responseText);
 							}
-						})
+						});
 					} else {
 						alert(filterEmpty);
-						filName = prompt(filterName, "name");
+						filName = prompt(filterName, 'name');
 					}
 					break;
 				case 'del-filter':
@@ -380,21 +354,21 @@ $(document).ready(function () {
 									$('#select_filter option:selected').remove();
 									$("#select_filter").trigger("chosen:updated");
 									$('#deleted-filter').show();
-									setTimeout(function (e) {
+									setTimeout(function () {
 										$('#deleted-filter').hide();
 									}, 600);
 								} else {
 									$('#error-filter').show();
-									setTimeout(function (e) {
+									setTimeout(function () {
 										$('#error-filter').hide();
 									}, 600);
 								}
 
 							},
-							error: function (jqXHR, textStatus, errorThrown) {
+							error: function (jqXHR) {
 								console.log(jqXHR.responseText);
 							}
-						})
+						});
 					} else {
 						alert(nodelete);
 					}
@@ -410,7 +384,7 @@ $(document).ready(function () {
 					$('#em-last-open .list-group .list-group-item').removeClass('active');
 					$('#em-user-filters').show();
 					$('.em-check:checked').prop('checked', false);
-					$(".col-md-9 .panel.panel-default").show();
+					$('.col-md-9 .panel.panel-default').show();
 					break;
 				case 'em-see-files':
 					var fnum = new Object();
@@ -424,7 +398,7 @@ $(document).ready(function () {
 					$.ajax({
 						type: 'get',
 						url: 'index.php?option=com_emundus&controller=users&task=getfnuminfos',
-						dataType: "json",
+						dataType: 'json',
 						data: ({
 							fnum: fnum.fnum
 						}),
@@ -436,10 +410,10 @@ $(document).ready(function () {
 								openFiles(fnum);
 							}
 						},
-						error: function (jqXHR, textStatus, errorThrown) {
+						error: function (jqXHR) {
 							console.log(jqXHR.responseText);
 						}
-					})
+					});
 
 					break;
 				case 'em-delete-files':
@@ -456,24 +430,24 @@ $(document).ready(function () {
 							},
 							success: function (result) {
 								if (result.status) {
-									if ($("#" + fnum + "-collapse").parent('div').hasClass('panel-primary')) {
+									if ($('#' + fnum + '-collapse').parent('div').hasClass('panel-primary')) {
 										$('.em-open-files').remove();
 										$('.em-hide').hide();
 										$('#em-last-open').show();
 										$('#em-last-open .list-group .list-group-item').removeClass('active');
 										$('#em-user-filters').show();
 										$('.em-check:checked').prop('checked', false);
-										$(".col-md-9.col-xs-16 .panel.panel-default").show();
+										$('.col-md-9.col-xs-16 .panel.panel-default').show();
 									}
-									$("#em-last-open #" + fnum + "_ls_op").remove();
-									$("#" + fnum + "-collapse").parent('div').remove();
+									$('#em-last-open #' + fnum + '_ls_op').remove();
+									$('#' + fnum + '-collapse').parent('div').remove();
 
 								}
 							},
-							error: function (jqXHR, textStatus, errorThrown) {
+							error: function (jqXHR) {
 								console.log(jqXHR.responseText);
 							}
-						})
+						});
 					}
 
 					break;
@@ -503,42 +477,12 @@ $(document).ready(function () {
 			});
 		}
 	});
-	/* $(document).on('keyup', 'input:text', function(e) {
-		                  if (e.keyCode == 13) {
-			                  var id = $(this).attr('id');
-			                  var test = id.split('-');
-			                  test.pop();
-			                  if (test.join('-') == 'em-adv-fil') {
-				                  var elements_son = true;
-			                  } else {
-				                  var elements_son = false;
-			                  }
-			                  $.ajax({
-				                         type: "POST",
-				                         dataType: 'json',
-				                         url: 'index.php?option=com_emundus&controller=users&task=setfilters&2',
-				                         data: ({
-					                         id: $('#' + id).attr('name'),
-					                         val: $('#' + id).val(),
-					                         multi: false,
-					                         elements: elements_son
-				                         }),
-				                         success: function(result) {
-					                         if (result.status) {
-						                         reloadData();
-					                         }
-				                         },
-				                         error: function(jqXHR, textStatus, errorThrown) {
-					                         console.log(jqXHR.responseText);
-				                         }
-			                         });
-		                  }
-	                  });*/
+
 	$(document).on('change', '#select_filter', function (e) {
 		var id = $(this).attr('id');
 		var val = $('#' + id).val();
 		$.ajax({
-			type: "POST",
+			type: 'POST',
 			dataType: 'json',
 			url: 'index.php?option=com_emundus&controller=users&task=setfilters&3',
 			data: ({
@@ -599,8 +543,7 @@ $(document).ready(function () {
 			error: function (jqXHR, textStatus, errorThrown) {
 				console.log(jqXHR.responseText);
 			}
-		})
-
+		});
 	});
 	$(document).on('click', '.em-dropdown', function (e) {
 		var id = $(this).attr('id');
@@ -614,9 +557,8 @@ $(document).ready(function () {
 			$('ul[aria-labelledby="' + id + '"]').addClass('open just-open');
 		}
 
-
 		setTimeout(function () {
-			$('ul[aria-labelledby="' + id + '"]').removeClass('just-open')
+			$('ul[aria-labelledby="' + id + '"]').removeClass('just-open');
 		}, 300);
 	});
 
@@ -690,7 +632,7 @@ $(document).ready(function () {
 			for (key in hash) {
 				string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]);
 			}
-			return string
+			return string;
 		};
 
 		url = url.fmt({
@@ -740,26 +682,6 @@ $(document).ready(function () {
 				});
 				break;
 
-			/*case 29:
-                            // change current profile
-                            $.ajax(
-                                {
-                                    type:'get',
-                                    url:url,
-                                    dataType:'html',
-                                    data:{user:sid},
-                                    success: function(result)
-                                    {
-                                          $('.modal-body').empty();
-                                        $('.modal-body').append(result);
-                                    },
-                                    error: function (jqXHR, textStatus, errorThrown)
-                                    {
-                                        console.log(jqXHR.responseText);
-                                    }
-                                })
-                          break;*/
-
 			case 21:
 				/*activate*/
 				$('#em-modal-actions').modal('hide');
@@ -793,7 +715,12 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							}).then(function() {
 								window.location.replace('/user');
 							});
@@ -919,7 +846,7 @@ $(document).ready(function () {
 			}
 		}
 
-		if ($('.modal-body .em-dimmer').is(':visible')) {
+		if ($('#em-dimmer').is(':visible')) {
 			return false;
 		}
 
@@ -941,7 +868,7 @@ $(document).ready(function () {
 					progs = progs.substr(0, progs.length - 1);
 				}
 
-				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+				addLoader();
 
 				$.ajax({
 					type: 'POST',
@@ -953,7 +880,7 @@ $(document).ready(function () {
 					},
 					dataType: 'json',
 					success: function (result) {
-						$('.modal-body .em-dimmer').remove();
+						removeLoader();
 						if (result.status) {
 
 							Swal.fire({
@@ -970,7 +897,12 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							});
 						}
 					},
@@ -1003,6 +935,10 @@ $(document).ready(function () {
 						oprofiles += ',';
 					}
 				}
+				if($('#same_login_email').is(':checked')){
+					$('#login').val($('#mail').val());
+				}
+
 				var login = $('#login').val();
 				var fn = $('#fname').val();
 				var ln = $('#lname').val();
@@ -1016,7 +952,8 @@ $(document).ready(function () {
 					$('#profiles').after('<span class="help-block">' + Joomla.JText._('SELECT_A_VALUE') + '</span>');
 					return false;
 				}
-				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+
+				addLoader();
 				$.ajax({
 					type: 'POST',
 					url: $('#em-add-user').attr('action'),
@@ -1036,7 +973,7 @@ $(document).ready(function () {
 					},
 					dataType: 'json',
 					success: function (result) {
-						$('.modal-body .em-dimmer').remove();
+						removeLoader();
 
 						if (result.status) {
 							Swal.fire({
@@ -1044,12 +981,8 @@ $(document).ready(function () {
 								type: 'success',
 								title: result.msg,
 								showConfirmButton: false,
-								timer: 1500
+								timer: 1500,
 							});
-							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
-								'<button type="button" class="close" data-dismiss="alert">×</button>' +
-								'<strong>' + result.msg + '</strong> ' +
-								'</div>');*/
 
 							$('#em-modal-actions').modal('hide');
 
@@ -1061,16 +994,18 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							});
-							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
-								'<button type="button" class="close" data-dismiss="alert">×</button>' +
-								'<strong>' + result.msg + '</strong> ' +
-								'</div>');*/
 						}
 
 					},
-					error: function (jqXHR, textStatus, errorThrown) {
+					error: function (jqXHR) {
+						removeLoader();
 						console.log(jqXHR.responseText);
 					}
 				});
@@ -1084,7 +1019,7 @@ $(document).ready(function () {
 					$('#agroups').after('<span class="help-block">' + Joomla.JText._('SELECT_A_GROUP') + '</span>');
 					return false;
 				} else {
-					var groups = "";
+					var groups = '';
 					for (var i = 0; i < $("#agroups").val().length; i++) {
 						groups += $("#agroups").val()[i];
 						groups += ',';
@@ -1101,7 +1036,7 @@ $(document).ready(function () {
 					},
 					dataType: 'json',
 					success: function (result) {
-						$('.modal-body .em-dimmer').remove();
+						removeLoader();
 
 						if (result.status) {
 							Swal.fire({
@@ -1111,10 +1046,6 @@ $(document).ready(function () {
 								showConfirmButton: false,
 								timer: 1500
 							});
-							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
-								'<button type="button" class="close" data-dismiss="alert">×</button>' +
-								'<strong>' + result.msg + '</strong> ' +
-								'</div>');*/
 
 								$('#em-modal-actions').modal('hide');
 
@@ -1122,12 +1053,13 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							});
-							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
-								'<button type="button" class="close" data-dismiss="alert">×</button>' +
-								'<strong>' + result.msg + '</strong> ' +
-								'</div>');*/
 						}
 
 					},
@@ -1158,7 +1090,6 @@ $(document).ready(function () {
 					for (var i = 0; i < $("#oprofiles").val().length; i++) {
 						oprofiles += $("#oprofiles").val()[i];
 						oprofiles += ',';
-						/*alert($("#oprofiles").val()[i]);*/
 					}
 				}
 				var login = $('#login').val();
@@ -1175,28 +1106,33 @@ $(document).ready(function () {
 					$('#profiles').after('<span class="help-block">' + Joomla.JText._('SELECT_A_VALUE') + '</span>');
 					return false;
 				}
-				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+				addLoader();
+
+				let addUserData = {
+					login: login,
+					firstname: fn,
+					lastname: ln,
+					campaigns: campaigns.substr(0, campaigns.length - 1),
+					oprofiles: oprofiles.substr(0, oprofiles.length - 1),
+					groups: groups.substr(0, groups.length - 1),
+					profile: profile,
+					jgr: $('#profiles option:selected').attr('id'),
+					email: email,
+					newsletter: $('#news').is(':checked') ? 1 : 0,
+					university_id: $('#univ').val()
+				}
+
+				if($('#em-add-user').attr('action').indexOf('edituser') !== -1) {
+					addUserData.id =  $('.em-check:checked').attr('id').split('_')[0];
+				}
 
 				$.ajax({
 					type: 'POST',
 					url: $('#em-add-user').attr('action'),
-					data: {
-						id: $('.em-check:checked').attr('id').split('_')[0],
-						login: login,
-						firstname: fn,
-						lastname: ln,
-						campaigns: campaigns.substr(0, campaigns.length - 1),
-						oprofiles: oprofiles.substr(0, oprofiles.length - 1),
-						groups: groups.substr(0, groups.length - 1),
-						profile: profile,
-						jgr: $('#profiles option:selected').attr('id'),
-						email: email,
-						newsletter: $('#news').is(':checked') ? 1 : 0,
-						university_id: $('#univ').val()
-					},
+					data: addUserData,
 					dataType: 'json',
 					success: function (result) {
-						$('.modal-body .em-dimmer').remove();
+						removeLoader();
 
 						if (result.status) {
 							Swal.fire({
@@ -1206,10 +1142,6 @@ $(document).ready(function () {
 								showConfirmButton: false,
 								timer: 1500
 							});
-							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
-								'<button type="button" class="close" data-dismiss="alert">×</button>' +
-								'<strong>' + result.msg + '</strong> ' +
-								'</div>');*/
 
 							$('#em-modal-actions').modal('hide');
 							reloadData();
@@ -1218,24 +1150,26 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							});
-							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
-								'<button type="button" class="close" data-dismiss="alert">×</button>' +
-								'<strong>' + result.msg + '</strong> ' +
-								'</div>');*/
 						}
-
 					},
-					error: function (jqXHR, textStatus, errorThrown) {
+					error: function (jqXHR) {
+						removeLoader();
 						console.log(jqXHR.responseText);
+						displayErrorMessage(jqXHR.responseText);
 					}
 				});
 				break;
 
 			case 26:
 				var checkInput = getUserCheck();
-				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+				addLoader();
 				$.ajax({
 					type: 'POST',
 					url: 'index.php?option=com_emundus&controller=users&task=deleteusers&Itemid=' + itemId,
@@ -1244,7 +1178,7 @@ $(document).ready(function () {
 					},
 					dataType: 'json',
 					success: function (result) {
-						$('.modal-body .em-dimmer').remove();
+						removeLoader();
 
 						if (result.status) {
 							Swal.fire({
@@ -1254,10 +1188,6 @@ $(document).ready(function () {
 								showConfirmButton: false,
 								timer: 1500
 							});
-							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
-								'<button type="button" class="close" data-dismiss="alert">×</button>' +
-								'<strong>' + result.msg + '</strong> ' +
-								'</div>');*/
 							reloadData();
 							$('body').removeClass('modal-open');
 							reloadActions($('#view').val());
@@ -1270,16 +1200,18 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							});
-							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
-								'<button type="button" class="close" data-dismiss="alert">×</button>' +
-								'<strong>' + result.msg + '</strong> ' +
-								'</div>');*/
 						}
 
 					},
-					error: function (jqXHR, textStatus, errorThrown) {
+					error: function (jqXHR) {
+						removeLoader();
 						console.log(jqXHR.responseText);
 					}
 				});
@@ -1288,6 +1220,8 @@ $(document).ready(function () {
 			case 33 :
 				var usersData = getUserCheck();/*get objectJson with id et uid*/
 				var uid = JSON.parse(usersData);/*parsing in json to get only the uid*/
+
+				addLoader();
 
 				$.ajax({
 					type: 'POST',
@@ -1298,23 +1232,33 @@ $(document).ready(function () {
 
 					dataType: 'json',
 					success: function (result) {
+						removeLoader();
 
 						if (result.status) {
-							setTimeout(function() {
-								$('#system-message-container').prepend('<div class="alert alert-dismissable alert-success" style="width: 70%;margin: 0 auto 10px auto;display: flex;">' +
-									'<button type="button" class="close" data-dismiss="alert">×</button>' +
-									'<strong>' + result.msg + '</strong>' +
-									'</div>');
-							},500);
+							Swal.fire({
+								text: result.msg,
+								type: "success",
+								showConfirmButton: false,
+								timer: 2500,
+								customClass: {
+									title: 'em-swal-title',
+								},
+							});
 							$('.close').click();
 						} else {
-							$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
-								'<button type="button" class="close" data-dismiss="alert">×</button>' +
-								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
+							Swal.fire({
+								text: result.msg,
+								type: "error",
+								showConfirmButton: false,
+								timer: 2500,
+								customClass: {
+									title: 'em-swal-title',
+								},
+							});
 						}
 					},
 					error: function (jqXHR, textStatus, errorThrown) {
+						removeLoader();
 						console.log(jqXHR.responseText, errorThrown);
 					}
 
@@ -1348,7 +1292,7 @@ $(document).ready(function () {
 				$('#em-modal-sending-emails').css('display', 'block');
 
 				$.ajax({
-					type: "POST",
+					type: 'POST',
 					url: "index.php?option=com_emundus&controller=messages&task=useremail",
 					data: data,
 					success: result => {
@@ -1367,15 +1311,25 @@ $(document).ready(function () {
 
 								Swal.fire({
 									type: 'success',
-									title: Joomla.JText._('EMAILS_SENT') + result.sent.length,
-									html:  sent_to + '</ul>'
+									title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
+									html:  sent_to + '</ul>',
+									customClass: {
+										title: 'em-swal-title',
+										confirmButton: 'em-swal-confirm-button',
+										actions: "em-swal-single-action",
+									},
 								});
 
 							} else {
 								Swal.fire({
 									type: 'error',
-									title: Joomla.JText._('NO_EMAILS_SENT')
-								})
+									title: Joomla.JText._('COM_EMUNDUS_EMAILS_NO_EMAILS_SENT'),
+									customClass: {
+										title: 'em-swal-title',
+										confirmButton: 'em-swal-confirm-button',
+										actions: "em-swal-single-action",
+									},
+								});
 							}
 
 							if (result.failed.length > 0) {
@@ -1431,4 +1385,68 @@ $(document).ready(function () {
 			}
 		}
 	});
+
+	function displayErrorMessage(msg)
+	{
+		Swal.fire({
+			type: 'error',
+			title: msg,
+			customClass: {
+				title: 'em-swal-title',
+				confirmButton: 'em-swal-confirm-button',
+				actions: "em-swal-single-action",
+			},
+		});
+	}
 })
+
+function DoubleScroll(element) {
+	const id = Math.random();
+	if (element.scrollWidth > element.offsetWidth) {
+		createScrollbarForElement(element, id);
+	}
+
+	window.addEventListener('resize', function () {
+		let scrollbar = document.getElementById(id);
+		if (scrollbar) {
+			if (element.scrollWidth > element.offsetWidth) {
+				scrollbar.firstChild.style.width = element.scrollWidth + 'px';
+			} else {
+				scrollbar.remove();
+			}
+		} else {
+			if (element.scrollWidth > element.offsetWidth) {
+				createScrollbarForElement(element, id);
+			}
+		}
+	});
+}
+
+function createScrollbarForElement(element, id) {
+	let new_scrollbar = document.createElement('div');
+	new_scrollbar.appendChild(document.createElement('div'));
+	new_scrollbar.style.overflowX = 'auto';
+	new_scrollbar.style.overflowY = 'hidden';
+	new_scrollbar.firstChild.style.height = '1px';
+	new_scrollbar.firstChild.style.width = element.scrollWidth + 'px';
+	new_scrollbar.firstChild.appendChild(document.createTextNode('\xA0'));
+	new_scrollbar.id = id;
+	let running = false;
+	new_scrollbar.onscroll = function () {
+		if (running) {
+			running = false;
+			return;
+		}
+		running = true;
+		element.scrollLeft = new_scrollbar.scrollLeft;
+	};
+	element.onscroll = function () {
+		if (running) {
+			running = false;
+			return;
+		}
+		running = true;
+		new_scrollbar.scrollLeft = element.scrollLeft;
+	};
+	element.parentNode.insertBefore(new_scrollbar, element);
+}

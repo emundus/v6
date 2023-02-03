@@ -10,7 +10,6 @@ export default {
             return false;
         }
     },
-
     async getFnumInfos(fnum) {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=files&task=getfnuminfos', {
@@ -22,6 +21,18 @@ export default {
             return response.data;
         } catch (e) {
             return false;
+        }
+    },
+    async isDataAnonymized() {
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=files&task=isdataanonymized');
+
+            return response.data;
+        } catch (e) {
+            return {
+                status: false,
+                message: e.message
+            };
         }
     }
 }

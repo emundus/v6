@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -72,7 +72,27 @@ if(empty($this->edit_address)) {
 	</div>
 <?php
 } else {
+	$after = array();
 	foreach($this->fields['address'] as $fieldname => $field) {
+		$onWhat = 'onchange';
+		if($field->field_type == 'radio')
+			$onWhat = 'onclick';
+
+		$field->field_required = false;
+		$html = $this->fieldsClass->display(
+			$field,
+			@$this->address->$fieldname,
+			'data[user_address]['.$fieldname.']',
+			false,
+			' ' . $onWhat . '="window.hikashop.toggleField(this.value,\''.$fieldname.'\',\'user_address\',0);"',
+			false,
+			$this->fields['address'],
+			$this->address
+		);
+		if($field->field_type == 'hidden') {
+			$after[] = $html;
+			continue;
+		}
 ?>
 	<dl id="hikamarket_user_address_<?php echo $this->address->address_id; ?>_<?php echo $fieldname;?>" class="hikam_options">
 		<dt class="hikamarket_user_address_<?php echo $fieldname;?>"><label><?php
@@ -82,27 +102,16 @@ if(empty($this->edit_address)) {
 		?></label></dt>
 		<dd class="hikamarket_user_address_<?php echo $fieldname;?>"><?php
 			if(!empty($field->vendor_edit)) {
-				$onWhat = 'onchange';
-				if($field->field_type == 'radio')
-					$onWhat = 'onclick';
-
-				$field->field_required = false;
-				echo $this->fieldsClass->display(
-						$field,
-						@$this->address->$fieldname,
-						'data[user_address]['.$fieldname.']',
-						false,
-						' ' . $onWhat . '="window.hikashop.toggleField(this.value,\''.$fieldname.'\',\'user_address\',0);"',
-						false,
-						$this->fields['address'],
-						$this->address
-				);
+				echo $html;
 			} else {
 				echo $this->fieldsClass->show($field, @$this->address->$fieldname);
 			}
 		?></dd>
 	</dl>
 <?php
+	}
+	if(count($after)) {
+		echo implode("\r\n", $after);
 	}
 	echo '<input type="hidden" name="data[user_address][address_id]" value="'.@$this->address->address_id.'"/>';
 	echo '<input type="hidden" name="data[user_address][address_user_id]" value="'.@$this->address->address_user_id.'"/>';

@@ -2,7 +2,7 @@
 button.btn-primary{
     background: #e03c32;
     border: 1px solid #e03c32;
-    border-radius: 4px!important;
+    border-radius: var(--em-applicant-border-radius) !important;
     padding: 8px 12px!important;
 }
 button.btn-primary:hover{
@@ -36,25 +36,49 @@ button.btn-primary:hover{
 .login form.form-validate.form-horizontal.well {
     border: none;
     margin-bottom: 0 !important;
-    border-radius: 0;
     background: white;
-    border-radius: 0;
-    padding: 0px;
     box-shadow: none;
-    width: 58%;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%;
+    padding: 0;
 }
 
-#g-container-main div.em-formRegistrationCenter, #g-container-main div.login {
+#g-container-main div.em-formRegistrationCenter {
     display: flex !important;
     flex-direction: column;
     align-items: center;
     background: white;
-    width: 60%;
+    margin-top: 50px;
+    border-radius: 16px 16px 0 0;
+    padding: 80px 64px 0 64px;
+    width: 50%;
     margin-left: auto;
     margin-right: auto;
+}
+
+#g-container-main div.em-formRegistrationCenter div:not(.page-header){
+ color: var(--em-applicant-text-color);
+}
+
+
+#g-container-main div.login {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    background: white;
     margin-top: 50px;
+    border-radius: 16px;
+    padding: 80px 64px 80px 64px;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#g-container-main div.login .control-group .controls button.btn.btn-primary {
+    text-transform: initial;
+    height: 48px;
+    width: 100%;
+    border-radius: var(--applicant-border-radius) !important;
+    font-family: var(--applicant-default-font);
 }
 
 .invalid {
@@ -62,27 +86,35 @@ button.btn-primary:hover{
     font-weight: 600;
 }
 .login .well label {
-    color: #000;
-    font-size: 14px;
+    font-family: var(--font);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 19px;
+    letter-spacing: 0.0015em;
+    text-align: left;
+    margin-bottom: 0px;
+    color: #2B2B2B;
 }
+
+.login .well label.invalid {
+ color: #2B2B2B !important;
+}
+
+
 ul.nav.nav-tabs.nav-stacked {
     background: white;
-    border-radius: 0;
+    border-radius: 0 0 16px 16px;
     display: flex;
-    justify-content: space-around;
-    width: 60%;
+    justify-content: space-between;
+    width: 50%;
     margin-left: auto !important;
     margin-right: auto !important;
-   padding-bottom: 50px !important;
-    margin-top: 0px;
+    padding: 0 0 80px 0 !important;
+    margin-top: 0;
     margin-bottom: 50px;
 }
 
-ul.nav.nav-tabs.nav-stacked a::before {
-    content: "\f101";
-    font-family: FontAwesome;
-    margin-right: 3px;
-}
 .login form > fieldset .control-group:nth-child(3) .controls {
     justify-content: center;
     margin-top: 20px;
@@ -94,60 +126,111 @@ ul.nav.nav-tabs.nav-stacked a::before {
     display: inline-flex;
     align-items: center;
 }
-.view-login  .form-horizontal .control-label {
+.view-login .form-horizontal .control-label {
     width: 100%;
     text-align: left;
+    padding-top: 0px;
+}
+.login .form-horizontal .control-label {
+    width: 100%;
 }
 .view-login .form-horizontal .control-group {
     display: flex;
     justify-content: center;
     flex-direction: column;
+    margin-bottom: 32px;
 }
+
+.login form.form-horizontal .control-group {
+    flex-direction: column;
+}
+
+.login form.form-horizontal .control-label {
+    width: 100%;
+}
+.login form.form-horizontal .controls {
+    width: 100%;
+    margin-left: 0;
+}
+
 footer div{
     line-height:1.5em;
 }
 .control-group .control-label label .star{
     display: none;
 }
-.fabrikLabel[opts*="Validation"]::after,
-body.view-login label#password-lbl::after,
-body.view-login label#username-lbl::after,
-body.view-reset label#jform_email-lbl::after,
-body.view-reset label#jform_username-lbl::after,
-.control-label .required::after {
-    content: "\f005";
-    color: #c30505;
-    padding-left: 2px;
-    top: -10px;
-    position: relative;
+.fabrikLabel[opts*="Validation"]::before,
+body.view-login label#password-lbl::before,
+body.view-login label#username-lbl::before,
+body.view-reset label#jform_email-lbl::before,
+body.view-reset label#jform_username-lbl::before,
+.control-label .required::before {
+    content: "";
     font-family: FontAwesome;
     font-size: 5px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 19px;
+    letter-spacing: 0;
+    text-align: left;
+    position: relative;
+    top: -5px;
+    margin-right: 5px;
+    color: #e5283B;
 }
 .control-group:nth-child(3) .controls button.btn.btn-primary {
     text-transform: capitalize;
     width: 100% !important;
-    height: 50px;
+    height: 48px;
     margin-right: 0px !important;
-    font-weight: 300;
+    margin-bottom: 0px;
+    font-family: var(--font);
+    font-weight: 500;
 }
 form.form-validate.form-horizontal.well .control-group .controls input {
     border-radius :4px;
+    width: 100%;
+    height: 48px;
+    border-radius: 4px;
+    padding: 0 12px 0 12px;
+    border: 1px solid #E3E3E3;
+    box-shadow: none;
+    margin-top: 12px;
+}
+
+form.form-validate.form-horizontal.well .control-group .controls input:focus {
+    border: 1px solid #1C6EF2;
+    box-shadow: none;
+}
+
+form.form-validate.form-horizontal.well .control-group .controls input.invalid {
+    border: 1px solid #e5283B;
+    box-shadow: none;
+}
+
+
+form.form-validate.form-horizontal.well .control-group .controls input:hover {
+    border: 1px solid #727272;
+    box-shadow: none;
 }
 
 h1.em-titre-connectez-vous {
-    margin-bottom: 20px !important;
+    margin-bottom: 16px !important;
+    margin-top: 0px;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 39px;
+    letter-spacing: 0;
+    text-align: center;
 }
 
-h1.em-titre-connectez-vous::after {
-    content: '';
-    position: absolute;
-    margin-top: 6px;
-    width: 2.7rem;
-    height: 0.2rem;
-    background: #de6339;
-    left: 0;
-    display: block !important;
+.page-header p.em-h3 {
+    font-family: var(--applicant-title-font);
+    color: var(--em-applicant-title-color);
 }
+
+
 .header-right a.btn.btn-danger.connexion , a.btn.btn-danger.inscription  {
     font-weight: 300;
     line-height: inherit;
@@ -166,13 +249,9 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 
 .logout .form-horizontal {
     margin-top: 20px;
-    width: 60%;
     border: none;
-    background: #fafafa;
-}
-
-#g-main-mainbody div.logout.login {
-    background: #fafafa !important;
+    background: transparent;
+    box-shadow: none;
 }
 
 #g-main-mainbody div.logout.login .page-header h1 {
@@ -236,12 +315,6 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     display: none;
 }
 
-.moduletable.em-formRegistrationCenter #login-form .unstyled li  a::before {
-    content: "\f101";
-    font-family: FontAwesome;
-    margin-right: 3px;
-}
-
 .moduletable.em-formRegistrationCenter #login-form .control-group .input-prepend {
     display: flex;
     flex-direction: column;
@@ -267,6 +340,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 @media all and (max-width: 479px) {
     .view-login #g-container-main div.login {
         width: 100%;
+        padding: 0px 24px 0 24px;
     }
 }
 
@@ -274,11 +348,14 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 
     .view-login .login  {
          width: 100% !important;
+        padding: 80px 24px 0 24px;
+        margin-top: 0px !important;
     }
 
     .view-login .login .page-header {
         width: 100% !important;
         padding: 0px 12px;
+        margin-top: 0px;
     }
 
     .view-login .form-horizontal fieldset .control-group {
@@ -301,6 +378,8 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 
     ul.nav.nav-tabs.nav-stacked li {
         text-align: center;
+        margin: 0px !important;
+        padding: 0px !important;
     }
 
 }
@@ -310,6 +389,16 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
         padding-right: 8rem;
         padding-left: 4rem;
         width: 80%;
+    }
+
+    #g-container-main div.em-formRegistrationCenter, #g-container-main div.login {
+        width: 65%;
+        padding: 80px 24px 0px 24px !important;
+    }
+
+    ul.nav.nav-tabs.nav-stacked
+    {
+        width: 65%;
     }
 
     .view-login .login.em-formRegistrationCenter .page-header  {
@@ -351,34 +440,10 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 
 .view-login .login.em-formRegistrationCenter .page-header {
     display: flex;
-    justify-content: flex-start;
-    align-items: flex-end;
-    flex-direction: row;
-    width: 59%;
-    margin-left: auto;
-    margin-right: auto;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 32px;
 }
 
-.view-login .login.em-formRegistrationCenter .page-header div.icon-title.loginicon {
-    background-image: url('../../../../../../media/com_emundus/images/enter.svg');
-    background-size: contain;
-    background-repeat: no-repeat;
-    margin-bottom: 20px;
-}
-
-@media all and (max-width: 479px) {
-    .view-login .login.em-formRegistrationCenter .page-header div.icon-title.loginicon {
-        display: none;
-    }
-}
-
-.view-login .login.em-formRegistrationCenter .page-header div.icon-title {
-    margin-right: 10px;
-    width: 35px;
-    height: 35px;
-    background-position: 0 0;
-    background-size: contain;
-    -webkit-filter: brightness(.5);
-    filter: brightness(.5);
-    fill: grey;
-}

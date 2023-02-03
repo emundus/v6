@@ -130,7 +130,7 @@ class EmundusControllerTrombinoscope extends EmundusController {
             $marge_css_bottom = $tab_margin[0];
         }
         // Génération du HTML
-        include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+        include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
 
         $emails = new EmundusModelEmails();
         $body = '';
@@ -146,7 +146,7 @@ class EmundusControllerTrombinoscope extends EmundusController {
                 'CAMPAIGN_END' => $fnumInfo['end_date'],
                 'SITE_URL' => JURI::base()
             ];
-            $tags = $emails->setTags($fnum["applicant_id"], $post, $fnum['fnum']);
+            $tags = $emails->setTags($fnum["applicant_id"], $post, $fnum['fnum'], '', $template);
             $body_tags = preg_replace($tags['patterns'], $tags['replacements'], $template);
             $body_tmp = $emails->setTagsFabrik($body_tags, array($fnum["fnum"]));
             $body .= $body_tmp;
@@ -292,6 +292,7 @@ footer {
 	 * @since version
 	 */
     public function generate_pdf() {
+        $return_value = false;
         $jinput = JFactory::getApplication()->input;
         $gridL = $jinput->get('gridL');
         $gridH = $jinput->get('gridH');
@@ -306,16 +307,19 @@ footer {
         $border = $jinput->get('border');
         $headerHeight = $jinput->get('headerHeight');
 
-        $fnums = $this->fnums_json_decode($string_fnums);
-        $html_content = $this->generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $header, $footer, $generate, false, $checkHeader, $border, $headerHeight);
+        if (!empty($format)) {
+            $fnums = $this->fnums_json_decode($string_fnums);
+            $html_content = $this->generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $header, $footer, $generate, false, $checkHeader, $border, $headerHeight);
 
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'trombinoscope.php');
-        $m_trombinoscrope = new EmundusModelTrombinoscope();
-        $generated_pdf_url = $m_trombinoscrope->generate_pdf($html_content, $format);
+            require_once (JPATH_COMPONENT.DS.'models'.DS.'trombinoscope.php');
+            $m_trombinoscrope = new EmundusModelTrombinoscope();
+            $generated_pdf_url = $m_trombinoscrope->generate_pdf($html_content, $format);
 
-        $return_value = json_encode(array(
-            'pdf_url' => $generated_pdf_url
-        ));
+            $return_value = json_encode(array(
+                'pdf_url' => $generated_pdf_url
+            ));
+        }
+
         echo $return_value;
         exit();
     }

@@ -73,12 +73,12 @@ class EmundusViewUsers extends JViewLegacy
 	private function _loadFilter() {
         $m_users = new EmundusModelUsers();
 		$model = new EmundusModelFiles;
-		
+
         $model->code = $m_users->getUserGroupsProgrammeAssoc($this->_user->id);
         $model->fnum_assoc = $m_users->getApplicantsAssoc($this->_user->id);
         $this->assignRef('code', $model->code);
         $this->assignRef('fnum_assoc', $model->fnum_assoc);
-		
+
         // reset filter
         $filters = @EmundusHelperFiles::resetFilter();
         $this->assignRef('filters', $filters);
@@ -88,18 +88,31 @@ class EmundusViewUsers extends JViewLegacy
 		$m_users = new EmundusModelUsers();
 		$edit = JFactory::getApplication()->input->getInt('edit', null);
 
+        include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
+        $m_profiles = new EmundusModelProfile;
+        $app_prof = $m_profiles->getApplicantsProfilesArray();
+
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+
 		if ($edit == 1) {
 			$uid = JFactory::getApplication()->input->getInt('user', null);
 			$user  = $m_users->getUserInfos($uid);
 
 			$uGroups = $m_users->getUserGroups($uid);
+            if($eMConfig->get('showJoomlagroups',0)) {
+                $juGroups = $m_users->getUsersIntranetGroups($uid);
+            }
 			$uCamps = $m_users->getUserCampaigns($uid);
 			$uOprofiles = $m_users->getUserOprofiles($uid);
 
 			$this->assignRef('user', $user);
 			$this->assignRef('uGroups', $uGroups);
+            if($eMConfig->get('showJoomlagroups',0)) {
+                $this->assignRef('juGroups', $juGroups);
+            }
 			$this->assignRef('uCamps', $uCamps);
 			$this->assignRef('uOprofiles', $uOprofiles);
+			$this->assignRef('app_prof', $app_prof);
 		}
 		$this->assignRef('edit', $edit);
 
@@ -112,6 +125,11 @@ class EmundusViewUsers extends JViewLegacy
 
 		$groups = $m_users->getGroups();
 		$this->assignRef('groups', $groups);
+
+        if($eMConfig->get('showJoomlagroups',0)) {
+            $jgroups = $m_users->getLascalaIntranetGroups();
+            $this->assignRef('jgroups', $jgroups);
+        }
 
 		$campaigns = $m_users->getAllCampaigns();
 		$this->assignRef('campaigns', $campaigns);
@@ -136,6 +154,13 @@ class EmundusViewUsers extends JViewLegacy
 	private function _loadAffectForm() {
 		$m_users = new EmundusModelUsers();
 		$groups = $m_users->getGroups();
+		$this->assignRef('groups', $groups);
+	}
+
+	private function _loadAffectIntranetForm()
+	{
+		$m_users = new EmundusModelUsers();
+		$groups = $m_users->getLascalaIntranetGroups();
 		$this->assignRef('groups', $groups);
 	}
 
@@ -173,6 +198,9 @@ class EmundusViewUsers extends JViewLegacy
 				break;
 			case 'addgroup':
 				$this->_loadGroupForm();
+				break;
+			case 'affectintranetlascala':
+				$this->_loadAffectIntranetForm();
 				break;
 			case 'affectgroup':
 				$this->_loadAffectForm();

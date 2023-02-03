@@ -74,6 +74,14 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 		return $params->get($pname);
 	}
 
+    public function onBeforeStore() {
+        $formModel = $this->getModel();
+
+        JPluginHelper::importPlugin('emundus','custom_event_handler');
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeStore', ['formModel' => $formModel]]);
+        return true;
+    }
+
 	/**
 	 * Before the record is stored, this plugin will see if it should process
 	 * and if so store the form data in the session.
@@ -415,6 +423,25 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 						JLog::add($error, JLog::ERROR, 'com_emundus');
 					}
 
+                    if (!empty($link)) {
+                        $query = $db->getQuery(true);
+                        $query->select('COUNT(id)')
+                            ->from('#__emundus_setup_attachment_profiles')
+                            ->where('profile_id = ' . $user->profile)
+                            ->orWhere('campaign_id = ' . $user->fnums[$user->fnum]->campaign_id);
+
+                        $db->setQuery($query);
+                        try {
+                            $profileDocuments = $db->loadResult();
+
+                            if ($profileDocuments < 1) {
+                                $link = "";
+                            }
+                        } catch (Exception $e) {
+                            JLog::add('Error trying to find document attached to profiles, unable to say if we can redirect to submission page directly', JLog::ERROR, 'fabrik_form.emundus_redirect');
+                        }
+                    }
+
 					if (empty($link)) {
 						try {
 							$query = 'SELECT CONCAT(link,"&Itemid=",id) 
@@ -429,6 +456,19 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 					}
 				}
 			}
+
+            // track the LOGS (1 | u | COM_EMUNDUS_ACCESS_FILE_UPDATE)
+            # get the logged user id	$user->id
+            # get the fnum				$user->fnum
+            # get the applicant id		$user->id
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+            $user = JFactory::getSession()->get('emundusUser');			# logged user #
+
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+            $mFile = new EmundusModelFiles();
+            $applicant_id = ($mFile->getFnumInfos($user->fnum))['applicant_id'];
+
+            //EmundusModelLogs::log($user->id, $applicant_id, $user->fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'COM_EMUNDUS_ACCESS_FILE_UPDATED_BY_APPLICANT');
 
 		} else {
 
@@ -463,10 +503,34 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 
 			$link = JRoute::_('index.php?option=com_fabrik&view=form&formid='.$formid.'&usekey=fnum&rowid='.$fnum.'&tmpl=component');
 
-			echo "<hr>";
-			echo '<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>';
-			echo "<hr>";
-			exit;
+            # get logged user_id 	$user->id
+            # get candidat user_id	$sid
+            # get the fnum			$fnum
+
+            // TRACK THE LOGS (1 | u | COM_EMUNDUS_ACCESS_FILE_UPDATE)
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+            $user = JFactory::getSession()->get('emundusUser');		# logged user #
+
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+            $mFile = new EmundusModelFiles();
+            $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+            echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>';
+            echo '<script src="https://code.jquery.com/jquery-3.3.1.slim.js" integrity="sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=" crossorigin="anonymous"></script>';
+            die("<script>
+              $(document).ready(function () {
+                Swal.fire({
+                  position: 'top',
+                  type: 'success',
+                  title: '".JText::_('SAVED')."',
+                  showConfirmButton: false,
+                  timer: 2000,
+                  onClose: () => {
+                    window.close();
+                  }
+                })
+              });
+            </script>");
 		}
 
 

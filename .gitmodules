@@ -1,0 +1,4 @@
+[submodule "media/com_emundus_vanilla"]
+	path = media/com_emundus_vanilla
+	url = ../../cms/vanilla_emjmd.git
+	branch = master

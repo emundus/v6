@@ -31,12 +31,13 @@ class EmundusViewFiles extends JViewLegacy
     public function display($tpl = null)
     {
 		$current_user = JFactory::getUser();
-		if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
-			die( JText::_('RESTRICTED_ACCESS') );
+		if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+			die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
+		}
 
     	// translation to load in javacript file ; /media/com_emundus/em_files.js
     	// put it in com_emundus/emundus.php
-		//JHTML::stylesheet("media/com_emundus/lib/chosen/chosen.min.css");
+		//JHTML::stylesheet("media/jui/css/chosen.min.css");
 
 		$app = JFactory::getApplication();
 

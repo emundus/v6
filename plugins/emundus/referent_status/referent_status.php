@@ -58,7 +58,7 @@ class PlgEmundusReferent_status extends JPlugin {
 
         // Generate emails from template and store it in message table
         if (!empty($applicant)) {
-            include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
+            include_once(JPATH_SITE . '/components/com_emundus/models/emails.php');
             $m_emails = new EmundusModelEmails;
 
             if (!empty($referent_mail_id)) {
@@ -67,26 +67,40 @@ class PlgEmundusReferent_status extends JPlugin {
                 $email = $m_emails->getEmail('referent_letter');
             }
 
-            if ($this->getFilesExist($applicant->fnum, $attachments_id) == 0) {
+            // Récupération de la pièce jointe : modele de lettre
+            $query = 'SELECT esp.reference_letter
+                FROM #__emundus_setup_profiles as esp
+                LEFT JOIN #__emundus_setup_campaigns as esc on esc.profile_id = esp.id 
+                LEFT JOIN #__emundus_campaign_candidature as ecc on ecc.campaign_id = esc.id 
+                WHERE ecc.fnum LIKE '. $db->quote($fnum);
+            $db->setQuery($query);
+            $obj_letter = $db->loadRowList();
+
+            $attachment = array();
+            if (!empty($obj_letter[0][0])) {
+                $attachment[] = JPATH_BASE.str_replace("\\", "/", $obj_letter[0][0]);
+            }
+
+            if ($this->getFilesExist($applicant->fnum, $attachments_id) != sizeof(explode(',', $attachments_id))) {
                 $mailer = JFactory::getMailer();
                 $mailer->SMTPDebug = true;
 
                 $baseurl = JURI::root();
 
                 $referents_emails = array();
-                $elts = explode(',',$fabrik_elts);
+                $elts = explode(',', $fabrik_elts);
 
                 $db = JFactory::getDbo();
                 $query = $db->getQuery(true);
 
-                foreach ($elts as $elt){
-                    $table = explode('__',$elt)[0];
-                    $field = explode('__',$elt)[1];
+                foreach ($elts as $elt) {
+                    $table = explode('__', $elt)[0];
+                    $field = explode('__', $elt)[1];
 
                     $query->clear()
                         ->select($field)
                         ->from($db->quoteName('#__' . $table))
-                        ->where($db->quoteName('fnum') .' LIKE '. $db->quote($applicant->fnum));
+                        ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($applicant->fnum));
 
                     $db->setQuery($query);
                     $referents_emails[] = $db->loadResult();
@@ -94,82 +108,97 @@ class PlgEmundusReferent_status extends JPlugin {
 
 
                 foreach ($referents_emails as $key => $referentEmail) {
-                    $referent_key = md5($this->rand_string(20).time());
-                    $link_upload = $baseurl . 'index.php?option=com_fabrik&c=form&view=form&formid='.$fabrik_form.'&tableid=71&keyid=' . $referent_key . '&sid=' . $applicant->applicant_id;
+                    $query->clear()
+                        ->select('COUNT(id)')
+                        ->from($db->quoteName('#__emundus_files_request'))
+                        ->where($db->quoteName('email') . ' LIKE ' . $db->quote($referentEmail))
+                        ->andWhere($db->quoteName('uploaded') . ' = 1 ')
+                        ->andWhere($db->quoteName('fnum') . ' LIKE '. $db->quote($applicant->fnum));
+                    $db->setQuery($query);
+                    $uploaded = $db->loadResult();
 
-                    $post = array(
-                        'FNUM' => $applicant->fnum,
-                        'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($applicant->end_date)),
-                        'CAMPAIGN_LABEL' => $applicant->label,
-                        'CAMPAIGN_START' => $applicant->start_date,
-                        'CAMPAIGN_END' => $applicant->end_date,
-                        'FIRSTNAME' => $applicant->firstname,
-                        'LASTNAME' => strtoupper($applicant->lastname),
-                        'UPLOAD_URL' => $link_upload,
-                        'SITE_URL' => JURI::base(),
-                    );
-                    $tags = $m_emails->setTags($applicant->id, $post);
+                    if (empty($uploaded)) {
+                        $referent_key = md5($this->rand_string(20) . time());
+                        $link_upload = $baseurl . 'index.php?option=com_fabrik&c=form&view=form&formid=' . $fabrik_form . '&tableid=71&keyid=' . $referent_key . '&sid=' . $applicant->applicant_id;
 
-                    $from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
-                    $from_id = 62;
-                    $fromname = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
-                    $to = $referentEmail;
-                    $to_id = $applicant->id;
-                    $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
-                    $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
-                    $body = $m_emails->setTagsFabrik($body, [$applicant->fnum]);
-
-
-                    $config = JFactory::getConfig();
-
-                    $email_from_sys = $config->get('mailfrom');
-                    $email_from = $from;
-
-                    // If the email sender has the same domain as the system sender address.
-                    if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
-                        $mail_from_address = $email_from;
-                    } else {
-                        $mail_from_address = $email_from_sys;
-                    }
-
-                    // Set sender
-                    $sender = [
-                        $mail_from_address,
-                        $fromname
-                    ];
-
-                    $mailer->setSender($sender);
-                    $mailer->addRecipient($to);
-                    $mailer->setSubject($subject);
-                    $mailer->isHTML(true);
-                    $mailer->Encoding = 'base64';
-                    $mailer->setBody($body);
-
-                    // Send emails
-                    $send = $mailer->Send();
-
-                    $mailer->clearAddresses();
-                    $mailer->clearAllRecipients();
-                    $mailer->smtpClose();
-
-                    if ($send !== true) {
-                        $this->log .= "\n Error sending email : " . $to;
-                    } else {
-                        $attachments = explode(',',$attachments_id);
-                        $this->setEmailSend($applicant->fnum,$attachments[$key],$applicant->id,$referentEmail,$applicant->campaign_id,$referent_key);
-                        $message = array(
-                            'user_id_from' => $from_id,
-                            'user_id_to' => $to_id,
-                            'subject' => $subject,
-                            'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $to . '</i><br>' . $body
+                        $post = array(
+                            'FNUM' => $applicant->fnum,
+                            'DEADLINE' => JHTML::_('date', $applicant->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+                            'CAMPAIGN_LABEL' => $applicant->label,
+                            'CAMPAIGN_START' => JHTML::_('date', $applicant->start_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+                            'CAMPAIGN_END' => JHTML::_('date', $applicant->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+                            'FIRSTNAME' => $applicant->firstname,
+                            'LASTNAME' => strtoupper($applicant->lastname),
+                            'UPLOAD_URL' => $link_upload,
+                            'SITE_URL' => JURI::base(),
                         );
-                        $m_emails->logEmail($message);
-                        $this->log .= '\n' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $to . ' :: ' . $body;
+                        $tags = $m_emails->setTags($applicant->id, $post, null, '', $email->emailfrom.$email->name.$email->subject.$email->message);
+
+                        $from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
+                        $from_id = 62;
+                        $fromname = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
+                        $to = $referentEmail;
+                        $to_id = $applicant->id;
+                        $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
+                        $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
+                        $body = $m_emails->setTagsFabrik($body, [$applicant->fnum]);
+
+
+                        $config = JFactory::getConfig();
+
+                        $email_from_sys = $config->get('mailfrom');
+                        $email_from = $from;
+
+                        // If the email sender has the same domain as the system sender address.
+                        if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
+                            $mail_from_address = $email_from;
+                        } else {
+                            $mail_from_address = $email_from_sys;
+                        }
+
+                        // Set sender
+                        $sender = [
+                            $mail_from_address,
+                            $fromname
+                        ];
+
+                        $mailer->setSender($sender);
+                        $mailer->addRecipient($to);
+                        $mailer->setSubject($subject);
+                        $mailer->isHTML(true);
+                        $mailer->Encoding = 'base64';
+                        $mailer->setBody($body);
+                        if(!empty($attachment)){
+                            $mailer->addAttachment($attachment);
+                        }
+
+                        // Send emails
+                        $send = $mailer->Send();
+
+                        $mailer->clearAddresses();
+                        $mailer->clearAllRecipients();
+                        $mailer->smtpClose();
+
+                        if ($send !== true) {
+                            $this->log .= "\n Error sending email : " . $to;
+                        } else {
+
+                            $attachments = explode(',', $attachments_id);
+                            $this->setEmailSend($applicant->fnum, $attachments[$key], $applicant->id, $referentEmail, $applicant->campaign_id, $referent_key);
+                            $message = array(
+                                'user_id_from' => $from_id,
+                                'user_id_to' => $to_id,
+                                'subject' => $subject,
+                                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $to . '</i><br>' . $body
+                            );
+                            $m_emails->logEmail($message);
+                            $this->log .= '\n' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $to . ' :: ' . $body;
+                        }
+
+                        // to avoid being considered as a spam process or DDoS
+                        sleep(5);
+
                     }
-
-                    // to avoid being considered as a spam process or DDoS
-                    sleep(5);
-
                 }
             }
         }
