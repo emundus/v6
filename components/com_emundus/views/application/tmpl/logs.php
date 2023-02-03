@@ -131,7 +131,6 @@ JFactory::getSession()->set('application_layout', 'logs');
 
                     results.data.forEach(log => {
                         typeLogs.append('<option value="' + log.id + '">' + Joomla.JText._(log.label) + '</option>');           /// append data
-                        //typeLogs.trigger("chosen:updated");
                         typeLogs.trigger("liszt:updated");
                     })
                 } else {
@@ -170,7 +169,6 @@ JFactory::getSession()->set('application_layout', 'logs');
 
                     results.data.forEach((user) => {
                         actorsLog.append('<option value="' + user.uid + '">' + user.name + '</option>');           /// append data
-                        //actorsLog.trigger("chosen:updated");
                         actorsLog.trigger("liszt:updated");
                     });
                 } else {
