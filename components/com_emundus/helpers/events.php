@@ -141,6 +141,8 @@ class EmundusHelperEvents {
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'date.php');
+
             $m_campaign = new EmundusModelCampaign;
 
             $formModel = $params['formModel'];
@@ -350,13 +352,27 @@ class EmundusHelperEvents {
 
                     // check if data stored for current user
                     try {
-                        $query = 'SELECT '.implode(',', $db->quoteName($elements)).' FROM '.$table->db_table_name.' WHERE user='.$user->id;
+						$query = $db->getQuery(true);
+						$query->select(implode(',', $db->quoteName($elements)))
+							->from($db->quoteName($table->db_table_name))
+							->where($db->quoteName('user') . ' = ' . $user->id);
                         $db->setQuery($query);
                         $stored = $db->loadAssoc();
 
-                        $query = 'SELECT count(id) FROM #__emundus_uploads WHERE user_id='.$user->id.' AND fnum like '.$db->Quote($user->fnum);
+						$query->clear()
+							->select('count(id)')
+							->from($db->quoteName($table->db_table_name))
+							->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($user->fnum));
                         $db->setQuery($query);
                         $already_cloned = $db->loadResult();
+
+						$query->clear()
+							->select('count(id)')
+							->from($db->quoteName('#__emundus_uploads'))
+							->where($db->quoteName('user_id') . ' = ' . $user->id)
+							->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($user->fnum));
+                        $db->setQuery($query);
+                        $attachments_already_cloned = $db->loadResult();
 
                         if (!empty($stored) && $already_cloned == 0) {
                             // update form data
@@ -365,6 +381,26 @@ class EmundusHelperEvents {
                             unset($stored['fnum']);
 
                             foreach ($stored as $key => $store) {
+                                // get the element plugin, and params
+	                            $query->clear()
+		                            ->select('fe.plugin,fe.params')
+		                            ->from($db->quoteName('#__fabrik_elements','fe'))
+		                            ->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
+		                            ->where($db->quoteName('ffg.form_id') . ' = ' . $form_id)
+		                            ->where($db->quoteName('fe.name') . ' = ' . $db->quote($key))
+		                            ->where($db->quoteName('fe.published') . ' = 1');
+                                $db->setQuery($query);
+                                $elt = $db->loadObject();
+
+                                // if this element is date plugin, we need to check the time storage format (UTC of Local time)
+                                if($elt->plugin === 'date') {
+                                    // storage format (UTC [0], Local [1])
+                                    $timeStorageFormat = json_decode($elt->params)->date_store_as_local;
+
+                                    $store = EmundusHelperDate::displayDate($store, 'Y-m-d H:i:s', $timeStorageFormat);
+                                }
+
+
                                 $formModel->data[$table->db_table_name . '___' . $key] = $store;
                                 $formModel->data[$table->db_table_name . '___' . $key . '_raw'] = $store;
                             }
@@ -409,7 +445,7 @@ class EmundusHelperEvents {
                         $fnums = $user->fnums;
                         unset($fnums[$user->fnum]);
 
-                        if (!empty($fnums)) {
+                        if (!empty($fnums) && $attachments_already_cloned == 0) {
                             $previous_fnum = array_keys($fnums);
                             $query = 'SELECT eu.*, esa.nbmax
 											FROM #__emundus_uploads as eu
@@ -441,7 +477,6 @@ class EmundusHelperEvents {
                                     if(empty($row['modified_by'])){
                                         unset($row['modified_by']);
                                     }
-                                    $row['pdf_pages_count'] = (int)$row['pdf_pages_count'];
                                     $row['pdf_pages_count'] = (int)$row['pdf_pages_count'];
 
                                     try {
