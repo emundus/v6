@@ -35,7 +35,6 @@
           </div>
         </template>
       </div>
-
     </div>
 
     <div v-if="files">
@@ -79,11 +78,12 @@
 							  :allow-empty="true"
 							  width="250px"
 					    ></multiselect>
-					    <span class="material-icons-outlined em-pointer" @click="removeFilter(filter)">close</span>
+					    <span class="material-icons-outlined em-pointer em-red-500-color" @click="removeFilter(filter)">close</span>
 				    </div>
 			    </div>
 		    </div>
-		    <div v-if="defaultFilters.length > 0">
+		    <div v-if="defaultFilters.length > 0" class="em-flex-row">
+			    <span class="material-icons-outlined em-mr-16 em-red-500-color" :class="{'em-pointer': filters.length > 0, 'em-pointer-disbabled': filters.length < 1 }" :alt="translate('COM_EMUNDUS_FILES_RESET_FILTERS')" @click="resetFilters">filter_list_off</span>
 			    <button class="em-primary-button em-pointer" @click="applyFilters">{{ translate('COM_EMUNDUS_FILES_APPLY_FILTER') }}</button>
 		    </div>
 	    </div>
@@ -383,6 +383,15 @@ export default {
 				}
 		  });
 	  },
+	  resetFilters() {
+			if (this.filters.length > 0) {
+				this.filters = [];
+
+				filesService.applyFilters(this.filters).then((response) => {
+					this.getFiles(true);
+				});
+			}
+	  },
 	  applyFilters()
 	  {
 			const filtersToApply = this.filters.map((filter) => {
@@ -566,10 +575,6 @@ select.em-select-no-border{
 					height: 24px !important;
 				}
 			}
-		}
-
-		input.multiselect__input {
-			height: 34px !important;
 		}
 	}
 }

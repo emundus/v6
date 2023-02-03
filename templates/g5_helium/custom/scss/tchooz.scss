@@ -568,6 +568,10 @@ input:focus + .em-slider {
   cursor: pointer;
 }
 
+.em-pointer-disbabled{
+  cursor: not-allowed;
+}
+
 .em-grab{
   cursor: grab;
 }
