@@ -8,8 +8,7 @@
         <option value="0" selected>/{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_SELECT_TYPE') }}</option>
         <option :value="field.value" v-for="field in fieldsData">{{ translate(field.label) }}</option>
       </select>
-
-      <input type="text" class="em-ml-8 em-mr-8 em-xs-input em-w-auto tree-branch" :value="node.type" v-else @focusout="updateNodeType($event)"/>
+      <input v-else type="text" class="em-ml-8 em-mr-8 em-xs-input em-w-auto tree-branch" :value="node.type" @focusout="updateNodeType($event)"/>
 
       <v-popover :popoverArrowClass="'custom-popover-arrow'">
         <span class="tooltip-target b3 material-icons">more_horiz</span>
