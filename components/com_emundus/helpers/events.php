@@ -145,6 +145,7 @@ class EmundusHelperEvents {
 
             $formModel = $params['formModel'];
             $listModel =  $params['formModel']->getListModel();
+            $form_id = $formModel->id;
 
             $emundusUser = JFactory::getSession()->get('emundusUser');
             $user = $emundusUser;
@@ -178,6 +179,21 @@ class EmundusHelperEvents {
             $itemid = $jinput->get('Itemid');
             $reload = $jinput->get('r', 0);
             $reload++;
+
+            if (empty($fnum)) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('db_table_name')
+                    ->from($db->quoteName('#__fabrik_lists'))
+                    ->where($db->quoteName('form_id') . ' = ' . $db->quote($form_id));
+                $db->setQuery($query);
+                $db_table_name = $db->loadResult();
+
+                if(!empty($db_table_name)){
+                    $fnum = $jinput->get->get($db_table_name.'___fnum', null);
+                }
+            }
 
             $current_fnum = !empty($fnum) ? $fnum : $user->fnum;
             $current_phase = $m_campaign->getCurrentCampaignWorkflow($current_fnum);
@@ -248,6 +264,10 @@ class EmundusHelperEvents {
                     if ($view == 'form') {
                         if ($can_edit) {
                             $reload_url = false;
+                            if ($reload < 3) {
+                                $reload++;
+                                $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum."&r=".$reload);
+                            }
                         }
                     } else {
                         //try to access detail view or other
@@ -370,6 +390,11 @@ class EmundusHelperEvents {
 
                                         if (!empty($stored)) {
                                             foreach ($stored as $store) {
+	                                            $formModel->data[$repeat_table . '___id'][] = "";
+	                                            $formModel->data[$repeat_table . '___id_raw'][] = "";
+	                                            $formModel->data[$repeat_table . '___parent_id'][] = "";
+	                                            $formModel->data[$repeat_table . '___parent_id_raw'][] = "";
+
                                                 $formModel->data[$repeat_table . '___' . $group->name][] = $store;
                                                 $formModel->data[$repeat_table . '___' . $group->name . '_raw'][] = $store;
                                             }
@@ -493,6 +518,18 @@ class EmundusHelperEvents {
             }
 
             if ($application_fee) {
+                if($params->get('hikashop_session', 0)) {
+                    // check if there is not another cart open
+                    $hikashop_user = JFactory::getSession()->get('emundusPayment');
+                    if (!empty($hikashop_user->fnum) && $hikashop_user->fnum != $user->fnum) {
+                        $user->fnum = $hikashop_user->fnum;
+                        JFactory::getSession()->set('emundusUser', $user);
+
+                        $mainframe->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
+                        $mainframe->redirect('/');
+                    }
+                }
+
                 $fnumInfos = $mFiles->getFnumInfos($user->fnum);
 
                 // If students with a scholarship have a different fee.

@@ -1032,7 +1032,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 	 * @throws \PhpOffice\PhpWord\Exception\CreateTemporaryFileException
 	 * @throws \PhpOffice\PhpWord\Exception\Exception
 	 */
-    function sendEmail($fnum, $email_id, $post = null, $attachments = [], $bcc = false) {
+    function sendEmail($fnum, $email_id, $post = null, $attachments = [], $bcc = false, $sender_id = null) {
         if (empty($fnum) || empty($email_id)) {
             return false;
         }
@@ -1120,13 +1120,16 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 	    // Tags are replaced with their corresponding values using the PHP preg_replace function.
 	    $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
-	    $body = $message;
-	    $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
-        $body_raw = $body;
+        $body = $message;
+        $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+        $body_raw = strip_tags($body);
+
         if ($template) {
             $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+            $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
         }
+
         // Check if user defined a cc address
         $cc = [];
         $emundus_user = $m_users->getUserById($fnum['applicant_id'])[0];
@@ -1151,7 +1154,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    $mailer->isHTML(true);
 	    $mailer->Encoding = 'base64';
 	    $mailer->setBody($body);
-        $mailer->AltBody = strip_tags($body_raw);
+        $mailer->AltBody = $body_raw;
 
 
         // Get any candidate files included in the message.
@@ -1236,8 +1239,14 @@ class EmundusControllerMessages extends JControllerLegacy {
 		    JLog::add($send, JLog::WARNING, 'com_emundus.email');
 		    return false;
 	    } else {
-            // if empty current user, it must come from cron task. so use default user_id
-            $user_id = !empty($user) ? $user->id : 62;
+            // in cron task, the current user is the last logged user, so we use a sender_id given in parameter, or the current user id, or the default user_id if none is found.
+            if (!empty($sender_id)) {
+                $user_id = $sender_id;
+            } else if (!empty($user)) {
+                $user_id = $user->id;
+            } else {
+                $user_id = 62;
+            }
 		    $log = [
 			    'user_id_from'  => $user_id,
 			    'user_id_to'    => $fnum['applicant_id'],
@@ -1346,8 +1355,9 @@ class EmundusControllerMessages extends JControllerLegacy {
             $body = $m_email->setTagsFabrik($body, array($fnum));
         }
 
-        $body_raw = $body;
-        if ($template != false) {
+        $body_raw = strip_tags($body);
+
+        if ($template) {
             $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
 
             if($user_id != null) {
@@ -1372,7 +1382,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 		$mailer->isHTML(true);
 		$mailer->Encoding = 'base64';
 		$mailer->setBody($body);
-        $mailer->AltBody = strip_tags($body_raw);
+        $mailer->AltBody = $body_raw;
 
 		if (!empty($toAttach)) {
 			$mailer->addAttachment($toAttach);
