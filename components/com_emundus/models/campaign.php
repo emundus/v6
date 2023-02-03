@@ -2236,7 +2236,7 @@ class EmundusModelCampaign extends JModelList {
                 ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
                 ->where('ecw_camp.campaign = ' . $this->_db->quote($fnumInfos['campaign_id']))
                 ->andWhere('ecw_status.entry_status = ' . $this->_db->quote($fnumInfos['status']))
-                ->group($db->quoteName('ecw.id'));
+                ->group($this->_db->quoteName('ecw.id'));
 
             $this->_db->setQuery($query);
 
@@ -2257,7 +2257,7 @@ class EmundusModelCampaign extends JModelList {
                     ->leftJoin('#__emundus_campaign_workflow_repeat_programs AS ecwrp ON ecwrp.parent_id = ecw.id')
                     ->where('ecw_status.entry_status = ' . $this->_db->quote($fnumInfos['status']))
                     ->andWhere('ecwrp.programs = esc.training')
-                    ->group($db->quoteName('ecw.id'));
+                    ->group($this->_db->quoteName('ecw.id'));
 
                 try {
                     $current_phase = $this->_db->loadObject();
@@ -2278,7 +2278,7 @@ class EmundusModelCampaign extends JModelList {
                             UNION
                             SELECT parent_id
                             FROM jos_emundus_campaign_workflow_repeat_campaign)')
-                        ->group($db->quoteName('ecw.id'));
+                        ->group($this->_db->quoteName('ecw.id'));
                     $this->_db->setQuery($query);
 
                     try {
