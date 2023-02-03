@@ -178,9 +178,11 @@ ksort($applications);
                                                             <a class="em-text-neutral-900 em-pointer" href="<?= JRoute::_($first_page_url); ?>" id="actions_block_open_<?php echo $application->fnum ?>">
                                                                 <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
                                                             </a>
-                                                            <a class="em-text-neutral-900 em-pointer" onclick="deletefile('<?php echo $application->fnum; ?>');" id="actions_block_delete_<?php echo $application->fnum ?>">
-                                                                <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
-                                                            </a>
+                                                            <?php if(in_array($application->status,$status_for_delete)) :?>
+                                                                <a class="em-text-neutral-900 em-pointer" onclick="deletefile('<?php echo $application->fnum; ?>');" id="actions_block_delete_<?php echo $application->fnum ?>">
+                                                                    <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
+                                                                </a>
+                                                            <?php endif; ?>
                                                         </div>
                                                     </div>
                                                 <?php endif; ?>
@@ -269,7 +271,7 @@ ksort($applications);
                                                 if($now < $end_date)
                                                 {
 	                                                $interval = date_create($now)->diff(date_create($end_date));
-	                                                if ($interval->d == 0)
+	                                                if ($interval->y == 0 && $interval->m == 0 && $interval->d == 0)
 	                                                {
 		                                                $displayInterval = true;
 	                                                }

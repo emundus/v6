@@ -640,7 +640,6 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
     JHTML::script("//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js");
     JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
     JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
-    JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );
     JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
     //TODO : Stop use chosen replace by an other js native library
     //JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );

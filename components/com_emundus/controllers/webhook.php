@@ -193,7 +193,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 		}
 
 		try {
-			$payload = $_POST["payload"];
+			$payload = !empty($_POST["payload"]) ? $_POST["payload"] : file_get_contents("php://input");
 
 			//the data is JSON encoded, so we must decode it in an associative array
 			$webhookData = json_decode($payload, true);
