@@ -498,7 +498,7 @@ form#member-profile .form-horizontal .control-label {
  text-decoration: none;
 }
 
-.view-registration.view-form page-header h1 {
+.view-registration.view-form .page-header h1 {
     font-family: var(--applicant-title-font) !important;
     color: var(--em-applicant-title-color) !important;
 }
