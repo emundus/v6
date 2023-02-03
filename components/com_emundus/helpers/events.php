@@ -478,7 +478,6 @@ class EmundusHelperEvents {
                                         unset($row['modified_by']);
                                     }
                                     $row['pdf_pages_count'] = (int)$row['pdf_pages_count'];
-                                    $row['pdf_pages_count'] = (int)$row['pdf_pages_count'];
 
                                     try {
                                         $query = 'SELECT count(id) FROM #__emundus_uploads WHERE user_id='.$user->id.' AND attachment_id='.$row['attachment_id'].' AND fnum like '.$db->Quote($user->fnum);
