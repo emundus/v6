@@ -604,6 +604,11 @@ div#em-appli-block h3 {
     font-size: 1rem;
 }
 
+div#em-appli-block h3.em-container-mail-content-heading {
+    color: var(--neutral-50);
+    font-size: 1rem;
+}
+
 div#em-appli-block .active.content h3 {
     font-weight: 700;
     padding-left: 13px;
