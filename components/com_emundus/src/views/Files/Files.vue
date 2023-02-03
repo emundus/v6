@@ -42,7 +42,7 @@
       <tabs v-if="$props.type === 'evaluation'" :tabs="tabs" @updateTab="updateTab"></tabs>
       <hr/>
 
-	    <div class="em-flex-row em-flex-space-between em-mb-16">
+	    <div v-if="!filtersLoading" class="em-flex-row em-flex-space-between em-mb-16">
 		    <div id="filters" class="em-flex-row-start">
 			    <div id="default-filters" v-if="defaultFilters.length > 0" v-click-outside="onDefaultFiltersClickOutside">
 				    <div class="em-tabs em-pointer em-flex-row em-s-justify-content-center" @click="openedFilters = !openedFilters">
@@ -86,6 +86,10 @@
 		    <div v-if="defaultFilters.length > 0">
 			    <button class="em-primary-button em-pointer" @click="applyFilters">{{ translate('COM_EMUNDUS_FILES_APPLY_FILTER') }}</button>
 		    </div>
+	    </div>
+	    <div v-else class="em-flex-row em-flex-space-between em-mb-16">
+			    <skeleton height="40px" width="96px" class="em-border-radius-8"></skeleton>
+			    <skeleton height="40px" width="120px" class="em-border-radius-8"></skeleton>
 	    </div>
     </div>
 
@@ -188,10 +192,12 @@ import filesService from 'com_emundus/src/services/files';
 import errors from '@/mixins/errors';
 import Application from '@/components/Files/Application';
 import multiselect from 'vue-multiselect';
+import Skeleton from '../../components/Skeleton';
 
 export default {
   name: 'Files',
   components: {
+	  Skeleton,
     Application,
     Tabs,
     'el-table': Table,
@@ -215,6 +221,7 @@ export default {
   mixins: [errors],
   data: () => ({
     loading: false,
+	  filtersLoading: false,
     moveRight: false,
     moveLeft: true,
     scrolling: null,
@@ -336,12 +343,11 @@ export default {
       }
     },
 	  getFilters() {
+			this.filtersLoading = true;
 			filesService.getFilters().then((response) => {
 				if (response.status == 1) {
-					const currentTabName = this.tabs[this.selected_tab].name;
-
-					if (this.filters.length == 0 && response.data.applied_filters[currentTabName] && response.data.applied_filters[currentTabName].length > 0 ) {
-						response.data.applied_filters[currentTabName].forEach((applied_filter) => {
+					if (this.filters.length == 0 && response.data.applied_filters.length > 0 ) {
+						response.data.applied_filters.forEach((applied_filter) => {
 							const filter = response.data.default_filters.find((default_filter) => {
 								return default_filter.id == applied_filter.id;
 							});
@@ -351,8 +357,10 @@ export default {
 					}
 
 					this.defaultFilters = response.data.default_filters;
+					this.filtersLoading = false;
 				} else {
 					this.displayError('COM_EMUNDUS_ERROR_OCCURED', response.msg);
+					this.filtersLoading = false;
 				}
 			});
 	  },
@@ -388,7 +396,7 @@ export default {
 				}
 			});
 
-		  filesService.applyFilters(filtersToApply, this.tabs[this.selected_tab].name).then((response) => {
+		  filesService.applyFilters(filtersToApply).then((response) => {
 			  this.getFiles(true);
 		  });
 	  },

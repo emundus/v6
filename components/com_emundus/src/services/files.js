@@ -180,10 +180,9 @@ export default {
         }
     },
 
-    async applyFilters(filters, tab) {
+    async applyFilters(filters) {
         const formData = new FormData();
         formData.append('filters', JSON.stringify(filters));
-        formData.append('tab', tab);
 
         try {
             const response = await client().post('index.php?option=com_emundus&controller=file&task=applyfilters', formData);

@@ -318,10 +318,7 @@ class EmundusControllerFile extends JControllerLegacy
             $jinput = JFactory::getApplication()->input;
             $filters = $jinput->getString('filters');
             $filters = json_decode($filters, true);
-
-            $tab = $jinput->getString('tab');
-            $this->files->applyFilters($filters, $tab);
-
+            $this->files->applyFilters($filters);
             JFactory::getSession()->set('files', serialize($this->files));
         } else {
             $response['status'] = 0;

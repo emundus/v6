@@ -366,9 +366,7 @@ class Evaluations extends Files
 	}
 
 
-    public function applyFilters($filters, $tab) {
-        if (!empty($tab)) {
-            $this->filters['applied_filters'][$tab] = $filters;
-        }
+    public function applyFilters($filters) {
+        $this->filters['applied_filters'] = $filters;
     }
 }
