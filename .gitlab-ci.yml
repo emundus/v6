@@ -71,6 +71,13 @@ php_security_checker:
   variables:
       COMPOSER_PATH: "./libraries/emundus/composer.lock"
 
+php_security_checker_joomla:
+  stage: test
+  extends:
+    - php_security_checker
+  variables:
+    COMPOSER_PATH: "./libraries/composer.lock"
+
 phpunit-job:
   stage: test
   image: emundus/tchooz-build-app:latest
