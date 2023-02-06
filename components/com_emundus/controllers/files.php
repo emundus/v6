@@ -55,6 +55,7 @@ class EmundusControllerFiles extends JControllerLegacy
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'admission.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 
         $this->_user = JFactory::getSession()->get('emundusUser');
 
@@ -515,10 +516,6 @@ class EmundusControllerFiles extends JControllerLegacy
         }
         unset($fnums);
 
-        /*$tagged = $m_files->getTaggedFile($tag);
-        $tagged_fnums = array_map(function($n) {return $n["fnum"];}, $tagged);
-
-        $validFnums = array_diff($validFnums, $tagged_fnums);*/
         $res = $m_files->tagFile($validFnums, $tag);
 
         echo json_encode((object)(array('status' => $res, 'msg' => JText::_('COM_EMUNDUS_TAGS_SUCCESS'), 'tagged' => $validFnums)));
@@ -1789,7 +1786,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnums_post = $session->get('fnums_export');
 
         if (count($fnums_post) == 0) {
-            $fnums_post = array($session->get('application_fnum'));
+            $fnums_post = [$session->get('application_fnum')];
         }
 
         $jinput     = JFactory::getApplication()->input;
@@ -1803,28 +1800,27 @@ class EmundusControllerFiles extends JControllerLegacy
         $decision   = $jinput->getInt('decision', 0);
         $admission  = $jinput->getInt('admission', 0);
         $ids        = $jinput->getVar('ids', null);
-        $formid     = $jinput->getVar('formids', null);
-        $attachid   = $jinput->getVar('attachids', null);
+        $formid     = $jinput->getString('formids', null);
+        $attachid   = $jinput->getString('attachids', null);
         $options     = $jinput->getVar('options', null);
 
-        $profiles = $jinput->getRaw('profiles', null);                          // default NULL
-        $tables = $jinput->getRaw('tables', null);                          // default NULL
-        $groups = $jinput->getRaw('groups', null);                      // default NULL
-        $elements = $jinput->getRaw('elements', null);                // default NULL
+        $profiles = $jinput->getRaw('profiles', null);
+        $tables = $jinput->getRaw('tables', null);
+        $groups = $jinput->getRaw('groups', null);
+        $elements = $jinput->getRaw('elements', null);
 
-        $pdf_data = array();
-
+        $pdf_data = [];
         foreach($profiles as $profile => $id) {
-            $pdf_data[$id] = array('fids' => $tables, 'gids' => $groups, 'eids' => $elements);
+            $pdf_data[$id] = ['fids' => $tables, 'gids' => $groups, 'eids' => $elements];
         }
 
         $formids    = explode(',', $formid);
         $attachids  = explode(',', $attachid);
-		if(!is_array($options)) {
-			$options = explode(',', $options);
-		}
+	    if(!is_array($options)) {
+		    $options = explode(',', $options);
+	    }
 
-        $validFnums = array();
+        $validFnums = [];
         foreach ($fnums_post as $fnum) {
             if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum)) {
                 $validFnums[] = $fnum;
@@ -1832,10 +1828,7 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         $fnumsInfo = $m_files->getFnumsInfos($validFnums);
-
-        //////////////////////////////////////////////////////////////////////////////////////
-        // Generate filename from emundus config ONLY if one file is selected
-        //
+		
         if (count($validFnums) == 1) {
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $application_form_name = empty($admission) ? $eMConfig->get('application_form_name', "application_form_pdf") : $eMConfig->get('application_admission_name', "application_form_pdf");
@@ -1861,7 +1854,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 $file = $application_form_name.'.pdf';
             }
         }
-        ////////////////////////////////////////////////////////////
+       
         if (file_exists(JPATH_SITE . DS . 'tmp' . DS . $file)) {
             $files_list = array(JPATH_SITE.DS.'tmp'.DS.$file);
         } else {
@@ -1883,28 +1876,13 @@ class EmundusControllerFiles extends JControllerLegacy
                         }
                     }
                     if ($forms || !empty($forms_to_export)) {
-
-                        //// fnum --> campaign_id
+						
                         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
                         $m_profile = new EmundusModelProfile;
                         $infos = $m_profile->getFnumDetails($fnum);
                         $campaign_id = $infos['campaign_id'];
 
-                        ///  campaign_id --> menu-profile
-                        $query = $db->getQuery(true);
-                        $query->select('jesp.menutype')
-                            ->from($db->quoteName('#__emundus_setup_profiles','jesp'))
-                            ->leftJoin($db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$db->quoteName('jesp.id').' = '.$db->quoteName('sc.profile_id'))
-                            ->where($db->quoteName('sc.id') . ' = ' . $campaign_id);
-                        $db->setQuery($query);
-                        $_return_menutype = $db->loadResult();
-
-                        /// if menu-profile is not in array array_keys($elements) --> do nothing
-                        /// otherwise, call to buildFormPDF
-
-                        if (in_array($_return_menutype, array_keys($elements))) {
-                            $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options, null, $pdf_data);
-                        }
+						$files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options, null, $pdf_data);
                     }
                 }
 

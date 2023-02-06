@@ -819,6 +819,8 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $code   = $jinput->getVar('code', null);
         $code = explode(',', $code);
+
+	    require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
         $m_evaluation = new EmundusModelEvaluation();
         $defaultElements = $m_evaluation->getEvaluationElementsName(0, 1, $code);
         if (!empty($defaultElements)) {

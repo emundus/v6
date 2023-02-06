@@ -1504,7 +1504,10 @@ class EmundusController extends JControllerLegacy {
         if($current_user->id == $uid){
             $fnum = $current_user->fnum;
         }
-        $fnums = array_keys($current_user->fnums);
+	    $fnums = [];
+		if(!empty($current_user->fnums)) {
+			$fnums = array_keys($current_user->fnums);
+		}
 
 
         // This query checks if the file can actually be viewed by the user, in the case a file uploaded to his file by a coordniator is opened.

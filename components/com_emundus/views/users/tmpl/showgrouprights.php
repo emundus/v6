@@ -44,7 +44,7 @@ span:hover {
 					</th>
 				</tr>
 				</thead>
-				<tbody size="<?= count(@$this->actions); ?>">
+				<tbody>
 				<?php
 				foreach ($g['acl'] as $l => $action) :?>
 

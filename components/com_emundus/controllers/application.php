@@ -400,6 +400,7 @@ class EmundusControllerApplication extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->get('fnum', null, 'STRING');
 
+	    require_once (JPATH_COMPONENT.DS.'models'.DS.'application.php');
         $m_application = new EmundusModelApplication();
         $menus = $m_application->getApplicationMenu();
         $res = false;

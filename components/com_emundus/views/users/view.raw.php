@@ -120,7 +120,7 @@ class EmundusViewUsers extends JViewLegacy
     		$profiles = $m_users->getProfilesByIDs($this->filts_details['profile_users']);
 		else
             $profiles = $m_users->getProfiles();
-
+		
 		$this->assignRef('profiles', $profiles);
 
 		$groups = $m_users->getGroups();

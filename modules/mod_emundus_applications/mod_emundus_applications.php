@@ -57,9 +57,9 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');
     $display_poll = $eMConfig->get('display_poll', 0);
     $display_poll_id = $eMConfig->get('display_poll_id', null);
-    $id_applicants = $eMConfig->get('id_applicants', '0');
+    $id_applicants = $eMConfig->get('id_applicants', null);
     $id_profiles = $eMConfig->get('id_profiles', '');
-    $applicants = explode(',', $id_applicants);
+    $applicants = !empty($id_applicants) ? explode(',', $id_applicants) : [];
 	if(!empty($id_profiles)) {
 		$id_profiles = explode(',', $id_profiles);
 	} else {
@@ -80,7 +80,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $show_progress_color = $params->get('show_progress_color', '#EA5012');
     $show_progress_color_forms = $params->get('show_progress_color_forms', '#EA5012');
     $show_progress_documents = $params->get('show_progress_documents', '#EA5012');
-    $admission_status = $params->get('admission_status') ? explode(',', $params->get('admission_status')) : null;
+    $admission_status = $params->get('admission_status') ? explode(',', $params->get('admission_status')) : [];
     $add_admission_prefix = $params->get('add_admission_prefix', 1);
     $absolute_urls = $params->get('absolute_urls', 1);
 
@@ -93,6 +93,8 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $visible_status = $params->get('visible_status', '');
     if ($visible_status != "") {
       $visible_status = explode(',', $params->get('visible_status', ''));
+    } else {
+		$visible_status = [];
     }
     $mod_em_applications_show_search = $params->get('mod_em_applications_show_search', 1);
 

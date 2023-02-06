@@ -1230,7 +1230,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		$options->set('isPhpEnabled', true);
 	    $dompdf = new Dompdf($options);
 
-		//echo '<pre>'; var_dump($htmldata); echo '</pre>'; die;
 	    $dompdf->loadHtml($htmldata);
 	    $dompdf->render();
 

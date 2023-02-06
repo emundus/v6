@@ -43,8 +43,8 @@ class EmundusViewFiles extends JViewLegacy
 	protected array $groupFnum;
 	protected array $evalFnum;
 	protected array $evals;
-	protected array $actions_evaluators;
-	protected array $hide_default_actions;
+	protected object $actions_evaluators;
+	protected string $hide_default_actions;
 
 	protected array $items;
 	protected string $display;

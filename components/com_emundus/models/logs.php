@@ -194,18 +194,14 @@ class EmundusModelLogs extends JModelList {
         $db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-        $user_from = implode(',', $user_from);
-        $action = implode(',', $action);
-        $crud = implode(',', $db->quote($crud));
-
 		// Build a where depending on what params are present.
         $where = $db->quoteName('fnum_to').' LIKE '.$db->quote($fnum);
         if (!empty($user_from))
-            $where .= ' AND '.$db->quoteName('user_id_from').' IN ('.$user_from . ')';
+            $where .= ' AND '.$db->quoteName('user_id_from').' IN ('.implode(',', $user_from) . ')';
         if (!empty($action))
-            $where .= ' AND '.$db->quoteName('action_id').' IN ('. $action . ')';
+            $where .= ' AND '.$db->quoteName('action_id').' IN ('. implode(',', $action) . ')';
         if (!empty($crud))
-            $where .= ' AND '.$db->quoteName('verb').' IN ( '. $crud . ')';
+            $where .= ' AND '.$db->quoteName('verb').' IN ( '. implode(',', $db->quote($crud)) . ')';
 
         $query->select('lg.*, us.firstname, us.lastname')
 			->from($db->quoteName('#__emundus_logs', 'lg'))
@@ -286,30 +282,26 @@ class EmundusModelLogs extends JModelList {
 	 * @return Mixed Returns false on error and an array of strings on success.
 	 */
 	public function setActionDetails($action = null, $crud = null, $params = null) {
-		// Get the action label
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
+
 		$query->select('label')
 			->from($db->quoteName('#__emundus_setup_actions'))
 			->where($db->quoteName('id').' = '.$db->quote($action));
 		$db->setQuery($query);
-
 		$action_category = $db->loadResult();
 
-		// Decode the json params string
-		if ($params) {
+		if (!empty($params)) {
 			$params = json_decode($params);
 		}
 
-		// Define action_details
 		$action_details = '';
 
-		// Complete action name with crud
         switch ($crud) {
             case ('c'):
                 $action_name = $action_category . '_CREATE';
                 foreach ($params->created as $value) {
-                    if(isset($value->details) and ($value->details) !== null) {
+                    if(isset($value->details)) {
                         $action_details .= '<span style="margin-bottom: 0.5rem"><b>' . $value->element . '</b></span>';
                         $action_details .= '<div><span class="em-main-500-color" style="margin-bottom: 0.5rem">' . $value->details . '</span>';
                         $action_details .= '</div>';
@@ -318,14 +310,11 @@ class EmundusModelLogs extends JModelList {
                     }
                 }
                 break;
-            case ('r'):
-                $action_name = $action_category . '_READ';
-                break;
             case ('u'):
                 $action_name = $action_category . '_UPDATE';
-                $action_details = '<b>' . reset($params->updated)->description . '</b>';
+	            if (!empty($params->updated)) {
 
-                if (!empty($params->updated)) {
+                    $action_details = '<b>' . reset($params->updated)->description . '</b>';
                     foreach ($params->updated as $value) {
                         $action_details .= '<div class="em-flex-row"><span>' . $value->element . '&nbsp</span>&nbsp';
                         $value->old = !empty($value->old) ? $value->old : '';

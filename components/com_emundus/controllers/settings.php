@@ -24,6 +24,7 @@ jimport('joomla.application.component.controller');
 class EmundusControllersettings extends JControllerLegacy {
 
     var $m_settings = null;
+
     public function __construct($config = array()) {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         parent::__construct($config);
@@ -738,6 +739,7 @@ class EmundusControllersettings extends JControllerLegacy {
             echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
         } else {
 
+	        require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
             $m_campaign = new EmundusModelCampaign();
 
             $jinput = JFactory::getApplication()->input;

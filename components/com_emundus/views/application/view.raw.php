@@ -317,12 +317,13 @@ class EmundusViewApplication extends JViewLegacy {
                 case 'logs':
                     if (EmundusHelperAccess::asAccessAction(37, 'r', $this->_user->id, $fnum)) {
                         EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 37, 'r', 'COM_EMUNDUS_ACCESS_LOGS_READ');
+						$m_logs = new EmundusModelLogs();
 
-                        $fileLogs = EmundusModelLogs::getActionsOnFnum($fnum);
+                        $fileLogs = $m_logs->getActionsOnFnum($fnum);
 
                         foreach ($fileLogs as $key => $log) {
                             $log->timestamp = EmundusHelperDate::displayDate($log->timestamp);
-                            $log->details = EmundusModelLogs::setActionDetails($log->action_id, $log->verb, $log->params);
+                            $log->details = $m_logs->setActionDetails($log->action_id, $log->verb, $log->params);
                         }
 
                         $this->assignRef('fileLogs', $fileLogs);
@@ -360,11 +361,8 @@ class EmundusViewApplication extends JViewLegacy {
                 case 'form':
                     if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
 
-                        //$step = $jinput->getString('step', 0);
-
                         EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 1, 'r', 'COM_EMUNDUS_ACCESS_FORM_READ');
 
-                        $m_user = new EmundusModelUsers;
                         $m_campaign = new EmundusModelCampaign;
 
                         /* detect user_id from fnum */
