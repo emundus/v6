@@ -199,11 +199,7 @@ class EmundusModelLogs extends JModelList {
         $crud = implode(',', $db->quote($crud));
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
-
-        // get show time (format) param
-        $showTimeFormat = $eMConfig->get('log_show_timeformat', 1);
-
-        // get show time (order) param
+        $showTimeFormat = $eMConfig->get('log_show_timeformat', 0);
         $showTimeOrder = $eMConfig->get('log_show_timeorder', 'DESC');
 
 		// Build a where depending on what params are present.
@@ -219,7 +215,7 @@ class EmundusModelLogs extends JModelList {
 			->from($db->quoteName('#__emundus_logs', 'lg'))
 			->leftJoin($db->quoteName('#__emundus_users', 'us').' ON '.$db->QuoteName('us.user_id').' = '.$db->QuoteName('lg.user_id_from'))
 			->where($where)
-            ->order($db->quoteName('lg.timestamp') . $showTimeOrder);
+            ->order($db->quoteName('lg.timestamp') . ' ' . $showTimeOrder);
 
         if(!is_null($offset)) {
             $query->setLimit($limit, $offset);
