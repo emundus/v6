@@ -78,6 +78,27 @@ php_security_checker_joomla:
   variables:
     COMPOSER_PATH: "./libraries/composer.lock"
 
+php_security_checker_fabrik:
+  stage: test
+  extends:
+    - php_security_checker
+  variables:
+    COMPOSER_PATH: "./libraries/fabrik/composer.lock"
+
+php_security_checker_gantry5:
+  stage: test
+  extends:
+    - php_security_checker
+  variables:
+    COMPOSER_PATH: "./libraries/gantry5/composer.lock"
+
+php_security_checker_phpgoogleapiclient:
+  stage: test
+  extends:
+    - php_security_checker
+  variables:
+    COMPOSER_PATH: "./libraries/php-google-api-client/composer.lock"
+
 phpunit-job:
   stage: test
   image: emundus/tchooz-build-app:latest
