@@ -9,6 +9,7 @@ variables:
   DOCKER_BUILDKIT: 1
   BUILDKIT_INLINE_CACHE: 1
   DOCKER_TLS_CERTDIR: ""
+  COMPOSER_PATH: "./libraries/emundus/composer.lock"
 
 stages:
   - prepare
@@ -60,6 +61,12 @@ build-db-to-test-job:
         - media/com_emundus_vanilla
         - Dockerfile.db
         - .ci/mysql/*
+
+include:
+- project: 'emundus/devops/ci-cd-templates'
+  ref: main
+  file: '.php_security_checker.yml'
+- template: Security/Secret-Detection.gitlab-ci.yml
 
 phpunit-job:
   stage: test
@@ -171,6 +178,3 @@ publish-db-image-job:
     - docker push emundus/tchooz-db:latest
   needs:
     - release-job
-
-include:
-  - template: Security/Secret-Detection.gitlab-ci.yml
