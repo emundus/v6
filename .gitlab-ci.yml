@@ -9,7 +9,6 @@ variables:
   DOCKER_BUILDKIT: 1
   BUILDKIT_INLINE_CACHE: 1
   DOCKER_TLS_CERTDIR: ""
-  COMPOSER_PATH: "./libraries/emundus/composer.lock"
 
 stages:
   - prepare
@@ -67,6 +66,10 @@ include:
   ref: main
   file: '.php_security_checker.yml'
 - template: Security/Secret-Detection.gitlab-ci.yml
+
+php_security_checker:
+  variables:
+      COMPOSER_PATH: "./libraries/emundus/composer.lock"
 
 phpunit-job:
   stage: test
