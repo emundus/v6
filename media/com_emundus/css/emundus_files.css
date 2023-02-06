@@ -1364,6 +1364,25 @@ td:first-child>.em-cell {
     margin: 0;
 }
 
+.em-cell-scroll > .em-cell {
+    max-height: 85px;
+    max-width: 300px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.em-cell-scroll > .em-cell > span, .em-cell-scroll > .em-cell > a > div {
+    display:block;
+    width:100%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    margin: 2px 0 !important;
+}
+.em-cell-scroll > .em-cell::-webkit-scrollbar {
+    display: none;
+}
+
 .form-control {
     display: block !important;
     width: 100% !important;

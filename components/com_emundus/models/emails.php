@@ -95,7 +95,11 @@ class EmundusModelEmails extends JModelList {
      *
      * @since version v6
      */
-    public function getEmailTrigger($step, $code, $to_applicant = 0, $to_current_user = null) {
+    public function getEmailTrigger($step, $code, $to_applicant = 0, $to_current_user = null, $student = null) {
+        if(empty($step) || empty($code)){
+            return [];
+        }
+
         $query = $this->_db->getQuery(true);
         $query->select('eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id, et.Template, GROUP_CONCAT(ert.tags) as tags, GROUP_CONCAT(erca.candidate_attachment) as attachments')
             ->from($this->_db->quoteName('#__emundus_setup_emails_trigger', 'eset'))
@@ -115,8 +119,14 @@ class EmundusModelEmails extends JModelList {
         }
         $query->andWhere($this->_db->quoteName('esp.code').' IN ('.implode(',', $this->_db->quote($code)) .')')
             ->group('eset.id');
-        $this->_db->setQuery( $query );
-        $results = $this->_db->loadObjectList();
+        try {
+            $this->_db->setQuery($query);
+            $results = $this->_db->loadObjectList();
+        }
+        catch (Exception $e) {
+            JLog::add('Error when get emails triggers with query : ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+        }
+
         $triggers = array_filter($results, function($obj){
             if (empty($obj->trigger_id)) { return false; }
             return true;
@@ -204,6 +214,9 @@ class EmundusModelEmails extends JModelList {
 
                     if ($tmpl['to']['to_current_user'] == 1) {
                         $current_user = JFactory::getSession()->get('emundusUser');
+                        if(empty($current_user) && !empty($student)){
+                            $current_user = $student;
+                        }
                         $recipients[$current_user->id] = array('id' => $current_user->id, 'name' => $current_user->name, 'email' => $current_user->email, 'university_id' => $current_user->university_id);
                     }
 
@@ -229,14 +242,14 @@ class EmundusModelEmails extends JModelList {
      * @since version v6
      * @throws Exception
      */
-    public function sendEmailTrigger($step, $code, $to_applicant = 0, $student = null) {
+    public function sendEmailTrigger($step, $code, $to_applicant = 0, $student = null, $to_current_user = null) {
         $app = JFactory::getApplication();
         $email_from_sys = $app->getCfg('mailfrom');
 
         jimport('joomla.log.log');
         JLog::addLogger(array('text_file' => 'com_emundus.email.php'), JLog::ALL, array('com_emundus'));
 
-        $trigger_emails = $this->getEmailTrigger($step, $code, $to_applicant);
+        $trigger_emails = $this->getEmailTrigger($step, $code, $to_applicant, $to_current_user, $student);
 
         if (count($trigger_emails) > 0) {
             // get current applicant course
@@ -425,7 +438,11 @@ class EmundusModelEmails extends JModelList {
     public function setConstants($user_id, $post=null, $passwd='', $fnum=null) {
         $app            = JFactory::getApplication();
         $current_user   = JFactory::getUser();
-        $user           = $current_user->id == $user_id ? $current_user : JFactory::getUser($user_id);
+        if(!empty($current_user)) {
+            $user = $current_user->id == $user_id ? $current_user : JFactory::getUser($user_id);
+        } else {
+            $user = JFactory::getUser($user_id);
+        }
         $config         = JFactory::getConfig();
 
         //get logo

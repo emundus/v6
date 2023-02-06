@@ -566,6 +566,7 @@ JText::script('COM_EMUNDUS_ACCESS_EXPORT_PDF');             # 8
 JText::script('COM_EMUNDUS_ACCESS_MAIL_APPLICANT');         # 9
 JText::script('COM_EMUNDUS_ACCESS_COMMENT_FILE');           # 10
 JText::script('COM_EMUNDUS_ACCESS_ACCESS_FILE');            # 11
+JText::script('COM_EMUNDUS_ACCESS_ACCESS_FILE_CREATE');     # 11
 JText::script('COM_EMUNDUS_ACCESS_USER');                   # 12
 JText::script('COM_EMUNDUS_ACCESS_STATUS');                 # 13
 JText::script('COM_EMUNDUS_ACCESS_TAGS');                   # 14
@@ -639,7 +640,6 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
     JHTML::script("//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js");
     JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
     JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
-    JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );
     JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
     //TODO : Stop use chosen replace by an other js native library
     //JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );

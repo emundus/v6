@@ -3411,7 +3411,7 @@ class EmundusHelperFiles
                                     $not_in = array_map(function($v) {
                                         return ltrim($v, '!');
                                     }, $not_in);
-                                    $query['q'] .= ' and jecc.fnum NOT IN (SELECT cc.fnum FROM jecc AS cc LEFT JOIN jos_emundus_tag_assoc as ta ON ta.fnum = cc.fnum WHERE ta.id_tag IN (' . implode(',', $not_in) . ')) ';
+                                    $query['q'] .= ' and jecc.fnum NOT IN (SELECT cc.fnum FROM jos_emundus_campaign_candidature AS cc LEFT JOIN jos_emundus_tag_assoc as ta ON ta.fnum = cc.fnum WHERE ta.id_tag IN (' . implode(',', $not_in) . ')) ';
                                 }
 
                                 if (!empty($value)) {

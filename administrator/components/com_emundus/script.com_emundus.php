@@ -497,13 +497,57 @@ class com_emundusInstallerScript
 		        EmundusHelperUpdate::insertTranslationsTag('SEND_ON', 'Send on', 'override', null, null, null, 'en-GB');
 	        }
 
+	        if (version_compare($cache_version, '1.34.33', '<') || $firstrun) {
+		        EmundusHelperUpdate::addColumn('jos_emundus_uploads', 'local_filename', 'VARCHAR', 255);
+	        }
+
+	        if (version_compare($cache_version, '1.34.36', '<') || $firstrun) {
+				$db = JFactory::getDbo();
+				$query = $db->getQuery(true);
+
+				$query->select('id,params')
+					->from($db->quoteName('#__fabrik_forms'))
+					->where("JSON_EXTRACT(params,'$.curl_code') LIKE '%media\/com_emundus\/lib\/chosen\/chosen.min.css%'");
+				$db->setQuery($query);
+				$forms_to_update = $db->loadObjectList();
+
+				foreach ($forms_to_update as $form){
+					$params = json_decode($form->params);
+					if(isset($params->curl_code)){
+						foreach ($params->curl_code as $key => $code){
+							if(strpos($code,'media/com_emundus/lib/chosen/chosen.min.css') !== false){
+								$params->curl_code[$key] = str_replace('media/com_emundus/lib/chosen/chosen.min.css','media/jui/css/chosen.css',$params->curl_code[$key]);
+							}
+							if(strpos($code,'media/com_emundus/lib/chosen/chosen.jquery.min.js') !== false){
+								$params->curl_code[$key] = str_replace('media/com_emundus/lib/chosen/chosen.jquery.min.js','media/jui/js/chosen.jquery.min.js',$params->curl_code[$key]);
+							}
+						}
+
+						$query->clear()
+							->update($db->quoteName('#__fabrik_forms'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+							->where($db->quoteName('id') . ' = ' . $db->quote($form->id));
+						$db->setQuery($query);
+						$db->execute();
+					}
+
+				}
+	        }
+
+            if (version_compare($cache_version, '1.34.49', '<') || $firstrun) {
+                EmundusHelperUpdate::addCustomEvents([
+                    ['label' => 'onHikashopAfterCheckoutStep', 'category' => 'Hikashop', 'published' => 1],
+                    ['label' => 'onHikashopAfterCartProductsLoad', 'category' => 'Hikashop', 'published' => 1],
+                    ['label' => 'onBeforeRenderApplications', 'category' => 'Applicant', 'published' => 1]
+                ]);
+            }
+
 	        if (version_compare($cache_version, '1.35.0', '<') || $firstrun) {
 				EmundusHelperUpdate::updateEmundusParam('gotenberg_url','https://gotenberg.microservices.tchooz.app','https://docs.emundus.app');
 	        }
 
             // Insert new translations in overrides files
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
-
 
             // Recompile Gantry5 css at each update
             $dir = JPATH_BASE . '/templates/g5_helium/custom/css-compiled';

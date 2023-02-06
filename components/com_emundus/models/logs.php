@@ -83,7 +83,7 @@ class EmundusModelLogs extends JModelList {
                         $db->setQuery($query);
                         $db->execute();
                     } catch (Exception $e) {
-                        JLog::add('Error logging at the following query: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+                        JLog::add('Error logging at the following query: ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                     }
                 }
             }
@@ -128,7 +128,7 @@ class EmundusModelLogs extends JModelList {
 		try {
 			return $this->db->loadObjectList();
 		} catch (Exception $e) {
-			JLog::add('Could not get logs in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Could not getUserActions in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -172,7 +172,7 @@ class EmundusModelLogs extends JModelList {
 		try {
 			return $this->db->loadObjectList();
 		} catch (Exception $e) {
-			JLog::add('Could not get logs in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Could not getActionsOnUser in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -225,7 +225,7 @@ class EmundusModelLogs extends JModelList {
                 $result->date = EmundusHelperDate::displayDate($result->timestamp,'DATE_FORMAT_LC2',0);
             }
 		} catch (Exception $e) {
-			JLog::add('Could not get logs in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Could not getActionsOnFnum in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 		}
 
         return $results;
@@ -271,7 +271,7 @@ class EmundusModelLogs extends JModelList {
 		try {
 			return $this->db->loadObjectList();
 		} catch (Exception $e) {
-			JLog::add('Could not get logs in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Could not getActionsBetweenUsers in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -324,36 +324,37 @@ class EmundusModelLogs extends JModelList {
             case ('u'):
                 $action_name = $action_category . '_UPDATE';
                 $action_details = '<b>' . reset($params->updated)->description . '</b>';
-                foreach ($params->updated as $value) {
-                    $action_details .= '<div class="em-flex-row"><span>' . $value->element . '&nbsp</span>&nbsp';
 
-                    if(empty($value->old) or is_null($value->old)) { $value->old = ""; }
-                    if(empty($value->new) or is_null($value->new)) { $value->new = ""; }
+                if (!empty($params->updated)) {
+                    foreach ($params->updated as $value) {
+                        $action_details .= '<div class="em-flex-row"><span>' . $value->element . '&nbsp</span>&nbsp';
+                        $value->old = !empty($value->old) ? $value->old : '';
+                        $value->new = !empty($value->new) ? $value->new : '';
 
-                    $value->old = explode('<#>',$value->old);
-                    foreach($value->old as $_old) {
-                        if(!isset($_old) or is_null($_old) or empty(trim($_old))) {
-                            $_old = JText::_('COM_EMUNDUS_EMPTY_OR_NULL_MODIF');
-                            $action_details .= '<span class="em-blue-500-color">' . $_old . '</span>&nbsp';
-                        } else {
-                            //$_old = (strlen($_old) > 25) ? substr($_old, 0, 25) . '...' : $_old;
-                            $action_details .= '<span class="em-red-500-color" style="text-decoration: line-through">' . $_old . '</span>&nbsp';
+                        $value->old = explode('<#>', $value->old);
+
+
+                        foreach($value->old as $_old) {
+                            if (empty(trim($_old))) {
+                                $action_details .= '<span class="em-blue-500-color">' . JText::_('COM_EMUNDUS_EMPTY_OR_NULL_MODIF') . '</span>&nbsp';
+                            } else {
+                                $action_details .= '<span class="em-red-500-color" style="text-decoration: line-through">' . $_old . '</span>&nbsp';
+                            }
                         }
-                    }
 
-                    $action_details .= '<span>' . JText::_('COM_EMUNDUS_CHANGE_TO') . '</span>&nbsp';
+                        $action_details .= '<span>' . JText::_('COM_EMUNDUS_CHANGE_TO') . '</span>&nbsp';
 
-                    $value->new = explode('<#>',$value->new);
-                    foreach($value->new as $_new) {
-                        if(!isset($_new) or is_null($_new) or empty(trim($_new))) {
-                            $_new = JText::_('COM_EMUNDUS_EMPTY_OR_NULL_MODIF');
-                            $action_details .= '<span class="em-blue-500-color">' . $_new . '</span>&nbsp';
-                        } else {
-                            //$_new = (strlen($_new) > 25) ? substr($_new, 0, 25) . '...' : $_new;
-                            $action_details .= '<span class="em-main-500-color">' . $_new . '</span>&nbsp';
+                        $value->new = explode('<#>',$value->new);
+                        foreach ($value->new as $_new) {
+                            if (empty(trim($_new))) {
+                                $action_details .= '<span class="em-blue-500-color">' . JText::_('COM_EMUNDUS_EMPTY_OR_NULL_MODIF') . '</span>&nbsp';
+                            } else {
+                                $action_details .= '<span class="em-main-500-color">' . $_new . '</span>&nbsp';
+                            }
                         }
+
+                        $action_details .= '</div>';
                     }
-                    $action_details .= '</div>';
                 }
                 break;
             case ('d'):

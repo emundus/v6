@@ -539,33 +539,32 @@ class EmundusControllerMessages extends JControllerLegacy {
         $mail_message = $jinput->post->get('message', null, 'RAW');
         $attachments = $jinput->post->get('attachments', null, null);
         $tags_str = $jinput->post->getString('tags', null, null);
-
-
-        // Here we filter out any CC or BCC emails that have been entered that do not match the regex.
         $cc = $jinput->post->getString('cc');
-        if (!empty($cc)) {
-            if (!is_array($cc)) {
-                $cc = [];
-            }
+	    $bcc = $jinput->post->getString('bcc');
+
+        if(!empty($cc) && is_array($cc)) {
             foreach ($cc as $key => $cc_to_test) {
                 if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $cc_to_test) !== 1) {
                     unset($cc[$key]);
                 }
             }
+	        $cc = array_unique($cc);
+        } else {
+            $cc = [];
         }
 
-        $bcc = $jinput->post->getString('bcc');
-        if (!empty($bcc)) {
-            if (!is_array($bcc)) {
-                $bcc = [];
-            }
+
+        if(!empty($bcc) && is_array($bcc)) {
             foreach ($bcc as $key => $bcc_to_test) {
                 if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $bcc_to_test) !== 1) {
                     unset($bcc[$key]);
                 }
             }
+	        $bcc = array_unique($bcc);
+        } else {
+            $bcc = [];
         }
-
+        
         // Get additional info for the fnums such as the user email.
         $fnums = $m_files->getFnumsInfos($fnums, 'object');
 
@@ -587,15 +586,13 @@ class EmundusControllerMessages extends JControllerLegacy {
 
             $programme = $m_campaign->getProgrammeByTraining($fnum->training);
 
-            $cc_custom = [];
+	        $cc_final = $cc;
             $emundus_user = $m_users->getUserById($fnum->applicant_id)[0];
-            if(isset($emundus_user->email_cc) && !empty($emundus_user->email_cc)) {
-                if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
-                    $cc_custom[] = $emundus_user->email_cc;
+            if(!empty($emundus_user->email_cc)) {
+                if (!in_array($emundus_user->email_cc,$cc_final) && preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
+	                $cc_final[] = $emundus_user->email_cc;
                 }
             }
-            $cc_final = array_merge($cc,$cc_custom);
-
 
             $toAttach = [];
             $post = [
@@ -635,19 +632,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 	        $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
 	        $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
-
-            /* DEPRECATED */
-	        // If the email sender has the same domain as the system sender address.
-	        /*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
-		        $mail_from_address = $mail_from;
-	        } else {
-            $mail_from_address = $mail_from_sys;
-	        }*/
-
             $mail_from_address = $mail_from_sys;
 
-
-            // Set sender
 	        $sender = [
 		        $mail_from_address,
 		        $mail_from_name
@@ -1033,7 +1019,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 	 * @throws \PhpOffice\PhpWord\Exception\CreateTemporaryFileException
 	 * @throws \PhpOffice\PhpWord\Exception\Exception
 	 */
-    function sendEmail($fnum, $email_id, $post = null, $attachments = [], $bcc = false) {
+    function sendEmail($fnum, $email_id, $post = null, $attachments = [], $bcc = false, $sender_id = null) {
         if (empty($fnum) || empty($email_id)) {
             return false;
         }
@@ -1121,13 +1107,16 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 	    // Tags are replaced with their corresponding values using the PHP preg_replace function.
 	    $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
-	    $body = $message;
-	    $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
-        $body_raw = $body;
+        $body = $message;
+        $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+        $body_raw = strip_tags($body);
+
         if ($template) {
             $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+            $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
         }
+
         // Check if user defined a cc address
         $cc = [];
         $emundus_user = $m_users->getUserById($fnum['applicant_id'])[0];
@@ -1152,7 +1141,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    $mailer->isHTML(true);
 	    $mailer->Encoding = 'base64';
 	    $mailer->setBody($body);
-        $mailer->AltBody = strip_tags($body_raw);
+        $mailer->AltBody = $body_raw;
 
 
         // Get any candidate files included in the message.
@@ -1237,8 +1226,14 @@ class EmundusControllerMessages extends JControllerLegacy {
 		    JLog::add($send, JLog::WARNING, 'com_emundus.email');
 		    return false;
 	    } else {
-            // if empty current user, it must come from cron task. so use default user_id
-            $user_id = !empty($user) ? $user->id : 62;
+            // in cron task, the current user is the last logged user, so we use a sender_id given in parameter, or the current user id, or the default user_id if none is found.
+            if (!empty($sender_id)) {
+                $user_id = $sender_id;
+            } else if (!empty($user)) {
+                $user_id = $user->id;
+            } else {
+                $user_id = 62;
+            }
 		    $log = [
 			    'user_id_from'  => $user_id,
 			    'user_id_to'    => $fnum['applicant_id'],
@@ -1339,8 +1334,9 @@ class EmundusControllerMessages extends JControllerLegacy {
             $body = $m_email->setTagsFabrik($body, array($fnum));
         }
 
-        $body_raw = $body;
-        if ($template != false) {
+        $body_raw = strip_tags($body);
+
+        if ($template) {
             $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
 
             if($user_id != null) {
@@ -1365,7 +1361,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 		$mailer->isHTML(true);
 		$mailer->Encoding = 'base64';
 		$mailer->setBody($body);
-        $mailer->AltBody = strip_tags($body_raw);
+        $mailer->AltBody = $body_raw;
 
         if (!empty($toAttach)) {
 			$mailer->addAttachment($toAttach);
@@ -1891,6 +1887,36 @@ class EmundusControllerMessages extends JControllerLegacy {
         } else {
             echo json_encode(['status' => false]);
         }
+        exit;
+    }
+
+   public function getAllCategories() {
+		$res = ['status' => true, 'data' => []];
+		if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
+			$res['status'] = false;
+			echo json_encode($res);
+			exit;
+        }
+
+        $_mMessages = $this->getModel('Messages');
+        $res['data'] = $_mMessages->getAllCategories();
+
+        echo json_encode($res);
+        exit;
+    }
+
+	public function getAllMessages() {
+		$res = ['status' => true, 'data' => []];
+		if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
+			$res['status'] = false;
+			echo json_encode($res);
+            exit;
+        }
+
+        $_mMessages = $this->getModel('Messages');
+        $res['data'] = $_mMessages->getAllMessages();
+
+        echo json_encode($res);
         exit;
     }
 }

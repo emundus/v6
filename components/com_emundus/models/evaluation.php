@@ -811,23 +811,17 @@ class EmundusModelEvaluation extends JModelList {
             '#__emundus_tag_assoc', 'jos_emundus_tag_assoc'
         );
         $leftJoin = '';
-        if (count($this->_elements) > 0) {
-            foreach ($this->_elements as $elt) {
-                if (!isset($lastTab)) {
-                    $lastTab = array();
-                }
-                if (!in_array($elt->tab_name, $lastTab)) {
-                    $leftJoin .= 'left join '.$elt->tab_name.' ON '.$elt->tab_name.'.fnum = jecc.fnum ';
-                }
-                if(!empty($elt->table_join)) {
-                    $lastTab[] = $elt->table_join;
-                    $group_by .= ', '.$elt->table_join.'___'.$elt->element_name;
-                } else {
-                    $lastTab[] = $elt->tab_name;
-                    $group_by .= ', '.$elt->tab_name.'___'.$elt->element_name;
-                }
-            }
-        }
+	    if (!empty($this->_elements)) {
+		    $leftJoin = '';
+		    $lastTab = !isset($lastTab) ? array() : $lastTab;
+
+		    foreach ($this->_elements as $elt) {
+			    if (!in_array($elt->tab_name, $lastTab)) {
+				    $leftJoin .= 'LEFT JOIN ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = jecc.fnum ';
+				    $lastTab[] = $elt->tab_name;
+			    }
+		    }
+	    }
         $query .= ', jos_emundus_evaluations.id AS evaluation_id, CONCAT(eue.lastname," ",eue.firstname) AS evaluator';
         $group_by .= ', evaluation_id';
 
