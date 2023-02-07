@@ -73,6 +73,8 @@ php_security_checker_emundus:
   variables:
       COMPOSER_PATH: "./libraries/emundus/composer.lock"
   allow_failure: true
+  only:
+    - merge_request
 
 php_security_checker_joomla:
   extends:
@@ -80,6 +82,8 @@ php_security_checker_joomla:
   variables:
     COMPOSER_PATH: "./libraries/composer.lock"
   allow_failure: true
+  only:
+    - merge_request
 
 php_security_checker_fabrik:
   extends:
@@ -87,6 +91,8 @@ php_security_checker_fabrik:
   variables:
     COMPOSER_PATH: "./libraries/fabrik/composer.lock"
   allow_failure: true
+  only:
+    - merge_request
 
 php_security_checker_gantry5:
   extends:
@@ -94,6 +100,8 @@ php_security_checker_gantry5:
   variables:
     COMPOSER_PATH: "./libraries/gantry5/composer.lock"
   allow_failure: true
+  only:
+    - merge_request
 
 php_security_checker_phpgoogleapiclient:
   stage: test
@@ -102,6 +110,8 @@ php_security_checker_phpgoogleapiclient:
   variables:
     COMPOSER_PATH: "./libraries/php-google-api-client/composer.lock"
   allow_failure: true
+  only:
+    - merge_request
 
 phpunit-job:
   stage: test
