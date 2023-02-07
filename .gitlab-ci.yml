@@ -67,9 +67,7 @@ include:
   file: '.php_security_checker.yml'
 - template: Security/Secret-Detection.gitlab-ci.yml
 
-php_security_checker_emundus:
-  extends:
-    - php_security_checker
+php_security_checker:
   variables:
       COMPOSER_PATH: "./libraries/emundus/composer.lock"
   allow_failure: true
