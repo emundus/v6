@@ -2,6 +2,8 @@
 
 namespace RocketTheme\Toolbox\ResourceLocator;
 
+use RecursiveIterator;
+
 /**
  * Implements recursive iterator over filesystem.
  *
@@ -9,7 +11,7 @@ namespace RocketTheme\Toolbox\ResourceLocator;
  * @author RocketTheme
  * @license MIT
  */
-class RecursiveUniformResourceIterator extends UniformResourceIterator implements \RecursiveIterator
+class RecursiveUniformResourceIterator extends UniformResourceIterator implements RecursiveIterator
 {
     /** @var string|null */
     protected $subPath;
@@ -17,6 +19,7 @@ class RecursiveUniformResourceIterator extends UniformResourceIterator implement
     /**
      * @return RecursiveUniformResourceIterator
      */
+    #[\ReturnTypeWillChange]
     public function getChildren()
     {
         $subPath = $this->getSubPathName();
@@ -28,6 +31,7 @@ class RecursiveUniformResourceIterator extends UniformResourceIterator implement
      * @param bool|null $allow_links
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function hasChildren($allow_links = null)
     {
         $allow_links = (bool)($allow_links !== null ? $allow_links : $this->flags & \FilesystemIterator::FOLLOW_SYMLINKS);
