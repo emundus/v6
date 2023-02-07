@@ -61,6 +61,66 @@ build-db-to-test-job:
         - Dockerfile.db
         - .ci/mysql/*
 
+include:
+- project: 'emundus/devops/ci-cd-templates'
+  ref: main
+  file: '.php_security_checker.yml'
+- template: Security/Secret-Detection.gitlab-ci.yml
+
+php_security_checker:
+  variables:
+      COMPOSER_PATH: "./libraries/emundus/composer.lock"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
+      when: always
+    - when: never
+  allow_failure: true
+
+php_security_checker_joomla:
+  extends:
+    - php_security_checker
+  variables:
+    COMPOSER_PATH: "./libraries/composer.lock"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
+      when: always
+    - when: never
+  allow_failure: true
+
+php_security_checker_fabrik:
+  extends:
+    - php_security_checker
+  variables:
+    COMPOSER_PATH: "./libraries/fabrik/composer.lock"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
+      when: always
+    - when: never
+  allow_failure: true
+
+php_security_checker_gantry5:
+  extends:
+    - php_security_checker
+  variables:
+    COMPOSER_PATH: "./libraries/gantry5/composer.lock"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
+      when: always
+    - when: never
+  allow_failure: true
+
+php_security_checker_phpgoogleapiclient:
+  stage: test
+  extends:
+    - php_security_checker
+  variables:
+    COMPOSER_PATH: "./libraries/php-google-api-client/composer.lock"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
+      when: always
+    - when: never
+  allow_failure: true
+
 phpunit-job:
   stage: test
   image: emundus/tchooz-build-app:latest
@@ -171,6 +231,3 @@ publish-db-image-job:
     - docker push emundus/tchooz-db:latest
   needs:
     - release-job
-
-include:
-  - template: Security/Secret-Detection.gitlab-ci.yml
