@@ -1,50 +1,49 @@
 <?php
 /**
  * @package         SCLogin
- * @copyright (c)   2009-2019 by SourceCoast - All Rights Reserved
+ * @copyright (c)   2009-2021 by SourceCoast - All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
- * @version         Release v8.4.3
- * @build-date      2020/05/29
+ * @version         Release v9.0.215
+ * @build-date      2022/09/06
  */
 
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Factory;
+
 ?>
-<div class="sclogin sourcecoast">
+<div class="sclogin sourcecoast <?php echo $helper->bsClass;?>">
 
 <?php
 if ($params->get('enableProfilePic'))
-    echo $helper->getSocialAvatar($registerType, $helper->profileLink);
+    echo $helper->getSocialAvatar($registerType, $helper->profileLink, $module->id);
 
-if ($params->get('greetingName') != 2)
-{
-    $user = JFactory::getUser();
-    if ($params->get('greetingName') == 0)
-        $name = $user->get('username');
-    else
-        $name = $user->get('name');
-    echo '<div class="sclogin-greeting">' . JText::sprintf('MOD_SCLOGIN_WELCOME', $name) . '</div>';
-}
+$name = $helper->getGreetingName();
+if(!empty($name))
+    echo '<div class="sclogin-greeting">' . Text::sprintf('MOD_SCLOGIN_WELCOME', $name) . '</div>';
 
 if($params->get('showProfileLink'))
 {
-    echo '<div class="sclogin-profile-link"><a href="'.$helper->profileLink.'">'.JText::_('MOD_SCLOGIN_LOGOUT_SHOW_PROFILE_LINK').'</a></div>';
+    echo '<div class="sclogin-profile-link"><a href="'.$helper->profileLink.'">'.Text::_('MOD_SCLOGIN_LOGOUT_SHOW_PROFILE_LINK').'</a></div>';
 }
 
 if ($params->get('showLogoutButton'))
 {
     if($params->get('showLogoutButton') == 1)
-        $logoutClass='button btn btn-primary';
+        $logoutClass=$loginButtonClass;
     else
         $logoutClass='logout-link';
     ?>
     <div class="sclogout-button">
         <div class="sclogin-joomla-login">
-            <form action="<?php echo JRoute::_('index.php', true, $params->get('usesecure'));?>" method="post" id="sclogin-form">
-                <div class="logout-button" id="scLogoutButton">
-                    <input type="submit" name="Submit" class="<?php echo $logoutClass;?>" value="<?php echo JText::_('JLOGOUT');?>" />
+            <form action="<?php echo Route::_('index.php', true, $params->get('usesecure'));?>" method="post" class="sclogin-form" id="sclogin-form<?php echo $module->id; ?>">
+                <div class="logout-button scLogoutButton" id="scLogoutButton-<?php echo $module->id; ?>">
+                    <input type="submit" name="Submit" class="<?php echo $logoutClass;?>" value="<?php echo Text::_('JLOGOUT');?>" />
 
-                    <?php $option = JFactory::getApplication()->input->get('option');?>
+                    <?php $option = Factory::getApplication()->input->get('option');?>
                     <?php if($option == 'com_easysocial'):?>
                     <input type="hidden" name="option" value="com_easysocial" />
                     <input type="hidden" name="controller" value="account" />
@@ -55,7 +54,7 @@ if ($params->get('showLogoutButton'))
                     <?php endif;?>
 
                     <input type="hidden" name="return" value="<?php echo $jLogoutUrl;?>" />
-                    <?php echo JHtml::_('form.token')?>
+                    <?php echo HTMLHelper::_('form.token')?>
                 </div>
             </form>
         </div>

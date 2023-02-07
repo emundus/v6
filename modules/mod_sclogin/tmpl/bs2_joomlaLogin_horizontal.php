@@ -1,10 +1,10 @@
 <?php
 /**
  * @package         SCLogin
- * @copyright (c)   2009-2019 by SourceCoast - All Rights Reserved
+ * @copyright (c)   2009-2021 by SourceCoast - All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  * @version         Release v9.0.215
- * @build-date      2021/07/09
+ * @build-date      2022/09/06
  */
 
 defined('_JEXEC') or die('Restricted access');
@@ -21,9 +21,6 @@ else
 
 if ($params->get('showLoginForm'))
 {
-    $showPassword = $helper->getShowPasswordButton('sclogin-passwd-'. $module->id );;
-    $forgotUser = $helper->getForgotUserButton();
-    $forgotPassword = $helper->getForgotPasswordButton();
     ?>
 
     <div class="sclogin-joomla-login horizontal <?php echo $joomlaSpan; ?>">
@@ -40,42 +37,27 @@ if ($params->get('showLoginForm'))
         }
         ?>
         <form action="<?php echo $action; ?>" method="post" id="sclogin-form<?php echo $module->id; ?>">
-            <div class="mod-sclogin__userdata userdata">
-                <div class="mod-sclogin__username form-group <?php echo $helper->pullClass;?>left">
-                    <div class="input-group">
-                        <input id="sclogin-username-<?php echo $module->id; ?>" type="text" name="username" class="form-control sclogin-username"
-                               autocomplete="username" placeholder="<?php echo Text::_('MOD_SCLOGIN_USERNAME'); ?>"
-                               tabindex="0" <?php echo $params->get('autoFocusUsername') ? 'autofocus' : '';?>
-                        >
-                        <label for="sclogin-username-<?php echo $module->id; ?>" class="visually-hidden"><?php echo Text::_('MOD_SCLOGIN_USERNAME'); ?></label>
-                        <span class="input-group-text" title="<?php echo Text::_('MOD_SCLOGIN_USERNAME'); ?>">
-                            <span class="<?php echo $helper->getIconClass('user');?>" aria-hidden="true"></span>
-                        </span>
-                        <!-- only add spans if they have buttons present -->
-                        <?php if(!empty($forgotUser)) { ?>
-                            <span class="input-group-text">
-                            <?php echo $forgotUser; ?>
-                        </span>
-                        <?php } ?>
-
+            <fieldset class="userdata span12">
+                <div class="control-group pull-left form-sclogin-username" id="form-sclogin-username-<?php echo $module->id; ?>">
+                    <div class="controls">
+                        <div class="input-append">
+                            <input id="sclogin-username-<?php echo $module->id; ?>" name="username" tabindex="0" <?php echo $params->get('autoFocusUsername') ? 'autofocus' : '';?> title="username" type="text" class="sclogin-username input-small"
+                                   placeholder="<?php echo Text::_('MOD_SCLOGIN_USERNAME'); ?>" aria-label="<?php echo Text::_('MOD_SCLOGIN_USERNAME'); ?>" required aria-required="true">
+                            <?php echo $helper->getForgotUserButton(); ?>
+                        </div>
                     </div>
                 </div>
-                <div class="mod-sclogin__password form-group <?php echo $helper->pullClass;?>left">
-                    <div class="input-group">
-                        <input id="sclogin-passwd-<?php echo $module->id; ?>" type="password" name="password" autocomplete="current-password" class="form-control sclogin-passwd" placeholder="<?php echo Text::_('MOD_SCLOGIN_PASSWORD'); ?>">
-                        <!-- only add spans if they have buttons present -->
-                        <?php if(!empty($showPassword)) { ?>
-                            <span class="input-group-text">
-                            <?php echo $showPassword; ?>
-                        </span>
-                        <?php } if(!empty($forgotPassword)) { ?>
-                            <span class="input-group-text">
-                            <?php echo $forgotPassword; ?>
-                        </span>
-                        <?php } ?>
+                <div class="control-group pull-left form-sclogin-password" id="form-sclogin-password-<?php echo $module->id; ?>">
+                    <div class="controls">
+                        <div class="input-append">
+                            <input id="sclogin-passwd<?php echo $module->id; ?>" name="<?php echo $passwordName; ?>" tabindex="0" title="password" type="password" class="sclogin-passwd input-small"
+                                   placeholder="<?php echo Text::_('MOD_SCLOGIN_PASSWORD') ?>" aria-label="<?php echo Text::_('MOD_SCLOGIN_PASSWORD') ?>" required aria-required="true">
+                            <?php echo $helper->getShowPasswordButton('sclogin-passwd'. $module->id ); ?>
+                            <?php echo $helper->getForgotPasswordButton(); ?>
+                        </div>
                     </div>
                 </div>
-                <div class="form-group <?php echo $helper->pullClass;?>left form-sclogin-submitcreate" id="form-sclogin-submitcreate-<?php echo $module->id; ?>">
+                <div class="control-group pull-left form-sclogin-submitcreate" id="form-sclogin-submitcreate-<?php echo $module->id; ?>">
                     <button type="submit" name="Submit" class="<?php echo $loginButtonClass;?>"><?php echo Text::_('MOD_SCLOGIN_LOGIN') ?></button>
                     <?php if ($showRegisterLinkInLogin) : ?>
                         <a class="<?php echo $registerButtonClass;?>" href="<?php echo $helper->registerLink; ?>"><?php echo Text::_('MOD_SCLOGIN_REGISTER_FOR_THIS_SITE'); ?></a>
@@ -84,13 +66,11 @@ if ($params->get('showLoginForm'))
                 <?php if (PluginHelper::isEnabled('system', 'remember')) :
                     if($helper->showRememberMe())
                     {?>
-                        <div class="form-check <?php echo $helper->pullClass;?>left">
-                            <div class="form-group form-sclogin-remember" id="form-sclogin-remember-<?php echo $module->id; ?>">
-                                <label for="sclogin-remember-<?php echo $module->id; ?>">
-                                    <input id="sclogin-remember-<?php echo $module->id; ?>" type="checkbox" name="remember" class="form-check-input sclogin-remember" <?php echo $helper->getRememberMeValue();?> title="Remember Me" />
-                                    <?php echo Text::_('JGLOBAL_REMEMBER_ME');?>
-                                </label>
-                            </div>
+                        <div class="control-group form-sclogin-remember" id="form-sclogin-remember-<?php echo $module->id; ?>">
+                            <label for="sclogin-remember-<?php echo $module->id; ?>">
+                                <input id="sclogin-remember-<?php echo $module->id; ?>" type="checkbox" name="remember" class="inputbox sclogin-remember" <?php echo $helper->getRememberMeValue();?> title="Remember Me" />
+                                <?php echo Text::_('JGLOBAL_REMEMBER_ME');?>
+                            </label>
                         </div>
                     <?php }
                     else
@@ -121,7 +101,7 @@ if ($params->get('showLoginForm'))
 
                 echo $helper->getForgotLinks();
                 ?>
-            </div>
+            </fieldset>
         </form>
     </div>
     <?php
