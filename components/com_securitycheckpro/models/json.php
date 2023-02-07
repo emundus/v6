@@ -224,30 +224,38 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 				} else 
 				{
 					$this->data = $this->site . '. Are both secret keys equals?';
+					$this->log_filename = "error.php";
+					$message = "Getting site error. Error decrypting data. Are both secret keys equals?";
+					$this->write_log($message,"ERROR");
 				}
+				// Vamos a usar el referrer como url a la que devolver la petición
+				if ( (array_key_exists('referrer',$request)) && (!empty($request['referrer'])) ) 
+				{
+					$this->site = $request['referrer'];
+					$this->status = self::STATUS_ERROR;
+					$this->cipher = self::CIPHER_RAW;				
+										
+					return $this->sendResponse();
+				}
+			}
+				
+		} else
+		{
+			$this->log_filename = "error.php";
+			$message = "Function Execute. Error decrypting data. Are both secret keys equals?";
+			$this->write_log($message,"ERROR");
+			
+			if ( (array_key_exists('referrer',$request)) && (!empty($request['referrer'])) ) 
+			{
 				// Vamos a usar el referrer como url a la que devolver la petición
 				$this->site = $request['referrer'];
 				
+				$this->data = 'Error decrypting data. Are both secret keys equals?';
 				$this->status = self::STATUS_ERROR;
 				$this->cipher = self::CIPHER_RAW;				
 										
 				return $this->sendResponse();
 			}
-				
-		} else
-		{
-			// Vamos a usar el referrer como url a la que devolver la petición
-			$this->site = $request['referrer'];
-			
-			$this->data = 'Error decrypting data. Are both secret keys equals?';
-			$this->status = self::STATUS_ERROR;
-			$this->cipher = self::CIPHER_RAW;
-			
-			$this->log_filename = "error.php";
-			$message = "Function Execute. Error decrypting data. Are both secret keys equals?";
-			$this->write_log($message,"ERROR");
-
-			return $this->sendResponse();
 		}			
 		
 		
@@ -2112,6 +2120,14 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 					$dlid = $params->get('pro_downloadid','');
 				}
 				break;
+			// Version 7 of Jch optimize
+			case "pkg_jchoptimize":
+				$params = JComponentHelper::getParams('com_jchoptimize');
+							
+				if (!empty($params)) {
+					$dlid = $params->get('pro_downloadid','');
+				}
+				break;			
 			case "com_sppagebuilder":
 				$params = JComponentHelper::getParams('com_sppagebuilder');
 							
@@ -2182,12 +2198,13 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 				{
 					
 				}
-										
+														
 				if ( is_array($extension_data) ) {					
 					$extension_name = $extension_data['name'];
 					$detailsurl = $extension_data['detailsurl'];
 					$extension_element = $extension_data['element'];
 					$extra_query = $extension_data['extra_query'];
+					
 									
 					if (strtolower($extension_element) == "joomla")
 					{
@@ -2213,7 +2230,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 						// Update failed
 						if ( (!$update_result) || ($update_result[0][0] == 2) )
 						{
-							$pro_versions_to_look_for = array('pkg_akeeba','pkg_admintools','com_rstbox','com_jch_optimize','com_sppagebuilder');
+							$pro_versions_to_look_for = array('pkg_akeeba','pkg_admintools','com_rstbox','com_jch_optimize','pkg_jchoptimize','com_sppagebuilder');
 							
 							if (in_array($extension_element, $pro_versions_to_look_for)) {
 								// Se ha producido un error y la extensión puede ser de pago. Intentamos actualizarla buscando su dlid
