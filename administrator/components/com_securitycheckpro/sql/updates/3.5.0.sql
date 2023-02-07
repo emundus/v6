@@ -1,48 +1,41 @@
-DROP TABLE IF EXISTS "#__securitycheckpro";
-CREATE TABLE "#__securitycheckpro" (
-"id" serial NOT NULL,
-"Product" character varying(100) NOT NULL,
-"sc_type" character varying(35),
-"Installedversion" character varying(30) DEFAULT '---',
-"Vulnerable" character varying(10) NOT NULL DEFAULT 'No',
-PRIMARY KEY ("id")
-);
+ALTER TABLE `#__securitycheckpro_logs` CHANGE `original_string` `original_string` MEDIUMTEXT;
 
-DROP TABLE IF EXISTS "#__securitycheckpro_dynamic_blacklist";
-CREATE TABLE "#__securitycheckpro_dynamic_blacklist" (
-"ip" character varying(26) NOT NULL,
-"timeattempt" timestamp without time zone NOT NULL,
-"counter" integer NOT NULL DEFAULT 1,
-PRIMARY KEY ("ip")
-);
+CREATE TABLE IF NOT EXISTS `#__securitycheckpro_blacklist` (
+`ip` VARCHAR(255) NOT NULL,
+PRIMARY KEY (`ip`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-DROP TABLE IF EXISTS "#__securitycheckpro_vuln_components";
-CREATE TABLE "#__securitycheckpro_vuln_components" (
-"id" serial NOT NULL,
-"Product" character varying(35) NOT NULL,
-"vuln_id" integer NOT NULL,
-PRIMARY KEY ("id")
-);
+CREATE TABLE IF NOT EXISTS `#__securitycheckpro_whitelist` (
+`ip` VARCHAR(255) NOT NULL,
+PRIMARY KEY (`ip`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-DROP TABLE IF EXISTS "#__securitycheckpro_db";
-CREATE TABLE "#__securitycheckpro_db" (
-"id" serial NOT NULL,
-"Product" character varying(35) NOT NULL,
-"vuln_type" character varying(35),
-"Vulnerableversion" character varying(40) DEFAULT '---',
-"modvulnversion" character varying(2) DEFAULT '==',
-"Joomlaversion" character varying(30) DEFAULT 'Notdefined',
-"modvulnjoomla" character varying(20) DEFAULT '==',
-"description" character varying(90),
-"vuln_class" character varying(70),
-"published" character varying(35),
-"vulnerable" character varying(70),
-"solution_type" character varying(35) DEFAULT '???',
-"solution" character varying(70),
-PRIMARY KEY ("id")
-);
-INSERT INTO "#__securitycheckpro_db" ("Product","vuln_type","Vulnerableversion","modvulnversion","Joomlaversion",
-"modvulnjoomla","description","vuln_class","published","vulnerable","solution_type","solution") VALUES 
+CREATE TABLE IF NOT EXISTS `#__securitycheckpro_users_control` (
+`id` INT(1) UNSIGNED NOT NULL AUTO_INCREMENT,
+`users` TEXT NOT NULL,
+`contador` INT(3) UNSIGNED NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `#__securitycheckpro_db`;
+CREATE TABLE `#__securitycheckpro_db` (
+`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`Product` VARCHAR(35) NOT NULL,
+`vuln_type` VARCHAR(35),
+`Vulnerableversion` VARCHAR(40) DEFAULT '---',
+`modvulnversion` VARCHAR(2) DEFAULT '==',
+`Joomlaversion` VARCHAR(30) DEFAULT 'Notdefined',
+`modvulnjoomla` VARCHAR(20) DEFAULT '==',
+`description` VARCHAR(90),
+`vuln_class` VARCHAR(70),
+`published` VARCHAR(35),
+`vulnerable` VARCHAR(70),
+`solution_type` VARCHAR(35) DEFAULT '???',
+`solution` VARCHAR(70),
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,`modvulnversion`,`Joomlaversion`,
+`modvulnjoomla`,`description`,`vuln_class`,`published`,`vulnerable`,`solution_type`,`solution`) VALUES 
 ('Joomla!','core','3.0.0','==','3.0.0','==','Joomla! XSS Vulnerability','Typographical error','Oct 09 2012','Joomla! 3.0.0','update','3.0.1'),
 ('com_fss','component','1.9.1.1447','<=','3.0.0','>=','Joomla Freestyle Support Component','SQL Injection Vulnerability','Oct 19 2012','Versions prior to 1.9.1.1447','none','No details'),
 ('com_commedia','component','3.1','<=','3.0.0','>=','Joomla Commedia Component','SQL Injection Vulnerability','Oct 19 2012','Versions prior to 3.1','update','3.2'),
@@ -470,7 +463,7 @@ INSERT INTO "#__securitycheckpro_db" ("Product","vuln_type","Vulnerableversion",
 ('com_jimtawl','component','2.2.7','==','3.0.0','>=','Jimtawl Component','Sql Injection vulnerabilitiy','Nov 18 2018','Version 2.2.7','update','2.2.8'),
 ('com_kunena','component','5.1.7','<','3.0.0','>=','Kunena Component','Xss vulnerability','Nov 21 2018','Version 5.1.6 and lower','update','5.1.7'),
 ('com_jephotogallery','component','1.1','==','3.0.0','>=','JE Photo Gallery Component','Sql Injection vulnerabilitiy','Dec 04 2018','Version 1.1','none','No details'),
-('com_muscol','component','3.0.3','<=','3.0.0','>=','Music collection Component','Sql Injection vulnerability','Dec 04 2018','Version 3.0.3','update','3.0.6'),
+('com_muscol','component','3.0.3','<=','3.0.0','>=','Music collection Component','Sql Injection vulnerabilitiy','Dec 04 2018','Version 3.0.3','update','3.0.6'),
 ('com_jomres','component','9.14.0','<=','3.0.0','>=','Joomres Component','Third party vulnerabilitiy','Dec 07 2018','Version 9.14.0 and lower','update','9.15.0'),
 ('com_kunena','component','5.1.7','<=','3.0.0','>=','Kunena Component','Tree XSS vulnerabilities','Jan 03 2019','Version 5.1.7 and lower','update','5.1.8'),
 ('com_joomcrm','component','1.1.1','==','3.0.0','>=','JoomCRM Component Component','Sql Injection vulnerabilitiy','Jan 15 2019','Version 1.1.0','update','1.1.2'),
@@ -489,7 +482,7 @@ INSERT INTO "#__securitycheckpro_db" ("Product","vuln_type","Vulnerableversion",
 ('com_bookpro','component','2.3','==','3.0.0','>=','JB Bus Component','SQL Injection vulnerability','Apr 12 2019','Version 2.3','update','2.4'),
 ('com_kunena','component','5.1.12','<','3.0.0','>=','Kunena Component','XSS vulnerability','Apr 23 2019','Version 5.1.3 through 5.1.12','update','5.1.12.1'),
 ('com_phocagallery','component','4.3.17','<','3.0.0','>=','Phoca Gallery Component','XSS vulnerability','Apr 26 2019','Version 4.3.15 prior','update','4.3.17'),
-('Joomla!','core','3.9.5','<=','3.0.0','>=','Joomla! core','Xss vulnerability','May 07 2019','Joomla 1.7.0 through 3.9.5','update','3.9.6'),
+('Joomla!','core','3.9.5','<=','3.0.0','>=','Joomla! core','Xss vulnerability','May 072019','Joomla 1.7.0 through 3.9.5','update','3.9.6'),
 ('com_rsform','component','2.2.0','==','3.0.0','>=','RSForm! Pro Component','Csv injection vulnerability','May 13 2019','Version 2.2.0','update','2.2.1'),
 ('com_rsmembership','component','1.22.10','<=','3.0.0','>=','RSMembership! Component','Csv injection vulnerability','May 13 2019','Version 1.22.10 and lower','update','1.22.11'),
 ('com_rsevents','component','2.2.0','<=','3.0.0','>=','RSEvents! Pro Component','Csv injection vulnerability','May 13 2019','Version 2.2.0 and lower','update','2.2.1'),
@@ -497,7 +490,7 @@ INSERT INTO "#__securitycheckpro_db" ("Product","vuln_type","Vulnerableversion",
 ('com_loginguard','component','3.1.1','<=','3.0.0','>=','Akeeba LoginGuard Component','Information disclosure vulnerability','May 18 2019','Version 3.1.1 and lower','update','3.2.0'),
 ('com_extplorer','component','2.1.12','<=','3.0.0','>=','Extplorer Component','Several vulnerabilities','May 20 2019','Version 2.1.12 and maybe lower','update','2.1.13'),
 ('com_comprofiler','component','2.4.1','<=','3.0.0','>=','Community Builder Component','jQuery vulnerability','May 22 2019','Version 2.4.1 and lower','update','2.4.2'),
-('com_akeeba','component','6.4.2.1','<=','3.0.0','>=','Akeeba Backup Component','Xss vulnerability','Jun 03 2019','versions 5.3.0.b1 to 6.4.2.1 inclusive','update','6.5.1'),
+('com_akeeba','component','6.4.2.1','<=','3.0.0','>=','Akeeba Backup Component','Xss vulnerability','Jun 03 2019','Versions 5.3.0.b1 to 6.4.2.1 inclusive','update','6.5.1'),
 ('Joomla!','core','3.9.6','<=','3.0.0','>=','Joomla! core','Several vulnerabilities','Jun 11 2019','Joomla 3.6.0 through 3.9.6','update','3.9.7'),
 ('Joomla!','core','3.9.8','<=','3.0.0','>=','Joomla! core','Remote code execution Vulnerability','Jul 09 2019','Joomla 3.9.7 through 3.9.8','update','3.9.9'),
 ('com_easydiscuss','component','4.1.9','==','3.0.0','>=','Easy discuss Component','Sql injection vulnerability','Aug 09 2019','version 4.1.9','update','4.1.10'),
@@ -522,167 +515,60 @@ INSERT INTO "#__securitycheckpro_db" ("Product","vuln_type","Vulnerableversion",
 ('Joomla!','core','3.9.19','<=','3.0.0','>=','Joomla! core','Several vulnerabilities','Jul 14 2020','Joomla 2.5.0 through 3.9.19','update','3.9.20'),
 ('Joomla!','core','3.9.20','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','Aug 25 2020','Joomla 2.5.0 through 3.9.20','update','3.9.21'),
 ('com_pago','component','2.5.9.0','==','3.0.0','>=','paGO Commerce Component','SQL Injection','Nov 02 2020','Version 2.5.9.0','none','No details'),
-('Joomla!','core','3.9.24','<=','3.0.0','>=','Joomla! core','Nine low vulnerabilities','Mar 03 2021','Joomla 2.5.0 through 3.9.24','update','3.9.25'),
-('Joomla!','core','3.9.25','<=','3.0.0','>=','Joomla! core','Two low vulnerabilities','Apr 13 2021','Joomla 3.0.0 through 3.9.25','update','3.9.26'),
-('com_publisher','component','3.0.19','==','3.0.0','>=','Publisher Component','Xss vulnerability','Apr 21 2021','Version 3.0.19','update','3.0.20'),
-('com_yoorecipe','component','1.0.0','>=','3.0.0','>=','Yoorecipe Component','SQL Injection vulnerability','Apr 21 2021','All versions','none','No details'),
-('Joomla!','core','3.9.26','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','May 25 2021','Joomla 3.0.0 through 3.9.26','update','3.9.27'),
-('Joomla!','core','3.9.27','<=','3.0.0','>=','Joomla! core','Five low vulnerabilities','Jul 07 2021','Joomla 2.5.0 through 3.9.27','update','3.9.28'),
+('Joomla!','core','3.9.22','<=','3.0.0','>=','Joomla! core','Seven low vulnerabilities','Nov 11 2020','Joomla 1.7.0 through 3.9.22','update','3.9.23'),
+('Joomla!','core','3.9.23','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','Jan 12 2020','Joomla 3.0.0 through 3.9.23','update','3.9.24'),
+('Joomla!','core','3.9.24','<=','3.0.0','>=','Joomla! core','Nine low vulnerabilities','Mar 03 2020','Joomla 2.5.0 through 3.9.24','update','3.9.25'),
+('Joomla!','core','3.9.26','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','May 25 2020','Joomla 3.0.0 through 3.9.26','update','3.9.27'),
+('Joomla!','core','3.9.27','<=','3.0.0','>=','Joomla! core','Five low vulnerabilities','Jul 07 2020','Joomla 2.5.0 through 3.9.27','update','3.9.28'),
+('Joomla!','core','4.0.0','<=','4.0.0','>=','Joomla! core','One vulnerability','Aug 24 2021','Joomla 4.0.0','update','4.0.1'),
 ('Joomla!','core','3.10.8','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','Mar 31 2022','Joomla 2.5.0 through 3.10.6','update','3.10.8'),
-('Joomla!','core','4.1.2','<=','4.0.0','>=','Joomla! core','Seven low vulnerabilities','Mar 31 2022','Joomla 4.0.0 through 4.1.0','update','4.1.2');
+('Joomla!','core','4.1.2','<=','4.0.0','>=','Joomla! core','Seven low vulnerabilities','Mar 31 2022','Joomla 4.0.0 through 4.1.0','update','4.1.2'),
+('com_sexypolling','component','2.1.7','<=','3.0.0','>=','Sexypolling Component','Sql Injection vulnerability','May 20 2022','Versions bellow 2.1.8','update','2.1.8');
 
-DROP TABLE IF EXISTS "#__securitycheckpro_logs";
-CREATE TABLE IF NOT EXISTS "#__securitycheckpro_logs" (
-"id" serial NOT NULL,
-"ip" character varying(35) NOT NULL,
-"geolocation" character varying(150) DEFAULT '---',
-"username" character varying(150) DEFAULT '---',
-"time" timestamp without time zone NOT NULL,
-"tag_description" character varying(50),
-"description" character varying(300) NOT NULL,
-"type" character varying(50),
-"uri" character varying(100),
-"component" character varying(150) DEFAULT '---',
-"marked" character varying(1) DEFAULT 0,
-"original_string" character varying(700),
-PRIMARY KEY ("id")
-);
+DROP TABLE IF EXISTS `#__securitycheckpro_sessions`;
+CREATE TABLE IF NOT EXISTS `#__securitycheckpro_sessions` (
+`userid` INT(4) UNSIGNED NOT NULL,
+`session_id` VARCHAR(200) NOT NULL,
+`username` VARCHAR(150) NOT NULL,
+`ip` VARCHAR(26) NOT NULL,
+`user_agent` VARCHAR(300) NOT NULL,
+PRIMARY KEY (`userid`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DROP TABLE IF EXISTS "#__securitycheckpro_own_logs";
-CREATE TABLE IF NOT EXISTS "#__securitycheckpro_own_logs" (
-"id" serial NOT NULL,
-"time" timestamp without time zone NOT NULL,
-"description" character varying(1200) NOT NULL,
-PRIMARY KEY ("id")
-);
+CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
+`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`version` VARCHAR(10),
+`last_check` DATETIME,
+`message` VARCHAR(300),
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.3.8');
 
-DROP TABLE IF EXISTS "#__securitycheckpro_sessions";
-CREATE TABLE IF NOT EXISTS "#__securitycheckpro_sessions" (
-"userid" integer NOT NULL,
-"session_id" character varying(200) NOT NULL,
-"username" character varying(150) NOT NULL,
-"ip" character varying(26) NOT NULL,
-"user_agent" character varying(300) NOT NULL,
-PRIMARY KEY ("userid")
-);
+CREATE TABLE IF NOT EXISTS `#__securitycheckpro_url_inspector_logs` (
+`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ip` VARCHAR(35) NOT NULL,
+`uri` VARCHAR(100),
+`forbidden_words` VARCHAR(300) NOT NULL,
+`date_added` DATETIME,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DROP TABLE IF EXISTS "#__securitycheckpro_emails";
-CREATE TABLE IF NOT EXISTS "#__securitycheckpro_emails" (
-"id" serial NOT NULL,
-"envoys" smallint DEFAULT 0,
-"send_date" timestamp without time zone DEFAULT '2012-01-01',
-PRIMARY KEY ("id")
-);
-INSERT INTO "#__securitycheckpro_emails" ("envoys","send_date") VALUES ('0','2012-01-01');
+CREATE TABLE IF NOT EXISTS `#__securitycheckpro_trackactions` (
+`id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+`message` TEXT,
+`log_date` DATETIME NOT NULL DEFAULT '1970-01-01 00:00:00',
+`extension` VARCHAR(50) NOT NULL DEFAULT '',
+`user_id` INT(11) NOT NULL DEFAULT '0',
+`ip_address` VARCHAR(40) NOT NULL DEFAULT '0.0.0.0',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DROP TABLE IF EXISTS "#__securitycheckpro_file_manager";
-CREATE TABLE IF NOT EXISTS "#__securitycheckpro_file_manager" (
-"id" serial NOT NULL,
-"last_check" timestamp without time zone,
-"last_check_integrity" timestamp without time zone,
-"files_scanned" integer DEFAULT 0,
-"files_scanned_integrity" integer DEFAULT 0,
-"files_with_incorrect_permissions" integer DEFAULT 0,
-"files_with_bad_integrity" integer DEFAULT 0,
-"estado" character varying(40) DEFAULT 'IN_PROGRESS',
-"estado_integrity" character varying(40) DEFAULT 'IN_PROGRESS',
-"hash_alg" character varying(30),
-"estado_cambio_permisos" character varying(40) DEFAULT 'IN_PROGRESS',
-"estado_clear_data" character varying(40) DEFAULT 'DELETING_ENTRIES',
-"last_task" character varying(40) DEFAULT 'INTEGRITY',
-"cron_tasks_launched" smallint DEFAULT 0,
-"last_check_malwarescan" timestamp without time zone,
-"files_scanned_malwarescan" integer DEFAULT 0,
-"suspicious_files" integer DEFAULT 0,
-"estado_malwarescan" character varying(40) DEFAULT 'IN_PROGRESS',
-"last_online_check_malwarescan" timestamp without time zone,
-"online_checked_files" integer DEFAULT 0,
-"online_checked_hashes" integer DEFAULT 0,
-"last_check_database" timestamp without time zone,
-PRIMARY KEY ("id")
-);
-INSERT INTO "#__securitycheckpro_file_manager" ("estado","estado_integrity","estado_cambio_permisos","estado_clear_data","estado_malwarescan") VALUES ('ENDED','ENDED','ENDED','DELETING_ENTRIES','ENDED');
-
-CREATE TABLE IF NOT EXISTS "#__securitycheckpro_storage" (
-"storage_key" character varying(255) NOT NULL,
-"storage_value" text NOT NULL,
-PRIMARY KEY ("storage_key")
-);
-INSERT INTO "#__securitycheckpro_storage" ("storage_key","storage_value") VALUES ('locked','0') ON CONFLICT DO NOTHING;
-
-CREATE TABLE IF NOT EXISTS "#__securitycheckpro_rules" (
-"id" serial NOT NULL,
-"group_id" integer,
-"rules_applied" smallint DEFAULT 0,
-"last_change" timestamp without time zone,
-PRIMARY KEY ("id")
-);
-
-DROP TABLE IF EXISTS "#__securitycheckpro_rules_logs";
-CREATE TABLE IF NOT EXISTS "#__securitycheckpro_rules_logs" (
-"id" serial NOT NULL,
-"ip" character varying(35) NOT NULL,
-"username" character varying(150) NOT NULL,
-"last_entry" timestamp without time zone,
-"reason" character varying(300),
-PRIMARY KEY ("id")
-);
-
-DROP TABLE IF EXISTS "#__securitycheckpro_online_checks";
-CREATE TABLE IF NOT EXISTS "#__securitycheckpro_online_checks" (
-"id" serial NOT NULL,
-"filename" character varying(35) NOT NULL,
-"files_checked" smallint DEFAULT 0,
-"threats_found" smallint DEFAULT 0,
-"scan_date" timestamp without time zone,
-"infected_files" character varying(300) DEFAULT NULL,
-PRIMARY KEY ("id")
-);
-
-DROP TABLE IF EXISTS "#__securitycheckpro_update_database";
-CREATE TABLE IF NOT EXISTS "#__securitycheckpro_update_database" (
-"id" serial NOT NULL,
-"version" character varying(10),
-"last_check" timestamp without time zone,
-"message" character varying(300),
-PRIMARY KEY ("id")
-);
-INSERT INTO "#__securitycheckpro_update_database" ("version") VALUES ('1.2.4');
-
-DROP TABLE IF EXISTS "#__securitycheckpro_users_control";
-CREATE TABLE "#__securitycheckpro_users_control" (
-"id" serial NOT NULL,
-"users" character varying(100) NOT NULL,
-"contador" smallint NOT NULL,
-PRIMARY KEY ("id")
-);
-
-DROP TABLE IF EXISTS "#__securitycheckpro_url_inspector_logs";
-CREATE TABLE IF NOT EXISTS "#__securitycheckpro_url_inspector_logs" (
-"id" serial NOT NULL,
-"ip" character varying(100) NOT NULL,
-"uri" character varying(100),
-"forbidden_words" character varying(300) NOT NULL,
-"date_added" timestamp without time zone,
-PRIMARY KEY ("id")
-);
-
-CREATE TABLE IF NOT EXISTS "#__securitycheckpro_trackactions" (
-"id" serial NOT NULL,
-"message" text,
-"log_date" timestamp without time zone NOT NULL DEFAULT '1970-01-01 00:00:00',
-"extension" character varying(50) NOT NULL DEFAULT '',
-"user_id" integer NOT NULL DEFAULT '0',
-"ip_address" character varying(40) NOT NULL DEFAULT '0.0.0.0',
-PRIMARY KEY ("id")
-);
-
-CREATE TABLE IF NOT EXISTS "#__securitycheckpro_trackactions_extensions" (
- "id" serial NOT NULL,
- "extension" character varying(100) NOT NULL DEFAULT '',
-PRIMARY KEY ("id")
-);
-INSERT INTO "#__securitycheckpro_trackactions_extensions" ("id", "extension") VALUES
+CREATE TABLE IF NOT EXISTS `#__securitycheckpro_trackactions_extensions` (
+ `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+ `extension` VARCHAR(100) NOT NULL DEFAULT '',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT IGNORE INTO `#__securitycheckpro_trackactions_extensions` (`id`, `extension`) VALUES
 (1, 'com_banners'),
 (2, 'com_cache'),
 (3, 'com_categories'),
@@ -699,17 +585,17 @@ INSERT INTO "#__securitycheckpro_trackactions_extensions" ("id", "extension") VA
 (14, 'com_redirect'),
 (15, 'com_tags'),
 (16, 'com_templates'),
-(17, 'com_users') ON CONFLICT DO NOTHING;
+(17, 'com_users');
 
-CREATE TABLE IF NOT EXISTS "#__securitycheckpro_trackactions_tables_data" (
-"id" serial NOT NULL,
-"type_title" character varying(255) NOT NULL DEFAULT '',
-"type_alias" character varying(255) NOT NULL DEFAULT '',
-"title_holder" character varying(255) DEFAULT NULL,
-"table_values" character varying(255) DEFAULT NULL,
-PRIMARY KEY ("id")
-);
-INSERT INTO "#__securitycheckpro_trackactions_tables_data" ("id", "type_title", "type_alias", "title_holder", "table_values") VALUES
+CREATE TABLE IF NOT EXISTS `#__securitycheckpro_trackactions_tables_data` (
+`id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+`type_title` varchar(255) NOT NULL DEFAULT '',
+`type_alias` varchar(255) NOT NULL DEFAULT '',
+`title_holder` varchar(255) DEFAULT NULL,
+`table_values` varchar(255) DEFAULT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT IGNORE INTO `#__securitycheckpro_trackactions_tables_data` (`id`, `type_title`, `type_alias`, `title_holder`, `table_values`) VALUES
 (1, 'article', 'com_content.article', 'title', '{"table_type":"Content","table_prefix":"JTable"}'),
 (2, 'article', 'com_content.form', 'title', '{"table_type":"Content","table_prefix":"JTable"}'),
 (3, 'banner', 'com_banners.banner', 'name', '{"table_type":"Banner","table_prefix":"BannersTable"}'),
@@ -727,14 +613,4 @@ INSERT INTO "#__securitycheckpro_trackactions_tables_data" ("id", "type_title", 
 (15, 'contact', 'com_contact.contact', 'name', '{"table_type":"Contact","table_prefix":"ContactTable"}'),
 (16, 'module', 'com_modules.module', 'title', '{"table_type":"Module","table_prefix":"JTable"}'),
 (17, 'access_level', 'com_users.level', 'title', '{"table_type":"Viewlevel","table_prefix":"JTable"}'),
-(18, 'banner_client', 'com_banners.client', 'name', '{"table_type":"Client","table_prefix":"BannersTable"}') ON CONFLICT DO NOTHING;
-
-CREATE TABLE IF NOT EXISTS "#__securitycheckpro_blacklist" (
-"ip" character varying(26) NOT NULL,
-PRIMARY KEY ("ip")
-);
-
-CREATE TABLE IF NOT EXISTS "#__securitycheckpro_whitelist" (
-"ip" character varying(26) NOT NULL,
-PRIMARY KEY ("ip")
-);
+(18, 'banner_client', 'com_banners.client', 'name', '{"table_type":"Client","table_prefix":"BannersTable"}');
