@@ -347,6 +347,8 @@
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_INTEGRATION" name="ametys" description="COM_EMUNDUS_INTEGRATION_DESC">
 
+		<field name="callback_whitelist_ip" type="text" default="" label="COM_EMUNDUS_INTEGRATION_WHITELIST_IP" description="COM_EMUNDUS_INTEGRATION_WHITELIST_IP_DESC" />
+
 		<field name="headerCheck" type="list" menu="hide" default="0" label="COM_EMUNDUS_HEADER_CHECK" description="COM_EMUNDUS_HEADER_CHECK_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>

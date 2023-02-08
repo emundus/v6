@@ -44,17 +44,44 @@ class EmundusControllerWebhook extends JControllerLegacy {
 	}
 
 	public function callback(){
-		$jinput = JFactory::getApplication()->input;
-		$type = $jinput->getString('type');
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$ips_allowed = $eMConfig->get('callback_whitelist_ip');
+		$ips_allowed = !empty($ips_allowed) ? explode(',', $eMConfig->get('callback_whitelist_ip')) : null;
 
-		$payload = !empty($_POST["payload"]) ? $_POST["payload"] : file_get_contents("php://input");
-		$webhook_datas = json_decode($payload, true);
+		$allowed = true;
+		if(!empty($ips_allowed)){
+			$allowed = false;
 
-		JPluginHelper::importPlugin('emundus','custom_event_handler');
-		$result = \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onWebhookCallbackProcess', ['webhook_datas' => $webhook_datas, 'type' => $type]]);
+			if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+				$ip = $_SERVER['HTTP_CLIENT_IP'];
+			} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+				$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+			} else {
+				$ip = $_SERVER['REMOTE_ADDR'];
+			}
+
+			if(!empty($ip)) {
+				$allowed = in_array($ip, $ips_allowed);
+			}
+		}
+
+		if($allowed) {
+			$jinput = JFactory::getApplication()->input;
+			$type   = $jinput->getString('type');
+
+			$payload       = !empty($_POST["payload"]) ? $_POST["payload"] : file_get_contents("php://input");
+			$webhook_datas = json_decode($payload, true);
+
+			JPluginHelper::importPlugin('emundus', 'custom_event_handler');
+			$return = \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onWebhookCallbackProcess', ['webhook_datas' => $webhook_datas, 'type' => $type]]);
+
+			$result = $return[0]['onWebhookCallbackProcess'];
+		} else {
+			$result = ['status' => false,'message' => 'You are not allowed to access to this route'];
+		}
 
 		header('Content-type: application/json');
-		echo json_encode($result[0]['onWebhookCallbackProcess']);
+		echo json_encode((object)$result);
 		exit;
 	}
 
