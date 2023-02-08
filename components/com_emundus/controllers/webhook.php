@@ -43,6 +43,21 @@ class EmundusControllerWebhook extends JControllerLegacy {
         JLog::addLogger(['text_file' => 'com_emundus.webhook.php'], JLog::ALL, array('com_emundus.webhook'));
 	}
 
+	public function callback(){
+		$jinput = JFactory::getApplication()->input;
+		$type = $jinput->getString('type');
+
+		$payload = !empty($_POST["payload"]) ? $_POST["payload"] : file_get_contents("php://input");
+		$webhook_datas = json_decode($payload, true);
+
+		JPluginHelper::importPlugin('emundus','custom_event_handler');
+		$result = \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onWebhookCallbackProcess', ['webhook_datas' => $webhook_datas, 'type' => $type]]);
+
+		header('Content-type: application/json');
+		echo json_encode($result[0]['onWebhookCallbackProcess']);
+		exit;
+	}
+
 
 	/**
 	 * Downloads the file associated to the YouSign procedure that was pushed.

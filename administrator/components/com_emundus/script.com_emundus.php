@@ -540,6 +540,12 @@ class com_emundusInstallerScript
                 ]);
             }
 
+	        if (version_compare($cache_version, '1.35.0', '<') || $firstrun) {
+		        EmundusHelperUpdate::addCustomEvents([
+			        ['label' => 'onWebhookCallbackProcess', 'category' => 'Webhook', 'published' => 1]
+		        ]);
+	        }
+
             // Insert new translations in overrides files
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
 
