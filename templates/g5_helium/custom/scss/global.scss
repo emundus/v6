@@ -3650,7 +3650,8 @@ div#em-appli-block {
   }
 
   .edit-comment-container button.delete-comment,
-  .em-container-tags-body button.btn-danger[title="Supprimer"]{
+  .em-container-tags-body button.btn-danger[title="Supprimer"],
+  .em-container-tags-body button.btn-danger[title="Delete"]{
     background: var(--neutral-50);
     border: 1px solid var(--neutral-50);
     border-radius: var(--em-border-radius) !important;
