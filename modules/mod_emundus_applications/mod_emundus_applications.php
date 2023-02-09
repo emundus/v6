@@ -114,6 +114,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     } else {
         // We send the layout as a param because Hesam needs different information.
         $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by);
+		$tabs = modemundusApplicationsHelper::getTabs();
     }
 
     $linknames = $params->get('linknames', 0);

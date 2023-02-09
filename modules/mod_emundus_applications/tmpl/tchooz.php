@@ -27,13 +27,11 @@ foreach ($applications as $key => $application) {
 $applications = [];
 $status_group = [];
 $missing_status = [];
-$tabs = [
-   [
-       'id' => 0,
-       'name' => 'MOD_EM_APPLICATION_FILES_ALL',
-       'ordering' => 0,
-   ]
-];
+array_unshift($tabs,[
+	'id' => 0,
+	'name' => 'MOD_EM_APPLICATION_FILES_ALL',
+	'ordering' => 0,
+]);
 
 if(!empty($groups) && !empty($tmp_applications)) {
     foreach ($groups as $key => $group) {
@@ -65,16 +63,6 @@ if(!empty($groups) && !empty($tmp_applications)) {
     $tab_already_inserted = [];
     foreach ($tmp_applications as $tmp_application) {
 	    $applications[$tmp_application->tab_id]['all']['applications'][] = $tmp_application;
-
-        if(!empty($tmp_application->tab_name) && !in_array($tmp_application->tab_name,$tab_already_inserted)){
-	        $tab_already_inserted[] = $tmp_application->tab_name;
-            $tab = [
-                'id' => $tmp_application->tab_id,
-                'name' => $tmp_application->tab_name,
-                'ordering' => $tmp_application->tab_ordering,
-            ];
-            $tabs[] = $tab;
-        }
     }
 
     $applications[0]['all']['applications'] = $tmp_applications;
@@ -139,7 +127,7 @@ $current_tab = 0;
         </div>
     <?php endforeach; ?>
     <div id="tab_adding_link" onclick="createTab()" class="em-mr-16 em-light-tabs em-pointer">
-        <a class="em-flex-row em-no-hover-underline em-font-size-14" href=""><span class="em-main-500-color material-icons-outlined em-font-size-14 em-mr-4">add</span><?php echo JText::_('MOD_EM_APPLICATION_TABS_ADD_TAB') ?></a>
+        <a class="em-flex-row em-no-hover-underline em-font-size-14 em-pointer"><span class="em-main-500-color material-icons-outlined em-font-size-14 em-mr-4">add</span><?php echo JText::_('MOD_EM_APPLICATION_TABS_ADD_TAB') ?></a>
     </div>
 </div>
 
@@ -625,5 +613,36 @@ $current_tab = 0;
                 elt.classList.remove('em-display-none');
             }
         })
+    }
+
+    async function createTab(){
+        const { value: tabName } = await Swal.fire({
+            title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_TAB'); ?>",
+            text: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_NAME'); ?>",
+            input: 'text',
+            showCancelButton: true,
+            reverseButtons: true,
+            confirmButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_CREATE_BUTTON');?>",
+            cancelButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_CANCEL_BUTTON');?>",
+            inputValidator: (value) => {
+                if (!value) {
+                    return "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_PLEASE_FILL_NAME');?>";
+                }
+            }
+        });
+
+        if (tabName) {
+            let formData = new FormData();
+            formData.append('name', tabName);
+
+            fetch('index.php?option=com_emundus&controller=application&task=createtab', {
+                body: formData,
+                method: 'post',
+            }).then((response) => {
+                if (response.ok) {
+                    return response.json();
+                }
+            }).then((res) => {})
+        }
     }
 </script>

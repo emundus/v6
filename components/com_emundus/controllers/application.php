@@ -842,4 +842,24 @@ class EmundusControllerApplication extends JControllerLegacy
         echo json_encode($response);
         exit;
     }
+	
+	public function createtab(){
+		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+		$user = JFactory::getUser();
+
+		$jinput = JFactory::getApplication()->input;
+		
+		$tab_name = $jinput->getString('name', '');
+
+		$m_application = $this->getModel('Application');
+
+		$tab_created = $m_application->createTab($tab_name,$user->id);
+
+		$response['status'] = $tab_created;
+		$response['msg'] =  $tab_created ? JText::_('SUCCESS') : JText::_('FAILED');
+
+		echo json_encode($response);
+		exit;
+	}
 }

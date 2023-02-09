@@ -5547,4 +5547,22 @@ class EmundusModelApplication extends JModelList
 
         return $select;
     }
+
+	public function createTab($name,$user_id){
+		try {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->insert($db->quoteName('#__emundus_campaign_candidature_tabs'))
+				->set($db->quoteName('name') . ' = ' . $db->quote($name))
+				->set($db->quoteName('ordering') . ' = 1')
+				->set($db->quoteName('applicant_id') . ' = ' . $user_id);
+			$db->setQuery($query);
+			return $db->execute();
+		}
+		catch (Exception $e) {
+			JLog::add('Failed to create for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			return false;
+		}
+	}
 }

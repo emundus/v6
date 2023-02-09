@@ -549,13 +549,28 @@ class com_emundusInstallerScript
 						'null' => 0,
 					],
 					[
+						'name' => 'applicant_id',
+						'type' => 'INT',
+						'null' => 0,
+					],
+					[
 						'name' => 'ordering',
 						'type' => 'INT',
 						'default' => 1,
 						'null' => 1,
 					]
 				];
-				EmundusHelperUpdate::createTable('jos_emundus_campaign_candidature_tabs',$columns,[],'Storage tab for filing');
+				$foreign_keys = [
+					[
+						'name' => 'jos_emundus_users_fk_applicant_id',
+						'from_column' => 'applicant_id',
+						'ref_table' => 'jos_emundus_users',
+						'ref_column' => 'user_id',
+						'update_cascade' => true,
+						'delete_cascade' => true,
+					]
+				];
+				EmundusHelperUpdate::createTable('jos_emundus_campaign_candidature_tabs',$columns,$foreign_keys,'Storage tab for filing');
 	        }
 
             // Insert new translations in overrides files
