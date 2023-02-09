@@ -565,6 +565,11 @@ input:focus + .em-slider {
 }
 
 /** HOVER **/
+.em-no-hover-underline{
+  &:hover{
+    text-decoration: none;
+  }
+}
 .em-no-hover{
   &:hover{
     color: unset;
@@ -717,7 +722,7 @@ input:focus + .em-slider {
   color: $main-400;
 }
 .em-main-500-color{
-  color: var(--main-500);
+  color: var(--main-500) !important;
 }
 .em-yellow-500-color{
   color: $yellow-500;
@@ -1042,6 +1047,9 @@ input:focus + .em-slider {
 .em-align-start{
   align-items: start;
 }
+.em-display-none{
+  display: none;
+}
 
 /*
   OPACITY
@@ -1119,11 +1127,27 @@ input:focus + .em-slider {
 .em-underline{
   text-decoration: underline;
 }
+.em-no-underline{
+  text-decoration: none;
+}
 .em-box-shadow{
   box-shadow: inset 0px -1px 0px #E3E5E8;
 }
 .em-neutral-100-box{
   background: #FAFAFA;
+}
+.em-light-tabs{
+  padding: 12px 0;
+  border-bottom: solid 1px transparent;
+  span{
+    color: var(--neutral-500);
+  }
+}
+.em-light-selected-tab{
+  border-bottom: 1px solid var(--main-400);
+  span{
+    color: var(--neutral-900);
+  }
 }
 
 /**

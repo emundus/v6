@@ -540,6 +540,24 @@ class com_emundusInstallerScript
                 ]);
             }
 
+	        if (version_compare($cache_version, '1.35.0', '<') || $firstrun) {
+				$columns = [
+					[
+						'name' => 'name',
+						'type' => 'VARCHAR',
+						'length' => 255,
+						'null' => 0,
+					],
+					[
+						'name' => 'ordering',
+						'type' => 'INT',
+						'default' => 1,
+						'null' => 1,
+					]
+				];
+				EmundusHelperUpdate::createTable('jos_emundus_campaign_candidature_tabs',$columns,[],'Storage tab for filing');
+	        }
+
             // Insert new translations in overrides files
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
 
