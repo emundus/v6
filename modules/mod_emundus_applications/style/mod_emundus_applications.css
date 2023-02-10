@@ -348,13 +348,13 @@ a.btn.btn-success:not(.btn-xs) {
     margin-top: 8px;
     flex-direction: column;
     box-shadow: 0px 12px 17px rgba(5, 47, 55, 0.07), 0px 5px 22px rgba(5, 47, 55, 0.06), 0px 7px 8px rgba(5, 47, 55, 0.1);
-    border-radius: 8px;
-    padding: 24px;
+    border-radius: 12px;
+    padding: 12px;
     position: absolute;
     background: white;
 }
 .mod_emundus_applications__actions a:not(:last-child){
-    margin-bottom: 20px;
+    margin-bottom: 8px;
 }
 
 .mod_emundus_applications__actions a:hover {
@@ -371,6 +371,61 @@ a.btn.btn-success:not(.btn-xs) {
 
 .mod_emundus_applications___content_text {
     justify-content: space-between;
+}
+.mod_emundus_applications_badge{
+    margin-left: 8px;
+    background: white;
+    border: solid 1px #ececec;
+    border-radius: 50px;
+    color: black;
+    display: flex;
+    height: 25px;
+    width: 25px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.em-light-tabs{
+    height: 50px;
+}
+.em-light-selected-tab p{
+    color: black;
+}
+
+.mod_emundus_application_swal_manage_tabs_popup{
+    padding: unset !important;
+    min-width: 40em;
+}
+.mod_emundus_application_swal_manage_tabs_header{
+    align-items: start !important;
+    padding: 24px 16px 8px 16px;
+}
+.mod_emundus_application_swal_manage_tabs_header h2{
+    color: black !important;
+    flex-direction: column;
+    align-items: start;
+}
+.mod_emundus_application_swal_manage_tabs_popup .swal2-content{
+    padding: 0 16px 0 16px;
+}
+.mod_emundus_application_swal_manage_tabs_popup #swal2-content{
+    display: flex !important;
+}
+.mod_emundus_application_swal_manage_tabs_popup #swal2-content ul{
+    list-style-type: none;
+    margin-left: 0;
+    margin-top: 4px;
+    margin-bottom: 0;
+}
+.mod_emundus_application_swal_manage_tabs_actions{
+    border-top: solid 1px #ececec;
+    margin-top: 8px !important;
+    padding: 8px 16px;
+    display: flex !important;
+    justify-content: end !important;
+}
+.mod_emundus_application_swal_manage_tabs_actions button{
+    border-radius: 8px !important;
 }
 
 @media screen and (max-width: 767px) {

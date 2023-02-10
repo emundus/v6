@@ -4277,6 +4277,23 @@ div#em-appli-block {
   margin: 10px 0 20px 0;
   font-family: var(--font);
 }
+.swal2-popup{
+  border-radius: 16px;
+}
+
+button.swal2-styled.swal2-confirm{
+  background: var(--blue-500);
+  border-radius: 8px;
+  padding: 11px 20px;
+  color: white;
+}
+button.swal2-styled.swal2-cancel{
+  background: #FFFFFF;
+  border: 1px solid var(--blue-500);
+  border-radius: 8px;
+  color: var(--blue-500);
+  padding: 11px 20px;
+}
 
 button.swal2-confirm.save-btn.sauvegarder.save_continue {
   font-family: var(--font);

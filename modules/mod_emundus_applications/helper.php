@@ -371,23 +371,4 @@ class modemundusApplicationsHelper {
             return false;
         }
     }
-
-	static function getTabs(){
-		$user = JFactory::getUser();
-
-		try {
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
-
-			$query->select('*')
-				->from($db->quoteName('#__emundus_campaign_candidature_tabs'))
-				->where($db->quoteName('applicant_id') . ' = ' . $user->id);
-			$db->setQuery($query);
-			return $db->loadAssocList();
-		}
-		catch (Exception $e) {
-			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-			return false;
-		}
-	}
 }

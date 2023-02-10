@@ -5558,7 +5558,88 @@ class EmundusModelApplication extends JModelList
 				->set($db->quoteName('ordering') . ' = 1')
 				->set($db->quoteName('applicant_id') . ' = ' . $user_id);
 			$db->setQuery($query);
-			return $db->execute();
+			$db->execute();
+
+			return $db->insertid();
+		}
+		catch (Exception $e) {
+			JLog::add('Failed to create for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			return false;
+		}
+	}
+
+	public function getTabs($user_id){
+		try {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('ecct.*,count(ecc.id) as no_files')
+				->from($db->quoteName('#__emundus_campaign_candidature_tabs','ecct'))
+				->leftJoin($db->quoteName('#__emundus_campaign_candidature','ecc').' ON '.$db->quoteName('ecc.tab').' = '.$db->quoteName('ecct.id'))
+				->where($db->quoteName('ecct.applicant_id') . ' = ' . $user_id)
+				->group($db->quoteName('ecct.id'))
+				->order($db->quoteName('ecct.ordering'));
+			$db->setQuery($query);
+			return $db->loadAssocList();
+		}
+		catch (Exception $e) {
+			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+	}
+	
+	public function updateTabs($tabs,$user_id){
+		try {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			foreach ($tabs as $tab) {
+				$query->clear()
+					->update($db->quoteName('#__emundus_campaign_candidature_tabs'))
+					->set($db->quoteName('name') . ' = ' . $db->quote($tab->name))
+					->set($db->quoteName('ordering') . ' = ' . $tab->ordering)
+					->where($db->quoteName('id') . ' = ' . $tab->id);
+				$db->setQuery($query);
+				$db->execute();
+			}
+
+			return true;
+		}
+		catch (Exception $e) {
+			JLog::add('Failed to update tabs for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			return false;
+		}
+	}
+
+	public function deleteTab($tab_id,$user_id){
+		try {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('*')
+				->from($db->quoteName('#__emundus_campaign_candidature_tabs'))
+				->where($db->quoteName('id') . ' = ' . $tab_id)
+				->where($db->quoteName('applicant_id') . ' = ' . $user_id);
+			$db->setQuery($query);
+			$tab = $db->loadAssoc();
+
+			if(!empty($tab)){
+				$query->clear()
+					->update($db->quoteName('#__emundus_campaign_candidature'))
+					->set($db->quoteName('tab') . ' = NULL')
+					->where($db->quoteName('tab') . ' = ' . $tab['id'])
+					->where($db->quoteName('applicant_id') . ' = ' . $user_id);
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->delete($db->quoteName('#__emundus_campaign_candidature_tabs'))
+					->where($db->quoteName('id') . ' = ' . $tab['id']);
+				$db->setQuery($query);
+				return $db->execute();
+			} else {
+				return false;
+			}
 		}
 		catch (Exception $e) {
 			JLog::add('Failed to create for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');

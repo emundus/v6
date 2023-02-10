@@ -25,9 +25,11 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+	$m_application = new EmundusModelApplication();
 
     $document = JFactory::getDocument();
     $document->addStyleSheet("media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
@@ -114,7 +116,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     } else {
         // We send the layout as a param because Hesam needs different information.
         $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by);
-		$tabs = modemundusApplicationsHelper::getTabs();
+		$tabs = $m_application->getTabs(JFactory::getUser()->id);
     }
 
     $linknames = $params->get('linknames', 0);

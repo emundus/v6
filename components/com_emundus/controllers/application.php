@@ -844,7 +844,7 @@ class EmundusControllerApplication extends JControllerLegacy
     }
 	
 	public function createtab(){
-		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+		$response = array();
 
 		$user = JFactory::getUser();
 
@@ -856,8 +856,57 @@ class EmundusControllerApplication extends JControllerLegacy
 
 		$tab_created = $m_application->createTab($tab_name,$user->id);
 
-		$response['status'] = $tab_created;
+		$response['tab'] = $tab_created;
 		$response['msg'] =  $tab_created ? JText::_('SUCCESS') : JText::_('FAILED');
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function gettabs(){
+		$response = array();
+
+		$user = JFactory::getUser();
+
+		$m_application = $this->getModel('Application');
+
+		$response['tabs'] = $m_application->getTabs($user->id);
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function updatetabs(){
+		$response = array();
+
+		$user = JFactory::getUser();
+
+		$jinput = JFactory::getApplication()->input;
+		$tabs = json_decode($jinput->getRaw('tabs'));
+
+		$m_application = $this->getModel('Application');
+
+		$response['updated'] = $m_application->updateTabs($tabs,$user->id);
+
+		$response['msg'] =  $response['updated'] ? JText::_('SUCCESS') : JText::_('FAILED');
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function deletetab(){
+		$response = array();
+
+		$user = JFactory::getUser();
+
+		$jinput = JFactory::getApplication()->input;
+		$tab = $jinput->getInt('tab');
+
+		$m_application = $this->getModel('Application');
+
+		$response['deleted'] = $m_application->deleteTab($tab,$user->id);
+
+		$response['msg'] =  $response['deleted'] ? JText::_('SUCCESS') : JText::_('FAILED');
 
 		echo json_encode($response);
 		exit;
