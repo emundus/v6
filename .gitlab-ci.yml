@@ -69,7 +69,7 @@ include:
 - project: 'emundus/devops/ci-cd-templates'
   ref: main
   file: '.deployer.yml'
-# - template: Security/Secret-Detection.gitlab-ci.yml
+- template: Security/Secret-Detection.gitlab-ci.yml
 
 php_security_checker:
   variables:
@@ -227,7 +227,7 @@ deployer-dev:
   tags:
     - deployer
   rules:
-    - if: '$CI_COMMIT_BRANCH == $CI_COMMIT_BRANCH'
+    - if: $CI_COMMIT_BRANCH == "dev"
 
 deployer-prod-manual:
   extends:
