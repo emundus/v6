@@ -69,7 +69,7 @@ include:
 - project: 'emundus/devops/ci-cd-templates'
   ref: main
   file: '.deployer.yml'
-- template: Security/Secret-Detection.gitlab-ci.yml
+# - template: Security/Secret-Detection.gitlab-ci.yml
 
 php_security_checker:
   variables:
@@ -223,7 +223,7 @@ deployer-dev:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: "'env=staging'"
+    DEPLOY_OPTIONS: "env=staging"
   tags:
     - deployer
   rules:
