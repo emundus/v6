@@ -213,7 +213,7 @@ publish-db-image-job:
 
 deployer:
   variables:
-    DEPLOY_OPTIONS: "'env=prod'"
+    DEPLOY_OPTIONS: "env=prod"
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
   tags:
