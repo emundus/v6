@@ -16,6 +16,7 @@ stages:
   - test
   - release
   - publish
+  - deploy
 
 check-tchooz-version-job:
   stage: prepare
@@ -65,6 +66,9 @@ include:
 - project: 'emundus/devops/ci-cd-templates'
   ref: main
   file: '.php_security_checker.yml'
+- project: 'emundus/devops/ci-cd-templates'
+  ref: main
+  file: '.deployer.yml'
 - template: Security/Secret-Detection.gitlab-ci.yml
 
 php_security_checker:
@@ -206,3 +210,29 @@ publish-db-image-job:
     - docker push emundus/tchooz-db:latest
   needs:
     - release-job
+
+deployer:
+  variables:
+    DEPLOY_OPTIONS: "'env=prod'"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+  tags:
+    - deployer
+
+deployer-dev:
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: "'env=staging'"
+  tags:
+    - deployer
+  # only: 
+  #   - dev
+
+deployer-prod-manual:
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: 'alias=master.tchooz.us'
+  tags:
+    - deployer
