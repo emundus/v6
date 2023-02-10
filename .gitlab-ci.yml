@@ -226,8 +226,8 @@ deployer-dev:
     DEPLOY_OPTIONS: "'env=staging'"
   tags:
     - deployer
-  # only: 
-  #   - dev
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_COMMIT_BRANCH'
 
 deployer-prod-manual:
   extends:
