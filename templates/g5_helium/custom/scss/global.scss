@@ -4332,16 +4332,24 @@ button.swal2-cancel.goback-btn {
 
 /* INDICATIFS TEL */
 
-div[class*="indicatif"].control-group,
-div[class*="indicatif_2"].control-group {
-  width: 130px !important;
+
+.chzn-container-single .chzn-single div b,
+.chzn-container-active.chzn-with-drop .chzn-single div b {
+  top: 13px;
 }
 
-[id*="indicatif"] .chzn-single {
+.chzn-container-single.chzn-container[id*="indicatif_chzn"],
+.chzn-container-single.chzn-container[id*="indicatif_2_chzn"] {
+  width: 88px !important;
+}
+
+[id$="indicatif_chzn"] .chzn-single,
+[id$="indicatif_2_chzn"] .chzn-single {
   width: 130px;
 }
 
-[id*="indicatif"] .chzn-single span {
+[id$="indicatif_chzn"] .chzn-single span,
+[id$="indicatif_2_chzn"] .chzn-single span {
   font-size: 13px !important;
   position: relative;
   bottom: 6px;
@@ -4352,10 +4360,10 @@ div[class*="indicatif_2"].control-group {
   background-position: 5%;
 }
 
-.view-form .chzn-container-single .chzn-single div b,
-.view-form .chzn-container-active.chzn-with-drop .chzn-single div b {
-  top: 13px;
+[class*="_indicatif"].plg-databasejoin  + .plg-field.control-group {
+  padding-left: 50px;
 }
+
 
 /* VIEW DETAILS */
 
@@ -5596,6 +5604,22 @@ screen and (max-height: 769px) {
     display: flex;
     flex-direction: inherit;
   }
+
+
+  /* AVEC MENU APPLICANT */
+
+  .view-form #g-container-main,
+  .view-detail #g-container-main,
+  .view-checklist #g-container-main,
+   {
+    margin-top: 100px;
+  }
+
+  .homepage.view-article #g-container-main,
+  .homepage.view-featured #g-container-main{
+    margin-top: 130px;
+  }
+
 }
 
 @media screen and (min-width: 480px) and (max-width: 959px) {
