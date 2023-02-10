@@ -1158,64 +1158,63 @@ class EmundusController extends JControllerLegacy {
             $this->_db->setQuery($image_resolution_query);
             $image_resolution = $this->_db->loadObject();
 
-            if(is_null($image_resolution->min_width) and is_null($image_resolution->max_width) and is_null($image_resolution->min_height) and is_null($image_resolution->max_height)) { }
-            else {
-                if ($w_src * $h_src > (int)$image_resolution->max_width * (int)$image_resolution->max_height) {
+            if ((!empty($image_resolution->max_width) && !empty($image_resolution->max_height)) && ($w_src * $h_src > (int)$image_resolution->max_width * (int)$image_resolution->max_height)) {
 
-                    if($w_src > $h_src) {
-                        $ratio = $h_src / $w_src;
+                if($w_src > $h_src) {
+                    $ratio = $h_src / $w_src;
 
-                        $new_width = max((int)$image_resolution->max_width, (int)$image_resolution->max_height);
-                        $new_height = round($new_width * $ratio);
+                    $new_width = max((int)$image_resolution->max_width, (int)$image_resolution->max_height);
+                    $new_height = round($new_width * $ratio);
 
-                    } else if($w_src < $h_src) {
-                        $ratio = $w_src / $h_src;
+                } else if($w_src < $h_src) {
+                    $ratio = $w_src / $h_src;
 
-                        $new_height = max((int)$image_resolution->max_width, (int)$image_resolution->max_height);
-                        $new_width = round($new_height * $ratio);
+                    $new_height = max((int)$image_resolution->max_width, (int)$image_resolution->max_height);
+                    $new_width = round($new_height * $ratio);
 
-                    } else {
-                        $new_height = min((int)$image_resolution->max_width, (int)$image_resolution->max_height);
-                        $new_width = min((int)$image_resolution->max_width, (int)$image_resolution->max_height);
-                    }
-
-                    switch ($type) {
-                        case 1:   // gif
-                            $original_img = imagecreatefromgif($file_src);
-                            break;
-                        case 2: // jpeg
-                            $original_img = imagecreatefromjpeg($file_src);
-                            break;
-                        case 3: // png
-                            $original_img = imagecreatefrompng($file_src);
-                            break;
-                        default:    // jpg
-                            $original_img = imagecreatefromjpeg($file_src);
-                            break;
-                    }
-
-                    /* $new_width = (int)$image_resolution->max_width;
-                    $new_height = (int)$image_resolution->max_height; */
-
-                    $resized_img = imagecreatetruecolor($new_width, $new_height);
-
-                    // copy resample
-                    imagecopyresampled($resized_img, $original_img, 0, 0, 0, 0, $new_width, $new_height, $w_src, $h_src);
-
-                    // export new image to jpeg
-                    imagejpeg($resized_img, $chemin . $user->id . DS . 'tn_' . $paths);
-
-                    /// remove old image
-                    unlink($file_src);
-
-                    /// change name the resize image
-                    rename($chemin . $user->id . DS . 'tn_' . $paths, $file_src);
-                } else if ($w_src * $h_src < (int)$image_resolution->min_width * (int)$image_resolution->min_height) {
-                    $errorInfo = "COM_EMUNDUS_ERROR_IMAGE_TOO_SMALL";
-                    echo '{"aid":"0","status":false,"message":"' . JText::_('COM_EMUNDUS_ERROR_IMAGE_TOO_SMALL') . " " . (int)$image_resolution->min_width . 'px x ' . (int)$image_resolution->min_height . 'px' . '"}';
-                    unlink($file_src);          /// remove uploaded file
-                    return false;
+                } else {
+                    $new_height = min((int)$image_resolution->max_width, (int)$image_resolution->max_height);
+                    $new_width = min((int)$image_resolution->max_width, (int)$image_resolution->max_height);
                 }
+
+                switch ($type) {
+                    case 1:   // gif
+                        $original_img = imagecreatefromgif($file_src);
+                        break;
+                    case 2: // jpeg
+                        $original_img = imagecreatefromjpeg($file_src);
+                        break;
+                    case 3: // png
+                        $original_img = imagecreatefrompng($file_src);
+                        break;
+                    default:    // jpg
+                        $original_img = imagecreatefromjpeg($file_src);
+                        break;
+                }
+
+                /* $new_width = (int)$image_resolution->max_width;
+                $new_height = (int)$image_resolution->max_height; */
+
+                $resized_img = imagecreatetruecolor($new_width, $new_height);
+
+                // copy resample
+                imagecopyresampled($resized_img, $original_img, 0, 0, 0, 0, $new_width, $new_height, $w_src, $h_src);
+
+                // export new image to jpeg
+                imagejpeg($resized_img, $chemin . $user->id . DS . 'tn_' . $paths);
+
+                /// remove old image only if resize was successful
+                if ($resized_img == false) {
+                    unlink($file_src);
+                }
+
+                /// change name the resize image
+                rename($chemin . $user->id . DS . 'tn_' . $paths, $file_src);
+            } else if ((!empty($image_resolution->min_width) && !empty($image_resolution->min_height)) && ($w_src * $h_src < (int)$image_resolution->min_width * (int)$image_resolution->min_height)) {
+                $errorInfo = "COM_EMUNDUS_ERROR_IMAGE_TOO_SMALL";
+                echo '{"aid":"0","status":false,"message":"' . JText::_('COM_EMUNDUS_ERROR_IMAGE_TOO_SMALL') . " " . (int)$image_resolution->min_width . 'px x ' . (int)$image_resolution->min_height . 'px' . '"}';
+                unlink($file_src);          /// remove uploaded file
+                return false;
             }
         }
 
