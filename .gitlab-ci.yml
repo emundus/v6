@@ -219,7 +219,7 @@ deployer:
   tags:
     - deployer
 
-deployer-dev:
+deployer-staging:
   extends:
     - deployer
   variables:
@@ -229,7 +229,7 @@ deployer-dev:
   rules:
     - if: $CI_COMMIT_BRANCH == "dev"
 
-deployer-prod-manual:
+deployer-manual-5e3GnMFODFGrWBA9SXKHj8sHTOyJShuM:
   extends:
     - deployer
   variables:
