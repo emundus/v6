@@ -233,6 +233,6 @@ deployer-prod-manual:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: 'alias=master.tchooz.us'
+    DEPLOY_OPTIONS: 'alias=5e3GnMFODFGrWBA9SXKHj8sHTOyJShuM'
   tags:
     - deployer
