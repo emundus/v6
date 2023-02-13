@@ -330,9 +330,16 @@ $current_tab = 0;
                                                 </a>
 												<?php if ($show_fnum) : ?>
                                                     <div class="em-mb-8 em-font-size-14">
-                                                        <span class="em-applicant-default-font em-neutral-800-color">N°<?php echo $application->fnum ?></span>
+                                                        <span class="em-applicant-default-font em-text-neutral-600">N°<?php echo $application->fnum ?></span>
                                                     </div>
 												<?php endif; ?>
+                                                <?php if(!empty($file_tags_display)) : ?>
+                                                <div class="em-mt-16">
+                                                    <span class="em-tags-display em-applicant-text-color">
+                                                        <?= $file_tags_display; ?>
+                                                    </span>
+                                                </div>
+                                                <?php endif; ?>
                                             </div>
 
                                             <div class="em-flex-row">
@@ -411,12 +418,6 @@ $current_tab = 0;
                                                     </div>
                                                 </div>
 											<?php endif; ?>
-
-                                            <div class="em-mt-16">
-                                <span class="em-tags-display em-applicant-text-color">
-                                    <?= $file_tags_display; ?>
-                                </span>
-                                            </div>
                                         </div>
 									<?php endif; ?>
 								<?php } ?>
