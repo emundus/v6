@@ -99,7 +99,7 @@ class modemundusApplicationsHelper {
 
 		$db = JFactory::getDbo();
 
-		$query = 'SELECT count(c.id)
+		$query = 'SELECT c.id,c.label
 					FROM #__emundus_setup_campaigns AS c
 					LEFT JOIN #__emundus_setup_programmes AS p ON p.code LIKE c.training
 					WHERE c.published = 1
@@ -112,11 +112,8 @@ class modemundusApplicationsHelper {
 						where applicant_id='. $uid .'
 					)';
 		try {
-
 			$db->setQuery($query);
-
-			return $db->loadResult() > 0;
-
+			return $db->loadAssocList();
 		} catch (Exception $e) {
 			JLog::add("Error at query : ".$query, JLog::ERROR, 'com_emundus');
 			return false;
@@ -127,7 +124,7 @@ class modemundusApplicationsHelper {
 
 		$db = JFactory::getDbo();
 
-		$query = 'SELECT count(c.id)
+		$query = 'SELECT c.id,c.label
 					FROM #__emundus_setup_campaigns AS c
 					LEFT JOIN #__emundus_setup_programmes AS p ON p.code LIKE c.training
 					WHERE c.published = 1
@@ -142,11 +139,8 @@ class modemundusApplicationsHelper {
 					)';
 
 		try {
-
 			$db->setQuery($query);
-
-			return $db->loadResult() > 0;
-
+			return $db->loadAssocList();
 		} catch (Exception $e) {
 			JLog::add("Error at query : ".$query, JLog::ERROR, 'com_emundus');
 			return false;
@@ -157,7 +151,7 @@ class modemundusApplicationsHelper {
 
 		$db = JFactory::getDbo();
 
-		$query = 'SELECT c.id
+		$query = 'SELECT c.id,c.label
 					FROM #__emundus_setup_campaigns AS c
 					LEFT JOIN #__emundus_setup_programmes AS p ON p.code LIKE c.training
 					WHERE c.published = 1
@@ -168,7 +162,7 @@ class modemundusApplicationsHelper {
 
 		try {
 			$db->setQuery($query);
-			return !empty($db->loadResult());
+			return $db->loadAssocList();
 		} catch (Exception $e) {
 			JLog::add("Error at query : ".$query, JLog::ERROR, 'com_emundus');
 			return false;

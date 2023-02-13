@@ -158,30 +158,32 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
             }
         }
 
-
+		$available_campaigns = [];
         // Check to see if the applicant meets the criteria to renew a file.
         switch ($applicant_can_renew) {
-
             // Applicants can apply as many times as they like
             case 1:
                 // We need to check if there are any available campaigns.
-                $applicant_can_renew = modemundusApplicationsHelper::getAvailableCampaigns();
+	            $available_campaigns = modemundusApplicationsHelper::getAvailableCampaigns();
                 break;
 
             // If the applicant can only have one file per campaign.
             case 2:
                 // True if does not have a file open in one or more of the available campaigns.
-                $applicant_can_renew = modemundusApplicationsHelper::getOtherCampaigns($user->id);
+	            $available_campaigns = modemundusApplicationsHelper::getOtherCampaigns($user->id);
                 break;
 
             // If the applicant can only have one file per year.
             case 3:
                 // True if periods are found for next year.
-                $applicant_can_renew = modemundusApplicationsHelper::getFutureYearCampaigns($user->id);
+	            $available_campaigns = modemundusApplicationsHelper::getFutureYearCampaigns($user->id);
                 break;
-
         }
-    }
+
+	    $applicant_can_renew = !empty($available_campaigns);
+	}
+
+
 
 	if ($display_poll == 1 && $display_poll_id > 0 && isset($user->fnum) && !empty($user->fnum)) {
 		$filled_poll_id = modemundusApplicationsHelper::getPoll();

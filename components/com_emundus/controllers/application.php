@@ -911,4 +911,35 @@ class EmundusControllerApplication extends JControllerLegacy
 		echo json_encode($response);
 		exit;
 	}
+
+	public function copyfile(){
+		$response = array('status' => 0, 'msg' => '');
+
+		$user = JFactory::getUser();
+
+		$jinput = JFactory::getApplication()->input;
+		$fnum = $jinput->getString('fnum');
+		$campaign = $jinput->getString('campaign');
+
+		if(!empty($fnum) && !empty($campaign)){
+			$m_files = $this->getModel('Files');
+			$fnumInfos = $m_files->getFnumInfos($fnum);
+
+			if($fnumInfos['applicant_id'] !== $user->id){
+				$response['msg'] = JText::_('ACCESS_DENIED');
+			} else {
+				$fnum_to = $m_files->createFile($campaign,$fnumInfos['applicant_id']);
+
+				if(!empty($fnum_to)) {
+					$m_application      = $this->getModel('Application');
+					$response['status'] = $m_application->copyFile($fnum, $fnum_to);
+					$response['first_page'] = 'index.php?option=com_emundus&task=openfile&fnum=' . $fnum_to;
+				}
+				$response['msg'] =  $response['status'] ? JText::_('SUCCESS') : JText::_('FAILED');
+			}
+		}
+
+		echo json_encode($response);
+		exit;
+	}
 }

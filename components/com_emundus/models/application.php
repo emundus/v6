@@ -5646,4 +5646,25 @@ class EmundusModelApplication extends JModelList
 			return false;
 		}
 	}
+
+	public function copyFile($fnum,$fnum_to){
+		$result = false;
+
+		try {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->insert($db->quoteName('#__emundus_campaign_candidature_links'))
+				->set($db->quoteName('date_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+				->set($db->quoteName('fnum_from') . ' = ' . $db->quote($fnum))
+				->set($db->quoteName('fnum_to') . ' = ' . $db->quote($fnum_to));
+			$db->setQuery($query);
+			$result = $db->execute();
+		}
+		catch (Exception $e) {
+			JLog::add('Failed to copy fnum from ' . $fnum . ' to ' . $fnum_to . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $result;
+	}
 }

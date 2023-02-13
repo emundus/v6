@@ -571,6 +571,34 @@ class com_emundusInstallerScript
 					]
 				];
 				EmundusHelperUpdate::createTable('jos_emundus_campaign_candidature_tabs',$columns,$foreign_keys,'Storage tab for filing');
+
+		        $columns = [
+			        [
+				        'name' => 'date_time',
+				        'type' => 'datetime',
+				        'null' => 1,
+			        ],
+			        [
+				        'name' => 'fnum_from',
+				        'type' => 'VARCHAR',
+				        'length' => 255,
+				        'null' => 0,
+			        ],
+			        [
+				        'name' => 'fnum_to',
+				        'type' => 'VARCHAR',
+				        'length' => 255,
+				        'null' => 0,
+			        ],
+			        [
+				        'name' => 'published',
+				        'type' => 'TINYINT',
+				        'default' => 1,
+				        'null' => 0,
+			        ]
+		        ];
+		        $foreign_keys = [];
+		        EmundusHelperUpdate::createTable('jos_emundus_campaign_candidature_links',$columns,$foreign_keys,'Links between two fnums');
 	        }
 
             // Insert new translations in overrides files
