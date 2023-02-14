@@ -416,17 +416,23 @@ $current_tab = 0;
                                                 <div>
                                                     <label class="em-applicant-text-color em-applicant-default-font"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_COMPLETED'); ?>
                                                         :</label>
-                                                    <p class="em-applicant-text-color  em-applicant-default-font"><?php echo(($progress['forms'][$application->fnum] + $progress['attachments'][$application->fnum]) / 2) ?>
+                                                    <p class="em-applicant-default-font"><?php echo(($progress['forms'][$application->fnum] + $progress['attachments'][$application->fnum]) / 2) ?>
                                                         %</p>
                                                 </div>
 
-												<?php if ($key == 'sent') : ?>
-                                                    <div>
-                                                        <label class="em-applicant-text-color em-applicant-default-font"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_LAST_UPDATE'); ?>
-                                                            :</label>
-                                                        <p class="em-applicant-text-color  em-applicant-default-font"><?php echo JFactory::getDate(new JDate($application->submitted_date, $site_offset))->format('d/m/Y H:i'); ?></p>
-                                                    </div>
-												<?php endif; ?>
+                                                <?php if(!empty($application->updated) || !empty($application->submitted_date)) : ?>
+                                                <div>
+                                                    <label class="em-applicant-text-color em-applicant-default-font"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_LAST_UPDATE'); ?>
+                                                        :</label>
+                                                    <p class="em-applicant-default-font">
+                                                        <?php if(empty($application->updated)) : ?>
+                                                            <?php echo JFactory::getDate(new JDate($application->submitted_date, $site_offset))->format('d/m/Y H:i'); ?>
+                                                        <?php else : ?>
+											                <?php echo EmundusHelperDate::displayDate($application->updated, 'd/m/Y H:i', 0); ?>
+                                                        <?php endif; ?>
+                                                    </p>
+                                                </div>
+                                                <?php endif; ?>
                                             </div>
 
 											<?php if ($show_state_files == 1) : ?>

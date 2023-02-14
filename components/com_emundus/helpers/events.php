@@ -120,6 +120,8 @@ class EmundusHelperEvents {
                 $submittion_page = $mForm->getSubmittionPage($prid);
                 $submittion_page_id = (int)explode('=', $submittion_page->link)[3];
 
+				$this->applicationUpdating($user->fnum);
+
                 if ($submittion_page_id != $params['formModel']->id) {
                     $this->redirect($params);
                 } else {
@@ -1466,4 +1468,25 @@ class EmundusHelperEvents {
 
         return $diffElements;
     }
+
+	private function applicationUpdating($fnum){
+		$result = false;
+
+		try {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->update($db->quoteName('#__emundus_campaign_candidature'))
+				->set($db->quoteName('updated') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+				->set($db->quoteName('updated_by') . ' = ' . JFactory::getUser()->id)
+				->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+			$db->setQuery($query);
+			$result = $db->execute();
+		}
+		catch (Exception $e) {
+			JLog::add('Error when try to log update of application: ' . __LINE__ . ' in file: ' . __FILE__ . ' with message: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+		}
+
+		return $result;
+	}
 }
