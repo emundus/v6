@@ -105,6 +105,8 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $date_format = $params->get('mod_em_application_date_format', 'd/m/Y H:i');
     $mod_em_applications_show_hello_text = $params->get('mod_em_applications_show_hello_text',1);
     $custom_actions  = $params->get('mod_em_application_custom_actions');
+	$show_tabs = $params->get('mod_em_applications_show_tabs',1);
+	$actions = $params->get('mod_emundus_applications_actions',[]);
 
     // Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
     if ($layout == '_:ccirs-drh') {

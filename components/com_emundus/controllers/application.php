@@ -942,4 +942,58 @@ class EmundusControllerApplication extends JControllerLegacy
 		echo json_encode($response);
 		exit;
 	}
+
+	public function movetotab(){
+		$response = array('status' => 0, 'msg' => '');
+
+		$user = JFactory::getUser();
+
+		$jinput = JFactory::getApplication()->input;
+		$fnum = $jinput->getString('fnum');
+		$tab = $jinput->getString('tab');
+
+		if(!empty($tab) && !empty($fnum)){
+			$m_files = $this->getModel('Files');
+			$fnumInfos = $m_files->getFnumInfos($fnum);
+
+			if($fnumInfos['applicant_id'] !== $user->id){
+				$response['msg'] = JText::_('ACCESS_DENIED');
+			} else {
+				$m_application      = $this->getModel('Application');
+				$response['status'] = $m_application->moveToTab($fnum, $tab);
+
+				$response['msg'] =  $response['status'] ? JText::_('SUCCESS') : JText::_('FAILED');
+			}
+		}
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function renamefile(){
+		$response = array('status' => 0, 'msg' => '');
+
+		$user = JFactory::getUser();
+
+		$jinput = JFactory::getApplication()->input;
+		$fnum = $jinput->getString('fnum');
+		$new_name = $jinput->getString('new_name');
+
+		if(!empty($fnum)){
+			$m_files = $this->getModel('Files');
+			$fnumInfos = $m_files->getFnumInfos($fnum);
+
+			if($fnumInfos['applicant_id'] !== $user->id){
+				$response['msg'] = JText::_('ACCESS_DENIED');
+			} else {
+				$m_application      = $this->getModel('Application');
+				$response['status'] = $m_application->renameFile($fnum, $new_name);
+
+				$response['msg'] =  $response['status'] ? JText::_('SUCCESS') : JText::_('FAILED');
+			}
+		}
+
+		echo json_encode($response);
+		exit;
+	}
 }

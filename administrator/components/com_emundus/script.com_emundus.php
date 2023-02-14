@@ -599,6 +599,10 @@ class com_emundusInstallerScript
 		        ];
 		        $foreign_keys = [];
 		        EmundusHelperUpdate::createTable('jos_emundus_campaign_candidature_links',$columns,$foreign_keys,'Links between two fnums');
+
+		        EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','name','VARCHAR',255);
+		        EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','updated','DATETIME');
+		        EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','updated_by','INT',10);
 	        }
 
             // Insert new translations in overrides files

@@ -431,6 +431,12 @@ a.btn.btn-success:not(.btn-xs) {
     font-size: 14px;
     margin: 0;
     width: 100%;
+    margin-top: 12px;
+}
+.mod_emundus_application_swal_manage_tabs_popup .swal2-content .swal2-validation-message{
+    background: transparent;
+    margin-left: -20px !important;
+    justify-content: start;
 }
 
 @media screen and (max-width: 767px) {

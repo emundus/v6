@@ -127,27 +127,31 @@ $current_tab = 0;
 	<?php endif; ?>
 </div>
 
-<div class="em-mt-32 em-flex-row em-border-bottom-neutral-300" style="flex-wrap: wrap;height: 50px">
-	<?php foreach ($tabs as $tab) : ?>
-        <div id="tab_link_<?php echo $tab['id'] ?>" onclick="updateTab(<?php echo $tab['id'] ?>)"
-             class="em-mr-16 em-flex-row em-light-tabs em-pointer <?php if ($current_tab == $tab['id']) : ?>em-light-selected-tab<?php endif; ?>">
-            <p class="em-font-size-14 em-text-neutral-600"
-               style="white-space: nowrap"><?php echo JText::_($tab['name']) ?></p>
-			<?php if ($tab['id'] != 0) : ?>
-                <span class="mod_emundus_applications_badge"><?php echo $tab['no_files'] ?></span>
-			<?php endif; ?>
-        </div>
-	<?php endforeach; ?>
-        <div id="tab_adding_link" onclick="createTab()" class="em-mr-16 em-light-tabs em-flex-row em-pointer <?php if (count($tabs) > 1) : ?>em-display-none<?php endif; ?>">
+<?php if ($show_tabs == 1) : ?>
+    <div class="em-mt-32 em-flex-row em-border-bottom-neutral-300" style="flex-wrap: wrap;height: 50px">
+		<?php foreach ($tabs as $tab) : ?>
+            <div id="tab_link_<?php echo $tab['id'] ?>" onclick="updateTab(<?php echo $tab['id'] ?>)"
+                 class="em-mr-16 em-flex-row em-light-tabs em-pointer <?php if ($current_tab == $tab['id']) : ?>em-light-selected-tab<?php endif; ?>">
+                <p class="em-font-size-14 em-text-neutral-600"
+                   style="white-space: nowrap"><?php echo JText::_($tab['name']) ?></p>
+				<?php if ($tab['id'] != 0) : ?>
+                    <span class="mod_emundus_applications_badge"><?php echo $tab['no_files'] ?></span>
+				<?php endif; ?>
+            </div>
+		<?php endforeach; ?>
+        <div id="tab_adding_link" onclick="createTab()"
+             class="em-mr-16 em-light-tabs em-flex-row em-pointer <?php if (count($tabs) > 1) : ?>em-display-none<?php endif; ?>">
             <a class="em-flex-row em-no-hover-underline em-font-size-14 em-pointer" style="white-space: nowrap"><span
                         class="em-main-500-color material-icons-outlined em-font-size-14 em-mr-4">add</span><?php echo JText::_('MOD_EM_APPLICATION_TABS_ADD_TAB') ?>
             </a>
         </div>
-        <div id="tab_manage_links" onclick="manageTabs()" class="em-mr-16 em-light-tabs em-flex-row em-pointer <?php if (count($tabs) == 1) : ?>em-display-none<?php endif; ?>">
+        <div id="tab_manage_links" onclick="manageTabs()"
+             class="em-mr-16 em-light-tabs em-flex-row em-pointer <?php if (count($tabs) == 1) : ?>em-display-none<?php endif; ?>">
             <a class="em-flex-row em-no-hover-underline em-font-size-14 em-pointer"
                style="white-space: nowrap"><?php echo JText::_('MOD_EM_APPLICATION_TABS_MANAGE_TABS') ?></a>
         </div>
-</div>
+    </div>
+<?php endif; ?>
 
 <?php if ($mod_em_applications_show_search && sizeof($applications) > 0): ?>
     <div class="em-searchbar em-flex-row-justify-end em-mt-16">
@@ -274,32 +278,43 @@ $current_tab = 0;
                                                                 <span class="material-icons-outlined em-font-size-16 em-mr-8">open_in_new</span>
 																<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
                                                             </a>
-                                                            <a class="em-text-neutral-900 em-pointer em-flex-row"
-                                                               href="<?= JRoute::_($first_page_url); ?>"
-                                                               id="actions_button_rename_<?php echo $application->fnum ?>">
-                                                                <span class="material-icons-outlined em-font-size-16 em-mr-8">drive_file_rename_outline</span>
-		                                                        <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION') ?>
-                                                            </a>
-                                                            <?php if(!empty($available_campaigns)) : ?>
+
+															<?php if (in_array('rename', $actions)) : ?>
+                                                                <a class="em-text-neutral-900 em-pointer em-flex-row"
+                                                                   onclick="renameApplication('<?php echo $application->fnum ?>','<?php echo $application->name ?>')"
+                                                                   id="actions_button_rename_<?php echo $application->fnum ?>">
+                                                                    <span class="material-icons-outlined em-font-size-16 em-mr-8">drive_file_rename_outline</span>
+																	<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION') ?>
+                                                                </a>
+															<?php endif; ?>
+
+															<?php if (!empty($available_campaigns) && in_array('copy', $actions)) : ?>
                                                                 <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                    onclick="copyApplication('<?php echo $application->fnum ?>')"
                                                                    id="actions_button_copy_<?php echo $application->fnum ?>">
                                                                     <span class="material-icons-outlined em-font-size-16 em-mr-8">file_copy</span>
-                                                                    <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_COPY_APPLICATION') ?>
+																	<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_COPY_APPLICATION') ?>
                                                                 </a>
-                                                            <?php endif; ?>
-                                                            <a class="em-text-neutral-900 em-pointer em-flex-row"
-                                                               onclick="moveToTab('<?php echo $application->fnum ?>')"
-                                                               id="actions_button_move_<?php echo $application->fnum ?>">
-                                                                <span class="material-icons-outlined em-font-size-16 em-mr-8">drive_file_move</span>
-		                                                        <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_MOVE_INTO_TAB') ?>
-                                                            </a>
-                                                            <a class="em-text-neutral-900 em-pointer em-flex-row"
-                                                               href="<?= JRoute::_($first_page_url); ?>"
-                                                               id="actions_button_history_<?php echo $application->fnum ?>">
-                                                                <span class="material-icons-outlined em-font-size-16 em-mr-8">history</span>
-		                                                        <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_VIEW_HISTORY') ?>
-                                                            </a>
+															<?php endif; ?>
+
+															<?php if ($show_tabs == 1) : ?>
+                                                                <a class="em-text-neutral-900 em-pointer em-flex-row"
+                                                                   onclick="moveToTab('<?php echo $application->fnum ?>')"
+                                                                   id="actions_button_move_<?php echo $application->fnum ?>">
+                                                                    <span class="material-icons-outlined em-font-size-16 em-mr-8">drive_file_move</span>
+																	<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_MOVE_INTO_TAB') ?>
+                                                                </a>
+															<?php endif; ?>
+
+															<?php if (in_array('history', $actions)) : ?>
+                                                                <a class="em-text-neutral-900 em-pointer em-flex-row"
+                                                                   href="<?= JRoute::_($first_page_url); ?>"
+                                                                   id="actions_button_history_<?php echo $application->fnum ?>">
+                                                                    <span class="material-icons-outlined em-font-size-16 em-mr-8">history</span>
+																	<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_VIEW_HISTORY') ?>
+                                                                </a>
+															<?php endif; ?>
+
 															<?php if (in_array($application->status, $status_for_delete)) : ?>
                                                                 <a class="em-red-500-color em-pointer"
                                                                    onclick="deletefile('<?php echo $application->fnum; ?>');"
@@ -308,14 +323,18 @@ $current_tab = 0;
 																	<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
                                                                 </a>
 															<?php endif; ?>
+
 															<?php
 															foreach ($custom_actions as $custom_action_key => $custom_action) {
 
 																if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)) {
 																	?>
                                                                     <a id="actions_button_custom_<?= $custom_action_key; ?>"
-                                                                       class="em-text-neutral-900 em-pointer"
-                                                                       href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?> ><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></a>
+                                                                       class="em-text-neutral-900 em-pointer em-flex-row"
+                                                                       href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?>>
+                                                                        <span class="material-icons-outlined em-font-size-16 em-mr-8"><?php echo $custom_action->mod_em_application_custom_action_icon ?></span>
+																		<?= JText::_($custom_action->mod_em_application_custom_action_label) ?>
+                                                                    </a>
 																	<?php
 																}
 															}
@@ -323,23 +342,31 @@ $current_tab = 0;
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <a href="<?= JRoute::_($first_page_url); ?>"
-                                                   class="em-h6 mod_emundus_applications___title"
-                                                   id="application_title_<?php echo $application->fnum ?>">
-                                                    <span><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></span>
-                                                </a>
+												<?php if (empty($application->name)) : ?>
+                                                    <a href="<?= JRoute::_($first_page_url); ?>"
+                                                       class="em-h6 mod_emundus_applications___title"
+                                                       id="application_title_<?php echo $application->fnum ?>">
+                                                        <span><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></span>
+                                                    </a>
+												<?php else : ?>
+                                                    <a href="<?= JRoute::_($first_page_url); ?>"
+                                                       class="em-h6 mod_emundus_applications___title"
+                                                       id="application_title_<?php echo $application->fnum ?>">
+                                                        <span><?= $application->name; ?></span>
+                                                    </a>
+												<?php endif; ?>
 												<?php if ($show_fnum) : ?>
                                                     <div class="em-mb-8 em-font-size-14">
                                                         <span class="em-applicant-default-font em-text-neutral-600">N°<?php echo $application->fnum ?></span>
                                                     </div>
 												<?php endif; ?>
-                                                <?php if(!empty($file_tags_display)) : ?>
-                                                <div class="em-mt-16">
+												<?php if (!empty($file_tags_display)) : ?>
+                                                    <div class="em-mt-16">
                                                     <span class="em-tags-display em-applicant-text-color">
                                                         <?= $file_tags_display; ?>
                                                     </span>
-                                                </div>
-                                                <?php endif; ?>
+                                                    </div>
+												<?php endif; ?>
                                             </div>
 
                                             <div class="em-flex-row">
@@ -389,16 +416,17 @@ $current_tab = 0;
                                                 <div>
                                                     <label class="em-applicant-text-color em-applicant-default-font"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_COMPLETED'); ?>
                                                         :</label>
-                                                    <p class="em-applicant-text-color  em-applicant-default-font"><?php echo (($progress['forms'][$application->fnum] + $progress['attachments'][$application->fnum])/2) ?>%</p>
+                                                    <p class="em-applicant-text-color  em-applicant-default-font"><?php echo(($progress['forms'][$application->fnum] + $progress['attachments'][$application->fnum]) / 2) ?>
+                                                        %</p>
                                                 </div>
 
-	                                            <?php if ($key == 'sent') : ?>
+												<?php if ($key == 'sent') : ?>
                                                     <div>
                                                         <label class="em-applicant-text-color em-applicant-default-font"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_LAST_UPDATE'); ?>
                                                             :</label>
                                                         <p class="em-applicant-text-color  em-applicant-default-font"><?php echo JFactory::getDate(new JDate($application->submitted_date, $site_offset))->format('d/m/Y H:i'); ?></p>
                                                     </div>
-	                                            <?php endif; ?>
+												<?php endif; ?>
                                             </div>
 
 											<?php if ($show_state_files == 1) : ?>
@@ -477,8 +505,15 @@ $current_tab = 0;
 <script type="text/javascript">
     let campaigns = {};
 	<?php foreach ($available_campaigns as $campaign) : ?>
-        campaigns[<?php echo $campaign['id'] ?>] = '<?php echo $campaign['label'] ?>';
+    campaigns[<?php echo $campaign['id'] ?>] = '<?php echo $campaign['label'] ?>';
 	<?php endforeach; ?>
+
+    window.addEventListener('DOMContentLoaded', (event) => {
+        let selected_tab_session = sessionStorage.getItem('mod_emundus_applications___selected_tab');
+        if (selected_tab_session !== null) {
+            this.updateTab(selected_tab_session);
+        }
+    });
 
     function deletefile(fnum) {
         Swal.fire({
@@ -600,8 +635,10 @@ $current_tab = 0;
 
     }, 500));
 
-    // TABS
+
+    /** TABS **/
     function updateTab(tab) {
+        sessionStorage.setItem("mod_emundus_applications___selected_tab", tab);
         document.querySelectorAll('div[id*="tab_link_"]').forEach((elt) => {
             if (elt.id !== 'tab_link_' + tab) {
                 elt.classList.remove('em-light-selected-tab');
@@ -621,9 +658,12 @@ $current_tab = 0;
 
     async function createTab() {
         const {value: tabName} = await Swal.fire({
-            title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_TAB'); ?>",
-            text: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_NAME'); ?>",
+            title: "<?= JText::_('MOD_EM_APPLICATION_TABS_CREATE_TAB_SWAL'); ?>",
             input: 'text',
+            inputAttributes: {
+                maxlength: 30,
+            },
+            text: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_NAME'); ?>",
             showCancelButton: true,
             reverseButtons: true,
             confirmButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_CREATE_BUTTON');?>",
@@ -776,6 +816,11 @@ $current_tab = 0;
                 document.querySelector('#tab_li_' + tab).remove();
                 document.querySelector('#tab_li_' + tab).remove();
                 document.querySelector('#tab_link_' + tab).remove();
+                let selected_tab_session = sessionStorage.getItem('mod_emundus_applications___selected_tab');
+                if (selected_tab_session !== null && selected_tab_session == tab) {
+                    sessionStorage.removeItem('mod_emundus_applications___selected_tab');
+                    this.updateTab(0);
+                }
             }
         });
     }
@@ -789,7 +834,7 @@ $current_tab = 0;
                 return response.json();
             }
         }).then(async (res) => {
-            if(res.tabs.length === 0){
+            if (res.tabs.length === 0) {
                 await this.createTab();
             } else {
                 tabs[0] = "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_PLEASE_SELECT'); ?>"
@@ -799,7 +844,7 @@ $current_tab = 0;
 
                 const {value: tab} = await Swal.fire({
                     title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_MOVE_TO_TAB_SWAL'); ?>",
-                    text: "",
+                    text: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_SELECT'); ?>",
                     input: 'select',
                     inputOptions: tabs,
                     showCancelButton: true,
@@ -816,21 +861,49 @@ $current_tab = 0;
                         actions: 'mod_emundus_application_swal_manage_tabs_actions',
                     },
                     inputValidator: (value) => {
-                        if (!value) {
+                        if (value == 0) {
                             return "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_PLEASE_SELECT_A_TAB');?>";
                         }
                     }
                 });
 
-                if(tab){}
+                if (tab) {
+                    let formData = new FormData();
+                    formData.append('fnum', fnum);
+                    formData.append('tab', tab);
+
+                    fetch('index.php?option=com_emundus&controller=application&task=movetotab', {
+                        body: formData,
+                        method: 'post',
+                    }).then((response) => {
+                        if (response.ok) {
+                            return response.json();
+                        }
+                    }).then((res) => {
+                        if (res.status == true) {
+                            window.location.reload();
+                        } else {
+                            Swal.fire({
+                                title: "Une erreur est survenue",
+                                text: res.msg,
+                                type: "error",
+                                reverseButtons: true,
+                                confirmButtonText: "<?php echo JText::_('JYES');?>",
+                                timer: 3000
+                            });
+                        }
+                    });
+                }
             }
         });
     }
 
-    async function copyApplication(fnum){
+    /** END **/
+
+    async function copyApplication(fnum) {
         const {value: campaign} = await Swal.fire({
             title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_COPY_FILE'); ?>",
-            text: "",
+            text: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_COPY_FILE_CAMPAIGN'); ?>",
             input: 'select',
             inputOptions: campaigns,
             showCancelButton: true,
@@ -866,12 +939,12 @@ $current_tab = 0;
                     return response.json();
                 }
             }).then((res) => {
-                if(res.status == true){
+                if (res.status == true) {
                     window.location.href = res.first_page;
                 } else {
                     Swal.fire({
                         title: "Une erreur est survenue",
-                        text: "",
+                        text: res.msg,
                         type: "error",
                         reverseButtons: true,
                         confirmButtonText: "<?php echo JText::_('JYES');?>",
@@ -880,5 +953,57 @@ $current_tab = 0;
                 }
             });
         }
+    }
+
+    async function renameApplication(fnum,name) {
+        const {value: new_name} = await Swal.fire({
+            title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION'); ?>",
+            text: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION_NAME'); ?>",
+            input: 'text',
+            inputValue: name,
+            inputAttributes: {
+                maxlength: 80,
+            },
+            showCancelButton: true,
+            reverseButtons: true,
+            confirmButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_RENAME_FILE_ACTION');?>",
+            cancelButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_CANCEL_BUTTON');?>",
+            customClass: {
+                container: 'mod_emundus_application_swal_manage_tabs_container',
+                popup: 'mod_emundus_application_swal_manage_tabs_popup',
+                header: 'mod_emundus_application_swal_manage_tabs_header',
+                htmlContainer: 'mod_emundus_application_swal_manage_tabs_content',
+                confirmButton: 'mod_emundus_application_swal_manage_tabs_confirm',
+                cancelButton: 'mod_emundus_application_swal_manage_tabs_cancel',
+                actions: 'mod_emundus_application_swal_manage_tabs_actions',
+            }
+        });
+
+
+        let formData = new FormData();
+        formData.append('fnum', fnum);
+        formData.append('new_name', new_name);
+
+        fetch('index.php?option=com_emundus&controller=application&task=renamefile', {
+            body: formData,
+            method: 'post',
+        }).then((response) => {
+            if (response.ok) {
+                return response.json();
+            }
+        }).then((res) => {
+            if (res.status == true) {
+                window.location.reload();
+            } else {
+                Swal.fire({
+                    title: "Une erreur est survenue",
+                    text: res.msg,
+                    type: "error",
+                    reverseButtons: true,
+                    confirmButtonText: "<?php echo JText::_('JYES');?>",
+                    timer: 3000
+                });
+            }
+        });
     }
 </script>

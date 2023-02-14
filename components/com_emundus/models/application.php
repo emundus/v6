@@ -5647,6 +5647,26 @@ class EmundusModelApplication extends JModelList
 		}
 	}
 
+	public function moveToTab($fnum, $tab){
+		$result = false;
+
+		try {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->update($db->quoteName('#__emundus_campaign_candidature'))
+				->set($db->quoteName('tab') . ' = ' . $db->quote($tab))
+				->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+			$db->setQuery($query);
+			$result = $db->execute();
+		}
+		catch (Exception $e) {
+			JLog::add('Failed to move fnum ' . $fnum . ' in tab ' . $tab . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $result;
+	}
+
 	public function copyFile($fnum,$fnum_to){
 		$result = false;
 
@@ -5663,6 +5683,26 @@ class EmundusModelApplication extends JModelList
 		}
 		catch (Exception $e) {
 			JLog::add('Failed to copy fnum from ' . $fnum . ' to ' . $fnum_to . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $result;
+	}
+
+	public function renameFile($fnum,$new_name){
+		$result = false;
+
+		try {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->update($db->quoteName('#__emundus_campaign_candidature'))
+				->set($db->quoteName('name') . ' = ' . $db->quote($new_name))
+				->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+			$db->setQuery($query);
+			$result = $db->execute();
+		}
+		catch (Exception $e) {
+			JLog::add('Failed to rename file ' . $fnum . ' with name ' . $new_name . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 		}
 
 		return $result;
