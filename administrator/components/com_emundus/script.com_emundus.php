@@ -541,13 +541,13 @@ class com_emundusInstallerScript
             }
 
 	        if (version_compare($cache_version, '1.35.0', '<') || $firstrun) {
-				EmundusHelperUpdate::updateYamlVariable('offcanvas','16rem','/templates/g5_helium/custom/config/default/styles.yaml','width');
-				EmundusHelperUpdate::updateYamlVariable('breakpoints','75rem','/templates/g5_helium/custom/config/default/styles.yaml','large-desktop-container');
-				EmundusHelperUpdate::updateYamlVariable('breakpoints','60rem','/templates/g5_helium/custom/config/default/styles.yaml','desktop-container');
-				EmundusHelperUpdate::updateYamlVariable('breakpoints','48rem','/templates/g5_helium/custom/config/default/styles.yaml','tablet-container');
-				EmundusHelperUpdate::updateYamlVariable('breakpoints','30rem','/templates/g5_helium/custom/config/default/styles.yaml','large-mobile-container');
-				EmundusHelperUpdate::updateYamlVariable('breakpoints','48rem','/templates/g5_helium/custom/config/default/styles.yaml','mobile-menu-breakpoint');
-				EmundusHelperUpdate::updateYamlVariable('menu','11rem','/templates/g5_helium/custom/config/default/styles.yaml','col-width');
+				EmundusHelperUpdate::updateYamlVariable('offcanvas','16rem',JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml','width');
+				EmundusHelperUpdate::updateYamlVariable('breakpoints','75rem',JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml','large-desktop-container');
+				EmundusHelperUpdate::updateYamlVariable('breakpoints','60rem',JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml','desktop-container');
+				EmundusHelperUpdate::updateYamlVariable('breakpoints','48rem',JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml','tablet-container');
+				EmundusHelperUpdate::updateYamlVariable('breakpoints','30rem',JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml','large-mobile-container');
+				EmundusHelperUpdate::updateYamlVariable('breakpoints','48rem',JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml','mobile-menu-breakpoint');
+				EmundusHelperUpdate::updateYamlVariable('menu','11rem',JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml','col-width');
 
 				$columns = [
 					[
