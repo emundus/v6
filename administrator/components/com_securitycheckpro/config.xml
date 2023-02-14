@@ -29,11 +29,7 @@
 		<field name="check_acl_security" type="radio" default="1" label="COM_SECURITYCHECKPRO_CHECK_ACL_SECURITY_LABEL" description="COM_SECURITYCHECKPRO_CHECK_ACL_SECURITY_DESCRIPTION">
 			<option value="1">COM_SECURITYCHECKPRO_YES</option>
 			<option value="0">COM_SECURITYCHECKPRO_NO</option>
-		</field>
-		<field name="determine_option_accurately" type="radio" default="1" label="COM_SECURITYCHECKPRO_DETERMINE_OPTION_ACCURATELY_LABEL" description="COM_SECURITYCHECKPRO_DETERMINE_OPTION_ACCURATELY_DESCRIPTION">
-			<option value="1">COM_SECURITYCHECKPRO_YES</option>
-			<option value="0">COM_SECURITYCHECKPRO_NO</option>
-		</field>
+		</field>		
 		
 		<field name="avoid_proxies" type="radio" default="0" label="COM_SECURITYCHECKPRO_AVOID_PROXIES_LABEL" description="COM_SECURITYCHECKPRO_AVOID_PROXIES_DESCRIPTION">
 			<option value="1">COM_SECURITYCHECKPRO_YES</option>

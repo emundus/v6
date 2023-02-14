@@ -1,21 +1,23 @@
 <?php
 /**
  * @package         SCLogin
- * @copyright (c)   2009-2019 by SourceCoast - All Rights Reserved
+ * @copyright (c)   2009-2021 by SourceCoast - All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
- * @version         Release v8.4.3
- * @build-date      2020/05/29
+ * @version         Release v9.0.215
+ * @build-date      2022/09/06
  */
 
 // no direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\CMS\Helper\ModuleHelper;
 
 jimport('joomla.filesystem.file');
 jimport('joomla.filesystem.folder');
 
 require_once(dirname(__FILE__) . '/helper.php');
 require_once(dirname(__FILE__) . '/sc_helper.php');
-$helper = new modSCLoginHelper($params);
+$helper = new ModScloginHelper($params);
 
 $helper->setupTheme();
 $helper->setupTwoFactorAuthentication();
@@ -40,40 +42,41 @@ $registerButtonClass = $params->get('registerbutton_class');
 if(empty($loginButtonClass))
 {
     if($helper->isJFBConnectInstalled)
-        $loginButtonClass = JFBCFactory::config()->getSetting('registration_loginbutton_class');
+        $loginButtonClass = JFBCFactory::config()->get('registration_loginbutton_class');
     else
         $loginButtonClass = "btn-primary";
 }
 if(empty($registerButtonClass))
 {
     if($helper->isJFBConnectInstalled)
-        $registerButtonClass = JFBCFactory::config()->getSetting('registration_registerbutton_class');
+        $registerButtonClass = JFBCFactory::config()->get('registration_registerbutton_class');
     else
         $registerButtonClass = "btn-secondary";
 }
 
 $loginButtonClass = "btn " . $loginButtonClass;
+$logoutButtonClass = $loginButtonClass;
 $registerButtonClass = "btn validate " . $registerButtonClass;
 
 if ($layout == 'horizontal')
 {
-    $joomlaSpan = 'pull-left';
-    $socialSpan = 'pull-' . $alignment;
+    $joomlaSpan = $helper->pullClass.'left';
+    $socialSpan = $helper->pullClass. $alignment;
 }
 else if ($orientation == 'side' && $helper->isJFBConnectInstalled)
 {
     // probably need settings for these spans instead of auto-guessing them, since any images can be used nowadays
-    $joomlaSpan = 'span8';
-    $socialSpan = 'span4';
+    $joomlaSpan = $helper->colClass.'8';
+    $socialSpan = $helper->colClass.'4';
 }
 else //$orientation == 'bottom' || $orientation == 'top'
 {
-    $joomlaSpan = 'span12';
-    $socialSpan = 'span12';
+    $joomlaSpan = $helper->colClass.'12';
+    $socialSpan = $helper->colClass.'12';
 }
 
 $addClearfix = false; //($layout == 'vertical' && $orientation == "side") ||
 // ($layout == "horizontal" && $orientation == "side" && $params->get('displayType') == 'modal');
 
-require(JModuleHelper::getLayoutPath('mod_sclogin', $helper->getType()));
+require(ModuleHelper::getLayoutPath('mod_sclogin', $helper->getType()));
 ?>
