@@ -508,7 +508,7 @@ class com_emundusInstallerScript
 					->where("JSON_EXTRACT(params,'$.curl_code') LIKE '%media\/com_emundus\/lib\/chosen\/chosen.min.css%'");
 				$db->setQuery($query);
 				$forms_to_update = $db->loadObjectList();
-				
+
 				foreach ($forms_to_update as $form){
 					$params = json_decode($form->params);
 					if(isset($params->curl_code)){
@@ -539,6 +539,39 @@ class com_emundusInstallerScript
                     ['label' => 'onBeforeRenderApplications', 'category' => 'Applicant', 'published' => 1]
                 ]);
             }
+
+	        if (version_compare($cache_version, '1.34.56', '<') || $firstrun) {
+		        $db = JFactory::getDbo();
+		        $query = $db->getQuery(true);
+
+		        $query->select('id')
+			        ->from($db->quoteName('#__modules'))
+			        ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_version'))
+			        ->where($db->quoteName('client_id') . ' = 0');
+		        $db->setQuery($query);
+		        $moduleid = $db->loadResult();
+
+		        if(!empty($moduleid)) {
+			        $query->clear()
+				        ->delete($db->quoteName('#__modules_menu'))
+				        ->where($db->quoteName('moduleid') . ' = ' . $moduleid);
+			        $db->setQuery($query);
+			        $db->execute();
+
+			        $query->clear()
+				        ->delete($db->quoteName('#__modules'))
+				        ->where($db->quoteName('id') . ' = ' . $moduleid);
+			        $db->setQuery($query);
+			        $db->execute();
+		        }
+
+		        $query->clear()
+			        ->delete($db->quoteName('#__extensions'))
+			        ->where($db->quoteName('element') . ' LIKE ' . $db->quote('mod_emundus_version'))
+			        ->where($db->quoteName('client_id') . ' = 0');
+		        $db->setQuery($query);
+		        $db->execute();
+	        }
 
             // Insert new translations in overrides files
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
