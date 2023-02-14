@@ -1,17 +1,22 @@
 <?php
 /**
  * @package         SCLogin
- * @copyright (c)   2009-2019 by SourceCoast - All Rights Reserved
+ * @copyright (c)   2009-2021 by SourceCoast - All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
- * @version         Release v8.4.3
- * @build-date      2020/05/29
+ * @version         Release v9.0.215
+ * @build-date      2022/09/06
  */
 
 defined('JPATH_PLATFORM') or die;
 
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Form\FormHelper;
+use Joomla\CMS\Filesystem\Folder;
+
 jimport('joomla.form.helper');
 jimport('joomla.filesystem.folder');
-JFormHelper::loadFieldClass('list');
+FormHelper::loadFieldClass('list');
 
 class JFormFieldTheme extends JFormFieldList
 {
@@ -21,7 +26,7 @@ class JFormFieldTheme extends JFormFieldList
     {
         $mediaCssFiles = $this->getCssFiles('/media/sourcecoast/themes/sclogin/');
 
-        $db = JFactory::getDBO();
+        $db = Factory::getDBO();
         $query = $db->getQuery(true);
         $query->select("template")
             ->from("#__template_styles")
@@ -36,7 +41,7 @@ class JFormFieldTheme extends JFormFieldList
         $options = array();
         foreach ($cssFiles as $cssName=>$cssPath)
         {
-            $options[] = JHtml::_('select.option', $cssPath, ucfirst($cssName));
+            $options[] = HTMLHelper::_('select.option', $cssPath, ucfirst($cssName));
         }
         return $options;
     }
@@ -53,9 +58,9 @@ class JFormFieldTheme extends JFormFieldList
     {
         $mediaCssFiles = array();
         $mediaFolder = JPATH_SITE . $folderPath;
-        if(JFolder::exists($mediaFolder))
+        if(Folder::exists($mediaFolder))
         {
-            $cssFiles = JFolder::files($mediaFolder, '.css');
+            $cssFiles = Folder::files($mediaFolder, '.css');
             if ($cssFiles && count($cssFiles) > 0)
             {
                 foreach ($cssFiles as $file)

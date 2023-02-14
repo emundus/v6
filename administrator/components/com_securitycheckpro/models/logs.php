@@ -614,7 +614,14 @@ class SecuritycheckprosModelLogs extends JModelList
 						JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_EXCEPTION_ALREADY_EXISTS', $result->component, $result->type), 'notice');
 					}						
 					break;	
-				
+				case 'FORBIDDEN_WORDS':
+					if (stristr($params['second_level_exceptions'], $result->component) === FALSE) {
+						$params['second_level_exceptions'] = $this->add_element($params['second_level_exceptions'],$result->component);
+						$exists = false;
+					} else {						
+						JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_EXCEPTION_ALREADY_EXISTS', $result->component, $result->type), 'notice');
+					}
+					break;
 			}        
         }  
 		
