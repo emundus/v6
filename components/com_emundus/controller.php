@@ -1204,7 +1204,7 @@ class EmundusController extends JControllerLegacy {
                 imagejpeg($resized_img, $chemin . $user->id . DS . 'tn_' . $paths);
 
                 /// remove old image only if resize was successful
-                if ($resized_img == false) {
+                if ($resized_img !== false) {
                     unlink($file_src);
                 }
 
