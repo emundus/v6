@@ -1544,10 +1544,10 @@ class EmundusController extends JControllerLegacy {
                 die (JText::_('ACCESS_DENIED'));
             }
         }
-        // If the user has the rights to open attachments.
-        elseif (!empty($fileInfo) && !EmundusHelperAccess::asAccessAction(4,'r', $current_user->id, $fileInfo->fnum)) {
+        // If the user has the rights to open attachments, or to create a PDF export (he needs to be able to open it, even if he can't access the documents).
+        elseif (!empty($fileInfo) && (!EmundusHelperAccess::asAccessAction(4,'r', $current_user->id, $fileInfo->fnum) && !EmundusHelperAccess::asAccessAction(8,'c', $current_user->id, $fileInfo->fnum))) {
             die (JText::_('ACCESS_DENIED'));
-        } elseif (empty($fileInfo) && !EmundusHelperAccess::asAccessAction(4,'r')) {
+        } elseif (empty($fileInfo) && (!EmundusHelperAccess::asAccessAction(4,'r') && !EmundusHelperAccess::asAccessAction(8,'c'))) {
             die (JText::_('ACCESS_DENIED'));
         }
 
