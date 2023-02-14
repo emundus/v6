@@ -352,6 +352,7 @@ a.btn.btn-success:not(.btn-xs) {
     padding: 12px;
     position: absolute;
     background: white;
+    z-index: 9999;
 }
 .mod_emundus_applications__actions a:not(:last-child){
     margin-bottom: 8px;
@@ -398,12 +399,13 @@ a.btn.btn-success:not(.btn-xs) {
 }
 .mod_emundus_application_swal_manage_tabs_header{
     align-items: start !important;
-    padding: 24px 16px 8px 16px;
+    padding: 24px 16px 8px 16px !important;
 }
 .mod_emundus_application_swal_manage_tabs_header h2{
     color: black !important;
     flex-direction: column;
     align-items: start;
+    margin-top: 0 !important;
 }
 .mod_emundus_application_swal_manage_tabs_popup .swal2-content{
     padding: 0 16px 0 16px;

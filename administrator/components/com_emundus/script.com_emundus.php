@@ -548,6 +548,7 @@ class com_emundusInstallerScript
 				EmundusHelperUpdate::updateYamlVariable('breakpoints','30rem',JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml','large-mobile-container');
 				EmundusHelperUpdate::updateYamlVariable('breakpoints','48rem',JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml','mobile-menu-breakpoint');
 				EmundusHelperUpdate::updateYamlVariable('menu','11rem',JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml','col-width');
+				EmundusHelperUpdate::updateYamlVariable('base','#f8f8f8',JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml','background');
 
 				$columns = [
 					[
@@ -608,6 +609,7 @@ class com_emundusInstallerScript
 		        $foreign_keys = [];
 		        EmundusHelperUpdate::createTable('jos_emundus_campaign_candidature_links',$columns,$foreign_keys,'Links between two fnums');
 
+		        EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','tab','INT',10);
 		        EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','name','VARCHAR',255);
 		        EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','updated','DATETIME');
 		        EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','updated_by','INT',10);
