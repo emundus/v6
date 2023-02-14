@@ -3,7 +3,7 @@
 /**
  * @package   Gantry5
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
  * @license   Dual License: MIT or GNU/GPLv2 and later
  *
  * http://opensource.org/licenses/MIT
@@ -96,6 +96,13 @@ class SystemFacade extends \Whoops\Util\SystemFacade
      */
     public function handleError($level, $message, $file = null, $line = null)
     {
+        // TODO: remove when upgrading to Twig 2+
+        if (($level === E_DEPRECATED) && strpos($file, '/twig/') !== false) {
+            if (str_contains($message, '#[\ReturnTypeWillChange]') || str_contains($message, 'Passing null to parameter')) {
+                return true;
+            }
+        }
+
         $handler = $this->whoopsErrorHandler;
 
         if (!$this->registeredPatterns) {
