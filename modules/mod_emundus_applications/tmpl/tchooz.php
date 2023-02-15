@@ -557,6 +557,7 @@ $current_tab = 0;
     document.addEventListener('click', function (e) {
         let target = e.target.id;
         let actions = document.querySelectorAll("[id^='actions_block_']");
+        let modal = document.querySelector('.swal2-container');
 
         if (typeof actions !== 'undefined') {
             actions.forEach((action) => {
@@ -570,7 +571,10 @@ $current_tab = 0;
                 fnum = fnum[fnum.length - 1];
 
                 let actions = document.getElementById('actions_block_' + fnum);
-                if (actions.style.display === 'none') {
+                if(modal !== null){
+                    actions.style.display = 'none';
+                }
+                else if (actions.style.display === 'none') {
                     actions.style.display = 'flex';
                 } else {
                     actions.style.display = 'none';
@@ -833,6 +837,7 @@ $current_tab = 0;
 
     async function moveToTab(fnum) {
         let tabs = {};
+
         fetch('index.php?option=com_emundus&controller=application&task=gettabs', {
             method: 'get',
         }).then((response) => {
@@ -840,6 +845,7 @@ $current_tab = 0;
                 return response.json();
             }
         }).then(async (res) => {
+            document.querySelector('#actions_block_'+fnum).style.display = 'none';
             if (res.tabs.length === 0) {
                 await this.createTab();
             } else {
@@ -962,7 +968,7 @@ $current_tab = 0;
     }
 
     async function renameApplication(fnum,name) {
-        const {value: new_name} = await Swal.fire({
+        await Swal.fire({
             title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION'); ?>",
             text: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION_NAME'); ?>",
             input: 'text',
@@ -983,31 +989,32 @@ $current_tab = 0;
                 cancelButton: 'mod_emundus_application_swal_manage_tabs_cancel',
                 actions: 'mod_emundus_application_swal_manage_tabs_actions',
             }
-        });
+        }).then((result) => {
+            if(result.value) {
+                let formData = new FormData();
+                formData.append('fnum', fnum);
+                formData.append('new_name', result.value);
 
-
-        let formData = new FormData();
-        formData.append('fnum', fnum);
-        formData.append('new_name', new_name);
-
-        fetch('index.php?option=com_emundus&controller=application&task=renamefile', {
-            body: formData,
-            method: 'post',
-        }).then((response) => {
-            if (response.ok) {
-                return response.json();
-            }
-        }).then((res) => {
-            if (res.status == true) {
-                window.location.reload();
-            } else {
-                Swal.fire({
-                    title: "Une erreur est survenue",
-                    text: res.msg,
-                    type: "error",
-                    reverseButtons: true,
-                    confirmButtonText: "<?php echo JText::_('JYES');?>",
-                    timer: 3000
+                fetch('index.php?option=com_emundus&controller=application&task=renamefile', {
+                    body: formData,
+                    method: 'post',
+                }).then((response) => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                }).then((res) => {
+                    if (res.status == true) {
+                        window.location.reload();
+                    } else {
+                        Swal.fire({
+                            title: "Une erreur est survenue",
+                            text: res.msg,
+                            type: "error",
+                            reverseButtons: true,
+                            confirmButtonText: "<?php echo JText::_('JYES');?>",
+                            timer: 3000
+                        });
+                    }
                 });
             }
         });
