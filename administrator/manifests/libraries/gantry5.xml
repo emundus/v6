@@ -2,8 +2,8 @@
 <extension version="3.9" type="library" method="upgrade">
     <name>Gantry 5 Framework</name>
     <libraryname>gantry5</libraryname>
-    <version>5.5.3</version>
-    <creationDate>October 29, 2021</creationDate>
+    <version>5.5.15</version>
+    <creationDate>September  5, 2022</creationDate>
     <author>RocketTheme, LLC</author>
     <authorEmail>support@rockettheme.com</authorEmail>
     <authorUrl>http://www.rockettheme.com</authorUrl>

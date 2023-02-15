@@ -25,6 +25,16 @@
 			<option value="1">JYES</option>
 		</field>
 
+		<field name="log_show_timeformat" type="list" default="0" label="COM_EMUNDUS_LOG_SHOW_TIMEFORMAT" description="COM_EMUNDUS_LOG_SHOW_TIMEFORMAT_DESC">
+			<option value="0">UTC_FORMAT</option>
+			<option value="1">LOCAL_FORMAT</option>
+		</field>
+
+		<field name="log_show_timeorder" type="list" default="DESC" label="COM_EMUNDUS_LOG_SHOW_TIMEORDER" description="COM_EMUNDUS_LOG_SHOW_TIMEORDER_DESC">
+			<option value="ASC">ASC</option>
+			<option value="DESC">DESC</option>
+		</field>
+
 		<field name="display_other_user_editing_same_file" type="list" default="0" label="DISPLAY_OTHER_USER_EDITING_SAME_FILE" description="DISPLAY_OTHER_USER_EDITING_SAME_FILE_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
@@ -71,11 +81,6 @@
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
-		<!-- <field name="can_evaluators_see_all_applicants" menu="hide" type="list" default="0" label="CAN_EVALUATORS_SEE_ALL_APPLICANTS" description="CAN_EVALUATORS_SEE_ALL_APPLICANTS_DESC">
-			<option value="0">No</option>
-			<option value="1">Can see all applicants</option>
-			<option value="2">Can see and evaluate all applicants</option>
-		</field> -->
 		<field name="evaluators_can_see" menu="hide" type="list" default="0" label="COM_EMUNDUS_EVALUATORS_CAN_SEE" description="COM_EMUNDUS_EVALUATORS_CAN_SEE_DESC">
 			<option value="0">COM_EMUNDUS_NONE</option>
 			<option value="1">COM_EMUNDUS_AFFECTED</option>
@@ -118,17 +123,6 @@
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
-		<!--
-		<field name="nb_months_registration_period_access" type="text" size="2" default="11" label="NB_MONTHS_REGISTRATION_PERIOD_ACCESS" description="NB_MONTHS_REGISTRATION_PERIOD_ACCESS_DESC" />
-		<field name="alert_new_applicant" type="radio" default="0" label="ALERT_NEW_APPLICANT" description="ALERT_NEW_APPLICANT_DESC">
-			<option value="0">JNo</option>
-			<option value="1">JYes</option>
-		</field>
-		<field name="alert_new_attachment" type="radio" default="0" label="ALERT_NEW_ATTACHMENT" description="ALERT_NEW_ATTACHMENT_DESC">
-			<option value="0">JNo</option>
-			<option value="1">JYes</option>
-		</field>
-		-->
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_APPLICANTS" name="applicants" description="COM_EMUNDUS_APPLICANTS_DESC">
 		<field name="id_applicants" type="text" size="50" default="" label="ID_APPLICANTS" description="ID_APPLICANTS_DESC" />
@@ -261,7 +255,6 @@
 		<field name="application_form_order" type="text" size="6" label="COM_EMUNDUS_APPLICATION_FORM_ORDER" description="COM_EMUNDUS_APPLICATION_FORM_ORDER_DESC"/>
 		<field name="attachment_order" type="text" size="6" label="COM_EMUNDUS_CANDIDACY_FORM_ORDER" description="COM_EMUNDUS_CANDIDACY_FORM_ORDER_DESC"/>
 
-		<!-- replace generated documents (means : just get the last generated document) -->
 		<field name="export_replace_doc" type="radio" default="0" label="COM_EMUNDUS_EXPORT_REPLACE_DOC" description="COM_EMUNDUS_EXPORT_REPLACE_DOC_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
@@ -293,11 +286,6 @@
 	<fieldset label="COM_EMUNDUS_IMPORTS" name="imports" description="COM_EMUNDUS_IMPORTS_DESC">
 		<field name="ldapFiltersImport" type="text" required="false" label="COM_EMUNDUS_LDAP_FILTERS_IMPORT_LABEL" description="COM_EMUNDUS_LDAP_FILTERS_IMPORT_DESC" />
 	</fieldset>
-	<!--
-        <fieldset addfieldpath="/administrator/components/com_emundus/models/fields" label="COM_EMUNDUS_PDF" name="pdf" description="COM_EMUNDUS_PDF_DESC" >
-            <field name="export_pdf" type="text" size="60" default="" label="Select items for the pdf export"/>
-        </fieldset>
-    -->
 
 	<fieldset label="COM_EMUNDUS_OFFERS" name="offers" description="COM_EMUNDUS_OFFERS_DESC">
 		<field name="fabrik_elements_title" type="text" required="false" label="COM_EMUNDUS_OFFERS_PDF_TITLE_LABEL" description="COM_EMUNDUS_OFFERS_PDF_TITLE_DESC" class="inputbox" default="2113" />

@@ -97,6 +97,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 			$this->setStoreDatabaseFormat($data, $repeatCounter);
 			$default = $w->parseMessageForRepeats($params->get('calc_calculation'), $data, $this, $repeatCounter);
 			$default = $w->parseMessageForPlaceHolder($default, $data, true, true);
+			$formModel = $this->getFormModel();
 
 			//  $$$ hugh - standardizing on $data but need need $d here for backward compat
 			$d = $data;
@@ -469,6 +470,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 
 		$opts->observe = array_values(array_unique($obs));
 		$opts->calcOnLoad = (bool) $params->get('calc_on_load', false);
+		$opts->calcOnRepeat = (bool) $params->get('calc_on_repeat', false);
 		$opts->id = $this->id;
 
 		return array('FbCalc', $id, $opts);

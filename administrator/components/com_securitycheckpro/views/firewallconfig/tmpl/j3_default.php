@@ -137,14 +137,7 @@ if (version_compare(JVERSION, "3.20", "lt")) {
 	JHtml::_('behavior.modal');
 }
 
-// Eliminamos la carga de las librerías mootools
 $document = JFactory::getDocument();
-$rootPath = JURI::root(true);
-$arrHead = $document->getHeadData();
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
-unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
-$document->setHeadData($arrHead);
-
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
 // Bootstrap core JavaScript
 // Inline javascript to avoid deferring in Joomla 4

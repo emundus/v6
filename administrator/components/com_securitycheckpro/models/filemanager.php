@@ -516,8 +516,8 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                 {
                     foreach($files_name as $file)
                     {
-                        // Transformamos el nombre del archivo a UTF-8
-                        $file = mb_convert_encoding($file, "UTF-8");
+                        // Transformamos el nombre del archivo a UTF-8 - Eliminado en versión 3.4.6
+                        //$file = mb_convert_encoding($file, "UTF-8");
                 
                         $this->files_processed_permissions++;
                         $percent_permissions = intval(round(($this->files_processed_permissions / $this->files_scanned) * 100));
@@ -721,8 +721,8 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                 {
                     foreach($files_name as $file)
                     {                    
-                        // Transformamos el nombre del archivo a UTF-8
-                        $file = mb_convert_encoding($file, "UTF-8");
+                        // Transformamos el nombre del archivo a UTF-8 - Eliminado en versión 3.4.6
+                        //$file = mb_convert_encoding($file, "UTF-8");
                                                     
                         $this->files_processed++;
                         $percent = intval(round(($this->files_processed / $this->files_scanned_integrity) * 100));
@@ -860,8 +860,9 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                 {
                     try 
                     {
-                        $file = $files_name[$indice];                
-                        $file = utf8_encode($file);                    
+                        $file = $files_name[$indice]; 
+						// Removed in 3.4.6 version to avoid storing rare filenames
+                        //$file = utf8_encode($file);                    
                                                                              
                         $safe_integrity = 1;
                         // Chequeamos si el archivo está incluido en las excepciones
@@ -1102,9 +1103,8 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                 {
                     foreach($files_name as $file)
                     {
-							
-							$file = utf8_encode($file);
-                    
+							// Removed in 3.4.6 version to avoid storing rare filenames
+							//$file = utf8_encode($file);                    
                             $this->write_log("FILE: " . $file);
                     
                              /* Dejamos sin efecto el tiempo mximo de ejecucin del script. Esto es necesario cuando existen miles de archivos a escanear */
