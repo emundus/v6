@@ -1793,6 +1793,7 @@ tr.fabrikFilterContainer{
   display: inline-block;
   position: relative;
   overflow: hidden;
+  width: 100%;
   input[type=file] {
     left: 0;
     top: 0;
@@ -1800,15 +1801,24 @@ tr.fabrikFilterContainer{
     position: absolute;
     font-size: 40px;
     cursor: pointer;
+    padding: 30px 12px !important;
   }
   .btn-upload{
     color: var(--neutral-50);
-    background: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
-    padding: 8px 12px;
+    border: 1px dashed #E3E3E3;
     border-radius: var(--applicant-border-radius) !important;
     cursor: pointer;
     margin: 8px 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 12px;
+    gap: 12px;
+    p{
+      margin-top: 0 !important;
+      color: var(--neutral-900) !important;
+    }
   }
   .em-deleteFile{
     margin-left: 10px;

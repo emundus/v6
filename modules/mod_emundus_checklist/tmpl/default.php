@@ -104,7 +104,7 @@ if (!empty($checkout_url)){
                     >
                     <?php foreach ($uploads as $upload) : ?>
                         <div class="em-flex-row em-mb-8">
-                            <span class="material-icons-outlined em-main-500-color" style="font-size: 16px">check_circle</span>
+                            <span class="material-icons em-main-500-color" style="font-size: 16px">check_circle</span>
                             <a class="em-font-size-12 em-ml-8 mod_emundus_checklist___attachment_links"  href="<?php echo $itemid['link'].'&Itemid='.$itemid['id'].'#a'.$upload->attachment_id ?>">
                                 <?php echo $upload->attachment_name ?>
                                 <?php if($upload->filesize > 0) :?>
