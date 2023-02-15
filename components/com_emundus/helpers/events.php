@@ -821,19 +821,27 @@ class EmundusHelperEvents {
         \Joomla\CMS\Factory::getApplication()->triggerEvent('onBeforeSubmitFile', [$student->id, $student->fnum]);
         \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
-        $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $db->Quote($now) . ', status='.$new_status.' WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
-        $db->setQuery($query);
+        $query = $db->getQuery(true);
+        $query->update('#__emundus_campaign_candidature')
+            ->set('submitted = 1')
+            ->set('date_submitted = ' . $db->quote($now))
+            ->set('status = ' . $new_status)
+            ->where('fnum = ' . $db->quote($student->fnum));
 
         try {
+            $db->setQuery($query);
             $updated = $db->execute();
         } catch (Exception $e) {
             $updated = false;
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
 
-
         if ($updated && $old_status != $new_status) {
             $this->logUpdateState($old_status, $new_status, $student->id, $applicant_id, $student->fnum);
+
+            $dispatcher = JEventDispatcher::getInstance();
+            $dispatcher->trigger('onAfterStatusChange', [$student->fnum, $new_status]);
+            $dispatcher->trigger('callEventHandler', ['onAfterStatusChange', ['fnum' => $student->fnum, 'state' => $new_status, 'old_state' => $old_status]]);
         }
 
         $query = 'UPDATE #__emundus_declaration SET time_date=' . $db->Quote($now) . ' WHERE user='.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
