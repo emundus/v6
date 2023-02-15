@@ -58,7 +58,7 @@ JHtml::_('bootstrap.tooltip');
             <?php endif; ?>
 
             <div class="formulaire">
-                <p>ou connectez-vous : </p>
+                <p><?php echo JText::_('MOD_EMUNDUS_CAS_OR_LOGIN'); ?></p>
                 <br />
                 <form action="<?php echo JRoute::_('index.php', true, $params->get('usesecure', 0)); ?>" method="post"
                       id="login-form" class="form-inline">
