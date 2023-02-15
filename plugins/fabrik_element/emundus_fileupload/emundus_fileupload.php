@@ -267,7 +267,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
             }
 
             $target = '/images'.DS.'emundus'.DS.'files'.DS.$user.DS.$fileName;
-            $result['files'][] = array('filename' => $fileName,'local_filename' => $local_fileName, 'target' => $target);
+            $result['files'][] = array('filename' => $fileName,'local_filename' => $local_fileName, 'target' => $target, 'can_be_deleted' => $upload->can_be_deleted, 'can_be_viewed' => $upload->can_be_viewed);
         }
 
         echo json_encode($result);
@@ -414,7 +414,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $db = JFactory::getDBO();
 
         $query = $db->getQuery(true);
-        $query->select(array($db->quoteName('id'),$db->quoteName('filename'),$db->quoteName('local_filename')))
+        $query->select(array($db->quoteName('id'),$db->quoteName('filename'),$db->quoteName('local_filename'),$db->quoteName('can_be_deleted'),$db->quoteName('can_be_viewed')))
             ->from($db->quoteName('#__emundus_uploads'))
             ->where($db->quoteName('attachment_id') . ' = ' . $attachId . ' AND ' . $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
         $db->setQuery($query);
