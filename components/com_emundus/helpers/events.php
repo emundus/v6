@@ -838,10 +838,8 @@ class EmundusHelperEvents {
 
         if ($updated && $old_status != $new_status) {
             $this->logUpdateState($old_status, $new_status, $student->id, $applicant_id, $student->fnum);
-
-            $dispatcher = JEventDispatcher::getInstance();
-            $dispatcher->trigger('onAfterStatusChange', [$student->fnum, $new_status]);
-            $dispatcher->trigger('callEventHandler', ['onAfterStatusChange', ['fnum' => $student->fnum, 'state' => $new_status, 'old_state' => $old_status]]);
+            \Joomla\CMS\Factory::getApplication()->triggerEvent('onAfterStatusChange', [$student->fnum, $new_status]);
+            \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterStatusChange', ['fnum' => $student->fnum, 'state' => $new_status, 'old_state' => $old_status]]);
         }
 
         $query = 'UPDATE #__emundus_declaration SET time_date=' . $db->Quote($now) . ' WHERE user='.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
