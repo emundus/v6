@@ -172,11 +172,11 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
         \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
         $query = $db->getQuery(true);
-        $query->update('#__emundus_campaign_candidature')
-            ->set('submitted = 1')
-            ->set('date_submitted = ' . $db->quote($now))
-            ->set('status = ' . $new_status)
-            ->where('fnum = ' . $db->quote($student->fnum));
+        $query->update($db->quoteName('#__emundus_campaign_candidature'))
+            ->set($db->quoteName('submitted') . ' = 1')
+            ->set($db->quoteName('date_submitted') . ' = ' . $db->quote($now))
+            ->set($db->quoteName('status') . ' = ' . $new_status)
+            ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($student->fnum));
 
         try {
             $db->setQuery($query);
