@@ -198,6 +198,10 @@ class EmundusModelLogs extends JModelList {
         $action = implode(',', $action);
         $crud = implode(',', $db->quote($crud));
 
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $showTimeFormat = $eMConfig->get('log_show_timeformat', 0);
+        $showTimeOrder = $eMConfig->get('log_show_timeorder', 'DESC');
+
 		// Build a where depending on what params are present.
         $where = $db->quoteName('fnum_to').' LIKE '.$db->quote($fnum);
         if (!empty($user_from))
@@ -211,7 +215,7 @@ class EmundusModelLogs extends JModelList {
 			->from($db->quoteName('#__emundus_logs', 'lg'))
 			->leftJoin($db->quoteName('#__emundus_users', 'us').' ON '.$db->QuoteName('us.user_id').' = '.$db->QuoteName('lg.user_id_from'))
 			->where($where)
-            ->order($db->QuoteName('lg.id') . ' DESC');
+            ->order($db->quoteName('lg.timestamp') . ' ' . $showTimeOrder);
 
         if(!is_null($offset)) {
             $query->setLimit($limit, $offset);
@@ -222,7 +226,7 @@ class EmundusModelLogs extends JModelList {
             $results = $db->loadObjectList();
 
             foreach ($results as $result) {
-                $result->date = EmundusHelperDate::displayDate($result->timestamp,'DATE_FORMAT_LC2',0);
+                $result->date = EmundusHelperDate::displayDate($result->timestamp,'DATE_FORMAT_LC2',(int)$showTimeFormat);
             }
 		} catch (Exception $e) {
             JLog::add('Could not getActionsOnFnum in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');

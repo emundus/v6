@@ -703,10 +703,11 @@ class FabrikFEModelForm extends FabModelForm
 		{
 			$scripts[$scriptsKey] = 'components/com_fabrik/js/' . $view . '_' . $this->getId() . '.js';
 		}
-        elseif (JFile::exists(COM_FABRIK_FRONTEND . '/js/custom_' . $view . '.js'))
-        {
-            $scripts[$scriptsKey] = 'components/com_fabrik/js/custom_' . $view . '.js';
-        }
+
+		if (JFile::exists(COM_FABRIK_FRONTEND . '/js/custom_' . $view . '.js'))
+		{
+			$scripts[$scriptsKey] = 'components/com_fabrik/js/custom_' . $view . '.js';
+		}
 	}
 
 	/**
@@ -2318,7 +2319,7 @@ class FabrikFEModelForm extends FabModelForm
 
 					// $$$ rob $this->formData was $_POST, but failed to get anything for calculation elements in php 5.2.1
 					$formData = $elementModel->getValue($this->formData, $c, array('runplugins' => 0, 'use_default' => false, 'use_querystring' => false));
-
+					
 					/* remove get_magic_quotes_gpc (always false since php5.4, deprecated in php7.4)
 					if (get_magic_quotes_gpc())
 					{
