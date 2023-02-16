@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <extension version="3.9" type="module" client="site" method="upgrade">
     <name>mod_gantry5_particle</name>
-    <version>5.5.3</version>
-    <creationDate>October 29, 2021</creationDate>
+    <version>5.5.15</version>
+    <creationDate>September  5, 2022</creationDate>
     <author>RocketTheme, LLC</author>
     <authorEmail>support@rockettheme.com</authorEmail>
     <authorUrl>http://www.rockettheme.com</authorUrl>
-    <copyright>(C) 2005 - 2021 RocketTheme, LLC. All rights reserved.</copyright>
+    <copyright>(C) 2005 - 2022 RocketTheme, LLC. All rights reserved.</copyright>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2</license>
     <description>MOD_GANTRY5_PARTICLE_DESCRIPTION</description>
 
@@ -30,14 +30,12 @@
                 <field
                     name="moduleclass_sfx"
                     type="text"
-                    label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
-                    description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC" />
+                    label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL" />
 
                 <field
                         name="owncache"
                         type="list"
                         label="COM_MODULES_FIELD_CACHING_LABEL"
-                        description="COM_MODULES_FIELD_CACHING_DESC"
                         default="0"
                 >
                     <option value="1">JGLOBAL_USE_GLOBAL</option>
@@ -48,8 +46,7 @@
                         name="cache_time"
                         type="text"
                         default="900"
-                        label="COM_MODULES_FIELD_CACHE_TIME_LABEL"
-                        description="COM_MODULES_FIELD_CACHE_TIME_DESC" />
+                        label="COM_MODULES_FIELD_CACHE_TIME_LABEL" />
             </fieldset>
         </fields>
     </config>
