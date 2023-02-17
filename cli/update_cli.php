@@ -119,9 +119,12 @@ class UpdateCli extends JApplicationCli
         if (isset($options["u"]) || isset($options["update"]) || isset($options["a"]) || isset($options["all"]) || isset($options["c"]) || isset($options["core"])) {
             $this->out("###########################################################");
 
-            $this->out($this->colorLog("$this->count_fails components failed to be updated !",'e'));
-            $this->out($this->colorLog("$this->count_exec components are up to date",'s'));
-
+            if ($this->count_fails == 0 ) {
+                $this->out($this->colorLog("$this->count_exec components are up to date",'s'));
+            } else {
+                $this->out($this->colorLog("$this->count_fails components failed to be updated !",'e'));
+            }
+            
             if ($this->verbose) {
                 $this->out($this->colorLog("  -> $this->count_stmt sql statements executed",'i'));
 
@@ -478,7 +481,7 @@ class UpdateCli extends JApplicationCli
                         $this->out("-> Scriptfile doesn't exists");
                     }
                 } else {
-                    $this->out($this->colorLog($manifest_cache['name'] . " component already up-to-date\n",'s'));
+                    $this->out($this->colorLog($elementArr['element'] . " component already up-to-date\n",'s'));
                     $this->updateSchema($elementArr['extension_id'], null, null, $this->manifest_xml->version);
                     continue;
                 }
