@@ -214,6 +214,7 @@ publish-db-image-job:
 deployer:
   environment: 
     name: development/auto
+    deployment_tier: development
   variables:
     DEPLOY_OPTIONS: "env=dev"
   rules:
@@ -222,6 +223,7 @@ deployer:
 deployer-auto-production:
   environment: 
     name: production/auto
+    deployment_tier: production
   extends:
     - deployer
   variables:
@@ -232,6 +234,7 @@ deployer-auto-production:
 deployer-manual-5e3GnMFODFGrWBA9SXKHj8sHTOyJShuM:
   environment: 
     name: production/manual
+    deployment_tier: production
   extends:
     - deployer
   variables:
