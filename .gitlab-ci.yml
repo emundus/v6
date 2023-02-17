@@ -247,4 +247,4 @@ deployer-manual-5e3GnMFODFGrWBA9SXKHj8sHTOyJShuM:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: 'alias=5e3GnMFODFGrWBA9SXKHj8sHTOyJShuM'
+    DEPLOY_OPTIONS: 'id=5e3GnMFODFGrWBA9SXKHj8sHTOyJShuM'
