@@ -216,16 +216,12 @@ deployer:
     DEPLOY_OPTIONS: "env=prod"
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
-  tags:
-    - deployer
 
 deployer-staging:
   extends:
     - deployer
   variables:
     DEPLOY_OPTIONS: "env=staging"
-  tags:
-    - deployer
   rules:
     - if: $CI_COMMIT_BRANCH == "dev"
 
@@ -234,5 +230,3 @@ deployer-manual-5e3GnMFODFGrWBA9SXKHj8sHTOyJShuM:
     - deployer
   variables:
     DEPLOY_OPTIONS: 'alias=5e3GnMFODFGrWBA9SXKHj8sHTOyJShuM'
-  tags:
-    - deployer
