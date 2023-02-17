@@ -508,7 +508,7 @@ class com_emundusInstallerScript
 					->where("JSON_EXTRACT(params,'$.curl_code') LIKE '%media\/com_emundus\/lib\/chosen\/chosen.min.css%'");
 				$db->setQuery($query);
 				$forms_to_update = $db->loadObjectList();
-				
+
 				foreach ($forms_to_update as $form){
 					$params = json_decode($form->params);
 					if(isset($params->curl_code)){
@@ -540,10 +540,52 @@ class com_emundusInstallerScript
                 ]);
             }
 
+	        if (version_compare($cache_version, '1.34.56', '<') || $firstrun) {
+		        $db = JFactory::getDbo();
+		        $query = $db->getQuery(true);
+
+		        $query->select('id')
+			        ->from($db->quoteName('#__modules'))
+			        ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_version'))
+			        ->where($db->quoteName('client_id') . ' = 0');
+		        $db->setQuery($query);
+		        $moduleid = $db->loadResult();
+
+		        if(!empty($moduleid)) {
+			        $query->clear()
+				        ->delete($db->quoteName('#__modules_menu'))
+				        ->where($db->quoteName('moduleid') . ' = ' . $moduleid);
+			        $db->setQuery($query);
+			        $db->execute();
+
+			        $query->clear()
+				        ->delete($db->quoteName('#__modules'))
+				        ->where($db->quoteName('id') . ' = ' . $moduleid);
+			        $db->setQuery($query);
+			        $db->execute();
+		        }
+
+		        $query->clear()
+			        ->delete($db->quoteName('#__extensions'))
+			        ->where($db->quoteName('element') . ' LIKE ' . $db->quote('mod_emundus_version'))
+			        ->where($db->quoteName('client_id') . ' = 0');
+		        $db->setQuery($query);
+		        $db->execute();
+	        }
+
 	        if (version_compare($cache_version, '1.35.0', '<') || $firstrun) {
-		        EmundusHelperUpdate::addCustomEvents([
-			        ['label' => 'onWebhookCallbackProcess', 'category' => 'Webhook', 'published' => 1]
-		        ]);
+		        EmundusHelperUpdate::updateYamlVariable('offcanvas', '16rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'width');
+		        EmundusHelperUpdate::updateYamlVariable('breakpoints', '75rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'large-desktop-container');
+		        EmundusHelperUpdate::updateYamlVariable('breakpoints', '60rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'desktop-container');
+		        EmundusHelperUpdate::updateYamlVariable('breakpoints', '48rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tablet-container');
+		        EmundusHelperUpdate::updateYamlVariable('breakpoints', '30rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'large-mobile-container');
+		        EmundusHelperUpdate::updateYamlVariable('breakpoints', '48rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'mobile-menu-breakpoint');
+		        EmundusHelperUpdate::updateYamlVariable('menu', '11rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'col-width');
+		        EmundusHelperUpdate::updateYamlVariable('base', '#f8f8f8', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'background');
+
+                EmundusHelperUpdate::addCustomEvents([
+                    ['label' => 'onWebhookCallbackProcess', 'category' => 'Webhook', 'published' => 1]
+                ]);
 	        }
 
             // Insert new translations in overrides files

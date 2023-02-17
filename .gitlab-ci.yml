@@ -16,6 +16,7 @@ stages:
   - test
   - release
   - publish
+  - deploy
 
 check-tchooz-version-job:
   stage: prepare
@@ -65,49 +66,32 @@ include:
 - project: 'emundus/devops/ci-cd-templates'
   ref: main
   file: '.php_security_checker.yml'
+- project: 'emundus/devops/ci-cd-templates'
+  ref: main
+  file: '.deployer.yml'
 - template: Security/Secret-Detection.gitlab-ci.yml
 
 php_security_checker:
   variables:
       COMPOSER_PATH: "./libraries/emundus/composer.lock"
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
-      when: always
-    - when: never
-  allow_failure: true
 
 php_security_checker_joomla:
   extends:
     - php_security_checker
   variables:
     COMPOSER_PATH: "./libraries/composer.lock"
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
-      when: always
-    - when: never
-  allow_failure: true
 
 php_security_checker_fabrik:
   extends:
     - php_security_checker
   variables:
     COMPOSER_PATH: "./libraries/fabrik/composer.lock"
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
-      when: always
-    - when: never
-  allow_failure: true
 
 php_security_checker_gantry5:
   extends:
     - php_security_checker
   variables:
     COMPOSER_PATH: "./libraries/gantry5/composer.lock"
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
-      when: always
-    - when: never
-  allow_failure: true
 
 php_security_checker_phpgoogleapiclient:
   stage: test
@@ -115,11 +99,6 @@ php_security_checker_phpgoogleapiclient:
     - php_security_checker
   variables:
     COMPOSER_PATH: "./libraries/php-google-api-client/composer.lock"
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
-      when: always
-    - when: never
-  allow_failure: true
 
 phpunit-job:
   stage: test
@@ -231,3 +210,29 @@ publish-db-image-job:
     - docker push emundus/tchooz-db:latest
   needs:
     - release-job
+
+deployer:
+  variables:
+    DEPLOY_OPTIONS: "env=prod"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+  tags:
+    - deployer
+
+deployer-staging:
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: "env=staging"
+  tags:
+    - deployer
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"
+
+deployer-manual-5e3GnMFODFGrWBA9SXKHj8sHTOyJShuM:
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: 'alias=5e3GnMFODFGrWBA9SXKHj8sHTOyJShuM'
+  tags:
+    - deployer
