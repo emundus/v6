@@ -212,20 +212,26 @@ publish-db-image-job:
     - release-job
 
 deployer:
+  environment: 
+    name: development/auto
+  variables:
+    DEPLOY_OPTIONS: "env=dev"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"
+
+deployer-auto-production:
+  environment: 
+    name: production/auto
+  extends:
+    - deployer
   variables:
     DEPLOY_OPTIONS: "env=prod"
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
 
-deployer-staging:
-  extends:
-    - deployer
-  variables:
-    DEPLOY_OPTIONS: "env=staging"
-  rules:
-    - if: $CI_COMMIT_BRANCH == "dev"
-
 deployer-manual-5e3GnMFODFGrWBA9SXKHj8sHTOyJShuM:
+  environment: 
+    name: production/manual
   extends:
     - deployer
   variables:
