@@ -556,6 +556,7 @@ p,
 .gantry.view-list #g-container-main .g-container .page-header {
   margin-top: 50px;
 }
+
 .gantry.view-list #g-container-main .g-container .page-header h1 {
   margin-bottom: 16px;
 }
@@ -1099,7 +1100,7 @@ p,
 
     .campaingapplycontent {
       color: $base-text-color;
-      strong, span,  {
+      strong, span  {
         color: $base-text-color;
       }
     }
@@ -6938,4 +6939,3 @@ p,
       margin-bottom: 64px;
     }
   }
-
