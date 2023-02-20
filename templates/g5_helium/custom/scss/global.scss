@@ -1672,6 +1672,10 @@ p,
       th:first-child{
         display: none;
       }
+      th{
+        padding-left: 0;
+        padding-right: 16px;
+      }
     }
     tbody{
       display: flex;
@@ -1689,6 +1693,8 @@ p,
           font-weight: bold;
         }
         td{
+          padding-left: 0;
+          padding-right: 16px;
           .chzn-container{
             width: auto !important;
             .chzn-single{
@@ -3975,6 +3981,11 @@ p,
     }
 
     .fabrikButtonsContainer.row-fluid ul li {
+
+      a{
+        padding-left: 0;
+        padding-right: 24px;
+      }
 
       a,
       i {
