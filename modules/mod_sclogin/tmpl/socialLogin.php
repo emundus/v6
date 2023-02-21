@@ -1,23 +1,25 @@
 <?php
 /**
  * @package         SCLogin
- * @copyright (c)   2009-2019 by SourceCoast - All Rights Reserved
+ * @copyright (c)   2009-2021 by SourceCoast - All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
- * @version         Release v8.4.3
- * @build-date      2020/05/29
+ * @version         Release v9.0.215
+ * @build-date      2022/09/06
  */
 
 defined('_JEXEC') or die('Restricted access');
 
-if (!class_exists('JFBCFactory'))
+use Joomla\CMS\Language\Text;
+
+if(!$helper->isJFBConnectInstalled)
     return;
 
 $loginButtons = $helper->getLoginButtons($orientation, $alignment);
 
 if ($loginButtons != '')
 {
-    $introText = JText::_('MOD_SCLOGIN_SOCIAL_INTRO_TEXT_LABEL');
-    $postText = JText::_('MOD_SCLOGIN_SOCIAL_POST_TEXT_LABEL');
+    $introText = Text::_('MOD_SCLOGIN_SOCIAL_INTRO_TEXT_LABEL');
+    $postText = Text::_('MOD_SCLOGIN_SOCIAL_POST_TEXT_LABEL');
 
     echo '<div class="sclogin-social-login '.$socialSpan . ' ' . $layout . ' ' . $orientation.'">';
     if($introText)
