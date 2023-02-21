@@ -651,12 +651,13 @@ p,
   max-height: 100px;
   height: 72px;
   background: transparent;
+  top: 0;
 
   .g-container {
     padding: 16px 12px;
     width: 100%;
+    position: sticky;
     margin: auto !important;
-    position: fixed;
     background: var(--neutral-50);
   }
 
@@ -4753,21 +4754,9 @@ screen and (max-height: 769px) {
 
 @media screen and (max-width: 433px)  {
 
-  .gantry #g-navigation.em_emundus_menu_active,
-  .gantry #g-navigation.em_emundus_menu_active .g-container {
-    height: 200px !important;
-    max-height: 100%;
-  }
-
-  .gantry #g-navigation.em_user_dropdown_connected:not(.em_emundus_menu_active),
-  .gantry #g-navigation.em_user_dropdown_connected:not(.em_emundus_menu_active) .g-container {
-    height: 120px !important;
-    max-height: 100%;
-  }
-
-  .gantry #g-navigation.em_user_dropdown_not_connected,
-  .gantry #g-navigation.em_user_dropdown_not_connected .g-container {
-    height: 220px !important;
+  .gantry #g-navigation,
+  .gantry #g-navigation .g-container {
+    height: auto !important;
     max-height: 100%;
   }
 
@@ -4783,20 +4772,9 @@ screen and (max-height: 769px) {
 
 @media all and (min-width: 434px) and (max-width: 479px) {
 
-  .gantry #g-navigation.em_emundus_menu_active,
-  .gantry #g-navigation.em_emundus_menu_active .g-container  {
-    height: 190px !important;
-    max-height: 100%;
-  }
-
-  .gantry #g-navigation.em_user_dropdown_connected:not(.em_emundus_menu_active),
-  .gantry #g-navigation.em_user_dropdown_connected:not(.em_emundus_menu_active) .g-container {
-    height: 120px !important;
-    max-height: 100%;
-  }
-  .gantry #g-navigation.em_user_dropdown_not_connected,
-  .gantry #g-navigation.em_user_dropdown_not_connected .g-container {
-    height: 180px !important;
+  .gantry #g-navigation,
+  .gantry #g-navigation .g-container  {
+    height: auto !important;
     max-height: 100%;
   }
 
@@ -5231,24 +5209,16 @@ screen and (max-height: 769px) {
 @media all and (min-width: 480px) and (max-width: 767px) {
 
   .gantry #g-navigation, .gantry #g-navigation .g-container {
-    height: 190px !important;
-    max-height: 100%;
-  }
-
-  .gantry #g-navigation.em_user_dropdown_connected:not(.em_emundus_menu_active),
-  .gantry #g-navigation.em_user_dropdown_connected:not(.em_emundus_menu_active) .g-container {
-    height: 120px !important;
-    max-height: 100%;
-  }
-
-  .gantry #g-navigation.em_user_dropdown_not_connected,
-  .gantry #g-navigation.em_user_dropdown_not_connected .g-container {
-    height: 180px !important;
+    height: auto !important;
     max-height: 100%;
   }
 
   .gantry #g-navigation .g-grid {
     row-gap: 8px;
+  }
+
+  .gantry #g-navigation .g-container #header-b {
+    justify-content: center;
   }
 
   #g-navigation #header-c {
@@ -5747,20 +5717,8 @@ screen and (max-height: 769px) {
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
 
-  .gantry #g-navigation.em_emundus_menu_active, .gantry #g-navigation.em_emundus_menu_active .g-container {
-    height: 180px !important;
-    max-height: 100%;
-  }
-
-  .gantry #g-navigation.em_user_dropdown_connected:not(.em_emundus_menu_active),
-  .gantry #g-navigation.em_user_dropdown_connected:not(.em_emundus_menu_active) .g-container {
-    height: 120px !important;
-    max-height: 100%;
-  }
-
-  .gantry #g-navigation.em_user_dropdown_not_connected,
-  .gantry #g-navigation.em_user_dropdown_not_connected .g-container {
-    height: 74px !important;
+  .gantry #g-navigation, .gantry #g-navigation .g-container {
+    height: auto !important;
     max-height: 100%;
   }
 
