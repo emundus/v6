@@ -4753,14 +4753,14 @@ screen and (max-height: 769px) {
 
 @media screen and (max-width: 433px)  {
 
-  .gantry #g-navigation.applicant_menu_active,
-  .gantry #g-navigation.applicant_menu_active .g-container {
+  .gantry #g-navigation.em_emundus_menu_active,
+  .gantry #g-navigation.em_emundus_menu_active .g-container {
     height: 200px !important;
     max-height: 100%;
   }
 
-  .gantry #g-navigation.em_user_dropdown_connected:not(.applicant_menu_active),
-  .gantry #g-navigation.em_user_dropdown_connected:not(.applicant_menu_active) .g-container {
+  .gantry #g-navigation.em_user_dropdown_connected:not(.em_emundus_menu_active),
+  .gantry #g-navigation.em_user_dropdown_connected:not(.em_emundus_menu_active) .g-container {
     height: 120px !important;
     max-height: 100%;
   }
@@ -4783,14 +4783,14 @@ screen and (max-height: 769px) {
 
 @media all and (min-width: 434px) and (max-width: 479px) {
 
-  .gantry #g-navigation.applicant_menu_active,
-  .gantry #g-navigation.applicant_menu_active .g-container  {
+  .gantry #g-navigation.em_emundus_menu_active,
+  .gantry #g-navigation.em_emundus_menu_active .g-container  {
     height: 190px !important;
     max-height: 100%;
   }
 
-  .gantry #g-navigation.em_user_dropdown_connected:not(.applicant_menu_active),
-  .gantry #g-navigation.em_user_dropdown_connected:not(.applicant_menu_active) .g-container {
+  .gantry #g-navigation.em_user_dropdown_connected:not(.em_emundus_menu_active),
+  .gantry #g-navigation.em_user_dropdown_connected:not(.em_emundus_menu_active) .g-container {
     height: 120px !important;
     max-height: 100%;
   }
@@ -4800,7 +4800,7 @@ screen and (max-height: 769px) {
     max-height: 100%;
   }
 
-  .gantry #g-navigation.applicant_menu_active .g-container #header-b {
+  .gantry #g-navigation.em_emundus_menu_active .g-container #header-b {
     justify-content: center;
   }
 
@@ -5235,8 +5235,8 @@ screen and (max-height: 769px) {
     max-height: 100%;
   }
 
-  .gantry #g-navigation.em_user_dropdown_connected:not(.applicant_menu_active),
-  .gantry #g-navigation.em_user_dropdown_connected:not(.applicant_menu_active) .g-container {
+  .gantry #g-navigation.em_user_dropdown_connected:not(.em_emundus_menu_active),
+  .gantry #g-navigation.em_user_dropdown_connected:not(.em_emundus_menu_active) .g-container {
     height: 120px !important;
     max-height: 100%;
   }
@@ -5259,7 +5259,7 @@ screen and (max-height: 769px) {
     width: 100% !important;
   }
 
-  .gantry #g-navigation.applicant_menu_active .g-container #header-b {
+  .gantry #g-navigation.em_emundus_menu_active .g-container #header-b {
     justify-content: center;
   }
 
@@ -5747,13 +5747,13 @@ screen and (max-height: 769px) {
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
 
-  .gantry #g-navigation.applicant_menu_active, .gantry #g-navigation.applicant_menu_active .g-container {
+  .gantry #g-navigation.em_emundus_menu_active, .gantry #g-navigation.em_emundus_menu_active .g-container {
     height: 180px !important;
     max-height: 100%;
   }
 
-  .gantry #g-navigation.em_user_dropdown_connected:not(.applicant_menu_active),
-  .gantry #g-navigation.em_user_dropdown_connected:not(.applicant_menu_active) .g-container {
+  .gantry #g-navigation.em_user_dropdown_connected:not(.em_emundus_menu_active),
+  .gantry #g-navigation.em_user_dropdown_connected:not(.em_emundus_menu_active) .g-container {
     height: 120px !important;
     max-height: 100%;
   }
@@ -5776,7 +5776,7 @@ screen and (max-height: 769px) {
     row-gap: 8px;
   }
 
-  .gantry #g-navigation.applicant_menu_active .g-container #header-b {
+  .gantry #g-navigation.em_emundus_menu_active .g-container #header-b {
     justify-content: center;
   }
 
