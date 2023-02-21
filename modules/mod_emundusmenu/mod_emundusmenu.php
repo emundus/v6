@@ -69,3 +69,13 @@ $class_sfx = htmlspecialchars($params->get('class_sfx'));
 if (count($list)) {
     require JModuleHelper::getLayoutPath('mod_emundusmenu', $layout);
 }
+
+$applicant_menu = ($display_applicant_menu == 1) ? 'applicant_menu_active' : 'applicant_menu_not_active';
+?>
+
+<script type="text/javascript">
+
+    var element = document.getElementById("g-navigation");
+    element.classList.add("<?= $applicant_menu ?>");
+
+</script>

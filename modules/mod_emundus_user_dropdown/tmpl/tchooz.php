@@ -355,4 +355,14 @@ else {
             document.querySelector('#header-c .g-content').style.alignItems = 'start';
         });*/
     </script>
-<?php } ?>
+<?php }
+$em_user_dropdown_connected = ($user != null) ? 'em_user_dropdown_connected' : 'em_user_dropdown_not_connected';
+
+?>
+
+<script type="text/javascript">
+
+    var element = document.getElementById("g-navigation");
+    element.classList.add("<?= $em_user_dropdown_connected ?>");
+
+</script>
