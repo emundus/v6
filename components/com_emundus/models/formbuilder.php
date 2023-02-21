@@ -1582,9 +1582,11 @@ class EmundusModelFormbuilder extends JModelList {
      */
     function updateOrder($elements, $group_id, $user, $moved_el = null)
     {
+        $updated = false;
+
         if ($moved_el != null) {
             if ($moved_el['group_id'] == $group_id) {
-                return $this->updateGroupElementsOrder($elements, $group_id);
+                $updated = $this->updateGroupElementsOrder($elements, $group_id);
             } else {
 
                 // groupe cible different du groupe de provenance
@@ -1644,9 +1646,10 @@ class EmundusModelFormbuilder extends JModelList {
                 $updated = $this->updateGroupElementsOrder($elements, $group_id);
             }
         } else {
-            return $this->updateGroupElementsOrder($elements, $group_id);
+            $updated = $this->updateGroupElementsOrder($elements, $group_id);
         }
 
+        return $updated;
     }
 
     function updateElementOrder($group_id, $element_id, $new_index)
