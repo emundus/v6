@@ -545,7 +545,7 @@ class plgUserEmundus extends JPlugin
             $table = JTable::getInstance('user', 'JTable');
 
             $user = JFactory::getSession()->get('emundusUser');
-            if(empty($user)) {
+            if(empty($user) || empty($user->id)) {
                 include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
                 $m_profile = new EmundusModelProfile();
                 $m_profile->initEmundusSession();
