@@ -16,7 +16,18 @@
         <fields name="params">
             <fieldset name="basic">
                 <field label="Condition PHP" desc="Si le code retourne false, alors l'utilisateur sera redirigé vers la page de redirection saisie" name="condition" type="textarea"></field>
-                <field label="URL" desc="URL sur laquelle rediriger si la condition renvoie false" name="redirection_url" type="text"></field>
+                <field
+                        label="URL"
+                        desc="URL sur laquelle rediriger si la condition renvoie false"
+                        name="redirection_url"
+                        query="SELECT jm.id, CONCAT(jmt.title, ' - ', jm.title) as label
+                            FROM jos_menu jm
+                            RIGHT JOIN jos_menu_types jmt on jm.menutype = jmt.menutype
+                            WHERE jm.published = 1 order by jm.menutype, jm.title"
+                        type="sql"
+                        key_field="id"
+                        value_field="label"
+                ></field>
                 <field label="Message de redirection" desc="Message affiché après redirection" name="redirection_message" type="text"></field>
                 <field
                         name="list_unimpacted_urls"
@@ -25,7 +36,16 @@
                         label="Liste de liens non impactés"
                 >
                     <fieldset hidden="true" name="list_unimpacted_urls_modal" repeat="true">
-                        <field name="unimpacted_url" label="URL" type="text"></field>
+                        <field
+                                name="unimpacted_url" label="URL"
+                                query="SELECT jm.id, CONCAT(jmt.title, ' - ', jm.title) as label
+                                    FROM jos_menu jm
+                                    RIGHT JOIN jos_menu_types jmt on jm.menutype = jmt.menutype
+                                    WHERE jm.published = 1 order by jm.menutype, jm.title"
+                               type="sql"
+                               key_field="id"
+                               value_field="label"
+                        ></field>
                     </fieldset>
                 </field>
             </fieldset>

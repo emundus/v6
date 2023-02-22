@@ -19,7 +19,9 @@ class plgSystemEmundus_conditional_redirect extends JPlugin {
 		parent::__construct($subject, $config);
 		$this->loadLanguage();
 
-		if (!isset($this->params)) {
+        JLog::addLogger(['text_file' => 'plugins.emundus_conditional_redirect.php'], JLog::ALL, 'plugins.emundus_conditional_redirect');
+
+        if (!isset($this->params)) {
 			$plugin = JPluginHelper::getPlugin('system', 'emundus_conditional_redirect');
 			$this->params = new JRegistry(@$plugin->params);
 		}
@@ -34,18 +36,25 @@ class plgSystemEmundus_conditional_redirect extends JPlugin {
 		}
 
         $code_php = $this->params->get('condition');
-        $redirection_url = $this->params->get('redirection_url');
+        $menu_item_id = $this->params->get('redirection_url');
+        $redirection_url = JRoute::_('index.php?Itemid='.$menu_item_id);
+
         if (!empty($code_php) && !empty($redirection_url)) {
             $unimpacted_urls = $this->params->get('list_unimpacted_urls');
             $unimpacted_urls = json_decode($unimpacted_urls, true);
+            $menu = $app->getMenu();
+            $current_menu = $menu->getActive();
 
-            $current_uri = JUri::getInstance();
-            $path = $current_uri->getPath();
-            $absoulte_url = $current_uri->render();
-            if ($path == $redirection_url || $absoulte_url == $redirection_url || !empty(array_intersect([$path, $absoulte_url], $unimpacted_urls['unimpacted_url']))) {
+            if ($current_menu->id == $menu_item_id || in_array($current_menu->id, $unimpacted_urls['unimpacted_url'])) {
                 // User on selected redirection url, no need to run code
             } else {
-                $code_response = eval($code_php);
+                $code_response = true;
+                try {
+                    $code_response = eval($code_php);
+                } catch (Exception $e) {
+                    JLog::add('Failed to evaluate condition for redirection ' . $e->getMessage(), JLog::ERROR, 'plugins.emundus_conditional_redirect');
+                    $code_response = true;
+                }
 
                 if ($code_response === false) {
                     $redirection_message = JText::_($this->params->get('redirection_message'));
