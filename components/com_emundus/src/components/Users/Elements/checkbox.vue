@@ -1,7 +1,7 @@
 <template>
   <div class="control-group fabrikElementContainer">
-    <label class="fabrikLabel">{{ element.label }}</label>
-      <div v-if="!readonly" class="fabrikElement">
+	  <label class="fabrikLabel" v-html="element.label"></label>
+	  <div v-if="!readonly" class="fabrikElement">
         <div class="fabrikSubElementContainer">
           <div class="row-fluid">
           <div class="fabrikgrid_checkbox" v-for="(sub_label, index) in options.sub_labels">

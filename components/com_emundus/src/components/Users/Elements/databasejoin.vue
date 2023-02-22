@@ -1,7 +1,7 @@
 <template>
   <div class="control-group fabrikElementContainer">
-    <label class="fabrikLabel">{{ element.label }}</label>
-    <div class="fabrikElement">
+	  <label class="fabrikLabel" v-html="element.label"></label>
+	  <div class="fabrikElement">
     <select v-if="!readonly && !advanced_select" class="fabrikinput em-w-100" :id="'input_' + element.id" :value="value" :name="element.name" v-model="value">
       <option v-if="params.database_join_show_please_select == 1" value="">{{ translate('PLEASE_SELECT') }}</option>
       <option v-for="option in options" :value="option.primary_key">{{ option.value }}</option>
