@@ -26,7 +26,7 @@ class plgSystemEmundus_conditional_redirect extends JPlugin {
 	}
 
 
-    function onAfterInitialise() {
+    function onAfterRender() {
 		$app = JFactory::getApplication();
 
 		if ($app->isAdmin() || JFactory::getUser()->guest) {
@@ -60,5 +60,4 @@ class plgSystemEmundus_conditional_redirect extends JPlugin {
 
 		return true;
 	}
-
 }

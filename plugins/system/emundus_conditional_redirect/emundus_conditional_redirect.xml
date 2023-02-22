@@ -2,7 +2,7 @@
 <extension type="plugin" version="3.10" method="upgrade" group="system">
     <name>Emundus Conditional Redirect Plugin</name>
     <creationDate>21 February 2023</creationDate>
-    <version>6.6.3</version>
+    <version>1.35.0</version>
     <author>eMundus</author>
     <authorEmail>dev@emundus.fr</authorEmail>
     <authorUrl>http://www.emundus.fr</authorUrl>
