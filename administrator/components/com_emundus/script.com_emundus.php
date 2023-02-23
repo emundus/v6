@@ -540,6 +540,74 @@ class com_emundusInstallerScript
                 ]);
             }
 
+            if (version_compare($cache_version, '1.34.63', '<') || $firstrun) {
+                // Add or update onchange js action for forbidden characters in password
+                $password_jsaction = [
+                    'params' => '{"js_e_event":"","js_e_trigger":"fabrik_trigger_group_group640","js_e_condition":"","js_e_value":"","js_published":"1"}',
+                    'code' => "var wrong_password_title = [&#039;Invalid password&#039;, &#039;Mot de passe invalide&#039;];
+                    var wrong_password_description = [&#039;The characters #${};&lt;&gt; are forbidden&#039;, &#039;Les caractères #${};&lt;&gt; sont interdits&#039;];
+                    
+                    var site_url = window.location.toString();
+                    var site_url_lang_regexp = /\w+.\/en/d;
+                    
+                    var index = 0;
+                    
+                    if(site_url.match(site_url_lang_regexp) === null) { index = 1; }
+                    
+                    var regex = /[#${};&lt;&gt; ]/;
+                    var password_value = this.form.formElements.get(&#039;jos_emundus_users___password&#039;).get(&#039;value&#039;);
+                    
+                    var password = this.form.formElements.get(&#039;jos_emundus_users___password&#039;);
+                    if (password_value.match(regex) != null) {
+                      Swal.fire({
+                        type: &#039;error&#039;,
+                        title: wrong_password_title[index],
+                        text: wrong_password_description[index],
+                        reverseButtons: true,
+                        customClass: {
+                          title: &#039;em-swal-title&#039;,
+                          confirmButton: &#039;em-swal-confirm-button&#039;,
+                          actions: &#039;em-swal-single-action&#039;,
+                        }
+                      });
+                      password.set(&#039;&#039;);
+                    }"
+                ];
+
+                $query->clear()
+                    ->select($db->quoteName('id'))
+                    ->from($db->quoteName('#__fabrik_elements'))
+                    ->where($db->quoteName('plugin') . ' = ' . $db->quote('password'))
+                    ->andWhere($db->quoteName('name') . ' = ' . $db->quote('password'));
+                $db->setQuery($query);
+                $password_inputs = $db->loadColumn();
+
+                if (!empty($password_inputs)) {
+                    foreach($password_inputs as $password) {
+                        $password_jsaction['element_id'] = $password;
+                        $query->clear()
+                            ->select($db->quoteName('id'))
+                            ->from($db->quoteName('#__fabrik_jsactions'))
+                            ->where($db->quoteName('element_id') . ' = ' . $db->quote($password_jsaction['element_id']))
+                            ->andWhere($db->quoteName('action') . ' = ' . $db->quote('change'))
+                            ->andWhere($db->quoteName('code') . ' LIKE ' . $db->quote('%Invalid password%'));
+                        $db->setQuery($query);
+                        $password_onchange = $db->loadResult();
+
+                        if (!empty($password_onchange)) {
+                            $password_jsaction['action_id'] = $password_onchange;
+                            EmundusHelperUpdate::updateJsAction($password_jsaction);
+                        } else {
+                            EmundusHelperUpdate::addJsAction($password_jsaction);
+                        }
+                    }
+                }
+                //
+
+                // Install send_file_archive and enable it, or enable it if already installed
+
+            }
+
             // Insert new translations in overrides files
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
 
