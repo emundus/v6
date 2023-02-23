@@ -327,111 +327,127 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 		}
 
 		// And now begins the YouSign API Magic.
-        $client = new GuzzleClient();
-        $params = [
-            'name' => $file->name,
-            'delivery_mode' => 'email',
-        ];
-        $response = $client->request('POST', $host . '/signature_requests', ['body' => json_encode($params), 'headers' => [
-            'Content-Type' => 'application/json',
-            'Authorization' => 'Bearer '.$api_key,
-            'accept' => 'application/json'
-        ]]);
+        try {
+            $client = new GuzzleClient();
+            $response = $client->request('POST', $host . '/signature_requests', ['body' => json_encode([
+                'name' => $file->name,
+                'delivery_mode' => 'email',
+            ]), 'headers' => [
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer '.$api_key,
+                'accept' => 'application/json'
+            ]]);
 
-        $signatureRequest = json_decode($response->getBody());
+            $signatureRequest = json_decode($response->getBody());
 
-        if (!empty($signatureRequest->id)) {
-            $signatureRequestId = $signatureRequest->id;
+            if (!empty($signatureRequest->id)) {
+                $signatureRequestId = $signatureRequest->id;
 
-            $file_pointer = fopen($fileNamePath, 'r');
+                $file_pointer = fopen($fileNamePath, 'r');
 
-            if ($file_pointer) {
-                $document_response = $client->request('POST', $host.'/signature_requests/' . $signatureRequestId . '/documents',
-                    [
-                        'multipart' => [
-                            [
-                                'name' => 'nature',
-                                'contents' => 'signable_document'
+                if ($file_pointer) {
+                    $document_response = $client->request('POST', $host.'/signature_requests/' . $signatureRequestId . '/documents',
+                        [
+                            'multipart' => [
+                                [
+                                    'name' => 'nature',
+                                    'contents' => 'signable_document'
+                                ],
+                                [
+                                    'name' => 'file',
+                                    'filename' => $file->name,
+                                    'contents' => $file_pointer,
+                                    'headers' => ['Content-Type' => 'application/pdf']
+                                ]
                             ],
-                            [
-                                'name' => 'file',
-                                'filename' => $file->name,
-                                'contents' => $file_pointer,
-                                'headers' => ['Content-Type' => 'application/pdf']
+                            'headers' => ['Accept' => 'application/json', 'Authorization' => 'Bearer '.$api_key]
+                        ]);
+                    fclose($file_pointer);
+
+                    if ($document_response->getStatusCode() == 201) {
+                        $document_body = json_decode($document_response->getBody());
+
+                        $params = [
+                            'signature_level' => "electronic_signature",
+                            'signature_authentication_mode'=> 'otp_email',
+                            'info' => [],
+                            'fields' => [
+                                [
+                                    'document_id' => $document_body->id,
+                                    'type' => 'signature',
+                                    'page' => (int)$this->getParam('signature_page', 1),
+                                    'x' => 249,
+                                    'y' => 540
+                                ]
                             ]
-                        ],
-                        'headers' => ['Accept' => 'application/json', 'Authorization' => 'Bearer '.$api_key]
-                    ]);
-                fclose($file_pointer);
-
-                if ($document_response->getStatusCode() == 201) {
-                    $document_body = json_decode($document_response->getBody());
-
-                    $params = [
-                        'signature_level' => "electronic_signature",
-                        'signature_authentication_mode'=> 'otp_email',
-                        'info' => [],
-                        'fields' => [
-                            [
-                                'document_id' => $document_body->id,
-                                'type' => 'signature',
-                                'page' => (int)$this->getParam('signature_page', 1),
-                                'x' => 249,
-                                'y' => 540
-                            ]
-                        ]
-                    ];
-
-                    foreach ($signers['names'] as $key => $name) {
-                        $name = preg_split('/\s+/', $name);
-                        $params['info'] = [
-                            'first_name' => $name[0],
-                            'last_name' => $name[1],
-                            'email' => $signers['emails'][$key],
-                            'locale' => 'fr'
                         ];
-                    }
-                    $create_signer_response = $client->request('POST', $host .  '/signature_requests/' . $signatureRequestId . '/signers', [
-                        'body' => json_encode($params),
-                        'headers' => ['Accept' => 'application/json', 'Authorization' => 'Bearer '.$api_key, 'Content-Type' => 'application/json']
-                    ]);
 
-                    if ($create_signer_response->getStatusCode() == 201) {
-                        $activate_response = $client->request('POST', $host . "/signature_requests/" . $signatureRequestId . "/activate", [
+                        foreach ($signers['names'] as $key => $name) {
+                            $name = preg_split('/\s+/', $name);
+                            $params['info'] = [
+                                'first_name' => $name[0],
+                                'last_name' => $name[1],
+                                'email' => $signers['emails'][$key],
+                                'locale' => 'fr'
+                            ];
+                        }
+                        $create_signer_response = $client->request('POST', $host .  '/signature_requests/' . $signatureRequestId . '/signers', [
+                            'body' => json_encode($params),
                             'headers' => ['Accept' => 'application/json', 'Authorization' => 'Bearer '.$api_key, 'Content-Type' => 'application/json']
                         ]);
 
-                        if ($activate_response->getStatusCode() == 201) {
-                            $embbed_url = '';
-                            $activate_response_data = json_decode($activate_response->getBody(), true);
+                        if ($create_signer_response->getStatusCode() == 201) {
+                            $activate_response = $client->request('POST', $host . "/signature_requests/" . $signatureRequestId . "/activate", [
+                                'headers' => ['Accept' => 'application/json', 'Authorization' => 'Bearer '.$api_key, 'Content-Type' => 'application/json']
+                            ]);
 
-                            if (!empty($activate_response_data['signers'])) {
-                                $embbed_url = activate_response_data['signers'][0]['signature_link'];
-                            }
+                            if ($activate_response->getStatusCode() == 201) {
+                                $embbed_url = '';
+                                $activate_response_data = json_decode($activate_response->getBody(), true);
 
-                            if ($this->getParam('method') === 'embed') {
-                                $application->redirect($this->getParam('embed_url', 'index.php?option=com_emundus&view=yousign&iframe_url=' . $embbed_url));
+                                if (!empty($activate_response_data['signers'])) {
+                                    $embbed_url = activate_response_data['signers'][0]['signature_link'];
+                                }
+
+                                if ($this->getParam('method') === 'embed') {
+                                    $application->redirect($this->getParam('embed_url', 'index.php?option=com_emundus&view=yousign&iframe_url=' . $embbed_url));
+                                }
+                            } else {
+                                JLog::add('Failed to activate signature request.', JLog::ERROR, 'com_emundus.yousign');
+                                throw new Exception('Failed to activate signature request.');
                             }
                         } else {
-                            JLog::add('Failed to activate signature request.', JLog::ERROR, 'com_emundus.error');
-                            throw new Exception('Failed to activate signature request.');
+                            JLog::add('Failed to create signer for signature request.', JLog::ERROR, 'com_emundus.yousign');
+                            throw new Exception('Failed to create signer for signature request.');
                         }
                     } else {
-                        JLog::add('Failed to create signer for signature request.', JLog::ERROR, 'com_emundus.error');
-                        throw new Exception('Failed to create signer for signature request.');
+                        JLog::add('Failed to create document in yousign.', JLog::ERROR, 'com_emundus.yousign');
+                        throw new Exception('Failed to create document in yousign.');
                     }
                 } else {
-                    JLog::add('Failed to create document in yousign.', JLog::ERROR, 'com_emundus.error');
-                    throw new Exception('Failed to create document in yousign.');
+                    JLog::add('Failed to open file to send it to yousign', JLog::ERROR, 'com_emundus.yousign');
+                    throw new Exception('Failed to open file to send it to yousign.');
                 }
             } else {
-                JLog::add('Failed to open file to send it to yousign', JLog::ERROR, 'com_emundus.error');
-                throw new Exception('Failed to open file to send it to yousign.');
+                JLog::add('Failed to initiate signature request.', JLog::ERROR, 'com_emundus.yousign');
+                throw new Exception('Failed to initiate signature request.');
             }
-        } else {
-            JLog::add('Failed to initiate signature request.', JLog::ERROR, 'com_emundus.error');
-            throw new Exception('Failed to initiate signature request.');
-        }
+        } catch (Exception $e) {
+            // In the case of a YouSign error, unassign the file.
+            $query->clear()
+                ->delete($db->quoteName('#__emundus_users_assoc'))
+                ->where($db->quoteName('user_id').' = '.JFactory::getUser()->id)
+                ->andWhere($db->quoteName('fnum').' IN ("'.implode('","', $fnums).'")');
+            $db->setQuery($query);
+
+            try {
+                $db->execute();
+            } catch (Exception $e) {
+                JLog::add('Error removing assoc users : '.$e->getMessage(), JLog::ERROR, 'com_emundus.yousign');
+            }
+
+            JLog::add('Failed yousign api request.' . $e->getMessage(), JLog::ERROR, 'com_emundus.yousign');
+            throw new Exception(JText::_('ERROR_WITH_YOUSIGN'));        }
 	}
 
 	/**
