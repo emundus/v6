@@ -18,6 +18,8 @@ defined('_JEXEC') or die('Restricted access');
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
+use GuzzleHttp\Client as GuzzleClient;
+
 /**
  * Create a Joomla user from the forms data
  *
@@ -325,165 +327,111 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 		}
 
 		// And now begins the YouSign API Magic.
-		$http = new JHttp();
+        $client = new GuzzleClient();
+        $params = [
+            'name' => $file->name,
+            'delivery_mode' => 'email',
+        ];
+        $response = $client->request('POST', $host . '/signature_requests', ['body' => json_encode($params), 'headers' => [
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer '.$api_key,
+            'accept' => 'application/json'
+        ]]);
 
-		// Step 1. Send file to API.
-		$file = new stdClass();
-		$file->name = $fileName;
-		// API Docs specify not to send the application/pdf part of the base64.
-		$file->content = str_replace('data:application/pdf;base64', '', $base64FileContent);
-		$response = $http->post($host.'/files', json_encode($file),
-		[
-			'Content-Type' => 'application/json',
-			'Authorization' => 'Bearer '.$api_key
-		]);
+        $signatureRequest = json_decode($response->getBody());
 
-		// Code 201 = CREATED
-		if ($response->code === 201) {
-			$response->body = json_decode($response->body);
-			$file_id = $response->body->id;
-			JLog::add('File uploaded to YouSign -> ID: '.$response->body->id, JLog::INFO, 'com_emundus.yousign');
-		} else {
-			JLog::add('ERROR : ('.$response->code.') '.json_decode($response->body)->detail, JLog::ERROR, 'com_emundus.yousign');
-			throw new Exception('ERROR '.$response->code.' FROM YOUSIGN.');
-		}
+        if (!empty($signatureRequest->id)) {
+            $signatureRequestId = $signatureRequest->id;
 
-		// Step 2: Create procedure.
-		$procedure = new stdClass();
-		$procedure->name = $fileName;
-		$procedure->description = 'Created by eMundus.';
+            $file_pointer = fopen($fileNamePath, 'r');
 
-		// Set the webhook up to
-		$webhook = new stdClass();
-		$webhook->url = JUri::base().'index.php?option=com_emundus&controller=webhook&task=yousign&format=raw&token='.JFactory::getConfig()->get('secret');
-		$webhook->method = 'POST';
+            if ($file_pointer) {
+                $document_response = $client->request('POST', $host.'/signature_requests/' . $signatureRequestId . '/documents',
+                    [
+                        'multipart' => [
+                            [
+                                'name' => 'nature',
+                                'contents' => 'signable_document'
+                            ],
+                            [
+                                'name' => 'file',
+                                'filename' => $file->name,
+                                'contents' => $file_pointer,
+                                'headers' => ['Content-Type' => 'application/pdf']
+                            ]
+                        ],
+                        'headers' => ['Accept' => 'application/json', 'Authorization' => 'Bearer '.$api_key]
+                    ]);
+                fclose($file_pointer);
 
-		$procedure->config->webhook->{'procedure.finished'}[] = $webhook;
+                if ($document_response->getStatusCode() == 201) {
+                    $document_body = json_decode($document_response->getBody());
 
-		$members = [];
-		foreach ($signers['names'] as $key => $name) {
-			$name = preg_split('/\s+/', $name);
-			$member = new stdClass();
-			$member->firstname = $name[0];
-			$member->lastname = $name[1];
-			$member->email = $signers['emails'][$key];
-			$member->phone = $signers['tels'][$key];
+                    $params = [
+                        'signature_level' => "electronic_signature",
+                        'signature_authentication_mode'=> 'otp_email',
+                        'info' => [],
+                        'fields' => [
+                            [
+                                'document_id' => $document_body->id,
+                                'type' => 'signature',
+                                'page' => (int)$this->getParam('signature_page', 1),
+                                'x' => 249,
+                                'y' => 540
+                            ]
+                        ]
+                    ];
 
-			$fileObject = new stdClass();
-			$fileObject->file = $file_id;
-			$fileObject->page = (int)$this->getParam('signature_page', 1);
-			$fileObject->position = $this->getParam('signature_position', '230,499,464,589');
-			$fileObject->mention = ''; // TODO: Handle mention ?
+                    foreach ($signers['names'] as $key => $name) {
+                        $name = preg_split('/\s+/', $name);
+                        $params['info'] = [
+                            'first_name' => $name[0],
+                            'last_name' => $name[1],
+                            'email' => $signers['emails'][$key],
+                            'locale' => 'fr'
+                        ];
+                    }
+                    $create_signer_response = $client->request('POST', $host .  '/signature_requests/' . $signatureRequestId . '/signers', [
+                        'body' => json_encode($params),
+                        'headers' => ['Accept' => 'application/json', 'Authorization' => 'Bearer '.$api_key, 'Content-Type' => 'application/json']
+                    ]);
 
-			$member->fileObjects = [$fileObject];
-			$members[] = $member;
-		}
+                    if ($create_signer_response->getStatusCode() == 201) {
+                        $activate_response = $client->request('POST', $host . "/signature_requests/" . $signatureRequestId . "/activate", [
+                            'headers' => ['Accept' => 'application/json', 'Authorization' => 'Bearer '.$api_key, 'Content-Type' => 'application/json']
+                        ]);
 
-		$procedure->members = $members;
+                        if ($activate_response->getStatusCode() == 201) {
+                            $embbed_url = '';
+                            $activate_response_data = json_decode($activate_response->getBody(), true);
 
-		$response = $http->post($host.'/procedures', json_encode($procedure),
-		[
-			'Content-Type' => 'application/json',
-			'Authorization' => 'Bearer '.$api_key
-		]);
+                            if (!empty($activate_response_data['signers'])) {
+                                $embbed_url = activate_response_data['signers'][0]['signature_link'];
+                            }
 
-		// Code 201 = CREATED
-		if ($response->code === 201) {
-			$response->body = json_decode($response->body);
-			$procedure_id = $response->body->id;
-			JLog::add('YouSign procedure created -> ID: '.$response->body->id, JLog::INFO, 'com_emundus.yousign');
-
-			foreach ($response->body->members as $webserviceResponseMember) {
-				foreach ($signers['emails'] as $key => $email) {
-					if ($email === $webserviceResponseMember->email) {
-						$signers['yousign'][$key] = $webserviceResponseMember->id;
-						continue 2;
-					}
-				}
-			}
-
-			// Save procedure to file_requests, used for keeping track of requested/signed procedures.
-			// We are going to save the YouSign procedure ID as the keyid and the YouSign file ID as the filename.
-			$query->clear()
-				->insert($db->quoteName('#__emundus_files_request'))
-				->columns($db->quoteName(['time_date', 'student_id', 'fnum', 'keyid', 'attachment_id', 'filename', 'campaign_id', 'signer_id']));
-
-			$now = JFactory::getDate();
-			foreach ($fnums as $fnum) {
-				$query->values(implode(',', [
-					$db->quote($now->toSql()), // time_date
-					(int)substr($fnum, -7), // student_id
-					$db->quote($fnum), // fnums
-					$db->quote($procedure_id), // keyid
-					$attachment_id, // attachement_id
-					$db->quote($file_id), // filename
-					(int)substr($fnum, 14, 7), // Campagin id
-					JFactory::getUser()->id
-				]));
-			}
-			$db->setQuery($query);
-
-			try {
-				$db->execute();
-			} catch (Exception $e) {
-				JLog::add('Error writing file request in plugin/yousign at query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.yousign');
-				return;
-			}
-
-			// Now that we have a procedure response, it's time we give the user access to the iFrame OR send him the email.
-			$user_is_signer = false;
-			foreach ($signers['emails'] as $key => $email) {
-
-				if (JFactory::getUser()->email === $email) {
-					$user_is_signer = true;
-				}
-
-				// Add user param containing the member ID.
-				if ($this->setUserParam($email, 'yousignMemberId', $signers['yousign'][$key])) {
-					JLog::add('Added YouSign member ID to user params: '.$response->body->id, JLog::INFO, 'com_emundus.yousign');
-				} elseif ($this->getParam('method') === 'embed') {
-
-					// Problem: Here we're in a case where we DID NOT add the memeber ID to the user, yet the settings are set to embed.
-					// Solution: Add it to the session, continue adding the other user's params, and then redirect to the iFrame for that user.
-					// This means if we have other users meant to sign, they will still get their user param added :)
-					// This session is used to prevent someone sniping a YouSign member ID from some URL and using it to look at a potentially super sensitive document.
-					$session = JFactory::getSession();
-					$session->set('youSignTmp', $signers['yousign'][$key]);
-
-					/* But Hugo, you ask, as you realize that this creates a case where technically we can have two signers, one is the current user and
-					 the other is simply an incoreectly entered email or a link that will be manually sent by the ccordinator or something (this system is meant to be super flexible).
-					 This means that we could accidentally redirect to the iFrame of the OTHER user and not the currently logged in one ? */
-
-					// Nope, this is fine, because the iFrame page will lookup the currently logged in user's info in preference to looking at the session :).
-
-				}
-
-				// No need to handle email case, this part handles itself :).
-				// TODO: Add email procedure handling when making YouSign procedure; this was cut out due to shortened delays.
-
-			}
-
-			if ($this->getParam('method') === 'embed' && $user_is_signer) {
-				$application->redirect($this->getParam('embed_url', 'index.php?option=com_emundus&view=yousign'));
-			}
-
-		} else {
-			JLog::add('Error from API: ('.$response->code.')  '.json_decode($response->body)->detail, JLog::ERROR, 'com_emundus.yousign');
-
-			// In the case of a YouSign error, unassign the file.
-			$query->clear()
-				->delete($db->quoteName('#__emundus_users_assoc'))
-				->where($db->quoteName('user_id').' = '.JFactory::getUser()->id)
-				->andWhere($db->quoteName('fnum').' IN ("'.implode('","', $fnums).'")');
-			$db->setQuery($query);
-
-			try {
-				$db->execute();
-			} catch (Exception $e) {
-				JLog::add('Error removing assoc users : '.$e->getMessage(), JLog::ERROR, 'com_emundus.yousign');
-			}
-			throw new Exception(JText::_('ERROR_WITH_YOUSIGN'));
-		}
+                            if ($this->getParam('method') === 'embed') {
+                                $application->redirect($this->getParam('embed_url', 'index.php?option=com_emundus&view=yousign&iframe_url=' . $embbed_url));
+                            }
+                        } else {
+                            JLog::add('Failed to activate signature request.', JLog::ERROR, 'com_emundus.error');
+                            throw new Exception('Failed to activate signature request.');
+                        }
+                    } else {
+                        JLog::add('Failed to create signer for signature request.', JLog::ERROR, 'com_emundus.error');
+                        throw new Exception('Failed to create signer for signature request.');
+                    }
+                } else {
+                    JLog::add('Failed to create document in yousign.', JLog::ERROR, 'com_emundus.error');
+                    throw new Exception('Failed to create document in yousign.');
+                }
+            } else {
+                JLog::add('Failed to open file to send it to yousign', JLog::ERROR, 'com_emundus.error');
+                throw new Exception('Failed to open file to send it to yousign.');
+            }
+        } else {
+            JLog::add('Failed to initiate signature request.', JLog::ERROR, 'com_emundus.error');
+            throw new Exception('Failed to initiate signature request.');
+        }
 	}
 
 	/**
