@@ -46,6 +46,9 @@
 .view-form #g-sidebar{
     position: sticky;
 }
+.view-checklist #g-sidebar{
+    position: sticky;
+}
 
 
 .program-year-page #g-main-mainbody, .campaign-page #g-main-mainbody, .users-profile-setup-page #g-main-mainbody, .emails-setup-page #g-main-mainbody,
@@ -65,6 +68,10 @@
 /* FORMULAIRE */
 
 .view-form #g-sidebar{
+    position: sticky;
+    top: 0;
+}
+.view-checklist #g-sidebar{
     position: sticky;
     top: 0;
 }
@@ -1832,6 +1839,10 @@ a.btn-attach:active {
     }
 
     .view-form #g-sidebar .moduletable  {
+        padding: 0px !important;
+    }
+
+    .view-checklist #g-sidebar .moduletable  {
         padding: 0px !important;
     }
 }
