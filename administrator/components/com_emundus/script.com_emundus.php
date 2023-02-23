@@ -636,7 +636,7 @@ class com_emundusInstallerScript
      */
     function postflight($type, $parent)
     {
-        echo "\rComposant eMundus mis à jour avec succès !\n";
+        return true;
     }
 
 
