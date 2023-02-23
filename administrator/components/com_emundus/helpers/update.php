@@ -1935,6 +1935,52 @@ class EmundusHelperUpdate
         return $result;
     }
 
+    public static function updateJsAction($datas,$params = null) {
+        $result = ['status' => false, 'message' => ''];
+
+        if(empty($datas['action_id'])){
+            $result['message'] = 'UPDATING FABRIK JSACTION : Please provide an action id.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            if(empty($params)){
+                $params = [
+                    'js_e_event' => '',
+                    'js_e_trigger' => '',
+                    'js_e_condition' => '',
+                    'js_e_value' => '',
+                    'js_published' => '1',
+                ];
+            }
+            $updating_datas = [
+                'code' => $datas['code'],
+                'params' => json_encode($params)
+            ];
+
+            $fields = array(
+                $db->quoteName('code') . ' = ' . $db->quote($updating_datas['code']),
+                $db->quoteName('params') . ' = ' . $db->quote($updating_datas['params'])
+            );
+
+            $query->clear()
+                ->update($db->quoteName('#__fabrik_jsactions'))
+                ->set($db->quoteName($fields))
+                ->where($db->quoteName('action_id') . ' = ' . $db->quote($datas['action_id']));
+            $db->setQuery($query);
+            $db->execute();
+        } catch (Exception $e) {
+            $result['message'] = 'UPDATING FABRIK JSACTION : Error : ' . $e->getMessage();
+            return $result;
+        }
+
+        $result['status'] = true;
+        return $result;
+    }
+
     public static function addCustomEvents($events) {
         $response = [
             'status' => false,
