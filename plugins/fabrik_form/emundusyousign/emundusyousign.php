@@ -263,7 +263,8 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 			$fileNamePath = EMUNDUS_PATH_ABS.$student->id.DS.$fileName;
 			$base64FileContent = base64_encode(file_get_contents($fileNamePath));
 
-		} else {
+		}
+        else {
 
 			// Handle the case of a letters doc
 			include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
@@ -291,47 +292,34 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 
 				// A different file is to be generated depending on the template type.
 				switch ($letter->template_type) {
-
 					case '1':
 						// This is a static file, we just need to find its path add it as an attachment.
-						if (file_exists(JPATH_BASE.$letter->file)) {
-							$base64FileContent = base64_encode(file_get_contents(JPATH_BASE.$letter->file));
-						}
+                        $fileNamePath = JPATH_BASE.$letter->file;
 						break;
-
 					case '2':
-
 						// This is a PDF to be generated from HTML.
 						require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
-						$path = generateLetterFromHtml($letter, $fnum, $fnumInfos['applicant_id'], $fnumInfos['training']);
-
-						if ($path && file_exists($path)) {
-							$base64FileContent = base64_encode(file_get_contents($path));
-						}
+                        $fileNamePath = generateLetterFromHtml($letter, $fnum, $fnumInfos['applicant_id'], $fnumInfos['training']);
 						break;
-
 					case '3':
 						// This is a DOC template to be completed with applicant information.
-						$path = $m_messages->generateLetterDoc($letter, $fnum);
-
-						if ($path && file_exists($path)) {
-							$base64FileContent = base64_encode(file_get_contents($path));
-						}
-						break;
-
+                        $fileNamePath = $m_messages->generateLetterDoc($letter, $fnum);
 					default:
 						throw new Exception('Error getting letter type.');
-
 				}
 			}
 		}
+
+        // Step 1. Send file to API.
+        $file = new stdClass();
+        $file->name = $fileName;
 
 		// And now begins the YouSign API Magic.
         try {
             $client = new GuzzleClient();
             $response = $client->request('POST', $host . '/signature_requests', ['body' => json_encode([
                 'name' => $file->name,
-                'delivery_mode' => 'email',
+                'delivery_mode' => 'none',
             ]), 'headers' => [
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer '.$api_key,

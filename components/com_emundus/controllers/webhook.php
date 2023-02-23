@@ -14,6 +14,8 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use GuzzleHttp\Client as GuzzleClient;
+
 /**
  * eMundus Component Controller
  *
@@ -90,121 +92,54 @@ class EmundusControllerWebhook extends JControllerLegacy {
 	 * Downloads the file associated to the YouSign procedure that was pushed.
 	 */
 	public function yousign() {
+        $body = (string)file_get_contents('php://input');
+        $body = json_decode($body);
 
-		// For some absolutely MAGICAL reason, webhook data does not appear in $_POST or $jinput->post
-		// It does appear however with file_get_contents('php://input'), so we're using that.
-		$post = json_decode(file_get_contents('php://input'));
-		if ($post === null) {
-			JLog::add('YouSign bad JSON : '.file_get_contents('php://input'), JLog::ERROR, 'com_emundus.webhook');
-			return;
-		}
+        if ($body->event_name == 'signature_request.done' && !empty($body->data)) {
+            JLog::add('Reveived WebHook : '. json_encode($body), JLog::INFO, 'com_emundus.webhook');
+            $signatureRequest = $body->data->signature_request;
 
-		JLog::add('Reveived WebHook : '.print_r(file_get_contents('php://input'), true), JLog::INFO, 'com_emundus.webhook');
+            if (!empty($signatureRequest->id)) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+                $eMConfig = JComponentHelper::getParams('com_emundus');
 
-		// 'procedure.finished' runs when all signatures are done and blissful harmony is restored to the universe.
-		if ($post->eventName === 'procedure.finished') {
+                $baseUrl = $eMConfig->get('yousign_prod', 'https://staging-api.yousign.com');
+                $baseUrl = "https://api-sandbox.yousign.app/v3";
+                $api_key = $eMConfig->get('yousign_api_key', 'https://staging-api.yousign.com');
+                $api_key = "6zzPEoij6Gwr5jsq14UF8whW0nHl62Ru";
+                $client = new GuzzleClient();
 
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
-			$eMConfig = JComponentHelper::getParams('com_emundus');
+                foreach($signatureRequest->documents as $document) {
+                    if ($document->nature == 'signable_document') {
+                        // TODO: retrieve upload id from document->id
 
-			$procedure = $post->procedure;
 
-			JLog::add('YouSign procedure : '.print_r($procedure, true), JLog::INFO, 'com_emundus.webhook');
+                        // TODO: replace emundus document content by yousign document content
+                        try {
+                            $response = $client->request('GET', $baseUrl . '/signature_requests/' . $signatureRequest->id . '/documents/download', [
+                                'headers' => [
+                                    'Authorization' => 'Bearer '. $api_key,
+                                    'accept' => 'application/zip, application/pdf',
+                                ],
+                                'sink' => fopen()
+                            ]);
 
-			// Now that the procedure is signed, we can remove the member ID used for loading the iFrame.
-			foreach ($procedure->members as $member) {
-				$this->setUserParam($member->email, 'yousignMemberId', false);
-			}
+                            if ($response->getStatusCode() == 200) {
 
-			$files = [];
-			foreach ($procedure->files as $file) {
-				$files[] = $file->id;
-				JLog::add('YouSign procedure file : '.$file->id, JLog::INFO, 'com_emundus.webhook');
-			}
-
-			$query->clear()
-				->select([$db->quoteName('fr.fnum'), $db->quoteName('a.lbl'), $db->quoteName('fr.attachment_id')])
-				->from($db->quoteName('jos_emundus_files_request', 'fr'))
-				->leftJoin($db->quoteName('jos_emundus_setup_attachments', 'a').' ON '.$db->quoteName('fr.attachment_id').' = '.$db->quoteName('a.id'))
-				->where($db->quoteName('filename').' IN ("'.implode('","', $files).'")');
-			$db->setQuery($query);
-			try {
-				$attachments = $db->loadObjectList();
-			} catch (Exception $e) {
-				JLog::add('Could not load files_requests : '.$e->getMessage(), JLog::ERROR, 'com_emundus.webhook');
-				return;
-			}
-
-			$http = new JHttp();
-
-			$host = $eMConfig->get('yousign_prod', 'https://staging-api.yousign.com');
-			$api_key = $eMConfig->get('yousign_api_key', 'https://staging-api.yousign.com');
-			if (empty($host) || empty($api_key)) {
-				JLog::add('Missing YouSign info.', JLog::ERROR, 'com_emundus.webhook');
-				return;
-			}
-
-			$frQuery = $db->getQuery(true);
-			foreach ($files as $file) {
-
-				// Time to download the files from the WebService.
-				$response = $http->get($host.$file.'/download?alt=media', [
-					'Content-Type' => 'application/json',
-					'Authorization' => 'Bearer '.$api_key
-				]);
-
-				// File exists, time to write it to the right place.
-				if ($response->code === 200) {
-
-					// Prepare the query to save the files into the upload table.
-					$query->clear()
-						->insert($db->quoteName('jos_emundus_uploads'))
-						->columns($db->quoteName(['user_id', 'fnum', 'campaign_id', 'attachment_id', 'filename', 'description', 'can_be_deleted', 'can_be_viewed']));
-
-					$success = [];
-					foreach ($attachments as $attachment) {
-
-						// Save the signed file into the users folder.
-						$fileName = $attachment->lbl.'_signed.pdf';
-						$uid = (int)substr($attachment->fnum, -7);
-						if (file_put_contents(EMUNDUS_PATH_ABS.$uid.DS.$fileName, $response->body) !== false) {
-
-							// Set the filerequest as uploaded.
-							$frQuery->clear()
-								->update($db->quoteName('jos_emundus_files_request'))
-								->set([
-									$db->quoteName('uploaded').' = 1',
-									$db->quoteName('signed_file').' = '.$db->quote($fileName)
-								])
-								->where($db->quoteName('filename').' LIKE '.$db->quote($file).'');
-							$db->setQuery($frQuery);
-							try {
-								$db->execute();
-							} catch (Exception $e) {
-								JLog::add('Could not update files_requests : '.$e->getMessage(), JLog::ERROR, 'com_emundus.webhook');
-								return;
-							}
-
-							$success[] = $attachment->fnum;
-							$query->values(implode(',', [$uid, $db->quote($attachment->fnum), (int)substr($attachment->fnum, 14, 7), $attachment->attachment_id, $db->quote($fileName), $db->quote('YouSign signed document'), '0', '0']));
-
-						} else {
-							JLog::add('Error downloading file from YouSign -> RESPONSE ('.$response->code.') '.$response->body, JLog::ERROR, 'com_emundus.webhook');
-						}
-					}
-
-					// Link the files to the users' files.
-					$db->setQuery($query);
-					try {
-						$db->execute();
-						JLog::add('Saved YouSigned saved file "'.$file.'" to fnums : '.implode(', ', $success), JLog::INFO, 'com_emundus.webhook');
-					} catch (Exception $e) {
-						JLog::add('Error adding attachemnts to files: '.$e->getMessage(), JLog::ERROR, 'com_emundus.webhook');
-					}
-				}
-			}
-		}
+                            }
+                        } catch (Exception $e) {
+                            echo json_encode(array('status' => false, 'msg' => $e->getMessage()));
+                            exit;
+                        }
+                    }
+                }
+            }
+        } else {
+            JLog::add('YouSign bad JSON : '.file_get_contents('php://input'), JLog::ERROR, 'com_emundus.webhook');
+            echo json_encode(array('status' => false, 'msg' => "Nothing to do here..."));
+            exit;
+        }
 	}
 
 
