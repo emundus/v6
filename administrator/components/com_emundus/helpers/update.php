@@ -1998,8 +1998,8 @@ class EmundusHelperUpdate
 
             $query->clear()
                 ->update($db->quoteName('#__fabrik_jsactions'))
-                ->set($db->quoteName($fields))
-                ->where($db->quoteName('action_id') . ' = ' . $db->quote($datas['action_id']));
+                ->set($fields)
+                ->where($db->quoteName('id') . ' = ' . $db->quote($datas['action_id']));
             $db->setQuery($query);
             $db->execute();
         } catch (Exception $e) {
