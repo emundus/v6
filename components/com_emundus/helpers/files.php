@@ -2003,6 +2003,7 @@ class EmundusHelperFiles
                         $adv_filter .= $h_files->setSearchBox($selected_adv, $val, $key, $i);
                     }
 
+                    $adv_filter .= '<button class="em-transparent-button" id="suppr-filt"><span class="material-icons">delete_outline</span></button>';
                     $i++;
                     $adv_filter .= '</fieldset>';
                 }
@@ -2089,6 +2090,21 @@ class EmundusHelperFiles
             }
         }
         return $attachmentsprogressList;
+    }
+
+
+    public function createUnreadMessageList($unread_messages) {
+        $unreadmessagesList = array();
+
+        foreach ($unread_messages as $unread_message) {
+
+            $fnum = $unread_message['fnum'];
+
+            if (!isset($unreadmessagesList[$fnum])) {
+                    $unreadmessagesList[$fnum] = '<p class="messenger__notifications_counter">'. $unread_message['nb'] .'</p> ';
+            }
+        }
+        return $unreadmessagesList;
     }
 
 	/** Create a list of HTML text using the tag system.
