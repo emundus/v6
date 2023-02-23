@@ -582,6 +582,10 @@ class com_emundusInstallerScript
 		        EmundusHelperUpdate::updateYamlVariable('breakpoints', '48rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'mobile-menu-breakpoint');
 		        EmundusHelperUpdate::updateYamlVariable('menu', '11rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'col-width');
 		        EmundusHelperUpdate::updateYamlVariable('base', '#f8f8f8', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'background');
+
+                EmundusHelperUpdate::addCustomEvents([
+                    ['label' => 'onWebhookCallbackProcess', 'category' => 'Webhook', 'published' => 1]
+                ]);
 	        }
 
             // Insert new translations in overrides files
