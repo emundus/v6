@@ -1,6 +1,6 @@
 <template>
   <div class="control-group fabrikElementContainer">
-    <label class="fabrikLabel">{{ element.label }}</label>
+	  <label class="fabrikLabel" v-html="element.label"></label>
       <div v-if="!readonly" class="fabrikElement">
         <div class="fabrikSubElementContainer">
           <div class="row-fluid">
