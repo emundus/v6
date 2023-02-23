@@ -135,7 +135,7 @@ $comments = $session->get('comments');
                     var campaigns = httpRequest.response.campaigns;
                     campaigns.forEach(function(campaign) {
                         var opt = document.createElement('option');
-                        opt.appendChild( document.createTextNode(campaign.label) );
+                        opt.appendChild(document.createTextNode(campaign.label + ' - ' + campaign.year));
                         opt.value = campaign.id;
                         document.getElementById('campaign').appendChild(opt);
                         document.getElementById('program-categories').classList.remove('hide');
