@@ -604,9 +604,12 @@ class com_emundusInstallerScript
                 }
                 //
 
-                // Install send_file_archive and enable it, or enable it if already installed
-
+                // Install send_file_archive and enable it, or just enable it if already installed
+                EmundusHelperUpdate::installExtension('Emundus - Send ZIP file to user.','send_file_archive','{"name":"Emundus - Send ZIP file to user.","type":"plugin","creationDate":"19 July 2019","author":"eMundus","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"6.9.10","description":"This plugin sends a ZIP of the file when it is changed to a certain status or when it is deleted.","group":"","filename":"send_file_archive"}','plugin');
+                EmundusHelperUpdate::enableEmundusPlugins('send_file_archive');
+                //
             }
+
 
             // Insert new translations in overrides files
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
