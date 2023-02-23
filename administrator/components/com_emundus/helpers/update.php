@@ -44,6 +44,36 @@ class EmundusHelperUpdate
     }
 
     /**
+     * Enable an emundus plugin
+     *
+     * @param $name
+     *
+     * @return false|mixed
+     *
+     * @since version 1.33.0
+     */
+    public static function enableEmundusPlugins($name) {
+        $disabled = false;
+
+        if (!empty($name)) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            try {
+                $query->update($db->quoteName('#__extensions'))
+                    ->set($db->quoteName('enabled') . ' = 1')
+                    ->where($db->quoteName('element') . ' LIKE ' . $db->quote($name));
+                $db->setQuery($query);
+                $disabled = $db->execute();
+            } catch (Exception $e) {
+                echo $e->getMessage();
+            }
+        }
+
+        return $disabled;
+    }
+
+    /**
      * Disable an emundus plugin
      *
      * @param $name
