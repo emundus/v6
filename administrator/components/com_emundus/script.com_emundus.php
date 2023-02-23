@@ -540,7 +540,7 @@ class com_emundusInstallerScript
                 ]);
             }
 
-            if (version_compare($cache_version, '1.34.63', '<') || $firstrun) {
+            if (version_compare($cache_version, '1.34.55', '<') || $firstrun) {
                 // Add or update onchange js action for forbidden characters in password
                 $password_jsaction = [
                     'params' => '{"js_e_event":"","js_e_trigger":"fabrik_trigger_group_group640","js_e_condition":"","js_e_value":"","js_published":"1"}',
