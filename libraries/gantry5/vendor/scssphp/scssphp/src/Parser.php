@@ -1580,9 +1580,7 @@ class Parser
                     } else {
                         list($line, $column) = $this->getSourcePosition($this->count);
                         $file = $this->sourceName;
-                        if (!$this->discardComments) {
-                            $this->logger->warn("Unterminated interpolations in multiline comments are deprecated and will be removed in ScssPhp 2.0, in \"$file\", line $line, column $column.", true);
-                        }
+                        $this->logger->warn("Unterminated interpolations in multiline comments are deprecated and will be removed in ScssPhp 2.0, in \"$file\", line $line, column $column.", true);
                         $comment[] = substr($this->buffer, $this->count, 2);
 
                         $this->count += 2;

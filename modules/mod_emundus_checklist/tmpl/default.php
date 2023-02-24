@@ -11,13 +11,27 @@ foreach ($forms as $index => $form){
         break;
     }
 }
+
+$pages_no = 0;
+if($show_forms == 1 && count($forms) > 0) {
+	$pages_no = count($forms);
+}
+
+if($show_mandatory_documents == 1 && count($mandatory_documents) > 0) {
+    $pages_no++;
+}
+if($show_optional_documents == 1 && count($optional_documents) > 0) {
+	$pages_no++;
+}
+if (!empty($checkout_url)){
+	$pages_no++;
+}
 ?>
 
 <div class="mod_emundus_checklist">
     <div class="em-flex-row em-flex-space-between em-pointer" onclick="expandForms()">
         <div class="em-flex-row">
             <p class="em-h6"><?php echo JText::_($forms_title) ?></p>
-            <span class="em-ml-12 mod_emundus_checklist___count"><?php echo $index_form . '/' . count($forms) ?></span>
         </div>
         <span id="mod_emundus_checklist___expand_icon" class="material-icons-outlined">expand_more</span>
     </div>
@@ -38,12 +52,21 @@ foreach ($forms as $index => $form){
                     $class = $cpt==0?'need_missing':'need_ok';
                     $step = $index+1;
                     ?>
-                    <div id="mlf<?php echo $form->id; ?>" class="<?php if($form->id == $menuid) echo 'active'?> mod_emundus_checklist_<?php echo $class; ?> mod_emundus_checklist___form_item">
+                    <div id="mlf<?php echo $form->id; ?>"
+                         class="<?php if($form->id == $menuid) echo 'active'?> mod_emundus_checklist_<?php echo $class; ?> mod_emundus_checklist___form_item">
                         <div class="mod_emundus_checklist___grid">
-                            <div class="mod_emundus_checklist___step_count"><?php echo $step ?></div>
+                            <div class="mod_emundus_checklist___step_count">
+                                <?php if($form->id == $menuid) : ?>
+                                    <span class="material-icons-outlined">more_horiz</span>
+                                <?php elseif($class == 'need_missing') : ?>
+                                    <span class="material-icons-outlined">close</span>
+                                <?php elseif ($class == 'need_ok') : ?>
+                                    <span class="material-icons-outlined">done</span>
+                                <?php endif; ?>
+                            </div>
                             <a href="<?php echo $form->link ?>"><?php echo JText::_($form->title); ?></a>
                         </div>
-                        <?php if ($index != (sizeof($forms) - 1) || ($show_mandatory_documents == 1 && !empty($mandatory_documents)) || ($show_optional_documents == 1 && !empty($optional_documents))) : ?>
+                        <?php if ($index != (sizeof($forms) - 1) || ($show_mandatory_documents == 1 && !empty($mandatory_documents)) || ($show_optional_documents == 1 && !empty($optional_documents)) || !empty($checkout_url)) : ?>
                             <div class="mod_emundus_checklist___border_item"></div>
                         <?php endif ?>
                     </div>
@@ -52,15 +75,36 @@ foreach ($forms as $index => $form){
         <?php endif; ?>
 
         <?php if ($show_mandatory_documents == 1 && count($mandatory_documents) > 0) : ?>
-            <div class="<?php if($itemid['id'] == $menuid) echo 'active'?> mod_emundus_checklist_<?php echo $class; ?> mod_emundus_checklist___form_item">
+	        <?php
+	        if($attachments_progress < 100) {
+		        $attachment_class = 'need_missing';
+	        } else {
+		        $attachment_class = 'need_ok';
+	        }
+	        ?>
+            <div class="<?php if($itemid['id'] == $menuid) echo 'active'?> mod_emundus_checklist_<?php echo $attachment_class; ?> mod_emundus_checklist___form_item">
                 <div class="mod_emundus_checklist___grid">
-                    <div class="mod_emundus_checklist___step_count"><?php echo $index_doc ?></div>
+                    <div class="mod_emundus_checklist___step_count">
+	                    <?php if($itemid['id'] == $menuid) : ?>
+                            <span class="material-icons-outlined">more_horiz</span>
+	                    <?php elseif($attachment_class == 'need_missing') : ?>
+                            <span class="material-icons-outlined">close</span>
+	                    <?php elseif ($attachment_class == 'need_ok') : ?>
+                            <span class="material-icons-outlined">done</span>
+	                    <?php endif; ?>
+                    </div>
                     <a href="<?php echo $itemid['link'].'&Itemid='.$itemid['id'] ?>"><?php echo JText::_($mandatory_documents_title) ?></a>
                 </div>
-                <div style="margin-top: -8px">
+                <div class="em-flex-row" style="align-items: stretch">
+	                <?php if (($show_optional_documents == 1 && !empty($optional_documents)) || !empty($checkout_url)) : ?>
+                        <div class="mod_emundus_checklist___border_item em-h-auto"></div>
+	                <?php endif ?>
+                    <div class="mod_emundus_checklist___attachment"
+                        <?php if (($show_optional_documents == 1 && !empty($optional_documents)) || !empty($checkout_url)) : ?>style="margin-left: 24px"<?php endif; ?>
+                    >
                     <?php foreach ($uploads as $upload) : ?>
-                        <div class="em-flex-row mod_emundus_checklist___attachment">
-                            <span class="material-icons-outlined em-main-500-color" style="font-size: 16px">check_circle</span>
+                        <div class="em-flex-row em-mb-8">
+                            <span class="material-icons em-main-500-color" style="font-size: 16px">check_circle</span>
                             <a class="em-font-size-12 em-ml-8 mod_emundus_checklist___attachment_links"  href="<?php echo $itemid['link'].'&Itemid='.$itemid['id'].'#a'.$upload->attachment_id ?>">
                                 <?php echo $upload->attachment_name ?>
                                 <?php if($upload->filesize > 0) :?>
@@ -69,24 +113,47 @@ foreach ($forms as $index => $form){
                             </a>
                         </div>
                     <?php endforeach; ?>
+                    </div>
                 </div>
             </div>
         <?php endif; ?>
 
         <?php if ($show_optional_documents == 1 && count($optional_documents) > 0) : ?>
-            <div class="<?php if($itemid['id'] == $menuid) echo 'active'?> mod_emundus_checklist_<?php echo $class; ?> mod_emundus_checklist___form_item em-mt-32">
+            <div class="<?php if($itemid['id'] == $menuid) echo 'active'?> mod_emundus_checklist___form_item">
                 <div class="mod_emundus_checklist___grid">
-                    <div class="mod_emundus_checklist___step_count"><?php echo $index_opt_doc ?></div>
+                    <div class="mod_emundus_checklist___step_count">
+	                    <?php if($itemid['id'] == $menuid) : ?>
+                            <span class="material-icons-outlined">more_horiz</span>
+	                    <?php else : ?>
+                            <span class="material-icons-outlined">priority_high</span>
+	                    <?php endif; ?>
+                    </div>
                     <a href="<?php echo $itemid['link'].'&Itemid='.$itemid['id'] ?>#attachment_list_opt"><?php echo JText::_($optional_documents_title) ?></a>
                 </div>
+	            <?php if (!empty($checkout_url)) : ?>
+                    <div class="mod_emundus_checklist___border_item"></div>
+	            <?php endif ?>
             </div>
         <?php endif; ?>
 
         <?php if (!empty($checkout_url)) : ?>
-            <div class="mod_emundus_checklist_<?php echo $class; ?> mod_emundus_checklist___form_item em-mt-32">
+	        <?php
+	        if(!$paid) {
+		        $paid_class = 'need_missing';
+	        } else {
+		        $paid_class = 'need_ok';
+	        }
+	        ?>
+            <div class="mod_emundus_checklist_<?php echo $paid_class; ?> mod_emundus_checklist___form_item">
                 <div class="mod_emundus_checklist___grid">
-                    <div class="mod_emundus_checklist___step_count"><?php echo $index_payment ?></div>
-                    <p><?php echo JText::_('MOD_EMUNDUS_CHECKLIST_PAYMENT') ?></p>
+                    <div class="mod_emundus_checklist___step_count">
+	                    <?php if($paid_class == 'need_missing') : ?>
+                            <span class="material-icons-outlined">close</span>
+	                    <?php elseif ($paid_class == 'need_ok') : ?>
+                            <span class="material-icons-outlined">done</span>
+	                    <?php endif; ?>
+                    </div>
+                    <a href="<?php echo $confirm_form_url; ?>"><?php echo JText::_('MOD_EMUNDUS_CHECKLIST_PAYMENT') ?></a>
                 </div>
             </div>
         <?php endif; ?>

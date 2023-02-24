@@ -167,13 +167,13 @@ function addElement() {
                 var num = ($('#nb-adv-filter').val() - 1) + 2;
                 $('#nb-adv-filter').val(num);
                 var newId = 'em-adv-father-' + num;
-                ni.append('<fieldset id="' + newId + '" class="em-nopadding em-flex-row">' +
-                    '<select class="chzn-select em-filt-select" name="elements" id="elements-'+num+'">' +
+                ni.append('<fieldset id="' + newId + '" class="em-nopadding">' +
+                    '<a id="suppr-filt" class="em-mb-4 em-flex-start">' +
+                    '<span class="em-font-size-14 em-red-500-color em-pointer">' + Joomla.JText._('COM_EMUNDUS_DELETE_ADVANCED_FILTERS') + '</span>' +
+                    '</a>' +
+                    '<select class="chzn-select em-filt-select em-mb-4" name="elements" id="elements-'+num+'">' +
                     '<option value="">' + result.default +'</option>' +
                     '</select> ' +
-                    '<button id="suppr-filt" class="em-tertiary-button em-flex-start">' +
-                    '<span class="material-icons em-red-500-color">delete_outline</span>' +
-                    '</button>'+
                     '</fieldset>');
 
                 var options = '';
@@ -6153,7 +6153,7 @@ $(document).ready(function() {
         var id = $(this).attr('id').split('_')[1];
 
         var elements_block = document.getElementById('felts' + id);
-        if (elements_block.style.display == 'none') {
+        if (elements_block != null && elements_block.style.display == 'none') {
             $('#showelements_'+id+'_icon').css('transform', 'rotate(0deg)');
             $('#felts'+ id).toggle(300);
         } else {
@@ -6594,3 +6594,53 @@ function sendMail(data)
     });
 }
 
+function DoubleScroll(element) {
+    const id = Math.random();
+    if (element.scrollWidth > element.offsetWidth) {
+        createScrollbarForElement(element, id);
+    }
+
+    window.addEventListener('resize', function () {
+       let scrollbar = document.getElementById(id);
+       if (scrollbar) {
+           if (element.scrollWidth > element.offsetWidth) {
+               scrollbar.firstChild.style.width = element.scrollWidth + 'px';
+           } else {
+               scrollbar.remove();
+           }
+       } else {
+           if (element.scrollWidth > element.offsetWidth) {
+               createScrollbarForElement(element, id);
+           }
+       }
+    });
+}
+
+function createScrollbarForElement(element, id) {
+    let new_scrollbar = document.createElement('div');
+    new_scrollbar.appendChild(document.createElement('div'));
+    new_scrollbar.style.overflowX = 'auto';
+    new_scrollbar.style.overflowY = 'hidden';
+    new_scrollbar.firstChild.style.height = '1px';
+    new_scrollbar.firstChild.style.width = element.scrollWidth + 'px';
+    new_scrollbar.firstChild.appendChild(document.createTextNode('\xA0'));
+    new_scrollbar.id = id;
+    let running = false;
+    new_scrollbar.onscroll = function () {
+        if (running) {
+            running = false;
+            return;
+        }
+        running = true;
+        element.scrollLeft = new_scrollbar.scrollLeft;
+    };
+    element.onscroll = function () {
+        if (running) {
+            running = false;
+            return;
+        }
+        running = true;
+        new_scrollbar.scrollLeft = element.scrollLeft;
+    };
+    element.parentNode.insertBefore(new_scrollbar, element);
+}

@@ -196,7 +196,6 @@ export default {
 
 <style lang="scss">
 #em-attachment-preview {
-	width: 60%;
 	height: 100%;
 	overflow: hidden;
 	position: relative;

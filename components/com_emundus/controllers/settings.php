@@ -987,5 +987,61 @@ class EmundusControllersettings extends JControllerLegacy {
 			exit;
 		}
 	}
+
+	public function getbanner() {
+		$results = [
+			'status' => true,
+			'filename' => null,
+		];
+		$banner_module = $this->m_settings->getBannerModule();
+		if(!empty($banner_module)) {
+			$params = json_decode($banner_module);
+			$filename = $params->mod_em_banner_image;
+			if(empty($filename)){
+				$filename = 'images/custom/default_banner.png';
+			}
+
+			$results['filename'] = $filename;
+		}
+
+		echo json_encode((object)$results);
+		exit;
+	}
+
+	public function updatebanner() {
+		$user = JFactory::getUser();
+		$results = [
+			'status' => false,
+			'msg' => ''
+		];
+
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$results['status'] = false;
+			$results['msg'] = JText::_("ACCESS_DENIED");
+		} else {
+			$jinput = JFactory::getApplication()->input;
+			$image = $jinput->files->get('file');
+
+			if(isset($image)) {
+				$filename = 'images/custom/default_banner.png';
+				unlink($filename);
+
+				if (move_uploaded_file($image["tmp_name"], $filename)) {
+					$this->m_settings->updateBannerImage();
+					$results['status'] = true;
+					$results['msg'] = JText::_('BANNER_UPDATED');
+				} else {
+					$results['status'] = false;
+					$results['msg'] = JText::_('BANNER_NOT_UPDATED');
+				}
+			} else {
+				$results['status'] = false;
+				$results['msg'] = JText::_('IMAGE_NOT_FOUND');
+			}
+		}
+
+		echo json_encode((object)$results);
+		exit;
+	}
 }
 

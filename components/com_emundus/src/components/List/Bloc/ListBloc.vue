@@ -8,7 +8,7 @@
 		</div>
 
 		<div class="informations">
-			<p v-if="data.short_description" class="description">{{ data.short_description }}</p>
+			<div v-if="data.short_description" class="description" v-html="data.short_description"></div>
 
 			<div v-if="campaign.associatedCampaigns !== null && campaign.associatedCampaigns.length === 1"
 				class="associated-campaigns em-w-100 em-flex-row"
@@ -365,6 +365,11 @@ export default {
 
   .description {
     font-family: var(--font);
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    max-height: 100px;
   }
 
 	.informations {

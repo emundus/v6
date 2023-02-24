@@ -1149,4 +1149,54 @@ class EmundusModelsettings extends JModelList {
             return false;
         }
     }
+
+	function getBannerModule(){
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try {
+			$query->select('params')
+				->from($db->quoteName('#__modules'))
+				->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_banner'))
+				->andWhere($db->quoteName('published') . ' = 1');
+			$db->setQuery($query);
+			return $db->loadResult();
+		}
+		catch (Exception $e) {
+			JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			return false;
+		}
+	}
+
+	function updateBannerImage(){
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try {
+			$query->select('*')
+				->from($db->quoteName('#__modules'))
+				->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_banner'))
+				->andWhere($db->quoteName('published') . ' = 1');
+			$db->setQuery($query);
+			$module = $db->loadObject();
+
+			if(!empty($module)){
+				$params = json_decode($module->params);
+				$params->mod_em_banner_image = 'images/custom/default_banner.png';
+
+				$query->clear()
+					->update($db->quoteName('#__modules'))
+					->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+					->where($db->quoteName('id') . ' = ' . $db->quote($module->id));
+				$db->setQuery($query);
+				return $db->execute();
+			} else {
+				return false;
+			}
+		}
+		catch (Exception $e) {
+			JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			return false;
+		}
+	}
 }

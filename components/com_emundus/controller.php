@@ -836,6 +836,8 @@ class EmundusController extends JControllerLegacy {
 
             foreach ($files as $key => $file) {
 
+				$local_filename = $file['name'];
+
                 $pageCount = 0;
                 if (empty($file['name'])) {
                     $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> try to upload empty file';
@@ -1058,7 +1060,7 @@ class EmundusController extends JControllerLegacy {
                         $can_be_deleted = @$post['can_be_deleted_'.$attachments]!=''?$post['can_be_deleted_'.$attachments]:JRequest::getVar('can_be_deleted', 1, 'POST', 'none',0);
                         $can_be_viewed = @$post['can_be_viewed_'.$attachments]!=''?$post['can_be_viewed_'.$attachments]:JRequest::getVar('can_be_viewed', 1, 'POST', 'none',0);
 
-                        $query .= '('.$user->id.', '.$attachments.', \''.$paths.'\', '.$db->Quote($descriptions).', '.$can_be_deleted.', '.$can_be_viewed.', '.$fnumInfos['id'].', '.$db->Quote($fnum).', '.$pageCount.'),';
+                        $query .= '('.$user->id.', '.$attachments.', \''.$paths.'\', '.$db->Quote($descriptions).', '.$can_be_deleted.', '.$can_be_viewed.', '.$fnumInfos['id'].', '.$db->Quote($fnum).', '.$pageCount.', '.$db->quote($local_filename).'),';
                         $nb++;
                     } else {
                         $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> Cannot move file : '.$file['tmp_name'].' to '.$chemin.$user->id.DS.$paths;
@@ -1156,64 +1158,63 @@ class EmundusController extends JControllerLegacy {
             $this->_db->setQuery($image_resolution_query);
             $image_resolution = $this->_db->loadObject();
 
-            if(is_null($image_resolution->min_width) and is_null($image_resolution->max_width) and is_null($image_resolution->min_height) and is_null($image_resolution->max_height)) { }
-            else {
-                if ($w_src * $h_src > (int)$image_resolution->max_width * (int)$image_resolution->max_height) {
+            if ((!empty($image_resolution->max_width) && !empty($image_resolution->max_height)) && ($w_src * $h_src > (int)$image_resolution->max_width * (int)$image_resolution->max_height)) {
 
-                    if($w_src > $h_src) {
-                        $ratio = $h_src / $w_src;
+                if($w_src > $h_src) {
+                    $ratio = $h_src / $w_src;
 
-                        $new_width = max((int)$image_resolution->max_width, (int)$image_resolution->max_height);
-                        $new_height = round($new_width * $ratio);
+                    $new_width = max((int)$image_resolution->max_width, (int)$image_resolution->max_height);
+                    $new_height = round($new_width * $ratio);
 
-                    } else if($w_src < $h_src) {
-                        $ratio = $w_src / $h_src;
+                } else if($w_src < $h_src) {
+                    $ratio = $w_src / $h_src;
 
-                        $new_height = max((int)$image_resolution->max_width, (int)$image_resolution->max_height);
-                        $new_width = round($new_height * $ratio);
+                    $new_height = max((int)$image_resolution->max_width, (int)$image_resolution->max_height);
+                    $new_width = round($new_height * $ratio);
 
-                    } else {
-                        $new_height = min((int)$image_resolution->max_width, (int)$image_resolution->max_height);
-                        $new_width = min((int)$image_resolution->max_width, (int)$image_resolution->max_height);
-                    }
-
-                    switch ($type) {
-                        case 1:   // gif
-                            $original_img = imagecreatefromgif($file_src);
-                            break;
-                        case 2: // jpeg
-                            $original_img = imagecreatefromjpeg($file_src);
-                            break;
-                        case 3: // png
-                            $original_img = imagecreatefrompng($file_src);
-                            break;
-                        default:    // jpg
-                            $original_img = imagecreatefromjpeg($file_src);
-                            break;
-                    }
-
-                    /* $new_width = (int)$image_resolution->max_width;
-                    $new_height = (int)$image_resolution->max_height; */
-
-                    $resized_img = imagecreatetruecolor($new_width, $new_height);
-
-                    // copy resample
-                    imagecopyresampled($resized_img, $original_img, 0, 0, 0, 0, $new_width, $new_height, $w_src, $h_src);
-
-                    // export new image to jpeg
-                    imagejpeg($resized_img, $chemin . $user->id . DS . 'tn_' . $paths);
-
-                    /// remove old image
-                    unlink($file_src);
-
-                    /// change name the resize image
-                    rename($chemin . $user->id . DS . 'tn_' . $paths, $file_src);
-                } else if ($w_src * $h_src < (int)$image_resolution->min_width * (int)$image_resolution->min_height) {
-                    $errorInfo = "COM_EMUNDUS_ERROR_IMAGE_TOO_SMALL";
-                    echo '{"aid":"0","status":false,"message":"' . JText::_('COM_EMUNDUS_ERROR_IMAGE_TOO_SMALL') . " " . (int)$image_resolution->min_width . 'px x ' . (int)$image_resolution->min_height . 'px' . '"}';
-                    unlink($file_src);          /// remove uploaded file
-                    return false;
+                } else {
+                    $new_height = min((int)$image_resolution->max_width, (int)$image_resolution->max_height);
+                    $new_width = min((int)$image_resolution->max_width, (int)$image_resolution->max_height);
                 }
+
+                switch ($type) {
+                    case 1:   // gif
+                        $original_img = imagecreatefromgif($file_src);
+                        break;
+                    case 2: // jpeg
+                        $original_img = imagecreatefromjpeg($file_src);
+                        break;
+                    case 3: // png
+                        $original_img = imagecreatefrompng($file_src);
+                        break;
+                    default:    // jpg
+                        $original_img = imagecreatefromjpeg($file_src);
+                        break;
+                }
+
+                /* $new_width = (int)$image_resolution->max_width;
+                $new_height = (int)$image_resolution->max_height; */
+
+                $resized_img = imagecreatetruecolor($new_width, $new_height);
+
+                // copy resample
+                imagecopyresampled($resized_img, $original_img, 0, 0, 0, 0, $new_width, $new_height, $w_src, $h_src);
+
+                // export new image to jpeg
+                imagejpeg($resized_img, $chemin . $user->id . DS . 'tn_' . $paths);
+
+                /// remove old image only if resize was successful
+                if ($resized_img !== false) {
+                    unlink($file_src);
+                }
+
+                /// change name the resize image
+                rename($chemin . $user->id . DS . 'tn_' . $paths, $file_src);
+            } else if ((!empty($image_resolution->min_width) && !empty($image_resolution->min_height)) && ($w_src * $h_src < (int)$image_resolution->min_width * (int)$image_resolution->min_height)) {
+                $errorInfo = "COM_EMUNDUS_ERROR_IMAGE_TOO_SMALL";
+                echo '{"aid":"0","status":false,"message":"' . JText::_('COM_EMUNDUS_ERROR_IMAGE_TOO_SMALL') . " " . (int)$image_resolution->min_width . 'px x ' . (int)$image_resolution->min_height . 'px' . '"}';
+                unlink($file_src);          /// remove uploaded file
+                return false;
             }
         }
 
@@ -1221,7 +1222,7 @@ class EmundusController extends JControllerLegacy {
         unlink($file['tmp_name']);
 
         if (!empty($query)) {
-            $query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum, pdf_pages_count)
+            $query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum, pdf_pages_count, local_filename)
                         VALUES '.substr($query,0,-1);
 
             try {
@@ -1542,10 +1543,10 @@ class EmundusController extends JControllerLegacy {
                 die (JText::_('ACCESS_DENIED'));
             }
         }
-        // If the user has the rights to open attachments.
-        elseif (!empty($fileInfo) && !EmundusHelperAccess::asAccessAction(4,'r', $current_user->id, $fileInfo->fnum)) {
+        // If the user has the rights to open attachments, or to create a PDF export (he needs to be able to open it, even if he can't access the documents).
+        elseif (!empty($fileInfo) && (!EmundusHelperAccess::asAccessAction(4,'r', $current_user->id, $fileInfo->fnum) && !EmundusHelperAccess::asAccessAction(8,'c', $current_user->id, $fileInfo->fnum))) {
             die (JText::_('ACCESS_DENIED'));
-        } elseif (empty($fileInfo) && !EmundusHelperAccess::asAccessAction(4,'r')) {
+        } elseif (empty($fileInfo) && (!EmundusHelperAccess::asAccessAction(4,'r') && !EmundusHelperAccess::asAccessAction(8,'c'))) {
             die (JText::_('ACCESS_DENIED'));
         }
 

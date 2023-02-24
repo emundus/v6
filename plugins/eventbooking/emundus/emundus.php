@@ -86,7 +86,7 @@ class plgEventbookingEmundus extends CMSPlugin
                 }*/
 
                 $query = $db->getQuery(true);
-                if($custom_fields->field_recurrent != 1){
+                /*if($custom_fields->field_recurrent != 1){
                     $query->select('start_date,end_date')
                         ->from($db->quoteName('data_recurrence'))
                         ->where($db->quoteName('eb_value') . ' = ' . $db->quote($custom_fields->field_recurrent));
@@ -99,7 +99,7 @@ class plgEventbookingEmundus extends CMSPlugin
                     if($row->cut_off_date) {
                         $row->cut_off_date = $dates->end_date;
                     }
-                }
+                }*/
 
                 // Create campaign
                 $query->clear()
@@ -112,7 +112,7 @@ class plgEventbookingEmundus extends CMSPlugin
                     ->set($db->quoteName('end_date') . ' = ' . $db->quote($row->cut_off_date))
                     ->set($db->quoteName('profile_id') . ' = ' . $db->quote(1043))
                     ->set($db->quoteName('training') . ' = ' . $db->quote('activites'))
-                    ->set($db->quoteName('year') . ' = ' . $db->quote('2021-2022'))
+                    ->set($db->quoteName('year') . ' = ' . $db->quote('2022-2023'))
                     ->set($db->quoteName('published') . ' = ' . $db->quote(1))
                     ->set($db->quoteName('event') . ' = ' . $db->quote($row->id));
                 //->set($db->quoteName('hikashop_product') . ' = ' . $db->quote($product_id));
@@ -139,6 +139,49 @@ class plgEventbookingEmundus extends CMSPlugin
                     ->where($db->quoteName('id') . ' = ' . $db->quote($campaign));
                 $db->setQuery($query);
                 $db->execute();
+
+                // Activités étudiantes
+                $query->clear()
+                    ->select($db->quoteName('fnum'))
+                    ->from($db->quoteName('#__emundus_campaign_candidature'))
+                    ->where($db->quoteName('campaign_id') . ' = ' . $db->quote($campaign));
+                $db->setQuery($query);
+                $existing_fnums = $db->loadColumn();
+
+                foreach ($existing_fnums as $indiv_fnum) {
+                    $query->clear()
+                        ->select($db->quoteName('egs.group_id'))
+                        ->from($db->quoteName('#__emundus_group_assoc','egs'))
+                        ->leftJoin($db->quoteName('#__emundus_setup_groups','esg').' ON '.$db->quoteName('esg.id').' = '.$db->quoteName('egs.group_id'))
+                        ->where($db->quoteName('esg.service_gestion') . ' = 1')
+                        ->where($db->quoteName('egs.fnum') . ' = ' . $db->quote($indiv_fnum));
+                    $db->setQuery($query);
+                    $fnum_group_gestion = $db->loadColumn();
+
+                    if (!in_array($custom_fields->field_faculte_gestion, $fnum_group_gestion)) {
+                        if (!empty($fnum_group_gestion)) {
+                            $conditions = array(
+                                $db->quoteName('group_id') . ' IN (' . implode(',', $fnum_group_gestion) . ')',
+                                $db->quoteName('fnum') . ' = ' . $db->quote($indiv_fnum)
+                            );
+                            $query->clear()
+                                ->delete($db->quoteName('#__emundus_group_assoc'))
+                                ->where($conditions);
+                            $db->setQuery($query);
+                            $db->execute();
+                        }
+
+                        $columns = array('group_id', 'action_id', 'fnum', 'r');
+                        $values = array($db->quote($custom_fields->field_faculte_gestion), $db->quote(1), $db->quote($indiv_fnum), $db->quote(1));
+
+                        $query->clear()
+                            ->insert($db->quoteName('#__emundus_group_assoc'))
+                            ->columns($db->quoteName($columns))
+                            ->values(implode(',', $values));
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
             }
 
             if($custom_fields->field_cm == 3){

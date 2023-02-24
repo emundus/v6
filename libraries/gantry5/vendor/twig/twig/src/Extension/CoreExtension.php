@@ -244,11 +244,11 @@ class CoreExtension extends AbstractExtension
             new TwigTest('odd', null, ['node_class' => '\Twig\Node\Expression\Test\OddTest']),
             new TwigTest('defined', null, ['node_class' => '\Twig\Node\Expression\Test\DefinedTest']),
             new TwigTest('sameas', null, ['node_class' => '\Twig\Node\Expression\Test\SameasTest', 'deprecated' => '1.21', 'alternative' => 'same as']),
-            new TwigTest('same as', null, ['node_class' => '\Twig\Node\Expression\Test\SameasTest']),
+            new TwigTest('same as', null, ['node_class' => '\Twig\Node\Expression\Test\SameasTest', 'one_mandatory_argument' => true]),
             new TwigTest('none', null, ['node_class' => '\Twig\Node\Expression\Test\NullTest']),
             new TwigTest('null', null, ['node_class' => '\Twig\Node\Expression\Test\NullTest']),
             new TwigTest('divisibleby', null, ['node_class' => '\Twig\Node\Expression\Test\DivisiblebyTest', 'deprecated' => '1.21', 'alternative' => 'divisible by']),
-            new TwigTest('divisible by', null, ['node_class' => '\Twig\Node\Expression\Test\DivisiblebyTest']),
+            new TwigTest('divisible by', null, ['node_class' => '\Twig\Node\Expression\Test\DivisiblebyTest', 'one_mandatory_argument' => true]),
             new TwigTest('constant', null, ['node_class' => '\Twig\Node\Expression\Test\ConstantTest']),
             new TwigTest('empty', 'twig_test_empty'),
             new TwigTest('iterable', 'twig_test_iterable'),
@@ -313,6 +313,8 @@ use Twig\Loader\SourceContextLoaderInterface;
 use Twig\Markup;
 use Twig\Node\Expression\ConstantExpression;
 use Twig\Node\Node;
+use Twig\Template;
+use Twig\TemplateWrapper;
 
 /**
  * Cycles over a value.
@@ -347,7 +349,7 @@ function twig_cycle($values, $position)
 function twig_random(Environment $env, $values = null, $max = null)
 {
     if (null === $values) {
-        return null === $max ? mt_rand() : mt_rand(0, $max);
+        return null === $max ? mt_rand() : mt_rand(0, (int) $max);
     }
 
     if (\is_int($values) || \is_float($values)) {
@@ -364,7 +366,7 @@ function twig_random(Environment $env, $values = null, $max = null)
             $max = $max;
         }
 
-        return mt_rand($min, $max);
+        return mt_rand((int) $min, (int) $max);
     }
 
     if (\is_string($values)) {
@@ -487,6 +489,10 @@ function twig_date_converter(Environment $env, $date = null, $timezone = null)
     }
 
     if (null === $date || 'now' === $date) {
+        if (null === $date) {
+            $date = 'now';
+        }
+
         return new \DateTime($date, false !== $timezone ? $timezone : $env->getExtension('\Twig\Extension\CoreExtension')->getTimezone());
     }
 
@@ -509,14 +515,14 @@ function twig_date_converter(Environment $env, $date = null, $timezone = null)
  *
  * @param string             $str  String to replace in
  * @param array|\Traversable $from Replace values
- * @param string|null        $to   Replace to, deprecated (@see https://secure.php.net/manual/en/function.strtr.php)
+ * @param string|null        $to   Replace to, deprecated (@see https://www.php.net/manual/en/function.strtr.php)
  *
  * @return string
  */
 function twig_replace_filter($str, $from, $to = null)
 {
     if (\is_string($from) && \is_string($to)) {
-        @trigger_error('Using "replace" with character by character replacement is deprecated since version 1.22 and will be removed in Twig 2.0', E_USER_DEPRECATED);
+        @trigger_error('Using "replace" with character by character replacement is deprecated since version 1.22 and will be removed in Twig 2.0', \E_USER_DEPRECATED);
 
         return strtr($str, $from, $to);
     }
@@ -547,7 +553,7 @@ function twig_round($value, $precision = 0, $method = 'common')
         throw new RuntimeError('The round filter only supports the "common", "ceil", and "floor" methods.');
     }
 
-    return $method($value * pow(10, $precision)) / pow(10, $precision);
+    return $method($value * 10 ** $precision) / 10 ** $precision;
 }
 
 /**
@@ -593,7 +599,7 @@ function twig_urlencode_filter($url)
 {
     if (\is_array($url)) {
         if (\defined('PHP_QUERY_RFC3986')) {
-            return http_build_query($url, '', '&', PHP_QUERY_RFC3986);
+            return http_build_query($url, '', '&', \PHP_QUERY_RFC3986);
         }
 
         return http_build_query($url, '', '&');
@@ -1041,7 +1047,7 @@ function twig_escape_filter(Environment $env, $string, $strategy = 'html', $char
 
     switch ($strategy) {
         case 'html':
-            // see https://secure.php.net/htmlspecialchars
+            // see https://www.php.net/htmlspecialchars
 
             // Using a static variable to avoid initializing the array
             // each time the function is called. Moving the declaration on the
@@ -1064,18 +1070,18 @@ function twig_escape_filter(Environment $env, $string, $strategy = 'html', $char
             ];
 
             if (isset($htmlspecialcharsCharsets[$charset])) {
-                return htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, $charset);
+                return htmlspecialchars($string, \ENT_QUOTES | \ENT_SUBSTITUTE, $charset);
             }
 
             if (isset($htmlspecialcharsCharsets[strtoupper($charset)])) {
                 // cache the lowercase variant for future iterations
                 $htmlspecialcharsCharsets[$charset] = true;
 
-                return htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, $charset);
+                return htmlspecialchars($string, \ENT_QUOTES | \ENT_SUBSTITUTE, $charset);
             }
 
             $string = twig_convert_encoding($string, 'UTF-8', $charset);
-            $string = htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $string = htmlspecialchars($string, \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8');
 
             return twig_convert_encoding($string, $charset, 'UTF-8');
 
@@ -1231,15 +1237,18 @@ function _twig_escape_js_callback($matches)
         return $shortMap[$char];
     }
 
-    // \uHHHH
-    $char = twig_convert_encoding($char, 'UTF-16BE', 'UTF-8');
-    $char = strtoupper(bin2hex($char));
-
-    if (4 >= \strlen($char)) {
-        return sprintf('\u%04s', $char);
+    $codepoint = mb_ord($char, 'UTF-8');
+    if (0x10000 > $codepoint) {
+        return sprintf('\u%04X', $codepoint);
     }
 
-    return sprintf('\u%04s\u%04s', substr($char, 0, -4), substr($char, -4));
+    // Split characters outside the BMP into surrogate pairs
+    // https://tools.ietf.org/html/rfc2781.html#section-2.1
+    $u = $codepoint - 0x10000;
+    $high = 0xD800 | ($u >> 10);
+    $low = 0xDC00 | ($u & 0x3FF);
+
+    return sprintf('\u%04X\u%04X', $high, $low);
 }
 
 function _twig_escape_css_callback($matches)
@@ -1376,7 +1385,7 @@ if (\function_exists('mb_get_info')) {
     function twig_title_string_filter(Environment $env, $string)
     {
         if (null !== $charset = $env->getCharset()) {
-            return mb_convert_case($string, MB_CASE_TITLE, $charset);
+            return mb_convert_case($string, \MB_CASE_TITLE, $charset);
         }
 
         return ucwords(strtolower($string));
@@ -1560,6 +1569,13 @@ function twig_include(Environment $env, $context, $template, $variables = [], $w
         if (!$alreadySandboxed = $sandbox->isSandboxed()) {
             $sandbox->enableSandbox();
         }
+
+        foreach ((\is_array($template) ? $template : [$template]) as $name) {
+            // if a Template instance is passed, it might have been instantiated outside of a sandbox, check security
+            if ($name instanceof TemplateWrapper || $name instanceof Template) {
+                $name->unwrap()->checkSecurity();
+            }
+        }
     }
 
     $loaded = null;
@@ -1736,6 +1752,10 @@ function twig_array_reduce(Environment $env, $array, $arrow, $initial = null)
     }
 
     if (!\is_array($array)) {
+        if (!$array instanceof \Traversable) {
+            throw new RuntimeError(sprintf('The "reduce" filter only works with arrays or "Traversable", got "%s" as first argument.', \gettype($array)));
+        }
+
         $array = iterator_to_array($array);
     }
 

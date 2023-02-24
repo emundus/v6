@@ -1399,3 +1399,54 @@ $(document).ready(function () {
 		});
 	}
 })
+
+function DoubleScroll(element) {
+	const id = Math.random();
+	if (element.scrollWidth > element.offsetWidth) {
+		createScrollbarForElement(element, id);
+	}
+
+	window.addEventListener('resize', function () {
+		let scrollbar = document.getElementById(id);
+		if (scrollbar) {
+			if (element.scrollWidth > element.offsetWidth) {
+				scrollbar.firstChild.style.width = element.scrollWidth + 'px';
+			} else {
+				scrollbar.remove();
+			}
+		} else {
+			if (element.scrollWidth > element.offsetWidth) {
+				createScrollbarForElement(element, id);
+			}
+		}
+	});
+}
+
+function createScrollbarForElement(element, id) {
+	let new_scrollbar = document.createElement('div');
+	new_scrollbar.appendChild(document.createElement('div'));
+	new_scrollbar.style.overflowX = 'auto';
+	new_scrollbar.style.overflowY = 'hidden';
+	new_scrollbar.firstChild.style.height = '1px';
+	new_scrollbar.firstChild.style.width = element.scrollWidth + 'px';
+	new_scrollbar.firstChild.appendChild(document.createTextNode('\xA0'));
+	new_scrollbar.id = id;
+	let running = false;
+	new_scrollbar.onscroll = function () {
+		if (running) {
+			running = false;
+			return;
+		}
+		running = true;
+		element.scrollLeft = new_scrollbar.scrollLeft;
+	};
+	element.onscroll = function () {
+		if (running) {
+			running = false;
+			return;
+		}
+		running = true;
+		new_scrollbar.scrollLeft = element.scrollLeft;
+	};
+	element.parentNode.insertBefore(new_scrollbar, element);
+}

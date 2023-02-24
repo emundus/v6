@@ -1,15 +1,19 @@
 <?php
 /**
  * @package         SCLogin
- * @copyright (c)   2009-2019 by SourceCoast - All Rights Reserved
+ * @copyright (c)   2009-2021 by SourceCoast - All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
- * @version         Release v8.4.3
- * @build-date      2020/05/29
+ * @version         Release v9.0.215
+ * @build-date      2022/09/06
  */
 
 defined('JPATH_PLATFORM') or die;
 
-JFormHelper::loadFieldClass('groupedlist');
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Form\FormHelper;
+
+FormHelper::loadFieldClass('groupedlist');
 
 // Import the com_menus helper.
 require_once realpath(JPATH_ADMINISTRATOR . '/components/com_menus/helpers/menus.php');
@@ -109,7 +113,7 @@ class JFormFieldRegistrationLink extends JFormFieldGroupedList
     }
 
     /**
-     * Method to attach a JForm object to the field.
+     * Method to attach a Form object to the field.
      *
      * @param   SimpleXMLElement  $element  The SimpleXMLElement object representing the <field /> tag for the form field object.
      * @param   mixed             $value    The form field value to validate.
@@ -119,7 +123,7 @@ class JFormFieldRegistrationLink extends JFormFieldGroupedList
      *
      * @return  boolean  True on success.
      *
-     * @see     JFormField::setup()
+     * @see     FormField::setup()
      * @since   3.2
      */
     public function setup(SimpleXMLElement $element, $value, $group = null)
@@ -162,7 +166,7 @@ class JFormFieldRegistrationLink extends JFormFieldGroupedList
             // Build the options array.
             foreach ($items as $link)
             {
-                $groups[$menuType][] = JHtml::_('select.option', $link->value, $link->text, 'value', 'text', in_array($link->type, $this->disable));
+                $groups[$menuType][] = HTMLHelper::_('select.option', $link->value, $link->text, 'value', 'text', in_array($link->type, $this->disable));
             }
         }
         // Build groups for all menu types.
@@ -177,7 +181,7 @@ class JFormFieldRegistrationLink extends JFormFieldGroupedList
                 // Build the options array.
                 foreach ($menu->links as $link)
                 {
-                    $groups[$menu->menutype][] = JHtml::_(
+                    $groups[$menu->menutype][] = HTMLHelper::_(
                         'select.option', $link->value, $link->text, 'value', 'text',
                         in_array($link->type, $this->disable)
                     );
@@ -196,7 +200,7 @@ class JFormFieldRegistrationLink extends JFormFieldGroupedList
         $register_type = $this->form->getValue('register_type', 'params', null);
         $notice_display = $register_type == "custom" ? "none" : "block";
         $input_display = $register_type == "custom" ? "block" : "none";
-        $html = '<div id="reglinknotice" style="display:'.$notice_display.'; clear:both;">'.JText::_("MOD_SCLOGIN_LOGIN_CUSTOM_REG_LINK_NOTICE").'</div>';
+        $html = '<div id="reglinknotice" style="display:'.$notice_display.'; clear:both;">'.Text::_("MOD_SCLOGIN_LOGIN_CUSTOM_REG_LINK_NOTICE").'</div>';
 
         return $html.'<div id="registrationlink" style="display:'.$input_display.'">'.parent::getInput().'</div>';
     }

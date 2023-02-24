@@ -101,7 +101,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
         $jinput = JFactory::getApplication()->input;
         $course = $jinput->get('course');
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"), 'campaigns' => []);
         } else {

@@ -52,12 +52,6 @@ $attachment_params = $db->loadObject();
 $fnumInfos = $m_files->getFnumInfos($fnum);
 $nom = $m_checklist->setAttachmentName($upload->filename, $attachment_params->lbl, $fnumInfos);
 
-/*
-if(!isset($attachment_params->displayed) || $attachment_params->displayed === '0') {
-    $nom.= "_locked";
-}
-*/
-
 //$nom .= $attachment_params->lbl.rand().'.'.end(explode('.', $upload->filename));
 
 // test if directory exist

@@ -111,4 +111,34 @@ class EmundusControllerPayment extends JControllerLegacy
         echo json_encode(array('status' => $updated));
         exit;
     }
+
+    public function resetpaymentsession()
+    {
+        $app = JFactory::getApplication();
+        $jinput = $app->input;
+        $redirect = $jinput->get('redirect', false);
+        $model = $this->getModel('payment');
+        $model->resetPaymentSession();
+
+        if ($redirect) {
+            $app->redirect('/');
+        }
+    }
+
+
+    public function checkpaymentsession()
+    {
+        $is_valid = true;
+        $app = JFactory::getApplication();
+        $jinput = $app->input;
+        $fnum = $jinput->get('fnum', false);
+
+        if (!empty($fnum)) {
+            $model = $this->getModel('payment');
+            $is_valid = $model->checkPaymentSession();
+        }
+
+        echo json_encode(array('response' => $is_valid));
+        exit;
+    }
 }

@@ -126,6 +126,7 @@ defined('_JEXEC') or die;
     }
     .tchooz-vertical-item a img{
         width: 30px;
+        height: 30px;
         padding: 5px;
     }
 

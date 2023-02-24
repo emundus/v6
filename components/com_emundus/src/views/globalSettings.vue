@@ -22,26 +22,26 @@
         ></StyleTool>
 
         <ContentTool
-            v-if="menuHighlight === 2"
+            v-else-if="menuHighlight === 2"
             v-show="modal_ready"
             @resetMenuIndex="menuHighlight = 0"
         />
 
         <FilesTool
-            v-if="menuHighlight === 3"
+		        v-else-if="menuHighlight === 3"
             v-show="modal_ready"
             @resetMenuIndex="menuHighlight = 0"
         />
 
         <TranslationTool
-            v-if="menuHighlight === 9"
+		        v-else-if="menuHighlight === 9"
             v-show="modal_ready"
             @resetMenuIndex="menuHighlight = 0"
             ref="translations"
         />
 
         <AttachmentStorage
-            v-if="menuHighlight === 5"
+		        v-else-if="menuHighlight === 5"
             v-show="modal_ready"
             @resetMenuIndex="menuHighlight = 0"
         />
@@ -53,21 +53,18 @@
 </template>
 
 <script>
-import EditStatus from "../components/Settings/FilesTool/EditStatus";
-import EditTags from "../components/Settings/FilesTool/EditTags";
-import TranslationTool from "../components/Settings/TranslationTool/TranslationTool";
-import ContentTool from "../components/Settings/Content/ContentTool";
-import FilesTool from "../components/Settings/FilesTool/FilesTool";
-import StyleTool from "../components/Settings/Style/StyleTool";
-import AttachmentStorage from "../components/Settings/AttachmentStorage/AttachmentStorage";
+import EditStatus from '../components/Settings/FilesTool/EditStatus';
+import EditTags from '../components/Settings/FilesTool/EditTags';
+import TranslationTool from '../components/Settings/TranslationTool/TranslationTool';
+import ContentTool from '../components/Settings/Content/ContentTool';
+import FilesTool from '../components/Settings/FilesTool/FilesTool';
+import StyleTool from '../components/Settings/Style/StyleTool';
+import AttachmentStorage from '../components/Settings/AttachmentStorage/AttachmentStorage';
 
-import settingsService from "com_emundus/src/services/settings";
-
-const qs = require("qs");
+import settingsService from '../services/settings';
 
 export default {
   name: "globalSettings",
-
   components: {
     StyleTool,
     AttachmentStorage,
@@ -77,11 +74,19 @@ export default {
     EditStatus,
     EditTags
   },
-
   props: {
-    actualLanguage: String,
-    coordinatorAccess: Number,
-    manyLanguages: Number
+    actualLanguage: {
+			type: String,
+	    default: 'fr'
+    },
+    coordinatorAccess: {
+			type: Number,
+	    default: 1
+    },
+    manyLanguages: {
+			type: Number,
+	    default: 1
+    }
   },
 
   data: () => ({

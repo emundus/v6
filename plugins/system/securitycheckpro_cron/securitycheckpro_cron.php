@@ -258,9 +258,52 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
                     } else if ($last_task == "PERMISSIONS") {
                         $last_check = $model->loadStack("filemanager_resume", "last_check");
                     }
+									
 					$now = $this->global_model->get_Joomla_timestamp();
 					$seconds = strtotime($now) - strtotime($last_check);
-					$interval = intval($seconds/3600);                    
+					$interval = intval($seconds/3600);
+						
+					if (is_null($last_check))
+					{
+						//Task never launched. Launching it
+						if ($last_task == "INTEGRITY") {
+							$this->acciones('normal', $launch_time);
+							// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+							$model->set_campo_filemanager("last_task", 'PERMISSIONS');
+						} else if ($last_task == "PERMISSIONS") {
+							$this->acciones_integrity('normal', $launch_time);
+							// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+                            $model->set_campo_filemanager("last_task", 'INTEGRITY');
+						}						
+						break;
+					}
+					
+					$dateFormat = 'Y-m-d H:i:s';
+					$date_now = DateTime::createFromFormat($dateFormat, $now);
+					$date_last_check = DateTime::createFromFormat($dateFormat, $last_check);
+					
+					if (!is_bool($date_now)) {
+						$day_now = intval($date_now->format('d'));
+					} else
+					{
+						// Something went wrong getting the date
+						$day_now = false;
+					}
+					
+					if (!is_bool($date_last_check)) {
+						$day_last_check = intval($date_last_check->format('d'));
+					} else
+					{
+						// Something went wrong getting the date
+						$day_last_check = false;
+					}
+														
+					$hours_matches = false;
+						
+					if ( ($hour == $launch_time) && ($day_now != $day_last_check) && (is_int($day_now)) && (is_int($day_last_check)) ) {
+						// hour matches with the schedule and day is different of the day last time the task was launched (this means the task was not already launched today)
+						$hours_matches = true;
+					}			
                     
                     if ($interval >= $periodicity) {  // Hay que lanzar la tarea
                         if ($last_task == "PERMISSIONS") {
@@ -282,13 +325,59 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
                             // Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
                             $model->set_campo_filemanager("last_task", 'PERMISSIONS');
                         }
-                    }
+                    } else if ($hours_matches) {
+						if ($last_task == "INTEGRITY") {
+							$this->acciones('normal', $launch_time);
+							// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+							$model->set_campo_filemanager("last_task", 'PERMISSIONS');
+						} else if ($last_task == "PERMISSIONS") {
+							$this->acciones_integrity('normal', $launch_time);
+							// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+                            $model->set_campo_filemanager("last_task", 'INTEGRITY');
+						}
+					}
                     break;
                 case "permissions":
                     $last_check = $model->loadStack("filemanager_resume", "last_check");
 					$now = $this->global_model->get_Joomla_timestamp();
 					$seconds = strtotime($now) - strtotime($last_check);
-					$permissions_interval = intval($seconds/3600);					
+					$permissions_interval = intval($seconds/3600);
+										
+					if (is_null($last_check))
+					{
+						//Task never launched. Launching it
+						$this->acciones('normal', $launch_time);
+						// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+                        $model->set_campo_filemanager("last_task", 'PERMISSIONS');
+						break;
+					}
+					
+					$dateFormat = 'Y-m-d H:i:s';
+					$date_now = DateTime::createFromFormat($dateFormat, $now);
+					$date_last_check = DateTime::createFromFormat($dateFormat, $last_check);
+					
+					if (!is_bool($date_now)) {
+						$day_now = intval($date_now->format('d'));
+					} else
+					{
+						// Something went wrong getting the date
+						$day_now = false;
+					}
+					
+					if (!is_bool($date_last_check)) {
+						$day_last_check = intval($date_last_check->format('d'));
+					} else
+					{
+						// Something went wrong getting the date
+						$day_last_check = false;
+					}
+										
+					$hours_matches = false;
+						
+					if ( ($hour == $launch_time) && ($day_now != $day_last_check) && (is_int($day_now)) && (is_int($day_last_check)) ) {
+						// hour matches with the schedule and day is different of the day last time the task was launched (this means the task was not already launched today)
+						$hours_matches = true;
+					}					
 					                    
                     if ($permissions_interval >= $periodicity) {  // Hay que lanzar la tarea
                         if (($launch_task) && ($hour != $launch_time)) {
@@ -299,14 +388,54 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
                         }
                         // Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
                         $model->set_campo_filemanager("last_task", 'PERMISSIONS');
-                    }
+                    } else if ($hours_matches) {
+						$this->acciones('normal', $launch_time);
+						// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+                        $model->set_campo_filemanager("last_task", 'PERMISSIONS');
+					}
                     break;
                 case "integrity":
                     $last_check_integrity = $model->loadStack("fileintegrity_resume", "last_check_integrity");
 					$now = $this->global_model->get_Joomla_timestamp();
 					$seconds = strtotime($now) - strtotime($last_check_integrity);
 					$integrity_interval = intval($seconds/3600);
-					                    
+					
+					if (is_null($last_check_integrity))
+					{
+						//Task never launched. Launching it
+						$this->acciones_integrity('normal', $launch_time);
+						// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+                        $model->set_campo_filemanager("last_task", 'INTEGRITY');
+						break;
+					}
+										
+					$dateFormat = 'Y-m-d H:i:s';
+					$date_now = DateTime::createFromFormat($dateFormat, $now);
+					$date_last_check = DateTime::createFromFormat($dateFormat, $last_check_integrity);
+					
+					if (!is_bool($date_now)) {
+						$day_now = intval($date_now->format('d'));
+					} else
+					{
+						// Something went wrong getting the date
+						$day_now = false;
+					}
+					
+					if (!is_bool($date_last_check)) {
+						$day_last_check = intval($date_last_check->format('d'));
+					} else
+					{
+						// Something went wrong getting the date
+						$day_last_check = false;
+					}
+					
+					$hours_matches = false;
+						
+					if ( ($hour == $launch_time) && ($day_now != $day_last_check) && (is_int($day_now)) && (is_int($day_last_check)) ) {
+						// hour matches with the schedule and day is different of the day last time the task was launched (this means the task was not already launched today)
+						$hours_matches = true;
+					}
+														                    
                     if ($integrity_interval >= $periodicity) {  // Hay que lanzar la tarea
                         if (($launch_task) && ($hour != $launch_time)) {
                             $this->acciones_integrity('launch', $launch_time);                            
@@ -317,11 +446,52 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
                         
                         // Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
                         $model->set_campo_filemanager("last_task", 'INTEGRITY');
-                    }
+                    } else if ($hours_matches) {
+						$this->acciones_integrity('normal', $launch_time);
+						// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+                        $model->set_campo_filemanager("last_task", 'INTEGRITY');
+					}
                     break;
                 case "both":
                     $last_check_integrity = $model->loadStack("fileintegrity_resume", "last_check_integrity");
                     $last_check = $model->loadStack("filemanager_resume", "last_check");
+					
+					if ( (is_null($last_check_integrity)) || (is_null($last_check)) )
+					{
+						//Task never launched. Launching it
+						$this->acciones_integrity('normal', $launch_time);						
+                        $this->acciones('normal', $launch_time);
+						// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+                        $model->set_campo_filemanager("last_task", 'PERMISSIONS');
+						break;
+					}
+										
+					$dateFormat = 'Y-m-d H:i:s';
+					$date_now = DateTime::createFromFormat($dateFormat, $now);
+					$date_last_check = DateTime::createFromFormat($dateFormat, $last_check_integrity);
+					
+					if (!is_bool($date_now)) {
+						$day_now = intval($date_now->format('d'));
+					} else
+					{
+						// Something went wrong getting the date
+						$day_now = false;
+					}
+					
+					if (!is_bool($date_last_check)) {
+						$day_last_check = intval($date_last_check->format('d'));
+					} else
+					{
+						// Something went wrong getting the date
+						$day_last_check = false;
+					}
+					
+					$hours_matches = false;
+						
+					if ( ($hour == $launch_time) && ($day_now != $day_last_check) && (is_int($day_now)) && (is_int($day_last_check)) ) {
+						// hour matches with the schedule and day is different of the day last time the task was launched (this means the task was not already launched today)
+						$hours_matches = true;
+					}
 					
 					$now = $this->global_model->get_Joomla_timestamp();					
 					$seconds_permissions = strtotime($now) - strtotime($last_check);
@@ -341,7 +511,12 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
                         
                         // Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
                         $model->set_campo_filemanager("last_task", 'PERMISSIONS');
-                    }
+                    } else if ($hours_matches) {
+						$this->acciones_integrity('normal', $launch_time);
+                        $this->acciones('normal', $launch_time);
+						// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+                        $model->set_campo_filemanager("last_task", 'PERMISSIONS');
+					}
                     break;
                 }
                 // Actualizamos el campo 'cron_tasks_launched' de la tabla 'file_manager' para indicar que las tareas ya han terminado de ejecutarse

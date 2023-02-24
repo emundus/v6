@@ -28,10 +28,10 @@
                 class="form-control fabrikinput em-w-100"
                 @focusout="onFormChange()"
             />
+            <span v-if="errors.label" class="em-red-500-color em-mb-8">
+              <span class="em-red-500-color">{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME') }}</span>
+            </span>
           </div>
-          <span v-if="errors.label" class="em-red-500-color em-mb-8">
-            <span class="em-red-500-color">{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME') }}</span>
-          </span>
 
           <div class="em-grid-2 em-mb-16">
             <div>
@@ -107,20 +107,21 @@
 
           <div class="em-mb-16">
             <label style="top: 5em">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME') }} <span class="em-red-500-color">*</span></label>
-            <textarea
-                type="textarea"
-                rows="2"
-                id="campResume"
-                maxlength="500"
-                placeholder=" "
-                class="form-control fabrikinput"
+            <editor-quill
+                style="height: 25em"
+                :text="form.short_description"
                 v-model="form.short_description"
-                @keyup="checkMaxlength('campResume')"
-                @focusout="removeBorderFocus('campResume')"
-            />
+                :enable_variables="false"
+                :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME')"
+                :id="'campResume'"
+                :key="editorResumeKey"
+                :limit="500"
+                :toolbar="'light'"
+                @focusout="onFormChange">
+            </editor-quill>
           </div>
 
-          <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
+          <label class="em-mt-16">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
           <div class="em-mb-16" v-if="typeof form.description != 'undefined'">
             <editor-quill
                 style="height: 25em"
@@ -277,6 +278,7 @@ export default {
     old_training: "",
     old_program_form: "",
     editorKey: 0,
+    editorResumeKey: 0,
 
     form: {
       label: {},
@@ -720,20 +722,6 @@ export default {
       }
       this.isHiddenProgram = !this.isHiddenProgram;
     },
-
-    checkMaxlength(id) {
-      var maxLength = document.getElementById(id).getAttribute('maxlength');
-      if(maxLength == this.form.short_description.length) {
-        document.getElementById(id).style.borderColor = 'red';
-      } else {
-        document.getElementById(id).style.borderColor = '#3898ec';
-      }
-    },
-
-    removeBorderFocus(id){
-      document.getElementById(id).style.borderColor = '#cccccc';
-      this.onFormChange();
-    },
   },
 
   watch: {
@@ -756,7 +744,7 @@ export default {
 }
 
 #campResume {
-  height: 85px !important;
+  height: 130px !important;
 }
 
 .em-color-round{

@@ -75,13 +75,47 @@
 
       <!-- COLORS -->
       <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
-        <div class="em-flex-row">
+        <div class="em-flex-row" style="margin-bottom: 52px">
             <h3 class="em-text-neutral-800" style="margin: 0">{{ translate("COM_EMUNDUS_ONBOARD_COLORS") }}</h3>
         </div>
 
         <div class="em-logo-box pointer em-mt-16" @click="$modal.show('modalUpdateColors')">
           <div class="color-preset" :style="'background-color:' + primary + ';border-right: 25px solid' + secondary">
           </div>
+        </div>
+      </div>
+
+      <!-- BANNER -->
+      <div v-if="bannerLink" class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
+        <div class="em-flex-row">
+          <div>
+            <h3 class="em-text-neutral-800" style="margin: 0">{{ translate("COM_EMUNDUS_ONBOARD_BANNER") }}</h3>
+            <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png</em></span><br/>
+            <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_RECOMMENDED_SIZE') }} : 1440x200px</em></span>
+          </div>
+          <span class="material-icons em-pointer" style="margin-left: 125px" v-if="banner_updating" @click="banner_updating = !banner_updating">close</span>
+        </div>
+
+        <div class="em-logo-box pointer em-mt-16" @click="banner_updating = !banner_updating" v-if="!banner_updating">
+          <img class="logo-settings" :src="bannerLink" :srcset="'/'+bannerLink" :alt="InsertBanner">
+        </div>
+        <div class="em-mt-16">
+          <vue-dropzone
+              v-if="banner_updating"
+              ref="dropzone"
+              id="customdropzone"
+              :include-styling="false"
+              :options="bannerDropzoneOptions"
+              :useCustomSlot=true
+              v-on:vdropzone-file-added="afterAdded"
+              v-on:vdropzone-thumbnail="thumbnail"
+              v-on:vdropzone-removed-file="afterRemoved"
+              v-on:vdropzone-complete="onComplete"
+              v-on:vdropzone-error="catchError">
+            <div class="dropzone-custom-content" id="dropzone-message">
+              {{ translate("COM_EMUNDUS_ONBOARD_DROP_HERE") }}
+            </div>
+          </vue-dropzone>
         </div>
       </div>
     </div>
@@ -122,14 +156,17 @@ export default {
       loading: false,
       logo_updating: false,
       favicon_updating: false,
+      banner_updating: false,
 
       imageLink: '',
       iconLink: 'images/custom/favicon.png',
+      bannerLink: null,
       primary: '',
       secondary: '',
       changes: false,
       InsertLogo: this.translate("COM_EMUNDUS_ONBOARD_INSERT_LOGO"),
       InsertIcon: this.translate("COM_EMUNDUS_ONBOARD_INSERT_ICON"),
+      InsertBanner: this.translate("COM_EMUNDUS_ONBOARD_INSERT_BANNER"),
 
       logoDropzoneOptions: {
         url: 'index.php?option=com_emundus&controller=settings&task=updatelogo',
@@ -151,6 +188,24 @@ export default {
       },
       faviconDropzoneOptions: {
         url: 'index.php?option=com_emundus&controller=settings&task=updateicon',
+        maxFilesize: 10,
+        maxFiles: 1,
+        autoProcessQueue: true,
+        addRemoveLinks: true,
+        thumbnailWidth: null,
+        thumbnailHeight: null,
+        resizeMimeType: 'image/png',
+        acceptedFiles: 'image/png,image/jpeg',
+        previewTemplate: getTemplate(),
+        dictCancelUpload: this.translate("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD"),
+        dictCancelUploadConfirmation: this.translate("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD_CONFIRMATION"),
+        dictRemoveFile: this.translate("COM_EMUNDUS_ONBOARD_REMOVE_FILE"),
+        dictInvalidFileType: this.translate("COM_EMUNDUS_ONBOARD_INVALID_FILE_TYPE"),
+        dictFileTooBig: this.translate("COM_EMUNDUS_ONBOARD_FILE_TOO_BIG") + ' : 10Mo',
+        dictMaxFilesExceeded: this.translate("COM_EMUNDUS_ONBOARD_MAX_FILES_EXCEEDED"),
+      },
+      bannerDropzoneOptions: {
+        url: 'index.php?option=com_emundus&controller=settings&task=updatebanner',
         maxFilesize: 10,
         maxFiles: 1,
         autoProcessQueue: true,
@@ -192,6 +247,20 @@ export default {
 
     axios({
       method: "get",
+      url: 'index.php?option=com_emundus&controller=settings&task=getbanner',
+    }).then((rep) => {
+      if(rep.data.filename != null){
+        this.bannerLink = rep.data.filename;
+      }
+
+      setTimeout(() => {
+        this.changes = true;
+      },1000);
+      this.loading = false;
+    });
+
+    axios({
+      method: "get",
       url: 'index.php?option=com_emundus&controller=settings&task=getappcolors',
     }).then((rep) => {
       this.primary = rep.data.primary;
@@ -210,6 +279,10 @@ export default {
     },
     updateIcon() {
       this.iconLink = 'images/custom/favicon.png?' + new Date().getTime();
+      this.$forceUpdate();
+    },
+    updateBanner() {
+      this.bannerLink = 'images/custom/default_banner.png?' + new Date().getTime();
       this.$forceUpdate();
     },
     updateColors(colors){
@@ -272,6 +345,10 @@ export default {
         if(this.favicon_updating) {
           this.favicon_updating = false;
           this.updateIcon();
+        }
+        if(this.banner_updating) {
+          this.banner_updating = false;
+          this.updateBanner();
         }
       }
     },
