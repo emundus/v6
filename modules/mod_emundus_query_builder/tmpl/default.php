@@ -4,7 +4,7 @@ header('Content-Type: text/html; charset=utf-8');
 ?>
 
 
-<center>
+<div>
 	<button id="buttonOpen" class="btnQueryBuilder" onclick="openCloseGraphManager()"><?php if(isset($_GET['gOpen'])) { echo JText::_('CLOSE_QUERY_BUILDER'); } else { echo JText::_('OPEN_QUERY_BUILDER'); } ?></button>
 	<br /><br />
 	<div class="queryBuilder" style="display:<?php if(isset($_GET['gOpen'])) { echo "block;"; } else { echo "none;"; } ?>" >
@@ -54,7 +54,7 @@ header('Content-Type: text/html; charset=utf-8');
             <?php endif; ?>
 		</form>
 	</div>
-</center>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
@@ -80,7 +80,7 @@ jQuery(document).ready(function(){
 	jQuery('.platform-content').attr('style', 'width:100%!important');
 	jQuery('.platform-content').has('.container-stat').attr('style', 'margin-bottom:50px;background-color:white;padding-bottom:1%;box-shadow: 0 1px 2px 0 hsla(0,0%,41.2%,.19);');
 	jQuery('.etiquette').attr('style', 'grid-column-end:span 3;');
-	jQuery('.informationStatistique').attr('style', 'grid-column-end:span 3;');
+	jQuery('.informationStatistique').attr('style', 'grid-column-end:span 3;margin-top: 32px');
 	jQuery('#g-container-main').attr('style', 'padding-left:5%!important;padding-right:5%!important');
 
 	taillerEtiquette();

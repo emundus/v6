@@ -818,21 +818,12 @@ class EmundusControllerFiles extends JControllerLegacy
      *
      */
     public function updatestate() {
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'files.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
         $app    = JFactory::getApplication();
         $jinput = $app->input;
         $fnums  = $jinput->getString('fnums', null);
         $state  = $jinput->getInt('state', null);
 
-        $h_files    = new EmundusHelperFiles();
         $m_files = $this->getModel('Files');
-
-        $get_candidate_attachments = $h_files->tableExists('#__emundus_setup_emails_repeat_candidate_attachment');
-        $get_letters_attachments = $h_files->tableExists('#__emundus_setup_emails_repeat_letter_attachment');
-
-
-        $email_from_sys = $app->getCfg('mailfrom');
 
         if($fnums == "all") {
             $fnums = $m_files->getAllFnums();
@@ -858,8 +849,7 @@ class EmundusControllerFiles extends JControllerLegacy
             }
         }
 
-        $fnumsInfos = $m_files->getFnumsInfos($validFnums);
-        $res        = $m_files->updateState($validFnums, $state);
+        $res = $m_files->updateState($validFnums, $state);
         $msg = '';
 
         if (is_array($res)) {
@@ -868,303 +858,6 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         if ($res !== false) {
-            $m_application = $this->getModel('application');
-            $status = $m_files->getStatus();
-            // Get all codes from fnum
-            $code = array();
-            foreach ($fnumsInfos as $fnum) {
-                $code[] = $fnum['training'];
-
-                // Log the update
-                $logsParams = array('updated' => []);
-                array_push($logsParams['updated'], ['old' => $fnum['value'], 'new' => $status[$state]['value'], 'old_id' => $fnum['step'], 'new_id' => $state]);
-                EmundusModelLogs::log($this->_user->id, (int)substr($fnum['fnum'], -7), $fnum['fnum'], 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
-            }
-
-            //*********************************************************************
-            // Get triggered email
-            include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
-            include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
-            $m_email = new EmundusModelEmails;
-            $m_users = new EmundusModelUsers;
-            $trigger_emails = $m_email->getEmailTrigger($state, $code, 1);
-            $toAttach = [];
-
-            if (count($trigger_emails) > 0) {
-
-                foreach ($trigger_emails as $trigger_email) {
-
-                    // Manage with default recipient by programme
-                    foreach ($trigger_email as $code => $trigger) {
-
-                        /* BAD IDEA In that place, we do not known the FNUM for file generation
-
-                                                $email_id = array_keys($trigger_emails);
-                                                $get_candidate_attachments = true;
-                                                $get_letters_attachments = true;
-                                                $template = $m_messages->getEmail($email_id[0], $get_candidate_attachments, $get_letters_attachments);
-                                                $attachments[]=$template->letter_attachments;
-
-                                                // Files generated using the Letters system. Requires attachment creation and doc generation rights.
-                                                if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c') && !empty($attachments)) {
-
-                                                    // Get from DB and generate using the tags.
-                                                    foreach ($attachments as $setup_letter) {
-
-                                                        $letter = $m_messages->get_letter($setup_letter);
-
-                                                        // We only get the letters if they are for that particular programme.
-                                                        if ($letter && in_array($code, explode('","',$letter->training))) {
-
-                                                            // Some letters are only for files of a certain status, this is where we check for that.
-                                                            if ($letter->status != null && !in_array($step, explode(',',$letter->status))) {
-                                                                continue;
-                                                            }
-
-                                                            // A different file is to be generated depending on the template type.
-                                                            switch ($letter->template_type) {
-
-                                                                case '1':
-                                                                    // This is a static file, we just need to find its path add it as an attachment.
-                                                                    if (file_exists(JPATH_SITE.$letter->file)) {
-                                                                        $toAttach[] = JPATH_SITE.$letter->file;
-                                                                    }
-                                                                    break;
-
-                                                                case '2':
-                                                                    // This is a PDF to be generated from HTML.
-                                                                    require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
-
-                                                                    $path = generateLetterFromHtml($letter, $fnum, $fnum->applicant_id, $fnum->training);
-
-                                                                    if ($path && file_exists($path)) {
-                                                                        $toAttach[] = $path;
-                                                                    }
-                                                                    break;
-
-                                                                case '3':
-                                                                    // This is a DOC template to be completed with applicant information.
-                                                                    $path = $m_messages->generateLetterDoc($letter, $fnum);
-
-                                                                    if ($path && file_exists($path)) {
-                                                                        $toAttach[] = $path;
-                                                                    }
-                                                                    break;
-
-                                                                default:
-                                                                    break;
-                                                            }
-
-                                                        }
-                                                    }
-                                                }
-                        */
-
-                        require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
-                        $h_emails = new EmundusHelperEmails();
-
-                        if ($trigger['to']['to_applicant'] == 1) {
-
-                            // Manage with selected fnum
-                            foreach ($fnumsInfos as $file) {
-                                if ($file['training'] != $code) {
-                                    continue;
-                                }
-
-                                $toAttach = [];
-                                if(!empty($trigger['tmpl']['attachments'])){
-                                    $attachments = $m_application->getAttachmentsByFnum($file['fnum'],null,explode(',',$trigger['tmpl']['attachments']));
-
-                                    foreach ($attachments as $attachment){
-                                        $toAttach[] = EMUNDUS_PATH_ABS.$file['applicant_id'].'/'.$attachment->filename;
-                                    }
-                                }
-
-                                $can_send_mail = $h_emails->assertCanSendMailToUser($file['applicant_id'], $file['fnum']);
-                                if (!$can_send_mail) {
-                                    continue;
-                                }
-
-                                // Check if user defined a cc address
-                                $cc = [];
-                                $emundus_user = $m_users->getUserById($file['applicant_id'])[0];
-                                if(isset($emundus_user->email_cc) && !empty($emundus_user->email_cc)) {
-                                    if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
-                                        $cc[] = $emundus_user->email_cc;
-                                    }
-                                }
-
-                                $mailer = JFactory::getMailer();
-
-                                $post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['label'], 'CAMPAIGN_END' => JHTML::_('date', $file['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null));
-                                $tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum'], '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
-
-                                $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
-                                $from_id    = 62;
-                                $fromname   = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['name']);
-                                $to         = $file['email'];
-                                $subject    = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['subject']);
-                                $body = $trigger['tmpl']['message'];
-
-
-                                // Add the email template model.
-                                if (!empty($trigger['tmpl']['template']))
-                                    $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $trigger['tmpl']['template']);
-
-                                $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
-                                $body = $m_email->setTagsFabrik($body, array($file['fnum']));
-
-                                // If the email sender has the same domain as the system sender address.
-                                if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
-                                    $mail_from_address = $from;
-                                else
-                                    $mail_from_address = $email_from_sys;
-
-                                // Set sender
-                                $sender = [
-                                    $mail_from_address,
-                                    $fromname
-                                ];
-
-                                $mailer->setSender($sender);
-                                $mailer->addReplyTo($from, $fromname);
-                                $mailer->addRecipient($to);
-                                $mailer->setSubject($subject);
-                                $mailer->isHTML(true);
-                                $mailer->Encoding = 'base64';
-                                $mailer->setBody($body);
-                                $mailer->addAttachment($toAttach);
-
-                                if (!empty($cc)) {
-                                    $mailer->addCc($cc);
-                                }
-
-                                $send = $mailer->Send();
-                                if ($send !== true) {
-                                    $msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT').' : '.$to.' '.$send->__toString().'</div>';
-                                    JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
-                                } else {
-                                    // Assoc tags if email has been sent
-                                    if(!empty($trigger['tmpl']['tags'])){
-                                        $db = JFactory::getDBO();
-                                        $query = $db->getQuery(true);
-
-                                        $tags = array_filter(explode(',',$trigger['tmpl']['tags']));
-
-                                        foreach($tags as $tag){
-                                            try{
-                                                $query->clear()
-                                                    ->insert($db->quoteName('#__emundus_tag_assoc'));
-                                                $query->set($db->quoteName('fnum') . ' = ' . $db->quote($file['fnum']))
-                                                    ->set($db->quoteName('id_tag') . ' = ' . $db->quote($tag))
-                                                    ->set($db->quoteName('user_id') . ' = ' . $db->quote(JFactory::getUser()->id));
-
-                                                $db->setQuery($query);
-                                                $db->execute();
-                                            }  catch (Exception $e) {
-                                                JLog::add('NOT IMPORTANT IF DUPLICATE ENTRY : Error getting template in model/messages at query :'.$query->__toString(). " with " . $e->getMessage(), JLog::ERROR, 'com_emundus');
-                                            }
-                                        }
-                                    }
-
-                                    $message = array(
-                                        'user_id_from' => $from_id,
-                                        'user_id_to' => $file['applicant_id'],
-                                        'subject' => $subject,
-                                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$to.'</i><br>'.$body
-                                    );
-                                    $m_email->logEmail($message);
-                                    $msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$to.'<br>';
-                                    JLog::add($to.' '.$body, JLog::INFO, 'com_emundus.email');
-                                }
-                            }
-                        }
-
-                        foreach ($trigger['to']['recipients'] as $key => $recipient) {
-                            $can_send_mail = $h_emails->assertCanSendMailToUser($recipient['id']);
-                            if (!$can_send_mail) {
-                                continue;
-                            }
-
-                            $mailer = JFactory::getMailer();
-
-                            $post = array();
-                            $tags = $m_email->setTags($recipient['id'], $post, null, '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
-
-                            $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
-                            $from_id    = 62;
-                            $fromname   = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['name']);
-                            $to         = $recipient['email'];
-                            $subject    = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['subject']);
-                            $body       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['message']);
-                            $body       = $m_email->setTagsFabrik($body, $validFnums);
-
-                            // If the email sender has the same domain as the system sender address.
-                            if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
-                                $mail_from_address = $from;
-                            else
-                                $mail_from_address = $email_from_sys;
-
-                            // Set sender
-                            $sender = [
-                                $mail_from_address,
-                                $fromname
-                            ];
-
-                            $mailer->setSender($sender);
-                            $mailer->addReplyTo($from, $fromname);
-                            $mailer->addRecipient($to);
-                            $mailer->setSubject($subject);
-                            $mailer->isHTML(true);
-                            $mailer->Encoding = 'base64';
-                            $mailer->setBody($body);
-                            $mailer->addAttachment($toAttach);
-
-                            $send = $mailer->Send();
-                            if ($send !== true) {
-                                $msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT').' : '.$to.' '.$send->__toString().'</div>';
-                                JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
-                            } else {
-                                // Assoc tags if email has been sent
-                                if(!empty($trigger['tmpl']['tags'])){
-                                    $db = JFactory::getDBO();
-                                    $query = $db->getQuery(true);
-
-                                    $tags = array_filter(explode(',',$trigger['tmpl']['tags']));
-
-                                    foreach($tags as $tag){
-                                        try{
-                                            $query->clear()
-                                                ->insert($db->quoteName('#__emundus_tag_assoc'));
-                                            $query->set($db->quoteName('fnum') . ' = ' . $db->quote($file['fnum']))
-                                                ->set($db->quoteName('id_tag') . ' = ' . $db->quote($tag))
-                                                ->set($db->quoteName('user_id') . ' = ' . $db->quote(JFactory::getUser()->id));
-
-                                            $db->setQuery($query);
-                                            $db->execute();
-                                        }  catch (Exception $e) {
-                                            JLog::add('NOT IMPORTANT IF DUPLICATE ENTRY : Error getting template in model/messages at query :'.$query->__toString(). " with " . $e->getMessage(), JLog::ERROR, 'com_emundus');
-                                        }
-                                    }
-                                }
-
-                                $message = array(
-                                    'user_id_from' => $from_id,
-                                    'user_id_to' => $recipient['id'],
-                                    'subject' => $subject,
-                                    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$to.'</i><br>'.$body
-                                );
-                                $m_email->logEmail($message);
-                                $msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$to.'<br>';
-                                JLog::add($to.' '.$body, JLog::INFO, 'com_emundus.email');
-                            }
-                        }
-                    }
-                }
-            }
-            //
-            //***************************************************
-
             $msg .= JText::_('COM_EMUNDUS_APPLICATION_STATE_SUCCESS');
         } else {
             $msg = empty($msg) ? JText::_('STATE_ERROR') : $msg;
@@ -1792,119 +1485,149 @@ class EmundusControllerFiles extends JControllerLegacy
             }
         }
 
-        // On parcours les fnums
-        foreach ($fnumsArray as $fnum) {
-            // On traite les données du fnum
-            foreach ($fnum as $k => $v) {
-                if ($k != 'code' && strpos($k, 'campaign_id') === false) {
+        if (!empty($fnumsArray)) {
+            $encrypted_tables = $h_files->getEncryptedTables();
+            if (!empty($encrypted_tables)) {
+                $cipher = 'aes-128-cbc';
+                $encryption_key = JFactory::getConfig()->get('secret');
+            }
+            
+            // On parcours les fnums
+            foreach ($fnumsArray as $fnum) {
+                // On traite les données du fnum
+                foreach ($fnum as $k => $v) {
+                    if ($k != 'code' && strpos($k, 'campaign_id') === false) {
 
-                    if ($k === 'fnum') {
-                        $line .= "'".$v."\t";
-                        $line .= $status[$v]['value']."\t";
-                        $uid = intval(substr($v, 21, 7));
-                        if (!$anonymize_data) {
-                            $userProfil = $m_users->getUserById($uid)[0];
-                            $line .= $userProfil->lastname."\t";
-                            $line .= $userProfil->firstname."\t";
-                        }
-
-                    } else {
-
-                        if ($v == "") {
-                            $line .= " "."\t";
-                        } elseif ($v[0] == "=" || $v[0] == "-") {
-                            if (count($opts) > 0 && in_array("upper-case", $opts)) {
-                                $line .= " ".mb_strtoupper($v)."\t";
-                            } else {
-                                $line .= " ".$v."\t";
+                        if ($k === 'fnum') {
+                            $line .= "'".$v."\t";
+                            $line .= $status[$v]['value']."\t";
+                            $uid = intval(substr($v, 21, 7));
+                            if (!$anonymize_data) {
+                                $userProfil = $m_users->getUserById($uid)[0];
+                                $line .= $userProfil->lastname."\t";
+                                $line .= $userProfil->firstname."\t";
                             }
                         } else {
-
-                            if (!empty($date_elements[$k])) {
-                                if ($v === '0000-00-00 00:00:00') {
-                                    $v = '';
-                                } else {
-                                    $v = date($date_elements[$k], strtotime($v));
-                                }
-                                $line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
-                            } elseif(!empty($textarea_elements[$k])){
-                                if($textarea_elements[$k] == 1){
-                                    $v = strip_tags($v);
-                                }
-                                $line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
-                            } elseif (count($opts) > 0 && in_array("upper-case", $opts)) {
-                                $line .= JText::_(preg_replace("/\r|\n|\t/", "", mb_strtoupper($v)))."\t";
+                            if ($v == "") {
+                                $line .= " "."\t";
                             } else {
-                                $line .= JText::_(preg_replace("/\r|\n|\t/", "", $v))."\t";
+                                if (!empty($encrypted_tables)) {
+                                    list($key_table, $key_element) = explode('___', $k);
+                                    if (!empty($key_table) && in_array($key_table, $encrypted_tables)) {
+                                        $decoded_value = json_decode($v, true);
+
+                                        if (!empty($decoded_value)) {
+                                            $all_decrypted_data = [];
+                                            foreach ($decoded_value as $decoded_sub_value) {
+                                                $decrypted_data = openssl_decrypt($decoded_sub_value, $cipher, $encryption_key, 0);
+                                                if ($decrypted_data !== false) {
+                                                    $all_decrypted_data[] = $decrypted_data;
+                                                }
+                                            }
+
+                                            $v = '[' . implode(',', $all_decrypted_data) . ']';
+                                        } else {
+                                            $decrypted_data = openssl_decrypt($v, $cipher, $encryption_key, 0);
+                                            if ($decrypted_data !== false) {
+                                                $v = $decrypted_data;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if ($v[0] == "=" || $v[0] == "-") {
+                                    if (count($opts) > 0 && in_array("upper-case", $opts)) {
+                                        $line .= " ".mb_strtoupper($v)."\t";
+                                    } else {
+                                        $line .= " ".$v."\t";
+                                    }
+                                } else {
+                                    if (!empty($date_elements[$k])) {
+                                        if ($v === '0000-00-00 00:00:00') {
+                                            $v = '';
+                                        } else {
+                                            $v = date($date_elements[$k], strtotime($v));
+                                        }
+                                        $line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
+                                    } elseif(!empty($textarea_elements[$k])){
+                                        if($textarea_elements[$k] == 1){
+                                            $v = strip_tags($v);
+                                        }
+                                        $line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
+                                    } elseif (count($opts) > 0 && in_array("upper-case", $opts)) {
+                                        $line .= JText::_(preg_replace("/\r|\n|\t/", "", mb_strtoupper($v)))."\t";
+                                    } else {
+                                        $line .= JText::_(preg_replace("/\r|\n|\t/", "", $v))."\t";
+                                    }
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            // On ajoute les données supplémentaires
-            foreach ($colOpt as $kOpt => $vOpt) {
-                switch ($kOpt) {
-                    case "PHOTO":
-                    case "forms":
-                    case "attachment":
-                    case 'evaluators':
-                        if (array_key_exists($fnum['fnum'], $vOpt)) {
-                            $line .= $vOpt[$fnum['fnum']]."\t";
-                        } else {
-                            $line .= "\t";
-                        }
-                        break;
-
-                    case "assessment":
-                        $eval = '';
-                        if (array_key_exists($fnum['fnum'],$vOpt)) {
-                            $evaluations = $vOpt[$fnum['fnum']];
-                            foreach ($evaluations as $evaluation) {
-                                $eval .= $evaluation;
-                                $eval .= chr(10) . '______' . chr(10);
+                // On ajoute les données supplémentaires
+                foreach ($colOpt as $kOpt => $vOpt) {
+                    switch ($kOpt) {
+                        case "PHOTO":
+                        case "forms":
+                        case "attachment":
+                        case 'evaluators':
+                            if (array_key_exists($fnum['fnum'], $vOpt)) {
+                                $line .= $vOpt[$fnum['fnum']]."\t";
+                            } else {
+                                $line .= "\t";
                             }
-                            $line .= $eval . "\t";
-                        } else {
-                            $line .= "\t";
-                        }
-                        break;
+                            break;
 
-                    case "comment":
-                        $comments = "";
-                        if (!empty($vOpt)) {
-                            foreach ($colOpt['comment'] as $comment) {
-                                if ($comment['fnum'] == $fnum['fnum']) {
-                                    $comments .= $comment['reason'] . " | " . $comment['comment_body'] . "\rn";
+                        case "assessment":
+                            $eval = '';
+                            if (array_key_exists($fnum['fnum'],$vOpt)) {
+                                $evaluations = $vOpt[$fnum['fnum']];
+                                foreach ($evaluations as $evaluation) {
+                                    $eval .= $evaluation;
+                                    $eval .= chr(10) . '______' . chr(10);
+                                }
+                                $line .= $eval . "\t";
+                            } else {
+                                $line .= "\t";
+                            }
+                            break;
+
+                        case "comment":
+                            $comments = "";
+                            if (!empty($vOpt)) {
+                                foreach ($colOpt['comment'] as $comment) {
+                                    if ($comment['fnum'] == $fnum['fnum']) {
+                                        $comments .= $comment['reason'] . " | " . $comment['comment_body'] . "\rn";
+                                    }
+                                }
+                                $line .= $comments . "\t";
+                            } else {
+                                $line .= "\t";
+                            }
+                            break;
+
+                        case "tags":
+                            $tags = "";
+
+                            foreach ($colOpt['tags'] as $tag) {
+                                if ($tag['fnum'] == $fnum['fnum']) {
+                                    $tags .= $tag['label'] . ", ";
                                 }
                             }
-                            $line .= $comments . "\t";
-                        } else {
-                            $line .= "\t";
-                        }
-                        break;
+                            $line .= $tags . "\t";
+                            break;
 
-                    case "tags":
-                        $tags = "";
-
-                        foreach ($colOpt['tags'] as $tag) {
-                            if ($tag['fnum'] == $fnum['fnum']) {
-                                $tags .= $tag['label'] . ", ";
-                            }
-                        }
-                        $line .= $tags . "\t";
-                        break;
-
-                    default:
-                        $line .= $vOpt[$fnum['fnum']]."\t";
-                        break;
+                        default:
+                            $line .= $vOpt[$fnum['fnum']]."\t";
+                            break;
+                    }
                 }
+                // On met les données du fnum dans le CSV
+                $element_csv[] = $line;
+                $line = "";
+                $i++;
             }
-            // On met les données du fnum dans le CSV
-            $element_csv[] = $line;
-            $line = "";
-            $i++;
-
         }
 
         // On remplit le fichier CSV
@@ -2080,7 +1803,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $ids        = $jinput->getVar('ids', null);
         $formid     = $jinput->getVar('formids', null);
         $attachid   = $jinput->getVar('attachids', null);
-        $option     = $jinput->getVar('options', null);
+	    $options     = $jinput->getVar('options', null);
 
         $profiles = $jinput->getRaw('profiles', null);                          // default NULL
         $tables = $jinput->getRaw('tables', null);                          // default NULL
@@ -2095,7 +1818,9 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $formids    = explode(',', $formid);
         $attachids  = explode(',', $attachid);
-        $options    = explode(',', $option);
+		if(!is_array($options)) {
+			$options = explode(',', $options);
+		}
 
         $validFnums = array();
         foreach ($fnums_post as $fnum) {
@@ -2239,7 +1964,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
             $dataresult = [
                 'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
-                'options' => $option, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
+                'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
                 'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
             ];
             $result = array('status' => true, 'json' => $dataresult);
@@ -2248,7 +1973,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
             $dataresult = [
                 'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
-                'options' => $option, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
+                'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
                 'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND')
             ];
 
@@ -2433,59 +2158,82 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
-    public function export_letter() {
-        /// the main idea of this function is to use Stream of Buffer to pass data from CSV to Excel
-        /// params --> 1st: csv, 2nd: excel
-        require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
-        $jinput = JFactory::getApplication()->input;
+	public function export_letter() {
+		/// the main idea of this function is to use Stream of Buffer to pass data from CSV to Excel
+		/// params --> 1st: csv, 2nd: excel
+		require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+		$jinput = JFactory::getApplication()->input;
 
-        // get source, letter name
-        $source = $jinput->getVar('source', null);
-        $letter = $jinput->getVar('letter', null);
+		// get source, letter name
+		$source = $jinput->getVar('source', null);
+		$letter = $jinput->getVar('letter', null);
 
-        /// copy excel to excel
-        $_start = JPATH_SITE.DS."tmp".DS. $source;
-        $_end = JPATH_SITE . $letter;
+		/// copy excel to excel
+		$_start = JPATH_SITE.DS."tmp".DS. $source;
+		$_end = JPATH_SITE . $letter;
 
-        /// copy letter from /images/emundus/letters --> /tmp
-        $tmp_route = JPATH_SITE.DS."tmp".DS;
-        $randomString = JUserHelper::genRandomPassword(20);
+		/// copy letter from /images/emundus/letters --> /tmp
+		$tmp_route = JPATH_SITE.DS."tmp".DS;
+		$randomString = JUserHelper::genRandomPassword(20);
 
-        $array = explode('/', $letter);
-        $letter_file = end($array);
-        $letter_file_random = explode('.xlsx', $letter_file)[0] .'_' . $randomString;
+		$array = explode('/', $letter);
+		$letter_file = end($array);
+		$letter_file_random = explode('.xlsx', $letter_file)[0] .'_' . $randomString;
 
-        $_newLetter = JPATH_SITE.DS."tmp".DS.$letter_file_random.'.xlsx';
-        copy($_end, JPATH_SITE.DS."tmp".DS.$letter_file_random.'.xlsx');
+		$_newLetter = JPATH_SITE.DS."tmp".DS.$letter_file_random.'.xlsx';
+		copy($_end, JPATH_SITE.DS."tmp".DS.$letter_file_random.'.xlsx');
 
-        $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
-        $_readerSpreadSheet = $reader->load($_start);
+		$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+		$_readerSpreadSheet = $reader->load($_start);
 
-        $_readerData = $_readerSpreadSheet->getActiveSheet()->toArray();
+		$_readerData = $_readerSpreadSheet->getActiveSheet()->toArray();
 
-        $_destination = \PhpOffice\PhpSpreadsheet\IOFactory::load($_newLetter);
-        $_destination->setActiveSheetIndex(0);
+		try{
+			$dataTable = new Svrnm\ExcelDataTables\ExcelDataTable();
 
-        $_destination->getActiveSheet()->fromArray($_readerData,null,'A1');
+			$data = array();
+			$columns = array();
+			foreach ($_readerData[0] as $column){
+				$columns[] = $column;
+			}
+			foreach ($_readerData as $key => $reader){
+				if($key !== 0){
+					$row = new stdClass();
+					foreach ($columns as $index => $column){
+						$row->{$column} = $reader[$index];
+					}
+					array_push($data,$row);
+				}
+			}
 
-        $writer = new Xlsx($_destination);
+			$xlsx = $dataTable->showHeaders()->addRows($data)->attachToFile($_end, $_newLetter);
 
-        $_raw_output_file = explode('#', $_newLetter)[0] . '.xlsx';
-        $_output_file = explode('.xlsx', $_raw_output_file)[0];
+			$_raw_output_file = explode('#', $_newLetter)[0] . '.xlsx';
+			$_output_file = explode('.xlsx', $_raw_output_file)[0];
+			$_clean_output_file = explode(JPATH_SITE.DS."tmp".DS, $_output_file)[1] . '.xlsx';
+		} catch(Exception $e){
+			$_destination = \PhpOffice\PhpSpreadsheet\IOFactory::load($_newLetter);
+			$_destination->setActiveSheetIndex(0);
+			$_destination->getActiveSheet()->fromArray($_readerData,null,'A1');
 
-        $_clean_output_file = explode(JPATH_SITE.DS."tmp".DS, $_output_file)[1] . '.xlsx';
+			$writer = new Xlsx($_destination);
 
-        $writer->save($_raw_output_file);
+			$_raw_output_file = explode('#', $_newLetter)[0] . '.xlsx';
+			$_output_file = explode('.xlsx', $_raw_output_file)[0];
+			$_clean_output_file = explode(JPATH_SITE.DS."tmp".DS, $_output_file)[1] . '.xlsx';
 
-        copy($_raw_output_file, JPATH_SITE.DS."tmp".DS . $_clean_output_file);
+			$writer->save($_raw_output_file);
+		}
 
-        $result = array('status' => true, 'link' => $_clean_output_file);
+		copy($_raw_output_file, JPATH_SITE.DS."tmp".DS . $_clean_output_file);
 
-        echo json_encode((object) $result);
+		$result = array('status' => true, 'link' => $_clean_output_file);
 
-        unlink($_raw_output_file);
-        exit();
-    }
+		echo json_encode((object) $result);
+
+		unlink($_raw_output_file);
+		exit();
+	}
 
     public function export_xls_from_csv() {
         /** PHPExcel */

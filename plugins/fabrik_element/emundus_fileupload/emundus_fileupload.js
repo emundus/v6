@@ -36,17 +36,18 @@ function watch(elementId, attachId) {
                 var result = JSON.parse(xhr.responseText);
 
                 if (result != null) {
-
                     if (result.limitObtained) {
+                        div.querySelector('div .btn-upload').hide();
                         div.querySelector('input#'+elementId).hide();
                     } else {
+                        div.querySelector('div .btn-upload').show();
                         div.querySelector('input#'+elementId).show();
                     }
 
                     if (result.files) {
                         if (!div.querySelector('.em-fileAttachmentTitle')) {
-                            var attachmentTitle = document.createElement('p');
-                            attachmentTitle.setAttribute("class", 'em-fileAttachmentTitle');
+                            var attachmentTitle = document.createElement('span');
+                            attachmentTitle.setAttribute("class", 'em-fileAttachmentTitle em-mt-8');
                             attachmentTitle.innerText= Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_UPLOADED_FILES');
                             divAttachment.appendChild(attachmentTitle);
                         } else {
@@ -62,28 +63,34 @@ function watch(elementId, attachId) {
                                 divAttachment.appendChild(divLink);
                             }
 
-                            var link = document.createElement('a');
-                            var linkText = document.createTextNode(result.files[i].filename);
-                            link.setAttribute("href", result.files[i].target);
-                            link.setAttribute("target", "_blank");
+                            if (result.files[i].can_be_viewed == 1) {
+                                var link = document.createElement('a');
+                                link.setAttribute("href", result.files[i].target);
+                                link.setAttribute("target", "_blank");
+                            } else {
+                                var link = document.createElement('p');
+                            }
+                            var linkText = document.createTextNode(result.files[i].local_filename);
 
                             divLink.appendChild(link);
                             link.appendChild(linkText);
 
-                            var deleteButton = document.createElement('a');
-                            deleteButton.setAttribute("class", 'em-pointer em-deleteFile em-ml-8');
-                            deleteButton.setAttribute('value', result.files[i].filename);
+                            if (result.files[i].can_be_deleted == 1) {
+                                var deleteButton = document.createElement('a');
+                                deleteButton.setAttribute("class", 'em-pointer em-deleteFile em-ml-8');
+                                deleteButton.setAttribute('value', result.files[i].filename);
 
-                            var deleteIcon = document.createElement('span');
-                            deleteIcon.setAttribute("class", 'material-icons-outlined');
-                            deleteIcon.setAttribute("style",'font-size: 16px');
-                            deleteIcon.appendChild(document.createTextNode('clear'));
-                            deleteButton.appendChild(deleteIcon);
+                                var deleteIcon = document.createElement('span');
+                                deleteIcon.setAttribute("class", 'material-icons-outlined');
+                                deleteIcon.setAttribute("style",'font-size: 16px');
+                                deleteIcon.appendChild(document.createTextNode('clear'));
+                                deleteButton.appendChild(deleteIcon);
 
-                            divLink.appendChild(deleteButton);
+                                divLink.appendChild(deleteButton);
 
-                            var button = document.querySelector('#' + elementId + '_attachment_link' + i + ' > a.em-deleteFile');
-                            button.addEventListener('click', () => FbFileUpload.delete(elementId, attachId));
+                                var button = document.querySelector('#' + elementId + '_attachment_link' + i + ' > a.em-deleteFile');
+                                button.addEventListener('click', () => FbFileUpload.delete(elementId, attachId));
+                            }
                         }
                     }
 
@@ -299,7 +306,9 @@ var FbFileUpload = {
                         });
 
                         input.value = '';
-                        deleteButton.style.display = 'none';
+                        if(deleteButton != null) {
+                            deleteButton.style.display = 'none';
+                        }
                     }
 
                     if (result[j].encrypt == false){
@@ -367,26 +376,15 @@ var FbFileUpload = {
     },
 
     delete: function(elementId, attachId) {
-
-        var myFormData = new FormData();
-        var xhr = new XMLHttpRequest();
-        var div = document.querySelector('div#'+elementId+'_attachment');
-        var input = document.querySelector('div#div_'+elementId+' > input#'+elementId);
-        var fnum = document.querySelector('input#'+elementId.split('___')[0]+'___fnum').value;
-
-
+        var div_parent = document.querySelector('div#div_'+elementId);
         var file = event.target;
-        var fileName = file.getAttribute('value');
-
-        myFormData.append('filename',fileName);
-        myFormData.append('attachId', attachId);
-        myFormData.append('fnum', fnum);
-
-        var parentDiv = file.parentNode;
+        var local_filename = file.parentElement.parentElement.firstChild.innerText;
+        var fileName = file.parentElement.parentElement.firstChild.href.split('/');
+        fileName = fileName[fileName.length - 1];
 
         Swal.fire({
             title: Joomla.JText._('PLG_ELEMENT_FIELD_SURE'),
-            text: Joomla.JText._('PLG_ELEMENT_FIELD_SURE_TEXT'),
+            html: Joomla.JText._('PLG_ELEMENT_FIELD_SURE_TEXT') + '<strong>'+ local_filename + '</strong> ?',
             type: 'warning',
             showCancelButton: true,
             reverseButtons: true,
@@ -395,43 +393,60 @@ var FbFileUpload = {
             cancelButtonText: Joomla.JText._('PLG_ELEMENT_FIELD_CANCEL'),
             cancelButtonClass: 'btn goback-btn button',
         }).then(answser => {
-
             if (answser.value) {
-                xhr.open('POST', 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=emundus_fileupload&method=ajax_delete', true);
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState == 4 && xhr.status == 200) {
+                var div = document.querySelector('div#'+elementId+'_attachment');
+                var input = document.querySelector('div#div_'+elementId+' > input#'+elementId);
+                var fnum = document.querySelector('input#'+elementId.split('___')[0]+'___fnum').value;
 
-                        var result = JSON.parse(xhr.responseText);
-                        if (result.status == true) {
-                            parentDiv.remove();
+                const formData = new FormData();
+                formData.append('filename', fileName);
+                formData.append('attachId', attachId);
+                formData.append('fnum', fnum);
 
-                            var attachmentList = div.querySelectorAll('.em-fileAttachment-link').length;
-                            if (attachmentList === 0) {
-                                document.querySelector('div#'+elementId+'_attachment > .em-fileAttachmentTitle').remove();
-                            }
+                fetch('index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=emundus_fileupload&method=ajax_delete', {
+                    body: formData,
+                    method: 'post'
+                }).then((response) => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                }).then((res) => {
+                    if (res.status) {
+                        div_parent.querySelector('div.btn-upload').show();
+                        div_parent.querySelector('input#'+elementId).show();
 
-                            input.value = "";
-                            Swal.fire({
-                                title: Joomla.JText._('PLG_ELEMENT_FIELD_DELETE'),
-                                text: Joomla.JText._('PLG_ELEMENT_FIELD_DELETE_TEXT'),
-                                type: 'success',
-                                customClass: {
-                                    title: 'em-swal-title',
-                                    confirmButton: 'em-swal-confirm-button',
-                                    actions: "em-swal-single-action",
-                                }
-                            });
+                        file.parentElement.parentElement.remove();
+
+                        var attachmentList = document.querySelectorAll('.em-fileAttachment-link').length;
+                        if (attachmentList === 0) {
+                            document.querySelector('div#'+elementId+'_attachment > .em-fileAttachmentTitle').remove();
                         }
-                        document.querySelectorAll('div#'+elementId+'_attachment').forEach(element => {
-                            element.remove();
+
+                        input.value = '';
+                        Swal.fire({
+                            title: Joomla.JText._('PLG_ELEMENT_FIELD_DELETE'),
+                            text: Joomla.JText._('PLG_ELEMENT_FIELD_DELETE_TEXT'),
+                            type: 'success',
+                            customClass: {
+                                title: 'em-swal-title',
+                                confirmButton: 'em-swal-confirm-button',
+                                actions: 'em-swal-single-action',
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            title: Joomla.JText._('PLG_ELEMENT_FIELD_DELETE_FAILED'),
+                            text: Joomla.JText._('PLG_ELEMENT_FIELD_DELETE_TEXT_FAILED'),
+                            type: 'error',
+                            customClass: {
+                                title: 'em-swal-title',
+                                confirmButton: 'em-swal-confirm-button',
+                                actions: 'em-swal-single-action',
+                            }
                         });
                     }
-
-                    watch(elementId, attachId);
-
-                };
+                });
             }
-            xhr.send(myFormData);
         });
     },
 

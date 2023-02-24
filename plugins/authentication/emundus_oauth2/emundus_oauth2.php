@@ -77,6 +77,7 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
      */
     public function onUserAuthenticate($credentials, $options, &$response)
     {
+        $authenticate = false;
         $this->attributes = json_decode($this->params->get('attributes'));
 
         $response->type = 'OAuth2';
@@ -87,45 +88,134 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
             if (!$username) {
                 $response->status = JAuthentication::STATUS_FAILURE;
                 $response->error_message = JText::_('JGLOBAL_AUTH_NO_USER');
-                return false;
-            }
+            } else {
+                try {
+                    $token = JArrayHelper::getValue($options, 'token');
+                    $url = $this->params->get('sso_account_url');
+                    $oauth2 = new JOAuth2Client;
+                    $oauth2->setToken($token);
+                    $oauth2->setOption('scope', $this->scopes);
+                    $result = $oauth2->query($url);
 
-            try {
-                $token = JArrayHelper::getValue($options, 'token');
-                $url = $this->params->get('sso_account_url');
-                $oauth2 = new JOAuth2Client;
-                $oauth2->setToken($token);
-                $oauth2->setOption('scope', $this->scopes);
-                $result = $oauth2->query($url);
+                    $body = json_decode($result->body);
 
-                $body = json_decode($result->body);
-                foreach ($this->attributes->user_column_name as $key => $column){
-                    $response->{$column} = $body->{$this->attributes->attribute_name[$key]};
-                }
-                $response->fullname = 'BROSSE Adam';
-                $response->firstname = 'Adam';
-                $response->lastname = 'BROSSE';
-                $response->username = 'v15314';
-                $response->profile = $this->params->get('emundus_profile', 9);
-                $response->status = JAuthentication::STATUS_SUCCESS;
-                $response->isnew = empty(JUserHelper::getUserId('v15314'));
-                $response->error_message = '';
+	                $debug_mode = $this->params->get('debug_mode', 0);
+	                if($debug_mode) {
+		                $jsonString = json_encode($body, JSON_PRETTY_PRINT);
+		                // Write in the file
+		                $path   = JPATH_ROOT . '/logs/oauth2_attributes.json';
+		                if(file_exists($path)){
+			                $debug_file = file_get_contents($path);
+			                $debug_file = substr(ltrim($debug_file, '['), 0, -1);
+			                $debug_file .= ",\n".$jsonString;
+			                file_put_contents($path, '['.$debug_file.']');
+		                } else {
+			                $fp     = fopen($path, 'w');
+			                if($fp) {
+				                fwrite($fp, '['.$jsonString.']');
+				                fclose($fp);
+			                }
+		                }
+	                }
 
-                $user = new JUser(JUserHelper::getUserId('v15314'));
-                if ($user->get('block') || $user->get('activation')) {
+                    foreach ($this->attributes->column_name as $key => $column) {
+                        if ($this->attributes->table_name[$key] == 'jos_users') {
+                            $response->{$column} = $body->{$this->attributes->attribute_name[$key]};
+                        }
+                    }
+
+                    if (!empty($response->username)) {
+                        $db = JFactory::getDbo();
+                        $query = $db->getQuery(true);
+
+                        if (empty(JUserHelper::getUserId($response->username)) && !empty($response->email)) {
+                            $query->select('username')
+                                ->from('#__users')
+                                ->where('email = ' . $db->quote($response->email));
+
+                            $db->setQuery($query);
+
+                            try {
+                                $existing_username = $db->loadResult();
+                            } catch (Exception $e) {
+                                JLog::add('Failed to check if user exists from mail but with another username ' .$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                            }
+
+                            if (!empty($existing_username)) {
+                                $response->username = $existing_username;
+                            }
+                        }
+
+                        if (!empty($body->name) && !empty($body->family_name)) {
+                            $response->firstname = trim(str_replace($body->family_name, '', $body->name));
+                            $body->firstname = $response->firstname;
+                            $response->lastname = $body->family_name;
+                        }
+
+                        $response->profile = $this->params->get('emundus_profile', 9);
+                        $response->status = JAuthentication::STATUS_SUCCESS;
+                        $response->isnew = empty(JUserHelper::getUserId($response->username));
+                        $response->error_message = '';
+                        $user = new JUser(JUserHelper::getUserId($response->username));
+
+	                    if ($user->get('block')) {
+		                    $response->status = JAuthentication::STATUS_FAILURE;
+		                    $response->error_message = JText::_('JGLOBAL_AUTH_ACCESS_DENIED');
+	                    } else {
+		                    $authenticate = true;
+
+		                    $response->annex_data = [];
+		                    foreach ($this->attributes->column_name as $key => $column) {
+			                    if ($this->attributes->table_name[$key] !== 'jos_users' && !empty($body->{$this->attributes->attribute_name[$key]}) && !empty($this->attributes->column_join_user_id[$key])) {
+
+				                    $response->annex_data[] = [
+					                    'table'               => $this->attributes->table_name[$key],
+					                    'column'              => $column,
+					                    'value'               => $body->{$this->attributes->attribute_name[$key]},
+					                    'column_join_user_id' => $this->attributes->column_join_user_id[$key]
+				                    ];
+			                    }
+		                    }
+
+		                    if (!$response->is_new) {
+			                    if (!empty($response->annex_data)) {
+				                    $db    = JFactory::getDBO();
+				                    $query = $db->getQuery(true);
+
+				                    $user_id = JUserHelper::getUserId($response->username);
+
+				                    foreach ($response->annex_data as $data) {
+					                    if (is_array($data['value'])) {
+						                    $data['value'] = implode(',', $data['value']);
+					                    }
+					                    $query->clear()
+						                    ->update($data['table'])
+						                    ->set($db->quoteName($data['column']) . ' = ' . $db->quote($data['value']))
+						                    ->where($db->quoteName($data['column_join_user_id']) . ' = ' . $user_id);
+					                    $db->setQuery($query);
+
+					                    try {
+						                    $db->execute();
+					                    }
+					                    catch (Exception $e) {
+						                    JLog::add('Failed to execute update query ' . $e->getMessage(), JLog::ERROR, 'com_emundus.oauth2');
+					                    }
+				                    }
+			                    }
+		                    }
+	                    }
+
+                    } else {
+                        $response->status = JAuthentication::STATUS_FAILURE;
+                        $response->error_message = JText::_('JGLOBAL_AUTH_NO_USER');
+                    }
+                } catch (Exception $e) {
                     $response->status = JAuthentication::STATUS_FAILURE;
-                    $response->error_message = JText::_('JGLOBAL_AUTH_ACCESS_DENIED');
-                    return false;
                 }
-
-                return true;
-            } catch (Exception $e) {
-                // log error.
-                $response->status = JAuthentication::STATUS_FAILURE;
-                return false;
             }
         }
-        return false;
+
+        return $authenticate;
     }
 
     /**
@@ -195,101 +285,118 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
     }
 
     // After the login has been executed, we need to send the user an email.
-    public function onOAuthAfterRegister(...$user_info)
+    public function onOAuthAfterRegister($user)
     {
-        // check if there is a email template to send
-        if ($this->params->get('email_id')) {
-            $user['username'] = $user_info[3];
-            $user['password'] = $user_info[4];
-            $user['email'] = $user_info[5];
-            $user['name'] = $user_info[6];
-
+        if ($user['type'] == 'OAuth2') {
             $user_id = JUserHelper::getUserId($user['username']);
 
-            require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
-            require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'messages.php');
-            require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
+            // check if there is a email template to send
+            if ($this->params->get('email_id')) {
+                require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
+                require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'messages.php');
+                require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
 
-            $m_messages = new EmundusModelMessages();
-            $m_emails = new EmundusModelEmails();
+                $m_messages = new EmundusModelMessages();
+                $m_emails = new EmundusModelEmails();
 
-            $config = JFactory::getConfig();
+                $config = JFactory::getConfig();
 
-            $template = $m_messages->getEmail($this->params->get('email_id'));
+                $template = $m_messages->getEmail($this->params->get('email_id'));
 
-            // Get default mail sender info
-            $mail_from_sys = $config->get('mailfrom');
-            $mail_from_sys_name = $config->get('fromname');
+                // Get default mail sender info
+                $mail_from_sys = $config->get('mailfrom');
+                $mail_from_sys_name = $config->get('fromname');
 
-            // If no mail sender info is provided, we use the system global config.
-            $mail_from_name = $mail_from_sys;
-            $mail_from = $template->emailfrom;
+                // If no mail sender info is provided, we use the system global config.
+                $mail_from_name = $mail_from_sys;
+                $mail_from = $template->emailfrom;
 
-            // If the email sender has the same domain as the system sender address.
-            if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
-                $mail_from_address = $mail_from;
-            } else {
-                $mail_from_address = $mail_from_sys;
-                $mail_from_name = $mail_from_sys_name;
-            }
+                // If the email sender has the same domain as the system sender address.
+                if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
+                    $mail_from_address = $mail_from;
+                } else {
+                    $mail_from_address = $mail_from_sys;
+                    $mail_from_name = $mail_from_sys_name;
+                }
 
-            // Set sender
-            $sender = [
-                $mail_from_address,
-                $mail_from_name
-            ];
-
-            $post = [
-                'USER_NAME' => $user['fullname'],
-                'SITE_URL' => JURI::base(),
-                'USER_EMAIL' => $user['email'],
-                'USER_PASS' => $user['password'],
-                'USERNAME' => $user['username']
-            ];
-
-            $tags = $m_emails->setTags($user_id, $post, null, '', $template->subject . $template->message);
-
-            // Tags are replaced with their corresponding values using the PHP preg_replace function.
-            $subject = preg_replace($tags['patterns'], $tags['replacements'], $template->subject);
-            $body = $template->message;
-            if (!empty($template->Template)) {
-                $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
-            }
-            $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
-
-            // Configure email sender
-            $mailer = JFactory::getMailer();
-            $mailer->setSender($sender);
-            $mailer->addReplyTo($mail_from, $mail_from_name);
-            $mailer->addRecipient($user['email']);
-            $mailer->setSubject($subject);
-            $mailer->isHTML(true);
-            $mailer->Encoding = 'base64';
-            $mailer->setBody($body);
-
-            // Send and log the email.
-            $send = $mailer->Send();
-
-            if ($send !== true) {
-
-                JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
-                return false;
-
-            } else {
-
-                $sent[] = $user['email'];
-                $log = [
-                    'user_id_to' => $user_id,
-                    'subject' => $subject,
-                    'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $user['email'] . '</i><br>' . $body,
-                    'type' => $template->type
+                // Set sender
+                $sender = [
+                    $mail_from_address,
+                    $mail_from_name
                 ];
-                $m_emails->logEmail($log);
 
-                $app = JFactory::getApplication();
-                $app->enqueueMessage(JText::_('PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CCI_SIGNED_IN'));
-                return true;
+                $post = [
+                    'USER_NAME' => $user['fullname'],
+                    'SITE_URL' => JURI::base(),
+                    'USER_EMAIL' => $user['email'],
+                    'USER_PASS' => $user['password'],
+                    'USERNAME' => $user['username']
+                ];
+
+                $tags = $m_emails->setTags($user_id, $post, null, '', $template->subject . $template->message);
+
+                // Tags are replaced with their corresponding values using the PHP preg_replace function.
+                $subject = preg_replace($tags['patterns'], $tags['replacements'], $template->subject);
+                $body = $template->message;
+                if (!empty($template->Template)) {
+                    $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+                }
+                $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+
+                // Configure email sender
+                $mailer = JFactory::getMailer();
+                $mailer->setSender($sender);
+                $mailer->addReplyTo($mail_from, $mail_from_name);
+                $mailer->addRecipient($user['email']);
+                $mailer->setSubject($subject);
+                $mailer->isHTML(true);
+                $mailer->Encoding = 'base64';
+                $mailer->setBody($body);
+
+                // Send and log the email.
+                $send = $mailer->Send();
+
+                if ($send !== true) {
+
+                    JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                    return false;
+
+                } else {
+
+                    $sent[] = $user['email'];
+                    $log = [
+                        'user_id_to' => $user_id,
+                        'subject' => $subject,
+                        'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $user['email'] . '</i><br>' . $body,
+                        'type' => $template->type
+                    ];
+                    $m_emails->logEmail($log);
+
+                    $app = JFactory::getApplication();
+                    $app->enqueueMessage(JText::_('PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CCI_SIGNED_IN'));
+                    return true;
+                }
             }
+
+	        if (!empty($user['annex_data'])) {
+		        $db = JFactory::getDBO();
+		        $query = $db->getQuery(true);
+
+		        foreach($user['annex_data'] as $data) {
+			        $query->clear()
+				        ->update($data['table'])
+				        ->set($db->quoteName($data['column']) . ' = ' . $db->quote($data['value']))
+				        ->where($db->quoteName($data['column_join_user_id']) . ' = ' . $user_id);
+
+			        $db->setQuery($query);
+
+			        try {
+				        $db->execute();
+			        } catch (Exception $e) {
+				        JLog::add('Failed to execute update query ' . $e->getMessage(), JLog::ERROR, 'com_emundus.oauth2');
+			        }
+		        }
+	        }
         }
     }
 

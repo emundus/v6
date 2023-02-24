@@ -1,15 +1,13 @@
 <template>
-  <div class="campaigns__add-campaign">
+  <div class="campaigns__add-campaign em-w-100">
     <div v-if="typeof campaignId == 'undefined' || campaignId == 0">
       <div class="em-flex-row em-mt-16 em-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
         <span class="material-icons-outlined">arrow_back</span>
         <p class="em-ml-8">{{ translate('BACK') }}</p>
       </div>
 
-      <div class="em-flex-row em-mt-16">
-        <h2>{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS') }}</h2>
-      </div>
-      <p style="margin-top: 20px">{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC') }}</p>
+      <div class="em-h3 em-mt-16">{{ translate('COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN') }}</div>
+      <p class="em-mt-16">{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC') }}</p>
 
       <hr>
     </div>
@@ -30,10 +28,10 @@
                 class="form-control fabrikinput em-w-100"
                 @focusout="onFormChange()"
             />
+            <span v-if="errors.label" class="em-red-500-color em-mb-8">
+              <span class="em-red-500-color">{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME') }}</span>
+            </span>
           </div>
-          <span v-if="errors.label" class="em-red-500-color em-mb-8">
-            <span class="em-red-500-color">{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME') }}</span>
-          </span>
 
           <div class="em-grid-2 em-mb-16">
             <div>
@@ -102,30 +100,31 @@
 
         <hr/>
 
-        <div>
+        <div class="em-mb-16">
           <div class="em-mb-16">
-            <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION') }}</h2>
+            <div class="em-h4">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION') }}</div>
           </div>
 
           <div class="em-mb-16">
             <label style="top: 5em">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME') }} <span class="em-red-500-color">*</span></label>
-            <textarea
-                type="textarea"
-                rows="2"
-                id="campResume"
-                maxlength="500"
-                placeholder=" "
-                class="form-control fabrikinput"
+            <editor-quill
+                style="height: 25em"
+                :text="form.short_description"
                 v-model="form.short_description"
-                @keyup="checkMaxlength('campResume')"
-                @focusout="removeBorderFocus('campResume')"
-            />
+                :enable_variables="false"
+                :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME')"
+                :id="'campResume'"
+                :key="editorResumeKey"
+                :limit="500"
+                :toolbar="'light'"
+                @focusout="onFormChange">
+            </editor-quill>
           </div>
 
-          <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
+          <label class="em-mt-16">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
           <div class="em-mb-16" v-if="typeof form.description != 'undefined'">
             <editor-quill
-                style="height: 30em"
+                style="height: 25em"
                 :text="form.description"
                 v-model="form.description"
                 :enable_variables="false"
@@ -137,7 +136,7 @@
           </div>
         </div>
 
-        <hr/>
+        <hr class="em-mt-64"/>
 
         <div class="em-mt-32">
           <div class="em-mb-16">
@@ -185,7 +184,7 @@
                   <span class="em-red-500-color">{{ translate('COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL') }}</span>
                 </p>
 
-                <div class="em-mb-16">
+                <div class="em-mb-16" style="display: none">
                   <label for="prog_color">{{ translate('COM_EMUNDUS_ONBOARD_PROGCOLOR') }}</label>
                   <div class="em-flex-row">
                     <div v-for="(color,index) in colors">
@@ -193,7 +192,7 @@
                            :class="index != 0 ? 'em-ml-8' : ''"
                            :style="selectedColor == color.text ? 'background-color:' + color.text + ';border: 2px solid ' + color.background : 'background-color:' + color.text"
                            @click="programForm.color = color.text;selectedColor = color.text">
-                        <span v-if="selectedColor == color.text" class="material-icons-outlined" style="font-weight: bold;color: black">done</span>
+                        <span v-if="selectedColor == color.text" class="material-icons-outlined" style="font-weight: bold;color: black;filter: invert(1)">done</span>
                       </div>
                     </div>
                   </div>
@@ -205,13 +204,7 @@
 
         <hr/>
 
-        <div class="em-flex-row em-flex-space-between">
-          <button
-              type="button"
-              class="em-secondary-button em-w-auto"
-              onclick="history.back()">
-            {{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}
-          </button>
+        <div class="em-flex-row em-flex-space-between em-float-right">
           <button
               type="button"
               class="em-primary-button em-w-auto"
@@ -222,7 +215,7 @@
       </form>
     </div>
 
-    <div class="em-page-loader" v-if="submitted"></div>
+    <div class="em-page-loader" v-if="submitted || !ready"></div>
   </div>
 </template>
 
@@ -285,6 +278,7 @@ export default {
     old_training: "",
     old_program_form: "",
     editorKey: 0,
+    editorResumeKey: 0,
 
     form: {
       label: {},
@@ -307,7 +301,7 @@ export default {
       programmes: "",
       published: 1,
       apply_online: 1,
-      color: ""
+      color: "#1C6EF2"
     },
 
     year: {
@@ -583,8 +577,19 @@ export default {
         if (this.isHiddenProgram) {
           if (this.programForm.label == "") {
             this.errors.progLabel = true;
-            document.getElementById('prog_label').focus();
-            return 0;
+	          document.getElementById('prog_label').focus();
+	          return 0;
+          } else {
+						// does this label already exists
+						const similarProgram = this.programs.find((program) => {
+							return program.label == this.programForm.label;
+						});
+
+						if (similarProgram != undefined) {
+							this.errors.progLabel = true;
+							document.getElementById('prog_label').focus();
+							return 0;
+						}
           }
         } else {
           document.getElementById('select_prog').focus();
@@ -618,10 +623,8 @@ export default {
 		        },
 		        data: qs.stringify( {body: this.programForm})
 	        }).then((response) => {
-		        if (task === 'createprogram') {
-			        this.programForm.code = response.data.data.programme_code;
-			        this.form.progid = response.data.data.programme_id;
-		        }
+		        this.programForm.code = response.data.data.programme_code;
+		        this.form.progid = response.data.data.programme_id;
 
 						this.updateCampaign();
 	        }).catch(error => {
@@ -681,7 +684,7 @@ export default {
       if (quit === 0) {
         this.redirectJRoute('index.php?option=com_emundus&view=campaign');
       } else if (quit === 1) {
-        document.cookie = 'campaign_'+this.campaignId+'_menu = 2; expires=Session; path=/';
+        document.cookie = 'campaign_'+this.campaignId+'_menu = 1; expires=Session; path=/';
         this.redirectJRoute('index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' + this.campaignId + '&index=0')
       }
     },
@@ -719,20 +722,6 @@ export default {
       }
       this.isHiddenProgram = !this.isHiddenProgram;
     },
-
-    checkMaxlength(id) {
-      var maxLength = document.getElementById(id).getAttribute('maxlength');
-      if(maxLength == this.form.short_description.length) {
-        document.getElementById(id).style.borderColor = 'red';
-      } else {
-        document.getElementById(id).style.borderColor = '#3898ec';
-      }
-    },
-
-    removeBorderFocus(id){
-      document.getElementById(id).style.borderColor = '#cccccc';
-      this.onFormChange();
-    },
   },
 
   watch: {
@@ -755,7 +744,7 @@ export default {
 }
 
 #campResume {
-  height: 85px !important;
+  height: 130px !important;
 }
 
 .em-color-round{

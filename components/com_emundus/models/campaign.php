@@ -1185,6 +1185,9 @@ class EmundusModelCampaign extends JModelList {
                         $labels->en = !empty($data['label']['en']) ? $data['label']['en'] : '';
                         $data['label'] = $data['label'][$actualLanguage];
                     }
+					if($key == 'description' && $data['description'] == 'null'){
+						$data['description'] = '';
+					}
                     if ($key == 'limit_status') {
                         $limit_status = $data['limit_status'];
                         array_splice($data, $i, 1);
@@ -2232,7 +2235,8 @@ class EmundusModelCampaign extends JModelList {
                 ->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecw_camp ON ecw_camp.parent_id = ecw.id')
                 ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
                 ->where('ecw_camp.campaign = ' . $this->_db->quote($fnumInfos['campaign_id']))
-                ->andWhere('ecw_status.entry_status = ' . $this->_db->quote($fnumInfos['status']));
+                ->andWhere('ecw_status.entry_status = ' . $this->_db->quote($fnumInfos['status']))
+                ->group($this->_db->quoteName('ecw.id'));
 
             $this->_db->setQuery($query);
 
@@ -2252,7 +2256,8 @@ class EmundusModelCampaign extends JModelList {
                     ->leftJoin('#__emundus_setup_campaigns AS esc ON esc.id = ' . $this->_db->quote($fnumInfos['campaign_id']))
                     ->leftJoin('#__emundus_campaign_workflow_repeat_programs AS ecwrp ON ecwrp.parent_id = ecw.id')
                     ->where('ecw_status.entry_status = ' . $this->_db->quote($fnumInfos['status']))
-                    ->andWhere('ecwrp.programs = esc.training');
+                    ->andWhere('ecwrp.programs = esc.training')
+                    ->group($this->_db->quoteName('ecw.id'));
 
                 try {
                     $current_phase = $this->_db->loadObject();
@@ -2272,7 +2277,8 @@ class EmundusModelCampaign extends JModelList {
                             FROM jos_emundus_campaign_workflow_repeat_programs
                             UNION
                             SELECT parent_id
-                            FROM jos_emundus_campaign_workflow_repeat_campaign)');
+                            FROM jos_emundus_campaign_workflow_repeat_campaign)')
+                        ->group($this->_db->quoteName('ecw.id'));
                     $this->_db->setQuery($query);
 
                     try {
@@ -2287,6 +2293,13 @@ class EmundusModelCampaign extends JModelList {
             if (!empty($current_phase->id)) {
                 $current_phase->entry_status = !empty($current_phase->entry_status) ? explode(',', $current_phase->entry_status) : [];
 
+	            if (empty($current_phase->start_date) || $current_phase->start_date === '0000-00-00 00:00:00') {
+					$campaign = $this->getCampaignByID($fnumInfos['campaign_id']);
+
+					if (!empty($campaign)) {
+						$current_phase->start_date = $campaign['start_date'];
+					}
+                }
                 if (empty($current_phase->end_date) || $current_phase->end_date === '0000-00-00 00:00:00') {
                     $campaign = $this->getCampaignByID($fnumInfos['campaign_id']);
 
@@ -2311,13 +2324,15 @@ class EmundusModelCampaign extends JModelList {
         $workflows = [];
 
         if (!empty($campaign_id)) {
+            $excluded_entry_statuses = [];
             $campaign_workflows_by_campaign = [];
             $query = $this->_db->getQuery(true);
             $query->select('DISTINCT ecw.*, GROUP_CONCAT(ecw_status.entry_status separator ",") as entry_status')
                 ->from('#__emundus_campaign_workflow as ecw')
                 ->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecw_camp ON ecw_camp.parent_id = ecw.id')
                 ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
-                ->where('ecw_camp.campaign = ' . $this->_db->quote($campaign_id));
+                ->where('ecw_camp.campaign = ' . $this->_db->quote($campaign_id))
+                ->group('ecw.profile');
             $this->_db->setQuery($query);
 
             try {
@@ -2325,6 +2340,8 @@ class EmundusModelCampaign extends JModelList {
                 foreach($campaign_workflows_by_campaign as $key => $wf) {
                     if (empty($wf->id)) {
                         unset($campaign_workflows_by_campaign[$key]);
+                    } else {
+                        $excluded_entry_statuses = array_merge(explode(',', $wf->entry_status), $excluded_entry_statuses);
                     }
                 }
             } catch (Exception $e) {
@@ -2339,6 +2356,12 @@ class EmundusModelCampaign extends JModelList {
                 ->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$this->_db->quoteName('esc.id').' = '.$this->_db->quote($campaign_id))
                 ->leftJoin($this->_db->quoteName('#__emundus_campaign_workflow_repeat_programs','ecwrp').' ON '.$this->_db->quoteName('ecwrp.parent_id').' = '.$this->_db->quoteName('ecw.id'))
                 ->where($this->_db->quoteName('ecwrp.programs') . ' = ' . $this->_db->quoteName('esc.training'));
+
+            if (!empty($excluded_entry_statuses)) {
+                $query->andWhere('ecw_status.entry_status NOT IN (' . implode(',', $excluded_entry_statuses)  . ')');
+            }
+
+            $query->group(['ecwrp.programs', 'ecw.profile']);
             $this->_db->setQuery($query);
 
             try {
@@ -2346,6 +2369,8 @@ class EmundusModelCampaign extends JModelList {
                 foreach($campaign_workflows_by_campaign_program as $key => $wf) {
                     if (empty($wf->id)) {
                         unset($campaign_workflows_by_campaign_program[$key]);
+                    } else {
+                        $excluded_entry_statuses = array_merge(explode(',', $wf->entry_status), $excluded_entry_statuses);
                     }
                 }
             } catch (Exception $e) {
@@ -2362,6 +2387,12 @@ class EmundusModelCampaign extends JModelList {
                             UNION
                             SELECT parent_id
                             FROM jos_emundus_campaign_workflow_repeat_campaign)');
+
+            if (!empty($excluded_entry_statuses)) {
+                $query->andWhere('ecw_status.entry_status NOT IN (' . implode(',', $excluded_entry_statuses)  . ')');
+            }
+
+            $query->group('ecw.profile');
             $this->_db->setQuery($query);
 
             try {
@@ -2533,10 +2564,15 @@ class EmundusModelCampaign extends JModelList {
                         ->where('ecw_status.entry_status IN (' . implode(',', $entry_status) . ')')
                         ->andWhere('ecw_programs.programs IN (' . implode(',', $db->quote($params['programs'])) . ')');
                     $db->setQuery($query);
-                    $nbWorkflows = $db->loadResult();
 
-                    if ($nbWorkflows > 0) {
-                        $canCreate = false;
+                    try {
+                        $nbWorkflows = $db->loadResult();
+
+                        if ($nbWorkflows > 0) {
+                            $canCreate = false;
+                        }
+                    } catch (Exception $e) {
+                        JLog::add('Failed to check if can create workflow ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                     }
                 }
 
@@ -2549,10 +2585,14 @@ class EmundusModelCampaign extends JModelList {
                         ->where('ecw_status.entry_status IN (' . implode(',', $entry_status) . ')')
                         ->andWhere('ecw_campaign.campaign IN (' . implode(',', $params['campaigns']) . ')');
                     $db->setQuery($query);
-                    $nbWorkflows = $db->loadResult();
+                    try {
+                        $nbWorkflows = $db->loadResult();
 
-                    if ($nbWorkflows > 0) {
-                        $canCreate = false;
+                        if ($nbWorkflows > 0) {
+                            $canCreate = false;
+                        }
+                    } catch (Exception $e) {
+                        JLog::add('Failed to check if can create workflow ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                     }
                 }
 
@@ -2570,9 +2610,14 @@ class EmundusModelCampaign extends JModelList {
                             FROM jos_emundus_campaign_workflow_repeat_campaign)');
                 $db->setQuery($query);
 
-                $nbWorkflows = $db->loadResult();
-                if ($nbWorkflows > 0) {
-                    $canCreate = false;
+                try {
+                    $nbWorkflows = $db->loadResult();
+
+                    if ($nbWorkflows > 0) {
+                        $canCreate = false;
+                    }
+                } catch (Exception $e) {
+                    JLog::add('Failed to check if can create workflow ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                 }
             }
         } else {
@@ -2598,10 +2643,153 @@ class EmundusModelCampaign extends JModelList {
         try {
             $db->setQuery($query);
             $deleted = $db->execute();
+
+            if ($deleted) {
+                $repeat_tables = [
+                    '#__emundus_campaign_workflow_repeat_campaign',
+                    '#__emundus_campaign_workflow_repeat_entry_status',
+                    '#__emundus_campaign_workflow_repeat_programs'
+                ];
+
+                foreach($repeat_tables as $table) {
+                    $query->clear()
+                        ->delete($db->quoteName($table));
+
+                    if (!empty($ids)) {
+                        $query->where('parent_id IN (' . implode(', ' . $ids). ')');
+                    }
+
+                    $db->setQuery($query);
+                    $deleted = $db->execute();
+                }
+            }
         } catch (Exception $e) {
             JLog::add('Failed to delete workflow(s) ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
         }
 
         return $deleted;
+    }
+
+    public function getWorkflows($ids = null)
+    {
+        $workflows = [];
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('*')
+            ->from($db->quoteName('#__emundus_campaign_workflow'));
+
+        if (!empty($ids)) {
+            $query->where('id IN (' . implode(',', $ids) . ')');
+        }
+
+        try {
+            $db->setQuery($query);
+            $workflows = $db->loadObjectList();
+
+            if (!empty($workflows)) {
+                foreach ($workflows as $key => $workflow) {
+                    $query->clear()
+                        ->select('entry_status')
+                        ->from('#__emundus_campaign_workflow_repeat_entry_status')
+                        ->where('parent_id = ' . $workflow->id);
+
+                    $db->setQuery($query);
+                    $workflows[$key]->entry_status = $db->loadColumn();
+
+                    $query->clear()
+                        ->select('campaign')
+                        ->from('#__emundus_campaign_workflow_repeat_campaign')
+                        ->where('parent_id = ' . $workflow->id);
+
+                    $db->setQuery($query);
+                    $workflows[$key]->campaigns = $db->loadColumn();
+
+                    $query->clear()
+                        ->select('programs')
+                        ->from('#__emundus_campaign_workflow_repeat_programs')
+                        ->where('parent_id = ' . $workflow->id);
+
+                    $db->setQuery($query);
+                    $workflows[$key]->programs = $db->loadColumn();
+                }
+            }
+        } catch (Exception $e) {
+            $workflows = [];
+            JLog::add('Failed to getAllWorkflows ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+        }
+
+        return $workflows;
+    }
+
+    /**
+     * @return void
+     */
+    public function findWorkflowIncoherences()
+    {
+        $incoherences = [];
+        $workflows = $this->getWorkflows();
+
+        if (!empty($workflows)) {
+            $similar_pairs = [];
+
+            foreach($workflows as $key => $workflow) {
+                $other_workflows = $workflows;
+                unset($other_workflows[$key]);
+
+                foreach ($other_workflows as $other_workflow) {
+                    if (!in_array($other_workflow->id . '-' . $workflow->id, $similar_pairs)) {
+                        // must contain same entry status to produce incoherence
+                        $similar_statuses = array_intersect($other_workflow->entry_status, $workflow->entry_status);
+                        if (!empty($similar_statuses)) {
+                            // are they on every program and every campaign ?
+                            if (empty($workflow->campaigns) && empty($workflow->programs) && empty($other_workflow->campaigns) && empty($other_workflow->programs)) {
+                                $incoherences[] = [
+                                    'workflow' => $workflow->id,
+                                    'similar_workflow' => $other_workflow->id,
+                                    'similarities' => [
+                                        'status' => $similar_statuses
+                                    ]
+                                ];
+
+                                $similar_pairs[] = $workflow->id . '-' . $other_workflow->id;
+                            } else {
+                                // is it on similar campaign
+                                $similar_campaigns = array_intersect($other_workflow->campaigns, $workflow->campaigns);
+
+                                if (!empty($similar_campaigns)) {
+                                    $incoherences[] = [
+                                        'workflow' => $workflow->id,
+                                        'similar_workflow' => $other_workflow->id,
+                                        'similarities' => [
+                                            'status' => $similar_statuses,
+                                            'campaigns' => $similar_campaigns
+                                        ]
+                                    ];
+                                    $similar_pairs[] = $workflow->id . '-' . $other_workflow->id;
+                                } else {
+                                    // is it on similar program
+                                    $similar_programs = array_intersect($other_workflow->programs, $workflow->programs);
+
+                                    if (!empty($similar_programs)) {
+                                        $incoherences[] = [
+                                            'workflow' => $workflow->id,
+                                            'similar_workflow' => $other_workflow->id,
+                                            'similarities' => [
+                                                'status' => $similar_statuses,
+                                                'programs' => $similar_programs
+                                            ]
+                                        ];
+                                        $similar_pairs[] = $workflow->id . '-' . $other_workflow->id;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $incoherences;
     }
 }

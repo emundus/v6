@@ -63,7 +63,7 @@ $limits = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 15 => 15,
                                     </div>
 
                                 </div>
-                                    <div class="selectAll" id="selectAll">
+                                    <div class="selectAll" id="selectAll_evaluation">
                                                 <label>
                                                     <input value="-1" id="em-check-all-page" class="em-check-all-page" type="checkbox" />
                                             <span id="span-check-all"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL');?></span>
@@ -185,7 +185,7 @@ $limits = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 15 => 15,
 
 
 <script>
-    const selectDropdownContainer = document.querySelector('.selectAll');
+    const selectDropdownContainer = document.querySelector('#selectAll_evaluation');
     const countFiles = document.querySelector('#countCheckedCheckbox');
     selectDropdownContainer.style.display = 'none';
 
@@ -251,8 +251,8 @@ $limits = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 15 => 15,
     }
 
 
-    $('.selectAll>span').click(function() {
-        $('.selectAll').slideUp();
+    $('#selectAll_evaluation>span').click(function() {
+        $('#selectAll_evaluation').slideUp();
     });
 
     $('#span-check-none').click(function(){

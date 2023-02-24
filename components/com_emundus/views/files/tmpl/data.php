@@ -107,7 +107,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
 							<?php foreach ($line as $k => $value) :?>
 
-								<td <?php if ($k == 'check'&& $value->class != null) { echo 'class="'.$value->class.'"'; } ?>>
+								<td <?php if ($k == 'check' && $value->class != null) { echo 'class="'.$value->class.'"'; } if ($k == 'access' || $k == 'id_tag') { echo 'class="em-cell-scroll"'; } ?>>
 									<div class="em-cell" >
 										<?php if ($k == 'check'): ?>
 											<label for = "<?= $line['fnum']->val; ?>_check">
@@ -231,7 +231,6 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
         $('#rt-mainbody-surround').children().addClass('mainemundus');
         $('#rt-main').children().addClass('mainemundus');
         $('#rt-main').children().children().addClass('mainemundus');
-		//$('.em-data-container').doubleScroll();
 
         menuAction = document.querySelector('.em-menuaction');
         headerNav = document.querySelector('#g-navigation .g-container');
@@ -240,9 +239,13 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
             $('.container-result').css('top', (headerNav.offsetHeight + menuAction.offsetHeight) + 'px');
             $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
         },2000);
+
+        const dataContainer = document.querySelector('.em-data-container')
+        if (dataContainer) {
+            DoubleScroll(document.querySelector('.em-data-container'));
+        }
 	});
     window.parent.$("html, body").animate({scrollTop : 0}, 300);
-
 </script>
 
 

@@ -167,13 +167,13 @@ function addElement() {
                 var num = ($('#nb-adv-filter').val() - 1) + 2;
                 $('#nb-adv-filter').val(num);
                 var newId = 'em-adv-father-' + num;
-                ni.append('<fieldset id="' + newId + '" class="em-nopadding em-flex-row">' +
-                    '<select class="chzn-select em-filt-select" name="elements" id="elements-'+num+'">' +
+                ni.append('<fieldset id="' + newId + '" class="em-nopadding">' +
+                    '<a id="suppr-filt" class="em-mb-4 em-flex-start">' +
+                    '<span class="em-font-size-14 em-red-500-color em-pointer">' + Joomla.JText._('COM_EMUNDUS_DELETE_ADVANCED_FILTERS') + '</span>' +
+                    '</a>' +
+                    '<select class="chzn-select em-filt-select em-mb-4" name="elements" id="elements-'+num+'">' +
                     '<option value="">' + result.default +'</option>' +
                     '</select> ' +
-                    '<button id="suppr-filt" class="em-tertiary-button em-flex-start">' +
-                    '<span class="material-icons em-red-500-color">delete_outline</span>' +
-                    '</button>'+
                     '</fieldset>');
 
                 var options = '';
@@ -761,7 +761,7 @@ function runAction(action, url = '', option = '') {
     switch (id) {
         // Export Excel
         case 6:
-            export_excel(checkInput);
+            export_excel(checkInput, option);
             break;
 
         // Export ZIP
@@ -1690,6 +1690,8 @@ $(document).ready(function() {
                 swal_actions_class = 'em-actions-fixed'
                 swal_confirm_button = 'COM_EMUNDUS_EXPORTS_EXPORT';
 
+                preconfirm = "return $('#em-export-letter').val();"
+
                 $.ajax({
                     type:'get',
                     url: url,
@@ -1806,18 +1808,6 @@ $(document).ready(function() {
 
                             checkInput = getUserCheck();
 
-                            getAllLetters().then(function(letters) {
-                                letters.forEach(letter => {
-                                    if (letter.template_type == '4') {
-                                        $('#em-export-letter').append('<option value="' + letter.id + '">' + letter.title + '</option>');
-                                        $('#em-export-letter').trigger("chosen:updated");
-                                        $('#letter').show();
-                                    }
-                                });
-                            }).catch(function(error) {
-                                console.log(error);
-                            });
-
                             $.ajax({
                                 type:'post',
                                 url: 'index.php?option=com_emundus&controller=files&task=getPDFProgrammes',
@@ -1826,33 +1816,6 @@ $(document).ready(function() {
 
                                 success: function(result) {
                                     if (result.status) {
-                                        // get export excel saved filter
-                                        $.ajax({
-                                            type:'get',
-                                            url: 'index.php?option=com_emundus&controller=files&task=getExportExcelFilter',
-                                            dataType:'json',
-                                            success: function (result) {
-                                                if (result.status) {
-
-                                                    for (var d in result.filter) {
-                                                        if (isNaN(parseInt(d)))
-                                                            break;
-                                                        $('#filt_save').append('<option value="' + result.filter[d].id + '">' + result.filter[d].name + '</option>');
-                                                        $('#filt_save').trigger("chosen:updated");
-                                                    }
-
-                                                } else {
-                                                    $('#err-filter').show();
-                                                    setTimeout(function() {
-                                                        $('#err-filter').hide();
-                                                    }, 600);
-                                                }
-                                            },
-                                            error: function(jqXHR) {
-                                                console.log(jqXHR.responseText);
-                                            }
-                                        });
-
                                         $('#em-export-prg').append(result.html);
                                         $('#em-export-prg').chosen('destroy').chosen({width: "100%"});
                                         nbprg = $('#em-export-prg option').size();
@@ -2947,9 +2910,46 @@ $(document).ready(function() {
 
                             $('#em-export-prg').chosen({width: "100%"});
                             $('#em-export-camp').chosen({width: "100%"});
-                            $('#em-export-letter').chosen({width: "100%"});
-                            $('#filt_save').chosen({width: "100%"});
                             $('#em-export-form').chosen({width: "100%"});
+
+                            getAllLetters().then(function(letters) {
+                                letters.forEach(letter => {
+                                    if (letter.template_type == '4') {
+                                        $('#em-export-letter').append('<option value="' + letter.id + '">' + letter.title + '</option>');
+                                        $('#em-export-letter').chosen({width: "100%"});
+                                        $('#letter').show();
+                                    }
+                                });
+                            }).catch(function(error) {
+                                console.log(error);
+                            });
+
+                            // get export excel saved filter
+                            $.ajax({
+                                type:'get',
+                                url: 'index.php?option=com_emundus&controller=files&task=getExportExcelFilter',
+                                dataType:'json',
+                                success: function (result) {
+                                    if (result.status) {
+
+                                        for (var d in result.filter) {
+                                            if (isNaN(parseInt(d)))
+                                                break;
+                                            $('#filt_save').append('<option value="' + result.filter[d].id + '">' + result.filter[d].name + '</option>');
+                                            $('#filt_save').chosen({width: "100%"});
+                                        }
+
+                                    } else {
+                                        $('#err-filter').show();
+                                        setTimeout(function() {
+                                            $('#err-filter').hide();
+                                        }, 600);
+                                    }
+                                },
+                                error: function(jqXHR) {
+                                    console.log(jqXHR.responseText);
+                                }
+                            });
                         }
                     },
                     error: function (jqXHR) {
@@ -4082,43 +4082,6 @@ $(document).ready(function() {
                                 }
                             });
 
-                            $('#em-ex-forms').click(function(e) {
-                                if ($('#em-ex-forms').is(":checked")){
-                                    $('[id^=felts-]').hide();
-                                    $('#felts input').attr('checked', false);
-                                    $('#felts button').removeClass("btn btn-elements-success").addClass("btn btn-info");
-                                    $('#felts span').removeClass("glyphicon-minus").addClass("glyphicon-plus");
-                                } else {
-                                    $('[id^=felts-]').show();
-                                    $('#felts button').removeClass("btn btn-info").addClass("btn btn-elements-success");
-                                    $('#felts span').removeClass("glyphicon-plus").addClass("glyphicon-minus");
-                                }
-                            });
-
-                            $('#em-ex-attachment').click(function(e) {
-                                if ($('#em-ex-attachment').is(":checked")){
-                                    $('[id^=aelts-]').hide();
-                                    $('#aelts input').attr('checked', false);
-                                    $('#aelts button').removeClass("btn btn-elements-success").addClass("btn btn-info");
-                                    $('#aelts span').removeClass("glyphicon-minus").addClass("glyphicon-plus");
-                                } else {
-                                    $('[id^=aelts-]').show();
-                                    $('#aelts button').removeClass("btn btn-info").addClass("btn btn-elements-success");
-                                    $('#aelts span').removeClass("glyphicon-plus").addClass("glyphicon-minus");
-                                }
-                            });
-
-
-                            $('#felts').click(function(e) {
-                                if ($(".em-ex-check").is(":checked"))
-                                    $('#em-ex-forms').attr('checked', false);
-                            });
-
-                            $('#aelts').click(function(e) {
-                                if ($(".em-ex-check").is(":checked"))
-                                    $('#em-ex-attachment').attr('checked', false);
-                            });
-
                             $('#em-add-header').click(function(e) {
                                 if ($("#em-add-header").is(":checked"))
                                     $('#exp-opt').show();
@@ -5037,6 +5000,10 @@ $(document).ready(function() {
                         }
                     )[0].split('-')[2];
 
+                    var url = window.location.href;
+                    url = url.split('#');
+                    window.history.pushState('','', url[0]+'#'+fnum.fnum+'|open');
+
                     $.ajax({
                         type: 'get',
                         url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnuminfos',
@@ -5094,6 +5061,10 @@ $(document).ready(function() {
                         )[0].split('-')[2];
                     }
 
+                    var url = window.location.href;
+                    url = url.split('#');
+                    window.history.pushState('','', url[0]+'#'+fnum.fnum+'|open');
+
                     $.ajax({
                         type: 'get',
                         url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnuminfos',
@@ -5124,6 +5095,10 @@ $(document).ready(function() {
                     fnum.cid = parseInt(fnum.fnum.substr(14, 7));
                     $('.em-check:checked').prop('checked', false);
                     $('#'+fnum.fnum+'_check').prop('checked', true);
+
+                    var url = window.location.href;
+                    url = url.split('#');
+                    window.history.pushState('','', url[0]+'#'+fnum.fnum+'|open');
 
                     $.ajax({
                         type:'get',
@@ -6181,7 +6156,7 @@ $(document).ready(function() {
         var id = $(this).attr('id').split('_')[1];
 
         var elements_block = document.getElementById('felts' + id);
-        if (elements_block.style.display == 'none') {
+        if (elements_block != null && elements_block.style.display == 'none') {
             $('#showelements_'+id+'_icon').css('transform', 'rotate(0deg)');
             $('#felts'+ id).toggle(300);
         } else {
@@ -6622,3 +6597,53 @@ function sendMail(data)
     });
 }
 
+function DoubleScroll(element) {
+    const id = Math.random();
+    if (element.scrollWidth > element.offsetWidth) {
+        createScrollbarForElement(element, id);
+    }
+
+    window.addEventListener('resize', function () {
+       let scrollbar = document.getElementById(id);
+       if (scrollbar) {
+           if (element.scrollWidth > element.offsetWidth) {
+               scrollbar.firstChild.style.width = element.scrollWidth + 'px';
+           } else {
+               scrollbar.remove();
+           }
+       } else {
+           if (element.scrollWidth > element.offsetWidth) {
+               createScrollbarForElement(element, id);
+           }
+       }
+    });
+}
+
+function createScrollbarForElement(element, id) {
+    let new_scrollbar = document.createElement('div');
+    new_scrollbar.appendChild(document.createElement('div'));
+    new_scrollbar.style.overflowX = 'auto';
+    new_scrollbar.style.overflowY = 'hidden';
+    new_scrollbar.firstChild.style.height = '1px';
+    new_scrollbar.firstChild.style.width = element.scrollWidth + 'px';
+    new_scrollbar.firstChild.appendChild(document.createTextNode('\xA0'));
+    new_scrollbar.id = id;
+    let running = false;
+    new_scrollbar.onscroll = function () {
+        if (running) {
+            running = false;
+            return;
+        }
+        running = true;
+        element.scrollLeft = new_scrollbar.scrollLeft;
+    };
+    element.onscroll = function () {
+        if (running) {
+            running = false;
+            return;
+        }
+        running = true;
+        new_scrollbar.scrollLeft = element.scrollLeft;
+    };
+    element.parentNode.insertBefore(new_scrollbar, element);
+}

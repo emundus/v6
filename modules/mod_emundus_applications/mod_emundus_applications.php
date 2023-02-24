@@ -27,6 +27,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
     $document = JFactory::getDocument();
     $document->addStyleSheet("media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
@@ -101,7 +102,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $title_other_section = $params->get('mod_em_application_group_title_other', 'MOD_EMUNDUS_APPLICATIONS_OTHER_FILES');
     $date_format = $params->get('mod_em_application_date_format', 'd/m/Y H:i');
     $mod_em_applications_show_hello_text = $params->get('mod_em_applications_show_hello_text',1);
-
+    $custom_actions  = $params->get('mod_em_application_custom_actions');
 
     // Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
     if ($layout == '_:ccirs-drh') {
@@ -133,6 +134,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $m_application = new EmundusModelApplication();
     $m_email = new EmundusModelEmails();
     $m_files = new EmundusModelFiles();
+    $m_campaign = new EmundusModelCampaign();
 
 
 	$fnums = array_keys($applications);
@@ -214,7 +216,10 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 
     $status = $m_files->getStatus();
 
-	require JModuleHelper::getLayoutPath('mod_emundus_applications', $layout);
+    JPluginHelper::importPlugin('emundus','custom_event_handler');
+    \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeRenderApplications', ['applications' => $applications, 'layout' => $layout, 'params' => $params, 'user' => $user]]);
+
+    require JModuleHelper::getLayoutPath('mod_emundus_applications', $layout);
 }
 
 

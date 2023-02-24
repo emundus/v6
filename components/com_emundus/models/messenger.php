@@ -102,6 +102,9 @@ class EmundusModelMessenger extends JModelList
 
         $user = JFactory::getSession()->get('emundusUser');
 
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $notifications_on_send = $eMConfig->get('messenger_notifications_on_send', '1');
+
         $m_messages = new EmundusModelMessages;
         $m_files = new EmundusModelFiles;
 
@@ -138,7 +141,9 @@ class EmundusModelMessenger extends JModelList
             $message = $this->getMessageById($new_message);
 
             try {
-                $this->notifyByMail($fnum,$notify_applicant);
+                if ($notifications_on_send == 1) {
+                    $this->notifyByMail($fnum,$notify_applicant);
+                }
             } catch (Exception $e) {
                 JLog::add('component/com_emundus_messages/models/messages | Error when try to notify by mail : '. $user->id . preg_replace("/[\r\n]/"," ",$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return $message;

@@ -942,5 +942,106 @@ class EmundusControllersettings extends JControllerLegacy {
         echo json_encode(array('display_expires_date' => $eMConfig->get('display_expires_date')));
         exit;
     }
+
+	public function uploadimagetocustomfolder(){
+		$user = JFactory::getUser();
+
+		if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+			$result = 0;
+			echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
+		} else {
+
+			$jinput = JFactory::getApplication()->input;
+			$image = $jinput->files->get('image');
+
+			if(isset($image)) {
+				$config = JFactory::getConfig();
+
+				$path = $image["name"];
+				$ext = pathinfo($path, PATHINFO_EXTENSION);
+				$filename = pathinfo($path, PATHINFO_FILENAME);
+
+
+				$target_root = "images/custom/";
+				$target_dir = $target_root . "editor/";
+				if(!file_exists($target_root)){
+					mkdir($target_root);
+				}
+				if(!file_exists($target_dir)){
+					mkdir($target_dir);
+				}
+
+				do{
+					$target_file = $target_dir . rand(1000,90000) . '.' . $ext;
+				} while (file_exists($target_file));
+
+				if (move_uploaded_file($image["tmp_name"], $target_file)) {
+					$result = 1;
+					echo json_encode(array('status' => $result, 'msg' => JText::_("UPLOAD_SUCCESS"), 'file' => $target_file));
+				} else {
+					echo json_encode(array('msg' => 'ERROR WHILE UPLOADING YOUR DOCUMENT'));
+				}
+			} else {
+				echo json_encode(array('msg' => 'ERROR WHILE UPLOADING YOUR DOCUMENT'));
+			}
+			exit;
+		}
+	}
+
+	public function getbanner() {
+		$results = [
+			'status' => true,
+			'filename' => null,
+		];
+		$banner_module = $this->m_settings->getBannerModule();
+		if(!empty($banner_module)) {
+			$params = json_decode($banner_module);
+			$filename = $params->mod_em_banner_image;
+			if(empty($filename)){
+				$filename = 'images/custom/default_banner.png';
+			}
+
+			$results['filename'] = $filename;
+		}
+
+		echo json_encode((object)$results);
+		exit;
+	}
+
+	public function updatebanner() {
+		$user = JFactory::getUser();
+		$results = [
+			'status' => false,
+			'msg' => ''
+		];
+
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$results['status'] = false;
+			$results['msg'] = JText::_("ACCESS_DENIED");
+		} else {
+			$jinput = JFactory::getApplication()->input;
+			$image = $jinput->files->get('file');
+
+			if(isset($image)) {
+				$filename = 'images/custom/default_banner.png';
+				unlink($filename);
+
+				if (move_uploaded_file($image["tmp_name"], $filename)) {
+					$this->m_settings->updateBannerImage();
+					$results['status'] = true;
+					$results['msg'] = JText::_('BANNER_UPDATED');
+				} else {
+					$results['status'] = false;
+					$results['msg'] = JText::_('BANNER_NOT_UPDATED');
+				}
+			} else {
+				$results['status'] = false;
+				$results['msg'] = JText::_('IMAGE_NOT_FOUND');
+			}
+		}
+
+		echo json_encode((object)$results);
+		exit;
+	}
 }
 

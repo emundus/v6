@@ -566,6 +566,7 @@ JText::script('COM_EMUNDUS_ACCESS_EXPORT_PDF');             # 8
 JText::script('COM_EMUNDUS_ACCESS_MAIL_APPLICANT');         # 9
 JText::script('COM_EMUNDUS_ACCESS_COMMENT_FILE');           # 10
 JText::script('COM_EMUNDUS_ACCESS_ACCESS_FILE');            # 11
+JText::script('COM_EMUNDUS_ACCESS_ACCESS_FILE_CREATE');     # 11
 JText::script('COM_EMUNDUS_ACCESS_USER');                   # 12
 JText::script('COM_EMUNDUS_ACCESS_STATUS');                 # 13
 JText::script('COM_EMUNDUS_ACCESS_TAGS');                   # 14
@@ -602,6 +603,11 @@ JText::script('COM_EMUNDUS_FORM_MY_FORMS');
 JText::script('COM_EMUNDUS_PASSWORD_WRONG_FORMAT_TITLE');
 JText::script('COM_EMUNDUS_PASSWORD_WRONG_FORMAT_DESCRIPTION');
 
+// DELETE ADVANCED FILTERS
+JText::script('COM_EMUNDUS_DELETE_ADVANCED_FILTERS');
+
+JText::script('COM_EMUNDUS_MAIL_GB_BUTTON');
+
 
 // ONBOARD
 
@@ -623,28 +629,37 @@ $controller   = new $classname();
 
 $user = JFactory::getUser();
 $secret = JFactory::getConfig()->get('secret');
+$webhook_token = JFactory::getConfig()->get('webhook_token') ?: '';
 
 $name = $app->input->get('view', '', 'CMD');
 $task = $app->input->get('task', '', 'CMD');
 $format = $app->input->get('format', '', 'CMD');
 $token = $app->input->get('token', '', 'ALNUM');
 
+$xmlDoc = new DOMDocument();
+$release_version = '1.0.0';
+if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
+    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
+}
+
 if(!in_array($name,['settings','campaigns','emails','form'])) {
     JHTML::script("//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js");
     JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
     JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
-    JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );
     JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
-    JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
-    JHTML::script('media/com_emundus/js/em_files.js');
-    JHTML::script('media/com_emundus/js/mixins/exports.js');
-    JHTML::script('media/com_emundus/js/mixins/utilities.js');
+    //TODO : Stop use chosen replace by an other js native library
+    //JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
+    JHtml::script('media/jui/js/chosen.jquery.min.js');
+    JFactory::getDocument()->addScript('media/com_emundus/js/em_files.js?' . $release_version);
+    JFactory::getDocument()->addScript('media/com_emundus/js/mixins/exports.js?' . $release_version);
+    JFactory::getDocument()->addScript('media/com_emundus/js/mixins/utilities.js?' . $release_version);
     JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
     JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
 
     JHtml::styleSheet('media/com_emundus/css/reset.css');
     JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
-    JHtml::styleSheet('media/com_emundus/lib/chosen/chosen.min.css');
+    //JHtml::styleSheet('media/com_emundus/lib/chosen/chosen.min.css');
+    JHtml::styleSheet('media/jui/css/chosen.css');
     JHtml::styleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
     JHtml::styleSheet('media/com_emundus/css/emundus_files.css');
     JHTML::stylesheet('libraries/emundus/selectize/dist/css/normalize.css' );
@@ -658,21 +673,29 @@ JHTML::styleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Materi
 
 /** QUILL */
 JHTML::script('https://cdn.quilljs.com/1.3.6/quill.min.js');
-JHtml::script('components/com_emundus/src/assets/js/image-resize.min.js');
-JHtml::script('components/com_emundus/src/assets/js/image-drop.min.js');
+JHtml::script('components/com_emundus/src/assets/js/quill/image-resize.min.js');
+JHtml::styleSheet('components/com_emundus/src/assets/js/quill/quill-mention/quill.mention.min.css');
+JHtml::script('components/com_emundus/src/assets/js/quill/quill-mention/quill.mention.min.js');
 
 // The task 'getproductpdf' can be executed as public (when not signed in and form any view).
 if ($task == 'getproductpdf') {
     $controller->execute($task);
 }
 
-if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name == 'job' || $name == 'thesiss' || $name == 'thesis')) {
+if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name == 'job' || $name == 'thesiss' || $name == 'thesis'))
+{
     $controller->execute($task);
-} elseif($user->guest && (($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && $secret === $token) {
+}
+elseif ($user->guest && (($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == JApplicationHelper::getHash($token)))
+{
     $controller->execute($task);
-} elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $json != 'json') && $task != 'passrequest' && $task != 'getusername') {
+}
+elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $json != 'json') && $task != 'passrequest' && $task != 'getusername')
+{
     $controller->setRedirect('index.php', JText::_("ACCESS_DENIED"), 'error');
-} else {
+}
+else
+{
     if ($name != 'search_engine') {
        // Perform the Request task
        $controller->execute($task);

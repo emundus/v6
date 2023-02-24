@@ -66,6 +66,7 @@ emundus_bdd*
 administrator/templates/isis/images/joomla.png
 administrator/templates/isis/images/logo.png
 plugins/fabrik_form/php/emundus-csv_import_ehesp.php
+components/com_fabrik/views/details/tmpl/celsa/*
 
 ### macOS ###
 *.DS_Store
@@ -111,3 +112,6 @@ components/com_eventbooking/fields.xml
 ## emundus custom controller/model ##
 /components/com_emundus/controllers/custom.php
 /components/com_emundus/models/custom.php
+
+## miniorange ##
+/plugins/authentication/miniorangesaml/saml2/cert/

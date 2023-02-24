@@ -133,6 +133,11 @@
     max-height: 100px;
     line-height: 160%;
     font-family: var(--applicant-default-font);
+    color: var(--em-applicant-text-color);
+}
+
+.mod_emundus_campaign__list_content_resume p {
+    color: var(--em-applicant-text-color);
 }
 
 .mod_emundus_campaign__header_filter {
@@ -257,11 +262,11 @@ a.em-blue-400-color:hover {
     min-height: 46px;
     font-family: var(--applicant-title-font) !important;
 }
-
-.mod_emundus_campaign__date * {
+/*
+.mod_emundus_campaign__date *{
     margin-right: 8px;
     margin-bottom: 8px !important;
-}
+}*/
 
 .mod_emundus_campaign__programme_tag {
     border-radius: 8px;

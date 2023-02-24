@@ -396,12 +396,12 @@ class com_emundusInstallerScript
                 $datas = [
                     'title' => 'Spotlight eMundus',
                     'note' => 'Advanced search based on Joomla indexing',
-                    'position' => 'drawer',
+                    'position' => 'header-c',
                     'module' => 'mod_finder',
                     'access' => 7,
                     'params' => [
                         'searchfilter' => '',
-                        'show_autosuggest' => 0,
+                        'show_autosuggest' => 1,
                         'show_advanced' => 0,
                         'field_size' => 25,
                         'show_label' => 1,
@@ -443,11 +443,153 @@ class com_emundusInstallerScript
 	            EmundusHelperUpdate::addYamlVariable('extra','{  }',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
 	            EmundusHelperUpdate::addYamlVariable('priority','0',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
 	            EmundusHelperUpdate::addYamlVariable('name','Quill',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+
+	            EmundusHelperUpdate::disableEmundusPlugins('emundus_profile');
+
+	            $query->clear()
+		            ->update('#__modules')
+		            ->set($db->quoteName('ordering') . ' = 1')
+		            ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_falang'))
+		            ->andWhere($db->quoteName('position') . ' LIKE ' . $db->quote('header-c'));
+	            $db->setQuery($query);
+	            $db->execute();
+
+	            $query->clear()
+		            ->update('#__modules')
+		            ->set($db->quoteName('ordering') . ' = 2')
+		            ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_messenger_notifications'))
+		            ->andWhere($db->quoteName('position') . ' LIKE ' . $db->quote('header-c'));
+	            $db->setQuery($query);
+	            $db->execute();
+
+	            $query->clear()
+		            ->update('#__modules')
+		            ->set($db->quoteName('ordering') . ' = 3')
+		            ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_finder'))
+		            ->andWhere($db->quoteName('position') . ' LIKE ' . $db->quote('header-c'));
+	            $db->setQuery($query);
+	            $db->execute();
+
+	            $query->clear()
+		            ->update('#__modules')
+		            ->set($db->quoteName('ordering') . ' = 4')
+		            ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_user_dropdown'))
+		            ->andWhere($db->quoteName('position') . ' LIKE ' . $db->quote('header-c'));
+	            $db->setQuery($query);
+	            $db->execute();
             }
+
+	        if (version_compare($cache_version, '1.34.4', '<') || $firstrun) {
+		        EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_MISSING_MANDATORY_FILE_UPLOAD', 'Veuillez remplir le champ obligatoire %s du formulaire %s');
+		        EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_MISSING_MANDATORY_FILE_UPLOAD', 'Please fill the mandatory field %s of form %s', 'override', null, null, null, 'en-GB');
+	        }
+
+	        if (version_compare($cache_version, '1.34.10', '<') || $firstrun) {
+		        EmundusHelperUpdate::insertTranslationsTag('APPLICATION_CREATION_DATE', 'Dossier crée le');
+		        EmundusHelperUpdate::insertTranslationsTag('APPLICATION_CREATION_DATE', 'File created on', 'override', null, null, null, 'en-GB');
+
+		        EmundusHelperUpdate::insertTranslationsTag('CAMPAIGN_ID', 'Campagne');
+		        EmundusHelperUpdate::insertTranslationsTag('CAMPAIGN_ID', 'Campaign', 'override', null, null, null, 'en-GB');
+
+		        EmundusHelperUpdate::insertTranslationsTag('SEND_ON', 'Envoyé le');
+		        EmundusHelperUpdate::insertTranslationsTag('SEND_ON', 'Send on', 'override', null, null, null, 'en-GB');
+	        }
+
+	        if (version_compare($cache_version, '1.34.33', '<') || $firstrun) {
+		        EmundusHelperUpdate::addColumn('jos_emundus_uploads', 'local_filename', 'VARCHAR', 255);
+	        }
+
+	        if (version_compare($cache_version, '1.34.36', '<') || $firstrun) {
+				$db = JFactory::getDbo();
+				$query = $db->getQuery(true);
+
+				$query->select('id,params')
+					->from($db->quoteName('#__fabrik_forms'))
+					->where("JSON_EXTRACT(params,'$.curl_code') LIKE '%media\/com_emundus\/lib\/chosen\/chosen.min.css%'");
+				$db->setQuery($query);
+				$forms_to_update = $db->loadObjectList();
+
+				foreach ($forms_to_update as $form){
+					$params = json_decode($form->params);
+					if(isset($params->curl_code)){
+						foreach ($params->curl_code as $key => $code){
+							if(strpos($code,'media/com_emundus/lib/chosen/chosen.min.css') !== false){
+								$params->curl_code[$key] = str_replace('media/com_emundus/lib/chosen/chosen.min.css','media/jui/css/chosen.css',$params->curl_code[$key]);
+							}
+							if(strpos($code,'media/com_emundus/lib/chosen/chosen.jquery.min.js') !== false){
+								$params->curl_code[$key] = str_replace('media/com_emundus/lib/chosen/chosen.jquery.min.js','media/jui/js/chosen.jquery.min.js',$params->curl_code[$key]);
+							}
+						}
+
+						$query->clear()
+							->update($db->quoteName('#__fabrik_forms'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+							->where($db->quoteName('id') . ' = ' . $db->quote($form->id));
+						$db->setQuery($query);
+						$db->execute();
+					}
+
+				}
+	        }
+
+            if (version_compare($cache_version, '1.34.49', '<') || $firstrun) {
+                EmundusHelperUpdate::addCustomEvents([
+                    ['label' => 'onHikashopAfterCheckoutStep', 'category' => 'Hikashop', 'published' => 1],
+                    ['label' => 'onHikashopAfterCartProductsLoad', 'category' => 'Hikashop', 'published' => 1],
+                    ['label' => 'onBeforeRenderApplications', 'category' => 'Applicant', 'published' => 1]
+                ]);
+            }
+
+	        if (version_compare($cache_version, '1.34.56', '<') || $firstrun) {
+		        $db = JFactory::getDbo();
+		        $query = $db->getQuery(true);
+
+		        $query->select('id')
+			        ->from($db->quoteName('#__modules'))
+			        ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_version'))
+			        ->where($db->quoteName('client_id') . ' = 0');
+		        $db->setQuery($query);
+		        $moduleid = $db->loadResult();
+
+		        if(!empty($moduleid)) {
+			        $query->clear()
+				        ->delete($db->quoteName('#__modules_menu'))
+				        ->where($db->quoteName('moduleid') . ' = ' . $moduleid);
+			        $db->setQuery($query);
+			        $db->execute();
+
+			        $query->clear()
+				        ->delete($db->quoteName('#__modules'))
+				        ->where($db->quoteName('id') . ' = ' . $moduleid);
+			        $db->setQuery($query);
+			        $db->execute();
+		        }
+
+		        $query->clear()
+			        ->delete($db->quoteName('#__extensions'))
+			        ->where($db->quoteName('element') . ' LIKE ' . $db->quote('mod_emundus_version'))
+			        ->where($db->quoteName('client_id') . ' = 0');
+		        $db->setQuery($query);
+		        $db->execute();
+	        }
+
+	        if (version_compare($cache_version, '1.35.0', '<') || $firstrun) {
+		        EmundusHelperUpdate::updateYamlVariable('offcanvas', '16rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'width');
+		        EmundusHelperUpdate::updateYamlVariable('breakpoints', '75rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'large-desktop-container');
+		        EmundusHelperUpdate::updateYamlVariable('breakpoints', '60rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'desktop-container');
+		        EmundusHelperUpdate::updateYamlVariable('breakpoints', '48rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tablet-container');
+		        EmundusHelperUpdate::updateYamlVariable('breakpoints', '30rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'large-mobile-container');
+		        EmundusHelperUpdate::updateYamlVariable('breakpoints', '48rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'mobile-menu-breakpoint');
+		        EmundusHelperUpdate::updateYamlVariable('menu', '11rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'col-width');
+		        EmundusHelperUpdate::updateYamlVariable('base', '#f8f8f8', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'background');
+
+                EmundusHelperUpdate::addCustomEvents([
+                    ['label' => 'onWebhookCallbackProcess', 'category' => 'Webhook', 'published' => 1]
+                ]);
+	        }
 
             // Insert new translations in overrides files
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
-
 
             // Recompile Gantry5 css at each update
             $dir = JPATH_BASE . '/templates/g5_helium/custom/css-compiled';
@@ -494,7 +636,7 @@ class com_emundusInstallerScript
      */
     function postflight($type, $parent)
     {
-        echo "\rComposant eMundus mis à jour avec succès !\n";
+        return true;
     }
 
 

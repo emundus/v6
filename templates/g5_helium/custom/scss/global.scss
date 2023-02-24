@@ -17,7 +17,7 @@ div#frame.outline {
   border-radius: 16px !important;
   background: var(--neutral-50);
   border: 1px solid var(--neutral-300);
-  box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+  box-shadow: 0 1px 1px rgba(5, 47, 55, 0.07), 0 2px 1px rgba(5, 47, 55, 0.06), 0 1px 3px rgba(5, 47, 55, 0.1);
 
   p, h1, a {
     font-family: var(--font);
@@ -90,7 +90,7 @@ h6 {
 .view-list, .g-back-office-emundus-tableau {
   h1,
   h2,
-  h3,
+  h3:not(.panel-title),
   h4,
   h5,
   h6 {
@@ -308,9 +308,19 @@ ul {
 }
 
 /* ARTICLE */
+.g-grid .span12 {
+  min-height: 0;
+}
 
 .view-article #g-main-mainbody .span12 .item-page {
   margin-top: 40px;
+}
+
+.view-article a:nth-child(.btn) {
+  text-decoration: underline;
+  &:hover {
+    text-decoration: none;
+  }
 }
 
 .modal {
@@ -333,6 +343,14 @@ ul {
   height: 100%;
   z-index: 9999;
   padding-top: 20%;
+}
+
+.gantry.g-back-office-emundus-tableau .swal2-popup iframe {
+  padding-top: 30px;
+}
+
+.contentpane.modal .span12 .emundus-form {
+    margin-top: 0 !important;
 }
 
 .modal-header {
@@ -525,7 +543,7 @@ p,
 
 .view-list .table .fabrikFilterContainer .fabrikDateListFilterRange button.btn.calendarbutton {
   height: 40px;
-  border-radius: 0px 4px 4px 0px !important;
+  border-radius: 0 4px 4px 0 !important;
   background: var(--neutral-50);
   color: var(--neutral-900);
   border: 1px solid #e0e0e5;
@@ -573,7 +591,7 @@ p,
 .view-details #g-container-main {
   .page-header {
     background: transparent;
-    margin: 32px 32px 0 0px;
+    margin: 32px 32px 0 0;
   }
 }
 
@@ -620,12 +638,8 @@ p,
       align-items: center;
 
       .platform-content {
-        margin: 0 10px;
+        margin: 0 12px;
         padding: 0;
-      }
-
-      .platform-content:nth-child(2) {
-        order: 3;
       }
     }
   }
@@ -686,7 +700,7 @@ p,
   flex-wrap: wrap;
   width: 100%;
   p {
-    padding: 0px 10px;
+    padding: 0 10px;
   }
 }
 
@@ -703,10 +717,6 @@ p,
 
       li {
         list-style: none;
-
-        a {
-          text-decoration: none;
-        }
       }
 
       li:nth-child(1) a {
@@ -854,7 +864,6 @@ body>.g-container {
 
   a {
     color: $link-regular;
-    text-decoration: none;
     &:hover {
       color: $link-hover;
     }
@@ -897,7 +906,7 @@ body>.g-container {
         }
       }
 
-      &:not(btn-creer-compte) {
+      &:not(.btn-creer-compte) {
         background: transparent;
         border: 1px solid $base-primary-color;
         color: $base-primary-color;
@@ -923,7 +932,6 @@ body>.g-container {
     display: flex;
     justify-content: center;
     border: unset !important;
-    margin: 0 10px 0 10px;
   }
 
   #userDropdownMenu {
@@ -998,12 +1006,12 @@ body>.g-container {
   }
 }
 .view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn.btn-primary.save-btn.sauvegarder.button.register,
-.view-form .em-formRegistrationCenter .row-fluid .span4 .button.btn.btn-primary.save-btn.sauvegarder.button.register {
+.view-form .em-formRegistrationCenter .button.btn.btn-primary.save-btn.sauvegarder.button.register {
   background-color: $base-primary-color;
   color: var(--neutral-50);
   border-color: $base-primary-color;
   text-transform: initial;
-  margin-left: 0px !important;
+  margin-left: 0 !important;
   font-family: var(--applicant-default-font);
 
   &:hover,
@@ -1080,7 +1088,7 @@ body>.g-container {
   }
 
   .right-side.campaingapply {
-    padding-left: 0px !important;
+    padding-left: 0 !important;
   }
 
   .below-content {
@@ -1088,7 +1096,7 @@ body>.g-container {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding: 0px;
+    padding: 0;
     margin-bottom: 50px;
 
     .btn.btn-plein {
@@ -1289,11 +1297,8 @@ body>.g-container {
 
 /* PAGE ACCUEIL */
 .homepage {
-  .content-bottom-a{
-    margin-top: -30px;
-  }
   h1:first-child {
-    margin-bottom: 25px;
+    margin-bottom: 12px;
   }
 
   /* MODULE EMUNDUS CAMPAIGN */
@@ -1510,6 +1515,12 @@ body>.g-container {
 
 /* LISTES  */
 
+.view-list .dropdown-menu > li > a {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .view-list .list-footer span.add-on {
   background: #eeeeee;
 }
@@ -1561,7 +1572,8 @@ body>.g-container {
 /* VIEW DETAILS  */
 
 .view-details .fabrikGroup h3.legend {
-  margin-top: 30px !important;
+  margin-top: 24px !important;
+  margin-bottom: 16px !important;
 }
 
 
@@ -1781,6 +1793,7 @@ tr.fabrikFilterContainer{
   display: inline-block;
   position: relative;
   overflow: hidden;
+  width: 100%;
   input[type=file] {
     left: 0;
     top: 0;
@@ -1788,15 +1801,24 @@ tr.fabrikFilterContainer{
     position: absolute;
     font-size: 40px;
     cursor: pointer;
+    padding: 30px 12px !important;
   }
   .btn-upload{
     color: var(--neutral-50);
-    background: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
-    padding: 8px 12px;
+    border: 1px dashed #E3E3E3;
     border-radius: var(--applicant-border-radius) !important;
     cursor: pointer;
     margin: 8px 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 12px;
+    gap: 12px;
+    p{
+      margin-top: 0 !important;
+      color: var(--neutral-900) !important;
+    }
   }
   .em-deleteFile{
     margin-left: 10px;
@@ -3109,13 +3131,13 @@ ul.unstyled.em-linkForgot li a {
     color: initial;
   }
 
-  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon){
+  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico){
     font-family: var(--font);
   }
 }
 
 .files-board.com_emundus, .view-list.com_fabrik {
-  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon){
+  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico){
     font-family: var(--font);
   }
 }
@@ -3124,7 +3146,7 @@ ul.unstyled.em-linkForgot li a {
   font-family: var(--font);
 }
 
-.indicateurs-page  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon) {
+.indicateurs-page  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico) {
   font-family: var(--font);
 }
 
@@ -3226,9 +3248,14 @@ ul.unstyled.em-linkForgot li a {
   .chzn-choices {
     background: var(--neutral-50) !important;
     box-shadow: unset;
-    border-color: var(--neutral-300);
+    border-color: var(--light-grey-3);
     border-radius: 4px;
     width: 100%;
+    li.search-field{
+      input[type="text"]{
+        width: auto !important;
+      }
+    }
   }
   .chzn-drop{
     border-color: var(--neutral-300);
@@ -3246,7 +3273,7 @@ ul.unstyled.em-linkForgot li a {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-color: var(--neutral-300);
+    border-color: var(--light-grey-3);
   }
 
   .chzn-search {
@@ -3271,6 +3298,7 @@ ul.unstyled.em-linkForgot li a {
   .chzn-results li.highlighted {
     background-color: var(--neutral-300);
     background-image: unset !important;
+    color: black;
   }
 }
 
@@ -3632,7 +3660,8 @@ div#em-appli-block {
   }
 
   .edit-comment-container button.delete-comment,
-  .em-container-tags-body button.btn-danger[title="Supprimer"]{
+  .em-container-tags-body button.btn-danger[title="Supprimer"],
+  .em-container-tags-body button.btn-danger[title="Delete"]{
     background: var(--neutral-50);
     border: 1px solid var(--neutral-50);
     border-radius: var(--em-border-radius) !important;
@@ -4002,16 +4031,6 @@ div#em-appli-block {
 /* MODULE EMUNDUS QUERY BUILDER */
 
 .indicateurs-page {
-  .informationStatistique {
-    background-color: var(--neutral-50);
-    color: var( --neutral-900) !important;
-    box-shadow: 0 1px 2px 0 hsla(0, 0%, 41.2%, .19);
-    border-radius: var(--em-border-radius);
-
-    * {
-      font-family: var(--font);
-    }
-  }
 
   .item-pageindicateurs-page {
     h1 {
@@ -4102,6 +4121,7 @@ div#em-appli-block {
   .input .modif,
   .input .delete {
     color: var(--night-blue);
+    border: unset;
   }
 
   .btnConsulter:hover a {
@@ -4320,9 +4340,46 @@ button.swal2-cancel.goback-btn {
 
 /******************************* FORMULAIRES ***********************************/
 
+/* INDICATIFS TEL */
+
+
+.chzn-container-single .chzn-single div b,
+.chzn-container-active.chzn-with-drop .chzn-single div b {
+  top: 13px;
+}
+
+.chzn-container-single.chzn-container[id*="indicatif_chzn"],
+.chzn-container-single.chzn-container[id*="indicatif_2_chzn"] {
+  width: 88px !important;
+}
+
+[id$="indicatif_chzn"] .chzn-single,
+[id$="indicatif_2_chzn"] .chzn-single {
+  width: 130px;
+}
+
+[id$="indicatif_chzn"] .chzn-single span,
+[id$="indicatif_2_chzn"] .chzn-single span {
+  font-size: 13px !important;
+  position: relative;
+  bottom: 6px;
+}
+
+.view-details .fabrikForm [class*="indicatif"] .fabrikElementReadOnly {
+  background-repeat: no-repeat;
+  background-position: 5%;
+}
+
+[class*="_indicatif"].plg-databasejoin  + .plg-field.control-group {
+  padding-left: 50px;
+}
+
+
+/* VIEW DETAILS */
+
 .view-details {
   .span12 h1{
-    margin: 48px 0;
+    margin: 12px 0;
     font-family: var(--font);
     color: var(--neutral-900);
   }
@@ -4390,7 +4447,7 @@ button.swal2-cancel.goback-btn {
       border-radius: 16px !important;
       background: #FFFFFF;
       border: 1px solid #EDEDED;
-      box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+      box-shadow: 0 1px 1px rgba(5, 47, 55, 0.07), 0 2px 1px rgba(5, 47, 55, 0.06), 0 1px 3px rgba(5, 47, 55, 0.1);
 
       .em-form-intro {
         margin: 8px 32px 0 32px;
@@ -4408,7 +4465,7 @@ button.swal2-cancel.goback-btn {
       border-radius: 16px !important;
       background: #FFFFFF;
       border: 1px solid #EDEDED;
-      box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+      box-shadow: 0 1px 1px rgba(5, 47, 55, 0.07), 0 2px 1px rgba(5, 47, 55, 0.06), 0 1px 3px rgba(5, 47, 55, 0.1);
 
       p:first-of-type:not(.accept_terms),
       p.form-intro {
@@ -4454,6 +4511,9 @@ button.swal2-cancel.goback-btn {
           margin-top: 48px;
           .fabrikSubGroupElements td input {
             @include input-default;
+          }
+          .fabrikSubGroupElements td select {
+            @include select-default;
           }
         }
 
@@ -4620,42 +4680,52 @@ button.swal2-cancel.goback-btn {
   margin-right: 12px;
   border-radius: 50px;
   background: #F0F6FD;
-  color: $base-primary-color;
+  color: var(--neutral-600);
   height: 24px;
   width: 24px;
   display: flex;
   justify-content: center;
   align-items: center;
+  border: solid 1px var(--neutral-600);
 }
 
 .mod_emundus_checklist___border_item{
   height: 32px;
-  border-left: 2px solid #F3F3F3;
+  border-left: 2px solid var(--neutral-200);
   margin: 1px 0 1px 11px;
-  margin-top: -15px;
-}
-
-.mod_emundus_checklist .mod_emundus_checklist_need_ok .mod_emundus_checklist___border_item{
-  height: 32px;
-  border-left: 2px solid $base-primary-color;
-  margin: 1px 0 1px 11px;
-  margin-top: -15px;
+  margin-top: -18px;
 }
 
 .mod_emundus_checklist .active .mod_emundus_checklist___step_count{
-  background: #F0F6FD;
+  background: var(--blue-100);
   color: $base-primary-color;
   font-family: var(--font);
+  border: solid 1px var(--blue-500);
+  .material-icons-outlined{
+    color: var(--blue-500);
+  }
 }
 .mod_emundus_checklist .mod_emundus_checklist_need_missing:not(.active) .mod_emundus_checklist___step_count{
-  background: #F3F3F3;
   color: #727272;
   font-family: var(--font);
+  background: transparent;
+  border: solid 1px var(--red-500);
+  .material-icons-outlined{
+    color: var(--red-500);
+  }
 }
 
 .mod_emundus_checklist .mod_emundus_checklist_need_ok:not(.active)  .mod_emundus_checklist___step_count{
-  background: $base-primary-color;
   color: #FFF;
+  border: solid 1px var(--main-500);
+  background: transparent;
+  .material-icons-outlined{
+    color: var(--main-500);
+  }
+}
+
+.mod_emundus_checklist___step_count .material-icons-outlined{
+  font-size: 14px;
 }
 
 .mod_emundus_flow___print .material-icons-outlined{
@@ -4809,7 +4879,7 @@ screen and (max-height: 769px) {
   }
 
   .gantry #g-feature {
-    margin-top: 50px;
+    margin-top: 0;
   }
 
 
@@ -4824,14 +4894,24 @@ screen and (max-height: 769px) {
     }
   }
 
+  .login.em-formRegistrationCenter {
+    .page-header {
+      text-align: center;
+    }
+  }
+
   .gantry.view-registration, .gantry.view-form.em-formRegistrationCenter {
     main#g-main-mainbody {
       padding: 0;
 
+      .view-registration.login.em-formRegistrationCenter{
+        margin-top: 50px;
+      }
+
       .login.em-formRegistrationCenter, .em-formRegistrationCenter:not(.componentheading) {
         padding: 0;
         width: 100% !important;
-        margin-top: -13px;
+        margin-top: 5px;
 
         ol {
           width: 100%;
@@ -4846,7 +4926,7 @@ screen and (max-height: 769px) {
 
         div.em-heading-registration {
           width: 100%;
-            padding: 80px 0px 32px 0px;
+            padding: 80px 0 32px 0;
           text-align: center;
         }
 
@@ -5551,7 +5631,6 @@ screen and (max-height: 769px) {
   /* FOOTER */
   footer#g-footer .footer-rgpd {
     flex-direction: row;
-    height: 70px;
 
     .footer-rgpd-links p {
       text-align: center;
@@ -5957,7 +6036,7 @@ fieldset[disabled] .multiselect {
   transition: border .1s ease !important;
   -webkit-box-sizing: border-box;
   box-sizing: border-box !important;
-  margin-bottom: 0px !important;
+  margin-bottom: 0 !important;
   vertical-align: top !important;
   padding: 0 !important;
   left: 0 !important;
@@ -6299,7 +6378,7 @@ fieldset[disabled] .multiselect {
 }
 
 *[dir="rtl"] .multiselect__tags {
-  padding: 8px 8px 0px 40px;
+  padding: 8px 8px 0 40px;
 }
 
 *[dir="rtl"] .multiselect__content {

@@ -219,6 +219,9 @@ JText::script('COM_EMUNDUS_EMAILS');
 JText::script('COM_EMUNDUS_EMAILS_DESC');
 JText::script('COM_EMUNDUS_FORM_BUILDER_SECTION');
 JText::script('COM_EMUNDUS_FORM_PAGES_PREVIEW');
+JText::script('COM_EMUNDUS_FORM_ATTACHMENTS_PREVIEW');
+JText::script('COM_EMUNDUS_ONBOARD_NO_FORM_FOUND_ADD_FORM');
+JText::script('COM_EMUNDUS_ONBOARD_EDIT_FORM');
 
 $lang = JFactory::getLanguage();
 $short_lang = substr($lang->getTag(), 0 , 2);

@@ -40,10 +40,21 @@
 					   description=""
 					   label="Attributs"
 				>
-					<field name="user_column_name"
+					<field name="table_name"
+						   type="text"
+						   default="jos_users"
+						   label="Table" description=""/>
+
+					<field name="column_name"
 						   type="text"
 						   default=""
 						   label="Colonne à compléter" description=""/>
+
+					<field showon="table_name!:jos_users"
+						   name="column_join_user_id"
+						   type="text"
+						   default=""
+						   label="Colonne Identifiant utilisateur" description=""/>
 
 					<field name="attribute_name"
 						   type="text"
@@ -52,6 +63,14 @@
 						   description="">
 					</field>
 
+				</field>
+				<field name="debug_mode"
+					   type="radio"
+					   default="0"
+					   label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_DEBUG_MODE"
+					   description="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_DEBUG_MODE_DESC">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
 				</field>
 			</fieldset>
 		</fields>

@@ -99,6 +99,8 @@
         </div>
       </div>
     </transition-group>
+
+    <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
 
@@ -122,6 +124,8 @@ export default {
       triggerSelected: null,
       manual_trigger: 0,
       candidate_trigger: 0,
+      loading: false,
+
       addTrigger: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_ADDTRIGGER"),
       removeTrig: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_REMOVETRIGGER"),
       affectTriggers: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_AFFECTTRIGGERS"),
@@ -169,6 +173,7 @@ export default {
       axios.get("index.php?option=com_emundus&controller=email&task=gettriggersbyprogram&pid=" + this.prog)
           .then(response => {
             this.triggers = response.data.data;
+            this.loading = false;
           });
     },
     triggerUsersWithProfile(trigger) {
@@ -195,6 +200,7 @@ export default {
     }
   },
   created() {
+    this.loading = true;
     this.getTriggers();
   }
 };

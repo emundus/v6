@@ -43,6 +43,9 @@ if($currentCampaign->apply_online == 0){
 
 <div class="mod_emundus_campaign__grid em-mt-24 em-mb-64" style="grid-gap: 64px">
     <div>
+        <div class="em-flex-row em-mb-12 em-pointer em-w-max-content" onclick="history.go(-1)">
+            <span class="material-icons">arrow_back</span><span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span>
+        </div>
         <?php if($mod_em_campaign_details_show_programme == 1) : ?>
             <?php
             $color = '#1C6EF2';
@@ -113,7 +116,7 @@ if($currentCampaign->apply_online == 0){
         <?php if (!empty($mod_em_campaign_show_timezone)) : ?>
             <div class="em-mt-8 em-applicant-text-color em-flex-row">
                 <p class="em-flex-row"><span class="material-icons-outlined em-mr-8 em-font-size-16">public</span></p>
-                <span class="em-applicant-default-font "><?php JText::_('MOD_EM_CAMPAIGN_TIMEZONE').$offset ?></span>
+                <span class="em-applicant-default-font"><?php echo JText::_('MOD_EM_CAMPAIGN_TIMEZONE').$offset ?></span>
             </div>
         <?php endif; ?>
 

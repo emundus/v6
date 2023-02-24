@@ -696,6 +696,11 @@ class EmundusControllerUsers extends JControllerLegacy {
 		if ($res === true || !is_array($res)) {
 			$res = true;
 			$msg = JText::_('COM_EMUNDUS_USERS_EDITED');
+
+			$e_user = JFactory::getSession()->get('emundusUser');
+			$e_user->firstname = $newuser['firstname'];
+			$e_user->lastname = $newuser['lastname'];
+			JFactory::getSession()->set('emundusUser', $e_user);
 		} else {
 			if (is_array($res)) {
 				$res['status'] = false;
@@ -1005,6 +1010,16 @@ class EmundusControllerUsers extends JControllerLegacy {
         if(!empty($user)) {
             $m_users = new EmundusModelUsers();
             $result = $m_users->saveUser($user,$current_user->id);
+			if($result){
+				$e_user = JFactory::getSession()->get('emundusUser');
+				if(isset($user->firstname)){
+					$e_user->firstname = $user->firstname;
+				}
+				if(isset($user->lastname)){
+					$e_user->lastname = $user->lastname;
+				}
+				JFactory::getSession()->set('emundusUser', $e_user);
+			}
         } else {
             $result = false;
         }
@@ -1311,5 +1326,17 @@ class EmundusControllerUsers extends JControllerLegacy {
         } else {
             JLog::add('WARNING! Attempt to activate anonym user without necessary parameters from ' . $_SERVER['REMOTE_ADDR'], JLog::WARNING, 'com_emundus.error');
         }
+    }
+
+	public function getCurrentUser()
+    {
+        $currentUser = JFactory::getUser();
+
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($currentUser->id)) {
+            return false;
+        }
+
+        echo json_encode($currentUser);
+        exit;
     }
 }

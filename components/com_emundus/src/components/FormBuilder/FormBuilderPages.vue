@@ -13,7 +13,7 @@
             :class="{selected: page.id === selected}"
         >
           <div class="em-flex-row em-flex-space-between" @mouseover="pageOptionsShown = page.id" @mouseleave="pageOptionsShown = 0">
-            <p @click="selectPage(page.id)" class="em-w-100 em-p-16">{{ page.label }}</p>
+            <p @click="selectPage(page.id)" class="em-w-100 em-p-16">{{ translate(page.label) }}</p>
             <div class="em-flex-row em-p-16" :style="pageOptionsShown === page.id ? 'opacity:1' : 'opacity: 0'">
 	            <v-popover :popoverArrowClass="'custom-popover-arraow'">
                 <span class="material-icons">more_horiz</span>

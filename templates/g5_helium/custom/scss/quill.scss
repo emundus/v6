@@ -39,6 +39,7 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
 
 .ql-editor{
   padding: 12px 15px;
+  white-space: pre-wrap;
 }
 
 #{$selectors}{

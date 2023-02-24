@@ -43,6 +43,48 @@ class EmundusControllerWebhook extends JControllerLegacy {
         JLog::addLogger(['text_file' => 'com_emundus.webhook.php'], JLog::ALL, array('com_emundus.webhook'));
 	}
 
+	public function callback(){
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$ips_allowed = $eMConfig->get('callback_whitelist_ip');
+		$ips_allowed = !empty($ips_allowed) ? explode(',', $eMConfig->get('callback_whitelist_ip')) : null;
+
+		$allowed = true;
+		if(!empty($ips_allowed)){
+			$allowed = false;
+
+			if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+				$ip = $_SERVER['HTTP_CLIENT_IP'];
+			} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+				$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+			} else {
+				$ip = $_SERVER['REMOTE_ADDR'];
+			}
+
+			if(!empty($ip)) {
+				$allowed = in_array($ip, $ips_allowed);
+			}
+		}
+
+		if($allowed) {
+			$jinput = JFactory::getApplication()->input;
+			$type   = $jinput->getString('type');
+
+			$payload       = !empty($_POST["payload"]) ? $_POST["payload"] : file_get_contents("php://input");
+			$webhook_datas = json_decode($payload, true);
+
+			JPluginHelper::importPlugin('emundus', 'custom_event_handler');
+			$return = \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onWebhookCallbackProcess', ['webhook_datas' => $webhook_datas, 'type' => $type]]);
+
+			$result = $return[0]['onWebhookCallbackProcess'];
+		} else {
+			$result = ['status' => false,'message' => 'You are not allowed to access to this route'];
+		}
+
+		header('Content-type: application/json');
+		echo json_encode((object)$result);
+		exit;
+	}
+
 
 	/**
 	 * Downloads the file associated to the YouSign procedure that was pushed.
@@ -193,7 +235,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 		}
 
 		try {
-			$payload = $_POST["payload"];
+			$payload = !empty($_POST["payload"]) ? $_POST["payload"] : file_get_contents("php://input");
 
 			//the data is JSON encoded, so we must decode it in an associative array
 			$webhookData = json_decode($payload, true);
@@ -709,6 +751,63 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
         header('Content-type: application/json');
         echo json_encode(array('status' => $status, 'msg' => $msg));
+        exit;
+    }
+
+    public function updateAxeptaPaymentInfos(){
+        JLog::addLogger(['text_file' => 'com_emundus.payment.php'], JLog::ALL, array('com_emundus.payment'));
+
+        try {
+            JLog::add('[updateAxeptaPaymentInfos] Start to get payment notification from axepta', JLog::INFO, 'com_emundus.payment');
+
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'payment'.DS.'Axepta.php');
+            $axepta = new Axepta();
+
+            $status = false;
+            $msg = JText::_('AXEPTA_PAYMENT_INFOS_UPDATED_FAILED');
+
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $blowfish_key = $eMConfig->get('axepta_blowfish_key','Tc5*2D_xs7B[6E?w');
+
+            $data = $_POST["Data"];
+            $len = $_POST["Len"];
+            $plaintext = $axepta->ctDecrypt($data, $len, $blowfish_key);
+
+            $a = "";
+            $a = explode('&', $plaintext);
+            $info = $axepta->ctSplit($a, '=');
+            $TransID = $axepta->ctSplit($a, '=', 'TransID');
+            $Status = $axepta->ctSplit($a, '=', 'Status');
+            $PayID = $axepta->ctSplit($a, '=', 'PayID');
+            $Type = $axepta->ctSplit($a, '=', 'Type');
+            $UserData = $axepta->ctSplit($a, '=', 'UserData');
+
+            // check transmitted decrypted status
+            $realstatus = $axepta->ctRealstatus($Status);
+
+            JLog::add('[updateAxeptaPaymentInfos] Get payment from Axepta with status : ' . $Status, JLog::INFO, 'com_emundus.payment');
+
+            if (!empty($TransID) && !empty($Status) && !empty($PayID)) {
+                require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'payment.php');
+                $m_payment = new EmundusModelPayment();
+                $status = $m_payment->updateAxeptaPaymentInfos($TransID,$Status,$PayID);
+
+                if ($status) {
+                    $msg = JText::_('AXEPTA_PAYMENT_INFOS_UPDATED_SUCCESSFULLY');
+                }
+            } else {
+                JLog::add('[updateAxeptaPaymentInfos] BAD_REQUEST_OR_MISSING_PARAMS - Malicious attempt ? Sender : ' . $_SERVER['REMOTE_ADDR'] .  ' data : ' . json_encode($data), JLog::ERROR, 'com_emundus.payment');
+                header('HTTP/1.1 400 Bad Request');
+                echo 'Error 400 - Bad Request';
+                die();
+            }
+        } catch (Exception $e) {
+            JLog::add('[updateAxeptaPaymentInfos] BAD_REQUEST_OR_MISSING_PARAMS - Malicious attempt ? Sender : ' . $_SERVER['REMOTE_ADDR'] .  ' with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.payment');
+        }
+
+
+        header('Content-type: application/json');
+        echo json_encode(array('status' => $realstatus, 'msg' => $msg));
         exit;
     }
 }

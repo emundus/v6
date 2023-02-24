@@ -35,10 +35,27 @@ if ($jinput->get('view') == 'form') {
 
 	$m_application = new EmundusModelApplication;
     $m_emails = new EmundusModelEmails;
+	//$validations = $m_application->checkFabrikValidations($user->fnum, true, $itemid);
 	$attachments = $m_application->getAttachmentsProgress($user->fnum);
 	$forms = $m_application->getFormsProgress($user->fnum);
 
+	if ($attachments < 100 || $forms < 100) {
+		$mainframe->redirect( "index.php?option=com_emundus&view=checklist&Itemid=".$itemid, JText::_('INCOMPLETE_APPLICATION'));
+	}
+
 	if ($application_fee) {
+		if($params->get('hikashop_session')) {
+			// check if there is not another cart open
+			$hikashop_user = JFactory::getSession()->get('emundusPayment');
+			if (!empty($hikashop_user->fnum) && $hikashop_user->fnum != $user->fnum) {
+				$user->fnum = $hikashop_user->fnum;
+				JFactory::getSession()->set('emundusUser', $user);
+
+				$mainframe->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
+				$mainframe->redirect('/');
+			}
+		}
+
         $m_files = new EmundusModelFiles;
         $fnumInfos = $m_files->getFnumInfos($user->fnum);
 
@@ -97,10 +114,6 @@ if ($jinput->get('view') == 'form') {
 		} else {
 			$mainframe->redirect('index.php');
 		}
-	}
-
-	if ($attachments < 100 || $forms < 100) {
-		$mainframe->redirect( "index.php?option=com_emundus&view=checklist&Itemid=".$itemid, JText::_('INCOMPLETE_APPLICATION'));
 	}
 }
 

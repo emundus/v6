@@ -1,21 +1,16 @@
 <template>
   <div>
-    <div class="em-mb-4 em-text-color">{{ChooseForm}} : </div>
-    <div class="em-mb-8">
-      <select id="select_profile" class="form-control fabrikinput" v-model="$props.profileId" @change="updateProfileCampaign">
+    <a class="em-pointer" @click="addNewForm">{{ translate('COM_EMUNDUS_ONBOARD_NO_FORM_FOUND_ADD_FORM') }}</a>
+
+    <div class="em-mb-4 em-mt-16 em-text-color">{{ChooseForm}} : </div>
+    <div class="em-mb-4">
+      <select id="select_profile" v-model="$props.profileId" @change="updateProfileCampaign">
         <option v-for="(profile, index) in profiles" :key="index" :value="profile.id">
           {{profile.form_label}}
         </option>
       </select>
-
-      <div class="em-mb-8 em-mt-8">
-        <span class="em-text-color">{{ translate('COM_EMUNDUS_OR').toUpperCase() }}</span>
-      </div>
-
-      <button @click="addNewForm" class="em-primary-button em-w-auto">
-          <span>{{ AddForm }}</span>
-      </button>
     </div>
+    <a class="em-pointer" @click="formbuilder">{{ translate('COM_EMUNDUS_ONBOARD_EDIT_FORM') }}</a>
 
     <hr/>
     <p class="em-h5">{{ translate('COM_EMUNDUS_FORM_PAGES_PREVIEW')}}</p>
@@ -33,16 +28,24 @@
       </div>
     </div>
 
+    <div v-if="documentsList.length > 0">
+      <p class="em-h5 em-mt-12">{{ translate('COM_EMUNDUS_FORM_ATTACHMENTS_PREVIEW')}}</p>
+      <div class="em-flex-row">
+        <div v-for="document in documentsList" :key="document.id"
+             class="card-wrapper em-mr-32"
+             :title="document.label"
+        >
+          <form-builder-preview-attachments
+              :document_id="Number(document.id)"
+              :document_label="document.label"
+              class="card em-shadow-cards model-preview em-pointer"
+          ></form-builder-preview-attachments>
+        </div>
+      </div>
+    </div>
 
-<!--    <FormCarrousel
-      v-if="formList"
-      :formList="formList"
-      :documentsList="documentsList"
-      :visibility="visibility"
-      :key="formListReload"
-      @getEmitIndex="getEmitIndex"
-      @formbuilder="formbuilder"
-    />-->
+
+    <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
 
@@ -55,6 +58,7 @@ const qs = require("qs");
 import "@fortawesome/fontawesome-free/css/all.css";
 import "@fortawesome/fontawesome-free/js/all.js";
 import FormBuilderPreviewForm from "@/components/FormBuilder/FormBuilderPreviewForm.vue";
+import FormBuilderPreviewAttachments from "@/components/FormBuilder/FormBuilderPreviewAttachments";
 
 export default {
   name: "addFormulaire",
@@ -67,6 +71,7 @@ export default {
     visibility: Number
   },
   components: {
+    FormBuilderPreviewAttachments,
     FormBuilderPreviewForm,
     FormCarrousel
   },
@@ -78,7 +83,7 @@ export default {
       EmitIndex: "0",
       formList: [],
       documentsList: [],
-      formListReload: 0,
+      loading: false,
 
       form: {
         label: "Nouveau formulaire",
@@ -94,6 +99,7 @@ export default {
       this.EmitIndex = value;
     },
     getForms(profile_id) {
+      this.loading = true;
       axios({
         method: "get",
         url:
@@ -107,7 +113,7 @@ export default {
       })
         .then(response => {
           this.formList = response.data.data;
-          this.formListReload += 1;
+          this.loading = false;
         })
         .catch(e => {
           console.log(e);
@@ -170,19 +176,13 @@ export default {
     },
 
     formbuilder(index) {
-      axios.get("index.php?option=com_emundus&controller=form&task=getfilesbyform&pid=" + this.profileId)
-          .then(response => {
-            if(response.data.data != 0){
-              this.$modal.show('modalWarningFormBuilder');
-            } else {
-              this.redirectJRoute('index.php?option=com_emundus&view=form&layout=formbuilder&prid=' +
-                  this.profileId +
-                  '&index=' +
-                  index +
-                  '&cid=' +
-                  this.campaignId)
-            }
-          });
+      index = 0;
+      this.redirectJRoute('index.php?option=com_emundus&view=form&layout=formbuilder&prid=' +
+          this.profileId +
+          '&index=' +
+          index +
+          '&cid=' +
+          this.campaignId)
     },
   },
   created() {
@@ -235,6 +235,11 @@ export default {
       background-color: #20835F !important;
     }
   }
+}
+#select_profile{
+  min-width: 250px;
+  width: max-content;
+  max-width: 350px;
 }
 </style>
 

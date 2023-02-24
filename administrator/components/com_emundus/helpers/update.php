@@ -325,7 +325,7 @@ class EmundusHelperUpdate
         $config_file = JPATH_CONFIGURATION . '/configuration.php';
 
         if (file_exists($config_file) and is_writable($config_file)){
-            file_put_contents($config_file,$str);
+            file_put_contents($config_file, $str);
         } else {
             echo ("Update Configuration file failed");
         }
@@ -1169,9 +1169,7 @@ class EmundusHelperUpdate
         $update = ['status' => false, 'message' => ''];
 
         $db = JFactory::getDBO();
-
         $db->setQuery("SHOW COLUMNS FROM `jos_emundus_campaign_workflow` LIKE 'programs'");
-
 
         $programs = $db->loadObject();
 
@@ -1954,7 +1952,7 @@ class EmundusHelperUpdate
                         ->select('id')
                         ->from('#__emundus_plugin_events')
                         ->where('label = ' . $db->quote($event['label']));
-
+	                $db->setQuery($query);
                     try {
                         $event_id = $db->loadResult();
                     } catch (Exception $e) {
@@ -2010,6 +2008,9 @@ class EmundusHelperUpdate
                     $response['status'] = true;
                     $response['message'] = 'Success';
                 }
+            } else {
+	            $response['status'] = true;
+	            $response['message'] = 'Events already inserted';
             }
         }
 

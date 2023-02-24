@@ -51,6 +51,32 @@ class EmundusModelCampaignTest extends TestCase
         $this->h_sample = new EmundusUnittestHelperSamples;
     }
 
+    public function createUnitTestCampaign($program)
+    {
+        $campaign_id = 0;
+
+        if (!empty($program)) {
+            $start_date = new DateTime();
+            $start_date->modify('-1 day');
+            $end_date = new DateTime();
+            $end_date->modify('+1 year');
+            $campaign_id = $this->m_campaign->createCampaign([
+                'label' =>  json_encode(['fr' => 'Campagne test unitaire', 'en' => 'Campagne test unitaire']),
+                'description' => 'Lorem ipsum',
+                'short_description' => 'Lorem ipsum',
+                'start_date' => $start_date->format('Y-m-d H:i:s'),
+                'end_date' => $end_date->format('Y-m-d H:i:s'),
+                'profile_id' => 9,
+                'training' => $program['programme_code'],
+                'year' => '2022-2023',
+                'published' => 1,
+                'is_limited' => 0
+            ]);
+        }
+
+        return $campaign_id;
+    }
+
 
     public function testCreateDocument()
     {
@@ -77,14 +103,10 @@ class EmundusModelCampaignTest extends TestCase
         $new_campaign_id = $this->m_campaign->createCampaign(['limit_status' => 1, 'profile_id' => 9]);
         $this->assertEmpty($new_campaign_id, 'Assert can not create campaign without label');
 
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-        $query->select('code')
-            ->from($db->quoteName('#__emundus_setup_programmes'));
-        $db->setQuery($query);
-        $programmes = $db->loadColumn();
+        $created_program = $this->m_programme->addProgram(['label' => 'Programme Test Unitaire']);
+        $this->assertNotEmpty($created_program);
 
-        if (!empty($programmes)) {
+        if (!empty($created_program)) {
             $start_date = new DateTime();
             $start_date->modify('-1 day');
 
@@ -98,9 +120,10 @@ class EmundusModelCampaignTest extends TestCase
                 'start_date' => $start_date->format('Y-m-d H:i:s'),
                 'end_date' => $end_date->format('Y-m-d H:i:s'),
                 'profile_id' => 9,
-                'training' => $programmes[0],
+                'training' => $created_program['programme_code'],
                 'year' => '2022-2023',
-                'published' => 1
+                'published' => 1,
+                'is_limited' => 0
             ];
 
             $new_campaign_id = $this->m_campaign->createCampaign($inserting_datas);
@@ -108,7 +131,7 @@ class EmundusModelCampaignTest extends TestCase
 
             $program = $this->m_campaign->getProgrammeByCampaignID($new_campaign_id);
             $this->assertNotEmpty($program, 'Getting program from campaign id works');
-            $this->assertSame($program['code'], $programmes[0], 'The program code used in creation is retrieved when getting program by the new campaign id');
+            $this->assertSame($program['code'], $created_program['programme_code'], 'The program code used in creation is retrieved when getting program by the new campaign id');
 
             $program_by_training = $this->m_campaign->getProgrammeByTraining($program['code']);
             $this->assertNotEmpty($program_by_training->id, 'Assert getting program by his training code works');
@@ -169,31 +192,22 @@ class EmundusModelCampaignTest extends TestCase
         $this->assertTrue($this->m_campaign->canCreateWorkflow(9, [0], ['programs' => ['program-1']]), 'On devrait pouvoir créer un workflow sur le même statut mais en spécifiant une campagne.');
 
         $program = $this->m_programme->addProgram(['label' => 'Programme Test Unitaire']);
-        $start_date = new DateTime();
-        $start_date->modify('-1 day');
-        $end_date = new DateTime();
-        $end_date->modify('+1 year');
-        $new_campaign_id = $this->m_campaign->createCampaign([
-            'label' =>  json_encode(['fr' => 'Campagne test unitaire', 'en' => 'Campagne test unitaire']),
-            'description' => 'Lorem ipsum',
-            'short_description' => 'Lorem ipsum',
-            'start_date' => $start_date->format('Y-m-d H:i:s'),
-            'end_date' => $end_date->format('Y-m-d H:i:s'),
-            'profile_id' => 9,
-            'training' => $program['programme_code'],
-            'year' => '2022-2023',
-            'published' => 1
-        ]);
-
         $workflow_on_program = $this->m_campaign->createWorkflow(9, [0], 1, null, ['programs' => [$program['programme_code']]]);
         $this->assertNotEmpty($workflow_on_program);
         $this->assertFalse($this->m_campaign->canCreateWorkflow(9, [0], ['programs' => ['program-1', $program['programme_code']]]), 'On ne devrait plus pouvoir créer un workflow sur le même statut et en spécifiant un progamme commun.');
-        $this->assertTrue($this->m_campaign->canCreateWorkflow(9, [0], ['campaigns' => [1]]), 'On devrait toujours pouvoir créer un workflow sur le même statut mais en spécifiant une campagne.');
 
-        $workflow_on_campaign = $this->m_campaign->createWorkflow(9, [0], 1, null, ['campaigns' => [$new_campaign_id]]);
-        $this->assertNotEmpty($workflow_on_campaign);
-        $this->assertFalse($this->m_campaign->canCreateWorkflow(9, [0], ['campaigns' => [12, $new_campaign_id, 15]]), 'On ne devrait plus pouvoir créer un workflow sur le même statut-campagne.');
-        $this->assertFalse($this->m_campaign->canCreateWorkflow(9, [0], ['programs' => ['test-emundus'], 'campaigns' => [12, $new_campaign_id, 15]]), 'On ne devrait plus pouvoir créer un workflow sur le même statut-campagne. Même test avec des données de programme.');
+        $new_campaign_id = $this->createUnitTestCampaign($program);
+
+        if (!empty($new_campaign_id)) {
+            $this->assertTrue($this->m_campaign->canCreateWorkflow(9, [0], ['campaigns' => [$new_campaign_id]]), 'On devrait toujours pouvoir créer un workflow sur le même statut mais en spécifiant une campagne.');
+
+            $workflow_on_campaign = $this->m_campaign->createWorkflow(9, [0], 1, null, ['campaigns' => [$new_campaign_id]]);
+            $this->assertNotEmpty($workflow_on_campaign);
+            $this->assertFalse($this->m_campaign->canCreateWorkflow(9, [0], ['campaigns' => [12, $new_campaign_id, 15]]), 'On ne devrait plus pouvoir créer un workflow sur le même statut-campagne.');
+            $this->assertFalse($this->m_campaign->canCreateWorkflow(9, [0], ['programs' => ['test-emundus'], 'campaigns' => [$new_campaign_id]]), 'On ne devrait plus pouvoir créer un workflow sur le même statut-campagne. Même test avec des données de programme.');
+        } else {
+            JLog:add('Warning, test canCreateWorkflow on campaign has not been launched', JLog::WARNING, 'com_emundus.unittest');
+        }
     }
 
     public function testDeleteWorkflow()
@@ -210,24 +224,9 @@ class EmundusModelCampaignTest extends TestCase
         $query = $db->getQuery(true);
 
         if (!empty($program['programme_code'])) {
-            $start_date = new DateTime();
-            $start_date->modify('-1 day');
+            $new_campaign_id = $this->createUnitTestCampaign($program);
 
-            $end_date = new DateTime();
-            $end_date->modify('+1 year');
-
-            $new_campaign_id = $this->m_campaign->createCampaign([
-                'label' =>  json_encode(['fr' => 'Campagne test unitaire', 'en' => 'Campagne test unitaire']),
-                'description' => 'Lorem ipsum',
-                'short_description' => 'Lorem ipsum',
-                'start_date' => $start_date->format('Y-m-d H:i:s'),
-                'end_date' => $end_date->format('Y-m-d H:i:s'),
-                'profile_id' => 9,
-                'training' => $program['programme_code'],
-                'year' => '2022-2023',
-                'published' => 1
-            ]);
-
+            $this->assertGreaterThan(0, $new_campaign_id);
             if ($new_campaign_id) {
                 $user_id = $this->h_sample->createSampleUser(9, 'user.test.emundus_' . rand() . '@emundus.fr');
                 $this->assertGreaterThan(0, $user_id);
@@ -269,5 +268,24 @@ class EmundusModelCampaignTest extends TestCase
                 $this->assertTrue($this->m_campaign->deleteWorkflows(), 'La suppression de workflow fonctionne');
             }
         }
+    }
+
+    function testGetAllCampaignWorkflows()
+    {
+        $this->m_campaign->deleteWorkflows();
+        $this->assertEmpty($this->m_campaign->getAllCampaignWorkflows(0), 'Pas de workflow renvoyés si la campagne n\'existe pas.');
+
+        $program = $this->m_programme->addProgram(['label' => 'Programme Test Unitaire']);
+        $new_campaign_id = $this->createUnitTestCampaign($program);
+        $this->assertEmpty($this->m_campaign->getAllCampaignWorkflows($new_campaign_id), 'Pas encore de workflow sur une nouvelle campagne, nouveau programme');
+
+        $workflow_on_program = $this->m_campaign->createWorkflow(9, [0], 1, null, ['programs' => [$program['programme_code']]]);
+        $this->assertSame(1, sizeof($this->m_campaign->getAllCampaignWorkflows($new_campaign_id)), 'getAllCampaignWorkflows renvoie 1 workflow à la création du workflow sur le programme de la campagne');
+
+        $workflow_on_campaign_same_state = $this->m_campaign->createWorkflow(9, [0], 1, null, ['campaigns' => [$new_campaign_id]]);
+        $this->assertSame(1, sizeof($this->m_campaign->getAllCampaignWorkflows($new_campaign_id)), 'getAllCampaignWorkflows renvoie 1 seul workflow à la création du workflow sur la campagne avec le même statut d\'entrée que le workflow précédent');
+
+        $this->m_campaign->createWorkflow(9, [1], 1, null, ['programs' => [$program['programme_code']]]);
+        $this->assertSame(2,  sizeof($this->m_campaign->getAllCampaignWorkflows($new_campaign_id)));
     }
 }

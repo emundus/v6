@@ -63,8 +63,9 @@ class EmundusViewChecklist extends JViewLegacy {
 
                 $accept_other_payments = $eMConfig->get('accept_other_payments', 0);
                 $fnumInfos = $m_files->getFnumInfos($this->_user->fnum);
+				$order = $m_application->getHikashopOrder($fnumInfos);
 
-                if ($accept_other_payments == 2 || !empty($m_application->getHikashopOrder($fnumInfos))) {
+                if ($accept_other_payments == 2 || !empty($order)) {
 
                     switch ($eMConfig->get('redirect_after_payment')) {
 
@@ -84,6 +85,8 @@ class EmundusViewChecklist extends JViewLegacy {
                             $app->redirect('index.php?option=com_emundus&task=openfile&fnum=' . $this->_user->fnum, JText::_('EM_PAYMENT_CONFIRMATION_MESSAGE_CONTINUE_CANDIDATURE'), 'message');
                         break;
                     }
+                } elseif (empty($order)){
+	                $app->redirect('index.php', JText::_('EM_PAYMENT_CANCEL_MESSAGE'), 'error');
                 }
 
                 $app->redirect($m_checklist->getConfirmUrl($this->_user->profile).'&usekey=fnum&rowid='.$this->_user->fnum);
