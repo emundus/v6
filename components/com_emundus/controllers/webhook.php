@@ -91,7 +91,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 	/**
 	 * Downloads the file associated to the YouSign procedure that was pushed.
 	 */
-	public function yousign() {
+    public function yousign() {
         $expectedSignature = $_REQUEST['x-yousign-signature-256'];
 
         $payload = file_get_contents('php://input');
@@ -100,7 +100,6 @@ class EmundusControllerWebhook extends JControllerLegacy {
         $computedSignature = "sha256=" . $digest;
 
         $doSignaturesMatch = hash_equals($expectedSignature, $computedSignature);
-
         if ($doSignaturesMatch) {
             $body = json_decode($payload);
 
@@ -130,7 +129,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
                                 $db->setQuery($query);
 
                                 $file_request = $db->loadObject();
-                                $file_path = str_replace('.pdf', 'signed.pdf', $file_request->filename);
+                                $file_path = str_replace('.pdf', '_signed.pdf', $file_request->filename);
 
                                 try {
                                     // Télécharger le document et le placer dans le répertoire candidat
@@ -139,7 +138,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
                                             'Authorization' => 'Bearer '. $api_key,
                                             'accept' => 'application/pdf',
                                         ],
-                                        'sink' => fopen($file_path, 'x')
+                                        'sink' => $file_path
                                     ]);
 
                                     if ($response->getStatusCode() == 200) {
@@ -154,8 +153,8 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
                                         $query->clear()
                                             ->insert('#__emundus_uploads')
-                                            ->columns(['fnum', 'time_date', 'user_id', 'campaign_id', 'attachment_id', 'filename', 'can_be_deleted', 'can_be_viewed'])
-                                            ->values($db->quote($file_request->fnum) . ', NOW(), 62, ' . $file_request->campaign_id . ', ' . $file_request->attachment_id . ',' . basename($file_request->filename) . ', 0, 0');
+                                            ->columns(['fnum', 'timedate', 'user_id', 'campaign_id', 'attachment_id', 'filename', 'can_be_deleted', 'can_be_viewed'])
+                                            ->values($db->quote($file_request->fnum) . ', NOW(), 62, ' . $file_request->campaign_id . ', ' . $file_request->attachment_id . ',' . $db->quote(basename($file_path)) . ', 0, 0');
                                         $db->setQuery($query);
                                         $db->execute();
 
@@ -171,7 +170,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
                                             $user_data = $db->loadObject();
                                             if (!empty($user_data->id)) {
-                                                $params = json_decode($user_data->params);
+                                                $params = json_decode($user_data->params, true);
 
                                                 unset($params['yousign_signer_id']);
                                                 unset($params['yousign_signature_request']);
@@ -185,29 +184,46 @@ class EmundusControllerWebhook extends JControllerLegacy {
                                                 $db->setQuery($query);
                                                 $db->execute();
                                             }
+
+                                            if (file_exists($file_path)) {
+                                                header('HTTP/1.1 200');
+                                                echo 'Document donwloaded by eMundus successfully.';
+                                                exit;
+                                            }
                                         }
                                     } else {
                                         JLog::add('Failed to download file from yousign : signature request id  '. $signatureRequest->id, JLog::ERROR, 'com_emundus.webhook');
-                                        echo json_encode(array('status' => false, 'msg' => 'Failed to download file from yousign'));
+                                        header('HTTP/1.1 500 Error');
+                                        echo 'Error 500 - Failed to download signed document';
                                         exit;
                                     }
                                 } catch (Exception $e) {
                                     JLog::add('Failed to download file from yousign : signature request id  '. $signatureRequest->id, JLog::ERROR, 'com_emundus.webhook');
-                                    echo json_encode(array('status' => false, 'msg' => $e->getMessage()));
+                                    header('HTTP/1.1 500 Error');
+                                    echo 'Error 500 - Failed to download signed document. ' . $e->getMessage();
                                     exit;
                                 }
                             }
                         }
+                    } else {
+                        header('HTTP/1.1 500 Error');
+                        echo 'Error 500 - API configuration missing';
+                        exit;
                     }
                 }
             } else {
                 JLog::add('YouSign bad JSON : '. file_get_contents('php://input'), JLog::ERROR, 'com_emundus.webhook');
-                echo json_encode(array('status' => false, 'msg' => "Nothing to do here..."));
+
+                header('HTTP/1.1 400 Error');
+                echo 'Error 400 - Bad Request';
                 exit;
             }
+        } else {
+            header('HTTP/1.1 400 Bad Request');
+            echo 'Error 400 - Bad Request';
+            die();
         }
-	}
-
+    }
 
 
 	/**
