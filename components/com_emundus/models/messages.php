@@ -79,7 +79,7 @@ class EmundusModelMessages extends JModelList {
             ->from($db->quoteName('#__emundus_setup_emails'))
             ->where($db->quoteName('type').' IN ('.$db->Quote($type).')')
             ->andWhere($db->quoteName('published') . ' = ' . $db->quote(1))
-            ->order($db->quoteName('cateogry'));
+            ->order($db->quoteName('category'));
 
         try {
 
