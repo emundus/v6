@@ -80,4 +80,7 @@
   'fontello' => array(
     'normal' => $fontDir . '/fontello-normal_938d737aebd54ad256e4addcddebab8c',
   ),
+  'roboto' => array(
+	  'normal' => $fontDir . '/9fa47a070a8b30b595086d70bb7ac78c',
+  ),
 ) ?>

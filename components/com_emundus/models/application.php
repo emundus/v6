@@ -2171,17 +2171,17 @@ class EmundusModelApplication extends JModelList
                 }
 
                 if (count($groupes) > 0) {
-                    $forms .= '<h2' . $breaker . '>';
+                    $forms .= '<h2 ' . $breaker . '>';
                     $title = explode('-', JText::_($itemt->label));
                     if (empty($title[1])) {
                         $form_label = preg_replace('/\s+/', ' ', JText::_(trim($itemt->label)));
                         if(!empty($form_label)) {
-                            $forms .= '<b><h2>' . $form_label . '</h2></b>';
+                            $forms .= '<b><h2 class="pdf-page-title">' . $form_label . '</h2></b>';
                         }
                     } else {
                         $form_label = preg_replace('/\s+/', ' ', JText::_(trim($title[1])));
                         if(!empty($form_label)) {
-                            $forms .= '<b><h2>' . $form_label . '</h2></b>';
+                            $forms .= '<b><h2 class="pdf-page-title">' . $form_label . '</h2></b>';
                         }
                     }
                 }
@@ -2244,7 +2244,9 @@ class EmundusModelApplication extends JModelList
                             }
                             $forms .= '</table>';
                             // TABLEAU DE PLUSIEURS LIGNES avec moins de 7 colonnes
-                        } elseif (((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1) && count($elements) < 4 && !$asTextArea) {
+                        }
+						elseif (((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1) && count($elements) < 4 && !$asTextArea)
+						{
                             //-- Entrée du tableau -- */
                             $t_elt = array();
                             foreach ($elements as &$element) {
@@ -2264,12 +2266,10 @@ class EmundusModelApplication extends JModelList
                             $check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum);
 
                             if ($check_repeat_groups) {
-                                if(!empty($group_label)){
-                                    $forms .= '<h3 class="group">' . $group_label . '</h3>';
-                                }
-                                $forms .= '<p><table class="adminlist"><thead><tr  class="background"> ';
+								$forms .= '<h3 class="group">' . $group_label . '</h3>';
+                                $forms .= '<table class="pdf-forms"><thead><tr class="background"> ';
                                 foreach ($elements as &$element) {
-                                    $forms .= '<th scope="col" class="background"><strong>' . JText::_($element->label) . '</strong></th>';
+                                    $forms .= '<th scope="col" class="background">' . JText::_($element->label) . '</th>';
                                 }
                                 unset($element);
 
@@ -2418,7 +2418,7 @@ class EmundusModelApplication extends JModelList
 
                                                 // trick to prevent from blank value in PDF when string is to long without spaces (usually emails)
                                                 $elt = str_replace('@', '<br>@', $elt);
-                                                $forms .= '<td class="background-light" style="border-right: 1px solid black;"><div id="em_training_' . $r_element->id . '" class="course ' . $r_element->id . '">' . (($elements[$j]->plugin != 'field') ? JText::_($elt) : $elt) . '</div></td>';
+                                                $forms .= '<td class="background-light"><div id="em_training_' . $r_element->id . '" class="course ' . $r_element->id . '">' . (($elements[$j]->plugin != 'field') ? JText::_($elt) : $elt) . '</div></td>';
                                             }
                                             $j++;
                                         }
@@ -2430,7 +2430,9 @@ class EmundusModelApplication extends JModelList
 
 
                             // TABLEAU DE PLUSIEURS LIGNES sans tenir compte du nombre de lignes
-                        } elseif ((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1) {
+                        }
+						elseif ((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1)
+						{
                             //-- Entrée du tableau -- */
                             $t_elt = array();
                             foreach ($elements as &$element) {
@@ -2445,9 +2447,8 @@ class EmundusModelApplication extends JModelList
                             $check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum);
 
                             if ($check_repeat_groups) {
-                                if(!empty($group_label)){
-                                    $forms .= '<h3 class="group">' . $group_label . '</h3>';
-                                }
+								$forms .= '<h3 class="group">' . $group_label . '</h3>';
+
                                 if ($itemg->group_id == 174) {
                                     $query = 'SELECT `' . implode("`,`", $t_elt) . '`, id FROM ' . $table . '
                                         WHERE parent_id=(SELECT id FROM ' . $itemt->db_table_name . ' WHERE fnum like ' . $this->_db->Quote($fnum) . ') OR applicant_id=' . $aid;
@@ -2466,8 +2467,8 @@ class EmundusModelApplication extends JModelList
 
                                     foreach ($repeated_elements as $r_element) {
                                         $j = 0;
-                                        $forms .= '<br>---- ' . $i . ' ----<br>';
-                                        $forms .= '<table>';
+                                        $forms .= '<p class="pdf-repeat-count">---- ' . $i . ' ----</p>';
+                                        $forms .= '<table class="pdf-forms">';
                                         foreach ($r_element as $key => $r_elt) {
                                             $params = json_decode($elements[$j]->params);
 
@@ -2597,11 +2598,11 @@ class EmundusModelApplication extends JModelList
 
                                                 if ($show_empty_fields == 1 || !empty($elt)) {
                                                     if ($elements[$j]->plugin == 'display') {
-                                                        $forms .= '<tr><td colspan="2"><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">' . $elt . '</span></td></tr><br/>';
+                                                        $forms .= '<tr><td colspan="2" style="background-color: #F3F3F3"><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">' . $elt . '</span></td></tr><br/>';
                                                     } elseif ($elements[$j]->plugin == 'textarea') {
-                                                        $forms .= '<tr><td colspan="2"><span style="color: #000000;">' .  (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">    ' . JText::_($elt) . '</span></td></tr>';
+                                                        $forms .= '<tr><td colspan="2" style="background-color: #F3F3F3"><span style="color: #000000;">' .  (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">    ' . JText::_($elt) . '</span></td></tr>';
                                                     } else {
-                                                        $forms .= '<tr><td colspan="1"><span style="color: #000000;">' . (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td> <td> ' . (($elements[$j]->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
+                                                        $forms .= '<tr><td colspan="1" style="background-color: #F3F3F3"><span style="color: #000000;">' . (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td> <td> ' . (($elements[$j]->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
                                                     }
                                                 }
                                             }
@@ -2619,12 +2620,9 @@ class EmundusModelApplication extends JModelList
                             $check_not_empty_group = $this->checkEmptyGroups($elements ,$itemt->db_table_name, $fnum);
 
                             if($check_not_empty_group) {
-                                if (!empty($group_label)) {
-                                    $forms .= '<h3 class="group">' . $group_label . '</h3>';
-                                } else {
-                                    $forms .= '<p></p><br/>';
-                                }
-                                $forms .= '<table>';
+								$forms .= '<h3 class="group">' . $group_label . '</h3>';
+
+                                $forms .= '<table class="pdf-forms">';
                                 foreach ($elements as $element) {
                                     $params = json_decode($element->params);
                                     if (empty($params->store_in_db)) {
@@ -2796,9 +2794,9 @@ class EmundusModelApplication extends JModelList
                                             if ($element->plugin == 'display') {
                                                 $forms .= '<tr><td colspan="2"><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">' . $elt . '</span></td></tr><br/>';
                                             } elseif ($element->plugin == 'textarea') {
-                                                $forms .= '<tr><td colspan="2"><span style="color: #000000;">' .  (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">  ' . JText::_($elt) . '</span></td></tr>';
+                                                $forms .= '<tr><td colspan="2" style="background-color: #F3F3F3"><span style="color: #000000;">' .  (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">  ' . JText::_($elt) . '</span></td></tr>';
                                             } else {
-                                                $forms .= '<tr><td colspan="1"><span style="color: #000000;">' . (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td> <td> ' . (($element->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
+                                                $forms .= '<tr><td colspan="1" style="background-color: #F3F3F3"><span style="color: #000000;">' . (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td> <td> ' . (($element->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
                                             }
                                         }
                                     } elseif (empty($element->content) && $show_empty_fields == 1) {
@@ -2818,11 +2816,13 @@ class EmundusModelApplication extends JModelList
         $forms .= '</p></p>';
 
         if($attachments) {
+			$forms .= '<div class="page-break pdf-attachments">';
             $upload_files = $this->getCountUploadedFile($fnum, $aid, $profile_id);
             $forms .= $upload_files;
 
             $list_upload_files = $this->getListUploadedFile($fnum, $aid, $profile_id);
             $forms .= $list_upload_files;
+			$forms .= '</div>';
         }
         return $forms;
     }

@@ -373,6 +373,10 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+		<field name="gotenberg_merge_activation" type="list" menu="hide" default="0" label="COM_EMUNDUS_GOTENBERG_MERGE_ACTIVATION" description="COM_EMUNDUS_GOTENBERG_MERGE_ACTIVATION_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 		<field name="gotenberg_url" type="text" default="http://localhost:3000" label="COM_EMUNDUS_GOTENBERG_URL" description="COM_EMUNDUS_GOTENBERG_URL_DESC" />
 
 		<field name="gotenberg_ssl" type="radio" default="1" label="COM_EMUNDUS_GOTENBERG_SSL" description="COM_EMUNDUS_GOTENBERG_SSL_DESC">

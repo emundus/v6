@@ -663,6 +663,8 @@ if (password_value.match(regex) != null) {
 				EmundusHelperUpdate::addCustomEvents([
 					['label' => 'onWebhookCallbackProcess', 'category' => 'Webhook', 'published' => 1]
 				]);
+
+				EmundusHelperUpdate::updateEmundusParam('gotenberg_url','https://gotenberg.microservices.tchooz.app','https://docs.emundus.app');
 			}
 
 

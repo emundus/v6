@@ -127,15 +127,11 @@ class EmundusController extends JControllerLegacy {
 
         require_once($file);
 
-        // Here we call the profile by fnum function, which will get the candidate's profile in the status table
-//        $profile_id = $m_profile->getProfileByFnum($fnum);
 
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            //application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, $options, null, $profile_id,null,null);
             application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, $options, null, $profile,null,null);
             exit;
         } elseif (EmundusHelperAccess::isApplicant($user->id)) {
-            //application_form_pdf($user->id, $fnum, true, 1, $formid, $options, null, $profile_id,null,null);
             application_form_pdf($user->id, $fnum, true, 1, $formid, $options, null, $profile,null,null);
             exit;
         } else {
