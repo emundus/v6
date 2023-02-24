@@ -44,6 +44,36 @@ class EmundusHelperUpdate
     }
 
     /**
+     * Enable an emundus plugin
+     *
+     * @param $name
+     *
+     * @return false|mixed
+     *
+     * @since version 1.33.0
+     */
+    public static function enableEmundusPlugins($name) {
+        $enabled = false;
+
+        if (!empty($name)) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            try {
+                $query->update($db->quoteName('#__extensions'))
+                    ->set($db->quoteName('enabled') . ' = 1')
+                    ->where($db->quoteName('element') . ' LIKE ' . $db->quote($name));
+                $db->setQuery($query);
+	            $enabled = $db->execute();
+            } catch (Exception $e) {
+                echo $e->getMessage();
+            }
+        }
+
+        return $enabled;
+    }
+
+    /**
      * Disable an emundus plugin
      *
      * @param $name
@@ -118,7 +148,7 @@ class EmundusHelperUpdate
         return $updated;
     }
 
-    public static function installExtension($name, $element, $manifest_cache, $type, $enabled = 1, $folder = ''){
+    public static function installExtension($name, $element, $manifest_cache, $type, $enabled = 1, $folder = '', $params = '{}'){
         $installed = false;
 
         if (!empty($element)) {
@@ -142,7 +172,7 @@ class EmundusHelperUpdate
                         ->set($db->quoteName('client_id') . ' = ' . $db->quote(0))
                         ->set($db->quoteName('enabled') . ' = ' . $db->quote($enabled))
                         ->set($db->quoteName('manifest_cache') . ' = ' . $db->quote($manifest_cache))
-                        ->set($db->quoteName('params') . ' = ' . $db->quote('{}'))
+                        ->set($db->quoteName('params') . ' = ' . $db->quote($params))
                         ->set($db->quoteName('custom_data') . ' = ' . $db->quote(''))
                         ->set($db->quoteName('system_data') . ' = ' . $db->quote(''));
                     $db->setQuery($query);
@@ -1928,6 +1958,52 @@ class EmundusHelperUpdate
             $db->execute();
         } catch (Exception $e) {
             $result['message'] = 'INSERTING FABRIK JSACTION : Error : ' . $e->getMessage();
+            return $result;
+        }
+
+        $result['status'] = true;
+        return $result;
+    }
+
+    public static function updateJsAction($datas,$params = null) {
+        $result = ['status' => false, 'message' => ''];
+
+        if(empty($datas['action_id'])){
+            $result['message'] = 'UPDATING FABRIK JSACTION : Please provide an action id.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            if(empty($params)){
+                $params = [
+                    'js_e_event' => '',
+                    'js_e_trigger' => '',
+                    'js_e_condition' => '',
+                    'js_e_value' => '',
+                    'js_published' => '1',
+                ];
+            }
+            $updating_datas = [
+                'code' => $datas['code'],
+                'params' => json_encode($params)
+            ];
+
+            $fields = array(
+                $db->quoteName('code') . ' = ' . $db->quote($updating_datas['code']),
+                $db->quoteName('params') . ' = ' . $db->quote($updating_datas['params'])
+            );
+
+            $query->clear()
+                ->update($db->quoteName('#__fabrik_jsactions'))
+                ->set($fields)
+                ->where($db->quoteName('id') . ' = ' . $db->quote($datas['action_id']));
+            $db->setQuery($query);
+            $db->execute();
+        } catch (Exception $e) {
+            $result['message'] = 'UPDATING FABRIK JSACTION : Error : ' . $e->getMessage();
             return $result;
         }
 
