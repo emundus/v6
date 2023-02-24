@@ -24,6 +24,7 @@
 						<option value="default">MOD_EM_CAMPAIGN_LIST_DEFAULT</option>
 						<option value="default_g5">MOD_EM_CAMPAIGN_LIST_DEFAULT_G5</option>
 						<option value="institut_fr">Institut Français</option>
+						<option value="institut_fr_single_campaign">Institut Français - Single campaign</option>
 						<option value="nantes">Nantes</option>
 						<option value="old">MOD_EM_CAMPAIGN_LIST_OLD</option>
 						<option value="single_campaign">MOD_EM_CAMPAIGN_DETAILS_DEFAULT</option>

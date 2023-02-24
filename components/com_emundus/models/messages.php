@@ -45,8 +45,10 @@ class EmundusModelMessages extends JModelList {
         $query = $db->getQuery(true);
 
         $query->select('*')
-                ->from($db->quoteName('#__emundus_setup_emails'))
-                ->where($db->quoteName('type').' IN ('.$db->Quote($type).') AND published=1');
+            ->from($db->quoteName('#__emundus_setup_emails'))
+            ->where($db->quoteName('type').' IN ('.$db->Quote($type).')')
+            ->andWhere($db->quoteName('published') . ' = ' . $db->quote(1))
+            ->order($db->quoteName('subject'));
 
         try {
 
@@ -74,8 +76,10 @@ class EmundusModelMessages extends JModelList {
         $query = $db->getQuery(true);
 
         $query->select('DISTINCT(category)')
-                ->from($db->quoteName('#__emundus_setup_emails'))
-                ->where($db->quoteName('type').' IN ('.$db->Quote($type).') AND published=1');
+            ->from($db->quoteName('#__emundus_setup_emails'))
+            ->where($db->quoteName('type').' IN ('.$db->Quote($type).')')
+            ->andWhere($db->quoteName('published') . ' = ' . $db->quote(1))
+            ->order($db->quoteName('cateogry'));
 
         try {
 
