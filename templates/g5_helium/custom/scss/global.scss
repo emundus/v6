@@ -4893,7 +4893,7 @@ screen and (max-height: 769px) {
 
 /* MOBILE */
 
-@media screen and (max-width: 433px)  {
+@media screen and (max-width: 433px) {
 
   .gantry #g-navigation,
   .gantry #g-navigation .g-container {
@@ -4914,7 +4914,7 @@ screen and (max-height: 769px) {
 @media all and (min-width: 434px) and (max-width: 479px) {
 
   .gantry #g-navigation,
-  .gantry #g-navigation .g-container  {
+  .gantry #g-navigation .g-container {
     height: auto !important;
     max-height: 100%;
   }
@@ -4955,23 +4955,23 @@ screen and (max-height: 769px) {
     }
   }
 
- /* .view-form.applicant-form,.view-form.emundus-form{
-    .span12 .emundus-form{
-      margin-top: 0;
-    }
+  /* .view-form.applicant-form,.view-form.emundus-form{
+     .span12 .emundus-form{
+       margin-top: 0;
+     }
 
-    .g-container {
-      .g-grid {
-        .g-block:first-child {
-          order: 2;
-        }
+     .g-container {
+       .g-grid {
+         .g-block:first-child {
+           order: 2;
+         }
 
-        .g-block:nth-child(2) {
-          order: 1;
-        }
-      }
-    }
-  }*/
+         .g-block:nth-child(2) {
+           order: 1;
+         }
+       }
+     }
+   }*/
 
   .view-users #g-container-main .g-container {
     width: 100% !important;
@@ -5838,11 +5838,11 @@ screen and (max-height: 769px) {
     display: flex;
     flex-direction: inherit;
   }
-  }
+}
 
-  @media screen and (min-width: 480px) and (max-width: 959px) {
+@media screen and (min-width: 480px) and (max-width: 959px) {
 
-    /* FOOTER */
+  /* FOOTER */
   footer#g-footer .footer-rgpd {
     flex-direction: row;
     height: 70px;
