@@ -3,7 +3,7 @@
 /**
  * @package   Gantry5
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
  * @license   GNU/GPLv2 and later
  *
  * http://www.gnu.org/licenses/gpl-2.0.html
@@ -112,6 +112,12 @@ abstract class Finder
      */
     public function order($by, $direction = 1, $alias = 'a')
     {
+        if ($direction === 'RANDOM') {
+            $this->query->order('RAND()');
+
+            return $this;
+        }
+
         if (is_numeric($direction)) {
             $direction = $direction > 0 ? 'ASC' : 'DESC';
         } else {
@@ -202,6 +208,7 @@ abstract class Finder
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         $baseQuery = clone $this->query;

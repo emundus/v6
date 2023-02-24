@@ -2,12 +2,12 @@
 <extension version="3.1" type="module" client="administrator" method="upgrade">
 	<name>Securitycheck Pro Info Module</name>
 	<author>José A. Luque </author>
-	<creationDate>22-03-2022</creationDate>
+	<creationDate>02-06-2022</creationDate>
 	<copyright>Copyright www.protegetuordenador.com</copyright>
 	<license>GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html</license>
 	<authorEmail>contacto@protegetuordenador.com</authorEmail>
 	<authorUrl>www.protegetuordenador.com</authorUrl>
-	<version>3.4.5</version>
+	<version>3.5.0</version>
 	<description>MOD_SECURITYCHECKPRO_DESCRIPTION</description>
 
 	<files>

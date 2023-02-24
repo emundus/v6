@@ -3,7 +3,7 @@
 /**
  * @package   Gantry5
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
  * @license   GNU/GPLv2 and later
  *
  * http://www.gnu.org/licenses/gpl-2.0.html
@@ -31,14 +31,11 @@ class Menu extends AbstractMenu
 {
     use GantryTrait;
 
-    /**
-     * @var CMSApplication
-     */
+    /** @var bool */
+    protected $isAdmin;
+    /** @var CMSApplication */
     protected $application;
-
-    /**
-     * @var \Joomla\CMS\Menu\AbstractMenu
-     */
+    /** @var \Joomla\CMS\Menu\AbstractMenu */
     protected $menu;
 
     public function __construct()
@@ -46,8 +43,10 @@ class Menu extends AbstractMenu
         /** @var CMSApplication $app */
         $app = Factory::getApplication();
         if ($app->isClient('administrator')) {
+            $this->isAdmin = true;
             $this->application = CMSApplication::getInstance('site');
         } else {
+            $this->isAdmin = false;
             $this->application = $app;
         }
 
@@ -61,6 +60,31 @@ class Menu extends AbstractMenu
         $this->menu = $this->application->getMenu();
         $this->default = $this->menu->getDefault($tag);
         $this->active  = $this->menu->getActive();
+    }
+
+    /**
+     * @param string|int $offset
+     * @return bool
+     */
+    #[\ReturnTypeWillChange]
+    public function offsetExists($offset)
+    {
+        return $this->offsetGet($offset) !== null;
+    }
+
+    /**
+     * @param string|int $offset
+     * @return Item|null
+     */
+    #[\ReturnTypeWillChange]
+    public function offsetGet($offset)
+    {
+        $item = isset($this->items[$offset]) ? $this->items[$offset] : null;
+        if (!$this->isAdmin) {
+            return $item && $item->enabled ? $item : null;
+        }
+
+        return $item;
     }
 
     /**
@@ -264,7 +288,7 @@ class Menu extends AbstractMenu
      * Get menu items from the platform.
      *
      * @param array $params
-     * @return MenuItem[] List of routes to the pages.
+     * @return array<string,object|MenuItem> List of routes to the pages.
      */
     protected function getItemsFromPlatform($params)
     {
@@ -278,14 +302,19 @@ class Menu extends AbstractMenu
             $attributes = ['menutype'];
             $values = [$params['menu']];
 
-            $items = $this->menu->getItems($attributes, $values);
+            $items = [];
+            foreach ($this->menu->getItems($attributes, $values) as $item) {
+                $items[$item->id] = $item;
+            }
+
+            $items = array_replace($this->getMenuItemIds($params['menu']), $items);
         }
 
         return $items;
     }
 
     /**
-     * @param MenuItem[] $menuItems
+     * @param array<string,object|MenuItem> $menuItems
      * @param array[] $items
      * @return Item[]
      */
@@ -358,6 +387,10 @@ class Menu extends AbstractMenu
             $data['parent_id'] = $parent_id;
             $data['path'] = $path;
 
+            $tree = isset($list[$parent_id]) ? $list[$parent_id]->tree : [];
+            $tree[] = $item->id;
+            $data['tree'] = $tree;
+
             $item = $this->createMenuItem($data);
             $list[$item->id] = $item;
         }
@@ -417,27 +450,29 @@ class Menu extends AbstractMenu
         $defaults = Item::$defaults;
         $item = static::normalizeMenuItem($item + $defaults, $ignoreList, true);
         foreach ($item as $var => $value) {
-            // Joomla has different format for lists than Gantry, convert to Joomla supported version.
-            if (is_array($value) && in_array($var, ['attributes', 'link_attributes'], true)) {
-                $i = $version < 4 ? 0 : 10;
-                $list = [];
-                foreach ($value as $k => $v) {
-                    if (is_array($v)) {
-                        if ($version < 4) {
-                            // Joomla 3: Save lists as {"fieldname0":{"key":"key","value":"value"}, ...}
-                            $list["{$var}{$i}"] = ['key' => key($v), 'value' => current($v)];
+            if (is_array($value)) {
+                // Joomla has different format for lists than Gantry, convert to Joomla supported version.
+                if (in_array($var, ['attributes', 'link_attributes'], true)) {
+                    $i = $version < 4 ? 0 : 10;
+                    $list = [];
+                    foreach ($value as $k => $v) {
+                        if (is_array($v)) {
+                            if ($version < 4) {
+                                // Joomla 3: Save lists as {"fieldname0":{"key":"key","value":"value"}, ...}
+                                $list["{$var}{$i}"] = ['key' => key($v), 'value' => current($v)];
+                            } else {
+                                // Joomla 4: Save lists as {"__field10":{"key":"key","value":"value"}, ...}
+                                $list["__field{$i}"] = ['key' => key($v), 'value' => current($v)];
+                            }
                         } else {
-                            // Joomla 4: Save lists as {"__field10":{"key":"key","value":"value"}, ...}
-                            $list["__field{$i}"] = ['key' => key($v), 'value' => current($v)];
+                            $list[$k] = $v;
                         }
-                    } else {
-                        $list[$k] = $v;
+                        $i++;
                     }
-                    $i++;
+                    $value = $list;
+                } elseif (in_array($var, ['options', 'columns', 'columns_count'])) {
+                    $value = json_encode($value);
                 }
-                $value = $list;
-            } elseif ($var === 'options') {
-                $value = json_encode($value);
             }
 
             // Prefix gantry parameters and save them.
@@ -476,10 +511,14 @@ class Menu extends AbstractMenu
                     foreach ($value as $v) {
                         if (is_object($v) && isset($v->key, $v->value)) {
                             $list[] = [$v->key => $v->value];
+                        } elseif (is_array($v) && isset($v['key'], $v['value'])) {
+                            $list[] = [$v['key'] => $v['value']];
                         }
                     }
                     $value = $list;
                 } elseif ($param === 'options') {
+                    $value = $value ? json_decode($value, true) : [];
+                } elseif (!is_array($value) && in_array($param, ['columns', 'columns_count'], true)) {
                     $value = $value ? json_decode($value, true) : [];
                 }
 
@@ -492,27 +531,30 @@ class Menu extends AbstractMenu
 
     /**
      * @param array $data
-     * @param MenuItem|null $menuItem
+     * @param MenuItem|object|null $menuItem
      * @return Item
      */
     protected function createMenuItem($data, $menuItem = null)
     {
         if ($menuItem) {
-            // This logic was originally copied from Joomla 3.4 mod_menu/helper.php (joomla-cms/staging, 2014-11-12).
+            // This logic was originally copied from Joomla 3.10 mod_menu/helper.php (joomla-cms/staging, 2021-11-09).
             // We should keep the contents of the function similar to Joomla in order to review it against any changes.
 
             $id = (int)$menuItem->id;
             $type = $menuItem->type;
             $link = $menuItem->link;
-            $params = $menuItem->getParams();
+            $params = method_exists($menuItem, 'getParams') ? $menuItem->getParams() : null;
+            $enabled = $params && $params->get('menu_show', 1);
 
             // Figure out menu link.
             switch ($type) {
                 case 'heading':
                 case 'separator':
                     // Check if menu item contains a particle.
-                    if (!empty($params['gantry-particle'])) {
+                    if ($params && !empty($params->get('gantry-particle'))) {
                         $type = 'particle';
+                        $options = $params->get('gantry-options');
+                        $enabled = isset($options['particle']['enabled']) ? $options['particle']['enabled'] : true;
                     }
 
                     // These types have no link.
@@ -530,23 +572,24 @@ class Menu extends AbstractMenu
                     // If this is an alias use the item id stored in the parameters to make the link.
                     $link = 'index.php?Itemid=' . $params->get('aliasoptions', 0);
 
-                    // FIXME: Joomla 4: missing multilanguage support
+                    // Get the language of the target menu item when site is multilingual
+                    if (Multilanguage::isEnabled()) {
+                        $menu = $this->application->getMenu();
+                        $newItem = $menu && $params ? $menu->getItem((int) $params->get('aliasoptions')) : null;
+
+                        // Use language code if not set to ALL
+                        if ($newItem && $newItem->language && $newItem->language !== '*') {
+                            $link .= '&lang=' . $newItem->language;
+                        }
+                    }
                     break;
 
                 case 'component':
                 default:
-                    $application = $this->application;
-                    $router = $application::getRouter();
+                    $link = 'index.php?Itemid=' . $menuItem->id;
 
-                    // FIXME: Joomla 4: do we need anything else?
-                    if (version_compare(JVERSION, 4, '<') && $router->getMode() !== JROUTER_MODE_SEF) {
-                        $link .= '&Itemid=' . $menuItem->id;
-                    } else {
-                        $link = 'index.php?Itemid=' . $menuItem->id;
-
-                        if (isset($menuItem->query['format']) && $application->get('sef_suffix')) {
-                            $link .= '&format=' . $menuItem->query['format'];
-                        }
+                    if (isset($menuItem->query['format']) && $this->application->get('sef_suffix')) {
+                        $link .= '&format=' . $menuItem->query['format'];
                     }
 
                     break;
@@ -575,16 +618,17 @@ class Menu extends AbstractMenu
                 'id' => $id,
                 'parent_id' => $level !== 1 ? (int)$menuItem->parent_id : '',
                 'path' => $menuItem->route,
+                'tree' => $menuItem->tree,
                 'alias' => $menuItem->alias,
                 'type' => $type,
                 'link' => $link,
-                'enabled' => (bool)$params->get('menu_show', 1),
+                'enabled' => $enabled,
                 'level' => $level,
-                'link_title' => $params->get('menu-anchor_title', ''),
-                'rel' => $params->get('menu-anchor_rel', ''),
+                'link_title' => $params ? $params->get('menu-anchor_title', '') : '',
+                'rel' => $params ? $params->get('menu-anchor_rel', '') : '',
             ];
 
-            $props = static::decodeJParams($params);
+            $props = $params ? static::decodeJParams($params) : null;
             if (null !== $props) {
                 $paramsEmbedded = true;
                 foreach ($props as $param => $value) {
@@ -602,9 +646,9 @@ class Menu extends AbstractMenu
             // And if not available in configuration, default to Joomla.
             $properties += [
                 'title' => $menuItem->title,
-                'anchor_class' => $params->get('menu-anchor_css', ''),
-                'image' => $params->get('menu_image', ''),
-                'icon_only' => !$params->get('menu_text', 1),
+                'anchor_class' => $params ? $params->get('menu-anchor_css', '') : '',
+                'image' => $params ? $params->get('menu_image', '') : '',
+                'icon_only' => $params ? !$params->get('menu_text', 1) : false,
                 'target' => $target
             ];
 
@@ -616,7 +660,7 @@ class Menu extends AbstractMenu
             $level = substr_count($route, '/') + 1;
 
             $properties['enabled'] = !isset($properties['options']['particle']['enabled']) || !empty($properties['options']['particle']['enabled']);
-            $properties['alias'] = basename($route);
+            $properties['alias'] = Gantry::basename($route);
             $properties['level'] = $level;
 
             // Deal with special types which do not have link.
@@ -635,8 +679,8 @@ class Menu extends AbstractMenu
         }
         if (!$link) {
             $url = false;
-        } elseif (strcasecmp(substr($link, 0, 4), 'http') && strpos($link, 'index.php?') !== false) {
-            $url = Route::_($link, false, $menuItem->getParams()->get('secure'));
+        } elseif ((strpos($link, 'index.php?') !== false) && strcasecmp(substr($link, 0, 4), 'http')) {
+            $url = Route::_($link, false, $params->get('secure'));
         } else {
             $url = Route::_($link, false);
         }
@@ -678,15 +722,10 @@ class Menu extends AbstractMenu
         $menu = $this->application->getMenu();
 
         // Get base menu item.
-        $base = $itemid ? $menu->getItem($itemid) : null;
+        $base = $itemid && $itemid !== '/' ? $menu->getItem($itemid) : null;
 
-        if (!$base) {
-            // Use active menu item or fall back to default menu item.
-            $base = $this->active ?: $this->default;
-        }
-
-        // Return base menu item.
-        return $base;
+        // Use active menu item or fall back to default menu item.
+        return $base ?: $this->active ?: $this->default;
     }
 
     /**
@@ -705,17 +744,23 @@ class Menu extends AbstractMenu
             return;
         }
 
-        $tree    = isset($this->base->tree) ? $this->base->tree : [];
-        $start   = $params['startLevel'];
-        $max     = $params['maxLevels'];
-        $end     = $max ? $start + $max - 1 : 0;
+        $tree = isset($this->base->tree) ? $this->base->tree : [];
+        $start = $params['startLevel'];
+        $max = $params['maxLevels'];
+        $end = $max ? $start + $max - 1 : 0;
+        $this->root = $start > 1 && isset($tree[$start - 2]) ? (int)$tree[$start - 2] : '';
 
         $menuItems = $this->createMenuItems($this->getItemsFromPlatform($params), $items);
         foreach ($menuItems as $item) {
             $level = $item->level;
+            if ($item->id === $this->root) {
+                $this->add($item);
+                continue;
+            }
+
             if (($start && $start > $level)
                 || ($end && $level > $end)
-                || ($start > 1 && !in_array($item->tree[$start - 2], $tree, false))) {
+                || ($start > 1 && !in_array($this->root, $item->tree, false))) {
                 continue;
             }
 
@@ -724,10 +769,50 @@ class Menu extends AbstractMenu
     }
 
     /**
+     * @param string $menutype
+     * @return array
+     */
+    private function getMenuItemIds($menutype)
+    {
+        $db = \JFactory::getDbo();
+        $query = $db->getQuery(true)
+            ->select('m.id, m.alias, m.path AS route, m.level, m.parent_id')
+            ->from('#__menu AS m')
+            ->where('m.menutype = ' . $db->quote($menutype))
+            ->where('m.parent_id > 0')
+            ->where('m.client_id = 0')
+            ->where('m.published >= 0')
+            ->order('m.lft');
+
+        // Set the query
+        $db->setQuery($query);
+
+        $items = [];
+        foreach ($db->loadAssocList('id') as $id => $data) {
+            $data += ['type' => 'separator', 'tree' => [], 'title' => '', 'link' => null, 'browserNav' => null];
+            $items[$id] = (object)$data;
+        }
+
+        foreach ($items as &$item) {
+            // Get parent information.
+            $parent_tree = [];
+            if (isset($items[$item->parent_id])) {
+                $parent_tree = $items[$item->parent_id]->tree;
+            }
+
+            // Create tree.
+            $parent_tree[] = $item->id;
+            $item->tree = $parent_tree;
+        }
+
+        return $items;
+    }
+
+    /**
      * This code is taken from Joomla\CMS\Menu\SiteMenu::load()
      *
      * @param string $menutype
-     * @return array|null
+     * @return array
      */
     private function getMenuItemsInAdmin($menutype)
     {
@@ -774,7 +859,6 @@ class Menu extends AbstractMenu
         foreach ($items as &$item) {
             // Get parent information.
             $parent_tree = [];
-
             if (isset($items[$item->parent_id])) {
                 $parent_tree = $items[$item->parent_id]->tree;
             }
