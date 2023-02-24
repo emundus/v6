@@ -92,53 +92,116 @@ class EmundusControllerWebhook extends JControllerLegacy {
 	 * Downloads the file associated to the YouSign procedure that was pushed.
 	 */
 	public function yousign() {
-        $body = (string)file_get_contents('php://input');
-        $body = json_decode($body);
+        $expectedSignature = $_REQUEST['x-yousign-signature-256'];
 
-        if ($body->event_name == 'signature_request.done' && !empty($body->data)) {
-            JLog::add('Reveived WebHook : '. json_encode($body), JLog::INFO, 'com_emundus.webhook');
-            $signatureRequest = $body->data->signature_request;
+        $payload = file_get_contents('php://input');
+        $secret = JFactory::getConfig()->get('yousign_webhook_token');
+        $digest = hash_hmac('sha256', utf8_encode($payload), utf8_encode($secret));
+        $computedSignature = "sha256=" . $digest;
 
-            if (!empty($signatureRequest->id)) {
-                $db = JFactory::getDbo();
-                $query = $db->getQuery(true);
-                $eMConfig = JComponentHelper::getParams('com_emundus');
+        $doSignaturesMatch = hash_equals($expectedSignature, $computedSignature);
 
-                $baseUrl = $eMConfig->get('yousign_prod', 'https://staging-api.yousign.com');
-                $baseUrl = "https://api-sandbox.yousign.app/v3";
-                $api_key = $eMConfig->get('yousign_api_key', 'https://staging-api.yousign.com');
-                $api_key = "6zzPEoij6Gwr5jsq14UF8whW0nHl62Ru";
-                $client = new GuzzleClient();
+        if ($doSignaturesMatch) {
+            $body = json_decode($payload);
 
-                foreach($signatureRequest->documents as $document) {
-                    if ($document->nature == 'signable_document') {
-                        // TODO: retrieve upload id from document->id
+            if ($body->event_name == 'signature_request.done' && !empty($body->data)) {
+                JLog::add('Reveived WebHook : '. json_encode($body), JLog::INFO, 'com_emundus.webhook');
+                $signatureRequest = $body->data->signature_request;
 
+                if (!empty($signatureRequest->id)) {
+                    $eMConfig = JComponentHelper::getParams('com_emundus');
 
-                        // TODO: replace emundus document content by yousign document content
-                        try {
-                            $response = $client->request('GET', $baseUrl . '/signature_requests/' . $signatureRequest->id . '/documents/download', [
-                                'headers' => [
-                                    'Authorization' => 'Bearer '. $api_key,
-                                    'accept' => 'application/zip, application/pdf',
-                                ],
-                                'sink' => fopen()
-                            ]);
+                    $baseUrl = $eMConfig->get('yousign_prod', 'https://api-sandbox.yousign.app/v3');
+                    $api_key = $eMConfig->get('yousign_api_key', '');
 
-                            if ($response->getStatusCode() == 200) {
+                    if (!empty($baseUrl) && !empty($api_key)) {
+                        $db = JFactory::getDbo();
+                        $query = $db->getQuery(true);
 
+                        $client = new GuzzleClient();
+                        foreach($signatureRequest->documents as $document) {
+                            if ($document->nature == 'signable_document') {
+                                $query->clear()
+                                    ->select('jefr.filename, jefr.fnum, ecc.campaign_id, jefr.attachment_id')
+                                    ->from($db->quoteName('#__emundus_files_request', 'jefr'))
+                                    ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.fnum = jefr.fnum')
+                                    ->where('keyid = ' . $signatureRequest->id)
+                                    ->andWhere('yousign_document_id = ' . $document->id);
+                                $db->setQuery($query);
+
+                                $file_request = $db->loadObject();
+                                $file_path = str_replace('.pdf', 'signed.pdf', $file_request->filename);
+
+                                try {
+                                    $response = $client->request('GET', $baseUrl . '/signature_requests/' . $signatureRequest->id . '/documents/download', [
+                                        'headers' => [
+                                            'Authorization' => 'Bearer '. $api_key,
+                                            'accept' => 'application/pdf',
+                                        ],
+                                        'sink' => fopen($file_path, 'x')
+                                    ]);
+
+                                    if ($response->getStatusCode() == 200) {
+                                        $query->clear()
+                                            ->update('#__emundus_files_request')
+                                            ->set('signed_file = ' . $db->quote($file_path))
+                                            ->where('keyid = ' . $db->quote($signatureRequest->id))
+                                            ->andWhere('yousign_document_id = ' . $db->quote($document->id));
+                                        $db->setQuery($query);
+                                        $updated = $db->execute();
+
+                                        $query->clear()
+                                            ->insert('#__emundus_uploads')
+                                            ->columns(['fnum', 'time_date', 'user_id', 'campaign_id', 'attachment_id', 'filename'])
+                                            ->values($db->quote($file_request->fnum) . ', NOW(), 62, ' . $file_request->campaign_id . ', ' . $file_request->attachment_id . ',' . basename($file_request->filename));
+                                        $db->setQuery($query);
+                                        $db->execute();
+
+                                        if ($updated) {
+                                            $query->clear()
+                                                ->select('ju.params, ju.id')
+                                                ->from($db->quoteName('#__users', 'ju'))
+                                                ->leftJoin($db->quoteName('#__emundus_files_request', 'jefr') . ' ON jefr.email = ju.username')
+                                                ->where('jefr.keyid = ' . $db->quote($signatureRequest->id))
+                                                ->andWhere('jefr.yousign_document_id = ' . $db->quote($document->id));
+                                            $db->setQuery($query);
+
+                                            $user_data = $db->loadObject();
+                                            if (!empty($user_data->id)) {
+                                                $params = json_decode($user_data->params);
+
+                                                unset($params['yousign_signer_id']);
+                                                unset($params['yousign_signature_request']);
+                                                unset($params['yousign_url']);
+
+                                                $query->clear()
+                                                    ->update('#__users')
+                                                    ->set('params = ' . $db->quote(json_encode($params)))
+                                                    ->where('id = ' . $user_data->id);
+
+                                                $db->setQuery($query);
+                                                $db->execute();
+                                            }
+                                        }
+                                    } else {
+                                        JLog::add('Failed to download file from yousign : signature request id  '. $signatureRequest->id, JLog::ERROR, 'com_emundus.webhook');
+                                        echo json_encode(array('status' => false, 'msg' => 'Failed to download file from yousign'));
+                                        exit;
+                                    }
+                                } catch (Exception $e) {
+                                    JLog::add('Failed to download file from yousign : signature request id  '. $signatureRequest->id, JLog::ERROR, 'com_emundus.webhook');
+                                    echo json_encode(array('status' => false, 'msg' => $e->getMessage()));
+                                    exit;
+                                }
                             }
-                        } catch (Exception $e) {
-                            echo json_encode(array('status' => false, 'msg' => $e->getMessage()));
-                            exit;
                         }
                     }
                 }
+            } else {
+                JLog::add('YouSign bad JSON : '. file_get_contents('php://input'), JLog::ERROR, 'com_emundus.webhook');
+                echo json_encode(array('status' => false, 'msg' => "Nothing to do here..."));
+                exit;
             }
-        } else {
-            JLog::add('YouSign bad JSON : '.file_get_contents('php://input'), JLog::ERROR, 'com_emundus.webhook');
-            echo json_encode(array('status' => false, 'msg' => "Nothing to do here..."));
-            exit;
         }
 	}
 

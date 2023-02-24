@@ -11,13 +11,7 @@
 defined('_JEXEC') or die;
 $eMConfig = JComponentHelper::getParams('com_emundus');
 
-if ($eMConfig->get('yousign_prod', 'https://staging-api.yousign.com') === 'https://staging-api.yousign.com') {
-	$host = 'https://staging-app.yousign.com';
-} else {
-	$host = 'https://webapp.yousign.com';
-}
-
 ?>
-<div class="em-yousign-embed">
-    <iframe src="<?= $host; ?>/procedure/sign?members=<?= $yousign_member_id.(!empty($signature_ui)?'&signatureUi='.$signature_ui:''); ?>"></iframe>
+<div class="em-w-100 em-flex-row" style="justify-content: flex-end;">
+    <a class="em-mt-16 em-pointer" href="<?= $yousignSession['iframe_url']; ?>" target="_blank"><button class="em-primary-button">Signer l'engagement de confidentialité.</button></a>
 </div>
