@@ -53,7 +53,7 @@ class EmundusHelperUpdate
      * @since version 1.33.0
      */
     public static function enableEmundusPlugins($name) {
-        $disabled = false;
+        $enabled = false;
 
         if (!empty($name)) {
             $db    = JFactory::getDbo();
@@ -64,13 +64,13 @@ class EmundusHelperUpdate
                     ->set($db->quoteName('enabled') . ' = 1')
                     ->where($db->quoteName('element') . ' LIKE ' . $db->quote($name));
                 $db->setQuery($query);
-                $disabled = $db->execute();
+	            $enabled = $db->execute();
             } catch (Exception $e) {
                 echo $e->getMessage();
             }
         }
 
-        return $disabled;
+        return $enabled;
     }
 
     /**
