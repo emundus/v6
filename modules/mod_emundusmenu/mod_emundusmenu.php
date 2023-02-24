@@ -69,3 +69,4 @@ $class_sfx = htmlspecialchars($params->get('class_sfx'));
 if (count($list)) {
     require JModuleHelper::getLayoutPath('mod_emundusmenu', $layout);
 }
+?>
