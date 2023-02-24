@@ -3,7 +3,7 @@
 /**
  * @package   Gantry 5
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
  * @license   GNU/GPLv2 and later
  *
  * http://www.gnu.org/licenses/gpl-2.0.html
@@ -629,10 +629,14 @@ class plgSystemGantry5 extends CMSPlugin
                 Loader::setup();
 
                 $isNew = $data->parent_id === null;
-                $isGantry = !empty($data->params['gantry']) || is_array(Menu::decodeJParams($data->params));
+                $menuParams = Menu::decodeJParams($data->params);
+                $isGantry = !empty($data->params['gantry']) || is_array($menuParams);
                 if ($isNew || $isGantry) {
                     // Add default Gantry params to menu item.
-                    $data->params += Menu::encodeJParams([], false);
+                    if (null === $menuParams) {
+                        $menuParams = [];
+                    }
+                    $data->params = array_merge($data->params, Menu::encodeJParams($menuParams, false));
                 }
                 break;
         }
