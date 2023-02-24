@@ -1,26 +1,58 @@
+
+.sclogin.ns-bs5 .btn-secondary {
+    color: #343a40;
+    background-color: #fefefe;
+    border-color: #ced4da;
+}
+
 /* Default SCLogin Theme - Add new themes to templates/YOUR_TEMPLATE_NAME/html/mod_sclogin/themes directory */
 .sclogin {
     overflow: visible;
     text-align: left;
 }
 
-#login-modal {
-top:15%;
-height: auto !important;
-}
 
-div#login-modal.sourcecoast.modal {
+/* Modal */
+div.sclogin-modal.sourcecoast.modal {
     transform: none;
 }
+
+.sclogin-modal.sourcecoast.hide {
+    display: none;
+}
+
+div.sclogin-modal.modal.in {
+    display: block !important;
+    background-color: #FFF;
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    z-index: 1050;
+    width: 560px;
+    margin-left: -280px;
+    height: fit-content;
+}
+@media (max-width: 1120px) {
+    div.sclogin-modal.modal.in {
+        width: 80%;
+        margin-left: -40%;
+    }
+}
+/* End Modal */
 
 .sclogin .powered-by {
     clear: both;
 }
 
+.sclogin-social-login .social-login,
+.social-login.reconnect{
+    margin:.25rem !important;
+}
+
 div.sclogin-social-login a.show,
 div.sclogin-joomla-login a.show,
 div.sclogin-social-connect a.show {
-    margin-bottom: 9px;
+    margin-bottom: .5rem;
 }
 
 div.sclogin-social-connect,
@@ -28,44 +60,56 @@ div.social-login.reconnect:nth-of-type(2) {
     clear:left;
 }
 
-.sclogin-social-login .pull-left,
-.social-login.reconnect.pull-left {
-    margin:5px;
+.sclogin .input-group {
+    margin-bottom: 9px;
 }
 
-.sclogin-social-login.bottom {
-    padding:5px 0;
+.sclogin.ns-bs2 .input-append input:only-child {
+    border-radius: 0 4px 4px 0 !important;
 }
 
-input.sclogin-username.input-block-level,
-input.sclogin-passwd.input-block-level {
-    height: 30px;
+.sclogin.ns-bs5 span.input-group-text,
+.sclogin.ns-bs5 input.sclogin-username,
+.sclogin.ns-bs5 input.sclogin-passwd {
+    height: calc(1.5em + .75rem + 2px);
+    padding: .6rem 1rem;
+    margin-bottom: 0px;
 }
 
-a.forgot.btn {
-    height: 28px !important;
-    padding: 0px 0px;
+.sclogin.ns-bs5 .showpasswd.btn,
+.sclogin.ns-bs5 a.forgot.btn {
+    height: calc(1.5em + .75rem);
+    line-height: calc(1.5em + .75rem);
 }
 
-a.forgot.btn i {
-    margin-top: 6px;
+.sclogin.ns-bs2 a.forgot.btn i {
+    margin-top: 0;
+    line-height: initial;
+    vertical-align: middle;
+    font-size: 1rem;
 }
 
-.sclogin .field-icon {
-    margin-left: -25px;
-    margin-right: 11px;
+.sclogin.ns-bs2 .field-icon {
     position: relative;
     z-index: 2;
-    font-size: 14px;
+    font-size: 1rem;
+    width: 1.25em;
 }
 
-#form-sclogin-submitcreate a,
+.sclogin.ns-bs2 span.icon-eye.field-icon,
+.sclogin.ns-bs2 span.fa.fa-eye.field-icon,
+.sclogin.ns-bs2 span.fa.fa-eye-slash.field-icon{
+    margin-top: .125rem;
+    vertical-align: text-bottom;
+}
+
+.form-sclogin-submitcreate a,
 .sclogin-modal-links a.btn,
 .scuser-menu a.dropdown-toggle {
     text-decoration: none !important;
 }
 
-#form-sclogin-submitcreate a,
+.form-sclogin-submitcreate a,
 .scuser-menu a.dropdown-toggle {
     color: #000000;
 }
@@ -78,11 +122,6 @@ a.forgot.btn i {
     clear: both;
 }
 
-.sclogin-username,
-.sclogin-passwd {
-    margin-top: 0px;
-}
-
 /* Vertical Layout */
 
 .sclogin-joomla-login.vertical input.sclogin-username.input-block-level,
@@ -90,22 +129,23 @@ a.forgot.btn i {
     width: 87% !important;
 }
 
-.sclogin-joomla-login.vertical a.forgot.btn {
-    width: 13% !important;
+.sclogin.ns-bs2 .vertical .showpasswd.btn {
+    line-height: 20px;
+    padding: 3px 12px;
 }
-
-.sclogin-joomla-login.vertical input.sclogin-username.input-append,
-.sclogin-joomla-login.vertical input.sclogin-passwd.input-append {
-    width: 100%;
-}
-
-.sclogin-joomla-login.vertical #form-sclogin-submitcreate .btn {
-    margin-top: 2px !important;
+.sclogin.ns-bs2 .vertical a.forgot.btn {
+    line-height: 20px;
+    padding: 3px 12px;
 }
 
 /* Horizontal Layout */
+.sclogin .horizontal div.form-group,
 .sclogin-joomla-login.horizontal .control-group {
-    margin-right: 2px;
+    margin-right: 9px;
+}
+
+.sclogin.ns-bs5 .horizontal div {
+    display: flex;
 }
 
 /* Modal Links */
@@ -151,7 +191,7 @@ a.forgot.btn i {
     clear: both;
 }
 
-.sclogin #scprofile-pic,
+.sclogin .scprofile-pic,
 .sclogin .sclogin-greeting,
 .sclogin .sclogin-profile-link{
     margin-bottom: 5px;

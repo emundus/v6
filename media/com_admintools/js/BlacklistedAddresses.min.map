@@ -1,0 +1,8 @@
+{
+"version":3,
+"file":"BlacklistedAddresses.min.js",
+"lineCount":5,
+"mappings":"A;;;;AAO+C,WAA/C,GAAI,MAAOA,WAAAC,qBAAX,GAECD,UAAAC,qBAFD,CAEmC,QACvBC,QAAQ,EAAG,CACpBC,MAAAC,OAAA,CAAc,gBAAd,CAAAC,OAAA,CAAuC,QAAQ,EAAE,CAChD,IAAIC,EAAiBH,MAAAC,OAAA,CAAc,kBAAd,CAArB,CACIG,EAAiBJ,MAAAC,OAAA,CAAc,kBAAd,CACa,IAAlC,EAAID,MAAAC,OAAA,CAAc,IAAd,CAAAI,IAAA,EAAJ,EAECF,CAAAG,KAAA,EACA,CAAAF,CAAAE,KAAA,EAHD,GAMCH,CAAAI,KAAA,EACA,CAAAH,CAAAG,KAAA,EAPD,CAHgD,CAAjD,CADoB,CADY,CAFnC,CAqBAP,OAAAC,OAAA,CAAcO,QAAd,CAAAC,MAAA,CAA8B,QAAQ,CAACC,CAAD,CAAG,CACxCb,UAAAC,qBAAAC,OAAA,EADwC,CAAzC;",
+"sources":["../uncompressed/js/BlacklistedAddresses.js"],
+"names":["admintools","BlacklistedAddresses","onLoad","akeeba","jQuery","change","fieldDelimiter","fieldEnclosure","val","show","hide","document","ready","$"]
+}

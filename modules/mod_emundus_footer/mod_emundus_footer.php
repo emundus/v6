@@ -20,9 +20,11 @@ include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 $params->def('greeting', 1);
 
 //Footer
+$mod_emundus_footer_merge_two_columns=$params->get('mod_emundus_footer_merge_two_columns',0);
 $mod_emundus_footer_texte_col_1=$params->get('mod_emundus_footer_texte_col_1', '');
 $mod_emundus_footer_texte_col_2=$params->get('mod_emundus_footer_texte_col_2', '');
 $mod_emundus_footer_display_tchooz_logo=$params->get('mod_emundus_footer_display_tchooz_logo',0);
+$mod_emundus_footer_display_powered_by=$params->get('mod_emundus_footer_display_powered_by',1);
 $mod_emundus_footer_client_link=$params->get('mod_emundus_footer_client_link','');
 
 // Gdpr articles

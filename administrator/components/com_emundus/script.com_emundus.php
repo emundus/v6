@@ -650,16 +650,32 @@ if (password_value.match(regex) != null) {
 				//
 			}
 
+			if (version_compare($cache_version, '1.35.0', '<') || $firstrun) {
+				EmundusHelperUpdate::updateYamlVariable('offcanvas', '16rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'width');
+				EmundusHelperUpdate::updateYamlVariable('breakpoints', '75rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'large-desktop-container');
+				EmundusHelperUpdate::updateYamlVariable('breakpoints', '60rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'desktop-container');
+				EmundusHelperUpdate::updateYamlVariable('breakpoints', '48rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tablet-container');
+				EmundusHelperUpdate::updateYamlVariable('breakpoints', '30rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'large-mobile-container');
+				EmundusHelperUpdate::updateYamlVariable('breakpoints', '48rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'mobile-menu-breakpoint');
+				EmundusHelperUpdate::updateYamlVariable('menu', '11rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'col-width');
+				EmundusHelperUpdate::updateYamlVariable('base', '#f8f8f8', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'background');
+
+				EmundusHelperUpdate::addCustomEvents([
+					['label' => 'onWebhookCallbackProcess', 'category' => 'Webhook', 'published' => 1]
+				]);
+			}
+
 
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
 
-			// Recompile Gantry5 css at each update
-			$dir = JPATH_BASE . '/templates/g5_helium/custom/css-compiled';
-			if (!empty($dir)) {
-				foreach (glob($dir . '/*') as $file) {
-					unlink($file);
-				}
+
+            // Recompile Gantry5 css at each update
+            $dir = JPATH_BASE . '/templates/g5_helium/custom/css-compiled';
+            if(!empty($dir)) {
+                foreach (glob($dir . '/*') as $file) {
+                    unlink($file);
+                }
 
 				rmdir($dir);
 			}
@@ -690,17 +706,17 @@ if (password_value.match(regex) != null) {
 	}
 
 
-	/**
-	 * @param $type
-	 * @param $parent
-	 *
-	 *
-	 * @since version 1.33.0
-	 */
-	function postflight($type, $parent)
-	{
-		echo "\rComposant eMundus mis à jour avec succès !\n";
-	}
+    /**
+     * @param $type
+     * @param $parent
+     *
+     *
+     * @since version 1.33.0
+     */
+    function postflight($type, $parent)
+    {
+        return true;
+    }
 
 
 	/**
