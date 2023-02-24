@@ -452,6 +452,17 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
                 $uid = $m_users->adduser($user, $other_param);
                 $user->id = $uid;
 
+                $table = JTable::getInstance('user', 'JTable');
+                $table->load($user->id);
+
+                $user->setParam('emailactivation_token', '');
+                $params = $user->getParameters();
+
+                // Set the user table instance to include the new token.
+                $table->params = $params->toString();
+                $table->activation = 1;
+                $table->store();
+
                 if (empty($uid) || (!mkdir(EMUNDUS_PATH_ABS . $user->id . DS, 0777, true) && !copy(EMUNDUS_PATH_ABS . 'index.html', EMUNDUS_PATH_ABS . $user->id . DS . 'index.html'))) {
                     throw new Exception(JText::_('ERROR_CANNOT_CREATE_USER_FILE'), 500);
                 }
