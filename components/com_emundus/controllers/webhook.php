@@ -125,14 +125,15 @@ class EmundusControllerWebhook extends JControllerLegacy {
                                     ->select('jefr.filename, jefr.fnum, ecc.campaign_id, jefr.attachment_id')
                                     ->from($db->quoteName('#__emundus_files_request', 'jefr'))
                                     ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.fnum = jefr.fnum')
-                                    ->where('keyid = ' . $signatureRequest->id)
-                                    ->andWhere('yousign_document_id = ' . $document->id);
+                                    ->where('keyid = ' .$db->quote($signatureRequest->id))
+                                    ->andWhere('yousign_document_id = ' .$db->quote($document->id));
                                 $db->setQuery($query);
 
                                 $file_request = $db->loadObject();
                                 $file_path = str_replace('.pdf', 'signed.pdf', $file_request->filename);
 
                                 try {
+                                    // Télécharger le document et le placer dans le répertoire candidat
                                     $response = $client->request('GET', $baseUrl . '/signature_requests/' . $signatureRequest->id . '/documents/download', [
                                         'headers' => [
                                             'Authorization' => 'Bearer '. $api_key,
@@ -142,6 +143,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
                                     ]);
 
                                     if ($response->getStatusCode() == 200) {
+                                        // Mettre à jour la files request et la table des documents du candidat
                                         $query->clear()
                                             ->update('#__emundus_files_request')
                                             ->set('signed_file = ' . $db->quote($file_path))
@@ -152,12 +154,13 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
                                         $query->clear()
                                             ->insert('#__emundus_uploads')
-                                            ->columns(['fnum', 'time_date', 'user_id', 'campaign_id', 'attachment_id', 'filename'])
-                                            ->values($db->quote($file_request->fnum) . ', NOW(), 62, ' . $file_request->campaign_id . ', ' . $file_request->attachment_id . ',' . basename($file_request->filename));
+                                            ->columns(['fnum', 'time_date', 'user_id', 'campaign_id', 'attachment_id', 'filename', 'can_be_deleted', 'can_be_viewed'])
+                                            ->values($db->quote($file_request->fnum) . ', NOW(), 62, ' . $file_request->campaign_id . ', ' . $file_request->attachment_id . ',' . basename($file_request->filename) . ', 0, 0');
                                         $db->setQuery($query);
                                         $db->execute();
 
                                         if ($updated) {
+                                            // Mettre a jour les données utilisateurs (retirer les données yousign dans les params)
                                             $query->clear()
                                                 ->select('ju.params, ju.id')
                                                 ->from($db->quoteName('#__users', 'ju'))
