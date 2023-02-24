@@ -4,6 +4,13 @@
     text-decoration: none;
 }
 
+#header-b #em_user_menu a.item span.image-title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
 .g-main-nav .g-sublevel > li.g-parent .g-menu-parent-indicator {
     margin-top: -4px;
 }

@@ -540,6 +540,39 @@ class com_emundusInstallerScript
                 ]);
             }
 
+	        if (version_compare($cache_version, '1.34.56', '<') || $firstrun) {
+				$db = JFactory::getDbo();
+				$query = $db->getQuery(true);
+
+				$query->select('id')
+					->from($db->quoteName('#__modules'))
+					->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_version'))
+					->where($db->quoteName('client_id') . ' = 0');
+				$db->setQuery($query);
+				$moduleid = $db->loadResult();
+
+				if(!empty($moduleid)) {
+					$query->clear()
+						->delete($db->quoteName('#__modules_menu'))
+						->where($db->quoteName('moduleid') . ' = ' . $moduleid);
+					$db->setQuery($query);
+					$db->execute();
+
+					$query->clear()
+						->delete($db->quoteName('#__modules'))
+						->where($db->quoteName('id') . ' = ' . $moduleid);
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+		        $query->clear()
+			        ->delete($db->quoteName('#__extensions'))
+			        ->where($db->quoteName('element') . ' LIKE ' . $db->quote('mod_emundus_version'))
+			        ->where($db->quoteName('client_id') . ' = 0');
+		        $db->setQuery($query);
+		        $db->execute();
+	        }
+
             if (version_compare($cache_version, '1.34.64', '<') || $firstrun) {
                 $db = JFactory::getDbo();
                 $query = $db->getQuery(true);

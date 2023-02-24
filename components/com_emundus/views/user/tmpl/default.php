@@ -5,7 +5,7 @@ $email = $this->user;
 $current_user = JFactory::getUser();
 ?>
 <div class="em-activation-header">
-    <p><a class="em-back-button em-pointer em-w-auto em-float-left" style="text-decoration: unset" href="index.php?option=com_users&task=user.logout&<?php echo JSession::getFormToken() ?>=1"><span class="material-icons em-mr-4">navigate_before</span>Retour à la page d'accueil</a></p>
+    <p><a class="em-back-button em-pointer em-w-auto em-float-left" style="text-decoration: unset" href="index.php?option=com_users&task=user.logout&<?php echo JSession::getFormToken() ?>=1"><span class="material-icons em-mr-4">navigate_before</span><?= JText::_('COM_EMUNDUS_MAIL_GB_BUTTON'); ?></a></p>
 </div>
 
     <section class="em-activation">
