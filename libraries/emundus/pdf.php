@@ -946,7 +946,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 						$data          = file_get_contents($avatar);
 						$avatar_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
 
-						$htmldata .= '<tr><td><img src="'. $avatar_base64 .'" width="auto" height="60" align="right"/></td></tr>';
+						$htmldata .= '<tr><td><img style="border-radius: 50%" src="'. $avatar_base64 .'" width="auto" height="60" align="right"/></td></tr>';
 					}
 				}
 
@@ -980,7 +980,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
                 if (in_array("tags", $options)) {
                     $tags = $m_files->getTagsByFnum(explode(',', $fnum));
-                    $htmldata .= '<table style="margin-top: 8px"><tr><td style="display: inline"> ';
+                    $htmldata .= '<table style="margin-top: 8px"><tr><td> ';
                     foreach ($tags as $tag) {
                         $htmldata .= '<span class="label ' . $tag['class'] . '">' . $tag['label'] . '</span>&nbsp;';
                     }
@@ -1014,45 +1014,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             }
         }
         else {
-            $forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order, $profile_id, null, $attachments);
+	        $forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order, $profile_id, null, $attachments);
         }
-
-        // Create PDF object
-        //$pdf = new Fpdi();
-        //$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-
-        //$pdf->SetCreator(PDF_CREATOR);
-        //$pdf->SetAuthor('eMundus');
-        //$pdf->SetTitle('Application Form');
-
-        //get title
-        /*$title = $config->get('sitename');
-        if (is_file($logo)) {
-            $pdf->SetHeaderData($logo, 20, $title, PDF_HEADER_STRING);
-        }
-
-        //unset($logo);
-        unset($title);*/
-
-        /*$pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-        $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, 'I', PDF_FONT_SIZE_DATA));
-        $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-        $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-        $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
-        $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
-        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-        $pdf->setCellPaddings('L');//Set Padding
-
-        //$pdf->SetLineWidth();
-
-        // set default monospaced font
-        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-        // set default font subsetting mode
-        $pdf->setFontSubsetting(true);
-        // set font
-        $pdf->SetFont('helvetica', '', 10);
-        $pdf->AddPage();
-        $dimensions = $pdf->getPageDimensions();*/
 
         /*** Applicant   ***/
 	    $htmldata .= "
@@ -1157,7 +1120,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                             page-break-before: always;
                         }
                     }
-                    .label {color:black;padding: 6px 12px;border-radius: 4px;color: white;}
+                    .label {color:black;padding: 6px 12px;border-radius: 4px;}
 		            .label-default {background-color:#999999;}
 		            .label-primary {background-color:#337ab7;}
 		            .label-success {background-color:#5cb85c;}
@@ -1191,16 +1154,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         /**  END APPLICANT   ****/
 
         $htmldata .= $forms;
-        /*$htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', "data_to_img", $htmldata);
-        $htmldata = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $htmldata);*/
 
-        /*if (!empty($htmldata)) {
-            $pdf->startTransaction();
-            $start_y = $pdf->GetY();
-            $start_page = $pdf->getPage();
-
-            $pdf->writeHTMLCell(0, '', '', $start_y, $htmldata, 'B', 1);
-        }*/
         if (!file_exists(EMUNDUS_PATH_ABS . @$item->user_id)) {
             mkdir(EMUNDUS_PATH_ABS . $item->user_id, 0777, true);
             chmod(EMUNDUS_PATH_ABS . $item->user_id, 0777);
@@ -1230,34 +1184,24 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		$options->set('isPhpEnabled', true);
 	    $dompdf = new Dompdf($options);
 
-		//echo '<pre>'; var_dump($htmldata); echo '</pre>'; die;
-	    $dompdf->loadHtml($htmldata);
-	    $dompdf->render();
+	    try {
+		    $dompdf->loadHtml($htmldata);
+		    $dompdf->render();
 
-		if($output) {
-			$dompdf->stream($filename, array("Attachment" => false));
-		} else {
-			file_put_contents($filename, $dompdf->output());
-			return $filename;
-		}
+		    if($output) {
+			    $dompdf->stream($filename, array("Attachment" => false));
+		    } else {
+			    file_put_contents($filename, $dompdf->output());
+			    return $filename;
+		    }
+	    }
+	    catch (Exception $e) {
+		    JLog::add('Error when export following file to PDF : ' . $fnum . ' with error ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+		    return false;
+	    }
 	    /** END */
 
         @chdir('tmp');
-        /*if ($output) {
-            if (!isset($current_user->applicant) && @$current_user->applicant != 1) {
-                $name = 'application_form_' . date('Y-m-d_H-i-s') . '.pdf';
-                $pdf->Output(EMUNDUS_PATH_ABS . $item->user_id . DS . $name, 'FI');
-                $attachment = $m_application->getAttachmentByLbl("_application_form");
-                $keys = array('user_id', 'attachment_id', 'filename', 'description', 'can_be_deleted', 'can_be_viewed', 'campaign_id', 'fnum');
-                $values = array($item->user_id, $attachment['id'], $name, $item->training . ' ' . date('Y-m-d H:i:s'), 0, 0, $campaign_id, $fnum);
-                $data = array('key' => $keys, 'value' => $values);
-                $m_application->uploadAttachment($data);
-            } else {
-                $pdf->Output(EMUNDUS_PATH_ABS . @$item->user_id . DS . $fnum . $file_lbl . '.pdf', 'FI');
-            }
-        } else {
-            $pdf->Output(EMUNDUS_PATH_ABS . @$item->user_id . DS . $fnum . $file_lbl . '.pdf', 'F');
-        }*/
     }
 }
 
@@ -1463,7 +1407,7 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
         }
         if (in_array("tags", $options)) {
             $tags = $m_files->getTagsByFnum(explode(',', $fnum));
-            $htmldata .= '<br/><table><tr><td style="display: inline;"> ';
+            $htmldata .= '<br/><table><tr><td> ';
             foreach ($tags as $tag) {
                 $htmldata .= '<span class="label ' . $tag['class'] . '" >' . $tag['label'] . '</span>&nbsp;';
             }

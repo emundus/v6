@@ -1797,6 +1797,7 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         $m_files = $this->getModel('Files');
+	    $eMConfig = JComponentHelper::getParams('com_emundus');
 
         $session = JFactory::getSession();
         $fnums_post = $session->get('fnums_export');
@@ -1817,7 +1818,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $admission  = $jinput->getInt('admission', 0);
         $ids        = $jinput->getVar('ids', null);
         $formid     = $jinput->getVar('formids', null);
-        $attachid   = $jinput->getVar('attachids', null);
+	    $attachids   = $jinput->getVar('attachids', null);
         $options     = $jinput->getVar('options', null);
 
         $profiles = $jinput->getRaw('profiles', null);                          // default NULL
@@ -1832,7 +1833,9 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         $formids    = explode(',', $formid);
-        $attachids  = explode(',', $attachid);
+	    if(!is_array($attachids)) {
+		    $attachids = explode(',', $attachids);
+	    }
 		if(!is_array($options)) {
 			$options = explode(',', $options);
 		}
@@ -1850,7 +1853,6 @@ class EmundusControllerFiles extends JControllerLegacy
         // Generate filename from emundus config ONLY if one file is selected
         //
         if (count($validFnums) == 1) {
-            $eMConfig = JComponentHelper::getParams('com_emundus');
             $application_form_name = empty($admission) ? $eMConfig->get('application_form_name', "application_form_pdf") : $eMConfig->get('application_admission_name', "application_form_pdf");
 
             if ($application_form_name != "application_form_pdf") {
@@ -1958,40 +1960,56 @@ class EmundusControllerFiles extends JControllerLegacy
         }
         $start = $i;
 
-        if (count($files_list) > 0) {
+        if (count($files_list) === 1 && !empty($files_list[0]))
+		{
+	        copy($files_list[0], JPATH_SITE . DS . 'tmp' . DS . $file);
 
-            // all PDF in one file
-            require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
+	        $start = $i;
 
-            $pdf = new ConcatPdf();
+	        $dataresult = [
+		        'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
+		        'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
+		        'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
+	        ];
+	        $response_status = true;
+        }
+		elseif (count($files_list) > 1)
+		{
+			foreach ($files_list as $key => $file_list){
+				if(empty($file_list)){
+					unset($files_list[$key]);
+				}
+			}
 
-            $pdf->setFiles($files_list);
+	        $gotenberg_merge_activation = $eMConfig->get('gotenberg_merge_activation', 0);
 
-            $pdf->concat();
+			if(!$gotenberg_merge_activation) {
+				require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
 
-            if (isset($tmpArray)) {
-                foreach ($tmpArray as $fn) {
-                    unlink($fn);
-                }
-            }
-            $pdf->Output(JPATH_SITE . DS . 'tmp' . DS . $file, 'F');
+				$pdf = new ConcatPdf();
+				$pdf->setFiles($files_list);
+				$pdf->concat();
 
-	        /*
-	        $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
-            $gotenberg_url = $eMConfig->get('gotenberg_url', 'http://localhost:3000');
+				if (isset($tmpArray)) {
+					foreach ($tmpArray as $fn) {
+						unlink($fn);
+					}
+				}
+				$pdf->Output(JPATH_SITE . DS . 'tmp' . DS . $file, 'F');
+			} else {
+				$gotenberg_url = $eMConfig->get('gotenberg_url', 'http://localhost:3000');
 
-	        if($gotenberg_activation && !empty($gotenberg_url))
-	        {
-		        $got_files = [];
-		        foreach ($files_list as $item){
-			        $got_files[] = Stream::path($item);
-		        }
-		        $request = Gotenberg::pdfEngines($gotenberg_url)
-			        ->merge(...$got_files);
-		        $response = Gotenberg::send($request);
-				file_put_contents(JPATH_SITE . DS . 'tmp' . DS . $file,$response->getBody()->getContents());
-	        }
-	        */
+				if (!empty($gotenberg_url)) {
+					$got_files = [];
+					foreach ($files_list as $item) {
+						$got_files[] = Stream::path($item);
+					}
+					$request  = Gotenberg::pdfEngines($gotenberg_url)
+						->merge(...$got_files);
+					$response = Gotenberg::send($request);
+					file_put_contents(JPATH_SITE . DS . 'tmp' . DS . $file, $response->getBody()->getContents());
+				}
+			}
 
             $start = $i;
 
@@ -2000,17 +2018,20 @@ class EmundusControllerFiles extends JControllerLegacy
                 'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
                 'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
             ];
-            $result = array('status' => true, 'json' => $dataresult);
-        } else {
-
+	        $response_status = true;
+        }
+		else
+		{
+	        $response_status = false;
             $dataresult = [
                 'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
                 'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
                 'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND')
             ];
+		}
 
-            $result = array('status' => false, 'json' => $dataresult);
-        }
+	    $result = array('status' => $response_status, 'json' => $dataresult);
+
         echo json_encode((object) $result);
         exit();
     }
