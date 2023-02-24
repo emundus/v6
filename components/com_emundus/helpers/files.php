@@ -1962,7 +1962,7 @@ class EmundusHelperFiles
                         $val = $val['value'];
                     }
 
-                    $adv_filter .= '<fieldset id="em-adv-father-'.$i.'" class="em-nopadding">
+                    $adv_filter .= '<fieldset id="em-adv-father-'.$i.'" class="em-nopadding em-flex-align-start em-flex-column">
 									<a id="suppr-filt" class="em-mb-4 em-flex-start">
 									<span class="em-font-size-14 em-red-500-color em-pointer">' . JText::_('COM_EMUNDUS_DELETE_ADVANCED_FILTERS') . '</span></a>
 										<select class="chzn-select em-filt-select" id="elements" name="elements">
@@ -2003,7 +2003,6 @@ class EmundusHelperFiles
                         $adv_filter .= $h_files->setSearchBox($selected_adv, $val, $key, $i);
                     }
 
-                    $adv_filter .= '<button class="em-transparent-button" id="suppr-filt"><span class="material-icons">delete_outline</span></button>';
                     $i++;
                     $adv_filter .= '</fieldset>';
                 }
