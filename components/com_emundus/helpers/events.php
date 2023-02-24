@@ -971,9 +971,10 @@ class EmundusHelperEvents {
             if (!empty($fnum)) {
                 $db = JFactory::getDbo();
                 $query = $db->getQuery(true);
+
                 $query->select('applicant_id')
-                    ->from('#__emundus_campaign_candidature as ecc')
-                    ->where('fnum = ' . $db->quote($fnum));
+                    ->from($db->quoteName('#__emundus_campaign_candidature','ecc'))
+                    ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
 
                 try {
                     $db->setQuery($query);
@@ -987,11 +988,12 @@ class EmundusHelperEvents {
 
                     if (!empty($form_elements)) {
                         include_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
+
                         if (class_exists('EmundusModelApplication')) {
                             $query->clear()
                                 ->select('label')
-                                ->from('#__fabrik_forms')
-                                ->where('id = ' . $form_data['formid']);
+                                ->from($db->quoteName('#__fabrik_forms'))
+                                ->where($db->quoteName('id') . ' = ' . $form_data['formid']);
 
                             try {
                                 $db->setQuery($query);
@@ -1064,16 +1066,17 @@ class EmundusHelperEvents {
 
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
-            $query->select('jfe.id, jfe.name, jfe.plugin, jfe.label, jfe.params, jfe.group_id, jfe.default, jfl.db_table_name, jfg.params as group_params')
-                ->from('#__fabrik_elements as jfe')
-                ->join('inner', '#__fabrik_groups AS jfg ON jfg.id = jfe.group_id')
-                ->join('inner', '#__fabrik_formgroup AS jffg ON jffg.group_id = jfe.group_id')
-                ->join('inner', '#__fabrik_lists AS jfl ON jfl.form_id = jffg.form_id')
-                ->where('jffg.form_id = ' . $form_id)
-                ->andWhere('jfe.published = 1')
-                ->andWhere('jfe.hidden != -1')
-                ->andWhere('jfe.name NOT IN (' . implode(',', $db->quote($excluded_name)) . ')')
-                ->andWhere('jfe.plugin NOT IN (' . implode(',', $db->quote($excluded_plugins)) . ')');
+
+            $query->select('fe.id, fe.name, fe.plugin, fe.label, fe.params, fe.group_id, fe.default, fl.db_table_name, fg.params as group_params')
+                ->from($db->quoteName('#__fabrik_elements', 'fe'))
+	            ->innerJoin($db->quoteName('#__fabrik_groups','fg').' ON '.$db->quoteName('fg.id').' = '.$db->quoteName('fe.group_id'))
+	            ->innerJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffj.group_id').' = '.$db->quoteName('fe.group_id'))
+	            ->innerJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ffg.form_id'))
+                ->where($db->quoteName('ffg.form_id') . ' = ' . $form_id)
+                ->where($db->quoteName('fe.published') . ' = 1')
+                ->where($db->quoteName('fe.hidden') . ' != -1')
+                ->where($db->quoteName('fe.name') . ' NOT IN (' . implode(',', $db->quote($excluded_name)) . ')')
+                ->where($db->quoteName('fe.plugin') . ' NOT IN (' . implode(',', $db->quote($excluded_plugins)) . ')');
 
             try {
                 $db->setQuery($query);
