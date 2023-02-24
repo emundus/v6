@@ -31,6 +31,12 @@ $now = $dateTime->format('Y-m-d H:i:s');
         .mod_emundus_flow___infos{
             grid-gap: 0;
         }
+        .mod_emundus_flow___intro{
+           flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            row-gap: 8px;
+        }
         .mod_emundus_flow___infos div:first-child{
             margin-bottom: 6px;
         }
@@ -38,7 +44,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
 </style>
 
 <div class="em-mt-48" style="padding: 0 20px">
-    <div class="em-flex-row em-flex-space-between">
+    <div class="em-flex-row em-flex-space-between  em-flex-row em-mt-8 mod_emundus_flow___intro">
         <div class="em-flex-row">
             <p class="em-h4"><?php echo JText::_($user->campaign_name) ?></p>
             <?php

@@ -1181,9 +1181,21 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         $validFnums = array();
+		$db = JFactory::getDbo();
+	    $query = $db->getQuery(true);
+
         foreach ($fnums as $fnum) {
             if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)&& $fnum != 'em-check-all-all' && $fnum != 'em-check-all') {
                 $validFnums[] = $fnum;
+
+				$query->clear()
+					->select('applicant_id')
+					->from($db->quoteName('#__emundus_campaign_candidature'))
+					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+				$db->setQuery($query);
+				$applicant_id = $db->loadResult();
+
+	            EmundusModelLogs::log(JFactory::getUser()->id, (int) $applicant_id, $fnum, 6, 'c', 'COM_EMUNDUS_ACCESS_EXPORT_EXCEL');
             }
         }
         $totalfile = count($validFnums);
@@ -1937,6 +1949,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 if (($forms != 1) && $formids[0] == "" && ($attachment != 1) && ($attachids[0] == "") && ($assessment != 1) && ($decision != 1) && ($admission != 1) && ($options[0] != "0"))
                     $files_list[] = EmundusHelperExport::buildHeaderPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $options);
 
+	            EmundusModelLogs::log(JFactory::getUser()->id, (int) $fnumsInfo[$fnum]['applicant_id'], $fnum, 8, 'c', 'COM_EMUNDUS_ACCESS_EXPORT_PDF');
             }
 
         }
@@ -1968,7 +1981,6 @@ class EmundusControllerFiles extends JControllerLegacy
                 'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
             ];
             $result = array('status' => true, 'json' => $dataresult);
-
         } else {
 
             $dataresult = [
@@ -4175,7 +4187,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $_mEval = new EmundusModelEvaluation;
 
         $letters = $_mEval->generateLetters($fnums,$templates,$canSee,$showMode,$mergeMode);
-
+        ob_clean();
         if ($letters) {
             $dispatcher = JEventDispatcher::getInstance();
             $dispatcher->trigger('onAfterGenerateLetters', ['letters' => $letters]);

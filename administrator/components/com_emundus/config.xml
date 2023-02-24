@@ -19,7 +19,17 @@
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
-		<field showon="log_forms_update:1" name="log_forms_update_forms" label="COM_EMUNDUS_LOG_FORMS_UPDATE_FORMS" type="field" description="COM_EMUNDUS_LOG_FORMS_UPDATE_FORMS_DESC"/>
+		<field showon="log_forms_update:1"
+			   name="log_forms_update_forms"
+			   label="COM_EMUNDUS_LOG_FORMS_UPDATE_FORMS"
+			   description="COM_EMUNDUS_LOG_FORMS_UPDATE_FORMS_DESC"
+			   type="sql"
+			   query="SELECT id, CONCAT(id, ' - ', label) as label FROM jos_fabrik_forms WHERE published = 1"
+			   key_field="id"
+			   value_field="label"
+			   multiple="true"
+			   default=""
+		/>
 		<field name="com_emundus_show_tags_category" menu="hide" type="list" default="0" label="COM_EMUNDUS_SHOW_TAGS_CATEGORY" description="COM_EMUNDUS_SHOW_TAGS_CATEGORY_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
@@ -548,6 +558,13 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+
+		<field name="messenger_notify_users_programs" type="list" default="0" label="COM_EMUNDUS_MESSENGER_NOTIFY_USERS_PROGRAMS" description="COM_EMUNDUS_MESSENGER_NOTIFY_USERS_PROGRAMS_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="messenger_notify_groups" type="textarea" default="" label="COM_EMUNDUS_MESSENGER_NOTIFY_GROUPS" description="COM_EMUNDUS_MESSENGER_NOTIFY_GROUPS_DESC"/>
+		<field name="messenger_notify_users" type="textarea" default="" label="COM_EMUNDUS_MESSENGER_NOTIFY_USERS" description="COM_EMUNDUS_MESSENGER_NOTIFY_USERS_DESC"/>
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_MODULES" name="modules" description="COM_EMUNDUS_MODULES_DESC">
 		<field name="style" label="COM_EMUNDUS_MODULES_STYLE" type="radio" default="1" description="COM_EMUNDUS_MODULES_STYLE_DESC">

@@ -355,4 +355,5 @@ else {
             document.querySelector('#header-c .g-content').style.alignItems = 'start';
         });*/
     </script>
-<?php } ?>
+<?php }
+?>
