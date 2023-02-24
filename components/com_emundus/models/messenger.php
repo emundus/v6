@@ -411,8 +411,7 @@ class EmundusModelMessenger extends JModelList
         return $moved;
     }
 
-    function notifyByMail($applicant_fnum,$notify_applicant = 0){
-        // Get list of applicants to notify
+    function notifyByMail($applicant_fnum,$notify_applicant = 0) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -421,18 +420,16 @@ class EmundusModelMessenger extends JModelList
         include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
         include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
 
-        $eMConfig = JComponentHelper::getParams('com_emundus');
+	    $m_files = new EmundusModelFiles;
+	    $c_messages = new EmundusControllerMessages();
 
-        // get messenger config params 'messenger_notify_groups' (TODO: id = 0)
+        $eMConfig = JComponentHelper::getParams('com_emundus');
         $notify_groups = $eMConfig->get('messenger_notify_groups', '');
         $notify_users = explode(',', $eMConfig->get('messenger_notify_users', ''));
-        $notify_to_ms = $eMConfig->get('messenger_notify_ms', 0);
+        $notify_to_users_programs = $eMConfig->get('messenger_notify_users_programs', 0);
 
-        $m_files = new EmundusModelFiles;
-
-        $c_messages = new EmundusControllerMessages();
-
-        if($notify_applicant){
+        if($notify_applicant)
+		{
             $query->select('id')
                 ->from($db->quoteName('#__emundus_setup_emails'))
                 ->where($db->quoteName('lbl') . ' = ' . $db->quote('messenger_reminder'));
@@ -440,13 +437,15 @@ class EmundusModelMessenger extends JModelList
             $email_tmpl = $db->loadResult();
 
             $c_messages->sendEmail($applicant_fnum, $email_tmpl);
-        } else {
-            // Send notifications to coordinators
+        }
+		else
+		{
+            // Send notifications to users/groups associated to file
             $fnums_no_readed = array();
 
             $query->select('id')
                 ->from($db->quoteName('#__emundus_setup_emails'))
-                ->where($db->quoteName('lbl') . ' = ' . $db->quote('messenger_reminder_group'));
+                ->where($db->quoteName('lbl') . ' LIKE ' . $db->quote('messenger_reminder_group'));
             $db->setQuery($query);
             $email_tmpl = $db->loadResult();
 
@@ -468,24 +467,21 @@ class EmundusModelMessenger extends JModelList
             $users_to_send = array_unique(array_merge($groups_associated, $users_associated));
 
             if(empty($users_to_send)) {
-                $users_associated_ms = array();
+                $users_associated_programs = array();
                 $assoc_users = array();
 
-                if ($notify_to_ms === "1") {
-                    // get all users assign to the programme
+                if ($notify_to_users_programs == '1') {
                     $query->clear()
                         ->select('distinct(ju.id) as id')
-                        ->from($db->quoteName('jos_users', 'ju'))
-                        ->leftJoin($db->quoteName('jos_emundus_groups', 'jeg') . ' ON ' . $db->quoteName('ju.id') . ' = ' . $db->quoteName('jeg.user_id'))
-                        ->leftJoin($db->quoteName('jos_emundus_setup_groups', 'jesg') . ' ON ' . $db->quoteName('jeg.group_id') . ' = ' . $db->quoteName('jesg.id'))
-                        ->leftJoin($db->quoteName('jos_emundus_setup_groups_repeat_course', 'jesgrc') . ' ON ' . $db->quoteName('jesg.id') . ' = ' . $db->quoteName('jesgrc.parent_id'))
-                        ->leftJoin($db->quoteName('jos_emundus_setup_programmes', 'jespr') . ' ON ' . $db->quoteName('jespr.code') . ' = ' . $db->quoteName('jesgrc.course'))
-                        ->leftJoin($db->quoteName('jos_emundus_setup_campaigns', 'jesc') . ' ON ' . $db->quoteName('jespr.code') . ' = ' . $db->quoteName('jesc.training'))
-                        ->leftJoin($db->quoteName('jos_emundus_campaign_candidature', 'jecc') . ' ON ' . $db->quoteName('jesc.id') . ' = ' . $db->quoteName('jecc.campaign_id'))
-                        ->where($db->quoteName('jecc.fnum') . ' = ' . $db->quote($applicant_fnum));
-
+                        ->from($db->quoteName('#__users', 'u'))
+                        ->leftJoin($db->quoteName('#__emundus_groups', 'eg') . ' ON ' . $db->quoteName('u.id') . ' = ' . $db->quoteName('eg.user_id'))
+                        ->leftJoin($db->quoteName('#__emundus_setup_groups', 'esg') . ' ON ' . $db->quoteName('eg.group_id') . ' = ' . $db->quoteName('esg.id'))
+                        ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'esgrc') . ' ON ' . $db->quoteName('esg.id') . ' = ' . $db->quoteName('esgrc.parent_id'))
+                        ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esgrc.course') . ' LIKE ' . $db->quoteName('esc.training'))
+                        ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
+                        ->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($applicant_fnum));
                     $db->setQuery($query);
-                    $users_associated_ms = $db->loadColumn();
+	                $users_associated_programs = $db->loadColumn();
                 }
 
                 // find all associate users of groups (jos_emundus_groups)
@@ -498,21 +494,19 @@ class EmundusModelMessenger extends JModelList
                     $assoc_users = $db->loadColumn();
                 }
 
-                if ($notify_to_ms === "1") {
-                    if(empty($users_associated_ms) or empty($assoc_users)) {
-                        $assoc_users = array_filter(array_unique(array_merge($assoc_users,$users_associated_ms)));
+                if ($notify_to_users_programs == '1') {
+                    if(empty($users_associated_programs) || empty($assoc_users)) {
+                        $assoc_users = array_unique(array_merge($assoc_users,$users_associated_programs));
                     } else {
-                        $assoc_users = array_filter(array_unique(array_intersect($assoc_users,$users_associated_ms)));
+                        $assoc_users = array_unique(array_intersect($assoc_users,$users_associated_programs));
                     }
                 } else {
-                    $assoc_users = array_filter(array_unique(array_merge($assoc_users,$users_associated_ms)));
+                    $assoc_users = array_unique(array_merge($assoc_users,$users_associated_programs));
                 }
 
-                $assoc_users = is_null($assoc_users) ? array() : $assoc_users;
+                $users_to_send = array_unique(array_merge($assoc_users,$notify_users));
 
-                // merge $assoc_users vs $notify_users (if any) and get array_unique ++ remove all empty values
-                $users_to_send = array_filter(array_unique(array_merge($assoc_users,$notify_users)));
-
+				// If no users found to notify send to coordinators
                 if (empty($users_to_send)) {
                     $query->clear()
                         ->select('distinct eu.user_id')
@@ -532,7 +526,6 @@ class EmundusModelMessenger extends JModelList
                     ->where($db->quoteName('c.fnum') . ' LIKE ' . $db->quote($applicant_fnum))
                     ->andWhere($db->quoteName('m.user_id_from') . ' NOT IN (' . implode(',', $users_to_send) . ')')
                     ->andWhere($db->quoteName('m.state') . ' = 0');
-
                 $db->setQuery($query);
                 $messages_not_read = $db->loadResult();
 
@@ -552,28 +545,22 @@ class EmundusModelMessenger extends JModelList
                         $user_info = $db->loadObject();
 
                         $to = $user_info->email;
+	                    $finfo = $m_files->getFnumsTagsInfos([$applicant_fnum]);
 
                         $fnumList = '<ul>';
                         $fnumListCampaign = '<ul>';
                         $fnumListProgramme = '<ul>';
-
                         foreach ($fnums_no_readed as $fnum) {
-                            // get fnum info
-                            $finfo = $m_files->getFnumsTagsInfos([$fnum]);
-
-                            // only fnum
                             $fnumList .= '
                             <li>
                                 <a href="' . JURI::base() . '/dossiers#' . $fnum . '">' . $fnum . '</a>
                             </li>';
 
-                            // fnum + campaign
                             $fnumListCampaign .= '
                             <li>
                                 <a href="' . JURI::base() . '/dossiers#' . $fnum . '">' . $fnum . '</a>' . ' ('. $finfo[$fnum]['campaign_label'] . ')' . '
                             </li>';
 
-                            // fnum + programme
                             $fnumListProgramme .= '
                             <li>
                                 <a href="' . JURI::base() . '/dossiers#' . $fnum . '">' . $fnum . '</a>' . ' ('. $finfo[$fnum]['training_programme'] . ')' . '
@@ -587,7 +574,7 @@ class EmundusModelMessenger extends JModelList
                             'FNUMS' => $fnumList,
                             'FNUMS_CAMPAIGNS' => $fnumListCampaign,
                             'FNUMS_TRAININGS' => $fnumListProgramme,
-                            'APPLICANT_NAME' => $finfo[$fnum]['applicant_name'],
+                            'APPLICANT_NAME' => $finfo[$applicant_fnum]['applicant_name'],
                             'NAME' => $user_info->name,
                             'SITE_URL' => JURI::base(),
                         );
