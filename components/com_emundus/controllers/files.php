@@ -4187,7 +4187,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $_mEval = new EmundusModelEvaluation;
 
         $letters = $_mEval->generateLetters($fnums,$templates,$canSee,$showMode,$mergeMode);
-
+        ob_clean();
         if ($letters) {
             $dispatcher = JEventDispatcher::getInstance();
             $dispatcher->trigger('onAfterGenerateLetters', ['letters' => $letters]);
