@@ -1,8 +1,5 @@
 <template>
   <div id="app">
-    <!--    <a style="margin-left: 1em" class="cta-block pointer" @click="enableDrag = !enableDrag">
-          <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
-        </a>-->
     <draggable
         v-model="widgets"
         :disabled="!enableDrag"
@@ -21,17 +18,6 @@
         <div v-for="(widget,index) in widgets" :id="widget.name + '_' + index"
         :class="enableDrag ? 'jello-horizontal handle' : widget.name + '-' + widget.class" :key="widget.name + '_' + index">
           <Custom v-if="widget.name === 'custom'" :widget="widget" @forceUpdate="$forceUpdate"/>
-
-          <!-- Sciences Po widgets -->
-          <KeyFigures v-if="widget.name === 'key_figures'" :program="selectedProgramme" :colors="colors"/>
-          <FilesNumberByDate v-if="widget.name === 'files_number_by_status_and_date'" :program="selectedProgramme" :colors="colors"/>
-          <FilesBySession v-if="widget.name === 'files_by_session'" :colors="colors"/>
-          <FilesBySessionPrecollege v-if="widget.name === 'files_by_session_precollege'" :colors="colors"/>
-          <FilesByCourses v-if="widget.name === 'files_by_courses'" :colors="colors" :session="1"/>
-          <FilesByCourses v-if="widget.name === 'files_by_courses'" :colors="colors" :session="2"/>
-          <FilesByCoursesPrecollege v-if="widget.name === 'files_by_courses_precollege'" :colors="colors" :session="1"/>
-          <FilesByCoursesPrecollege v-if="widget.name === 'files_by_courses_precollege'" :colors="colors" :session="2"/>
-          <FilesByNationalities v-if="widget.name === 'files_by_nationalities'" :program="selectedProgramme" :colors="colors"/>
         </div>
       </template>
     </draggable>
@@ -41,13 +27,6 @@
 <script>
 import draggable from "vuedraggable";
 import axios from "axios";
-import KeyFigures from "@/components/sciencespo/KeyFigures";
-import FilesNumberByDate from "@/components/sciencespo/FilesNumberByStatusAndDate";
-import FilesBySession from "@/components/sciencespo/FilesBySession";
-import FilesBySessionPrecollege from "@/components/sciencespo/FilesBySessionPrecollege";
-import FilesByCourses from "@/components/sciencespo/FilesByCourses";
-import FilesByCoursesPrecollege from "@/components/sciencespo/FilesByCoursesPrecollege";
-import FilesByNationalities from "@/components/sciencespo/FilesByNationalities";
 import Custom from "@/components/Custom";
 
 export default {
@@ -57,14 +36,7 @@ export default {
   },
   components: {
     Custom,
-    draggable,
-    KeyFigures,
-    FilesNumberByDate,
-    FilesBySession,
-    FilesBySessionPrecollege,
-    FilesByCourses,
-    FilesByCoursesPrecollege,
-    FilesByNationalities,
+    draggable
   },
   data() {
     return {

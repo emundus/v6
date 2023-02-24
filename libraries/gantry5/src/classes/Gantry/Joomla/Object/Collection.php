@@ -3,7 +3,7 @@
 /**
  * @package   Gantry5
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
  * @license   GNU/GPLv2 and later
  *
  * http://www.gnu.org/licenses/gpl-2.0.html
@@ -61,5 +61,21 @@ class Collection extends BaseCollection
         }
 
         return $list;
+    }
+
+    public function exportSql()
+    {
+        $objects = [];
+        foreach ($this as $object) {
+            // Initialize table object.
+            $objects[] = trim($object->exportSql());
+        }
+
+        $out = '';
+        if ($objects) {
+            $out .= implode("\n", $objects);
+        }
+
+        return $out;
     }
 }

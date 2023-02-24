@@ -3,7 +3,7 @@
 /**
  * @package   Gantry5
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
  * @license   Dual License: MIT or GNU/GPLv2 and later
  *
  * http://opensource.org/licenses/MIT
@@ -68,6 +68,7 @@ class TwigExtension extends AbstractExtension implements GlobalsInterface
             new TwigFilter('html', [$this, 'htmlFilter']),
             new TwigFilter('url', [$this, 'urlFunc']),
             new TwigFilter('trans_key', [$this, 'transKeyFilter']),
+            new TwigFilter('substr', 'substr'),
             new TwigFilter('trans', [$this, 'transFilter']),
             new TwigFilter('repeat', [$this, 'repeatFilter']),
             new TwigFilter('values', [$this, 'valuesFilter']),
@@ -467,12 +468,12 @@ class TwigExtension extends AbstractExtension implements GlobalsInterface
      * @example {{ url('theme://images/logo.png')|default('http://www.placehold.it/150x100/f4f4f4') }}
      *
      * @param  string $input       Resource to be located.
-     * @param  bool $domain        True to include domain name.
+     * @param  bool|null $domain   True to include domain name.
      * @param  int $timestamp_age  Append timestamp to files that are less than x seconds old. Defaults to a week.
      *                             Use value <= 0 to disable the feature.
      * @return string|null         Returns url to the resource or null if resource was not found.
      */
-    public function urlFunc($input, $domain = false, $timestamp_age = null)
+    public function urlFunc($input, $domain = null, $timestamp_age = null)
     {
         $gantry = Gantry::instance();
 

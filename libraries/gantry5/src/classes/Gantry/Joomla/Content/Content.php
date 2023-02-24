@@ -3,7 +3,7 @@
 /**
  * @package   Gantry5
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
  * @license   GNU/GPLv2 and later
  *
  * http://www.gnu.org/licenses/gpl-2.0.html
@@ -237,7 +237,7 @@ class Content extends AbstractObject
      */
     public function toArray()
     {
-        return $this->getProperties(true) + [
+        $properties = $this->getProperties(true) + [
             'category' => [
                 'alias' => $this->category()->alias,
                 'title' => $this->category()->title
@@ -247,5 +247,30 @@ class Content extends AbstractObject
                 'fullname' => $this->author()->name
             ],
         ];
+
+        foreach ($properties as $key => $val) {
+            if (str_starts_with($key, '_')) {
+                unset($properties[$key]);
+            }
+        }
+
+        return $properties;
+    }
+
+    public function exportSql()
+    {
+        return $this->getCreateSql(['asset_id', 'created_by', 'modified_by', 'checked_out', 'checked_out_time', 'publish_up', 'publish_down', 'version', 'xreference']) . ';';
+    }
+
+    protected function fixValue($table, $k, $v)
+    {
+        if ($k === '`created`' || $k === '`modified`') {
+            $v = 'NOW()';
+        } elseif (is_string($v)) {
+            $dbo = $table->getDbo();
+            $v = $dbo->quote($v);
+        }
+
+        return $v;
     }
 }
