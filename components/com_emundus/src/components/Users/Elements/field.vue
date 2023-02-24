@@ -1,6 +1,6 @@
 <template>
   <div class="control-group fabrikElementContainer">
-    <label class="fabrikLabel" :for="'input_' + element.id">{{ element.label }}</label>
+    <label class="fabrikLabel" :for="'input_' + element.id" v-html="element.label"></label>
     <div class="fabrikElement">
       <span v-if="tip.length > 0" class="em-tip">{{ tip }}</span>
       <input v-if="!readonly" :type="type" class="fabrikinput em-w-100" :id="'input_' + element.id" :value="value" :name="element.name" v-model="value" />

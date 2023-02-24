@@ -180,9 +180,12 @@ class Config implements \ArrayAccess, \Countable, \Iterator, ExportInterface
     public function flatten($name = null, $separator = '.', $prefix = '')
     {
         $element = $name ? $this->offsetGet($name) : $this->items;
+        if (null === $element) {
+            return [];
+        }
 
         if (!is_array($element)) {
-            return [$name, $element];
+            return [$name => $element];
         }
 
         if (strlen($separator) === 2 && in_array($separator, ['][', ')(', '}{'])) {
@@ -256,6 +259,7 @@ class Config implements \ArrayAccess, \Countable, \Iterator, ExportInterface
      * @param string $separator
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count($path = null, $separator = '.')
     {
         $items = $path ? $this->get($path, null, $separator) : $this->items;

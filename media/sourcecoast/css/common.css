@@ -1,81 +1,24 @@
-.sourcecoast .intro {
-  padding: 6px 8px 0 0;
-  font-size: 1.1em;
+.sourcecoast.ns-bs5 .modal {
+    position: fixed; /* Center modal screen */
+    top: 50%; /* Center modal screen */
+    left: 50%; /* Center modal screen */
+    transform: translate(-50%, -50%); /* Center modal screen */
+    z-index: 99999 !important;
+    max-width: 600px;
+    height: auto;
+    width: 80%;
+    margin-left: 0px;
+}
+.ns-bs5 .modal-content .modal-header {
+    flex-direction: row; /* Joomla 4 inside modal-content class */
 }
 
-.sourcecoast .btn {
-  margin-top: 0;
+.ns-bs5 .modal-header {
+    flex-direction: row-reverse; /* Joomla 3 not in modal-content class */
 }
 
-.sourcecoast.modal-backdrop {
-  z-index: 99990;
-  position:fixed;
-  top:0;
-  bottom:0;
-  right:0;
-  left:0;
-  background-color: #000000;
-  opacity: 0.8;
-}
-
-.sourcecoast.modal-backdrop.fade {
-  opacity: 0;
-  -webkit-transition: opacity 0.15s linear;
-  -moz-transition: opacity 0.15s linear;
-  -o-transition: opacity 0.15s linear;
-  transition: opacity 0.15s linear;
-}
-
-.sourcecoast.modal-backdrop.fade.in {
-    opacity: 0.8;
-}
-
-.sourcecoast.modal {
-  position: fixed;
-  top: 25%;
-  left: 50%;
-  z-index: 99999 !important;
-  max-width: 560px;
-  width: 80%;
-  margin: 0 0 0 -40%;
-  background-color: #ffffff;
-  border: 1px solid #999;
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  *border: 1px solid #999;
-  /* IE6-7 */
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
-  -webkit-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
-  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
-  -webkit-background-clip: padding-box;
-  -moz-background-clip: padding-box;
-  background-clip: padding-box;
-  outline: none;
-}
-.sourcecoast.modal.fade {
-  -webkit-transition: opacity .3s linear, top .3s ease-out;
-  -moz-transition: opacity .3s linear, top .3s ease-out;
-  -o-transition: opacity .3s linear, top .3s ease-out;
-  transition: opacity .3s linear, top .3s ease-out;
-  top: -25%;
-  opacity: 0;
-}
-.sourcecoast.modal.fade.in {
-  opacity: 1;
-}
-.sourcecoast.modal.fade.in {
-  top: 25%;
-}
-
-.sourcecoast .modal-body {
-    overflow-y:auto; /* Change from visible to scroll the modal for mobile */
-    width: 94%;
-}
-
-.sourcecoast .form-horizontal .control-group {
-  margin-bottom:10px;
+.sourcecoast.login.ns-bs5 .d-flex {
+    flex-wrap: wrap;
 }
 
 .sourcecoast.facebook,
