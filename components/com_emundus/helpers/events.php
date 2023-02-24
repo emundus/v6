@@ -962,25 +962,21 @@ class EmundusHelperEvents {
         EmundusModelLogs::log($student->id, $applicant_id, $student->fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'COM_EMUNDUS_ACCESS_FILE_SENT_BY_APPLICANT');
 
         $redirect_message = !empty($params['plugin_options']) && !empty($params['plugin_options']->get('trigger_confirmpost_success_msg')) ? JText::_($params['plugin_options']->get('trigger_confirmpost_success_msg')) : JText::_('APPLICATION_SENT');
-        if(!empty($params['plugin_options'])){
 
-            if(intval(JText::_($params['plugin_options']->get('trigger_confirmpost_redirect_to_next_step_first_page_url'))) ===1){
+		if(!empty($params['plugin_options'])) {
 
+            if(intval($params['plugin_options']->get('trigger_confirmpost_redirect_to_next_step_first_page_url')) === 1){
                 $redirect_url = 'index.php?option=com_emundus&task=openfile&fnum='.$student->fnum;
-
             } else {
-
                 $redirect_url = !empty($params['plugin_options']->get('trigger_confirmpost_redirect_url'))  ? JText::_($params['plugin_options']->get('trigger_confirmpost_redirect_url')) : 'index.php';
                 $app->enqueueMessage($redirect_message, 'success');
             }
 
-        }  else {
-
+        } else {
             $app->enqueueMessage($redirect_message, 'success');
-
             $redirect_url = 'index.php';
         }
-        $app->enqueueMessage($redirect_message, 'success');
+
         $app->redirect($redirect_url);
 
         return true;
