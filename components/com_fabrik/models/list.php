@@ -1580,8 +1580,8 @@ class FabrikFEModelList extends JModelForm
 				}
 				else
 				{
-                    $img = FabrikHelperHTML::image('search.png', 'list', '', array('alt' => $viewLabel));
-                    $viewLink = '<a data-loadmethod="' . $loadMethod . '" class="' . $class . '" ' . $detailsAttribs
+					$img = FabrikHelperHTML::image('search.png', 'list', '', array('alt' => $viewLabel));
+					$viewLink = '<a data-loadmethod="' . $loadMethod . '" class="' . $class . '" ' . $detailsAttribs
 						. 'data-list="' . $dataList . '" href="' . $link . '" title="' . $viewLabel . '" target="' . $viewLinkTarget . '">' . $img
 						. ' ' . $viewText . '</a>';
 				}
@@ -2344,7 +2344,7 @@ class FabrikFEModelList extends JModelForm
 		$isAjax = $this->isAjaxLinks() ? '1' : '0';
 		$isCustom = $customLink !== '';
 		$isIcon = false;
-
+		
 		/* Check if the data component is html, if it is an icon lnk and image parse it out */
 		$html = FabrikHelperHTML::loadDOMDocument($data);
 		$a   = $html->getElementsByTagName('a')->item(0);
@@ -2382,7 +2382,7 @@ class FabrikFEModelList extends JModelForm
 		} else {
 			$displayData->data = $data;
 		}
-
+		
 		$data = $layout->render($displayData);
 
 		return $data;
@@ -11368,7 +11368,6 @@ class FabrikFEModelList extends JModelForm
 	public function resetQuery()
 	{
 		unset($this->_whereSQL);
-		unset($this->orderBy);
 		unset($this->data);
 	}
 
@@ -12156,7 +12155,7 @@ class FabrikFEModelList extends JModelForm
 				return strcmp($a[0], $b[0]);
 			});
 		}
-
+		
 		/**
 		 * We consolidate by finding the two consecutive rows with the smallest total and merging them.
 		 * To avoid excessive looping if user tabField is too fragmented, we should skip tabs if
@@ -12240,7 +12239,7 @@ class FabrikFEModelList extends JModelForm
 	 * @return  array  Tabs
 	 */
 	public function loadTabs()
-	{
+	{ 
 		$this->tabs = array();
 		$tabs = $this->getTabCategories();
 
@@ -12282,7 +12281,7 @@ class FabrikFEModelList extends JModelForm
 		}
 
 		/* Null to indicate that the limitstart is not set in the url due to direct menu access) */
-		$ActiveTabLimitStart = FArrayHelper::getValue($inputArray, 'limitstart'.$listId, $uri->getVar('limitstart' . $listId, null));
+		$ActiveTabLimitStart = FArrayHelper::getValue($inputArray, 'limitstart'.$listId, $uri->getVar('limitstart' . $listId, null));	
 		$ActiveTabLimit = FArrayHelper::getValue($inputArray, 'limit'.$listId, $uri->getVar('limit' . $listId, null));
 
 		/* Get the cached tabs */
@@ -12298,7 +12297,7 @@ class FabrikFEModelList extends JModelForm
 				list($label, $range) = $tabArray;
 				$row->label = $label;
 				$row->isAllTab = ($label == FText::_('COM_FABRIK_LIST_TABS_ALL'));
-
+				
 				if (is_null($range) || $row->isAllTab)
 				{
 					$originalUri->delVar($tabsField);
@@ -12313,7 +12312,7 @@ class FabrikFEModelList extends JModelForm
 					$row->mergeArray = array('value'=>array(urlencode($low), urlencode($high)), 'condition' => 'BETWEEN');
 					$originalUri->setVar($tabsField, $row->mergeArray);
 				}
-
+			
 				$row->id = 'list_tabs_' . $this->getId() . '_' . $i;
 				$row->js = false;
 				$originalUri->setVar('limit'.$listId, is_null($ActiveTabLimit) ? $defaultRowsPerPage : $ActiveTabLimit);
@@ -12323,7 +12322,7 @@ class FabrikFEModelList extends JModelForm
 					$row->class='active';
 				}
 				$cachedTabs[$label] = $row;
-			}
+			} 
 		}
 		/* Find which tab was last active */
 		foreach($cachedTabs as $key => $data) {
@@ -12345,10 +12344,10 @@ class FabrikFEModelList extends JModelForm
 		}
 		/* Force a filter reset */
 		$uri->setVar('resetfilters', 1);
-
+		
 		/* Clear this if we just processed a delete */
 		$uri->setVar('fabrik_show_in_list', null);
-
+		
 		/* if we still do not have an active tab this must be the first call from the menu, default to the first tab */
 		if (is_null($uriActiveTab)) {
 			$uriActiveTab = FArrayHelper::firstKey($cachedTabs);
@@ -12356,7 +12355,7 @@ class FabrikFEModelList extends JModelForm
 
 		/* If we have changed tabs, clear the last active tabs active class */
 		if ($lastActiveTab != $uriActiveTab) {
-				unset($cachedTabs[$lastActiveTab]->class);
+				unset($cachedTabs[$lastActiveTab]->class); 
 		}
 
 		/* If the active tab is not the All tab, set the tabField to filter on */
@@ -12376,12 +12375,12 @@ class FabrikFEModelList extends JModelForm
 		 * so all the records are in the list. This is OK when there is an All tab as it
 		 * wants all the list data, but when no All tab we need to filter on the tab field
 		 * name of the first tab, so now that we have the href for the first tab all set
-		 * we will simply do a redirect to it and all should be well
+		 * we will simply do a redirect to it and all should be well 
 		 */
 		if (is_null($ActiveTabLimitStart) && is_null($ActiveTabLimit)) {
 			$this->app->redirect($cachedTabs[$uriActiveTab]->href);
 		}
-
+		
 		$this->app->setUserState($context.'tabs', serialize($cachedTabs));
 
 		return $this->tabs = $cachedTabs;

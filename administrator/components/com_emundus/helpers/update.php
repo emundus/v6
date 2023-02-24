@@ -355,7 +355,7 @@ class EmundusHelperUpdate
         $config_file = JPATH_CONFIGURATION . '/configuration.php';
 
         if (file_exists($config_file) and is_writable($config_file)){
-            file_put_contents($config_file,$str);
+            file_put_contents($config_file, $str);
         } else {
             echo ("Update Configuration file failed");
         }

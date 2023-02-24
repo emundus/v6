@@ -80,7 +80,7 @@ abstract class Template implements \Twig_TemplateInterface
      */
     public function getSource()
     {
-        @trigger_error('The '.__METHOD__.' method is deprecated since version 1.27 and will be removed in 2.0. Use getSourceContext() instead.', E_USER_DEPRECATED);
+        @trigger_error('The '.__METHOD__.' method is deprecated since version 1.27 and will be removed in 2.0. Use getSourceContext() instead.', \E_USER_DEPRECATED);
 
         return '';
     }
@@ -100,7 +100,7 @@ abstract class Template implements \Twig_TemplateInterface
      */
     public function getEnvironment()
     {
-        @trigger_error('The '.__METHOD__.' method is deprecated since version 1.20 and will be removed in 2.0.', E_USER_DEPRECATED);
+        @trigger_error('The '.__METHOD__.' method is deprecated since version 1.20 and will be removed in 2.0.', \E_USER_DEPRECATED);
 
         return $this->env;
     }
@@ -110,8 +110,6 @@ abstract class Template implements \Twig_TemplateInterface
      *
      * This method is for internal use only and should never be called
      * directly.
-     *
-     * @param array $context
      *
      * @return \Twig_TemplateInterface|TemplateWrapper|false The parent template or false if there is no parent
      *
@@ -235,7 +233,7 @@ abstract class Template implements \Twig_TemplateInterface
         } elseif (false !== $parent = $this->getParent($context)) {
             $parent->displayBlock($name, $context, array_merge($this->blocks, $blocks), false);
         } else {
-            @trigger_error(sprintf('Silent display of undefined block "%s" in template "%s" is deprecated since version 1.29 and will throw an exception in 2.0. Use the "block(\'%s\') is defined" expression to test for block existence.', $name, $this->getTemplateName(), $name), E_USER_DEPRECATED);
+            @trigger_error(sprintf('Silent display of undefined block "%s" in template "%s" is deprecated since version 1.29 and will throw an exception in 2.0. Use the "block(\'%s\') is defined" expression to test for block existence.', $name, $this->getTemplateName(), $name), \E_USER_DEPRECATED);
         }
     }
 
@@ -303,7 +301,7 @@ abstract class Template implements \Twig_TemplateInterface
     public function hasBlock($name, array $context = null, array $blocks = [])
     {
         if (null === $context) {
-            @trigger_error('The '.__METHOD__.' method is internal and should never be called; calling it directly is deprecated since version 1.28 and won\'t be possible anymore in 2.0.', E_USER_DEPRECATED);
+            @trigger_error('The '.__METHOD__.' method is internal and should never be called; calling it directly is deprecated since version 1.28 and won\'t be possible anymore in 2.0.', \E_USER_DEPRECATED);
 
             return isset($this->blocks[(string) $name]);
         }
@@ -337,7 +335,7 @@ abstract class Template implements \Twig_TemplateInterface
     public function getBlockNames(array $context = null, array $blocks = [])
     {
         if (null === $context) {
-            @trigger_error('The '.__METHOD__.' method is internal and should never be called; calling it directly is deprecated since version 1.28 and won\'t be possible anymore in 2.0.', E_USER_DEPRECATED);
+            @trigger_error('The '.__METHOD__.' method is internal and should never be called; calling it directly is deprecated since version 1.28 and won\'t be possible anymore in 2.0.', \E_USER_DEPRECATED);
 
             return array_keys($this->blocks);
         }
@@ -366,7 +364,7 @@ abstract class Template implements \Twig_TemplateInterface
             }
 
             if ($template === $this->getTemplateName()) {
-                $class = \get_class($this);
+                $class = static::class;
                 if (false !== $pos = strrpos($class, '___', -1)) {
                     $class = substr($class, 0, $pos);
                 }
@@ -399,7 +397,7 @@ abstract class Template implements \Twig_TemplateInterface
      *
      * @return Template
      */
-    protected function unwrap()
+    public function unwrap()
     {
         return $this;
     }
@@ -721,7 +719,7 @@ abstract class Template implements \Twig_TemplateInterface
             } elseif ('render' === $method || 'display' === $method) {
                 $message .= sprintf(' Use include("%s") instead).', $object->getTemplateName());
             }
-            @trigger_error($message, E_USER_DEPRECATED);
+            @trigger_error($message, \E_USER_DEPRECATED);
 
             return '' === $ret ? '' : new Markup($ret, $this->env->getCharset());
         }

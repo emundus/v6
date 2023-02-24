@@ -3,7 +3,7 @@
 /**
  * @package   Gantry5
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
  * @license   Dual License: MIT or GNU/GPLv2 and later
  *
  * http://opensource.org/licenses/MIT
@@ -14,6 +14,7 @@
 
 namespace Gantry\Component\File;
 
+use Gantry\Framework\Gantry;
 use RocketTheme\Toolbox\File\PhpFile;
 
 /**
@@ -123,7 +124,7 @@ trait CompiledFile
             }
 
         } catch (\Exception $e) {
-            throw new \RuntimeException(sprintf('Failed to read %s: %s', basename($this->filename), $e->getMessage()), 500, $e);
+            throw new \RuntimeException(sprintf('Failed to read %s: %s', Gantry::basename($this->filename), $e->getMessage()), 500, $e);
         }
 
         return parent::content($var);

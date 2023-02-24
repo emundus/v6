@@ -94,7 +94,8 @@ CREATE TABLE IF NOT EXISTS `#__{package}_change_log` (
      `row_id` INT( 11 ) NOT NULL,
      `join_id` INT( 11 ),
      `log_type_id` INT( 11 ) NOT NULL,
-     `parent_id` INT( 11 ) NOT NULL,
+      `parent_id` INT( 11 ) NOT NULL
+
 );
 EOT;
 
@@ -410,6 +411,11 @@ EOT;
 		return $logId;
 	}
 
+	public function setOrigData($origData)
+	{
+		$this->origData = $origData;
+	}
+
 	/**
 	 * Make sure we get our own copy of origData, the "raw" table data, prior to any updates
 	 *
@@ -463,9 +469,8 @@ EOT;
 		foreach ($groups as $groupModel)
 		{
 			$elementModels = $groupModel->getPublishedElements();
-			$origPks = [];
-			$thisPks = [];
 			$deletedPks = [];
+			$newPks = [];
 			$groupIndexMap = [];
 			$pk = '';
 			$join = false;
@@ -517,7 +522,7 @@ EOT;
 					foreach ($deletedPks as $k => $pkVal)
 					{
 						$orig      = ArrayHelper::getValue($this->origData, $fullKey);
-						$origValue = ArrayHelper::getValue($orig, $groupIndexMap[$k]);
+						$origValue = ArrayHelper::getValue($orig, $k);
 
 						$changes[] = array(
 							'time_date' => $date->format('Y-m-d H:i:s'),
@@ -535,45 +540,48 @@ EOT;
 						);
 					}
 
-					foreach ($data[$fullKey] as $k => $newValue)
+					if (is_array($data[$fullKey]))
 					{
-						$force = false;
+						foreach ($data[$fullKey] as $k => $newValue)
+						{
+							$force = false;
 
-						if (!$this->newRecord && array_key_exists($k, $groupIndexMap))
-						{
-							$orig      = ArrayHelper::getValue($this->origData, $fullKey);
-							$origValue = ArrayHelper::getValue($orig, $groupIndexMap[$k]);
-							$pkVal = ArrayHelper::getValue($this->origData[$pk], $groupIndexMap[$k], '');
-							$changeTypeId = 10;
-						}
-						else
-						{
-							$changeTypeId = 7;
-							$origValue = '';
-							$pkVal = '';
-							$force = true;
-						}
-
-						if ($force || $newValue !== $origValue)
-						{
-							if (!$force && $this->dataEmpty($newValue) && $this->dataEmpty($origValue))
+							if (!$this->newRecord && array_key_exists($k, $groupIndexMap))
 							{
-								continue;
+								$orig         = ArrayHelper::getValue($this->origData, $fullKey);
+								$origValue    = ArrayHelper::getValue($orig, $groupIndexMap[$k]);
+								$pkVal        = ArrayHelper::getValue($this->origData[$pk], $groupIndexMap[$k], '');
+								$changeTypeId = 10;
+							}
+							else
+							{
+								$changeTypeId = 7;
+								$origValue    = '';
+								$pkVal        = ArrayHelper::getValue($newPks, $k, '');
+								$force        = true;
 							}
 
-							$changes[] = array(
-								'time_date' => $date->format('Y-m-d H:i:s'),
-								'form_id' => $formModel->getId(),
-								'list_id' => $formModel->getListModel()->getId(),
-								'element_id' => $elementModel->getId(),
-								'row_id' => $rowId,
-								'pk_id' => $pkVal,
-								'table_name' => $join->getJoin()->table_join,
-								'orig_value' => $origValue,
-								'new_value' => $newValue,
-								'field_name' => $elementModel->element->name,
-								'log_type_id' => $changeTypeId
-							);
+							if ($force || $newValue !== $origValue)
+							{
+								if (!$force && $this->dataEmpty($newValue) && $this->dataEmpty($origValue))
+								{
+									continue;
+								}
+
+								$changes[] = array(
+									'time_date'   => $date->format('Y-m-d H:i:s'),
+									'form_id'     => $formModel->getId(),
+									'list_id'     => $formModel->getListModel()->getId(),
+									'element_id'  => $elementModel->getId(),
+									'row_id'      => $rowId,
+									'pk_id'       => $pkVal,
+									'table_name'  => $join->getJoin()->table_join,
+									'orig_value'  => $origValue,
+									'new_value'   => $newValue,
+									'field_name'  => $elementModel->element->name,
+									'log_type_id' => $changeTypeId
+								);
+							}
 						}
 					}
 				}
@@ -593,7 +601,7 @@ EOT;
 						$changeTypeId = 2;
 					}
 
-					if ($force || $data[$fullKey] !== $origValue)
+					if (array_key_exists($fullKey, $data) && ($force || $data[$fullKey] !== $origValue))
 					{
 						if (!$force && $this->dataEmpty($data[$fullKey]) && $this->dataEmpty($origValue))
 						{
@@ -618,6 +626,7 @@ EOT;
 			}
 		}
 
+		$this->session->set('fabrik.form.log.changes', $changes);
 		$this->logSubmitChanges($changes);
 
 		return true;
