@@ -363,8 +363,10 @@ class EmundusModelFiles extends JModelLegacy
         $can_be_ordering[] = 'status';
         $can_be_ordering[] = 'name';
         $can_be_ordering[] = 'eta.id_tag';
-        $can_be_ordering[] = 'unread_messages';
 
+        if (in_array('unread_messages', $em_other_columns)) {
+            $can_be_ordering[] = 'unread_messages';
+        }
         $campaign_candidature_columns = [
             'form_progress',
             'attachment_progress',
