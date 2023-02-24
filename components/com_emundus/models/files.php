@@ -1125,7 +1125,7 @@ class EmundusModelFiles extends JModelLegacy
      * @throws Exception
      */
     public function getAllTags() {
-        $query = 'select * from #__emundus_setup_action_tag where 1';
+        $query = 'select * from #__emundus_setup_action_tag where 1 order by label';
         $db = $this->getDbo();
 
         try {

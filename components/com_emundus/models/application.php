@@ -2755,7 +2755,7 @@ class EmundusModelApplication extends JModelList
                                                 $index = array_intersect(json_decode(@$element->content), $params->sub_options->sub_values);
                                                 foreach ($index as $value) {
                                                     $key = array_search($value,$params->sub_options->sub_values);
-                                                    $elm[] =  ' - ' . JText::_($params->sub_options->sub_labels[$key]);
+                                                    $elm[] = JText::_($params->sub_options->sub_labels[$key]);
                                                 }
                                                 $elt = '<ul>';
                                                 foreach ($elm as $val){
