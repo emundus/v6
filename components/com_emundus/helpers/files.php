@@ -2694,12 +2694,9 @@ class EmundusHelperFiles
      * @since   1.6
      */
     public function createFnum($campaign_id, $user_id){
-        // TODO can be improved with further testing on generated fnum
-        if (!empty($campaign_id) && !empty($user_id)) {
+        if (!empty($campaign_id)) {
             $fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
             return $fnum;
-        } else {
-            return false;
         }
     }
 
