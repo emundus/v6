@@ -6,14 +6,14 @@ import mimeTypes from '../data/mimeTypes';
 
 var mixin = {
 	methods: {
-		formattedDate: function (date = '',format = 'LLLL') {
+		formattedDate: function (date = '',format = 'LLLL',utc = 0) {
 			let formattedDate = '';
 
 			if (date !== null) {
 				if (date !== '') {
-					formattedDate = moment(date).format(format);
+					formattedDate = moment(date).utcOffset(utc).format(format);
 				} else {
-					formattedDate = moment().format(format);
+					formattedDate = moment().utcOffset(utc).format(format);
 				}
 			}
 

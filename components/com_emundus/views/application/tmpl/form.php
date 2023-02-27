@@ -36,10 +36,29 @@ $user = $this->userid;
                 <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span></button>
             </div>
         </div>
+        <div class="em-flex-row em-mt-16">
+            <div class="em-flex-row em-small-flex-column em-small-align-items-start">
+                <div class="em-profile-picture-big no-hover"
+			        <?php if(empty($this->applicant->profile_picture)) :?>
+                        style="background-image:url(<?php echo JURI::base() ?>/media/com_emundus/images/profile/default-profile.jpg)"
+			        <?php else : ?>
+                        style="background-image:url(<?php echo JURI::base() ?>/<?php echo $this->applicant->profile_picture ?>)"
+			        <?php endif; ?>
+                >
+                </div>
+            </div>
+            <div class="em-ml-24 ">
+                <p class="em-font-weight-500">
+                    <?php echo $this->applicant->lastname . ' ' . $this->applicant->firstname; ?>
+                </p>
+                <p><?php echo $this->fnum ?></p>
+            </div>
+        </div>
+
         <div class="panel-body Marginpanel-body em-container-form-body">
             <input type="hidden" id="dpid_hidden" value="<?php echo $defaultpid->pid ?>"/>
 
-            <div id="em-switch-profiles">
+            <div id="em-switch-profiles" <?php if(sizeof($pids) < 2): ?>style="display: none"<?php endif; ?>>
                 <div class="em_label">
                     <label class="control-label em-filter-label"><?= JText::_('PROFILE_FORM'); ?></label>
                 </div>

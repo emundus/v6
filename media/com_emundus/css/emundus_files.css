@@ -211,7 +211,7 @@ button.close {
 }
 
 .em-data-container .table-hover.table-striped tbody tr:nth-child(2n+1) td, .em-data-container .table-hover.table-striped tbody tr:nth-child(2n+1) th {
-    background: #F2F2F2 !important;
+    background: #fafafa !important;
 }
 
 th {
@@ -1316,6 +1316,7 @@ p {
     text-overflow: ellipsis;
     display: inline-block !important;
     margin-bottom: 10px;
+    font-weight: 400 !important;
 }
 
 /*.navbar .navbar-inverse{
