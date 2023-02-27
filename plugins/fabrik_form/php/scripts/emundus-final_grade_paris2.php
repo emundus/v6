@@ -22,6 +22,7 @@ $motif = $jinput->get('jos_emundus_final_grade___motif_refus')[0];
 
 include_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 include_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+include_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
 
 $email_from_sys = JFactory::getApplication()->getCfg('mailfrom');
 
@@ -66,6 +67,23 @@ if (!empty($status)) {
 
     $code = array();
     $code[] = $fnumsInfos['training'];
+
+    $mFile = new EmundusModelFiles();
+
+    $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+    # get old status label
+    $fnumOldStatus = $mFile->getStatusByFnums([$fnum])[$fnum]['value'];        // status id //
+
+    # get new status label (write SQL query)
+    $fnumNewStatus = $mFile->getStatusByStep($status)[0]['value'];
+
+    # track the logs
+    $logsStd = new stdClass();
+    $logsStd->old = $fnumOldStatus;
+    $logsStd->new = $fnumNewStatus;
+
+    $logsParams = array('updated' => [$logsStd]);
 
     $query = $db->getQuery(true);
     $query->update($db->quoteName('#__emundus_campaign_candidature'))
@@ -156,6 +174,7 @@ if (!empty($status)) {
                 }
             }
         }
+        EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE',json_encode($logsParams,JSON_UNESCAPED_UNICODE));
 
     } catch(Exception $e) {
         JLog::add('Unable to set status in plugin/emundusFinalGrade at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');

@@ -123,7 +123,8 @@ class EmundusModelsettings extends JModelList {
         $query = $db->getQuery(true);
 
         $query->select('*')
-            ->from($db->quoteName('#__emundus_setup_action_tag'));
+            ->from($db->quoteName('#__emundus_setup_action_tag'))
+            ->order($db->quoteName('label'));
 
         try {
             $db->setQuery($query);

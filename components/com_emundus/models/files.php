@@ -1092,7 +1092,22 @@ class EmundusModelFiles extends JModelLegacy
 
 	        foreach ($fnums as $fnum) {
 		        foreach ($users as $user) {
-			        EmundusModelLogs::log(JFactory::getUser()->id, (int) $user, $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE');
+
+			        $query->clear()
+				        ->select('name')
+				        ->from($db->quoteName('#__users'))
+				        ->where($db->quoteName('id') . ' = ' . $user);
+			        $db->setQuery($query);
+			        $user_name = $db->loadResult();
+
+			        $logsStd = new stdClass();
+			        $logsStd->details = $user_name;
+			        $logger[] = $logsStd;
+
+			        if (!empty($logger)) {
+				        $logsParams = array('created' => array_unique($logger, SORT_REGULAR));
+				        EmundusModelLogs::log(JFactory::getUser()->id, (int) $user, $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+			        }
 		        }
 	        }
 
@@ -1110,7 +1125,7 @@ class EmundusModelFiles extends JModelLegacy
      * @throws Exception
      */
     public function getAllTags() {
-        $query = 'select * from #__emundus_setup_action_tag where 1';
+        $query = 'select * from #__emundus_setup_action_tag where 1 order by label';
         $db = $this->getDbo();
 
         try {

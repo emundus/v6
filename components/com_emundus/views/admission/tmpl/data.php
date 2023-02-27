@@ -255,7 +255,6 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
         $('#rt-mainbody-surround').children().addClass('mainemundus');
         $('#rt-main').children().addClass('mainemundus');
         $('#rt-main').children().children().addClass('mainemundus');
-        //$('.em-data-container').doubleScroll();
 
         menuAction = document.querySelector('.em-menuaction');
         headerNav = document.querySelector('#g-navigation .g-container');
@@ -264,6 +263,11 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
             $('.container-result').css('top', (headerNav.offsetHeight + menuAction.offsetHeight) + 'px');
             $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
         },2000);
+
+        const dataContainer = document.querySelector('.em-data-container')
+        if (dataContainer) {
+            DoubleScroll(dataContainer);
+        }
     });
     window.parent.$("html, body").animate({scrollTop : 0}, 300);
 

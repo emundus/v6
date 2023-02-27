@@ -44,6 +44,18 @@ if ($jinput->get('view') == 'form') {
 	}
 
 	if ($application_fee) {
+		if($params->get('hikashop_session')) {
+			// check if there is not another cart open
+			$hikashop_user = JFactory::getSession()->get('emundusPayment');
+			if (!empty($hikashop_user->fnum) && $hikashop_user->fnum != $user->fnum) {
+				$user->fnum = $hikashop_user->fnum;
+				JFactory::getSession()->set('emundusUser', $user);
+
+				$mainframe->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
+				$mainframe->redirect('/');
+			}
+		}
+
         $m_files = new EmundusModelFiles;
         $fnumInfos = $m_files->getFnumInfos($user->fnum);
 

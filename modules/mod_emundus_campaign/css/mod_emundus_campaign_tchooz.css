@@ -133,6 +133,11 @@
     max-height: 100px;
     line-height: 160%;
     font-family: var(--applicant-default-font);
+    color: var(--em-applicant-text-color);
+}
+
+.mod_emundus_campaign__list_content_resume p {
+    color: var(--em-applicant-text-color);
 }
 
 .mod_emundus_campaign__header_filter {

@@ -168,19 +168,23 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 
         $old_status = $student->fnums[$student->fnum]->status;
 		JPluginHelper::importPlugin('emundus');
-		$dispatcher = JEventDispatcher::getInstance();
-		$dispatcher->trigger('onBeforeSubmitFile', [$student->id, $student->fnum]);
-        $dispatcher->trigger('callEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onBeforeSubmitFile', [$student->id, $student->fnum]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
-		$query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $db->Quote($now) . ', status='.$new_status.' WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
-		$db->setQuery($query);
+        $query = $db->getQuery(true);
+        $query->update($db->quoteName('#__emundus_campaign_candidature'))
+            ->set($db->quoteName('submitted') . ' = 1')
+            ->set($db->quoteName('date_submitted') . ' = ' . $db->quote($now))
+            ->set($db->quoteName('status') . ' = ' . $new_status)
+            ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($student->fnum));
 
-		try {
-			$updated = $db->execute();
-		} catch (Exception $e) {
+        try {
+            $db->setQuery($query);
+            $updated = $db->execute();
+        } catch (Exception $e) {
             $updated = false;
-			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-		}
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
 
         // track the LOGS (FILE_UPDATE)
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
@@ -190,9 +194,10 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
         $mFile = new EmundusModelFiles();
         $applicant_id = ($mFile->getFnumInfos($student->fnum))['applicant_id'];
 
-
         if ($updated && $old_status != $new_status) {
-            $this->logUpdateState($old_status, $new_status, $user->id, $applicant_id, $student->fnum);
+            $this->logUpdateState($old_status, $new_status, $student->id, $applicant_id, $student->fnum);
+            \Joomla\CMS\Factory::getApplication()->triggerEvent('onAfterStatusChange', [$student->fnum, $new_status]);
+            \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterStatusChange', ['fnum' => $student->fnum, 'state' => $new_status, 'old_state' => $old_status]]);
         }
 
 		$query = 'UPDATE #__emundus_declaration SET time_date=' . $db->Quote($now) . ' WHERE user='.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
@@ -212,8 +217,8 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
         $to_applicant = '0,1';
         $m_emails->sendEmailTrigger($step, $code, $to_applicant, $student);
 
-		$dispatcher->trigger('onAfterSubmitFile', [$student->id, $student->fnum]);
-        $dispatcher->trigger('callEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onAfterSubmitFile', [$student->id, $student->fnum]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
 		// If pdf exporting is activated
 		if ($export_pdf == 1) {

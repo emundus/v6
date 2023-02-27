@@ -167,13 +167,13 @@ function addElement() {
                 var num = ($('#nb-adv-filter').val() - 1) + 2;
                 $('#nb-adv-filter').val(num);
                 var newId = 'em-adv-father-' + num;
-                ni.append('<fieldset id="' + newId + '" class="em-nopadding em-flex-row">' +
-                    '<select class="chzn-select em-filt-select" name="elements" id="elements-'+num+'">' +
+                ni.append('<fieldset id="' + newId + '" class="em-nopadding">' +
+                    '<a id="suppr-filt" class="em-mb-4 em-flex-start">' +
+                    '<span class="em-font-size-14 em-red-500-color em-pointer">' + Joomla.JText._('COM_EMUNDUS_DELETE_ADVANCED_FILTERS') + '</span>' +
+                    '</a>' +
+                    '<select class="chzn-select em-filt-select em-mb-4" name="elements" id="elements-'+num+'">' +
                     '<option value="">' + result.default +'</option>' +
                     '</select> ' +
-                    '<button id="suppr-filt" class="em-tertiary-button em-flex-start">' +
-                    '<span class="material-icons em-red-500-color">delete_outline</span>' +
-                    '</button>'+
                     '</fieldset>');
 
                 var options = '';
@@ -1177,17 +1177,14 @@ function runAction(action, url = '', option = '') {
 
         case 15:
         case 16:
-            // TODO : make thiw work
+            // TODO : make this work
 
             const iframeFastMails = document.querySelector('#iframe-fast-emails');
             const fastMailForm = iframeFastMails.contentWindow.document.querySelector('#adminForm');
             fastMailForm.submit();
             break;
 
-        // TODO : Generate letter
         case 27:
-            addLoader();
-
             generate_letter();
             break;
 
@@ -6106,20 +6103,20 @@ $(document).ready(function() {
             $('#merge-div').show();
             $("label[for='em-combine-pdf']").css('text-decoration', 'none');
             if(showMode == 0) {
-                $('#export-tooltips').append('<div id="candidat-export-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_EXPORT_TOOLTIP') + '</div>');
+                $('#export-tooltips').append('<div id="candidat-export-tooltip" style="font-size: .8rem; color: #406AFF">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_EXPORT_TOOLTIP') + '</div>');
                 $('#em-doc-pdf-merge').prop('checked', false);
 
                 if($('#em-doc-pdf-merge').is(':checked')) {
-                    setTimeout(function() {$('#merge-tooltips').append('<div id="candidat-merge-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_MERGE_TOOLTIP') + '</div>');}, 100);
+                    setTimeout(function() {$('#merge-tooltips').append('<div id="candidat-merge-tooltip" style="font-size: .8rem; color: #406AFF">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_MERGE_TOOLTIP') + '</div>');}, 100);
                 } else {
                     $('#merge-tooltips').empty();
                 }
             } else if(showMode == 1) {
-                $('#export-tooltips').append('<div id="document-export-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_EXPORT_TOOLTIP') + '</div>');
+                $('#export-tooltips').append('<div id="document-export-tooltip" style="font-size: .8rem; color: #406AFF">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_EXPORT_TOOLTIP') + '</div>');
                 $('#em-doc-pdf-merge').prop('checked', false);
 
                 if($('#em-doc-pdf-merge').is(':checked')) {
-                    setTimeout(function() {$('#merge-tooltips').append('<div id="document-merge-tooltip" style="font-size: 1rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_MERGE_TOOLTIP') + '</div>');}, 100);
+                    setTimeout(function() {$('#merge-tooltips').append('<div id="document-merge-tooltip" style="font-size: 1rem; color: #406AFF">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_MERGE_TOOLTIP') + '</div>');}, 100);
                 } else {
                     $('#merge-tooltips').empty();
                 }
@@ -6131,10 +6128,10 @@ $(document).ready(function() {
         if ($('#em-doc-pdf-merge').is(':checked')) {
             setTimeout(function() {$('#merge-tooltips').empty();}, 100);
             if ($('#em-doc-export-mode').val() == 0) {
-                setTimeout(function(){$('#merge-tooltips').append('<div id="candidat-merge-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_MERGE_TOOLTIP') + '</div>');}, 100);
+                setTimeout(function(){$('#merge-tooltips').append('<div id="candidat-merge-tooltip" style="font-size: .8rem; color: #406AFF">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_MERGE_TOOLTIP') + '</div>');}, 100);
                 $('#merge-tooltips').fadeIn();
             } else if ($('#em-doc-export-mode').val() == 1) {
-                setTimeout(function(){$('#merge-tooltips').append('<div id="document-merge-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_MERGE_TOOLTIP') + '</div>');}, 100);
+                setTimeout(function(){$('#merge-tooltips').append('<div id="document-merge-tooltip" style="font-size: .8rem; color: #406AFF">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_MERGE_TOOLTIP') + '</div>');}, 100);
                 $('#merge-tooltips').fadeIn();
             }
         } else {
@@ -6597,3 +6594,53 @@ function sendMail(data)
     });
 }
 
+function DoubleScroll(element) {
+    const id = Math.random();
+    if (element.scrollWidth > element.offsetWidth) {
+        createScrollbarForElement(element, id);
+    }
+
+    window.addEventListener('resize', function () {
+       let scrollbar = document.getElementById(id);
+       if (scrollbar) {
+           if (element.scrollWidth > element.offsetWidth) {
+               scrollbar.firstChild.style.width = element.scrollWidth + 'px';
+           } else {
+               scrollbar.remove();
+           }
+       } else {
+           if (element.scrollWidth > element.offsetWidth) {
+               createScrollbarForElement(element, id);
+           }
+       }
+    });
+}
+
+function createScrollbarForElement(element, id) {
+    let new_scrollbar = document.createElement('div');
+    new_scrollbar.appendChild(document.createElement('div'));
+    new_scrollbar.style.overflowX = 'auto';
+    new_scrollbar.style.overflowY = 'hidden';
+    new_scrollbar.firstChild.style.height = '1px';
+    new_scrollbar.firstChild.style.width = element.scrollWidth + 'px';
+    new_scrollbar.firstChild.appendChild(document.createTextNode('\xA0'));
+    new_scrollbar.id = id;
+    let running = false;
+    new_scrollbar.onscroll = function () {
+        if (running) {
+            running = false;
+            return;
+        }
+        running = true;
+        element.scrollLeft = new_scrollbar.scrollLeft;
+    };
+    element.onscroll = function () {
+        if (running) {
+            running = false;
+            return;
+        }
+        running = true;
+        new_scrollbar.scrollLeft = element.scrollLeft;
+    };
+    element.parentNode.insertBefore(new_scrollbar, element);
+}

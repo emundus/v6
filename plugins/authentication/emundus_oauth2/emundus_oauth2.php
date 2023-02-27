@@ -98,6 +98,26 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
                     $result = $oauth2->query($url);
 
                     $body = json_decode($result->body);
+
+	                $debug_mode = $this->params->get('debug_mode', 0);
+	                if($debug_mode) {
+		                $jsonString = json_encode($body, JSON_PRETTY_PRINT);
+		                // Write in the file
+		                $path   = JPATH_ROOT . '/logs/oauth2_attributes.json';
+		                if(file_exists($path)){
+			                $debug_file = file_get_contents($path);
+			                $debug_file = substr(ltrim($debug_file, '['), 0, -1);
+			                $debug_file .= ",\n".$jsonString;
+			                file_put_contents($path, '['.$debug_file.']');
+		                } else {
+			                $fp     = fopen($path, 'w');
+			                if($fp) {
+				                fwrite($fp, '['.$jsonString.']');
+				                fclose($fp);
+			                }
+		                }
+	                }
+
                     foreach ($this->attributes->column_name as $key => $column) {
                         if ($this->attributes->table_name[$key] == 'jos_users') {
                             $response->{$column} = $body->{$this->attributes->attribute_name[$key]};
@@ -138,25 +158,53 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
                         $response->error_message = '';
                         $user = new JUser(JUserHelper::getUserId($response->username));
 
-                        if ($user->get('block') || $user->get('activation')) {
-                            $response->status = JAuthentication::STATUS_FAILURE;
-                            $response->error_message = JText::_('JGLOBAL_AUTH_ACCESS_DENIED');
-                        } else {
-                            $authenticate = true;
+	                    if ($user->get('block')) {
+		                    $response->status = JAuthentication::STATUS_FAILURE;
+		                    $response->error_message = JText::_('JGLOBAL_AUTH_ACCESS_DENIED');
+	                    } else {
+		                    $authenticate = true;
 
-                            $response->annex_data = [];
-                            foreach ($this->attributes->column_name as $key => $column) {
-                                if ($this->attributes->table_name[$key] !== 'jos_users' && !empty($body->{$this->attributes->attribute_name[$key]}) && !empty($this->attributes->column_join_user_id[$key])) {
+		                    $response->annex_data = [];
+		                    foreach ($this->attributes->column_name as $key => $column) {
+			                    if ($this->attributes->table_name[$key] !== 'jos_users' && !empty($body->{$this->attributes->attribute_name[$key]}) && !empty($this->attributes->column_join_user_id[$key])) {
 
-                                    $response->annex_data[] = [
-                                        'table' => $this->attributes->table_name[$key],
-                                        'column' => $column,
-                                        'value' => $body->{$this->attributes->attribute_name[$key]},
-                                        'column_join_user_id' => $this->attributes->column_join_user_id[$key]
-                                    ];
-                                }
-                            }
-                        }
+				                    $response->annex_data[] = [
+					                    'table'               => $this->attributes->table_name[$key],
+					                    'column'              => $column,
+					                    'value'               => $body->{$this->attributes->attribute_name[$key]},
+					                    'column_join_user_id' => $this->attributes->column_join_user_id[$key]
+				                    ];
+			                    }
+		                    }
+
+		                    if (!$response->is_new) {
+			                    if (!empty($response->annex_data)) {
+				                    $db    = JFactory::getDBO();
+				                    $query = $db->getQuery(true);
+
+				                    $user_id = JUserHelper::getUserId($response->username);
+
+				                    foreach ($response->annex_data as $data) {
+					                    if (is_array($data['value'])) {
+						                    $data['value'] = implode(',', $data['value']);
+					                    }
+					                    $query->clear()
+						                    ->update($data['table'])
+						                    ->set($db->quoteName($data['column']) . ' = ' . $db->quote($data['value']))
+						                    ->where($db->quoteName($data['column_join_user_id']) . ' = ' . $user_id);
+					                    $db->setQuery($query);
+
+					                    try {
+						                    $db->execute();
+					                    }
+					                    catch (Exception $e) {
+						                    JLog::add('Failed to execute update query ' . $e->getMessage(), JLog::ERROR, 'com_emundus.oauth2');
+					                    }
+				                    }
+			                    }
+		                    }
+	                    }
+
                     } else {
                         $response->status = JAuthentication::STATUS_FAILURE;
                         $response->error_message = JText::_('JGLOBAL_AUTH_NO_USER');
@@ -330,25 +378,25 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
                 }
             }
 
-            if (!empty($user['annex_data'])) {
-                $db = JFactory::getDBO();
-                $query = $db->getQuery(true);
+	        if (!empty($user['annex_data'])) {
+		        $db = JFactory::getDBO();
+		        $query = $db->getQuery(true);
 
-                foreach($user['annex_data'] as $data) {
-                    $query->clear()
-                        ->update($data['table'])
-                        ->set($db->quoteName($data['column']) . ' = ' . $db->quote($data['value']))
-                        ->where($db->quoteName($data['column_join_user_id']) . ' = ' . $user_id);
+		        foreach($user['annex_data'] as $data) {
+			        $query->clear()
+				        ->update($data['table'])
+				        ->set($db->quoteName($data['column']) . ' = ' . $db->quote($data['value']))
+				        ->where($db->quoteName($data['column_join_user_id']) . ' = ' . $user_id);
 
-                    $db->setQuery($query);
+			        $db->setQuery($query);
 
-                    try {
-                        $db->execute();
-                    } catch (Exception $e) {
-                        JLog::add('Failed to execute update query ' . $e->getMessage(), JLog::ERROR, 'com_emundus.oauth2');
-                    }
-                }
-            }
+			        try {
+				        $db->execute();
+			        } catch (Exception $e) {
+				        JLog::add('Failed to execute update query ' . $e->getMessage(), JLog::ERROR, 'com_emundus.oauth2');
+			        }
+		        }
+	        }
         }
     }
 

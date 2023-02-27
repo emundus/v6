@@ -278,6 +278,7 @@ a.btn.btn-success:not(.btn-xs) {
 .mod_emundus_applications___header p.em-h3 {
  font-family: var(--applicant-title-font);
  color: var(--em-applicant-title-color);
+margin-top: 16px;
 }
 
 .mod_emundus_applications___header_desc h2 {

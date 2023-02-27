@@ -1,8 +1,9 @@
 <?php
+
 /**
  * @package   Gantry 5 Theme
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2017 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
  * @copyright Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
  * @license   GNU/GPLv2 and later
  *
@@ -11,7 +12,13 @@
 
 defined('_JEXEC') or die;
 
-// Gantry Specific Module Chrome
+/**
+ * Gantry Specific Module Chrome for Joomla 3
+ *
+ * @param object $module
+ * @param object $params
+ * @param array $attribs
+ */
 function modChrome_gantry($module, &$params, &$attribs)
 {
 	$moduleTag      = $params->get('module_tag', 'div');
@@ -24,7 +31,7 @@ function modChrome_gantry($module, &$params, &$attribs)
 	$headerClass    = ($headerClass) ? ' class="' . htmlspecialchars($headerClass, ENT_COMPAT|ENT_SUBSTITUTE, 'UTF-8') . '"' : '';
 
 	if (!empty ($module->content)) : ?>
-		<<?php echo $moduleTag; ?> class="moduletable <?php echo htmlspecialchars($params->get('moduleclass_sfx'), ENT_COMPAT|ENT_SUBSTITUTE, 'UTF-8') . $moduleClass; ?>">
+		<<?php echo $moduleTag; ?> class="moduletable <?php echo htmlspecialchars($params->get('moduleclass_sfx', ''), ENT_COMPAT|ENT_SUBSTITUTE, 'UTF-8') . $moduleClass; ?>">
 			<?php if ((bool) $module->showtitle) : ?>
 				<<?php echo $headerTag . $headerClass . '>' . $module->title; ?></<?php echo $headerTag; ?>>
 			<?php endif; ?>
