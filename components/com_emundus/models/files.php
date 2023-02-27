@@ -278,10 +278,10 @@ class EmundusModelFiles extends JModelLegacy
         if (in_array('unread_messages', $em_other_columns)) {
             $this->_elements_default[] = ' (SELECT count(m.message_id)
             FROM #__emundus_campaign_candidature AS `ecc`
-            LEFT JOIN `#__emundus_chatroom` AS `ec` ON `ec`.`fnum` = ecc.fnum
+            LEFT JOIN `#__emundus_chatroom` AS `ec` ON `ec`.`fnum` LIKE `ecc`.`fnum`
             LEFT JOIN `#__messages` AS `m` ON `m`.`page` = `ec`.`id`
-            WHERE ecc.fnum = jecc.fnum
-            GROUP BY jecc.fnum) AS unread_messages ';
+            WHERE `ecc`.`fnum` LIKE `jecc`.`fnum` AND `m`.`state` = 0 AND `m`.`user_id_from` != ' . JFactory::getUser()->id
+            . ' GROUP BY `jecc`.`fnum`) AS unread_messages ';
         }
         if (empty($col_elt)) {
             $col_elt = array();
@@ -3464,7 +3464,8 @@ class EmundusModelFiles extends JModelLegacy
                 ->leftJoin($db->quoteName('#__emundus_chatroom','ec').' ON '.$db->quoteName('ec.fnum').' = '.$db->quoteName('ecc.fnum'))
                 ->leftJoin($db->quoteName('#__messages','m').' ON '.$db->quoteName('m.page').' = '.$db->quoteName('ec.id'))
                 ->where($db->quoteName('ecc.fnum') . ' = ' . $db->quoteName('ecc.fnum'))
-                ->andWhere($db->quoteName('m.state') . ' = 1')
+                ->andWhere($db->quoteName('m.state') . ' = 0')
+                ->andWhere($db->quoteName('m.user_id_from') . ' != ' . JFactory::getUser()->id)
                 ->group('ecc.fnum');
 
             $db->setQuery($query);
