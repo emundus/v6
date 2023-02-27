@@ -665,6 +665,56 @@ if (password_value.match(regex) != null) {
 				]);
 
 				EmundusHelperUpdate::updateEmundusParam('gotenberg_url','https://gotenberg.microservices.tchooz.app','https://docs.emundus.app');
+
+				// Install new flow module on old default layouts
+				$db    = JFactory::getDbo();
+				$query = $db->getQuery(true);
+
+				$query->select('id,params')
+					->from($db->quoteName('#__modules'))
+					->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundusflow'))
+					->andWhere($db->quoteName('position') . ' LIKE ' . $db->quote('drawer'))
+					->andWhere($db->quoteName('published') . ' = 1');
+				$db->setQuery($query);
+				$modules = $db->loadObjectList();
+
+				foreach ($modules as $module){
+					$params = json_decode($module->params);
+
+					if(isset($params->layout) && $params->layout == '_:default') {
+						$params->layout = '_:tchooz';
+						$query->clear()
+							->update($db->quoteName('#__modules'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+							->where($db->quoteName('id') . ' = ' . $module->id);
+						$db->setQuery($query);
+						$db->execute();
+
+						$query->clear()
+							->select('id,value')
+							->from($db->quoteName('#__falang_content'))
+							->where($db->quoteName('reference_table') . ' LIKE ' . $db->quote('modules'))
+							->andWhere($db->quoteName('reference_field') . ' LIKE ' . $db->quote('params'))
+							->andWhere($db->quoteName('reference_id') . ' = ' . $module->id);
+						$db->setQuery($query);
+						$module_translations = $db->loadObjectList();
+
+						foreach ($module_translations as $module_translation){
+							$translation_params = json_decode($module_translation->value);
+
+							if(isset($translation_params->layout) && $translation_params->layout == '_:default') {
+								$translation_params->layout = '_:tchooz';
+
+								$query->clear()
+									->update($db->quoteName('#__falang_content'))
+									->set($db->quoteName('value') . ' = ' . $db->quote(json_encode($translation_params)))
+									->where($db->quoteName('id') . ' = ' . $module_translation->id);
+								$db->setQuery($query);
+								$db->execute();
+							}
+						}
+					}
+				}
 			}
 
 
