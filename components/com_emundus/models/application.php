@@ -1534,14 +1534,14 @@ class EmundusModelApplication extends JModelList
 
                 foreach ($tableuser as $key => $itemt) {
 
-                    $forms .= '<br><hr><div class="TitlePersonalInfo em-personalInfo">';
+                    $forms .= '<br><hr><div class="TitlePersonalInfo em-personalInfo em-mb-12">';
                     $title = explode('-', JText::_($itemt->label));
                     if (empty($title[1])) {
                         $title= JText::_(trim($itemt->label));
                     } else {
                         $title= JText::_(trim($title[1]));
                     }
-                    $forms .= '<h3>' . $title . '</h3>';
+                    $forms .= '<p class="em-h5">' . $title . '</p>';
                     $form_params = json_decode($itemt->params);
 
                     if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $itemt->db_table_name != "#__emundus_training") {
@@ -1555,7 +1555,7 @@ class EmundusModelApplication extends JModelList
                             if ($allowEmbed) {
                                 $forms .= ' <button type="button" id="' . $itemt->form_id . '" class="btn btn btn-info btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&usekey=fnum&rowid=' . $fnum . '&tmpl=component" alt="' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '" target="_blank"><i> ' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '</i></button>';
                             } else {
-                                $forms .= ' <a id="' . $itemt->form_id . '" class="btn btn btn-info btn-sm" href="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&usekey=fnum&rowid=' . $fnum . '" alt="' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '" target="_blank"><i> ' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '</i></a>';
+                                $forms .= ' <a id="' . $itemt->form_id . '" class="em-link" href="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&usekey=fnum&rowid=' . $fnum . '" alt="' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '" target="_blank"><span> ' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '</span></a>';
                             }
 
                         } else {
@@ -1563,7 +1563,7 @@ class EmundusModelApplication extends JModelList
                             if ($allowEmbed) {
                                 $forms .= ' <button type="button" id="' . $itemt->form_id . '" class="btn btn-default btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&' . $itemt->db_table_name . '___fnum=' . $fnum . '&' . $itemt->db_table_name . '___user_raw=' . $aid . '&' . $itemt->db_table_name . '___user=' . $aid . '&sid=' . $aid . '&tmpl=component" alt="' . JText::_('COM_EMUNDUS_ADD') . '"><i> ' . JText::_('COM_EMUNDUS_ADD') . '</i></button>';
                             } else {
-                                $forms .= ' <a type="button" id="' . $itemt->form_id . '" class="btn btn-default btn-sm" href="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&' . $itemt->db_table_name . '___fnum=' . $fnum . '&' . $itemt->db_table_name . '___user_raw=' . $aid . '&' . $itemt->db_table_name . '___user=' . $aid . '&sid=' . $aid . '" alt="' . JText::_('COM_EMUNDUS_ADD') . '" target="_blank"><i> ' . JText::_('COM_EMUNDUS_ADD') . '</i></a>';
+                                $forms .= ' <a type="button" id="' . $itemt->form_id . '" class="em-link" href="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&' . $itemt->db_table_name . '___fnum=' . $fnum . '&' . $itemt->db_table_name . '___user_raw=' . $aid . '&' . $itemt->db_table_name . '___user=' . $aid . '&sid=' . $aid . '" alt="' . JText::_('COM_EMUNDUS_ADD') . '" target="_blank"><span> ' . JText::_('COM_EMUNDUS_ADD') . '</span></a>';
                             }
 
                         }
@@ -1585,7 +1585,7 @@ class EmundusModelApplication extends JModelList
 
                         if (($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) || !EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int)$g_params->access)) {
                             $forms .= '<fieldset class="em-personalDetail">
-											<legend class="legend">' . JText::_($itemg->label) . '</legend>
+											<p class="em-h6 em-font-weight-400">' . JText::_($itemg->label) . '</p>
 											<table class="em-restricted-group">
 												<thead><tr><td>' . JText::_('COM_EMUNDUS_CANNOT_SEE_GROUP') . '</td></tr></thead>
 											</table>
@@ -1634,9 +1634,9 @@ class EmundusModelApplication extends JModelList
                                     unset($element);
 
                                     $forms .= '<fieldset class="em-personalDetail">';
-                                    $forms .= (!empty($itemg->label)) ? '<legend class="legend">' . JText::_($itemg->label) . '</legend>' : '';
+                                    $forms .= (!empty($itemg->label)) ? '<p class="em-h6 em-font-weight-400">' . JText::_($itemg->label) . '</legend>' : '';
 
-                                    $forms .= '<table class="table table-bordered table-striped em-personalDetail-table-multiplleLine"><thead><tr> ';
+                                    $forms .= '<table class="em-mt-8 em-mb-16 table table-bordered table-striped em-personalDetail-table-multiplleLine"><thead><tr> ';
 
                                     foreach ($elements as &$element) {
                                         if ($element->plugin != 'id') {
@@ -1858,7 +1858,7 @@ class EmundusModelApplication extends JModelList
                                 $check_not_empty_group = $this->checkEmptyGroups($elements ,$itemt->db_table_name, $fnum);
 
                                 if($check_not_empty_group && $g_params->repeat_group_show_first != -1) {
-                                    $forms .= '<table class="em-personalDetail-table-inline"><legend class="legend">' . JText::_($itemg->label) . '</legend>';
+                                    $forms .= '<table class="em-mt-8 em-mb-16 em-personalDetail-table-inline"><p class="em-h6 em-font-weight-400">' . JText::_($itemg->label) . '</legend>';
 
                                     $modulo = 0;
                                     foreach ($elements as &$element) {
@@ -5300,49 +5300,91 @@ class EmundusModelApplication extends JModelList
         }
     }
 
-    public function getValuesByElementAndFnum($fnum, $eid, $fid, $raw=1){
+	public function getValuesByElementAndFnum($fnum,$eid,$fid,$raw=1,$wheres = []){
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
 
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+		$result = '';
 
-        try {
-            $query->select('db_table_name')
-                ->from($db->quoteName('#__fabrik_lists'))
-                ->where($db->quoteName('form_id') . ' = ' . $fid);
-            $db->setQuery($query);
-            $table = $db->loadResult();
+		try {
+			$query->select('db_table_name')
+				->from($db->quoteName('#__fabrik_lists'))
+				->where($db->quoteName('form_id') . ' = ' . $fid);
+			$db->setQuery($query);
+			$table = $db->loadResult();
 
-            $query->clear()
-                ->select('applicant_id')
-                ->from($db->quoteName('#__emundus_campaign_candidature'))
-                ->where($db->quoteName('fnum') . ' LIKE ' . $fnum);
-            $db->setQuery($query);
-            $aid = $db->loadResult();
+			$query->clear()
+				->select('applicant_id')
+				->from($db->quoteName('#__emundus_campaign_candidature'))
+				->where($db->quoteName('fnum') . ' LIKE ' . $fnum);
+			$db->setQuery($query);
+			$aid = $db->loadResult();
 
-            $query->clear()
-                ->select('fe.id,fe.name,fe.group_id,fe.plugin,fe.default,fe.params')
-                ->from($db->quoteName('#__fabrik_elements','fe'))
-                ->where($db->quoteName('fe.id') . ' = ' . $db->quote($eid));
-            $db->setQuery($query);
-            $element = $db->loadObject();
+			$query->clear()
+				->select('fe.id,fe.name,fe.group_id,fe.plugin,fe.default,fe.params,fg.params as group_params')
+				->from($db->quoteName('#__fabrik_elements','fe'))
+				->leftJoin($db->quoteName('#__fabrik_groups','fg').' ON '.$db->quoteName('fg.id').' = '.$db->quoteName('fe.group_id'))
+				->where($db->quoteName('fe.id') . ' = ' . $db->quote($eid));
+			$db->setQuery($query);
+			$element = $db->loadObject();
+			$group_params = json_decode($element->group_params);
 
-            // TODO : Implement repeatgroup
-            $query->clear()
-                ->select($db->quoteName($element->name))
-                ->from($db->quoteName($table))
-                ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
-            $db->setQuery($query);
-            $value = $db->loadResult();
+			if($table == 'jos_emundus_evaluations'){
+				$params = JComponentHelper::getParams('com_emundus');
+				$multi_eval = $params->get('multi_eval', 0);
 
-            $elt = '';
-            if (!empty($value) || $element->plugin == 'yesno') {
-                $elt = $this->formatElementValue($element, $value, $table, $aid);
+				if($multi_eval == 1) {
+					$wheres[] = $db->quoteName('user') . ' = ' . $db->quote(JFactory::getUser()->id);
+				}
+			}
+
+			if($group_params->repeat_group_button == 1){
+				$query->clear()
+					->select('join_from_table,table_join,table_key,table_join_key')
+					->from($db->quoteName('#__fabrik_joins'))
+					->where($db->quoteName('group_id') . ' = ' . $db->quote($element->group_id))
+					->andWhere($db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'));
+				$db->setQuery($query);
+				$join_params = $db->loadObject();
+
+				$query->clear()
+					->select($db->quoteName('r.'.$element->name))
+					->from($db->quoteName($join_params->join_from_table,'p'))
+					->leftJoin($db->quoteName($join_params->table_join,'r').' ON '.$db->quoteName('r.'.$join_params->table_join_key).' = '.$db->quoteName('p.'.$join_params->table_key))
+					->where($db->quoteName('p.fnum') . ' LIKE ' . $db->quote($fnum));
+				foreach ($wheres as $where){
+					$query->where($where);
+				}
+				$db->setQuery($query);
+				$values = $db->loadColumn();
+			} else {
+				$query->clear()
+					->select($db->quoteName($element->name))
+					->from($db->quoteName($table))
+					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+				foreach ($wheres as $where){
+					$query->where($where);
+				}
+				$db->setQuery($query);
+				$values = $db->loadResult();
+			}
+
+            $elt = [];
+			if(!is_array($values)){
+				$values = [$values];
+			}
+            if (!empty($values) || $element->plugin == 'yesno') {
+	            foreach ($values as $value) {
+		            $elt[] = $this->formatElementValue($element, $value, $table, $aid);
+	            }
             }
 
-            return $elt;
+            $result = implode(',',$elt);
         } catch (Exception $e) {
             JLog::add('Problem when get values of element ' . $eid . ' with fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
         }
+
+		return $result;
     }
 
     /**
@@ -5447,16 +5489,13 @@ class EmundusModelApplication extends JModelList
                     $index = array_intersect(json_decode(@$value), $params->sub_options->sub_values);
                     foreach ($index as $sub_value) {
                         $key = array_search($sub_value,$params->sub_options->sub_values);
-                        $elm[] =  ' - ' . JText::_($params->sub_options->sub_labels[$key]);
+                        $elm[] = ' - ' . JText::_($params->sub_options->sub_labels[$key]);
                     }
                     $elt = "<li>" . implode("</li><li>", @$elm) . "</li>";
                     break;
                 case 'dropdown':
                 case 'radiobutton':
                     $index = array_search($value, $params->sub_options->sub_values, false);
-
-                    if ($index === false) {
-                    }
 
                     if ($index !== false) {
                         $elt = JText::_($params->sub_options->sub_labels[$index]);

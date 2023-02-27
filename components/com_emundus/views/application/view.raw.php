@@ -366,6 +366,10 @@ class EmundusViewApplication extends JViewLegacy {
 
                         $m_user = new EmundusModelUsers;
                         $m_campaign = new EmundusModelCampaign;
+	                    $applicant = $m_user->getUserById($fnumInfos['applicant_id']);
+						if(!isset($applicant[0]->profile_picture) || empty($applicant[0]->profile_picture)){
+							$applicant[0]->profile_picture = $m_user->getIdentityPhoto($fnum,$fnumInfos['applicant_id']);
+						}
 
                         /* detect user_id from fnum */
                         $userId = $fnumInfos['applicant_id'];
@@ -419,6 +423,7 @@ class EmundusViewApplication extends JViewLegacy {
 
                         $forms = $m_application->getForms(intval($fnumInfos['applicant_id']), $fnum, $pid);
                         $this->assignRef('forms', $forms);
+                        $this->assignRef('applicant', $applicant[0]);
 
                     } else {
                         echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
