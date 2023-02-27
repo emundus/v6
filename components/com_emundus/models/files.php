@@ -3464,6 +3464,7 @@ class EmundusModelFiles extends JModelLegacy
                 ->leftJoin($db->quoteName('#__emundus_chatroom','ec').' ON '.$db->quoteName('ec.fnum').' = '.$db->quoteName('ecc.fnum'))
                 ->leftJoin($db->quoteName('#__messages','m').' ON '.$db->quoteName('m.page').' = '.$db->quoteName('ec.id'))
                 ->where($db->quoteName('ecc.fnum') . ' = ' . $db->quoteName('ecc.fnum'))
+                ->andWhere($db->quoteName('m.state') . ' = 1')
                 ->group('ecc.fnum');
 
             $db->setQuery($query);
