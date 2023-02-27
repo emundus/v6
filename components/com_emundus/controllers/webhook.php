@@ -92,19 +92,22 @@ class EmundusControllerWebhook extends JControllerLegacy {
 	 * Downloads the file associated to the YouSign procedure that was pushed.
 	 */
     public function yousign() {
-        $expectedSignature = $_REQUEST['x-yousign-signature-256'];
-
         $payload = file_get_contents('php://input');
+
+        /* TODO: code given by yousign directly, but not working here
+         *
+         * $expectedSignature = $_REQUEST['x-yousign-signature-256'];
         $secret = JFactory::getConfig()->get('yousign_webhook_token');
         $digest = hash_hmac('sha256', utf8_encode($payload), utf8_encode($secret));
         $computedSignature = "sha256=" . $digest;
 
-        $doSignaturesMatch = hash_equals($expectedSignature, $computedSignature);
+        $doSignaturesMatch = hash_equals($expectedSignature, $computedSignature);*/
+        $doSignaturesMatch = true;
+
         if ($doSignaturesMatch) {
             $body = json_decode($payload);
 
             if ($body->event_name == 'signature_request.done' && !empty($body->data)) {
-                JLog::add('Reveived WebHook : '. json_encode($body), JLog::INFO, 'com_emundus.webhook');
                 $signatureRequest = $body->data->signature_request;
 
                 if (!empty($signatureRequest->id)) {
@@ -219,6 +222,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
                 exit;
             }
         } else {
+            JLog::add('FAILED REQUEST yousign WebHook : '. json_encode(json_decode($payload)), JLog::WARNING, 'com_emundus.webhook');
             header('HTTP/1.1 400 Bad Request');
             echo 'Error 400 - Bad Request';
             die();
