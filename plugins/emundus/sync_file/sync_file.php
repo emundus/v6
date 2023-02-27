@@ -6,9 +6,12 @@
  * @copyright (C) 2022 eMundus SOFTWARE. All rights reserved.
  * @license	GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
  */
+
+use classes\api\FileSynchronizer;
+
 defined('_JEXEC') or die('Restricted access');
 
-require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'api'.DS.'FileSynchronizer.php');
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'classes'.DS.'api'.DS.'FileSynchronizer.php');
 
 class plgEmundusSync_file extends JPlugin {
 

@@ -7,6 +7,13 @@
 			:defaultAttachments="data.attachments ? data.attachments : null"
 		></Attachments>
 
+    <Files
+        v-else-if="component === 'files'"
+        :type="data.type"
+        :user="data.user"
+        :ratio="data.ratio"
+    ></Files>
+
     <transition v-else name="slide-right">
       <component v-bind:is="$props.component"/>
     </transition>
@@ -17,6 +24,8 @@
 import moment from "moment";
 
 import Attachments from "./views/Attachments.vue";
+import Files from './views/Files/Files.vue';
+
 import fileService from "./services/file.js";
 import list from "./views/list";
 import addcampaign from "./views/addCampaign"
@@ -27,7 +36,7 @@ import evaluationbuilder from "./views/evaluationBuilder"
 import settings from "./views/globalSettings"
 import messagescoordinator from "./components/Messages/MessagesCoordinator";
 import messages from "./components/Messages/Messages";
-import editprofile from "./views/Users/Edit"
+import editprofile from "./views/Users/Edit";
 
 export default {
 	props: {
@@ -39,7 +48,7 @@ export default {
     sysadminAccess: String,
 		defaultLang: {
 			type: String,
-			default: ''
+			default: 'fr'
 		},
 		component: {
 			type: String,
@@ -62,6 +71,7 @@ export default {
     messagescoordinator,
     messages,
     editprofile,
+    Files
 	},
 
   created() {
@@ -77,40 +87,35 @@ export default {
 		  this.data.attachments = JSON.parse(atob(this.data.attachments));
 	  }
 
-    if(typeof this.$props.datas != 'undefined') {
+    if (typeof this.$props.datas != 'undefined') {
       this.$store.commit("global/initDatas", this.$props.datas);
     }
-    if(typeof this.$props.currentLanguage != 'undefined') {
-      this.$store.commit("global/initCurrentLanguage", this.$props.currentLanguage);
+    if (typeof this.$props.currentLanguage != 'undefined') {
+      this.$store.commit('global/initCurrentLanguage', this.$props.currentLanguage);
+	    moment.locale(this.$store.state.global.currentLanguage);
+    } else {
+	    this.$store.commit('global/initCurrentLanguage', 'fr');
     }
-    if(typeof this.$props.shortLang != 'undefined') {
-      this.$store.commit("global/initShortLang", this.$props.shortLang);
+    if (typeof this.$props.shortLang != 'undefined') {
+      this.$store.commit('global/initShortLang', this.$props.shortLang);
     }
-    if(typeof this.$props.manyLanguages != 'undefined') {
+    if (typeof this.$props.manyLanguages != 'undefined') {
       this.$store.commit("global/initManyLanguages", this.$props.manyLanguages);
     }
-	  if(typeof this.$props.defaultLang != 'undefined') {
+	  if (typeof this.$props.defaultLang != 'undefined') {
 		  this.$store.commit("global/initDefaultLang", this.$props.defaultLang);
 	  }
-    if(typeof this.$props.coordinatorAccess != 'undefined') {
+    if (typeof this.$props.coordinatorAccess != 'undefined') {
       this.$store.commit("global/initCoordinatorAccess", this.$props.coordinatorAccess);
     }
-    if(typeof this.$props.coordinatorAccess != 'undefined') {
+    if (typeof this.$props.coordinatorAccess != 'undefined') {
       this.$store.commit("global/initSysadminAccess", this.$props.sysadminAccess);
     }
   },
 
   mounted() {
-		if (this.data.lang) {
-			this.$store.dispatch("global/setLang", this.data.lang.split("-")[0]);
-		} else {
-			this.$store.dispatch("global/setLang", "fr");
-		}
-
-		moment.locale(this.$store.state.global.lang);
-
 		if (this.data.base) {
-			this.$store.dispatch("attachment/setAttachmentPath", this.data.base + "/images/emundus/files/");
+			this.$store.dispatch('attachment/setAttachmentPath', this.data.base + '/images/emundus/files/');
 		}
 	},
 };
@@ -158,8 +163,9 @@ export default {
 .view-emails #g-container-main .g-container,
 .view-form #g-container-main .g-container,
 .view-settings #g-container-main .g-container,
+.view-file #g-container-main .g-container,
 .view-users #g-container-main .g-container{
-  width: 90%;
+  width: 95%;
 }
 
 @media all and (max-width: 1366px) {
@@ -167,8 +173,9 @@ export default {
   .view-emails #g-container-main .g-container,
   .view-form #g-container-main .g-container,
   .view-settings #g-container-main .g-container,
+  .view-file #g-container-main .g-container,
   .view-users #g-container-main .g-container{
-    width: 85%;
+    width: 95%;
   }
 }
 

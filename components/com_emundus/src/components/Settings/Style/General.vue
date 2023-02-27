@@ -4,8 +4,6 @@
         @UpdateColors="updateColors"
     />
 
-    <h2 style="margin-top: 0">{{ translate('COM_EMUNDUS_ONBOARD_STYLE_TOOL_GENERAL') }}</h2>
-
     <!-- LOGO -->
     <div class="em-grid-2">
       <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">

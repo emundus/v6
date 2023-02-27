@@ -9,6 +9,8 @@
  */
 
 // No direct access
+use classes\api\FileSynchronizer;
+
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 
@@ -368,8 +370,8 @@ class EmundusModelSync extends JModelList {
     {
         $states = array();
 
-        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'api' . DS . 'FileSynchronizer.php');
-        if (class_exists('FileSynchronizer')) {
+        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'classes' . DS . 'api' . DS . 'FileSynchronizer.php');
+        if (class_exists('classes\api\FileSynchronizer')) {
             $synchronizer = new FileSynchronizer($type);
             foreach ($upload_ids as $upload_id) {
                 $states[$upload_id] = $synchronizer->updateFile($upload_id);
@@ -383,8 +385,8 @@ class EmundusModelSync extends JModelList {
     {
         $states = array();
 
-        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'api' . DS . 'FileSynchronizer.php');
-        if (class_exists('FileSynchronizer')) {
+        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'classes' . DS .'api' . DS . 'FileSynchronizer.php');
+        if (class_exists('classes\api\FileSynchronizer')) {
             $synchronizer = new FileSynchronizer($type);
             foreach ($upload_ids as $upload_id) {
                 $states[$upload_id] = $synchronizer->deleteFile($upload_id);
@@ -398,8 +400,8 @@ class EmundusModelSync extends JModelList {
     {
         $states = array();
 
-        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'api' . DS . 'FileSynchronizer.php');
-        if (class_exists('FileSynchronizer')) {
+        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'classes' . DS .'api' . DS . 'FileSynchronizer.php');
+        if (class_exists('classes\api\FileSynchronizer')) {
             $synchronizer = new FileSynchronizer($type);
             foreach ($upload_ids as $upload_id) {
                 $states[$upload_id] = $synchronizer->checkFileExists($upload_id);
