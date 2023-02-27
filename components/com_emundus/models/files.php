@@ -275,6 +275,14 @@ class EmundusModelFiles extends JModelLegacy
         if (in_array('overall', $em_other_columns)) {
             $this->_elements_default[] = ' AVG(ee.overall) as overall ';
         }
+        if (in_array('unread_messages', $em_other_columns)) {
+            $this->_elements_default[] = ' (SELECT count(m.message_id)
+            FROM #__emundus_campaign_candidature AS `ecc`
+            LEFT JOIN `#__emundus_chatroom` AS `ec` ON `ec`.`fnum` LIKE `ecc`.`fnum`
+            LEFT JOIN `#__messages` AS `m` ON `m`.`page` = `ec`.`id`
+            WHERE `ecc`.`fnum` LIKE `jecc`.`fnum` AND `m`.`state` = 0 AND `m`.`user_id_from` != ' . JFactory::getUser()->id
+            . ' GROUP BY `jecc`.`fnum`) AS unread_messages ';
+        }
         if (empty($col_elt)) {
             $col_elt = array();
         }
@@ -356,6 +364,9 @@ class EmundusModelFiles extends JModelLegacy
         $can_be_ordering[] = 'name';
         $can_be_ordering[] = 'eta.id_tag';
 
+        if (in_array('unread_messages', $em_other_columns)) {
+            $can_be_ordering[] = 'unread_messages';
+        }
         $campaign_candidature_columns = [
             'form_progress',
             'attachment_progress',
@@ -555,7 +566,9 @@ class EmundusModelFiles extends JModelLegacy
             '#__emundus_setup_campaigns', 'jos_emundus_setup_campaigns',
             '#__users', 'jos_users',
             '#__emundus_users', 'jos_emundus_users',
-            '#__emundus_tag_assoc', 'jos_emundus_tag_assoc'
+            '#__emundus_tag_assoc', 'jos_emundus_tag_assoc',
+            '#__messages', 'jos_messages',
+            '#__emundus_chatroom', 'jos_emundus_chatroom'
         ];
 
         if (in_array('overall', $em_other_columns)) {
@@ -3436,6 +3449,34 @@ class EmundusModelFiles extends JModelLegacy
         $db->setQuery($query);
         return $db->loadAssocList();
     }
+
+    public function getUnreadMessages() {
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $user = JFactory::getUser();
+        $default = array();
+
+
+        try {
+            $query->select('ecc.fnum, count(m.message_id) as nb')
+                ->from($db->quoteName('#__emundus_campaign_candidature','ecc'))
+                ->leftJoin($db->quoteName('#__emundus_chatroom','ec').' ON '.$db->quoteName('ec.fnum').' = '.$db->quoteName('ecc.fnum'))
+                ->leftJoin($db->quoteName('#__messages','m').' ON '.$db->quoteName('m.page').' = '.$db->quoteName('ec.id'))
+                ->where($db->quoteName('ecc.fnum') . ' = ' . $db->quoteName('ecc.fnum'))
+                ->andWhere($db->quoteName('m.state') . ' = 0')
+                ->andWhere($db->quoteName('m.user_id_from') . ' != ' . JFactory::getUser()->id)
+                ->group('ecc.fnum');
+
+            $db->setQuery($query);
+            $result = $db->loadAssocList();
+
+            return $result;
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return 0;
+    }}
+
 
     public function getTagsAssocStatus($status){
         $db = JFactory::getDBO();
