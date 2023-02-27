@@ -826,7 +826,12 @@ function generate_letter() {
                     /// showMode == 2 (classic way)
                     var files = result.data.files;
                     if (files && files.length > 0) {
-                        var zipUrl = 'index.php?option=com_emundus&controller=files&task=exportzipdoc&ids=';
+                        let file_ids = [];
+                        files.forEach((file) => {
+                            file_ids.push(file.upload);
+                        });
+
+                        var zipUrl = 'index.php?option=com_emundus&controller=files&task=exportzipdoc&ids=' + file_ids.toString();
                         table += '<p class="em-h5">' + Joomla.JText._('COM_EMUNDUS_LETTERS_FILES_GENERATED') + '</p>' +
                             '<table class="table table-striped" id="em-generated-docs">' +
                             '<thead>' +
