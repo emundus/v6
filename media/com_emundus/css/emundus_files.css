@@ -2653,30 +2653,39 @@ a.copy-0:focus {
 }
 
 @media all and (min-width: 768px) and (max-width: 959px) {
-    .g-back-office-emundus-tableau .panel-body {
+    .g-back-office-emundus-tableau.files-board .panel-body {
         height: auto;
     }
-    .g-back-office-emundus-tableau .col-md-3.side-panel {
+    .g-back-office-emundus-tableau.files-board .col-md-3.side-panel {
         position: inherit;
+    }
+    .g-back-office-emundus-tableau.files-board #g-main-mainbody .platform-content {
+        padding: 0 !important;
     }
 }
 
 @media all and (min-width: 480px) and (max-width: 767px) {
-    .g-back-office-emundus-tableau .panel-body {
+    .g-back-office-emundus-tableau.files-board .panel-body {
         height: auto;
     }
-    .g-back-office-emundus-tableau .col-md-3.side-panel {
+    .g-back-office-emundus-tableau.files-board .col-md-3.side-panel {
         position: inherit;
+    }
+    .g-back-office-emundus-tableau.files-board #g-main-mainbody .platform-content {
+        padding: 0 !important;
     }
 }
 
 @media all and (max-width: 479px) {
 
-    .g-back-office-emundus-tableau .panel-body {
+    .g-back-office-emundus-tableau.files-board .panel-body {
         height: auto;
     }
-    .g-back-office-emundus-tableau .col-md-3.side-panel {
+    .g-back-office-emundus-tableau.files-board .col-md-3.side-panel {
         position: inherit;
+    }
+    .g-back-office-emundus-tableau.files-board #g-main-mainbody .platform-content {
+        padding: 0 !important;
     }
 
     .g-back-office-emundus-tableau #em_select_filter select#select_filter {
