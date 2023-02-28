@@ -557,7 +557,7 @@ if (!empty($this->custom_title)) :?>
                 <tr class="em-allowed-files">
                     <td>
                     <div class="em-ml-8">
-                    <p><em>'. JText::_('COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY').' '.$attachment->allowed_types.'</em></p>
+                    <p style="word-break: break-all;"><em>'. JText::_('COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY').' '.$attachment->allowed_types.'</em></p>
                     <div class="em-flex-row em-flex-space-between">';
                    if (!empty($this->attachments_to_upload) && in_array($attachment->id,$this->attachments_to_upload)) {
                         $div .= '<button class="btn btn-danger btn-xs em-pointer" onclick="uploadfromprofile('."$attachment->id".')">'.JText::_('COM_EMUNDUS_USERS_MY_DOCUMENTS_LOAD').'</button>';
