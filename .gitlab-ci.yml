@@ -229,6 +229,17 @@ deployer-auto-dev:
   rules:
     - if: $CI_COMMIT_BRANCH == "dev"
 
+deployer-auto-release:
+  environment:
+    name: release/auto
+    deployment_tier: testing
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: "env=release --no-hooks"
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ "/^release\/.*/"
+
 deployer-auto-production:
   environment: 
     name: production/auto
