@@ -5028,6 +5028,16 @@ screen and (max-height: 769px) {
 
 @media all and (max-width: 479px) {
 
+  /* BIRTHDAY */
+  .view-form:not(.com_emundus) .span12 form .fabrikGroup .row-fluid .fabrikElementContainer.control-group:not(.plg-display) .fabrikElement .fabrikSubElementContainer {
+    .fabrikinput.inputbox {
+      margin-bottom: 8px;
+    }
+    .fabrikinput.inputbox:nth-child(3) {
+      margin-left: 0px;
+    }
+  }
+
   .em-searchbar {
     width: 100%;
 
@@ -5454,6 +5464,13 @@ screen and (max-height: 769px) {
 }
 
 @media all and (min-width: 480px) and (max-width: 767px) {
+
+  /* BIRTHDAY */
+  .view-form:not(.com_emundus) .span12 form .fabrikGroup .row-fluid .fabrikElementContainer.control-group:not(.plg-display) .fabrikElement .fabrikSubElementContainer {
+     .fabrikinput.inputbox {
+      margin: 0 !important;
+    }
+  }
 
   .gantry #g-navigation, .gantry #g-navigation .g-container {
     height: auto !important;
