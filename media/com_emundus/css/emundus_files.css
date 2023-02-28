@@ -1988,6 +1988,10 @@ label[for="em-file_to_upload"]:hover {
     padding: 0 !important;
 }
 
+.em-nopadding .chzn-container.chzn-container-single{
+    width: 100% !important;
+    margin-bottom: 8px;
+}
 
 
 /* collapse in Files */
