@@ -136,7 +136,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     width: 50%;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 50px;
+    margin-top: 24px;
     margin-bottom: 50px;
     border-radius: 16px;
 }
@@ -184,7 +184,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 
 .view-reset .reset .page-header,  .view-reset .reset-confirm .page-header, .view-reset .reset-complete .page-header {
     width: 100%;
-    padding: 80px 64px 0px 64px;
+    padding: 0 64px 0px 64px;
 }
 
 

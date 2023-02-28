@@ -1031,6 +1031,9 @@ body > .g-container {
 }
 
 /*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
+.emundus-form.em-formRegistrationCenter{
+  margin-top: 0 !important;
+}
 .view-registration, .view-login, .view-reset, .view-form.em-formRegistrationCenter {
   #g-navigation .g-container {
     padding: 24px !important;
