@@ -5,22 +5,24 @@
     />
 
     <!-- LOGO -->
-    <div class="em-grid-2">
+    <div class="em-grid-2" v-show="!loading">
       <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
         <div class="em-flex-row">
           <div>
-            <h3 class="em-text-neutral-800" style="margin: 0">Logo</h3>
-            <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png, gif, svg</em></span>
+            <p class="em-text-neutral-800 em-h5 em-flex-row em-mb-8">
+              Logo
+              <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayLogoTip">help_outline</span>
+            </p>
+            <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png, gif, svg</em></p>
+            <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_LOGO_RECOMMENDED') }}</em></p>
           </div>
-          <span class="material-icons em-pointer" style="margin-left: 125px" v-if="logo_updating" @click="logo_updating = !logo_updating">close</span>
         </div>
 
-        <div class="em-logo-box pointer em-mt-16" @click="logo_updating = !logo_updating" v-if="!logo_updating">
+        <div class="em-logo-box pointer em-mt-16" v-if="!logo_updating">
           <img class="logo-settings" :src="imageLink" :srcset="'/'+imageLink" :alt="InsertLogo">
         </div>
-        <div class="em-mt-16">
+        <div class="em-mt-16" v-if="logo_updating">
           <vue-dropzone
-              v-if="logo_updating"
               ref="dropzone"
               id="customdropzone"
               :include-styling="false"
@@ -36,24 +38,31 @@
             </div>
           </vue-dropzone>
         </div>
+
+        <button @click="logo_updating = !logo_updating" class="em-mt-8 em-primary-button">
+          <span v-if="!logo_updating">{{ translate("COM_EMUNDUS_ONBOARD_UPDATE_LOGO") }}</span>
+          <span v-else>{{ translate('COM_EMUNDUS_ONBOARD_CANCEL') }}</span>
+        </button>
       </div>
 
       <!-- FAVICON -->
       <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
         <div class="em-flex-row">
           <div>
-            <h3 class="em-text-neutral-800" style="margin: 0">{{ translate("COM_EMUNDUS_ONBOARD_ICON") }}</h3>
-            <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png</em></span>
+            <p class="em-text-neutral-800 em-h5 em-flex-row em-mb-8">
+              {{ translate("COM_EMUNDUS_ONBOARD_ICON") }}
+              <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayFaviconTip">help_outline</span>
+            </p>
+            <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png</em></p>
+            <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ICON_RECOMMENDED') }}</em></p>
           </div>
-          <span class="material-icons em-pointer" style="margin-left: 125px" v-if="favicon_updating" @click="favicon_updating = !favicon_updating">close</span>
         </div>
 
-        <div class="em-logo-box pointer em-mt-16" @click="favicon_updating = !favicon_updating" v-if="!favicon_updating">
+        <div class="em-logo-box pointer em-mt-16" v-if="!favicon_updating">
           <img class="logo-settings" :src="iconLink" :srcset="'/'+iconLink" :alt="InsertIcon">
         </div>
-        <div class="em-mt-16">
+        <div class="em-mt-16" v-if="favicon_updating">
           <vue-dropzone
-              v-if="favicon_updating"
               ref="dropzone"
               id="customdropzone"
               :include-styling="false"
@@ -69,37 +78,48 @@
             </div>
           </vue-dropzone>
         </div>
+
+        <button @click="favicon_updating = !favicon_updating" class="em-mt-8 em-primary-button">
+          <span v-if="!favicon_updating">{{ translate("COM_EMUNDUS_ONBOARD_UPDATE_ICON") }}</span>
+          <span v-else>{{ translate('COM_EMUNDUS_ONBOARD_CANCEL') }}</span>
+        </button>
       </div>
 
       <!-- COLORS -->
       <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
-        <div class="em-flex-row" style="margin-bottom: 52px">
-            <h3 class="em-text-neutral-800" style="margin: 0">{{ translate("COM_EMUNDUS_ONBOARD_COLORS") }}</h3>
+        <div>
+            <p class="em-text-neutral-800 em-h5 em-mb-8">{{ translate("COM_EMUNDUS_ONBOARD_COLORS") }}</p>
+            <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_COLORS_RECOMMENDED') }}</em></p>
         </div>
 
-        <div class="em-logo-box pointer em-mt-16" @click="$modal.show('modalUpdateColors')">
+        <div class="em-logo-box pointer em-mt-16">
           <div class="color-preset" :style="'background-color:' + primary + ';border-right: 25px solid' + secondary">
           </div>
         </div>
+
+        <button class="em-mt-8 em-primary-button" @click="$modal.show('modalUpdateColors')">
+          <span>{{ translate("COM_EMUNDUS_ONBOARD_UPDATE_COLORS") }}</span>
+        </button>
       </div>
 
       <!-- BANNER -->
       <div v-if="bannerLink" class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
         <div class="em-flex-row">
           <div>
-            <h3 class="em-text-neutral-800" style="margin: 0">{{ translate("COM_EMUNDUS_ONBOARD_BANNER") }}</h3>
+            <p class="em-text-neutral-800 em-h5 em-mb-8 em-flex-row">
+              {{ translate("COM_EMUNDUS_ONBOARD_BANNER") }}
+              <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayBannerTip">help_outline</span>
+            </p>
             <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png</em></span><br/>
             <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_RECOMMENDED_SIZE') }} : 1440x200px</em></span>
           </div>
-          <span class="material-icons em-pointer" style="margin-left: 125px" v-if="banner_updating" @click="banner_updating = !banner_updating">close</span>
         </div>
 
-        <div class="em-logo-box pointer em-mt-16" @click="banner_updating = !banner_updating" v-if="!banner_updating">
-          <img class="logo-settings" :src="bannerLink" :srcset="'/'+bannerLink" :alt="InsertBanner">
+        <div class="em-logo-box pointer em-mt-16" v-if="!banner_updating">
+          <img class="logo-settings" style="width: 250px" :src="bannerLink" :srcset="'/'+bannerLink" :alt="InsertBanner">
         </div>
-        <div class="em-mt-16">
+        <div class="em-mt-16" v-if="banner_updating">
           <vue-dropzone
-              v-if="banner_updating"
               ref="dropzone"
               id="customdropzone"
               :include-styling="false"
@@ -115,6 +135,11 @@
             </div>
           </vue-dropzone>
         </div>
+
+        <button @click="banner_updating = !banner_updating" class="em-mt-8 em-primary-button">
+          <span v-if="!banner_updating">{{ translate("COM_EMUNDUS_ONBOARD_UPDATE_BANNER") }}</span>
+          <span v-else>{{ translate('COM_EMUNDUS_ONBOARD_CANCEL') }}</span>
+        </button>
       </div>
     </div>
 
@@ -240,7 +265,6 @@ export default {
       setTimeout(() => {
         this.changes = true;
       },1000);
-      this.loading = false;
     });
 
     axios({
@@ -254,7 +278,6 @@ export default {
       setTimeout(() => {
         this.changes = true;
       },1000);
-      this.loading = false;
     });
 
     axios({
@@ -380,6 +403,57 @@ export default {
     },
     uploadNewLogo() {
       this.$refs.dropzone.processQueue();
+    },
+
+    displayFaviconTip() {
+      Swal.fire({
+        title: this.translate("COM_EMUNDUS_ONBOARD_ICON"),
+        text: this.translate("COM_EMUNDUS_ONBOARD_ICON_TIP_TEXT"),
+        showCancelButton: false,
+        confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          confirmButton: 'em-swal-confirm-button',
+          actions: "em-swal-single-action",
+        },
+      }).then(result => {
+
+      });
+    },
+
+    displayLogoTip() {
+      Swal.fire({
+        title: 'Logo',
+        text: this.translate("COM_EMUNDUS_ONBOARD_LOGO_TIP_TEXT"),
+        showCancelButton: false,
+        confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          confirmButton: 'em-swal-confirm-button',
+          actions: "em-swal-single-action",
+        },
+      }).then(result => {
+
+      });
+    },
+
+    displayBannerTip() {
+      Swal.fire({
+        title: this.translate('COM_EMUNDUS_ONBOARD_BANNER'),
+        text: this.translate("COM_EMUNDUS_ONBOARD_BANNER_TIP_TEXT"),
+        showCancelButton: false,
+        confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          confirmButton: 'em-swal-confirm-button',
+          actions: "em-swal-single-action",
+        },
+      }).then(result => {
+
+      });
     }
   }
 }
