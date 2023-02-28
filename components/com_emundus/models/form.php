@@ -638,7 +638,7 @@ class EmundusModelForm extends JModelList {
 							$db->setQuery($query);
 							$heading_to_duplicate = $db->loadObject();
 
-							if (!empty($heading_to_duplicate)) {
+							if (!empty($heading_to_duplicate->id)) {
 								$query->clear();
 								$query->insert($db->quoteName('#__menu'));
 								foreach ($heading_to_duplicate as $key => $val) {
@@ -654,57 +654,59 @@ class EmundusModelForm extends JModelList {
 								}
 								$db->setQuery($query);
 								$db->execute();
-							}
-							//
 
-							// Get fabrik_lists
-							$query->clear()
-								->select('link')
-								->from('#__menu')
-								->where($db->quoteName('menutype') . ' = ' . $db->quote($oldprofile->menutype))
-								->andWhere($db->quoteName('type') . ' = ' . $db->quote('component'))
-								->andWhere('published = 1');
-							$db->setQuery($query);
-							$links = $db->loadObjectList();
-
-							foreach ($links as $link) {
-								if(strpos($link->link,'formid') !== false){
-									$formsid_arr[] = explode('=', $link->link)[3];
-								}
-							}
-
-							foreach ($formsid_arr as $formid) {
+								// Get fabrik_lists
 								$query->clear()
-									->select('label', 'intro')
-									->from($db->quoteName('#__fabrik_forms'))
-									->where($db->quoteName('id') . ' = ' . $db->quote($formid));
+									->select('link')
+									->from('#__menu')
+									->where($db->quoteName('menutype') . ' = ' . $db->quote($oldprofile->menutype))
+									->andWhere($db->quoteName('type') . ' = ' . $db->quote('component'))
+									->andWhere('published = 1');
 								$db->setQuery($query);
-								$form = $db->loadObject();
+								$links = $db->loadObjectList();
 
-								$label = array();
-								$intro = array();
-
-								foreach ($languages as $language) {
-									$label[$language->sef] = $formbuilder->getTranslation($form->label,$language->lang_code);
-									$intro[$language->sef] = $formbuilder->getTranslation($form->intro,$language->lang_code);
-									if($label[$language->sef] == ''){
-										$label[$language->sef] = $form->label;
+								foreach ($links as $link) {
+									if(strpos($link->link,'formid') !== false){
+										$formsid_arr[] = explode('=', $link->link)[3];
 									}
 								}
 
-								$formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile);
-							}
+								foreach ($formsid_arr as $formid) {
+									$query->clear()
+										->select('label', 'intro')
+										->from($db->quoteName('#__fabrik_forms'))
+										->where($db->quoteName('id') . ' = ' . $db->quote($formid));
+									$db->setQuery($query);
+									$form = $db->loadObject();
 
-							// Create checklist menu
-							$this->addChecklistMenu($newprofile);
+									$label = array();
+									$intro = array();
+
+									foreach ($languages as $language) {
+										$label[$language->sef] = $formbuilder->getTranslation($form->label,$language->lang_code);
+										$intro[$language->sef] = $formbuilder->getTranslation($form->intro,$language->lang_code);
+										if($label[$language->sef] == ''){
+											$label[$language->sef] = $form->label;
+										}
+									}
+
+									$formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile);
+								}
+
+								// Create checklist menu
+								$this->addChecklistMenu($newprofile);
+
+								$duplicated = $newprofile;
+							} else {
+								JLog::add('Failed to duplicate form, no heading menu found', JLog::WARNING, 'com_emundus.error');
+							}
+							//
 						} else {
 							JLog::add('Failed to duplicate form, empty new profile ', JLog::WARNING, 'com_emundus.error');
 						}
 					}
                 }
-
-	            $duplicated = $newprofile;
-            } catch (Exception $e) {
+			} catch (Exception $e) {
                 JLog::add('component/com_emundus/models/form | Error when duplicate forms : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             }
         }
