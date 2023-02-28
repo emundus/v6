@@ -2652,7 +2652,33 @@ a.copy-0:focus {
     align-items: center;
 }
 
+@media all and (min-width: 768px) and (max-width: 959px) {
+    .g-back-office-emundus-tableau .panel-body {
+        height: auto;
+    }
+    .g-back-office-emundus-tableau .col-md-3.side-panel {
+        position: inherit;
+    }
+}
+
+@media all and (min-width: 480px) and (max-width: 767px) {
+    .g-back-office-emundus-tableau .panel-body {
+        height: auto;
+    }
+    .g-back-office-emundus-tableau .col-md-3.side-panel {
+        position: inherit;
+    }
+}
+
 @media all and (max-width: 479px) {
+
+    .g-back-office-emundus-tableau .panel-body {
+        height: auto;
+    }
+    .g-back-office-emundus-tableau .col-md-3.side-panel {
+        position: inherit;
+    }
+
     .g-back-office-emundus-tableau #em_select_filter select#select_filter {
         width: 85% !important;
     }
