@@ -1615,6 +1615,10 @@ button.em-swal-delete-button{
   margin-bottom: 12px;
   font-family: var(--applicant-default-font);
   height: fit-content;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 250px;
 }
 
 /** SEARCHBAR **/
