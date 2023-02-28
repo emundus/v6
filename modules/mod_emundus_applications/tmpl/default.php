@@ -97,7 +97,7 @@ defined('_JEXEC') or die;
                 </div>
 
                 <div class="col-xs-12 <?= ($show_state_files == 1) ? "col-md-3" : "col-md-6" ?> main-page-file-progress">
-                    <section class="container" style="width:150px; float: left;">
+                    <section class="em-flex-row">
                     <?php if ($show_progress == 1) : ?>
                             <div <?php if(in_array($application->status, $admission_status)): ?>
                             id="file-<?=$application->status; ?>-<?= $application->fnum; ?>"

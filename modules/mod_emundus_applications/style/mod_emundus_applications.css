@@ -165,6 +165,9 @@ a.btn.btn-success:not(.btn-xs) {
 .g-block.size-100.content-bottom-a hr:last-child {
     display: none !important;
 }
+.main-page-file-progress .svg-container{
+    width: 100px;
+}
 @media all and (max-width: 479px) {
     .main-page-file-info a {
         margin-bottom: 4px;
@@ -229,7 +232,7 @@ a.btn.btn-success:not(.btn-xs) {
     }
 
     .main-page-file-progress {
-        width: 50%;
+        width: 100%;
         margin-top: 10px;
     }
 }
