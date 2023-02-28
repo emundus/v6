@@ -494,6 +494,16 @@ class EmundusControllersettings extends JControllerLegacy {
 
             file_put_contents('templates/g5_helium/custom/config/default/styles.yaml', $new_yaml);
 
+	        // Recompile Gantry5 css at each update
+	        $dir = JPATH_BASE . '/templates/g5_helium/custom/css-compiled';
+	        if(!empty($dir)) {
+		        foreach (glob($dir . '/*') as $file) {
+			        unlink($file);
+		        }
+
+		        rmdir($dir);
+	        }
+
             $tab = array('status' => '1', 'msg' => JText::_("SUCCESS"));
         }
         echo json_encode((object)$tab);

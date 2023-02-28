@@ -2214,7 +2214,7 @@ class EmundusModelUsers extends JModelList {
         $m_emails = new EmundusModelEmails();
 
 		// Load the com_users language tags in order to call the Joomla user JText.
-		$language =& JFactory::getLanguage();
+		$language = JFactory::getLanguage();
 		$extension = 'com_users';
 		$base_dir = JPATH_SITE;
 		$language_tag = $language->getTag(); // loads the current language-tag
@@ -2257,7 +2257,9 @@ class EmundusModelUsers extends JModelList {
 		}
 
 		// Get the user object.
-		$user = JUser::getInstance($userId);
+		$user = JFactory::getUser($userId);
+		$table = JTable::getInstance('user', 'JTable');
+		$table->load($user->id);
 
 		// Make sure the user isn't blocked.
 		if ($user->block) {
@@ -2288,10 +2290,10 @@ class EmundusModelUsers extends JModelList {
 		$token = JApplicationHelper::getHash(JUserHelper::genRandomPassword());
 		$hashedToken = JUserHelper::hashPassword($token);
 
-		$user->activation = $hashedToken;
+		$table->activation = $hashedToken;
 
 		// Save the user to the database.
-		if (!$user->save(true)) {
+		if (!$table->store()) {
 			throw new JException(JText::sprintf('COM_USERS_USER_SAVE_FAILED', $user->getError()), 500);
 		}
 

@@ -925,7 +925,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 			// The request succeeded.
 			// Proceed to step two.
-			$this->setRedirect('index.php?option=com_users&view=reset&layout=confirm');
+			$this->setRedirect(JRoute::_('index.php?option=com_users&view=reset&layout=confirm'));
 			return true;
 
 		}

@@ -1031,6 +1031,9 @@ body > .g-container {
 }
 
 /*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
+.emundus-form.em-formRegistrationCenter{
+  margin-top: 0 !important;
+}
 .view-registration, .view-login, .view-reset, .view-form.em-formRegistrationCenter {
   #g-navigation .g-container {
     padding: 24px !important;
@@ -3560,6 +3563,7 @@ ul.unstyled.em-linkForgot li a {
 }
 
 #em-files-filters #em_filters fieldset input#save-filter,
+#em-files-filters fieldset input#save-filter,
 #em_adv_filters .em_filters_adv_filter_addColumn button#add-filter {
   margin-top: 10px;
   background: var(--neutral-50);
@@ -5028,6 +5032,16 @@ screen and (max-height: 769px) {
 
 @media all and (max-width: 479px) {
 
+  /* BIRTHDAY */
+  .view-form:not(.com_emundus) .span12 form .fabrikGroup .row-fluid .fabrikElementContainer.control-group:not(.plg-display) .fabrikElement .fabrikSubElementContainer {
+    .fabrikinput.inputbox {
+      margin-bottom: 8px;
+    }
+    .fabrikinput.inputbox:nth-child(3) {
+      margin-left: 0px;
+    }
+  }
+
   .em-searchbar {
     width: 100%;
 
@@ -5454,6 +5468,13 @@ screen and (max-height: 769px) {
 }
 
 @media all and (min-width: 480px) and (max-width: 767px) {
+
+  /* BIRTHDAY */
+  .view-form:not(.com_emundus) .span12 form .fabrikGroup .row-fluid .fabrikElementContainer.control-group:not(.plg-display) .fabrikElement .fabrikSubElementContainer {
+     .fabrikinput.inputbox {
+      margin: 0 !important;
+    }
+  }
 
   .gantry #g-navigation, .gantry #g-navigation .g-container {
     height: auto !important;
@@ -7412,4 +7433,53 @@ tbody .el-table__row:nth-child(odd){
     bottom: 10%;
   }
 }
+
+#customdropzone {
+  letter-spacing: 0.2px;
+  background: #fff;
+  color: #C5C8CE;
+  transition: background-color .2s linear;
+  height: 200px;
+  padding: 40px;
+  border: dashed;
+  border-radius: 5px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  cursor: pointer;
+  .dz-preview {
+    width: 100%;
+    display: inline-block;
+    text-align: center;
+    .dz-image {
+      width: auto;
+      height: 100px;
+      >div {
+        width: inherit;
+        height: inherit;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+      >img {
+        width: 100%;
+      }
+    }
+    .dz-details {
+      color: black;
+      transition: opacity .2s linear;
+      text-align: center;
+    }
+  }
+  .dz-success-mark {
+    display: none;
+  }
+}
+.dz-default.dz-message {
+  text-align: center !important;
+}
+.dz-error-mark {
+  display: none;
+}
+/**** END ****/
 
