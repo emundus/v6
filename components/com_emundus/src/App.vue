@@ -159,23 +159,28 @@ export default {
   }
 }
 
-.view-campaigns #g-container-main .g-container,
-.view-emails #g-container-main .g-container,
+.view-campaigns.no-layout #g-container-main .g-container,
+.view-emails.no-layout #g-container-main .g-container,
 .view-form #g-container-main .g-container,
 .view-settings #g-container-main .g-container,
 .view-file #g-container-main .g-container,
 .view-users #g-container-main .g-container{
-  width: 95%;
+  width: 75rem;
 }
 
 @media all and (max-width: 1366px) {
   .view-campaigns #g-container-main .g-container,
   .view-emails #g-container-main .g-container,
   .view-form #g-container-main .g-container,
-  .view-settings #g-container-main .g-container,
   .view-file #g-container-main .g-container,
   .view-users #g-container-main .g-container{
     width: 95%;
+  }
+
+  .view-campaigns.layout-addnextcampaign #g-container-main .g-container,
+  .view-emails.layout-add #g-container-main .g-container,
+  .view-settings.no-layout #g-container-main .g-container {
+    width: calc(95% - 150px);
   }
 }
 
