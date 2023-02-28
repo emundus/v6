@@ -381,7 +381,7 @@ export default {
         title: this.translate("COM_EMUNDUS_ONBOARD_ICON"),
         text: this.translate("COM_EMUNDUS_ONBOARD_ICON_TIP_TEXT"),
         showCancelButton: false,
-        confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+        confirmButtonText: this.translate("COM_EMUNDUS_SWAL_OK_BUTTON"),
         reverseButtons: true,
         customClass: {
           title: 'em-swal-title',
@@ -398,7 +398,7 @@ export default {
         title: 'Logo',
         text: this.translate("COM_EMUNDUS_ONBOARD_LOGO_TIP_TEXT"),
         showCancelButton: false,
-        confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+        confirmButtonText: this.translate("COM_EMUNDUS_SWAL_OK_BUTTON"),
         reverseButtons: true,
         customClass: {
           title: 'em-swal-title',
@@ -415,7 +415,7 @@ export default {
         title: this.translate('COM_EMUNDUS_ONBOARD_BANNER'),
         text: this.translate("COM_EMUNDUS_ONBOARD_BANNER_TIP_TEXT"),
         showCancelButton: false,
-        confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+        confirmButtonText: this.translate("COM_EMUNDUS_SWAL_OK_BUTTON"),
         reverseButtons: true,
         customClass: {
           title: 'em-swal-title',
