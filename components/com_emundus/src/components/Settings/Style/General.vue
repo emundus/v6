@@ -13,7 +13,7 @@
               Logo
               <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayLogoTip">help_outline</span>
             </p>
-            <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png, gif, svg</em></p>
+            <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, jpg, png, gif, svg</em></p>
             <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_LOGO_RECOMMENDED') }}</em></p>
           </div>
         </div>
@@ -53,13 +53,13 @@
               {{ translate("COM_EMUNDUS_ONBOARD_ICON") }}
               <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayFaviconTip">help_outline</span>
             </p>
-            <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png</em></p>
+            <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, jpg, png</em></p>
             <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ICON_RECOMMENDED') }}</em></p>
           </div>
         </div>
 
         <div class="em-logo-box pointer em-mt-16" v-if="!favicon_updating">
-          <img class="logo-settings" :src="iconLink" :srcset="'/'+iconLink" :alt="InsertIcon">
+          <img class="logo-settings" :src="iconLink" :srcset="iconLink" :alt="InsertIcon">
         </div>
         <div class="em-mt-16" v-if="favicon_updating">
           <vue-dropzone
@@ -182,7 +182,7 @@ export default {
       banner_updating: false,
 
       imageLink: '',
-      iconLink: 'images/custom/favicon.png',
+      iconLink: window.location.origin + '//images/custom/favicon.png' + '?' + new Date().getTime(),
       bannerLink: null,
       primary: '',
       secondary: '',
@@ -259,7 +259,7 @@ export default {
       if(rep.data.filename == null){
         this.imageLink = 'images/custom/logo.png';
       } else {
-        this.imageLink = 'images/custom/' + rep.data.filename;
+        this.imageLink = 'images/custom/' + rep.data.filename + '?' + new Date().getTime();
       }
 
       setTimeout(() => {
@@ -296,10 +296,13 @@ export default {
   methods:{
     updateView(ext = 'png') {
       this.imageLink = 'images/custom/logo_custom.'+ext+'?' + new Date().getTime();
+      document.querySelector('img[src="/images/custom/logo_custom.'+ext+'"]').src = '/images/custom/logo_custom.'+ext+'?' + new Date().getTime();
       this.$forceUpdate();
     },
     updateIcon() {
-      this.iconLink = 'images/custom/favicon.png?' + new Date().getTime();
+      this.iconLink = window.location.origin + '//images/custom/favicon.png?' + new Date().getTime();
+      document.querySelector('img[src="'+window.location.origin+'//images/custom/favicon.png"]').src = window.location.origin + '//images/custom/favicon.png?' + new Date().getTime();
+      document.querySelector('link[type="image/x-icon"]').href = window.location.origin + '//images/custom/favicon.png?' + new Date().getTime();
       this.$forceUpdate();
     },
     updateBanner() {
@@ -310,40 +313,6 @@ export default {
       this.primary = colors.primary;
       this.secondary = colors.secondary;
     },
-    removeIcon() {
-      Swal.fire({
-        title: this.translate("COM_EMUNDUS_ONBOARD_REMOVE_ICON"),
-        text: this.translate("COM_EMUNDUS_ONBOARD_REMOVE_ICON_TEXT"),
-        type: "warning",
-        showCancelButton: true,
-        confirmButtonColor: '#12db42',
-        confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
-        cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-        reverseButtons: true
-      }).then(result => {
-        if (result.value) {
-          axios({
-            method: "post",
-            url:
-                "index.php?option=com_emundus&controller=settings&task=removeicon",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-          }).then((rep) => {
-            this.iconLink = '';
-            this.$forceUpdate();
-          });
-        }
-      });
-    },
-
-    imageExists(url, callback) {
-      var img = new Image();
-      img.onload = function() { callback(true); };
-      img.onerror = function() { callback(false); };
-      img.src = url;
-    },
-
     beforeClose(event) {
     },
     beforeOpen(event) {
@@ -353,7 +322,9 @@ export default {
     },
     afterRemoved() {
       if(this.$refs.dropzone.getAcceptedFiles().length === 0){
-        document.getElementById('dropzone-message').style.display = 'block';
+        if(this.banner_updating || this.logo_updating || this.favicon_updating) {
+          document.getElementById('dropzone-message').style.display = 'block';
+        }
       }
     },
     onComplete: function(response){
@@ -454,6 +425,35 @@ export default {
       }).then(result => {
 
       });
+    },
+
+    openFileInput(){
+      setTimeout(() => {
+        document.getElementsByClassName('dz-clickable')[0].click();
+      }, 300);
+    }
+  },
+  watch: {
+    logo_updating: function(value){
+      if(value){
+        this.favicon_updating = false;
+        this.banner_updating = false;
+        this.openFileInput();
+      }
+    },
+    favicon_updating: function(value){
+      if(value){
+        this.logo_updating = false;
+        this.banner_updating = false;
+        this.openFileInput();
+      }
+    },
+    banner_updating: function(value){
+      if(value){
+        this.favicon_updating = false;
+        this.logo_updating = false;
+        this.openFileInput();
+      }
     }
   }
 }
