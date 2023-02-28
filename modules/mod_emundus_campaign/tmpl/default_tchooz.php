@@ -87,24 +87,27 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     <?php if (sizeof($campaigns) == 0 && empty($codes_filters) && empty($categories_filters)) : ?>
         <hr>
         <div class="mod_emundus_campaign__list_content--default">
-            <p class="em-text-neutral-900 em-h5 em-applicant-title-font"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN') ?></p><br/>
-            <p class="em-text-neutral-900 em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT') ?></p>
-            <p class="em-applicant-text-color"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_2') ?></p><br/>
-            <p class="em-text-neutral-900 em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_3') ?></p>
-            <p class="em-applicant-text-color"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_4') ?></p>
-            <?php if (!empty($links)) :?>
-            <div class="em-flex-row-justify-end mod_emundus_campaign__buttons em-mt-32">
-                <a href="<?php echo $links->link_register ?>">
-                    <button class="em-secondary-button em-w-auto em-applicant-border-radius" type="button">
-                            <?php echo JText::_('MOD_EM_CAMPAIGN_REGISTRATION_URL') ?>
-                    </button>
-                </a>
-                <a href="<?php echo $links->link_login ?>">
-                    <button class="em-applicant-primary-button em-w-auto em-ml-8 em-applicant-border-radius" type="button">
-                        <?php echo JText::_('MOD_EM_CAMPAIGN_LOGIN_URL') ?>
-                    </button>
-                </a>
-            </div>
+            <p class="em-text-neutral-900 em-h5 em-applicant-title-font"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN') ?></p>
+            <?php if(JFactory::getUser()->guest) : ?>
+                <br/>
+                <p class="em-text-neutral-900 em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT') ?></p>
+                <p class="em-applicant-text-color"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_2') ?></p><br/>
+                <p class="em-text-neutral-900 em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_3') ?></p>
+                <p class="em-applicant-text-color"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_4') ?></p>
+                <?php if (!empty($links)) : ?>
+                    <div class="em-flex-row-justify-end mod_emundus_campaign__buttons em-mt-32">
+                        <a href="<?php echo $links->link_register ?>">
+                            <button class="em-secondary-button em-w-auto em-applicant-border-radius" type="button">
+                                    <?php echo JText::_('MOD_EM_CAMPAIGN_REGISTRATION_URL') ?>
+                            </button>
+                        </a>
+                        <a href="<?php echo $links->link_login ?>">
+                            <button class="em-applicant-primary-button em-w-auto em-ml-8 em-applicant-border-radius" type="button">
+                                <?php echo JText::_('MOD_EM_CAMPAIGN_LOGIN_URL') ?>
+                            </button>
+                        </a>
+                    </div>
+                <?php endif; ?>
             <?php endif; ?>
         </div>
     <?php else : ?>
