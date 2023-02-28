@@ -3562,8 +3562,12 @@ ul.unstyled.em-linkForgot li a {
   }
 }
 
+.em_filters_adv_filter #em_adv_filters br {
+  display: none;
+}
+
 #em-files-filters #em_filters fieldset input#save-filter,
-#em-files-filters fieldset input#save-filter,
+fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
 #em_adv_filters .em_filters_adv_filter_addColumn button#add-filter {
   margin-top: 10px;
   background: var(--neutral-50);
