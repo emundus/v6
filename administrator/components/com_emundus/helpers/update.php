@@ -114,7 +114,7 @@ class EmundusHelperUpdate
      *
      * @since version 1.33.0
      */
-    public static function updateModulesParams($name, $param, $value) {
+    public static function updateModulesParams($name, $param, $value, $position = '') {
         $updated = false;
 
         if (!empty($name)) {
@@ -123,8 +123,12 @@ class EmundusHelperUpdate
 
             try {
                 $query->select('id,params')
-                    ->from('#__modules')
-                    ->where('module LIKE ' . $db->q('%'.$name.'%'));
+                    ->from($db->quoteName('#__modules'))
+                    ->where($db->quoteName('module') . ' LIKE ' . $db->quote($name))
+	                ->andWhere($db->quoteName('published') . ' = 1');
+				if(!empty($position)){
+					$query->andWhere($db->quoteName('position') . ' LIKE ' . $db->quote($position));
+				}
                 $db->setQuery($query);
                 $rows =  $db->loadObjectList();
 
@@ -133,12 +137,34 @@ class EmundusHelperUpdate
                     $params[$param] = $value;
 
                     $query->clear()
-                        ->update('#__modules')
-                        ->set('params = ' . $db->quote(json_encode($params)))
-                        ->where('id = ' . $row->id);
+                        ->update($db->quoteName('#__modules'))
+                        ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+                        ->where($db->quoteName('id') . ' = ' . $row->id);
                     $db->setQuery($query);
-
                     $updated = $db->execute();
+
+					if($updated) {
+						$query->clear()
+							->select('id,value')
+							->from($db->quoteName('#__falang_content'))
+							->where($db->quoteName('reference_table') . ' LIKE ' . $db->quote('modules'))
+							->andWhere($db->quoteName('reference_field') . ' LIKE ' . $db->quote('params'))
+							->andWhere($db->quoteName('reference_id') . ' = ' . $row->id);
+						$db->setQuery($query);
+						$module_translations = $db->loadObjectList();
+
+						foreach ($module_translations as $module_translation) {
+							$translation_params = json_decode($module_translation->value,true);
+							$translation_params[$param] = $value;
+
+							$query->clear()
+								->update($db->quoteName('#__falang_content'))
+								->set($db->quoteName('value') . ' = ' . $db->quote(json_encode($translation_params)))
+								->where($db->quoteName('id') . ' = ' . $module_translation->id);
+							$db->setQuery($query);
+							$db->execute();
+						}
+					}
                 }
             } catch (Exception $e) {
                 echo $e->getMessage();

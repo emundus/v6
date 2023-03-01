@@ -717,6 +717,9 @@ if (password_value.match(regex) != null) {
 				}
 
 				EmundusHelperUpdate::genericUpdateParams('#__fabrik_cron', 'plugin', 'emundusrecall', array('log_email') , array(''));
+
+				EmundusHelperUpdate::updateConfigurationFile('caching', '2');
+				EmundusHelperUpdate::updateModulesParams('mod_emundusmenu','cache',0);
 			}
 
 
