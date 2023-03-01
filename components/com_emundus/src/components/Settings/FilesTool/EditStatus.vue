@@ -95,7 +95,7 @@ export default {
       actualLanguage : '',
       swatches: [
         '#EBECF0', '#FBE8FF', '#EBE9FE', '#663399', '#E0F2FE', '#D1E9FF', '#D1E0FF', '#CCFBEF', '#C4F0E1', '#E4F0EC',
-        '#FDF7C3', '#FEF0C7', '#FCEAD7', '#FFE5D5', '#EC644B', '#FEE4E2', '#e5283b', '#FCE7F6', '#FFE4E8'
+        '#FDF7C3', '#FEF0C7', '#FCEAD7', '#FFE5D5', '#EC644B', '#FEE4E2', '#E5283B', '#FCE7F6', '#FFE4E8'
       ],
     };
   },
