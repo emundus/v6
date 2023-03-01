@@ -133,7 +133,7 @@ select:not(.profile-select),
 a.chzn-single,
 textarea {
   background-color: $neutral-50 !important;
-  color: initial;
+  color: black;
   font-family: var(--font);
 }
 
@@ -1917,7 +1917,7 @@ tr.fabrikFilterContainer {
   }
 }
 
-/* STATUS ET ETIQUETTES */
+/* STATUTS ET ETIQUETTES */
 .em-cell > .label,.em-status{
   border-radius: 8px !important;
   font-size: 14px !important;
@@ -2019,6 +2019,7 @@ tr.fabrikFilterContainer {
 /** DEPRECATED **/
 .label-lightyellow {
   background-color: #FFFD7E !important;
+  color: #5d5b00 !important;
   text-shadow: none;
 }
 .label-text-lightyellow {
@@ -2091,7 +2092,7 @@ tr.fabrikFilterContainer {
 }
 
 .label-darkred {
-  background-color: #e5283b !important;
+  background-color: #E5283B !important;
   text-shadow: none;
 }
 .label-darkred {
