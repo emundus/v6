@@ -6148,7 +6148,7 @@ $(document).ready(function() {
         }
     });
 
-    $(document).on('click', '[id^=showelements_]', function() {
+    $(document).on('click', 'div[id^=showelements_]', function() {
         var id = $(this).attr('id').split('_')[1];
 
         var elements_block = document.getElementById('felts' + id);

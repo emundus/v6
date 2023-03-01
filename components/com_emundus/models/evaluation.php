@@ -3179,7 +3179,7 @@ class EmundusModelEvaluation extends JModelList {
                 // If we do not have any rights on evaluation
                 else {
                     $message = 'COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS';
-                    $url = 'index.php';
+                    $url = '';
                 }
             }
             // If no evaluation found but period is not started or passed
