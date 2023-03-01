@@ -2293,41 +2293,45 @@ class EmundusModelFormbuilder extends JModelList {
         }
     }
 
-    function reorderMenu($menus,$profile) {
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
+    function reorderMenu($menus, $profile) {
+	    $updated = false;
 
-        try {
-            $rgt = 2;
-            foreach ($menus as $key => $menu) {
-                $rgt = $menu->rgt + $key + 3;
-                $lft = $menu->rgt + $key + 2;
+		if (!empty($profile)) {
+			$db = $this->getDbo();
+			$query = $db->getQuery(true);
 
-				if(!empty($menu->link)) {
-					$query->clear()
-						->update($db->quoteName('#__menu'))
-						->set('rgt = ' . $db->quote($rgt))
-						->set('lft = ' . $db->quote($lft))
-						->where('link = ' . $db->quote($menu->link));
-					$db->setQuery($query);
-					$db->execute();
+			try {
+				$rgt = 2;
+				foreach ($menus as $key => $menu) {
+					$rgt = $menu->rgt + $key + 3;
+					$lft = $menu->rgt + $key + 2;
+
+					if(!empty($menu->link)) {
+						$query->clear()
+							->update($db->quoteName('#__menu'))
+							->set('rgt = ' . $db->quote($rgt))
+							->set('lft = ' . $db->quote($lft))
+							->where('link = ' . $db->quote($menu->link));
+						$db->setQuery($query);
+						$db->execute();
+					}
 				}
-            }
 
-            $query->clear()
-                ->update($db->quoteName('#__menu'))
-                ->set('lft = ' . $db->quote(1))
-                ->set('rgt = ' . $db->quote($rgt - 1))
-                ->where('menutype = ' . $db->quote('menu-profile'.$profile))
-                ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
-            $db->setQuery($query);
-            $db->execute();
+				$query->clear()
+					->update($db->quoteName('#__menu'))
+					->set('lft = ' . $db->quote(1))
+					->set('rgt = ' . $db->quote($rgt - 1))
+					->where('menutype = ' . $db->quote('menu-profile'.$profile))
+					->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
+				$db->setQuery($query);
 
-            return true;
-        } catch (Exception $e){
-            JLog::add('component/com_emundus/models/formbuilder | Error at reorder the menu with link : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
-        }
+				$updated = $db->execute();
+			} catch (Exception $e){
+				JLog::add('component/com_emundus/models/formbuilder | Error at reorder the menu with link : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $updated;
     }
 
     function getGroupOrdering($gid,$fid) {
