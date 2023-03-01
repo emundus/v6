@@ -1630,8 +1630,8 @@ $(document).ready(function() {
         url +='&action_id='+id;
 
         var checkInput = getUserCheck();
-        var prghtml = "";
-        var atthtml = "";
+        var prghtml = '';
+        var atthtml = '';
 
         switch (id) {
             /**
@@ -3174,7 +3174,6 @@ $(document).ready(function() {
 
                     $('#em-export-prg').on('change', function() {
                         var code = $(this).val();
-                        console.log(code);
 
                         if (code != 0) {
                             $.ajax({
@@ -3224,7 +3223,7 @@ $(document).ready(function() {
                                                             if (result.status) {
 
                                                                 prghtml = result.html;
-                                                                $('#felts-'+code+camp).parent('div').remove();
+                                                                $('#felts').empty();
                                                                 $('#felts').append(result.html);
                                                                 $('#felts').show();
 
@@ -3237,7 +3236,7 @@ $(document).ready(function() {
                                                                     success: function(result) {
                                                                         if (result.status) {
                                                                             atthtml = result.html;
-                                                                            $('#aelts-'+code+camp).parent('div').remove();
+                                                                            $('#aelts').empty();
                                                                             $('#aelts').append(result.html);
                                                                             $('#aelts').show();
                                                                         }
