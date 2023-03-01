@@ -650,7 +650,7 @@ if (password_value.match(regex) != null) {
 				//
 			}
 
-			if (version_compare($cache_version, '1.35.0', '<') || $firstrun) {
+			if (version_compare($cache_version, '1.35.0', '<=') || $firstrun) {
 				EmundusHelperUpdate::updateYamlVariable('offcanvas', '16rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'width');
 				EmundusHelperUpdate::updateYamlVariable('breakpoints', '75rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'large-desktop-container');
 				EmundusHelperUpdate::updateYamlVariable('breakpoints', '60rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'desktop-container');
