@@ -276,6 +276,7 @@ export default {
 	#models .models-card {
 		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 		margin-bottom: 64px;
+		flex-wrap: wrap;
 	}
 
 	#search-model-wrapper {
