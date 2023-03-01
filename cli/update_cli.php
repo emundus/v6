@@ -327,7 +327,7 @@ class UpdateCli extends JApplicationCli
                 }
 
                 # Update loop
-                if ($this->firstrun or version_compare($manifest_cache['version'], $this->manifest_xml->version, '<')) {
+                if ($this->firstrun or version_compare($manifest_cache['version'], $this->manifest_xml->version, '<=')) {
                     $this->out("UPDATE " . $manifest_cache['name'] . ' (' . $manifest_cache['version'] . ' to ' . $this->manifest_xml->version . ')');
 
                     # Require scriptfile
