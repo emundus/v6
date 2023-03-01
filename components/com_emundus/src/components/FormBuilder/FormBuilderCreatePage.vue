@@ -24,7 +24,6 @@
 				<div class="line em-bg-main-500"></div>
 			</div>
 			<section id="models" class="em-flex-row em-w-100">
-				<p v-if="models.length < 1 && !loading" class="em-w-100 em-text-align-center empty-model-message">{{ translate('COM_EMUNDUS_FORM_BUILDER_EMPTY_PAGE_MODELS') }}</p>
 				<div v-if="!loading" class="em-w-100">
 					<div id="search-model-wrapper">
 						<input id="search-model" class="em-mt-16" type="text" v-model="search" placeholder="Rechercher"/>
@@ -284,8 +283,8 @@ export default {
 
 		.reset-search {
 			position: absolute;
-			top: 25px;
-			left: 180px;
+			top: 27px;
+			right: 10px;
 		}
 	}
 
