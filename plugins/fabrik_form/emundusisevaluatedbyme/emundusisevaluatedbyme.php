@@ -46,6 +46,7 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
 			}
 		}
 
+		require_once(JPATH_SITE.'/components/com_emundus/models/evaluation.php');
         $m_evaluation = new EmundusModelEvaluation();
         $evaluation = $m_evaluation->getEvaluationUrl($fnum,$formid,$rowid,$student_id,1);
 
