@@ -129,7 +129,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		if (is_array($uid)) {
 			echo json_encode((object)  array('status' => false));
 			exit;
-		} else if (empty($iud)) {
+		} else if (empty($uid)) {
 			echo json_encode((object) array('status' => false, 'user' => $user, 'msg' => $user->getError()));
 			exit;
 		}
