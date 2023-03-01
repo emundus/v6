@@ -622,12 +622,6 @@ class EmundusModelFiles extends JModelLegacy
                 $query .= " limit $limitStart, $limit ";
             }
 
-            /*
-            if (JFactory::getUser()->id == 63)
-                echo '<hr>FILES:'.str_replace('#_', 'jos', $query).'<hr>';
-            */
-
-
             $dbo->setQuery($query);
             return $dbo->loadAssocList();
 

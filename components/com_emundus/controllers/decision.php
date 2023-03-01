@@ -72,7 +72,8 @@ class EmundusControllerDecision extends JControllerLegacy
         $elements = $jinput->getString('elements', null);
         $multi = $jinput->getString('multi', null);
 
-        @EmundusHelperFiles::clearfilter();
+	    $h_files = new EmundusHelperFiles;
+	    $h_files->clearfilter();
 
         if ($multi == "true") {
             $filterval = $jinput->get('val', array(), 'ARRAY');
@@ -102,7 +103,7 @@ class EmundusControllerDecision extends JControllerLegacy
         }
 
         $session->set('filt_params', $params);
-        $session->set('limitstart', 0);
+
         echo json_encode((object)(array('status' => true)));
         exit();
     }
@@ -111,20 +112,24 @@ class EmundusControllerDecision extends JControllerLegacy
         try {
             $jinput = JFactory::getApplication()->input;
             $id = $jinput->getInt('id', null);
-            $filter = @EmundusHelperFiles::getEmundusFilters($id);
+
+	        $session = JFactory::getSession();
+
+	        $h_files = new EmundusHelperFiles;
+	        $filter = $h_files->getEmundusFilters($id);
             $params = (array) json_decode($filter->constraints);
             $params['select_filter'] = $id;
             $params =  json_decode($filter->constraints, true);
 
-            JFactory::getSession()->set('select_filter', $id);
+            $session->set('select_filter', $id);
             if(isset($params['filter_order']))
             {
-                JFactory::getSession()->set('filter_order', $params['filter_order']);
-                JFactory::getSession()->set('filter_order_Dir', $params['filter_order_Dir']);
+	            $session->set('filter_order', $params['filter_order']);
+	            $session->set('filter_order_Dir', $params['filter_order_Dir']);
             }
-            JFactory::getSession()->set('filt_params', $params['filter']);
+	        $session->set('filt_params', $params['filter']);
             if(!empty($params['col']))
-                JFactory::getSession()->set('adv_cols', $params['col']);
+	            $session->set('adv_cols', $params['col']);
 
             echo json_encode((object)(array('status' => true)));
             exit();
