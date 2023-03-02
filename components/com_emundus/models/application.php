@@ -4608,7 +4608,8 @@ class EmundusModelApplication extends JModelList
 		try {
 			$db->setQuery($query);
 			$db->execute();
-			if ($db->getNumRows() == 1) {
+			if ($db->getNumRows() == 1)
+			{
 				$res = $db->loadAssoc();
 
 				$elements = array_map(function($arr) {
@@ -4625,7 +4626,13 @@ class EmundusModelApplication extends JModelList
 
 				$elements = array_filter($elements, function($el) {return $el === false;});
 				return !empty($elements);
-			} else {
+			}
+			elseif ($db->getNumRows() > 1)
+			{
+				return true;
+			}
+			else
+			{
 				if($show_empty_fields == 0){
 					return false;
 				}
