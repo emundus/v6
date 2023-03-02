@@ -10,7 +10,9 @@ $user = $session->get('emundusUser');
 $helper = new modEmundusBookInterviewHelper;
 $evaluated_status = $params->get('evaluated_status');
 
-if (isset($user->fnum)) {
+$status = $helper->getLastFileInterviewStatus($user->id)->status;
+$fnum = $helper->getLastFileInterviewStatus($user->id)->fnum;
+if (isset($fnum)) {
 
     // First we need to check if the user has booked.
     // If the user has not, we will display a button that opens a modal allowing them to book an event (and so we need to get the event info).
@@ -29,7 +31,7 @@ if (isset($user->fnum)) {
 
         require(JModuleHelper::getLayoutPath('mod_emundus_book_interview','showInterview_'.$params->get('mod_em_book_interview_layout')));
 
-    } elseif ($user->status == $evaluated_status) {
+    } elseif ($status == $evaluated_status) {
 
         $available_events = $helper->getEvents($user);
 
