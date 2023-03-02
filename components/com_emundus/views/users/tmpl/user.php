@@ -117,7 +117,8 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
                                         <div class="em-cell" >
                                             <label for = "<?php echo $value?>_check">
                                                 <?php
-                                                echo EmundusHelperDate::displayDate($value, 'COM_EMUNDUS_DATE_FORMAT', 0);
+                                                $timezone = date_default_timezone_get();
+                                                echo EmundusHelperDate::displayDate($value, 'COM_EMUNDUS_DATE_FORMAT', $timezone === 'UTC' ? 0 : 1);
                                                 ?>
                                             </label>
                                         </div>
