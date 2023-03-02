@@ -710,6 +710,7 @@ div#em-modal-actions .modal-dialog .modal-content {
 
 div#em-modal-actions .modal-dialog .modal-body {
     max-height: calc(90vh - 182px) !important;
+    display: contents;
 }
 
 #em-add-user .em-hidden-nonapli-fields .chosen-container .chosen-drop {
