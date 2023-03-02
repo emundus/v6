@@ -5258,6 +5258,14 @@ legend[data-v-fe12b58a] {
 }
 
 
+
+.em-container-profile-view[data-v-51860b0b] {
+  width: 84% !important;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
 :root {
   --primary-color: #16afe1;
   --secondary-color: #12db42;
