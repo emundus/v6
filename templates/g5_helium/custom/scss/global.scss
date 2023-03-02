@@ -2465,6 +2465,25 @@ p.readmore .btn,
 #em-modal-actions .modal-footer {
   position: sticky;
   bottom: 0;
+
+  button.btn-success {
+    background: var(--main-500);
+    border-color: var(--main-500);
+    color: var(--neutral-50);
+    border-radius: var(--em-border-radius) !important;
+    &:hover, &:active, &:focus {
+      background: var(--neutral-50);
+      border-color: var(--main-500);
+      color: var(--main-500);
+    }
+  }
+
+  button.btn-danger {
+    border: solid 1px #EDEDED;
+    background: transparent;
+    color: #353544;
+  }
+
 }
 
 .modal-footer table {
