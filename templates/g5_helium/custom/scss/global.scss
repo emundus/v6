@@ -4815,6 +4815,19 @@ button.swal2-cancel.goback-btn {
           @include fabrik-elements;
         }
 
+        /* PROFIL */
+        .em-profile-element .fabrikElement .multiselect__tags {
+          border-radius: var(--em-border-radius);
+          background: $neutral-50;
+
+          .multiselect__single {
+            background: $neutral-50;
+            margin-top: 0 !important;
+          }
+          &:hover {
+            @include input-hover;
+          }
+        }
 
         .fabrikSubGroupElements,
         .fabrikSubGroup {
