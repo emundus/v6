@@ -35,7 +35,7 @@ form#member-profile.well {
     margin-bottom: 50px;
     border-radius: 16px;
     padding: 80px 64px;
-    width: 90%;
+    width: 84%;
     margin-left: auto;
     margin-right: auto;
 }
@@ -140,5 +140,11 @@ form#member-profile.form-validate.form-horizontal.well  label.required::after{
 @media all and (min-width: 768px) and (max-width: 959px) {
     .view-profile .form-horizontal .controls {
         margin-left: 0px;
+    }
+}
+
+@media (max-width: 1366px) {
+    .view-profile.layout-edit #g-container-main .g-container {
+        width: 95%;
     }
 }
