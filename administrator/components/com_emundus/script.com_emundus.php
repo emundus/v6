@@ -756,6 +756,10 @@ if (password_value.match(regex) != null) {
 
 				rmdir($dir);
 			}
+
+			// Clear Joomla Cache
+			$cache = JCache::getInstance('callback');
+			$cache->clean(null, 'notgroup');
 		}
 
 		return $succeed;

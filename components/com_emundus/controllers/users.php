@@ -1135,38 +1135,40 @@ class EmundusControllerUsers extends JControllerLegacy {
         exit;
     }
 
-    public function updateprofilepicture() {
-        $user = JFactory::getUser();
+	public function updateprofilepicture() {
+		$user = JFactory::getUser();
 
-        $jinput = JFactory::getApplication()->input;
-        $file = $jinput->files->get('file');
+		$jinput = JFactory::getApplication()->input;
+		$file = $jinput->files->get('file');
 
-        if(isset($file)) {
-            $root_dir = "images/emundus/files/" . $user->id;
-            $target_dir = $root_dir . '/profile/';
+		if(isset($file)) {
+			$root_dir = "images/emundus/files/" . $user->id;
+			$target_dir = $root_dir . '/profile/';
+			if(!file_exists($root_dir)){
+				mkdir($root_dir);
+			}
+			if(!file_exists($target_dir)){
+				mkdir($target_dir);
+			}
 
-            $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+			$ext = pathinfo($file['name'], PATHINFO_EXTENSION);
 
-            if(!file_exists($target_dir)){
-                mkdir($target_dir);
-            }
+			$target_file = $target_dir . basename('profile.' . $ext);
 
-            $target_file = $target_dir . basename('profile.' . $ext);
+			if (move_uploaded_file($file["tmp_name"], $target_file)) {
+				$m_users = new EmundusModelUsers();
+				$uploaded = $m_users->updateProfilePicture($user->id,$target_file);
 
-            if (move_uploaded_file($file["tmp_name"], $target_file)) {
-                $m_users = new EmundusModelUsers();
-                $uploaded = $m_users->updateProfilePicture($user->id,$target_file);
-
-                $result = array('status' => $uploaded, 'profile_picture' => $target_file);
-            } else {
-                $result = array('status' => false);
-            }
-        } else {
-            $result = array('status' => false);
-        }
-        echo json_encode((object)$result);
-        exit;
-    }
+				$result = array('status' => $uploaded, 'profile_picture' => $target_file);
+			} else {
+				$result = array('status' => false);
+			}
+		} else {
+			$result = array('status' => false);
+		}
+		echo json_encode((object)$result);
+		exit;
+	}
 
 
     public function activation()
