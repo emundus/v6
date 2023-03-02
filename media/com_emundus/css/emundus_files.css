@@ -494,6 +494,10 @@ div#em-appli-block button.btn.btn-default {
     border: none !important;
 }
 
+.em-personalInfo > a.em-link  {
+    color: var(--main-500);
+}
+
 .em-personalInfo > a {
     background-color: #29d4ff;
     display: -webkit-inline-box;
