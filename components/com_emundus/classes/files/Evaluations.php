@@ -46,7 +46,7 @@ class Evaluations extends Files
 	        $params = $menu->getParams($Itemid)->get('params');
 
 	        $select_all = ['DISTINCT ecc.fnum'];
-			$select_count = ['COUNT(DISTINCT ecc.id) as total'];
+			$select_count = ['DISTINCT ecc.id as total'];
 
 			$select = $this->buildSelect($params,$read_status_allowed);
 			$left_joins = $this->buildLeftJoin($params,$read_status_allowed);
@@ -86,7 +86,7 @@ class Evaluations extends Files
 				$to_evaluate['limit'] = 10;
 				$to_evaluate['page'] = 0;
 			}
-	        $to_evaluate['total'] = array_sum(array_filter($total_files_to_evaluate,function($file) { return $file != 0;}));
+	        $to_evaluate['total'] = sizeof($total_files_to_evaluate);
 			$this->setToEvaluate($to_evaluate);
 
 	        $total_files_evaluated = $this->buildQuery($select_count,[],$wheres_evaluated,$read_access_file,0,0,'column');
@@ -95,7 +95,7 @@ class Evaluations extends Files
 		        $evaluated['limit'] = 10;
 		        $evaluated['page'] = 0;
 	        }
-	        $evaluated['total'] = array_sum(array_filter($total_files_evaluated,function($file) { return $file != 0;}));
+	        $evaluated['total'] = sizeof($total_files_evaluated);
 	        $this->setEvaluated($evaluated);
 
 	        $total_files_all = $this->buildQuery($select_count,[],$wheres,$read_access_file,0,0,'column');
@@ -104,7 +104,7 @@ class Evaluations extends Files
 		        $all['limit'] = 10;
 		        $all['page'] = 0;
 	        }
-	        $all['total'] = array_sum(array_filter($total_files_all,function($file) { return $file != 0;}));
+	        $all['total'] = sizeof($total_files_all);
 	        $this->setAll($all);
 			//
 

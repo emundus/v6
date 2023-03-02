@@ -1132,15 +1132,22 @@ class EmundusModelFiles extends JModelLegacy
      * @throws Exception
      */
     public function getAllTags() {
-        $query = 'select * from #__emundus_setup_action_tag where 1 order by label';
-        $db = $this->getDbo();
+		$tags = [];
+
+	    $db = $this->getDbo();
+		$query = $db->getQuery(true);
+		$query->select('*')
+			->from($db->quoteName('#__emundus_setup_action_tag'))
+			->order('label');
 
         try {
             $db->setQuery($query);
-            return $db->loadAssocList();
+	        $tags =  $db->loadAssocList();
         } catch(Exception $e) {
-            throw $e;
+            JLog::add('Faziled to get all tags ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
         }
+
+		return $tags;
     }
 
     /**
