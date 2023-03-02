@@ -311,6 +311,11 @@ ul {
 }
 
 /* ARTICLE */
+
+.view-article.com_content .page-header h2[itemprop="headline"] {
+  margin-bottom: 32px;
+}
+
 .g-grid .span12 {
   min-height: 0;
 }
