@@ -45,6 +45,8 @@ if ($show_registration == 0 || ($show_registration == 1 && $user === null && mod
     $show_registration = true;
 } elseif ($show_registration == 2){
     $show_registration = false;
+} else {
+	$show_registration = false;
 }
 
 //
