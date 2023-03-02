@@ -299,14 +299,14 @@ export default {
       document.querySelector('img[src="/images/custom/logo_custom.'+ext+'"]').src = '/images/custom/logo_custom.'+ext+'?' + new Date().getTime();
       this.$forceUpdate();
     },
-    updateIcon() {
-      this.iconLink = window.location.origin + '//images/custom/favicon.png?' + new Date().getTime();
-      document.querySelector('img[src="'+window.location.origin+'//images/custom/favicon.png"]').src = window.location.origin + '//images/custom/favicon.png?' + new Date().getTime();
-      document.querySelector('link[type="image/x-icon"]').href = window.location.origin + '//images/custom/favicon.png?' + new Date().getTime();
+    updateIcon(ext = 'png') {
+      this.iconLink = window.location.origin + '//images/custom/favicon.'+ext+'?' + new Date().getTime();
+      document.querySelector('img[src="'+window.location.origin+'//images/custom/favicon.'+ext+'"]').src = window.location.origin + '//images/custom/favicon.'+ext+'?' + new Date().getTime();
+      document.querySelector('link[type="image/x-icon"]').href = window.location.origin + '//images/custom/favicon.'+ext+'?' + new Date().getTime();
       this.$forceUpdate();
     },
-    updateBanner() {
-      this.bannerLink = 'images/custom/default_banner.png?' + new Date().getTime();
+    updateBanner(ext = 'png') {
+      this.bannerLink = 'images/custom/default_banner.'+ext+'?' + new Date().getTime();
       this.$forceUpdate();
     },
     updateColors(colors){
@@ -336,11 +336,11 @@ export default {
         }
         if(this.favicon_updating) {
           this.favicon_updating = false;
-          this.updateIcon();
+          this.updateIcon(ext);
         }
         if(this.banner_updating) {
           this.banner_updating = false;
-          this.updateBanner();
+          this.updateBanner(ext);
         }
       }
     },

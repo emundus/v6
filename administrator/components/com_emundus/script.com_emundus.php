@@ -718,8 +718,28 @@ if (password_value.match(regex) != null) {
 
 				EmundusHelperUpdate::genericUpdateParams('#__fabrik_cron', 'plugin', 'emundusrecall', array('log_email') , array(''));
 
-				EmundusHelperUpdate::updateConfigurationFile('caching', '2');
+				EmundusHelperUpdate::updateConfigurationFile('caching', '1');
 				EmundusHelperUpdate::updateModulesParams('mod_emundusmenu','cache',0);
+
+				$query->clear()
+					->select('params')
+					->from($db->quoteName('#__extensions'))
+					->where($db->quoteName('element') . ' LIKE ' . $db->quote('com_fabrik'));
+				$db->setQuery($query);
+				$fabrik_extension = $db->loadResult();
+
+				if(!empty($fabrik_extension)) {
+					$fabrik_params                    = json_decode($fabrik_extension, true);
+					$fabrik_params['disable_caching'] = "1";
+
+					$query->clear()
+						->update($db->quoteName('#__extensions'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($fabrik_params)))
+						->where($db->quoteName('element') . ' LIKE ' . $db->quote('com_fabrik'));
+					$db->setQuery($query);
+					$db->execute();
+				}
+
 			}
 
 
