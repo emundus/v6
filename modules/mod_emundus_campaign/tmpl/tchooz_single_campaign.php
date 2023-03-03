@@ -70,7 +70,7 @@ if($currentCampaign->apply_online == 0){
             </p>
         <?php endif; ?>
         <p class="em-h3 mod_emundus_campaign__campaign_title em-mt-16" style="max-height: unset"><?php echo $currentCampaign->label; ?></p>
-        <div class="em-grid-2 em-mt-16">
+        <div class="em-grid-2 em-mt-24">
             <?php if ($mod_em_campaign_show_camp_start_date && $currentCampaign->start_date != '0000-00-00 00:00:00') :?>
             <div class="em-flex-row" style="white-space: nowrap;">
                 <p class="em-applicant-text-color em-flex-row em-applicant-default-font "><span class="material-icons em-mr-8 em-font-size-16">alarm</span> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?></p>
@@ -114,7 +114,7 @@ if($currentCampaign->apply_online == 0){
             <?php endif; ?>
         </div>
         <?php if (!empty($mod_em_campaign_show_timezone)) : ?>
-            <div class="em-mt-16 em-applicant-text-color em-flex-row">
+            <div class="em-mt-24 em-applicant-text-color em-flex-row">
                 <p class="em-flex-row"><span class="material-icons-outlined em-mr-8 em-font-size-16">public</span></p>
                 <span class="em-applicant-default-font"><?php echo JText::_('MOD_EM_CAMPAIGN_TIMEZONE').$offset ?></span>
             </div>
