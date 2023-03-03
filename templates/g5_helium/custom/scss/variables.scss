@@ -537,7 +537,7 @@ $font:'Inter', sans-serif;
 @mixin input-readonly {
   background: var(--neutral-400);
   border: 1px solid var(--neutral-400);
-  border-radius: 4px;
+  border-radius: 8px;
   box-shadow: none;
 }
 
@@ -872,6 +872,7 @@ $font:'Inter', sans-serif;
       resize: vertical;
       color: var(--neutral-800);
       border: 1px solid var(--neutral-400);
+      border-radius: 8px;
       @include body-16;
 
       &.input-medium, &.input-small {
@@ -923,7 +924,8 @@ $font:'Inter', sans-serif;
         width: 100%;
         margin-top: 12px;
         padding-left: 8px;
-        height: 100% !important;
+        height: 48px !important;
+        border-radius: 8px;
 
         li.search-choice {
           border: var(--neutral-400);
@@ -956,7 +958,7 @@ $font:'Inter', sans-serif;
     }
 
     .fabrikSubElementContainer {
-      margin-top: 12px;
+      margin-top: 6px;
       color: var(--neutral-800);
 
       /* YES/NO & RADIO GROUPES */
@@ -1101,6 +1103,10 @@ $font:'Inter', sans-serif;
 
           i.icon-clock {
             margin: 0;
+          }
+
+          i {
+            color: var(--neutral-500);
           }
 
           &:hover {
