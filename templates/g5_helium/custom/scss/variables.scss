@@ -537,7 +537,7 @@ $font:'Inter', sans-serif;
 @mixin input-readonly {
   background: var(--neutral-400);
   border: 1px solid var(--neutral-400);
-  border-radius: 4px;
+  border-radius: 8px;
   box-shadow: none;
 }
 
@@ -1103,6 +1103,10 @@ $font:'Inter', sans-serif;
 
           i.icon-clock {
             margin: 0;
+          }
+
+          i {
+            color: var(--neutral-500);
           }
 
           &:hover {
