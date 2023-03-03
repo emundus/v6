@@ -15,8 +15,11 @@
           <span class="material-icons-outlined em-font-size-16" style="color: white">arrow_back</span>
         </div>
         <span class="em-text-neutral-500">|</span>
-        <p class="em-font-size-14" style="color: white">
+        <p class="em-font-size-14" style="color: white" v-if="file.applicant_name != ''">
           {{ file.applicant_name }} - {{ file.fnum }}
+        </p>
+        <p class="em-font-size-14" style="color: white" v-else>
+          {{ file.fnum }}
         </p>
       </div>
     </div>
