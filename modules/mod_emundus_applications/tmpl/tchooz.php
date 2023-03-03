@@ -316,7 +316,7 @@ $current_tab = 0;
 															<?php endif; ?>
 
 															<?php if (in_array($application->status, $status_for_delete)) : ?>
-                                                                <a class="em-red-500-color em-pointer"
+                                                                <a class="em-red-500-color em-flex-row em-pointer"
                                                                    onclick="deletefile('<?php echo $application->fnum; ?>');"
                                                                    id="actions_block_delete_<?php echo $application->fnum ?>">
                                                                     <span class="material-icons-outlined em-font-size-16 em-mr-8">delete</span>

@@ -157,8 +157,7 @@ class modemundusApplicationsHelper {
 					WHERE c.published = 1
 					AND p.apply_online = 1
 					AND c.end_date >= NOW()
-					AND c.start_date <= NOW()
-					LIMIT 1';
+					AND c.start_date <= NOW()';
 
 		try {
 			$db->setQuery($query);
