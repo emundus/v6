@@ -746,6 +746,8 @@ if (password_value.match(regex) != null) {
 				EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
 				EmundusHelperUpdate::addYamlVariable('name', 'Material Icons', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
 
+				EmundusHelperUpdate::updateOverrideTag('FORM_REGISTRATION','Créer votre compte','Créez votre compte');
+
 			}
 
 
