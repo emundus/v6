@@ -740,6 +740,12 @@ if (password_value.match(regex) != null) {
 					$db->execute();
 				}
 
+				EmundusHelperUpdate::addYamlVariable('location', 'https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
+				EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('name', 'Material Icons', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+
 			}
 
 
@@ -748,14 +754,10 @@ if (password_value.match(regex) != null) {
 
 
             // Recompile Gantry5 css at each update
-            $dir = JPATH_BASE . '/templates/g5_helium/custom/css-compiled';
-            if(!empty($dir)) {
-                foreach (glob($dir . '/*') as $file) {
-                    unlink($file);
-                }
+			$succeed['recompile_gantry_5'] = EmundusHelperUpdate::recompileGantry5();
 
-				rmdir($dir);
-			}
+			// Clear Joomla Cache
+			$succeed['clear_joomla_cache'] = EmundusHelperUpdate::clearJoomlaCache();
 		}
 
 		return $succeed;

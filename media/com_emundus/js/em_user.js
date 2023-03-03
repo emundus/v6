@@ -22,9 +22,13 @@ function reloadActions(view) {
 	});
 }
 
-function clearchosen(cible) {
+/*function clearchosen(cible) {
 	$(cible).val("%");
 	$(cible).trigger('chosen:updated');
+}*/
+
+function clearchosen(target){
+	$(target)[0].sumo.unSelectAll();
 }
 
 function getUserCheck() {

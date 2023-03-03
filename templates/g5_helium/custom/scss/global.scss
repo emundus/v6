@@ -311,6 +311,11 @@ ul {
 }
 
 /* ARTICLE */
+
+.view-article.com_content .page-header h2[itemprop="headline"] {
+  margin-bottom: 32px;
+}
+
 .g-grid .span12 {
   min-height: 0;
 }
@@ -2460,6 +2465,25 @@ p.readmore .btn,
 #em-modal-actions .modal-footer {
   position: sticky;
   bottom: 0;
+
+  button.btn-success {
+    background: var(--main-500);
+    border-color: var(--main-500);
+    color: var(--neutral-50);
+    border-radius: var(--em-border-radius) !important;
+    &:hover, &:active, &:focus {
+      background: var(--neutral-50);
+      border-color: var(--main-500);
+      color: var(--main-500);
+    }
+  }
+
+  button.btn-danger {
+    border: solid 1px #EDEDED;
+    background: transparent;
+    color: #353544;
+  }
+
 }
 
 .modal-footer table {
@@ -3191,7 +3215,7 @@ ul.g-dropdown.g-dropdown-right.g-fade {
   li:hover a,
   li:active a,
   li:focus a {
-    color: $base-secondary-color;
+    color: var(--neutral-600);
   }
 }
 
@@ -3395,7 +3419,7 @@ ul.unstyled.em-linkForgot li a {
 }
 
 .form.em-decision-form .btn.btn-success {
-  padding: 5px 30px;
+  padding: 8px 12px;
   border: 1px solid var(--dark-grey);
   background: var(--dark-grey);
   border-radius: var(--em-border-radius) !important;
@@ -3896,8 +3920,8 @@ div#em-appli-block {
   .edit-comment-container button.delete-comment,
   .em-container-tags-body button.btn-danger[title="Supprimer"],
   .em-container-tags-body button.btn-danger[title="Delete"] {
-    background: var(--neutral-50);
-    border: 1px solid var(--neutral-50);
+    background: var(--neutral-0);
+    border: 1px solid var(--neutral-0);
     border-radius: var(--em-border-radius) !important;
 
     span {

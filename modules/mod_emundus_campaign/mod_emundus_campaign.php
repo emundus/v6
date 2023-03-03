@@ -277,6 +277,19 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     }
 
 
+    $show_registration = 0;
+    $modules = JModuleHelper::getModules('header-c');
+    foreach ($modules as $module){
+        if($module->module == 'mod_emundus_user_dropdown'){
+            $show_registration = json_decode($module->params)->show_registration;
+        }
+    }
+    if($show_registration == 0 || $show_registration == 1 && $user === null && !empty($currentCampaign)){
+        $show_registration = true;
+    } else {
+        $show_registration = false;
+    }
+
     jimport('joomla.html.pagination');
     $session = JFactory::getSession();
 

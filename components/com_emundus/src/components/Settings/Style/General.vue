@@ -88,8 +88,12 @@
       <!-- COLORS -->
       <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
         <div>
-            <p class="em-text-neutral-800 em-h5 em-mb-8">{{ translate("COM_EMUNDUS_ONBOARD_COLORS") }}</p>
-            <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_COLORS_RECOMMENDED') }}</em></p>
+          <p class="em-text-neutral-800 em-h5 em-flex-row em-mb-8">
+            {{ translate("COM_EMUNDUS_ONBOARD_COLORS") }}
+            <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayColorsTip">help_outline</span>
+          </p>
+          <span style="opacity: 0">Colors</span><br/>
+          <span style="opacity: 0">Colors</span>
         </div>
 
         <div class="em-logo-box pointer em-mt-16">
@@ -269,6 +273,21 @@ export default {
 
     axios({
       method: "get",
+      url: 'index.php?option=com_emundus&controller=settings&task=getfavicon',
+    }).then((rep) => {
+      if(rep.data.filename == null){
+        this.iconLink = 'images/custom/favicon.png';
+      } else {
+        this.iconLink = rep.data.filename + '?' + new Date().getTime();
+      }
+
+      setTimeout(() => {
+        this.changes = true;
+      },1000);
+    });
+
+    axios({
+      method: "get",
       url: 'index.php?option=com_emundus&controller=settings&task=getbanner',
     }).then((rep) => {
       if(rep.data.filename != null){
@@ -294,15 +313,15 @@ export default {
   },
 
   methods:{
-    updateView(ext = 'png') {
-      this.imageLink = 'images/custom/logo_custom.'+ext+'?' + new Date().getTime();
-      document.querySelector('img[src="/images/custom/logo_custom.'+ext+'"]').src = '/images/custom/logo_custom.'+ext+'?' + new Date().getTime();
+    updateView(response) {
+      this.imageLink = 'images/custom/'+response.filename+'?' + new Date().getTime();
+      document.querySelector('img[src="/images/custom/'+response.old_logo+'"]').src = '/images/custom/'+response.filename+'?' + new Date().getTime();
       this.$forceUpdate();
     },
-    updateIcon(ext = 'png') {
-      this.iconLink = window.location.origin + '//images/custom/favicon.'+ext+'?' + new Date().getTime();
-      document.querySelector('img[src="'+window.location.origin+'//images/custom/favicon.'+ext+'"]').src = window.location.origin + '//images/custom/favicon.'+ext+'?' + new Date().getTime();
-      document.querySelector('link[type="image/x-icon"]').href = window.location.origin + '//images/custom/favicon.'+ext+'?' + new Date().getTime();
+    updateIcon(response) {
+      this.iconLink = window.location.origin + '//images/custom/'+response.filename+'?' + new Date().getTime();
+      document.querySelector('link[type="image/x-icon"]').href = window.location.origin + '//images/custom/'+response.filename+'?' + new Date().getTime();
+      document.querySelector('.tchooz-vertical-logo a img').src = window.location.origin + '//images/custom/'+response.filename+'?' + new Date().getTime();
       this.$forceUpdate();
     },
     updateBanner(ext = 'png') {
@@ -332,11 +351,11 @@ export default {
       if(response.status == 'success'){
         if(this.logo_updating) {
           this.logo_updating = false;
-          this.updateView(ext);
+          this.updateView(JSON.parse(response.xhr.response));
         }
         if(this.favicon_updating) {
           this.favicon_updating = false;
-          this.updateIcon(ext);
+          this.updateIcon(JSON.parse(response.xhr.response));
         }
         if(this.banner_updating) {
           this.banner_updating = false;
@@ -405,8 +424,6 @@ export default {
           confirmButton: 'em-swal-confirm-button',
           actions: "em-swal-single-action",
         },
-      }).then(result => {
-
       });
     },
 
@@ -422,8 +439,21 @@ export default {
           confirmButton: 'em-swal-confirm-button',
           actions: "em-swal-single-action",
         },
-      }).then(result => {
+      });
+    },
 
+    displayColorsTip() {
+      Swal.fire({
+        title: this.translate('COM_EMUNDUS_ONBOARD_COLORS'),
+        text: this.translate("COM_EMUNDUS_FORM_BUILDER_COLORS_RECOMMENDED"),
+        showCancelButton: false,
+        confirmButtonText: this.translate("COM_EMUNDUS_SWAL_OK_BUTTON"),
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          confirmButton: 'em-swal-confirm-button',
+          actions: "em-swal-single-action",
+        },
       });
     },
 
