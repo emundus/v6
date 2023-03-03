@@ -18,7 +18,7 @@
         <hr/>
         <div>
           <strong class="em-mb-8">{{comment.reason}}</strong>
-          <p>{{comment.comment_body}}</p>
+          <p style="word-break: break-all;">{{comment.comment_body}}</p>
         </div>
       </div>
     </div>
