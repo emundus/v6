@@ -31,23 +31,29 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
         $r = $app->input->get('r', 0);
         $formid = $app->input->get('formid', '256');
         $rowid = $app->input->get('rowid');
-        $student_id = $app->input->get('jos_emundus_evaluations___student_id') ?: '{jos_emundus_evaluations___student_id}';
+        $student_id = $app->input->get('jos_emundus_evaluations___student_id') ?: '';
 		$fnum = $app->input->get('jos_emundus_evaluations___fnum') ?:'';
 
-		if (empty($fnum)) {
+		if (empty($fnum) || empty($student_id)) {
 			if (!empty($rowid)) {
-				$query->select('fnum')
+				$query->select('fnum, student_id')
 					->from('#__emundus_evaluations')
 					->where('id = ' . $rowid);
 
 				try {
 					$db->setQuery($query);
-					$fnum = $db->loadResult();
+					$evaluation_row = $db->loadAssoc();
+
+					if (!empty($evaluation_row)) {
+						$fnum = $evaluation_row['fnum'];
+						$student_id = $evaluation_row['student_id'];
+					}
 				} catch (Exception $e) {
 					JLog::add('Failed to find fnum from rowid ' . $rowid . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 				}
 			} else {
 				$fnum = '{jos_emundus_evaluations___fnum}';
+				$student_id = '{jos_emundus_evaluations___student_id}';
 			}
 		}
 
