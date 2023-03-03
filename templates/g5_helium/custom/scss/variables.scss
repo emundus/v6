@@ -871,6 +871,7 @@ $font:'Inter', sans-serif;
       margin-top: 12px !important;
       resize: vertical;
       color: var(--neutral-800);
+      border: 1px solid var(--neutral-400);
       @include body-16;
 
       &.input-medium, &.input-small {
@@ -926,7 +927,7 @@ $font:'Inter', sans-serif;
 
         li.search-choice {
           border: var(--neutral-400);
-          background: var(--neutral-200);
+          background: var(--neutral-100);
           @include body-14;
 
           span {
@@ -1075,7 +1076,7 @@ $font:'Inter', sans-serif;
         justify-content: flex-end;
 
         input {
-          border-radius: 4px 0 0 4px;
+          border-radius: 8px 0 0 8px;
         }
 
         input[id$='cal'].inputbox, input.inputbox.timeField{
@@ -1087,14 +1088,15 @@ $font:'Inter', sans-serif;
         button.timeButton {
           border: 1px solid var(--neutral-400);
           margin-top: 6px;
+          margin-left: -2px;
           width: 48px !important;
           display: flex;
           justify-content: center;
           align-items: center;
           height: 48px !important;
-          background: var(--neutral-200);
-          border-radius: 0 4px 4px 0 !important;
-          color: var(--neutral-800);
+          background: var(--neutral-100);
+          border-radius: 0 8px 8px 0 !important;
+          color: var(--neutral-500);
           z-index: 10;
 
           i.icon-clock {
