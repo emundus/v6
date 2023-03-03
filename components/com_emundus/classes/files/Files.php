@@ -380,6 +380,7 @@ class Files
 
 		$left_joins = [
 			$db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('ecc.applicant_id') . ' = ' . $db->quoteName('u.id'),
+			$db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('ecc.campaign_id').' = '.$db->quoteName('esc.id')
 		];
 		if($status_access) {
 			$left_joins[] = $db->quoteName('#__emundus_setup_status', 'ess') . ' ON ' . $db->quoteName('ess.step') . ' = ' . $db->quoteName('ecc.status');
@@ -390,7 +391,6 @@ class Files
 		if(isset($params->display_group_assoc) && $params->display_group_assoc == 1){
 			$left_joins[] = $db->quoteName('#__emundus_group_assoc','ega').' ON '.$db->quoteName('ega.fnum').' = '.$db->quoteName('ecc.fnum');
 			$left_joins[] = $db->quoteName('#__emundus_users_assoc','eua').' ON '.$db->quoteName('eua.fnum').' = '.$db->quoteName('ecc.fnum');
-			$left_joins[] = $db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.id').' = '.$db->quoteName('ecc.campaign_id');
 			$left_joins[] = $db->quoteName('#__emundus_setup_groups_repeat_course','esgrc').' ON '.$db->quoteName('esgrc.course').' LIKE '.$db->quoteName('esc.training');
 		}
 
@@ -400,7 +400,9 @@ class Files
 	public function buildWhere($params): array{
 		$db = JFactory::getDbo();
 
-		$wheres = [];
+		$wheres = [
+			$db->quoteName('esc.published') . ' = 1'
+		];
 		if (isset($params->status) && $params->status !== '') {
 			$wheres[] = $db->quoteName('ecc.status') . ' IN (' . implode(',',$params->status) . ')';
 		}
@@ -467,7 +469,8 @@ class Files
 					$query_groups_program_associated->leftJoin($left_join);
 				}
 				$query_groups_program_associated->where($db->quoteName('eg.id') . ' IN (' . implode(',', $db->quote($groups_allowed)) .')')
-					->andWhere($db->quoteName('ecc.published') . ' = 1');
+					->andWhere($db->quoteName('ecc.published') . ' = 1')
+					->andWhere($db->quoteName('esc.published') . ' = 1');
 				foreach ($wheres as $where){
 					$query_groups_program_associated->andWhere($where);
 				}
@@ -475,7 +478,8 @@ class Files
 
 			$query_users_associated->select(implode(',',$select))
 				->from($db->quoteName('#__emundus_users_assoc','eua'))
-				->leftJoin($db->quoteName('#__emundus_campaign_candidature','ecc').' ON '.$db->quoteName('eua.fnum').' = '.$db->quoteName('ecc.fnum'));
+				->leftJoin($db->quoteName('#__emundus_campaign_candidature','ecc').' ON '.$db->quoteName('eua.fnum').' = '.$db->quoteName('ecc.fnum'))
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'));
 			foreach ($left_joins as $left_join){
 				$query_users_associated->leftJoin($left_join);
 			}
@@ -484,6 +488,7 @@ class Files
 				$query_users_associated->andWhere($access);
 			}
 			$query_users_associated->andWhere($db->quoteName('ecc.published') . ' = 1');
+			$query_users_associated->andWhere($db->quoteName('esc.published') . ' = 1');
 			foreach ($wheres as $where){
 				$query_users_associated->andWhere($where);
 			}
@@ -495,7 +500,8 @@ class Files
 			$query_groups_associated->select(implode(',',$select))
 				->from($db->quoteName('#__emundus_groups','eg'))
 				->leftJoin($db->quoteName('#__emundus_group_assoc','ega').' ON '.$db->quoteName('ega.group_id').' = '.$db->quoteName('eg.group_id'))
-				->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ega.fnum') . ' = ' . $db->quoteName('ecc.fnum'));
+				->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ega.fnum') . ' = ' . $db->quoteName('ecc.fnum'))
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'));
 			foreach ($left_joins as $left_join){
 				$query_groups_associated->leftJoin($left_join);
 			}
@@ -504,6 +510,7 @@ class Files
 				$query_groups_associated->andWhere($access);
 			}
 			$query_groups_associated->andWhere($db->quoteName('ecc.published') . ' = 1');
+			$query_groups_associated->andWhere($db->quoteName('esc.published') . ' = 1');
 			foreach ($wheres as $where){
 				$query_groups_associated->andWhere($where);
 			}
