@@ -160,19 +160,19 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                             </div>
 
                             <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
-                                <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $campaign_pinned->label; ?></p>
+                                <p class="em-h6 mod_emundus_campaign__campaign_title" title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></p>
                             </a>
                         <?php  elseif ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '0') :  ?>
                             <p class="em-programme-tag" title="<?php echo $campaign_pinned->programme ?>" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
                                 <?php  echo $campaign_pinned->programme; ?>
                             </p>
                             <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
-                                <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $campaign_pinned->label; ?></p>
+                                <p class="em-h6 mod_emundus_campaign__campaign_title" title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></p>
                             </a>
                         <?php  elseif ($mod_em_campaign_list_show_programme == '0' && $mod_em_campaign_show_programme_logo == '1') :  ?>
                             <div class="mod_emundus_campaign__campagne_properties">
                                 <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
-                                    <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $campaign_pinned->label; ?></p>
+                                    <p class="em-h6 mod_emundus_campaign__campaign_title" title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></p>
                                 </a>
                                 <?php if (!empty($campaign_pinned->logo)) :?>
                                     <img src="<?php echo $campaign_pinned->logo; ?>" alt="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_PROGRAMME_LOGO_ALT'); ?>">
@@ -180,7 +180,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                             </div>
                         <?php  else :  ?>
                             <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
-                                <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $campaign_pinned->label; ?></p>
+                                <p class="em-h6 mod_emundus_campaign__campaign_title" title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></p>
                             </a>
                         <?php endif; ?>
 
@@ -260,6 +260,28 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                             echo $textcamp;
                             ?>
                         </div>
+
+	                    <?php if ($mod_em_campaign_show_apply_button == 1 && (strtotime($now) < strtotime($campaign_pinned->end_date)) && (strtotime($now) > strtotime($campaign_pinned->start_date))) : ?>
+                            <div>
+			                    <?php
+			                    $register_url = '';
+			                    // The register URL does not work  with SEF, this workaround helps counter this.
+			                    if ($sef == 0) {
+				                    if(empty($redirect_url)) {
+					                    $redirect_url = 'index.php?option=com_users&view=registration';
+				                    }
+				                    $register_url = $redirect_url.'&course='.$campaign_pinned->code.'&cid='.$campaign_pinned->id.'&Itemid='.$mod_em_campaign_itemid;
+			                    } else {
+				                    $register_url = $redirect_url.'?course='.$campaign_pinned->code.'&cid='.$campaign_pinned->id.'&Itemid='.$mod_em_campaign_itemid;
+			                    }
+
+			                    if(!$user->guest) {
+				                    $register_url .= '&redirect=' . $formUrl;
+			                    }
+			                    ?>
+                                <a class="btn btn-primary em-w-100 em-mt-12 em-applicant-default-font em-flex-column" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+                            </div>
+	                    <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -507,12 +529,12 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                     </p>
 
                                     <a href="<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
-                                        <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></p>
+                                        <p class="em-h6 mod_emundus_campaign__campaign_title" title="<?php echo $result->label; ?>"><?php echo $result->label; ?></p>
                                     </a>
                                 <?php  elseif ($mod_em_campaign_list_show_programme == '0' && $mod_em_campaign_show_programme_logo == '1') :  ?>
                                     <div class="mod_emundus_campaign__campagne_properties">
                                         <a href="<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
-                                            <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></p>
+                                            <p class="em-h6 mod_emundus_campaign__campaign_title" title="<?php echo $result->label; ?>"><?php echo $result->label; ?></p>
                                         </a>
                                         <?php if (!empty($result->logo)) :?>
                                             <img src="<?php echo $result->logo; ?>" alt="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_PROGRAMME_LOGO_ALT'); ?>">
@@ -520,7 +542,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                     </div>
                                 <?php  else :  ?>
                                     <a href="<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
-                                        <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></p>
+                                        <p class="em-h6 mod_emundus_campaign__campaign_title" title="<?php echo $result->label; ?>"><?php echo $result->label; ?></p>
                                     </a>
                                 <?php endif; ?>
                                 <div class="<?php echo $mod_em_campaign_class; ?> em-applicant-text-color em-font-size-16">
@@ -630,9 +652,9 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                             if(empty($redirect_url)) {
                                                 $redirect_url = 'index.php?option=com_users&view=registration';
                                             }
-                                            $register_url = $redirect_url.'&course='.$currentCampaign->code.'&cid='.$currentCampaign->id.'&Itemid='.$mod_em_campaign_itemid;
+                                            $register_url = $redirect_url.'&course='.$result->code.'&cid='.$result->id.'&Itemid='.$mod_em_campaign_itemid;
                                         } else {
-                                            $register_url = $redirect_url.'?course='.$currentCampaign->code.'&cid='.$currentCampaign->id.'&Itemid='.$mod_em_campaign_itemid;
+                                            $register_url = $redirect_url.'?course='.$result->code.'&cid='.$result->id.'&Itemid='.$mod_em_campaign_itemid;
                                         }
 
                                         if(!$user->guest) {
