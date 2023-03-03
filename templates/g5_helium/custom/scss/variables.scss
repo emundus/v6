@@ -566,7 +566,7 @@ $font:'Inter', sans-serif;
 
 @mixin select-button-default {
   height: 48px !important;
-  background: var(--neutral-200);
+  background: var(--neutral-100);
   border-radius: 4px 0 0 4px !important;
   color: var(--neutral-800);
 }
