@@ -17,6 +17,40 @@ use Joomla\CMS\Table\Table;
 class EmundusHelperUpdate
 {
 
+	public static function clearJoomlaCache(){
+		require_once (JPATH_ROOT . '/administrator/components/com_cache/models/cache.php');
+		$m_cache = new CacheModelCache();
+		$clients    = array(1, 0);
+
+		foreach ($clients as $client)
+		{
+			$mCache    = $m_cache->getCache($client);
+
+			foreach ($mCache->getAll() as $cache)
+			{
+				if ($mCache->clean($cache->group) === false)
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	public static function recompileGantry5(){
+		$dir = JPATH_BASE . '/templates/g5_helium/custom/css-compiled';
+		if(!empty($dir)) {
+			foreach (glob($dir . '/*') as $file) {
+				unlink($file);
+			}
+
+			rmdir($dir);
+		}
+
+		return true;
+	}
+
     /**
      * Get all emundus plugins
      *
