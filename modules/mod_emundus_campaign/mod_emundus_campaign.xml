@@ -85,8 +85,6 @@
 				<fieldset name="list" label="Paramètres de la liste">
 					<field showon="mod_em_campaign_layout:default_tchooz" type="checkboxes" name="mod_em_campaign_list_sections" label="MOD_EM_CAMPAIGN_LIST_SECTIONS" description="MOD_EM_CAMPAIGN_LIST_SECTIONS_DESC">
 						<option checked="true" value="intro">MOD_EM_CAMPAIGN_LIST_SECTIONS_INTROTEXT</option>
-						<option checked="true" value="filters">MOD_EM_CAMPAIGN_LIST_SECTIONS_FILTERS</option>
-						<option checked="true" value="campaigns">MOD_EM_CAMPAIGN_LIST_SECTIONS_CAMPAIGNS</option>
 					</field>
 
 					<field

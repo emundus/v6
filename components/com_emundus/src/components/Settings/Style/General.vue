@@ -19,7 +19,8 @@
         </div>
 
         <div class="em-logo-box pointer em-mt-16" v-if="!logo_updating">
-          <img class="logo-settings" :src="imageLink" :srcset="'/'+imageLink" :alt="InsertLogo">
+          <img class="logo-settings" :src="imageLink" :srcset="'/'+imageLink"  @error="hideLogo = true">
+          <p v-if="hideLogo">{{ translate('COM_EMUNDUS_ONBOARD_INSERT_LOGO') }}</p>
         </div>
         <div class="em-mt-16" v-if="logo_updating">
           <vue-dropzone
@@ -59,7 +60,8 @@
         </div>
 
         <div class="em-logo-box pointer em-mt-16" v-if="!favicon_updating">
-          <img class="logo-settings" :src="iconLink" :srcset="iconLink" :alt="InsertIcon">
+          <img class="logo-settings" v-if="!hideIcon" :src="iconLink" :srcset="iconLink" @error="hideIcon = true">
+          <p v-if="hideIcon">{{ translate('COM_EMUNDUS_ONBOARD_INSERT_ICON') }}</p>
         </div>
         <div class="em-mt-16" v-if="favicon_updating">
           <vue-dropzone
@@ -191,9 +193,9 @@ export default {
       primary: '',
       secondary: '',
       changes: false,
-      InsertLogo: this.translate("COM_EMUNDUS_ONBOARD_INSERT_LOGO"),
-      InsertIcon: this.translate("COM_EMUNDUS_ONBOARD_INSERT_ICON"),
       InsertBanner: this.translate("COM_EMUNDUS_ONBOARD_INSERT_BANNER"),
+      hideIcon: false,
+      hideLogo: false,
 
       logoDropzoneOptions: {
         url: 'index.php?option=com_emundus&controller=settings&task=updatelogo',
@@ -314,11 +316,13 @@ export default {
 
   methods:{
     updateView(response) {
+      this.hideLogo = false;
       this.imageLink = 'images/custom/'+response.filename+'?' + new Date().getTime();
       document.querySelector('img[src="/images/custom/'+response.old_logo+'"]').src = '/images/custom/'+response.filename+'?' + new Date().getTime();
       this.$forceUpdate();
     },
     updateIcon(response) {
+      this.hideIcon = false;
       this.iconLink = window.location.origin + '//images/custom/'+response.filename+'?' + new Date().getTime();
       document.querySelector('link[type="image/x-icon"]').href = window.location.origin + '//images/custom/'+response.filename+'?' + new Date().getTime();
       document.querySelector('.tchooz-vertical-logo a img').src = window.location.origin + '//images/custom/'+response.filename+'?' + new Date().getTime();
