@@ -841,6 +841,56 @@ class EmundusHelperUpdate
         return $updated;
     }
 
+	public static function updateOverrideTag($tag,$old_value,$new_value) {
+		$updated = ['status' => true, 'message' => "Override tag successfully updated"];
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select($db->quoteName('lang_code'))
+			->from($db->quoteName('#__languages'))
+			->where($db->quoteName('published') . ' = 1');
+		$db->setQuery($query);
+
+		try {
+			$platform_languages = $db->loadColumn();
+		} catch (Exception $e) {
+			$updated = ['status' => false, 'message' => "Cannot getting platform languages"];
+		}
+
+		if (!empty($platform_languages)) {
+			try {
+				$files = [];
+				foreach ($platform_languages as $language) {
+					$override_file = JPATH_BASE . '/language/overrides/' . $language . '.override.ini';
+					if (file_exists($override_file)) {
+						$files[] = $override_file;
+					}
+				}
+
+
+				foreach ($files as $file) {
+					$parsed_file = JLanguageHelper::parseIniFile($file);
+
+					if (!empty($parsed_file)) {
+						if ($parsed_file[$tag] == $old_value)
+						{
+							$parsed_file[$tag] = $new_value;
+							JLanguageHelper::saveToIniFile($file, $parsed_file);
+						}
+					}
+				}
+			} catch(Exception $e){
+				$updated = ['status' => false, 'message' => "Error when import translation into file : " . $e->getMessage()];
+			}
+		} else {
+			$updated = ['status' => false, 'message' => "Empty platform languages"];
+		}
+
+		return $updated;
+
+	}
+
     /**
      *
      * @return array|mixed|void
