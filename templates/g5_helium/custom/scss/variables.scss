@@ -928,6 +928,8 @@ $font:'Inter', sans-serif;
         border-radius: 8px;
 
         li.search-choice {
+          margin-top: 4px;
+          border-radius: 8px;
           border: var(--neutral-400);
           background: var(--neutral-100);
           @include body-14;
