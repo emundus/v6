@@ -3485,9 +3485,9 @@ ul.unstyled.em-linkForgot li a {
 
 .chzn-container-multi {
   .chzn-choices {
-    background: var(--neutral-50) !important;
+    background: var(--neutral-0) !important;
     box-shadow: unset;
-    border-color: var(--light-grey-3);
+    border: 1px solid var(--neutral-400);
     border-radius: 4px;
     width: 100%;
 
