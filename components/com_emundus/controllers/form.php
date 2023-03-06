@@ -180,23 +180,24 @@ class EmundusControllerForm extends JControllerLegacy {
 
     public function duplicateform() {
         $user = JFactory::getUser();
+	    $tab = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 	        $jinput = JFactory::getApplication()->input;
-
 	        $data = $jinput->getInt('id');
 
-            $form = $this->m_form->duplicateForm($data);
-
-            if ($form) {
-                $tab = array('status' => 0, 'msg' => JText::_('FORM_DUPLICATED'), 'data' => $form);
-            } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_DUPLICATE_FORM'), 'data' => $form);
-            }
+			if (!empty($data)) {
+				$form = $this->m_form->duplicateForm($data);
+				if ($form) {
+					$tab = array('status' => true, 'msg' => JText::_('FORM_DUPLICATED'), 'data' => $form);
+				} else {
+					$tab['msg'] = JText::_('ERROR_CANNOT_DUPLICATE_FORM');
+				}
+			} else {
+				$tab['msg'] = JText::_('MISSING_PARAMS');
+			}
         }
+
         echo json_encode((object)$tab);
         exit;
     }

@@ -119,7 +119,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
                     $sizeMax = ($postSize >= $iniSize) ? $iniSize : $postSize;
 
                     if (!empty($fileName)) {
-                        $insert[] = $user . ' , ' . $db->quote($fnum) . ' , ' . $cid . ' , ' . $attachId . ' , ' . $db->quote($fileName) . ' , ' . '0' . ' , ' . '1' . ' , ' . $db->quote($file['name']);
+                        $insert[] = $user . ' , ' . $db->quote($fnum) . ' , ' . $cid . ' , ' . $attachId . ' , ' . $db->quote($fileName) . ' , ' . '1' . ' , ' . '1' . ' , ' . $db->quote($file['name']);
                     }
 
 

@@ -7,6 +7,13 @@
     "published": true
   },
   {
+    "id": 5,
+    "value": "textarea",
+    "icon": "notes",
+    "name": "COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA",
+    "published": true
+  },
+  {
     "id": 8,
     "value": "nom",
     "icon": "text_fields",
@@ -25,13 +32,6 @@
     "value": "email",
     "icon": "mail",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_EMAIL",
-    "published": true
-  },
-  {
-    "id": 5,
-    "value": "textarea",
-    "icon": "notes",
-    "name": "COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA",
     "published": true
   },
   {

@@ -186,7 +186,8 @@
 					   description="">
 				</field>
 
-				<field name="show_fnum"
+				<field showon="layout:_:tchooz"
+					   name="show_fnum"
 					   type="radio"
 					   default="0"
 					   label="MOD_EMUNDUS_APPLICATIONS_SHOW_FNUM"

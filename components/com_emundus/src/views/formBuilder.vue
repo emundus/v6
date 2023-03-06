@@ -94,6 +94,7 @@
                   @add-page="getPages(currentPage.id)"
                   @delete-page="selectedPage = pages[0].id;"
                   @open-page-create="principalContainer = 'create-page';"
+                  @reorder-pages="onReorderedPages"
               ></form-builder-pages>
               <hr>
               <form-builder-documents
@@ -275,6 +276,9 @@ export default {
         });
       });
     },
+	  onReorderedPages(reorderedPages) {
+		  this.pages = reorderedPages;
+	  },
     onElementCreated(elementIndex) {
       this.$refs.formBuilderPage.getSections(elementIndex);
     },

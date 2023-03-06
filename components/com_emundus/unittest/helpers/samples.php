@@ -21,7 +21,7 @@ jimport('joomla.plugin.helper');
 include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
 include_once(JPATH_SITE.'/components/com_emundus/models/formbuilder.php');
 include_once(JPATH_SITE.'/components/com_emundus/models/settings.php');
-include_once(JPATH_SITE.'/components/com_emundus/api/FileSynchronizer.php');
+include_once(JPATH_SITE.'/components/com_emundus/classes/api/FileSynchronizer.php');
 
 /**
  * eMundus Component Query Helper

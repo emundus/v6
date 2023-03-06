@@ -1,0 +1,8 @@
+{
+"version":3,
+"file":"ChangeDBCollation.min.js",
+"lineCount":5,
+"mappings":"A;;;;AAO2C,WAA3C,EAAI,MAAOA,WAAAC,kBAAX,GAECD,UAAAC,kBAFD,CAEgC,QACpBC,QAAQ,EAAG,CACpB,IAAIC,EAAYC,MAAAC,OAAA,CAAc,iBAAd,CAAAC,IAAA,EAAhB,CACIC,EAAiBH,MAAAC,OAAA,CAAc,iBAAd,CAEJ,GAAjB,EAAIF,CAAJ,CAECI,CAAAC,KAAA,EAFD,CAMCD,CAAAE,KAAA,EAGDF,EAAAD,IAAA,CAAmBH,CAAnB,CAboB,CADS,CAFhC;",
+"sources":["../uncompressed/js/ChangeDBCollation.js"],
+"names":["admintools","ChangeDBCollation","change","collation","akeeba","jQuery","val","inputCollation","show","hide"]
+}

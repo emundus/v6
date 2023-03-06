@@ -19,7 +19,17 @@
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
-		<field showon="log_forms_update:1" name="log_forms_update_forms" label="COM_EMUNDUS_LOG_FORMS_UPDATE_FORMS" type="field" description="COM_EMUNDUS_LOG_FORMS_UPDATE_FORMS_DESC"/>
+		<field showon="log_forms_update:1"
+			   name="log_forms_update_forms"
+			   label="COM_EMUNDUS_LOG_FORMS_UPDATE_FORMS"
+			   description="COM_EMUNDUS_LOG_FORMS_UPDATE_FORMS_DESC"
+			   type="sql"
+			   query="SELECT id, CONCAT(id, ' - ', label) as label FROM jos_fabrik_forms WHERE published = 1"
+			   key_field="id"
+			   value_field="label"
+			   multiple="true"
+			   default=""
+		/>
 		<field name="com_emundus_show_tags_category" menu="hide" type="list" default="0" label="COM_EMUNDUS_SHOW_TAGS_CATEGORY" description="COM_EMUNDUS_SHOW_TAGS_CATEGORY_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
@@ -347,6 +357,8 @@
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_INTEGRATION" name="ametys" description="COM_EMUNDUS_INTEGRATION_DESC">
 
+		<field name="callback_whitelist_ip" type="text" default="" label="COM_EMUNDUS_INTEGRATION_WHITELIST_IP" description="COM_EMUNDUS_INTEGRATION_WHITELIST_IP_DESC" />
+
 		<field name="headerCheck" type="list" menu="hide" default="0" label="COM_EMUNDUS_HEADER_CHECK" description="COM_EMUNDUS_HEADER_CHECK_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
@@ -358,6 +370,10 @@
 				label="COM_EMUNDUS_GOTENBERG_DESC"
 		/>
 		<field name="gotenberg_activation" type="list" menu="hide" default="0" label="COM_EMUNDUS_GOTENBERG_ACTIVATION" description="COM_EMUNDUS_GOTENBERG_ACTIVATION_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="gotenberg_merge_activation" type="list" menu="hide" default="0" label="COM_EMUNDUS_GOTENBERG_MERGE_ACTIVATION" description="COM_EMUNDUS_GOTENBERG_MERGE_ACTIVATION_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
@@ -514,6 +530,17 @@
 			<field name="saml_default_profile" label="COM_EMUNDUS_SAML_INTEGRATION_DEFAULT_PROFILE" type="text"></field>
 		</fieldset>
 
+
+		<field name="spacer11" type="spacer" hr="true"/>
+		<field name="smart_agenda" type="note" label="COM_EMUNDUS_SMART_AGENDA"/>
+		<fieldset label="COM_EMUNDUS_SMART_AGENDA">
+			<field name="smart_agenda_login" type="text" label="COM_EMUNDUS_SMART_AGENDA_LOGIN"/>
+			<field name="smart_agenda_pwd" type="password" label="COM_EMUNDUS_SMART_AGENDA_PWD"/>
+			<field name="smart_agenda_api_id" type="text" label="COM_EMUNDUS_SMART_AGENDA_API_ID"/>
+			<field name="smart_agenda_api_key" type="password" label="COM_EMUNDUS_SMART_AGENDA_API_KEY"/>
+			<field name="smart_agenda_base_url" type="text" label="COM_EMUNDUS_SMART_AGENDA_BASE_URL"/>
+		</fieldset>
+
 	</fieldset>
 	<fieldset
 			name="permissions"
@@ -535,6 +562,13 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+
+		<field name="messenger_notify_users_programs" type="list" default="0" label="COM_EMUNDUS_MESSENGER_NOTIFY_USERS_PROGRAMS" description="COM_EMUNDUS_MESSENGER_NOTIFY_USERS_PROGRAMS_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="messenger_notify_groups" type="textarea" default="" label="COM_EMUNDUS_MESSENGER_NOTIFY_GROUPS" description="COM_EMUNDUS_MESSENGER_NOTIFY_GROUPS_DESC"/>
+		<field name="messenger_notify_users" type="textarea" default="" label="COM_EMUNDUS_MESSENGER_NOTIFY_USERS" description="COM_EMUNDUS_MESSENGER_NOTIFY_USERS_DESC"/>
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_MODULES" name="modules" description="COM_EMUNDUS_MODULES_DESC">
 		<field name="style" label="COM_EMUNDUS_MODULES_STYLE" type="radio" default="1" description="COM_EMUNDUS_MODULES_STYLE_DESC">

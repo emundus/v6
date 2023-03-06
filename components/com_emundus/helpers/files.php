@@ -1962,7 +1962,7 @@ class EmundusHelperFiles
                         $val = $val['value'];
                     }
 
-                    $adv_filter .= '<fieldset id="em-adv-father-'.$i.'" class="em-nopadding">
+                    $adv_filter .= '<fieldset id="em-adv-father-'.$i.'" class="em-nopadding em-flex-align-start em-flex-column">
 									<a id="suppr-filt" class="em-mb-4 em-flex-start">
 									<span class="em-font-size-14 em-red-500-color em-pointer">' . JText::_('COM_EMUNDUS_DELETE_ADVANCED_FILTERS') . '</span></a>
 										<select class="chzn-select em-filt-select" id="elements" name="elements">
@@ -2045,9 +2045,9 @@ class EmundusHelperFiles
         foreach ($tags as $tag) {
             $fnum = $tag['fnum'];
             if (!isset($tagsList[$fnum])) {
-                $tagsList[$fnum] = '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
+                $tagsList[$fnum] = '<span class="'.$tag['class'].' label">'.$tag['label'].'</span>';
             } else {
-                $tagsList[$fnum] .= '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
+                $tagsList[$fnum] .= '<span class="'.$tag['class'].' label">'.$tag['label'].'</span>';
             }
         }
         return $tagsList;
@@ -2089,6 +2089,21 @@ class EmundusHelperFiles
             }
         }
         return $attachmentsprogressList;
+    }
+
+
+    public function createUnreadMessageList($unread_messages) {
+        $unreadmessagesList = array();
+
+        foreach ($unread_messages as $unread_message) {
+
+            $fnum = $unread_message['fnum'];
+
+            if (!isset($unreadmessagesList[$fnum])) {
+                    $unreadmessagesList[$fnum] = '<p class="messenger__notifications_counter">'. $unread_message['nb'] .'</p> ';
+            }
+        }
+        return $unreadmessagesList;
     }
 
 	/** Create a list of HTML text using the tag system.
@@ -2705,7 +2720,10 @@ class EmundusHelperFiles
      * @since   1.6
      */
     public function createFnum($campaign_id, $user_id){
-        return date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
+        if (!empty($campaign_id)) {
+            $fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
+            return $fnum;
+        }
     }
 
     /**

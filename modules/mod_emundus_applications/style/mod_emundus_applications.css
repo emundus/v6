@@ -165,6 +165,9 @@ a.btn.btn-success:not(.btn-xs) {
 .g-block.size-100.content-bottom-a hr:last-child {
     display: none !important;
 }
+.main-page-file-progress .svg-container{
+    width: 100px;
+}
 @media all and (max-width: 479px) {
     .main-page-file-info a {
         margin-bottom: 4px;
@@ -229,7 +232,7 @@ a.btn.btn-success:not(.btn-xs) {
     }
 
     .main-page-file-progress {
-        width: 50%;
+        width: 100%;
         margin-top: 10px;
     }
 }
@@ -274,9 +277,24 @@ a.btn.btn-success:not(.btn-xs) {
     width: 100%;
 }
 
+.mod_emundus_applications___header #add-application {
+    width: 40%;
+}
+
+.mod_emundus_applications___footer {
+    max-width: 720px;
+    width: 100%;
+}
+
+.mod_emundus_applications___footer a.btn.btn-success:not(.btn-xs){
+    width: 40%;
+    margin-bottom: 24px;
+}
+
 .mod_emundus_applications___header p.em-h3 {
  font-family: var(--applicant-title-font);
  color: var(--em-applicant-title-color);
+margin-top: 16px;
 }
 
 .mod_emundus_applications___header_desc h2 {
@@ -445,6 +463,11 @@ a.btn.btn-success:not(.btn-xs) {
     .mod_emundus_applications___header #add-application {
         width: 100% !important;
     }
+
+    .mod_emundus_applications___footer a.btn.btn-success:not(.btn-xs){
+        width: 100%;
+    }
+
 
     span.material-icons-outlined {
        flex-basis: auto !important;

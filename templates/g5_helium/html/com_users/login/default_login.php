@@ -12,6 +12,12 @@ JHtml::_('behavior.formvalidator');
 $document = JFactory::getDocument();
 $document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_users_login.css");
 $eMConfig = JComponentHelper::getParams('com_emundus');
+
+if(!empty($this->campaign)){
+    JFactory::getSession()->set('login_campaign_id',$this->campaign);
+} else {
+	JFactory::getSession()->clear('login_campaign_id');
+}
 ?>
 <div class="login<?php echo $this->pageclass_sfx; ?>">
     <?php if ($this->params->get('show_page_heading')) : ?>

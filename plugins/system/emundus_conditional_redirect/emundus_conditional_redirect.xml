@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" version="3.10" method="upgrade" group="system">
+    <name>Emundus Conditional Redirect Plugin</name>
+    <creationDate>21 February 2023</creationDate>
+    <version>1.35.0</version>
+    <author>eMundus</author>
+    <authorEmail>dev@emundus.fr</authorEmail>
+    <authorUrl>http://www.emundus.fr</authorUrl>
+    <copyright>(C) 2010-2023 EMUNDUS SOFTWARE. All rights reserved.</copyright>
+    <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+    <description>This plugin enables you to redirect applicants on specific condition</description>
+    <files>
+        <filename plugin="emundus_conditional_redirect">emundus_conditional_redirect.php</filename>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field label="Condition PHP" desc="Si le code retourne false, alors l'utilisateur sera redirigé vers la page de redirection saisie" name="condition" type="textarea"></field>
+                <field
+                        label="URL"
+                        desc="URL sur laquelle rediriger si la condition renvoie false"
+                        name="redirection_url"
+                        query="SELECT jm.id, CONCAT(jmt.title, ' - ', jm.title) as label
+                            FROM jos_menu jm
+                            RIGHT JOIN jos_menu_types jmt on jm.menutype = jmt.menutype
+                            WHERE jm.published = 1 order by jm.menutype, jm.title"
+                        type="sql"
+                        key_field="id"
+                        value_field="label"
+                ></field>
+                <field label="Message de redirection" desc="Message affiché après redirection" name="redirection_message" type="text"></field>
+                <field
+                        name="list_unimpacted_urls"
+                        type="repeatable"
+                        icon="list"
+                        label="Liste de liens non impactés"
+                >
+                    <fieldset hidden="true" name="list_unimpacted_urls_modal" repeat="true">
+                        <field
+                                name="unimpacted_url" label="URL"
+                                query="SELECT jm.id, CONCAT(jmt.title, ' - ', jm.title) as label
+                                    FROM jos_menu jm
+                                    RIGHT JOIN jos_menu_types jmt on jm.menutype = jmt.menutype
+                                    WHERE jm.published = 1 order by jm.menutype, jm.title"
+                               type="sql"
+                               key_field="id"
+                               value_field="label"
+                        ></field>
+                    </fieldset>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>
