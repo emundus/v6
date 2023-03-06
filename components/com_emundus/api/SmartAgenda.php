@@ -28,7 +28,12 @@ class SmartAgenda
      */
     private $baseUrl = '';
 
-    /**
+	/**
+	 * @var string $baseUrl
+	 */
+	private $webServiceBaseUrl = '';
+
+	/**
      * @var string $token
      */
     private $token = '';
@@ -60,7 +65,7 @@ class SmartAgenda
         }
     }
 
-    private function setAuth()
+    private function setAuth(): void
     {
         $config = JComponentHelper::getParams('com_emundus');
         $this->auth['login'] = $config->get('smart_agenda_login');
@@ -114,7 +119,7 @@ class SmartAgenda
         return $this->token;
     }
 
-    private function setToken($token)
+    private function setToken($token): void
     {
         $this->token = $token;
     }
