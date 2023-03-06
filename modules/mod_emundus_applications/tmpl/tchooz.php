@@ -265,16 +265,16 @@ $current_tab = 0;
                                                     </div>
                                                     <div>
                                                         <span class="material-icons em-text-neutral-600"
-                                                              id="actions_button_<?php echo $application->fnum ?>"
+                                                              id="actions_button_<?php echo $application->fnum ?>_tab<?php echo $key ?>"
                                                               style="font-size: 16px">more_vert</span>
 
                                                         <!-- ACTIONS BLOCK -->
                                                         <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color"
-                                                             id="actions_block_<?php echo $application->fnum ?>"
+                                                             id="actions_block_<?php echo $application->fnum ?>_tab<?php echo $key ?>"
                                                              style="display: none">
                                                             <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                href="<?= JRoute::_($first_page_url); ?>"
-                                                               id="actions_block_open_<?php echo $application->fnum ?>">
+                                                               id="actions_block_open_<?php echo $application->fnum ?>_tab<?php echo $key ?>">
                                                                 <span class="material-icons-outlined em-font-size-16 em-mr-8">open_in_new</span>
 																<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
                                                             </a>
@@ -282,7 +282,7 @@ $current_tab = 0;
 															<?php if (in_array('rename', $actions)) : ?>
                                                                 <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                    onclick="renameApplication('<?php echo $application->fnum ?>','<?php echo $application->name ?>')"
-                                                                   id="actions_button_rename_<?php echo $application->fnum ?>">
+                                                                   id="actions_button_rename_<?php echo $application->fnum ?>_tab<?php echo $key ?>">
                                                                     <span class="material-icons-outlined em-font-size-16 em-mr-8">drive_file_rename_outline</span>
 																	<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION') ?>
                                                                 </a>
@@ -291,7 +291,7 @@ $current_tab = 0;
 															<?php if (!empty($available_campaigns) && in_array('copy', $actions)) : ?>
                                                                 <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                    onclick="copyApplication('<?php echo $application->fnum ?>')"
-                                                                   id="actions_button_copy_<?php echo $application->fnum ?>">
+                                                                   id="actions_button_copy_<?php echo $application->fnum ?>_tab<?php echo $key ?>">
                                                                     <span class="material-icons-outlined em-font-size-16 em-mr-8">file_copy</span>
 																	<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_COPY_APPLICATION') ?>
                                                                 </a>
@@ -299,8 +299,8 @@ $current_tab = 0;
 
 															<?php if ($show_tabs == 1) : ?>
                                                                 <a class="em-text-neutral-900 em-pointer em-flex-row"
-                                                                   onclick="moveToTab('<?php echo $application->fnum ?>')"
-                                                                   id="actions_button_move_<?php echo $application->fnum ?>">
+                                                                   onclick="moveToTab('<?php echo $application->fnum ?>','tab<?php echo $key ?>')"
+                                                                   id="actions_button_move_<?php echo $application->fnum ?>_tab<?php echo $key ?>">
                                                                     <span class="material-icons-outlined em-font-size-16 em-mr-8">drive_file_move</span>
 																	<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_MOVE_INTO_TAB') ?>
                                                                 </a>
@@ -309,7 +309,7 @@ $current_tab = 0;
 															<?php if (in_array('history', $actions)) : ?>
                                                                 <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                    href="<?= JRoute::_($first_page_url); ?>"
-                                                                   id="actions_button_history_<?php echo $application->fnum ?>">
+                                                                   id="actions_button_history_<?php echo $application->fnum ?>_tab<?php echo $key ?>">
                                                                     <span class="material-icons-outlined em-font-size-16 em-mr-8">history</span>
 																	<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_VIEW_HISTORY') ?>
                                                                 </a>
@@ -318,7 +318,7 @@ $current_tab = 0;
 															<?php if (in_array($application->status, $status_for_delete)) : ?>
                                                                 <a class="em-red-500-color em-flex-row em-pointer"
                                                                    onclick="deletefile('<?php echo $application->fnum; ?>');"
-                                                                   id="actions_block_delete_<?php echo $application->fnum ?>">
+                                                                   id="actions_block_delete_<?php echo $application->fnum ?>_tab<?php echo $key ?>">
                                                                     <span class="material-icons-outlined em-font-size-16 em-mr-8">delete</span>
 																	<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
                                                                 </a>
@@ -329,7 +329,7 @@ $current_tab = 0;
 
 																if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)) {
 																	?>
-                                                                    <a id="actions_button_custom_<?= $custom_action_key; ?>"
+                                                                    <a id="actions_button_custom_<?= $custom_action_key; ?>_tab<?php echo $key ?>"
                                                                        class="em-text-neutral-900 em-pointer em-flex-row"
                                                                        href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?>>
                                                                         <span class="material-icons-outlined em-font-size-16 em-mr-8"><?php echo $custom_action->mod_em_application_custom_action_icon ?></span>
@@ -568,10 +568,12 @@ $current_tab = 0;
             });
 
             if (target.indexOf('actions_button_') !== -1) {
-                let fnum = target.split('_');
-                fnum = fnum[fnum.length - 1];
+                console.log(target);
+                let url = target.split('_');
+                let fnum = url[url.length - 2];
+                let tab = url[url.length - 1];
 
-                let actions = document.getElementById('actions_block_' + fnum);
+                actions = document.getElementById('actions_block_' + fnum + '_' + tab);
                 if(modal !== null){
                     actions.style.display = 'none';
                 }
@@ -742,7 +744,7 @@ $current_tab = 0;
                 let item = document.createElement('li');
                 item.classList.add('em-flex-row', 'em-mb-12', 'em-grab', 'em-flex-space-between');
                 item.id = 'tab_li_' + tab.id;
-                item.innerHTML = '<div class="em-flex-row"><span class="material-icons-outlined em-font-size-14 em-mr-4">drag_indicator</span><span contenteditable="true" class="em-cursor-text" id="' + tab.id + '">' + tab.name + '</span></div><span class="material-icons-outlined em-mr-4 em-pointer em-red-500-color" onclick="deleteTab(' + tab.id + ')">close</span>';
+                item.innerHTML = '<div class="em-flex-row"><span class="material-icons-outlined em-font-size-14 em-mr-4">drag_indicator</span><span contenteditable="true" class="em-cursor-text" id="' + tab.id + '">' + tab.name + '</span></div><span class="material-icons-outlined em-mr-4 em-pointer em-red-500-color" onclick="deleteTab(' + tab.id + ',\'' + tab.name +'\')">close</span>';
                 document.getElementById('items').appendChild(item);
             });
             let link_to_add = document.createElement('a');
@@ -814,29 +816,46 @@ $current_tab = 0;
         })
     }
 
-    function deleteTab(tab) {
-        fetch('index.php?option=com_emundus&controller=application&task=deletetab&tab=' + tab, {
-            method: 'get'
-        }).then((response) => {
-            if (response.ok) {
-                return response.json();
+    function deleteTab(tab,name) {
+        Swal.fire({
+            title: "<?= JText::_('MOD_EM_APPLICATION_TABS_MANAGE_TABS_DELETE_SWAL'); ?>",
+            text: "<?= JText::_('MOD_EM_APPLICATION_TABS_MANAGE_TABS_CONFIRM_DELETE_SWAL'); ?> " + name + " ?",
+            showCancelButton: true,
+            reverseButtons: true,
+            confirmButtonText: "<?php echo JText::_('MOD_EM_APPLICATION_TABS_MANAGE_TABS_DELETE_SWAL_BUTTON');?>",
+            cancelButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_CANCEL_BUTTON');?>",
+            customClass: {
+                container: 'mod_emundus_application_swal_manage_tabs_container',
+                popup: 'mod_emundus_application_swal_manage_tabs_popup',
+                header: 'mod_emundus_application_swal_manage_tabs_header',
+                htmlContainer: 'mod_emundus_application_swal_manage_tabs_content',
+                confirmButton: 'mod_emundus_application_swal_manage_tabs_confirm',
+                cancelButton: 'mod_emundus_application_swal_manage_tabs_cancel',
+                actions: 'mod_emundus_application_swal_manage_tabs_actions',
             }
-        }).then((res) => {
-            if (res.deleted == true) {
-                // Need to be run twice but don't know why ^^
-                document.querySelector('#tab_li_' + tab).remove();
-                document.querySelector('#tab_li_' + tab).remove();
-                document.querySelector('#tab_link_' + tab).remove();
-                let selected_tab_session = sessionStorage.getItem('mod_emundus_applications___selected_tab');
-                if (selected_tab_session !== null && selected_tab_session == tab) {
-                    sessionStorage.removeItem('mod_emundus_applications___selected_tab');
-                    this.updateTab(0);
-                }
+        }).then((confirm) => {
+            if(confirm.value) {
+                fetch('index.php?option=com_emundus&controller=application&task=deletetab&tab=' + tab, {
+                    method: 'get'
+                }).then((response) => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                }).then((res) => {
+                    if (res.deleted == true) {
+                        document.querySelector('#tab_link_' + tab).remove();
+                        let selected_tab_session = sessionStorage.getItem('mod_emundus_applications___selected_tab');
+                        if (selected_tab_session !== null && selected_tab_session == tab) {
+                            sessionStorage.removeItem('mod_emundus_applications___selected_tab');
+                            this.updateTab(0);
+                        }
+                    }
+                });
             }
         });
     }
 
-    async function moveToTab(fnum) {
+    async function moveToTab(fnum,tab) {
         let tabs = {};
 
         fetch('index.php?option=com_emundus&controller=application&task=gettabs', {
@@ -846,7 +865,7 @@ $current_tab = 0;
                 return response.json();
             }
         }).then(async (res) => {
-            document.querySelector('#actions_block_'+fnum).style.display = 'none';
+            document.querySelector('#actions_block_'+fnum+'_'+tab).style.display = 'none';
             if (res.tabs.length === 0) {
                 await this.createTab();
             } else {
