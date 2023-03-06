@@ -3238,13 +3238,13 @@ ul.g-dropdown.g-dropdown-right.g-fade {
 #g-container-main div.login .control-group .controls button.btn.btn-primary:hover {
   border: 1px solid $base-primary-color;
   background: $base-primary-color;
-  color: var(--neutral-50);
+  color: var(--neutral-0);
   padding: 8px 12px;
 }
 
 #g-container-main div.login .control-group .controls button.btn.btn-primary {
   border: 1px solid $base-primary-color;
-  background: var(--neutral-50);
+  background: var(--neutral-0);
   color: $base-primary-color;
 }
 
@@ -4843,10 +4843,10 @@ button.swal2-cancel.goback-btn {
         /* PROFIL */
         .em-profile-element .fabrikElement .multiselect__tags {
           border-radius: var(--em-border-radius);
-          background: $neutral-50;
+          background: var(--neutral-0);
 
           .multiselect__single {
-            background: $neutral-50;
+            background: var(--neutral-0);
             margin-top: 0 !important;
           }
           &:hover {
@@ -6265,7 +6265,7 @@ screen and (max-height: 769px) {
 }
 
 .multiselect__option--highlight::after, .multiselect__option--highlight {
-  background: var(--neutral-300) !important;
+  background: var(--neutral-100) !important;
   color: var(--neutral-900) !important;
 }
 
@@ -6423,7 +6423,7 @@ fieldset[disabled] .multiselect {
   line-height: 20px !important;
   border: none !important;
   border-radius: 5px !important;
-  background-color: var(--neutral-50);
+  background-color: var(--neutral-0);
   -webkit-transition: border .1s ease;
   transition: border .1s ease !important;
   -webkit-box-sizing: border-box;
@@ -6471,9 +6471,9 @@ fieldset[disabled] .multiselect {
   display: flex;
   align-items: center;
   padding: 0 24px 0 12px;
-  border-radius: 4px;
+  border-radius: var(--em-border-radius);
   border: 1px solid var(--neutral-400);
-  background: var(--neutral-50);
+  background: var(--neutral-0);
   font-size: 14px;
 }
 
