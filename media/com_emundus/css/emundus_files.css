@@ -714,7 +714,6 @@ div#em-modal-actions .modal-dialog .modal-content {
 
 div#em-modal-actions .modal-dialog .modal-body {
     max-height: calc(90vh - 182px) !important;
-    display: contents;
 }
 
 #em-add-user .em-hidden-nonapli-fields .chosen-container .chosen-drop {
@@ -2658,7 +2657,8 @@ a.copy-0:focus {
 }
 
 @media all and (min-width: 768px) and (max-width: 959px) {
-    .g-back-office-emundus-tableau.files-board .panel-body {
+    .g-back-office-emundus-tableau.files-board .panel-body,
+    .g-back-office-emundus-tableau .col-md-3.side-panel{
         height: auto;
     }
     .g-back-office-emundus-tableau.files-board .col-md-3.side-panel {
