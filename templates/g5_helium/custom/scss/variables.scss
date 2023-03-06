@@ -768,7 +768,7 @@ $font:'Inter', sans-serif;
   }
 
   /* TEXTE D AIDE */
-  span:not(.badge):not([class^="material-icons"]):not(.icon-handle):not([class^="tox"]):not(.mceIcon) {
+  span:not(.badge):not([class^="material-icons"]):not(.icon-handle):not([class^="tox"]):not(.mceIcon):not(.mceText):not(.mcePathLabel) {
     @include body-14;
     color: var(--neutral-600);
     display: flex;
@@ -1035,7 +1035,7 @@ $font:'Inter', sans-serif;
 
           span {
             @include body-16-medium;
-            margin-top: 0;
+            margin-top: 0 !important;
             color: var(--neutral-900);
           }
         }

@@ -135,7 +135,6 @@ textarea {
   background-color: $neutral-50 !important;
   color: black;
   font-family: var(--font);
-  border-radius: 8px;
 }
 
 
@@ -2671,7 +2670,7 @@ a#em-doc-zip:focus,
   background-color: transparent;
   color: $base-primary-color;
   outline: none;
-  border: 1px solid $base-primary-color;
+  border: 1px solid $base-primary-color !important;
 }
 
 .span4.offset1 > .btn-group > button.button {
@@ -3471,6 +3470,7 @@ ul.unstyled.em-linkForgot li a {
     height: 100%;
     display: flex !important;
     align-items: center !important;
+    margin-top: 0 !important;
   }
 }
 
@@ -4606,8 +4606,15 @@ button.swal2-cancel.goback-btn {
 
 /******************************* FORMULAIRES ***********************************/
 
-/* INDICATIFS TEL */
 
+/* ADD PICK LIST LABEL */
+
+.view-form .plg-dropdown .fabrikElement .addoption .inputbox[name="addPicklistLabel"] {
+  @include input-default;
+}
+
+
+/* INDICATIFS TEL */
 
 .chzn-container-single .chzn-single div b,
 .chzn-container-active.chzn-with-drop .chzn-single div b {
