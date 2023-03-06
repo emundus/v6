@@ -40,6 +40,11 @@
     margin-right: auto;
     text-align: center;
 }
+
+.com_emundus.view-user .em-activation infoContainer p {
+    color: var(--neutral-900) !important;
+}
+
 .email{
     margin-top: 60px;
     margin-bottom: 30px;
