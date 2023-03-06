@@ -783,7 +783,8 @@ class EmundusControllerUsers extends JControllerLegacy {
         $users = $user->getUsersById($id); // get user from uid
         foreach ($users as $selectUser) {
 
-            $passwd = JUserHelper::genRandomPassword(8); //generate a random password
+            //$passwd = JUserHelper::genRandomPassword(8); //generate a random password
+            $passwd = $user->randomPassword(8); //generate a random password
             $passwd_md5 = JUserHelper::hashPassword($passwd); // hash the random password
 
             $m_users = new EmundusModelUsers();

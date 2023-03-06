@@ -151,7 +151,10 @@ class Evaluations extends Files
 			        $evaluation->fnum           = $file->fnum;
 			        $evaluation->student_id     = $file->applicant_id;
 			        $evaluation->campaign       = $file->campaign;
-			        $evaluation->applicant_name = $file->applicant_name;
+			        $evaluation->applicant_name = '';
+			        if(!EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)) {
+				        $evaluation->applicant_name = $file->applicant_name;
+			        }
 					if(isset($file->assocs)){
 						$evaluation->assocs = $file->assocs;
 					}
