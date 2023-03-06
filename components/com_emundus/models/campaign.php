@@ -1918,9 +1918,10 @@ class EmundusModelCampaign extends JModelList {
 
             if(!$campaign_dropfile_cat){
                 JPluginHelper::importPlugin('emundus', 'setup_category');
-                $dispatcher = JEventDispatcher::getInstance();
-                $dispatcher->trigger('onAfterCampaignCreate', $cid);
-                $this->getCampaignCategory($cid);
+                $result = \Joomla\CMS\Factory::getApplication()->triggerEvent('onAfterCampaignCreate', [$cid]);
+                if($result) {
+                    $this->getCampaignCategory($cid);
+                }
             }
             return $campaign_dropfile_cat;
         } catch (Exception $e) {
@@ -2235,7 +2236,8 @@ class EmundusModelCampaign extends JModelList {
                 ->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecw_camp ON ecw_camp.parent_id = ecw.id')
                 ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
                 ->where('ecw_camp.campaign = ' . $this->_db->quote($fnumInfos['campaign_id']))
-                ->andWhere('ecw_status.entry_status = ' . $this->_db->quote($fnumInfos['status']));
+                ->andWhere('ecw_status.entry_status = ' . $this->_db->quote($fnumInfos['status']))
+                ->group($this->_db->quoteName('ecw.id'));
 
             $this->_db->setQuery($query);
 
@@ -2255,7 +2257,8 @@ class EmundusModelCampaign extends JModelList {
                     ->leftJoin('#__emundus_setup_campaigns AS esc ON esc.id = ' . $this->_db->quote($fnumInfos['campaign_id']))
                     ->leftJoin('#__emundus_campaign_workflow_repeat_programs AS ecwrp ON ecwrp.parent_id = ecw.id')
                     ->where('ecw_status.entry_status = ' . $this->_db->quote($fnumInfos['status']))
-                    ->andWhere('ecwrp.programs = esc.training');
+                    ->andWhere('ecwrp.programs = esc.training')
+                    ->group($this->_db->quoteName('ecw.id'));
 
                 try {
                     $current_phase = $this->_db->loadObject();
@@ -2275,7 +2278,8 @@ class EmundusModelCampaign extends JModelList {
                             FROM jos_emundus_campaign_workflow_repeat_programs
                             UNION
                             SELECT parent_id
-                            FROM jos_emundus_campaign_workflow_repeat_campaign)');
+                            FROM jos_emundus_campaign_workflow_repeat_campaign)')
+                        ->group($this->_db->quoteName('ecw.id'));
                     $this->_db->setQuery($query);
 
                     try {
@@ -2290,6 +2294,13 @@ class EmundusModelCampaign extends JModelList {
             if (!empty($current_phase->id)) {
                 $current_phase->entry_status = !empty($current_phase->entry_status) ? explode(',', $current_phase->entry_status) : [];
 
+	            if (empty($current_phase->start_date) || $current_phase->start_date === '0000-00-00 00:00:00') {
+					$campaign = $this->getCampaignByID($fnumInfos['campaign_id']);
+
+					if (!empty($campaign)) {
+						$current_phase->start_date = $campaign['start_date'];
+					}
+                }
                 if (empty($current_phase->end_date) || $current_phase->end_date === '0000-00-00 00:00:00') {
                     $campaign = $this->getCampaignByID($fnumInfos['campaign_id']);
 

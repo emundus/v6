@@ -45,7 +45,7 @@ $logo = JPATH_BASE.DS.$tab[1];
 if ($this->params->get('show-title', 1)) :?>
 <header>
     <img src="https://www.emundus.fr/images/logo-sorbonne.png" height="100%"/>
-    <h3 style="color: #395c9b; float:right;"><?php $title = explode('-', $form->label); echo !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0])); ?></h3>
+    <h3 style="color: #395c9b; float:right;"><?php $title = explode(' - ', $form->label); echo !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0])); ?></h3>
 </header>
 <body>
 <?php

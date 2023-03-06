@@ -50,7 +50,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $mandatory_documents_title = $params->get('mandatory_documents_title', JText::_('MANDATORY_DOCUMENTS'));
     $optional_documents_title = $params->get('optional_documents_title', JText::_('OPTIONAL_DOCUMENTS'));
     $admission = $params->get('admission', 0);
-    $show_send = $params->get('show_send', 1);
+    $show_send = $params->get('showsend', 1);
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
     $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
@@ -146,7 +146,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
     $query = $db->getQuery(true);
 
-    $query->select('eu.*,esa.value as attachment_name')
+    $query->select('eu.*, esa.value as attachment_name, esa.id as esa_id')
         ->from($db->quoteName('#__emundus_uploads','eu'))
         ->leftJoin($db->quoteName('#__emundus_setup_attachment_profiles','esap').' ON '.$db->quoteName('eu.attachment_id').' = '.$db->quoteName('esap.attachment_id'))
         ->leftJoin($db->quoteName('#__emundus_setup_attachments','esa').' ON '.$db->quoteName('esap.attachment_id').' = '.$db->quoteName('esa.id'))

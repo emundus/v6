@@ -192,21 +192,6 @@ function firstLetterToUppercase(element) {
     }
 }
 
-/**
- * Show/Hide an element depends on a value of checkbox
- *
- * Examples :
- * displayElementFromCheckboxValue(fab.get('jos_emundus_1001_00___grade'),'other',fab.get('jos_emundus_1001_00___other'));
- *
- * @param element
- * @param value
- * @param element_to_display
- * @param action
- */
-function displayElementFromCheckboxValue(element, value, element_to_display, action = 'show') {
-    //TODO : create the method
-}
-
 function numberOfDaysBetweenDates(date1,date2 = null) {
     if(date2 === null) {
         date2 = new Date();

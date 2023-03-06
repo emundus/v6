@@ -1,19 +1,21 @@
 <?php
 /**
  * @package         SCLogin
- * @copyright (c)   2009-2019 by SourceCoast - All Rights Reserved
+ * @copyright (c)   2009-2021 by SourceCoast - All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
- * @version         Release v8.4.3
- * @build-date      2020/05/29
+ * @version         Release v9.0.215
+ * @build-date      2022/09/06
  */
 
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Factory;
+
 class mod_scloginInstallerScript
 {
     var $extReqs = array(
-        array('name' => 'JFBConnect', 'version' => '6.1.0', 'element' => 'com_jfbconnect')
+        array('name' => 'JFBConnect', 'version' => '9.0.138', 'element' => 'com_jfbconnect')
     );
 
     public function preflight($type, $parent)
@@ -23,15 +25,15 @@ class mod_scloginInstallerScript
             $currentVersion = $this->getInstalledVersion($req['element']);
             if ($currentVersion && version_compare($currentVersion, $req['version'], '<'))
             {
-                $installStr = 'SCLogin requires JFBConnect v6.1.0 or higher for Social Network functionality. Please upgrade JFBConnect to enable the Social Network login features.';
-                JFactory::getApplication()->enqueueMessage($installStr, 'error');
+                $installStr = 'SCLogin requires JFBConnect v9.0.138 or higher for Social Network functionality. Please upgrade JFBConnect to enable the Social Network login features.';
+                Factory::getApplication()->enqueueMessage($installStr, 'error');
             }
         }
     }
 
     private function getInstalledVersion($element)
     {
-        $db = JFactory::getDBO();
+        $db = Factory::getDBO();
         $query = $db->getQuery(true);
         $query->select('manifest_cache')->from('#__extensions')->where($db->qn('element') . '=' . $db->q($element));
         $db->setQuery($query);

@@ -21,7 +21,7 @@
 
     <hr/>
 
-    <FilesName @updateName="updateName" :name="name" v-if="buildedComponent" />
+    <FilesName v-if="buildedComponent" @updateName="updateName" :name="name"/>
 
     <hr/>
 
@@ -61,7 +61,7 @@ export default {
   },
   created() {
     syncService.getConfig('ged').then((response) => {
-      if(response.data.data !== null) {
+      if (response.data.data !== null) {
         this.nodes = response.data.data.tree;
         this.name = response.data.data.name;
         this.aspects = response.data.data.aspects;

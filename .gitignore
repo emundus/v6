@@ -112,3 +112,6 @@ components/com_eventbooking/fields.xml
 ## emundus custom controller/model ##
 /components/com_emundus/controllers/custom.php
 /components/com_emundus/models/custom.php
+
+## miniorange ##
+/plugins/authentication/miniorangesaml/saml2/cert/

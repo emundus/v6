@@ -82,6 +82,18 @@ class plgUserEmundus extends JPlugin
         }
         closedir($dh);
         @rmdir($dir);
+
+	    // Send email to inform applicant
+	    if($this->params->get('send_email_delete', 0) == 1) {
+		    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
+		    $c_messages = new EmundusControllerMessages();
+		    $post       = [
+			    'NAME' => $user['name']
+		    ];
+		    $c_messages->sendEmailNoFnum($user['email'], 'delete_user', $post);
+	    }
+	    //
+
         return true;
     }
 
@@ -533,7 +545,7 @@ class plgUserEmundus extends JPlugin
             $table = JTable::getInstance('user', 'JTable');
 
             $user = JFactory::getSession()->get('emundusUser');
-            if(empty($user)) {
+            if(empty($user) || empty($user->id)) {
                 include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
                 $m_profile = new EmundusModelProfile();
                 $m_profile->initEmundusSession();

@@ -222,14 +222,13 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
                         ];
                         $tags = $m_emails->setTags($fnum_detail['applicant_id'], $post, $fnum, '', $obj[0]->subject . $obj[0]->message);
                         $subject = preg_replace($tags['patterns'], $tags['replacements'], $obj[0]->subject);
-                        $body = preg_replace($tags['patterns'], $tags['replacements'], $obj[0]->message);
-
-                        $body = $m_emails->setTagsFabrik($body, [$fnum_detail['fnum']]);
                         $subject = $m_emails->setTagsFabrik($subject, [$fnum_detail['fnum']]);
 
                         if($obj[0]->Template) {
-                            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $obj[0]->Template);
+                            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $obj[0]->message], $obj[0]->Template);
                         }
+                        $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+                        $body = $m_emails->setTagsFabrik($body, array($student->fnum));
 
                         $to = array($recipient['email']);
 

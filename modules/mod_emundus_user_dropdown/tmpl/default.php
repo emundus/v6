@@ -139,4 +139,5 @@ if($user != null) {
 	<?php } ?>
 </div>
     <a class="forgotten_password_header" href="<?= $link_forgotten_password; ?>"><?= JText::_('FORGOTTEN_PASSWORD_LABEL'); ?></a>
-<?php } ?>
+<?php }
+?>

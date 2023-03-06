@@ -194,7 +194,11 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
         $('#rt-mainbody-surround').children().addClass('mainemundus');
         $('#rt-main').children().addClass('mainemundus');
         $('#rt-main').children().children().addClass('mainemundus');
-		$('.em-data-container').doubleScroll();
+
+        const dataContainer = document.querySelector('.em-data-container')
+        if (dataContainer) {
+            DoubleScroll(dataContainer);
+        }
 	});
     window.parent.$("html, body").animate({scrollTop : 0}, 300);
 </script>

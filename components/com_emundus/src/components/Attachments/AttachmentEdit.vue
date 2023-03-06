@@ -70,23 +70,23 @@
       <div class="non-editable-data">
         <div>
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_SEND_DATE") }}</span>
-          <span>{{ formattedDate(attachment.timedate) }}</span>
+          <span class="em-text-align-right">{{ formattedDate(attachment.timedate) }}</span>
         </div>
         <div v-if="attachment.user_id && canSee">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY") }}</span>
-          <span>{{ getUserNameById(attachment.user_id) }}</span>
+          <span class="em-text-align-right">{{ getUserNameById(attachment.user_id) }}</span>
         </div>
         <div v-if="attachment.category">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY") }}</span>
-          <span>{{ this.categories[attachment.category] }}</span>
+          <span class="em-text-align-right">{{ this.categories[attachment.category] }}</span>
         </div>
         <div v-if="attachment.modified_by && canSee">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY") }}</span>
-          <span>{{ getUserNameById(attachment.modified_by) }}</span>
+          <span class="em-text-align-right">{{ getUserNameById(attachment.modified_by) }}</span>
         </div>
         <div v-if="attachment.modified">
 					<span>{{translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE") }}</span>
-          <span>{{ formattedDate(attachment.modified) }}</span>
+          <span class="em-text-align-right">{{ formattedDate(attachment.modified) }}</span>
         </div>
         <!-- TODO: add file size -->
       </div>
@@ -101,9 +101,6 @@
 				  menu_open
 			  </span>
 		  </div>
-		  <!--<div class="actions">
-			  <button v-if="canUpdate" @click="saveChanges" class="em-primary-button">{{ translate("COM_EMUNDUS_ATTACHMENTS_SAVE") }}</button>
-		  </div>-->
 	  </div>
     <div v-if="error" class="error-msg">{{ errorMessage }}</div>
   </div>
@@ -254,7 +251,6 @@ export default {
 #attachment-edit {
   padding: 16px 16px 16px 10px;
   height: 100%;
-  width: 40%;
   float: right;
   border-left: 1px solid var(--border-color);
   position: relative;

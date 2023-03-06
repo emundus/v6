@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2023 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -534,7 +534,7 @@ class Select
 		return [
 			HTMLHelper::_('FEFHelp.select.option', '-1', Text::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_CORS_OPT_SAMEORIGIN')),
 			HTMLHelper::_('FEFHelp.select.option', '0', Text::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_CORS_OPT_UNSET')),
-			HTMLHelper::_('FEFHelp.select.option', '2', Text::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_CORS_OPT_ENABLE')),
+			HTMLHelper::_('FEFHelp.select.option', '1', Text::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_CORS_OPT_ENABLE')),
 		];
 	}
 

@@ -793,7 +793,7 @@ class EmundusHelperEmails {
                     ->where('id = ' . $user_id);
                 $db->setQuery($query);
             } else {
-                $query->select('params')
+                $query->select('ju.email, ju.params')
                     ->from('#__users AS ju')
                     ->leftJoin('#__emundus_campaign_candidature AS jecc ON jecc.applicant_id = ju.id')
                     ->where('jecc.fnum LIKE ' . $db->quote($fnum));

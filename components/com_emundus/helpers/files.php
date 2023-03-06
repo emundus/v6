@@ -223,6 +223,11 @@ class EmundusHelperFiles
             $params['programme'] = ["%"];
         }
 
+        // If there is no campaign value, set the campaign param as an empty array, for real
+        if (count($params['campaign']) == 1 && $params['campaign'][0] == '') {
+            $params['campaign'] = [];
+        }
+
 
         $session->set('filt_params', $params);
         $session->set('filt_menu', $filts_details);
@@ -551,7 +556,7 @@ class EmundusHelperFiles
         if (empty($code)) {
             $params = JFactory::getSession()->get('filt_params');
             $programme = $params['programme'];
-            $campaigns = @$params['campaign'];
+            $campaigns = $params['campaign'];
 
             if (empty($programme) && empty($campaigns)) {
                 $programme = $m_campaign->getLatestCampaign();
@@ -752,9 +757,14 @@ class EmundusHelperFiles
 
                 $fnums[] = $fnum;
                 $photos = $m_files->getPhotos($fnums);
+
                 foreach ($photos as $photo) {
                     $folder = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
-                    return '<img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></img>';
+                    if(file_exists($folder . '/tn_'. $photo['filename'])) {
+                        return '<img class="img-responsive" src="' . $folder . '/tn_' . $photo['filename'] . '" width="60" /></img>';
+                    } else {
+                        return '<img class="img-responsive" src="' . $folder . DS. $photo['filename'] . '" width="60" /></img>';
+                    }
                 }
 
             } else {
@@ -762,7 +772,12 @@ class EmundusHelperFiles
                 $photos = $m_files->getPhotos();
                 foreach ($photos as $photo) {
                     $folder = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
-                    $pictures[$photo['fnum']] = '<img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></img>';
+
+                    if(file_exists($folder . '/tn_'. $photo['filename'])) {
+                        $pictures[$photo['fnum']] = '<img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></img>';
+                    } else {
+                        $pictures[$photo['fnum']] = '<img class="img-responsive" src="'.$folder . DS . $photo['filename'] . '" width="60" /></img>';
+                    }
                 }
                 return $pictures;
 
@@ -772,6 +787,7 @@ class EmundusHelperFiles
             return false;
         }
     }
+
 
 
     /**
@@ -1947,6 +1963,8 @@ class EmundusHelperFiles
                     }
 
                     $adv_filter .= '<fieldset id="em-adv-father-'.$i.'" class="em-nopadding">
+									<a id="suppr-filt" class="em-mb-4 em-flex-start">
+									<span class="em-font-size-14 em-red-500-color em-pointer">' . JText::_('COM_EMUNDUS_DELETE_ADVANCED_FILTERS') . '</span></a>
 										<select class="chzn-select em-filt-select" id="elements" name="elements">
                                             <option value="">'.JText::_('COM_EMUNDUS_PLEASE_SELECT').'</option>';
                     $menu = "";
@@ -1985,7 +2003,6 @@ class EmundusHelperFiles
                         $adv_filter .= $h_files->setSearchBox($selected_adv, $val, $key, $i);
                     }
 
-                    $adv_filter .= '<button class="em-transparent-button" id="suppr-filt"><span class="material-icons">delete_outline</span></button>';
                     $i++;
                     $adv_filter .= '</fieldset>';
                 }
@@ -2688,7 +2705,10 @@ class EmundusHelperFiles
      * @since   1.6
      */
     public function createFnum($campaign_id, $user_id){
-        return date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
+        if (!empty($campaign_id)) {
+            $fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
+            return $fnum;
+        }
     }
 
     /**
@@ -3390,7 +3410,7 @@ class EmundusHelperFiles
                                     $not_in = array_map(function($v) {
                                         return ltrim($v, '!');
                                     }, $not_in);
-                                    $query['q'] .= ' and jecc.fnum NOT IN (SELECT cc.fnum FROM jecc AS cc LEFT JOIN jos_emundus_tag_assoc as ta ON ta.fnum = cc.fnum WHERE ta.id_tag IN (' . implode(',', $not_in) . ')) ';
+                                    $query['q'] .= ' and jecc.fnum NOT IN (SELECT cc.fnum FROM jos_emundus_campaign_candidature AS cc LEFT JOIN jos_emundus_tag_assoc as ta ON ta.fnum = cc.fnum WHERE ta.id_tag IN (' . implode(',', $not_in) . ')) ';
                                 }
 
                                 if (!empty($value)) {

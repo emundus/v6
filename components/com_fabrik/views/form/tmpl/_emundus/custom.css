@@ -46,6 +46,9 @@
 .view-form #g-sidebar{
     position: sticky;
 }
+.view-checklist #g-sidebar{
+    position: sticky;
+}
 
 
 .program-year-page #g-main-mainbody, .campaign-page #g-main-mainbody, .users-profile-setup-page #g-main-mainbody, .emails-setup-page #g-main-mainbody,
@@ -65,6 +68,10 @@
 /* FORMULAIRE */
 
 .view-form #g-sidebar{
+    position: sticky;
+    top: 0;
+}
+.view-checklist #g-sidebar{
     position: sticky;
     top: 0;
 }
@@ -490,6 +497,19 @@ form#member-profile .form-horizontal .control-label {
 /* ---- ALLOW * TO BE AT THE END OF TEXT ----- */
 
 /* Inscription */
+
+.view-registration form a {
+    text-decoration: underline;
+}
+.view-registration form a:hover {
+ text-decoration: none;
+}
+
+.view-registration.view-form .page-header h1 {
+    font-family: var(--applicant-title-font) !important;
+    color: var(--em-applicant-title-color) !important;
+}
+
 .view-registration .login.em-formRegistrationCenter .emundus-form{
     border: unset !important;
     box-shadow: unset !important;
@@ -579,7 +599,7 @@ form#member-profile .form-horizontal .control-label {
     align-items: flex-end;
     flex-direction: row;
     width: 100%;
-    padding: 0 64px 16px 64px;
+    padding: 0px 20px 0px 48px;
 }
 
 form.fabrikForm label {
@@ -1073,7 +1093,7 @@ ol {
 
 .view-registration .login.em-formRegistrationCenter ol,
 .view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) ol {
-    padding: 0px 64px 0px 83px !important;
+    padding: 0px 20px 0px 48px !important;
     text-align: justify;
     margin-left: 0px !important;
     margin-bottom: 0px !important;
@@ -1819,6 +1839,10 @@ a.btn-attach:active {
     }
 
     .view-form #g-sidebar .moduletable  {
+        padding: 0px !important;
+    }
+
+    .view-checklist #g-sidebar .moduletable  {
         padding: 0px !important;
     }
 }

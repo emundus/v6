@@ -28,6 +28,8 @@ if($display) {
     $document = JFactory::getDocument();
     $document->addStyleSheet('modules/mod_emundus_banner/style/mod_emundus_banner.css');
 
+	$image_link = $params->get('mod_em_banner_image','/images/custom/default_banner.png');
+
     require JModuleHelper::getLayoutPath('mod_emundus_banner', 'default');
 }
 

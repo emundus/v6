@@ -1,28 +1,28 @@
 <?php
 /**
  * @package         SCLogin
- * @copyright (c)   2009-2019 by SourceCoast - All Rights Reserved
+ * @copyright (c)   2009-2021 by SourceCoast - All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
- * @version         Release v8.4.3
- * @build-date      2020/05/29
+ * @version         Release v9.0.215
+ * @build-date      2022/09/06
  */
 
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Factory;
+
 class SCLibraryUtilities
 {
     static function getAffiliateLink($affiliateID)
     {
-        if($affiliateID)
-            return 'http://www.shareasale.com/r.cfm?b=495360&u='.$affiliateID.'&m=46720&urllink=&afftrack=';
-        else
-            return 'http://www.sourcecoast.com/joomla-facebook/';
+        return 'http://www.sourcecoast.com/joomla-facebook/';
     }
 
     static function getLinkFromMenuItem($itemId, $isLogout)
     {
-        $app =JFactory::getApplication();
+        $app = Factory::getApplication();
         $menu =& $app->getMenu();
         $item =& $menu->getItem($itemId);
 
@@ -40,7 +40,7 @@ class SCLibraryUtilities
                     $link = 'index.php';
                 else
                     $link = SCLibraryUtilities::getLinkWithItemId($item->link, $aliasedId);
-                $redirect = JRoute::_($link, false);
+                $redirect = Route::_($link, false);
             }
             else //Regular menu item
             {
@@ -48,7 +48,7 @@ class SCLibraryUtilities
                     $link = 'index.php';
                 else
                     $link = SCLibraryUtilities::getLinkWithItemId($item->link, $itemId);
-                $redirect = JRoute::_($link, false);
+                $redirect = Route::_($link, false);
             }
         }
         else
@@ -59,7 +59,7 @@ class SCLibraryUtilities
 
     static function getLinkWithItemId($link, $itemId)
     {
-        $app =JFactory::getApplication();
+        $app =Factory::getApplication();
         $router = $app->getRouter();
 
         if($link)
@@ -77,7 +77,7 @@ class SCLibraryUtilities
 
     static function isMenuRegistered($menuItemId)
     {
-        $db = JFactory::getDBO();
+        $db = Factory::getDBO();
         $query = "SELECT * FROM #__menu WHERE id=" . $db->quote($menuItemId);
         $db->setQuery($query);
         $menuItem = $db->loadObject();

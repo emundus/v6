@@ -24,6 +24,7 @@
 						<option value="default">MOD_EM_CAMPAIGN_LIST_DEFAULT</option>
 						<option value="default_g5">MOD_EM_CAMPAIGN_LIST_DEFAULT_G5</option>
 						<option value="institut_fr">Institut Français</option>
+						<option value="institut_fr_single_campaign">Institut Français - Single campaign</option>
 						<option value="nantes">Nantes</option>
 						<option value="old">MOD_EM_CAMPAIGN_LIST_OLD</option>
 						<option value="single_campaign">MOD_EM_CAMPAIGN_DETAILS_DEFAULT</option>
@@ -32,9 +33,9 @@
 						<option value="paris2">Paris 2</option>
 					</field>
 
-					<field showon="mod_em_campaign_layout!:default_tchooz" type="text" name="mod_em_campaign_itemid" label="MOD_EM_CAMPAIGN_ITEMID" description="MOD_EM_CAMPAIGN_ITEMID_DESC" />
+					<field type="text" name="mod_em_campaign_itemid" label="MOD_EM_CAMPAIGN_ITEMID" description="MOD_EM_CAMPAIGN_ITEMID_DESC" />
 
-					<field showon="mod_em_campaign_layout!:default_tchooz" type="text" name="mod_em_campaign_itemid2" label="MOD_EM_CAMPAIGN_ITEMID2" description="MOD_EM_CAMPAIGN_ITEMID2_DESC" />
+					<field type="text" name="mod_em_campaign_itemid2" label="MOD_EM_CAMPAIGN_ITEMID2" description="MOD_EM_CAMPAIGN_ITEMID2_DESC" />
 
 					<field type="text" name="mod_em_campaign_link" default="" label="MOD_EM_CAMPAIGN_LINK" description="MOD_EM_CAMPAIGN_LINK_DESC"/>
 

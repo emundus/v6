@@ -64,6 +64,14 @@
 					</field>
 
 				</field>
+				<field name="debug_mode"
+					   type="radio"
+					   default="0"
+					   label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_DEBUG_MODE"
+					   description="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_DEBUG_MODE_DESC">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
 			</fieldset>
 		</fields>
 	</config>

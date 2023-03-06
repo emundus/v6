@@ -16,6 +16,7 @@ stages:
   - test
   - release
   - publish
+  - deploy
 
 check-tchooz-version-job:
   stage: prepare
@@ -29,6 +30,8 @@ check-tchooz-version-job:
 
 build-app-to-test-job:
   stage: build
+  services:
+    - name: docker:20.10-dind
   image: docker:20.10
   before_script:
     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
@@ -43,6 +46,8 @@ build-app-to-test-job:
 
 build-db-to-test-job:
   stage: build
+  services:
+    - name: docker:20.10-dind
   image: docker:20.10
   before_script:
     - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
@@ -56,6 +61,44 @@ build-db-to-test-job:
         - media/com_emundus_vanilla
         - Dockerfile.db
         - .ci/mysql/*
+
+include:
+- project: 'emundus/devops/ci-cd-templates'
+  ref: main
+  file: '.php_security_checker.yml'
+- project: 'emundus/devops/ci-cd-templates'
+  ref: main
+  file: '.deployer.yml'
+- template: Security/Secret-Detection.gitlab-ci.yml
+
+php_security_checker:
+  variables:
+      COMPOSER_PATH: "./libraries/emundus/composer.lock"
+
+php_security_checker_joomla:
+  extends:
+    - php_security_checker
+  variables:
+    COMPOSER_PATH: "./libraries/composer.lock"
+
+php_security_checker_fabrik:
+  extends:
+    - php_security_checker
+  variables:
+    COMPOSER_PATH: "./libraries/fabrik/composer.lock"
+
+php_security_checker_gantry5:
+  extends:
+    - php_security_checker
+  variables:
+    COMPOSER_PATH: "./libraries/gantry5/composer.lock"
+
+php_security_checker_phpgoogleapiclient:
+  stage: test
+  extends:
+    - php_security_checker
+  variables:
+    COMPOSER_PATH: "./libraries/php-google-api-client/composer.lock"
 
 phpunit-job:
   stage: test
@@ -128,6 +171,8 @@ sync-documentation-job:
 
 publish-app-image-job:
   stage: publish
+  services:
+    - name: docker:20.10-dind
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
@@ -147,6 +192,8 @@ publish-app-image-job:
 
 publish-db-image-job:
   stage: publish
+  services:
+    - name: docker:20.10-dind
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
@@ -164,5 +211,157 @@ publish-db-image-job:
   needs:
     - release-job
 
-include:
-  - template: Security/Secret-Detection.gitlab-ci.yml
+deployer:
+  environment: 
+    name: production/manual
+    deployment_tier: production
+  variables:
+    DEPLOY_OPTIONS: 'id=lcykF9FUAo5q0nDBhRlDhtZv8QhcdqGI'
+
+deployer-auto-dev:
+  environment: 
+    name: development/auto
+    deployment_tier: development
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: "env=dev"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"
+
+deployer-auto-production:
+  environment: 
+    name: production/auto
+    deployment_tier: production
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: "env=prod"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
+deployer-manual-eG5NEnlFOzhoskWHOJAdBE9rVfQy9ui1:
+  environment: 
+    name: production/manual
+    deployment_tier: production
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: 'id=eG5NEnlFOzhoskWHOJAdBE9rVfQy9ui1'
+
+deployer-manual-DXCLfAeHmABj52kQobNMqhX1iFTFmOPk:
+  environment: 
+    name: production/manual
+    deployment_tier: production
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: 'id=DXCLfAeHmABj52kQobNMqhX1iFTFmOPk'
+
+deployer-manual-wpfWx493ijCjkTetfgGBM4oJVRPvCzmI:
+  environment: 
+    name: production/manual
+    deployment_tier: production
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: 'id=wpfWx493ijCjkTetfgGBM4oJVRPvCzmI'
+
+deployer-manual-qeMLDMN7ekjqkQHNtMSLsSVGFrUHYivm:
+  environment: 
+    name: production/manual
+    deployment_tier: production
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: 'id=qeMLDMN7ekjqkQHNtMSLsSVGFrUHYivm'
+
+deployer-manual-Re13IJywvAH1zGN9egF76fJeVxwV30qw:
+  environment: 
+    name: production/manual
+    deployment_tier: production
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: 'id=Re13IJywvAH1zGN9egF76fJeVxwV30qw'
+
+deployer-manual-D6RZG8YLjXwawzF3oGdVbIr5tjqSKQlE:
+  environment: 
+    name: production/manual
+    deployment_tier: production
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: 'id=D6RZG8YLjXwawzF3oGdVbIr5tjqSKQlE'
+
+deployer-manual-YOKa7VktjgVIpmw6bE4EzhteAicGQiwa:
+  environment: 
+    name: production/manual
+    deployment_tier: production
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: 'id=YOKa7VktjgVIpmw6bE4EzhteAicGQiwa'
+
+deployer-manual-1GhNXURF7R8yMncDJqzpUct48xDigvbw:
+  environment: 
+    name: production/manual
+    deployment_tier: production
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: 'id=1GhNXURF7R8yMncDJqzpUct48xDigvbw'
+
+deployer-manual-9rxEbTdVMF56BDyoBuPtpT6KWGEPHPXD:
+  environment: 
+    name: production/manual
+    deployment_tier: production
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: 'id=9rxEbTdVMF56BDyoBuPtpT6KWGEPHPXD'
+
+deployer-manual-ygUNN6FWQpqYPmSpkfFlvSdeAQnAjvfx:
+  environment: 
+    name: production/manual
+    deployment_tier: production
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: 'id=ygUNN6FWQpqYPmSpkfFlvSdeAQnAjvfx'
+
+deployer-manual-LEXyRpsCDvytDBunr4C2SSHbEPrEonTa:
+  environment: 
+    name: production/manual
+    deployment_tier: production
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: 'id=LEXyRpsCDvytDBunr4C2SSHbEPrEonTa'
+
+deployer-manual-B4jFVLQegq97qngkvbDmINGMpXllNihX:
+  environment: 
+    name: production/manual
+    deployment_tier: production
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: 'id=B4jFVLQegq97qngkvbDmINGMpXllNihX'
+
+deployer-manual-qwIcRfpnCs3r03FIphI0zeKDCgRBwbei:
+  environment: 
+    name: production/manual
+    deployment_tier: production
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: 'id=qwIcRfpnCs3r03FIphI0zeKDCgRBwbei'
+
+deployer-manual-NkKEx6e8vVvY73RaGnvGWj3VsjelPynE:
+  environment: 
+    name: production/manual
+    deployment_tier: production
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: 'id=NkKEx6e8vVvY73RaGnvGWj3VsjelPynE'

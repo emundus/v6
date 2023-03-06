@@ -36,14 +36,17 @@ class EmundusControllerSync extends JControllerLegacy
     {
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            $tab = array('status' => $result, 'msg' => JText::_('ACCESS_DENIED'));
         } else {
             $jinput = JFactory::getApplication()->input;
             $type = $jinput->getString('type', null);
 
-            $config = $this->m_sync->getConfig($type);
-
-            $tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => json_decode($config));
+            if (!empty($type)) {
+                $config = $this->m_sync->getConfig($type);
+                $tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => json_decode($config));
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('MISSING_PARAMS'));
+            }
         }
         echo json_encode((object)$tab);
         exit;

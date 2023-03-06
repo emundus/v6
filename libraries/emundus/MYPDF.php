@@ -21,7 +21,7 @@ class MYPDF extends TCPDF {
 	public function Header() {
 		// Logo
 		if (is_file($this->logo))
-			$this->Image($this->logo, 0, 0, 200, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+			$this->Image($this->logo, 2, 2, 25, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
 		// Set font
 		$this->SetFont('helvetica', 'B', 16);
 		// Title

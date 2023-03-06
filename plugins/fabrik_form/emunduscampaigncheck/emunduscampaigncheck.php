@@ -128,6 +128,7 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
                 JLog::add('User: '.$user->id.' already has a file.', JLog::ERROR, 'com_emundus.campaign-check');
                 $this->getModel()->formErrorMsg = '';
                 $this->getModel()->getForm()->error = JText::_('CANNOT_HAVE_MULTI_FILE');
+	            $app->redirect('index.php', JText::_('CANNOT_HAVE_MULTI_FILE'));
                 break;
 
             // If the applicant can only have one file per campaign.
@@ -207,6 +208,7 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
                         JLog::add('User: '.$user->id.' already has a file for year belong to campaign: '.$campaign_id, JLog::ERROR, 'com_emundus.campaign-check');
                         $this->getModel()->formErrorMsg = '';
                         $this->getModel()->getForm()->error = JText::_('USER_HAS_FILE_FOR_YEAR');
+	                    $app->redirect('index.php', JText::_('USER_HAS_FILE_FOR_YEAR'));
                     }
 
                 } catch (Exception $e) {
