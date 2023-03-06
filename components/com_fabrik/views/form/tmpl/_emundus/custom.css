@@ -331,6 +331,10 @@ form legend a, form legend a:hover, form legend a:focus {
     margin-top: 6px;
 }
 
+.view-form a.btn.toggle-addoption:not(.btn-info) {
+    margin-left: 6px;
+}
+
 .view-form a.btn.toggle-addoption i.icon-plus {
     margin: 0 !important;
 }
