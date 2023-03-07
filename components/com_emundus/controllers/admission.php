@@ -709,7 +709,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
         }
 
         require_once($file);
-        pdf_admission(!empty($student_id)?$student_id:$this->_user->id, $fnum);
+        pdf_admission(!empty($student_id) ? $student_id : $this->_user->id, $fnum);
 
         exit();
     }

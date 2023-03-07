@@ -340,23 +340,38 @@ class EmundusHelperFilters {
 	* @return   array 	list of Fabrik element ID used in evaluation form
 	**/
 	function getAllElementsByGroups($groups, $show_in_list_summary=null, $hidden=null) {
-		$db = JFactory::getDBO();
-		$query = 'SELECT element.name, element.label, element.plugin, element.id as element_id, groupe.id, groupe.label AS group_label, element.params,
-				INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias
-				FROM #__fabrik_elements element
-				INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
-				INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
-				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
-				INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id
-				WHERE tab.published = 1
-					AND element.published=1
-					AND groupe.id IN ('.$groups.') ';
-		$query .= isset($show_in_list_summary) ?' AND element.show_in_list_summary = '.$show_in_list_summary : '';
-		$query .= isset($hidden) ?' AND element.hidden = '.$hidden : '';
-        $query .= ' ORDER BY find_in_set(groupe.id, "'. $groups . '"), element.ordering';
+		$elements = [];
 
-		$db->setQuery( $query );
-		return $db->loadObjectList();
+		if (!empty($groups)) {
+			$db = JFactory::getDBO();
+			$query = $db->getQuery(true);
+			$query->select('jfe.name, jfe.label, jfe.plugin, jfe.id as element_id, jfg.id, jfg.label AS group_label, jfe.params, INSTR(jfg.params,\'"repeat_group_button":"1"\') AS group_repeated, jfl.id AS table_id, jfl.db_table_name AS table_name, jfl.label AS table_label, jfl.created_by_alias')
+				->from($db->qn('#__fabrik_elements', 'jfe'))
+				->join('inner', $db->qn('#__fabrik_groups', 'jfg') . ' ON jfg.id = jfe.group_id')
+				->join('inner', $db->qn('#__fabrik_formgroup', 'jffg') . ' ON jfg.id = jffg.group_id')
+				->join('inner', $db->qn('#__fabrik_lists', 'jfl') . ' ON jfl.form_id = jffg.form_id')
+				->join('inner', $db->qn('#__fabrik_forms', 'jff') . ' ON jff.id = jfl.form_id')
+				->where('jfe.group_id IN (' . $groups .  ')')
+				->andWhere('jfl.published = 1')
+				->andWhere('jfe.published = 1');
+
+			if ($show_in_list_summary !== null) {
+				$query->andWhere('jfe.show_in_list_summary = ' . $show_in_list_summary);
+			}
+
+			if ($hidden !== null) {
+				$query->andWhere('jfe.hidden = ' . $hidden);
+			}
+			$query->order('find_in_set(jfg.id, "'. $groups . '"), jfe.ordering');
+			try {
+				$db->setQuery($query);
+				$elements = $db->loadObjectList();
+			} catch (Exception $e) {
+				JLog::add('Failed to get fabrik elements by group id ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $elements;
 	}
 
 	function getElementsOther($tables) {

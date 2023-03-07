@@ -2481,8 +2481,8 @@ class EmundusHelperFiles
 
     // Get Admission
     function getAdmission($format='html', $fnums, $name = null) {
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'admission.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        require_once (JPATH_SITE . '/components/com_emundus/models/admission.php');
+        require_once (JPATH_SITE . '/components/com_emundus/models/files.php');
 
         $m_admission = new EmundusModelAdmission();
         $m_files = new EmundusModelFiles;
@@ -2570,7 +2570,7 @@ class EmundusHelperFiles
         }
 
         // Get information from application form filled out by the student
-        $element_id     = $m_admission->getAllApplicantAdmissionElements(1, $fnumInfo['training']);
+        $element_id = $m_admission->getAllApplicantAdmissionElements(1, $fnumInfo['training']);
         if(!empty($element_id)) {
             $elements       = $h_files->getElementsName(implode(',',$element_id));
             $admissions     = $m_files->getFnumArray($fnums, $elements);
