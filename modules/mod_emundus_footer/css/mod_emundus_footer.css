@@ -58,6 +58,25 @@ hr.footer-separation {
     flex-direction: row;
 }
 
+.em-footer-container-row {
+    column-gap: 8px;
+}
+
+.footer-emundus {
+    text-align: end;
+    width: auto;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.footer-rgpd  {
+    flex: 6;
+}
+
+.footer-client  {
+    flex: 1;
+}
+
 .footer-rgpd-links a, .em-col-3-footer a  {
     text-decoration: underline;
 }
@@ -65,7 +84,6 @@ hr.footer-separation {
 .footer-rgpd-links a:hover, .em-col-3-footer a:hover {
     text-decoration: none;
 }
-
 
 .footer-rgpd p {
     padding: 0px 10px;
