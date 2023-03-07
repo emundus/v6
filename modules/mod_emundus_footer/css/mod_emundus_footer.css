@@ -56,6 +56,7 @@ hr.footer-separation {
 .footer-rgpd-links {
     display: flex;
     flex-direction: row;
+    align-items: center;
 }
 
 .em-footer-container-row {
@@ -87,6 +88,7 @@ hr.footer-separation {
 
 .footer-rgpd p {
     padding: 0px 10px;
+    text-align: center;
 }
 
 /* GESTIONNAIRE */
@@ -154,11 +156,35 @@ hr.footer-separation {
         display: flex;
         flex-direction: column;
     }
-}
 
-@media all and (min-width: 480px) and(max-width: 767px) {
-    .footer-rgpd-links {
-        flex-direction: column;
-        align-items: center;
+    .em-footer-container-row {
+        flex-direction: column !important;
+    }
+
+    .footer-client {
+        text-align: center;
     }
 }
+
+@media all and (min-width: 480px) and (max-width: 767px) {
+    .footer-rgpd-links {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .em-flex-row.em-footer-container-row {
+        flex-direction: column !important;
+        row-gap: 16px;
+    }
+
+    .footer-client {
+        text-align: center;
+    }
+}
+
+@media all and (min-width: 768px) and (max-width: 959px) {
+    .footer-emundus {
+        white-space: break-spaces;
+    }
+}
+
