@@ -85,6 +85,10 @@ if($applicant = !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
         <?php if ($mod_emundus_footer_cookies == '1') :?>
             <p><a href="<?php echo $actualLanguage ?>/gestion-des-cookies"><?= JText::_('MOD_EM_FOOTER_COOKIES_LINK'); ?></a></p>
         <?php endif; ?>
+
+            <?php if ($mod_emundus_footer_accessibility== '1') :?>
+                <p><a href="<?php echo $actualLanguage ?>/accessibilite"><?= JText::_('MOD_EM_FOOTER_RGAA_LINK'); ?></a></p>
+            <?php endif; ?>
         </div>
         </div>
           <?php if(empty($mod_emundus_footer_texte_col_1) && empty($mod_emundus_footer_texte_col_2) && $mod_emundus_footer_display_powered_by == 1) : ?>
