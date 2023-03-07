@@ -952,7 +952,7 @@ body > .g-container {
         &:focus {
           background: transparent;
           color: $base-secondary-color;
-          border-color: $base-secondary-color;
+          border-color: $base-secondary-color !important;
         }
       }
 
