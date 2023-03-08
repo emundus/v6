@@ -2473,7 +2473,7 @@ p.readmore .btn,
     border-radius: var(--em-border-radius) !important;
     &:hover, &:active, &:focus {
       background: var(--neutral-50);
-      border-color: var(--main-500);
+      border-color: var(--main-500) !important;
       color: var(--main-500);
     }
   }
