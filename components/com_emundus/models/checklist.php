@@ -26,18 +26,44 @@ class EmundusModelChecklist extends JModelList
 	function __construct()
 	{
 		parent::__construct();
-		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
-		$this->_db = JFactory::getDBO();
-		$student_id = JRequest::getVar('sid', null, 'GET', 'none',0);
+		jimport('joomla.log.log');
+		JLog::addLogger(['text_file' => 'com_emundus.checklist.php'], JLog::ALL, array('com_emundus.checklist'));
 
-		if ($student_id > 0 && JFactory::getUser()->usertype != 'Registered') {
-			$this->_user = JFactory::getUser($student_id);
-			$this->_db->setQuery('SELECT user.profile, user.university_id, user.schoolyear, profile.menutype
-				FROM #__emundus_users AS user
-				LEFT JOIN #__emundus_setup_profiles AS profile ON profile.id = user.profile
-				WHERE user.user_id = '.$this->_user->id);
-			$res = $this->_db->loadObject();
-			$this->_user->profile = $res->profile;
+		require_once (JPATH_SITE.'/components/com_emundus/helpers/menu.php');
+		$this->_db = JFactory::getDBO();
+		$app =  JFactory::getApplication();
+		$student_id = $app->input->getInt('sid');
+		$current_user = JFactory::getUser()->id;
+
+		if (!empty($student_id)) {
+			if (EmundusHelperAccess::asPartnerAccessLevel($current_user)) {
+				$this->_user = JFactory::getUser($student_id);
+				if (!empty($this->_user->id)) {
+					$query = $this->_db->getQuery(true);
+
+					$query->select('jeu.profile')
+						->from($this->_db->quoteName('#__emundus_users', 'jeu'))
+						->where('jeu.user_id = ' . $this->_user->id);
+
+					try {
+						$this->_db->setQuery($query);
+						$profile = $this->_db->loadResult();
+
+						if (!empty($profile)) {
+							$this->_user->profile = $profile;
+						}
+					} catch (Exception $e) {
+						JLog::add('Failed to get user profile ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					}
+				} else {
+					JLog::add('User ' . $current_user .  ' tried to read checklist of user ' . $student_id . ' but user does not exists.', JLog::INFO, 'com_emundus.checklist');
+					$app->enqueueMessage(JText::_('COM_USERS_USER_NOT_FOUND'), 'warning');
+				}
+			} else {
+				JLog::add('[' . $_SERVER['REMOTE_ADDR'] . '] User ' . $current_user .  ' tried to read checklist of user ' . $student_id . ' but does not have the rights to do it.', JLog::WARNING, 'com_emundus.checklist');
+				$app->enqueueMessage(JText::_('ACCESS_DENIED'), 'warning');
+				$app->redirect('/checklist');
+			}
 		} else {
 			$this->_user = JFactory::getSession()->get('emundusUser');
 		}
@@ -46,7 +72,7 @@ class EmundusModelChecklist extends JModelList
 	function getGreeting() {
 		$query = 'SELECT id, title, text FROM #__emundus_setup_checklist WHERE page = "checklist" ';
 		$note = 0;
-		if ($note && is_numeric($note) && $note>1) {
+		if ($note && is_numeric($note) && $note > 1) {
             $this->_need = $note;
         }
 		$query .= 'AND (whenneed = '.$this->_need . ' OR whenneed='.$this->_user->status.')';
@@ -69,7 +95,7 @@ class EmundusModelChecklist extends JModelList
 			$form->nb = $this->_db->loadResult();
 			if ($form->nb==0) {
 				$this->_forms = 1;
-				$this->_need = $this->_attachments=1?1:0;
+				$this->_need = $this->_attachments == 1 ?: 0;
 			}
 		}
 		return $forms;
@@ -156,19 +182,34 @@ class EmundusModelChecklist extends JModelList
 	}
 
 	function getConfirmUrl($profile = null) {
-
+		$confirm_url = '';
 	    if (empty($profile)) {
 	        $profile = $this->_user->profile;
         }
 
-        $db = JFactory::getDBO();
-        $query = 'SELECT CONCAT(m.link,"&Itemid=", m.id) as link
-        FROM #__emundus_setup_profiles as esp
-        LEFT JOIN  #__menu as m on m.menutype = esp.menutype
-        WHERE esp.id='.$profile.' AND m.published>=0 AND m.level=1 ORDER BY m.lft DESC';
+		if (!empty($profile)) {
+			$db = JFactory::getDBO();
 
-        $db->setQuery($query);
-        return $db->loadResult();
+			$query = $db->getQuery(true);
+			$query->select('CONCAT(m.link,"&Itemid=", m.id) as link')
+				->from('#__emundus_setup_profiles as esp')
+				->leftJoin('#__menu as m on m.menutype = esp.menutype')
+				->where('esp.id = ' . $profile)
+				->andWhere('m.published > 0')
+				->andWhere('m.level = 1')
+				->order('m.lft DESC');
+
+			try {
+				$db->setQuery($query);
+				$confirm_url = $db->loadResult();
+			} catch(Exception $e) {
+				JLog::add('Failed to get confirm url from profile ' . $profile . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.checklist');
+			}
+		} else {
+			JLog::add('Failed to get confirm url from profile because profile is not set', JLog::WARNING, 'com_emundus.checklist');
+		}
+
+		return $confirm_url;
 	}
 
 
@@ -176,7 +217,7 @@ class EmundusModelChecklist extends JModelList
 
 		$db = JFactory::getDBO();
 
-		if (!isset($student) && empty($student)) {
+		if (empty($student)) {
             $student = JFactory::getSession()->get('emundusUser');
         }
 
