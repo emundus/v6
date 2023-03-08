@@ -1204,7 +1204,10 @@ body > .g-container {
 .candidacy-files-list .em-light-selected-tab {
   border-bottom: 1px solid $base-secondary-color;
 }
-
+.swal2-actions button.swal2-styled.swal2-cancel:not(.mod_emundus_application_swal_manage_tabs_cancel) {
+  border: 1px solid rgb(220, 53, 69) !important;
+  color: #fff !important;
+}
 
 /* MODULE APPLICATIONS COULEUR BTN IMPRIMER*/
 .homepage #g-main-mainbody #content-bottom-a {
@@ -4590,6 +4593,9 @@ button.swal2-styled.swal2-cancel{
   border-radius: 8px;
   color: var(--blue-500);
   padding: 11px 20px;
+  &:hover, &:active, &:focus {
+    background: #FFFFFF;
+  }
 }
 
 button.swal2-confirm.save-btn.sauvegarder.save_continue {
