@@ -1200,6 +1200,12 @@ body > .g-container {
   border-top: 2px solid $base-secondary-color !important;
 }
 
+/* TEMPLATE TCHOOZ */
+.candidacy-files-list .em-light-selected-tab {
+  border-bottom: 1px solid $base-secondary-color;
+}
+
+
 /* MODULE APPLICATIONS COULEUR BTN IMPRIMER*/
 .homepage #g-main-mainbody #content-bottom-a {
   .platform-content .btn.btn-info {
