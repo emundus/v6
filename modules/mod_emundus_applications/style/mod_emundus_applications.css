@@ -306,6 +306,10 @@ margin-top: 16px;
     color: #727272;
 }
 
+.mod_emundus_applications___header.mod_emundus_applications___tmp_tchooz a#add-application {
+    width: 100%;
+}
+
 .mod_emundus_applications___content{
     display: grid;
     align-items: flex-start;
@@ -452,6 +456,8 @@ margin-top: 16px;
     margin: 0;
     width: 100%;
     margin-top: 12px;
+    height: 48px;
+    border-radius: 8px;
 }
 .mod_emundus_application_swal_manage_tabs_popup .swal2-content .swal2-validation-message{
     background: transparent;

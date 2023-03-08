@@ -78,7 +78,7 @@ ksort($applications);
 
 $current_tab = 0;
 ?>
-<div class="mod_emundus_applications___header">
+<div class="mod_emundus_applications___header mod_emundus_applications___tmp_tchooz">
 	<?php if ($mod_em_applications_show_hello_text == 1) : ?>
         <div class="em-flex-row em-flex-space-between em-w-100 em-mb-16">
             <p class="em-h3 em-mb-8"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_HELLO') . $user->firstname ?></p>
