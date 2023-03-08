@@ -3491,6 +3491,7 @@ ul.unstyled.em-linkForgot li a {
     border: 1px solid var(--neutral-400);
     border-radius: 4px;
     width: 100%;
+    overflow: auto;
 
     li.search-field {
       input[type="text"] {
