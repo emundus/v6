@@ -33,6 +33,7 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
         $rowid = $app->input->get('rowid');
         $student_id = $app->input->get('jos_emundus_evaluations___student_id') ?: '';
 		$fnum = $app->input->get('jos_emundus_evaluations___fnum') ?:'';
+		$view = strpos(JUri::getInstance()->getPath(), '/details/') !== false ? 'details' : 'form';
 
 		if (empty($fnum) || empty($student_id)) {
 			if (!empty($rowid)) {
@@ -59,7 +60,7 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
 
 		require_once(JPATH_SITE.'/components/com_emundus/models/evaluation.php');
         $m_evaluation = new EmundusModelEvaluation();
-        $evaluation = $m_evaluation->getEvaluationUrl($fnum,$formid,$rowid,$student_id,1);
+        $evaluation = $m_evaluation->getEvaluationUrl($fnum,$formid,$rowid,$student_id,1, $view);
 
         if(!empty($evaluation)) {
             $event_datas = [
