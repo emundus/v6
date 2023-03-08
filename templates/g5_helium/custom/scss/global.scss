@@ -4594,7 +4594,9 @@ button.swal2-styled.swal2-cancel{
   color: var(--blue-500);
   padding: 11px 20px;
   &:hover, &:active, &:focus {
-    background: #FFFFFF;
+    background: var(--blue-500);
+    color: #FFFFFF;
+    background-image: none !important;
   }
 }
 
