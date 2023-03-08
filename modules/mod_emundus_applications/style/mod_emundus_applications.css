@@ -486,12 +486,6 @@ margin-top: 16px;
 .mod_emundus_application___buttons_switch_view_disabled{
     color: #8F96A3;
 }
-.mod_emundus_application___buttons_switch_view_enable{
-    color: #156FEE;
-}
-.mod_emundus_application___buttons_enable{
-    border: 1px solid #156FEE;
-}
 
 @media screen and (max-width: 767px) {
     .mod_emundus_applications___header #add-application {

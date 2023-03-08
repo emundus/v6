@@ -142,7 +142,7 @@ $current_tab = 0;
         <div id="tab_adding_link" onclick="createTab()"
              class="em-mr-16 em-light-tabs em-flex-row em-pointer <?php if (count($tabs) > 1) : ?>em-display-none<?php endif; ?>">
             <a class="em-flex-row em-no-hover-underline em-font-size-14 em-pointer" style="white-space: nowrap"><span
-                        class="em-main-500-color material-icons-outlined em-font-size-14 em-mr-4">add</span><?php echo JText::_('MOD_EM_APPLICATION_TABS_ADD_TAB') ?>
+                        class="material-icons-outlined em-font-size-14 em-mr-4">add</span><?php echo JText::_('MOD_EM_APPLICATION_TABS_ADD_TAB') ?>
             </a>
         </div>
         <div id="tab_manage_links" onclick="manageTabs()"
@@ -1028,7 +1028,7 @@ $current_tab = 0;
             link_to_add.classList.add('em-flex-row', 'em-no-hover-underline', 'em-font-size-14', 'em-pointer');
             link_to_add.setAttribute('onclick', 'createTab()');
             link_to_add.id = 'add_link_manage'
-            link_to_add.innerHTML = '<span class="em-main-500-color material-icons-outlined em-font-size-14 em-mr-4">add</span><?php echo JText::_('MOD_EM_APPLICATION_TABS_ADD_TAB') ?>';
+            link_to_add.innerHTML = '<span class="material-icons-outlined em-font-size-14 em-mr-4">add</span><?php echo JText::_('MOD_EM_APPLICATION_TABS_ADD_TAB') ?>';
             document.getElementById('swal_manage').appendChild(link_to_add);
 
             let el = document.getElementById('swal_manage').cloneNode(true);

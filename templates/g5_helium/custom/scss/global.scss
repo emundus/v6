@@ -1208,6 +1208,46 @@ body > .g-container {
   border: 1px solid rgb(220, 53, 69) !important;
   color: #fff !important;
 }
+.mod_emundus_application___buttons_switch_view_enable{
+  color: $base-secondary-color;
+}
+.mod_emundus_application___buttons_enable{
+  border: 1px solid $base-secondary-color;
+}
+#tab_adding_link a span.material-icons-outlined{
+  color: $base-primary-color;
+}
+
+.mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-cancel {
+  background: transparent;
+  border: 1px solid $base-primary-color;
+  border-radius: 8px;
+  color: $base-primary-color;
+  padding: 11px 20px;
+  font-weight: inherit;
+
+  &:hover, &:focus, &:active  {
+    background: $base-primary-color;
+    border: 1px solid $base-primary-color;
+    color: #fff;
+  }
+}
+
+.mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-confirm {
+  background: $base-secondary-color;
+  border: 1px solid $base-secondary-color;
+  border-radius: 8px;
+  color: #fff;
+  padding: 11px 20px;
+  font-weight: inherit;
+
+  &:hover, &:focus, &:active  {
+    background: transparent;
+    border: 1px solid $base-secondary-color;
+    color: $base-secondary-color;
+  }
+}
+
 
 /* MODULE APPLICATIONS COULEUR BTN IMPRIMER*/
 .homepage #g-main-mainbody #content-bottom-a {
