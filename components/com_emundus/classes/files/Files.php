@@ -730,9 +730,14 @@ class Files
 
                         if (!empty($params['sub_options'])) {
                             foreach($params['sub_options']['sub_values'] as $sub_opt_key => $sub_opt) {
+	                            $label = \JText::_($params['sub_options']['sub_labels'][$sub_opt_key]);
+	                            if($sub_opt == 0){
+									$label = '';
+								}
+
                                 $values[] = [
                                     'value' => $sub_opt,
-                                    'label' => \JText::_($params['sub_options']['sub_labels'][$sub_opt_key])
+                                    'label' => $label
                                 ];
                             }
                         }
