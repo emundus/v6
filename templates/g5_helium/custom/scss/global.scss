@@ -4086,6 +4086,10 @@ div#em-appli-block {
     background-color: var(--background-color) !important;
   }
 
+  tbody input.fabrik_filter[type="text"]  {
+    background-color: var(--neutral-0) !important;
+  }
+
   .list-footer .limit {
     .input-prepend > .add-on, .input-append > .add-on, select {
       background-color: var(--background-color) !important;
