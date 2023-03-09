@@ -230,12 +230,14 @@ export default {
       const sectionFrom = this.sections.find(section => section.group_id === fromGroup);
       const fromElements = Object.values(sectionFrom.elements);
       const movedElement = fromElements[event.oldIndex];
-      const toElements = this.$refs['section-'+toGroup][0].elements.map((element, index) => {
-        return { id: element.id, order: index + 1 };
-      });
-
       if (movedElement.id) {
-        formBuilderService.updateOrder(toElements, toGroup, movedElement);
+	      const toElements = this.$refs['section-'+toGroup][0].elements.map((element, index) => {
+		      return { id: element.id, order: index + 1 };
+	      });
+	      toElements.push({id:movedElement.id, order: event.newIndex});
+	      this.$refs['section-'+toGroup][0].elements.push(movedElement);
+
+	      formBuilderService.updateOrder(toElements, toGroup, movedElement);
         this.updateLastSave();
       }
     },
