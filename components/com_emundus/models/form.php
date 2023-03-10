@@ -1900,21 +1900,27 @@ class EmundusModelForm extends JModelList {
     }
 
     function getDocumentsByProfile($prid){
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
+		$attachments_by_profile = [];
 
-        try {
-            $query->select('sa.id as docid,sa.value as label,sap.*,sa.allowed_types')
-                ->from($db->quoteName('#__emundus_setup_attachment_profiles','sap'))
-                ->leftJoin($db->quoteName('#__emundus_setup_attachments','sa').' ON '.$db->quoteName('sa.id').' = '.$db->quoteName('sap.attachment_id'))
-                ->where($db->quoteName('sap.profile_id') . ' = ' . $db->quote($prid))
-                ->order('sap.mandatory DESC, sap.ordering, sa.value ASC');
-            $db->setQuery($query);
-            return $db->loadObjectList();
-        } catch (Exception $e){
-            JLog::add('component/com_emundus/models/form | Error cannot get documents by profile_id : ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
-        }
+		if (!empty($prid)) {
+			$db = $this->getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('sa.id as docid,sa.value as label,sap.*,sa.allowed_types')
+				->from($db->quoteName('#__emundus_setup_attachment_profiles','sap'))
+				->leftJoin($db->quoteName('#__emundus_setup_attachments','sa').' ON '.$db->quoteName('sa.id').' = '.$db->quoteName('sap.attachment_id'))
+				->where($db->quoteName('sap.profile_id') . ' = ' . $db->quote($prid))
+				->order('sap.mandatory DESC, sap.ordering, sa.value ASC');
+
+			try {
+				$db->setQuery($query);
+				$attachments_by_profile = $db->loadObjectList();
+			} catch (Exception $e){
+				JLog::add('component/com_emundus/models/form | Error cannot get documents by profile_id : ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+	    return $attachments_by_profile;
     }
 
     function reorderDocuments($documents){

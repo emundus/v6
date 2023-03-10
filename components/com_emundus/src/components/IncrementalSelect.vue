@@ -89,19 +89,19 @@ export default {
           this.newValue = detachedValue;
           this.emitValueChanges();
         } else {
-          console.error("No value matched the selected one. It should be impossible.")
+					this.unselectExistingValue();
         }
       }
       this.showOptions = false;
     },
     unselectExistingValue() {
       this.isNewVal = true;
-	    this.newExistingLabel = this.existingValues.find((existingValue) => {
+			let foundValue = this.existingValues.find((existingValue) => {
 				return existingValue.id == this.selectedExistingValue;
-	    }).label;
-
+			});
+	    this.newExistingLabel = foundValue ? foundValue.label : '';
 			this.selectedExistingValue = -1;
-      this.newValue.label = "";
+      this.newValue.label = '';
       this.newValue.id = 0;
 			this.existingValues = JSON.parse(JSON.stringify(this.originalOptions));
       this.showOptions = false;

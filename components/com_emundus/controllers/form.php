@@ -510,25 +510,27 @@ class EmundusControllerForm extends JControllerLegacy {
     }
 
     public function getDocuments() {
-        $user = JFactory::getUser();
+	    $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+	    $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
-
             $profile_id = $jinput->getInt('pid');
 
-            $documents = $this->m_form->getDocumentsByProfile($profile_id);
+			if (!empty($profile_id)) {
+				$documents = $this->m_form->getDocumentsByProfile($profile_id);
 
-            if (!empty($documents)) {
-                $tab = array('status' => 1, 'msg' => 'worked', 'data' => $documents);
-            } else {
-                $tab = array('status' => 0, 'msg' => 'Doesn t worked', 'data' => $documents);
-            }
+				if (!empty($documents)) {
+					$response = array('status' => true, 'msg' => 'worked', 'data' => $documents);
+				} else {
+					$response = array('status' => false, 'msg' => 'No documents attached to profile found', 'data' => $documents);
+				}
+			} else {
+				$response = array('status' => false, 'msg' => 'Missing parameters');
+			}
         }
-        echo json_encode((object)$tab);
+
+        echo json_encode((object)$response);
         exit;
     }
 
