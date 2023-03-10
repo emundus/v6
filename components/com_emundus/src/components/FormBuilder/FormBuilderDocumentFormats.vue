@@ -28,10 +28,9 @@
 </template>
 
 <script>
-import draggable from "vuedraggable";
-import campaignService from "../../services/campaign";
-import formBuilderMixin from "../../mixins/formbuilder";
-import formService from "../../services/form";
+import draggable from 'vuedraggable';
+import formBuilderMixin from '../../mixins/formbuilder';
+import formService from '../../services/form';
 
 export default {
   components: {

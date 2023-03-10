@@ -374,8 +374,6 @@ export default {
     updateDocumentSelectedValue(document)
     {
       if (document.id) {
-				const pos = document.id.indexOf('-');
-				document.id = document.id.substring(0, pos);
         this.document.name[this.shortDefaultLang] = document.label;
         this.selectModel({target: {value: document.id}}, this.current_document && this.current_document.id && this.current_document.id == document.id ? this.current_document.mandatory : null);
       } else {
@@ -415,16 +413,14 @@ export default {
     },
     documentList() {
       return this.models.map((document) => {
-				const label = document.mandatory == '1' ? document.name[this.shortDefaultLang] + ' (' + this.translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_MANDATORY') + ')' : document.name[this.shortDefaultLang] + ' (' + this.translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_NOT_MANDATORY') + ')';
-
         return {
-          id: document.id + '-' + document.mandatory,
-          label: label
+          id: document.id,
+          label: document.name[this.shortDefaultLang]
         };
       });
     },
     isMandatory() {
-      return this.document.mandatory == "1";
+      return this.document.mandatory == '1';
     },
     incSelectDefaultValue() {
 			let defaultValue = null

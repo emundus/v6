@@ -338,6 +338,25 @@ class EmundusControllerForm extends JControllerLegacy {
         exit;
     }
 
+	public function getAttachments() {
+		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+		$user = JFactory::getUser();
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$attachments = $this->m_form->getAttachments();
+			if (!empty($attachments)) {
+				$response['status'] = true;
+				$response['msg'] =  JText::_('DOCUMENTS_RETRIEVED');
+				$response['data'] = $attachments;
+			} else {
+				$response['msg'] =  JText::_('ERROR_CANNOT_RETRIEVE_DOCUMENTS');
+			}
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
     public function getdocumentsusage() {
         $user = JFactory::getUser();
         $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));

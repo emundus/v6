@@ -111,7 +111,7 @@ export default {
             };
 
             const response = await client().get(
-                baseUrl + '&task=getundocuments'
+                baseUrl + '&task=getAttachments'
             );
 
             if (response.data.status) {

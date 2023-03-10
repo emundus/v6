@@ -1226,6 +1226,37 @@ class EmundusModelForm extends JModelList {
         }
     }
 
+	public function getAttachments() {
+		$attachments = [];
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('*')
+			->from($db->quoteName('#__emundus_setup_attachments'))
+			->where($db->quoteName('published') . ' = 1')
+			->order('value');
+
+		try {
+			$db->setQuery($query);
+			$attachments = $db->loadObjectList();
+
+			if (!empty($attachments)) {
+				require_once (JPATH_SITE . '/components/com_emundus/models/falang.php');
+				$falang = new EmundusModelFalang;
+
+				foreach ($attachments as $attachment) {
+					$attachment->can_be_deleted = strpos($attachment->lbl, '_em') === 0;
+					$attachment->name = $falang->getFalang($attachment->id,'emundus_setup_attachments','value', $attachment->value);
+					$attachment->description = $falang->getFalang($attachment->id,'emundus_setup_attachments','description', $attachment->description);
+				}
+			}
+		} catch (Exception $e) {
+			JLog::add('Failed to get attachments ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $attachments;
+	}
+
     /**
      * @param $documentIds
      * @return array
