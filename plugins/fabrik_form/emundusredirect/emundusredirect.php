@@ -101,6 +101,22 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 		$user = JFactory::getSession()->get('emundusUser');
 		$db = JFactory::getDBO();
 
+		if(isset($user->fnum)){
+			try {
+				$query = $db->getQuery(true);
+
+				$query->update($db->quoteName('#__emundus_campaign_candidature'))
+					->set($db->quoteName('updated') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+					->set($db->quoteName('updated_by') . ' = ' . JFactory::getUser()->id)
+					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($user->fnum));
+				$db->setQuery($query);
+				$db->execute();
+			} catch (Exception $e) {
+				$error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+				JLog::add($error, JLog::ERROR, 'com_emundus');
+			}
+		}
+
 		include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
 		$m_profile = new EmundusModelProfile();
 		$applicant_profiles = $m_profile->getApplicantsProfilesArray();
