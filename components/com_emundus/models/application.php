@@ -3977,7 +3977,7 @@ class EmundusModelApplication extends JModelList
      * @param $pid Int the profile_id to get list of forms
      * @return bool
      */
-    public function copyApplication($fnum_from, $fnum_to, $pid = null, $copy_attachment = 0, $campaign_id = null, $copy_tag = 0, $move_hikashop_command = 0, $delete_from_file = 0) {
+    public function copyApplication($fnum_from, $fnum_to, $pid = null, $copy_attachment = 0, $campaign_id = null, $copy_tag = 0, $move_hikashop_command = 0, $delete_from_file = 0,$copyUsersAssoc=0,$copyGroupsAssoc=0) {
         $db = JFactory::getDbo();
         $pids = [];
 
@@ -4187,6 +4187,12 @@ class EmundusModelApplication extends JModelList
                 $db->setQuery($query);
                 $db->execute();
             }
+            if($copyUsersAssoc){
+                $this->copyUsersAssoc($fnum_from,$fnum_to);
+            }
+            if($copyGroupsAssoc){
+                $this->copyGroupsAssoc($fnum_from,$fnum_to);
+            }
         } catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$q.' :: '.$query, JLog::ERROR, 'com_emundus');
@@ -4270,6 +4276,81 @@ class EmundusModelApplication extends JModelList
                         }
                     } catch (Exception $e) {
                         $error = JUri::getInstance().' :: USER ID : '.$row['user_id'].' -> '.$e->getMessage();
+                        JLog::add($error, JLog::ERROR, 'com_emundus');
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+        return true;
+    }
+
+    public function copyUsersAssoc($fnum_from, $fnum_to) {
+        $db = JFactory::getDbo();
+
+        try {
+
+            // 1. get list of user assoc for previous file defined as duplicated
+            $query = 'SELECT eua.*
+                        FROM #__emundus_users_assoc as eua
+                        WHERE eua.fnum like '.$db->Quote($fnum_from);
+
+            $db->setQuery($query);
+            $users_assoc = $db->loadAssocList();
+
+            if (count($users_assoc) > 0) {
+                // 2. copy DB définition and duplicate files in applicant directory
+                foreach ($users_assoc as $user) {
+                    $user['fnum'] = $fnum_to;
+                    unset($user['id']);
+
+                    try {
+                        $query = 'INSERT INTO #__emundus_users_assoc (`'.implode('`,`', array_keys($user)).'`) VALUES('.implode(',', $db->Quote($user)).')';
+                        $db->setQuery($query);
+                        $db->execute();
+                    } catch (Exception $e) {
+                        $error = JUri::getInstance().' :: USER ID : '.$user['user_id'].' -> '.$e->getMessage();
+                        JLog::add($error, JLog::ERROR, 'com_emundus');
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+        return true;
+    }
+    public function copyGroupsAssoc($fnum_from, $fnum_to) {
+        $db = JFactory::getDbo();
+
+        try {
+
+            // 1. get list of usser assoc for previous file defined as duplicated
+            $query = 'SELECT ega.*
+                        FROM #__emundus_group_assoc as ega
+                        WHERE ega.fnum like '.$db->Quote($fnum_from);
+
+            $db->setQuery($query);
+            $groups_assoc = $db->loadAssocList();
+
+            if (count($groups_assoc) > 0) {
+                // 2. copy DB définition and duplicate files in applicant directory
+                foreach ($groups_assoc as $group) {
+                    $group['fnum'] = $fnum_to;
+                    unset($group['id']);
+
+                    try {
+                        $query = 'INSERT INTO #__emundus_group_assoc (`'.implode('`,`', array_keys($group)).'`) VALUES('.implode(',', $db->Quote($group)).')';
+                        $db->setQuery($query);
+                        $db->execute();
+                    } catch (Exception $e) {
+                        $error = JUri::getInstance().' :: fnum : '.$group['user_id'].' :: group : '.$group['group_id'].' -> '.$e->getMessage();
                         JLog::add($error, JLog::ERROR, 'com_emundus');
                     }
                 }
