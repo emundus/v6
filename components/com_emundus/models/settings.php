@@ -526,7 +526,7 @@ class EmundusModelsettings extends JModelList {
 					$query->clear()
 						->select('title, introtext, alias')
 						->from($db->quoteName('#__content'))
-						->where('asset_id = ' . $article->asset_id);
+						->where('id = ' . $article->id);
 
 					$db->setQuery($query);
 					$article_content = $db->loadAssoc();
