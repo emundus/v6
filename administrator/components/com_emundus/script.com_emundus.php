@@ -748,6 +748,14 @@ if (password_value.match(regex) != null) {
 
 				EmundusHelperUpdate::updateOverrideTag('FORM_REGISTRATION','Créer votre compte','Créez votre compte');
 
+				$query->clear()
+					->update($db->quoteName('#__fabrik_elements'))
+					->set($db->quoteName('published') . ' = 0')
+					->where($db->quoteName('name') . ' LIKE ' . $db->quote('confirm_email'))
+					->where($db->quoteName('plugin') . ' LIKE ' . $db->quote('field'))
+					->where($db->quoteName('group_id') . ' = 640');
+				$db->setQuery($query);
+				$db->execute();
 			}
 
 
