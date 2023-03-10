@@ -1177,7 +1177,7 @@ class EmundusControllerUsers extends JControllerLegacy {
         require_once(JPATH_COMPONENT . '/models/user.php');
         $m_user = new EmundusModelUser();
 
-	    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING);
+	    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
         $user = JFactory::getUser();
 		$uid = $user->id;
 
