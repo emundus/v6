@@ -518,8 +518,23 @@ class EmundusModelsettings extends JModelList {
             $db->setQuery($query);
             $result = $db->loadResult();
 
-            if(!empty($result)){
+            if (!empty($result)){
                 $article->{$reference_field} = $result;
+            } else {
+	            $currentLang = JFactory::getLanguage();
+				if ($currentLang->lang_code != $lang_code) {
+					$query->clear()
+						->select('title, introtext, alias')
+						->from($db->quoteName('#__content'))
+						->where('asset_id = ' . $article->asset_id);
+
+					$db->setQuery($query);
+					$article_content = $db->loadAssoc();
+
+					foreach ($article_content as $key => $content) {
+						$article->{$key} = $content;
+					}
+				}
             }
 
             return $article;
