@@ -58,10 +58,11 @@ import formService from '../../services/form';
 import formBuilderService from '../../services/formbuilder';
 import translationService from '../../services/translations';
 
-import FormBuilderPageSection from "./FormBuilderPageSection";
-import formBuilderMixin from "../../mixins/formbuilder";
-import globalMixin from "../../mixins/mixin";
-import Swal from "sweetalert2";
+import FormBuilderPageSection from './FormBuilderPageSection';
+import formBuilderMixin from '../../mixins/formbuilder';
+import globalMixin from '../../mixins/mixin';
+import errorMixin from '../../mixins/errors';
+import Swal from 'sweetalert2';
 
 export default {
   components: {
@@ -77,7 +78,7 @@ export default {
       default: {}
     },
   },
-  mixins: [formBuilderMixin, globalMixin],
+  mixins: [formBuilderMixin, globalMixin, errorMixin],
   data() {
     return {
       fabrikPage: {},
@@ -227,19 +228,37 @@ export default {
       });
     },
     updateElementsOrder(event, fromGroup, toGroup) {
-      const sectionFrom = this.sections.find(section => section.group_id === fromGroup);
-      const fromElements = Object.values(sectionFrom.elements);
-      const movedElement = fromElements[event.oldIndex];
-      if (movedElement.id) {
-	      const toElements = this.$refs['section-'+toGroup][0].elements.map((element, index) => {
-		      return { id: element.id, order: index + 1 };
-	      });
-	      toElements.push({id:movedElement.id, order: event.newIndex});
-	      this.$refs['section-'+toGroup][0].elements.push(movedElement);
+			let updated = false;
 
-	      formBuilderService.updateOrder(toElements, toGroup, movedElement);
-        this.updateLastSave();
-      }
+			if (fromGroup > 0 && toGroup > 0 && fromGroup != toGroup) {
+				const sectionFrom = this.sections.find(section => section.group_id === fromGroup);
+				const fromElements = Object.values(sectionFrom.elements);
+				const movedElement = fromElements[event.oldIndex];
+
+				if (movedElement !== undefined && movedElement !== null && movedElement.id) {
+					const foundElement = this.$refs['section-'+toGroup][0].elements.find(element => element.id === movedElement.id);
+
+					if (foundElement == undefined || foundElement == null) {
+						this.$refs['section-'+toGroup][0].elements.splice(event.newIndex, 0, movedElement);
+					}
+
+					const toElements = this.$refs['section-'+toGroup][0].elements.map((element, index) => {
+						return { id: element.id, order: index + 1 };
+					});
+					formBuilderService.updateOrder(toElements, toGroup, movedElement).then((response) => {
+						updated = response.data.status;
+
+						if (!updated) {
+							this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED');
+						}
+					});
+					this.updateLastSave();
+				} else {
+					this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED');
+				}
+      } else {
+				this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED');
+			}
     },
     deleteSection(sectionId) {
       this.sections = this.sections.filter(section => section.group_id !== sectionId);
