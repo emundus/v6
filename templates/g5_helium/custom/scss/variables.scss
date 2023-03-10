@@ -351,6 +351,7 @@ $font:'Inter', sans-serif;
 @mixin input-focus {
   border: 1px solid var(--blue-500);
   box-shadow: none;
+  outline: 5px auto -webkit-focus-ring-color;
 }
 
 @mixin input-hover {

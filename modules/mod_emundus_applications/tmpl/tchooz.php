@@ -63,7 +63,7 @@ ksort($applications);
 ?>
 <div class="mod_emundus_applications___header">
     <?php if ($mod_em_applications_show_hello_text == 1) : ?>
-        <p class="em-h3 em-mb-8"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_HELLO') . $user->firstname ?></p>
+        <h1 class="em-h3 em-mb-8"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_HELLO') . $user->firstname ?></h1>
     <?php endif; ?>
 
     <?php if (sizeof($applications) > 0) : ?>
@@ -170,8 +170,8 @@ ksort($applications);
                                                     <div class="em-mb-8 em-font-size-14">
                                                         <span class="em-applicant-default-font em-neutral-800-color">N°<?php echo $application->fnum ?></span>
                                                     </div>
-                                                    <div>
-                                                        <span class="material-icons em-text-neutral-600" id="actions_button_<?php echo $application->fnum ?>" style="font-size: 16px">more_vert</span>
+                                                    <div >
+                                                        <span tabindex="0" class="material-icons em-text-neutral-600" id="actions_button_<?php echo $application->fnum ?>" style="font-size: 16px">more_vert</span>
 
                                                         <!-- ACTIONS BLOCK -->
                                                         <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color" id="actions_block_<?php echo $application->fnum ?>" style="display: none">
