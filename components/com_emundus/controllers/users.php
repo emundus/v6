@@ -1174,14 +1174,12 @@ class EmundusControllerUsers extends JControllerLegacy {
 
     public function activation()
     {
-        require_once(JPATH_COMPONENT . DS . 'models' . DS . 'user.php');
+        require_once(JPATH_COMPONENT . '/models/user.php');
         $m_user = new EmundusModelUser();
 
-        $body = json_decode(file_get_contents('php://input'), true);
-        $uid = $body['user'];
-        $email = $body['email'];
-
-        $user = JFactory::getUser($uid);
+	    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING);
+        $user = JFactory::getUser();
+		$uid = $user->id;
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
