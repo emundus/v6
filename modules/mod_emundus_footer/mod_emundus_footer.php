@@ -32,6 +32,7 @@ $mod_emundus_footer_legal_info=$params->get('mod_emundus_footer_legal_info', '1'
 $mod_emundus_footer_data_privacy=$params->get('mod_emundus_footer_data_privacy', '1');
 $mod_emundus_footer_rights=$params->get('mod_emundus_footer_rights', '1');
 $mod_emundus_footer_cookies=$params->get('mod_emundus_footer_cookies', '1');
+$mod_emundus_footer_accessibility=$params->get('mod_emundus_footer_accessibility', '1');
 
 $type             = ModLoginHelper::getType();
 $return           = ModLoginHelper::getReturnUrl($params, $type);
