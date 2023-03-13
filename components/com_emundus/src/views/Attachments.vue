@@ -329,14 +329,12 @@ export default {
         const foundUser = this.users && this.users.length ? this.users.find((user) => user.user_id == response.fnumInfos.applicant_id) : false;
 
         if (!foundUser) {
-          const resp = await userService.getUserById(
-              response.fnumInfos.applicant_id
-          );
+          const resp = await userService.getUserNameById(response.fnumInfos.applicant_id);
           if (resp.status) {
-            this.users.push(resp.user[0]);
-            this.displayedUser = resp.user[0];
+            this.users.push(resp.user);
+            this.displayedUser = resp.user;
             this.$store.dispatch('user/setDisplayedUser', this.displayedUser.user_id);
-            this.$store.dispatch('user/setUsers', resp.user);
+            this.$store.dispatch('user/setUsers', [resp.user]);
           } else {
             this.displayErrorMessage(this.translate('COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND'));
           }
