@@ -13,15 +13,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
  
 jimport( 'joomla.application.component.model' );
 
-//client api for file conversion
-use TheCodingMachine\Gotenberg\Client;
-use TheCodingMachine\Gotenberg\ClientException;
-use TheCodingMachine\Gotenberg\DocumentFactory;
-use TheCodingMachine\Gotenberg\OfficeRequest;
-use TheCodingMachine\Gotenberg\HTMLRequest;
-use TheCodingMachine\Gotenberg\Request;
-use TheCodingMachine\Gotenberg\RequestException;
-use GuzzleHttp\Psr7\LazyOpenStream;
+use Gotenberg\Gotenberg;
+use Gotenberg\Stream;
  
 class EmundusModelExport extends JModelList {
 
@@ -54,7 +47,7 @@ class EmundusModelExport extends JModelList {
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
         $gotenberg_url = $eMConfig->get('gotenberg_url', 'http://localhost:3000');
-        $gotenberg_ssl = (bool)$eMConfig->get('gotenberg_ssl', 1);        // using SSL certificate or not
+        $gotenberg_ssl = (bool)$eMConfig->get('gotenberg_ssl', 1);
 
         $res = new stdClass();
 
@@ -66,62 +59,41 @@ class EmundusModelExport extends JModelList {
 
         $user_id = !empty($fnum) ? (int)substr($fnum, -7) : null;
 
-        if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $fnum))
-        {
+        if (EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $fnum)) {
             require JPATH_LIBRARIES . '/emundus/vendor/autoload.php';
 
-            ///
-            $src = $file_src;
-            $file = end(explode('/',$file_src));
-            $dest = $file_dest;
+            $src   = $file_src;
+	        $file = explode('/', $file_src);
+	        $file  = end($file);
 
-            //TODO: parse URL to make it cleaner
-            $ssl = new \GuzzleHttp\Client(['verify' => $gotenberg_ssl]);
-            $client = new Client($gotenberg_url, new \Http\Adapter\Guzzle6\Client($ssl));
-            $files = [
-                DocumentFactory::makeFromPath($file, $src),
-            ];
+	        $dest = explode('/', $file_dest);
+	        $dest_file  = array_pop($dest);
+			$dest_path = implode('/',$dest);
 
             try {
                 if ($file_src_format != 'html') {
-                    //Office
-                    $request = new OfficeRequest($files);
+	                $request = Gotenberg::libreOffice($gotenberg_url)
+		                ->outputFilename($dest_file)
+		                ->convert(
+			                Stream::path($file_src)
+		                );
+					
+	                Gotenberg::save($request, $dest_path .'/');
                 } else {
-                    // HTML
-                    // @todo define parts of html source (header, footer, body)
-                    $header = '';
-                    $footer = '';
-                    $assets = '';
-                    $request = new HTMLRequest($src);
-                    $request->setHeader($header);
-                    $request->setFooter($footer);
-                    $request->setAssets($assets);
-                    $request->setPaperSize(Request::A4);
-                    $request->setMargins(Request::NO_MARGINS);
-                    $request->setScale(0.75);
+	                $request = Gotenberg::chromium($gotenberg_url)
+		                ->html(Stream::string('my.html', $src));
+
+	                Gotenberg::save($request, $dest_path .'/');
                 }
-                
-                # store method allows you to... store the resulting PDF in a particular destination.
-                $client->store($request, $dest);
-                
-                # if you wish to redirect the response directly to the browser, you may also use:
-                $client->post($request);          
-            } catch (RequestException $e) {
-                # this exception is thrown if given paper size or margins are not correct.
+				$res->file = $dest_path .'/' . $dest_file . '.pdf';
+            } catch (\Gotenberg\Exceptions\GotenbergApiErroed $e) {
                 $res->status = false;
-                $res->msg = JText::_('COM_EMUNDUS_ERROR_EXPORT_MARGIN').' GOTEMBERG ERROR ('.$e->getCode().'): '.$e->getMessage();
+                $res->msg = JText::_('COM_EMUNDUS_ERROR_EXPORT_MARGIN').' GOTEMBERG ERROR ('.$e->getCode().'): '.$e->getResponse();
                 JLog::add($res->msg, JLog::ERROR, 'com_emundus.export');
                 return json_encode($res);
-            } catch (ClientException $e) {
-                # this exception is thrown by the client if the API has returned a code != 200.
-                $res->status = false;
-                $res->msg = JText::_('COM_EMUNDUS_ERROR_EXPORT_API').' GOTEMBERG ERROR ('.$e->getCode().'): '.$e->getMessage();
-                JLog::add($res->msg, JLog::ERROR, 'com_emundus.export');
-                return $res;
             }
 
             $res->status = true;
-            //$res->msg = '<a href="'.$dest.'" target="_blank">'.$dest.'</a>';
             return $res;
         }
         else

@@ -355,7 +355,7 @@ class EmundusHelperUpdate
         $config_file = JPATH_CONFIGURATION . '/configuration.php';
 
         if (file_exists($config_file) and is_writable($config_file)){
-            file_put_contents($config_file,$str);
+            file_put_contents($config_file, $str);
         } else {
             echo ("Update Configuration file failed");
         }
@@ -2179,4 +2179,35 @@ class EmundusHelperUpdate
 
         return $module;
     }
+
+	public static function updateEmundusParam($param,$value,$old_value_checking = null){
+		$updated = false;
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+
+		if(!empty($old_value_checking)){
+			$old_value = $eMConfig->get($param,'');
+			if(empty($old_value) || $old_value == $old_value_checking){
+				$eMConfig->set($param, $value);
+			}
+		} else{
+			$eMConfig->set($param, $value);
+		}
+
+		$componentid = JComponentHelper::getComponent('com_emundus')->id;
+		$db = JFactory::getDBO();
+		$query = $db->getQuery(true);
+
+		try {
+			$query->update('#__extensions')
+				->set($db->quoteName('params') . ' = ' . $db->quote($eMConfig->toString()))
+				->where($db->quoteName('extension_id') . ' = ' . $db->quote($componentid));
+			$db->setQuery($query);
+			$updated = $db->execute();
+		}
+		catch (Exception $e) {
+			JLog::add('Failed to update emundus parameter '.$param.' with value ' .$value.': '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $updated;
+	}
 }

@@ -20,6 +20,7 @@ use Gantry\Component\Config\ConfigFileFinder;
 use Gantry\Debugger;
 use Gantry\Framework\Atoms;
 use Gantry\Framework\Gantry;
+use Joomla\CMS\Version;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
@@ -139,6 +140,13 @@ class ConfigServiceProvider implements ServiceProviderInterface
         $atoms = $config->get('page.head.atoms');
         if (is_array($atoms)) {
             $config->set('page.head.atoms', (new Atoms($atoms))->init()->toArray());
+        }
+
+        // Set FA default in Joomla
+        if (class_exists(Version::class)) {
+            $config->def('page.fontawesome.default_version', Version::MAJOR_VERSION < 4 ? 'fa4' : 'fa5css');
+        } else {
+            $config->def('page.fontawesome.default_version', 'fa4');
         }
 
         return $config;

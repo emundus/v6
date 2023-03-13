@@ -1,18 +1,25 @@
 <?php
 /**
  * @package         SCLogin
- * @copyright (c)   2009-2019 by SourceCoast - All Rights Reserved
+ * @copyright (c)   2009-2021 by SourceCoast - All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
- * @version         Release v8.4.3
- * @build-date      2020/05/29
+ * @version         Release v9.0.215
+ * @build-date      2022/09/06
  */
 
 defined('JPATH_PLATFORM') or die;
 
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Form\Form;
+use Joomla\CMS\Form\FormField;
+
 jimport('joomla.form.helper');
 
 $factoryPath = JPATH_SITE . '/components/com_jfbconnect/libraries/factory.php';
-if (JFile::exists($factoryPath))
+if (File::exists($factoryPath))
     require_once($factoryPath);
 
 if (class_exists('JFBCFactory')) {
@@ -21,15 +28,15 @@ if (class_exists('JFBCFactory')) {
     else {
         jimport('sourcecoast.utilities'); // Call no longer necessary in v6.5, but left for compatibility with older JFBC versions
     }
-    $jlang = JFactory::getLanguage();
+    $jlang = Factory::getLanguage();
     $jlang->load('com_jfbconnect', JPATH_ADMINISTRATOR, 'en-GB', true); // Load English (British)
     $jlang->load('com_jfbconnect', JPATH_ADMINISTRATOR, null, true); // Load the currently selected language
 
-    class JFormFieldJFBConnectSettings extends JFormField
+    class JFormFieldJFBConnectSettings extends FormField
     {
         public function getInput()
         {
-            $form = JForm::getInstance('mod_sclogin.jfbconnectsettings', JPATH_SITE . '/modules/mod_sclogin/fields/jfbconnectsettings.xml', array('control' => 'jform'));
+            $form = Form::getInstance('mod_sclogin.jfbconnectsettings', JPATH_SITE . '/modules/mod_sclogin/fields/jfbconnectsettings.xml', array('control' => 'jform'));
             // J3.2+ compatible way. Need lengthier code for J2.5
             //$form->bind($this->form->getData());
             $params = $this->form->getValue('params');
@@ -64,7 +71,7 @@ if (class_exists('JFBCFactory')) {
     {
         public function getInput()
         {
-            JFactory::getDocument()->addStyleDeclaration(
+            Factory::getDocument()->addStyleDeclaration(
                 '.jfbcButtonImg {margin-bottom:10px;}
                     .jfbcLearnMore {clear:left;margin-top:30px;}
                     .jfbcLearnMore a {color:#FFFFFF;}
@@ -72,10 +79,10 @@ if (class_exists('JFBCFactory')) {
                     .jfbc-btn-buynow:hover{background-color:rgba(247,130,60,0.6);text-decoration:none;border-radius:5px}
                 ');
 
-            $jfbcNotDetected = '<h3>' . JText::_('MOD_SCLOGIN_SOCIAL_JFBC_NOT_DETECTED') . '</h3>';
-            $jfbcInstructions = '<div style="clear:left"><p>' . JText::_('MOD_SCLOGIN_SOCIAL_JFBC_LEARN_MORE1') . '</p><p>' . JText::_('MOD_SCLOGIN_SOCIAL_JFBC_LEARN_MORE2') . '</p></div>';
-            $loginImage = '<div class="jfbcButtonImg"><img src="' . JURI::root() . 'modules/mod_sclogin/fields/images/socialloginbuttons.png' . '"/></div>';
-            $buyNow = '<div class="jfbcLearnMore"><a class="jfbc-btn-buynow" href="https://www.sourcecoast.com/l/jfbconnect-for-sclogin" target="_blank">' . JText::_('MOD_SCLOGIN_SOCIAL_JFBC_LEARN_MORE') . '</a></div>';
+            $jfbcNotDetected = '<h3>' . Text::_('MOD_SCLOGIN_SOCIAL_JFBC_NOT_DETECTED') . '</h3>';
+            $jfbcInstructions = '<div style="clear:left"><p>' . Text::_('MOD_SCLOGIN_SOCIAL_JFBC_LEARN_MORE1') . '</p><p>' . Text::_('MOD_SCLOGIN_SOCIAL_JFBC_LEARN_MORE2') . '</p></div>';
+            $loginImage = '<div class="jfbcButtonImg"><img src="' . Uri::root() . 'modules/mod_sclogin/fields/images/socialloginbuttons.png' . '"/></div>';
+            $buyNow = '<div class="jfbcLearnMore"><a class="jfbc-btn-buynow" href="https://www.sourcecoast.com/l/jfbconnect-for-sclogin" target="_blank">' . Text::_('MOD_SCLOGIN_SOCIAL_JFBC_LEARN_MORE') . '</a></div>';
 
             return $jfbcNotDetected . $loginImage . $jfbcInstructions . $buyNow;
         }

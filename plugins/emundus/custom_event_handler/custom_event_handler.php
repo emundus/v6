@@ -30,7 +30,7 @@ class plgEmundusCustom_event_handler extends JPlugin {
 
         if (!empty($params) && !empty($params->event_handlers)) {
             foreach ($params->event_handlers as $event_handler) {
-                if ($event_handler->event == $event) {
+                if ($event_handler->event == $event && $event_handler->published) {
                     $events[] = $event_handler->event;
                     $codes[] = $event_handler->code;
                 }

@@ -3,7 +3,7 @@
 /**
  * @package   Gantry5
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
  * @license   GNU/GPLv2 and later
  *
  * http://www.gnu.org/licenses/gpl-2.0.html
@@ -15,6 +15,7 @@ use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Table\Table;
+use Joomla\Database\DatabaseQuery;
 
 /**
  * Abstract base class for database objects.
@@ -43,11 +44,18 @@ abstract class AbstractObject extends \JObject
     /**
      * Class constructor, overridden in descendant classes.
      *
-     * @param int $identifier Identifier.
+     * @param int|array $properties Identifier.
      */
-    public function __construct($identifier = null)
+    public function __construct($properties = null)
     {
-        parent::__construct();
+        if (null === $properties || is_array($properties)) {
+            $identifier = null;
+        } else {
+            $identifier = $properties;
+            $properties = null;
+        }
+
+        parent::__construct($properties);
 
         if ($identifier) {
             $this->load($identifier);
@@ -194,7 +202,7 @@ abstract class AbstractObject extends \JObject
         if (!empty($fields)) {
             $src = $include ? array_intersect_key($src, array_flip($fields)) : array_diff_key($src, array_flip($fields));
         }
-        $this->setProperties ($src);
+        $this->setProperties($src);
 
         return true;
     }
@@ -346,6 +354,86 @@ abstract class AbstractObject extends \JObject
         $application->triggerEvent('onContentAfterDelete', ['com_gantry5.' . static::class, $table]);
 
         return true;
+    }
+
+    /**
+     * Returns SQL on how to create the object.
+     *
+     * @param array $ignore
+     * @return DatabaseQuery
+     */
+    public function getCreateSql(array $ignore = ['asset_id'])
+    {
+        // Initialize table object.
+        $table = self::getTable();
+        $table->bind($this->getProperties());
+        $dbo = $table->getDbo();
+
+        $values = $this->getFieldValues($ignore);
+
+        // Create the base insert statement.
+        $query = $dbo->getQuery(true)
+            ->insert($dbo->quoteName($table->getTableName()))
+            ->columns(array_keys($values))
+            ->values(implode(',', array_values($values)));
+
+        return $query;
+    }
+
+
+    /**
+     * Returns SQL on how to create the object.
+     *
+     * @param array $ignore
+     * @return array
+     */
+    public function getFieldValues(array $ignore = ['asset_id'])
+    {
+        // Initialize table object.
+        $table = self::getTable();
+        $table->bind($this->getProperties());
+        $dbo = $table->getDbo();
+
+        $values       = [];
+        $tableColumns = $table->getFields();
+
+        // Iterate over the object variables to build the query fields and values.
+        foreach (get_object_vars($this) as $k => $v) {
+            // Ignore any internal or ignored fields.
+            if ($k[0] === '_' || in_array($k, $ignore, true) || $v === null) {
+                continue;
+            }
+
+            // Skip columns that don't exist in the table.
+            if (!\array_key_exists($k, $tableColumns)) {
+                continue;
+            }
+
+            $field = $tableColumns[$k];
+            if (strpos($field->Type, 'int(') === 0) {
+                $v = (int)$v;
+            }
+
+            // Convert arrays and objects into JSON.
+            if (\is_array($v) || \is_object($v)) {
+                $v = json_encode($v);
+            }
+
+            $k = $dbo->quoteName($k);
+            $values[$k] = $this->fixValue($table, $k, $v);
+        }
+
+        return $values;
+    }
+
+    protected function fixValue($table, $k, $v)
+    {
+        if (is_string($v)) {
+            $dbo = $table->getDbo();
+            $v = $dbo->quote($v);
+        }
+
+        return $v;
     }
 
     /**

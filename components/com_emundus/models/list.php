@@ -307,7 +307,8 @@ class EmundusModelList extends JModelList
 
             foreach ($rows as $row) {
                 if (preg_match('/.*-action-([0-9]+)-([0-9]+)/', $row['id'], $match)) {
-                    $numeroSignalement = $row['num_signalement'];
+	                $result = explode("\n",$row['num_signalement']);
+	                $numeroSignalement = preg_replace('/[^a-zA-Z0-9-_\.]/','', $result[1]);
                     $actionId = $match[1];
                     $userId = $match[2];
 
