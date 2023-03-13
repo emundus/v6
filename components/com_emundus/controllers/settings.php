@@ -300,38 +300,41 @@ class EmundusControllersettings extends JControllerLegacy {
         } else {
             $jinput = JFactory::getApplication()->input;
             $image = $jinput->files->get('file');
-
-			// get old logo
+	        // get old logo
 	        $logo_module = JModuleHelper::getModuleById('90');
 	        $regex = '/logo_custom.{3,4}[png+|jpeg+|jpg+|svg+|gif+]/m';
 	        preg_match($regex, $logo_module->content, $matches, PREG_OFFSET_CAPTURE, 0);
 			$old_logo = $matches[0][0];
 
-            if(isset($image)) {
+            if(!empty($image)) {
                 $target_dir = 'images/custom/';
                 $ext = pathinfo($image['name'], PATHINFO_EXTENSION);
-				if(!empty($old_logo)) {
-					unlink($target_dir . $old_logo);
+				if (in_array($ext, ['png', 'jpg', 'jpeg', 'svg', 'gif', 'webp'])) {
+					if(!empty($old_logo)) {
+						unlink($target_dir . $old_logo);
+					}
+
+					$target_file = $target_dir . basename('logo_custom.' . $ext);
+
+					$logo_module = JModuleHelper::getModuleById('90');
+
+					if (move_uploaded_file($image["tmp_name"], $target_file)) {
+						$regex = '/(logo.(png+|jpeg+|jpg+|svg+|gif+|webp+))|(logo_custom.(png+|jpeg+|jpg+|svg+|gif+|webp+))/m';
+
+						$new_content = preg_replace($regex,'logo_custom.' . $ext, $logo_module->content);
+
+						$this->m_settings->updateLogo($new_content);
+
+						$cache = JCache::getInstance('callback');
+						$cache->clean(null, 'notgroup');
+
+						$tab = array('status' => 1, 'msg' => JText::_('LOGO_UPDATED'), 'filename' => 'logo_custom.' . $ext, 'old_logo' => $old_logo);
+					} else {
+						$tab = array('status' => 0, 'msg' => JText::_('LOGO_NOT_UPDATED'), 'filename' => '');
+					}
+				} else {
+					$tab = array('status' => 0, 'msg' => JText::_('LOGO_NOT_UPDATED'), 'filename' => '');
 				}
-
-                $target_file = $target_dir . basename('logo_custom.' . $ext);
-
-                $logo_module = JModuleHelper::getModuleById('90');
-
-                if (move_uploaded_file($image["tmp_name"], $target_file)) {
-                    $regex = '/(logo.(png+|jpeg+|jpg+|svg+|gif+|webp+))|(logo_custom.(png+|jpeg+|jpg+|svg+|gif+|webp+))/m';
-
-                    $new_content = preg_replace($regex,'logo_custom.' . $ext, $logo_module->content);
-
-                    $this->m_settings->updateLogo($new_content);
-
-	                $cache = JCache::getInstance('callback');
-	                $cache->clean(null, 'notgroup');
-
-                    $tab = array('status' => 1, 'msg' => JText::_('LOGO_UPDATED'), 'filename' => 'logo_custom.' . $ext, 'old_logo' => $old_logo);
-                } else {
-                    $tab = array('status' => 0, 'msg' => JText::_('LOGO_NOT_UPDATED'), 'filename' => '');
-                }
             } else {
                 $tab = array('status' => 0, 'msg' => JText::_('LOGO_NOT_UPDATED'), 'filename' => '');
             }
