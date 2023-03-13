@@ -133,6 +133,10 @@ Below are several links that are essential for developers working on this projec
 * [Material Icons](https://fonts.google.com/icons?icon.set=Material+Icons)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+<br/>
+<p align="right">Powered by</p>
+<img src="images/logo.png" alt="Core logo" align="right" width="200">
+
 
 
 
