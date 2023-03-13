@@ -111,20 +111,16 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     $codes           = $app->input->getString('code', null);
     $categories_filt = $app->input->getString('category', null);
 
-    if (isset($order_date) && !empty($order_date))
-    {
+    // this verification is used to prevent SQL injection
+    if (!empty($order_date) && in_array($order_date, ['start_date', 'end_date', 'formation_start', 'formation_end'])) {
         $session->set('order_date', $order_date);
-    }
-    elseif (empty($order))
-    {
+    } elseif (empty($order)) {
         $session->set('order_date', $mod_em_campaign_order);
     }
-    if (isset($order_time) && !empty($order_time))
-    {
+
+    if (!empty($order_time) && in_array($order_time, ['asc', 'desc'])) {
         $session->set('order_time', $order_time);
-    }
-    elseif (empty($order))
-    {
+    } elseif (empty($order)) {
         $session->set('order_time', $mod_em_campaign_order_type);
     }
     if (isset($group_by) && !empty($group_by))
@@ -188,8 +184,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     }
 
     $condition = '';
-    if (isset($searchword) && !empty($searchword))
-    {
+    if (!empty($searchword)) {
         $condition .= ' AND (pr.code LIKE "%"' . $db->quote($searchword) . '"%" OR ca.label LIKE "%"' . $db->quote($searchword) . '"%" OR ca.description LIKE "%"' . $db->quote($searchword) . '"%" OR ca.short_description LIKE "%"' . $db->quote($searchword) . '"%") ';
     }
 
