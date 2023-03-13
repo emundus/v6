@@ -932,22 +932,25 @@ class EmundusControllerUsers extends JControllerLegacy {
 		}
 	}
 
-	public function getusers()
-	{
-		$m_users = new EmundusModelUsers();
-		$users_list = $m_users->getUsers();
-
-		echo json_encode($users_list);
-		exit;
-	}
-
 	public function getuserbyid()
 	{
-		$id = JFactory::getApplication()->input->getInt('id', JFactory::getUser()->id);
-		$m_users = new EmundusModelUsers();
-		$user = $m_users->getUserById($id);
+		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
-		echo json_encode(array('status' => true, 'user' => $user));
+		$id = JFactory::getApplication()->input->getInt('id', 0);
+		if (!empty($id)) {
+			if ($id == JFactory::getUser()->id || EmundusHelperAccess::asPartnerAccessLevel(JFactory::getUser()->id)) {
+				$m_users = new EmundusModelUsers();
+				$user = $m_users->getUserById($id);
+
+				if (!empty($user)) {
+					$response['user'] = $user;
+					$response['status'] = true;
+					$response['msg'] = JText::_('SUCCESS');
+				}
+			}
+		}
+
+		echo json_encode($response);
 		exit;
 	}
 
