@@ -756,6 +756,8 @@ if (password_value.match(regex) != null) {
 					->where($db->quoteName('group_id') . ' = 640');
 				$db->setQuery($query);
 				$db->execute();
+
+				EmundusHelperUpdate::updateEmundusParam('export_application_pdf_title_color','#000000','#ee1c25');
 			}
 
 
