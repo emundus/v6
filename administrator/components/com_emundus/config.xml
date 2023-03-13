@@ -237,11 +237,6 @@
 			<option value="1">JYES</option>
 		</field>
 
-		<field name="hikashop_session" menu="hide" type="list" default="0" label="COM_EMUNDUS_ACTIVATE_HIKASHOP_SESSION" description="COM_EMUNDUS_ACTIVATE_HIKASHOP_SESSION_DESC">
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
-		</field>
-
 		<field
 				name="spacer1"
 				type="spacer"
@@ -560,10 +555,6 @@
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_MESSENGER" name="messenger" description="COM_EMUNDUS_MESSENGER_DESC">
 		<field name="messenger_anonymous_coordinator" type="list" default="0" label="COM_EMUNDUS_MESSENGER_ANONYMOUS" description="COM_EMUNDUS_MESSENGER_ANONYMOUS_DESC">
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
-		</field>
-		<field name="messenger_notifications_on_send" type="list" default="1" label="COM_EMUNDUS_MESSENGER_NOTIFICATION_ON_SEND" description="COM_EMUNDUS_MESSENGER_NOTIFICATION_ON_SEND_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
