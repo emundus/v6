@@ -236,7 +236,7 @@ deployer-auto-release:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: "env=release --no-hooks"
+    DEPLOY_OPTIONS: "env=release --no-hooks -vvv"
   rules:
     - if: $CI_COMMIT_BRANCH =~ "/^release\/.*/"
 
