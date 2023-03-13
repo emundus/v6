@@ -2,7 +2,6 @@
 <br />
 <div align="center">
   <a href="https://git.emundus.io/emundus/saas/app_tchooz" style="display: flex;justify-content: center;align-items: center;gap: 16px">
-    <img src="images/logo.png" alt="Core logo" width="400">
     <img src="images/custom/logo.png" alt="Core logo" width="400">
   </a>
 
