@@ -1183,48 +1183,53 @@ class EmundusControllerUsers extends JControllerLegacy {
 			$user = JFactory::getUser();
 			$uid = $user->id;
 
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			if (!empty($uid)) {
+				$db = JFactory::getDbo();
+				$query = $db->getQuery(true);
 
-			$query->select('count(id)')
-				->from($db->quoteName('#__users'))
-				->where($db->quoteName('email') . ' LIKE ' . $db->quote($email))
-				->andWhere($db->quoteName('id') . ' <> ' . $db->quote($uid));
-			$db->setQuery($query);
-
-			try {
-				$email_alreay_use = $db->loadResult();
-			} catch (Exception $e) {
-				JLog::add('Error getting email already use: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-				echo json_encode((object)(array('status' => false, 'msg' => JText::_('COM_EMUNDUS_MAIL_ERROR_TRYING_TO_GET_EMAIL_ALREADY_USE'))));
-				exit();
-			}
-
-			if (!$email_alreay_use) {
-				$query->clear()
-					->select($db->quoteName('params'))
+				$query->select('count(id)')
 					->from($db->quoteName('#__users'))
-					->where($db->quoteName('id') . ' = ' . $db->quote($uid));
+					->where($db->quoteName('email') . ' LIKE ' . $db->quote($email))
+					->andWhere($db->quoteName('id') . ' <> ' . $db->quote($uid));
 				$db->setQuery($query);
-				$result = $db->loadObject();
 
-				$token = json_decode($result->params);
-				$token = $token->emailactivation_token;
-
-				$emailSent = $m_user->sendActivationEmail($user->getProperties(), $token, $email);
-
-				if ($user->email != $email) {
-					$m_user->updateEmailUser($user->id, $email);
-				}
-				if ($emailSent) {
-					echo json_encode((object)(array('status' => true, 'msg' => JText::_('COM_EMUNDUS_MAIL_SUCCESSFULLY_SENT'))));
+				try {
+					$email_alreay_use = $db->loadResult();
+				} catch (Exception $e) {
+					JLog::add('Error getting email already use: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+					echo json_encode((object)(array('status' => false, 'msg' => JText::_('COM_EMUNDUS_MAIL_ERROR_TRYING_TO_GET_EMAIL_ALREADY_USE'))));
 					exit();
+				}
+
+				if (!$email_alreay_use) {
+					$query->clear()
+						->select($db->quoteName('params'))
+						->from($db->quoteName('#__users'))
+						->where($db->quoteName('id') . ' = ' . $db->quote($uid));
+					$db->setQuery($query);
+					$result = $db->loadObject();
+
+					$token = json_decode($result->params);
+					$token = $token->emailactivation_token;
+
+					$emailSent = $m_user->sendActivationEmail($user->getProperties(), $token, $email);
+
+					if ($user->email != $email) {
+						$m_user->updateEmailUser($user->id, $email);
+					}
+					if ($emailSent) {
+						echo json_encode((object)(array('status' => true, 'msg' => JText::_('COM_EMUNDUS_MAIL_SUCCESSFULLY_SENT'))));
+						exit();
+					} else {
+						echo json_encode((object)(array('status' => false, 'msg' => JText::_('COM_EMUNDUS_MAIL_ERROR_AT_SEND'))));
+						exit();
+					}
 				} else {
-					echo json_encode((object)(array('status' => false, 'msg' => JText::_('COM_EMUNDUS_MAIL_ERROR_AT_SEND'))));
+					echo json_encode((object)(array('status' => false, 'msg' => JText::_('COM_EMUNDUS_MAIL_ALREADY_USE'))));
 					exit();
 				}
 			} else {
-				echo json_encode((object)(array('status' => false, 'msg' => JText::_('COM_EMUNDUS_MAIL_ALREADY_USE'))));
+				echo json_encode((object)(array('status' => false, 'msg' => JText::_('EMPTY_CURRENT_USER'))));
 				exit();
 			}
 		} else {
