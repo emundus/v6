@@ -746,7 +746,13 @@ if (password_value.match(regex) != null) {
 				EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
 				EmundusHelperUpdate::addYamlVariable('name', 'Material Icons', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
 
-				EmundusHelperUpdate::updateOverrideTag('FORM_REGISTRATION','Créer votre compte','Créez votre compte');
+				$old_values = [
+					'fr-FR' => 'Créer votre compte',
+				];
+				$new_values = [
+					'fr-FR' => 'Créez votre compte',
+				];
+				EmundusHelperUpdate::updateOverrideTag('FORM_REGISTRATION',$old_values,$new_values);
 
 				$query->clear()
 					->update($db->quoteName('#__fabrik_elements'))
@@ -758,6 +764,26 @@ if (password_value.match(regex) != null) {
 				$db->execute();
 
 				EmundusHelperUpdate::updateEmundusParam('export_application_pdf_title_color','#000000','#ee1c25');
+
+				$old_values = [
+					'fr-FR' => 'Table - Paramétrage des groupes',
+					'en-GB' => 'Group settings',
+				];
+				$new_values = [
+					'fr-FR' => 'Groupes',
+					'en-GB' => 'Groups',
+				];
+				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_GROUPS',$old_values,$new_values);
+
+				$old_values = [
+					'fr-FR' => 'Table - Paramétrage des profils',
+					'en-GB' => 'Profile settings',
+				];
+				$new_values = [
+					'fr-FR' => 'Profils',
+					'en-GB' => 'Profiles',
+				];
+				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_PROFILES',$old_values,$new_values);
 			}
 
 
