@@ -225,7 +225,7 @@ deployer-auto-dev:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: "env=dev"
+    DEPLOY_OPTIONS: "env=dev --no-hooks"
   rules:
     - if: $CI_COMMIT_BRANCH == "dev"
 
