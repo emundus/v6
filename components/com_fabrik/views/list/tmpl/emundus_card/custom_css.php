@@ -137,11 +137,22 @@ font-size: 16px;
 }
 
 .fabrikDataContainer{
-    grid-column: span 6;
+    grid-column: span 4;
 }
 
 .fabrikDataContainer .page-header{
     margin-top: 0 !important;
+}
+
+.view-list .filtertable input.fabrik_filter.search-query.input-medium{
+	background-color: #FFFFFF !important;	
+    border: 1px solid #E3E3E3 !important;
+    border-radius: 8px !important;
+}
+
+.view-list .filtertable select.inputbox.fabrik_filter{
+	width: 100%;
+	height: 38px;
 }
 
 ";?>

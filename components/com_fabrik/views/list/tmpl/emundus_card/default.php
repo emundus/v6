@@ -35,7 +35,7 @@ if ($this->hasButtons):
 	echo $this->loadTemplate('buttons');
 endif;
 ?>
-<div style="display: grid;grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));grid-gap: 24px">
+<div style="display: grid;grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));grid-gap: 24px">
     <?php
 if ($this->showFilters && $this->bootShowFilters) :
 	echo $this->layoutFilters();

@@ -40,6 +40,19 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
 	                <?php endif ?>
                 </div>
 
+	            <?php if (array_key_exists('all', $d->filters) || $d->filter_action != 'onchange') {
+		            ?>
+                    <div class="em-mb-12">
+			            <?php if (array_key_exists('all', $d->filters)) { ?>
+                            <p class="em-mb-4 em-text-neutral-600"><?php echo FText::_('COM_FABRIK_ADVANCED_SEARCH') ?></p>
+				            <?php echo $d->filters['all']->element;
+			            };
+			            ?>
+                    </div>
+		            <?php
+	            }
+	            ?>
+
 	            <?php
 	            $c = 0;
 	            // $$$ hugh - filterCols stuff isn't operation yet, WiP, just needed to get it committed
