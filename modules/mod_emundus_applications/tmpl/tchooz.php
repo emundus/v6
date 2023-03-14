@@ -258,13 +258,13 @@ $current_tab = 0;
 														<?php if (empty($visible_status)) : ?>
                                                             <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row"
                                                                  id="application_status_<?php echo $application->fnum ?>">
-                                                                <span class="mod_emundus_applications___circle em-mr-8 label-<?= $application->class; ?>"></span>
+                                                                <span class="mod_emundus_applications___circle em-mr-8 label-<?= $application->class; ?>-500"></span>
                                                                 <span class="mod_emundus_applications___status_label em-neutral-800-color em-applicant-default-font"><?= $application->value; ?></span>
                                                             </div>
 														<?php elseif (in_array($application->status, $visible_status)) : ?>
                                                             <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row"
                                                                  id="application_status_<?php echo $application->fnum ?>">
-                                                                <span class="mod_emundus_applications___circle em-mr-8 label-<?= $application->class; ?>"></span>
+                                                                <span class="mod_emundus_applications___circle em-mr-8 label-<?= $application->class; ?>-500"></span>
                                                                 <span class="mod_emundus_applications___status_label"><?= $application->value; ?></span>
                                                             </div>
 														<?php endif; ?>
@@ -603,13 +603,13 @@ $current_tab = 0;
 		                                            <?php if (empty($visible_status)) : ?>
                                                         <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row"
                                                              id="application_status_<?php echo $application->fnum ?>">
-                                                            <span class="mod_emundus_applications___circle em-mr-8 label-<?= $application->class; ?>"></span>
+                                                            <span class="mod_emundus_applications___circle em-mr-8 label-<?= $application->class; ?>-500"></span>
                                                             <span class="mod_emundus_applications___status_label em-neutral-800-color em-applicant-default-font"><?= $application->value; ?></span>
                                                         </div>
 		                                            <?php elseif (in_array($application->status, $visible_status)) : ?>
                                                         <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row"
                                                              id="application_status_<?php echo $application->fnum ?>">
-                                                            <span class="mod_emundus_applications___circle em-mr-8 label-<?= $application->class; ?>"></span>
+                                                            <span class="mod_emundus_applications___circle em-mr-8 label-<?= $application->class; ?>-500"></span>
                                                             <span class="mod_emundus_applications___status_label"><?= $application->value; ?></span>
                                                         </div>
 		                                            <?php endif; ?>
@@ -759,11 +759,6 @@ $current_tab = 0;
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
 <script type="text/javascript">
-    let campaigns = {};
-	<?php foreach ($available_campaigns as $campaign) : ?>
-    campaigns[<?php echo $campaign['id'] ?>] = '<?php echo $campaign['label'] ?>';
-	<?php endforeach; ?>
-
     window.addEventListener('DOMContentLoaded', (event) => {
         let selected_tab_session = sessionStorage.getItem('mod_emundus_applications___selected_tab');
         let selected_view = sessionStorage.getItem('mod_emundus_applications___selected_view');
@@ -1210,11 +1205,22 @@ $current_tab = 0;
     /** END **/
 
     async function copyApplication(fnum) {
+        fetch('index.php?option=com_emundus&controller=application&task=getcampaignsavailableforcopy&' + new URLSearchParams({
+            fnum: fnum,
+        }), {
+            method: 'get',
+        }).then((response) => {
+            if (response.ok) {
+                return response.json();
+            }
+        }).then(async (res) => {
+            console.log(res.campaigns);
+
         const {value: campaign} = await Swal.fire({
             title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_COPY_FILE'); ?>",
             text: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_COPY_FILE_CAMPAIGN'); ?>",
             input: 'select',
-            inputOptions: campaigns,
+            inputOptions: res.campaigns,
             showCancelButton: true,
             reverseButtons: true,
             confirmButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_COPY_FILE_ACTION');?>",
@@ -1262,6 +1268,7 @@ $current_tab = 0;
                 }
             });
         }
+        });
     }
 
     async function renameApplication(fnum,name) {

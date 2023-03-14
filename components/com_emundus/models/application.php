@@ -5768,4 +5768,40 @@ class EmundusModelApplication extends JModelList
 
 		return $result;
 	}
+
+	public function getCampaignsAvailableForCopy($fnum){
+		$campaigns = [];
+
+		try {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('esc.training')
+				->from($db->quoteName('#__emundus_campaign_candidature','ecc'))
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.id').' = '.$db->quoteName('ecc.campaign_id'))
+				->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
+			$db->setQuery($query);
+			$prog_code = $db->loadResult();
+
+			if(!empty($prog_code)){
+				$query->clear()
+					->select('esc.id,esc.label')
+					->from($db->quoteName('#__emundus_setup_campaigns','esc'))
+					->where($db->quoteName('esc.training') . ' LIKE ' . $db->quote($prog_code))
+					->where($db->quoteName('esc.start_date') . ' < NOW()')
+					->where($db->quoteName('esc.end_date') . ' > NOW()');
+				$db->setQuery($query);
+				$campaigns_object = $db->loadObjectList('id');
+
+				foreach ($campaigns_object as $key => $campaign){
+					$campaigns[$campaign->id] = $campaign->label;
+				}
+			}
+		}
+		catch (Exception $e) {
+			JLog::add('Failed to get available campaigns via fnum ' . $fnum . ' with error ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $campaigns;
+	}
 }

@@ -996,4 +996,30 @@ class EmundusControllerApplication extends JControllerLegacy
 		echo json_encode($response);
 		exit;
 	}
+
+	public function getcampaignsavailableforcopy(){
+		$response = array('status' => 0, 'msg' => '');
+
+		$user = JFactory::getUser();
+
+		$jinput = JFactory::getApplication()->input;
+		$fnum = $jinput->getString('fnum');
+
+		if(!empty($fnum)){
+			$m_files = $this->getModel('Files');
+			$fnumInfos = $m_files->getFnumInfos($fnum);
+
+			if($fnumInfos['applicant_id'] !== $user->id){
+				$response['msg'] = JText::_('ACCESS_DENIED');
+			} else {
+				$m_application      = $this->getModel('Application');
+				$response['campaigns'] = $m_application->getCampaignsAvailableForCopy($fnum);
+
+				$response['msg'] =  !empty($response['campaigns']) ? JText::_('SUCCESS') : JText::_('FAILED');
+			}
+		}
+
+		echo json_encode($response);
+		exit;
+	}
 }
