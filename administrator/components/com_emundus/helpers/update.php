@@ -841,7 +841,7 @@ class EmundusHelperUpdate
         return $updated;
     }
 
-	public static function updateOverrideTag($tag,$old_value,$new_value) {
+	public static function updateOverrideTag($tag,$old_values,$new_values) {
 		$updated = ['status' => true, 'message' => "Override tag successfully updated"];
 
 		$db = JFactory::getDbo();
@@ -864,19 +864,22 @@ class EmundusHelperUpdate
 				foreach ($platform_languages as $language) {
 					$override_file = JPATH_BASE . '/language/overrides/' . $language . '.override.ini';
 					if (file_exists($override_file)) {
-						$files[] = $override_file;
+						$file = new stdClass();
+						$file->file = $override_file;
+						$file->language = $language;
+						$files[] = $file;
 					}
 				}
 
 
 				foreach ($files as $file) {
-					$parsed_file = JLanguageHelper::parseIniFile($file);
+					$parsed_file = JLanguageHelper::parseIniFile($file->file);
 
-					if (!empty($parsed_file)) {
-						if ($parsed_file[$tag] == $old_value)
+					if (!empty($parsed_file) && !empty($old_values[$file->language])) {
+						if ($parsed_file[$tag] == $old_values[$file->language])
 						{
-							$parsed_file[$tag] = $new_value;
-							JLanguageHelper::saveToIniFile($file, $parsed_file);
+							$parsed_file[$tag] = $new_values[$file->language];
+							JLanguageHelper::saveToIniFile($file->file, $parsed_file);
 						}
 					}
 				}

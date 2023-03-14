@@ -5,7 +5,7 @@
 			<p>{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_INTRO') }}</p>
 			<section id="new-page">
 				<div class="em-mt-16 em-mb-16 card-wrapper" :class="{selected: -1 === selected}" @click="selected = -1;">
-					<div class="card em-shadow-cards em-pointer em-flex-row">
+					<div class="card em-shadow-cards em-pointer em-flex-row" @dblclick="createPage">
 						<span class="add_circle material-icons-outlined em-main-500-color">add_circle</span>
 					</div>
 					<input
@@ -36,6 +36,7 @@
 							:class="{selected: model.id === selected, hidden: !model.displayed}"
 							:title="model.label[shortDefaultLang]"
 							@click="selected = model.id"
+							@dblclick="createPage"
 						>
 							<form-builder-preview-form
 								:form_id="Number(model.form_id)"

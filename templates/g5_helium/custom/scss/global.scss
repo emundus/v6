@@ -784,7 +784,7 @@ p,
 }
 
 footer#g-footer {
-  background-color: var(--neutral-50);
+  background-color: var(--neutral-0);
   border-top: 1px solid #E3E5E8;
   bottom: 0;
   width: 100vw;
@@ -1979,6 +1979,8 @@ tr.fabrikFilterContainer {
   box-shadow: 0px 1px 4px rgba(32, 35, 44, 0.05);
   padding: 6px 10px;
 }
+
+// DEFAULT
 .label-default,.label-null,.label- {
   background-color: var(--neutral-100) !important;
   color: var(--neutral-600) !important;
@@ -1986,6 +1988,9 @@ tr.fabrikFilterContainer {
 }
 .label-text-default,.label-text-null {
   color: var(--neutral-600) !important;
+}
+.label-default-500,.label-null-500,.label-500 {
+  background-color: var(--neutral-500) !important;
 }
 
 .label-lightpurple {
@@ -1996,6 +2001,9 @@ tr.fabrikFilterContainer {
 .label-text-lightpurple {
   color: var(--fuchsia-800) !important;
 }
+.label-lightpurple-500 {
+  background-color: var(--fuchsia-500) !important;
+}
 
 .label-purple {
   background-color: var(--purple-100) !important;
@@ -2004,6 +2012,9 @@ tr.fabrikFilterContainer {
 }
 .label-text-purple {
   color: var(--purple-800) !important;
+}
+.label-purple-500 {
+  background-color: var(--purple-500) !important;
 }
 
 /** DEPRECATED **/
@@ -2014,33 +2025,45 @@ tr.fabrikFilterContainer {
 .label-text-darkpurple {
   color: white !important;
 }
+.label-darkpurple-500 {
+  background-color: #663399 !important;
+}
 /** **/
 
 .label-lightblue {
   background-color: var(--light-blue-100) !important;
-  color: var(--light-blue-800) !important;
+  color: var(--light-blue-900) !important;
   text-shadow: none;
 }
 .label-text-lightblue {
-  color: var(--light-blue-800) !important;
+  color: var(--light-blue-900) !important;
+}
+.label-lightblue-500 {
+  background-color: var(--light-blue-500) !important;
 }
 
 .label-blue {
   background-color: var(--blue-100) !important;
-  color: var(--blue-800) !important;
+  color: var(--blue-900) !important;
   text-shadow: none;
 }
 .label-text-blue {
-  color: var(--blue-800) !important;
+  color: var(--blue-900) !important;
+}
+.label-blue-500 {
+  background-color: var(--blue-500) !important;
 }
 
 .label-darkblue {
   background-color: var(--dark-blue-100) !important;
-  color: var(--dark-blue-800) !important;
+  color: var(--dark-blue-900) !important;
   text-shadow: none;
 }
 .label-text-darkblue {
-  color: var(--dark-blue-800) !important;
+  color: var(--dark-blue-900) !important;
+}
+.label-darkblue-500 {
+  background-color: var(--dark-blue-500) !important;
 }
 
 .label-lightgreen {
@@ -2051,6 +2074,9 @@ tr.fabrikFilterContainer {
 .label-text-lightgreen {
   color: var(--light-green-800) !important;
 }
+.label-lightgreen-500 {
+  background-color: var(--light-green-500) !important;
+}
 
 .label-green {
   background-color: var(--secondary-main-100) !important;
@@ -2060,14 +2086,20 @@ tr.fabrikFilterContainer {
 .label-text-green {
   color: var(--secondary-main-800) !important;
 }
+.label-green-500 {
+  background-color: var(--secondary-main-500) !important;
+}
 
 .label-darkgreen {
-  background-color: var(--main-50) !important;
-  color: var(--main-700) !important;
+  background-color: var(--main-100) !important;
+  color: var(--main-800) !important;
   text-shadow: none;
 }
 .label-text-darkgreen {
-  color: var(--main-700) !important;
+  color: var(--main-800) !important;
+}
+.label-darkgreen-500 {
+  background-color: var(--main-500) !important;
 }
 
 /** DEPRECATED **/
@@ -2079,24 +2111,33 @@ tr.fabrikFilterContainer {
 .label-text-lightyellow {
   color: black !important;
 }
+.label-lightyellow-500 {
+  background-color: #5d5b00 !important;
+}
 /** **/
 
 .label-yellow {
   background-color: var(--yellow-100) !important;
-  color: var(--yellow-800) !important;
+  color: var(--yellow-900) !important;
   text-shadow: none;
 }
 .label-text-yellow {
-  color: var(--yellow-800) !important;
+  color: var(--yellow-900) !important;
+}
+.label-yellow-500 {
+  background-color: var(--yellow-500) !important;
 }
 
 .label-darkyellow {
   background-color: var(--warning-100) !important;
-  color: var(--warning-800) !important;
+  color: var(--warning-900) !important;
   text-shadow: none;
 }
 .label-text-darkyellow {
-  color: var(--warning-800) !important;
+  color: var(--warning-900) !important;
+}
+.label-darkyellow-500 {
+  background-color: var(--warning-500) !important;
 }
 
 /** DEPRECATED **/
@@ -2108,15 +2149,21 @@ tr.fabrikFilterContainer {
 .label-text-lightorange {
   color: #C87E00 !important;
 }
+.label-lightorange-500 {
+  background-color: #C87E00 !important;
+}
 /** **/
 
 .label-orange {
   background-color: var(--orange-100) !important;
-  color: var(--orange-800) !important;
+  color: var(--orange-900) !important;
   text-shadow: none;
 }
 .label-text-orange {
-  color: var(--orange-800) !important;
+  color: var(--orange-900) !important;
+}
+.label-orange-500 {
+  background-color: var(--orange-500) !important;
 }
 
 .label-darkorange {
@@ -2127,6 +2174,9 @@ tr.fabrikFilterContainer {
 .label-text-darkorange{
   color: var(--dark-orange-800) !important;
 }
+.label-darkorange-500{
+  background-color: var(--dark-orange-500) !important;
+}
 
 .label-lightred {
   background-color: #EC644B !important;
@@ -2135,23 +2185,35 @@ tr.fabrikFilterContainer {
 .label-text-lightred {
   color: black !important;
 }
+.label-lightred-500 {
+  background-color: #EC644B !important;
+}
 
 .label-red {
   background-color: var(--red-100) !important;
-  color: var(--red-700) !important;
+  color: var(--red-800) !important;
   text-shadow: none;
 }
 .label-text-red {
-  color: var(--red-700) !important;
+  color: var(--red-800) !important;
+}
+.label-red-500 {
+  background-color: var(--red-500) !important;
 }
 
+/** DEPRECATED **/
 .label-darkred {
-  background-color: #E5283B !important;
+  background-color: var(--red-100) !important;
+  color: var(--red-800) !important;
   text-shadow: none;
 }
 .label-darkred {
-  color: white !important;
+  color: var(--red-800) !important;
 }
+.label-darkred-500 {
+  background-color: var(--red-500) !important;
+}
+/** **/
 
 /** DEPRECATED **/
 .label-lightpink {
@@ -2162,24 +2224,33 @@ tr.fabrikFilterContainer {
 .label-text-lightpink {
   color: #b04748 !important;
 }
+.label-lightpink-500 {
+  background-color: #b04748 !important;
+}
 /** **/
 
 .label-pink {
   background-color: var(--pink-100) !important;
-  color: var(--pink-800) !important;
+  color: var(--pink-900) !important;
   text-shadow: none;
 }
 .label-text-pink {
-  color: var(--pink-800) !important;
+  color: var(--pink-900) !important;
+}
+.label-pink-500 {
+  background-color: var(--pink-500) !important;
 }
 
 .label-darkpink {
   background-color: var(--dark-pink-100) !important;
-  color: var(--dark-pink-800) !important;
+  color: var(--dark-pink-900) !important;
   text-shadow: none;
 }
 .label-text-darkpink {
-  color: var(--dark-pink-800) !important;
+  color: var(--dark-pink-900) !important;
+}
+.label-darkpink-500 {
+  background-color: var(--dark-pink-500) !important;
 }
 
 /* ERROR PAGE 404 */
@@ -2522,7 +2593,7 @@ p.readmore .btn,
     border-radius: var(--em-border-radius) !important;
     &:hover, &:active, &:focus {
       background: var(--neutral-50);
-      border-color: var(--main-500);
+      border-color: var(--main-500) !important;
       color: var(--main-500);
     }
   }
@@ -3540,10 +3611,11 @@ ul.unstyled.em-linkForgot li a {
     border: 1px solid var(--neutral-400);
     border-radius: 4px;
     width: 100%;
+    overflow: auto;
 
     li.search-field {
       input[type="text"] {
-        width: auto !important;
+        width: auto;
       }
     }
   }
@@ -4061,6 +4133,10 @@ div#em-appli-block {
 .view-list .filtertable.table {
   textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
     background-color: var(--background-color) !important;
+  }
+
+  tbody input.fabrik_filter[type="text"]  {
+    background-color: var(--neutral-0) !important;
   }
 
   .list-footer .limit {

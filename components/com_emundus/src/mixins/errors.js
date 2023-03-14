@@ -1,5 +1,4 @@
-import client from "../services/axiosClient";
-import Swal from "sweetalert2";
+import Swal from 'sweetalert2';
 
 var errors = {
     methods: {

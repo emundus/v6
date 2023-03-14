@@ -106,7 +106,7 @@ class EmundusControllerEmail extends JControllerLegacy {
      * Get emails filtered
      */
     public function getallemail() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asManagerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {

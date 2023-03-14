@@ -299,7 +299,7 @@ export default {
 				this.getAttachmentCategories().then((response) => {
 					this.categories = response ? response : {};
 					this.attachments = this.defaultAttachments;
-					this.displayedAttachments = this.attachments;
+					this.setDisplayedAttachments();
 					this.$store.dispatch('attachment/setAttachmentsOfFnum', {
 						fnum: [this.displayedFnum],
 						attachments: this.attachments,
@@ -329,14 +329,12 @@ export default {
         const foundUser = this.users && this.users.length ? this.users.find((user) => user.user_id == response.fnumInfos.applicant_id) : false;
 
         if (!foundUser) {
-          const resp = await userService.getUserById(
-              response.fnumInfos.applicant_id
-          );
+          const resp = await userService.getUserNameById(response.fnumInfos.applicant_id);
           if (resp.status) {
-            this.users.push(resp.user[0]);
-            this.displayedUser = resp.user[0];
+            this.users.push(resp.user);
+            this.displayedUser = resp.user;
             this.$store.dispatch('user/setDisplayedUser', this.displayedUser.user_id);
-            this.$store.dispatch('user/setUsers', resp.user);
+            this.$store.dispatch('user/setUsers', [resp.user]);
           } else {
             this.displayErrorMessage(this.translate('COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND'));
           }
@@ -356,7 +354,7 @@ export default {
         await this.refreshAttachments();
       } else {
         this.attachments = this.$store.state.attachment.attachments[this.displayedFnum];
-	      this.displayedAttachments = this.attachments;
+	      this.setDisplayedAttachments();
 	      this.categories = this.$store.state.attachment.categories;
       }
     },
@@ -372,7 +370,7 @@ export default {
 
       if (response.status) {
         this.attachments = response.attachments;
-	      this.displayedAttachments = this.attachments;
+	      this.setDisplayedAttachments();
 	      this.$store.dispatch('attachment/setAttachmentsOfFnum', {
           fnum: [this.displayedFnum],
           attachments: this.attachments,
@@ -477,6 +475,11 @@ export default {
       this.canDelete = this.$store.state.user.rights[this.displayedFnum] ? this.$store.state.user.rights[this.displayedFnum].canDelete : false;
       this.canUpdate = this.$store.state.user.rights[this.displayedFnum] ? this.$store.state.user.rights[this.displayedFnum].canUpdate : false;
     },
+	  setDisplayedAttachments() {
+		  this.displayedAttachments = this.attachments.filter((attachment) => {
+			  return ((attachment.show === true || typeof attachment.show == 'undefined' || attachment.show == null ));
+		  });
+	  },
     async exportAttachments() {
       if (this.canExport) {
         attachmentService.exportAttachments(
@@ -539,6 +542,7 @@ export default {
         this.attachments = this.attachments.filter(
             (attachment) => !this.checkedAttachments.includes(attachment.aid)
         );
+				this.setDisplayedAttachments();
 
         let response = null;
         if (this.sync) {
@@ -589,9 +593,7 @@ export default {
         }
       });
 
-			this.displayedAttachments = this.attachments.filter((attachment) => {
-				return ((attachment.show === true || typeof attachment.show == 'undefined' || attachment.show == null ));
-			});
+			this.setDisplayedAttachments();
     },
     resetSearch() {
       this.attachments.forEach((attachment, index) => {
@@ -599,9 +601,7 @@ export default {
       });
       this.$refs["searchbar"].value = "";
 
-			this.displayedAttachments = this.attachments.filter((attachment) => {
-		    return ((attachment.show === true || typeof attachment.show == 'undefined' || attachment.show == null ));
-	    });
+	    this.setDisplayedAttachments();
     },
     resetOrder() {
       this.sort = {
@@ -655,9 +655,7 @@ export default {
         }
       });
 
-	    this.displayedAttachments = this.attachments.filter((attachment) => {
-		    return ((attachment.show === true || typeof attachment.show == 'undefined' || attachment.show == null ));
-	    });
+	    this.setDisplayedAttachments();
     },
     updateAllCheckedAttachments(e) {
       if (e.target.checked) {

@@ -2148,7 +2148,7 @@ class EmundusModelApplication extends JModelList
 
             foreach ($tableuser as $key => $itemt) {
                 $form_params = json_decode($itemt->params);
-                $breaker = ($em_breaker) ? ($key === 0) ? '' : 'class="breaker"' : '';
+                $breaker = ($em_breaker) ? ($key === 0) ? '' : 'class="page-break"' : '';
                 // liste des groupes pour le formulaire d'une table
                 $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, fg.params
                             FROM #__fabrik_formgroup ff, #__fabrik_groups fg
@@ -5505,7 +5505,11 @@ class EmundusModelApplication extends JModelList
                     $index = array_search($value, $params->sub_options->sub_values, false);
 
                     if ($index !== false) {
-                        $elt = JText::_($params->sub_options->sub_labels[$index]);
+						if($value == 0){
+							$elt = '';
+						} else {
+							$elt = JText::_($params->sub_options->sub_labels[$index]);
+						}
                     } elseif (!empty($params->dropdown_populate)) {
                         $elt = $value;
                     } elseif (isset($params->multiple) && $params->multiple == 1) {

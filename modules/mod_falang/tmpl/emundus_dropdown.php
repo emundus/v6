@@ -32,24 +32,11 @@ foreach ($list as $key=> $language) {
 
     <div id="mod_falang_emundus___other_languages" class="mod_falang_emundus___other_languages em-border-neutral-400" style="display: none">
         <?php foreach($list as $language):?>
-        <span <?php if (!empty($language->active)) : ?>class="mod_falang_emundus___other_languages_selected"<?php endif; ?> onclick="document.location.replace('<?php echo $language->link; ?>');">
-            <?php echo $language->title_native; ?>
+        <span <?php if (!empty($language->active)) : ?>class="mod_falang_emundus___other_languages_selected"<?php endif; ?>>
+            <a href="<?= $language->link; ?>"><?php echo $language->title_native; ?></a>
         </span>
         <?php endforeach; ?>
     </div>
-
-    	<!--<select class="inputbox mod_emundus_falang___select" onchange="document.location.replace(this.value);" >
-            <?php /*foreach($list as $language):*/?>
-                <?php /*if ($language->display) { */?>
-                    <option value="<?php /*echo $language->link;*/?>" <?php /*echo !empty($language->active) ? 'selected="selected"' : ''*/?>>
-                        <?php /*if ($params->get('show_name', 1)):*/?>
-                            <?php /*echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);*/?>
-                        <?php /*endif; */?></option>
-                <?php /*} else { */?>
-                    <option disabled="disabled" style="opacity: 0.5" value="<?php /*echo $language->link;*/?>" <?php /*echo !empty($language->active) ? 'selected="selected"' : ''*/?>><?php /*echo $language->title_native;*/?></option>
-                <?php /*} */?>
-            <?php /*endforeach; */?>
-        </select>-->
     <?php else : ?>
 
         <!-- >>> [PAID] >>> -->
