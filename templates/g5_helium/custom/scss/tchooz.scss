@@ -874,6 +874,14 @@ input:focus + .em-slider {
   padding: 32px;
 }
 
+.em-p-0-12{
+  padding: 0 12px;
+}
+
+.em-p-0-24{
+  padding: 0 24px;
+}
+
 .em-p-0-32{
   padding: 0 32px;
 }
@@ -1357,6 +1365,14 @@ input:focus + .em-slider {
   box-shadow: 0 1px 1px rgba(5, 47, 55, 0.07), 0 2px 1px rgba(5, 47, 55, 0.06), 0 1px 3px rgba(5, 47, 55, 0.1);
   border-radius: calc(var(--em-border-radius)*2) !important;
   padding: 24px;
+  height: auto;
+  background: #fff;
+  border: 1px solid $neutral-200;
+}
+
+.em-repeat-card-no-padding{
+  box-shadow: 0 1px 1px rgba(5, 47, 55, 0.07), 0 2px 1px rgba(5, 47, 55, 0.06), 0 1px 3px rgba(5, 47, 55, 0.1);
+  border-radius: calc(var(--em-border-radius)*2) !important;
   height: auto;
   background: #fff;
   border: 1px solid $neutral-200;

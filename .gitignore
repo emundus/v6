@@ -115,3 +115,10 @@ components/com_eventbooking/fields.xml
 
 ## miniorange ##
 /plugins/authentication/miniorangesaml/saml2/cert/
+
+## FABRIK JS ##
+/components/com_fabrik/js/form_*.js
+/components/com_fabrik/js/list_*.js
+/components/com_fabrik/js/table_*.js
+/components/com_fabrik/js/viz_*.js
+/components/com_fabrik/js/details_*.js
