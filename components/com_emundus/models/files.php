@@ -1169,7 +1169,7 @@ class EmundusModelFiles extends JModelLegacy
             $db->setQuery($query);
 	        $tags =  $db->loadAssocList();
         } catch(Exception $e) {
-            JLog::add('Faziled to get all tags ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            JLog::add('Failed to get all tags ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
         }
 
 		return $tags;
