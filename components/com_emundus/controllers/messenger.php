@@ -39,7 +39,6 @@ class EmundusControllerMessenger extends JControllerLegacy
         $user = JFactory::getUser();
 
         $files = $this->m_messenger->getFilesByUser();
-
         $data = array('data' => $files, 'current_user' => $user->id);
 
         echo json_encode((object)$data);
@@ -47,16 +46,33 @@ class EmundusControllerMessenger extends JControllerLegacy
     }
 
     public function getmessagesbyfnum(){
+		$response = ['data' => null, 'status' => false, 'msg' => JText::_('BAD_REQUEST')];
+
         $jinput = JFactory::getApplication()->input;
+	    $fnum = $jinput->getString('fnum');
+	    $current_user = JFactory::getUser();
 
-        $fnum = $jinput->getString('fnum');
-        $offset = $jinput->getString('offset',0);
+		if (!empty($fnum) && !empty($current_user->id)) {
+			require_once (JPATH_ROOT . '/components/com_emundus/models/profile.php');
+			$m_profile = new EmundusModelProfile();
+			$current_user_fnums = array_keys($m_profile->getApplicantFnums($current_user->id));
+			$response['msg'] = JText::_('ACCESS_DENIED');
 
-        $messages = $this->m_messenger->getMessagesByFnum($fnum,$offset);
+			if (EmundusHelperAccess::asAccessAction(36, 'c', $current_user->id, $fnum) || in_array($fnum, $current_user_fnums)) {
+				$offset = $jinput->getString('offset',0);
 
-        $data = array('data' => $messages);
+				$response['data'] = $this->m_messenger->getMessagesByFnum($fnum,$offset);
+				if (!empty($response['data'])) {
+					$response['status'] = true;
+					$response['msg'] = JText::_('SUCCESS');
+				} else {
+					$response['status'] = false;
+					$response['msg'] = JText::_('FAIL');
+				}
+			}
+		}
 
-        echo json_encode((object)$data);
+        echo json_encode((object)$response);
         exit;
     }
 
