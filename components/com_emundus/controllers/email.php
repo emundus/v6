@@ -106,7 +106,7 @@ class EmundusControllerEmail extends JControllerLegacy {
      * Get emails filtered
      */
     public function getallemail() {
-        if (!EmundusHelperAccess::asManagerAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -152,7 +152,7 @@ class EmundusControllerEmail extends JControllerLegacy {
     }
 
     public function unpublishemail() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -173,7 +173,7 @@ class EmundusControllerEmail extends JControllerLegacy {
     }
 
     public function publishemail() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -194,7 +194,7 @@ class EmundusControllerEmail extends JControllerLegacy {
     }
 
     public function duplicateemail() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -215,7 +215,7 @@ class EmundusControllerEmail extends JControllerLegacy {
     }
 
     public function createemail() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -282,7 +282,7 @@ class EmundusControllerEmail extends JControllerLegacy {
 
 
     public function updateemail() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -351,7 +351,7 @@ class EmundusControllerEmail extends JControllerLegacy {
     }
 
     public function getemailbyid() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -372,7 +372,7 @@ class EmundusControllerEmail extends JControllerLegacy {
     }
 
     public function getemailcategories() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -389,7 +389,7 @@ class EmundusControllerEmail extends JControllerLegacy {
     }
 
     public function getemailtypes() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -406,7 +406,7 @@ class EmundusControllerEmail extends JControllerLegacy {
     }
 
     public function getstatus() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -423,7 +423,7 @@ class EmundusControllerEmail extends JControllerLegacy {
     }
 
     public function gettriggersbyprogram() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -444,7 +444,7 @@ class EmundusControllerEmail extends JControllerLegacy {
     }
 
     public function gettriggerbyid() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -465,7 +465,7 @@ class EmundusControllerEmail extends JControllerLegacy {
     }
 
     public function createtrigger() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -487,7 +487,7 @@ class EmundusControllerEmail extends JControllerLegacy {
     }
 
     public function updatetrigger() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -510,7 +510,7 @@ class EmundusControllerEmail extends JControllerLegacy {
     }
 
     public function removetrigger() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
