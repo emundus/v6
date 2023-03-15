@@ -487,54 +487,55 @@ class EmundusControllerApplication extends JControllerLegacy
     {
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->post->getString('fnum', null);
-        $ids = $jinput->post->getString('ids', null);
-        $sid = $jinput->post->getInt('student_id', null);
-        $form_post = $jinput->post->getVar('forms', null);
-        $attachments_only = $jinput->post->getBool('attachments_only', false);
 
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'form.php');
-        $m_form = new EmundusModelForm;
-        $m_profile = new EmundusModelProfile;
-        $m_files = new EmundusModelFiles;
+	    if (!empty($fnum) && EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $fnum)) {
+	        $ids = $jinput->post->getString('ids', null);
+	        $sid = $jinput->post->getInt('student_id', null);
+	        $form_post = $jinput->post->getVar('forms', null);
+	        $attachments_only = $jinput->post->getBool('attachments_only', false);
 
-        $fnumInfos = $m_files->getFnumInfos($fnum);
-        $profile = $m_profile->getProfileByCampaign($fnumInfos['campaign_id']);
+	        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+	        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+	        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'form.php');
+	        $m_form = new EmundusModelForm;
+	        $m_profile = new EmundusModelProfile;
+	        $m_files = new EmundusModelFiles;
 
-        if (!$attachments_only) {
-            if(empty($form_post)){
-                $form_post = array();
+	        $fnumInfos = $m_files->getFnumInfos($fnum);
+	        $profile = $m_profile->getProfileByCampaign($fnumInfos['campaign_id']);
 
-                $forms = $m_form->getFormsByProfileId($profile['profile_id']);
-                foreach ($forms as $form){
-                    if(!in_array($form->id,$form_post)){
-                        $form_post[] = $form->id;
-                    }
-                }
-            }
-        }
+	        if (!$attachments_only) {
+	            if(empty($form_post)){
+	                $form_post = array();
 
-        if(empty($ids)){
-            $ids = array();
-            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
-            $m_application = new EmundusModelApplication;
+	                $forms = $m_form->getFormsByProfileId($profile['profile_id']);
+	                foreach ($forms as $form){
+	                    if(!in_array($form->id,$form_post)){
+	                        $form_post[] = $form->id;
+	                    }
+	                }
+	            }
+	        }
 
-            $profile = $m_profile->getProfileByCampaign($fnumInfos['campaign_id']);
-            $attachments_by_profile = $m_form->getDocumentsByProfile($profile['profile_id']);
-            $aids_allowed = array();
-            foreach($attachments_by_profile as $attachment){
-                $aids_allowed[] =  $attachment->attachment_id;
-            }
-            $attachments = $m_application->getAttachmentsByFnum($fnum);
-            foreach($attachments as $attachment){
-                if(in_array($attachment->attachment_id,$aids_allowed)) {
-                    $ids[] = $attachment->id;
-                }
-            }
-        }
+	        if(empty($ids)){
+	            $ids = array();
+	            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+	            $m_application = new EmundusModelApplication;
 
-        if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $fnum)) {
+	            $profile = $m_profile->getProfileByCampaign($fnumInfos['campaign_id']);
+	            $attachments_by_profile = $m_form->getDocumentsByProfile($profile['profile_id']);
+	            $aids_allowed = array();
+	            foreach($attachments_by_profile as $attachment){
+	                $aids_allowed[] =  $attachment->attachment_id;
+	            }
+	            $attachments = $m_application->getAttachmentsByFnum($fnum);
+	            foreach($attachments as $attachment){
+	                if(in_array($attachment->attachment_id,$aids_allowed)) {
+	                    $ids[] = $attachment->id;
+	                }
+	            }
+	        }
+
             $exports = array();
             $tmpArray = array();
 
@@ -700,13 +701,29 @@ class EmundusControllerApplication extends JControllerLegacy
 
     public function getattachmentsbyfnum()
     {
+	    $response = ['status' => false, 'code' => 403, 'msg' => JText::_('BAD_REQUEST'), 'attachments' => null];
         $m_application = $this->getModel('Application');
         $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->getVar('fnum', null);
+        $fnum = $jinput->getString('fnum', '');
 
-        $attachments = $m_application->getUserAttachmentsByFnum($fnum, NULL);
+		if (!empty($fnum)) {
+			$response['msg'] = JText::_('ACCESS_DENIED');
 
-        echo json_encode(['status' => $attachments !== false, 'attachments' => $attachments]);
+			if (EmundusHelperAccess::asAccessAction(4, 'r', JFactory::getUser()->id, $fnum)) {
+				$response['attachments'] = $m_application->getUserAttachmentsByFnum($fnum, NULL);
+
+				if ($response['attachments']) {
+					$response['msg'] = JText::_('SUCCESS');
+					$response['status'] = true;
+					$response['code'] = 200;
+				} else {
+					$response['msg'] = JText::_('FAIL');
+					$response['code'] = 500;
+				}
+			}
+		}
+
+        echo json_encode($response);
         exit;
     }
 
