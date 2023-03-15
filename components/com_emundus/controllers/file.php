@@ -45,19 +45,19 @@ class EmundusControllerFile extends JControllerLegacy
     }
 
     public function getfiles(){
-        $results = ['status' => 1, 'msg' => '', 'data' => [], 'total' => 0];
+        $results = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
 
-        if(EmundusHelperAccess::asAccessAction(1,'r',JFactory::getUser()->id)){
+        if (EmundusHelperAccess::asAccessAction(1,'r', JFactory::getUser()->id)){
             $results['data'] = $this->files->getFiles();
             $results['total'] = $this->files->getTotal();
-	        if($this->type == 'evaluation'){
+	        $results['status'] = true;
+	        $results['msg'] = '';
+
+	        if ($this->type == 'evaluation'){
 				$results['all'] = $this->files->getAll();
 				$results['to_evaluate'] = $this->files->getToEvaluate();
 				$results['evaluated'] = $this->files->getEvaluated();
 	        }
-        } else {
-            $results['status'] = 0;
-            $results['msg'] = JText::_('ACCESS_DENIED');
         }
 
         echo json_encode((object)$results);

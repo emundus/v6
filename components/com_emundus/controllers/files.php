@@ -3866,16 +3866,19 @@ class EmundusControllerFiles extends JControllerLegacy
     }
 
     public function getalllogactions() {
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-        $m_files = new EmundusModelFiles();
-        $logs = $m_files->getAllLogActions();
+	    $response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
 
-        if($logs) {
-            echo json_encode((array('status' => true, 'data' => $logs)));
-        } else {
-            echo json_encode((array('status' => false, 'data' => [])));
-        }
-        exit;
+	    if (EmundusHelperAccess::asAccessAction(37, 'r', JFactory::getUser()->id)) {
+		    require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+		    $m_files = new EmundusModelFiles();
+		    $response['data'] = $m_files->getAllLogActions();
+		    $response['status'] = true;
+		    $response['code'] = 200;
+		    $response['msg'] = JText::_('SUCCESS');
+	    }
+
+	    echo json_encode($response);
+	    exit;
     }
 
     public function getuserslogbyfnum() {
