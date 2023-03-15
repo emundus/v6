@@ -81,12 +81,13 @@ class EmundusHelperUpdate
      * Enable an emundus plugin
      *
      * @param $name
+     * @param $folder
      *
      * @return false|mixed
      *
      * @since version 1.33.0
      */
-    public static function enableEmundusPlugins($name) {
+    public static function enableEmundusPlugins($name, $folder = null) {
         $enabled = false;
 
         if (!empty($name)) {
@@ -97,7 +98,12 @@ class EmundusHelperUpdate
                 $query->update($db->quoteName('#__extensions'))
                     ->set($db->quoteName('enabled') . ' = 1')
                     ->where($db->quoteName('element') . ' LIKE ' . $db->quote($name));
-                $db->setQuery($query);
+
+				if (!empty($folder)) {
+					$query->andWhere($db->quoteName('folder') . ' = ' . $db->quote($folder));
+				}
+
+	            $db->setQuery($query);
 	            $enabled = $db->execute();
             } catch (Exception $e) {
                 echo $e->getMessage();

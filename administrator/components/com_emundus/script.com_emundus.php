@@ -939,6 +939,8 @@ if (password_value.match(regex) != null) {
 					}
 				}
 
+				EmundusHelperUpdate::installExtension('Emundus - Authentication.', 'emundus', '{"name":"Authentication - eMundus","type":"plugin","creationDate":"March 2023","author":"J\u00e9r\u00e9my LEGENDRE","copyright":"(C) 2023 eMundus All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"emundus.fr","version":"1.0.0","description":"PLG_AUTHENTICATION_EMUNDUS_XML_DESCRIPTION","group":"","filename":"emundus"}', 'plugin', 1, 'authentication');
+				EmundusHelperUpdate::enableEmundusPlugins('emundus', 'authentication');
 			}
 
 
