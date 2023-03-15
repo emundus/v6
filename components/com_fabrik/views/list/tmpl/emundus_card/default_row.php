@@ -16,10 +16,13 @@ defined('_JEXEC') or die('Restricted access');
 		$style = empty($this->cellClass[$heading]['style']) ? '' : 'style="'.$this->cellClass[$heading]['style'].'"';
 		?>
         <?php if (isset($this->_row->data)) : ?>
-            <?php if(strpos($this->_row->data->$heading,'<img') !== false) : ?>
+            <?php if(strpos($this->_row->data->$heading,'<img') !== false || strpos($this->_row->data->$heading,'fabrik-filetype-webp') !== false) : ?>
                 <?php
                     $xpath = new DOMXPath(@DOMDocument::loadHTML($this->_row->data->$heading));
                     $src = $xpath->evaluate("string(//img/@src)");
+                    if(empty($src)){
+	                    $src = $xpath->evaluate("string(//a/@href)");
+                    }
                 ?>
                 <p class="<?php echo $this->cellClass[$heading]['class']?>" <?php echo $style?>>
                     <div class="fabrikImageBackground" style="background-image: url('<?php echo $src ?>')"></div>
