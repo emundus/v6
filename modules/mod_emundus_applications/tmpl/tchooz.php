@@ -81,7 +81,7 @@ $current_tab = 0;
 <div class="mod_emundus_applications___header mod_emundus_applications___tmp_tchooz">
 	<?php if ($mod_em_applications_show_hello_text == 1) : ?>
         <div class="em-flex-row em-flex-space-between em-w-100 em-mb-16">
-            <p class="em-h3 em-mb-8"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_HELLO') . $user->firstname ?></p>
+            <h1 class="em-h3 em-mb-8"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_HELLO') . $user->firstname ?></h1>
 			<?php if (sizeof($applications) > 0) : ?>
                 <div class="em-flex-row em-w-auto">
 					<?php if ($show_add_application && ($position_add_application == 3 || $position_add_application == 4) && $applicant_can_renew) : ?>

@@ -65,7 +65,7 @@ div#frame.outline {
 }
 
 *:focus {
-  outline: none;
+  outline: 5px auto -webkit-focus-ring-color;
 }
 
 body {
@@ -187,10 +187,6 @@ legend {
   font-weight: 400;
   font-style: normal;
   line-height: normal;
-}
-
-a:focus {
-  outline: none;
 }
 
 a {
@@ -2422,7 +2418,6 @@ button.btn-primary {
   &:hover {
     background-color: transparent;
     color: $base-secondary-color;
-    outline: none;
   }
 }
 
@@ -2435,7 +2430,6 @@ button.btn-secondary {
   &:hover {
     background-color: transparent;
     color: $base-secondary-color;
-    outline: none;
 
     span {
       color: $base-secondary-color !important;
@@ -2458,7 +2452,6 @@ span.btn {
   &:active {
     background-color: transparent;
     color: $base-primary-color;
-    outline: none;
     border: 1px solid $base-primary-color;
   }
 }
@@ -2789,7 +2782,6 @@ a#em-doc-zip:focus,
 .choice-statut-btn:focus {
   background-color: transparent;
   color: $base-primary-color;
-  outline: none;
   border: 1px solid $base-primary-color !important;
 }
 
@@ -2803,7 +2795,6 @@ a#em-doc-zip:focus,
   &:active {
     background-color: transparent;
     color: $base-primary-color;
-    outline: none;
   }
 }
 
@@ -2820,7 +2811,6 @@ a#em-doc-zip:focus,
     background-color: transparent;
     color: $base-primary-color;
     border: 1px solid $base-primary-color;
-    outline: none;
   }
 }
 
@@ -2832,7 +2822,6 @@ a#em-doc-zip:focus,
   &:hover {
     background-color: transparent !important;
     color: $base-secondary-color !important;
-    outline: none;
   }
 }
 
@@ -2862,7 +2851,6 @@ button#back,
   &:focus {
     background-color: $base-secondary-color;
     color: var(--neutral-50);
-    outline: none;
     border-color: unset;
   }
 }
@@ -2920,7 +2908,6 @@ button#back,
   &:focus,
   &:active {
     background-color: var(--night-blue);
-    outline: none;
   }
 
   span {
@@ -3116,7 +3103,6 @@ label[for='clear-search'] img:hover:focus {
 .candidacy-files-list h1,
 #em-panel h1 {
   color: var(--neutral-900);
-  font-weight: 700;
 }
 
 //test
@@ -6509,10 +6495,6 @@ fieldset[disabled] .multiselect {
   box-sizing: border-box;
 }
 
-.multiselect:focus {
-  outline: none;
-}
-
 .multiselect--disabled {
   background: var(--neutral-300);
   pointer-events: none;
@@ -6608,7 +6590,6 @@ fieldset[disabled] .multiselect {
 .multiselect__input:focus,
 .multiselect__single:focus {
   border-color: #a8a8a8;
-  outline: none;
 }
 
 .multiselect__single {
@@ -6812,7 +6793,6 @@ fieldset[disabled] .multiselect {
 
 .multiselect__option--highlight {
   background: #41b883;
-  outline: none;
   color: var(--neutral-50);
 }
 
