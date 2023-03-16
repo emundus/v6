@@ -814,10 +814,6 @@ class EmundusModelDecision extends JModelList
 			$leftJoin = '';
 			$lastTab = !isset($lastTab) ? array() : $lastTab;
 
-		if (!empty($this->_elements)) {
-			$leftJoin = '';
-			$lastTab = !isset($lastTab) ? array() : $lastTab;
-
 			foreach ($this->_elements as $elt) {
 				if (!in_array($elt->tab_name, $lastTab)) {
 					$leftJoin .= 'LEFT JOIN ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = jecc.fnum ';
