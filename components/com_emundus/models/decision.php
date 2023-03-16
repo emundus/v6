@@ -782,7 +782,7 @@ class EmundusModelDecision extends JModelList
 	 */
 	public function getUsers($current_fnum = null) {
 		$session = JFactory::getSession();
-		
+
 		$app = JFactory::getApplication();
 		$current_menu = $app->getMenu()->getActive();
 		if (!empty($current_menu)) {
@@ -794,7 +794,7 @@ class EmundusModelDecision extends JModelList
 
 		$dbo = $this->getDbo();
 		$query = 'select jecc.fnum, ss.step, ss.value as status, ss.class as status_class, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name';
-		
+
 		// prevent double left join on query
 		$lastTab = [
 			'#__emundus_campaign_candidature', 'jecc',
@@ -809,6 +809,10 @@ class EmundusModelDecision extends JModelList
 		if (in_array('overall', $em_other_columns)) {
 			$lastTab[] = ['#__emundus_evaluations', 'jos_emundus_evaluations'];
 		}
+
+		if (!empty($this->_elements)) {
+			$leftJoin = '';
+			$lastTab = !isset($lastTab) ? array() : $lastTab;
 
 		if (!empty($this->_elements)) {
 			$leftJoin = '';
