@@ -1010,4 +1010,21 @@ class EmundusControllerApplication extends JControllerLegacy
 		echo json_encode($response);
 		exit;
 	}
+
+	public function filterapplications(){
+		$response = array('status' => 1, 'msg' => JText::_('SUCCESS'));
+
+		$jinput = JFactory::getApplication()->input;
+		$type = $jinput->getString('type');
+		$value = $jinput->getString('value');
+
+		if(!empty($type) && !empty($value) && in_array($type,['applications_order_by','applications_filter_by'])){
+			JFactory::getSession()->set($type,$value);
+		} else {
+			$response = array('status' => 0, 'msg' => JText::_('FAILED'));
+		}
+
+		echo json_encode($response);
+		exit;
+	}
 }

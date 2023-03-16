@@ -164,21 +164,24 @@ $current_tab = 0;
         <?php endif; ?>
 
         <?php if ($mod_em_applications_show_filters == 1) : ?>
-            <div id="mod_emundus_application__header_filter" class="mod_emundus_application__header_filter em-border-neutral-400 em-white-bg em-neutral-800-color em-pointer em-mr-8" onclick="displayFilters()">
+<!--            <div id="mod_emundus_application__header_filter" class="mod_emundus_application__header_filter em-border-neutral-400 em-white-bg em-neutral-800-color em-pointer em-mr-8" onclick="displayFilters()">
                 <span class="material-icons-outlined">filter_list</span>
-                <span class="em-ml-8"><?php echo JText::_('MOD_EM_APPPLICATION_LIST_FILTER') ?></span>
+                <span class="em-ml-8"><?php /*echo JText::_('MOD_EM_APPPLICATION_LIST_FILTER') */?></span>
                 <span id="mod_emundus_campaign__header_filter_count" class="mod_emundus_campaign__header_filter_count em-mr-8"></span>
-            </div>
+            </div>-->
         <?php endif; ?>
 
         <!-- SORT BLOCK -->
         <div class="mod_emundus_application__header_sort__values em-border-neutral-400 em-neutral-800-color" id="sort_block" style="display: none">
-                <a onclick="filterCampaigns('group_by','program')" class="em-text-neutral-900 em-pointer">
-                    <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_PROGRAM') ?>
+                <a onclick="filterApplications('applications_order_by','status')" class="em-text-neutral-900 em-pointer">
+                    <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_STATUS') ?>
                 </a>
-                <a onclick="filterCampaigns('group_by','category')" class="em-text-neutral-900 em-pointer">
-                    <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_CATEGORY') ?>
+                <a onclick="filterApplications('applications_order_by','campaigns')" class="em-text-neutral-900 em-pointer">
+                    <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_CAMPAIGN') ?>
                 </a>
+            <a onclick="filterApplications('applications_order_by','last_update')" class="em-text-neutral-900 em-pointer">
+		        <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_LAST_UPDATE') ?>
+            </a>
         </div>
     </div>
 
@@ -1362,5 +1365,33 @@ $current_tab = 0;
         } else {
             sort.style.display = 'none';
         }
+    }
+
+    function filterApplications(type,value){
+        let formData = new FormData();
+        formData.append('type', type);
+        formData.append('value', value);
+
+        fetch('index.php?option=com_emundus&controller=application&task=filterapplications', {
+            body: formData,
+            method: 'post',
+        }).then((response) => {
+            if (response.ok) {
+                return response.json();
+            }
+        }).then((res) => {
+            if (res.status == true) {
+                window.location.reload();
+            } else {
+                Swal.fire({
+                    title: "Une erreur est survenue",
+                    text: res.msg,
+                    type: "error",
+                    reverseButtons: true,
+                    confirmButtonText: "<?php echo JText::_('JYES');?>",
+                    timer: 3000
+                });
+            }
+        });
     }
 </script>
