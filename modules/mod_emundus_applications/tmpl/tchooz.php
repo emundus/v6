@@ -1247,60 +1247,60 @@ $current_tab = 0;
                 return response.json();
             }
         }).then(async (res) => {
-            console.log(res.campaigns);
+            document.querySelector('.mod_emundus_applications__actions').style.display = 'none';
 
-        const {value: campaign} = await Swal.fire({
-            title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_COPY_FILE'); ?>",
-            text: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_COPY_FILE_CAMPAIGN'); ?>",
-            input: 'select',
-            inputOptions: res.campaigns,
-            showCancelButton: true,
-            reverseButtons: true,
-            confirmButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_COPY_FILE_ACTION');?>",
-            cancelButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_CANCEL_BUTTON');?>",
-            customClass: {
-                container: 'mod_emundus_application_swal_manage_tabs_container',
-                popup: 'mod_emundus_application_swal_manage_tabs_popup',
-                header: 'mod_emundus_application_swal_manage_tabs_header',
-                htmlContainer: 'mod_emundus_application_swal_manage_tabs_content',
-                confirmButton: 'mod_emundus_application_swal_manage_tabs_confirm',
-                cancelButton: 'mod_emundus_application_swal_manage_tabs_cancel',
-                actions: 'mod_emundus_application_swal_manage_tabs_actions',
-            },
-            inputValidator: (value) => {
-                if (!value) {
-                    return "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_PLEASE_SELECT_A_CAMPAIGN');?>";
-                }
-            }
-        });
-
-        if (campaign) {
-            let formData = new FormData();
-            formData.append('fnum', fnum);
-            formData.append('campaign', campaign);
-
-            fetch('index.php?option=com_emundus&controller=application&task=copyfile', {
-                body: formData,
-                method: 'post',
-            }).then((response) => {
-                if (response.ok) {
-                    return response.json();
-                }
-            }).then((res) => {
-                if (res.status == true) {
-                    window.location.href = res.first_page;
-                } else {
-                    Swal.fire({
-                        title: "Une erreur est survenue",
-                        text: res.msg,
-                        type: "error",
-                        reverseButtons: true,
-                        confirmButtonText: "<?php echo JText::_('JYES');?>",
-                        timer: 3000
-                    });
+            const {value: campaign} = await Swal.fire({
+                title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_COPY_FILE'); ?>",
+                text: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_COPY_FILE_CAMPAIGN'); ?>",
+                input: 'select',
+                inputOptions: res.campaigns,
+                showCancelButton: true,
+                reverseButtons: true,
+                confirmButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_COPY_FILE_ACTION');?>",
+                cancelButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_CANCEL_BUTTON');?>",
+                customClass: {
+                    container: 'mod_emundus_application_swal_manage_tabs_container',
+                    popup: 'mod_emundus_application_swal_manage_tabs_popup',
+                    header: 'mod_emundus_application_swal_manage_tabs_header',
+                    htmlContainer: 'mod_emundus_application_swal_manage_tabs_content',
+                    confirmButton: 'mod_emundus_application_swal_manage_tabs_confirm',
+                    cancelButton: 'mod_emundus_application_swal_manage_tabs_cancel',
+                    actions: 'mod_emundus_application_swal_manage_tabs_actions',
+                },
+                inputValidator: (value) => {
+                    if (!value) {
+                        return "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_PLEASE_SELECT_A_CAMPAIGN');?>";
+                    }
                 }
             });
-        }
+
+            if (campaign) {
+                let formData = new FormData();
+                formData.append('fnum', fnum);
+                formData.append('campaign', campaign);
+
+                fetch('index.php?option=com_emundus&controller=application&task=copyfile', {
+                    body: formData,
+                    method: 'post',
+                }).then((response) => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                }).then((res) => {
+                    if (res.status == true) {
+                        window.location.href = res.first_page;
+                    } else {
+                        Swal.fire({
+                            title: "Une erreur est survenue",
+                            text: res.msg,
+                            type: "error",
+                            reverseButtons: true,
+                            confirmButtonText: "<?php echo JText::_('JYES');?>",
+                            timer: 3000
+                        });
+                    }
+                });
+            }
         });
     }
 
