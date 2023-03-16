@@ -81,12 +81,13 @@ class EmundusHelperUpdate
      * Enable an emundus plugin
      *
      * @param $name
+     * @param $folder
      *
      * @return false|mixed
      *
      * @since version 1.33.0
      */
-    public static function enableEmundusPlugins($name) {
+    public static function enableEmundusPlugins($name, $folder = null) {
         $enabled = false;
 
         if (!empty($name)) {
@@ -96,8 +97,14 @@ class EmundusHelperUpdate
             try {
                 $query->update($db->quoteName('#__extensions'))
                     ->set($db->quoteName('enabled') . ' = 1')
-                    ->where($db->quoteName('element') . ' LIKE ' . $db->quote($name));
-                $db->setQuery($query);
+	                ->set($db->quoteName('state') . ' = 0')
+	                ->where($db->quoteName('element') . ' LIKE ' . $db->quote($name));
+
+				if (!empty($folder)) {
+					$query->andWhere($db->quoteName('folder') . ' = ' . $db->quote($folder));
+				}
+
+	            $db->setQuery($query);
 	            $enabled = $db->execute();
             } catch (Exception $e) {
                 echo $e->getMessage();
@@ -876,7 +883,12 @@ class EmundusHelperUpdate
 					$parsed_file = JLanguageHelper::parseIniFile($file->file);
 
 					if (!empty($parsed_file) && !empty($old_values[$file->language])) {
-						if ($parsed_file[$tag] == $old_values[$file->language])
+						if (!empty($parsed_file[$tag]) && $parsed_file[$tag] == $old_values[$file->language])
+						{
+							$parsed_file[$tag] = $new_values[$file->language];
+							JLanguageHelper::saveToIniFile($file->file, $parsed_file);
+						}
+						elseif (empty($parsed_file[$tag]))
 						{
 							$parsed_file[$tag] = $new_values[$file->language];
 							JLanguageHelper::saveToIniFile($file->file, $parsed_file);

@@ -140,28 +140,5 @@ if(!empty($this->campaign)){
                 });
             }
         <?php endif; ?>
-
-
-        document.getElementById('login_form').addEventListener('submit', function (event) {
-            event.preventDefault();
-
-            let formData = new FormData();
-            formData.append('username', document.getElementsByName('username')[0].value);
-
-            fetch('index.php?option=com_emundus&controller=user&task=getusername', {
-                body: formData,
-                method: 'post',
-            }).then((response) => {
-                if (response.ok) {
-                    return response.json();
-                }
-            }).then((res) => {
-                if(res.username !== '' && res.username !== null){
-                    document.getElementsByName('username')[0].value = res.username;
-                }
-
-                document.getElementById('login_form').submit();
-            })
-        });
     });
 </script>
