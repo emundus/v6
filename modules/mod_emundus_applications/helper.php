@@ -62,13 +62,13 @@ class modemundusApplicationsHelper {
 		$order_by_session = JFactory::getSession()->get('applications_order_by');
 		switch ($order_by_session) {
 			case 'status':
-				$query .= ' ORDER BY ess.ordering ASC';
+				$query .= ' ORDER BY ess.ordering ASC,ecc.date_time DESC';
 				break;
 			case 'campaigns':
-				$query .= ' ORDER BY esc.label ASC';
+				$query .= ' ORDER BY esc.label ASC,ecc.date_time DESC';
 				break;
 			case 'last_update':
-				$query .= ' ORDER BY ecc.updated DESC';
+				$query .= ' ORDER BY ecc.updated DESC,ecc.date_time DESC';
 				break;
 			default:
 				$query .= ' ORDER BY ' . $order_by;
