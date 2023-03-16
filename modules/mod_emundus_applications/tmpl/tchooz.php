@@ -170,19 +170,6 @@ $current_tab = 0;
                 <span id="mod_emundus_campaign__header_filter_count" class="mod_emundus_campaign__header_filter_count em-mr-8"></span>
             </div>-->
         <?php endif; ?>
-
-        <!-- SORT BLOCK -->
-        <div class="mod_emundus_application__header_sort__values em-border-neutral-400 em-neutral-800-color" id="sort_block" style="display: none">
-                <a onclick="filterApplications('applications_order_by','status')" class="em-text-neutral-900 em-pointer">
-                    <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_STATUS') ?>
-                </a>
-                <a onclick="filterApplications('applications_order_by','campaigns')" class="em-text-neutral-900 em-pointer">
-                    <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_CAMPAIGN') ?>
-                </a>
-            <a onclick="filterApplications('applications_order_by','last_update')" class="em-text-neutral-900 em-pointer">
-		        <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_LAST_UPDATE') ?>
-            </a>
-        </div>
     </div>
 
     <div class="em-flex-row-justify-end" style="gap: 24px">
@@ -203,6 +190,19 @@ $current_tab = 0;
             </div>
         </div>
     </div>
+</div>
+
+<!-- SORT BLOCK -->
+<div class="mod_emundus_application__header_sort__values em-border-neutral-400 em-neutral-800-color" id="sort_block" style="display: none">
+    <a onclick="filterApplications('applications_order_by','status')" class="em-text-neutral-900 em-pointer">
+		<?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_STATUS') ?>
+    </a>
+    <a onclick="filterApplications('applications_order_by','campaigns')" class="em-text-neutral-900 em-pointer">
+		<?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_CAMPAIGN') ?>
+    </a>
+    <a onclick="filterApplications('applications_order_by','last_update')" class="em-text-neutral-900 em-pointer">
+		<?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_LAST_UPDATE') ?>
+    </a>
 </div>
 
 
