@@ -516,10 +516,20 @@ class com_emundusInstallerScript
 					if (isset($params->curl_code)) {
 						foreach ($params->curl_code as $key => $code) {
 							if (strpos($code, 'media/com_emundus/lib/chosen/chosen.min.css') !== false) {
-								$params->curl_code[$key] = str_replace('media/com_emundus/lib/chosen/chosen.min.css', 'media/jui/css/chosen.css', $params->curl_code[$key]);
+								if(is_object($params->curl_code)){
+									$params->curl_code->{$key} = str_replace('media/com_emundus/lib/chosen/chosen.min.css', 'media/jui/css/chosen.css', $params->curl_code->{$key});
+								}
+								elseif(is_array($params->curl_code)){
+									$params->curl_code[$key] = str_replace('media/com_emundus/lib/chosen/chosen.min.css', 'media/jui/css/chosen.css', $params->curl_code[$key]);
+								}
 							}
 							if (strpos($code, 'media/com_emundus/lib/chosen/chosen.jquery.min.js') !== false) {
-								$params->curl_code[$key] = str_replace('media/com_emundus/lib/chosen/chosen.jquery.min.js', 'media/jui/js/chosen.jquery.min.js', $params->curl_code[$key]);
+								if(is_object($params->curl_code)) {
+									$params->curl_code->{$key} = str_replace('media/com_emundus/lib/chosen/chosen.jquery.min.js', 'media/jui/js/chosen.jquery.min.js', $params->curl_code->{$key});
+								}
+								elseif(is_array($params->curl_code)){
+									$params->curl_code[$key] = str_replace('media/com_emundus/lib/chosen/chosen.jquery.min.js', 'media/jui/js/chosen.jquery.min.js', $params->curl_code[$key]);
+								}
 							}
 						}
 
