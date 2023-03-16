@@ -1797,13 +1797,14 @@ class EmundusModelUsers extends JModelList {
 		if (isset($user['same_login_email']) && $user['same_login_email'] === 1) {
 			$user['username'] = $user['email'];
 			unset($user['same_login_email']);
+			$u->username = $user['username'];
 		}
 
 
         if (!$u->bind($user)) {
             return array('msg' => $u->getError());
         }
-        if (!$u->save()) {
+	    if (!$u->save()) {
             return array('msg' =>$u->getError());
         }
 
@@ -1819,7 +1820,6 @@ class EmundusModelUsers extends JModelList {
         }
 
         $query->where('user_id = ' . $db->quote($user['id']));
-
         $db->setQuery($query);
 
 	    try {
