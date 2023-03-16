@@ -1791,9 +1791,14 @@ class EmundusModelUsers extends JModelList {
 
 
     public function editUser($user) {
-
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $u = JFactory::getUser($user['id']);
+
+		if (isset($user['same_login_email']) && $user['same_login_email'] === 1) {
+			$user['username'] = $user['email'];
+			unset($user['same_login_email']);
+		}
+
 
         if (!$u->bind($user)) {
             return array('msg' => $u->getError());
