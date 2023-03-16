@@ -97,7 +97,8 @@ class EmundusHelperUpdate
             try {
                 $query->update($db->quoteName('#__extensions'))
                     ->set($db->quoteName('enabled') . ' = 1')
-                    ->where($db->quoteName('element') . ' LIKE ' . $db->quote($name));
+	                ->set($db->quoteName('state') . ' = 0')
+	                ->where($db->quoteName('element') . ' LIKE ' . $db->quote($name));
 
 				if (!empty($folder)) {
 					$query->andWhere($db->quoteName('folder') . ' = ' . $db->quote($folder));

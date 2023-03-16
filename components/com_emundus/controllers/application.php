@@ -27,44 +27,22 @@ class EmundusControllerApplication extends JControllerLegacy
     }
 
     /**
-     * export ZIP
-     */
-/*
-    public function export_zip() {
-        require_once('libraries/emundus/zip.php');
-        //$db   = JFactory::getDBO();
-        $cid = JRequest::getVar('uid', null, 'POST', 'array', 0);
-        JArrayHelper::toInteger( $cid, 0 );
-        if (count( $cid ) == 0) {
-            JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_NO_ITEMS_SELECTED' ) );
-            $this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
-            exit;
-        }
-        zip_file($cid);
-        exit;
-    }
-*/
-    /**
      * Delete an applicant attachment(s)
      */
     public function delete_attachments() {
         $user = JFactory::getUser();
-        //$allowed = array("Super Users", "Administrator", "Editor");
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
             die(JText::_("ACCESS_DENIED"));
 
-        //$db   = JFactory::getDBO();
         $attachments = JRequest::getVar('attachments', null, 'POST', 'array', 0);
         $user_id     = JRequest::getVar('sid', null, 'POST', 'none', 0);
         $view        = JRequest::getVar('view', null, 'POST', 'none', 0);
         $tmpl        = JRequest::getVar('tmpl', null, 'POST', 'none', 0);
 
         $url = !empty($tmpl)?'index.php?option=com_emundus&view='.$view.'&sid='.$user_id.'&tmpl='.$tmpl.'#attachments':'index.php?option=com_emundus&view='.$view.'&sid='.$user_id.'&tmpl=component#attachments';
-        // die(var_dump($attachments));
         JArrayHelper::toInteger($attachments, 0);
         if (count($attachments) == 0) {
             JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_NO_ITEMS_SELECTED' ) );
-            //$mainframe->redirect($url);
             exit;
         }
 
@@ -111,7 +89,6 @@ class EmundusControllerApplication extends JControllerLegacy
         $id = JRequest::getVar('id', null, 'GET', 'none',0);
 
         $m_application = $this->getModel('application');
-
         $upload = $m_application->getUploadByID($id);
         $attachment = $m_application->getAttachmentByID($upload['attachment_id']);
 
@@ -249,7 +226,6 @@ class EmundusControllerApplication extends JControllerLegacy
 
 
     public function editcomment() {
-
         $user   = JFactory::getUser();
         $jinput = JFactory::getApplication()->input;
 
@@ -382,11 +358,6 @@ class EmundusControllerApplication extends JControllerLegacy
         $m_application->addComment($row);
 
         echo $result;
-
-        /*
-        if($result!=1){
-            echo JText::_('DELETE_ERROR');
-        }*/
     }
     /*
      * Get Menu for application file
