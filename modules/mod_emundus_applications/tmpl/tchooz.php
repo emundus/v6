@@ -153,21 +153,51 @@ $current_tab = 0;
     </div>
 <?php endif; ?>
 
-<div class="em-flex-row-justify-end em-mt-16" style="gap: 24px">
-	<?php if ($mod_em_applications_show_search && sizeof($applications) > 0): ?>
-        <div class="em-searchbar em-flex-row-justify-end">
-            <label for="searchword" style="display: inline-block;margin-bottom: unset">
-                <input name="searchword" type="text" id="applications_searchbar" class="form-control"
-                       placeholder="<?php echo JText::_('MOD_EM_APPLICATIONS_SEARCH') ?>">
-            </label>
+<div class="em-flex-row em-flex-space-between em-mt-16">
+    <div class="em-flex-row">
+        <!-- BUTTONS -->
+        <?php if ($mod_em_applications_show_sort == 1) : ?>
+            <div id="mod_emundus_application__header_sort" class="mod_emundus_application__header_filter em-border-neutral-400 em-white-bg em-neutral-800-color em-pointer em-mr-8" onclick="displaySort()">
+                <span class="material-icons-outlined">swap_vert</span>
+                <span class="em-ml-8"><?php echo JText::_('MOD_EM_APPPLICATION_LIST_SORT') ?></span>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($mod_em_applications_show_filters == 1) : ?>
+            <div id="mod_emundus_application__header_filter" class="mod_emundus_application__header_filter em-border-neutral-400 em-white-bg em-neutral-800-color em-pointer em-mr-8" onclick="displayFilters()">
+                <span class="material-icons-outlined">filter_list</span>
+                <span class="em-ml-8"><?php echo JText::_('MOD_EM_APPPLICATION_LIST_FILTER') ?></span>
+                <span id="mod_emundus_campaign__header_filter_count" class="mod_emundus_campaign__header_filter_count em-mr-8"></span>
+            </div>
+        <?php endif; ?>
+
+        <!-- SORT BLOCK -->
+        <div class="mod_emundus_application__header_sort__values em-border-neutral-400 em-neutral-800-color" id="sort_block" style="display: none">
+                <a onclick="filterCampaigns('group_by','program')" class="em-text-neutral-900 em-pointer">
+                    <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_PROGRAM') ?>
+                </a>
+                <a onclick="filterCampaigns('group_by','category')" class="em-text-neutral-900 em-pointer">
+                    <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_CATEGORY') ?>
+                </a>
         </div>
-	<?php endif; ?>
-    <div class="em-flex-row" style="gap: 8px">
-        <div id="button_switch_card" class="em-pointer mod_emundus_application___buttons_switch_view mod_emundus_application___buttons_enable" onclick="updateView('card')">
-            <span class="material-icons-outlined mod_emundus_application___buttons_switch_view_enable">grid_view</span>
-        </div>
-        <div id="button_switch_list" class="em-pointer mod_emundus_application___buttons_switch_view" onclick="updateView('list')">
-            <span class="material-icons-outlined mod_emundus_application___buttons_switch_view_disabled">menu</span>
+    </div>
+
+    <div class="em-flex-row-justify-end" style="gap: 24px">
+        <?php if ($mod_em_applications_show_search && sizeof($applications) > 0): ?>
+            <div class="em-searchbar em-flex-row-justify-end">
+                <label for="searchword" style="display: inline-block;margin-bottom: unset">
+                    <input name="searchword" type="text" id="applications_searchbar" class="form-control"
+                           placeholder="<?php echo JText::_('MOD_EM_APPLICATIONS_SEARCH') ?>">
+                </label>
+            </div>
+        <?php endif; ?>
+        <div class="em-flex-row" style="gap: 8px">
+            <div id="button_switch_card" class="em-pointer mod_emundus_application___buttons_switch_view mod_emundus_application___buttons_enable" onclick="updateView('card')">
+                <span class="material-icons-outlined mod_emundus_application___buttons_switch_view_enable">grid_view</span>
+            </div>
+            <div id="button_switch_list" class="em-pointer mod_emundus_application___buttons_switch_view" onclick="updateView('list')">
+                <span class="material-icons-outlined mod_emundus_application___buttons_switch_view_disabled">menu</span>
+            </div>
         </div>
     </div>
 </div>
@@ -1322,5 +1352,15 @@ $current_tab = 0;
                 });
             }
         });
+    }
+
+    function displaySort(){
+        let sort = document.getElementById('sort_block');
+        console.log(sort);
+        if(sort.style.display === 'none'){
+            sort.style.display = 'flex';
+        } else {
+            sort.style.display = 'none';
+        }
     }
 </script>

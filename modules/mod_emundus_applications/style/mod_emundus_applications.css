@@ -493,6 +493,33 @@ margin-top: 16px;
     color: #8F96A3;
 }
 
+.mod_emundus_application__header_filter{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    padding: 6px 16px;
+    width: max-content;
+}
+
+.mod_emundus_application__header_sort__values{
+    margin-top: 150px;
+    flex-direction: column;
+    box-shadow: 0px 12px 17px rgba(5, 47, 55, 0.07), 0px 5px 22px rgba(5, 47, 55, 0.06), 0px 7px 8px rgba(5, 47, 55, 0.1);
+    border-radius: 8px;
+    padding: 24px;
+    position: absolute;
+    background: white;
+}
+
+.mod_emundus_application__header_sort__values a:not(:last-child){
+    margin-bottom: 20px;
+}
+
+.mod_emundus_application__header_sort__values a:hover {
+    color: #727272;
+}
+
 @media screen and (max-width: 767px) {
     .mod_emundus_applications___header #add-application {
         width: 100% !important;

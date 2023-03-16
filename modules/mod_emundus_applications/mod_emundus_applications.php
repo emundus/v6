@@ -91,6 +91,8 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
       $visible_status = explode(',', $params->get('visible_status', ''));
     }
     $mod_em_applications_show_search = $params->get('mod_em_applications_show_search', 1);
+    $mod_em_applications_show_sort = $params->get('mod_em_applications_show_sort', 0);
+    $mod_em_applications_show_filters = $params->get('mod_em_applications_show_filters', 0);
 
     $order_applications = $params->get('order_applications', 'esc.end_date');
     $applications_as_desc = $params->get('order_applications_asc_des', 'DESC');
