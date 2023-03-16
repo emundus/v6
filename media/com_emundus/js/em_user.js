@@ -1101,7 +1101,7 @@ $(document).ready(function () {
 				var ln = $('#lname').val();
 				var email = $('#mail').val();
 				var profile = $('#profiles').val();
-				let sameLoginEmail = document.getElementById('same_login_email').checked;
+				let sameLoginEmail = document.getElementById('same_login_email').checked ? 1 : 0;
 
 				if (!formCheck('fname') || !formCheck('lname') || !formCheck('login') || !formCheck('mail')) {
 					return false;
