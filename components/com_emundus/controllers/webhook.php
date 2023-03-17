@@ -760,7 +760,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
         try {
             JLog::add('[updateAxeptaPaymentInfos] Start to get payment notification from axepta', JLog::INFO, 'com_emundus.payment');
 
-            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'payment'.DS.'Axepta.php');
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'classes'.DS.'payment'.DS.'Axepta.php');
             $axepta = new Axepta();
 
             $status = false;

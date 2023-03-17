@@ -65,7 +65,7 @@ class EmundusModelUser extends JModelList
             'LOGO' => $logo
         ];
 
-        return $c_messages->sendEmailNoFnum($email, 'registration_email', $post);
+	    return $c_messages->sendEmailNoFnum($email, 'registration_email', $post, $userID);
     }
 
     public function updateEmailUser($user_id,$email){

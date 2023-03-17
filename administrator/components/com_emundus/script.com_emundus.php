@@ -516,10 +516,20 @@ class com_emundusInstallerScript
 					if (isset($params->curl_code)) {
 						foreach ($params->curl_code as $key => $code) {
 							if (strpos($code, 'media/com_emundus/lib/chosen/chosen.min.css') !== false) {
-								$params->curl_code[$key] = str_replace('media/com_emundus/lib/chosen/chosen.min.css', 'media/jui/css/chosen.css', $params->curl_code[$key]);
+								if(is_object($params->curl_code)){
+									$params->curl_code->{$key} = str_replace('media/com_emundus/lib/chosen/chosen.min.css', 'media/jui/css/chosen.css', $params->curl_code->{$key});
+								}
+								elseif(is_array($params->curl_code)){
+									$params->curl_code[$key] = str_replace('media/com_emundus/lib/chosen/chosen.min.css', 'media/jui/css/chosen.css', $params->curl_code[$key]);
+								}
 							}
 							if (strpos($code, 'media/com_emundus/lib/chosen/chosen.jquery.min.js') !== false) {
-								$params->curl_code[$key] = str_replace('media/com_emundus/lib/chosen/chosen.jquery.min.js', 'media/jui/js/chosen.jquery.min.js', $params->curl_code[$key]);
+								if(is_object($params->curl_code)) {
+									$params->curl_code->{$key} = str_replace('media/com_emundus/lib/chosen/chosen.jquery.min.js', 'media/jui/js/chosen.jquery.min.js', $params->curl_code->{$key});
+								}
+								elseif(is_array($params->curl_code)){
+									$params->curl_code[$key] = str_replace('media/com_emundus/lib/chosen/chosen.jquery.min.js', 'media/jui/js/chosen.jquery.min.js', $params->curl_code[$key]);
+								}
 							}
 						}
 
@@ -650,7 +660,7 @@ if (password_value.match(regex) != null) {
 				//
 			}
 
-			if (version_compare($cache_version, '1.35.0', '<') || $firstrun) {
+			if (version_compare($cache_version, '1.35.0', '<=') || $firstrun) {
 				EmundusHelperUpdate::updateYamlVariable('offcanvas', '16rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'width');
 				EmundusHelperUpdate::updateYamlVariable('breakpoints', '75rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'large-desktop-container');
 				EmundusHelperUpdate::updateYamlVariable('breakpoints', '60rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'desktop-container');
@@ -665,6 +675,282 @@ if (password_value.match(regex) != null) {
 				]);
 
 				EmundusHelperUpdate::updateEmundusParam('gotenberg_url','https://gotenberg.microservices.tchooz.app','https://docs.emundus.app');
+
+				// Install new flow module on old default layouts
+				$db    = JFactory::getDbo();
+				$query = $db->getQuery(true);
+
+				$query->select('id,params')
+					->from($db->quoteName('#__modules'))
+					->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundusflow'))
+					->andWhere($db->quoteName('position') . ' LIKE ' . $db->quote('drawer'))
+					->andWhere($db->quoteName('published') . ' = 1');
+				$db->setQuery($query);
+				$modules = $db->loadObjectList();
+
+				foreach ($modules as $module){
+					$params = json_decode($module->params);
+
+					if(isset($params->layout) && $params->layout == '_:default') {
+						$params->layout = '_:tchooz';
+						$query->clear()
+							->update($db->quoteName('#__modules'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+							->where($db->quoteName('id') . ' = ' . $module->id);
+						$db->setQuery($query);
+						$db->execute();
+
+						$query->clear()
+							->select('id,value')
+							->from($db->quoteName('#__falang_content'))
+							->where($db->quoteName('reference_table') . ' LIKE ' . $db->quote('modules'))
+							->andWhere($db->quoteName('reference_field') . ' LIKE ' . $db->quote('params'))
+							->andWhere($db->quoteName('reference_id') . ' = ' . $module->id);
+						$db->setQuery($query);
+						$module_translations = $db->loadObjectList();
+
+						foreach ($module_translations as $module_translation){
+							$translation_params = json_decode($module_translation->value);
+
+							if(isset($translation_params->layout) && $translation_params->layout == '_:default') {
+								$translation_params->layout = '_:tchooz';
+
+								$query->clear()
+									->update($db->quoteName('#__falang_content'))
+									->set($db->quoteName('value') . ' = ' . $db->quote(json_encode($translation_params)))
+									->where($db->quoteName('id') . ' = ' . $module_translation->id);
+								$db->setQuery($query);
+								$db->execute();
+							}
+						}
+					}
+				}
+
+				EmundusHelperUpdate::genericUpdateParams('#__fabrik_cron', 'plugin', 'emundusrecall', array('log_email') , array(''));
+
+				EmundusHelperUpdate::updateConfigurationFile('caching', '1');
+				EmundusHelperUpdate::updateModulesParams('mod_emundusmenu','cache',0);
+
+				$query->clear()
+					->select('params')
+					->from($db->quoteName('#__extensions'))
+					->where($db->quoteName('element') . ' LIKE ' . $db->quote('com_fabrik'));
+				$db->setQuery($query);
+				$fabrik_extension = $db->loadResult();
+
+				if(!empty($fabrik_extension)) {
+					$fabrik_params                    = json_decode($fabrik_extension, true);
+					$fabrik_params['disable_caching'] = "1";
+
+					$query->clear()
+						->update($db->quoteName('#__extensions'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($fabrik_params)))
+						->where($db->quoteName('element') . ' LIKE ' . $db->quote('com_fabrik'));
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				EmundusHelperUpdate::addYamlVariable('location', 'https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
+				EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('name', 'Material Icons', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+
+				$old_values = [
+					'fr-FR' => 'Créer votre compte',
+				];
+				$new_values = [
+					'fr-FR' => 'Créez votre compte',
+				];
+				EmundusHelperUpdate::updateOverrideTag('FORM_REGISTRATION',$old_values,$new_values);
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_elements'))
+					->set($db->quoteName('published') . ' = 0')
+					->where($db->quoteName('name') . ' LIKE ' . $db->quote('confirm_email'))
+					->where($db->quoteName('plugin') . ' LIKE ' . $db->quote('field'))
+					->where($db->quoteName('group_id') . ' = 640');
+				$db->setQuery($query);
+				$db->execute();
+
+				EmundusHelperUpdate::updateEmundusParam('export_application_pdf_title_color','#000000','#ee1c25');
+
+				$old_values = [
+					'fr-FR' => 'Table - Paramétrage des groupes',
+					'en-GB' => 'Group settings',
+				];
+				$new_values = [
+					'fr-FR' => 'Groupes',
+					'en-GB' => 'Groups',
+				];
+				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_GROUPS',$old_values,$new_values);
+
+				$old_values = [
+					'fr-FR' => 'Table - Paramétrage des profils',
+					'en-GB' => 'Profile settings',
+				];
+				$new_values = [
+					'fr-FR' => 'Profils',
+					'en-GB' => 'Profiles',
+				];
+				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_PROFILES',$old_values,$new_values);
+
+				$old_values = [
+					'fr-FR' => 'Liste des programmes',
+				];
+				$new_values = [
+					'fr-FR' => 'Programmes',
+				];
+				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_PROGRAMS',$old_values,$new_values);
+
+				$old_values = [
+					'fr-FR' => 'Liste des années par programme',
+					'en-GB' => 'Year settings',
+				];
+				$new_values = [
+					'fr-FR' => 'Années',
+					'en-GB' => 'Years',
+				];
+				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_YEARS',$old_values,$new_values);
+
+				$old_values = [
+					'fr-FR' => 'Paramétrage - Périodes de dépôt de dossiers',
+					'en-GB' => 'Registration period settings',
+				];
+				$new_values = [
+					'fr-FR' => 'Campagnes',
+					'en-GB' => 'Campaigns',
+				];
+				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_PERIODE',$old_values,$new_values);
+
+				$old_values = [
+					'fr-FR' => 'Table - Tags',
+					'en-GB' => 'Tags',
+				];
+				$new_values = [
+					'fr-FR' => 'Étiquettes',
+					'en-GB' => 'Stickers',
+				];
+				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_TAGS',$old_values,$new_values);
+
+				$old_values = [
+					'fr-FR' => 'Table - Invitation par email',
+					'en-GB' => 'Invitation by email',
+				];
+				$new_values = [
+					'fr-FR' => 'Sollicitation des référents',
+					'en-GB' => 'Solicitation of referees',
+				];
+				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_INVITATION_BY_EMAIL',$old_values,$new_values);
+
+				$old_values = [
+					'fr-FR' => 'Table - Paramétrages des documents',
+					'en-GB' => 'Document settings',
+				];
+				$new_values = [
+					'fr-FR' => 'Types de documents',
+					'en-GB' => 'Document types',
+				];
+				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_DOCUMENTS',$old_values,$new_values);
+
+				$old_values = [
+					'fr-FR' => 'ADMIN_SETUP_STATUS',
+				];
+				$new_values = [
+					'fr-FR' => 'Statuts de dossiers',
+				];
+				EmundusHelperUpdate::updateOverrideTag('ADMIN_SETUP_STATUS',$old_values,$new_values);
+
+				$old_values = [
+					'fr-FR' => 'Table - Paramétrages des emails',
+					'en-GB' => 'Email settings',
+				];
+				$new_values = [
+					'fr-FR' => 'Emails',
+					'en-GB' => 'Emails',
+				];
+				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_EMAILS',$old_values,$new_values);
+
+				$old_values = [
+					'fr-FR' => 'Table- Paiements',
+				];
+				$new_values = [
+					'fr-FR' => 'Paiements',
+				];
+				EmundusHelperUpdate::updateOverrideTag('TABLE_PAYMENT',$old_values,$new_values);
+
+				$old_values = [
+					'fr-FR' => 'Table - Paramétrage déclencheurs mails',
+				];
+				$new_values = [
+					'fr-FR' => 'Déclencheurs d\'emails',
+				];
+				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_EMAILS_TRIGGER',$old_values,$new_values);
+
+				$old_values = [
+					'fr-FR' => 'Paramétrage de périodes de dépôt de dossiers',
+					'en-GB' => 'Period for the submission of candidacies',
+				];
+				$new_values = [
+					'fr-FR' => 'Paramétrage d\'une campagne',
+					'en-GB' => 'Campaign\'s settings',
+				];
+				EmundusHelperUpdate::updateOverrideTag('SETUP_PERIODS',$old_values,$new_values);
+
+				$old_values = [
+					'fr-FR' => 'Paramétrage des tags',
+					'en-GB' => 'Tag settings',
+				];
+				$new_values = [
+					'fr-FR' => 'Paramétrage d\'une étiquette',
+					'en-GB' => 'Stickers\'s settings',
+				];
+				EmundusHelperUpdate::updateOverrideTag('SETUP_TAGS',$old_values,$new_values);
+
+				$old_values = [
+					'fr-FR' => 'Form - Invitation par email',
+					'en-GB' => 'Invitation by email',
+				];
+				$new_values = [
+					'fr-FR' => 'Sollicitation d\'un référent',
+					'en-GB' => 'Solicitation of a referee',
+				];
+				EmundusHelperUpdate::updateOverrideTag('SETUP_INVITATION_BY_EMAIL',$old_values,$new_values);
+
+				$old_values = [
+					'fr-FR' => 'SETUP_STATUS',
+				];
+				$new_values = [
+					'fr-FR' => 'Paramétrer un statut de dossier',
+				];
+				EmundusHelperUpdate::updateOverrideTag('SETUP_STATUS',$old_values,$new_values);
+
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_lists'));
+				$db->setQuery($query);
+				$fabrik_lists = $db->loadObjectList();
+
+				if(!empty($fabrik_lists)){
+					foreach ($fabrik_lists as $list){
+						$params = json_decode($list->params,true);
+						$params['advanced-filter'] = "0";
+
+						if($params['show-table-filters'] != "0"){
+							$params['show-table-filters'] = "1";
+						}
+
+						$query->clear()
+							->update($db->quoteName('#__fabrik_lists'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+							->where($db->quoteName('id') . ' = ' . $list->id);
+						$db->setQuery($query);
+						$db->execute();
+					}
+				}
+
+				EmundusHelperUpdate::installExtension('Emundus - Authentication.', 'emundus', '{"name":"Authentication - eMundus","type":"plugin","creationDate":"March 2023","author":"J\u00e9r\u00e9my LEGENDRE","copyright":"(C) 2023 eMundus All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"emundus.fr","version":"1.0.0","description":"PLG_AUTHENTICATION_EMUNDUS_XML_DESCRIPTION","group":"","filename":"emundus"}', 'plugin', 1, 'authentication');
+				EmundusHelperUpdate::enableEmundusPlugins('emundus', 'authentication');
 			}
 
 
@@ -673,14 +959,10 @@ if (password_value.match(regex) != null) {
 
 
             // Recompile Gantry5 css at each update
-            $dir = JPATH_BASE . '/templates/g5_helium/custom/css-compiled';
-            if(!empty($dir)) {
-                foreach (glob($dir . '/*') as $file) {
-                    unlink($file);
-                }
+			$succeed['recompile_gantry_5'] = EmundusHelperUpdate::recompileGantry5();
 
-				rmdir($dir);
-			}
+			// Clear Joomla Cache
+			$succeed['clear_joomla_cache'] = EmundusHelperUpdate::clearJoomlaCache();
 		}
 
 		return $succeed;

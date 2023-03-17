@@ -804,7 +804,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     }
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
-    $cTitle = $eMConfig->get('export_application_pdf_title_color', '#ee1c25'); //déclaration couleur principale
+    $cTitle = $eMConfig->get('export_application_pdf_title_color', '#000000'); //déclaration couleur principale
     $profile_color = '#20835F';
 
     $config = JFactory::getConfig();
@@ -1042,6 +1042,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 					    padding: 10px 12px;
 					    border-radius: 2px;
 					    margin-right: 16px;
+					    color: ".$cTitle."
 					}
 					h3 {
 					  font-style: normal;

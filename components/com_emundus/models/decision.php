@@ -415,7 +415,7 @@ class EmundusModelDecision extends JModelList
         $can_be_ordering[] = 'jos_emundus_campaign_candidature.status';
         $can_be_ordering[] = 'fnum';
         $can_be_ordering[] = 'status';
-        $can_be_ordering[] = 'c.status';
+        $can_be_ordering[] = 'jecc.status';
         $can_be_ordering[] = 'name';
 		$can_be_ordering[] = 'eta.id_tag';
 		if (in_array('overall', $em_other_columns)) {
@@ -766,7 +766,7 @@ class EmundusModelDecision extends JModelList
 	 */
 	private function _buildWhere($tableAlias = array()) {
 		$h_files = new EmundusHelperFiles();
-		$h_files->_buildWhere($tableAlias, 'decision', [
+		return $h_files->_buildWhere($tableAlias, 'decision', [
 			'fnum_assoc' => $this->fnum_assoc,
 			'code' => $this->code
 		]);
@@ -781,31 +781,34 @@ class EmundusModelDecision extends JModelList
 	 * @since version
 	 */
 	public function getUsers($current_fnum = null) {
-
 		$session = JFactory::getSession();
+
 		$app = JFactory::getApplication();
-		$dbo = $this->getDbo();
-
 		$current_menu = $app->getMenu()->getActive();
-		$menu_params = $current_menu->params;
-		$em_other_columns = explode(',', $menu_params->get('em_other_columns'));
+		if (!empty($current_menu)) {
+			$menu_params      = $current_menu->params;
+			$em_other_columns = explode(',', $menu_params->get('em_other_columns'));
+		} else {
+			$em_other_columns = array();
+		}
 
-		$query = 'select c.fnum, ss.step, ss.value as status, ss.class as status_class, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name ';
+		$dbo = $this->getDbo();
+		$query = 'select jecc.fnum, ss.step, ss.value as status, ss.class as status_class, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name';
+
 		// prevent double left join on query
 		$lastTab = [
+			'#__emundus_campaign_candidature', 'jecc',
 			'#__emundus_setup_status', 'jos_emundus_setup_status',
 			'#__emundus_setup_programmes', 'jos_emundus_setup_programmes',
 			'#__emundus_setup_campaigns', 'jos_emundus_setup_campaigns',
-			'#__emundus_final_grade', 'jos_emundus_final_grade',
-			'#__emundus_users', 'jos_emundus_users',
 			'#__users', 'jos_users',
-			'#__emundus_tag_assoc', 'jos_emundus_tag_assoc'
+			'#__emundus_users', 'jos_emundus_users',
+			'#__emundus_tag_assoc', 'jos_emundus_tag_assoc',
+			'#__emundus_final_grade', 'jos_emundus_final_grade'
 		];
 		if (in_array('overall', $em_other_columns)) {
 			$lastTab[] = ['#__emundus_evaluations', 'jos_emundus_evaluations'];
 		}
-
-		$leftJoin = '';
 
 		if (!empty($this->_elements)) {
 			$leftJoin = '';
@@ -813,45 +816,44 @@ class EmundusModelDecision extends JModelList
 
 			foreach ($this->_elements as $elt) {
 				if (!in_array($elt->tab_name, $lastTab)) {
-					$leftJoin .= 'LEFT JOIN ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = c.fnum ';
+					$leftJoin .= 'LEFT JOIN ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = jecc.fnum ';
 					$lastTab[] = $elt->tab_name;
 				}
 			}
 		}
 
-		if (count($this->_elements_default) > 0) {
+		if (!empty($this->_elements_default)) {
 			$query .= ', '.implode(',', $this->_elements_default);
 		}
 		$query .= ', jos_emundus_final_grade.id AS evaluation_id, CONCAT(eue.lastname," ",eue.firstname) AS evaluator';
 
-		$query .= ' FROM #__emundus_campaign_candidature as c
-					LEFT JOIN #__emundus_setup_status as ss on ss.step = c.status
-					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = c.campaign_id
-					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
-					LEFT JOIN #__emundus_users as eu on eu.user_id = c.applicant_id
-					LEFT JOIN #__users as u on u.id = c.applicant_id
-					LEFT JOIN #__emundus_final_grade as jos_emundus_final_grade on jos_emundus_final_grade.fnum = c.fnum
-					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=c.fnum  ';
+		$query .= ' FROM #__emundus_campaign_candidature as jecc
+					LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
+					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
+					LEFT JOIN #__emundus_setup_programmes as sp on sp.code LIKE esc.training
+					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
+					LEFT JOIN #__users as u on u.id = jecc.applicant_id
+					LEFT JOIN #__emundus_final_grade as jos_emundus_final_grade on jos_emundus_final_grade.fnum LIKE jecc.fnum
+					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum LIKE jecc.fnum  ';
 
 		if (in_array('overall', $em_other_columns)) {
-			$query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum = c.fnum ';
+			$query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum LIKE jecc.fnum ';
 		}
 
 
 		$q = $this->_buildWhere($lastTab);
-
 		if (!empty($leftJoin)) {
 			$query .= $leftJoin;
 		}
 		$query .= ' LEFT JOIN #__emundus_users as eue on eue.user_id = jos_emundus_final_grade.user ';
 		$query .= $q['join'];
-		$query .= ' where c.status > 0 ' . $q['q'];
+		$query .= ' WHERE u.block=0 ' . $q['q'];
 
 		if (isset($current_fnum) && !empty($current_fnum)) {
-			$query .= ' AND c.fnum like '.$dbo->Quote($current_fnum);
+			$query .= ' AND jecc.fnum like '.$dbo->Quote($current_fnum);
 		}
 
-		$query .= ' GROUP BY c.fnum';
+		$query .= ' GROUP BY jecc.fnum';
 		$query .= $this->_buildContentOrderBy();
 		$dbo->setQuery($query);
 

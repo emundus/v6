@@ -12,6 +12,12 @@ JHtml::_('behavior.formvalidator');
 $document = JFactory::getDocument();
 $document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_users_login.css");
 $eMConfig = JComponentHelper::getParams('com_emundus');
+
+if(!empty($this->campaign)){
+    JFactory::getSession()->set('login_campaign_id',$this->campaign);
+} else {
+	JFactory::getSession()->clear('login_campaign_id');
+}
 ?>
 <div class="login<?php echo $this->pageclass_sfx; ?>">
     <?php if ($this->params->get('show_page_heading')) : ?>
@@ -134,28 +140,5 @@ $eMConfig = JComponentHelper::getParams('com_emundus');
                 });
             }
         <?php endif; ?>
-
-
-        document.getElementById('login_form').addEventListener('submit', function (event) {
-            event.preventDefault();
-
-            let formData = new FormData();
-            formData.append('username', document.getElementsByName('username')[0].value);
-
-            fetch('index.php?option=com_emundus&controller=user&task=getusername', {
-                body: formData,
-                method: 'post',
-            }).then((response) => {
-                if (response.ok) {
-                    return response.json();
-                }
-            }).then((res) => {
-                if(res.username !== '' && res.username !== null){
-                    document.getElementsByName('username')[0].value = res.username;
-                }
-
-                document.getElementById('login_form').submit();
-            })
-        });
     });
 </script>

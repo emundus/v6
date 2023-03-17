@@ -70,7 +70,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
 
         $m_programme = $this->getModel('programme');
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -120,7 +120,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
     public function getcampaignsbyprogramme() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -146,7 +146,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
      */
     public function getallcampaign() {
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -182,7 +182,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
      */
     public function deletecampaign() {
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -209,7 +209,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
      */
     public function unpublishcampaign() {
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -235,7 +235,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
      */
     public function publishcampaign() {
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -262,7 +262,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
      */
     public function duplicatecampaign() {
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -291,7 +291,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
      */
     public function getyears() {
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -314,7 +314,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
      */
     public function createcampaign() {
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -343,7 +343,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
     public function updatecampaign() {
         $tab = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('body');
             $cid = $jinput->getInt('cid');

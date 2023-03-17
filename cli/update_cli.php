@@ -298,6 +298,8 @@ class UpdateCli extends JApplicationCli
                         $rename_file = JPATH_ADMINISTRATOR . '/components/' . $element . '/' . $short_element . '.xml';
                         rename($file, $rename_file);
                         $xml_path = $rename_file;
+                    } else {
+                        $xml_path = JPATH_ADMINISTRATOR . '/components/' . $element . '/' . $short_element . '.xml';
                     }
                 }
             }
@@ -327,7 +329,7 @@ class UpdateCli extends JApplicationCli
                 }
 
                 # Update loop
-                if ($this->firstrun or version_compare($manifest_cache['version'], $this->manifest_xml->version, '<')) {
+                if ($this->firstrun or version_compare($manifest_cache['version'], $this->manifest_xml->version, '<=')) {
                     $this->out("UPDATE " . $manifest_cache['name'] . ' (' . $manifest_cache['version'] . ' to ' . $this->manifest_xml->version . ')');
 
                     # Require scriptfile

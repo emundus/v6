@@ -224,8 +224,7 @@ class EmundusModelFiles extends JModelLegacy
                     $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
                     $this->_elements_default[] = $query;
                 }
-                elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton' || $def_elmt->element_plugin == 'checkbox') {
-
+                elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'checkbox') {
                     if (@$group_params->repeat_group_button == 1) {
                         $element_attribs = json_decode($def_elmt->element_attribs);
                         $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
@@ -248,6 +247,32 @@ class EmundusModelFiles extends JModelLegacy
                         }
                         $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
                     }
+                } elseif ($def_elmt->element_plugin == 'radiobutton') {
+	                if (!empty($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
+		                $element_attribs = json_decode($def_elmt->element_attribs);
+		                $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
+		                foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+			                $select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+		                }
+		                $select = str_replace($def_elmt->tab_name . '.' . $def_elmt->element_name,'GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.' SEPARATOR ", ")',$select);
+		                $this->_elements_default[] = '(
+                                    SELECT ' . $select . '
+                                    FROM '.$def_elmt->table_join.'
+                                    WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
+                                  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
+	                } else {
+		                $element_attribs = json_decode($def_elmt->element_attribs);
+
+						$element_replacement = $def_elmt->tab_name . '___' . $def_elmt->element_name;
+		                $select = $def_elmt->tab_name . '.' . $def_elmt->element_name . ' AS ' . $db->quote($element_replacement) . ', CASE ';
+		                foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+			                $select .= ' WHEN ' . $def_elmt->tab_name . '.' . $def_elmt->element_name . ' = ' . $db->quote($value) . ' THEN ' .  $db->quote(JText::_(addslashes($element_attribs->sub_options->sub_labels[$key]))) ;
+		                }
+						$select .= ' ELSE ' . $def_elmt->tab_name . '.' . $def_elmt->element_name;
+						$select .= ' END AS ' . $db->quote($element_replacement);
+
+		                $this->_elements_default[] = $select;
+	                }
                 } elseif ($def_elmt->element_plugin == 'yesno') {
                     if (@$group_params->repeat_group_button == 1) {
                         $this->_elements_default[] = '(
@@ -274,6 +299,14 @@ class EmundusModelFiles extends JModelLegacy
         }
         if (in_array('overall', $em_other_columns)) {
             $this->_elements_default[] = ' AVG(ee.overall) as overall ';
+        }
+        if (in_array('unread_messages', $em_other_columns)) {
+            $this->_elements_default[] = ' (SELECT count(m.message_id)
+            FROM #__emundus_campaign_candidature AS `ecc`
+            LEFT JOIN `#__emundus_chatroom` AS `ec` ON `ec`.`fnum` LIKE `ecc`.`fnum`
+            LEFT JOIN `#__messages` AS `m` ON `m`.`page` = `ec`.`id`
+            WHERE `ecc`.`fnum` LIKE `jecc`.`fnum` AND `m`.`state` = 0 AND `m`.`user_id_from` != ' . JFactory::getUser()->id
+            . ' GROUP BY `jecc`.`fnum`) AS unread_messages ';
         }
         if (empty($col_elt)) {
             $col_elt = array();
@@ -356,6 +389,9 @@ class EmundusModelFiles extends JModelLegacy
         $can_be_ordering[] = 'name';
         $can_be_ordering[] = 'eta.id_tag';
 
+        if (in_array('unread_messages', $em_other_columns)) {
+            $can_be_ordering[] = 'unread_messages';
+        }
         $campaign_candidature_columns = [
             'form_progress',
             'attachment_progress',
@@ -555,7 +591,9 @@ class EmundusModelFiles extends JModelLegacy
             '#__emundus_setup_campaigns', 'jos_emundus_setup_campaigns',
             '#__users', 'jos_users',
             '#__emundus_users', 'jos_emundus_users',
-            '#__emundus_tag_assoc', 'jos_emundus_tag_assoc'
+            '#__emundus_tag_assoc', 'jos_emundus_tag_assoc',
+            '#__messages', 'jos_messages',
+            '#__emundus_chatroom', 'jos_emundus_chatroom'
         ];
 
         if (in_array('overall', $em_other_columns)) {
@@ -608,12 +646,6 @@ class EmundusModelFiles extends JModelLegacy
             if ($limit > 0) {
                 $query .= " limit $limitStart, $limit ";
             }
-
-            /*
-            if (JFactory::getUser()->id == 63)
-                echo '<hr>FILES:'.str_replace('#_', 'jos', $query).'<hr>';
-            */
-
 
             $dbo->setQuery($query);
             return $dbo->loadAssocList();
@@ -1125,15 +1157,22 @@ class EmundusModelFiles extends JModelLegacy
      * @throws Exception
      */
     public function getAllTags() {
-        $query = 'select * from #__emundus_setup_action_tag where 1 order by label';
-        $db = $this->getDbo();
+		$tags = [];
+
+	    $db = $this->getDbo();
+		$query = $db->getQuery(true);
+		$query->select('*')
+			->from($db->quoteName('#__emundus_setup_action_tag'))
+			->order('label');
 
         try {
             $db->setQuery($query);
-            return $db->loadAssocList();
+	        $tags =  $db->loadAssocList();
         } catch(Exception $e) {
-            throw $e;
+            JLog::add('Failed to get all tags ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
         }
+
+		return $tags;
     }
 
     /**
@@ -3437,6 +3476,34 @@ class EmundusModelFiles extends JModelLegacy
         return $db->loadAssocList();
     }
 
+    public function getUnreadMessages() {
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $user = JFactory::getUser();
+        $default = array();
+
+
+        try {
+            $query->select('ecc.fnum, count(m.message_id) as nb')
+                ->from($db->quoteName('#__emundus_campaign_candidature','ecc'))
+                ->leftJoin($db->quoteName('#__emundus_chatroom','ec').' ON '.$db->quoteName('ec.fnum').' = '.$db->quoteName('ecc.fnum'))
+                ->leftJoin($db->quoteName('#__messages','m').' ON '.$db->quoteName('m.page').' = '.$db->quoteName('ec.id'))
+                ->where($db->quoteName('ecc.fnum') . ' = ' . $db->quoteName('ecc.fnum'))
+                ->andWhere($db->quoteName('m.state') . ' = 0')
+                ->andWhere($db->quoteName('m.user_id_from') . ' != ' . JFactory::getUser()->id)
+                ->group('ecc.fnum');
+
+            $db->setQuery($query);
+            $result = $db->loadAssocList();
+
+            return $result;
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return 0;
+    }}
+
+
     public function getTagsAssocStatus($status){
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
@@ -3512,19 +3579,20 @@ class EmundusModelFiles extends JModelLegacy
 
     public function getAllLogActions()
     {
+		$logs = [];
+
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
         $query->clear()->select('*')->from($db->quoteName('#__emundus_setup_actions', 'jesa'))->order('jesa.id ASC');
 
-        try
-        {
+        try {
             $db->setQuery($query);
-            return $db->loadObjectList();
-        }
-        catch(Exception $e)
-        {
+	        $logs = $db->loadObjectList();
+        } catch(Exception $e) {
             JLog::add('component/com_emundus/models/files | Error when get all logs' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
         }
+
+		return $logs;
     }
 
     /**

@@ -12,7 +12,7 @@
     background: #F3F3F3;
 }
 #em_user_menu li:not(:first-child){
-    margin-left: 24px;
+    margin-left: 12px;
 }
 #header-b{
     justify-content: start;

@@ -102,7 +102,7 @@ class EmundusModelQcm extends JModelList {
                 ->insert('#__emundus_qcm_applicants');
             $query->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum_details['fnum']))
                 ->set($db->quoteName('user') . ' = ' . $db->quote($fnum_details['user_id']))
-                ->set($db->quoteName('questions') . ' = ' . $db->quote(implode(',',$random_questions)))
+                ->set($db->quoteName('questions') . ' = ' . $db->quote(implode(',', $random_questions)))
                 ->set($db->quoteName('step') . ' = 0')
                 ->set($db->quoteName('pending') . ' = 0')
                 ->set($db->quoteName('qcmid') . ' = ' . $db->quote($idqcm));
@@ -117,24 +117,34 @@ class EmundusModelQcm extends JModelList {
         }
     }
 
-    public function getQuestions($questions){
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
+    public function getQuestions($question_ids, $with_answers = false) {
+		$questions = [];
 
-        $query
-            ->select('qq.*,GROUP_CONCAT(qqr.id) as proposals_id,GROUP_CONCAT(qqr.proposals SEPARATOR "|") as proposals_text')
-            ->from($db->quoteName('#__emundus_qcm_questions','qq'))
-            ->leftJoin($db->quoteName('jos_emundus_qcm_questions_765_repeat','qqr').' ON '.$db->quoteName('qq.id').' = '.$db->quoteName('qqr.parent_id'))
-            ->where($db->quoteName('qq.id') . ' IN (' . $questions . ')')
-            ->group('qq.id');
+		if (!empty($question_ids)) {
+			$db = $this->getDbo();
+			$query = $db->getQuery(true);
 
-        try {
-            $db->setQuery($query);
-            return $db->loadObjectList();
-        } catch (Exception $e){
-            JLog::add('component/com_emundus/models/qcm | Error when try to get questions : ' . $questions . ' with query ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return new stdClass();
-        }
+			$query->select('qq.*, GROUP_CONCAT(qqr.id) as proposals_id,GROUP_CONCAT(qqr.proposals SEPARATOR "|") as proposals_text')
+				->from($db->quoteName('#__emundus_qcm_questions','qq'))
+				->leftJoin($db->quoteName('jos_emundus_qcm_questions_765_repeat','qqr').' ON '.$db->quoteName('qq.id').' = '.$db->quoteName('qqr.parent_id'))
+				->where($db->quoteName('qq.id') . ' IN (' . $question_ids . ')')
+				->group('qq.id');
+
+			try {
+				$db->setQuery($query);
+				$questions = $db->loadObjectList();
+
+				if (!$with_answers) {
+					foreach($questions as $key => $question) {
+						unset($questions[$key]->answer);
+					}
+				}
+			} catch (Exception $e){
+				JLog::add('component/com_emundus/models/qcm | Error when try to get questions : ' . $questions . ' with query ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $questions;
     }
 
     public function saveAnswer($question,$answers,$current_user,$formid,$module){

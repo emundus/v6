@@ -3082,7 +3082,7 @@ class EmundusModelEvaluation extends JModelList {
         }
     }
 
-    public function getEvaluationUrl($fnum,$formid,$rowid = 0,$student_id = 0,$redirect = 0){
+    public function getEvaluationUrl($fnum, $formid, $rowid = 0, $student_id = 0, $redirect = 0, $view = 'form') {
         $url = 'index.php';
         $message = '';
 
@@ -3170,7 +3170,7 @@ class EmundusModelEvaluation extends JModelList {
                 }
                 // If evaluation period started and not passed and we have update rights
                 elseif ($update_access || $create_access) {
-                    $url = $form_url;
+                    $url = $view == 'form' ? $form_url : $details_url;
                 }
                 // If evaluation period started and not passed and we have read rights
                 elseif ($read_access){
@@ -3179,7 +3179,7 @@ class EmundusModelEvaluation extends JModelList {
                 // If we do not have any rights on evaluation
                 else {
                     $message = 'COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS';
-                    $url = 'index.php';
+                    $url = '';
                 }
             }
             // If no evaluation found but period is not started or passed
@@ -3193,7 +3193,7 @@ class EmundusModelEvaluation extends JModelList {
             }
             // If no evaluation and period is started and not passed and I have create rights
             elseif ((!$passed && $started) && $create_access) {
-                $url = $form_url;
+	            $url = $view == 'form' ? $form_url : $details_url;
             }
             // I don't have rights to evaluate
             else {

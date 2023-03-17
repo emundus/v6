@@ -12,7 +12,7 @@
 				:checked="checkedAttachments.includes(attachment.aid)"
 			/>
 		</td>
-		<td class="td-document" @click="openModal">
+		<td v-if="columns.includes('name')" class="td-document" @click="openModal">
 			<span>{{ attachment.value }}</span>
 			<span
 				v-if="!attachment.existsOnServer"
@@ -22,12 +22,13 @@
 				warning
 			</span>
 		</td>
-		<td class="date">{{ formattedDate(attachment.timedate) }}</td>
-		<td class="desc"> {{ strippedHtml(attachment.upload_description) }}</td>
-		<td class="category">
+		<td v-if="columns.includes('date')" class="date">{{ formattedDate(attachment.timedate) }}</td>
+		<td v-if="columns.includes('desc')" class="desc"> {{ strippedHtml(attachment.upload_description) }}</td>
+		<td v-if="columns.includes('category')" class="category">
 			{{ category }}
 		</td>
 		<td
+        v-if="columns.includes('status')"
 			class="status valid-state"
 			:class="{
 				success: attachment.is_validated == 1,
@@ -50,10 +51,10 @@
 				</option>
 			</select>
 		</td>
-		<td v-if="canSee">{{ getUserNameById(attachment.user_id) }}</td>
-		<td v-if="canSee">{{ getUserNameById(attachment.modified_by) }}</td>
-		<td class="date">{{ formattedDate(attachment.modified) }}</td>
-		<td class="permissions">
+		<td v-if="canSee && columns.includes('user')">{{ getUserNameById(attachment.user_id) }}</td>
+		<td v-if="canSee && columns.includes('modified_by')">{{ getUserNameById(attachment.modified_by) }}</td>
+		<td class="date" v-if="columns.includes('modified')">{{ formattedDate(attachment.modified) }}</td>
+		<td v-if="columns.includes('permissions')" class="permissions">
 			<span
 				class="material-icons-outlined visibility-permission em-pointer"
 				:class="{ active: attachment.can_be_viewed == '1' }"
@@ -69,7 +70,7 @@
 				>delete_outlined</span
 			>
 		</td>
-    <td v-if="sync">
+    <td v-if="sync && columns.includes('sync')">
       <div v-if="attachment.sync > 0">
         <span
             v-if="attachment.sync_method == 'write' && !syncLoading"
@@ -128,6 +129,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    columns: {
+      type: Array,
+	    default: ['name','date','desc','category','status','user','modified_by','modified','permissions','sync']
+    }
 	},
 	mixins: [mixin],
 	data() {

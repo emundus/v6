@@ -343,9 +343,17 @@ export default {
 		h3 {
 			font-size: 18px;
 			font-weight: 600;
-			line-height: 23px;
 			color: #080C12;
 			margin-bottom: 8px;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      max-height: 48px;
+      display: -webkit-box;
+      line-height: 140%;
+      min-height: 46px;
+      width: 100%;
+      white-space: normal;
 		}
 
 		.dates {

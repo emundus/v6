@@ -271,16 +271,25 @@ class EmundusControllersettings extends JControllerLegacy {
     public function getlogo() {
         $logo_module = JModuleHelper::getModuleById('90');
 
-        $regex = '/logo_custom.{3,4}[png+|jpeg+|jpg+|svg+]/m';
-
+        $regex = '/logo_custom.{3,4}[png+|jpeg+|jpg+|svg+|gif+]/m';
         preg_match($regex, $logo_module->content, $matches, PREG_OFFSET_CAPTURE, 0);
 
         $tab = array('status' => 1, 'msg' => JText::_('LOGO_FOUND'), 'filename' => $matches[0][0]);
 
         echo json_encode((object)$tab);
         exit;
-
     }
+
+	public function getfavicon() {
+		$target_dir = "images/custom/";
+		$filename = 'favicon';
+		$old_favicon = glob("{$target_dir}{$filename}.*");
+
+		$tab = array('status' => 1, 'msg' => JText::_('FAVICON_FOUND'), 'filename' => $old_favicon[0]);
+
+		echo json_encode((object)$tab);
+		exit;
+	}
 
     public function updatelogo() {
         $user = JFactory::getUser();
@@ -291,26 +300,41 @@ class EmundusControllersettings extends JControllerLegacy {
         } else {
             $jinput = JFactory::getApplication()->input;
             $image = $jinput->files->get('file');
+	        // get old logo
+	        $logo_module = JModuleHelper::getModuleById('90');
+	        $regex = '/logo_custom.{3,4}[png+|jpeg+|jpg+|svg+|gif+]/m';
+	        preg_match($regex, $logo_module->content, $matches, PREG_OFFSET_CAPTURE, 0);
+			$old_logo = $matches[0][0];
 
-            if(isset($image)) {
-                $target_dir = "images/custom/";
+            if(!empty($image)) {
+                $target_dir = 'images/custom/';
                 $ext = pathinfo($image['name'], PATHINFO_EXTENSION);
-                unlink($target_dir . 'logo_custom.' . $ext);
+				if (in_array($ext, ['png', 'jpg', 'jpeg', 'svg', 'gif', 'webp'])) {
+					if(!empty($old_logo)) {
+						unlink($target_dir . $old_logo);
+					}
 
-                $target_file = $target_dir . basename('logo_custom.' . $ext);
+					$target_file = $target_dir . basename('logo_custom.' . $ext);
 
-                $logo_module = JModuleHelper::getModuleById('90');
+					$logo_module = JModuleHelper::getModuleById('90');
 
-                if (move_uploaded_file($image["tmp_name"], $target_file)) {
-                    $regex = '/(logo.(png+|jpeg+|jpg+|svg+))|(logo_custom.(png+|jpeg+|jpg+|svg+))/m';
+					if (move_uploaded_file($image["tmp_name"], $target_file)) {
+						$regex = '/(logo.(png+|jpeg+|jpg+|svg+|gif+|webp+))|(logo_custom.(png+|jpeg+|jpg+|svg+|gif+|webp+))/m';
 
-                    $new_content = preg_replace($regex,'logo_custom.' . $ext, $logo_module->content);
+						$new_content = preg_replace($regex,'logo_custom.' . $ext, $logo_module->content);
 
-                    $this->m_settings->updateLogo($new_content);
-                    $tab = array('status' => 1, 'msg' => JText::_('LOGO_UPDATED'), 'filename' => 'logo_custom.' . $ext);
-                } else {
-                    $tab = array('status' => 0, 'msg' => JText::_('LOGO_NOT_UPDATED'), 'filename' => '');
-                }
+						$this->m_settings->updateLogo($new_content);
+
+						$cache = JCache::getInstance('callback');
+						$cache->clean(null, 'notgroup');
+
+						$tab = array('status' => 1, 'msg' => JText::_('LOGO_UPDATED'), 'filename' => 'logo_custom.' . $ext, 'old_logo' => $old_logo);
+					} else {
+						$tab = array('status' => 0, 'msg' => JText::_('LOGO_NOT_UPDATED'), 'filename' => '');
+					}
+				} else {
+					$tab = array('status' => 0, 'msg' => JText::_('LOGO_NOT_UPDATED'), 'filename' => '');
+				}
             } else {
                 $tab = array('status' => 0, 'msg' => JText::_('LOGO_NOT_UPDATED'), 'filename' => '');
             }
@@ -330,13 +354,22 @@ class EmundusControllersettings extends JControllerLegacy {
             $image = $jinput->files->get('file');
 
             if(isset($image)) {
-                $target_dir = "images/custom/";
-                unlink($target_dir . 'favicon.png');
+	            $ext = pathinfo($image['name'], PATHINFO_EXTENSION);
+	            $target_dir = "images/custom/";
+	            $filename = 'favicon';
+	            $old_favicon = glob("{$target_dir}{$filename}.*");
 
-                $target_file = $target_dir . basename('favicon.png');
+				if(!empty($old_favicon)) {
+					unlink($old_favicon[0]);
+				}
+
+                $target_file = $target_dir . basename('favicon.' . $ext);
 
                 if (move_uploaded_file($image["tmp_name"], $target_file)) {
-                    $tab = array('status' => 1, 'msg' => JText::_('ICON_UPDATED'));
+	                $cache = JCache::getInstance('callback');
+	                $cache->clean(null, 'notgroup');
+
+                    $tab = array('status' => 1, 'msg' => JText::_('ICON_UPDATED'), 'filename' => 'favicon.' . $ext, 'old_favicon' => $old_favicon[0]);
                 } else {
                     $tab = array('status' => 0, 'msg' => JText::_('ICON_NOT_UPDATED'));
                 }
@@ -493,6 +526,16 @@ class EmundusControllersettings extends JControllerLegacy {
             $new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml, 5);
 
             file_put_contents('templates/g5_helium/custom/config/default/styles.yaml', $new_yaml);
+
+	        // Recompile Gantry5 css at each update
+	        $dir = JPATH_BASE . '/templates/g5_helium/custom/css-compiled';
+	        if(!empty($dir)) {
+		        foreach (glob($dir . '/*') as $file) {
+			        unlink($file);
+		        }
+
+		        rmdir($dir);
+	        }
 
             $tab = array('status' => '1', 'msg' => JText::_("SUCCESS"));
         }

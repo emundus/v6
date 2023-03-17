@@ -48,53 +48,56 @@ class EmundusModelMessenger extends JModelList
         return $files;
     }
 
-    function getMessagesByFnum($fnum,$offset = 0) {
-        $db = JFactory::getDbo();
+    function getMessagesByFnum($fnum, $offset = 0) {
+		$messages = [];
 
-        $user = JFactory::getSession()->get('emundusUser');
+		if (!empty($fnum)) {
+			$db = JFactory::getDbo();
+			$user = JFactory::getSession()->get('emundusUser');
 
-        $eMConfig = JComponentHelper::getParams('com_emundus');
-        $anonymous_coordinator = $eMConfig->get('messenger_anonymous_coordinator', '0');
+			$eMConfig = JComponentHelper::getParams('com_emundus');
+			$anonymous_coordinator = $eMConfig->get('messenger_anonymous_coordinator', '0');
 
-        try {
-            $query = "SELECT distinct(CAST(m.date_time AS DATE)) as dates,group_concat(m.message_id) as messages
+			try {
+				$query = "SELECT distinct(CAST(m.date_time AS DATE)) as dates,group_concat(m.message_id) as messages
                 FROM `jos_messages` AS `m`
                 LEFT JOIN `jos_emundus_chatroom` AS `c` ON `c`.`id` = `m`.`page`
                 LEFT JOIN `jos_users` AS `u` ON `u`.`id` = `m`.`user_id_from`
                 WHERE `c`.`fnum` LIKE ".$db->quote($fnum).
-                " group by CAST(m.date_time AS DATE)
+					" group by CAST(m.date_time AS DATE)
                 ORDER BY m.date_time";
-            $db->setQuery($query);
-            $dates = $db->loadObjectList();
 
-            foreach ($dates as $key => $date){
-                $dates[$key]->messages = explode(',',$date->messages);
-            }
+				$db->setQuery($query);
+				$dates = $db->loadObjectList();
 
-            $query = $db->getQuery(true);
+				foreach ($dates as $key => $date) {
+					$dates[$key]->messages = explode(',', $date->messages);
+				}
 
-            $query->select('m.*,u.name')
-                ->from($db->quoteName('#__messages','m'))
-                ->leftJoin($db->quoteName('#__emundus_chatroom','c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('m.page'))
-                ->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('u.id').' = '.$db->quoteName('m.user_id_from'))
-                ->where($db->quoteName('c.fnum') .' LIKE ' . $db->quote($fnum))
-                ->order('m.date_time DESC');
-            //->setLimit(10);
-            $db->setQuery($query,$offset);
+				$query = $db->getQuery(true);
+				$query->select('m.*,u.name')
+					->from($db->quoteName('#__messages','m'))
+					->leftJoin($db->quoteName('#__emundus_chatroom','c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('m.page'))
+					->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('u.id').' = '.$db->quoteName('m.user_id_from'))
+					->where($db->quoteName('c.fnum') .' LIKE ' . $db->quote($fnum))
+					->order('m.date_time DESC');
+				$db->setQuery($query, $offset);
 
-            $datas = new stdClass;
-            $datas->dates = $dates;
-            $datas->messages = array_reverse($db->loadObjectList());
-            $datas->anonymous = $anonymous_coordinator;
+				$datas = new stdClass;
+				$datas->dates = $dates;
+				$datas->messages = array_reverse($db->loadObjectList());
+				$datas->anonymous = $anonymous_coordinator;
+				$messages = $datas;
+			} catch (Exception $e){
+				JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+				$messages = [];
+			}
+		}
 
-            return $datas;
-        } catch (Exception $e){
-            JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return [];
-        }
+		return $messages;
     }
 
-    function sendMessage($message,$fnum){
+    function sendMessage($message, $fnum){
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         $db = JFactory::getDbo();
@@ -247,7 +250,7 @@ class EmundusModelMessenger extends JModelList
         }
     }
 
-    function getDocumentsByCampaign($fnum, $applicant){
+    function getDocumentsByCampaign($fnum, $applicant) {
         $documents_by_campaign = [];
 
         if (!empty($fnum)) {

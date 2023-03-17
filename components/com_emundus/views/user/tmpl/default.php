@@ -26,7 +26,7 @@ $current_user = JFactory::getUser();
                     </p>
                     <div class="containerButtons">
                         <input id="email" type="text" name="email" value="<?= $this->user_email ?>" class="mail">
-                        <input type="button" onclick="activation(<?= $this->user->id; ?>)" class="btn btn-primary btn-resend" value="<?= JText::_('COM_EMUNDUS_MAIL_SEND_NEW'); ?>">
+                        <input type="button" onclick="activation()" class="btn btn-primary btn-resend" value="<?= JText::_('COM_EMUNDUS_MAIL_SEND_NEW'); ?>">
                     </div>
                 </div>
             </div>
@@ -41,62 +41,52 @@ $current_user = JFactory::getUser();
         document.getElementById('g-page-surround').style.background = 'white';
         document.getElementById('g-footer').style.display = 'none';
         document.getElementById('header-c').style.display = 'none';
-
-        /*setTimeout(() => {
-            window.location.href = 'index.php';
-        },10000)*/
     });
 
-    function activation(user) {
+    function activation() {
        document.getElementsByClassName('em-page-loader')[0].style.display = 'block';
-       var email = document.getElementById('email').value;
-       let body = {
-           user: user,
-           email: email
-       };
-
-       let config = {};
-
        return new Promise(function(resolve, reject) {
-           const xhr = new XMLHttpRequest();
-           const url = window.location.origin + '/index.php?option=com_emundus&controller=users&task=activation';
-           xhr.open('POST', url);
-
-           xhr.onload = function() {
-               if (xhr.status === 200) {
-                   document.getElementsByClassName('em-page-loader')[0].style.display = 'none';
-                   const response = JSON.parse(xhr.responseText);
-
-                   if (response.status) {
-                       Swal.fire({
-                           title: Joomla.JText._('COM_EMUNDUS_MAIL_SENDED'),
-                           text: response.msg,
-                           type: "success",
-                           showConfirmButton: false,
-                           showCancelButton: false,
-                           timer: 1500,
-                           customClass: {
-                               title: 'em-swal-title',
-                           },
-                       });
-                   } else {
-                       Swal.fire({
-                           title: Joomla.JText._('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE'),
-                           text: response.msg,
-                           type: "error",
-                           showConfirmButton: false,
-                           showCancelButton: false,
-                           timer: 1500,
-                           customClass: {
-                               title: 'em-swal-title',
-                           },
-                       });
-                       reject(xhr.statusText);
-                   }
-               } else {
-                   document.getElementsByClassName('em-page-loader')[0].style.display = 'none';
+           let formData = new FormData();
+           formData.append('email', document.getElementById('email').value);
+           fetch(window.location.origin + '/index.php?option=com_emundus&controller=users&task=activation', {
+               body: formData,
+               method: 'post'
+           }).then((response) => {
+               if (response.ok) {
+                   return response.json();
+               } else{
                    Swal.fire({
                        title: Joomla.JText._('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE'),
+                       type: 'error',
+                       showConfirmButton: false,
+                       showCancelButton: false,
+                       timer: 1500,
+                       customClass: {
+                           title: 'em-swal-title',
+                       },
+                   });
+
+                   reject(response);
+               }
+           }).then((res) => {
+               document.getElementsByClassName('em-page-loader')[0].style.display = 'none';
+
+               if (res.status) {
+                   Swal.fire({
+                       title: Joomla.JText._('COM_EMUNDUS_MAIL_SENDED'),
+                       text: res.msg,
+                       type: "success",
+                       showConfirmButton: false,
+                       showCancelButton: false,
+                       timer: 1500,
+                       customClass: {
+                           title: 'em-swal-title',
+                       },
+                   });
+               } else {
+                   Swal.fire({
+                       title: Joomla.JText._('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE'),
+                       text: res.msg,
                        type: "error",
                        showConfirmButton: false,
                        showCancelButton: false,
@@ -105,25 +95,9 @@ $current_user = JFactory::getUser();
                            title: 'em-swal-title',
                        },
                    });
-                   reject(xhr.statusText);
+                   reject(res.msg);
                }
-           };
-
-           xhr.onerror = function() {
-               Swal.fire({
-                   title: Joomla.JText._('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE'),
-                   type: "error",
-                   showConfirmButton: false,
-                   showCancelButton: false,
-                   timer: 1500,
-                   customClass: {
-                       title: 'em-swal-title',
-                   },
-               });
-               reject(xhr.statusText);
-           };
-
-           xhr.send(JSON.stringify(body));
+           });
        });
    }
 </script>
