@@ -226,6 +226,9 @@ class EmundusHelperUpdate
                 $query->select('extension_id')
                     ->from($db->quoteName('#__extensions'))
                     ->where($db->quoteName('element') . ' LIKE ' . $db->quote($element));
+				if(!empty($folder)){
+					$query->where($db->quoteName('folder') . ' LIKE ' . $db->quote($folder));
+				}
                 $db->setQuery($query);
                 $is_existing = $db->loadResult();
 
