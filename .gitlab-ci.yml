@@ -69,17 +69,14 @@ include:
 - project: 'emundus/devops/ci-cd-templates'
   ref: main
   file: '.deployer.yml'
+- project: 'emundus/devops/ci-cd-templates'
+  ref: main
+  file: '.release.yml'
 - template: Security/Secret-Detection.gitlab-ci.yml
 
 php_security_checker:
   variables:
       COMPOSER_PATH: "./libraries/emundus/composer.lock"
-
-php_security_checker_joomla:
-  extends:
-    - php_security_checker
-  variables:
-    COMPOSER_PATH: "./libraries/composer.lock"
 
 php_security_checker_fabrik:
   extends:
@@ -141,19 +138,14 @@ jest-job:
     - merge_request
 
 release-job:
-  stage: release
+  variables:
+    IMAGE_TAG: "latest"
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - administrator/components/com_emundus/emundus.xml
       when: on_success
     - when: never
-  image: emundus/semantic-release:latest
-  script:
-    - semantic-release
-  artifacts:
-    reports:
-      dotenv: release.env
 
 sync-documentation-job:
   stage: release
@@ -216,7 +208,7 @@ deployer:
     name: production/manual
     deployment_tier: production
   variables:
-    DEPLOY_OPTIONS: 'id=lcykF9FUAo5q0nDBhRlDhtZv8QhcdqGI -vvv'
+    DEPLOY_OPTIONS: 'id=lcykF9FUAo5q0nDBhRlDhtZv8QhcdqGI -vv'
 
 deployer-auto-dev:
   environment: 
@@ -225,7 +217,7 @@ deployer-auto-dev:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: "env=dev --no-hooks -vvv"
+    DEPLOY_OPTIONS: "env=dev --no-hooks -vv"
   rules:
     - if: $CI_COMMIT_BRANCH == "dev"
 
@@ -236,7 +228,7 @@ deployer-auto-release:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: "env=release --no-hooks -vvv"
+    DEPLOY_OPTIONS: "env=release --no-hooks -vv"
   rules:
     - if: $CI_COMMIT_BRANCH =~ "/^release\/.*/"
 
@@ -247,7 +239,7 @@ deployer-auto-production:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: "env=prod -vvv"
+    DEPLOY_OPTIONS: "env=prod -vv"
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
 
@@ -258,7 +250,7 @@ deployer-manual-eG5NEnlFOzhoskWHOJAdBE9rVfQy9ui1:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: 'id=eG5NEnlFOzhoskWHOJAdBE9rVfQy9ui1 -vvv'
+    DEPLOY_OPTIONS: 'id=eG5NEnlFOzhoskWHOJAdBE9rVfQy9ui1 -vv'
 
 deployer-manual-DXCLfAeHmABj52kQobNMqhX1iFTFmOPk:
   environment: 
@@ -267,7 +259,7 @@ deployer-manual-DXCLfAeHmABj52kQobNMqhX1iFTFmOPk:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: 'id=DXCLfAeHmABj52kQobNMqhX1iFTFmOPk -vvv'
+    DEPLOY_OPTIONS: 'id=DXCLfAeHmABj52kQobNMqhX1iFTFmOPk -vv'
 
 deployer-manual-wpfWx493ijCjkTetfgGBM4oJVRPvCzmI:
   environment: 
@@ -276,7 +268,7 @@ deployer-manual-wpfWx493ijCjkTetfgGBM4oJVRPvCzmI:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: 'id=wpfWx493ijCjkTetfgGBM4oJVRPvCzmI -vvv'
+    DEPLOY_OPTIONS: 'id=wpfWx493ijCjkTetfgGBM4oJVRPvCzmI -vv'
 
 deployer-manual-qeMLDMN7ekjqkQHNtMSLsSVGFrUHYivm:
   environment: 
@@ -285,7 +277,7 @@ deployer-manual-qeMLDMN7ekjqkQHNtMSLsSVGFrUHYivm:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: 'id=qeMLDMN7ekjqkQHNtMSLsSVGFrUHYivm -vvv'
+    DEPLOY_OPTIONS: 'id=qeMLDMN7ekjqkQHNtMSLsSVGFrUHYivm -vv'
 
 deployer-manual-Re13IJywvAH1zGN9egF76fJeVxwV30qw:
   environment: 
@@ -294,7 +286,7 @@ deployer-manual-Re13IJywvAH1zGN9egF76fJeVxwV30qw:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: 'id=Re13IJywvAH1zGN9egF76fJeVxwV30qw -vvv'
+    DEPLOY_OPTIONS: 'id=Re13IJywvAH1zGN9egF76fJeVxwV30qw -vv'
 
 deployer-manual-D6RZG8YLjXwawzF3oGdVbIr5tjqSKQlE:
   environment: 
@@ -303,7 +295,7 @@ deployer-manual-D6RZG8YLjXwawzF3oGdVbIr5tjqSKQlE:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: 'id=D6RZG8YLjXwawzF3oGdVbIr5tjqSKQlE -vvv'
+    DEPLOY_OPTIONS: 'id=D6RZG8YLjXwawzF3oGdVbIr5tjqSKQlE -vv'
 
 deployer-manual-YOKa7VktjgVIpmw6bE4EzhteAicGQiwa:
   environment: 
@@ -312,7 +304,7 @@ deployer-manual-YOKa7VktjgVIpmw6bE4EzhteAicGQiwa:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: 'id=YOKa7VktjgVIpmw6bE4EzhteAicGQiwa -vvv'
+    DEPLOY_OPTIONS: 'id=YOKa7VktjgVIpmw6bE4EzhteAicGQiwa -vv'
 
 deployer-manual-1GhNXURF7R8yMncDJqzpUct48xDigvbw:
   environment: 
@@ -321,7 +313,7 @@ deployer-manual-1GhNXURF7R8yMncDJqzpUct48xDigvbw:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: 'id=1GhNXURF7R8yMncDJqzpUct48xDigvbw -vvv'
+    DEPLOY_OPTIONS: 'id=1GhNXURF7R8yMncDJqzpUct48xDigvbw -vv'
 
 deployer-manual-9rxEbTdVMF56BDyoBuPtpT6KWGEPHPXD:
   environment: 
@@ -330,7 +322,7 @@ deployer-manual-9rxEbTdVMF56BDyoBuPtpT6KWGEPHPXD:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: 'id=9rxEbTdVMF56BDyoBuPtpT6KWGEPHPXD -vvv'
+    DEPLOY_OPTIONS: 'id=9rxEbTdVMF56BDyoBuPtpT6KWGEPHPXD -vv'
 
 deployer-manual-ygUNN6FWQpqYPmSpkfFlvSdeAQnAjvfx:
   environment: 
@@ -339,7 +331,7 @@ deployer-manual-ygUNN6FWQpqYPmSpkfFlvSdeAQnAjvfx:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: 'id=ygUNN6FWQpqYPmSpkfFlvSdeAQnAjvfx -vvv'
+    DEPLOY_OPTIONS: 'id=ygUNN6FWQpqYPmSpkfFlvSdeAQnAjvfx -vv'
 
 deployer-manual-LEXyRpsCDvytDBunr4C2SSHbEPrEonTa:
   environment: 
@@ -348,7 +340,7 @@ deployer-manual-LEXyRpsCDvytDBunr4C2SSHbEPrEonTa:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: 'id=LEXyRpsCDvytDBunr4C2SSHbEPrEonTa -vvv'
+    DEPLOY_OPTIONS: 'id=LEXyRpsCDvytDBunr4C2SSHbEPrEonTa -vv'
 
 deployer-manual-B4jFVLQegq97qngkvbDmINGMpXllNihX:
   environment: 
@@ -357,7 +349,7 @@ deployer-manual-B4jFVLQegq97qngkvbDmINGMpXllNihX:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: 'id=B4jFVLQegq97qngkvbDmINGMpXllNihX -vvv'
+    DEPLOY_OPTIONS: 'id=B4jFVLQegq97qngkvbDmINGMpXllNihX -vv'
 
 deployer-manual-qwIcRfpnCs3r03FIphI0zeKDCgRBwbei:
   environment: 
@@ -366,7 +358,7 @@ deployer-manual-qwIcRfpnCs3r03FIphI0zeKDCgRBwbei:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: 'id=qwIcRfpnCs3r03FIphI0zeKDCgRBwbei -vvv'
+    DEPLOY_OPTIONS: 'id=qwIcRfpnCs3r03FIphI0zeKDCgRBwbei -vv'
 
 deployer-manual-NkKEx6e8vVvY73RaGnvGWj3VsjelPynE:
   environment: 
@@ -375,7 +367,7 @@ deployer-manual-NkKEx6e8vVvY73RaGnvGWj3VsjelPynE:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: 'id=NkKEx6e8vVvY73RaGnvGWj3VsjelPynE -vvv'
+    DEPLOY_OPTIONS: 'id=NkKEx6e8vVvY73RaGnvGWj3VsjelPynE -vv'
   
 deployer-manual-XDocx5EqY4nWzyUWHTBiPoJnVkIbd6Am:
   environment:
@@ -384,7 +376,7 @@ deployer-manual-XDocx5EqY4nWzyUWHTBiPoJnVkIbd6Am:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: 'id=XDocx5EqY4nWzyUWHTBiPoJnVkIbd6Am -vvv'
+    DEPLOY_OPTIONS: 'id=XDocx5EqY4nWzyUWHTBiPoJnVkIbd6Am -vv'
 
 deployer-manual-3xanpNYRcd3Wf6gryqebYiGqy0b6z2CP:
   environment:
@@ -393,4 +385,4 @@ deployer-manual-3xanpNYRcd3Wf6gryqebYiGqy0b6z2CP:
   extends:
     - deployer
   variables:
-    DEPLOY_OPTIONS: 'id=3xanpNYRcd3Wf6gryqebYiGqy0b6z2CP -vvv'
+    DEPLOY_OPTIONS: 'id=3xanpNYRcd3Wf6gryqebYiGqy0b6z2CP -vv'
