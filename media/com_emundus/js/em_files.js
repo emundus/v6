@@ -237,7 +237,7 @@ function addElement() {
 }
 
 function refreshFilter(view) {
-    view = (typeof view === 'undefined') ? 'files' : view;
+    /*view = (typeof view === 'undefined') ? 'files' : view;
     $.ajax({
         type: 'GET',
         url: 'index.php?option=com_emundus&view='+view+'&layout=filters&format=raw&Itemid=' + itemId,
@@ -252,7 +252,9 @@ function refreshFilter(view) {
         error: function(jqXHR) {
             console.log(jqXHR.responseText);
         }
-    });
+    });*/
+    reloadData($('#view').val());
+
 }
 
 function tableOrder(order) {
@@ -476,7 +478,7 @@ function openFiles(fnum, page = 0, vue = false) {
                             data:({fnum:fnum.fnum}),
                             success: function(result) {
                                 removeLoader();
-                                $('#em-files-filters').hide();
+                                //$('#em-files-filters').hide();
                                 $('.main-panel .panel.panel-default').hide();
 
                                 const appBlock = $('#em-appli-block');
@@ -4957,7 +4959,7 @@ $(document).ready(function() {
                     $('.em-hide').hide();
                     $('#em-last-open').show();
                     $('#em-last-open .list-group .list-group-item').removeClass('active');
-                    $('#em-files-filters').show();
+                    //$('#em-files-filters').show();
                     $('.em-check:checked').prop('checked', false);
                     $(".main-panel .panel.panel-default").show();
                     break;
@@ -5138,7 +5140,7 @@ $(document).ready(function() {
                                         $('.em-hide').hide();
                                         $('#em-last-open').show();
                                         $('#em-last-open .list-group .list-group-item').removeClass('active');
-                                        $('#em-files-filters').show();
+                                        //$('#em-files-filters').show();
                                         $('.em-check:checked').prop('checked', false);
                                         $(".main-panel.col-xs-16 .panel.panel-default").show();
                                     }

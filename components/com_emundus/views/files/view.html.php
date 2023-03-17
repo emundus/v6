@@ -35,10 +35,6 @@ class EmundusViewFiles extends JViewLegacy
 			die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 		}
 
-    	// translation to load in javacript file ; /media/com_emundus/em_files.js
-    	// put it in com_emundus/emundus.php
-		//JHTML::stylesheet("media/jui/css/chosen.min.css");
-
 		$app = JFactory::getApplication();
 
 	    $this->itemId = $app->input->getInt('Itemid', null);
@@ -51,11 +47,6 @@ class EmundusViewFiles extends JViewLegacy
 		$this->assignRef('actions', $actions);
 		$pagination = $this->get('Pagination');
 		$this->assignRef('pagination', $pagination);
-
-		//$submitForm = EmundusHelperJavascript::onSubmitForm();
-		//$delayAct = EmundusHelperJavascript::delayAct();
-		//$this->assignRef('delayAct', $delayAct);
-		//$this->assignRef('submitForm', $submitForm);
 
 		parent::display($tpl);
 	}

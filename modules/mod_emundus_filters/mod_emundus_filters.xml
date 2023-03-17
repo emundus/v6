@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="1.0.0" client="site" method="upgrade">
+    <name>mod_emundus_filters</name>
+    <author>LEGENDRE Jérémy</author>
+    <creationDate>May 2022</creationDate>
+    <copyright>Copyright (C) 2022 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>jeremy.legendre@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>1.0.0</version>
+    <description></description>
+    <files>
+        <filename module="mod_emundus_filters" label="MOD_EMUNDUS_FILTERS">mod_emundus_filters.php</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+        <filename>mod_emundus_filters.xml</filename>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field type="text" name="element_id" label="FABRIK_ELEMENT_ID" default="0"></field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

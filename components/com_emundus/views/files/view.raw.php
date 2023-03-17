@@ -121,7 +121,7 @@ class EmundusViewFiles extends JViewLegacy
 				}
 				break;
 
-			case 'filters':
+			/*case 'filters':
 				$m_user = new EmundusModelUsers();
 
 				$m_files->code = $m_user->getUserGroupsProgrammeAssoc($current_user->id);
@@ -139,7 +139,7 @@ class EmundusViewFiles extends JViewLegacy
 				$filters = $h_files->resetFilter();
 				$this->assignRef('filters', $filters);
 				break;
-
+			*/
 			case 'docs':
 				$fnumsObj = $app->input->getString('fnums', "");
 				$fnumsObj = json_decode(stripslashes($fnumsObj), false, 512, JSON_BIGINT_AS_STRING);
