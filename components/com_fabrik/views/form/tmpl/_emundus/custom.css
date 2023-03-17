@@ -5,8 +5,9 @@
 .fabrikForm .row-fluid.nav{
     display: none;
 }
-.plg-databasejoin .fabrikElement{
+.plg-databasejoin .fabrikElement {
     display: flex;
+    align-items: center;
 }
 .view-form:not(.view-registration) .fabrikForm .fabrikActions.form-actions, .view-details .fabrikForm .fabrikActions.form-actions {
     padding: 16px 0 0;
@@ -325,8 +326,47 @@ form legend a, form legend a:hover, form legend a:focus {
     display: none !important;
 }
 
-.view-form a.btn.btn-info.toggle-addoption {
-    padding: 13px 12px !important;
+.view-form a.btn.toggle-addoption {
+    padding: 11px 12px !important;
+    margin-top: 6px;
+}
+
+.view-form a.btn.toggle-addoption:not(.btn-info) {
+    margin-left: 6px;
+}
+
+.view-form a.btn.toggle-addoption i.icon-plus {
+    margin: 0 !important;
+}
+
+.view-form .plg-dropdown .fabrikElement .addoption .inputbox[name="addPicklistLabel"] {
+    box-sizing: border-box;
+    margin-bottom: 6px!important;
+}
+
+.view-form .plg-user .fabrikElement .input-append span.add-on {
+    margin-top: 5px !important;
+    background: var(--neutral-100);
+    border-radius: 4px;
+    margin-left: 4px;
+    border: 1px solid var(--neutral-400);
+}
+
+.view-form .plg-user .fabrikElement .input-append span.add-on i {
+    display: flex;
+    align-items: center;
+    color: var(--neutral-500);
+}
+
+.view-form .fabrikElement .wf-editor-container+.btn-toolbar a.btn {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.view-form .fabrikElement .wf-editor-container+.btn-toolbar a.btn span[class*="icon-"] {
+    color: var(--neutral-0) !important;
+    margin-right: 6px;
 }
 
 /* Fabrik application form details */
@@ -538,7 +578,7 @@ form#member-profile .form-horizontal .control-label {
     margin-right: auto;
     margin-bottom: 64px;
     border-radius: 16px;
-    margin-top: 68px;
+    margin-top: 12px;
     width: 45%;
     max-width: 720px;
 }

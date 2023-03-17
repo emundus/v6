@@ -18,6 +18,7 @@
                    description="MOD_SCLOGIN_SOCIAL_ALIGNMENT_DESC">
                 <option value="left">MOD_SCLOGIN_SOCIAL_ALIGNMENT_VALUE_LEFT</option>
                 <option value="right">MOD_SCLOGIN_SOCIAL_ALIGNMENT_VALUE_RIGHT</option>
+                <option value="center">MOD_SCLOGIN_SOCIAL_ALIGNMENT_VALUE_CENTER</option>
             </field>
             <field name="loginbuttonsorder"
                    type="textarea"

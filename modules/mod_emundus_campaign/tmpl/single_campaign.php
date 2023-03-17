@@ -106,7 +106,9 @@ $currentCampaign = is_array($allCampaign) ? $allCampaign[0] : $allCampaign;
                                     $register_url .= "&redirect=" . $formUrl;
                                 }
                             ?>
-							<a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+						    <?php if ($currentCampaign->start_date < $now && $currentCampaign->end_date > $now) : ?>
+							    <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+							<?php endif; ?>
 						<?php else :?>
                             <?php if ($mod_em_campaign_get_link) :?>
                                 <a class="btn btn-primary btn-creux" role="button" href="javascript:history.back()" data-toggle="sc-modal" ><?= JText::_('MOD_EM_CAMPAIGN_GO_BACK');?></a>

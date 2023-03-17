@@ -1541,18 +1541,35 @@ class EmundusModelFormbuilder extends JModelList {
     }
 
     function updateGroupElementsOrder($elements, $group_id) {
-        $db = $this->getDbo();
+        $updated = false;
 
-        $elements_ids = array();
-        $case = array();
-        for ($i = 0; $i < count($elements); $i++) {
-            $case[] = 'when id = '.$elements[$i]['id'].' then '.$elements[$i]['order'];
-            $elements_ids[] = $elements[$i]['id'];
+        if (!empty($elements) && !empty($group_id)) {
+            $db = $this->getDbo();
+            $query = $db->getQuery(true);
+
+            $elements_ids = [];
+            $case = [];
+            foreach ($elements as $element) {
+                $case[] = 'when id = '.$element['id'].' then '.$element['order'];
+                $elements_ids[] = $element['id'];
+            }
+
+            $query->update('jos_fabrik_elements')
+                ->set('ordering = (case '. join(' ', $case) . ' end)')
+                ->set('modified = ' . $db->quote(date('Y-m-d H:i:s')))
+                ->set('modified_by = '.$db->quote(JFactory::getUser()->id))
+                ->set('group_id = ' . $group_id)
+                ->where('id IN (' . join(',', $elements_ids) . ')');
+
+            try {
+                $db->setQuery($query);
+                $updated = $db->execute();
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus/models/formbuilder | Cannot reorder elements : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            }
         }
 
-        $query = "UPDATE jos_fabrik_elements SET ordering = (case ".join(' ',$case). " end), modified = ".$db->quote(date('Y-m-d H:i:s')). ", modified_by = ".$db->quote(JFactory::getUser()->id). " WHERE id in (".join(',',$elements_ids).");";
-        $db->setQuery($query);
-        return $db->execute();
+        return $updated;
     }
 
     /**
@@ -1565,14 +1582,14 @@ class EmundusModelFormbuilder extends JModelList {
      */
     function updateOrder($elements, $group_id, $user, $moved_el = null)
     {
+        $updated = false;
+
         if ($moved_el != null) {
-
             if ($moved_el['group_id'] == $group_id) {
-
-                return $this->updateGroupElementsOrder($elements, $group_id);
+                $updated = $this->updateGroupElementsOrder($elements, $group_id);
             } else {
 
-                //groupe cible different du groupe de provenance
+                // groupe cible different du groupe de provenance
                 // on vérifie si le groupe cible est un groupe repeat
 
                 $db = $this->getDbo();
@@ -1585,7 +1602,6 @@ class EmundusModelFormbuilder extends JModelList {
                 $group_cible_params = json_decode(($db->loadObject())->params);
 
                 if ($group_cible_params->repeat_group_button == 1) {
-
                     //le groupe cible est un groupe répétable
                     //alors on crée la colone correspondante à l'element dans la table repetable;
                     $query->clear();
@@ -1617,31 +1633,23 @@ class EmundusModelFormbuilder extends JModelList {
                     }
 
                     // on crée maintenant la colonne donc;
-
-                    $query = "ALTER TABLE " . $table_join_name->table_join . " ADD " . $moved_el['name'] . " " . $dbtype . " NULL";
-
-                    $db->setQuery($query);
+                    $db->setQuery("ALTER TABLE " . $table_join_name->table_join . " ADD " . $moved_el['name'] . " " . $dbtype . " NULL");
 
                     try {
                         $db->execute();
                     } catch (Exception $e) {
-
                         JLog::add('component/com_emundus/models/formbuilder | Cannot not create new colum in the repeat table case: moving element form group to an target group witch is repeat group because column already exist ' . $group_id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-
                     }
-
-
                 }
 
-
                 // Maintenant j'update enfin les ordres
-                return $this->updateGroupElementsOrder($elements, $group_id);
-
+                $updated = $this->updateGroupElementsOrder($elements, $group_id);
             }
         } else {
-            return $this->updateGroupElementsOrder($elements, $group_id);
+            $updated = $this->updateGroupElementsOrder($elements, $group_id);
         }
 
+        return $updated;
     }
 
     function updateElementOrder($group_id, $element_id, $new_index)
@@ -2285,41 +2293,45 @@ class EmundusModelFormbuilder extends JModelList {
         }
     }
 
-    function reorderMenu($menus,$profile) {
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
+    function reorderMenu($menus, $profile) {
+	    $updated = false;
 
-        try {
-            $rgt = 2;
-            foreach ($menus as $key => $menu) {
-                $rgt = $menu->rgt + $key + 3;
-                $lft = $menu->rgt + $key + 2;
+		if (!empty($profile)) {
+			$db = $this->getDbo();
+			$query = $db->getQuery(true);
 
-				if(!empty($menu->link)) {
-					$query->clear()
-						->update($db->quoteName('#__menu'))
-						->set('rgt = ' . $db->quote($rgt))
-						->set('lft = ' . $db->quote($lft))
-						->where('link = ' . $db->quote($menu->link));
-					$db->setQuery($query);
-					$db->execute();
+			try {
+				$rgt = 2;
+				foreach ($menus as $key => $menu) {
+					$rgt = $menu->rgt + $key + 3;
+					$lft = $menu->rgt + $key + 2;
+
+					if(!empty($menu->link)) {
+						$query->clear()
+							->update($db->quoteName('#__menu'))
+							->set('rgt = ' . $db->quote($rgt))
+							->set('lft = ' . $db->quote($lft))
+							->where('link = ' . $db->quote($menu->link));
+						$db->setQuery($query);
+						$db->execute();
+					}
 				}
-            }
 
-            $query->clear()
-                ->update($db->quoteName('#__menu'))
-                ->set('lft = ' . $db->quote(1))
-                ->set('rgt = ' . $db->quote($rgt - 1))
-                ->where('menutype = ' . $db->quote('menu-profile'.$profile))
-                ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
-            $db->setQuery($query);
-            $db->execute();
+				$query->clear()
+					->update($db->quoteName('#__menu'))
+					->set('lft = ' . $db->quote(1))
+					->set('rgt = ' . $db->quote($rgt - 1))
+					->where('menutype = ' . $db->quote('menu-profile'.$profile))
+					->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
+				$db->setQuery($query);
 
-            return true;
-        } catch (Exception $e){
-            JLog::add('component/com_emundus/models/formbuilder | Error at reorder the menu with link : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
-        }
+				$updated = $db->execute();
+			} catch (Exception $e){
+				JLog::add('component/com_emundus/models/formbuilder | Error at reorder the menu with link : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $updated;
     }
 
     function getGroupOrdering($gid,$fid) {

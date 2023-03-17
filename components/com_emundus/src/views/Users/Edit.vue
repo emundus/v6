@@ -102,4 +102,10 @@ export default {
 
 <style scoped>
 
+.em-container-profile-view {
+  width: 84% !important;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 </style>

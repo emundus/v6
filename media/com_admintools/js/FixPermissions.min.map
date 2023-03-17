@@ -1,0 +1,8 @@
+{
+"version":3,
+"file":"FixPermissions.min.js",
+"lineCount":5,
+"mappings":"A;;;;AAOwC,WAAxC,EAAI,MAAOA,WAAAC,eAAX,GAECD,UAAAC,eAFD,CAE6B,SAChBC,QAAS,EACjB,CACUC,MAAAH,WAAAI,aAAAC,WAAA,EADV,CAFwB,CAF7B,CAUAC,OAAAC,OAAA,CAAcC,QAAd,CAAAC,MAAA,CAA8B,QAAS,CAACC,CAAD,CACvC,CACwBA,CAAAC,CAAE,sCAAFA,CAEnBC,OAAJ,CAECC,MAAAC,WAAA,CAAkBd,UAAAC,eAAAC,QAAlB,CAAqD,GAArD,CAFD,CAMCM,QAAAO,MAAAC,UAAAC,OAAA,EATF,CADA;",
+"sources":["../uncompressed/js/FixPermissions.js"],
+"names":["admintools","FixPermissions","closeMe","parent","ControlPanel","closeModal","akeeba","jQuery","document","ready","$","autoCloseElement","length","window","setTimeout","forms","adminForm","submit"]
+}

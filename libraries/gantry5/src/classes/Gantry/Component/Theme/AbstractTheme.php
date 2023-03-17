@@ -3,7 +3,7 @@
 /**
  * @package   Gantry5
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
  * @license   Dual License: MIT or GNU/GPLv2 and later
  *
  * http://opensource.org/licenses/MIT
@@ -20,6 +20,7 @@ use Gantry\Component\Filesystem\Folder;
 use Gantry\Component\Gantry\GantryTrait;
 use Gantry\Component\Twig\TwigCacheFilesystem;
 use Gantry\Component\Twig\TwigExtension;
+use Gantry\Framework\Gantry;
 use Gantry\Framework\Platform;
 use Gantry\Framework\Services\ErrorServiceProvider;
 use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
@@ -62,7 +63,7 @@ abstract class AbstractTheme
             throw new \LogicException('Theme not found!');
         }
 
-        $this->name = $name ?: basename($path);
+        $this->name = $name ?: Gantry::basename($path);
         $this->path = $path;
 
         $this->init();

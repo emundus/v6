@@ -10,14 +10,28 @@
 defined('_JEXEC') or die;
 
 // Note. It is important to remove spaces between elements.
-$class = $item->anchor_css ? 'class="'.$item->anchor_css.'" ' : '';
 $title = $item->anchor_title ? 'title="'.$item->anchor_title.'" ' : '';
+$icon_css = $item->params->get('menu_image_css', '');
+$class = 'class="';
+
+if($item->anchor_css){
+	$class .= $item->anchor_css;
+}
+if(!empty($icon_css)){
+	$class .= ' em-flex-row';
+}
+$class .= '"';
 if ($item->menu_image) {
 		$item->params->get('menu_text', 1 ) ?
 		$linktype = '<img src="'.$item->menu_image.'" alt="'.$item->title.'" /><span class="image-title">'.$item->title.'</span> ' :
 		$linktype = '<img src="'.$item->menu_image.'" alt="'.$item->title.'" />';
 }
-else { $linktype = $item->title;
+else {
+	if(!empty($icon_css)){
+		$linktype = '<span class="material-icons-outlined" style="font-size: 16px; color: black;margin-right: 4px">'.$icon_css.'</span><span>' . $item->title . '</span>';
+	} else {
+		$linktype = $item->title;
+	}
 }
 
 switch ($item->browserNav) :

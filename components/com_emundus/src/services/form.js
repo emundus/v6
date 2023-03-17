@@ -86,21 +86,19 @@ export default {
     },
     async getDocuments(id)
     {
-        try {
-            const response = await client().get(
-                baseUrl + '&task=getDocuments',
-                {
-                    params: {
-                        pid: id
-                    }
-                }
-             );
-
-            return response;
-        } catch (error) {
+        if (id > 0) {
+            try {
+                return await client().get(baseUrl + '&task=getDocuments', {params: {pid: id}});
+            } catch (error) {
+                return {
+                    status: false,
+                    error: error
+                };
+            }
+        } else {
             return {
                 status: false,
-                error: error
+                error: 'Missing parameter'
             };
         }
     },
@@ -111,7 +109,7 @@ export default {
             };
 
             const response = await client().get(
-                baseUrl + '&task=getundocuments'
+                baseUrl + '&task=getAttachments'
             );
 
             if (response.data.status) {

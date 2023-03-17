@@ -5,7 +5,7 @@
 			<p>{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_INTRO') }}</p>
 			<section id="new-page">
 				<div class="em-mt-16 em-mb-16 card-wrapper" :class="{selected: -1 === selected}" @click="selected = -1;">
-					<div class="card em-shadow-cards em-pointer em-flex-row">
+					<div class="card em-shadow-cards em-pointer em-flex-row" @dblclick="createPage">
 						<span class="add_circle material-icons-outlined em-main-500-color">add_circle</span>
 					</div>
 					<input
@@ -24,7 +24,6 @@
 				<div class="line em-bg-main-500"></div>
 			</div>
 			<section id="models" class="em-flex-row em-w-100">
-				<p v-if="models.length < 1 && !loading" class="em-w-100 em-text-align-center empty-model-message">{{ translate('COM_EMUNDUS_FORM_BUILDER_EMPTY_PAGE_MODELS') }}</p>
 				<div v-if="!loading" class="em-w-100">
 					<div id="search-model-wrapper">
 						<input id="search-model" class="em-mt-16" type="text" v-model="search" placeholder="Rechercher"/>
@@ -37,6 +36,7 @@
 							:class="{selected: model.id === selected, hidden: !model.displayed}"
 							:title="model.label[shortDefaultLang]"
 							@click="selected = model.id"
+							@dblclick="createPage"
 						>
 							<form-builder-preview-form
 								:form_id="Number(model.form_id)"
@@ -277,6 +277,7 @@ export default {
 	#models .models-card {
 		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 		margin-bottom: 64px;
+		flex-wrap: wrap;
 	}
 
 	#search-model-wrapper {
@@ -284,8 +285,8 @@ export default {
 
 		.reset-search {
 			position: absolute;
-			top: 25px;
-			left: 180px;
+			top: 27px;
+			right: 10px;
 		}
 	}
 

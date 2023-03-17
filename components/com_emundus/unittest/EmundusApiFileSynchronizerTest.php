@@ -9,7 +9,7 @@ define('JPATH_BASE', dirname(__DIR__) . '/../../');
 include_once ( JPATH_BASE . 'includes/defines.php' );
 include_once ( JPATH_BASE . 'includes/framework.php' );
 include_once (__DIR__ . '/../models/sync.php');
-include_once (__DIR__ . '/../api/FileSynchronizer.php');
+include_once (__DIR__ . '/../classes/api/FileSynchronizer.php');
 include_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
 
 jimport('joomla.user.helper');

@@ -49,7 +49,7 @@ class UpdateCli extends JApplicationCli
         foreach ($log_files AS $file) {
             if (file_exists($file)){
                 if (!unlink($file)) {
-                    echo("$file log file can't be deleted");
+                    $this->out($this->colorLog("$file log file can't be deleted\n",'e'));
                 }
             }
         }
@@ -117,29 +117,31 @@ class UpdateCli extends JApplicationCli
         }
 
         if (isset($options["u"]) || isset($options["update"]) || isset($options["a"]) || isset($options["all"]) || isset($options["c"]) || isset($options["core"])) {
-            $this->out("\n###########################################################");
+            $this->out("###########################################################");
+
             if ($this->count_fails == 0 ) {
-                $this->out($this->colorLog("RESULTS: SUCCESS !",'s'));
+                $this->out($this->colorLog("$this->count_exec components are up to date",'s'));
             } else {
-                $this->out($this->colorLog("RESULTS: FAILED !",'e'));
+                $this->out($this->colorLog("$this->count_fails components failed to be updated !",'e'));
             }
-
-            $this->out($this->colorLog("$this->count_fails components failed to be updated / $this->count_exec updated components",'i'));
-
+            
             if ($this->verbose) {
-                $this->out($this->colorLog("-> $this->count_stmt sql statements executed",'i'));
+                $this->out($this->colorLog("  -> $this->count_stmt sql statements executed",'i'));
 
                 # Execution time
-
-                $this->out();
                 $executionEndTime = microtime(true);
                 $seconds = $executionEndTime - $executionStartTime;
                 $seconds = substr((string)$seconds, 0, 4);
-                $this->out($this->colorLog("This script took $seconds seconds to execute.",'i'));
+                $this->out($this->colorLog("\nThis script took $seconds seconds to execute.",'i'));
             }
 
-
-
+            if ($this->count_fails == 0 ) {
+                $this->out($this->colorLog("\nRESULTS: SUCCESS !",'s'));
+            } else {
+                $this->out($this->colorLog("\nRESULTS: FAILED !",'e'));
+                $this->out("###########################################################");
+                exit(1);
+            }
             $this->out("###########################################################");
         }
     }
@@ -170,6 +172,7 @@ class UpdateCli extends JApplicationCli
         $files = scandir($dir);
         sort($files, SORT_NATURAL);
 
+        $this->out("*--------------------*\n");
         $this->out("UPDATE Joomla " . $version . " to " . preg_split("/.sql/", end($files))[0]);
         $this->purgeAndFetchUpdates("joomla");
         $this->out("-> Finalise...");
@@ -195,9 +198,10 @@ class UpdateCli extends JApplicationCli
 
         # Log informations according to operation result
         if ($res == 1) {
-            $this->out("\nJoomla database update successfully completed");
+            $this->out($this->colorLog("Joomla database update successfully completed",'s'));
+            // $this->out("Joomla database update successfully completed\n");
             if ($this->verbose) {
-                $this->out("-> " . count($component_logs) . " sql statements executed");
+                $this->out("    -> " . count($component_logs) . " sql statements executed\n");
             }
 
         } else {
@@ -219,9 +223,9 @@ class UpdateCli extends JApplicationCli
                 $this->updateSchema($id, array($exit_file[0]), "end");
             }
             # Log
-            $this->out("\nJoomla DB update Failed...");
+            $this->out($this->colorLog("\nJoomla database update failed...",'e'));
             if ($this->verbose) {
-                $this->out("-> " . count($component_logs) . " sql statements executed");
+                $this->out("    -> " . count($component_logs) . " sql statements executed");
                 $this->out("-> " . $err_msg);
             }
             $this->out("-> Take a look to the error log file for more information");
@@ -275,11 +279,31 @@ class UpdateCli extends JApplicationCli
                 $xml_file = preg_split("/[_]+/", $elementArr["element"], 2)[1] . '.xml';
             }
             $path = is_dir(JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/') ? JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/' : JPATH_ROOT . '/components/' . $elementArr['element'] . '/';
-
+            
             # Load xml or fail
-            if (file_exists($xml_path = $path . $xml_file)) {
+            $xml_path = $path . $xml_file;
+            if ($element == 'com_extplorer' || $element == 'com_dropfiles') {
+                if (empty($manifest_cache['version'])) {
+                    $manifest_cache['version'] = $this->refreshManifestCache($elementArr['extension_id'], $elementArr['element']);
+                }
+                if (!file_exists($xml_path)) {
+                    if ($element == 'com_extplorer') {
+                        $short_element = str_replace('com_', '', $element);
+                        $file = JPATH_ADMINISTRATOR . '/components/' . $element . '/' . $short_element . '.j30.xml';
+                    } elseif ($element == 'com_dropfiles') {
+                        $file = JPATH_ADMINISTRATOR . '/components/' . $element . '/' . $element . '.xml';
+                        $short_element = str_replace('com_', '', $element);
+                    }
+                    if (file_exists($file)) {
+                        $rename_file = JPATH_ADMINISTRATOR . '/components/' . $element . '/' . $short_element . '.xml';
+                        rename($file, $rename_file);
+                        $xml_path = $rename_file;
+                    }
+                }
+            }
+            if (file_exists($xml_path)) {
                 $this->manifest_xml = simplexml_load_file($xml_path);
-                $this->out("\n*--------------------*\n");
+                $this->out("*--------------------*\n");
 
                 $regex = '/^6\.[0-9]*/m';
                 preg_match_all($regex, $manifest_cache['version'], $matches, PREG_SET_ORDER, 0);
@@ -303,7 +327,7 @@ class UpdateCli extends JApplicationCli
                 }
 
                 # Update loop
-                if ($this->firstrun or version_compare($manifest_cache['version'], $this->manifest_xml->version, '<')) {
+                if ($this->firstrun or version_compare($manifest_cache['version'], $this->manifest_xml->version, '<=')) {
                     $this->out("UPDATE " . $manifest_cache['name'] . ' (' . $manifest_cache['version'] . ' to ' . $this->manifest_xml->version . ')');
 
                     # Require scriptfile
@@ -334,7 +358,7 @@ class UpdateCli extends JApplicationCli
                         $this->count_fails++;
                         continue;
                     } elseif (!$sql_update[0] == 0) {
-                        $this->out("-> " . $sql_update[0] . " sql statements executed");
+                        $this->out("    -> " . $sql_update[0] . " sql statements executed");
                     }
 
                     if ($this->firstrun) {
@@ -457,7 +481,7 @@ class UpdateCli extends JApplicationCli
                         $this->out("-> Scriptfile doesn't exists");
                     }
                 } else {
-                    $this->out($manifest_cache['name'] . " Component already up-to-date");
+                    $this->out($this->colorLog($elementArr['element'] . " component already up-to-date\n",'s'));
                     $this->updateSchema($elementArr['extension_id'], null, null, $this->manifest_xml->version);
                     continue;
                 }
@@ -481,7 +505,7 @@ class UpdateCli extends JApplicationCli
 
                 if ($this->verbose) {
                     $this->out("-> OK");
-                    $this->out("-> " . count($component_logs) . " sql statements executed");
+                    $this->out("    -> " . count($component_logs) . " sql statements executed");
                 }
 
                 if(empty($options) || !isset($options['dry-run'])) {
@@ -493,11 +517,14 @@ class UpdateCli extends JApplicationCli
                     $this->out("-> Schema : " . $this->schema_version);
                     $this->out("-> Manifest cache : " . $manifest_cache['version']);
                     $this->out("-> Manifest : " . $this->manifest_xml->version);
-                    $this->out("\nFinishing update successfuly with : " . $elementArr['name']);
+                    $this->out($this->colorLog("\nFinishing update successfuly with : " . $elementArr['name'] . "\n",'s'));
                 }
             } else {
-                echo("Fail");
-                echo "\nReason: $failure_msg";
+                if(empty($failure_msg)) {
+                    $this->out($this->colorLog("  -> $element component update failed\n",'e'));
+                } else {
+                    $this->out($this->colorLog("  -> $element component update failed with error : $failure_msg\n",'e'));
+                }
                 $this->count_fails++;
             }
         }
@@ -885,11 +912,11 @@ class UpdateCli extends JApplicationCli
         $installer = JInstaller::getInstance();
         $installer->extension->load($ext_id);
 
-        # For Joomla update method works, we need to rename manifest file for some extensions (extplorer dropfiles & jchoptimize)
+        # For Joomla update method works, we need to rename manifest file for some extensions (extplorer and dropfiles)
         if ($element == 'com_extplorer' or $element == 'com_dropfiles') {
             $comp = $this->getElementFromId('extensions', array($ext_id));
             $manifest = json_decode($comp[0]['manifest_cache'], true);
-            $file = JPATH_ADMINISTRATOR . '/components/' . $comp[0]['element'] . '/' . $manifest['filename'] . '.xml';
+            $file = JPATH_ADMINISTRATOR . '/components/' . $comp[0]['element'] . '/' . $comp[0]['element'] . '.xml';
             $short_element = str_replace('com_', '', $comp[0]['element']);
             if (file_exists($file)) {
                 $rename_file = JPATH_ADMINISTRATOR . '/components/' . $comp[0]['element'] . '/' . $short_element . '.xml';
@@ -979,16 +1006,16 @@ class UpdateCli extends JApplicationCli
         $results = $str;
         switch ($type) {
             case 'e': //error
-                $results = "\033[31m$str \033[0m\n";
+                $results = "\033[31m$str \033[0m";
                 break;
             case 's': //success
-                $results = "\033[32m$str \033[0m\n";
+                $results = "\033[32m$str \033[0m";
                 break;
             case 'w': //warning
-                $results = "\033[33m$str \033[0m\n";
+                $results = "\033[33m$str \033[0m";
                 break;
             case 'i': //info
-                $results = "\033[36m$str \033[0m\n";
+                $results = "\033[36m$str \033[0m";
                 break;
             default:
                 # code...

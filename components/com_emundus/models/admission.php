@@ -428,11 +428,10 @@ class EmundusModelAdmission extends JModelList
             $filt_params = $session->get('filt_params');
 
             if (is_array(@$filt_params['programme']) && $filt_params['programme'][0] != '%') {
-
                 foreach ($filt_params['programme'] as $value) {
                     if ($value == $programme_code) {
                         $groups = $this->getGroupsApplicantAdmissionByProgramme($value);
-                        if (!empty($groups)) {
+						if (!empty($groups)) {
                             $admission_elt_list = $this->getAllElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
                             if (count($admission_elt_list)>0) {
                                 foreach ($admission_elt_list as $eel) {
@@ -446,9 +445,9 @@ class EmundusModelAdmission extends JModelList
             } else {
 
                 $groups = $this->getGroupsApplicantAdmissionByProgramme($programme_code);
-                if (!empty($groups)) {
+	            if (!empty($groups)) {
                     $admission_elt_list = $this->getAllElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
-                    if (count($admission_elt_list)>0) {
+		            if (count($admission_elt_list)>0) {
                         foreach ($admission_elt_list as $eel) {
                             $elements_id[] = $eel->element_id;
                         }

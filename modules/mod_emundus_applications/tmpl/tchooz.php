@@ -83,7 +83,7 @@ ksort($applications);
         <span class="mod_emundus_applications___header_desc"><?php echo $description; ?></span>
 
         <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
-            <a id="add-application" class="btn btn-success em-mt-32" style="width: auto" href="<?= $cc_list_url; ?>">
+            <a id="add-application" class="btn btn-success em-mt-32"  href="<?= $cc_list_url; ?>">
                 <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
             </a>
             <hr>
@@ -175,7 +175,7 @@ ksort($applications);
 
                                                         <!-- ACTIONS BLOCK -->
                                                         <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color" id="actions_block_<?php echo $application->fnum ?>" style="display: none">
-                                                            <a class="em-text-neutral-900 em-pointer" href="<?= JRoute::_($first_page_url); ?>" id="actions_block_open_<?php echo $application->fnum ?>">
+                                                            <a onclick="openFile(event,'<?php echo $first_page_url ?>')" class="em-text-neutral-900 em-pointer" href="<?= JRoute::_($first_page_url); ?>" id="actions_block_open_<?php echo $application->fnum ?>">
                                                                 <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
                                                             </a>
                                                             <?php if(in_array($application->status,$status_for_delete)) :?>
@@ -183,6 +183,16 @@ ksort($applications);
                                                                     <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
                                                                 </a>
                                                             <?php endif; ?>
+	                                                        <?php
+	                                                        foreach($custom_actions as $custom_action_key => $custom_action) {
+
+		                                                        if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)){
+			                                                        ?>
+                                                                    <a id="actions_button_custom_<?= $custom_action_key; ?>" class="em-text-neutral-900 em-pointer" href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?> ><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></a>
+			                                                        <?php
+		                                                        }
+	                                                        }
+	                                                        ?>
                                                         </div>
                                                     </div>
                                                 <?php endif; ?>
@@ -225,6 +235,16 @@ ksort($applications);
                                                                         <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
                                                                     </a>
                                                                 <?php endif; ?>
+                                                                <?php
+                                                                foreach($custom_actions as $custom_action_key => $custom_action) {
+
+                                                                    if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)){
+                                                                        ?>
+                                                                        <a id="actions_button_custom_<?= $custom_action_key; ?>" class="em-text-neutral-900 em-pointer" href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?> ><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></a>
+                                                                        <?php
+                                                                    }
+                                                                }
+                                                                ?>
                                                             </div>
                                                         </div>
                                                     <?php endif; ?>
@@ -251,6 +271,16 @@ ksort($applications);
                                                                         <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
                                                                     </a>
                                                                 <?php endif; ?>
+                                                                <?php
+                                                                foreach($custom_actions as $custom_action_key => $custom_action) {
+
+                                                                    if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)){
+                                                                        ?>
+                                                                        <a id="actions_button_custom_<?= $custom_action_key; ?>" class="em-text-neutral-900 em-pointer" href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?> ><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></a>
+                                                                        <?php
+                                                                    }
+                                                                }
+                                                                ?>
                                                             </div>
                                                         </div>
                                                     <?php endif; ?>
@@ -323,13 +353,13 @@ ksort($applications);
                                                 <?php if(empty($visible_status)) : ?>
                                                     <label class="em-applicant-text-color em-applicant-default-font"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_STATUS'); ?> :</label>
                                                     <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row" id="application_status_<?php echo $application->fnum ?>">
-                                                        <span class="mod_emundus_applications___circle em-mr-8 label-<?= $application->class; ?>"></span>
+                                                        <span class="mod_emundus_applications___circle em-mr-8 label-<?= $application->class; ?>-500"></span>
                                                         <span class="mod_emundus_applications___status_label em-neutral-800-color em-applicant-default-font"><?= $application->value; ?></span>
                                                     </div>
                                                 <?php elseif (in_array($application->status,$visible_status)) :?>
                                                     <label class="em-applicant-text-color"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_STATUS'); ?> :</label>
                                                     <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row" id="application_status_<?php echo $application->fnum ?>">
-                                                        <span class="mod_emundus_applications___circle em-mr-8 label-<?= $application->class; ?>"></span>
+                                                        <span class="mod_emundus_applications___circle em-mr-8 label-<?= $application->class; ?>-500"></span>
                                                         <span class="mod_emundus_applications___status_label"><?= $application->value; ?></span>
                                                     </div>
                                                 <?php endif; ?>
@@ -374,8 +404,10 @@ ksort($applications);
 
 
 <?php if ($show_add_application && ($position_add_application == 1 || $position_add_application == 2 || $position_add_application == 4) && $applicant_can_renew) : ?>
+  <div class="mod_emundus_applications___footer">
     <a class="btn btn-success" href="<?= $cc_list_url; ?>"><span class="icon-plus-sign"> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span></a>
-<?php endif; ?>
+  </div>
+  <?php endif; ?>
 
 <?php if (!empty($filled_poll_id) && !empty($poll_url) && $filled_poll_id == 0 && $poll_url != "") : ?>
     <div class="modal fade" id="em-modal-form" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-form" aria-hidden="true">
@@ -464,7 +496,7 @@ ksort($applications);
         }
     });
 
-    function openFile(e,url) {
+    function openFile(e, url) {
         let target = e.target.id;
 
         if(target.indexOf('actions_button_') !== -1 || target.indexOf('actions_block_delete_') !== -1){

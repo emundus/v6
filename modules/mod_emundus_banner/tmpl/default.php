@@ -10,7 +10,9 @@ defined('_JEXEC') or die;
 ?>
 
 <div class="mod_emundus_banner__banner" style="display: none">
-
+	<?php if(!empty($image_link)) : ?>
+        <img src="<?php echo $image_link ?>" style="opacity: 0">
+    <?php endif; ?>
 </div>
 
 <script type="text/javascript">

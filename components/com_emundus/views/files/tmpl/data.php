@@ -189,6 +189,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
         if (url[1] != null && url[1].length >= 20) {
             url = url[1].split("|");
+            url = url[0].split('%7C');
             var fnum = {};
             fnum.fnum = url[0];
 

@@ -86,6 +86,26 @@ class EmundusViewDecision extends JViewLegacy
 				$this->assignRef('display', $display);
 			break;
 
+			case 'filters':
+				$m_user = new EmundusModelUsers();
+
+				$m_files->code = $m_user->getUserGroupsProgrammeAssoc($this->_user->id);
+
+				// get all fnums manually associated to user
+				$groups = $m_user->getUserGroups($this->_user->id, 'Column');
+				$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
+				$fnum_assoc = $m_user->getApplicantsAssoc($this->_user->id);
+				$m_files->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
+
+				$this->assignRef('code', $m_files->code);
+				$this->assignRef('fnum_assoc', $m_files->fnum_assoc);
+
+				// reset filter
+				$h_files = new EmundusHelperFiles();
+				$filters = $h_files->resetFilter();
+				$this->assignRef('filters', $filters);
+				break;
+
 			default :
 				$jinput = JFactory::getApplication()->input;
 				$cfnum = $jinput->getString('cfnum', null);
@@ -99,16 +119,19 @@ class EmundusViewDecision extends JViewLegacy
 				$h_files = new EmundusHelperFiles();
 
                 $m_decision->code = $m_users->getUserGroupsProgrammeAssoc($this->_user->id);
+
 		        $groups = $m_users->getUserGroups($this->_user->id, 'Column');
         		$fnum_assoc_to_groups = $m_users->getApplicationsAssocToGroups($groups);
 		        $fnum_assoc = $m_users->getApplicantsAssoc($this->_user->id);
 		        $m_decision->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
+
                 $this->assignRef('code', $m_decision->code);
                 $this->assignRef('fnum_assoc', $m_decision->fnum_assoc);
 
 				// reset filter
+				/*echo '<pre>'; var_dump(JFactory::getSession()->get('filt_params')); echo '</pre>';
 				$filters = @EmundusHelperFiles::resetFilter();
-				$this->assignRef('filters', $filters);
+				$this->assignRef('filters', $filters);*/
 
 				// Do not display photos unless specified in params
 				$displayPhoto = false;
