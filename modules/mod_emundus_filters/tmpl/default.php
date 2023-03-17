@@ -2,6 +2,7 @@
 defined('_JEXEC') or die;
 ?>
 
+<script type="text/javaScript" src="../assets/js/filters.js"></script>
 <section id="mod_emundus_filters">
     <?php
     if (!empty($default_filters)) {
@@ -46,7 +47,7 @@ defined('_JEXEC') or die;
 	    ?>
     </div>
     <div class="actions">
-        <button class="em-primary-button"><?= JText::_('SEARCH'); ?></button>
+        <button class="em-primary-button" onclick="applyFilters"><?= JText::_('SEARCH'); ?></button>
     </div>
     <?php
     } else {
