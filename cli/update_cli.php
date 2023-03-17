@@ -298,6 +298,8 @@ class UpdateCli extends JApplicationCli
                         $rename_file = JPATH_ADMINISTRATOR . '/components/' . $element . '/' . $short_element . '.xml';
                         rename($file, $rename_file);
                         $xml_path = $rename_file;
+                    } else {
+                        $xml_path = JPATH_ADMINISTRATOR . '/components/' . $element . '/' . $short_element . '.xml';
                     }
                 }
             }
