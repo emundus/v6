@@ -18,6 +18,21 @@ stages:
   - publish
   - deploy
 
+include:
+- project: 'emundus/devops/ci-cd-templates'
+  ref: main
+  file: '.php_security_checker.yml'
+- project: 'emundus/devops/ci-cd-templates'
+  ref: main
+  file: '.deployer.yml'
+- project: 'emundus/devops/ci-cd-templates'
+  ref: main
+  file: '.deployer_tchooz_auto_production.yml'
+- project: 'emundus/devops/ci-cd-templates'
+  ref: main
+  file: '.release.yml'
+- template: Security/Secret-Detection.gitlab-ci.yml
+
 check-tchooz-version-job:
   stage: prepare
   rules:
@@ -61,18 +76,6 @@ build-db-to-test-job:
         - media/com_emundus_vanilla
         - Dockerfile.db
         - .ci/mysql/*
-
-include:
-- project: 'emundus/devops/ci-cd-templates'
-  ref: main
-  file: '.php_security_checker.yml'
-- project: 'emundus/devops/ci-cd-templates'
-  ref: main
-  file: '.deployer.yml'
-- project: 'emundus/devops/ci-cd-templates'
-  ref: main
-  file: '.release.yml'
-- template: Security/Secret-Detection.gitlab-ci.yml
 
 php_security_checker:
   variables:
@@ -236,12 +239,6 @@ deployer-auto-production:
   environment: 
     name: production/auto
     deployment_tier: production
-  extends:
-    - deployer
-  variables:
-    DEPLOY_OPTIONS: "env=prod -vv"
-  rules:
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
 
 deployer-manual-eG5NEnlFOzhoskWHOJAdBE9rVfQy9ui1:
   environment: 
