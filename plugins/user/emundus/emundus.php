@@ -569,13 +569,16 @@ class plgUserEmundus extends JPlugin
             }
             JFactory::getSession()->set('emundusUser', $user);
 
-			$cid_session = JFactory::getSession()->get('login_campaign_id');
-			if(!empty($cid_session)){
-				$previous_url = 'index.php?option=com_fabrik&view=form&formid=102&cid='.$cid_session;
-				JFactory::getSession()->clear('login_campaign_id');
-			}
             if ($options['redirect'] === 0) {
                 $previous_url = '';
+            } else {
+				if ($user->activation != -1) {
+					$cid_session = JFactory::getSession()->get('login_campaign_id');
+					if (!empty($cid_session)){
+						$previous_url = 'index.php?option=com_fabrik&view=form&formid=102&cid='.$cid_session;
+						JFactory::getSession()->clear('login_campaign_id');
+					}
+				}
             }
 
             JPluginHelper::importPlugin('emundus', 'custom_event_handler');
