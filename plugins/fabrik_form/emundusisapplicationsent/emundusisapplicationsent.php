@@ -380,10 +380,12 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
 
 						                    if (!empty($stored)) {
 							                    foreach ($stored as $store) {
-								                    $formModel->data[$repeat_table . '___id'][]            = "";
-								                    $formModel->data[$repeat_table . '___id_raw'][]        = "";
-								                    $formModel->data[$repeat_table . '___parent_id'][]     = "";
-								                    $formModel->data[$repeat_table . '___parent_id_raw'][] = "";
+								                    if(count($formModel->data[$repeat_table . '___id']) < count($stored)){
+									                    $formModel->data[$repeat_table . '___id'][]            = "";
+									                    $formModel->data[$repeat_table . '___id_raw'][]        = "";
+									                    $formModel->data[$repeat_table . '___parent_id'][]     = "";
+									                    $formModel->data[$repeat_table . '___parent_id_raw'][] = "";
+								                    }
 
 								                    $formModel->data[$repeat_table . '___' . $group->name][]          = $store;
 								                    $formModel->data[$repeat_table . '___' . $group->name . '_raw'][] = $store;
@@ -397,6 +399,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
 
                         // sync documents uploaded
                         // 1. get list of uploaded documents for previous file defined as duplicated
+	                    $query = $db->getQuery(true);
 	                    $query->clear()
 		                    ->select('count(id)')
 		                    ->from($db->quoteName('#__emundus_uploads'))
