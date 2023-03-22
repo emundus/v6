@@ -44,23 +44,6 @@ switch ($order) {
 }
 ?>
 
-<div class="single-campaign-tabs">
-    <?php if (!empty($faq_articles) || !empty($files)) : ?>
-        <button class="btn btn-primary current-tab" onclick="displayTab('campaign')" id="campaign_tab">
-            <span><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS') ?></span>
-        </button>
-    <?php endif; ?>
-    <?php if (in_array('faq', $modules_tabs) && !empty($faq_articles)) : ?>
-        <button class="btn btn-primary" onclick="displayTab('faq')" id="faq_tab">
-            <span><?php echo JText::_('MOD_EM_CAMPAIGN_FAQ') ?></span>
-        </button>
-    <?php endif; ?>
-    <?php if (in_array('documents', $modules_tabs) && !empty($files)) : ?>
-        <button class="btn btn-primary" onclick="displayTab('documents')" id="documents_tab">
-            <span><?php echo JText::_('MOD_EM_CAMPAIGN_DOCUMENTS') ?></span>
-        </button>
-    <?php endif; ?>
-</div>
 <div class="g-block size-100 tchooz-single-campaign">
     <div class="single-campaign" id="campaign">
         <div class="right-side-tchooz col-md-4">
@@ -138,10 +121,9 @@ switch ($order) {
         <?php endif; ?>
         <?php if ($showcampaign) :?>
             <div class="col-md-12">
-                <span><?php echo $currentCampaign->description ?></span>
                 <?php
                 // Get number of files compared to limit if limit is enabled
-                if ($currentCampaign->islimited == 1) {
+                if ($currentCampaign->is_limited == '1') {
                     $db = JFactory::getDbo();
                     $query = $db->getQuery(true);
 
@@ -159,21 +141,21 @@ switch ($order) {
                     $db->setQuery($query);
                     $file_limit = $db->loadResult();
 
-                    $limit_status = [1,2];
-
                     $files_sent = 0;
                     if (!empty($limit_status)) {
                         $query->clear()
                             ->select('COUNT(id)')
                             ->from($db->quoteName('jos_emundus_campaign_candidature'))
-                            ->where($db->quoteName('status') . ' IN (' . implode(',', $limit_status) . ')');
+                            ->where($db->quoteName('campaign_id') . ' = ' . $db->quote($currentCampaign->id))
+                            ->andWhere($db->quoteName('status') . ' IN (' . implode(',', $limit_status) . ')');
                         $db->setQuery($query);
                         $files_sent = $db->loadResult();
                     }
 
-                    echo '<p>' . $files_sent . ' / ' . $file_limit . ' ' . JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_SENT_NUMBER') . '</p>';
+                    echo '<div style="width:100%;display:flex;justify-content:center;"><p style="display:inline-block;padding:10px;border:1px solid red;border-radius:4px;font-weight:bold;color:red;">' . $files_sent . ' ' . JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_SENT_NUMBER') . ' ' . $file_limit . '</p></div>';
                 }
                 ?>
+                <span><?php echo $currentCampaign->description ?></span>
             </div>
         <?php endif; ?>
     </div><!-- Close campaign-content -->
@@ -201,60 +183,3 @@ switch ($order) {
     <?php endif; ?>
 
 </div>
-
-<script>
-    var current_tab = 'campaign';
-
-    window.onload = function() {
-        document.getElementById('campaign_tab').classList.add('current-tab');
-        <?php if (in_array('faq', $modules_tabs)) : ?>
-        document.getElementById('faq').style.display = 'none';
-        <?php endif; ?>
-
-        <?php if (in_array('documents', $modules_tabs)) : ?>
-        document.getElementById('documents').style.display = 'none';
-        if(typeof document.getElementsByClassName('campaign-documents')[0] != 'undefined') {
-            document.getElementsByClassName('campaign-documents')[0].parentElement.style.display = 'none';
-        }
-        <?php endif; ?>
-    }
-
-    function displayTab(tab){
-        switch (tab) {
-            case 'campaign':
-                if(current_tab === 'faq'){
-                    document.getElementById('faq').style.display = 'none';
-                    document.getElementById('faq_tab').classList.remove('current-tab');
-                } else if(current_tab === 'documents'){
-                    document.getElementById('documents').style.display = 'none';
-                    document.getElementById('documents_tab').classList.remove('current-tab');
-                }
-                break;
-            case 'faq':
-                if(current_tab === 'campaign'){
-                    document.getElementById('campaign').style.display = 'none';
-                    document.getElementById('campaign_tab').classList.remove('current-tab');
-                } else if(current_tab === 'documents'){
-                    document.getElementById('documents').style.display = 'none';
-                    document.getElementById('documents_tab').classList.remove('current-tab');
-                }
-                break;
-            case 'documents':
-                if(current_tab === 'faq'){
-                    document.getElementById('faq').style.display = 'none';
-                    document.getElementById('faq_tab').classList.remove('current-tab');
-                } else if(current_tab === 'campaign'){
-                    document.getElementById('campaign').style.display = 'none';
-                    document.getElementById('campaign_tab').classList.remove('current-tab');
-                }
-                break;
-            default:
-                break;
-        }
-        current_tab = tab;
-        var section = document.getElementById(tab);
-        var tab_div = document.getElementById(tab + '_tab');
-        section.style.display === 'none' ? tab_div.classList.add('current-tab') : '';
-        section.style.display === 'none' ? section.style.display = 'flex' : '';
-    }
-</script>
