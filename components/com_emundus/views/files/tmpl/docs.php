@@ -72,7 +72,7 @@ $template_type = array(
         success: function(result) {
             if(result.status) {
                 let attachment_letters = result.attachment_letters;
-                document.getElementById('export-div').show();
+                $('#export-div').show();
 
                 attachment_letters.forEach((letter,index) => {
                     const opt = document.createElement("option");

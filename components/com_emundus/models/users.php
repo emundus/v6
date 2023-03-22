@@ -1794,16 +1794,16 @@ class EmundusModelUsers extends JModelList {
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $u = JFactory::getUser($user['id']);
 
-		if (isset($user['same_login_email']) && $user['same_login_email'] === 1) {
+	    if (isset($user['same_login_email']) && $user['same_login_email'] === 1) {
 			$user['username'] = $user['email'];
+			$properties_set = $u->setProperties([ 'username' => $user['username']]);
 			unset($user['same_login_email']);
 		}
 
-
-        if (!$u->bind($user)) {
+	    if (!$u->bind($user)) {
             return array('msg' => $u->getError());
         }
-        if (!$u->save()) {
+	    if (!$u->save()) {
             return array('msg' =>$u->getError());
         }
 
@@ -1819,7 +1819,6 @@ class EmundusModelUsers extends JModelList {
         }
 
         $query->where('user_id = ' . $db->quote($user['id']));
-
         $db->setQuery($query);
 
 	    try {

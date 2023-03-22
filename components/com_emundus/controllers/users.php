@@ -699,9 +699,11 @@ class EmundusControllerUsers extends JControllerLegacy {
 			$msg = JText::_('COM_EMUNDUS_USERS_EDITED');
 
 			$e_user = JFactory::getSession()->get('emundusUser');
-			$e_user->firstname = $newuser['firstname'];
-			$e_user->lastname = $newuser['lastname'];
-			JFactory::getSession()->set('emundusUser', $e_user);
+			if ($e_user->id == $newuser['id']) {
+				$e_user->firstname = $newuser['firstname'];
+				$e_user->lastname = $newuser['lastname'];
+				JFactory::getSession()->set('emundusUser', $e_user);
+			}
 		} else {
 			if (is_array($res)) {
 				$res['status'] = false;
