@@ -287,7 +287,16 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                 }
             }
 
-            if ($copy_application_form == 1 && isset($user->fnum) && !in_array($formModel->getId(), $copy_exclude_forms)) {
+	        $db = JFactory::getDBO();
+	        $query = $db->getQuery(true);
+
+	        $query->select('fnum_from')
+		        ->from($db->quoteName('#__emundus_campaign_candidature_links'))
+		        ->where($db->quoteName('fnum_to') . ' LIKE ' . $db->quote($fnum));
+	        $db->setQuery($query);
+	        $fnum_linked = $db->loadResult();
+
+            if ($copy_application_form == 1 && isset($user->fnum) && !in_array($formModel->getId(), $copy_exclude_forms) || !empty($fnum_linked)) {
                 if (empty($formModel->getRowId())) {
                     $db = JFactory::getDBO();
                     $table = $listModel->getTable();
@@ -302,108 +311,120 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                     // check if data stored for current user
                     try {
 						$query = $db->getQuery(true);
-						$query->select(implode(',', $db->quoteName($elements)))
-							->from($db->quoteName($table->db_table_name))
-							->where($db->quoteName('user') . ' = ' . $user->id);
-                        $db->setQuery($query);
-                        $stored = $db->loadAssoc();
 
-						$query->clear()
-							->select('count(id)')
-							->from($db->quoteName($table->db_table_name))
-							->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($user->fnum));
-                        $db->setQuery($query);
-                        $already_cloned = $db->loadResult();
+	                    $query->select('count(id)')
+		                    ->from($db->quoteName($table->db_table_name))
+		                    ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($user->fnum));
+	                    $db->setQuery($query);
+	                    $already_cloned = $db->loadResult();
 
-						$query->clear()
-							->select('count(id)')
-							->from($db->quoteName('#__emundus_uploads'))
-							->where($db->quoteName('user_id') . ' = ' . $user->id)
-							->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($user->fnum));
-                        $db->setQuery($query);
-                        $attachments_already_cloned = $db->loadResult();
+	                    if($already_cloned == 0) {
+		                    $query->select(implode(',', $db->quoteName($elements)))
+			                    ->from($db->quoteName($table->db_table_name))
+			                    ->where($db->quoteName('user') . ' = ' . $user->id);
+		                    if (!empty($fnum_linked)) {
+			                    $query->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum_linked));
+		                    }
+		                    $db->setQuery($query);
+		                    $stored = $db->loadAssoc();
 
-                        if (!empty($stored) && $already_cloned == 0) {
-                            // update form data
-                            $parent_id = $stored['id'];
-                            unset($stored['id']);
-                            unset($stored['fnum']);
+		                    if (!empty($stored)) {
+			                    // update form data
+			                    $parent_id = $stored['id'];
+			                    unset($stored['id']);
+			                    unset($stored['fnum']);
 
-                            foreach ($stored as $key => $store) {
-                                // get the element plugin, and params
-	                            $query->clear()
-		                            ->select('fe.plugin,fe.params')
-		                            ->from($db->quoteName('#__fabrik_elements','fe'))
-		                            ->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
-		                            ->where($db->quoteName('ffg.form_id') . ' = ' . $form_id)
-		                            ->where($db->quoteName('fe.name') . ' = ' . $db->quote($key))
-		                            ->where($db->quoteName('fe.published') . ' = 1');
-                                $db->setQuery($query);
-                                $elt = $db->loadObject();
+			                    foreach ($stored as $key => $store) {
+				                    // get the element plugin, and params
+				                    $query->clear()
+					                    ->select('fe.plugin,fe.params')
+					                    ->from($db->quoteName('#__fabrik_elements', 'fe'))
+					                    ->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
+					                    ->where($db->quoteName('ffg.form_id') . ' = ' . $form_id)
+					                    ->where($db->quoteName('fe.name') . ' = ' . $db->quote($key))
+					                    ->where($db->quoteName('fe.published') . ' = 1');
+				                    $db->setQuery($query);
+				                    $elt = $db->loadObject();
 
-                                // if this element is date plugin, we need to check the time storage format (UTC of Local time)
-                                if($elt->plugin === 'date') {
-                                    // storage format (UTC [0], Local [1])
-                                    $timeStorageFormat = json_decode($elt->params)->date_store_as_local;
+				                    // if this element is date plugin, we need to check the time storage format (UTC of Local time)
+				                    if ($elt->plugin === 'date') {
+					                    // storage format (UTC [0], Local [1])
+					                    $timeStorageFormat = json_decode($elt->params)->date_store_as_local;
 
-                                    $store = EmundusHelperDate::displayDate($store, 'Y-m-d H:i:s', $timeStorageFormat);
-                                }
-                                
-                                $formModel->data[$table->db_table_name . '___' . $key] = $store;
-                                $formModel->data[$table->db_table_name . '___' . $key . '_raw'] = $store;
-                            }
+					                    $store = EmundusHelperDate::displayDate($store, 'Y-m-d H:i:s', $timeStorageFormat);
+				                    }
 
-                            $groups = $formModel->getFormGroups(true);
-                            if (count($groups) > 0) {
-                                foreach ($groups as $group) {
-                                    $group_params = json_decode($group->gparams);
-                                    if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1 && !in_array($group->name,['id','parent_id','fnum','user','date_time'])) {
-                                        $query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id = ' . $group->group_id . ' AND table_key LIKE "id" AND table_join_key LIKE "parent_id"';
-                                        $db->setQuery($query);
-                                        try {
-                                            $repeat_table = $db->loadResult();
-                                        } catch (Exception $e) {
-                                            $error = JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage();
-                                            JLog::add($error, JLog::ERROR, 'com_emundus');
-                                            $repeat_table = $table->db_table_name . '_' . $group->group_id . '_repeat';
-                                        }
+				                    $formModel->data[$table->db_table_name . '___' . $key]          = $store;
+				                    $formModel->data[$table->db_table_name . '___' . $key . '_raw'] = $store;
+			                    }
 
-                                        $query = 'SELECT ' . $db->quoteName($group->name) . ' FROM ' . $repeat_table . ' WHERE parent_id=' . $parent_id;
-                                        $db->setQuery($query);
-                                        $stored = $db->loadColumn();
+			                    $groups = $formModel->getFormGroups(true);
+			                    if (count($groups) > 0) {
+				                    foreach ($groups as $group) {
+					                    $group_params = json_decode($group->gparams);
+					                    if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1 && !in_array($group->name, ['id', 'parent_id', 'fnum', 'user', 'date_time'])) {
+						                    $query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id = ' . $group->group_id . ' AND table_key LIKE "id" AND table_join_key LIKE "parent_id"';
+						                    $db->setQuery($query);
+						                    try {
+							                    $repeat_table = $db->loadResult();
+						                    }
+						                    catch (Exception $e) {
+							                    $error = JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage();
+							                    JLog::add($error, JLog::ERROR, 'com_emundus');
+							                    $repeat_table = $table->db_table_name . '_' . $group->group_id . '_repeat';
+						                    }
 
-                                        if (!empty($stored)) {
-                                            foreach ($stored as $store) {
-												$formModel->data[$repeat_table . '___id'][] = "";
-	                                            $formModel->data[$repeat_table . '___id_raw'][] = "";
-	                                            $formModel->data[$repeat_table . '___parent_id'][] = "";
-	                                            $formModel->data[$repeat_table . '___parent_id_raw'][] = "";
+						                    $query = 'SELECT ' . $db->quoteName($group->name) . ' FROM ' . $repeat_table . ' WHERE parent_id=' . $parent_id;
+						                    $db->setQuery($query);
+						                    $stored = $db->loadColumn();
 
-                                                $formModel->data[$repeat_table . '___' . $group->name][] = $store;
-                                                $formModel->data[$repeat_table . '___' . $group->name . '_raw'][] = $store;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+						                    if (!empty($stored)) {
+							                    foreach ($stored as $store) {
+								                    $formModel->data[$repeat_table . '___id'][]            = "";
+								                    $formModel->data[$repeat_table . '___id_raw'][]        = "";
+								                    $formModel->data[$repeat_table . '___parent_id'][]     = "";
+								                    $formModel->data[$repeat_table . '___parent_id_raw'][] = "";
+
+								                    $formModel->data[$repeat_table . '___' . $group->name][]          = $store;
+								                    $formModel->data[$repeat_table . '___' . $group->name . '_raw'][] = $store;
+							                    }
+						                    }
+					                    }
+				                    }
+			                    }
+		                    }
+	                    }
 
                         // sync documents uploaded
                         // 1. get list of uploaded documents for previous file defined as duplicated
+	                    $query->clear()
+		                    ->select('count(id)')
+		                    ->from($db->quoteName('#__emundus_uploads'))
+		                    ->where($db->quoteName('user_id') . ' = ' . $user->id)
+		                    ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($user->fnum));
+	                    $db->setQuery($query);
+	                    $attachments_already_cloned = $db->loadResult();
+
                         $fnums = $user->fnums;
                         unset($fnums[$user->fnum]);
 
                         if (!empty($fnums) && $attachments_already_cloned == 0) {
                             $previous_fnum = array_keys($fnums);
-                            $query = 'SELECT eu.*, esa.nbmax
-											FROM #__emundus_uploads as eu
-											LEFT JOIN #__emundus_setup_attachments as esa on esa.id=eu.attachment_id
-											LEFT JOIN #__emundus_setup_attachment_profiles as esap on esap.attachment_id=eu.attachment_id AND esap.profile_id='.$user->profile.'
-											WHERE eu.user_id='.$user->id.'
-											AND eu.fnum like '.$db->Quote($previous_fnum[0]).'
-											AND esap.duplicate=1';
-                            $db->setQuery( $query );
-                            $stored = $db->loadAssocList();
+
+	                        $query->clear()
+		                        ->select('eu.*, esa.nbmax')
+		                        ->from($db->quoteName('#__emundus_uploads','eu'))
+		                        ->leftJoin($db->quoteName('#__emundus_setup_attachments','esa').' ON '.$db->quoteName('esa.id').' = '.$db->quoteName('eu.attachment_id'))
+		                        ->leftJoin($db->quoteName('#__emundus_setup_attachment_profiles','esap').' ON '.$db->quoteName('esap.attachment_id').' = '.$db->quoteName('eu.attachment_id') . ' AND ' . $db->quoteName('esap.profile_id') . ' = ' . $user->profile)
+		                        ->where($db->quoteName('eu.user_id') . ' = ' . $user->id);
+	                        if(!empty($fnum_linked)){
+		                        $query->andWhere($db->quoteName('eu.fnum') . ' LIKE ' . $db->quote($fnum_linked));
+	                        } else {
+		                        $query->andWhere($db->quoteName('eu.fnum') . ' LIKE ' . $db->quote($previous_fnum[0]));
+	                        }
+	                        $query->andWhere($db->quoteName('esap.duplicate') . ' = 1');
+	                        $db->setQuery($query);
+	                        $stored = $db->loadAssocList();
 
                             if (!empty($stored)) {
                                 // 2. copy DB définition and duplicate files in applicant directory
