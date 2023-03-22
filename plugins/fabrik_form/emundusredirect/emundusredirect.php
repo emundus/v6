@@ -105,8 +105,11 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 			try {
 				$query = $db->getQuery(true);
 
+				$now = new DateTime();
+				$now->setTimezone(new DateTimeZone('UTC'));
+
 				$query->update($db->quoteName('#__emundus_campaign_candidature'))
-					->set($db->quoteName('updated') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+					->set($db->quoteName('updated') . ' = ' . $db->quote($now->format('Y-m-d H:i:s')))
 					->set($db->quoteName('updated_by') . ' = ' . JFactory::getUser()->id)
 					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($user->fnum));
 				$db->setQuery($query);
