@@ -248,16 +248,20 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                     }
 
                     $fnumList = '<ul>';
+                    $fnumListNoLink = '<ul>';
                     foreach ($fnums_no_readed as $fnum) {
                         $fnumList .= '
                         <li>
                             <a href="' . JURI::root() . $userLink . '#' . $fnum . '|open">' . $fnum . '</a>
                         </li>';
+                        $fnumListNoLink .= '<li>' . $fnum . '</li>';
                     }
                     $fnumList .= '</ul>';
+                    $fnumListNoLink .= '</ul>';
 
                     $post = array(
                         'FNUMS' => $fnumList,
+                        'FNUMS_LIST' => $fnumListNoLink,
                         'NAME' => $user_info->name,
                         'SITE_URL' => JURI::base(),
                     );
