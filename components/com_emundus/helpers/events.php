@@ -1213,8 +1213,12 @@ class EmundusHelperEvents {
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
+			$now = new DateTime();
+			$now->setTimezone(new DateTimeZone('UTC'));
+			$now->format('Y-m-d H:i:s');
+
 			$query->update($db->quoteName('#__emundus_campaign_candidature'))
-				->set($db->quoteName('updated') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+				->set($db->quoteName('updated') . ' = ' . $db->quote($now))
 				->set($db->quoteName('updated_by') . ' = ' . JFactory::getUser()->id)
 				->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
 			$db->setQuery($query);
