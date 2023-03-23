@@ -80,6 +80,12 @@ elseif (!empty($tmp_applications)) {
 				}
 				$applications[0]['all']['applications'][$tmp_application->programme][] = $tmp_application;
 				break;
+			case 'years':
+				if (!empty($tmp_application->tab_id)) {
+					$applications[$tmp_application->tab_id]['all']['applications'][$tmp_application->year][] = $tmp_application;
+				}
+				$applications[0]['all']['applications'][$tmp_application->year][] = $tmp_application;
+				break;
 			default:
 				if (!empty($tmp_application->tab_id)) {
 					$applications[$tmp_application->tab_id]['all']['applications'][0][] = $tmp_application;
@@ -209,6 +215,8 @@ $current_tab = 0;
                         <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_PROGRAMS') ?>
                     <?php elseif ($order_by_session == 'last_update') : ?>
                         <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_LAST_UPDATE') ?>
+                    <?php elseif ($order_by_session == 'years') : ?>
+	                    <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_YEARS') ?>
                     <?php endif; ?>
                 </span>
                 <span class="material-icons-outlined em-pointer em-ml-8 em-font-size-16" onclick="filterApplications('applications_order_by','')">close</span>
@@ -251,6 +259,9 @@ $current_tab = 0;
     <a onclick="filterApplications('applications_order_by','programs')" class="em-text-neutral-900 em-pointer">
 		<?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_PROGRAMS') ?>
     </a>
+    <a onclick="filterApplications('applications_order_by','years')" class="em-text-neutral-900 em-pointer">
+		<?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_YEARS') ?>
+    </a>
     <a onclick="filterApplications('applications_order_by','last_update')" class="em-text-neutral-900 em-pointer">
 		<?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_LAST_UPDATE') ?>
     </a>
@@ -291,7 +302,7 @@ $current_tab = 0;
                     <div id="group_application_tab_<?php echo $key ?>"
                          class="em-mb-44 <?php if ($key != $current_tab) : ?>em-display-none<?php endif; ?>">
 						<?php foreach ($sub_group['applications'] as $f_key => $files) : ?>
-							<?php if (!is_integer($f_key)) : ?>
+							<?php if (!is_integer($f_key) || $order_by_session == 'years') : ?>
                                 <p class="em-h5 em-ml-8"><?php echo $f_key ?></p>
                                 <hr/>
 							<?php endif; ?>
@@ -610,7 +621,7 @@ $current_tab = 0;
                             </thead>
                         </table>
 						<?php foreach ($sub_group['applications'] as $f_key => $files) : ?>
-							<?php if (!is_integer($f_key)) : ?>
+							<?php if (!is_integer($f_key) || $order_by_session == 'years') : ?>
                                 <div class="em-mt-12 em-flex-row em-white-bg em-applicant-border-radius em-p-6-12">
                                     <span class="material-icons-outlined em-mr-8">expand_more</span>
                                     <p class="em-h6"><?php echo $f_key ?></p>

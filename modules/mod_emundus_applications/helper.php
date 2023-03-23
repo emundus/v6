@@ -71,7 +71,10 @@ class modemundusApplicationsHelper {
 				$query .= ' ORDER BY ecc.updated DESC,ecc.date_time DESC';
 				break;
 			case 'programs':
-				$query .= ' ORDER BY esc.training DESC,ecc.date_time DESC';
+				$query .= ' ORDER BY esc.training ASC,ecc.date_time DESC';
+				break;
+			case 'years':
+				$query .= ' ORDER BY esc.year DESC,ecc.date_time DESC';
 				break;
 			default:
 				$query .= ' ORDER BY ' . $order_by;
