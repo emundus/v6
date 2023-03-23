@@ -1020,7 +1020,11 @@ class EmundusControllerApplication extends JControllerLegacy
 
 		if(!empty($type) && !empty($value) && in_array($type,['applications_order_by','applications_filter_by'])){
 			JFactory::getSession()->set($type,$value);
-		} else {
+		}
+		elseif (empty($value)){
+			JFactory::getSession()->clear($type);
+		}
+		else {
 			$response = array('status' => 0, 'msg' => JText::_('FAILED'));
 		}
 

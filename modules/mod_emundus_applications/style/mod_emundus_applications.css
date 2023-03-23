@@ -470,7 +470,7 @@ margin-top: 16px;
 }
 #applications_list_view table thead tr th,#applications_list_view table tbody tr td{
     background: transparent;
-    padding: 12px 8px 12px 0;
+    padding: 12px 8px 12px 8px;
 }
 #applications_list_view table tr {
     border-bottom: 1px solid #EDEDED;
