@@ -244,7 +244,8 @@ class EmundusModelEmails extends JModelList {
      */
     public function sendEmailTrigger($step, $code, $to_applicant = 0, $student = null, $to_current_user = null) {
         $app = JFactory::getApplication();
-        $email_from_sys = $app->getCfg('mailfrom');
+        $config = JFactory::getConfig();
+        $email_from_sys = $config->get('mailfrom');
 
         jimport('joomla.log.log');
         JLog::addLogger(array('text_file' => 'com_emundus.email.php'), JLog::ALL, array('com_emundus'));
@@ -301,11 +302,12 @@ class EmundusModelEmails extends JModelList {
 
 
                     // If the email sender has the same domain as the system sender address.
-                    if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
+                    /*if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
                         $mail_from_address = $from;
                     } else {
                         $mail_from_address = $email_from_sys;
-                    }
+                    }*/
+                    $mail_from_address = $email_from_sys;
 
                     // Set sender
                     $sender = [
@@ -320,7 +322,12 @@ class EmundusModelEmails extends JModelList {
                     $mailer->isHTML(true);
                     $mailer->Encoding = 'base64';
                     $mailer->setBody($body);
-                    $send = $mailer->Send();
+
+                    try {
+                        $send = $mailer->Send();
+                    } catch (Exception $e) {
+                        JLog::add('eMundus Triggers - PHP Mailer send failed ' . $e->getMessage(), JLog::ERROR, 'com_emundus.email');
+                    }
 
                     if ($send !== true) {
                         echo 'Error sending email: ' . $send->__toString();
