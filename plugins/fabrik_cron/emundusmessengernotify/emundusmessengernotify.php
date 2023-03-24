@@ -51,6 +51,12 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
 
         $reminder_mail_id = $params->get('reminder_mail_id', '79');
         $reminder_mail_coordinator_id = $params->get('reminder_mail_id_coordinator', '80');
+        $notify_users_programs = $params->get('notify_users_programs', '0');
+        $notify_users_groups = $params->get('notify_users_groups', '1');
+        $notify_users_assoc = $params->get('notify_users_assoc', '1');
+        $notify_groups = $params->get('notify_groups', '');
+        $notify_profiles = $params->get('notify_profiles', '');
+        $notify_coordinators = $params->get('notify_coordinators', '0');
 
         $this->log = '';
 
@@ -175,72 +181,138 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
             $users_fnum_assoc = array();
 
             foreach ($chatrooms as $chatroom) {
-                $group_associated_prog = array();
-                $group_associated_direct = array();
-                $users_associated_direct = array();
-                $users_to_send = array();
-
                 $fnumInfos = $m_files->getFnumInfos($chatroom->fnum);
 
-                // Get users associated to the file by their group and the campaign program
-                $query->clear()
-                    ->select('distinct u.id')
-                    ->from($db->quoteName('#__emundus_groups', 'g'))
-                    ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'grc') . ' ON ' . $db->quoteName('grc.parent_id') . ' = ' . $db->quoteName('g.group_id'))
-                    ->innerJoin($db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('u.id') . ' = ' . $db->quoteName('g.user_id'))
-                    ->where($db->quoteName('grc.course') . ' = ' . $db->quote($fnumInfos['training']));
-                $db->setQuery($query);
-                $group_associated_prog = $db->loadColumn();
-
-                // Get users associated to the file by their group directly
-                $query->clear()
-                    ->select('distinct u.id')
-                    ->from($db->quoteName('#__emundus_groups', 'g'))
-                    ->leftJoin($db->quoteName('#__emundus_group_assoc', 'ga') . ' ON ' . $db->quoteName('ga.group_id') . ' = ' . $db->quoteName('g.group_id'))
-                    ->innerJoin($db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('u.id') . ' = ' . $db->quoteName('g.user_id'))
-                    ->where($db->quoteName('ga.fnum') . ' LIKE ' . $db->quote($chatroom->fnum));
-                $db->setQuery($query);
-                $group_associated_direct = $db->loadColumn();
-
-                // Get users associated to the file directly
-                $query->clear()
-                    ->select('distinct u.id')
-                    ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
-                    ->leftJoin($db->quoteName('#__emundus_users_assoc', 'eua') . ' ON ' . $db->quoteName('eua.fnum') . ' LIKE ' . $db->quoteName('cc.fnum'))
-                    ->innerJoin($db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('u.id') . ' = ' . $db->quoteName('eua.user_id'))
-                    ->where($db->quoteName('cc.fnum') . ' LIKE ' . $db->quote($chatroom->fnum))
-                    ->group($db->quoteName('cc.fnum'));
-                $db->setQuery($query);
-                $users_associated_direct = $db->loadColumn();
-
-                // Merge the two lists
-                $users_to_send = array_unique(array_merge($group_associated_prog,$group_associated_direct,$users_associated_direct));
-
-                // If there are no users associated to the file, get a list of all coordinators
-                if(empty($users_to_send)){
-                    $query->clear()
-                        ->select('distinct eu.user_id')
-                        ->from($db->quoteName('#__emundus_users','eu'))
-                        ->leftJoin($db->quoteName('#__emundus_users_profiles','eup').' ON '.$db->quoteName('eu.user_id').' = '.$db->quoteName('eup.user_id'))
-                        ->where($db->quoteName('eup.profile_id') . ' = 2');
-                    $db->setQuery($query);
-                    $users_to_send = $db->loadColumn();
-                }
-
-                // Check if unread messages from the chatroom come from another user than the ones in our final list
+                // Check if unread messages from the chatroom come from the applicant
                 $query->clear()
                     ->select('count(m.message_id)')
                     ->from($db->quoteName('#__messages', 'm'))
-                    ->leftJoin($db->quoteName('#__emundus_chatroom', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('m.page'))
-                    ->where($db->quoteName('c.fnum') . ' LIKE ' . $db->quote($chatroom->fnum))
+                    ->leftJoin($db->quoteName('#__emundus_chatroom', 'ec') . ' ON ' . $db->quoteName('ec.id') . ' = ' . $db->quoteName('m.page'))
+                    ->where($db->quoteName('ec.fnum') . ' LIKE ' . $db->quote($chatroom->fnum))
                     ->andWhere($db->quoteName('m.user_id_from') . ' = ' . $db->quote($chatroom->applicant_id))
                     ->andWhere($db->quoteName('m.state') . ' = 0');
-
                 $db->setQuery($query);
                 $messages_not_read = $db->loadResult();
 
-                // If an unread message from the chatroom was not sent by a partner from our final list, then it must be the applicant, add the users and the fnum to the list of emails to send
                 if ($messages_not_read > 0) {
+                    // Get users associated to the file by their group and the campaign program
+                    if ($notify_users_programs == 1 || !empty($notify_groups) || !empty($notify_profiles)) {
+                        $query->clear()
+                            ->select('distinct eu.user_id')
+                            ->from($db->quoteName('#__emundus_groups', 'eg'))
+                            ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'esgrc') . ' ON ' . $db->quoteName('esgrc.parent_id') . ' = ' . $db->quoteName('eg.group_id'))
+                            ->innerJoin($db->quoteName('#__emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.user_id') . ' = ' . $db->quoteName('eg.user_id'));
+                        if (!empty($notify_profiles)) {
+                            $query->leftJoin($db->quoteName('#__emundus_users_profiles', 'eup') . ' ON ' . $db->quoteName('eup.user_id') . ' = ' . $db->quoteName('eu.user_id'));
+                        }
+
+                        $query->where($db->quoteName('esgrc.course') . ' = ' . $db->quote($fnumInfos['training']));
+
+                        // Keep only users associated to groups given in parameter
+                        if (!empty($notify_groups)) {
+                            $query->andWhere($db->quoteName('eg.group_id') . ' IN (' . $notify_groups . ')');
+                        }
+                        // Keep only users associated to profiles given in parameter
+                        if (!empty($notify_profiles)) {
+                            $query->andWhere($db->quoteName('eu.profile') . ' IN (' . $notify_profiles . ') OR ' . $db->quoteName('eup.profile_id') . ' IN (' . $notify_profiles . ')');
+                        }
+
+                        $db->setQuery($query);
+                        $group_associated_prog = $db->loadColumn();
+
+                        // Remove eventual null values
+                        if (!empty($group_associated_prog)) {
+                            $group_associated_prog = array_filter($group_associated_prog);
+                        }
+                    }
+
+                    // Get users associated to the file by their group directly
+                    if ($notify_users_groups == 1 || !empty($notify_groups) || !empty($notify_profiles)) {
+                        $query->clear()
+                            ->select('distinct eu.user_id')
+                            ->from($db->quoteName('#__emundus_groups', 'eg'))
+                            ->leftJoin($db->quoteName('#__emundus_group_assoc', 'ega') . ' ON ' . $db->quoteName('ega.group_id') . ' = ' . $db->quoteName('eg.group_id'))
+                            ->innerJoin($db->quoteName('#__emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.user_id') . ' = ' . $db->quoteName('eg.user_id'));
+                        if (!empty($notify_profiles)) {
+                            $query->leftJoin($db->quoteName('#__emundus_users_profiles', 'eup') . ' ON ' . $db->quoteName('eup.user_id') . ' = ' . $db->quoteName('eu.user_id'));
+                        }
+
+                        $query->where($db->quoteName('ega.fnum') . ' LIKE ' . $db->quote($chatroom->fnum));
+
+                        // Keep only users associated to groups given in parameter
+                        if (!empty($notify_groups)) {
+                            $query->andWhere($db->quoteName('eg.group_id') . ' IN (' . $notify_groups . ')');
+                        }
+                        // Keep only users associated to profiles given in parameter
+                        if (!empty($notify_profiles)) {
+                            $query->andWhere($db->quoteName('eu.profile') . ' IN (' . $notify_profiles . ') OR ' . $db->quoteName('eup.profile_id') . ' IN (' . $notify_profiles . ')');
+                        }
+
+                        $db->setQuery($query);
+                        $group_associated_direct = $db->loadColumn();
+
+                        // Remove eventual null values
+                        if (!empty($group_associated_direct)) {
+                            $group_associated_direct = array_filter($group_associated_direct);
+                        }
+                    }
+
+                    // Get users associated to the file directly
+                    if ($notify_users_assoc == 1 || !empty($notify_groups) || !empty($notify_profiles)) {
+                        $query->clear()
+                            ->select('distinct eu.user_id')
+                            ->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+                            ->leftJoin($db->quoteName('#__emundus_users_assoc', 'eua') . ' ON ' . $db->quoteName('eua.fnum') . ' LIKE ' . $db->quoteName('ecc.fnum'))
+                            ->innerJoin($db->quoteName('#__emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.user_id') . ' = ' . $db->quoteName('eua.user_id'));
+                        if (!empty($notify_profiles)) {
+                            $query->leftJoin($db->quoteName('#__emundus_users_profiles', 'eup') . ' ON ' . $db->quoteName('eup.user_id') . ' = ' . $db->quoteName('eu.user_id'));
+                        }
+
+                        $query->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($chatroom->fnum));
+
+                        // Keep only users associated to groups given in parameter
+                        if (!empty($notify_groups)) {
+                            $query->andWhere($db->quoteName('eg.group_id') . ' IN (' . $notify_groups . ')');
+                        }
+                        // Keep only users associated to profiles given in parameter
+                        if (!empty($notify_profiles)) {
+                            $query->andWhere($db->quoteName('eu.profile') . ' IN (' . $notify_profiles . ') OR ' . $db->quoteName('eup.profile_id') . ' IN (' . $notify_profiles . ')');
+                        }
+
+                        $db->setQuery($query);
+                        $users_associated_direct = $db->loadColumn();
+
+                        // Remove eventual null values
+                        if (!empty($users_associated_direct)) {
+                            $users_associated_direct = array_filter($users_associated_direct);
+                        }
+                    }
+
+                    // Merge the lists
+                    $users_to_send = array_unique(array_merge($group_associated_prog,$group_associated_direct,$users_associated_direct));
+
+                    // If there are no users associated to the file, get a list of all coordinators
+                    if(empty($users_to_send)){
+                        $query->clear()
+                            ->select('distinct eu.user_id')
+                            ->from($db->quoteName('#__emundus_users','eu'))
+                            ->leftJoin($db->quoteName('#__emundus_users_profiles','eup').' ON '.$db->quoteName('eu.user_id').' = '.$db->quoteName('eup.user_id'))
+                            ->where($db->quoteName('eup.profile_id') . ' = 2');
+                        $db->setQuery($query);
+                        $users_to_send = $db->loadColumn();
+                    } else if ($notify_coordinators == 1) {
+                        $query->clear()
+                            ->select('distinct eu.user_id')
+                            ->from($db->quoteName('#__emundus_users','eu'))
+                            ->leftJoin($db->quoteName('#__emundus_users_profiles','eup').' ON '.$db->quoteName('eu.user_id').' = '.$db->quoteName('eup.user_id'))
+                            ->where($db->quoteName('eup.profile_id') . ' = 2');
+                        $db->setQuery($query);
+                        $users_coordinators = $db->loadColumn();
+
+                        // Merge the lists
+                        $users_to_send = array_unique(array_merge($users_to_send,$users_coordinators));
+                    }
+
                     foreach ($users_to_send as $user_fnum_assoc) {
                         $users_fnum_assoc[$user_fnum_assoc][] = $chatroom->fnum;
                     }

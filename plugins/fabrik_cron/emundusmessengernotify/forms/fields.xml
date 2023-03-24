@@ -15,6 +15,56 @@
 				   label="PLG_CRON_EMAIL_TEMPLATE_COORDINATOR"
 				   size="30"
 				   default="80" />
+
+			<field name="notify_users_programs"
+				   type="list"
+				   default="0"
+				   label="PLG_CRON_NOTIFY_USERS_PROGRAMS"
+				   description="PLG_CRON_NOTIFY_USERS_PROGRAMS_DESC">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<field name="notify_users_groups"
+				   type="list"
+				   default="1"
+				   label="PLG_CRON_NOTIFY_USERS_GROUPS"
+				   description="PLG_CRON_NOTIFY_USERS_GROUPS_DESC">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<field name="notify_users_assoc"
+				   type="list"
+				   default="1"
+				   label="PLG_CRON_NOTIFY_USERS_ASSOC"
+				   description="PLG_CRON_NOTIFY_USERS_ASSOC_DESC">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<field
+					name="notify_groups"
+					type="text"
+					size="30"
+					label="PLG_CRON_NOTIFY_GROUPS"
+					description="PLG_CRON_NOTIFY_GROUPS_DESC"/>
+
+			<field
+					name="notify_profiles"
+					type="text"
+					size="30"
+					label="PLG_CRON_NOTIFY_PROFILES"
+					description="PLG_CRON_NOTIFY_PROFILES_DESC"/>
+
+			<field name="notify_coordinators"
+				   type="list"
+				   default="0"
+				   label="PLG_CRON_NOTIFY_COORDINATORS"
+				   description="PLG_CRON_NOTIFY_COORDINATORS_DESC">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
 		</fieldset>
 
 	</fields>
