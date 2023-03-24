@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 class EmundusModelFilters extends JModelList
 {
 	private $default_element = 0;
-	private $default_filters = [];
+	private $filters = [];
 	private $applied_filters = [];
 
 	public function __construct($config = array(), \Joomla\CMS\MVC\Factory\MVCFactoryInterface $factory = null)
@@ -24,7 +24,7 @@ class EmundusModelFilters extends JModelList
 
 		if (!empty($config['element_id'])) {
 			$this->default_element = $config['element_id'];
-			$this->setDefaultFilters();
+			$this->setFilters();
 		}
 
 		$session_filters = JFactory::getSession()->get('applied_filters');
@@ -38,7 +38,7 @@ class EmundusModelFilters extends JModelList
 		return $this->default_element;
 	}
 
-	private function setDefaultFilters()
+	private function setFilters()
 	{
 		$element = $this->getDefaultElement();
 
@@ -62,8 +62,6 @@ class EmundusModelFilters extends JModelList
 				JLog::add('Failed to get infos from fabrik element id ' . $element . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
 			}
 
-
-
 			if (!empty($data['form_id'])) {
 				$query->clear()
 					->select('jfe.id, jfe.plugin, jfe.label, jfe.params')
@@ -82,11 +80,10 @@ class EmundusModelFilters extends JModelList
 
 				if (!empty($elements)) {
 					foreach($elements as $element) {
-						$default_filter = [
+						$filter = [
 							'id' => $element['id'],
 							'label' => JText::_($element['label']),
 							'type' => 'text',
-							'operators' => ['='],
 							'values' => []
 						];
 
@@ -95,27 +92,27 @@ class EmundusModelFilters extends JModelList
 							case 'checkbox':
 							case 'radiobutton':
 							case 'databasejoin':
-								$default_filter['type'] = 'select';
-								$default_filter['values'] = $this->getFabrikElementValues($element);
+								$filter['type'] = 'select';
+								$filter['values'] = $this->getFabrikElementValues($element);
 							break;
 							case 'date':
 							case 'jdate':
 							case 'birthday':
-								$default_filter['type'] = 'date';
+								$filter['type'] = 'date';
 								break;
 							default:
 						}
 
-						$this->default_filters[] = $default_filter;
+						$this->filters[] = $filter;
 					}
 				}
 			}
 		}
 	}
 
-	public function getDefaultFilters()
+	public function getFilters()
 	{
-		return $this->default_filters;
+		return $this->filters;
 	}
 
 	private function setAppliedFilters($applied_filters)
@@ -125,7 +122,7 @@ class EmundusModelFilters extends JModelList
 
 	public function getAppliedFilters()
 	{
-		return $this->default_filters;
+		return $this->applied_filters;
 	}
 
 	public function applyFilters()

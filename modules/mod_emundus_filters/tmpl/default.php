@@ -4,12 +4,14 @@ defined('_JEXEC') or die;
 
 <script type="text/javaScript" src="../assets/js/filters.js"></script>
 <section id="mod_emundus_filters">
+    <input type="text" id="search" placeholder="<?= JText::_('SEARCH') ?>"/>
+
     <?php
-    if (!empty($default_filters)) {
+    if (!empty($filters)) {
     ?>
-    <div id="default-filters" class="">
+    <div id="filters" class="em-mt-16 hidden">
         <?php
-        foreach($default_filters as $filter) {
+        foreach($filters as $filter) {
             ?>
             <div>
                 <label><?= $filter['label'] ?></label>
@@ -20,7 +22,7 @@ defined('_JEXEC') or die;
                         break;
                     case 'select':
                         ?>
-                        <select id="<?= $filter['id'] ?>">
+                        <select id="<?= $filter['id'] ?>" class="em-w-100">
                             <option value="0"><?= JText::_('PLEASE_SELECT'); ?></option>
                             <?php foreach($filter['values'] as $value){ ?>
                                 <option value="<?=$value['value']?>"><?= $value['label'] ?></option>
@@ -39,7 +41,7 @@ defined('_JEXEC') or die;
         ?>
     </div>
 
-    <div id="applied-filters">
+    <div id="applied-filters" class="em-mt-16 em-mb-16">
         <?php
         foreach($applied_filters as $filter) {
 

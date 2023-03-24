@@ -18,7 +18,24 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
-                <field type="text" name="element_id" label="FABRIK_ELEMENT_ID" default="0"></field>
+                <field type="text" name="element_id" label="MOD_EM_FILTER_FABRIK_ELEMENT_ID" description="MOD_EM_FILTER_FABRIK_ELEMENT_ID_DESC" default="0"></field>
+                <field name="default_filter_element_ids"
+                       type="subform"
+                       label="MOD_EM_FILTER_DEFAULT_ELEMENTS"
+                       description="MOD_EM_FILTER_DEFAULT_ELEMENTS_DESC"
+                       multiple="true"
+                       min="1"
+                       max="20"
+                       filter="raw"
+                       layout="joomla.form.field.subform.repeatable-table"
+                >
+                    <form>
+                        <field type="text" name="id" label="MOD_EM_FILTER_DEFAULT_ELEMENT_ID" description="MOD_EM_FILTER_DEFAULT_ELEMENT_ID_DESC" default="0"></field>
+                        <field type="text" name="join_table" label="MOD_EM_FILTER_DEFAULT_ELEMENT_JOIN_TABLE" default=""></field>
+                        <field type="text" name="join_column_from" label="MOD_EM_FILTER_DEFAULT_ELEMENT_JOIN_COLUMN_FROM" default=""></field>
+                        <field type="text" name="join_column_to" label="MOD_EM_FILTER_DEFAULT_ELEMENT_JOIN_COLUMN_TO" default=""></field>
+                    </form>
+                </field>
             </fieldset>
         </fields>
     </config>

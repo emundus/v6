@@ -299,17 +299,9 @@ class EmundusModelEmails extends JModelList {
                     $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
                     $body = $this->setTagsFabrik($body, array($student->fnum));
 
-
-                    // If the email sender has the same domain as the system sender address.
-                    if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
-                        $mail_from_address = $from;
-                    } else {
-                        $mail_from_address = $email_from_sys;
-                    }
-
                     // Set sender
                     $sender = [
-                        $mail_from_address,
+                        $email_from_sys,
                         $fromname
                     ];
 
@@ -320,7 +312,12 @@ class EmundusModelEmails extends JModelList {
                     $mailer->isHTML(true);
                     $mailer->Encoding = 'base64';
                     $mailer->setBody($body);
-                    $send = $mailer->Send();
+
+                    try {
+                        $send = $mailer->Send();
+                    } catch (Exception $e) {
+                        JLog::add('eMundus Triggers - PHP Mailer send failed ' . $e->getMessage(), JLog::ERROR, 'com_emundus.email');
+                    }
 
                     if ($send !== true) {
                         echo 'Error sending email: ' . $send->__toString();
