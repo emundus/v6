@@ -1169,7 +1169,7 @@ class EmundusModelFiles extends JModelLegacy
             $db->setQuery($query);
 	        $tags =  $db->loadAssocList();
         } catch(Exception $e) {
-            JLog::add('Faziled to get all tags ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            JLog::add('Failed to get all tags ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
         }
 
 		return $tags;
@@ -3579,19 +3579,20 @@ class EmundusModelFiles extends JModelLegacy
 
     public function getAllLogActions()
     {
+		$logs = [];
+
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
         $query->clear()->select('*')->from($db->quoteName('#__emundus_setup_actions', 'jesa'))->order('jesa.id ASC');
 
-        try
-        {
+        try {
             $db->setQuery($query);
-            return $db->loadObjectList();
-        }
-        catch(Exception $e)
-        {
+	        $logs = $db->loadObjectList();
+        } catch(Exception $e) {
             JLog::add('component/com_emundus/models/files | Error when get all logs' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
         }
+
+		return $logs;
     }
 
     /**

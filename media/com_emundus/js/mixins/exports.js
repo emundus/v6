@@ -890,7 +890,7 @@ function generate_trombinoscope(fnums, data)
         type: 'POST',
         url: 'index.php?option=com_emundus&controller=trombinoscope&task=generate_pdf',
         async: false,
-        dataType: "json",
+        dataType: 'json',
         data : {
             string_fnums: string_fnums,
             gridL: data.selected_grid_width,
@@ -906,15 +906,28 @@ function generate_trombinoscope(fnums, data)
             headerHeight : data.header_height
         },
         success: function (data) {
-            Swal.fire({
-                title: Joomla.JText._('COM_EMUNDUS_TROMBI_DOWNLOAD'),
-                html: '<a href="' +data.pdf_url + '" target="_blank">Télécharger le fichier</a>',
-                customClass: {
-                    title: 'em-swal-title',
-                    confirmButton: 'em-swal-confirm-button',
-                    actions: 'em-swal-single-action'
-                },
-            })
+            if (data.status && data.pdf_url !== undefined && data.pdf_url !== null) {
+                Swal.fire({
+                    title: Joomla.JText._('COM_EMUNDUS_TROMBI_DOWNLOAD'),
+                    html: '<a href="' +data.pdf_url + '" target="_blank">Télécharger le fichier</a>',
+                    customClass: {
+                        title: 'em-swal-title',
+                        confirmButton: 'em-swal-confirm-button',
+                        actions: 'em-swal-single-action'
+                    },
+                });
+            } else {
+                Swal.fire({
+                    title: Joomla.JText._('COM_EMUNDUS_ERROR'),
+                    text: Joomla.JText._('COM_EMUNDUS_TROMBINOSCOPE_GENERATE_FAILED'),
+                    type: 'error',
+                    customClass: {
+                        title: 'em-swal-title',
+                        confirmButton: 'em-swal-confirm-button',
+                        actions: 'em-swal-single-action'
+                    },
+                });
+            }
             removeLoader();
         },
         error: function (xhr) {

@@ -673,6 +673,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$newuser['username'] 		= JRequest::getVar('login', null, 'POST', '', 0);
 		$newuser['name'] 			= $newuser['firstname'].' '.$newuser['lastname'];
 		$newuser['email'] 			= JRequest::getVar('email', null, 'POST', '', 0);
+		$newuser['same_login_email']= JFactory::getApplication()->input->post->getInt('sameLoginEmail', null);
 		$newuser['profile'] 		= JRequest::getVar('profile', null, 'POST', '', 0);
 		$newuser['em_oprofiles']	= JRequest::getVar('oprofiles', null, 'POST', 'string',0);
 		$newuser['groups'] 			= array(JRequest::getVar('jgr', null, 'POST', '', 0));
@@ -685,7 +686,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 			echo json_encode((object)array('status' => false, 'msg' => 'LOGIN_NOT_GOOD'));
 			exit;
 		}
-		if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $newuser['email']) !== 1) {
+		if (!filter_var($newuser['email'], FILTER_VALIDATE_EMAIL)) {
 			echo json_encode((object)array('status' => false, 'msg' => 'MAIL_NOT_GOOD'));
 			exit;
 		}
@@ -698,9 +699,11 @@ class EmundusControllerUsers extends JControllerLegacy {
 			$msg = JText::_('COM_EMUNDUS_USERS_EDITED');
 
 			$e_user = JFactory::getSession()->get('emundusUser');
-			$e_user->firstname = $newuser['firstname'];
-			$e_user->lastname = $newuser['lastname'];
-			JFactory::getSession()->set('emundusUser', $e_user);
+			if ($e_user->id == $newuser['id']) {
+				$e_user->firstname = $newuser['firstname'];
+				$e_user->lastname = $newuser['lastname'];
+				JFactory::getSession()->set('emundusUser', $e_user);
+			}
 		} else {
 			if (is_array($res)) {
 				$res['status'] = false;
