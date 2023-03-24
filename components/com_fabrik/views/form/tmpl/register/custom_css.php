@@ -562,7 +562,7 @@ textarea.fabrikinput{
     -webkit-appearance: none;
     border: 1px solid #cccccc !important;
 	border-radius:none!important; 
-    background: transparent url(../../../../../../images/custom/vyv/arrow-down.png) no-repeat;
+    background: transparent url(../../../../../../images/custom/vyv/arrow.svg) no-repeat;
     background-size: 10px;
     padding: 0 30px 0 10px;
 	background-color: white;
@@ -621,7 +621,6 @@ background-position: 50%;
 input[type='radio'],input[type='checkbox'] {
     margin-top:0;
     -webkit-appearance: none;
-    border: 2px solid $base-secondary-color;
     border-radius: 50%;
     width:10px;
     height: 10px;

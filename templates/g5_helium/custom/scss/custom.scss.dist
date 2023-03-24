@@ -3413,7 +3413,7 @@ form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm
         background-position-x: 98%;
         background-position-y: 58%;
         -webkit-appearance: none;
-        background: transparent url(images/custom/arrow-down.png) no-repeat 98% 52%;
+        background: transparent url(images/custom/arrow.svg) no-repeat 98% 52%;
         background-size: 10px;
         padding: 0 30px 0 10px;
     }

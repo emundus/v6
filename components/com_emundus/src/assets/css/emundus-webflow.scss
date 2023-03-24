@@ -383,7 +383,7 @@ textarea.w-input {
   border-radius: 4px;
   border: 2px solid #ccc;
   background-color: white !important;
-  background-image: url(/images/emundus/arrow-2.png) !important;
+  background-image: url(/images/emundus/arrow.svg) !important;
   background-size: 25px !important;
   background-repeat: no-repeat !important;
   background-position-x: 98% !important;
@@ -1817,14 +1817,14 @@ textarea {
   }
 }
 .down-arrow {
-  background: url("/images/emundus/arrow-2.png");
+  background: url("/images/emundus/arrow.svg");
   background-repeat: no-repeat;
   width: 65%;
   background-position-x: 95%;
   background-position-y: 3px;
 }
 .down-arrow-evaluation {
-  background: url("/images/emundus/arrow-2.png");
+  background: url("/images/emundus/arrow.svg");
   background-repeat: no-repeat;
   background-position-y: 10px;
 }

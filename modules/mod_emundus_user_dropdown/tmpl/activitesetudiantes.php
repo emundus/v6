@@ -67,7 +67,7 @@ if($user != null) {
             padding: 0 5px;
             border: 1px solid #e5e5e5;
             background-color: white !important;
-            background-image: url(/images/emundus/arrow-2.png) !important;
+            background-image: url(/images/emundus/arrow.svg) !important;
             background-size: 25px !important;
             background-repeat: no-repeat !important;
             background-position-x: 98% !important;
