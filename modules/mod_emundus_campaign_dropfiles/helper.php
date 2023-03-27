@@ -6,11 +6,12 @@ jimport( 'joomla.access.access' );
 
 class modEmundusCampaignDropfilesHelper {
 
-    public function getFiles($column = null) {
+    public function getFiles($column = null, $cid = null) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $jinput = JFactory::getApplication()->input;
         $id = $jinput->get('id') ? $jinput->getInt('id',null) : $jinput->getInt('cid',null);
+		$id = empty($id) ? $cid : $id;
         $groupUser = JFactory::getUser()->getAuthorisedGroups();
         $dateTime = new Date('now', 'UTC');
         $now = $dateTime->toSQL();

@@ -46,10 +46,12 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $show_mandatory_documents = $params->get('show_mandatory_documents', 1);
     $show_optional_documents = $params->get('show_optional_documents', 0);
     $show_duplicate_documents = $params->get('show_duplicate_documents', 1);
-    $forms_title = $params->get('forms_title', JText::_('FORMS'));
+	$show_preliminary_documents = $params->get('show_preliminary_documents', 1);
+	$forms_title = $params->get('forms_title', JText::_('FORMS'));
     $mandatory_documents_title = $params->get('mandatory_documents_title', JText::_('MANDATORY_DOCUMENTS'));
     $optional_documents_title = $params->get('optional_documents_title', JText::_('OPTIONAL_DOCUMENTS'));
-    $admission = $params->get('admission', 0);
+	$preliminary_documents_title = $params->get('preliminary_documents_title', JText::_('PRELIMINARY_DOCUMENTS'));
+	$admission = $params->get('admission', 0);
     $show_send = $params->get('showsend', 1);
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
@@ -231,6 +233,12 @@ if (isset($user->fnum) && !empty($user->fnum)) {
         $paid = !empty($order);
     }
     //
+
+	if ($show_preliminary_documents) {
+		include_once(JPATH_BASE . '/modules/mod_emundus_campaign_dropfiles/helper.php');
+		$dropfiles_helper = new modEmundusCampaignDropfilesHelper();
+		$preliminary_documents = $dropfiles_helper->getFiles(null, $user->campaign_id);
+	}
 
     require(JModuleHelper::getLayoutPath('mod_emundus_checklist'));
 }

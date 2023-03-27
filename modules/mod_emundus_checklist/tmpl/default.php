@@ -26,8 +26,28 @@ if($show_optional_documents == 1 && count($optional_documents) > 0) {
 if (!empty($checkout_url)){
 	$pages_no++;
 }
-?>
 
+
+if($show_preliminary_documents && !empty($preliminary_documents)): ?>
+<div class="mod_emundus_checklist em-mb-24">
+    <div class="em-flex-row em-flex-space-between em-pointer" onclick="expandForms()">
+        <div class="em-flex-row">
+            <p class="em-h6"><?php echo JText::_($preliminary_documents_title) ?></p>
+        </div>
+        <span id="mod_emundus_checklist___expand_icon" class="material-icons-outlined" style="transform: rotate(-90deg);">expand_more</span>
+    </div>
+    <div id="mod_emundus_checklist___content" class="em-mt-24 mod_emundus_checklist___content_closed">
+        <?php foreach($preliminary_documents as $document): ?>
+            <div class="em-flex-row em-mb-16 mod_emundus_campaign__details_file">
+                <span class="material-icons-outlined mod_emundus_campaign__details_file_icon">insert_drive_file</span>
+                <a href="files/<?php echo $document->catid."/".$document->title_category."/".$document->id."/".$document->title_file.".".$document->ext; ?>" target="_blank" rel="noopener noreferrer" >
+			        <?php echo $document->title_file.".".$document->ext; ?>
+                </a>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</div>
+<?php endif; ?>
 <div class="mod_emundus_checklist">
     <div class="em-flex-row em-flex-space-between em-pointer" onclick="expandForms()">
         <div class="em-flex-row">
