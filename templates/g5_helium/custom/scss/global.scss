@@ -312,8 +312,15 @@ ul {
 
 /* ARTICLE */
 
-.view-article.com_content .page-header h2[itemprop="headline"] {
-  margin-bottom: 32px;
+
+.view-article.com_content {
+  .page-header h2[itemprop="headline"] {
+    margin-bottom: 32px;
+  }
+
+  table td {
+    border: 1px solid #dce2e9;
+  }
 }
 
 .g-grid .span12 {
