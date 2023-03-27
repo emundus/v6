@@ -324,7 +324,7 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                 // So we have to send one email to these partners
                 foreach ($users_fnum_assoc as $user_to_send => $fnums_not_read) {
                     $query->clear()
-                        ->select('id, email, name')
+                        ->select(array('id, email, name'))
                         ->from($db->quoteName('#__users'))
                         ->where($db->quoteName('id') . ' = ' . $user_to_send);
                     $db->setQuery($query);
@@ -336,21 +336,59 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
 
                     // Get the first link from the partner's menu that corresponds to the file list.
                     $query->clear()
-                        ->select($db->quoteName('path'))
+                        ->select(array('id', 'path'))
                         ->from($db->quoteName('#__menu'))
                         ->where($db->quoteName('menutype') . ' = ' . $db->quote($menutype))
                         ->andWhere($db->quoteName('published') . ' = ' . $db->quote(1))
                         ->andWhere($db->quoteName('link') . ' LIKE ' . $db->quote('%option=com_emundus&view=files%') . ' OR ' . $db->quoteName('link') . ' LIKE ' . $db->quote('%option=com_emundus&view=evaluation%') . ' OR ' . $db->quoteName('link') . ' LIKE ' . $db->quote('%option=com_emundus&view=decision%'))
                         ->order($db->quoteName('lft'));
                     $db->setQuery($query);
-                    $userLink = $db->loadResult();
+                    $userLink = $db->loadObject();
+
+                    // Check if a translation exists for this link
+                    // In english
+                    $query->clear()
+                        ->select($db->quoteName('value'))
+                        ->from($db->quoteName('#__falang_content'))
+                        ->where($db->quoteName('language_id') . ' = ' . $db->quote(1))
+                        ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote('menu'))
+                        ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote('path'))
+                        ->andWhere($db->quoteName('reference_id') . ' = ' . $db->quote($userLink->id))
+                        ->andWhere($db->quoteName('published') . ' = ' . $db->quote(1));
+                    $db->setQuery($query);
+                    $path_en = $db->loadResult();
+
+                    // In french
+                    $query->clear()
+                        ->select($db->quoteName('value'))
+                        ->from($db->quoteName('#__falang_content'))
+                        ->where($db->quoteName('language_id') . ' = ' . $db->quote(2))
+                        ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote('menu'))
+                        ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote('path'))
+                        ->andWhere($db->quoteName('reference_id') . ' = ' . $db->quote($userLink->id))
+                        ->andWhere($db->quoteName('published') . ' = ' . $db->quote(1));
+                    $db->setQuery($query);
+                    $path_fr = $db->loadResult();
+
+                    // If there are both en and fr translations, use no link in the mail
+                    if (!empty($path_fr) && !empty($path_en)) {
+                        $userLink = '';
+                    } else {
+                        if (!empty($path_fr)) {
+                            // If there is only a french one, use the french translation of the link
+                            $userLink->path = $path_fr;
+                        } else if (!empty($path_en)) {
+                            // If there is only an english one, use the english translation of the link
+                            $userLink->path = $path_en;
+                        }
+                    }
 
                     // Here we build the fnumList to be added to the email
                     $fnumList = '<ul>';
                     // Using the fnums array stocked as a value for each user_id, we can list all the associated fnums with unread messages for each user specifically
                     foreach ($fnums_not_read as $fnum) {
                         if (!empty($userLink)) {
-                            $fnumList .= '<li><a href="' . JURI::root() . $userLink . '#' . $fnum . '|open">' . $fnum . '</a></li>';
+                            $fnumList .= '<li><a href="' . JURI::root() . $userLink->path . '#' . $fnum . '|open">' . $fnum . '</a></li>';
                         } else {
                             $fnumList .= '<li>' . $fnum . '</li>';
                         }
