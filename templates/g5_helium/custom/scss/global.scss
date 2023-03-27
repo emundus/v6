@@ -55,12 +55,12 @@ div#frame.outline {
 }
 
 .com_emundus_vue .fabrikElementContainer.control-group span.material-icons {
-  font-family: 'Material Icons' !important;
+  font-family: 'Material Icons', sans-serif !important;
   font-size: 24px !important;
 }
 
 .com_emundus_vue .fabrikElementContainer.control-group span.material-icons-outlined {
-  font-family: 'Material Icons Outlined' !important;
+  font-family: 'Material Icons Outlined', sans-serif !important;
   font-size: 24px !important;
 }
 
@@ -1955,7 +1955,7 @@ tr.fabrikFilterContainer {
   border-radius: 8px !important;
   font-size: 14px !important;
   font-weight: 400 !important;
-  box-shadow: 0px 1px 4px rgba(32, 35, 44, 0.05);
+  box-shadow: 0 1px 4px rgba(32, 35, 44, 0.05);
   padding: 6px 10px;
 }
 
@@ -5086,8 +5086,7 @@ button.swal2-cancel.goback-btn {
 .mod_emundus_checklist___border_item {
   height: 32px;
   border-left: 2px solid var(--neutral-200);
-  margin: 1px 0 1px 11px;
-  margin-top: -18px;
+  margin: -18px 0 1px 11px;
 }
 
 .mod_emundus_checklist .active .mod_emundus_checklist___step_count {
@@ -5192,7 +5191,7 @@ screen and (max-height: 769px) {
       margin-bottom: 8px;
     }
     .fabrikinput.inputbox:nth-child(3) {
-      margin-left: 0px;
+      margin-left: 0;
     }
   }
 
@@ -5979,13 +5978,13 @@ screen and (max-height: 769px) {
 
   .user-menu-phone a.profile-btn-phone::before {
     content: "\f007";
-    font-family: FontAwesome;
+    font-family: FontAwesome, sans-serif;
     margin-right: 10px;
   }
 
   .user-menu-phone a.logout-phone-btn::before {
     content: "\f011";
-    font-family: FontAwesome;
+    font-family: FontAwesome, sans-serif;
     margin-right: 10px;
   }
 
@@ -6646,8 +6645,7 @@ fieldset[disabled] .multiselect {
   box-sizing: border-box;
   display: block;
   overflow: hidden;
-  padding: 8px 12px 0;
-  padding-right: 30px;
+  padding: 8px 30px 0 12px;
   white-space: nowrap;
   margin: 0;
   text-decoration: none;
@@ -6723,10 +6721,7 @@ fieldset[disabled] .multiselect {
 
 .multiselect--above .multiselect__content-wrapper {
   bottom: 100%;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
+  border-radius: 5px 5px 0 0;
   border-bottom: none;
   border-top: 1px solid #e8e8e8;
 }
@@ -7517,7 +7512,7 @@ tbody .el-table__row:nth-child(odd){
   height: 20px;
   border-radius: 6px;
   &::after{
-    font-family: "Material Icons";
+    font-family: "Material Icons", sans-serif;
     content: "\e5ca";
     border: unset;
     height: 20px;
