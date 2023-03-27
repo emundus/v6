@@ -171,7 +171,7 @@ ksort($applications);
                                                         <span class="em-applicant-default-font em-neutral-800-color">N°<?php echo $application->fnum ?></span>
                                                     </div>
                                                     <div>
-                                                        <span class="material-icons em-text-neutral-600" id="actions_button_<?php echo $application->fnum ?>" style="font-size: 16px">more_vert</span>
+                                                        <span class="material-icons em-text-neutral-600" id="actions_button_<?php echo $application->fnum ?>" style="font-size: 22px">more_vert</span>
 
                                                         <!-- ACTIONS BLOCK -->
                                                         <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color" id="actions_block_<?php echo $application->fnum ?>" style="display: none">
