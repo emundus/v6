@@ -1449,6 +1449,27 @@ body > .g-container {
   }
 }
 
+/* DROPFILE */
+
+.com_dropfiles.view-manage #newcategory {
+  width: fit-content;
+
+  .btn.btn-default {
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+  }
+
+  i.material-icons {
+    margin-right: 8px;
+  }
+}
+
+.com_dropfiles.view-manage #mybootstrap #rightcol .dropfiles-save-submit {
+  font-size: 11px !important;
+  width: fit-content !important;
+}
+
 /** MODULE SINGLE CAMPAIGN **/
 
 .em-campaign-dropfiles ul a:focus {
