@@ -40,75 +40,80 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         $em_application_payment = $eMConfig->get('application_payment', 'user');
 
         $session = JFactory::getSession()->get('emundusUser');
-        $order_id = $order->order_parent_id ?: $order->order_id;
-        if (!empty($session)) {
+	    $order_id = $order->order_parent_id ?: $order->order_id;
+
+		// find the fnum related to current order (it isn't always the same as the session)
+	    $db = JFactory::getDbo();
+	    $query = $db->getQuery(true);
+	    $query->clear()
+		    ->select('order_id')
+		    ->from($db->quoteName('#__hikashop_order'))
+		    ->where($db->quoteName('order_id') . ' = ' . $order_id .  ' OR ' . $db->quoteName('order_parent_id') . ' = ' . $order_id);
+	    $db->setQuery($query);
+	    $orders = $db->loadColumn();
+	    $orders = empty($orders) ? [$order_id] : $orders;
+
+		$query->clear()
+			->select('fnum')
+			->from($db->quoteName('#__emundus_hikashop'))
+			->where($db->quoteName('order_id') . ' IN (' . implode(',', $orders) . ')');
+		$db->setQuery($query);
+		$fnum = $db->loadResult();
+
+		if (!empty($fnum)) {
+			$user = $session->id;
+			require_once (JPATH_SITE.'/components/com_emundus/models/files.php');
+			$m_files = new EmundusModelFiles();
+			$fnum_infos = $m_files->getFnumInfos($fnum);
+			$cid = $fnum_infos['campaign_id'];
+			$status = $fnum_infos['status'];
+		} else if (!empty($session)) {
             $user = $session->id;
             $fnum = $session->fnum;
             $cid = $session->campaign_id;
             $status = $session->status;
         }
         else {
-            JLog::add('Could not get session on order ID. -> '. $order_id, JLog::ERROR, 'com_emundus');
+            JLog::add('Could not get session on order ID nor fnum from order_id. -> '. $order_id, JLog::ERROR, 'com_emundus');
             return false;
         }
 
         if ($eMConfig->get('hikashop_session')) {
-            $payment_session = JFactory::getSession()->get('emundusPayment', null);
-            if (empty($payment_session->fnum)) {
+	        $payment_session = JFactory::getSession()->get('emundusPayment', null);
+	        if (empty($payment_session->fnum)) {
                 $emundus_payment = new StdClass();
-                $emundus_payment->user_id = $session->id;
-                $emundus_payment->fnum = $session->fnum;
-
+                $emundus_payment->user_id = $user;
+                $emundus_payment->fnum = $fnum;
                 JFactory::getSession()->set('emundusPayment', $emundus_payment);
             }
         }
 
-        $db = JFactory::getDbo();
         $config = hikashop_config();
         $confirmed_statuses = explode(',', trim($config->get('invoice_order_statuses','confirmed,shipped'), ','));
-
-        if(empty($confirmed_statuses)) {
+        if (empty($confirmed_statuses)) {
             $confirmed_statuses = array('confirmed','shipped');
         }
 
-        $query = $db->getQuery(true);
+	    $query->clear()
+		    ->select('*')
+		    ->from($db->quoteName('#__emundus_hikashop'));
 
         switch ($em_application_payment) {
-
             case 'campaign':
-                $query
-                    ->clear()
-                    ->select('*')
-                    ->from($db->quoteName('#__emundus_hikashop'))
-                    ->where($db->quoteName('order_id') . ' = ' . $order_id . ' OR (' . $db->quoteName('campaign_id') . ' = ' . $cid . ' AND ' . $db->quoteName('user') . ' = ' . $user .' ) ');
+				$query->where($db->quoteName('order_id') . ' IN (' . implode(',', $orders) . ') OR (' . $db->quoteName('campaign_id') . ' = ' . $cid . ' AND ' . $db->quoteName('user') . ' = ' . $user .' ) ');
                 break;
-
             case 'fnum':
-                $query
-                    ->clear()
-                    ->select('*')
-                    ->from($db->quoteName('#__emundus_hikashop'))
-                    ->where($db->quoteName('order_id') . ' = ' . $order_id . ' OR ' . $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
-                break;
-
+				$query->where($db->quoteName('order_id') . ' IN (' . implode(',', $orders) . ') OR ' . $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+				break;
             case 'status':
-                $query
-                    ->clear()
-                    ->select('*')
-                    ->from($db->quoteName('#__emundus_hikashop'))
-                    ->where($db->quoteName('order_id') . ' = ' . $order_id . ' OR (' . $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum).' AND '. $db->quoteName('status').' = '.$status.')');
+                $query->where($db->quoteName('order_id') . ' IN (' . implode(',', $orders) . ') OR (' . $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum).' AND '. $db->quoteName('status').' = '.$status.')');
                 break;
-
             case 'user':
             default :
-                $query
-                    ->clear()
-                    ->select('*')
-                    ->from($db->quoteName('#__emundus_hikashop'))
-                    ->where($db->quoteName('order_id') . ' = ' . $order_id . ' OR ' . $db->quoteName('user') . ' = ' . $user);
+                $query->where($db->quoteName('order_id') . ' IN (' . implode(',', $orders) . ') OR ' . $db->quoteName('user') . ' = ' . $user);
                 break;
-
         }
+
         try {
             $db->setQuery($query);
 
