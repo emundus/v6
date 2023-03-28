@@ -1579,6 +1579,12 @@ body > .g-container {
 
 /* LISTES  */
 
+.view-list{
+  .page-intro p{
+    color: $neutral-500;
+  }
+}
+
 .view-list .dropdown-menu > li > a {
   overflow: hidden;
   white-space: nowrap;
@@ -4348,12 +4354,12 @@ div#em-appli-block {
 }
 
 .table-hover tbody tr:hover td {
-  background: #ECEFF3 !important;
+  background: $main-25 !important;
 }
 
 .table-hover tbody tr:nth-child(2n) > td,
 .table-hover tbody tr:nth-child(2n) > th {
-  background: #F3F3F3 !important;
+  background: transparent;
 }
 
 .table-hover tbody tr,
