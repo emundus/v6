@@ -235,6 +235,7 @@ class EmundusModelCampaignTest extends TestCase
 
                 $workflow_on_all = $this->m_campaign->createWorkflow(9, [0], 1, null, []);
                 $current_file_workflow = $this->m_campaign->getCurrentCampaignWorkflow($fnum);
+				$this->assertNotNull($current_file_workflow, 'La phase courante doit être non nulle.');
                 $this->assertSame(intval($workflow_on_all), intval($current_file_workflow->id), 'Le dossier est impacté par le workflow qui n\'a ni campagne ni programme par défaut, mais est sur le même statut.');
 
                 $workflow_on_program = $this->m_campaign->createWorkflow(9, [0], 1, null, ['programs' => [$program['programme_code']]]);

@@ -954,6 +954,21 @@ if (password_value.match(regex) != null) {
 			}
 
 			if (version_compare($cache_version, '1.36.0', '<=') || $firstrun) {
+				// check if table has column display_preliminary_documents
+				$query->clear()
+					->select('COLUMN_NAME')
+					->from('INFORMATION_SCHEMA.COLUMNS')
+					->where('TABLE_SCHEMA = ' . $db->quote($db->getDatabase()))
+					->andWhere('TABLE_NAME = ' . $db->quote('jos_emundus_campaign_workflow'))
+					->andWhere('COLUMN_NAME = ' . $db->quote('display_preliminary_documents'));
+
+				$db->setQuery($query);
+				$column = $db->loadResult();
+				if (empty($column)) {
+					$db->setQuery('ALTER TABLE `jos_emundus_campaign_workflow` ADD `display_preliminary_documents` TINYINT(1) DEFAULT 0 AFTER `programs`');
+					$db->execute();
+				}
+
 				$query->clear()
 					->select('id')
 					->from($db->quoteName('#__fabrik_elements'))
