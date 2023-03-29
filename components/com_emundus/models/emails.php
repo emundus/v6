@@ -1434,7 +1434,7 @@ class EmundusModelEmails extends JModelList {
                     include_once (JPATH_ROOT . '/components/com_emundus/models/logs.php');
                     if (class_exists('EmundusModelLogs')) {
                         $m_logs = new EmundusModelLogs();
-                        $m_logs->log($row['user_id_from'], $row['user_id_to'], $fnum, 9, 'c', 'COM_EMUNDUS_LOGS_EMAIL_SENT', json_encode(['email_id' => $email_id, 'message_id' => $message_id, 'created' => [$row['subject']]]), JSON_UNESCAPED_UNICODE);
+                        $m_logs->log($row['user_id_from'], $row['user_id_to'], $fnum, 9, 'c', 'COM_EMUNDUS_LOGS_EMAIL_SENT', json_encode(['email_id' => $email_id, 'message_id' => $message_id, 'created' => [$row['subject']]], JSON_UNESCAPED_UNICODE));
                     }
                 }
             }
