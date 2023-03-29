@@ -1260,6 +1260,7 @@ class EmundusModelEmails extends JModelList {
             }
 
             // 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
+            $student_id = ''; // TODO: student id was not defined before, don't knwo why
             $link_accept = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid->accepted.'&keyid='.$key1.'&cid='.$campaign_id;
             $link_refuse = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid->refused.'&keyid='.$key1.'&cid='.$campaign_id.'&usekey=keyid&rowid='.$key1;
             $link_accept_noform = 'index.php?option=com_fabrik&c=form&view=form&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id;
@@ -1380,7 +1381,7 @@ class EmundusModelEmails extends JModelList {
      *
      * @since version v6
      */
-    public function logEmail($row) {
+    public function logEmail($row, $fnum = null) {
         $logged = false;
 
         // log email to admin user if user_id_from is empty
@@ -1411,12 +1412,17 @@ class EmundusModelEmails extends JModelList {
             ->values(implode(',',$values));
 
         try {
-
             $this->_db->setQuery($query);
             $logged = $this->_db->execute();
 
+            if ($logged && !empty($fnum)) {
+                $email_id = isset($row['email_id']) ?? $row['email_id'];
+                require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+                $m_logs = new EmundusModelLogs();
+                $m_logs->log($row['user_id_from'], $row['user_id_to'], $fnum, 9, 'c', 'COM_EMUNDUS_LOGS_EMAIL_SENT', json_encode(['email_id' => $email_id, 'message_id' => $this->_db->insertid()]));
+            }
         } catch (Exception $e) {
-            JLog::add('Error logging email in model/emails : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.email.error');
+            JLog::add('Error logging email in model/emails : '.preg_replace("/[\r\n]/"," ",$query->__toString()) .  ' data : ' . json_encode($row) , JLog::ERROR, 'com_emundus.email.error');
         }
 
         return $logged;
