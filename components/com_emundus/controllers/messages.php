@@ -1198,10 +1198,6 @@ class EmundusControllerMessages extends JControllerLegacy {
 		    ];
 		    $m_emails->logEmail($log,$fnum['fnum']);
 
-		    // Log the email in the eMundus logging system.
-            $logsParams = array('created' => [$subject]);
-		    EmundusModelLogs::log($user_id, $fnum['applicant_id'], $fnum['fnum'], 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
-
 		    return true;
 	    }
     }
