@@ -638,7 +638,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
                 include_once(JPATH_SITE.'/components/com_emundus/helpers/emails.php');
                 $h_email = new EmundusHelperEmails;
 
-			    foreach ($trigger_emails as $key => $trigger_email) {
+			    foreach ($trigger_emails as $trigger_email_id => $trigger_email) {
 
 				    // Manage with default recipient by programme
 				    foreach ($trigger_email as $code => $trigger) {
@@ -694,7 +694,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 									    'user_id_to' => $file['applicant_id'],
 									    'subject' => $subject,
 									    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$to.'</i><br>'.$body,
-									    'email_id' => $trigger['tmpl']['id']
+									    'email_id' => $trigger_email_id
 								    );
 								    $m_email->logEmail($message, $file['fnum']);
 								    $msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$to.'<br>';
@@ -752,7 +752,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 								    'user_id_to' => $recipient['id'],
 								    'subject' => $subject,
 								    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$to.'</i><br>'.$body,
-								    'email_id' => $trigger['tmpl']['id']
+								    'email_id' => $trigger_email_id
 							    ];
 							    $m_email->logEmail($message, $fnum['fnum']);
 							    $msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$to.'<br>';

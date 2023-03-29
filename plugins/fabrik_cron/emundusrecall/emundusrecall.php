@@ -160,9 +160,10 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
                         'user_id_from' => $from_id,
                         'user_id_to' => $to_id,
                         'subject' => $subject,
-                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
+                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body,
+	                    'email_id' => $reminder_mail_id,
                     );
-                    $m_emails->logEmail($message);
+                    $m_emails->logEmail($message, $applicant->fnum);
                     $this->log .= '\n' . JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.' :: '.$body;
                 }
                 // to avoid been considered as a spam process or DDoS

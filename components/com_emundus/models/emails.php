@@ -274,7 +274,7 @@ class EmundusModelEmails extends JModelList {
             require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
             $h_emails = new EmundusHelperEmails();
 
-            foreach ($trigger_emails as $trigger_email) {
+            foreach ($trigger_emails as $trigger_email_id => $trigger_email) {
 
                 foreach ($trigger_email[$student->code]['to']['recipients'] as $recipient) {
                     if (!$h_emails->assertCanSendMailToUser($recipient['id'])) {
@@ -286,7 +286,8 @@ class EmundusModelEmails extends JModelList {
                     $tags = $this->setTags($student->id, $post, $student->fnum, '', $trigger_email[$student->code]['tmpl']['emailfrom'].$trigger_email[$student->code]['tmpl']['name'].$trigger_email[$student->code]['tmpl']['subject'].$trigger_email[$student->code]['tmpl']['message']);
 
                     $from = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['emailfrom']);
-                    $from_id = 62;
+                    $from_id = JFactory::getUser()->id;
+                    $from_id = empty($from_id) ? 62 : $from_id;
                     $fromname = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['name']);
                     $to = $recipient['email'];
                     $to_id = $recipient['id'];
@@ -330,9 +331,10 @@ class EmundusModelEmails extends JModelList {
                             'user_id_from' => $from_id,
                             'user_id_to' => $to_id,
                             'subject' => $subject,
-                            'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
+                            'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body,
+                            'email_id' => $trigger_email_id
                         );
-                        $this->logEmail($message);
+                        $this->logEmail($message, $student->fnum);
                     }
                 }
             }
@@ -1416,10 +1418,22 @@ class EmundusModelEmails extends JModelList {
             $logged = $this->_db->execute();
 
             if ($logged && !empty($fnum)) {
-                $email_id = isset($row['email_id']) ?? $row['email_id'];
-                require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-                $m_logs = new EmundusModelLogs();
-                $m_logs->log($row['user_id_from'], $row['user_id_to'], $fnum, 9, 'c', 'COM_EMUNDUS_LOGS_EMAIL_SENT', json_encode(['email_id' => $email_id, 'message_id' => $this->_db->insertid()]));
+                $message_id = $this->_db->insertid();
+
+                // check user_id_to is the applicant user id, before logging in file
+                $query->clear()
+                    ->select($this->_db->quoteName('applicant_id'))
+                    ->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+                    ->where($this->_db->quoteName('fnum').' LIKE '.$this->_db->quote($fnum));
+
+                $this->_db->setQuery($query);
+                $applicant_id = $this->_db->loadResult();
+                if ($applicant_id == $row['user_id_to']) {
+                    $email_id = isset($row['email_id']) ? $row['email_id'] : 0;
+                    require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+                    $m_logs = new EmundusModelLogs();
+                    $m_logs->log($row['user_id_from'], $row['user_id_to'], $fnum, 9, 'c', 'COM_EMUNDUS_LOGS_EMAIL_SENT', json_encode(['email_id' => $email_id, 'message_id' => $message_id, 'created' => [$row['subject']]]), JSON_UNESCAPED_UNICODE);
+                }
             }
         } catch (Exception $e) {
             JLog::add('Error logging email in model/emails : '.preg_replace("/[\r\n]/"," ",$query->__toString()) .  ' data : ' . json_encode($row) , JLog::ERROR, 'com_emundus.email.error');

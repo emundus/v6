@@ -687,49 +687,6 @@ class EmundusControllerMessages extends JControllerLegacy {
                             break;
                         }
                     }
-
-                    // We only get the letters if they are for that particular programme.
-//                    if ($letter && in_array($fnum->training, explode('","',$letter->training))) {
-//
-//                        // Some letters are only for files of a certain status, this is where we check for that.
-//                        if ($letter->status != null && !in_array($fnum->step, explode(',',$letter->status))) {
-//                            continue;
-//                        }
-//
-//                        // A different file is to be generated depending on the template type.
-//                        switch ($letter->template_type) {
-//
-//                            case '1':
-//                                // This is a static file, we just need to find its path add it as an attachment.
-//                                if (file_exists(JPATH_SITE.$letter->file)) {
-//                                    $toAttach[] = JPATH_SITE.$letter->file;
-//                                }
-//                            break;
-//
-//                            case '2':
-//                                // This is a PDF to be generated from HTML.
-//                                require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
-//
-//                                $path = generateLetterFromHtml($letter, $fnum->fnum, $fnum->applicant_id, $fnum->training);
-//
-//                                if ($path && file_exists($path)) {
-//                                    $toAttach[] = $path;
-//                                }
-//                            break;
-//
-//                            case '3':
-//                                // This is a DOC template to be completed with applicant information.
-//                                $path = $m_messages->generateLetterDoc($letter, $fnum->fnum);
-//
-//                                if ($path && file_exists($path)) {
-//                                    $toAttach[] = $path;
-//                                }
-//                            break;
-//
-//                            default:
-//                            break;
-//                        }
-//                    }
                 }
             }
 
@@ -837,12 +794,9 @@ class EmundusControllerMessages extends JControllerLegacy {
                     'subject' => $subject,
                     'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $fnum->email . '</i><br>' . $body . $files,
                     'type' => (empty($template->type))?'':$template->type,
-	                'template_id' => $template_id
+	                'email_id' => $template_id
                 ];
                 $m_emails->logEmail($log, $fnum->fnum);
-                // Log the email in the eMundus logging system.
-                $logsParams = array('created' => [$subject]);
-                EmundusModelLogs::log($user->id, $fnum->applicant_id, $fnum->fnum, 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
             }
 
             // Due to mailtrap now limiting emails sent to fast, we add a long sleep.
@@ -1239,9 +1193,10 @@ class EmundusControllerMessages extends JControllerLegacy {
 			    'user_id_to'    => $fnum['applicant_id'],
 			    'subject'       => $subject,
 			    'message'       => '<i>'.JText::_('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO').' '.$fnum['email'].'</i><br>'.$body,
-			    'type'          => $template->type
+			    'type'          => $template->type,
+			    'email_id'      => $email_id,
 		    ];
-		    $m_emails->logEmail($log);
+		    $m_emails->logEmail($log,$fnum['fnum']);
 
 		    // Log the email in the eMundus logging system.
             $logsParams = array('created' => [$subject]);
@@ -1815,8 +1770,9 @@ class EmundusControllerMessages extends JControllerLegacy {
                 'subject' => $subject,
                 'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $fnum_info['email'] . '</i><br>' . $body . $files,
                 'type' => (empty($template->type))?'':$template->type,
+	            'email_id' => $template_email_id,
             ];
-            $m_emails->logEmail($log);
+            $m_emails->logEmail($log, $fnum);
             // Log the email in the eMundus logging system.
             EmundusModelLogs::log($user->id, $fnum_info['applicant_id'], $fnum_info['fnum'], 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
         }
