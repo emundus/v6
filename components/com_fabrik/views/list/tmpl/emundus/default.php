@@ -28,15 +28,22 @@ if ($this->params->get('show_page_heading')) :
 endif;
 
 if ($this->showTitle == 1) : ?>
-	<div class="page-header">
-		<h1><?php echo $this->table->label;?></h1>
+	<div class="page-header em-flex-row em-flex-space-between emundus-list-page-header">
+		<h1 class="em-h3" style="margin: 0"><?php echo $this->table->label;?></h1>
+		<?php if ($this->showAdd) :?>
+
+            <div><a class="addbutton addRecord em-primary-button em-w-max-content" href="<?php echo $this->addRecordLink;?>">
+					<?php echo FText::_($this->addLabel);?>
+                </a></div>
+		<?php
+		endif; ?>
 	</div>
 <?php
 endif;
 
 // Intro outside of form to allow for other lists/forms to be injected.
 ?>
-<div class="page-intro">
+<div class="page-intro <?php if ($this->showTitle != 1) : ?>em-mt-32<?php endif; ?>">
     <?php echo $this->table->intro; ?>
 </div>
 

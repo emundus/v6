@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 <div class="fabrikButtonsContainer row-fluid">
 <div class="pull-left em-mt-32">
 
-<?php if ($this->showAdd) :?>
+<?php if ($this->showAdd && $this->showTitle != 1) :?>
 
 	<div><a class="addbutton addRecord em-primary-button em-w-max-content" href="<?php echo $this->addRecordLink;?>">
 		<?php echo FText::_($this->addLabel);?>

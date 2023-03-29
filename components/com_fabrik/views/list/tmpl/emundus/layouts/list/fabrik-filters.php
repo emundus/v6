@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2020  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.4
  */
@@ -14,27 +14,9 @@ defined('_JEXEC') or die('Restricted access');
 
 $d             = $displayData;
 $underHeadings = $d->filterMode === 3 || $d->filterMode === 4;
+$clearFiltersClass = $d->gotOptionalFilters ? "clearFilters hasFilters" : "clearFilters";
 
 $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
-CUSTOM LAYOUT<br />
-<div>
-    <table class="filtertable table table-striped">
-        <?php
-        $c = 0;
-        foreach ($d->filters as $key => $filter) :
-            if (in_array($key, array('fab_main_test___name'))) :
-                $required = $filter->required == 1 ? ' notempty' : ''; ?>
-                <tr data-filter-row="<?php echo $key; ?>"
-                    class="fabrik_row oddRow<?php echo ($c % 2) . $required; ?>">
-                    <td><?php echo $filter->label; ?></td>
-                    <td><?php echo $filter->element; ?></td>
-                </tr>
-            <?php
-            endif;
-        endforeach;
-        ?>
-    </table>
-</div>
 <div class="fabrikFilterContainer" <?php echo $style ?>>
 	<?php
 	if (!$underHeadings) :
@@ -53,8 +35,9 @@ CUSTOM LAYOUT<br />
 					<th><?php echo FText::_('COM_FABRIK_SEARCH'); ?>:</th>
 					<th style="text-align:right">
 						<?php if ($d->showClearFilters) : ?>
-							<a class="clearFilters" href="#">
-								<?php echo FabrikHelperHTML::icon('icon-refresh', FText::_('COM_FABRIK_CLEAR')); ?>
+							<a class="<?php echo $clearFiltersClass; ?> em-flex-row" href="#">
+                                <span class="material-icons-outlined em-mr-4" style="font-size: 18px">filter_alt_off</span>
+								<?php echo FText::_('COM_FABRIK_CLEAR'); ?>
 							</a>
 						<?php endif ?>
 					</th>
@@ -84,7 +67,7 @@ CUSTOM LAYOUT<br />
 						<table class="filtertable_horiz">
 							<?php
 							endif;
-							if (!in_array($key, array('all', 'fab_main_test___name'))) :
+							if ($key !== 'all') :
 								$c++;
 								$required = $filter->required == 1 ? ' notempty' : ''; ?>
 								<tr data-filter-row="<?php echo $key; ?>"
@@ -101,6 +84,16 @@ CUSTOM LAYOUT<br />
 					</td>
 				</tr>
 			<?php
+			endif;
+			if ($d->filter_action != 'onchange') :
+				?>
+				<tr>
+					<td colspan="2">
+						<input type="button" class="pull-right  btn-info btn fabrik_filter_submit button"
+								value="<?php echo FText::_('COM_FABRIK_GO'); ?>" name="filter">
+					</td>
+				</tr>
+				<?php
 			endif;
 			?>
 			</table>
@@ -120,13 +113,3 @@ CUSTOM LAYOUT<br />
 	</div>
 <?php endif; ?>
 </div>
-    if ($d->filter_action != 'onchange') :
-    ?>
-    <tr>
-        <td colspan="2">
-            <input type="button" class="pull-right  btn-info btn fabrik_filter_submit button"
-                   value="<?php echo FText::_('COM_FABRIK_GO'); ?>" name="filter">
-        </td>
-    </tr>
-<?php
-endif;

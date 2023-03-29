@@ -113,7 +113,7 @@ font-size: 16px;
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-	padding: 8px 12px;
+	padding: 10px 16px;
 	color: black;
 }
 .view-list .fabrikForm .fabrikButtonsContainer .em-action-buttons li a i{
@@ -126,6 +126,9 @@ font-size: 16px;
 /** **/
 
 /** LIST **/
+.view-list .span12 .page-header.emundus-list-page-header{
+	margin-top: 32px !important;
+}
 .view-list .table-striped tbody tr:nth-child(2n+1) td, .table-striped tbody tr:nth-child(2n+1) th {
 	background: transparent;
 }
@@ -151,6 +154,9 @@ font-size: 16px;
 }
 .view-list .fabrikDataContainer .table tfoot tr td{
 	padding-left: 0;
+}
+.view-list .fabrikDataContainer .table tfoot .fabrikNav .list-footer .pagination{
+	margin: 0;
 }
 .view-list .fabrikDataContainer .table tfoot .fabrikNav .list-footer .pagination ul.pagination-list{
 	box-shadow: unset;
@@ -225,3 +231,13 @@ font-size: 16px;
 	padding-bottom: 2px;
 }
 /** **/
+
+/** SCROLLBAR **/
+.view-list .fabrikForm::-webkit-scrollbar {
+	width: 12px;
+	background: transparent;
+}
+.view-list .fabrikForm::-webkit-scrollbar-thumb {
+	background: #DFDFDF;
+	border-radius: 8px;
+}
