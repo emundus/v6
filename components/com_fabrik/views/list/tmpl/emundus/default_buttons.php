@@ -14,16 +14,17 @@ defined('_JEXEC') or die('Restricted access');
 
 ?>
 <div class="fabrikButtonsContainer row-fluid">
-<div class="pull-left em-mt-16">
+<div class="pull-left em-mt-32">
 
 <?php if ($this->showAdd) :?>
 
-	<div><a class="addbutton addRecord em-primary-button" href="<?php echo $this->addRecordLink;?>">
+	<div><a class="addbutton addRecord em-primary-button em-w-max-content" href="<?php echo $this->addRecordLink;?>">
 		<?php echo FText::_($this->addLabel);?>
 	</a></div>
 <?php
-endif;
-
+endif; ?>
+    <div class="em-mt-8 em-action-buttons">
+    <?php
 if ($this->showToggleCols) :
 	echo $this->loadTemplate('togglecols');
 endif;
@@ -120,6 +121,7 @@ if ($this->emptyLink) :?>
 <?php
 endif;
 ?>
+</div>
 </div>
 <?php if (array_key_exists('all', $this->filters) || $this->filter_action != 'onchange') {
 ?>

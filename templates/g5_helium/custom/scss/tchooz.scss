@@ -1432,6 +1432,19 @@ input:focus + .em-slider {
   padding: 32px;
 }
 
+/** LIST **/
+.em-list-pagination{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 12px;
+  background: #FFFFFF;
+  border: 1px solid #EBECF0;
+  box-shadow: 0px 1px 4px rgba(32, 35, 44, 0.05);
+  border-radius: 8px;
+}
+
 /** SKELETON **/
 .skeleton {
   animation: skeleton-loading 1s linear infinite alternate;
