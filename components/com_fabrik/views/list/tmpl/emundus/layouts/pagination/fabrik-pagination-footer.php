@@ -24,9 +24,7 @@ if ($d->showNav) :
 			<?php echo $d->list; ?>
             <?php if (!empty($d->pagesCounter)) : ?>
                 <span class="add-on">
-                    <small>
                         <?php echo $d->pagesCounter; ?>
-                    </small>
                 </span>
             <?php endif; ?>
 		</div>
