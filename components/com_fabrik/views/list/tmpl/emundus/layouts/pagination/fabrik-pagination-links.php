@@ -16,9 +16,30 @@ $prevClass = $list['previous']['active'] == 1 ? ' ' : ' active';
 $nextClass = $list['next']['active'] == 1 ? ' ' : ' active';
 $endClass = $list['end']['active'] == 1 ? ' ' : ' active';
 
+$nav_mapping = [
+    'start' => 'keyboard_double_arrow_left',
+    'previous' => 'keyboard_arrow_left',
+    'next' => 'keyboard_arrow_right',
+    'end' => 'keyboard_double_arrow_right'
+];
+
+foreach ($nav_mapping as $position => $nav) {
+	$dom = new DOMDocument;
+	$dom->loadHTML($list[$position]['data']);
+	$xpath = new DOMXPath($dom);
+	$nodes = $xpath->query("//a");
+	foreach ($nodes as $node) {
+		$node->textContent = '';
+		$icon              = $dom->createElement('span', $nav);
+		$icon->setAttribute('class', 'material-icons-outlined');
+		$node->appendChild($icon);
+	}
+	$list[$position]['data'] = $dom->saveHTML();
+}
+
 ?>
 <div class="pagination">
-	<ul class="pagination-list">
+	<ul class="pagination-list em-flex-row">
 		<li class="pagination-start<?php echo $startClass; ?>">
 			<?php echo $list['start']['data']; ?>
 		</li>
