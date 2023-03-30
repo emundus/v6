@@ -999,7 +999,40 @@ if (password_value.match(regex) != null) {
      */
     function postflight($type, $parent)
     {
-        return true;
+	    $config = JFactory::getConfig();
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+	    $query->select('custom_data')
+		    ->from($db->quoteName('#__extensions'))
+		    ->where($db->quoteName('element') . ' LIKE ' . $db->quote('com_emundus'));
+	    $db->setQuery($query);
+		$custom_data = $db->loadResult();
+
+		if(!empty($custom_data)){
+			$custom_data = json_decode($custom_data,true);
+
+			$custom_data['sitename'] = $config->get('sitename');
+		} else {
+			$custom_data = [
+				'sitename' => $config->get('sitename'),
+			];
+		}
+
+		$query->clear()
+			->update($db->quoteName('#__extensions'))
+			->set($db->quoteName('custom_data') . ' = ' . $db->quote(json_encode($custom_data)))
+			->where($db->quoteName('element') . ' LIKE ' . $db->quote('com_emundus'));
+		$db->setQuery($query);
+
+		if($db->execute()){
+			echo "Application name updated";
+			return true;
+		} else {
+			echo "Application name not updated";
+			return false;
+		}
     }
 
 
