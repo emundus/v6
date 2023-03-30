@@ -3819,6 +3819,15 @@ class EmundusModelFiles extends JModelLegacy
                                     $toAttach[] = EMUNDUS_PATH_ABS.$file['applicant_id'].'/'.$attachment->filename;
                                 }
                             }
+                            if(!empty($trigger['tmpl']['letter_attachment'])){
+                                include_once(JPATH_SITE . '/components/com_emundus/models/evaluation.php');
+                                $m_eval = new EmundusModelEvaluation();
+
+                                $letters = $m_eval->generateLetters($file['fnum'], [$trigger['tmpl']['letter_attachment']], 1, 0, 0);
+                                foreach($letters->files as $filename){
+                                    $toAttach[] = EMUNDUS_PATH_ABS.$file['applicant_id'].'/'.$filename['filename'];
+                                }
+                            }
 
                             // Check if user defined a cc address
                             $cc = [];
