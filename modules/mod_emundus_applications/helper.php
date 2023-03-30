@@ -65,16 +65,16 @@ class modemundusApplicationsHelper {
 				$query .= ' ORDER BY ess.ordering ASC,ecc.date_time DESC';
 				break;
 			case 'campaigns':
-				$query .= ' ORDER BY esc.start_date DESC,ecc.date_time DESC';
+				$query .= ' ORDER BY esc.start_date DESC,ess.ordering ASC,ecc.date_time DESC';
 				break;
 			case 'last_update':
 				$query .= ' ORDER BY ecc.updated DESC,ecc.date_time DESC';
 				break;
 			case 'programs':
-				$query .= ' ORDER BY esc.training ASC,ecc.date_time DESC';
+				$query .= ' ORDER BY esc.training ASC,ess.ordering ASC,ecc.date_time DESC';
 				break;
 			case 'years':
-				$query .= ' ORDER BY esc.year DESC,ecc.date_time DESC';
+				$query .= ' ORDER BY esc.year DESC,ess.ordering ASC,ecc.date_time DESC';
 				break;
 			default:
 				$query .= ' ORDER BY ' . $order_by;

@@ -624,7 +624,7 @@ $current_tab = 0;
 							<?php if (!is_integer($f_key) || $order_by_session == 'years') : ?>
                                 <div class="em-mt-12 em-flex-row em-white-bg em-applicant-border-radius em-p-6-12">
                                     <span class="material-icons-outlined em-mr-8">expand_more</span>
-                                    <p class="em-h6"><?php echo $f_key ?></p>
+                                    <h2 style="margin-top: 0" class="em-h6"><?php echo $f_key ?></h2>
                                 </div>
 							<?php endif; ?>
                             <table class="em-ml-12">
