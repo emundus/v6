@@ -32,6 +32,21 @@
 				<field name="message_displayed" type="text" size="5" default="PLG_EMUNDUSWAITINGROOM_MAX_SESSIONS_REACHED" label="Message displayed if Force redirection is set to No" description="Display a warning message if max session is reached."/>
 				<field name="max_sessions" type="text" size="5" default="5000" label="Max activated sessions" description="The number of max activated sessions allowed."/>
 				<field name="ips_allowed" type="text" size="5" default="" label="IPs to exclude of waiting room" description=""/>
+				<field name="strings_allowed"
+					   type="subform"
+					   label="No redirection if URL contains"
+					   description="If one of these strings is found in an URL, the request will ignore the waiting room."
+					   multiple="true"
+					   min="1"
+					   layout="joomla.form.field.subform.repeatable-table"
+				>
+					<form>
+						<field name="string_allowed_text"
+							   type="text"
+							   label="String" description="String to exclude from waiting room redirection"
+						/>
+					</form>
+				</field>
 			</fieldset>
 		</fields>
 	</config>
