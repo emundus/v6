@@ -188,11 +188,12 @@ class SmartAgenda
 		} else {
 			try {
 				$auth = $this->getAuth();
-				$client = new GuzzleClient();
-				$response = $client->request('POST', $url, [
-					'auth' => [$auth['login'], $auth['pwd']],
-					'json' => $json
+				$client = new GuzzleClient([
+					'headers' => [
+						'Authorization' => 'Basic ' . base64_encode($auth['login'].':'.$auth['pwd'])
+					]
 				]);
+				$response = $client->request('POST', $url, ['json' => $json]);
 
 				$response = json_decode($response->getBody());
 			} catch (\Exception $e) {
@@ -320,6 +321,20 @@ class SmartAgenda
 		$invited = false;
 
 		if (!empty($params) && !empty($params['id_interne_candidat']) && !empty($params['id_presta_smartagenda']) && !empty($params['mail']) && $params['_action'] == 'userinvit') {
+			$characters = 'abcdefghijklmnopqrstuvwxyz';
+			$sel = '';
+
+			for ($i = 0; $i < 10; $i++) {
+				$index = rand(0, strlen($characters) - 1);
+				$sel .= $characters[$index];
+			}
+			$userinvit_hash = $sel;
+			foreach($params as $key => $value) {
+				$userinvit_hash .= $value;
+			}
+
+			$params['hash'] = $sel . hash('sha1', $userinvit_hash);
+
 			$response = $this->post($this->getWSBaseUrl(), $params, false);
 			if (!empty($response) && $response->code == 0 && !empty($response->id_client)) {
 				$invited = true;
