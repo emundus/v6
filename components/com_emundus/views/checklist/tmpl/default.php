@@ -50,7 +50,7 @@ if (!empty($this->current_phase) && !empty($this->current_phase->entry_status)) 
 $is_app_sent = !in_array($this->user->status, $status_for_send);
 
 $block_upload = true;
-if ($can_edit_after_deadline || (!$is_app_sent && (!$this->is_dead_line_passed || $this->isLimitObtained !== true)) || in_array($this->user->id, $applicants) || ($is_app_sent && !$this->is_dead_line_passed && $can_edit_until_deadline && $this->isLimitObtained !== true)) {
+if ($can_edit_after_deadline || (!$is_app_sent && !$this->is_dead_line_passed && $this->isLimitObtained !== true) || in_array($this->user->id, $applicants) || ($is_app_sent && !$this->is_dead_line_passed && $can_edit_until_deadline && $this->isLimitObtained !== true)) {
     $block_upload = false;
 }
 
