@@ -198,17 +198,16 @@ class EmundusControllerForm extends JControllerLegacy {
 
 
     public function createform() {
-        $user = JFactory::getUser();
+	    $tab = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+	    $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = $this->m_form->createApplicantProfile();
 
             if ($result) {
-                $tab = array('status' => 1, 'msg' => JText::_('FORM_ADDED'), 'data' => $result);
+                $tab = array('status' => true, 'msg' => JText::_('FORM_ADDED'), 'data' => $result, 'redirect' => 'index.php?option=com_emundus&view=form&layout=formbuilder&prid='.$result);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_FORM'), 'data' => $result);
+                $tab['msg'] = JText::_('ERROR_CANNOT_ADD_FORM');
             }
         }
         echo json_encode((object)$tab);

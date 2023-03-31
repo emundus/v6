@@ -14,10 +14,16 @@
             "controller": "form"
           },
           {
-            "action": "/index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%",
+            "action": "index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%",
             "label": "Modifier",
             "controller": "form",
-            "type": "edit"
+            "type": "redirect"
+          },
+          {
+            "action": "createform",
+            "controller": "form",
+            "label": "Add",
+            "type": "add"
           }
         ]
       },
@@ -36,7 +42,7 @@
             "action": "/index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%&eval=1",
             "label": "Modifier",
             "controller": "form",
-            "type": "edit"
+            "type": "redirect"
           }
         ]
       },
@@ -64,28 +70,33 @@
         "key": "campaign",
         "actions": [
           {
-            "action": "duplicate",
+            "action": "index.php?option=com_emundus&view=campaigns&layout=add",
+            "label": "Add",
+            "type": "add"
+          },
+          {
+            "action": "duplicatecampaign",
             "label": "Dupliquer",
             "controller": "campaign"
           },
           {
-            "action": "edit",
+            "action": "index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=%id%",
             "label": "Modifier",
             "controller": "campaign",
-            "type": "edit"
+            "type": "redirect"
           },
           {
-            "action": "delete",
+            "action": "deletecampaign",
             "label": "Supprimer",
             "controller": "campaign"
           },
           {
-            "action": "unpublish",
+            "action": "unpublishcampaign",
             "label": "Dépublier",
             "controller": "campaign"
           },
           {
-            "action": "publish",
+            "action": "publishcampaign",
             "label": "Publier",
             "controller": "campaign"
           }
@@ -97,14 +108,19 @@
     "title": "Emails",
     "tabs": [
       {
-        "title": "Mes Campagnes",
-        "key": "campaign",
+        "title": "Mes Emails",
+        "key": "emails",
         "actions": [
           {
-            "action": "edit",
+            "action": "index.php?option=com_emundus&view=emails&layout=add",
+            "label": "Add",
+            "type": "add"
+          },
+          {
+            "action": "index.php?option=com_emundus&view=emails&layout=add&eid=%id%",
             "label": "Modifier",
             "controller": "emails",
-            "type": "edit"
+            "type": "redirect"
           },
           {
             "action": "preview",

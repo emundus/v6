@@ -1,11 +1,12 @@
 <template>
 	<div id="onboarding_list" class="em-w-100">
 		<div class="head">
-			<p>{{ currentList.title }}</p>
+			<h2>{{ currentList.title }}</h2>
+			<a class="em-pointer" @click="onClickAddAction">{{ translate('COM_EMUNDUS_LIST_ADD_' + type.toUpperCase()) }}</a>
 		</div>
 		<div class="list">
 			<nav v-if="currentList.tabs.length > 1">
-				<ul style="list-style-type: none" class="em-flex-row">
+				<ul style="list-style-type: none;margin-left:0;" class="em-flex-row">
 					<li v-for="tab in currentList.tabs"
 					    key="tab.key"
 					    class="em-pointer em-p-8 em-font-weight-600 em-p-16"
@@ -33,7 +34,12 @@
 								<td>{{ item.label[params.shortlang] }}</td>
 								<td>
 									<ul>
-										<li v-for="action in currentTab.actions" :key="action.action" @click="onClickAction(action, item.id)">{{ action.label }}</li>
+										<li v-for="action in tabActionsWithoutAdd"
+										    :key="action.action"
+										    @click="onClickAction(action, item.id)"
+										>
+											{{ action.label }}
+										</li>
 									</ul>
 								</td>
 							</tr>
@@ -107,16 +113,37 @@ export default {
 				}
 			});
 		},
-		onClickAction(action, itemId) {
+		onClickAddAction() {
+			const addAction = this.currentTab.actions.find((action) => {
+				return action.type == 'add';
+			});
+
+			if (typeof addAction !== 'undefined') {
+				this.onClickAction(addAction);
+			} else {
+				console.error('No add action found for this list');
+			}
+		},
+		onClickAction(action, itemId = null) {
 			const parameter = action.parameter || 'id';
 
-			if (action.type == 'edit') {
+			if (action.type == 'redirect') {
 				window.location.href = action.action.replace('%id%', itemId);
 				return;
 			} else {
-				client().get('index.php?option=com_emundus&controller=' + action.controller + '&task=' + action.action + '&' + parameter + '=' + itemId)
+				let url = 'index.php?option=com_emundus&controller=' + action.controller + '&task=' + action.action;
+
+				if (itemId !== null) {
+					url += '&' + parameter + '=' + itemId;
+				}
+
+				client().get(url)
 						.then(response => {
 							if (response.data.status === true) {
+								if (response.data.redirect) {
+									window.location.href = response.data.redirect;
+								}
+
 								this.getListItems();
 							}
 						})
@@ -131,6 +158,11 @@ export default {
 			return this.currentList.tabs.find((tab) => {
 				return tab.key == this.selectedListTab;
 			});
+		},
+		tabActionsWithoutAdd() {
+			return typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.filter((action) => {
+				return action.type != 'add';
+			}): [];
 		}
 	}
 }
