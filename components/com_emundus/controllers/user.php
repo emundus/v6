@@ -52,4 +52,12 @@ class EmundusControllerUser extends JControllerLegacy
         else
             echo JText::_('ACCESS_DENIED');
     }
+
+	public function redirectMeWithMessage()
+	{
+		$input = JFactory::getApplication()->input;
+		$message = $input->getString('message', null);
+
+		$this->setRedirect('/', $message);
+	}
 }

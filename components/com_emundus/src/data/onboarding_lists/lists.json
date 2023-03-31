@@ -1,52 +1,63 @@
 {
   "forms": {
+    "title": "Formulaires",
     "tabs": [
       {
         "title": "Mes Formulaires",
         "key": "form",
+        "controller": "form",
+        "getter": "getallform",
         "actions": [
           {
-            "action": "duplicate",
+            "action": "duplicateform",
             "label": "Dupliquer",
             "controller": "form"
           },
           {
-            "action": "edit",
+            "action": "/index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%",
             "label": "Modifier",
-            "controller": "form"
+            "controller": "form",
+            "type": "edit"
           }
         ]
       },
       {
         "title": "Mes Formulaires d'évaluation",
         "key": "form_evaluations",
+        "controller": "form",
+        "getter": "getallgrilleEval",
         "actions": [
           {
-            "action": "duplicate",
+            "action": "duplicateform",
             "label": "Dupliquer",
             "controller": "form"
           },
           {
-            "action": "edit",
+            "action": "/index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%&eval=1",
             "label": "Modifier",
-            "controller": "form"
+            "controller": "form",
+            "type": "edit"
           }
         ]
       },
       {
         "title": "Mes modèles de page",
         "key": "form_models",
+        "controller": "formbuilder",
+        "getter": "getpagemodels",
         "actions": [
           {
-            "action": "delete",
+            "action": "deleteformmodelfromids",
             "label": "Supprimer",
-            "controller": "form"
+            "controller": "formbuilder",
+            "parameter": "model_ids"
           }
         ]
       }
     ]
   },
   "campaigns": {
+    "title": "Campagnes",
     "tabs": [
       {
         "title": "Mes Campagnes",
@@ -60,7 +71,8 @@
           {
             "action": "edit",
             "label": "Modifier",
-            "controller": "campaign"
+            "controller": "campaign",
+            "type": "edit"
           },
           {
             "action": "delete",
@@ -82,6 +94,7 @@
     ]
   },
   "emails": {
+    "title": "Emails",
     "tabs": [
       {
         "title": "Mes Campagnes",
@@ -90,7 +103,8 @@
           {
             "action": "edit",
             "label": "Modifier",
-            "controller": "campaign"
+            "controller": "emails",
+            "type": "edit"
           },
           {
             "action": "preview",

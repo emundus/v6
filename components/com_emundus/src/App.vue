@@ -28,6 +28,7 @@ import Files from './views/Files/Files.vue';
 
 import fileService from "./services/file.js";
 import list from "./views/list";
+import list_v2 from "./views/list_v2";
 import addcampaign from "./views/addCampaign"
 import addemail from "./views/addEmail"
 import addformnextcampaign from "./views/addFormNextCampaign"
@@ -71,7 +72,8 @@ export default {
     messagescoordinator,
     messages,
     editprofile,
-    Files
+    Files,
+		list_v2
 	},
 
   created() {

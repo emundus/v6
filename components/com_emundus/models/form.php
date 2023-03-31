@@ -42,19 +42,9 @@ class EmundusModelForm extends JModelList {
      * @param Int $page
      * @return array|stdClass
      */
-    function getAllForms(String $filter = "", String $sort = "", String $recherche = "", Int $lim = 0, Int $page = 0) : Array {
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
-
-        // Get translation files
-        $path_to_file = basename(__FILE__) . '/../language/overrides/';
-        $path_to_files = array();
-        $Content_Folder = array();
-        $languages = JLanguageHelper::getLanguages();
-        foreach ($languages as $language) {
-            $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
-            $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
-        }
-
+    function getAllForms(String $filter = '', String $sort = '', String $recherche = '', Int $lim = 0, Int $page = 0) : Array {
+        $forms = [];
+		require_once (JPATH_ROOT . '/components/com_emundus/models/users.php');
 
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -83,30 +73,16 @@ class EmundusModelForm extends JModelList {
         }
 
         $filterId = $db->quoteName('sp.published') . ' = 1';
+		$fullRecherche =empty($recherche) ? 1 : $db->quoteName('sp.label').' LIKE '.$db->quote('%' . $recherche . '%');
 
-        if (empty($recherche)) {
-            $fullRecherche = 1;
-        } else {
-            $fullRecherche = $db->quoteName('sp.label').' LIKE '.$db->quote('%' . $recherche . '%');
-        }
-
-        // Get program codes linked to the user's group to later filter
         $m_user = new EmundusModelUsers();
         $allowed_programs = $m_user->getUserGroupsProgramme(JFactory::getUser()->id);
 
         // GET ALL PROFILES THAT ARE NOT LINKED TO A CAMPAIGN
         $other_profile_query = $db->getQuery(true);
+		$other_profile_full_recherche = empty($recherche) ? 1 : $db->quoteName('esp.label').' LIKE '.$db->quote('%' . $recherche . '%');
 
-        if (empty($recherche)) {
-            $other_profile_full_recherche = 1;
-        } else {
-            $other_profile_full_recherche = $db->quoteName('esp.label').' LIKE '.$db->quote('%' . $recherche . '%');
-        }
-
-        $other_profile_query->select([
-            'esp.*',
-            'esp.label AS form_label'
-        ])
+        $other_profile_query->select(['esp.*', 'esp.label AS form_label'])
             ->from($db->quoteName('#__emundus_setup_profiles', 'esp'))
             ->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.profile_id').' = '.$db->quoteName('esp.id'))
             ->where($db->quoteName('esc.profile_id') . ' IS NULL')
@@ -115,10 +91,7 @@ class EmundusModelForm extends JModelList {
             ->andWhere($db->quoteName('esp.menutype') . ' IS NOT NULL');
 
         // Now we need to put the query together and get the profiles
-        $query->select([
-            'sp.*',
-            'sp.label AS form_label'
-        ])
+        $query->select(['sp.*', 'sp.label AS form_label'])
             ->from($db->quoteName('#__emundus_setup_profiles', 'sp'))
             ->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.profile_id').' = '.$db->quoteName('sp.id'))
             ->where($filterDate)
@@ -131,14 +104,35 @@ class EmundusModelForm extends JModelList {
 
         try {
             $db->setQuery($query);
-            $count_forms = sizeof($db->loadObjectList());
-            $db->setQuery($query, $offset, $limit);
-            return array('datas' => $db->loadObjectList(), 'count' => $count_forms);
-        } catch (Exception $e) {
-            echo $e->getMessage();
+			$forms = $db->loadObjectList();
+
+			if (!empty($forms)) {
+				$path_to_file = basename(__FILE__) . '/../language/overrides/';
+				$path_to_files = array();
+				$Content_Folder = array();
+				$languages = JLanguageHelper::getLanguages();
+				if (!empty($languages)) {
+					foreach ($languages as $language) {
+						$path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
+						$Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+					}
+
+					require_once (JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
+					$formbuilder = new EmundusModelFormbuilder;
+					foreach ($forms as $form) {
+						$label= [];
+						foreach ($languages as $language) {
+							$label[$language->sef] = $formbuilder->getTranslation($form->label,$language->lang_code) ?: $form->label;
+						}
+						$form->label = $label;
+					}
+				}
+			}
+		} catch (Exception $e) {
             JLog::add('component/com_emundus/models/form | Cannot getting the list of forms : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return [];
         }
+
+		return $forms;
     }
 
     /**

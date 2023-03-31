@@ -1162,7 +1162,8 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
             $model_ids = $jinput->getString('model_ids');
             $model_ids = json_decode($model_ids, true);
 
-            if (!empty($model_ids) && is_array($model_ids)) {
+            if (!empty($model_ids)) {
+				$model_ids = is_array($model_ids) ? $model_ids : array($model_ids);
                 $response['status'] = $this->m_formbuilder->deleteFormModelFromIds($model_ids);
                 $response['msg'] = $response['status'] ? JText::_('SUCCESS') :  JText::_('FAILED');
             } else {
