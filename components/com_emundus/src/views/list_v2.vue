@@ -2,7 +2,7 @@
 	<div id="onboarding_list" class="em-w-100">
 		<div class="head">
 			<h2>{{ currentList.title }}</h2>
-			<a class="em-pointer" @click="onClickAddAction">{{ translate('COM_EMUNDUS_LIST_ADD_' + type.toUpperCase()) }}</a>
+			<a v-if="currentAddAction" class="em-pointer" @click="onClickAddAction">{{ translate('COM_EMUNDUS_LIST_ADD_' + type.toUpperCase()) }}</a>
 		</div>
 		<div class="list">
 			<nav v-if="currentList.tabs.length > 1">
@@ -80,6 +80,7 @@ export default {
 	},
 	methods: {
 		initList() {
+			// TODO: get lists from db table jos_emundus_setup_config, namekey = 'onboarding'
 			if (typeof lists[this.type] === 'undefined') {
 				console.error('List type ' + this.type + ' does not exist');
 				window.location.href = '/';
@@ -163,6 +164,11 @@ export default {
 			return typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.filter((action) => {
 				return action.type != 'add';
 			}): [];
+		},
+		currentAddAction() {
+			return typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.find((action) => {
+				return action.type == 'add';
+			}): false;
 		}
 	}
 }
