@@ -44,7 +44,7 @@ git_query=$(curl --silent --location --request GET $(echo $GITLAB_URL)'/api/v4/p
 # Checks if at least one commit of the current merge request respects the naming of the commits 
 i=0
 for commit in $(echo "${git_query}" | jq -r '.[] | @base64'); do
-   message=$(echo "${commit}" | base64 --decode | jq -r '.message')
+   message=$(echo "${commit}" | base64 -d | jq -r '.message')
    for prefix in "${COMMIT_PREFIXES_TRIGGERING_RELEASE[@]}"; do
       if [[ "$message" == "$prefix"* ]]; then
          i=$((i+1))
