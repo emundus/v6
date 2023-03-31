@@ -45,11 +45,11 @@ class EmundusControllerSamples extends JControllerLegacy
 
             if($datas['samples_users']){
                 $i = 0;
-                $j = 0;
                 $nb_files_created = 0;
 
                 while($i < $datas['samples_users']) {
-                    $user = $mSamples->createSampleUser(9,'user'.$i.'.test@emundus.fr');
+	                $j = 0;
+                    $user = $mSamples->createSampleUser(9);
                     $i++;
                     if ($datas['samples_files']) {
                         while($j < $datas['samples_files']) {

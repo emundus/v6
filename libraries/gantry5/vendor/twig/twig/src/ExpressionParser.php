@@ -43,8 +43,8 @@ use Twig\Node\Node;
  */
 class ExpressionParser
 {
-    const OPERATOR_LEFT = 1;
-    const OPERATOR_RIGHT = 2;
+    public const OPERATOR_LEFT = 1;
+    public const OPERATOR_RIGHT = 2;
 
     protected $parser;
     protected $unaryOperators;
@@ -61,7 +61,7 @@ class ExpressionParser
             $this->unaryOperators = $env->getUnaryOperators();
             $this->binaryOperators = $env->getBinaryOperators();
         } else {
-            @trigger_error('Passing the operators as constructor arguments to '.__METHOD__.' is deprecated since version 1.27. Pass the environment instead.', E_USER_DEPRECATED);
+            @trigger_error('Passing the operators as constructor arguments to '.__METHOD__.' is deprecated since version 1.27. Pass the environment instead.', \E_USER_DEPRECATED);
 
             $this->env = $parser->getEnvironment();
             $this->unaryOperators = func_get_arg(1);
@@ -376,7 +376,16 @@ class ExpressionParser
             //  * a string -- 'a'
             //  * a name, which is equivalent to a string -- a
             //  * an expression, which must be enclosed in parentheses -- (1 + 2)
-            if (($token = $stream->nextIf(Token::STRING_TYPE)) || ($token = $stream->nextIf(Token::NAME_TYPE)) || $token = $stream->nextIf(Token::NUMBER_TYPE)) {
+            if ($token = $stream->nextIf(Token::NAME_TYPE)) {
+                $key = new ConstantExpression($token->getValue(), $token->getLine());
+
+                // {a} is a shortcut for {a:a}
+                if ($stream->test(Token::PUNCTUATION_TYPE, [',', '}'])) {
+                    $value = new NameExpression($key->getAttribute('value'), $key->getTemplateLine());
+                    $node->addElement($value, $key);
+                    continue;
+                }
+            } elseif (($token = $stream->nextIf(Token::STRING_TYPE)) || $token = $stream->nextIf(Token::NUMBER_TYPE)) {
                 $key = new ConstantExpression($token->getValue(), $token->getLine());
             } elseif ($stream->test(Token::PUNCTUATION_TYPE, '(')) {
                 $key = $this->parseExpression();
@@ -623,7 +632,7 @@ class ExpressionParser
                     $value = $this->parsePrimaryExpression();
 
                     if (!$this->checkConstantExpression($value)) {
-                        throw new SyntaxError(sprintf('A default value for an argument must be a constant (a boolean, a string, a number, or an array).'), $token->getLine(), $stream->getSourceContext());
+                        throw new SyntaxError('A default value for an argument must be a constant (a boolean, a string, a number, or an array).', $token->getLine(), $stream->getSourceContext());
                     }
                 } else {
                     $value = $this->parseExpression(0, $allowArrow);
@@ -702,6 +711,8 @@ class ExpressionParser
         $arguments = null;
         if ($stream->test(Token::PUNCTUATION_TYPE, '(')) {
             $arguments = $this->parseArguments(true);
+        } elseif ($test->hasOneMandatoryArgument()) {
+            $arguments = new Node([0 => $this->parsePrimaryExpression()]);
         }
 
         return new $class($node, $name, $arguments, $this->parser->getCurrentToken()->getLine());
@@ -747,7 +758,7 @@ class ExpressionParser
             $src = $stream->getSourceContext();
             $message .= sprintf(' in %s at line %d.', $src->getPath() ?: $src->getName(), $stream->getCurrent()->getLine());
 
-            @trigger_error($message, E_USER_DEPRECATED);
+            @trigger_error($message, \E_USER_DEPRECATED);
         }
 
         if ($test instanceof TwigTest) {
@@ -777,7 +788,7 @@ class ExpressionParser
             $src = $this->parser->getStream()->getSourceContext();
             $message .= sprintf(' in %s at line %d.', $src->getPath() ?: $src->getName(), $line);
 
-            @trigger_error($message, E_USER_DEPRECATED);
+            @trigger_error($message, \E_USER_DEPRECATED);
         }
 
         if ($function instanceof TwigFunction) {
@@ -807,7 +818,7 @@ class ExpressionParser
             $src = $this->parser->getStream()->getSourceContext();
             $message .= sprintf(' in %s at line %d.', $src->getPath() ?: $src->getName(), $line);
 
-            @trigger_error($message, E_USER_DEPRECATED);
+            @trigger_error($message, \E_USER_DEPRECATED);
         }
 
         if ($filter instanceof TwigFilter) {

@@ -36,9 +36,10 @@ class EmundusModelSamples extends JModelList {
             $existing = $db->loadResult();
         } while(!is_null($existing));
 
-        $query->insert('#__users')
-            ->columns('name, email, password')
-            ->values($db->quote('Test USER') . ', ' . $db->quote($username) . ',' .  $db->quote(md5('test1234')));
+        $query->clear()
+	        ->insert('#__users')
+            ->columns('name, username, email, password')
+            ->values($db->quote('Test USER') . ', ' . $db->quote($username) . ',' . $db->quote($username . '@emundus.fr') . ',' .  $db->quote(md5('test1234')));
 
         try {
             $db->setQuery($query);
@@ -97,7 +98,18 @@ class EmundusModelSamples extends JModelList {
 
             foreach ($uids as $uid) {
                 $cid_key = array_rand($cids);
-                $fnum = @EmundusHelperFiles::createFnum($cids[$cid_key], $uid);
+	            $fnum = '';
+	            do {
+		            $fnum = @EmundusHelperFiles::createFnum($cids[$cid_key], $uid);
+
+		            $query->clear()
+			            ->select('id')
+			            ->from($db->quoteName('#__emundus_campaign_candidature'))
+			            ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+		            $db->setQuery($query);
+		            $file_already_exist = $db->loadResult();
+	            } while (!empty($file_already_exist));
+
 
                 if (!empty($fnum)) {
                     try {

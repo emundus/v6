@@ -31,13 +31,36 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
         $r = $app->input->get('r', 0);
         $formid = $app->input->get('formid', '256');
         $rowid = $app->input->get('rowid');
-        $student_id = $app->input->get('jos_emundus_evaluations___student_id') ?: '{jos_emundus_evaluations___student_id}';
-        $fnum = $app->input->get('jos_emundus_evaluations___fnum') ?: '{jos_emundus_evaluations___fnum}';
+        $student_id = $app->input->get('jos_emundus_evaluations___student_id') ?: '';
+		$fnum = $app->input->get('jos_emundus_evaluations___fnum') ?:'';
+		$view = strpos(JUri::getInstance()->getPath(), '/details/') !== false ? 'details' : 'form';
 
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+		if (empty($fnum) || empty($student_id)) {
+			if (!empty($rowid)) {
+				$query->select('fnum, student_id')
+					->from('#__emundus_evaluations')
+					->where('id = ' . $rowid);
+
+				try {
+					$db->setQuery($query);
+					$evaluation_row = $db->loadAssoc();
+
+					if (!empty($evaluation_row)) {
+						$fnum = $evaluation_row['fnum'];
+						$student_id = $evaluation_row['student_id'];
+					}
+				} catch (Exception $e) {
+					JLog::add('Failed to find fnum from rowid ' . $rowid . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				}
+			} else {
+				$fnum = '{jos_emundus_evaluations___fnum}';
+				$student_id = '{jos_emundus_evaluations___student_id}';
+			}
+		}
+
+		require_once(JPATH_SITE.'/components/com_emundus/models/evaluation.php');
         $m_evaluation = new EmundusModelEvaluation();
-
-        $evaluation = $m_evaluation->getEvaluationUrl($fnum,$formid,$rowid,$student_id,1);
+        $evaluation = $m_evaluation->getEvaluationUrl($fnum,$formid,$rowid,$student_id,1, $view);
 
         if(!empty($evaluation)) {
             $event_datas = [

@@ -11,7 +11,7 @@
 
 use Twig\Extension\ExtensionInterface;
 
-@trigger_error('The Twig_Test_Method class is deprecated since version 1.12 and will be removed in 2.0. Use \Twig\TwigTest instead.', E_USER_DEPRECATED);
+@trigger_error('The Twig_Test_Method class is deprecated since version 1.12 and will be removed in 2.0. Use \Twig\TwigTest instead.', \E_USER_DEPRECATED);
 
 /**
  * Represents a method template test.
@@ -38,5 +38,10 @@ class Twig_Test_Method extends Twig_Test
     public function compile()
     {
         return sprintf('$this->env->getExtension(\'%s\')->%s', \get_class($this->extension), $this->method);
+    }
+
+    public function hasOneMandatoryArgument(): bool
+    {
+        return (bool) ($this->options['one_mandatory_argument'] ?? false);
     }
 }
