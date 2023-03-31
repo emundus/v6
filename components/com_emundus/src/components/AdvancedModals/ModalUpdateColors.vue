@@ -81,10 +81,11 @@
     margin: 30px;
     border-radius: 25px;
     cursor: pointer;
+    transition: all 0.3s ease-in-out;
   }
 
   .preset-presentation:hover{
-    transform: scale(1.1);
+    transform: scale(1.05);
   }
 
   .modalC-content{

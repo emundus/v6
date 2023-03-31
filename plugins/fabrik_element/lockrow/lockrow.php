@@ -10,6 +10,9 @@
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
+
 jimport('joomla.application.component.model');
 
 require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
@@ -23,6 +26,15 @@ class PlgFabrik_ElementLockrow extends PlgFabrik_Element
 	 * @var string
 	 */
 	protected $fieldDesc = 'VARCHAR(32)';
+
+	private function getCustomMsg($lang, $data)
+	{
+		$params = $this->getParams();
+		$param = strtolower(str_replace('PLG_ELEMENT_', '', $lang));
+		$lockedMsg = $params->get($param, '');
+		$lockedMsg = empty($lockedMsg) ? $lang : $lockedMsg;
+		return Text::sprintf($lockedMsg, ...$data);
+	}
 
 	public function isSubmitLocked($value, $thisUserId = null)
 	{
@@ -47,6 +59,7 @@ class PlgFabrik_ElementLockrow extends PlgFabrik_Element
 
 			$params      = $this->getParams();
 			$allowReedit = $params->get('lockrow_allow_user_reedit', '1');
+			$allowTimeout = $params->get('lockrow_allow_timeout_submit', '0') === '1';
 
 			if (!isset($thisUserId))
 			{
@@ -70,9 +83,10 @@ class PlgFabrik_ElementLockrow extends PlgFabrik_Element
 			$timedOut = $ttlTime > 0 && $timeNow > $ttlTime;
 
 			// if user ids are different, it's locked, regardless
-			if ((int) $lockingUserId !== (int) $origLockingUserId)
+			if ((int) $lockingUserId !== (int) $origLockingUserId || (int)$lockingUserId !== (int)$thisUserId)
 			{
-				$this->app->enqueueMessage(FText::_('PLG_ELEMENT_LOCKROW_SUBMIT_NOT_OWNER_MSG'));
+				$origLockingUser = JFactory::getUser($origLockingUserId);
+				$this->app->enqueueMessage($this->getCustomMsg('PLG_ELEMENT_LOCKROW_SUBMIT_NOT_OWNER_MSG', [$origLockingUser->username, $origLockingUser->name]));
 
 				return true;
 			}
@@ -84,19 +98,19 @@ class PlgFabrik_ElementLockrow extends PlgFabrik_Element
 				{
 					if ($expireMinutes < 0)
 					{
-						$this->app->enqueueMessage(FText::sprintf('PLG_ELEMENT_LOCKROW_SUBMIT_WRONG_LOCK_EXPIPRED_MSG', abs($expireMinutes)));
+						$this->app->enqueueMessage($this->getCustomMsg('PLG_ELEMENT_LOCKROW_SUBMIT_WRONG_LOCK_EXPIRED_MSG', abs($expireMinutes)));
 					}
 					else
 					{
-						$this->app->enqueueMessage(FText::sprintf('PLG_ELEMENT_LOCKROW_SUBMIT_WRONG_LOCK_MSG', abs($expireMinutes)));
+						$this->app->enqueueMessage($this->getCustomMsg('PLG_ELEMENT_LOCKROW_SUBMIT_WRONG_LOCK_MSG', [abs($expireMinutes)]));
 					}
 
 					return true;
 				}
 
-				if ($timedOut)
+				if ($timedOut && !$allowTimeout)
 				{
-					$this->app->enqueueMessage(FText::_('PLG_ELEMENT_LOCKROW_SUBMIT_TIMEOUT_MSG'));
+					$this->app->enqueueMessage($this->getCustomMsg('PLG_ELEMENT_LOCKROW_SUBMIT_TIMEOUT_MSG', []));
 
 					return true;
 				}
@@ -104,9 +118,9 @@ class PlgFabrik_ElementLockrow extends PlgFabrik_Element
 			else if ($allowReedit === '1')
 			{
 				// if allow reedit is 1 (yes), only locked if this lock is timed out
-				if ($timedOut)
+				if ($timedOut && !$allowTimeout)
 				{
-					$this->app->enqueueMessage(FText::_('PLG_ELEMENT_LOCKROW_SUBMIT_TIMEOUT_MSG'));
+					$this->app->enqueueMessage($this->getCustomMsg('PLG_ELEMENT_LOCKROW_SUBMIT_TIMEOUT_MSG', []));
 
 					return true;
 				}
@@ -115,7 +129,7 @@ class PlgFabrik_ElementLockrow extends PlgFabrik_Element
 		else
 		{
 			// if no lock data, barf
-			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_LOCKROW_SUBMIT_ERROR_MSG'));
+			$this->app->enqueueMessage($this->getCustomMsg('PLG_ELEMENT_LOCKROW_SUBMIT_ERROR_MSG', []));
 
 			return true;
 		}
@@ -128,6 +142,11 @@ class PlgFabrik_ElementLockrow extends PlgFabrik_Element
 	{
 		if (!empty($value))
 		{
+			if ($this->app->input->get('unlock_hash', '') === md5($value))
+			{
+				return false;
+			}
+
 			$params      = $this->getParams();
 			$allowReedit = $params->get('lockrow_allow_user_reedit', '1');
 
@@ -285,9 +304,15 @@ class PlgFabrik_ElementLockrow extends PlgFabrik_Element
 
 		$ttl       = (int) $params->get('lockrow_ttl', '60');
 
+		if ($this->app->input->get('unlock_hash', '') === md5($value))
+		{
+			$value = '';
+		}
+
 		if (!empty($value))
 		{
 			list($time, $lockingUserId) = explode(';', $value);
+			$lockingUser = JFactory::getUser($lockingUserId);
 			$ttlTime = (int) $time + ($ttl * 60);
 			$timeNow = time();
 
@@ -301,24 +326,24 @@ class PlgFabrik_ElementLockrow extends PlgFabrik_Element
 				{
 					if ($params->get('lockrow_allow_user_reedit', '1') === '1')
 					{
-						$app->enqueueMessage(FText::_('PLG_ELEMENT_LOCKROW_RELOCKED_MSG'));
+						$app->enqueueMessage($this->getCustomMsg('PLG_ELEMENT_LOCKROW_RELOCKED_MSG', [$ttl]));
 					}
 					else if ($params->get('lockrow_allow_user_reedit', '1') === '2')
 					{
-						$app->enqueueMessage(FText::_('PLG_ELEMENT_LOCKROW_RELOCKED_EXCLUSIVE_MSG'));
+						$app->enqueueMessage($this->getCustomMsg('PLG_ELEMENT_LOCKROW_RELOCKED_EXCLUSIVE_MSG', [$ttl]));
 					}
 					else
 					{
 						if ($ttl === 0)
 						{
 
-							$app->enqueueMessage(FText::_('PLG_ELEMENT_LOCKROW_OWN_LOCKED_NO_EXPIRE_MSG'));
+							$app->enqueueMessage($this->getCustomMsg('PLG_ELEMENT_LOCKROW_OWN_LOCKED_NO_EXPIRE_MSG', []));
 						}
 						else
 						{
 							$expireTime    = $ttlTime = $timeNow;
 							$expireMinutes = round($expireTime / 60);
-							$app->enqueueMessage(FText::sprintf('PLG_ELEMENT_LOCKROW_OWN_LOCKED_MSG', abs($expireMinutes)));
+							$app->enqueueMessage($this->getCustomMsg('PLG_ELEMENT_LOCKROW_OWN_LOCKED_MSG', [abs($expireMinutes)]));
 						}
 
 						return "";
@@ -326,26 +351,41 @@ class PlgFabrik_ElementLockrow extends PlgFabrik_Element
 				}
 				else
 				{
-					$app->enqueueMessage(FText::_('PLG_ELEMENT_LOCKROW_LOCK_EXPIRED_MSG'));
+					$app->enqueueMessage($this->getCustomMsg('PLG_ELEMENT_LOCKROW_LOCK_EXPIRED_MSG', [$lockingUser->username, $lockingUser->name]));
 				}
 			}
 			else
 			{
 				if ($timeNow < $ttlTime)
 				{
-					$app->enqueueMessage(FText::sprintf('PLG_ELEMENT_LOCKROW_LOCKED_MSG', $ttl));
+					if ($this->canUnlock($value))
+					{
+						$url = 'index.php';
+						$url .= '?option=' . $this->app->input->get('option');
+						$url .= '&view=' . $this->app->input->get('view');
+						$url .= '&formid=' . $this->app->input->get('formid');
+						$url .= '&rowid=' . $this->app->input->get('rowid');
+						$url .= '&Itemid=' . $this->app->input->get('Itemid');
+						$url .= '&unlock_hash=' . md5($value);
+						$url = Route::_($url, false);
+						$app->enqueueMessage($this->getCustomMsg('PLG_ELEMENT_LOCKROW_LOCKED_UNLOCK_MSG', [$ttl, $lockingUser->username, $lockingUser->name, $url]));
+					}
+					else
+					{
+						$app->enqueueMessage($this->getCustomMsg('PLG_ELEMENT_LOCKROW_LOCKED_MSG', [$ttl, $lockingUser->username, $lockingUser->name]));
+					}
 
 					return "";
 				}
 				else
 				{
-					$app->enqueueMessage(FText::_('PLG_ELEMENT_LOCKROW_LOCK_EXPIRED_MSG'));
+					$app->enqueueMessage($this->getCustomMsg('PLG_ELEMENT_LOCKROW_LOCK_EXPIRED_MSG', [$ttl]));
 				}
 			}
 		}
 		else
 		{
-			$app->enqueueMessage(FText::sprintf('PLG_ELEMENT_LOCKROW_LOCK_LOCKING_MSG', $ttl));
+			$app->enqueueMessage($this->getCustomMsg('PLG_ELEMENT_LOCKROW_LOCK_LOCKING_MSG', [$ttl]));
 		}
 
 		if (!isset($lockstr))
@@ -436,12 +476,14 @@ class PlgFabrik_ElementLockrow extends PlgFabrik_Element
 				$layoutData->icon  = $params->get('lockrow_locked_icon', 'lock');
 				$layoutData->alt   = 'Locked';
 				$layoutData->class = 'fabrikElement_lockrow_locked';
+				$layoutData->lockingUserId = explode(';',$data)[1];
 			}
 			else
 			{
 				$layoutData->icon  = $params->get('lockrow_unlocked_icon', 'unlock');
 				$layoutData->alt   = 'Not Locked';
 				$layoutData->class = 'fabrikElement_lockrow_unlocked';
+				$layoutData->lockingUserId = '';
 			}
 
 			return $layout->render($layoutData);

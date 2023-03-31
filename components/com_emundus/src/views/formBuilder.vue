@@ -94,6 +94,7 @@
                   @add-page="getPages(currentPage.id)"
                   @delete-page="selectedPage = pages[0].id;"
                   @open-page-create="principalContainer = 'create-page';"
+                  @reorder-pages="onReorderedPages"
               ></form-builder-pages>
               <hr>
               <form-builder-documents
@@ -275,6 +276,9 @@ export default {
         });
       });
     },
+	  onReorderedPages(reorderedPages) {
+		  this.pages = reorderedPages;
+	  },
     onElementCreated(elementIndex) {
       this.$refs.formBuilderPage.getSections(elementIndex);
     },
@@ -348,13 +352,14 @@ export default {
     },
     onEditDocument(document)
     {
+	    this.selectedDocument = document;
+	    this.showInRightPanel = 'create-document';
+	    this.createDocumentMode = 'update';
 			if (this.$refs.formBuilderCreateDocument) {
-				this.$refs.formBuilderCreateDocument.mode = 'update';
+				this.$refs.formBuilderCreateDocument.document.mandatory = document !== undefined && document !== null ? document.mandatory : this.createDocumentMandatory;
+				this.$refs.formBuilderCreateDocument.$forceUpdate();
 			}
 
-      this.selectedDocument = document;
-      this.showInRightPanel = 'create-document';
-	    this.createDocumentMode = 'update';
 	    this.setSectionShown('documents');
     },
     onDeleteDocument(){

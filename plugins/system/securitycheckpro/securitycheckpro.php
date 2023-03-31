@@ -10,7 +10,10 @@ use Joomla\CMS\Access\Access as JAccess;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel as JModel;
 use Joomla\CMS\Factory as JFactory;
 use Joomla\CMS\Language\Text as JText;
-
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\String\StringHelper;
+use Joomla\CMS\Application\SiteApplication;
+use Joomla\CMS\Component\ComponentHelper;
 
 class plgSystemSecuritycheckpro extends JPlugin
 {
@@ -104,10 +107,14 @@ class plgSystemSecuritycheckpro extends JPlugin
             $description = $db->escape($description);
             $type = filter_var($type, FILTER_SANITIZE_STRING);
             $type = $db->escape($type);
+			$type = substr($type,0,50);
             $uri = filter_var($uri, FILTER_SANITIZE_STRING);
             $uri = $db->escape($uri);
+			// Truncate the uri string
+			$uri = substr($uri,0,100);
             $component = filter_var($component, FILTER_SANITIZE_STRING);            
             $component = $db->escape($component);
+			$component = substr($component,0,150);
             // Guardamos el string original en formato base64 para evitar problemas de seguridad; además, lo debemos filtrar en el archivo default.php
             //$original_string = filter_var($original_string, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);                
             $original_string = base64_encode($original_string);
@@ -422,7 +429,7 @@ class plgSystemSecuritycheckpro extends JPlugin
                 $this->redirection(403, "", true);
             } else 
             {
-                $xss_forbidden_words_array = array("onload","onfocus","autofocus","javascript:","onmouseover","onerror","FSCommand","onAbort","onActivate","onAfterPrint","onAfterUpdate","onBeforeActivate","onBeforeCopy","onBeforeCut","onBeforeDeactivate","onBeforeEditFocus","onBeforePaste","onBeforePrint","onBeforeUnload","onBeforeUpdate","onBegin","onBlur","onBounce","onCellChange","onChange","onClick","onContextMenu","onControlSelect","onCopy","onCut","onDataAvailable","onDataSetChanged","onDataSetComplete","onDblClick","onDeactivate","onDrag","onDragEnd","onDragLeave","onDragEnter","onDragOver","onDragDrop","onDragStart","onDrop","onEnd","onErrorUpdate","onFilterChange","onFinish","onFocusIn","onFocusOut","onHashChange","onHelp","onInput","onKeyDown","onKeyPress","onKeyUp","onLayoutComplete","onLoseCapture","onMediaComplete","onMediaError","onMessage","onMouseDown","onMouseEnter","onMouseLeave","onMouseMove","onMouseOut","onMouseOut","onMouseUp","onMouseWheel","onMove","onMoveEnd","onMoveStart","onOffline","onOnline","onOutOfSync","onPaste","onPause","onPopState","onProgress","onPropertyChange","onReadyStateChange","onRedo","onRepeat","onReset","onResize","onResizeEnd","onResizeStart","onResume","onReverse","onRowsEnter","onRowExit","onRowDelete","onRowInserted","onScroll","onSeek","onSelect","onSelectionChange","onSelectStart","onStart","onStop","onStop","onSyncRestored","onSubmit","onTimeError","onTimeError","onUndo","onUnload","onURLFlip","seekSegmentTime");
+                $xss_forbidden_words_array = array("onload","onfocus","autofocus","javascript:","onmouseover","onerror","FSCommand","onAbort","onActivate","onAfterPrint","onAfterUpdate","onBeforeActivate","onBeforeCopy","onBeforeCut","onBeforeDeactivate","onBeforeEditFocus","onBeforePaste","onBeforePrint","onBeforeUnload","onBeforeUpdate","onBegin","onBlur","onBounce","onCellChange","onChange","onClick","onContextMenu","onControlSelect","onCopy","onCut","onDataAvailable","onDataSetChanged","onDataSetComplete","onDblClick","onDeactivate","onDrag","onDragEnd","onDragLeave","onDragEnter","onDragOver","onDragDrop","onDragStart","onDrop","onErrorUpdate","onFilterChange","onFinish","onFocusIn","onFocusOut","onHashChange","onHelp","onInput","onKeyDown","onKeyPress","onKeyUp","onLayoutComplete","onLoseCapture","onMediaComplete","onMediaError","onMessage","onMouseDown","onMouseEnter","onMouseLeave","onMouseMove","onMouseOut","onMouseOut","onMouseUp","onMouseWheel","onMove","onMoveEnd","onMoveStart","onOffline","onOnline","onOutOfSync","onPaste","onPause","onPopState","onProgress","onPropertyChange","onReadyStateChange","onRedo","onRepeat","onReset","onResize","onResizeEnd","onResizeStart","onResume","onReverse","onRowsEnter","onRowExit","onRowDelete","onRowInserted","onScroll","onSeek","onSelect","onSelectionChange","onSelectStart","onStart","onSyncRestored","onSubmit","onTimeError","onTimeError","onUndo","onUnload","onURLFlip","seekSegmentTime");
                                 
                 foreach($xss_forbidden_words_array as $word) {
                     if ((is_string($string)) && (!empty($word))) {
@@ -611,7 +618,7 @@ class plgSystemSecuritycheckpro extends JPlugin
         }    
 		                        
         /* LFI Prevention */
-        $lfiStatements = array("/\.\.\//","/\?\?\?/","/\/\./");
+        $lfiStatements = array("/\.\.\//","/\?\?\?/");
         if ((!(strstr($lfi_exceptions, $pageoption)) || $extension_vulnerable) && !(strstr($lfi_exceptions, '*'))) {
             if (!$modified) {                        
                 $string_sanitized = preg_replace($lfiStatements, '', $string);
@@ -1879,7 +1886,7 @@ class plgSystemSecuritycheckpro extends JPlugin
         }        
         
         // Is the plugin enabled?
-        if ($plugin_enabled) {
+        if ($plugin_enabled) {	
     
             // Cargamos el lenguaje del sitio
             $lang = JFactory::getLanguage();
@@ -2023,55 +2030,126 @@ class plgSystemSecuritycheckpro extends JPlugin
     }
     
     // Obtiene el componente de Joomla implicado en una petición al servidor
+	// Basado en el método 'parseSefRoute' de /libraries/src/Router/SiteRouter.php
     private function get_component()
     {
         
         //Inicializamos variables
         $option = '';
         
-        // ¿Cómo hemos de extraer el componente?
-        $params = JComponentHelper::getParams('com_securitycheckpro');
-        $determine_option_accurately = $params->get('determine_option_accurately', 1);
-                            
-        if ($determine_option_accurately == 1) {
-                    
-            // Obtenemos el componente de la petición
-            $app = JFactory::getApplication();
-            $uri = clone JUri::getInstance();
-            $router = $app->getRouter();
-            $parsed = $router->parse($uri);
-            if (isset($parsed['option'])) {
-                $option = $parsed['option'];
-            } else
-            {
-                $option = 'com_content';
-            }
-            
-        } else 
-        {
-                        
-            // Obtenemos el componente de la petición
-            $app = JFactory::getApplication()->input;
-            $uriQuery = $app->getArray();
-            if (array_key_exists('option', $uriQuery)) {
-                $option = $uriQuery['option'];
-            } else {
-                // No hemos podido obtener el componente; lo establecemos por defecto
-                $option = 'com_content';
-            }            
-        }        
-                                
-        $new_option = '';
-                        
-        //Si obtenemos 'com_content' como contenido activo, quizá el parseo no ha podido extraer el componente. Lo intentamos con 'JInput'
-        if ($option == 'com_content') {
-            $input = new JInput();
-            $new_option = $input->getCmd('option', 'Not_defined');
-            if ($new_option != 'Not_defined') {
-                $option = $new_option;
-            }
-        }
-        
+        $is_admin = JFactory::getApplication()->isClient('administrator');
+		
+		$uri = JUri::getInstance();	
+								
+		if ($is_admin)
+		{
+			// Get the variables from the uri
+			$vars = $uri->getQuery(true);		
+		
+			if (isset($vars['option'])) {
+				$option = $vars['option'];
+			} else {
+				$option = 'com_content';
+			}
+		}
+		else
+		{
+			if (version_compare(JVERSION, '4.0', 'ge')) {
+				$app = JFactory::getContainer()->get(SiteApplication::class);					
+			} else {
+				$app = CMSApplication::getInstance('site');
+			}
+			$menu = $app->getMenu();
+			$route = $uri->getPath();
+						
+			// Remove the suffix
+			if ($app->get('sef_suffix'))
+			{
+				if ($suffix = pathinfo($route, PATHINFO_EXTENSION))
+				{
+					$route = str_replace('.' . $suffix, '', $route);
+				}
+			}
+		
+			$items = $menu->getMenu();
+								
+			$found           = false;
+			$route_lowercase = StringHelper::strtolower($route);
+			$lang_tag        = $app->getLanguage()->getTag();
+										
+			// Iterate through all items and check route matches.
+			foreach ($items as $item)
+			{					
+				if ($item->route && StringHelper::strpos($route_lowercase . '/', $item->route . '/') === 1 && $item->type !== 'menulink')
+				{
+					// Usual method for non-multilingual site.
+					if (!$app->getLanguageFilter())
+					{
+						// Exact route match. We can break iteration because exact item was found.
+						if ($item->route === $route_lowercase)
+						{
+							$found = $item;
+							break;
+						}
+							// Partial route match. Item with highest level takes priority.
+						if (!$found || $found->level < $item->level)
+						{
+							$found = $item;
+						}
+					}
+					// Multilingual site.
+					elseif ($item->language === '*' || $item->language === $lang_tag)
+					{
+						// Exact route match.
+						if ($item->route === $route_lowercase)
+						{
+							$found = $item;
+								// Break iteration only if language is matched.
+							if ($item->language === $lang_tag)
+							{
+								break;
+							}
+						}
+							// Partial route match. Item with highest level or same language takes priority.
+						if (!$found || $found->level < $item->level || $item->language === $lang_tag)
+						{
+							$found = $item;
+						}
+					}
+				}
+			}
+						
+			if ($found)
+			{
+				$option = $found->component;
+			} else {
+				$components = ComponentHelper::getComponents();		
+				
+				foreach ($components as $component)
+				{
+					$component_without_com = str_replace("com_", "",$component->option);					
+					
+					if (strstr($route,$component_without_com))
+					{
+						$option = $component->option;
+					}			
+				}
+				// None of the components matches. Maybe something went wrong. Let's set a predefined value.
+				if (empty($option))
+				{
+					// Do we have a non-sef url?
+					$vars = $uri->getQuery(true);		
+				
+					if (isset($vars['option'])) {
+						$option = $vars['option'];
+					} else {
+						$option = 'com_content';
+					}					
+				}
+				
+			}
+		}		
+					  
         // Sanitizamos la salida        
         return (filter_var($option, FILTER_SANITIZE_STRING));
     }

@@ -30,6 +30,8 @@ class EmundusModelForm extends JModelList {
         JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_menus/models/', 'MenusModel');
         JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_menus/tables/');
         $this->model_menus = JModelLegacy::getInstance('Item', 'MenusModel');
+
+	    JLog::addLogger(['text_file' => 'com_emundus.form.php'], JLog::ALL, array('com_emundus.form'));
     }
 
     /**
@@ -565,143 +567,185 @@ class EmundusModelForm extends JModelList {
 
 
     public function duplicateForm($data) {
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
-
-        // Prepare languages
-        $path_to_file = basename(__FILE__) . '/../language/overrides/';
-        $path_to_files = array();
-        $Content_Folder = array();
-
-        $languages = JLanguageHelper::getLanguages();
-        foreach ($languages as $language) {
-            $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
-            $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
-        }
-
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'formbuilder.php');
-
-        $formbuilder = new EmundusModelFormbuilder();
-
+		$duplicated = false;
         if (!is_array($data)) {
             $data = array($data);
         }
 
-        if (count($data) > 0) {
-            try {
+        if (!empty($data)) {
+	        $db = $this->getDbo();
+	        $query = $db->getQuery(true);
+
+	        // Prepare languages
+	        $path_to_file = basename(__FILE__) . '/../language/overrides/';
+	        $path_to_files = array();
+	        $Content_Folder = array();
+
+	        $languages = JLanguageHelper::getLanguages();
+	        foreach ($languages as $language) {
+		        $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
+		        $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+	        }
+
+	        require_once (JPATH_SITE. '/components/com_emundus/models/formbuilder.php');
+	        $formbuilder = new EmundusModelFormbuilder();
+
+	        try {
                 foreach ($data as $pid) {
                     // Get profile
-                    $query->select('*')
+                    $query->clear()
+	                    ->select('*')
                         ->from($db->quoteName('#__emundus_setup_profiles'))
                         ->where($db->quoteName('id') . ' = ' . $db->quote($pid));
                     $db->setQuery($query);
                     $oldprofile = $db->loadObject();
 
-                    // Create a new profile
-                    $query->clear()
-                        ->insert('#__emundus_setup_profiles')
-                        ->set($db->quoteName('label') . ' = ' . $db->quote($oldprofile->label. ' - Copy'))
-                        ->set($db->quoteName('published') . ' = 1')
-                        ->set($db->quoteName('menutype') . ' = ' . $db->quote($oldprofile->menutype))
-                        ->set($db->quoteName('acl_aro_groups') . ' = ' . $db->quote($oldprofile->acl_aro_groups))
-                        ->set($db->quoteName('status') . ' = ' . $db->quote($oldprofile->status));
-                    $db->setQuery($query);
-                    $db->execute();
-                    $newprofile = $db->insertid();
-                    $newmenutype = 'menu-profile' . $newprofile;
+					if (!empty($oldprofile)) {
+						// Create a new profile
+						$query->clear()
+							->insert('#__emundus_setup_profiles')
+							->set($db->quoteName('label') . ' = ' . $db->quote($oldprofile->label. ' - Copy'))
+							->set($db->quoteName('published') . ' = 1')
+							->set($db->quoteName('menutype') . ' = ' . $db->quote($oldprofile->menutype))
+							->set($db->quoteName('acl_aro_groups') . ' = ' . $db->quote($oldprofile->acl_aro_groups))
+							->set($db->quoteName('status') . ' = ' . $db->quote($oldprofile->status));
+						$db->setQuery($query);
+						$db->execute();
+						$newprofile = $db->insertid();
 
-                    $newmenutype = $this->createMenuType($newmenutype,$oldprofile->label . ' - Copy');
-                    if(empty($newmenutype)){
-                        return false;
-                    }
+						if (!empty($newprofile)) {
+							$newmenutype = 'menu-profile' . $newprofile;
+							$newmenutype = $this->createMenuType($newmenutype,$oldprofile->label . ' - Copy');
+							if (empty($newmenutype)) {
+								JLog::add('Failed to create new menu from profile ' . $newprofile, JLog::WARNING, 'com_emundus.error');
+								return false;
+							}
 
-                    $query->clear()
-                        ->update('#__emundus_setup_profiles')
-                        ->set($db->quoteName('menutype') . ' = ' . $db->quote($newmenutype))
-                        ->where($db->quoteName('id') . ' = ' . $db->quote($newprofile));
-                    $db->setQuery($query);
-                    $db->execute();
-                    //
+							$query->clear()
+								->update('#__emundus_setup_profiles')
+								->set($db->quoteName('menutype') . ' = ' . $db->quote($newmenutype))
+								->where($db->quoteName('id') . ' = ' . $db->quote($newprofile));
+							$db->setQuery($query);
+							$db->execute();
+							//
 
-                    // Duplicate heading menu
-                    $query->clear()
-                        ->select('*')
-                        ->from('#__menu')
-                        ->where($db->quoteName('menutype') . ' = ' . $db->quote($oldprofile->menutype))
-                        ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
+							// Duplicate heading menu
+							$query->clear()
+								->select('*')
+								->from('#__menu')
+								->where($db->quoteName('menutype') . ' = ' . $db->quote($oldprofile->menutype))
+								->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'))
+								->andWhere('published = 1');
 
-                    $db->setQuery($query);
-                    $heading_to_duplicate = $db->loadObject();
+							$db->setQuery($query);
+							$heading_to_duplicate = $db->loadObject();
 
-                    if(!empty($heading_to_duplicate)) {
-                        $query->clear();
-                        $query->insert($db->quoteName('#__menu'));
-                        foreach ($heading_to_duplicate as $key => $val) {
-                            if ($key != 'id' && $key != 'menutype' && $key != 'alias' && $key != 'path') {
-                                $query->set($key . ' = ' . $db->quote($val));
-                            } elseif ($key == 'menutype') {
-                                $query->set($key . ' = ' . $db->quote($newmenutype));
-                            } elseif ($key == 'path') {
-                                $query->set($key . ' = ' . $db->quote($newmenutype));
-                            } elseif ($key == 'alias') {
-                                $query->set($key . ' = ' . $db->quote(str_replace($formbuilder->getSpecialCharacters(), '-', strtolower($oldprofile->label . '-Copy')) . '-' . $newprofile));
-                            }
-                        }
-                        $db->setQuery($query);
-                        $db->execute();
-                    }
-                    //
+							if (empty($heading_to_duplicate) || empty($heading_to_duplicate->id)) {
+								JLog::add('Could not find heading menu when copying profile ' . $pid, JLog::INFO, 'com_emundus.form');
 
-                    // Get fabrik_lists
-                    $query->clear()
-                        ->select('link')
-                        ->from('#__menu')
-                        ->where($db->quoteName('menutype') . ' = ' . $db->quote($oldprofile->menutype))
-                        ->andWhere($db->quoteName('type') . ' = ' . $db->quote('component'));
-                    $db->setQuery($query);
-                    $links = $db->loadObjectList();
+								$default_heading_menu = new stdClass();
+								$default_heading_menu->id = 1;
+								$default_heading_menu->menutype = '';
+								$default_heading_menu->title = "PROFILE $pid - Copy";
+								$default_heading_menu->alias = '';
+								$default_heading_menu->note = '';
+								$default_heading_menu->path = '';
+								$default_heading_menu->link = '';
+								$default_heading_menu->type = 'heading';
+								$default_heading_menu->published = 1;
+								$default_heading_menu->parent_id = 1;
+								$default_heading_menu->level = 1;
+								$default_heading_menu->component_id = 0;
+								$default_heading_menu->checked_out = 0;
+								$default_heading_menu->params = '{"menu-anchor_title":"","menu-anchor_css":"","menu-anchor_rel":"","menu_image":"","menu_image_css":"","menu_text":1,"menu_show":1}';
+								$default_heading_menu->home = 0;
+								$default_heading_menu->language = '*';
+								$default_heading_menu->client_id = 0;
+								$default_heading_menu->template_style_id = 22;
+								$default_heading_menu->access = 1;
+								$default_heading_menu->browserNav = 0;
+								$heading_to_duplicate = $default_heading_menu;
+							}
 
-                    foreach ($links as $link) {
-                        if(strpos($link->link,'formid') !== false){
-                            $formsid_arr[] = explode('=', $link->link)[3];
-                        }
-                    }
+							if (!empty($heading_to_duplicate->id)) {
+								$query->clear();
+								$query->insert($db->quoteName('#__menu'));
+								foreach ($heading_to_duplicate as $key => $val) {
+									if ($key != 'id' && $key != 'menutype' && $key != 'alias' && $key != 'path') {
+										$query->set($key . ' = ' . $db->quote($val));
+									} elseif ($key == 'menutype') {
+										$query->set($key . ' = ' . $db->quote($newmenutype));
+									} elseif ($key == 'path') {
+										$query->set($key . ' = ' . $db->quote($newmenutype));
+									} elseif ($key == 'alias') {
+										$query->set($key . ' = ' . $db->quote(str_replace($formbuilder->getSpecialCharacters(), '-', strtolower($oldprofile->label . '-Copy')) . '-' . $newprofile));
+									}
+								}
+								$db->setQuery($query);
 
-                    foreach ($formsid_arr as $formid) {
-                        $query->clear()
-                            ->select('label', 'intro')
-                            ->from($db->quoteName('#__fabrik_forms'))
-                            ->where($db->quoteName('id') . ' = ' . $db->quote($formid));
-                        $db->setQuery($query);
-                        $form = $db->loadObject();
+								$inserted_heading = $db->execute();
 
-                        $label = array();
-                        $intro = array();
+								if ($inserted_heading) {
+									// Get fabrik_lists
+									$query->clear()
+										->select('link')
+										->from('#__menu')
+										->where($db->quoteName('menutype') . ' = ' . $db->quote($oldprofile->menutype))
+										->andWhere($db->quoteName('type') . ' = ' . $db->quote('component'))
+										->andWhere('published = 1');
+									$db->setQuery($query);
+									$links = $db->loadObjectList();
 
-                        foreach ($languages as $language) {
-                            $label[$language->sef] = $formbuilder->getTranslation($form->label,$language->lang_code);
-                            $intro[$language->sef] = $formbuilder->getTranslation($form->intro,$language->lang_code);
-                            if($label[$language->sef] == ''){
-                                $label[$language->sef] = $form->label;
-                            }
-                        }
+									foreach ($links as $link) {
+										if(strpos($link->link,'formid') !== false){
+											$formsid_arr[] = explode('=', $link->link)[3];
+										}
+									}
 
-                        $formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile);
-                    }
+									foreach ($formsid_arr as $formid) {
+										$query->clear()
+											->select('label', 'intro')
+											->from($db->quoteName('#__fabrik_forms'))
+											->where($db->quoteName('id') . ' = ' . $db->quote($formid));
+										$db->setQuery($query);
+										$form = $db->loadObject();
 
-                    // Create checklist menu
-                    $this->addChecklistMenu($newprofile);
-                    //
+										$label = array();
+										$intro = array();
+
+										foreach ($languages as $language) {
+											$label[$language->sef] = $formbuilder->getTranslation($form->label,$language->lang_code);
+											$intro[$language->sef] = $formbuilder->getTranslation($form->intro,$language->lang_code);
+											if($label[$language->sef] == ''){
+												$label[$language->sef] = $form->label;
+											}
+										}
+
+										$formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile);
+									}
+
+									// Create checklist menu
+									$this->addChecklistMenu($newprofile);
+
+									$duplicated = $newprofile;
+								} else {
+									JLog::add('Failed to duplicate form, heading has not been created properly', JLog::WARNING, 'com_emundus.error');
+								}
+							} else {
+								JLog::add('Failed to duplicate form, no heading menu found', JLog::WARNING, 'com_emundus.error');
+							}
+							//
+						} else {
+							JLog::add('Failed to duplicate form, empty new profile ', JLog::WARNING, 'com_emundus.error');
+						}
+					}
                 }
-
-                return $newprofile;
-            } catch (Exception $e) {
+			} catch (Exception $e) {
                 JLog::add('component/com_emundus/models/form | Error when duplicate forms : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-                return false;
             }
-        } else {
-            return false;
         }
+
+		return $duplicated;
     }
 
 
@@ -1181,6 +1225,37 @@ class EmundusModelForm extends JModelList {
             return false;
         }
     }
+
+	public function getAttachments() {
+		$attachments = [];
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('*')
+			->from($db->quoteName('#__emundus_setup_attachments'))
+			->where($db->quoteName('published') . ' = 1')
+			->order('value');
+
+		try {
+			$db->setQuery($query);
+			$attachments = $db->loadObjectList();
+
+			if (!empty($attachments)) {
+				require_once (JPATH_SITE . '/components/com_emundus/models/falang.php');
+				$falang = new EmundusModelFalang;
+
+				foreach ($attachments as $attachment) {
+					$attachment->can_be_deleted = strpos($attachment->lbl, '_em') === 0;
+					$attachment->name = $falang->getFalang($attachment->id,'emundus_setup_attachments','value', $attachment->value);
+					$attachment->description = $falang->getFalang($attachment->id,'emundus_setup_attachments','description', $attachment->description);
+				}
+			}
+		} catch (Exception $e) {
+			JLog::add('Failed to get attachments ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $attachments;
+	}
 
     /**
      * @param $documentIds
@@ -1825,21 +1900,27 @@ class EmundusModelForm extends JModelList {
     }
 
     function getDocumentsByProfile($prid){
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
+		$attachments_by_profile = [];
 
-        try {
-            $query->select('sa.id as docid,sa.value as label,sap.*,sa.allowed_types')
-                ->from($db->quoteName('#__emundus_setup_attachment_profiles','sap'))
-                ->leftJoin($db->quoteName('#__emundus_setup_attachments','sa').' ON '.$db->quoteName('sa.id').' = '.$db->quoteName('sap.attachment_id'))
-                ->where($db->quoteName('sap.profile_id') . ' = ' . $db->quote($prid))
-                ->order('sap.mandatory DESC, sap.ordering, sa.value ASC');
-            $db->setQuery($query);
-            return $db->loadObjectList();
-        } catch (Exception $e){
-            JLog::add('component/com_emundus/models/form | Error cannot get documents by profile_id : ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
-        }
+		if (!empty($prid)) {
+			$db = $this->getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('sa.id as docid,sa.value as label,sap.*,sa.allowed_types')
+				->from($db->quoteName('#__emundus_setup_attachment_profiles','sap'))
+				->leftJoin($db->quoteName('#__emundus_setup_attachments','sa').' ON '.$db->quoteName('sa.id').' = '.$db->quoteName('sap.attachment_id'))
+				->where($db->quoteName('sap.profile_id') . ' = ' . $db->quote($prid))
+				->order('sap.mandatory DESC, sap.ordering, sa.value ASC');
+
+			try {
+				$db->setQuery($query);
+				$attachments_by_profile = $db->loadObjectList();
+			} catch (Exception $e){
+				JLog::add('component/com_emundus/models/form | Error cannot get documents by profile_id : ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+	    return $attachments_by_profile;
     }
 
     function reorderDocuments($documents){

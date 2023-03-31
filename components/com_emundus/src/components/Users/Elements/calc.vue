@@ -1,7 +1,7 @@
 <template>
   <div class="control-group fabrikElementContainer">
-    <label class="fabrikLabel" :for="'input_' + element.id">{{ element.label }}</label>
-    <div class="fabrikElement">
+	  <label class="fabrikLabel" :for="'input_' + element.id" v-html="element.label"></label>
+	  <div class="fabrikElement">
       <span v-if="tip.length > 0" class="em-tip">{{ tip }}</span>
       <p>{{ element.value }}</p>
     </div>

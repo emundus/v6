@@ -1,18 +1,18 @@
 <!--~
   ~ @package   admintools
-  ~ @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+  ~ @copyright Copyright (c)2010-2023 Nicholas K. Dionysopoulos / Akeeba Ltd
   ~ @license   GNU General Public License version 3, or later
   -->
 
 <extension type="component" version="3.9.0" method="upgrade">
 	<name>Admintools</name>
-	<creationDate>2022-02-08</creationDate>
+	<creationDate>2023-01-09</creationDate>
 	<author>Nicholas K. Dionysopoulos</author>
 	<authorEmail>nicholas@akeeba.com</authorEmail>
 	<authorUrl>https://www.akeeba.com</authorUrl>
-	<copyright>Copyright (c)2010-2019 Nicholas K. Dionysopoulos</copyright>
+	<copyright>Copyright (c)2010-2023 Nicholas K. Dionysopoulos</copyright>
 	<license>This component in released under the GNU/GPL v3 or later license</license>
-	<version>6.1.5</version>
+	<version>6.1.8</version>
 	<description>Security and utilitarian tools for Joomla! site administrators</description>
 
 	<!-- Public front end files -->

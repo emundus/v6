@@ -17,6 +17,40 @@ use Joomla\CMS\Table\Table;
 class EmundusHelperUpdate
 {
 
+	public static function clearJoomlaCache(){
+		require_once (JPATH_ROOT . '/administrator/components/com_cache/models/cache.php');
+		$m_cache = new CacheModelCache();
+		$clients    = array(1, 0);
+
+		foreach ($clients as $client)
+		{
+			$mCache    = $m_cache->getCache($client);
+
+			foreach ($mCache->getAll() as $cache)
+			{
+				if ($mCache->clean($cache->group) === false)
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	public static function recompileGantry5(){
+		$dir = JPATH_BASE . '/templates/g5_helium/custom/css-compiled';
+		if(!empty($dir)) {
+			foreach (glob($dir . '/*') as $file) {
+				unlink($file);
+			}
+
+			rmdir($dir);
+		}
+
+		return true;
+	}
+
     /**
      * Get all emundus plugins
      *
@@ -41,6 +75,43 @@ class EmundusHelperUpdate
         }
 
         return $plugins;
+    }
+
+    /**
+     * Enable an emundus plugin
+     *
+     * @param $name
+     * @param $folder
+     *
+     * @return false|mixed
+     *
+     * @since version 1.33.0
+     */
+    public static function enableEmundusPlugins($name, $folder = null) {
+        $enabled = false;
+
+        if (!empty($name)) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            try {
+                $query->update($db->quoteName('#__extensions'))
+                    ->set($db->quoteName('enabled') . ' = 1')
+	                ->set($db->quoteName('state') . ' = 0')
+	                ->where($db->quoteName('element') . ' LIKE ' . $db->quote($name));
+
+				if (!empty($folder)) {
+					$query->andWhere($db->quoteName('folder') . ' = ' . $db->quote($folder));
+				}
+
+	            $db->setQuery($query);
+	            $enabled = $db->execute();
+            } catch (Exception $e) {
+                echo $e->getMessage();
+            }
+        }
+
+        return $enabled;
     }
 
     /**
@@ -84,7 +155,7 @@ class EmundusHelperUpdate
      *
      * @since version 1.33.0
      */
-    public static function updateModulesParams($name, $param, $value) {
+    public static function updateModulesParams($name, $param, $value, $position = '') {
         $updated = false;
 
         if (!empty($name)) {
@@ -93,8 +164,12 @@ class EmundusHelperUpdate
 
             try {
                 $query->select('id,params')
-                    ->from('#__modules')
-                    ->where('module LIKE ' . $db->q('%'.$name.'%'));
+                    ->from($db->quoteName('#__modules'))
+                    ->where($db->quoteName('module') . ' LIKE ' . $db->quote($name))
+	                ->andWhere($db->quoteName('published') . ' = 1');
+				if(!empty($position)){
+					$query->andWhere($db->quoteName('position') . ' LIKE ' . $db->quote($position));
+				}
                 $db->setQuery($query);
                 $rows =  $db->loadObjectList();
 
@@ -103,12 +178,34 @@ class EmundusHelperUpdate
                     $params[$param] = $value;
 
                     $query->clear()
-                        ->update('#__modules')
-                        ->set('params = ' . $db->quote(json_encode($params)))
-                        ->where('id = ' . $row->id);
+                        ->update($db->quoteName('#__modules'))
+                        ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+                        ->where($db->quoteName('id') . ' = ' . $row->id);
                     $db->setQuery($query);
-
                     $updated = $db->execute();
+
+					if($updated) {
+						$query->clear()
+							->select('id,value')
+							->from($db->quoteName('#__falang_content'))
+							->where($db->quoteName('reference_table') . ' LIKE ' . $db->quote('modules'))
+							->andWhere($db->quoteName('reference_field') . ' LIKE ' . $db->quote('params'))
+							->andWhere($db->quoteName('reference_id') . ' = ' . $row->id);
+						$db->setQuery($query);
+						$module_translations = $db->loadObjectList();
+
+						foreach ($module_translations as $module_translation) {
+							$translation_params = json_decode($module_translation->value,true);
+							$translation_params[$param] = $value;
+
+							$query->clear()
+								->update($db->quoteName('#__falang_content'))
+								->set($db->quoteName('value') . ' = ' . $db->quote(json_encode($translation_params)))
+								->where($db->quoteName('id') . ' = ' . $module_translation->id);
+							$db->setQuery($query);
+							$db->execute();
+						}
+					}
                 }
             } catch (Exception $e) {
                 echo $e->getMessage();
@@ -118,7 +215,7 @@ class EmundusHelperUpdate
         return $updated;
     }
 
-    public static function installExtension($name, $element, $manifest_cache, $type, $enabled = 1, $folder = ''){
+    public static function installExtension($name, $element, $manifest_cache, $type, $enabled = 1, $folder = '', $params = '{}'){
         $installed = false;
 
         if (!empty($element)) {
@@ -129,6 +226,9 @@ class EmundusHelperUpdate
                 $query->select('extension_id')
                     ->from($db->quoteName('#__extensions'))
                     ->where($db->quoteName('element') . ' LIKE ' . $db->quote($element));
+				if(!empty($folder)){
+					$query->where($db->quoteName('folder') . ' LIKE ' . $db->quote($folder));
+				}
                 $db->setQuery($query);
                 $is_existing = $db->loadResult();
 
@@ -142,7 +242,7 @@ class EmundusHelperUpdate
                         ->set($db->quoteName('client_id') . ' = ' . $db->quote(0))
                         ->set($db->quoteName('enabled') . ' = ' . $db->quote($enabled))
                         ->set($db->quoteName('manifest_cache') . ' = ' . $db->quote($manifest_cache))
-                        ->set($db->quoteName('params') . ' = ' . $db->quote('{}'))
+                        ->set($db->quoteName('params') . ' = ' . $db->quote($params))
                         ->set($db->quoteName('custom_data') . ' = ' . $db->quote(''))
                         ->set($db->quoteName('system_data') . ' = ' . $db->quote(''));
                     $db->setQuery($query);
@@ -316,19 +416,24 @@ class EmundusHelperUpdate
      * @since version 1.33.0
      */
     public static function updateConfigurationFile($param, $value) {
-        $formatter = new JRegistryFormatPHP();
-        $config = new JConfig();
+		if(!empty($param) && !empty($value) && !in_array($param,['host','user','password','db','secret','mailfrom','smtpuser','smpthost','smtppass','smtpsecure','smtpport','webhook_token'])) {
+			$formatter = new JRegistryFormatPHP();
+			$config    = new JConfig();
 
-        $config->$param = $value;
-        $params = array('class' => 'JConfig', 'closingtag' => false);
-        $str = $formatter->objectToString($config, $params);
-        $config_file = JPATH_CONFIGURATION . '/configuration.php';
+			$config->$param = $value;
+			$params         = array('class' => 'JConfig', 'closingtag' => false);
+			$str            = $formatter->objectToString($config, $params);
+			$config_file    = JPATH_CONFIGURATION . '/configuration.php';
 
-        if (file_exists($config_file) and is_writable($config_file)){
-            file_put_contents($config_file,$str);
-        } else {
-            echo ("Update Configuration file failed");
-        }
+			if (file_exists($config_file) and is_writable($config_file)) {
+				file_put_contents($config_file, $str);
+			}
+			else {
+				echo("Update Configuration file failed");
+			}
+		} else {
+			echo("Update Configuration file failed");
+		}
     }
 
     /**
@@ -750,6 +855,64 @@ class EmundusHelperUpdate
 
         return $updated;
     }
+
+	public static function updateOverrideTag($tag,$old_values,$new_values) {
+		$updated = ['status' => true, 'message' => "Override tag successfully updated"];
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select($db->quoteName('lang_code'))
+			->from($db->quoteName('#__languages'))
+			->where($db->quoteName('published') . ' = 1');
+		$db->setQuery($query);
+
+		try {
+			$platform_languages = $db->loadColumn();
+		} catch (Exception $e) {
+			$updated = ['status' => false, 'message' => "Cannot getting platform languages"];
+		}
+
+		if (!empty($platform_languages)) {
+			try {
+				$files = [];
+				foreach ($platform_languages as $language) {
+					$override_file = JPATH_BASE . '/language/overrides/' . $language . '.override.ini';
+					if (file_exists($override_file)) {
+						$file = new stdClass();
+						$file->file = $override_file;
+						$file->language = $language;
+						$files[] = $file;
+					}
+				}
+
+
+				foreach ($files as $file) {
+					$parsed_file = JLanguageHelper::parseIniFile($file->file);
+
+					if (!empty($parsed_file) && !empty($old_values[$file->language])) {
+						if (!empty($parsed_file[$tag]) && $parsed_file[$tag] == $old_values[$file->language])
+						{
+							$parsed_file[$tag] = $new_values[$file->language];
+							JLanguageHelper::saveToIniFile($file->file, $parsed_file);
+						}
+						elseif (empty($parsed_file[$tag]))
+						{
+							$parsed_file[$tag] = $new_values[$file->language];
+							JLanguageHelper::saveToIniFile($file->file, $parsed_file);
+						}
+					}
+				}
+			} catch(Exception $e){
+				$updated = ['status' => false, 'message' => "Error when import translation into file : " . $e->getMessage()];
+			}
+		} else {
+			$updated = ['status' => false, 'message' => "Empty platform languages"];
+		}
+
+		return $updated;
+
+	}
 
     /**
      *
@@ -1935,6 +2098,52 @@ class EmundusHelperUpdate
         return $result;
     }
 
+    public static function updateJsAction($datas,$params = null) {
+        $result = ['status' => false, 'message' => ''];
+
+        if(empty($datas['action_id'])){
+            $result['message'] = 'UPDATING FABRIK JSACTION : Please provide an action id.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            if(empty($params)){
+                $params = [
+                    'js_e_event' => '',
+                    'js_e_trigger' => '',
+                    'js_e_condition' => '',
+                    'js_e_value' => '',
+                    'js_published' => '1',
+                ];
+            }
+            $updating_datas = [
+                'code' => $datas['code'],
+                'params' => json_encode($params)
+            ];
+
+            $fields = array(
+                $db->quoteName('code') . ' = ' . $db->quote($updating_datas['code']),
+                $db->quoteName('params') . ' = ' . $db->quote($updating_datas['params'])
+            );
+
+            $query->clear()
+                ->update($db->quoteName('#__fabrik_jsactions'))
+                ->set($fields)
+                ->where($db->quoteName('id') . ' = ' . $db->quote($datas['action_id']));
+            $db->setQuery($query);
+            $db->execute();
+        } catch (Exception $e) {
+            $result['message'] = 'UPDATING FABRIK JSACTION : Error : ' . $e->getMessage();
+            return $result;
+        }
+
+        $result['status'] = true;
+        return $result;
+    }
+
     public static function addCustomEvents($events) {
         $response = [
             'status' => false,
@@ -2103,4 +2312,35 @@ class EmundusHelperUpdate
 
         return $module;
     }
+
+	public static function updateEmundusParam($param,$value,$old_value_checking = null){
+		$updated = false;
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+
+		if(!empty($old_value_checking)){
+			$old_value = $eMConfig->get($param,'');
+			if(empty($old_value) || $old_value == $old_value_checking){
+				$eMConfig->set($param, $value);
+			}
+		} else{
+			$eMConfig->set($param, $value);
+		}
+
+		$componentid = JComponentHelper::getComponent('com_emundus')->id;
+		$db = JFactory::getDBO();
+		$query = $db->getQuery(true);
+
+		try {
+			$query->update('#__extensions')
+				->set($db->quoteName('params') . ' = ' . $db->quote($eMConfig->toString()))
+				->where($db->quoteName('extension_id') . ' = ' . $db->quote($componentid));
+			$db->setQuery($query);
+			$updated = $db->execute();
+		}
+		catch (Exception $e) {
+			JLog::add('Failed to update emundus parameter '.$param.' with value ' .$value.': '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $updated;
+	}
 }

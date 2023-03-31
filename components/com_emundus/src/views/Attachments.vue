@@ -77,48 +77,48 @@
           <thead>
           <tr>
             <th id="check-th"><input class="attachment-check" type="checkbox" @change="updateAllCheckedAttachments"/></th>
-            <th id="name" @click="orderBy('value')">
+            <th v-if="columns.includes('name')" id="name" @click="orderBy('value')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_NAME") }}
               <span v-if="sort.orderBy == 'value' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
               <span v-if="sort.orderBy == 'value' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
-            <th id="date" class="date" @click="orderBy('timedate')">
+            <th v-if="columns.includes('date')" id="date" class="date" @click="orderBy('timedate')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_SEND_DATE") }}
               <span v-if="sort.orderBy == 'timedate' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
               <span v-if="sort.orderBy == 'timedate' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
-            <th id="desc" class="desc" @click="orderBy('upload_description')">
+            <th v-if="columns.includes('desc')" id="desc" class="desc" @click="orderBy('upload_description')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_DESCRIPTION") }}
               <span v-if="sort.orderBy == 'upload_description' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
               <span v-if="sort.orderBy == 'upload_description' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
-            <th id="category" class="category" @click="orderBy('category')">
+            <th v-if="columns.includes('category')" id="category" class="category" @click="orderBy('category')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY") }}
               <span v-if="sort.orderBy == 'category' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
               <span v-if="sort.orderBy == 'category' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
-            <th id="status" class="status" @click="orderBy('is_validated')">
+            <th v-if="columns.includes('status')" id="status" class="status" @click="orderBy('is_validated')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_CHECK") }}
               <span v-if="sort.orderBy == 'is_validated' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
               <span v-if="sort.orderBy == 'is_validated' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
-            <th v-if="canSee" id="user" @click="orderBy('user_id')">
+            <th v-if="canSee && columns.includes('user')" id="user" @click="orderBy('user_id')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY") }}
               <span v-if="sort.orderBy == 'user_id' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
               <span v-if="sort.orderBy == 'user_id' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
-            <th v-if="canSee" id="modified_by" @click="orderBy('modified_by')">
+            <th v-if="canSee && columns.includes('modified_by')" id="modified_by" @click="orderBy('modified_by')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY") }}
               <span v-if="sort.orderBy == 'modified_by' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
               <span v-if="sort.orderBy == 'modified_by' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
-            <th id="modified" class="date" @click="orderBy('modified')">
+            <th v-if="columns.includes('modified')" id="modified" class="date" @click="orderBy('modified')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE") }}
               <span v-if="sort.orderBy == 'modified' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
               <span v-if="sort.orderBy == 'modified' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
-            <th id="permissions" class="permissions">{{ translate("COM_EMUNDUS_ATTACHMENTS_PERMISSIONS") }}</th>
-            <th v-if="sync" id="sync" class="sync" @click="orderBy('sync')">
+            <th v-if="columns.includes('permissions')" id="permissions" class="permissions">{{ translate("COM_EMUNDUS_ATTACHMENTS_PERMISSIONS") }}</th>
+            <th v-if="sync && columns.includes('sync')" id="sync" class="sync" @click="orderBy('sync')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_SYNC") }}
             </th>
           </tr>
@@ -136,6 +136,7 @@
               @update-checked-attachments="updateCheckedAttachments"
               @update-status="updateStatus"
               @change-permission="changePermission"
+              :columns="$props.columns"
           >
           </AttachmentRow>
           </tbody>
@@ -189,6 +190,7 @@
         <div v-if="!modalLoading && displayedUser.user_id && displayedFnum" class="modal-body em-flex-row" :class="{'only-preview': onlyPreview}">
           <AttachmentPreview @fileNotFound="canDownload = false" @canDownload="canDownload = true" :user="displayedUser.user_id"></AttachmentPreview>
           <AttachmentEdit
+              v-if="displayEdit"
 		          :fnum="displayedFnum"
 							:is-displayed="!onlyPreview"
 		          @closeModal="closeModal"
@@ -236,7 +238,15 @@ export default {
 	  defaultRights: {
 			type: Object,
 		  default: null
-	  }
+	  },
+    columns: {
+      type: Array,
+      default: ['name','date','desc','category','status','user','modified_by','modified','permissions','sync']
+    },
+    displayEdit: {
+      type: Boolean,
+      default: true
+    }
   },
   mixins: [mixin],
   data() {
@@ -289,7 +299,7 @@ export default {
 				this.getAttachmentCategories().then((response) => {
 					this.categories = response ? response : {};
 					this.attachments = this.defaultAttachments;
-					this.displayedAttachments = this.attachments;
+					this.setDisplayedAttachments();
 					this.$store.dispatch('attachment/setAttachmentsOfFnum', {
 						fnum: [this.displayedFnum],
 						attachments: this.attachments,
@@ -319,14 +329,12 @@ export default {
         const foundUser = this.users && this.users.length ? this.users.find((user) => user.user_id == response.fnumInfos.applicant_id) : false;
 
         if (!foundUser) {
-          const resp = await userService.getUserById(
-              response.fnumInfos.applicant_id
-          );
+          const resp = await userService.getUserNameById(response.fnumInfos.applicant_id);
           if (resp.status) {
-            this.users.push(resp.user[0]);
-            this.displayedUser = resp.user[0];
+            this.users.push(resp.user);
+            this.displayedUser = resp.user;
             this.$store.dispatch('user/setDisplayedUser', this.displayedUser.user_id);
-            this.$store.dispatch('user/setUsers', resp.user);
+            this.$store.dispatch('user/setUsers', [resp.user]);
           } else {
             this.displayErrorMessage(this.translate('COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND'));
           }
@@ -346,7 +354,7 @@ export default {
         await this.refreshAttachments();
       } else {
         this.attachments = this.$store.state.attachment.attachments[this.displayedFnum];
-	      this.displayedAttachments = this.attachments;
+	      this.setDisplayedAttachments();
 	      this.categories = this.$store.state.attachment.categories;
       }
     },
@@ -362,7 +370,7 @@ export default {
 
       if (response.status) {
         this.attachments = response.attachments;
-	      this.displayedAttachments = this.attachments;
+	      this.setDisplayedAttachments();
 	      this.$store.dispatch('attachment/setAttachmentsOfFnum', {
           fnum: [this.displayedFnum],
           attachments: this.attachments,
@@ -467,6 +475,11 @@ export default {
       this.canDelete = this.$store.state.user.rights[this.displayedFnum] ? this.$store.state.user.rights[this.displayedFnum].canDelete : false;
       this.canUpdate = this.$store.state.user.rights[this.displayedFnum] ? this.$store.state.user.rights[this.displayedFnum].canUpdate : false;
     },
+	  setDisplayedAttachments() {
+		  this.displayedAttachments = this.attachments.filter((attachment) => {
+			  return ((attachment.show === true || typeof attachment.show == 'undefined' || attachment.show == null ));
+		  });
+	  },
     async exportAttachments() {
       if (this.canExport) {
         attachmentService.exportAttachments(
@@ -529,6 +542,7 @@ export default {
         this.attachments = this.attachments.filter(
             (attachment) => !this.checkedAttachments.includes(attachment.aid)
         );
+				this.setDisplayedAttachments();
 
         let response = null;
         if (this.sync) {
@@ -579,9 +593,7 @@ export default {
         }
       });
 
-			this.displayedAttachments = this.attachments.filter((attachment) => {
-				return ((attachment.show === true || typeof attachment.show == 'undefined' || attachment.show == null ));
-			});
+			this.setDisplayedAttachments();
     },
     resetSearch() {
       this.attachments.forEach((attachment, index) => {
@@ -589,9 +601,7 @@ export default {
       });
       this.$refs["searchbar"].value = "";
 
-			this.displayedAttachments = this.attachments.filter((attachment) => {
-		    return ((attachment.show === true || typeof attachment.show == 'undefined' || attachment.show == null ));
-	    });
+	    this.setDisplayedAttachments();
     },
     resetOrder() {
       this.sort = {
@@ -645,9 +655,7 @@ export default {
         }
       });
 
-	    this.displayedAttachments = this.attachments.filter((attachment) => {
-		    return ((attachment.show === true || typeof attachment.show == 'undefined' || attachment.show == null ));
-	    });
+	    this.setDisplayedAttachments();
     },
     updateAllCheckedAttachments(e) {
       if (e.target.checked) {

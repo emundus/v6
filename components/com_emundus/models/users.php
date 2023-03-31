@@ -1791,14 +1791,19 @@ class EmundusModelUsers extends JModelList {
 
 
     public function editUser($user) {
-
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $u = JFactory::getUser($user['id']);
 
-        if (!$u->bind($user)) {
+	    if (isset($user['same_login_email']) && $user['same_login_email'] === 1) {
+			$user['username'] = $user['email'];
+			$properties_set = $u->setProperties([ 'username' => $user['username']]);
+			unset($user['same_login_email']);
+		}
+
+	    if (!$u->bind($user)) {
             return array('msg' => $u->getError());
         }
-        if (!$u->save()) {
+	    if (!$u->save()) {
             return array('msg' =>$u->getError());
         }
 
@@ -1814,7 +1819,6 @@ class EmundusModelUsers extends JModelList {
         }
 
         $query->where('user_id = ' . $db->quote($user['id']));
-
         $db->setQuery($query);
 
 	    try {
@@ -2170,15 +2174,48 @@ class EmundusModelUsers extends JModelList {
     }
 
     public function getUserById($uid) { // user of emundus
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-        $query->select('eu.*, case when u.password = ' . $db->quote('') . ' then ' . $db->quote('external') . ' else ' . $db->quote('internal') . ' end as login_type')
-            ->from('#__emundus_users as eu')
-            ->leftJoin('#__users as u on u.id = eu.user_id')
-            ->where('eu.user_id = '.$uid);
-        $db->setQuery($query);
-        return $db->loadObjectList();
+	    $users = [];
+
+		if (!empty($uid)) {
+			$db = JFactory::getDBO();
+			$query = $db->getQuery(true);
+			$query->select('eu.*, case when u.password = ' . $db->quote('') . ' then ' . $db->quote('external') . ' else ' . $db->quote('internal') . ' end as login_type')
+				->from('#__emundus_users as eu')
+				->leftJoin('#__users as u on u.id = eu.user_id')
+				->where('eu.user_id = '.$uid);
+
+			try {
+				$db->setQuery($query);
+				$users = $db->loadObjectList();
+			} catch (Exception $e) {
+				JLog::add('Failed to get user by id ' . $uid . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+        return $users;
     }
+
+	public function getUserNameById($id) {
+		$username = [];
+
+		if (!empty($id)) {
+			$db = JFactory::getDBO();
+			$query = $db->getQuery(true);
+
+			$query->select('eu.firstname, eu.lastname, eu.user_id')
+				->from('#__emundus_users as eu')
+				->where('eu.user_id = '.$id);
+
+			try {
+				$db->setQuery($query);
+				$username = $db->loadAssoc();
+			} catch (Exception $e) {
+				JLog::add('Failed to get username by id ' . $id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $username;
+	}
 
     public function getUsersById($id) { //user of application
         $db = JFactory::getDBO();
@@ -2214,7 +2251,7 @@ class EmundusModelUsers extends JModelList {
         $m_emails = new EmundusModelEmails();
 
 		// Load the com_users language tags in order to call the Joomla user JText.
-		$language =& JFactory::getLanguage();
+		$language = JFactory::getLanguage();
 		$extension = 'com_users';
 		$base_dir = JPATH_SITE;
 		$language_tag = $language->getTag(); // loads the current language-tag
@@ -2257,7 +2294,9 @@ class EmundusModelUsers extends JModelList {
 		}
 
 		// Get the user object.
-		$user = JUser::getInstance($userId);
+		$user = JFactory::getUser($userId);
+		$table = JTable::getInstance('user', 'JTable');
+		$table->load($user->id);
 
 		// Make sure the user isn't blocked.
 		if ($user->block) {
@@ -2288,10 +2327,10 @@ class EmundusModelUsers extends JModelList {
 		$token = JApplicationHelper::getHash(JUserHelper::genRandomPassword());
 		$hashedToken = JUserHelper::hashPassword($token);
 
-		$user->activation = $hashedToken;
+		$table->activation = $hashedToken;
 
 		// Save the user to the database.
-		if (!$user->save(true)) {
+		if (!$table->store()) {
 			throw new JException(JText::sprintf('COM_USERS_USER_SAVE_FAILED', $user->getError()), 500);
 		}
 
@@ -3310,4 +3349,59 @@ class EmundusModelUsers extends JModelList {
 
         return $isSamlUser;
     }
+
+	public function getIdentityPhoto($fnum,$applicant_id){
+		try {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('filename')
+				->from($db->quoteName('#__emundus_uploads'))
+				->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
+				->andWhere($db->quoteName('attachment_id') . ' = 10');
+			$db->setQuery($query);
+			$filename = $db->loadResult();
+
+			if(!empty($filename)){
+				return EMUNDUS_PATH_REL . $applicant_id . '/' . $filename;
+			}
+		}
+		catch (Exception $e) {
+			JLog::add(' com_emundus/models/users.php | Failed to get identity photo : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			return '';
+		}
+	}
+
+	function randomPassword($len = 8) {
+
+		//enforce min length 8
+		if($len < 8)
+			$len = 8;
+
+		//define character libraries - remove ambiguous characters like iIl|1 0oO
+		$sets = array();
+		$sets[] = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+		$sets[] = 'abcdefghjkmnpqrstuvwxyz';
+		$sets[] = '23456789';
+		$sets[]  = '~!@#$%^&*(){}[],./?';
+
+		$password = '';
+
+		//append a character from each set - gets first 4 characters
+		foreach ($sets as $set) {
+			$password .= $set[array_rand(str_split($set))];
+		}
+
+		//use all characters to fill up to $len
+		while(strlen($password) < $len) {
+			//get a random set
+			$randomSet = $sets[array_rand($sets)];
+
+			//add a random char from the random set
+			$password .= $randomSet[array_rand(str_split($randomSet))];
+		}
+
+		//shuffle the password string before returning!
+		return str_shuffle($password);
+	}
 }
