@@ -303,12 +303,6 @@ class EmundusModelEmails extends JModelList {
                     $body = $this->setTagsFabrik($body, array($student->fnum));
 
 
-                    // If the email sender has the same domain as the system sender address.
-                    /*if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
-                        $mail_from_address = $from;
-                    } else {
-                        $mail_from_address = $email_from_sys;
-                    }*/
                     $mail_from_address = $email_from_sys;
 
                     // Set sender
@@ -324,16 +318,20 @@ class EmundusModelEmails extends JModelList {
                         $letters = $m_eval->generateLetters($student->fnum, [$trigger_email[$student->code]['tmpl']['letter_attachment']], 1, 0, 0);
 
                         foreach($letters->files as $filename){
-                            $toAttach[] = EMUNDUS_PATH_ABS.$student->id.'/'.$filename['filename'];
+                            if(!empty($filename['filename'])) {
+                                $toAttach[] = EMUNDUS_PATH_ABS . $student->id . '/' . $filename['filename'];
+                            }
                         }
                     }
-                    if(!empty($trigger_email[$student->code]['tmpl']['attachment'])){
+                    if(!empty($trigger_email[$student->code]['tmpl']['attachments'])){
                         require_once (JPATH_SITE . '/components/com_emundus/models/application.php');
                         $m_application = new EmundusModelApplication();
-                        $attachments = $m_application->getAttachmentsByFnum($student->fnum,null, explode(',', $trigger_email[$student->code]['tmpl']['attachment']));
+                        $attachments = $m_application->getAttachmentsByFnum($student->fnum,null, explode(',', $trigger_email[$student->code]['tmpl']['attachments']));
 
                         foreach ($attachments as $attachment) {
-                            $toAttach[] = EMUNDUS_PATH_ABS.$student->id.'/'.$attachment->filename;
+                            if(!empty($attachment->filename)) {
+                                $toAttach[] = EMUNDUS_PATH_ABS . $student->id . '/' . $attachment->filename;
+                            }
                         }
                     }
 
@@ -353,8 +351,8 @@ class EmundusModelEmails extends JModelList {
                     }
 
                     if ($send !== true) {
-                        echo 'Error sending email: ' . $send->__toString();
-                        JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                        echo 'Error sending email: ' . $send;
+                        JLog::add($send, JLog::ERROR, 'com_emundus');
                     } else {
                         $message = array(
                             'user_id_from' => $from_id,
