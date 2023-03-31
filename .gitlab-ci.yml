@@ -1,5 +1,4 @@
 default:
-  retry: 2
   tags:
     - k8s
 
