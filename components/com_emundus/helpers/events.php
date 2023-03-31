@@ -432,24 +432,23 @@ class EmundusHelperEvents {
 											$db->setQuery($query);
 											$stored = $db->loadColumn();
 
-											if (!empty($stored)) {
-												foreach ($stored as $store) {
-													if(count($formModel->data[$repeat_table . '___id']) < count($stored)){
-														$formModel->data[$repeat_table . '___id'][]            = "";
-														$formModel->data[$repeat_table . '___id_raw'][]        = "";
-														$formModel->data[$repeat_table . '___parent_id'][]     = "";
-														$formModel->data[$repeat_table . '___parent_id_raw'][] = "";
-													}
+	                                    if (!empty($stored)) {
+		                                    foreach ($stored as $store) {
+			                                    if(count($formModel->data[$repeat_table . '___id']) < count($stored)){
+				                                    $formModel->data[$repeat_table . '___id'][]            = "";
+				                                    $formModel->data[$repeat_table . '___id_raw'][]        = "";
+				                                    $formModel->data[$repeat_table . '___parent_id'][]     = "";
+				                                    $formModel->data[$repeat_table . '___parent_id_raw'][] = "";
+			                                    }
 
-													$formModel->data[$repeat_table . '___' . $group->name][]          = $store;
-													$formModel->data[$repeat_table . '___' . $group->name . '_raw'][] = $store;
-												}
-											}
-										}
-									}
-								}
-							}
-						}
+			                                    $formModel->data[$repeat_table . '___' . $group->name][]          = $store;
+			                                    $formModel->data[$repeat_table . '___' . $group->name . '_raw'][] = $store;
+		                                    }
+	                                    }
+                                    }
+                                }
+                            }
+                        }
 
                         // sync documents uploaded
                         // 1. get list of uploaded documents for previous file defined as duplicated
@@ -574,9 +573,41 @@ class EmundusHelperEvents {
             $attachments = $mApplication->getAttachmentsProgress($user->fnum);
             $forms = $mApplication->getFormsProgress($user->fnum);
 
-            if ($attachments < 100 || $forms < 100) {
-                $mainframe->redirect( "index.php?option=com_emundus&view=checklist&Itemid=".$itemid, JText::_('INCOMPLETE_APPLICATION'));
-            }
+	        if ($attachments < 100 || $forms < 100) {
+		        $db    = JFactory::getDbo();
+		        $query = $db->getQuery(true);
+
+		        $profile_by_status = $mProfile->getProfileByStatus($user->fnum);
+
+		        if (empty($profile_by_status['profile'])) {
+			        $query->select('esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id')
+				        ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
+				        ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ecc.campaign_id') . ' = ' . $db->quoteName('esc.id'))
+				        ->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($user->fnum));
+			        $db->setQuery($query);
+			        $profile_by_status = $db->loadAssoc();
+		        }
+
+		        $profile    = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
+		        $profile_id = (!empty($user->fnums[$user->fnum]) && $user->profile != $profile && $user->applicant === 1) ? $user->profile : $profile;
+
+		        $forms    = @EmundusHelperMenu::getUserApplicationMenu($profile_id);
+
+		        foreach ($forms as $form) {
+			        $query->clear()
+				        ->select('count(*)')
+				        ->from($db->quoteName($form->db_table_name))
+				        ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($user->fnum));
+			        $db->setQuery($query);
+			        $cpt = $db->loadResult();
+
+			        if ($cpt == 0) {
+				        $mainframe->redirect('index.php?option=com_fabrik&view=form&formid=' . $form->form_id . '&Itemid=' . $form->id . '&usekey=fnum&rowid=' . $user->fnum . '&r=1', JText::_('INCOMPLETE_APPLICATION'));
+			        }
+		        }
+
+		        $mainframe->redirect("index.php?option=com_emundus&view=checklist&Itemid=" . $itemid, JText::_('INCOMPLETE_APPLICATION'));
+	        }
 
             if ($application_fee) {
                 if($params->get('hikashop_session', 0)) {
