@@ -1,7 +1,7 @@
 <template>
 	<div id="list-head">
 		<div class="list-head-container">
-			<h2 class="em-text-neutral-800"> {{ translations['title_' + data.type] }}</h2>
+			<h2 class="em-text-neutral-800">{{ translations['title_' + data.type] }}</h2>
 			<a :href="data.add_url" v-if="data.type !== 'form' && data.type !== 'formulaire'" class="em-primary-button em-w-auto">
 					{{ translations['add_' + data.type] }}
 			</a>

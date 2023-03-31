@@ -1,0 +1,104 @@
+{
+  "forms": {
+    "tabs": [
+      {
+        "title": "Mes Formulaires",
+        "key": "form",
+        "actions": [
+          {
+            "action": "duplicate",
+            "label": "Dupliquer",
+            "controller": "form"
+          },
+          {
+            "action": "edit",
+            "label": "Modifier",
+            "controller": "form"
+          }
+        ]
+      },
+      {
+        "title": "Mes Formulaires d'évaluation",
+        "key": "form_evaluations",
+        "actions": [
+          {
+            "action": "duplicate",
+            "label": "Dupliquer",
+            "controller": "form"
+          },
+          {
+            "action": "edit",
+            "label": "Modifier",
+            "controller": "form"
+          }
+        ]
+      },
+      {
+        "title": "Mes modèles de page",
+        "key": "form_models",
+        "actions": [
+          {
+            "action": "delete",
+            "label": "Supprimer",
+            "controller": "form"
+          }
+        ]
+      }
+    ]
+  },
+  "campaigns": {
+    "tabs": [
+      {
+        "title": "Mes Campagnes",
+        "key": "campaign",
+        "actions": [
+          {
+            "action": "duplicate",
+            "label": "Dupliquer",
+            "controller": "campaign"
+          },
+          {
+            "action": "edit",
+            "label": "Modifier",
+            "controller": "campaign"
+          },
+          {
+            "action": "delete",
+            "label": "Supprimer",
+            "controller": "campaign"
+          },
+          {
+            "action": "unpublish",
+            "label": "Dépublier",
+            "controller": "campaign"
+          },
+          {
+            "action": "publish",
+            "label": "Publier",
+            "controller": "campaign"
+          }
+        ]
+      }
+    ]
+  },
+  "emails": {
+    "tabs": [
+      {
+        "title": "Mes Campagnes",
+        "key": "campaign",
+        "actions": [
+          {
+            "action": "edit",
+            "label": "Modifier",
+            "controller": "campaign"
+          },
+          {
+            "action": "preview",
+            "label": "Prévisualiser",
+            "controller": "emails"
+          }
+        ]
+      }
+    ]
+  }
+}
