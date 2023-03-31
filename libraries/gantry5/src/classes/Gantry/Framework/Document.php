@@ -3,7 +3,7 @@
 /**
  * @package   Gantry5
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
  * @license   GNU/GPLv2 and later
  *
  * http://www.gnu.org/licenses/gpl-2.0.html
@@ -80,10 +80,10 @@ class Document extends HtmlDocument
     /**
      * NOTE: In PHP this function can be called either from Gantry DI container or statically.
      *
-     * @param bool $addDomain
+     * @param bool|null $addDomain
      * @return string
      */
-    public static function domain($addDomain = false)
+    public static function domain($addDomain = null)
     {
         if (!$addDomain) {
             return '';

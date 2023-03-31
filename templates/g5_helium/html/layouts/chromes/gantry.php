@@ -3,7 +3,7 @@
 /**
  * @package   Gantry 5 Theme
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
  * @copyright Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
  * @license   GNU/GPLv2 and later
  *
@@ -28,7 +28,7 @@ if ($module->content === null || $module->content === '') {
 
 $moduleTag              = $params->get('module_tag', 'div');
 $moduleAttribs          = [];
-$moduleAttribs['class'] = $module->position . ' moduletable ' . htmlspecialchars($params->get('moduleclass_sfx'), ENT_QUOTES, 'UTF-8');
+$moduleAttribs['class'] = $module->position . ' moduletable ' . htmlspecialchars($params->get('moduleclass_sfx', ''), ENT_QUOTES, 'UTF-8');
 $headerTag              = htmlspecialchars($params->get('header_tag', 'h3'), ENT_QUOTES, 'UTF-8');
 $headerClass            = htmlspecialchars($params->get('header_class', 'g-title'), ENT_QUOTES, 'UTF-8');
 $headerAttribs          = [];

@@ -407,12 +407,17 @@ class EmundusModelCalendar extends JModelLegacy {
 
         // The post variable allows us to insert data that will be transformed by the tags.
         // In this case we want the dates and times as well as programmes, the fnum is there possibly temporarly as we do not know whether is it used yet.
+
+        $db->setQuery('SELECT title FROM #__categories WHERE id = '.$event->catid);
+        $event_category_title = $db->loadResult();
+
         $post = array(
             'FNUM'          => $user->fnum,
             'EVENT_DATE'    => $event_date,
             'EVENT_TIME'    => $event_time,
             'USER_NAME'     => $user->name,
-            'PROGRAM'       => $label
+            'PROGRAM'       => $label,
+            'JURY'          => $event_category_title
         );
 
         $from_id = 62;

@@ -120,6 +120,31 @@ class Category extends AbstractObject
      */
     public function toArray()
     {
-        return $this->getProperties(true);
+        $properties = $this->getProperties(true);
+
+        foreach ($properties as $key => $val) {
+            if (str_starts_with($key, '_')) {
+                unset($properties[$key]);
+            }
+        }
+
+        return $properties;
+    }
+
+    public function exportSql()
+    {
+        return $this->getCreateSql(['asset_id', 'checked_out', 'checked_out_time', 'created_user_id', 'modified_user_id', 'hits', 'version']) . ';';
+    }
+
+    protected function fixValue($table, $k, $v)
+    {
+        if ($k === '`created_time`' || $k === '`modified_time`') {
+            $v = 'NOW()';
+        } elseif (is_string($v)) {
+            $dbo = $table->getDbo();
+            $v = $dbo->quote($v);
+        }
+
+        return $v;
     }
 }

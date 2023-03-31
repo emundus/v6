@@ -477,18 +477,29 @@ class EmundusControllerFiles extends JControllerLegacy
      * @since 6.0
      */
     public function gettags() {
-        $m_files = new EmundusModelFiles();
-        $tags = $m_files->getAllTags();
+	    $response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED'), 'tags' => null];
+	    $user = JFactory::getUser();
 
-        $params = JComponentHelper::getParams('com_emundus');
-        $show_tags_category = $params->get('com_emundus_show_tags_category', 0);
+	    if (EmundusHelperAccess::asAccessAction(14, 'c', $user->id)) {
+            $m_files = new EmundusModelFiles();
+		    $response['tags'] = $m_files->getAllTags();
 
+		    if (!empty($response['tags'])) {
+			    $response['code'] = 200;
+			    $response['status']  = true;
+			    $response['msg'] = JText::_('SUCCESS');
+			    $response['tag'] = JText::_('COM_EMUNDUS_TAGS');
+			    $response['select_tag'] = JText::_('COM_EMUNDUS_FILES_PLEASE_SELECT_TAG');
 
-        echo json_encode((object)(array('status' => true,
-            'tags' => $tags,
-            'tag' => JText::_('COM_EMUNDUS_TAGS'),
-            'show_tags_category' => $show_tags_category,
-            'select_tag' => JText::_('COM_EMUNDUS_FILES_PLEASE_SELECT_TAG'))));
+			    $params = JComponentHelper::getParams('com_emundus');
+			    $response['show_tags_category'] = $params->get('com_emundus_show_tags_category', 0);
+		    } else {
+			    $response['code'] = 500;
+			    $response['msg'] = JText::_('FAIL');
+		    }
+	    }
+
+        echo json_encode((object)$response);
         exit;
     }
 
@@ -497,28 +508,38 @@ class EmundusControllerFiles extends JControllerLegacy
      * @since 6.0
      */
     public function tagfile() {
+	    $response = ['status' => false, 'code' => 403, 'msg' => JText::_('BAD_REQUEST')];
+
         $jinput = JFactory::getApplication()->input;
         $fnums  = $jinput->getString('fnums', null);
-        $tag    = $jinput->get('tag', null);
-        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
-        $m_files = new EmundusModelFiles();
+	    $tag    = $jinput->get('tag', null);
 
-        if ($fnums == "all") {
-            $fnums = $m_files->getAllFnums();
-        }
+		if (!empty($fnums) && !empty($tag)) {
+            $m_files = new EmundusModelFiles();
+			$fnums = ($fnums == 'all') ? $m_files->getAllFnums() : (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
-        $validFnums = array();
+			if (!empty($fnums)) {
+				$validFnums = [];
+				foreach ($fnums as $fnum) {
+					if ($fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum)) {
+						$validFnums[] = $fnum;
+					}
+				}
+				unset($fnums);
+				$response['status'] = $m_files->tagFile($validFnums, $tag);
 
-        foreach ($fnums as $fnum) {
-            if ($fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum)) {
-                $validFnums[] = $fnum;
-            }
-        }
-        unset($fnums);
+				if ($response['status']) {
+					$response['code'] = 200;
+					$response['msg'] = JText::_('COM_EMUNDUS_TAGS_SUCCESS');
+					$response['tagged'] = $validFnums;
+				} else {
+					$response['code'] = 500;
+					$response['msg'] = JText::_('FAIL');
+				}
+			}
+		}
 
-        $res = $m_files->tagFile($validFnums, $tag);
-
-        echo json_encode((object)(array('status' => $res, 'msg' => JText::_('COM_EMUNDUS_TAGS_SUCCESS'), 'tagged' => $validFnums)));
+        echo json_encode((object)($response));
         exit;
     }
 
@@ -1180,9 +1201,21 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         $validFnums = array();
+		$db = JFactory::getDbo();
+	    $query = $db->getQuery(true);
+
         foreach ($fnums as $fnum) {
             if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)&& $fnum != 'em-check-all-all' && $fnum != 'em-check-all') {
                 $validFnums[] = $fnum;
+
+				$query->clear()
+					->select('applicant_id')
+					->from($db->quoteName('#__emundus_campaign_candidature'))
+					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+				$db->setQuery($query);
+				$applicant_id = $db->loadResult();
+
+	            EmundusModelLogs::log(JFactory::getUser()->id, (int) $applicant_id, $fnum, 6, 'c', 'COM_EMUNDUS_ACCESS_EXPORT_EXCEL');
             }
         }
         $totalfile = count($validFnums);
@@ -1781,6 +1814,7 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         $m_files = new EmundusModelFiles();
+        $eMConfig = JComponentHelper::getParams('com_emundus');
 
         $session = JFactory::getSession();
         $fnums_post = $session->get('fnums_export');
@@ -1800,8 +1834,8 @@ class EmundusControllerFiles extends JControllerLegacy
         $decision   = $jinput->getInt('decision', 0);
         $admission  = $jinput->getInt('admission', 0);
         $ids        = $jinput->getVar('ids', null);
-        $formid     = $jinput->getString('formids', null);
-        $attachid   = $jinput->getString('attachids', null);
+        $formid     = $jinput->getVar('formids', null);
+	    $attachids   = $jinput->getVar('attachids', null);
         $options     = $jinput->getVar('options', null);
 
         $profiles = $jinput->getRaw('profiles', null);
@@ -1815,10 +1849,12 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         $formids    = explode(',', $formid);
-        $attachids  = explode(',', $attachid);
-	    if(!is_array($options)) {
-		    $options = explode(',', $options);
+	    if(!is_array($attachids)) {
+		    $attachids = explode(',', $attachids);
 	    }
+		if(!is_array($options)) {
+			$options = explode(',', $options);
+		}
 
         $validFnums = [];
         foreach ($fnums_post as $fnum) {
@@ -1828,9 +1864,8 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         $fnumsInfo = $m_files->getFnumsInfos($validFnums);
-		
+
         if (count($validFnums) == 1) {
-            $eMConfig = JComponentHelper::getParams('com_emundus');
             $application_form_name = empty($admission) ? $eMConfig->get('application_form_name', "application_form_pdf") : $eMConfig->get('application_admission_name', "application_form_pdf");
 
             if ($application_form_name != "application_form_pdf") {
@@ -1854,7 +1889,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 $file = $application_form_name.'.pdf';
             }
         }
-       
+
         if (file_exists(JPATH_SITE . DS . 'tmp' . DS . $file)) {
             $files_list = array(JPATH_SITE.DS.'tmp'.DS.$file);
         } else {
@@ -1876,7 +1911,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         }
                     }
                     if ($forms || !empty($forms_to_export)) {
-						
+
                         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
                         $m_profile = new EmundusModelProfile;
                         $infos = $m_profile->getFnumDetails($fnum);
@@ -1917,28 +1952,62 @@ class EmundusControllerFiles extends JControllerLegacy
                 if (($forms != 1) && $formids[0] == "" && ($attachment != 1) && ($attachids[0] == "") && ($assessment != 1) && ($decision != 1) && ($admission != 1) && ($options[0] != "0"))
                     $files_list[] = EmundusHelperExport::buildHeaderPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $options);
 
+	            EmundusModelLogs::log(JFactory::getUser()->id, (int) $fnumsInfo[$fnum]['applicant_id'], $fnum, 8, 'c', 'COM_EMUNDUS_ACCESS_EXPORT_PDF');
             }
 
         }
         $start = $i;
 
-        if (count($files_list) > 0) {
+        if (count($files_list) === 1 && !empty($files_list[0]))
+		{
+	        copy($files_list[0], JPATH_SITE . DS . 'tmp' . DS . $file);
 
-            // all PDF in one file
-            require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
+	        $start = $i;
 
-            $pdf = new ConcatPdf();
+	        $dataresult = [
+		        'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
+		        'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
+		        'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
+	        ];
+	        $response_status = true;
+        }
+		elseif (count($files_list) > 1)
+		{
+			foreach ($files_list as $key => $file_list){
+				if(empty($file_list)){
+					unset($files_list[$key]);
+				}
+			}
 
-            $pdf->setFiles($files_list);
+	        $gotenberg_merge_activation = $eMConfig->get('gotenberg_merge_activation', 0);
 
-            $pdf->concat();
+			if(!$gotenberg_merge_activation) {
+				require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
 
-            if (isset($tmpArray)) {
-                foreach ($tmpArray as $fn) {
-                    unlink($fn);
-                }
-            }
-            $pdf->Output(JPATH_SITE . DS . 'tmp' . DS . $file, 'F');
+				$pdf = new ConcatPdf();
+				$pdf->setFiles($files_list);
+				$pdf->concat();
+
+				if (isset($tmpArray)) {
+					foreach ($tmpArray as $fn) {
+						unlink($fn);
+					}
+				}
+				$pdf->Output(JPATH_SITE . DS . 'tmp' . DS . $file, 'F');
+			} else {
+				$gotenberg_url = $eMConfig->get('gotenberg_url', 'http://localhost:3000');
+
+				if (!empty($gotenberg_url)) {
+					$got_files = [];
+					foreach ($files_list as $item) {
+						$got_files[] = Stream::path($item);
+					}
+					$request  = Gotenberg::pdfEngines($gotenberg_url)
+						->merge(...$got_files);
+					$response = Gotenberg::send($request);
+					file_put_contents(JPATH_SITE . DS . 'tmp' . DS . $file, $response->getBody()->getContents());
+				}
+			}
 
 	        /*
 	        $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
@@ -1964,18 +2033,20 @@ class EmundusControllerFiles extends JControllerLegacy
                 'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
                 'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
             ];
-            $result = array('status' => true, 'json' => $dataresult);
-
-        } else {
-
+	        $response_status = true;
+        }
+		else
+		{
+	        $response_status = false;
             $dataresult = [
                 'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
                 'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
                 'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND')
             ];
+		}
 
-            $result = array('status' => false, 'json' => $dataresult);
-        }
+	    $result = array('status' => $response_status, 'json' => $dataresult);
+
         echo json_encode((object) $result);
         exit();
     }
@@ -2957,512 +3028,6 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
-
-    /*
-    *   Get my evaluation by fnum
-    */
-    /**
-     *
-     */
-    function getevalid() {
-        $current_user = JFactory::getUser();
-
-        if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
-            die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
-
-        $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->getString('fnum', null);
-
-        $m_evaluation = $this->getModel('Evaluation');
-        $myEval = $m_evaluation->getEvaluationsFnumUser($fnum, $current_user->id);
-        $evalid = ($myEval[0]->id>0)?$myEval[0]->id:-1;
-
-        $result = array('status' => true, 'evalid' => $evalid);
-        echo json_encode((object) $result);
-        exit();
-    }
-
-    public function getdocs()
-    {
-        $jinput = JFactory::getApplication()->input;
-        $code = $jinput->getString('code', "");
-        $m_files = $this->getModel('Files');
-
-        $res = new stdClass();
-        $res->status = true;
-        $res->options = $m_files->getDocsByProg($code);
-
-        echo json_encode($res);
-        exit();
-    }
-
-
-    /** Generate a new document from the many templates.
-     * @throws Exception
-     */
-    public function generatedoc() {
-        $jinput = JFactory::getApplication()->input;
-        $fnums = $jinput->post->getString('fnums', "");
-        $code = $jinput->post->getString('code', "");
-        $idTmpl = $jinput->post->getString('id_tmpl', "");
-        $canSee = $jinput->post->getInt('cansee', 0);
-
-        $fnumsArray = explode(",", $fnums);
-
-        $m_files = $this->getModel('Files');
-        $m_evaluation = $this->getModel('Evaluation');
-        $m_emails = $this->getModel('Emails');
-
-        $user = JFactory::getUser();
-
-        $fnumsArray = $m_files->checkFnumsDoc($code, $fnumsArray);
-        $tmpl = $m_evaluation->getLettersTemplateByID($idTmpl);
-        $attachInfos = $m_files->getAttachmentInfos($tmpl[0]['attachment_id']);
-
-        $res = new stdClass();
-        $res->status = true;
-        $res->files = [];
-        $fnumsInfos = $m_files->getFnumsTagsInfos($fnumsArray);
-
-        switch ($tmpl[0]['template_type']) {
-
-            case 1:
-                // Simple FILE.
-                $file = JPATH_SITE . $tmpl[0]['file'];
-                if (file_exists($file)) {
-                    foreach ($fnumsArray as $fnum) {
-                        if (isset($fnumsInfos[$fnum])) {
-                            $name = $attachInfos['lbl'] . '_' . date('Y-m-d_H-i-s') . '.' . pathinfo($file)['extension'];
-                            $path = EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'] . DS . $name;
-                            if (copy($file, $path)) {
-                                $url = JURI::base().EMUNDUS_PATH_REL . $fnumsInfos[$fnum]['applicant_id'] . '/';
-                                $upId = $m_files->addAttachment($fnum, $name, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description'], $canSee);
-
-                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url,);
-                            }
-                        }
-                    }
-                } else {
-                    $res->status = false;
-                    $res->msg = JText::_('COM_EMUNDUS_LETTERS_ERROR_CANNOT_GENERATE_FILE');
-                }
-
-                echo json_encode($res);
-                break;
-
-            case 2:
-
-                // PDF From HTML.
-                foreach ($fnumsArray as $fnum) {
-                    if (isset($fnumsInfos[$fnum])) {
-                        $post = [
-                            'TRAINING_CODE' => $fnumsInfos[$fnum]['campaign_code'],
-                            'TRAINING_PROGRAMME' => $fnumsInfos[$fnum]['campaign_label'],
-                            'CAMPAIGN_LABEL' => $fnumsInfos[$fnum]['campaign_label'],
-                            'CAMPAIGN_YEAR' => $fnumsInfos[$fnum]['campaign_year'],
-                            'USER_NAME' => $fnumsInfos[$fnum]['applicant_name'],
-                            'USER_EMAIL' => $fnumsInfos[$fnum]['applicant_email'],
-                            'FNUM' => $fnum
-                        ];
-
-                        // Generate PDF
-                        $tags = $m_emails->setTags($fnumsInfos[$fnum]['applicant_id'], $post, $fnum, '', $tmpl[0]["body"]);
-
-                        require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'MYPDF.php');
-                        $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-                        $pdf->SetCreator(PDF_CREATOR);
-                        $pdf->SetAuthor($user->name);
-                        $pdf->SetTitle($tmpl[0]['title']);
-
-                        // Set margins
-                        $pdf->SetMargins(5, 40, 5);
-                        $pdf->footer = $tmpl[0]["footer"];
-
-                        // Get logo
-                        preg_match('#src="(.*?)"#i', $tmpl[0]['header'], $tab);
-                        $pdf->logo = JPATH_SITE . DS . $tab[1];
-
-                        // Get footer.
-                        preg_match('#src="(.*?)"#i', $tmpl[0]['footer'], $tab);
-                        $pdf->logo_footer = JPATH_SITE . DS . @$tab[1];
-                        unset($logo, $logo_footer);
-
-                        $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
-
-                        // Set default monospaced font
-                        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-
-                        // Set default font subsetting mode
-                        $pdf->setFontSubsetting(true);
-
-                        // Set font
-                        $pdf->SetFont('freeserif', '', 8);
-
-                        $htmldata = $m_emails->setTagsFabrik($tmpl[0]["body"], array($fnum));
-                        // clean html
-                        $htmldata = preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $htmldata))));
-                        // base64 images to link
-                        $htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', function($match) {
-                            list(, $img, $type, $base64, $end) = $match;
-
-                            $bin = base64_decode($base64);
-                            $md5 = md5($bin);   // generate a new temporary filename
-                            $fn = "tmp/$md5.$type";
-                            file_exists($fn) or file_put_contents($fn, $bin);
-
-                            return "$img$fn$end";  // new <img> tag
-                        }, $htmldata);
-                        $htmldata = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $htmldata);
-
-                        $pdf->AddPage();
-
-                        // Print text using writeHTMLCell()
-                        $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $htmldata, $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = '', $autopadding = true);
-
-                        $rand = rand(0, 1000000);
-                        if (!file_exists(EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'])) {
-                            mkdir(EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'], 0775);
-                        }
-
-                        $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-                        if (!$anonymize_data) {
-                            $eMConfig = JComponentHelper::getParams('com_emundus');
-                            $generated_doc_name = $eMConfig->get('generated_doc_name', "");
-                            if (!empty($generated_doc_name)) {
-                                require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
-                                $m_checklist = new EmundusModelChecklist;
-                                $name = $m_checklist->formatFileName($generated_doc_name, $fnum, $post);
-                            } else {
-                                $name = $this->sanitize_filename($fnumsInfos[$fnum]['applicant_name']);
-                            }
-                            $name = $name.$attachInfos['lbl']."-".md5($rand.time()).".pdf";
-                        } else {
-                            $name = $this->sanitize_filename($fnumsInfos[$fnum]).$attachInfos['lbl']."-".md5($rand.time()).".pdf";
-                        }
-
-                        $path = EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'] . DS . $name;
-                        $url = JURI::base().EMUNDUS_PATH_REL . $fnumsInfos[$fnum]['applicant_id'] . '/';
-                        $upId = $m_files->addAttachment($fnum, $name, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description'], $canSee);
-
-                        $pdf->Output($path, 'F');
-                        $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url);
-                    }
-                }
-                unset($pdf, $path, $name, $url, $upIdn);
-                echo json_encode($res);
-                break;
-
-            case 3:
-                // template DOCX
-                //require_once JPATH_LIBRARIES . DS . 'vendor' . DS . 'autoload.php';
-                require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
-                require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'export.php');
-
-                $m_export = new EmundusModelExport;
-
-                $eMConfig = JComponentHelper::getParams('com_emundus');
-                $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
-
-                $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
-
-                // Special tags which require a bit more work.
-                $special = ['user_dob_age', 'evaluation_radar'];
-
-                try {
-                    $phpWord = new \PhpOffice\PhpWord\PhpWord();
-                    $preprocess = $phpWord->loadTemplate(JPATH_SITE . $tmpl[0]['file']);
-                    $tags = $preprocess->getVariables();
-                    $idFabrik = array();
-                    $setupTags = array();
-                    foreach ($tags as $i => $val) {
-                        $tag = strip_tags($val);
-                        if (is_numeric($tag)) {
-                            $idFabrik[] = $tag;
-                        } else {
-                            $setupTags[] = $tag;
-                        }
-                    }
-
-                    if (!empty($idFabrik)) {
-                        $fabrikElts = $m_files->getValueFabrikByIds($idFabrik);
-                    } else {
-                        $fabrikElts = array();
-                    }
-
-                    $fabrikValues = array();
-                    foreach ($fabrikElts as $elt) {
-                        $params = json_decode($elt['params']);
-                        $groupParams = json_decode($elt['group_params']);
-                        $isDate = ($elt['plugin'] == 'date');
-                        $isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
-
-                        if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
-                            $fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnumsArray, $params, $groupParams->repeat_group_button == 1);
-                        } else {
-                            if ($isDate) {
-                                $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->date_form_format);
-                            } else {
-                                $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
-                            }
-                        }
-
-                        if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown") {
-
-                            foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-
-                                if ($elt['plugin'] == "checkbox") {
-                                    $val = json_decode($val['val']);
-                                } else {
-                                    $val = explode(',', $val['val']);
-                                }
-
-                                if (count($val) > 0) {
-                                    foreach ($val as $k => $v) {
-                                        $index = array_search(trim($v), $params->sub_options->sub_values);
-                                        $val[$k] = JText::_($params->sub_options->sub_labels[$index]);
-                                    }
-                                    $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
-                                } else {
-                                    $fabrikValues[$elt['id']][$fnum]['val'] = "";
-                                }
-
-                            }
-
-                        } elseif ($elt['plugin'] == "birthday") {
-
-                            foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-                                $val = explode(',', $val['val']);
-                                foreach ($val as $k => $v) {
-                                    $val[$k] = date($params->details_date_format, strtotime($v));
-                                }
-                                $fabrikValues[$elt['id']][$fnum]['val'] = implode(",", $val);
-                            }
-
-                        } else {
-                            if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
-                                $fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnumsArray, $params, $groupParams->repeat_group_button == 1);
-                            } else {
-                                $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
-                            }
-                        }
-                    }
-
-                    foreach ($fnumsArray as $fnum) {
-
-                        $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_SITE . $tmpl[0]['file']);
-                        if (isset($fnumsInfos[$fnum])) {
-                            foreach ($setupTags as $tag) {
-                                $val = "";
-                                $lowerTag = strtolower($tag);
-
-                                if (array_key_exists($lowerTag, $const)) {
-
-                                    $preprocess->setValue($tag, $const[$lowerTag]);
-
-                                } elseif (in_array($lowerTag, $special)) {
-
-                                    // Each tag has it's own logic requiring special work.
-                                    switch ($lowerTag) {
-
-                                        // dd-mm-YYYY (YY)
-                                        case 'user_dob_age':
-                                            $birthday = $m_files->getBirthdate($fnum, 'd/m/Y', true);
-                                            $preprocess->setValue($tag, $birthday->date . ' (' . $birthday->age . ')');
-                                            break;
-
-                                        default:
-                                            $preprocess->setValue($tag, '');
-                                            break;
-                                    }
-
-                                } elseif (!empty(@$fnumsInfos[$fnum][$lowerTag])) {
-                                    $preprocess->setValue($tag, @$fnumsInfos[$fnum][$lowerTag]);
-                                } else {
-                                    $tags = $m_emails->setTagsWord(@$fnumsInfos[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
-                                    $i = 0;
-                                    foreach ($tags['patterns'] as $value) {
-                                        if ($value == $tag) {
-                                            $val = $tags['replacements'][$i];
-                                            break;
-                                        }
-                                        $i++;
-                                    }
-                                    $preprocess->setValue($tag, htmlspecialchars($val));
-                                }
-                            }
-                            foreach ($idFabrik as $id) {
-                                if (isset($fabrikValues[$id][$fnum])) {
-                                    $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
-                                    $preprocess->setValue($id, htmlspecialchars($value));
-                                } else {
-                                    $preprocess->setValue($id, '');
-                                }
-                            }
-
-                            $rand = rand(0, 1000000);
-                            if (!file_exists(EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'])) {
-                                mkdir(EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'], 0775);
-                            }
-
-                            $filename = $this->sanitize_filename($fnumsInfos[$fnum]['applicant_name']).$attachInfos['lbl']."-".md5($rand . time()).".docx";
-
-                            $preprocess->saveAs(EMUNDUS_PATH_ABS.$fnumsInfos[$fnum]['applicant_id'].DS.$filename);
-
-                            if($gotenberg_activation == 1 && $tmpl[0]['pdf'] == 1){
-                                //convert to PDF
-                                $src = EMUNDUS_PATH_ABS.$fnumsInfos[$fnum]['applicant_id'].DS.$filename;
-                                $dest = str_replace('.docx', '.pdf', $src);
-                                $filename = str_replace('.docx', '.pdf', $filename);
-                                $res = $m_export->toPdf($src, $dest, $fnum);
-                            }
-
-                            $upId = $m_files->addAttachment($fnum, $filename, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description'], $canSee);
-
-                            $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => JURI::base().EMUNDUS_PATH_REL . $fnumsInfos[$fnum]['applicant_id'] . '/',);
-                        }
-                        unset($preprocess);
-                    }
-                    echo json_encode($res);
-
-                } catch (Exception $e) {
-                    $res->status = false;
-                    $res->msg = JText::_("AN_ERROR_OCURRED") . ':' . $e->getMessage();
-                    echo json_encode($res);
-                    exit();
-                }
-                break;
-
-            case 4 :
-                //require_once JPATH_LIBRARIES.DS.'phpspreadsheet'.DS.'phpspreadsheet.php';
-                //require JPATH_LIBRARIES . '/emundus/vendor/autoload.php';
-                require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
-
-                $inputFileName = JPATH_SITE . $tmpl[0]['file'];
-                $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($inputFileName);
-                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
-
-                $reader->setIncludeCharts(true);
-                $spreadsheet = $reader->load($inputFileName);
-
-                $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
-
-                // Special tags which require a bit more work.
-                $special = ['user_dob_age'];
-
-                foreach ($fnumsArray as $fnum) {
-                    if (isset($fnumsInfos[$fnum])) {
-
-                        $preprocess = $spreadsheet->getAllSheets(); //Search in each sheet of the workbook
-
-                        foreach ($preprocess as $sheet) {
-                            foreach ($sheet->getRowIterator() as $row) {
-                                $cellIterator = $row->getCellIterator();
-                                foreach ($cellIterator as $cell) {
-
-                                    $cell->getValue();
-
-                                    $regex = '/\$\{(.*?)}|\[(.*?)]/';
-                                    preg_match_all($regex, $cell, $matches);
-
-                                    $idFabrik = array();
-                                    $setupTags = array();
-
-                                    foreach ($matches[1] as $i => $val) {
-
-                                        $tag = strip_tags($val);
-
-                                        if (is_numeric($tag)) {
-                                            $idFabrik[] = $tag;
-                                        } else {
-                                            $setupTags[] = $tag;
-                                        }
-                                    }
-
-                                    if (!empty($idFabrik)) {
-                                        $fabrikElts = $m_files->getValueFabrikByIds($idFabrik);
-                                    } else {
-                                        $fabrikElts = array();
-                                    }
-
-                                    $fabrikValues = $this->getValueByFabrikElts($fabrikElts, $fnumsArray);
-
-                                    foreach ($setupTags as $tag) {
-                                        $val = "";
-                                        $lowerTag = strtolower($tag);
-
-                                        if (array_key_exists($lowerTag, $const)) {
-                                            $cell->setValue($const[$lowerTag]);
-                                        } elseif (in_array($lowerTag, $special)) {
-
-                                            // Each tag has it's own logic requiring special work.
-                                            switch ($lowerTag) {
-
-                                                // dd-mm-YYYY (YY)
-                                                case 'user_dob_age':
-                                                    $birthday = $m_files->getBirthdate($fnum, 'd/m/Y', true);
-                                                    $cell->setValue($birthday->date . ' (' . $birthday->age . ')');
-                                                    break;
-
-                                                default:
-                                                    $cell->setValue('');
-                                                    break;
-                                            }
-
-                                        } elseif (!empty(@$fnumsInfos[$fnum][$lowerTag])) {
-                                            $cell->setValue(@$fnumsInfos[$fnum][$lowerTag]);
-                                        } else {
-                                            $tags = $m_emails->setTagsWord(@$fnumsInfos[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
-                                            $i = 0;
-                                            foreach ($tags['patterns'] as $value) {
-                                                if ($value == $tag) {
-                                                    $val = $tags['replacements'][$i];
-                                                    break;
-                                                }
-                                                $i++;
-                                            }
-                                            $cell->setValue(htmlspecialchars($val));
-                                        }
-                                    }
-                                    foreach ($idFabrik as $id) {
-
-                                        if (isset($fabrikValues[$id][$fnum])) {
-                                            $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
-                                            $cell->setValue(htmlspecialchars($value));
-                                        } else {
-                                            $cell->setValue('');
-                                        }
-
-                                    }
-                                }
-                            }
-
-                        }
-                        $rand = rand(0, 1000000);
-                        if (!file_exists(EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'])) {
-                            mkdir(EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'], 0775);
-                        }
-
-                        $filename = $this->sanitize_filename($fnumsInfos[$fnum]['applicant_name']).$attachInfos['lbl']."-".md5($rand . time()).".xlsx";
-
-                        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-                        $writer->setIncludeCharts(true);
-
-                        $writer->save(EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'] . DS . $filename);
-
-                        $upId = $m_files->addAttachment($fnum, $filename, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description'], $canSee);
-
-                        $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => JURI::base().EMUNDUS_PATH_REL.$fnumsInfos[$fnum]['applicant_id'].'/',);
-                    }
-                }
-                echo json_encode($res);
-                break;
-        }
-    }
-
-    private function sanitize_filename($name) {
-        return strtolower(preg_replace(['([\40])', '([^a-zA-Z0-9-])','(-{2,})'], ['_','','_'], preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/', '$1', htmlentities($name, ENT_NOQUOTES, 'UTF-8'))));
-    }
-
     public function exportzipdoc() {
         $jinput = JFactory::getApplication()->input;
         $idFiles = explode(',', $jinput->getString('ids', ''));
@@ -4118,7 +3683,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $_mEval = new EmundusModelEvaluation;
 
         $letters = $_mEval->generateLetters($fnums,$templates,$canSee,$showMode,$mergeMode);
-
+        ob_clean();
         if ($letters) {
             $dispatcher = JEventDispatcher::getInstance();
             $dispatcher->trigger('onAfterGenerateLetters', ['letters' => $letters]);
@@ -4299,16 +3864,19 @@ class EmundusControllerFiles extends JControllerLegacy
     }
 
     public function getalllogactions() {
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-        $m_files = new EmundusModelFiles();
-        $logs = $m_files->getAllLogActions();
+	    $response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
 
-        if($logs) {
-            echo json_encode((array('status' => true, 'data' => $logs)));
-        } else {
-            echo json_encode((array('status' => false, 'data' => [])));
-        }
-        exit;
+	    if (EmundusHelperAccess::asAccessAction(37, 'r', JFactory::getUser()->id)) {
+		    require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+		    $m_files = new EmundusModelFiles();
+		    $response['data'] = $m_files->getAllLogActions();
+		    $response['status'] = true;
+		    $response['code'] = 200;
+		    $response['msg'] = JText::_('SUCCESS');
+	    }
+
+	    echo json_encode($response);
+	    exit;
     }
 
     public function getuserslogbyfnum() {

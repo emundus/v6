@@ -167,13 +167,13 @@ function addElement() {
                 var num = ($('#nb-adv-filter').val() - 1) + 2;
                 $('#nb-adv-filter').val(num);
                 var newId = 'em-adv-father-' + num;
-                ni.append('<fieldset id="' + newId + '" class="em-nopadding em-flex-row">' +
-                    '<select class="chzn-select em-filt-select" name="elements" id="elements-'+num+'">' +
+                ni.append('<fieldset id="' + newId + '" class="em-nopadding">' +
+                    '<a id="suppr-filt" class="em-mb-4 em-flex-start">' +
+                    '<span class="em-font-size-14 em-red-500-color em-pointer">' + Joomla.JText._('COM_EMUNDUS_DELETE_ADVANCED_FILTERS') + '</span>' +
+                    '</a>' +
+                    '<select class="chzn-select em-filt-select em-mb-4" name="elements" id="elements-'+num+'">' +
                     '<option value="">' + result.default +'</option>' +
                     '</select> ' +
-                    '<button id="suppr-filt" class="em-tertiary-button em-flex-start">' +
-                    '<span class="material-icons em-red-500-color">delete_outline</span>' +
-                    '</button>'+
                     '</fieldset>');
 
                 var options = '';
@@ -1630,8 +1630,8 @@ $(document).ready(function() {
         url +='&action_id='+id;
 
         var checkInput = getUserCheck();
-        var prghtml = "";
-        var atthtml = "";
+        var prghtml = '';
+        var atthtml = '';
 
         switch (id) {
             /**
@@ -3174,7 +3174,6 @@ $(document).ready(function() {
 
                     $('#em-export-prg').on('change', function() {
                         var code = $(this).val();
-                        console.log(code);
 
                         if (code != 0) {
                             $.ajax({
@@ -3224,7 +3223,7 @@ $(document).ready(function() {
                                                             if (result.status) {
 
                                                                 prghtml = result.html;
-                                                                $('#felts-'+code+camp).parent('div').remove();
+                                                                $('#felts').empty();
                                                                 $('#felts').append(result.html);
                                                                 $('#felts').show();
 
@@ -3237,7 +3236,7 @@ $(document).ready(function() {
                                                                     success: function(result) {
                                                                         if (result.status) {
                                                                             atthtml = result.html;
-                                                                            $('#aelts-'+code+camp).parent('div').remove();
+                                                                            $('#aelts').empty();
                                                                             $('#aelts').append(result.html);
                                                                             $('#aelts').show();
                                                                         }
@@ -6152,7 +6151,7 @@ $(document).ready(function() {
         }
     });
 
-    $(document).on('click', '[id^=showelements_]', function() {
+    $(document).on('click', 'div[id^=showelements_]', function() {
         var id = $(this).attr('id').split('_')[1];
 
         var elements_block = document.getElementById('felts' + id);

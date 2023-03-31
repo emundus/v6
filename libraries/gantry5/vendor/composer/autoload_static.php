@@ -4,33 +4,29 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitc736a86c58ef746ed59c613f6b84d74e
+class ComposerStaticInit998af8be9fb97be45c0721a3dcc9f19b
 {
     public static $files = array (
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
-        '23c18046f52bef3eea034657bafda50f' => __DIR__ . '/..' . '/symfony/polyfill-php81/bootstrap.php',
-        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
     );
 
     public static $prefixLengthsPsr4 = array (
-        'W' =>
+        'W' => 
         array (
             'Whoops\\' => 7,
         ),
-        'T' =>
+        'T' => 
         array (
             'Twig\\' => 5,
         ),
-        'S' =>
+        'S' => 
         array (
-            'Symfony\\Polyfill\\Php81\\' => 23,
-            'Symfony\\Polyfill\\Php80\\' => 23,
             'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Component\\Yaml\\' => 23,
             'Symfony\\Component\\EventDispatcher\\' => 34,
             'ScssPhp\\ScssPhp\\' => 16,
         ),
-        'R' =>
+        'R' => 
         array (
             'RocketTheme\\Toolbox\\StreamWrapper\\' => 34,
             'RocketTheme\\Toolbox\\Session\\' => 28,
@@ -42,119 +38,119 @@ class ComposerStaticInitc736a86c58ef746ed59c613f6b84d74e
             'RocketTheme\\Toolbox\\Blueprints\\' => 31,
             'RocketTheme\\Toolbox\\ArrayTraits\\' => 32,
         ),
-        'P' =>
+        'P' => 
         array (
             'Psr\\Log\\' => 8,
             'Psr\\Container\\' => 14,
         ),
-        'G' =>
+        'L' => 
+        array (
+            'Leafo\\ScssPhp\\' => 14,
+        ),
+        'G' => 
         array (
             'Gantry\\' => 7,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Whoops\\' =>
+        'Whoops\\' => 
         array (
             0 => __DIR__ . '/..' . '/filp/whoops/src/Whoops',
         ),
-        'Twig\\' =>
+        'Twig\\' => 
         array (
             0 => __DIR__ . '/..' . '/twig/twig/src',
         ),
-        'Symfony\\Polyfill\\Php81\\' =>
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-php81',
-        ),
-        'Symfony\\Polyfill\\Php80\\' =>
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
-        ),
-        'Symfony\\Polyfill\\Ctype\\' =>
+        'Symfony\\Polyfill\\Ctype\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
         ),
-        'Symfony\\Component\\Yaml\\' =>
+        'Symfony\\Component\\Yaml\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/yaml',
         ),
-        'Symfony\\Component\\EventDispatcher\\' =>
+        'Symfony\\Component\\EventDispatcher\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/event-dispatcher',
         ),
-        'ScssPhp\\ScssPhp\\' =>
+        'ScssPhp\\ScssPhp\\' => 
         array (
             0 => __DIR__ . '/..' . '/scssphp/scssphp/src',
         ),
-        'RocketTheme\\Toolbox\\StreamWrapper\\' =>
+        'RocketTheme\\Toolbox\\StreamWrapper\\' => 
         array (
             0 => __DIR__ . '/..' . '/rockettheme/toolbox/StreamWrapper/src',
         ),
-        'RocketTheme\\Toolbox\\Session\\' =>
+        'RocketTheme\\Toolbox\\Session\\' => 
         array (
             0 => __DIR__ . '/..' . '/rockettheme/toolbox/Session/src',
         ),
-        'RocketTheme\\Toolbox\\ResourceLocator\\' =>
+        'RocketTheme\\Toolbox\\ResourceLocator\\' => 
         array (
             0 => __DIR__ . '/..' . '/rockettheme/toolbox/ResourceLocator/src',
         ),
-        'RocketTheme\\Toolbox\\File\\' =>
+        'RocketTheme\\Toolbox\\File\\' => 
         array (
             0 => __DIR__ . '/..' . '/rockettheme/toolbox/File/src',
         ),
-        'RocketTheme\\Toolbox\\Event\\' =>
+        'RocketTheme\\Toolbox\\Event\\' => 
         array (
             0 => __DIR__ . '/..' . '/rockettheme/toolbox/Event/src',
         ),
-        'RocketTheme\\Toolbox\\DI\\' =>
+        'RocketTheme\\Toolbox\\DI\\' => 
         array (
             0 => __DIR__ . '/..' . '/rockettheme/toolbox/DI/src',
         ),
-        'RocketTheme\\Toolbox\\Compat\\' =>
+        'RocketTheme\\Toolbox\\Compat\\' => 
         array (
             0 => __DIR__ . '/..' . '/rockettheme/toolbox/Compat/src',
         ),
-        'RocketTheme\\Toolbox\\Blueprints\\' =>
+        'RocketTheme\\Toolbox\\Blueprints\\' => 
         array (
             0 => __DIR__ . '/..' . '/rockettheme/toolbox/Blueprints/src',
         ),
-        'RocketTheme\\Toolbox\\ArrayTraits\\' =>
+        'RocketTheme\\Toolbox\\ArrayTraits\\' => 
         array (
             0 => __DIR__ . '/..' . '/rockettheme/toolbox/ArrayTraits/src',
         ),
-        'Psr\\Log\\' =>
+        'Psr\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
         ),
-        'Psr\\Container\\' =>
+        'Psr\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
-        'Gantry\\' =>
+        'Leafo\\ScssPhp\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/leafo/scssphp/src',
+        ),
+        'Gantry\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src/classes/Gantry',
         ),
     );
 
     public static $prefixesPsr0 = array (
-        'T' =>
+        'T' => 
         array (
-            'Twig_' =>
+            'Twig_' => 
             array (
                 0 => __DIR__ . '/..' . '/twig/twig/lib',
             ),
         ),
-        'P' =>
+        'P' => 
         array (
-            'Pimple' =>
+            'Pimple' => 
             array (
                 0 => __DIR__ . '/..' . '/pimple/pimple/src',
             ),
-            'ParsedownExtra' =>
+            'ParsedownExtra' => 
             array (
                 0 => __DIR__ . '/..' . '/erusev/parsedown-extra',
             ),
-            'Parsedown' =>
+            'Parsedown' => 
             array (
                 0 => __DIR__ . '/..' . '/erusev/parsedown',
             ),
@@ -162,21 +158,16 @@ class ComposerStaticInitc736a86c58ef746ed59c613f6b84d74e
     );
 
     public static $classMap = array (
-        'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'ReturnTypeWillChange' => __DIR__ . '/..' . '/symfony/polyfill-php81/Resources/stubs/ReturnTypeWillChange.php',
-        'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
-        'UnhandledMatchError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
-        'ValueError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitc736a86c58ef746ed59c613f6b84d74e::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitc736a86c58ef746ed59c613f6b84d74e::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitc736a86c58ef746ed59c613f6b84d74e::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitc736a86c58ef746ed59c613f6b84d74e::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit998af8be9fb97be45c0721a3dcc9f19b::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit998af8be9fb97be45c0721a3dcc9f19b::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit998af8be9fb97be45c0721a3dcc9f19b::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit998af8be9fb97be45c0721a3dcc9f19b::$classMap;
 
         }, null, ClassLoader::class);
     }

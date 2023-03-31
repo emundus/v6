@@ -39,11 +39,9 @@ class EmundusControllerUpdate extends JControllerLegacy {
 
         $user = JFactory::getUser();
         // verify if version is not already set
-        if($version != $oldVersion && $version != $ignoreVersion && EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-
+        if($version != $oldVersion && $version != $ignoreVersion && EmundusHelperAccess::asCoordinatorAccessLevel(JFactory::getUser()->id)) {
             $config = JFactory::getConfig();
-
-            $subject = "Mise à jour eMundus";
+            $subject = 'Mise à jour eMundus';
 
             $body = "Bonjour équipe eMundus,<br>
                     Vous avez reçu une demande de mise à jour eMundus v" . $version . " par " . JFactory::getUser()->name . " pour leur site " . JURI::base();
@@ -76,59 +74,33 @@ class EmundusControllerUpdate extends JControllerLegacy {
 
             if ($send !== true) {
                 JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
-
-                echo json_encode((object)[
-                    'status' => false,
-                    'msg' => "Internal error"
-                ]);
+                echo json_encode((object)['status' => false, 'msg' => 'Internal error']);
                 exit;
-
             } else {
-
-                echo json_encode((object)[
-                    'status' => $m_update->setIgnoreVal($version)
-                ]);
+                echo json_encode((object)['status' => $m_update->setIgnoreVal($version)]);
                 exit;
-
             }
         } else {
-
-            echo json_encode((object)[
-                'status' => false,
-                'msg' => "Internal error"
-            ]);
+            echo json_encode((object)['status' => false, 'msg' => 'Internal error']);
             exit;
-
         }
-
-
     }
 
-/// Ignore Update
+	/// Ignore Update
     public function ignore() {
         $jinput = JFactory::getApplication()->input;
         $version = $jinput->post->get('version', null);
         $oldVersion = $jinput->post->get('oldversion', null);
         $ignoreVersion = $jinput->post->get('ignoreversion', null);
-        $m_update = new EmundusModelUpdate();
 
-        $user = JFactory::getUser();
+        if ($version != $oldVersion && $version != $ignoreVersion && EmundusHelperAccess::asCoordinatorAccessLevel(JFactory::getUser()->id)) {
+	        $m_update = new EmundusModelUpdate();
 
-        if($version != $oldVersion && $version != $ignoreVersion && EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-
-
-            echo json_encode((object)[
-                'status' => $m_update->setIgnoreVal($version)
-            ]);
+            echo json_encode((object)['status' => $m_update->setIgnoreVal($version)]);
             exit;
-
         } else {
-
-            echo json_encode((object)[
-                'status' => false
-            ]);
+            echo json_encode((object)['status' => false]);
             exit;
-
         }
     }
 
@@ -141,28 +113,17 @@ class EmundusControllerUpdate extends JControllerLegacy {
         $updateDate = $jinput->post->get('updateDate', null);
 
         $user = JFactory::getUser();
-        $m_update = new EmundusModelUpdate();
-        $m_calendar = new EmundusModelCalendar();
-        $eMConfig = JComponentHelper::getParams('com_emundus');
 
 
         if($version != $oldVersion && $version != $ignoreVersion && EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-
-            //$google = $eMConfig->get('useGoogle');
-
-
-            $google_client_id       = $eMConfig->get('clientId');
+	        $m_calendar = new EmundusModelCalendar();
+	        $eMConfig = JComponentHelper::getParams('com_emundus');
+			$google_client_id       = $eMConfig->get('clientId');
             $google_secret_key      = $eMConfig->get('clientSecret');
             $google_refresh_token   = $eMConfig->get('refreshToken');
 
-            var_dump($google_client_id );
-
             $service = $m_calendar->google_authenticate($google_client_id, $google_secret_key, $google_refresh_token);
-
-           // $m_update->setUpdateDate($updateDate, $user->name, $version);
-
             $config = JFactory::getConfig();
-
             $subject = "Mise à jour eMundus";
 
             $body = "Bonjour équipe eMundus,<br>
@@ -176,11 +137,8 @@ class EmundusControllerUpdate extends JControllerLegacy {
             $mail_from_sys_name = $config->get('fromname');
 
             // Set sender
-            $sender = [
-                $mail_from_sys,
-                $mail_from_sys_name
-            ];
-
+            $sender = [$mail_from_sys, $mail_from_sys_name];
+    
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $emundusEmail = $eMConfig->get('emundus_email', 'support@emundus.fr');
 
@@ -196,23 +154,7 @@ class EmundusControllerUpdate extends JControllerLegacy {
 
             // Send and log the email.
             $send = $mailer->Send();
-/*
-            echo json_encode((object)[
-                'status' => $m_update->setIgnoreVal($version)
-            ]);
-            exit;
-
-        } else {
-
-            echo json_encode((object)[
-                'status' => false
-            ]);
-            exit;
-
         }
-        */
-    }
-
-}
+	}
 }
 

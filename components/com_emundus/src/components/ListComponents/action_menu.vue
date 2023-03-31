@@ -499,14 +499,31 @@ export default {
               },
             }).then(result => {
               if (result.value) {
-                this.$emit("updateLoading",true);
+                this.$emit('updateLoading',true);
                 axios({
-                  method: "post",
-                  url: "index.php?option=com_emundus&controller=form&task=duplicateform",
+                  method: 'post',
+                  url: 'index.php?option=com_emundus&controller=form&task=duplicateform',
                   data: qs.stringify({id})
                 }).then(response => {
-                  window.location.reload();
-                })
+									if (response.data.status) {
+										window.location.reload();
+									} else {
+										this.$emit('updateLoading', false);
+
+										Swal.fire({
+											title: this.translate('COM_EMUNDUS_ONBOARD_FORMDUPLICATE_FAILED'),
+											type: 'error',
+											text: response.data.msg,
+											confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
+											reverseButtons: true,
+											customClass: {
+												title: 'em-swal-title',
+												confirmButton: 'em-swal-confirm-button',
+												actions: "em-swal-single-action",
+											}
+										});
+									}
+                });
               }
             });
             break;

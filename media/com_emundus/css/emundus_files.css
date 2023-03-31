@@ -211,7 +211,7 @@ button.close {
 }
 
 .em-data-container .table-hover.table-striped tbody tr:nth-child(2n+1) td, .em-data-container .table-hover.table-striped tbody tr:nth-child(2n+1) th {
-    background: #F2F2F2 !important;
+    background: #fafafa !important;
 }
 
 th {
@@ -494,6 +494,10 @@ div#em-appli-block button.btn.btn-default {
     border: none !important;
 }
 
+.em-personalInfo > a.em-link  {
+    color: var(--main-500);
+}
+
 .em-personalInfo > a {
     background-color: #29d4ff;
     display: -webkit-inline-box;
@@ -601,6 +605,11 @@ div#em-appli-block button.btn.btn-default span.glyphicon.glyphicon-file {
 
 div#em-appli-block h3 {
     color: inherit;
+    font-size: 1rem;
+}
+
+div#em-appli-block .em-container-mail-content-heading h3 {
+    color: var(--neutral-50) !important;
     font-size: 1rem;
 }
 
@@ -850,6 +859,8 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 .g-back-office-emundus-tableau .col-md-3.side-panel {
     padding: 0;
     position: sticky;
+    height: 100vh;
+    overflow: auto;
 }
 
 .g-back-office-emundus-tableau .col-md-9.main-panel {
@@ -1311,6 +1322,7 @@ p {
     text-overflow: ellipsis;
     display: inline-block !important;
     margin-bottom: 10px;
+    font-weight: 400 !important;
 }
 
 /*.navbar .navbar-inverse{
@@ -1982,6 +1994,10 @@ label[for="em-file_to_upload"]:hover {
     padding: 0 !important;
 }
 
+.em-nopadding .chzn-container.chzn-container-single{
+    width: 100% !important;
+    margin-bottom: 8px;
+}
 
 
 /* collapse in Files */
@@ -2640,7 +2656,43 @@ a.copy-0:focus {
     align-items: center;
 }
 
+@media all and (min-width: 768px) and (max-width: 959px) {
+    .g-back-office-emundus-tableau.files-board .panel-body,
+    .g-back-office-emundus-tableau .col-md-3.side-panel{
+        height: auto;
+    }
+    .g-back-office-emundus-tableau.files-board .col-md-3.side-panel {
+        position: inherit;
+    }
+    .g-back-office-emundus-tableau.files-board #g-main-mainbody .platform-content {
+        padding: 0 !important;
+    }
+}
+
+@media all and (min-width: 480px) and (max-width: 767px) {
+    .g-back-office-emundus-tableau.files-board .panel-body {
+        height: auto;
+    }
+    .g-back-office-emundus-tableau.files-board .col-md-3.side-panel {
+        position: inherit;
+    }
+    .g-back-office-emundus-tableau.files-board #g-main-mainbody .platform-content {
+        padding: 0 !important;
+    }
+}
+
 @media all and (max-width: 479px) {
+
+    .g-back-office-emundus-tableau.files-board .panel-body {
+        height: auto;
+    }
+    .g-back-office-emundus-tableau.files-board .col-md-3.side-panel {
+        position: inherit;
+    }
+    .g-back-office-emundus-tableau.files-board #g-main-mainbody .platform-content {
+        padding: 0 !important;
+    }
+
     .g-back-office-emundus-tableau #em_select_filter select#select_filter {
         width: 85% !important;
     }

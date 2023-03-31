@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="1.6" type="module" method="upgrade" client="site">
     <name>SCLogin</name>
-    <version>8.4.3</version>
-    <creationDate>2020/05/29</creationDate>
+    <version>9.0.215</version>
+    <creationDate>2022/09/06</creationDate>
     <author>SourceCoast | www.sourcecoast.com</author>
     <authorEmail>support@sourcecoast.com</authorEmail>
     <authorUrl>http://www.sourcecoast.com</authorUrl>
-    <copyright>Copyright (C) 2009-2019 SourceCoast. All rights reserved.</copyright>
+    <copyright>Copyright (C) 2009-2021 SourceCoast. All rights reserved.</copyright>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
     <description>
         <![CDATA[Enhanced login module with flexible styles and customizations for Facebook, Google+, Twitter, LinkedIn, Amazon, Github, Instagram, Meetup, VK.com and Windows Live Authentication when combined with <a href='http://www.sourcecoast.com/joomla-facebook/' target='_blank'>JFBConnect</a>.<br/><br/>Please visit <a href='http://www.sourcecoast.com/sclogin/features/' target='_blank'>SourceCoast</a> for more information or <a href='http://www.sourcecoast.com/forums' target='_blank'>our forums</a> for support.<br/><br/>If you use SCLogin, please post a rating and a review at the Joomla! Extensions Directory: <a href='http://extensions.joomla.org/extensions/access-a-security/site-access/authentication/24054' target='_blank'>SCLogin Enhanced Login</a>]]></description>
@@ -16,30 +16,13 @@
         <filename>helper.php</filename>
         <filename>mod_sclogin.xml</filename>
         <filename>sc_helper.php</filename>
-        <filename>ajax/otpcheck.php</filename>
-        <filename>fields/theme.php</filename>
-        <filename>fields/jfbconnectsettings.php</filename>
-        <filename>fields/jfbconnectsettings.xml</filename>
-        <filename>fields/placeholder.php</filename>
-        <filename>fields/registrationlink.php</filename>
-        <filename>fields/images/socialloginbuttons.png</filename>
-        <filename>tmpl/login.php</filename>
-        <filename>tmpl/logout.php</filename>
-        <filename>tmpl/joomlaLogin_vertical.php</filename>
-        <filename>tmpl/joomlaLogin_horizontal.php</filename>
-        <filename>tmpl/socialLogin.php</filename>
-        <filename>tmpl/otp.php</filename>
+        <folder>fields</folder>
+        <folder>tmpl</folder>
     </files>
     <media folder="media" destination="sourcecoast">
-        <filename>themes/sclogin/default.css</filename>
-        <filename>themes/sclogin/sourcecoast.css</filename>
-        <filename>css/common.css</filename>
-        <filename>css/sc_bootstrap.css</filename>
-        <filename>css/img/glyphicons-halflings-white.png</filename>
-        <filename>css/img/glyphicons-halflings.png</filename>
-        <filename>js/jq-bootstrap-1.8.3.js</filename>
-        <filename>js/jquery.placeholder.js</filename>
-        <filename>js/mod_sclogin.js</filename>
+        <folder>themes/sclogin</folder>
+        <folder>css</folder>
+        <folder>js</folder>
     </media>
     <languages folder="translations">
         <language tag="ar-AA">ar-AA.mod_sclogin.ini</language>
@@ -65,7 +48,6 @@
         <language tag="pt-PT">pt-PT.mod_sclogin.ini</language>
         <language tag="ro-RO">ro-RO.mod_sclogin.ini</language>
         <language tag="ru-RU">ru-RU.mod_sclogin.ini</language>
-        <language tag="sk-SK">sk-SK.mod_sclogin.ini</language>
         <language tag="sl-SI">sl-SI.mod_sclogin.ini</language>
         <language tag="sr-YU">sr-YU.mod_sclogin.ini</language>
         <language tag="sv-SE">sv-SE.mod_sclogin.ini</language>
@@ -171,18 +153,6 @@
                     <option value="2">MOD_SCLOGIN_SHOW_REMEMBER_ME_VALUE_HIDE_UNCHECKED</option>
                     <option value="3">MOD_SCLOGIN_SHOW_REMEMBER_ME_VALUE_HIDE_CHECKED</option>
                 </field>
-                <field name="loginbutton_class"
-                       type="text"
-                       label="MOD_SCLOGIN_LOGINBUTTON_CLASS_LABEL"
-                       description="MOD_SCLOGIN_LOGINBUTTON_CLASS_DESC"
-                       default=""
-                />
-                <field name="registerbutton_class"
-                       type="text"
-                       label="MOD_SCLOGIN_REGISTERBUTTON_CLASS_LABEL"
-                       description="MOD_SCLOGIN_REGISTERBUTTON_CLASS_DESC"
-                       default=""
-                />
                 <field name="autoFocusUsername"
                        type="radio"
                        class="btn-group"
@@ -263,7 +233,9 @@
                        description="MOD_SCLOGIN_LOGOUT_GREETING_DESC">
                     <option value="0">MOD_SCLOGIN_LOGOUT_GREETING_VALUE_USERNAME</option>
                     <option value="1">MOD_SCLOGIN_LOGOUT_GREETING_VALUE_REALNAME</option>
+                    <option value="3">MOD_SCLOGIN_LOGOUT_GREETING_VALUE_FIRSTNAME</option>
                     <option value="2">MOD_SCLOGIN_LOGOUT_GREETING_VALUE_NONE</option>
+
                 </field>
                 <field name="showProfileLink"
                        type="radio"
@@ -351,6 +323,50 @@
                 <field name="loginbuttons"
                        type="placeholder" />
             </fieldset>
+            <fieldset name="styles" label="MOD_SCLOGIN_STYLES_LABEL">
+                <field name="loginbutton_class"
+                       type="text"
+                       label="MOD_SCLOGIN_LOGINBUTTON_CLASS_LABEL"
+                       description="MOD_SCLOGIN_LOGINBUTTON_CLASS_DESC"
+                       default=""
+                />
+                <field name="registerbutton_class"
+                       type="text"
+                       label="MOD_SCLOGIN_REGISTERBUTTON_CLASS_LABEL"
+                       description="MOD_SCLOGIN_REGISTERBUTTON_CLASS_DESC"
+                       default=""
+                />
+                <field name="forgotbutton_class"
+                       type="text"
+                       label="MOD_SCLOGIN_FORGOTBUTTON_CLASS_LABEL"
+                       description="MOD_SCLOGIN_FORGOTBUTTON_CLASS_DESC"
+                       default=""
+                />
+                <field name="showUser_fa_class"
+                       type="text"
+                       label="MOD_SCLOGIN_BTNUSER_CLASS_LABEL"
+                       description="MOD_SCLOGIN_BTNUSER_CLASS_DESC"
+                       default="fa fa-user"
+                       />
+                <field name="showPassword_fa_class"
+                       type="text"
+                       label="MOD_SCLOGIN_SHOW_PASSWORD_CLASS_LABEL"
+                       description="MOD_SCLOGIN_SHOW_PASSWORD_CLASS_DESC"
+                       default="fa fa-eye"
+                />
+                <field name="hidePassword_fa_class"
+                       type="text"
+                       label="MOD_SCLOGIN_HIDE_PASSWORD_CLASS_LABEL"
+                       description="MOD_SCLOGIN_HIDE_PASSWORD_CLASS_DESC"
+                       default="fa fa-eye-slash"
+                />
+                <field name="showForgotButton_fa_class"
+                       type="text"
+                       label="MOD_SCLOGIN_SHOW_FORGOTBUTTON_CLASS_LABEL"
+                       description="MOD_SCLOGIN_SHOW_FORGOTBUTTON_CLASS_DESC"
+                       default="fa fas fa-question-circle"
+               />
+            </fieldset>
             <fieldset name="advanced" label="MOD_SCLOGIN_ADV_LABEL">
                 <field name="user_intro"
                        type="textarea"
@@ -368,14 +384,22 @@
                     <option value="0">MOD_SCLOGIN_VALUE_NO</option>
                     <option value="1">MOD_SCLOGIN_VALUE_YES</option>
                 </field>
-                <!-- <field name="loadBootstrapCSS"
+                <field name="useFontAwesome"
                        type="radio"
-                       default="1"
-                       label="MOD_SCLOGIN_ADV_LOAD_BOOTSTRAP_LABEL"
-                       description="MOD_SCLOGIN_ADV_LOAD_BOOTSTRAP_DESC">
+                       default="0"
+                       label="MOD_SCLOGIN_ADV_USE_FONTAWESOME_LABEL"
+                       description="MOD_SCLOGIN_ADV_USE_FONTAWESOME_DESC">
                     <option value="0">MOD_SCLOGIN_VALUE_NO</option>
                     <option value="1">MOD_SCLOGIN_VALUE_YES</option>
-                </field>-->
+                </field>
+                <field name="loadFontAwesome"
+                       type="radio"
+                       default="1"
+                       label="MOD_SCLOGIN_ADV_LOAD_FONTAWESOME_LABEL"
+                       description="MOD_SCLOGIN_ADV_LOAD_FONTAWESOME_DESC">
+                    <option value="0">MOD_SCLOGIN_VALUE_NO</option>
+                    <option value="1">MOD_SCLOGIN_VALUE_YES</option>
+                </field>
                 <field name="showPoweredByLink"
                        type="radio"
                        class="btn-group"

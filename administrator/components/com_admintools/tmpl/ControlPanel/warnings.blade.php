@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2023 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -105,7 +105,7 @@ $emptyRoot = empty($root);
 	'minPHPVersion' => '7.2.0',
 ])
 
-@if ($this->oldVersion)
+@if ($this->oldVersion && false)
 	<div class="akeeba-block--warning">
 		<strong>@lang('COM_ADMINTOOLS_ERR_CONTROLPANEL_OLDVERSION')</strong>
 	</div>

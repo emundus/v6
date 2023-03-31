@@ -26,28 +26,28 @@ class EmundusModelsettings extends JModelList {
      */
     function getColorClasses(){
         return array(
-            'lightpurple' => '#DCC6E0',
-            'purple' => '#947CB0',
+            'lightpurple' => '#D444F1',
+            'purple' => '#7959F8',
             'darkpurple' => '#663399',
-            'lightblue' => '#6BB9F0',
-            'blue' => '#19B5FE',
-            'darkblue' => '#013243',
-            'lightgreen' => '#7BEFB2',
-            'green' => '#3FC380',
-            'darkgreen' => '#1E824C',
-            'lightyellow' => '#FFFD7E',
-            'yellow' => '#FFFD54',
-            'darkyellow' => '#F7CA18',
-            'lightorange' => '#FABE58',
-            'orange' => '#E87E04',
-            'darkorange' => '#D35400',
+            'lightblue' => '#0BA4EB',
+            'blue' => '#2E90FA',
+            'darkblue' => '#2970FE',
+            'lightgreen' => '#15B79E',
+            'green' => '#238C69',
+            'darkgreen' => '#20835F',
+            'lightyellow' => '#5D5B00',
+            'yellow' => '#EAA907',
+            'darkyellow' => '#F79009',
+            'lightorange' => '#C87E00',
+            'orange' => '#EF681F',
+            'darkorange' => '#FF4305',
             'lightred' => '#EC644B',
-            'red' => '#CF000F',
-            'darkred' => '#E5283B',
-            'lightpink' => '#E08283',
-            'pink' => '#D2527F',
-            'darkpink' => '#DB0A5B',
-            'default' => '#999999',
+            'red' => '#DB333E',
+            'darkred' => '#DB333E',
+            'lightpink' => '#B04748',
+            'pink' => '#EE46BC',
+            'darkpink' => '#F53D68',
+            'default' => '#5E6580',
         );
     }
 
@@ -123,7 +123,8 @@ class EmundusModelsettings extends JModelList {
         $query = $db->getQuery(true);
 
         $query->select('*')
-            ->from($db->quoteName('#__emundus_setup_action_tag'));
+            ->from($db->quoteName('#__emundus_setup_action_tag'))
+            ->order($db->quoteName('label'));
 
         try {
             $db->setQuery($query);
@@ -517,8 +518,23 @@ class EmundusModelsettings extends JModelList {
             $db->setQuery($query);
             $result = $db->loadResult();
 
-            if(!empty($result)){
+            if (!empty($result)){
                 $article->{$reference_field} = $result;
+            } else {
+	            $currentLang = JFactory::getLanguage();
+				if ($currentLang->lang_code != $lang_code) {
+					$query->clear()
+						->select('title, introtext, alias')
+						->from($db->quoteName('#__content'))
+						->where('id = ' . $article->id);
+
+					$db->setQuery($query);
+					$article_content = $db->loadAssoc();
+
+					foreach ($article_content as $key => $content) {
+						$article->{$key} = $content;
+					}
+				}
             }
 
             return $article;

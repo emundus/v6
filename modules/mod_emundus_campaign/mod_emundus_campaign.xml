@@ -24,6 +24,7 @@
 						<option value="default">MOD_EM_CAMPAIGN_LIST_DEFAULT</option>
 						<option value="default_g5">MOD_EM_CAMPAIGN_LIST_DEFAULT_G5</option>
 						<option value="institut_fr">Institut Français</option>
+						<option value="institut_fr_single_campaign">Institut Français - Single campaign</option>
 						<option value="nantes">Nantes</option>
 						<option value="old">MOD_EM_CAMPAIGN_LIST_OLD</option>
 						<option value="single_campaign">MOD_EM_CAMPAIGN_DETAILS_DEFAULT</option>
@@ -84,8 +85,6 @@
 				<fieldset name="list" label="Paramètres de la liste">
 					<field showon="mod_em_campaign_layout:default_tchooz" type="checkboxes" name="mod_em_campaign_list_sections" label="MOD_EM_CAMPAIGN_LIST_SECTIONS" description="MOD_EM_CAMPAIGN_LIST_SECTIONS_DESC">
 						<option checked="true" value="intro">MOD_EM_CAMPAIGN_LIST_SECTIONS_INTROTEXT</option>
-						<option checked="true" value="filters">MOD_EM_CAMPAIGN_LIST_SECTIONS_FILTERS</option>
-						<option checked="true" value="campaigns">MOD_EM_CAMPAIGN_LIST_SECTIONS_CAMPAIGNS</option>
 					</field>
 
 					<field
@@ -177,8 +176,8 @@
 					<field type="list" name="mod_em_campaign_orderby" default="start_date" label="MOD_EM_CAMPAIGN_ORDER" description="MOD_EM_CAMPAIGN_ORDER_DESC">
 						<option value="start_date">MOD_EM_CAMPAIGN_LIST_DATE_START</option>
 						<option value="end_date">MOD_EM_CAMPAIGN_LIST_DATE_END</option>
-						<option value="formation_start">MOD_EM_CAMPAIGN_LIST_FORMATION_DATE_START</option>
-						<option value="formation_end">MOD_EM_CAMPAIGN_LIST_FORMATION_DATE_END</option>
+						<option showon="mod_em_campaign_layout:nantes" value="formation_start">MOD_EM_CAMPAIGN_LIST_FORMATION_DATE_START</option>
+						<option showon="mod_em_campaign_layout:nantes" value="formation_end">MOD_EM_CAMPAIGN_LIST_FORMATION_DATE_END</option>
 					</field>
 					<field type="list" name="mod_em_campaign_order_type" default="" label="MOD_EM_CAMPAIGN_ORDER_TYPE" description="MOD_EM_CAMPAIGN_ORDER_TYPE_DESC">
 						<option value="asc">MOD_EM_CAMPAIGN_LIST_ASC</option>

@@ -1,0 +1,12 @@
+.emundus-form{
+    border: unset !important;
+    box-shadow: unset !important;
+    margin-top: 0 !important;
+}
+.fabrikGroup{
+    padding: 0 24px 0 24px !important;
+    background: white !important;
+}
+.contentpane.modal{
+    padding: unset !important;
+}

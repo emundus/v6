@@ -20,6 +20,8 @@ if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml'
 }
 //
 
+$current_lang = substr(JFactory::getLanguage()->getTag(), 0 , 2);
+
 require JModuleHelper::getLayoutPath('mod_emundus_help', 'default');
 
 

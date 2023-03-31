@@ -3,7 +3,7 @@
 /**
  * @package   Gantry 5 Theme
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
  * @license   GNU/GPLv2 and later
  *
  * http://www.gnu.org/licenses/gpl-2.0.html
@@ -69,6 +69,7 @@ class G5_HeliumInstallerScript
     /**
      * @param string $type
      * @param TemplateAdapter $parent
+     * @return bool
      * @throws Exception
      */
     public function postflight($type, $parent)
@@ -110,6 +111,7 @@ class G5_HeliumInstallerScript
      * Called by TemplateInstaller to customize post-installation.
      *
      * @param ThemeInstaller $installer
+     * @return void
      */
     public function installDefaults(ThemeInstaller $installer)
     {
@@ -121,6 +123,7 @@ class G5_HeliumInstallerScript
      * Called by TemplateInstaller to customize sample data creation.
      *
      * @param ThemeInstaller $installer
+     * @return void
      */
     public function installSampleData(ThemeInstaller $installer)
     {

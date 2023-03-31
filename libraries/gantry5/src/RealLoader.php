@@ -3,7 +3,7 @@
 /**
  * @package   Gantry5
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
  * @license   Dual License: MIT or GNU/GPLv2 and later
  *
  * http://opensource.org/licenses/MIT
@@ -49,8 +49,8 @@ abstract class RealLoader
             throw new \LogicException(self::$errorMessageGantryLoaded);
         }
 
-        define('GANTRY5_VERSION', '5.5.6');
-        define('GANTRY5_VERSION_DATE', 'December  3, 2021');
+        define('GANTRY5_VERSION', '5.5.15');
+        define('GANTRY5_VERSION_DATE', 'September  5, 2022');
 
         if (!defined('DS')) {
             define('DS', DIRECTORY_SEPARATOR);
@@ -101,17 +101,26 @@ abstract class RealLoader
             throw new \LogicException('Please run composer in Gantry 5 Library!');
         }
 
+        // In PHP >=7.2.5 we need to use newer version of ctype library.
+        $useNewLibraries = \PHP_VERSION_ID >= 70205 && GANTRY5_PLATFORM !== 'grav';
+        if ($useNewLibraries) {
+            /** @var ClassLoader $loader */
+            $loader = require "{$lib}/compat/vendor/autoload.php";
+            $loader->unregister();
+        }
+
         /** @var ClassLoader $loader */
         $loader = require $autoload;
 
-        // In PHP <7.2.5 we need to use older version of Twig.
-        if (\PHP_VERSION_ID < 70205) {
+        // In PHP >=7.2.5 we need to use newer version of Twig.
+        if ($useNewLibraries) {
             $loader->setPsr4('Twig\\', "{$lib}/compat/vendor/twig/twig/src");
             $loader->set('Twig_', "{$lib}/compat/vendor/twig/twig/lib");
         }
 
         // Skip registering SCSS compiler until it's needed.
         $loader->setPsr4('ScssPhp\\ScssPhp\\', '');
+        $loader->setPsr4('Leafo\\ScssPhp\\', '');
 
         // Support for development environments.
         if (file_exists($lib . '/src/platforms')) {

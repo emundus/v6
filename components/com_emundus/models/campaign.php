@@ -1922,10 +1922,10 @@ class EmundusModelCampaign extends JModelList {
 
             if(!$campaign_dropfile_cat){
                 JPluginHelper::importPlugin('emundus', 'setup_category');
-	            $result = \Joomla\CMS\Factory::getApplication()->triggerEvent('onAfterCampaignCreate', [$cid]);
-				if($result) {
-					$this->getCampaignCategory($cid);
-				}
+                $result = \Joomla\CMS\Factory::getApplication()->triggerEvent('onAfterCampaignCreate', [$cid]);
+                if($result) {
+                    $this->getCampaignCategory($cid);
+                }
             }
             return $campaign_dropfile_cat;
         } catch (Exception $e) {

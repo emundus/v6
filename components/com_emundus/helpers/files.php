@@ -170,7 +170,7 @@ class EmundusHelperFiles
             }
 
         }
-		
+
         if (is_array($filts_details['group']) && count($filts_details['group']) > 0 && isset($filts_details['group'][0]) && !empty($filts_details['group'][0])) {
             $fd_with_param          = $params['group'] + $filts_details['group'];
             $params['group']        = $filts_details['group'];
@@ -1959,7 +1959,9 @@ class EmundusHelperFiles
                         $val = $val['value'];
                     }
 
-                    $adv_filter .= '<fieldset id="em-adv-father-'.$i.'" class="em-nopadding">
+                    $adv_filter .= '<fieldset id="em-adv-father-'.$i.'" class="em-nopadding em-flex-align-start em-flex-column">
+									<a id="suppr-filt" class="em-mb-4 em-flex-start">
+									<span class="em-font-size-14 em-red-500-color em-pointer">' . JText::_('COM_EMUNDUS_DELETE_ADVANCED_FILTERS') . '</span></a>
 										<select class="chzn-select em-filt-select" id="elements" name="elements">
                                             <option value="">'.JText::_('COM_EMUNDUS_PLEASE_SELECT').'</option>';
                     $menu = "";
@@ -1998,7 +2000,6 @@ class EmundusHelperFiles
                         $adv_filter .= $h_files->setSearchBox($selected_adv, $val, $key, $i);
                     }
 
-                    $adv_filter .= '<button class="em-transparent-button" id="suppr-filt"><span class="material-icons">delete_outline</span></button>';
                     $i++;
                     $adv_filter .= '</fieldset>';
                 }
@@ -2041,9 +2042,9 @@ class EmundusHelperFiles
         foreach ($tags as $tag) {
             $fnum = $tag['fnum'];
             if (!isset($tagsList[$fnum])) {
-                $tagsList[$fnum] = '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
+                $tagsList[$fnum] = '<span class="'.$tag['class'].' label">'.$tag['label'].'</span>';
             } else {
-                $tagsList[$fnum] .= '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
+                $tagsList[$fnum] .= '<span class="'.$tag['class'].' label">'.$tag['label'].'</span>';
             }
         }
         return $tagsList;
@@ -2085,6 +2086,21 @@ class EmundusHelperFiles
             }
         }
         return $attachmentsprogressList;
+    }
+
+
+    public function createUnreadMessageList($unread_messages) {
+        $unreadmessagesList = array();
+
+        foreach ($unread_messages as $unread_message) {
+
+            $fnum = $unread_message['fnum'];
+
+            if (!isset($unreadmessagesList[$fnum])) {
+                    $unreadmessagesList[$fnum] = '<p class="messenger__notifications_counter">'. $unread_message['nb'] .'</p> ';
+            }
+        }
+        return $unreadmessagesList;
     }
 
 	/** Create a list of HTML text using the tag system.
@@ -2551,7 +2567,7 @@ class EmundusHelperFiles
         }
 
         // Get information from application form filled out by the student
-        $element_id     = $m_admission->getAllApplicantAdmissionElements(1, $fnumInfo['training']);
+        $element_id = $m_admission->getAllApplicantAdmissionElements(1, $fnumInfo['training']);
         if(!empty($element_id)) {
             $elements       = $h_files->getElementsName(implode(',',$element_id));
             $admissions     = $m_files->getFnumArray($fnums, $elements);
@@ -2701,7 +2717,10 @@ class EmundusHelperFiles
      * @since   1.6
      */
     public static function createFnum($campaign_id, $user_id){
-        return date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
+        if (!empty($campaign_id)) {
+            $fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
+            return $fnum;
+        }
     }
 
     /**

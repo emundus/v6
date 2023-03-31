@@ -546,7 +546,7 @@ class plgUserEmundus extends JPlugin
             $table = JTable::getInstance('user', 'JTable');
 
             $user = JFactory::getSession()->get('emundusUser');
-            if(empty($user)) {
+            if(empty($user) || empty($user->id)) {
                 include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
                 $m_profile = new EmundusModelProfile();
                 $m_profile->initEmundusSession();
@@ -572,6 +572,14 @@ class plgUserEmundus extends JPlugin
 
             if ($options['redirect'] === 0) {
                 $previous_url = '';
+            } else {
+				if ($user->activation != -1) {
+					$cid_session = JFactory::getSession()->get('login_campaign_id');
+					if (!empty($cid_session)){
+						$previous_url = 'index.php?option=com_fabrik&view=form&formid=102&cid='.$cid_session;
+						JFactory::getSession()->clear('login_campaign_id');
+					}
+				}
             }
 
             JPluginHelper::importPlugin('emundus', 'custom_event_handler');

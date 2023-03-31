@@ -3,7 +3,7 @@
 /**
  * @package   Gantry 5 Theme
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
  * @copyright Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
  * @license   GNU/GPLv2 and later
  *
@@ -13,6 +13,15 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Language\Text;
+
+if (version_compare(JVERSION, 4.0, '>')) {
+    include JPATH_ROOT . '/layouts/joomla/system/message.php';
+    return;
+}
+
+/**
+ * Joomla 3 version of the system messages.
+ */
 
 $msgList = $displayData['msgList'];
 

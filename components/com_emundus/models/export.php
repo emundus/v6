@@ -58,8 +58,9 @@ class EmundusModelExport extends JModelList {
         }
 
         $user_id = !empty($fnum) ? (int)substr($fnum, -7) : null;
+		$em_user = JFactory::getSession()->get('emundusUser');
 
-        if (EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $fnum)) {
+        if (EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $fnum) || $fnum == $em_user->fnum) {
             require JPATH_LIBRARIES . '/emundus/vendor/autoload.php';
 
             $src   = $file_src;

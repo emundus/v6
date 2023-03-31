@@ -43,6 +43,48 @@ class EmundusControllerWebhook extends JControllerLegacy {
         JLog::addLogger(['text_file' => 'com_emundus.webhook.php'], JLog::ALL, array('com_emundus.webhook'));
 	}
 
+	public function callback(){
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$ips_allowed = $eMConfig->get('callback_whitelist_ip');
+		$ips_allowed = !empty($ips_allowed) ? explode(',', $eMConfig->get('callback_whitelist_ip')) : null;
+
+		$allowed = true;
+		if(!empty($ips_allowed)){
+			$allowed = false;
+
+			if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+				$ip = $_SERVER['HTTP_CLIENT_IP'];
+			} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+				$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+			} else {
+				$ip = $_SERVER['REMOTE_ADDR'];
+			}
+
+			if(!empty($ip)) {
+				$allowed = in_array($ip, $ips_allowed);
+			}
+		}
+
+		if($allowed) {
+			$jinput = JFactory::getApplication()->input;
+			$type   = $jinput->getString('type');
+
+			$payload       = !empty($_POST["payload"]) ? $_POST["payload"] : file_get_contents("php://input");
+			$webhook_datas = json_decode($payload, true);
+
+			JPluginHelper::importPlugin('emundus', 'custom_event_handler');
+			$return = \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onWebhookCallbackProcess', ['webhook_datas' => $webhook_datas, 'type' => $type]]);
+
+			$result = $return[0]['onWebhookCallbackProcess'];
+		} else {
+			$result = ['status' => false,'message' => 'You are not allowed to access to this route'];
+		}
+
+		header('Content-type: application/json');
+		echo json_encode((object)$result);
+		exit;
+	}
+
 
 	/**
 	 * Downloads the file associated to the YouSign procedure that was pushed.
@@ -726,7 +768,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
         try {
             JLog::add('[updateAxeptaPaymentInfos] Start to get payment notification from axepta', JLog::INFO, 'com_emundus.payment');
 
-            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'payment'.DS.'Axepta.php');
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'classes'.DS.'payment'.DS.'Axepta.php');
             $axepta = new Axepta();
 
             $status = false;

@@ -527,7 +527,9 @@ INSERT INTO "#__securitycheckpro_db" ("Product","vuln_type","Vulnerableversion",
 ('com_publisher','component','3.0.19','==','3.0.0','>=','Publisher Component','Xss vulnerability','Apr 21 2021','Version 3.0.19','update','3.0.20'),
 ('com_yoorecipe','component','1.0.0','>=','3.0.0','>=','Yoorecipe Component','SQL Injection vulnerability','Apr 21 2021','All versions','none','No details'),
 ('Joomla!','core','3.9.26','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','May 25 2021','Joomla 3.0.0 through 3.9.26','update','3.9.27'),
-('Joomla!','core','3.9.27','<=','3.0.0','>=','Joomla! core','Five low vulnerabilities','Jul 07 2021','Joomla 2.5.0 through 3.9.27','update','3.9.28');
+('Joomla!','core','3.9.27','<=','3.0.0','>=','Joomla! core','Five low vulnerabilities','Jul 07 2021','Joomla 2.5.0 through 3.9.27','update','3.9.28'),
+('Joomla!','core','3.10.8','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','Mar 31 2022','Joomla 2.5.0 through 3.10.6','update','3.10.8'),
+('Joomla!','core','4.1.2','<=','4.0.0','>=','Joomla! core','Seven low vulnerabilities','Mar 31 2022','Joomla 4.0.0 through 4.1.0','update','4.1.2');
 
 DROP TABLE IF EXISTS "#__securitycheckpro_logs";
 CREATE TABLE IF NOT EXISTS "#__securitycheckpro_logs" (

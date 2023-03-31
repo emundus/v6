@@ -40,7 +40,6 @@
 }
 
 .em-container-footer-cand .em-col-3-footer a {
-    text-decoration: none;
     font-weight: 500 ;
     text-align: end;
 }
@@ -59,16 +58,17 @@ hr.footer-separation {
     flex-direction: row;
 }
 
-.footer-rgpd p {
-    padding: 0px 10px;
+.footer-rgpd-links a, .em-col-3-footer a  {
+    text-decoration: underline;
 }
 
-#g-footer .footer-rgpd p a {
+.footer-rgpd-links a:hover, .em-col-3-footer a:hover {
     text-decoration: none;
 }
 
-#g-footer .footer-rgpd p a:hover {
-    text-decoration: underline;
+
+.footer-rgpd p {
+    padding: 0px 10px;
 }
 
 /* GESTIONNAIRE */
@@ -87,7 +87,6 @@ hr.footer-separation {
 
 .em-container-footer-gest .em-block-footer a {
     color: #000 !important;
-    text-decoration: none !important;
     font-weight: 500 ;
 }
 
@@ -137,11 +136,30 @@ hr.footer-separation {
         display: flex;
         flex-direction: column;
     }
+
+    .em-container-footer-cand .em-flex-row {
+        flex-direction: column;
+        row-gap: 8px;
+    }
 }
 
-@media all and (min-width: 480px) and(max-width: 767px) {
+@media all and (min-width: 480px) and (max-width: 767px) {
     .footer-rgpd-links {
-        flex-direction: column;
-        align-items: center;
+        flex-direction: row;
+    }
+
+    .em-container-footer-cand .em-flex-row {
+        flex-direction: column !important;
+        row-gap: 8px;
+    }
+}
+@media all and (min-width: 768px) and (max-width: 959px) {
+    .footer-rgpd-links {
+        flex-direction: row;
+    }
+
+    .em-container-footer-cand .em-flex-row {
+        flex-direction: column !important;
+        row-gap: 8px;
     }
 }
