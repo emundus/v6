@@ -432,19 +432,20 @@ class EmundusHelperEvents {
 											$db->setQuery($query);
 											$stored = $db->loadColumn();
 
-	                                    if (!empty($stored)) {
-		                                    foreach ($stored as $store) {
-			                                    if(count($formModel->data[$repeat_table . '___id']) < count($stored)){
-				                                    $formModel->data[$repeat_table . '___id'][]            = "";
-				                                    $formModel->data[$repeat_table . '___id_raw'][]        = "";
-				                                    $formModel->data[$repeat_table . '___parent_id'][]     = "";
-				                                    $formModel->data[$repeat_table . '___parent_id_raw'][] = "";
-			                                    }
+											if (!empty($stored)) {
+												foreach ($stored as $store) {
+													if (count($formModel->data[$repeat_table . '___id']) < count($stored)) {
+														$formModel->data[$repeat_table . '___id'][]            = "";
+														$formModel->data[$repeat_table . '___id_raw'][]        = "";
+														$formModel->data[$repeat_table . '___parent_id'][]     = "";
+														$formModel->data[$repeat_table . '___parent_id_raw'][] = "";
+													}
 
-			                                    $formModel->data[$repeat_table . '___' . $group->name][]          = $store;
-			                                    $formModel->data[$repeat_table . '___' . $group->name . '_raw'][] = $store;
-		                                    }
-	                                    }
+													$formModel->data[$repeat_table . '___' . $group->name][]          = $store;
+													$formModel->data[$repeat_table . '___' . $group->name . '_raw'][] = $store;
+												}
+											}
+										}
                                     }
                                 }
                             }
