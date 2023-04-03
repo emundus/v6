@@ -928,7 +928,7 @@ class EmundusModelForm extends JModelList {
 
             return $newprofile;
         } catch (Exception $e) {
-            JLog::add('component/com_emundus/models/form | Error when create a setup_profile : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/form | Error when create a setup_profile : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
             return false;
         }
     }
@@ -937,12 +937,12 @@ class EmundusModelForm extends JModelList {
 	{
 		require_once (JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
 		$m_formbuilder = new EmundusModelFormbuilder();
-		$form_id = $m_formbuilder->createFabrikForm('EVALUATION', ['fr' => 'Nouvelle Évaluation', 'en' => 'New Evaluation'], ['fr' => 'Introduction de l\'évaluation', 'en' => 'Evaluation introduction']);
+		$form_id = $m_formbuilder->createFabrikForm('EVALUATION', ['fr' => 'Nouvelle Évaluation', 'en' => 'New Evaluation'], ['fr' => 'Introduction de l\'évaluation', 'en' => 'Evaluation introduction'], 'eval');
 
 		if (!empty($form_id)) {
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
-			// get the first list with db_table_name = jos_emundus_evaluations
+
 			$query->clear()
 				->select('*')
 				->from($db->quoteName('#__fabrik_lists'))
@@ -952,9 +952,16 @@ class EmundusModelForm extends JModelList {
 			$list = $db->loadAssoc();
 
 			if (!empty($list)) {
-				// copy lists
 				$list_id = $m_formbuilder->copyList($list, $form_id);
+
+				if (empty($list_id)) {
+					JLog::add('component/com_emundus/models/form | Error when create a list for evaluation form, could not copy list based on jos_emundus_evaluations', JLog::WARNING, 'com_emundus.error');
+				}
+			} else {
+				JLog::add('component/com_emundus/models/form | Error when create a list for evaluation form, could not find list with jos_emundus_evaluations', JLog::WARNING, 'com_emundus.error');
 			}
+		} else {
+			JLog::add('component/com_emundus/models/form | Error when create a form for evaluation form', JLog::WARNING, 'com_emundus.error');
 		}
 
 		return $form_id;

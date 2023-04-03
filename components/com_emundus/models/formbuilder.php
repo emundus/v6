@@ -448,18 +448,18 @@ class EmundusModelFormbuilder extends JModelList {
      * @param $prid int profile id
      * @param $label array labels by language
      * @param $intro array intros by language
+     * @param $type string (form || eval)
      * @return false|int|mixed
      */
-    function createFabrikForm($prid, $label, $intro) {
-        $formid = 0;
+    function createFabrikForm($prid, $label, $intro, $type = '') {
+	    $form_id = 0;
 
         if (!empty($prid) && !empty($label) && is_array($label)) {
             $db = $this->getDbo();
             $query = $db->getQuery(true);
 
             try {
-                $params = $this->h_fabrik->prepareFormParams();
-
+                $params = $this->h_fabrik->prepareFormParams(true, $type);
                 $data = array(
                     'label' => 'FORM_' . $prid,
                     'record_in_database' => 1,
@@ -483,25 +483,25 @@ class EmundusModelFormbuilder extends JModelList {
 
                 $query->insert($db->quoteName('#__fabrik_forms'))
                     ->columns($db->quoteName(array_keys($data)))
-                    ->values(implode(',',$db->quote(array_values($data))));
+                    ->values(implode(',', $db->quote(array_values($data))));
                 $db->setQuery($query);
                 $db->execute();
-                $formid = $db->insertid();
+                $form_id = $db->insertid();
 
-                if (!empty($formid)) {
+                if (!empty($form_id)) {
                     $query->clear()
                         ->update($db->quoteName('#__fabrik_forms'))
-                        ->set($db->quoteName('label') . ' = ' . $db->quote('FORM_' . $prid . '_' . $formid))
-                        ->set($db->quoteName('intro') . ' = ' . $db->quote('<p>' . 'FORM_' . $prid . '_INTRO_' . $formid . '</p>'));
-                    $query->where($db->quoteName('id') . ' = ' . $db->quote($formid));
+                        ->set($db->quoteName('label') . ' = ' . $db->quote('FORM_' . $prid . '_' . $form_id))
+                        ->set($db->quoteName('intro') . ' = ' . $db->quote('<p>' . 'FORM_' . $prid . '_INTRO_' . $form_id . '</p>'));
+                    $query->where($db->quoteName('id') . ' = ' . $db->quote($form_id));
                     $db->setQuery($query);
                     $db->execute();
 
                     // Add translation to translation files
-                    $this->translate('FORM_' . $prid . '_' . $formid, $label,'fabrik_forms', $formid,'label');
+                    $this->translate('FORM_' . $prid . '_' . $form_id, $label,'fabrik_forms', $form_id,'label');
 
                     if (!empty($intro) && is_array($intro)) {
-                        $this->translate('FORM_' . $prid . '_INTRO_' . $formid, $intro,'fabrik_forms', $formid,'intro');
+                        $this->translate('FORM_' . $prid . '_INTRO_' . $form_id, $intro,'fabrik_forms', $form_id,'intro');
                     }
                 }
             } catch (Exception $e) {
@@ -509,7 +509,7 @@ class EmundusModelFormbuilder extends JModelList {
             }
         }
 
-        return $formid;
+        return $form_id;
     }
 
     function createFabrikList($prid,$formid){
@@ -1268,8 +1268,7 @@ class EmundusModelFormbuilder extends JModelList {
         }
 
 
-        return ["data" => $created_elements];
-
+        return $created_elements;
     }
 
     function createElement($name,$group_id,$plugin,$label,$default = '',$hidden = 0,$create_column = 1,$show_in_list_summary = 1,$published = 1,$parent_id = 0,$width = 20) {
