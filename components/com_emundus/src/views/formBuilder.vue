@@ -83,57 +83,59 @@
             ></form-builder-document-list>
           </transition>
         </section>
-        <aside class="right-panel em-flex-column em-h-100" v-if="rightPanel.tabs.includes(showInRightPanel)">
-          <transition name="fade" mode="out-in">
-            <div id="form-hierarchy" v-if="showInRightPanel === 'hierarchy' && rightPanel.tabs.includes('hierarchy')" class="em-w-100">
-              <form-builder-pages
-                  :pages="pages"
-                  :selected="parseInt(selectedPage)"
-                  :profile_id="parseInt(profile_id)"
-                  @select-page="selectPage($event)"
-                  @add-page="getPages(currentPage.id)"
-                  @delete-page="selectedPage = pages[0].id;"
-                  @open-page-create="principalContainer = 'create-page';"
-                  @reorder-pages="onReorderedPages"
-              ></form-builder-pages>
-              <hr>
-              <form-builder-documents
-                  ref="formBuilderDocuments"
-                  :profile_id="parseInt(profile_id)"
-                  :campaign_id="parseInt(campaign_id)"
-                  @show-documents="setSectionShown('documents')"
-                  @open-create-document="onOpenCreateDocument"
-              ></form-builder-documents>
-            </div>
-            <form-builder-element-properties
-                v-if="showInRightPanel === 'element-properties'"
-                @close="onCloseElementProperties"
-                :element="selectedElement"
-                :profile_id="parseInt(profile_id)"
-            ></form-builder-element-properties>
-            <form-builder-section-properties
-                v-if="showInRightPanel === 'section-properties'"
-                @close="onCloseSectionProperties"
-                :section_id="selectedSection.group_id"
-                :profile_id="parseInt(profile_id)"
-            ></form-builder-section-properties>
-	          <form-builder-create-model
-			          v-if="showInRightPanel === 'create-model'"
-			          :page="selectedPage"
-			          @close="showInRightPanel = 'hierarchy';"
-	          ></form-builder-create-model>
-            <form-builder-create-document
-                v-if="showInRightPanel === 'create-document' && rightPanel.tabs.includes('create-document')"
-                ref="formBuilderCreateDocument"
-                :profile_id="parseInt(profile_id)"
-                :current_document="selectedDocument ? selectedDocument : null"
-                :mandatory="createDocumentMandatory"
-                :mode="createDocumentMode"
-                @close="showInRightPanel = 'hierarchy'"
-                @documents-updated="onUpdateDocument"
-            ></form-builder-create-document>
-          </transition>
-        </aside>
+	      <transition name="slide-fade" mode="out-in">
+		      <aside v-if="rightPanel.tabs.includes(showInRightPanel)" class="right-panel em-flex-column em-h-100">
+	          <transition name="fade" mode="out-in">
+	            <div id="form-hierarchy" v-if="showInRightPanel === 'hierarchy' && rightPanel.tabs.includes('hierarchy')" class="em-w-100">
+	              <form-builder-pages
+	                  :pages="pages"
+	                  :selected="parseInt(selectedPage)"
+	                  :profile_id="parseInt(profile_id)"
+	                  @select-page="selectPage($event)"
+	                  @add-page="getPages(currentPage.id)"
+	                  @delete-page="selectedPage = pages[0].id;"
+	                  @open-page-create="principalContainer = 'create-page';"
+	                  @reorder-pages="onReorderedPages"
+	              ></form-builder-pages>
+	              <hr>
+	              <form-builder-documents
+	                  ref="formBuilderDocuments"
+	                  :profile_id="parseInt(profile_id)"
+	                  :campaign_id="parseInt(campaign_id)"
+	                  @show-documents="setSectionShown('documents')"
+	                  @open-create-document="onOpenCreateDocument"
+	              ></form-builder-documents>
+	            </div>
+	            <form-builder-element-properties
+	                v-if="showInRightPanel === 'element-properties'"
+	                @close="onCloseElementProperties"
+	                :element="selectedElement"
+	                :profile_id="parseInt(profile_id)"
+	            ></form-builder-element-properties>
+	            <form-builder-section-properties
+	                v-if="showInRightPanel === 'section-properties'"
+	                @close="onCloseSectionProperties"
+	                :section_id="selectedSection.group_id"
+	                :profile_id="parseInt(profile_id)"
+	            ></form-builder-section-properties>
+		          <form-builder-create-model
+				          v-if="showInRightPanel === 'create-model'"
+				          :page="selectedPage"
+				          @close="showInRightPanel = 'hierarchy';"
+		          ></form-builder-create-model>
+	            <form-builder-create-document
+	                v-if="showInRightPanel === 'create-document' && rightPanel.tabs.includes('create-document')"
+	                ref="formBuilderCreateDocument"
+	                :profile_id="parseInt(profile_id)"
+	                :current_document="selectedDocument ? selectedDocument : null"
+	                :mandatory="createDocumentMandatory"
+	                :mode="createDocumentMode"
+	                @close="showInRightPanel = 'hierarchy'"
+	                @documents-updated="onUpdateDocument"
+	            ></form-builder-create-document>
+	          </transition>
+	        </aside>
+	      </transition>
       </div>
 	    <div v-else-if="principalContainer === 'create-page'">
 		    <form-builder-create-page :profile_id="parseInt(profile_id)" @close="onCloseCreatePage"></form-builder-create-page>
@@ -483,6 +485,10 @@ export default {
     aside, section {
       justify-content: flex-start;
     }
+
+	  aside {
+			transition: all .3s;
+	  }
 
     section {
       overflow-y: auto;
