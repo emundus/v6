@@ -45,20 +45,22 @@
 						<tbody>
 							<tr v-for="item in items[selectedListTab]" :key="item.id">
 								<td class="em-pointer" @click="onClickAction(editAction, item.id)"><h3>{{ item.label[params.shortlang] }}</h3></td>
-								<hr v-if="viewType == 'blocs'" class="em-w-100">
-								<td class="actions">
-									<a v-if="viewType == 'blocs' && editAction"
-									   @click="onClickAction(editAction, item.id)"
-									   class="em-primary-button em-font-size-14 em-pointer em-w-auto"
-									>
-										{{ translate(editAction.label) }}
-									</a>
-									<ul>
-										<li v-for="action in tabActionsPopover" :key="action.action" @click="onClickAction(action, item.id)">
-											{{ translate(action.label) }}
-										</li>
-									</ul>
-								</td>
+								<div>
+									<hr v-if="viewType == 'blocs'" class="em-w-100">
+									<td class="actions">
+										<a v-if="viewType == 'blocs' && editAction"
+										   @click="onClickAction(editAction, item.id)"
+										   class="em-primary-button em-font-size-14 em-pointer em-w-auto"
+										>
+											{{ translate(editAction.label) }}
+										</a>
+										<ul>
+											<li v-for="action in tabActionsPopover" :key="action.action" @click="onClickAction(action, item.id)">
+												{{ translate(action.label) }}
+											</li>
+										</ul>
+									</td>
+								</div>
 							</tr>
 					</table>
 				</div>
@@ -157,15 +159,32 @@ export default {
 			});
 		},
 		onClickAction(action, itemId = null) {
-			const parameter = action.parameter || 'id';
+			let item = null;
+			if (itemId !== null) {
+				item = this.items[this.selectedListTab].find(item => item.id === itemId);
+			}
 
 			if (action.type === 'redirect') {
-				window.location.href = action.action.replace('%id%', itemId);
+				let url = action.action;
+				Object.keys(item).forEach(key => {
+					url = url.replace('%' + key + '%', item[key]);
+				});
+
+				window.location.href = url;
 			} else {
 				let url = 'index.php?option=com_emundus&controller=' + action.controller + '&task=' + action.action;
 
 				if (itemId !== null) {
-					url += '&' + parameter + '=' + itemId;
+					if (action.parameters) {
+						let url_parameters = action.parameters;
+						Object.keys(item).forEach(key => {
+							url_parameters = url_parameters.replace('%' + key + '%', item[key]);
+						});
+
+						url += url_parameters;
+					} else {
+						url += '&id=' + itemId;
+					}
 				}
 
 				client().get(url)
@@ -190,24 +209,19 @@ export default {
 				return tab.key === this.selectedListTab;
 			});
 		},
-		tabActionsWithoutAdd() {
-			return typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.filter((action) => {
-				return action.type !== 'add';
-			}): [];
-		},
 		tabActionsPopover() {
 			return typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.filter((action) => {
-				return !(['add', 'redirect'].includes(action.type));
+				return !(['add', 'edit'].includes(action.name));
 			}): [];
 		},
 		editAction() {
 			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.find((action) => {
-				return action.type === 'redirect';
+				return action.name === 'edit';
 			}): false;
 		},
 		addAction() {
 			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.find((action) => {
-				return action.type === 'add';
+				return action.name === 'add';
 			}): false;
 		}
 	}

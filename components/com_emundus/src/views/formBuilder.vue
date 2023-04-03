@@ -239,7 +239,7 @@ export default {
 		if (data && data.mode && data.mode.value) {
 			this.mode = data.mode.value;
 
-			if (this.mode === 'eval') {
+			if (this.mode === 'eval' || this.mode == 'models') {
 				this.rightPanel.tabs = this.rightPanel.tabs.filter(tab => tab !== 'hierarchy' && tab !== 'create-document');
 				this.leftPanel.tabs = this.leftPanel.tabs.filter(tab => tab.title != 'Documents');
 				this.form_id = this.profile_id;
