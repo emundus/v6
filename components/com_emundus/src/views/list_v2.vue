@@ -2,7 +2,7 @@
 	<div id="onboarding_list" class="em-w-100">
 		<div class="head em-flex-row em-flex-space-between em-mb-16 em-mt-16">
 			<h2 style="margin:0;">{{ currentList.title }}</h2>
-			<a v-if="currentAddAction" class="em-primary-button em-w-auto" @click="onClickAddAction">{{ translate(currentAddAction.label) }}</a>
+			<a v-if="addAction" class="em-primary-button em-w-auto" @click="onClickAddAction">{{ translate(addAction.label) }}</a>
 		</div>
 		<div class="list">
 			<nav v-if="currentList.tabs.length > 1">
@@ -35,9 +35,7 @@
 			</div>
 			<div>
 				<div v-if="typeof items[selectedListTab] != 'undefined' && items[selectedListTab].length > 0" id="list-items">
-					<table id="list-table" :class="{
-						'blocs': viewType === 'blocs',
-					}">
+					<table id="list-table" :class="{'blocs': viewType === 'blocs'}">
 						<thead>
 							<tr>
 								<th>{{ translate('COM_EMUNDUS_LIST_COLUMN_LABEL') }}</th>
@@ -46,13 +44,16 @@
 						</thead>
 						<tbody>
 							<tr v-for="item in items[selectedListTab]" :key="item.id">
-								<td>{{ item.label[params.shortlang] }}</td>
-								<td>
+								<td class="em-pointer" @click="onClickAction(editAction, item.id)"><h3>{{ item.label[params.shortlang] }}</h3></td>
+								<td class="actions">
+									<a v-if="viewType == 'blocs' && editAction"
+									   @click="onClickAction(editAction, item.id)"
+									   class="em-primary-button em-font-size-14 em-pointer em-w-auto"
+									>
+										{{ translate(editAction.label) }}
+									</a>
 									<ul>
-										<li v-for="action in tabActionsWithoutAdd"
-										    :key="action.action"
-										    @click="onClickAction(action, item.id)"
-										>
+										<li v-for="action in tabActionsPopover" :key="action.action" @click="onClickAction(action, item.id)">
 											{{ translate(action.label) }}
 										</li>
 									</ul>
@@ -72,7 +73,7 @@ import settingsService from '../services/settings.js';
 import client from '../services/axiosClient';
 
 export default {
-	name: "list_v2",
+	name: 'list_v2',
 	data() {
 		return {
 			lists: {},
@@ -204,7 +205,17 @@ export default {
 				return action.type !== 'add';
 			}): [];
 		},
-		currentAddAction() {
+		tabActionsPopover() {
+			return typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.filter((action) => {
+				return !(['add', 'redirect'].includes(action.type));
+			}): [];
+		},
+		editAction() {
+			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.find((action) => {
+				return action.type === 'redirect';
+			}): false;
+		},
+		addAction() {
 			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.find((action) => {
 				return action.type === 'add';
 			}): false;
@@ -215,6 +226,12 @@ export default {
 
 <style lang="scss">
 #list-table {
+	transition: all .3s;
+
+	h3 {
+		font-size: 18px;
+	}
+
 	&.blocs {
 		border: 0;
 
@@ -223,24 +240,36 @@ export default {
 		}
 
 		tbody {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+			column-gap: 10px;
+			row-gap: 15px;
+
 			tr {
+				background: #fff;
 				display: flex;
 				flex-direction: column;
+				justify-content: space-between;
 				border: 1px solid #ddd;
-				border-radius: 5px;
-				margin-bottom: 10px;
-				padding: 10px;
+				border-radius: 4px;
+				padding: 12px;
+				min-height: 200px;
 
 				td {
 					display: flex;
-					flex-direction: column;
+					flex-direction: row;
 					justify-content: space-between;
 					padding: 0;
 
+					&.actions {
+						align-items: center;
+					}
+
 					ul {
 						display: flex;
-						flex-direction: row;
-						justify-content: space-between;
+						flex-direction: column;
+						justify-content: flex-end;
+						align-items: flex-end;
 						padding: 0;
 						margin: 0;
 
