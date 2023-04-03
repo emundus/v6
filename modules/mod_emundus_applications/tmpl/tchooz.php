@@ -277,7 +277,7 @@ $current_tab = 0;
                                                     <div>
                                                         <span class="material-icons em-text-neutral-600"
                                                               id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
-                                                              style="font-size: 16px">more_vert</span>
+                                                              style="font-size: 22px">more_vert</span>
 
                                                         <!-- ACTIONS BLOCK -->
                                                         <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color"
