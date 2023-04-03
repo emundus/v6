@@ -2,7 +2,7 @@
 	<div id="onboarding_list" class="em-w-100">
 		<div class="head em-flex-row em-flex-space-between em-mb-16 em-mt-16">
 			<h2 style="margin:0;">{{ currentList.title }}</h2>
-			<a v-if="addAction" class="em-primary-button em-w-auto" @click="onClickAddAction">{{ translate(addAction.label) }}</a>
+			<a v-if="addAction" class="em-primary-button em-w-auto em-pointer" @click="onClickAction(addAction)">{{ translate(addAction.label) }}</a>
 		</div>
 		<div class="list">
 			<nav v-if="currentList.tabs.length > 1">
@@ -38,13 +38,14 @@
 					<table id="list-table" :class="{'blocs': viewType === 'blocs'}">
 						<thead>
 							<tr>
-								<th>{{ translate('COM_EMUNDUS_LIST_COLUMN_LABEL') }}</th>
-								<th>{{ translate('COM_EMUNDUS_LIST_COLUMN_ACTIONS') }}</th>
+								<th>{{ translate('COM_EMUNDUS_ONBOARD_LABEL') }}</th>
+								<th>{{ translate('COM_EMUNDUS_ONBOARD_ACTIONS') }}</th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr v-for="item in items[selectedListTab]" :key="item.id">
 								<td class="em-pointer" @click="onClickAction(editAction, item.id)"><h3>{{ item.label[params.shortlang] }}</h3></td>
+								<hr v-if="viewType == 'blocs'" class="em-w-100">
 								<td class="actions">
 									<a v-if="viewType == 'blocs' && editAction"
 									   @click="onClickAction(editAction, item.id)"
@@ -61,7 +62,7 @@
 							</tr>
 					</table>
 				</div>
-				<p v-else id="list-empty">{{ translate('COM_EMUNDUS_LIST_EMPTY') }}</p>
+				<p v-else id="list-empty">{{ translate('COM_EMUNDUS_ONBOARD_EMPTY_LIST') }}</p>
 			</div>
 		</div>
 	</div>
@@ -154,17 +155,6 @@ export default {
 						});
 				}
 			});
-		},
-		onClickAddAction() {
-			const addAction = this.currentTab.actions.find((action) => {
-				return action.type === 'add';
-			});
-
-			if (typeof addAction !== 'undefined') {
-				this.onClickAction(addAction);
-			} else {
-				console.error('No add action found for this list');
-			}
 		},
 		onClickAction(action, itemId = null) {
 			const parameter = action.parameter || 'id';
