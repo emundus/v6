@@ -83,9 +83,9 @@
             ></form-builder-document-list>
           </transition>
         </section>
-        <aside class="right-panel em-flex-column em-h-100">
+        <aside class="right-panel em-flex-column em-h-100" v-if="rightPanel.tabs.includes(showInRightPanel)">
           <transition name="fade" mode="out-in">
-            <div id="form-hierarchy" v-if="showInRightPanel === 'hierarchy'" class="em-w-100">
+            <div id="form-hierarchy" v-if="showInRightPanel === 'hierarchy' && rightPanel.tabs.includes('hierarchy')" class="em-w-100">
               <form-builder-pages
                   :pages="pages"
                   :selected="parseInt(selectedPage)"
@@ -123,7 +123,7 @@
 			          @close="showInRightPanel = 'hierarchy';"
 	          ></form-builder-create-model>
             <form-builder-create-document
-                v-if="showInRightPanel === 'create-document'"
+                v-if="showInRightPanel === 'create-document' && rightPanel.tabs.includes('create-document')"
                 ref="formBuilderCreateDocument"
                 :profile_id="parseInt(profile_id)"
                 :current_document="selectedDocument ? selectedDocument : null"
@@ -176,7 +176,9 @@ export default {
   },
   data() {
     return {
+			mode: 'forms',
       profile_id: 0,
+	    form_id: 0,
       campaign_id: 0,
       title: '',
       pages: [],
@@ -187,6 +189,15 @@ export default {
       selectedElement: null,
       optionsSelectedElement: false,
       selectedDocument: null,
+	    rightPanel: {
+				tabs: [
+						'hierarchy',
+						'element-properties',
+						'section-properties',
+						'create-model',
+						'create-document',
+				]
+	    },
       showInRightPanel: 'hierarchy',
       createDocumentMandatory: true,
       lastSave: null,
@@ -216,11 +227,23 @@ export default {
     }
   },
   created() {
-    if(parseInt(this.$store.state.global.manyLanguages) === 0){
-      this.leftPanel.tabs[2].displayed = false;
-    }
-    this.profile_id = this.$store.state.global.datas.prid.value;
-    this.campaign_id = this.$store.state.global.datas.cid.value;
+	  const data = this.$store.getters['global/datas'];
+	  if(parseInt(this.$store.state.global.manyLanguages) === 0){
+		  this.leftPanel.tabs[2].displayed = false;
+	  }
+	  this.profile_id = data.prid.value;
+	  this.campaign_id = data.cid.value;
+
+		if (data && data.mode && data.mode.value) {
+			this.mode = data.mode.value;
+
+			if (this.mode === 'eval') {
+				this.rightPanel.tabs = this.rightPanel.tabs.filter(tab => tab !== 'hierarchy' && tab !== 'create-document');
+				this.leftPanel.tabs = this.leftPanel.tabs.filter(tab => tab.title != 'Documents');
+				this.form_id = this.profile_id;
+				this.profile_id = 0;
+			}
+		}
 
     this.getFormTitle();
     this.getPages();
@@ -230,11 +253,13 @@ export default {
   },
   methods: {
     getFormTitle() {
-      formService.getProfileLabelByProfileId(this.profile_id).then(response => {
-        if (response.status !== false) {
-          this.title = response.data.data.label;
-        }
-      });
+			if (this.profile_id) {
+				formService.getProfileLabelByProfileId(this.profile_id).then(response => {
+					if (response.status !== false) {
+						this.title = response.data.data.label;
+					}
+				});
+			}
     },
     updateFormTitle()
     {
@@ -243,38 +268,48 @@ export default {
       formService.updateFormLabel({
         label: this.title,
         prid: this.profile_id,
+	      form_id: this.form_id
       });
     },
     updateFormTitleKeyup() {
       document.activeElement.blur();
     },
     getPages(page_id = 0) {
-      formService.getFormsByProfileId(this.profile_id).then(response => {
-        this.pages = response.data.data;
+			if (this.profile_id) {
+				formService.getFormsByProfileId(this.profile_id).then(response => {
+					this.pages = response.data.data;
 
-        if (page_id === 0) {
-	        this.selectPage(this.pages[0].id);
-        } else {
-	        this.selectPage(String(page_id));
-        }
-	      this.principalContainer = 'default';
+					if (page_id === 0) {
+						this.selectPage(this.pages[0].id);
+					} else {
+						this.selectPage(String(page_id));
+					}
+					this.principalContainer = 'default';
 
-	      formService.getSubmissionPage(this.profile_id).then(response => {
-          const formId = response.data.link.match(/formid=(\d+)/)[1];
-          if (formId) {
-            // check if the form is already in the pages
-            const page = this.pages.find(page => page.id === formId);
-            if (!page) {
-              this.pages.push({
-                id: formId,
-                label: this.translate('COM_EMUNDUS_FORM_BUILDER_SUBMISSION_PAGE'),
-                type: 'submission',
-                elements: [],
-              });
-            }
-          }
-        });
-      });
+					formService.getSubmissionPage(this.profile_id).then(response => {
+						const formId = response.data.link.match(/formid=(\d+)/)[1];
+						if (formId) {
+							// check if the form is already in the pages
+							const page = this.pages.find(page => page.id === formId);
+							if (!page) {
+								this.pages.push({
+									id: formId,
+									label: this.translate('COM_EMUNDUS_FORM_BUILDER_SUBMISSION_PAGE'),
+									type: 'submission',
+									elements: [],
+								});
+							}
+						}
+					});
+				});
+			} else if (this.form_id) {
+				formService.getFormByFabrikId(this.form_id).then(response => {
+					this.title = response.data.data.label;
+					this.pages = [response.data.data];
+					this.selectPage(this.pages[0].id);
+					this.principalContainer = 'default';
+				});
+			}
     },
 	  onReorderedPages(reorderedPages) {
 		  this.pages = reorderedPages;

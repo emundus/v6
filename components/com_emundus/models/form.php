@@ -766,6 +766,32 @@ class EmundusModelForm extends JModelList {
         }
     }
 
+	public function getFormByFabrikId($id) {
+		$form = [];
+
+		if (!empty($id)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('id, label')
+				->from($db->quoteName('#__fabrik_forms'))
+				->where($db->quoteName('id') . ' = ' . $id);
+
+
+			try {
+				$db->setQuery($query);
+				$form = $db->loadObject();
+
+				if (!empty($form->label)) {
+					$form->label = JText::_($form->label);
+				}
+			} catch (Exception $e) {
+				JLog::add('component/com_emundus/models/form | Error when get form by fabrik id ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $form;
+	}
 
     public function createApplicantProfile($first_page = true) {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'formbuilder.php');

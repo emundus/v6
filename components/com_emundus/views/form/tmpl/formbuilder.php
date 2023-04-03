@@ -430,6 +430,8 @@ if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml'
     $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
 }
 
+$mode = JFactory::getApplication()->input->get('mode', '');
+
 ?>
 
 <div id="em-component-vue"
@@ -437,12 +439,14 @@ if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml'
      prid="<?= JFactory::getApplication()->input->get('prid') ?>"
      index="<?= JFactory::getApplication()->input->get('index') ?>"
      cid="<?= JFactory::getApplication()->input->get('cid') ?>"
-     eval="<?= JFactory::getApplication()->input->get('evaluation') ?>"
      shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
      manyLanguages="<?= $many_languages ?>"
      defaultLang="<?= $default_lang ?>"
      coordinatorAccess="<?= $coordinator_access ?>"
      sysadminAccess="<?= $sysadmin_access ?>"
+     <?php if (!empty($mode)) : ?>
+        mode="<?= $mode ?>"
+     <?php endif; ?>
 ></div>
 
 <script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>

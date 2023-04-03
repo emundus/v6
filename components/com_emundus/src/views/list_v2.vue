@@ -40,8 +40,8 @@
 					}">
 						<thead>
 							<tr>
-								<th>Label</th>
-								<th>Actions</th>
+								<th>{{ translate('COM_EMUNDUS_LIST_COLUMN_LABEL') }}</th>
+								<th>{{ translate('COM_EMUNDUS_LIST_COLUMN_ACTIONS') }}</th>
 							</tr>
 						</thead>
 						<tbody>

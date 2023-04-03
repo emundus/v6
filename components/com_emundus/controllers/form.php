@@ -286,6 +286,29 @@ class EmundusControllerForm extends JControllerLegacy {
         exit;
     }
 
+	public function getFormByFabrikId() {
+		$user = JFactory::getUser();
+		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$jinput = JFactory::getApplication()->input;
+			$id = $jinput->getInt('form_id');
+
+			if (!empty($id)) {
+				$form = $this->m_form->getFormByFabrikId($id);
+				if (!empty($form)) {
+					$response = array('status' => true, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $form);
+				} else {
+					$response['msg'] = JText::_('ERROR_CANNOT_RETRIEVE_FORM');
+				}
+			} else {
+				$response['msg'] = JText::_('MISSING_PARAMS');
+			}
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
 
     public function getalldocuments() {
         $user = JFactory::getUser();
