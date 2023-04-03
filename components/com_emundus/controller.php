@@ -731,6 +731,7 @@ class EmundusController extends JControllerLegacy {
         $m_application = new EmundusModelApplication;
 
         $db = JFactory::getDBO();
+	    $query_updating_file = null;
         $jinput = JFactory::getApplication()->input;
 
         $student_id = $jinput->get->get('sid', null);
@@ -753,6 +754,13 @@ class EmundusController extends JControllerLegacy {
             } else {
 	            $fnums[] = $fnum;
             }
+
+	        $query_updating_file = $db->getQuery(true);
+
+	        $query_updating_file->update($db->quoteName('#__emundus_campaign_candidature'))
+		        ->set($db->quoteName('updated') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+		        ->set($db->quoteName('updated_by') . ' = ' . JFactory::getUser()->id)
+		        ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
 
         } elseif (EmundusHelperAccess::asAccessAction(4, 'c', $current_user->id, $fnum) || EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
             $user = $m_profile->getEmundusUser($student_id);
@@ -1225,6 +1233,11 @@ class EmundusController extends JControllerLegacy {
                 $db->setQuery( $query );
                 $db->execute();
                 $id = $db->insertid();
+
+				if(!empty($query_updating_file)){
+					$db->setQuery($query_updating_file);
+					$db->execute();
+				}
 
                 // TODO: onAfterAttachmentUpload event appeared after onAfterUploadFile creation on this branch. move treatment to use onAfterAttachmentUpload
                 $dispatcher = JEventDispatcher::getInstance();

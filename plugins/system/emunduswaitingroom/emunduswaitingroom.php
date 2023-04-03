@@ -62,6 +62,7 @@ class plgSystemEmunduswaitingroom extends JPlugin
 		$plugin = JPluginHelper::getPlugin('system', 'emunduswaitingroom');
 		$params = new JRegistry($plugin->params);
 		$ips_allowed = explode(',',$params->get('ips_allowed',''));
+        $strings_allowed = $params->get('strings_allowed');
 
 		$allowed = false;
 		if(!empty($ips_allowed)){
@@ -80,7 +81,14 @@ class plgSystemEmunduswaitingroom extends JPlugin
 			$uri = JUri::getInstance();
 			$current_url = $uri->toString();
 
-			if (strpos($current_url, 'paybox_') === false && strpos($current_url, 'stripeconnect_') === false) {
+            $string_continue = false;
+            foreach($strings_allowed as $string_allowed) {
+                if (strpos($current_url, $string_allowed->string_allowed_text)) {
+                    $string_continue = true;
+                }
+            }
+
+			if (!$string_continue) {
 
 				$force_redirect = $params->get('force_redirect','1');
 				$redirection_url = $params->get('redirection_url','waiting-queue');

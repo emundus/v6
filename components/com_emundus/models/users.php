@@ -1791,14 +1791,19 @@ class EmundusModelUsers extends JModelList {
 
 
     public function editUser($user) {
-
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $u = JFactory::getUser($user['id']);
 
-        if (!$u->bind($user)) {
+	    if (isset($user['same_login_email']) && $user['same_login_email'] === 1) {
+			$user['username'] = $user['email'];
+			$properties_set = $u->setProperties([ 'username' => $user['username']]);
+			unset($user['same_login_email']);
+		}
+
+	    if (!$u->bind($user)) {
             return array('msg' => $u->getError());
         }
-        if (!$u->save()) {
+	    if (!$u->save()) {
             return array('msg' =>$u->getError());
         }
 
@@ -1814,7 +1819,6 @@ class EmundusModelUsers extends JModelList {
         }
 
         $query->where('user_id = ' . $db->quote($user['id']));
-
         $db->setQuery($query);
 
 	    try {
@@ -2170,15 +2174,48 @@ class EmundusModelUsers extends JModelList {
     }
 
     public function getUserById($uid) { // user of emundus
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-        $query->select('eu.*, case when u.password = ' . $db->quote('') . ' then ' . $db->quote('external') . ' else ' . $db->quote('internal') . ' end as login_type')
-            ->from('#__emundus_users as eu')
-            ->leftJoin('#__users as u on u.id = eu.user_id')
-            ->where('eu.user_id = '.$uid);
-        $db->setQuery($query);
-        return $db->loadObjectList();
+	    $users = [];
+
+		if (!empty($uid)) {
+			$db = JFactory::getDBO();
+			$query = $db->getQuery(true);
+			$query->select('eu.*, case when u.password = ' . $db->quote('') . ' then ' . $db->quote('external') . ' else ' . $db->quote('internal') . ' end as login_type')
+				->from('#__emundus_users as eu')
+				->leftJoin('#__users as u on u.id = eu.user_id')
+				->where('eu.user_id = '.$uid);
+
+			try {
+				$db->setQuery($query);
+				$users = $db->loadObjectList();
+			} catch (Exception $e) {
+				JLog::add('Failed to get user by id ' . $uid . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+        return $users;
     }
+
+	public function getUserNameById($id) {
+		$username = [];
+
+		if (!empty($id)) {
+			$db = JFactory::getDBO();
+			$query = $db->getQuery(true);
+
+			$query->select('eu.firstname, eu.lastname, eu.user_id')
+				->from('#__emundus_users as eu')
+				->where('eu.user_id = '.$id);
+
+			try {
+				$db->setQuery($query);
+				$username = $db->loadAssoc();
+			} catch (Exception $e) {
+				JLog::add('Failed to get username by id ' . $id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $username;
+	}
 
     public function getUsersById($id) { //user of application
         $db = JFactory::getDBO();

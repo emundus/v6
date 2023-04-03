@@ -312,72 +312,97 @@ class EmundusControllerAdmission extends JControllerLegacy {
     }
 
     public function getevsandgroups() {
-        $m_files = $this->getModel('Files');
+	    $response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
 
-        $evalGroups = $m_files->getEvalGroups();
-        $actions    = $m_files->getAllActions('1,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18');
+	    if (EmundusHelperAccess::asPartnerAccessLevel(JFactory::getUser()->id)) {
+		    $m_files = $this->getModel('Files');
+		    $evalGroups = $m_files->getEvalGroups();
+		    $actions = $m_files->getAllActions('1,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18');
+		    $response = [
+			    'status' => true,
+			    'code' => 200,
+			    'groups' => $evalGroups['groups'],
+			    'users' => $evalGroups['users'],
+			    'actions' => $actions,
+			    'group' => JText::_('COM_EMUNDUS_GROUPS_GROUP_EVAL'),
+			    'eval' => JText::_('COM_EMUNDUS_EVALUATION_EVALUATORS'),
+			    'select_group' => JText::_('COM_EMUNDUS_GROUPS_PLEASE_SELECT_GROUP'),
+			    'select_eval' => JText::_('COM_EMUNDUS_GROUPS_PLEASE_SELECT_ASSESSOR'),
+			    'check' => JText::_('COM_EMUNDUS_ACCESS_CHECK_ACL'),
+			    'create' => JText::_('COM_EMUNDUS_ACCESS_CREATE'),
+			    'retrieve' => JText::_('COM_EMUNDUS_ACCESS_RETRIEVE'),
+			    'update' => JText::_('COM_EMUNDUS_ACCESS_UPDATE'),
+			    'delete' => JText::_('COM_EMUNDUS_ACTIONS_DELETE'),
+		    ];
+	    }
 
-        echo json_encode((object)([
-            'status'        => true,
-            'groups'        => $evalGroups['groups'],
-            'users'         => $evalGroups['users'],
-            'actions'       => $actions,
-            'group'         => JText::_('COM_EMUNDUS_GROUPS_GROUP_EVAL'),
-            'eval'          => JText::_('COM_EMUNDUS_EVALUATION_EVALUATORS'),
-            'select_group'  => JText::_('COM_EMUNDUS_GROUPS_PLEASE_SELECT_GROUP'),
-            'select_eval'   => JText::_('COM_EMUNDUS_GROUPS_PLEASE_SELECT_ASSESSOR'),
-            'check'         => JText::_('COM_EMUNDUS_ACCESS_CHECK_ACL'),
-            'create'        => JText::_('COM_EMUNDUS_ACCESS_CREATE'),
-            'retrieve'      => JText::_('COM_EMUNDUS_ACCESS_RETRIEVE'),
-            'update'        => JText::_('COM_EMUNDUS_ACCESS_UPDATE'),
-            'delete'        => JText::_('COM_EMUNDUS_ACTIONS_DELETE')
-        ]));
-        exit;
+	    echo json_encode((object)$response);
+	    exit;
     }
 
     public function gettags()
     {
-        $m_files = $this->getModel('Files');
-        $tags = $m_files->getAllTags();
+	    $response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED'), 'tags' => null];
+	    $user = JFactory::getUser();
 
-        echo json_encode((object)([
-            'status'        => true,
-            'tags'          => $tags,
-            'tag'           => JText::_('COM_EMUNDUS_TAGS'),
-            'select_tag'    => JText::_('COM_EMUNDUS_FILES_PLEASE_SELECT_TAG')
-        ]));
+	    if (EmundusHelperAccess::asAccessAction(14, 'c', $user->id)) {
+		    $m_files = $this->getModel('Files');
+		    $response['tags'] = $m_files->getAllTags();
+
+			if (!empty($response['tags'])) {
+				$response['code'] = 200;
+				$response['status']  = true;
+				$response['msg'] = JText::_('SUCCESS');
+				$response['tag'] = JText::_('COM_EMUNDUS_TAGS');
+				$response['select_tag'] = JText::_('COM_EMUNDUS_FILES_PLEASE_SELECT_TAG');
+			} else {
+				$response['code'] = 500;
+				$response['msg'] = JText::_('FAIL');
+			}
+	    }
+
+        echo json_encode((object)$response);
         exit;
     }
 
     /**
      * Add a tag to an application
      */
-     public function tagfile()
-     {
-         $jinput = JFactory::getApplication()->input;
-         $fnums = $jinput->getString('fnums', null);
-         $tag = $jinput->getInt('tag', null);
-         $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
-         $m_files = $this->getModel('Files');
+	public function tagfile() {
+		$response = ['status' => false, 'code' => 403, 'msg' => JText::_('BAD_REQUEST')];
 
-         if ($fnums == "all")
-             $fnums = $m_files->getAllFnums();
+		$jinput = JFactory::getApplication()->input;
+		$fnums  = $jinput->getString('fnums', null);
+		$tag    = $jinput->get('tag', null);
 
-         $validFnums = array();
+		if (!empty($fnums) && !empty($tag)) {
+			$m_files = $this->getModel('Files');
+			$fnums = ($fnums == 'all') ? $m_files->getAllFnums() : (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
-         foreach($fnums as $fnum) {
-             if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum)) {
-                 $validFnums[] = $fnum;
-             }
-         }
-         unset($fnums);
+			if (!empty($fnums)) {
+				$validFnums = [];
+				foreach ($fnums as $fnum) {
+					if ($fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum)) {
+						$validFnums[] = $fnum;
+					}
+				}
+				unset($fnums);
+				$response['status'] = $m_files->tagFile($validFnums, $tag);
 
-         $res = $m_files->tagFile($validFnums, $tag);
-         $tagged = $m_files->getTaggedFile($tag);
+				if ($response['status']) {
+					$response['code'] = 200;
+					$response['msg'] = JText::_('COM_EMUNDUS_TAGS_SUCCESS');
+					$response['tagged'] = $validFnums;
+				} else {
+					$response['code'] = 500;
+					$response['msg'] = JText::_('FAIL');
+				}
+			}
+		}
 
-         echo json_encode((object)(array('status' => true, 'msg' => JText::_('COM_EMUNDUS_TAGS_SUCCESS'), 'tagged' => $tagged)));
-         exit;
-     }
+		echo json_encode((object)($response));
+		exit;
+	}
 
 
      public function deletetags()

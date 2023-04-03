@@ -2148,7 +2148,7 @@ class EmundusModelApplication extends JModelList
 
             foreach ($tableuser as $key => $itemt) {
                 $form_params = json_decode($itemt->params);
-                $breaker = ($em_breaker) ? ($key === 0) ? '' : 'class="breaker"' : '';
+                $breaker = ($em_breaker) ? ($key === 0) ? '' : 'class="page-break"' : '';
                 // liste des groupes pour le formulaire d'une table
                 $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, fg.params
                             FROM #__fabrik_formgroup ff, #__fabrik_groups fg
@@ -5414,7 +5414,7 @@ class EmundusModelApplication extends JModelList
 
             switch ($element->plugin) {
                 case 'date':
-                    $elt = date($params->date_form_format, strtotime($value));
+                    $elt = $value == '0000-00-00 00:00:00' ? '' : date($params->date_form_format, strtotime($value));
                     break;
                 case 'birthday':
                     preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $value, $matches);
@@ -5505,7 +5505,11 @@ class EmundusModelApplication extends JModelList
                     $index = array_search($value, $params->sub_options->sub_values, false);
 
                     if ($index !== false) {
-                        $elt = JText::_($params->sub_options->sub_labels[$index]);
+						if($value == 0){
+							$elt = '';
+						} else {
+							$elt = JText::_($params->sub_options->sub_labels[$index]);
+						}
                     } elseif (!empty($params->dropdown_populate)) {
                         $elt = $value;
                     } elseif (isset($params->multiple) && $params->multiple == 1) {
@@ -5763,5 +5767,41 @@ class EmundusModelApplication extends JModelList
 		}
 
 		return $result;
+	}
+
+	public function getCampaignsAvailableForCopy($fnum){
+		$campaigns = [];
+
+		try {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('esc.training')
+				->from($db->quoteName('#__emundus_campaign_candidature','ecc'))
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.id').' = '.$db->quoteName('ecc.campaign_id'))
+				->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
+			$db->setQuery($query);
+			$prog_code = $db->loadResult();
+
+			if(!empty($prog_code)){
+				$query->clear()
+					->select('esc.id,esc.label')
+					->from($db->quoteName('#__emundus_setup_campaigns','esc'))
+					->where($db->quoteName('esc.training') . ' LIKE ' . $db->quote($prog_code))
+					->where($db->quoteName('esc.start_date') . ' < NOW()')
+					->where($db->quoteName('esc.end_date') . ' > NOW()');
+				$db->setQuery($query);
+				$campaigns_object = $db->loadObjectList('id');
+
+				foreach ($campaigns_object as $key => $campaign){
+					$campaigns[$campaign->id] = $campaign->label;
+				}
+			}
+		}
+		catch (Exception $e) {
+			JLog::add('Failed to get available campaigns via fnum ' . $fnum . ' with error ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $campaigns;
 	}
 }

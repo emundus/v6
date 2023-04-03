@@ -1,14 +1,15 @@
 import client from './axiosClient';
 
 export default {
-    async getUsers() {
+    async getUserById(id) {
         try {
-            const response = await client().get('index.php?option=com_emundus&controller=users&task=getusers');
+            const response = await client().get('index.php?option=com_emundus&controller=users&task=getuserbyid', {
+                params: {
+                    id: id
+                }
+            });
 
-            return {
-                data: response.data,
-                status: true
-            };
+            return response.data;
         } catch (e) {
             return {
                 status: false,
@@ -16,9 +17,9 @@ export default {
             };
         }
     },
-    async getUserById(id) {
+    async getUserNameById(id) {
         try {
-            const response = await client().get('index.php?option=com_emundus&controller=users&task=getuserbyid', {
+            const response = await client().get('index.php?option=com_emundus&controller=users&task=getUserNameById', {
                 params: {
                     id: id
                 }

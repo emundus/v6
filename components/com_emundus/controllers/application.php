@@ -27,44 +27,22 @@ class EmundusControllerApplication extends JControllerLegacy
     }
 
     /**
-     * export ZIP
-     */
-/*
-    public function export_zip() {
-        require_once('libraries/emundus/zip.php');
-        //$db   = JFactory::getDBO();
-        $cid = JRequest::getVar('uid', null, 'POST', 'array', 0);
-        JArrayHelper::toInteger( $cid, 0 );
-        if (count( $cid ) == 0) {
-            JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_NO_ITEMS_SELECTED' ) );
-            $this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
-            exit;
-        }
-        zip_file($cid);
-        exit;
-    }
-*/
-    /**
      * Delete an applicant attachment(s)
      */
     public function delete_attachments() {
         $user = JFactory::getUser();
-        //$allowed = array("Super Users", "Administrator", "Editor");
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
             die(JText::_("ACCESS_DENIED"));
 
-        //$db   = JFactory::getDBO();
         $attachments = JRequest::getVar('attachments', null, 'POST', 'array', 0);
         $user_id     = JRequest::getVar('sid', null, 'POST', 'none', 0);
         $view        = JRequest::getVar('view', null, 'POST', 'none', 0);
         $tmpl        = JRequest::getVar('tmpl', null, 'POST', 'none', 0);
 
         $url = !empty($tmpl)?'index.php?option=com_emundus&view='.$view.'&sid='.$user_id.'&tmpl='.$tmpl.'#attachments':'index.php?option=com_emundus&view='.$view.'&sid='.$user_id.'&tmpl=component#attachments';
-        // die(var_dump($attachments));
         JArrayHelper::toInteger($attachments, 0);
         if (count($attachments) == 0) {
             JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_NO_ITEMS_SELECTED' ) );
-            //$mainframe->redirect($url);
             exit;
         }
 
@@ -111,7 +89,6 @@ class EmundusControllerApplication extends JControllerLegacy
         $id = JRequest::getVar('id', null, 'GET', 'none',0);
 
         $m_application = $this->getModel('application');
-
         $upload = $m_application->getUploadByID($id);
         $attachment = $m_application->getAttachmentByID($upload['attachment_id']);
 
@@ -249,7 +226,6 @@ class EmundusControllerApplication extends JControllerLegacy
 
 
     public function editcomment() {
-
         $user   = JFactory::getUser();
         $jinput = JFactory::getApplication()->input;
 
@@ -382,11 +358,6 @@ class EmundusControllerApplication extends JControllerLegacy
         $m_application->addComment($row);
 
         echo $result;
-
-        /*
-        if($result!=1){
-            echo JText::_('DELETE_ERROR');
-        }*/
     }
     /*
      * Get Menu for application file
@@ -487,54 +458,55 @@ class EmundusControllerApplication extends JControllerLegacy
     {
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->post->getString('fnum', null);
-        $ids = $jinput->post->getString('ids', null);
-        $sid = $jinput->post->getInt('student_id', null);
-        $form_post = $jinput->post->getVar('forms', null);
-        $attachments_only = $jinput->post->getBool('attachments_only', false);
 
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'form.php');
-        $m_form = new EmundusModelForm;
-        $m_profile = new EmundusModelProfile;
-        $m_files = new EmundusModelFiles;
+	    if (!empty($fnum) && EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $fnum)) {
+	        $ids = $jinput->post->getString('ids', null);
+	        $sid = $jinput->post->getInt('student_id', null);
+	        $form_post = $jinput->post->getVar('forms', null);
+	        $attachments_only = $jinput->post->getBool('attachments_only', false);
 
-        $fnumInfos = $m_files->getFnumInfos($fnum);
-        $profile = $m_profile->getProfileByCampaign($fnumInfos['campaign_id']);
+	        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+	        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+	        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'form.php');
+	        $m_form = new EmundusModelForm;
+	        $m_profile = new EmundusModelProfile;
+	        $m_files = new EmundusModelFiles;
 
-        if (!$attachments_only) {
-            if(empty($form_post)){
-                $form_post = array();
+	        $fnumInfos = $m_files->getFnumInfos($fnum);
+	        $profile = $m_profile->getProfileByCampaign($fnumInfos['campaign_id']);
 
-                $forms = $m_form->getFormsByProfileId($profile['profile_id']);
-                foreach ($forms as $form){
-                    if(!in_array($form->id,$form_post)){
-                        $form_post[] = $form->id;
-                    }
-                }
-            }
-        }
+	        if (!$attachments_only) {
+	            if(empty($form_post)){
+	                $form_post = array();
 
-        if(empty($ids)){
-            $ids = array();
-            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
-            $m_application = new EmundusModelApplication;
+	                $forms = $m_form->getFormsByProfileId($profile['profile_id']);
+	                foreach ($forms as $form){
+	                    if(!in_array($form->id,$form_post)){
+	                        $form_post[] = $form->id;
+	                    }
+	                }
+	            }
+	        }
 
-            $profile = $m_profile->getProfileByCampaign($fnumInfos['campaign_id']);
-            $attachments_by_profile = $m_form->getDocumentsByProfile($profile['profile_id']);
-            $aids_allowed = array();
-            foreach($attachments_by_profile as $attachment){
-                $aids_allowed[] =  $attachment->attachment_id;
-            }
-            $attachments = $m_application->getAttachmentsByFnum($fnum);
-            foreach($attachments as $attachment){
-                if(in_array($attachment->attachment_id,$aids_allowed)) {
-                    $ids[] = $attachment->id;
-                }
-            }
-        }
+	        if(empty($ids)){
+	            $ids = array();
+	            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+	            $m_application = new EmundusModelApplication;
 
-        if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $fnum)) {
+	            $profile = $m_profile->getProfileByCampaign($fnumInfos['campaign_id']);
+	            $attachments_by_profile = $m_form->getDocumentsByProfile($profile['profile_id']);
+	            $aids_allowed = array();
+	            foreach($attachments_by_profile as $attachment){
+	                $aids_allowed[] =  $attachment->attachment_id;
+	            }
+	            $attachments = $m_application->getAttachmentsByFnum($fnum);
+	            foreach($attachments as $attachment){
+	                if(in_array($attachment->attachment_id,$aids_allowed)) {
+	                    $ids[] = $attachment->id;
+	                }
+	            }
+	        }
+
             $exports = array();
             $tmpArray = array();
 
@@ -700,13 +672,29 @@ class EmundusControllerApplication extends JControllerLegacy
 
     public function getattachmentsbyfnum()
     {
+	    $response = ['status' => false, 'code' => 403, 'msg' => JText::_('BAD_REQUEST'), 'attachments' => null];
         $m_application = $this->getModel('Application');
         $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->getVar('fnum', null);
+        $fnum = $jinput->getString('fnum', '');
 
-        $attachments = $m_application->getUserAttachmentsByFnum($fnum, NULL);
+		if (!empty($fnum)) {
+			$response['msg'] = JText::_('ACCESS_DENIED');
 
-        echo json_encode(['status' => $attachments !== false, 'attachments' => $attachments]);
+			if (EmundusHelperAccess::asAccessAction(4, 'r', JFactory::getUser()->id, $fnum)) {
+				$response['attachments'] = $m_application->getUserAttachmentsByFnum($fnum, NULL);
+
+				if ($response['attachments']) {
+					$response['msg'] = JText::_('SUCCESS');
+					$response['status'] = true;
+					$response['code'] = 200;
+				} else {
+					$response['msg'] = JText::_('FAIL');
+					$response['code'] = 500;
+				}
+			}
+		}
+
+        echo json_encode($response);
         exit;
     }
 
@@ -991,6 +979,53 @@ class EmundusControllerApplication extends JControllerLegacy
 
 				$response['msg'] =  $response['status'] ? JText::_('SUCCESS') : JText::_('FAILED');
 			}
+		}
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function getcampaignsavailableforcopy(){
+		$response = array('status' => 0, 'msg' => '');
+
+		$user = JFactory::getUser();
+
+		$jinput = JFactory::getApplication()->input;
+		$fnum = $jinput->getString('fnum');
+
+		if(!empty($fnum)){
+			$m_files = $this->getModel('Files');
+			$fnumInfos = $m_files->getFnumInfos($fnum);
+
+			if($fnumInfos['applicant_id'] !== $user->id){
+				$response['msg'] = JText::_('ACCESS_DENIED');
+			} else {
+				$m_application      = $this->getModel('Application');
+				$response['campaigns'] = $m_application->getCampaignsAvailableForCopy($fnum);
+
+				$response['msg'] =  !empty($response['campaigns']) ? JText::_('SUCCESS') : JText::_('FAILED');
+			}
+		}
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function filterapplications(){
+		$response = array('status' => 1, 'msg' => JText::_('SUCCESS'));
+
+		$jinput = JFactory::getApplication()->input;
+		$type = $jinput->getString('type');
+		$value = $jinput->getString('value');
+
+		if(!empty($type) && !empty($value) && in_array($type,['applications_order_by','applications_filter_by'])){
+			JFactory::getSession()->set($type,$value);
+		}
+		elseif (empty($value)){
+			JFactory::getSession()->clear($type);
+		}
+		else {
+			$response = array('status' => 0, 'msg' => JText::_('FAILED'));
 		}
 
 		echo json_encode($response);

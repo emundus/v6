@@ -478,18 +478,29 @@ class EmundusControllerFiles extends JControllerLegacy
      * @since 6.0
      */
     public function gettags() {
-        $m_files = $this->getModel('Files');
-        $tags = $m_files->getAllTags();
+	    $response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED'), 'tags' => null];
+	    $user = JFactory::getUser();
 
-        $params = JComponentHelper::getParams('com_emundus');
-        $show_tags_category = $params->get('com_emundus_show_tags_category', 0);
+	    if (EmundusHelperAccess::asAccessAction(14, 'c', $user->id)) {
+		    $m_files = $this->getModel('Files');
+		    $response['tags'] = $m_files->getAllTags();
 
+		    if (!empty($response['tags'])) {
+			    $response['code'] = 200;
+			    $response['status']  = true;
+			    $response['msg'] = JText::_('SUCCESS');
+			    $response['tag'] = JText::_('COM_EMUNDUS_TAGS');
+			    $response['select_tag'] = JText::_('COM_EMUNDUS_FILES_PLEASE_SELECT_TAG');
 
-        echo json_encode((object)(array('status' => true,
-            'tags' => $tags,
-            'tag' => JText::_('COM_EMUNDUS_TAGS'),
-            'show_tags_category' => $show_tags_category,
-            'select_tag' => JText::_('COM_EMUNDUS_FILES_PLEASE_SELECT_TAG'))));
+			    $params = JComponentHelper::getParams('com_emundus');
+			    $response['show_tags_category'] = $params->get('com_emundus_show_tags_category', 0);
+		    } else {
+			    $response['code'] = 500;
+			    $response['msg'] = JText::_('FAIL');
+		    }
+	    }
+
+        echo json_encode((object)$response);
         exit;
     }
 
@@ -498,32 +509,38 @@ class EmundusControllerFiles extends JControllerLegacy
      * @since 6.0
      */
     public function tagfile() {
+	    $response = ['status' => false, 'code' => 403, 'msg' => JText::_('BAD_REQUEST')];
+
         $jinput = JFactory::getApplication()->input;
         $fnums  = $jinput->getString('fnums', null);
-        $tag    = $jinput->get('tag', null);
-        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
-        $m_files = $this->getModel('Files');
+	    $tag    = $jinput->get('tag', null);
 
-        if ($fnums == "all") {
-            $fnums = $m_files->getAllFnums();
-        }
+		if (!empty($fnums) && !empty($tag)) {
+			$m_files = $this->getModel('Files');
+			$fnums = ($fnums == 'all') ? $m_files->getAllFnums() : (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
-        $validFnums = array();
+			if (!empty($fnums)) {
+				$validFnums = [];
+				foreach ($fnums as $fnum) {
+					if ($fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum)) {
+						$validFnums[] = $fnum;
+					}
+				}
+				unset($fnums);
+				$response['status'] = $m_files->tagFile($validFnums, $tag);
 
-        foreach ($fnums as $fnum) {
-            if ($fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum)) {
-                $validFnums[] = $fnum;
-            }
-        }
-        unset($fnums);
+				if ($response['status']) {
+					$response['code'] = 200;
+					$response['msg'] = JText::_('COM_EMUNDUS_TAGS_SUCCESS');
+					$response['tagged'] = $validFnums;
+				} else {
+					$response['code'] = 500;
+					$response['msg'] = JText::_('FAIL');
+				}
+			}
+		}
 
-        /*$tagged = $m_files->getTaggedFile($tag);
-        $tagged_fnums = array_map(function($n) {return $n["fnum"];}, $tagged);
-
-        $validFnums = array_diff($validFnums, $tagged_fnums);*/
-        $res = $m_files->tagFile($validFnums, $tag);
-
-        echo json_encode((object)(array('status' => $res, 'msg' => JText::_('COM_EMUNDUS_TAGS_SUCCESS'), 'tagged' => $validFnums)));
+        echo json_encode((object)($response));
         exit;
     }
 
@@ -3849,16 +3866,19 @@ class EmundusControllerFiles extends JControllerLegacy
     }
 
     public function getalllogactions() {
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-        $m_files = new EmundusModelFiles();
-        $logs = $m_files->getAllLogActions();
+	    $response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
 
-        if($logs) {
-            echo json_encode((array('status' => true, 'data' => $logs)));
-        } else {
-            echo json_encode((array('status' => false, 'data' => [])));
-        }
-        exit;
+	    if (EmundusHelperAccess::asAccessAction(37, 'r', JFactory::getUser()->id)) {
+		    require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+		    $m_files = new EmundusModelFiles();
+		    $response['data'] = $m_files->getAllLogActions();
+		    $response['status'] = true;
+		    $response['code'] = 200;
+		    $response['msg'] = JText::_('SUCCESS');
+	    }
+
+	    echo json_encode($response);
+	    exit;
     }
 
     public function getuserslogbyfnum() {

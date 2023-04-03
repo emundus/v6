@@ -57,9 +57,29 @@ class modemundusApplicationsHelper {
 			$query .= ' LEFT JOIN #__emundus_projet AS pro ON pro.fnum=ecc.fnum ';
 		}
 
-		$query .= ' WHERE ecc.applicant_id ='.$user->id.'
-					ORDER BY ' . $order_by;
+		$query .= ' WHERE ecc.applicant_id ='.$user->id;
 
+		$order_by_session = JFactory::getSession()->get('applications_order_by');
+		switch ($order_by_session) {
+			case 'status':
+				$query .= ' ORDER BY ess.ordering ASC,ecc.date_time DESC';
+				break;
+			case 'campaigns':
+				$query .= ' ORDER BY esc.start_date DESC,ess.ordering ASC,ecc.date_time DESC';
+				break;
+			case 'last_update':
+				$query .= ' ORDER BY ecc.updated DESC,ecc.date_time DESC';
+				break;
+			case 'programs':
+				$query .= ' ORDER BY esc.training ASC,ess.ordering ASC,ecc.date_time DESC';
+				break;
+			case 'years':
+				$query .= ' ORDER BY esc.year DESC,ess.ordering ASC,ecc.date_time DESC';
+				break;
+			default:
+				$query .= ' ORDER BY ' . $order_by;
+				break;
+		}
 		$db->setQuery($query);
 
 		$result = $db->loadObjectList('fnum');

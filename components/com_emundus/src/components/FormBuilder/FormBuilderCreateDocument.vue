@@ -29,7 +29,7 @@
       <div class="em-mb-16">
         <label for="title" class="em-font-weight-500">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_NAME") }}</label>
         <incremental-select
-		        v-if="models.length > 0"
+		        v-if="models.length > 0 && document.id != 1"
 		        :options="documentList"
 		        :defaultValue="incSelectDefaultValue"
 		        :locked="mode != 'create'"
@@ -185,7 +185,6 @@ export default {
     };
   },
   created() {
-    this.document.mandatory = this.current_document == null || this.current_document.mandatory === null || typeof this.current_document.mandatory == 'undefined' ? this.mandatory : this.current_document.mandatory;
     this.getDocumentModels();
     this.getFileTypes();
   },
@@ -233,6 +232,7 @@ export default {
 			this.hasPDFFormat();
     },
      selectModel(event, mandatory = null) {
+			console.log(mandatory, 'select-model');
       if (event.target.value !== 'none') {
         const model = this.models.find(model => model.id == event.target.value);
         this.document.id = model.id;
@@ -375,7 +375,7 @@ export default {
     {
       if (document.id) {
         this.document.name[this.shortDefaultLang] = document.label;
-        this.selectModel({target: {value: document.id}}, this.current_document && this.current_document.id && this.current_document.id == document.id ? this.current_document.mandatory : null);
+        this.selectModel({target: {value: document.id}}, this.current_document && this.current_document.id && this.current_document.id == document.id ? this.current_document.mandatory : this.mandatory);
       } else {
         this.document.id = null;
         this.document.name[this.shortDefaultLang] = document.label;
@@ -420,10 +420,10 @@ export default {
       });
     },
     isMandatory() {
-      return this.document.mandatory == "1";
+      return this.document.mandatory == '1';
     },
     incSelectDefaultValue() {
-			let defaultValue = null
+			let defaultValue = null;
 	    if (this.current_document && (this.current_document.docid || this.current_document.id)) {
 				defaultValue = this.current_document.docid ? this.current_document.docid : this.current_document.id;
 	    }
@@ -432,6 +432,8 @@ export default {
   },
   watch: {
     current_document(newValue) {
+			console.log(newValue, 'curr doc watcher');
+
       if (newValue && (newValue.docid || newValue.id)) {
         if (this.models.length < 1) {
           this.getDocumentModels().then(() => {
@@ -439,14 +441,14 @@ export default {
               target: {
                 value: newValue.docid ? newValue.docid : newValue.id
               }
-            },  newValue.mandatory ?  newValue.mandatory : null);
+            },  newValue.mandatory ? newValue.mandatory : null);
           });
         } else {
           this.selectModel({
             target: {
               value: newValue.docid ? newValue.docid : newValue.id
             }
-          }, newValue.mandatory ?  newValue.mandatory : null);
+          }, newValue.mandatory ? newValue.mandatory : null);
         }
       }
     },

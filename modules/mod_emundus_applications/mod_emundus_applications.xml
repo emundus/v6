@@ -157,6 +157,16 @@
 					   label="MOD_EM_APPLICATION_GROUP_TITLE_OTHER" description="MOD_EM_APPLICATION_GROUP_TITLE_OTHER_DESC"
 				/>
 
+				<field showon="layout:_:tchooz" name="mod_em_applications_show_filters" type="radio" default="0" label="MOD_EMUNDUS_APPLICATIONS_SHOW_FILTERS" description="MOD_EMUNDUS_APPLICATIONS_SHOW_FILTERS_DESC">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+
+				<field showon="layout:_:tchooz" name="mod_em_applications_show_sort" type="radio" default="0" label="MOD_EMUNDUS_APPLICATIONS_SHOW_SORT" description="MOD_EMUNDUS_APPLICATIONS_SHOW_SORT_DESC">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+
 				<field showon="layout:_:tchooz" name="mod_em_applications_show_search" type="radio" default="1" label="MOD_EMUNDUS_APPLICATIONS_SHOW_SEARCHBAR" description="MOD_EMUNDUS_APPLICATIONS_SHOW_SEARCHBAR_DESC">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>

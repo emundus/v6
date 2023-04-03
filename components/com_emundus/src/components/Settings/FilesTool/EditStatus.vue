@@ -26,7 +26,7 @@
               <div>
                 <p class="em-p-8-12 em-editable-content" contenteditable="true" :id="'status_label_' + statu.step" @focusout="updateStatus(statu)" @keyup.enter="manageKeyup(statu)" @keydown="checkMaxlength">{{statu.label[actualLanguage]}}</p>
               </div>
-              <input type="hidden" :class="'label-' + statu.class">
+              <input type="hidden" :class="'label-' + statu.class + '-500'">
             </div>
             <div class="em-flex-row">
               <v-swatches
@@ -94,8 +94,8 @@ export default {
       show: false,
       actualLanguage : '',
       swatches: [
-        '#EBECF0', '#FBE8FF', '#EBE9FE', '#663399', '#E0F2FE', '#D1E9FF', '#D1E0FF', '#CCFBEF', '#C4F0E1', '#E4F0EC',
-        '#FDF7C3', '#FEF0C7', '#FCEAD7', '#FFE5D5', '#EC644B', '#FEE4E2', '#E5283B', '#FCE7F6', '#FFE4E8'
+        '#5E6580', '#D444F1', '#7959F8', '#0BA4EB', '#2E90FA', '#2970FE', '#15B79E', '#238C69', '#20835F', '#EAA907',
+        '#F79009', '#EF681F', '#FF4305', '#DB333E', '#EE46BC', '#F53D68'
       ],
     };
   },
@@ -213,7 +213,7 @@ export default {
 
     getHexColors(element) {
       element.translate = false;
-      let status_class = document.querySelector('.label-' + element.class);
+      let status_class = document.querySelector('.label-' + element.class + '-500');
       let style = getComputedStyle(status_class);
       let rgbs = style.backgroundColor.split('(')[1].split(')')[0].split(',');
       element.class = this.rgbToHex(parseInt(rgbs[0]),parseInt(rgbs[1]),parseInt(rgbs[2]));

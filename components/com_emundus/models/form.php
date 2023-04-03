@@ -1226,6 +1226,37 @@ class EmundusModelForm extends JModelList {
         }
     }
 
+	public function getAttachments() {
+		$attachments = [];
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('*')
+			->from($db->quoteName('#__emundus_setup_attachments'))
+			->where($db->quoteName('published') . ' = 1')
+			->order('value');
+
+		try {
+			$db->setQuery($query);
+			$attachments = $db->loadObjectList();
+
+			if (!empty($attachments)) {
+				require_once (JPATH_SITE . '/components/com_emundus/models/falang.php');
+				$falang = new EmundusModelFalang;
+
+				foreach ($attachments as $attachment) {
+					$attachment->can_be_deleted = strpos($attachment->lbl, '_em') === 0;
+					$attachment->name = $falang->getFalang($attachment->id,'emundus_setup_attachments','value', $attachment->value);
+					$attachment->description = $falang->getFalang($attachment->id,'emundus_setup_attachments','description', $attachment->description);
+				}
+			}
+		} catch (Exception $e) {
+			JLog::add('Failed to get attachments ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $attachments;
+	}
+
     /**
      * @param $documentIds
      * @return array
@@ -1869,21 +1900,27 @@ class EmundusModelForm extends JModelList {
     }
 
     function getDocumentsByProfile($prid){
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
+		$attachments_by_profile = [];
 
-        try {
-            $query->select('sa.id as docid,sa.value as label,sap.*,sa.allowed_types')
-                ->from($db->quoteName('#__emundus_setup_attachment_profiles','sap'))
-                ->leftJoin($db->quoteName('#__emundus_setup_attachments','sa').' ON '.$db->quoteName('sa.id').' = '.$db->quoteName('sap.attachment_id'))
-                ->where($db->quoteName('sap.profile_id') . ' = ' . $db->quote($prid))
-                ->order('sap.mandatory DESC, sap.ordering, sa.value ASC');
-            $db->setQuery($query);
-            return $db->loadObjectList();
-        } catch (Exception $e){
-            JLog::add('component/com_emundus/models/form | Error cannot get documents by profile_id : ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
-        }
+		if (!empty($prid)) {
+			$db = $this->getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('sa.id as docid,sa.value as label,sap.*,sa.allowed_types')
+				->from($db->quoteName('#__emundus_setup_attachment_profiles','sap'))
+				->leftJoin($db->quoteName('#__emundus_setup_attachments','sa').' ON '.$db->quoteName('sa.id').' = '.$db->quoteName('sap.attachment_id'))
+				->where($db->quoteName('sap.profile_id') . ' = ' . $db->quote($prid))
+				->order('sap.mandatory DESC, sap.ordering, sa.value ASC');
+
+			try {
+				$db->setQuery($query);
+				$attachments_by_profile = $db->loadObjectList();
+			} catch (Exception $e){
+				JLog::add('component/com_emundus/models/form | Error cannot get documents by profile_id : ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+	    return $attachments_by_profile;
     }
 
     function reorderDocuments($documents){

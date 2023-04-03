@@ -52,19 +52,4 @@ class EmundusControllerUser extends JControllerLegacy
         else
             echo JText::_('ACCESS_DENIED');
     }
-
-    public function getusername() {
-        $jinput = JFactory::getApplication()->input;
-        $username = $jinput->getString('username');
-
-        if (filter_var($username, FILTER_VALIDATE_EMAIL)) {
-            $username = $this->m_user->getUsernameByEmail($username);
-        }
-
-        $response = array('username' => $username);
-
-        echo json_encode((object)$response);
-        exit;
-    }
-
 }

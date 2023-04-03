@@ -142,9 +142,11 @@ class EmundusHelperEvents {
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'date.php');
 
             $m_campaign = new EmundusModelCampaign;
+            $m_users = new EmundusModelUsers;
 
             $formModel = $params['formModel'];
             $listModel =  $params['formModel']->getListModel();
@@ -348,12 +350,13 @@ class EmundusHelperEvents {
 			$db->setQuery($query);
 			$fnum_linked = $db->loadResult();
 
+			$profile_details = $m_users->getUserById(JFactory::getUser()->id)[0];
+
             if ($copy_application_form == 1 && isset($user->fnum) && !in_array($formModel->getId(), $copy_exclude_forms) || !empty($fnum_linked)) {
 
                 if (empty($formModel->getRowId())) {
                     $table = $listModel->getTable();
                     $table_elements = $formModel->getElementOptions(false, 'name', false, false, array(), '', true);
-                    $rowid = $formModel->data["rowid"];
 
                     $elements = array();
                     foreach ($table_elements as $element) {
@@ -371,6 +374,20 @@ class EmundusHelperEvents {
 	                    $already_cloned = $db->loadResult();
 
 						if($already_cloned == 0) {
+
+							// Check if we can fill a value with our profile
+							$profile_elements = array_keys(get_object_vars($profile_details));
+							foreach ($elements as $element){
+								$elt_name = explode('.',$element)[1];
+								if(in_array($elt_name,$profile_elements)) {
+									if(!empty($profile_details->{$elt_name})) {
+										$formModel->data[$table->db_table_name . '___' . $elt_name]          = $profile_details->{$elt_name};
+										$formModel->data[$table->db_table_name . '___' . $elt_name . '_raw'] = $profile_details->{$elt_name};
+									}
+								}
+							}
+
+							// Next we check if we find a form by applicant or via linked fnum
 							$query->clear()
 								->select(implode(',', $db->quoteName($elements)))
 								->from($db->quoteName($table->db_table_name))
@@ -388,28 +405,30 @@ class EmundusHelperEvents {
 								unset($stored['fnum']);
 
 								foreach ($stored as $key => $store) {
-									// get the element plugin, and params
-									$query->clear()
-										->select('fe.plugin,fe.params')
-										->from($db->quoteName('#__fabrik_elements', 'fe'))
-										->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
-										->where($db->quoteName('ffg.form_id') . ' = ' . $form_id)
-										->where($db->quoteName('fe.name') . ' = ' . $db->quote($key))
-										->where($db->quoteName('fe.published') . ' = 1');
-									$db->setQuery($query);
-									$elt = $db->loadObject();
+									if(empty($formModel->data[$table->db_table_name . '___' . $key]) || empty($formModel->data[$table->db_table_name . '___' . $key . '_raw'])) {
+										// get the element plugin, and params
+										$query->clear()
+											->select('fe.plugin,fe.params')
+											->from($db->quoteName('#__fabrik_elements', 'fe'))
+											->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
+											->where($db->quoteName('ffg.form_id') . ' = ' . $form_id)
+											->where($db->quoteName('fe.name') . ' = ' . $db->quote($key))
+											->where($db->quoteName('fe.published') . ' = 1');
+										$db->setQuery($query);
+										$elt = $db->loadObject();
 
-									// if this element is date plugin, we need to check the time storage format (UTC of Local time)
-									if ($elt->plugin === 'date') {
-										// storage format (UTC [0], Local [1])
-										$timeStorageFormat = json_decode($elt->params)->date_store_as_local;
+										// if this element is date plugin, we need to check the time storage format (UTC of Local time)
+										if ($elt->plugin === 'date') {
+											// storage format (UTC [0], Local [1])
+											$timeStorageFormat = json_decode($elt->params)->date_store_as_local;
 
-										$store = EmundusHelperDate::displayDate($store, 'Y-m-d H:i:s', $timeStorageFormat);
+											$store = EmundusHelperDate::displayDate($store, 'Y-m-d H:i:s', $timeStorageFormat);
+										}
+
+
+										$formModel->data[$table->db_table_name . '___' . $key]          = $store;
+										$formModel->data[$table->db_table_name . '___' . $key . '_raw'] = $store;
 									}
-
-
-									$formModel->data[$table->db_table_name . '___' . $key]          = $store;
-									$formModel->data[$table->db_table_name . '___' . $key . '_raw'] = $store;
 								}
 
 								$groups = $formModel->getFormGroups(true);
@@ -434,23 +453,26 @@ class EmundusHelperEvents {
 
 											if (!empty($stored)) {
 												foreach ($stored as $store) {
-													$formModel->data[$repeat_table . '___id'][]            = "";
-													$formModel->data[$repeat_table . '___id_raw'][]        = "";
-													$formModel->data[$repeat_table . '___parent_id'][]     = "";
-													$formModel->data[$repeat_table . '___parent_id_raw'][] = "";
+													if (count($formModel->data[$repeat_table . '___id']) < count($stored)) {
+														$formModel->data[$repeat_table . '___id'][]            = "";
+														$formModel->data[$repeat_table . '___id_raw'][]        = "";
+														$formModel->data[$repeat_table . '___parent_id'][]     = "";
+														$formModel->data[$repeat_table . '___parent_id_raw'][] = "";
+													}
 
 													$formModel->data[$repeat_table . '___' . $group->name][]          = $store;
 													$formModel->data[$repeat_table . '___' . $group->name . '_raw'][] = $store;
 												}
 											}
 										}
-									}
-								}
-							}
-						}
+                                    }
+                                }
+                            }
+                        }
 
                         // sync documents uploaded
                         // 1. get list of uploaded documents for previous file defined as duplicated
+	                    $query = $db->getQuery(true);
 	                    $query->clear()
 		                    ->select('count(id)')
 		                    ->from($db->quoteName('#__emundus_uploads'))
@@ -571,9 +593,41 @@ class EmundusHelperEvents {
             $attachments = $mApplication->getAttachmentsProgress($user->fnum);
             $forms = $mApplication->getFormsProgress($user->fnum);
 
-            if ($attachments < 100 || $forms < 100) {
-                $mainframe->redirect( "index.php?option=com_emundus&view=checklist&Itemid=".$itemid, JText::_('INCOMPLETE_APPLICATION'));
-            }
+	        if ($attachments < 100 || $forms < 100) {
+		        $db    = JFactory::getDbo();
+		        $query = $db->getQuery(true);
+
+		        $profile_by_status = $mProfile->getProfileByStatus($user->fnum);
+
+		        if (empty($profile_by_status['profile'])) {
+			        $query->select('esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id')
+				        ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
+				        ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ecc.campaign_id') . ' = ' . $db->quoteName('esc.id'))
+				        ->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($user->fnum));
+			        $db->setQuery($query);
+			        $profile_by_status = $db->loadAssoc();
+		        }
+
+		        $profile    = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
+		        $profile_id = (!empty($user->fnums[$user->fnum]) && $user->profile != $profile && $user->applicant === 1) ? $user->profile : $profile;
+
+		        $forms    = @EmundusHelperMenu::getUserApplicationMenu($profile_id);
+
+		        foreach ($forms as $form) {
+			        $query->clear()
+				        ->select('count(*)')
+				        ->from($db->quoteName($form->db_table_name))
+				        ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($user->fnum));
+			        $db->setQuery($query);
+			        $cpt = $db->loadResult();
+
+			        if ($cpt == 0) {
+				        $mainframe->redirect('index.php?option=com_fabrik&view=form&formid=' . $form->form_id . '&Itemid=' . $form->id . '&usekey=fnum&rowid=' . $user->fnum . '&r=1', JText::_('INCOMPLETE_APPLICATION'));
+			        }
+		        }
+
+		        $mainframe->redirect("index.php?option=com_emundus&view=checklist&Itemid=" . $itemid, JText::_('INCOMPLETE_APPLICATION'));
+	        }
 
             if ($application_fee) {
                 if($params->get('hikashop_session', 0)) {
@@ -1213,8 +1267,11 @@ class EmundusHelperEvents {
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
+			$now = new DateTime();
+			$now->setTimezone(new DateTimeZone('UTC'));
+
 			$query->update($db->quoteName('#__emundus_campaign_candidature'))
-				->set($db->quoteName('updated') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+				->set($db->quoteName('updated') . ' = ' . $db->quote($now->format('Y-m-d H:i:s')))
 				->set($db->quoteName('updated_by') . ' = ' . JFactory::getUser()->id)
 				->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
 			$db->setQuery($query);

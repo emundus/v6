@@ -26,28 +26,28 @@ class EmundusModelsettings extends JModelList {
      */
     function getColorClasses(){
         return array(
-            'lightpurple' => '#FBE8FF',
-            'purple' => '#EBE9FE',
+            'lightpurple' => '#D444F1',
+            'purple' => '#7959F8',
             'darkpurple' => '#663399',
-            'lightblue' => '#E0F2FE',
-            'blue' => '#D1E9FF',
-            'darkblue' => '#D1E0FF',
-            'lightgreen' => '#CCFBEF',
-            'green' => '#C4F0E1',
-            'darkgreen' => '#E4F0EC',
-            'lightyellow' => '#FFFD7E',
-            'yellow' => '#FDF7C3',
-            'darkyellow' => '#FEF0C7',
-            'lightorange' => '#FFEDCF',
-            'orange' => '#FCEAD7',
-            'darkorange' => '#FFE5D5',
+            'lightblue' => '#0BA4EB',
+            'blue' => '#2E90FA',
+            'darkblue' => '#2970FE',
+            'lightgreen' => '#15B79E',
+            'green' => '#238C69',
+            'darkgreen' => '#20835F',
+            'lightyellow' => '#5D5B00',
+            'yellow' => '#EAA907',
+            'darkyellow' => '#F79009',
+            'lightorange' => '#C87E00',
+            'orange' => '#EF681F',
+            'darkorange' => '#FF4305',
             'lightred' => '#EC644B',
-            'red' => '#FEE4E2',
-            'darkred' => '#E5283B',
-            'lightpink' => '#ffeaea',
-            'pink' => '#FCE7F6',
-            'darkpink' => '#FFE4E8',
-            'default' => '#EBECF0',
+            'red' => '#DB333E',
+            'darkred' => '#DB333E',
+            'lightpink' => '#B04748',
+            'pink' => '#EE46BC',
+            'darkpink' => '#F53D68',
+            'default' => '#5E6580',
         );
     }
 
@@ -518,8 +518,23 @@ class EmundusModelsettings extends JModelList {
             $db->setQuery($query);
             $result = $db->loadResult();
 
-            if(!empty($result)){
+            if (!empty($result)){
                 $article->{$reference_field} = $result;
+            } else {
+	            $currentLang = JFactory::getLanguage();
+				if ($currentLang->lang_code != $lang_code) {
+					$query->clear()
+						->select('title, introtext, alias')
+						->from($db->quoteName('#__content'))
+						->where('id = ' . $article->id);
+
+					$db->setQuery($query);
+					$article_content = $db->loadAssoc();
+
+					foreach ($article_content as $key => $content) {
+						$article->{$key} = $content;
+					}
+				}
             }
 
             return $article;

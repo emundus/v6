@@ -517,6 +517,7 @@ $font:'Inter', sans-serif;
 @mixin input-focus {
   border: 1px solid var(--blue-500);
   box-shadow: none;
+  outline: 5px auto -webkit-focus-ring-color;
 }
 
 @mixin input-hover {
@@ -924,7 +925,7 @@ $font:'Inter', sans-serif;
         width: 100%;
         margin-top: 12px;
         padding-left: 8px;
-        height: 48px !important;
+        height: 60px !important;
         border-radius: 8px;
 
         li.search-choice {
@@ -935,13 +936,13 @@ $font:'Inter', sans-serif;
           @include body-14;
 
           span {
-            margin: 0;
+            margin: 0 !important;
             padding: 7px;
           }
         }
 
         li.search-field {
-          input {
+          input[type="text"] {
             margin-top: 6px;
             @include body-14;
             font-size: 13px !important;

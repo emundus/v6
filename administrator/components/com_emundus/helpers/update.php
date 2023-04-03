@@ -81,12 +81,13 @@ class EmundusHelperUpdate
      * Enable an emundus plugin
      *
      * @param $name
+     * @param $folder
      *
      * @return false|mixed
      *
      * @since version 1.33.0
      */
-    public static function enableEmundusPlugins($name) {
+    public static function enableEmundusPlugins($name, $folder = null) {
         $enabled = false;
 
         if (!empty($name)) {
@@ -96,8 +97,14 @@ class EmundusHelperUpdate
             try {
                 $query->update($db->quoteName('#__extensions'))
                     ->set($db->quoteName('enabled') . ' = 1')
-                    ->where($db->quoteName('element') . ' LIKE ' . $db->quote($name));
-                $db->setQuery($query);
+	                ->set($db->quoteName('state') . ' = 0')
+	                ->where($db->quoteName('element') . ' LIKE ' . $db->quote($name));
+
+				if (!empty($folder)) {
+					$query->andWhere($db->quoteName('folder') . ' = ' . $db->quote($folder));
+				}
+
+	            $db->setQuery($query);
 	            $enabled = $db->execute();
             } catch (Exception $e) {
                 echo $e->getMessage();
@@ -219,6 +226,9 @@ class EmundusHelperUpdate
                 $query->select('extension_id')
                     ->from($db->quoteName('#__extensions'))
                     ->where($db->quoteName('element') . ' LIKE ' . $db->quote($element));
+				if(!empty($folder)){
+					$query->where($db->quoteName('folder') . ' LIKE ' . $db->quote($folder));
+				}
                 $db->setQuery($query);
                 $is_existing = $db->loadResult();
 
@@ -406,19 +416,24 @@ class EmundusHelperUpdate
      * @since version 1.33.0
      */
     public static function updateConfigurationFile($param, $value) {
-        $formatter = new JRegistryFormatPHP();
-        $config = new JConfig();
+		if(!empty($param) && !empty($value) && !in_array($param,['host','user','password','db','secret','mailfrom','smtpuser','smpthost','smtppass','smtpsecure','smtpport','webhook_token'])) {
+			$formatter = new JRegistryFormatPHP();
+			$config    = new JConfig();
 
-        $config->$param = $value;
-        $params = array('class' => 'JConfig', 'closingtag' => false);
-        $str = $formatter->objectToString($config, $params);
-        $config_file = JPATH_CONFIGURATION . '/configuration.php';
+			$config->$param = $value;
+			$params         = array('class' => 'JConfig', 'closingtag' => false);
+			$str            = $formatter->objectToString($config, $params);
+			$config_file    = JPATH_CONFIGURATION . '/configuration.php';
 
-        if (file_exists($config_file) and is_writable($config_file)){
-            file_put_contents($config_file, $str);
-        } else {
-            echo ("Update Configuration file failed");
-        }
+			if (file_exists($config_file) and is_writable($config_file)) {
+				file_put_contents($config_file, $str);
+			}
+			else {
+				echo("Update Configuration file failed");
+			}
+		} else {
+			echo("Update Configuration file failed");
+		}
     }
 
     /**
@@ -841,7 +856,7 @@ class EmundusHelperUpdate
         return $updated;
     }
 
-	public static function updateOverrideTag($tag,$old_value,$new_value) {
+	public static function updateOverrideTag($tag,$old_values,$new_values) {
 		$updated = ['status' => true, 'message' => "Override tag successfully updated"];
 
 		$db = JFactory::getDbo();
@@ -864,19 +879,27 @@ class EmundusHelperUpdate
 				foreach ($platform_languages as $language) {
 					$override_file = JPATH_BASE . '/language/overrides/' . $language . '.override.ini';
 					if (file_exists($override_file)) {
-						$files[] = $override_file;
+						$file = new stdClass();
+						$file->file = $override_file;
+						$file->language = $language;
+						$files[] = $file;
 					}
 				}
 
 
 				foreach ($files as $file) {
-					$parsed_file = JLanguageHelper::parseIniFile($file);
+					$parsed_file = JLanguageHelper::parseIniFile($file->file);
 
-					if (!empty($parsed_file)) {
-						if ($parsed_file[$tag] == $old_value)
+					if (!empty($parsed_file) && !empty($old_values[$file->language])) {
+						if (!empty($parsed_file[$tag]) && $parsed_file[$tag] == $old_values[$file->language])
 						{
-							$parsed_file[$tag] = $new_value;
-							JLanguageHelper::saveToIniFile($file, $parsed_file);
+							$parsed_file[$tag] = $new_values[$file->language];
+							JLanguageHelper::saveToIniFile($file->file, $parsed_file);
+						}
+						elseif (empty($parsed_file[$tag]))
+						{
+							$parsed_file[$tag] = $new_values[$file->language];
+							JLanguageHelper::saveToIniFile($file->file, $parsed_file);
 						}
 					}
 				}

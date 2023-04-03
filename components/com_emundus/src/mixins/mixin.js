@@ -28,7 +28,6 @@ var mixin = {
 		},
 		getUserNameById: function (id) {
 			let completeName = '';
-			// id to int
 			id = parseInt(id);
 
 			if (id > 0) {
@@ -36,11 +35,10 @@ var mixin = {
 				if (user) {
 					completeName = user.firstname + ' ' + user.lastname;
 				} else {
-					userService.getUserById(id).then(data => {
-						if (data.status && data.user[0]) {
-							completeName = data.user[0].firstname + ' ' + data.user[0].lastname;
-							data.user[0].id = id;
-							this.$store.dispatch('user/setUsers', data.user);
+					userService.getUserNameById(id).then(data => {
+						if (data.status && data.user.user_id == id) {
+							completeName = data.user.firstname + ' ' + data.user.lastname;
+							this.$store.dispatch('user/setUsers', [data.user]);
 						}
 					});
 				}
