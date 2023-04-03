@@ -1,8 +1,8 @@
 <template>
 	<div id="onboarding_list" class="em-w-100">
-		<div class="head em-flex-row em-flex-space-between em-mb-8 em-mt-8">
+		<div class="head em-flex-row em-flex-space-between em-mb-16 em-mt-16">
 			<h2 style="margin:0;">{{ currentList.title }}</h2>
-			<a v-if="currentAddAction" class="em-primary-button em-w-auto" @click="onClickAddAction">{{ translate('COM_EMUNDUS_LIST_ADD_' + type.toUpperCase()) }}</a>
+			<a v-if="currentAddAction" class="em-primary-button em-w-auto" @click="onClickAddAction">{{ translate(currentAddAction.label) }}</a>
 		</div>
 		<div class="list">
 			<nav v-if="currentList.tabs.length > 1">
@@ -16,7 +16,7 @@
 							}"
 					    @click="selectedListTab = tab.key"
 					>
-						{{ tab.title }}
+						{{ translate(tab.title) }}
 					</li>
 				</ul>
 			</nav>
@@ -53,7 +53,7 @@
 										    :key="action.action"
 										    @click="onClickAction(action, item.id)"
 										>
-											{{ action.label }}
+											{{ translate(action.label) }}
 										</li>
 									</ul>
 								</td>
@@ -121,7 +121,6 @@ export default {
 					if (typeof this.lists[this.type] === 'undefined') {
 						console.error('List type ' + this.type + ' does not exist');
 						window.location.href = '/';
-						return;
 					}
 
 					this.currentList = this.lists[this.type];
@@ -135,7 +134,6 @@ export default {
 				} else {
 					console.error('Error while getting onboarding lists');
 					window.location.href = '/';
-					return;
 				}
 			});
 		},
@@ -158,7 +156,7 @@ export default {
 		},
 		onClickAddAction() {
 			const addAction = this.currentTab.actions.find((action) => {
-				return action.type == 'add';
+				return action.type === 'add';
 			});
 
 			if (typeof addAction !== 'undefined') {
@@ -170,9 +168,8 @@ export default {
 		onClickAction(action, itemId = null) {
 			const parameter = action.parameter || 'id';
 
-			if (action.type == 'redirect') {
+			if (action.type === 'redirect') {
 				window.location.href = action.action.replace('%id%', itemId);
-				return;
 			} else {
 				let url = 'index.php?option=com_emundus&controller=' + action.controller + '&task=' + action.action;
 
@@ -199,17 +196,17 @@ export default {
 	computed: {
 		currentTab() {
 			return this.currentList.tabs.find((tab) => {
-				return tab.key == this.selectedListTab;
+				return tab.key === this.selectedListTab;
 			});
 		},
 		tabActionsWithoutAdd() {
 			return typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.filter((action) => {
-				return action.type != 'add';
+				return action.type !== 'add';
 			}): [];
 		},
 		currentAddAction() {
-			return typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.find((action) => {
-				return action.type == 'add';
+			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.find((action) => {
+				return action.type === 'add';
 			}): false;
 		}
 	}

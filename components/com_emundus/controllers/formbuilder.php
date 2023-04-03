@@ -549,11 +549,11 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $jinput = JFactory::getApplication()->input;
-
             $gid = $jinput->getInt('gid');
             $plugin = $jinput->getString('plugins');
+	        $mode = $jinput->getString('mode', 'form');
 
-            $changeresponse = $this->m_formbuilder->createSectionSimpleElements($gid,$plugin);
+	        $changeresponse = $this->m_formbuilder->createSectionSimpleElements($gid, $plugin, $mode);
         }
         echo json_encode((object)$changeresponse);
         exit;

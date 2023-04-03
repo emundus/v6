@@ -214,6 +214,24 @@ class EmundusControllerForm extends JControllerLegacy {
         exit;
     }
 
+	public function createformeval() {
+		$tab = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+		$user = JFactory::getUser();
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$form_id = $this->m_form->createFormEval();
+
+			if ($form_id) {
+				$tab = array('status' => true, 'msg' => JText::_('FORM_ADDED'), 'data' => $form_id, 'redirect' => 'index.php?option=com_emundus&view=form&layout=formbuilder&prid='. $form_id . '&mode=eval');
+			} else {
+				$tab['msg'] = JText::_('ERROR_CANNOT_ADD_FORM');
+			}
+		}
+
+		echo json_encode((object)$tab);
+		exit;
+	}
+
 
     public function updateform() {
         $user = JFactory::getUser();

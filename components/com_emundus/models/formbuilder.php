@@ -1095,17 +1095,15 @@ class EmundusModelFormbuilder extends JModelList {
         }
     }
 
-    function createSectionSimpleElements($gid, $plugins)
+    function createSectionSimpleElements($gid, $plugins, $mode = 'forms')
     {
         $created_elements = [];
         $user = JFactory::getUser()->id;
 
+		$evaluation = $mode === 'eval' ? 1 : 0;
+
         foreach ($plugins as $plugin) {
-
-
             switch ($plugin) {
-
-
                 case 'birthday':
 
                     $label = array(
@@ -1113,7 +1111,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Birthday',
                     );
 
-                    $created_elements[] = $this->createSimpleElement($gid, $plugin, null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, $plugin, null, $evaluation, $label);
                     break;
                 case 'date_debut':
                     $label = array(
@@ -1121,7 +1119,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Contract start date',
                     );
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'birthday', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'birthday', null, $evaluation, $label);
                     break;
                 case 'date_fin':
                     $label = array(
@@ -1129,7 +1127,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Contract end date',
                     );
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'birthday', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'birthday', null, $evaluation, $label);
                     break;
 
                 case 'telephone':
@@ -1139,7 +1137,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Phone',
                     );
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
                 case 'fonction':
 
@@ -1149,7 +1147,7 @@ class EmundusModelFormbuilder extends JModelList {
                     );
 
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
 
                 case 'employeur':
@@ -1158,7 +1156,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Employer',
                     );
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
 
                 case 'ville_employeur':
@@ -1169,7 +1167,7 @@ class EmundusModelFormbuilder extends JModelList {
                     );
 
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
                 case 'missions':
 
@@ -1179,7 +1177,7 @@ class EmundusModelFormbuilder extends JModelList {
                     );
 
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'textarea', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'textarea', null, $evaluation, $label);
                     break;
                 case 'adresse':
                     $label = array(
@@ -1188,21 +1186,21 @@ class EmundusModelFormbuilder extends JModelList {
                     );
 
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
                 case 'code postal':
                     $label = array(
                         'fr' => 'Code postal',
                         'en' => 'postal code',
                     );
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
                 case 'ville':
                     $label = array(
                         'fr' => 'Ville',
                         'en' => 'City',
                     );
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
                 case 'adresseComplementaire':
                     $label = array(
@@ -1211,7 +1209,7 @@ class EmundusModelFormbuilder extends JModelList {
                     );
 
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
 
                 case 'email':
@@ -1221,7 +1219,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Email',
                     );
 
-                    $created_elements[] = $this->createSimpleElement($gid, $plugin, null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, $plugin, null, $evaluation, $label);
 
                     break;
                 case 'nationalite':
@@ -1231,7 +1229,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Nationality',
                     );
 
-                    $el_id = $this->createSimpleElement($gid, 'databasejoin', null, 0, $label);
+                    $el_id = $this->createSimpleElement($gid, 'databasejoin', null, $evaluation, $label);
 
                     $created_elements[] = $el_id;
                     $element = json_decode(json_encode($this->getElement($el_id, $gid)), true);
@@ -1249,7 +1247,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Country',
                     );
 
-                    $el_id = $this->createSimpleElement($gid, 'databasejoin', null, 0, $label);
+                    $el_id = $this->createSimpleElement($gid, 'databasejoin', null, $evaluation, $label);
 
                     $created_elements[] = $el_id;
                     $element = json_decode(json_encode($this->getElement($el_id, $gid)), true);
@@ -1263,11 +1261,8 @@ class EmundusModelFormbuilder extends JModelList {
                     break;
 
                 default:
-
-                    $created_elements[] = $this->createSimpleElement($gid, $plugin);
+                    $created_elements[] = $this->createSimpleElement($gid, $plugin, null, $evaluation);
                     break;
-
-
             }
 
         }

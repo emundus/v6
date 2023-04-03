@@ -933,6 +933,33 @@ class EmundusModelForm extends JModelList {
         }
     }
 
+	public function createFormEval()
+	{
+		require_once (JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
+		$m_formbuilder = new EmundusModelFormbuilder();
+		$form_id = $m_formbuilder->createFabrikForm('EVALUATION', ['fr' => 'Nouvelle Évaluation', 'en' => 'New Evaluation'], ['fr' => 'Introduction de l\'évaluation', 'en' => 'Evaluation introduction']);
+
+		if (!empty($form_id)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			// get the first list with db_table_name = jos_emundus_evaluations
+			$query->clear()
+				->select('*')
+				->from($db->quoteName('#__fabrik_lists'))
+				->where($db->quoteName('db_table_name') . ' LIKE ' . $db->quote('jos_emundus_evaluations'));
+
+			$db->setQuery($query);
+			$list = $db->loadAssoc();
+
+			if (!empty($list)) {
+				// copy lists
+				$list_id = $m_formbuilder->copyList($list, $form_id);
+			}
+		}
+
+		return $form_id;
+	}
+
     public function createMenuType($menutype, $title) {
         $menutype_table = JTableNested::getInstance('MenuType');
 
