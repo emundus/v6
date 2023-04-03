@@ -1215,4 +1215,32 @@ class EmundusModelsettings extends JModelList {
 			return false;
 		}
 	}
+
+	function getOnboardingLists() {
+		$lists = [];
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select('`default`, value')
+			->from($db->quoteName('#__emundus_setup_config'))
+			->where($db->quoteName('namekey') . ' = ' . $db->quote('onboarding_lists'));
+
+		try {
+			$db->setQuery($query);
+
+			$data = $db->loadObject();
+
+			if (!empty($data)) {
+				if (!empty($data->value)) {
+					$lists = json_decode($data->value, true);
+				} else {
+					$lists = json_decode($data->default, true);
+				}
+			}
+		} catch (Exception $e) {
+			JLog::add('Error getting onboarding lists in model at query : '. $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $lists;
+	}
 }

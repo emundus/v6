@@ -53,13 +53,14 @@
 
 <script>
 import Vue from 'vue';
-import lists from '../data/onboarding_lists/lists.json';
+import settingsService from '../services/settings.js';
 import client from '../services/axiosClient';
 
 export default {
 	name: "list_v2",
 	data() {
 		return {
+			'lists': {},
 			'type': 'forms',
 			'params': {},
 			'currentList': {
@@ -80,22 +81,31 @@ export default {
 	},
 	methods: {
 		initList() {
-			// TODO: get lists from db table jos_emundus_setup_config, namekey = 'onboarding'
-			if (typeof lists[this.type] === 'undefined') {
-				console.error('List type ' + this.type + ' does not exist');
-				window.location.href = '/';
-				return;
-			}
+			settingsService.getOnboardingLists().then(response => {
+				console.log(response);
+				if (response.data.status) {
+					this.lists = response.data.data;
 
-			this.currentList = lists[this.type];
+					if (typeof this.lists[this.type] === 'undefined') {
+						console.error('List type ' + this.type + ' does not exist');
+						window.location.href = '/';
+						return;
+					}
 
-			if (this.params.hasOwnProperty('tab')) {
-				this.selectedListTab = this.params.tab;
-			} else {
-				this.selectedListTab = this.currentList.tabs[0].key;
-			}
+					this.currentList = this.lists[this.type];
+					if (this.params.hasOwnProperty('tab')) {
+						this.selectedListTab = this.params.tab;
+					} else {
+						this.selectedListTab = this.currentList.tabs[0].key;
+					}
 
-			this.getListItems();
+					this.getListItems();
+				} else {
+					console.error('Error while getting onboarding lists');
+					window.location.href = '/';
+					return;
+				}
+			});
 		},
 		getListItems() {
 			this.items = Vue.observable(Object.assign({}, ...this.currentList.tabs.map(tab => ({[tab.key]: []}))));

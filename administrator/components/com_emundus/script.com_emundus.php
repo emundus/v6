@@ -1005,6 +1005,35 @@ if (password_value.match(regex) != null) {
 				}
 			}
 
+			if (version_compare($cache_version, '1.36.0', '<=') || $firstrun) {
+				// check if table jos_emundus_setup_config exists
+				$str_query = 'SHOW TABLES LIKE ' . $db->quote('jos_emundus_setup_config');
+				$db->setQuery($str_query);
+				$table_exists = $db->loadResult();
+
+				if (!$table_exists) {
+					// create it if it doesn't exist
+					$str_query = 'create table jos_emundus_setup_config
+					(
+					    namekey   varchar(255) not null primary key,
+					    value     text         null,
+					    `default` text         null,
+					    constraint jos_emundus_setup_config_namekey_uindex unique (namekey)
+					);';
+
+					$db->setQuery($str_query);
+					$db->execute();
+
+					// insert default values
+					$query->clear()
+						->insert($db->quoteName('#__emundus_setup_config'))
+						->columns($db->quoteName(['namekey', 'value', 'default']))
+						->values($db->quote('onboarding_lists') . ', ' . $db->quote('{"forms":{"title":"Formulaires","tabs":[{"title":"Mes Formulaires","key":"form","controller":"form","getter":"getallform","actions":[{"action":"duplicateform","label":"Dupliquer","controller":"form"},{"action":"index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%","label":"Modifier","controller":"form","type":"redirect"},{"action":"createform","controller":"form","label":"Add","type":"add"}]},{"title":"Mes Formulaires d\'évaluation","key":"form_evaluations","controller":"form","getter":"getallgrilleEval","actions":[{"action":"duplicateform","label":"Dupliquer","controller":"form"},{"action":"/index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%&eval=1","label":"Modifier","controller":"form","type":"redirect"}]},{"title":"Mes modèles de page","key":"form_models","controller":"formbuilder","getter":"getpagemodels","actions":[{"action":"deleteformmodelfromids","label":"Supprimer","controller":"formbuilder","parameter":"model_ids"}]}]},"campaigns":{"title":"Campagnes","tabs":[{"title":"Mes Campagnes","key":"campaign","actions":[{"action":"index.php?option=com_emundus&view=campaigns&layout=add","label":"Add","type":"add"},{"action":"duplicatecampaign","label":"Dupliquer","controller":"campaign"},{"action":"index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=%id%","label":"Modifier","controller":"campaign","type":"redirect"},{"action":"deletecampaign","label":"Supprimer","controller":"campaign"},{"action":"unpublishcampaign","label":"Dépublier","controller":"campaign"},{"action":"publishcampaign","label":"Publier","controller":"campaign"}]}]},"emails":{"title":"Emails","tabs":[{"title":"Mes Emails","key":"emails","actions":[{"action":"index.php?option=com_emundus&view=emails&layout=add","label":"Add","type":"add"},{"action":"index.php?option=com_emundus&view=emails&layout=add&eid=%id%","label":"Modifier","controller":"emails","type":"redirect"},{"action":"preview","label":"Prévisualiser","controller":"emails"}]}]}}') . ', ' . $db->quote(''));
+
+					$db->setQuery($query);
+					$db->execute();
+				}
+			}
 
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
