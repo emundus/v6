@@ -33,7 +33,7 @@ class EmundusViewFiles extends JViewLegacy
 	protected array $lists;
 	protected array $actions;
 	protected array $users;
-	protected array $datas;
+	protected string|array $datas;
 	protected string $delayAct;
 	protected string $submitForm;
 	protected array $accessObj;
