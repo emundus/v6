@@ -5,6 +5,14 @@
 			<a v-if="addAction" class="em-primary-button em-w-auto em-pointer" @click="onClickAction(addAction)">{{ translate(addAction.label) }}</a>
 		</div>
 		<div class="list">
+			<section id="list-filter">
+				<input
+						name="search"
+						type="text"
+						:placeholder="translate('COM_EMUNDUS_ONBOARD_SEARCH')"
+						v-model="search"
+				>
+			</section>
 			<nav v-if="currentList.tabs.length > 1">
 				<ul style="list-style-type: none;margin-left:0;" class="em-flex-row">
 					<li v-for="tab in currentList.tabs"
@@ -34,7 +42,7 @@
 				</div>
 			</div>
 			<div>
-				<div v-if="typeof items[selectedListTab] != 'undefined' && items[selectedListTab].length > 0" id="list-items">
+				<div v-if="displayedItems.length > 0" id="list-items">
 					<table id="list-table" :class="{'blocs': viewType === 'blocs'}">
 						<thead>
 							<tr>
@@ -43,12 +51,12 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr v-for="item in items[selectedListTab]" :key="item.id">
+							<tr v-for="item in displayedItems" :key="item.id">
 								<td class="em-pointer" @click="onClickAction(editAction, item.id)"><h3>{{ item.label[params.shortlang] }}</h3></td>
 								<div>
-									<hr v-if="viewType == 'blocs'" class="em-w-100">
+									<hr v-if="viewType === 'blocs'" class="em-w-100">
 									<td class="actions">
-										<a v-if="viewType == 'blocs' && editAction"
+										<a v-if="viewType === 'blocs' && editAction"
 										   @click="onClickAction(editAction, item.id)"
 										   class="em-primary-button em-font-size-14 em-pointer em-w-auto"
 										>
@@ -107,6 +115,7 @@ export default {
 					icon: 'grid_view'
 				}
 			],
+			search: '',
 		}
 	},
 	created() {
@@ -123,10 +132,6 @@ export default {
 		this.initList();
 	},
 	methods: {
-		changeViewType(viewType) {
-			this.viewType = viewType.value;
-			localStorage.setItem('tchooz_view_type/' + document.location.hostname,viewType.value);
-		},
 		initList() {
 			settingsService.getOnboardingLists().then(response => {
 				if (response.data.status) {
@@ -211,7 +216,11 @@ export default {
 							console.error(error);
 						});
 			}
-		}
+		},
+		changeViewType(viewType) {
+			this.viewType = viewType.value;
+			localStorage.setItem('tchooz_view_type/' + document.location.hostname,viewType.value);
+		},
 	},
 	computed: {
 		currentTab() {
@@ -233,7 +242,16 @@ export default {
 			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.find((action) => {
 				return action.name === 'add';
 			}): false;
-		}
+		},
+		displayedItems() {
+			let items = typeof this.items[this.selectedListTab] !== 'undefined' ? this.items[this.selectedListTab] : [];
+
+			items.filter((item) => {
+				return item.label[this.params.shortlang].toLowerCase().includes(this.search.toLowerCase()) || this.search === '';
+			});
+
+			return items;
+		},
 	}
 }
 </script>
