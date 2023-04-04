@@ -245,12 +245,9 @@ export default {
 		},
 		displayedItems() {
 			let items = typeof this.items[this.selectedListTab] !== 'undefined' ? this.items[this.selectedListTab] : [];
-
-			items.filter((item) => {
-				return item.label[this.params.shortlang].toLowerCase().includes(this.search.toLowerCase()) || this.search === '';
+			return items.filter((item) => {
+				return item.label[this.params.shortlang].toLowerCase().includes(this.search.toLowerCase());
 			});
-
-			return items;
 		},
 	}
 }
