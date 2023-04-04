@@ -4,16 +4,15 @@
 			<h2 style="margin:0;">{{ currentList.title }}</h2>
 			<a v-if="addAction" class="em-primary-button em-w-auto em-pointer" @click="onClickAction(addAction)">{{ translate(addAction.label) }}</a>
 		</div>
+		<hr class="em-w-100">
 		<div class="list">
 			<section id="list-filter">
-				<input
-						name="search"
-						type="text"
-						:placeholder="translate('COM_EMUNDUS_ONBOARD_SEARCH')"
-						v-model="search"
-				>
+				<div class="em-flex-row em-flex-row-center">
+					<span class="material-icons-outlined em-mr-8">search</span>
+					<input name="search" type="text" style="margin: 0;" :placeholder="translate('COM_EMUNDUS_ONBOARD_SEARCH')" v-model="search">
+				</div>
 			</section>
-			<nav v-if="currentList.tabs.length > 1">
+			<nav v-if="currentList.tabs.length > 1" id="list-nav">
 				<ul style="list-style-type: none;margin-left:0;" class="em-flex-row">
 					<li v-for="tab in currentList.tabs"
 					    key="tab.key"
@@ -254,6 +253,12 @@ export default {
 </script>
 
 <style lang="scss">
+#list-nav {
+	li {
+		transition: all .3s;
+	}
+}
+
 #list-table {
 	transition: all .3s;
 
