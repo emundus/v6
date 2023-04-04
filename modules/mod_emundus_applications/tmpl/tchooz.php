@@ -746,7 +746,7 @@ $current_tab = 0;
 
 															<?php if (in_array('rename', $actions)) : ?>
                                                                 <a class="em-text-neutral-900 em-pointer em-flex-row"
-                                                                   onclick="renameApplication('<?php echo $application->fnum ?>','<?php echo $application->name ?>')"
+                                                                   onclick="renameApplication('<?php echo $application->fnum ?>','<?php echo $application->name ?>','<?php echo $application->label ?>')"
                                                                    id="actions_button_rename_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
                                                                     <span class="material-icons-outlined em-font-size-16 em-mr-8">drive_file_rename_outline</span>
 																	<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION') ?>
