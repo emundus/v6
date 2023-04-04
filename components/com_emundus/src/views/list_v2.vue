@@ -54,11 +54,21 @@
 										>
 											{{ translate(editAction.label) }}
 										</a>
-										<ul>
-											<li v-for="action in tabActionsPopover" :key="action.action" @click="onClickAction(action, item.id)">
-												{{ translate(action.label) }}
-											</li>
-										</ul>
+
+										<v-popover :popoverArrowClass="'custom-popover-arrow'">
+											<span class="tooltip-target b3 material-icons">more_vert</span>
+											<template slot="popover">
+												<ul style="list-style-type: none; margin: 0;">
+													<li v-for="action in tabActionsPopover"
+													    :key="action.action"
+													    @click="onClickAction(action, item.id)"
+													    class="em-pointer em-p-8 em-font-weight-600"
+													>
+														{{ translate(action.label) }}
+													</li>
+												</ul>
+											</template>
+										</v-popover>
 									</td>
 								</div>
 							</tr>
