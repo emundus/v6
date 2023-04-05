@@ -307,6 +307,7 @@ class ConsoleApplication extends Application implements DispatcherAwareInterface
                 new Console\DeleteUserCommand($this->getDatabase()),
                 new Console\ChangeUserPasswordCommand(),
                 new Console\ListUserCommand($this->getDatabase()),
+                new Console\TchoozDeploymentRunCommand($this->getDatabase()),
             ]
         );
     }
