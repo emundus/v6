@@ -143,7 +143,7 @@ if (!empty($this->custom_title)) :?>
             } else {
                 $div .= '<span class="material-icons-outlined em-main-500-color em-mr-4">check_circle</span>';
             }
-            $div .= '<span class="em-h5">'.$attachment->value .'</span>';
+            $div .= '<h4 class="em-h4">'.$attachment->value .'</h4>';
             $div .= '</div>
                 <p class="em-ml-8 em-mt-8">'.$attachment->description .'</p>
                 <div>
@@ -599,7 +599,7 @@ if (!empty($this->custom_title)) :?>
       <div class="col-md-<?= (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_mand != '') {
-           echo '<div id="attachment_list_mand" class="em-container-attachments em-w-100"><p class="em-h3">'.JText::_('COM_EMUNDUS_ATTACHMENTS_MANDATORY_DOCUMENTS').'</p>'.$attachment_list_mand.'</div>';
+           echo '<div id="attachment_list_mand" class="em-container-attachments em-w-100"><h3 class="em-h3">'.JText::_('COM_EMUNDUS_ATTACHMENTS_MANDATORY_DOCUMENTS').'</h3>'.$attachment_list_mand.'</div>';
         }
     ?>
       </div>
@@ -611,7 +611,7 @@ if (!empty($this->custom_title)) :?>
       <div class="col-md-<?= (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_opt != '') {
-           echo '<div id="attachment_list_opt" class="em-container-attachmentsOpt em-mt-16 em-w-100"><p class="em-h3">'.JText::_('COM_EMUNDUS_ATTACHMENTS_OPTIONAL_DOCUMENTS').'</p>'.$attachment_list_opt.'</div>';
+           echo '<div id="attachment_list_opt" class="em-container-attachmentsOpt em-mt-16 em-w-100"><h3 class="em-h3">'.JText::_('COM_EMUNDUS_ATTACHMENTS_OPTIONAL_DOCUMENTS').'</h3>'.$attachment_list_opt.'</div>';
         }
     ?>
       </div>
