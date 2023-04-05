@@ -1,7 +1,7 @@
 <template>
 	<div id="onboarding_list" class="em-w-100">
 		<div class="head em-flex-row em-flex-space-between em-mb-16 em-mt-16">
-			<h2 style="margin:0;">{{ currentList.title }}</h2>
+			<h2 style="margin:0;">{{ translate(currentList.title) }}</h2>
 			<a v-if="addAction" class="em-primary-button em-w-auto em-pointer" @click="onClickAction(addAction)">{{ translate(addAction.label) }}</a>
 		</div>
 		<hr class="em-w-100">
