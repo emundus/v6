@@ -1451,24 +1451,108 @@ body > .g-container {
 
 /* DROPFILE */
 
-.com_dropfiles.view-manage #newcategory {
-  width: fit-content;
+.com_dropfiles.view-manage #g-main-mainbody {
+    #navigation {
+      display: none;
+    }
 
-  .btn.btn-default {
-    font-size: 11px;
-    display: flex;
-    align-items: center;
+    #mybootstrap {
+
+      button.btn, a.btn {
+        text-transform: inherit;
+        border-radius: var(--em-border-radius) !important;
+        font-family: var(--font);
+        letter-spacing: inherit;
+      }
+
+      #pwrapper #preview {
+        background: var(--background-color);
+
+        #dropbox {
+          height: calc(100vh - 70px);
+        }
+
+        .restableMenu .restableMenuButton {
+          margin-top: 24px !important;
+        }
+      }
+
+      #mycategories  {
+
+        .bs-docs-sidenav2 > li a.edit {
+          top: 11px;
+        }
+
+        .dd-item.active, .dd-item:hover {
+          & > .dd-content {
+            background: var(--main-100);
+
+            span  {
+              color: var(--main-500);
+            }
+          }
+
+          .dropfiles-folder::before {
+            color: var(--main-500);
+          }
+        }
+
+
+        #newcategory {
+          width: fit-content;
+
+          .btn.btn-default {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--main-500);
+            background: var(--neutral-0);
+            color: var(--main-500);
+
+            &:hover, &:focus, &:active {
+              border: 1px solid var(--main-500);
+              background: var(--main-500);
+              color: var(--neutral-0);
+            }
+          }
+
+          i.material-icons {
+            margin-right: 8px;
+          }
+        }
+      }
+
+      #wpreview {
+        .dropfiles-search-file a.dropfiles-btn-search  {
+          border: 1px solid var(--main-500);
+          background: var(--neutral-0);
+          color: var(--main-500);
+
+          &:hover, &:focus, &:active {
+            border: 1px solid var(--main-500);
+            background: var(--main-500);
+            color: var(--neutral-0);
+          }
+        }
+      }
+
+
+      #rightcol {
+        .dropfiles-save-submit {
+          width: fit-content !important;
+          border: 1px solid var(--main-500);
+          background-color: var(--main-500) !important;
+          color: var(--neutral-0);
+
+          &:hover, &:focus, &:active {
+            border: 1px solid var(--main-500);
+            background-color: var(--neutral-0) !important;
+            color: var(--main-500);
+          }
+        }
+      }
+    }
   }
 
-  i.material-icons {
-    margin-right: 8px;
-  }
-}
-
-.com_dropfiles.view-manage #mybootstrap #rightcol .dropfiles-save-submit {
-  font-size: 11px !important;
-  width: fit-content !important;
-}
 
 /** MODULE SINGLE CAMPAIGN **/
 
