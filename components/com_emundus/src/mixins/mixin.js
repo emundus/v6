@@ -6,12 +6,24 @@ import mimeTypes from '../data/mimeTypes';
 
 var mixin = {
 	methods: {
-		formattedDate: function (date = '',format = 'LLLL',utc = 0) {
+		formattedDate: function (date = '',format = 'LLLL',utc = null) {
 			let formattedDate = '';
+
+			if (utc === null) {
+				utc = this.$store.state.global.offset;
+			}
 
 			if (date !== null) {
 				if (date !== '') {
-					formattedDate = moment(date).utcOffset(utc).format(format);
+					let year = date.substring(0, 4);
+					let month = date.substring(5, 7);
+					let day = date.substring(8, 10);
+					let hour = date.substring(11, 13);
+					let minute = date.substring(14, 16);
+					let second = date.substring(17, 19);
+					const stringDate = year + '-' + month + '-' + day + 'T' + hour + ':' + minute + ':' + second + '+00:00';
+
+					formattedDate = moment(stringDate).utcOffset(utc).format(format);
 				} else {
 					formattedDate = moment().utcOffset(utc).format(format);
 				}
