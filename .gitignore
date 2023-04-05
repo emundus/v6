@@ -3,7 +3,7 @@
 docker-compose-*.yml
 
 # IDE & System Related Files #
-.idea
+.idea/
 .buildpath
 .project
 .settings
