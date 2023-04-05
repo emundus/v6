@@ -35,7 +35,7 @@ class modEmundusBookInterviewHelper {
 	 * @return mixed
 	 * @throws Exception
 	 */
-    public function getEvents($user) {
+    public function getEvents($user,$fnum) {
 
         $db = JFactory::getDbo();
         $offset = JFactory::getConfig()->get('offset');
@@ -53,7 +53,7 @@ class modEmundusBookInterviewHelper {
                 SELECT GROUP_CONCAT(id)
                 FROM jos_categories
                 WHERE extension LIKE \"com_dpcalendar\"
-                AND params LIKE '%\"program\":\"".$user->code."\"%'
+                AND params LIKE '%\"program\":\"".$user->fnums[$fnum]->training."\"%'
                 GROUP BY id
             )
             ORDER BY catid ASC";

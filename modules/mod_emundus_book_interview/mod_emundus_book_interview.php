@@ -33,7 +33,7 @@ if (isset($fnum)) {
 
     } elseif ($status == $evaluated_status) {
 
-        $available_events = $helper->getEvents($user);
+        $available_events = $helper->getEvents($user,$fnum);
 
         $offset = JFactory::getConfig()->get('offset');
 

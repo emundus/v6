@@ -376,14 +376,14 @@ class EmundusModelCalendar extends JModelLegacy {
 
         try {
 
-            $db->setQuery('SELECT params FROM #__categories WHERE id = '.$event->catid);
-            $params = $db->loadResult();
+            $db->setQuery('SELECT params, description, title FROM #__categories WHERE id = '.$event->catid);
+            $category_dp = $db->loadResult();
 
         } catch (Exception $e) {
             JLog::add("SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
         }
 
-        $params = json_decode($params);
+        $params = json_decode($category_dp->params);
 
         // Set event time to the correct timezone.
         $offset     = $config->get('offset');
@@ -417,7 +417,8 @@ class EmundusModelCalendar extends JModelLegacy {
             'EVENT_TIME'    => $event_time,
             'USER_NAME'     => $user->name,
             'PROGRAM'       => $label,
-            'JURY'          => $event_category_title
+            'JURY'          => $category_dp->title,
+            'LINK'          => $category_dp->description
         );
 
         $from_id = 62;
