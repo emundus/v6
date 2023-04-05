@@ -1,11 +1,20 @@
 <template>
 	<div id="onboarding_list" class="em-w-100">
-		<div class="head em-flex-row em-flex-space-between em-mb-16 em-mt-16">
+		<skeleton v-if="loading.lists" height="40px" width="100%" class="em-mb-16 em-mt-16 em-border-radius-8"></skeleton>
+		<div v-else class="head em-flex-row em-flex-space-between em-mb-16 em-mt-16">
 			<h2 style="margin:0;">{{ translate(currentList.title) }}</h2>
 			<a v-if="addAction" class="em-primary-button em-w-auto em-pointer" @click="onClickAction(addAction)">{{ translate(addAction.label) }}</a>
 		</div>
 		<hr class="em-w-100">
-		<div class="list">
+
+		<div v-if="loading.items">
+			<skeleton height="40px" width="100%" class="em-mb-16 em-border-radius-8"></skeleton>
+			<div class="skeleton-grid" style="flex-wrap: wrap">
+				<skeleton v-for="i in 10" :key="i" class="em-m-16 em-border-radius-8" height="200px"></skeleton>
+			</div>
+		</div>
+
+		<div v-else class="list">
 			<section id="list-filter">
 				<div class="em-flex-row em-flex-row-center">
 					<span class="material-icons-outlined em-mr-8">search</span>
@@ -93,13 +102,25 @@
 
 <script>
 import Vue from 'vue';
+
+// Components
+import Skeleton from '../components/Skeleton.vue';
+
+// Services
 import settingsService from '../services/settings.js';
 import client from '../services/axiosClient';
 
 export default {
 	name: 'list_v2',
+	components: {
+		Skeleton
+	},
 	data() {
 		return {
+			loading: {
+				'lists': false,
+				'items': false,
+			},
 			lists: {},
 			type: 'forms',
 			params: {},
@@ -122,6 +143,8 @@ export default {
 		}
 	},
 	created() {
+		this.loading.lists = true;
+		this.loading.items = true;
 		const data = this.$store.getters['global/datas'];
 		this.params = Object.assign({}, ...Array.from(data).map(({name, value}) => ({[name]: value})));
 		this.type = this.params.type;
@@ -152,6 +175,8 @@ export default {
 						this.selectedListTab = this.currentList.tabs[0].key;
 					}
 
+					this.loading.lists = false;
+
 					this.getListItems();
 				} else {
 					console.error('Error while getting onboarding lists');
@@ -160,12 +185,14 @@ export default {
 			});
 		},
 		getListItems() {
+			this.loading.items = true;
 			this.items = Vue.observable(Object.assign({}, ...this.currentList.tabs.map(tab => ({[tab.key]: []}))));
 
 			this.currentList.tabs.forEach(tab => {
 				if (typeof tab.getter !== 'undefined') {
 					client().get('index.php?option=com_emundus&controller=' + tab.controller + '&task=' + tab.getter)
 						.then(response => {
+
 							if (response.data.status === true) {
 								if (typeof response.data.data.datas !== 'undefined') {
 									this.items[tab.key] = response.data.data.datas;
@@ -173,10 +200,14 @@ export default {
 
 								}
 							}
+							this.loading.items = false;
 						})
 						.catch(error => {
 							console.error(error);
+							this.loading.items = false;
 						});
+				} else {
+					this.loading.items = false;
 				}
 			});
 		},
@@ -328,5 +359,12 @@ export default {
 			}
 		}
 	}
+}
+
+.skeleton-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+	column-gap: 10px;
+	row-gap: 15px;
 }
 </style>
