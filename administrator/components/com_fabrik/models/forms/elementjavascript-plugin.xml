@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<form addfieldpath="/administrator/components/com_fabrik/models/fields">
+	<name>Element Javascript Options</name>
+
+	<fields >
+		<fieldset name="params">
+
+			<field name="js_published"
+				type="radio"
+				class="btn-group"
+				repeat="true"
+				default="1"
+				layout="joomla.form.field.radio.switcher"
+				label="COM_FABRIK_PUBLISHED">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+			<field name="action"
+				type="list"
+				class="col-sm-6"
+				repeat="true"
+				label="COM_FABRIK_JS_EVENT"
+				description="COM_FABRIK_JS_EVENT_DESC"
+				>
+					<option value="">COM_FABRIK_PLEASE_SELECT</option>
+					<option value="focus">focus</option>
+					<option value="blur">blur</option>
+					<option value="abort">abort</option>
+					<option value="click">click</option>
+					<option value="change">change</option>
+					<option value="dblclick">dblclick</option>
+					<option value="keydown">keydown</option>
+					<option value="keypress">keypress</option>
+					<option value="keyup">keyup</option>
+					<option value="mouseup">mouseup</option>
+					<option value="mousedown">mousedown</option>
+					<option value="mouseover">mouseover</option>
+					<option value="mouseout">mouseout</option>
+					<option value="select">select</option>
+					<option value="load">load</option>
+					<option value="unload">unload</option>
+			</field>
+
+			<field name="bespoke"
+				type="spacer"
+				class="text"
+				label="COM_FABRIK_JS_BESPOKE_DESC"
+				/>
+
+			<field name="code"
+				type="fabrikeditor"
+				mode="javascript"
+				encoded="true"
+				repeat="true"
+				cols="60"
+				rows="6"
+				label="COM_FABRIK_JS_CODE"
+				description="COM_FABRIK_JS_CODE_DESC" />
+
+			<field name="predefined"
+				type="spacer"
+				class="text"
+				label="COM_FABRIK_JS_PREDEFINED_DESC"
+				/>
+
+			<field name="js_e_condition"
+				type="list"
+				repeat="true"
+				label="COM_FABRIK_JS_IF"
+				description="COM_FABRIK_JS_IF_DESC"
+				>
+					<option value="">COM_FABRIK_PLEASE_SELECT</option>
+					<option value="&lt;">&lt;</option>
+					<option value="&lt;=">&lt;=</option>
+					<option value="==">==</option>
+					<option value="&gt;=">&gt;=</option>
+					<option value="&gt;">&gt;</option>
+					<option value="!=">!=</option>
+					<option value="hidden">COM_FABRIK_JS_HIDDEN</option>
+					<option value="shown">COM_FABRIK_JS_SHOWN</option>
+					<option value="CONTAINS">COM_FABRIK_JS_CONTAINS</option>
+					<option value="!CONTAINS">COM_FABRIK_JS_NOT_CONTAIN</option>
+					<option value="regex">COM_FABRIK_JS_REGEX</option>
+					<option value="!regex">COM_FABRIK_JS_NOT_REGEX</option>
+			</field>
+
+			<field name="js_e_value"
+				type="text"
+				repeat="true"
+				label="COM_FABRIK_VALUE"
+				description="COM_FABRIK_JS_VALUE_DESC"
+				/>
+
+			<field name="js_e_event"
+				type="list"
+				repeat="true"
+				label="COM_FABRIK_JS_ACTION"
+				description="COM_FABRIK_JS_ACTION_DESC"
+				>
+					<option value="">COM_FABRIK_PLEASE_SELECT</option>
+					<option value="hide">COM_FABRIK_JS_HIDE</option>
+					<option value="show">COM_FABRIK_JS_SHOW</option>
+					<option value="fadeout">COM_FABRIK_JS_FADEOUT</option>
+					<option value="fadein">COM_FABRIK_JS_FADEIN</option>
+					<option value="slide out">COM_FABRIK_JS_SLIDEOUT</option>
+					<option value="slide in">COM_FABRIK_JS_SLIDEIN</option>
+					<option value="slide toggle">COM_FABRIK_JS_SLIDETOGGLE</option>
+					<option value="clear">COM_FABRIK_JS_CLEAR</option>
+					<option value="disable">COM_FABRIK_JS_DISABLE</option>
+					<option value="enable">COM_FABRIK_JS_ENABLE</option>
+					<option value="readonly">COM_FABRIK_JS_READONLY</option>
+					<option value="notreadonly">COM_FABRIK_JS_NOTREADONLY</option>
+			</field>
+
+			<field name="js_e_trigger"
+				type="groupelements"
+				repeat="true"
+				label="COM_FABRIK_JS_ELEMENT"
+				description="COM_FABRIK_JS_ELEMENT_DESC"
+				/>
+
+		</fieldset>
+	</fields>
+</form>

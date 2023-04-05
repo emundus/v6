@@ -1,0 +1,21 @@
+.fade {
+  transition: $transition-fade;
+
+  &:not(.show) {
+    opacity: 0;
+  }
+}
+
+// scss-docs-start collapse-classes
+.collapse {
+  &:not(.show) {
+    display: none;
+  }
+}
+
+.collapsing {
+  height: 0;
+  overflow: hidden;
+  transition: $transition-collapse;
+}
+// scss-docs-end collapse-classes

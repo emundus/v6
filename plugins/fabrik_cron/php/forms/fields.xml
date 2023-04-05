@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-cron-php">
+
+			<field name="cronphp_file"
+				type="filelist"
+				description="PLG_FABRIK_CRON_PHP_FILE_DESC"
+				directory="plugins/fabrik_cron/php/scripts/"
+				hide_default="1"
+				label="PLG_FABRIK_CRON_PHP_FILE_LABEL" />
+
+			<field name="cronphp_params"
+				type="fabrikeditor"
+				cols="60"
+				rows="6"
+				description="PLG_FABRIK_CRON_PHP_PARAMS_DESC"
+				label="PLG_FABRIK_CRON_PHP_PARAMS_LABEL"
+				/>
+
+			<field name="cronphp_code"
+			       type="fabrikeditor"
+				cols="60"
+				rows="6"
+			       description="PLG_FABRIK_CRON_PHP_CODE_DESC"
+			       label="PLG_FABRIK_CRON_PHP_CODE_LABEL"
+			/>
+
+		</fieldset>
+	</fields>
+</form>

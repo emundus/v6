@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields
+		addfieldpath="/administrator/components/com_fabrik/models/fields"
+		name="params">
+		<fieldset label="PLG_FABRIK_ELEMENT_PICKLIST" name="plg-element-picklist">
+
+			<field
+				type="helplink"
+				url="PLG_ELEMENT_PICKLIST_HELP_SERVER" />
+
+			<field name="bootstrap_class"
+				type="bootstrapfieldclass"
+				default="col-sm-6"
+				label="PLG_ELEMENT_BOOTSTRAP_CLASS_LABEL"
+				description="PLG_ELEMENT_BOOTSTRAP_CLASS_DESC" />
+
+			<field name="sub_options"
+				type="suboptions"
+				label="COM_FABRIK_SUBOPTIONS" />
+
+			<field name="allowadd"
+				type="radio"
+				default="0"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				description="PLG_ELEMENT_PICKLIST_EDIT_DROPDOWN_DESC"
+				label="PLG_ELEMENT_PICKLIST_EDIT_DROPDOWN_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+			<field name="allowadd-onlylabel"
+				type="radio"
+				default="0"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				description="PLG_ELEMENT_PICKLIST_ONLY_ADD_LABEL_DESC"
+				label="PLG_ELEMENT_PICKLIST_ONLY_ADD_LABEL_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+			<field name="savenewadditions"
+				type="radio"
+				default="0"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				description="PLG_ELEMENT_PICKLIST_SAVE_NEW_ADDITIONS_DESC"
+				label="PLG_ELEMENT_PICKLIST_SAVE_NEW_ADDITIONS_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+			<field name="picklist-hovercolour"
+				type="color"
+				default="#AFFFFD"
+				description="PLG_ELEMENT_PICKLIST_HOVER_COLOUR_DESCRIPTION"
+				label="PLG_ELEMENT_PICKLIST_HOVER_COLOUR_LABEL"
+				size="6" />
+
+			<field name="picklist-bghovercolour"
+				type="color"
+				default="#FFFFDF"
+				description="PLG_ELEMENT_PICKLIST_BG_HOVER_COLOUR_DESCRIPTION"
+				label="PLG_ELEMENT_PICKLIST_BG_HOVER_COLOUR_LABEL"
+				size="6" />
+
+		</fieldset>
+		<fieldset label="Advanced" name="plg-picklist-advanced">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_PICKLIST_HELP_SERVER" />
+
+			<field name="dropdown_populate"
+				type="fabrikeditor"
+				mode="php"
+				cols="60"
+				rows="6"
+				description="PLG_ELEMENT_PICKLIST_POPULATE_DESC"
+				label="PLG_ELEMENT_PICKLIST_POPULATE_LABEL" />
+
+		</fieldset>
+	</fields>
+</form>

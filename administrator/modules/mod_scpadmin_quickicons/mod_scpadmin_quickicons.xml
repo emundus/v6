@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.1" type="module" client="administrator" method="upgrade">
+	<name>Securitycheck Pro Info Module</name>
+	<author>José A. Luque </author>
+	<creationDate>02-06-2022</creationDate>
+	<copyright>Copyright www.protegetuordenador.com</copyright>
+	<license>GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html</license>
+	<authorEmail>contacto@protegetuordenador.com</authorEmail>
+	<authorUrl>www.protegetuordenador.com</authorUrl>
+	<version>3.5.0</version>
+	<description>MOD_SECURITYCHECKPRO_DESCRIPTION</description>
+
+	<files>
+		<filename module="mod_scpadmin_quickicons">mod_scpadmin_quickicons.php</filename>
+		<filename>helper.php</filename>
+		<filename>index.html</filename>
+		<folder>tmpl</folder>		
+	</files>
+	<languages folder="translations">
+		<language tag="en-GB">en-GB.mod_scpadmin_quickicons.ini</language>
+		<language tag="en-GB">en-GB.mod_scpadmin_quickicons.sys.ini</language>
+		<language tag="es-ES">es-ES.mod_scpadmin_quickicons.ini</language>		
+		<language tag="es-ES">es-ES.mod_scpadmin_quickicons.sys.ini</language>
+		<language tag="fr-FR">fr-FR.mod_scpadmin_quickicons.ini</language>		
+		<language tag="fr-FR">fr-FR.mod_scpadmin_quickicons.sys.ini</language>
+		<language tag="ca-ES">ca-ES.mod_scpadmin_quickicons.ini</language>		
+		<language tag="ca-ES">ca-ES.mod_scpadmin_quickicons.sys.ini</language>
+		<language tag="pt-BR">pt-BR.mod_scpadmin_quickicons.ini</language>		
+		<language tag="pt-BR">pt-BR.mod_scpadmin_quickicons.sys.ini</language>
+		<language tag="ja-JP">ja-JP.mod_scpadmin_quickicons.ini</language>		
+		<language tag="ja-JP">ja-JP.mod_scpadmin_quickicons.sys.ini</language>
+		<language tag="ru-RU">ru-RU.mod_scpadmin_quickicons.ini</language>		
+		<language tag="ru-RU">ru-RU.mod_scpadmin_quickicons.sys.ini</language>
+		<language tag="pl-PL">pl-PL.mod_scpadmin_quickicons.ini</language>		
+		<language tag="pl-PL">pl-PL.mod_scpadmin_quickicons.sys.ini</language>
+		<language tag="sl-SI">sl-SI.mod_scpadmin_quickicons.ini</language>		
+		<language tag="sl-SI">sl-SI.mod_scpadmin_quickicons.sys.ini</language>
+		<language tag="de-DE">de-DE.mod_scpadmin_quickicons.ini</language>		
+		<language tag="de-DE">de-DE.mod_scpadmin_quickicons.sys.ini</language>
+		<language tag="nl-NL">nl-NL.mod_scpadmin_quickicons.ini</language>		
+		<language tag="nl-NL">nl-NL.mod_scpadmin_quickicons.sys.ini</language>
+		<language tag="it-IT">it-IT.mod_scpadmin_quickicons.ini</language>		
+		<language tag="it-IT">it-IT.mod_scpadmin_quickicons.sys.ini</language>
+		<language tag="en-US">en-US.mod_scpadmin_quickicons.ini</language>		
+		<language tag="en-US">en-US.mod_scpadmin_quickicons.sys.ini</language>
+		<language tag="hr-HR">hr-HR.mod_scpadmin_quickicons.ini</language>		
+		<language tag="hr-HR">hr-HR.mod_scpadmin_quickicons.sys.ini</language>
+		<language tag="bs-BA">bs-BA.mod_scpadmin_quickicons.ini</language>		
+		<language tag="bs-BA">bs-BA.mod_scpadmin_quickicons.sys.ini</language>
+		<language tag="pt-PT">pt-PT.mod_scpadmin_quickicons.ini</language>		
+		<language tag="pt-PT">pt-PT.mod_scpadmin_quickicons.sys.ini</language>
+		<language tag="hu-HU">hu-HU.mod_scpadmin_quickicons.ini</language>		
+		<language tag="hu-HU">hu-HU.mod_scpadmin_quickicons.sys.ini</language>
+		<language tag="ro-RO">ro-RO.mod_scpadmin_quickicons.ini</language>		
+		<language tag="ro-RO">ro-RO.mod_scpadmin_quickicons.sys.ini</language>
+		<language tag="ua-UA">ua-UA.mod_scpadmin_quickicons.ini</language>		
+		<language tag="ua-UA">ua-UA.mod_scpadmin_quickicons.sys.ini</language>
+		<language tag="af-ZA">af-ZA.mod_scpadmin_quickicons.ini</language>
+		<language tag="af-ZA">af-ZA.mod_scpadmin_quickicons.sys.ini</language>
+	</languages>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="check_vulnerable_extensions" type="radio" default="1" label="MOD_SECURITYCHECKPRO_CHECK_VULNERABLE_EXTENSIONS_LABEL" description="MOD_SECURITYCHECKPRO_CHECK_VULNERABLE_EXTENSIONS_DESCRIPTION">
+					<option value="0">MOD_SECURITYCHECKPRO_NO</option>
+					<option value="1">MOD_SECURITYCHECKPRO_YES</option>
+				</field>			
+				<field name="check_not_readed_logs" type="radio" default="1" label="MOD_SECURITYCHECKPRO_CHECK_NOT_READED_LOGS_LABEL" description="MOD_SECURITYCHECKPRO_CHECK_NOT_READED_LOGS_DESCRIPTION">
+					<option value="0">MOD_SECURITYCHECKPRO_NO</option>
+					<option value="1">MOD_SECURITYCHECKPRO_YES</option>
+				</field>				
+				<field name="check_file_permissions" type="radio" default="1" label="MOD_SECURITYCHECKPRO_CHECK_FILE_PERMISSIONS_LABEL" description="MOD_SECURITYCHECKPRO_CHECK_FILE_PERMISSIONS_DESCRIPTION">
+					<option value="0">MOD_SECURITYCHECKPRO_NO</option>
+					<option value="1">MOD_SECURITYCHECKPRO_YES</option>
+				</field>
+				<field name="check_file_integrity" type="radio" default="1" label="MOD_SECURITYCHECKPRO_CHECK_FILE_INTEGRITY_LABEL" description="MOD_SECURITYCHECKPRO_CHECK_FILE_INTEGRITY_DESCRIPTION">
+					<option value="0">MOD_SECURITYCHECKPRO_NO</option>
+					<option value="1">MOD_SECURITYCHECKPRO_YES</option>
+				</field>
+				<field name="check_malwarescan" type="radio" default="1" label="MOD_SECURITYCHECKPRO_CHECK_MALWARESCAN_LABEL" description="MOD_SECURITYCHECKPRO_CHECK_MALWARESCAN_DESCRIPTION">
+					<option value="0">MOD_SECURITYCHECKPRO_NO</option>
+					<option value="1">MOD_SECURITYCHECKPRO_YES</option>
+				</field>
+			</fieldset>
+		</fields>
+	</config>
+</extension>

@@ -1,0 +1,170 @@
+.g-main-nav {
+    .g-standard {
+        .g-dropdown {
+            transition: none;
+        }
+
+        .g-fade.g-dropdown {
+            transition: opacity .3s ease-out, transform .3s ease-out;
+        }
+
+        .g-zoom.g-active {
+            animation-duration: .3s;
+            animation-name: g-dropdown-zoom;
+        }
+
+        .g-fade-in-up.g-active {
+            animation-duration: .3s;
+            animation-name: g-dropdown-fade-in-up;
+        }
+
+        .g-dropdown-bounce-in-left.g-active {
+            animation-duration: .5s;
+            animation-name: g-dropdown-bounce-in-left;
+        } 
+
+        .g-dropdown-bounce-in-right.g-active {
+            animation-duration: .5s;
+            animation-name: g-dropdown-bounce-in-right;
+        } 
+
+        .g-dropdown-bounce-in-down.g-active {
+            animation-duration: .5s;
+            animation-name: g-dropdown-bounce-in-down;
+        }                
+    }
+
+    .g-fullwidth > {
+        .g-dropdown {
+            transition: none;
+        }
+
+        .g-fade.g-dropdown {
+            transition: opacity .3s ease-out, transform .3s ease-out;
+        }
+
+        .g-zoom.g-active {
+            animation-duration: .3s;
+            animation-name: g-dropdown-zoom;
+        }
+
+        .g-dropdown-bounce-in-left.g-active {
+            animation-duration: .5s;
+            animation-name: g-dropdown-bounce-in-left;
+        } 
+
+        .g-dropdown-bounce-in-right.g-active {
+            animation-duration: .5s;
+            animation-name: g-dropdown-bounce-in-right;
+        } 
+        
+        .g-dropdown-bounce-in-down.g-active {
+            animation-duration: .5s;
+            animation-name: g-dropdown-bounce-in-down;
+        }         
+    }
+}
+
+@keyframes g-dropdown-zoom {
+    0% {
+        opacity: 0;
+        transform: scale3d(.8, .8, .8);
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes g-dropdown-fade-in-up {
+    0% {
+        opacity: 0;
+        transform: translate3d(0, 30px, 0);
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes g-dropdown-bounce-in-left {
+  from, 60%, 75%, 90%, to {
+    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  }
+
+  0% {
+    opacity: 0;
+    transform: translate3d(-50px, 0, 0);
+  }
+
+  60% {
+    opacity: 1;
+    transform: translate3d(25px, 0, 0);
+  }
+
+  75% {
+    transform: translate3d(-10px, 0, 0);
+  }
+
+  90% {
+    transform: translate3d(5px, 0, 0);
+  }
+
+  to {
+    transform: none;
+  }
+}
+
+@keyframes g-dropdown-bounce-in-down {
+  from, 60%, 75%, 90%, to {
+    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  }
+
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -50px, 0);
+  }
+
+  60% {
+    opacity: 1;
+    transform: translate3d(0, 25px, 0);
+  }
+
+  75% {
+    transform: translate3d(0, -10px, 0);
+  }
+
+  90% {
+    transform: translate3d(0, 5px, 0);
+  }
+
+  to {
+    transform: none;
+  }
+}
+
+@keyframes g-dropdown-bounce-in-right {
+  from, 60%, 75%, 90%, to {
+    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  }
+
+  from {
+    opacity: 0;
+    transform: translate3d(50px, 0, 0);
+  }
+
+  60% {
+    opacity: 1;
+    transform: translate3d(-25px, 0, 0);
+  }
+
+  75% {
+    transform: translate3d(10px, 0, 0);
+  }
+
+  90% {
+    transform: translate3d(-5px, 0, 0);
+  }
+
+  to {
+    transform: none;
+  }
+}

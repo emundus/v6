@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields name="params">
+		<fieldset name="plg-dropdown-multi" label="COM_FABRIK_DATA">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_DROPDOWN_HELP_SERVER" />
+
+			<field name="sub_options"
+				type="suboptions"
+				label="COM_FABRIK_SUBOPTIONS"
+				description="PLG_ELEMENT_DROPDOWN_SUBOPTIONS_DESC" />
+
+			<field name="multiple"
+				type="radio"
+				default="0"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				label="PLG_ELEMENT_DROPDOWN_ALLOW_MULTISELECT_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+			<field name="dropdown_multisize"
+				type="text"
+				class="col-sm-2"
+				default="3"
+				description="PLG_ELEMENT_DROPDOWN_MULTISIZE_DESC"
+				label="PLG_ELEMENT_DROPDOWN_MULTISIZE_LABEL"
+				size="3" />
+
+		</fieldset>
+
+		<fieldset label="PLG_ELEMENT_DROPDOWN_FRONT_END_ADDITIONS" name="plg-dropdown-add">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_DROPDOWN_HELP_SERVER" />
+
+			<field name="allow_frontend_addtodropdown"
+				type="radio"
+				default="0"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				description="PLG_ELEMENT_DROPDOWN_EDIT_DROPDOWN_DESC"
+				label="PLG_ELEMENT_DROPDOWN_EDIT_DROPDOWN_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+			<field name="dd-allowadd-onlylabel"
+				type="radio"
+				default="0"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				description="PLG_ELEMENT_DROPDOWN_ONLY_ADD_LABEL_DESC"
+				label="PLG_ELEMENT_DROPDOWN_ONLY_ADD_LABEL_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+			<field name="dd-savenewadditions"
+				type="radio"
+				default="0"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				description="PLG_ELEMENT_DROPDOWN_SAVE_NEW_ADDITIONS_DESC"
+				label="PLG_ELEMENT_DROPDOWN_SAVE_NEW_ADDITIONS_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+		</fieldset>
+
+		<fieldset label="Advanced" name="plg-dropdown-advanced">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_DROPDOWN_HELP_SERVER" />
+
+			<field name="options_split_str"
+				type="text"
+				default=""
+				description="PLG_ELEMENT_DROPDOWN_SEPARATOR_DESC"
+				label="PLG_ELEMENT_DROPDOWN_SEPARATOR_LABEL" size="10" />
+
+			<field name="dropdown_populate"
+				type="fabrikeditor"
+				mode="php"
+				cols="60"
+				rows="6"
+				description="PLG_ELEMENT_DROPDOWN_POPULATE_DESC"
+				label="PLG_ELEMENT_DROPDOWN_POPULATE_LABEL" />
+
+		</fieldset>
+		
+		<fieldset label="PLG_ELEMENT_DROPDOWN_FORMATTING" name="plg-dropdown-formatting">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_DROPDOWN_HELP_SERVER" />
+
+			<field name="advanced_behavior"
+				type="radio"
+				default="0"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				label="PLG_ELEMENT_DROPDOWN_JQUERY_CHOSEN_LABEL"
+				description="PLG_ELEMENT_DROPDOWN_JQUERY_CHOSEN_DESC" >
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+			
+			<field name="bootstrap_class"
+				type="bootstrapfieldclass"
+				default="col-sm-6"
+				label="PLG_ELEMENT_BOOTSTRAP_CLASS_LABEL"
+				description="PLG_ELEMENT_BOOTSTRAP_CLASS_DESC" />
+
+		</fieldset>
+
+	</fields>
+	<fields>
+		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields" name="plg-element-dropdown" label="COM_FABRIK_OPTIONS">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_DROPDOWN_HELP_SERVER" />
+
+			<field name="hidden"
+				   type="radio"
+				   default="0"
+				   class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				   label="PLG_ELEMENT_DROPDOWN_HIDDEN_LABEL">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<field name="default"
+				type="fabrikeditor"
+				mode="php"
+				cols="60"
+				rows="6"
+				label="PLG_ELEMENT_DROPDOWN_DEFAULT_LABEL" />
+
+			<field name="eval"
+				type="radio"
+				default="0"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				label="PLG_ELEMENT_DROPDOWN_EVAL_LABEL" >
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+		</fieldset>
+	</fields>
+</form>

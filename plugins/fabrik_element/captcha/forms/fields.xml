@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields
+		addfieldpath="/administrator/components/com_fabrik/models/fields"
+		name="params">
+		<fieldset
+			name="plg-element-captcha"
+			label="COM_FABRIK_OPTIONS">
+
+			<field
+				type="helplink"
+				url="PLG_ELEMENT_CAPTCHA_HELP_SERVER" />
+
+			<field name="bootstrap_class"
+				type="bootstrapfieldclass"
+				default="col-sm-6"
+				label="PLG_ELEMENT_BOOTSTRAP_CLASS_LABEL"
+				description="PLG_ELEMENT_BOOTSTRAP_CLASS_DESC" />
+
+			<field name="captcha-showloggedin"
+				type="radio"
+				default="0"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				description="PLG_ELEMENT_CAPTCHA_SHOW_WHEN_LOGGED_IN_DESC"
+				label="PLG_ELEMENT_CAPTCHA_SHOW_WHEN_LOGGED_IN_LABEL">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<field name="captcha-method"
+				type="list"
+				default="standard"
+				description="PLG_ELEMENT_CAPTCHA_METHOD_DESC"
+				label="PLG_ELEMENT_CAPTCHA_METHOD_LABEL">
+				<option value="standard">Standard</option>
+				<option value="nocaptcha">reCaptcha (Checkbox) v2</option>
+				<option value="invisible">reCaptcha (Invisible) v2</option>
+				<option value="recaptcha">reCaptcha v1</option>
+			</field>
+		</fieldset>
+
+		<fieldset
+			label="PLG_ELEMENT_STANDARD_CAPTCHA_FIELDSET_LABEL"
+			name="plg-captcha-standard">
+
+			<field
+				type="helplink"
+				url="PLG_ELEMENT_CAPTCHA_HELP_SERVER" />
+
+			<field name="captcha-font-size"
+				type="text"
+				class="col-sm-2"
+				default="30"
+				description=""
+				label="PLG_ELEMENT_CAPTCHA_FONT_SIZE_LABEL"
+				size="3" />
+
+			<field name="captcha-angle"
+				type="text"
+				class="col-sm-2"
+				default="0"
+				description=""
+				label="PLG_ELEMENT_CAPTCHA_ANGLE_LABEL"
+				size="3" />
+
+			<field name="captcha-padding"
+				type="text"
+				class="col-sm-2"
+				default="10"
+				description=""
+				label="PLG_ELEMENT_CAPTCHA_PADDING_LABEL"
+				size="3" />
+
+			<!-- <field default="120" description="" label="PLG_ELEMENT_CAPTCHA_WIDTH_LABEL"
+				name="captcha-width" size="3" class="col-sm-2" type="text"/> -->
+
+			<!-- <field default="40" description="" label="PLG_ELEMENT_CAPTCHA_HEIGHT_LABEL"
+				name="captcha-height" size="3" class="col-sm-2" type="text"/> -->
+
+			<field name="captcha-chars"
+				type="text"
+				class="col-sm-2"
+				default="6"
+				description=""
+				label="PLG_ELEMENT_CAPTCHA_NUMBER_OF_CHARS_LABEL"
+				size="3" />
+
+			<field name="captcha-bg"
+				type="color"
+				default="ffffff"
+				description=""
+				label="PLG_ELEMENT_CAPTCHA_BACKGROUND_COLOR"
+				size="7" />
+
+			<field name="captcha-noise-color"
+				type="color"
+				default="0000ff"
+				description=""
+				label="PLG_ELEMENT_CAPTCHA_NOISE_COLOR"
+				size="7" />
+
+			<field name="captcha-text-color"
+				type="color"
+				default="0000ff"
+				description=""
+				label="PLG_ELEMENT_CAPTCHA_TEXT_COLOR"
+				size="7" />
+		</fieldset>
+
+		<fieldset
+			label="PLG_ELEMENT_RECAPTCHA_CAPTCHA_FIELDSET_LABEL"
+			name="plg-captcha-recaptcha">
+
+			<field
+				type="helplink"
+				url="PLG_ELEMENT_CAPTCHA_HELP_SERVER" />
+
+			<field name="recaptcha_publickey"
+				type="text"
+				description="PLG_ELEMENT_CAPTCHA_RECAPTCHA_PUBLIC_KEY_DESC"
+				label="PLG_ELEMENT_CAPTCHA_RECAPTCHA_PUBLIC_KEY_LABEL"
+				size="60" />
+
+			<field
+				default=""
+				description="PLG_ELEMENT_CAPTCHA_RECAPTCHA_PRIVATE_KEY_DESC"
+				label="PLG_ELEMENT_CAPTCHA_RECAPTCHA_PRIVATE_KEY_LABEL"
+				name="recaptcha_privatekey"
+				size="60"
+				type="text" />
+
+			<field name="recaptcha_lang"
+				type="text"
+				default="en"
+				description="PLG_ELEMENT_RECAPTCHA_LANG_DESC"
+				label="PLG_ELEMENT_RECAPTCHA_LANG"
+				size="10" />
+
+		</fieldset>
+
+	</fields>
+</form>

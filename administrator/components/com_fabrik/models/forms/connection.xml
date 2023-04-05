@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<form>
+	<fieldset addfieldpath="/administrator/components/com_banners/models/fields" name="details">
+
+		<field name="id"
+			type="text"
+			class="readonly"
+			default="0"
+			description="JGLOBAL_FIELD_ID_DESC"
+			label="JGLOBAL_FIELD_ID_LABEL"
+			readonly="true" />
+
+		<field name="description"
+			type="text"
+			description="COM_FABRIK_FIELD_DESCRIPTION_DESC"
+			label="COM_FABRIK_FIELD_DESCRIPTION_LABEL"
+			required="true"
+			size="40" />
+
+		<field name="host"
+			type="text"
+			description="COM_FABRIK_FIELD_HOST_DESC"
+			label="COM_FABRIK_FIELD_HOST_LABEL"
+			required="true"
+			size="30" />
+
+		<field name="database"
+			type="text"
+			description="COM_FABRIK_FIELD_DATABASE_DESC"
+			label="COM_FABRIK_FIELD_DATABASE_LABEL"
+			required="true"
+			size="30"/>
+
+		<field name="user"
+			type="text"
+			description="COM_FABRIK_FIELD_USER_DESC"
+			label="COM_FABRIK_FIELD_USER_LABEL"
+			required="true"
+			size="30"/>
+
+		<field name="password"
+			type="password"
+			filter="raw"
+			description="COM_FABRIK_FIELD_PASSWORD_DESC"
+			label="COM_FABRIK_FIELD_PASSWORD_LABEL"
+			size="30"/>
+
+		<field name="passwordConf"
+			type="password"
+			filter="raw"
+			description="COM_FABRIK_FIELD_PASSWORDCONF_DESC"
+			label="COM_FABRIK_FIELD_PASSWORDCONF_LABEL"
+			size="30"/>
+
+		<field name="published"
+			type="radio"
+		    class="btn btn-group"
+			default="0"
+			label="JSTATUS"
+			description="JFIELD_PUBLISHED_DESC"
+			>
+				<option value="1">JPUBLISHED</option>
+				<option value="0">JUNPUBLISHED</option>
+				<option value="-2">JTRASHED</option>
+		</field>
+
+	</fieldset>
+</form>

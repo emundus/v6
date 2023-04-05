@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-form-php">
+			<field
+				name="only_process_curl"
+				type="list"
+				class="col-sm-12"
+				default=""
+				description="PLG_FORM_PHP_PROCESS_CURL_DESC"
+				label="PLG_FORM_PHP_PROCESS_CURL_LABEL"
+				repeat="true"
+				>
+					<option value="">PLG_FORM_PHP_PROCESS_NEVER</option>
+					<option value="onBeforeLoad">PLG_FORM_PHP_PROCESS_ONBEFORELOAD</option>
+					<option value="onLoad">PLG_FORM_PHP_PROCESS_ONLOAD</option>
+					<option value="onJSReady">PLG_FORM_PHP_PROCESS_ONJSREADY</option>
+					<option value="onJSOpts">PLG_FORM_PHP_PROCESS_ONJSOPTS</option>
+					<option value="onCanEditGroup">PLG_FORM_PHP_PROCESS_ONCANEDITGROUP</option>
+					<option value="onBeforeProcess">PLG_FORM_PHP_PROCESS_ONBEFOREPROCESS</option>
+					<option value="onBeforeStore">PLG_FORM_PHP_PROCESS_ONBEFORESTORE</option>
+					<option value="onBeforeCalculations">PLG_FORM_PHP_PROCESS_ONBEFORECALCULATIONS</option>
+					<option value="onAfterProcess">PLG_FORM_PHP_PROCESS_ONAFTERPROCESS</option>
+					<option value="onError">PLG_FORM_PHP_PROCESS_ONERROR</option>
+					<option value="getTopContent">PLG_FORM_PHP_PROCESS_GETTOPCONTENT</option>
+					<option value="getBottomContent">PLG_FORM_PHP_PROCESS_GETBOTTOMCONTENT</option>
+					<option value="getEndContent">PLG_FORM_PHP_PROCESS_GETENDCONTENT</option>
+					<option value="onDeleteRowsForm">PLG_FORM_PHP_PROCESS_ONDELETEROWSFORM</option>
+					<option value="onAfterDeleteRowsForm">PLG_FORM_PHP_PROCESS_ONAFTERDELETEROWSFORM</option>
+					<option value="onSavePage">PLG_FORM_PHP_PROCESS_ONSAVEPAGE</option>
+					<option value="onElementCanUse">PLG_FORM_PHP_PROCESS_ONELEMENTCANUSE</option>
+					<option value="onElementCanView">PLG_FORM_PHP_PROCESS_ONELEMENTCANVIEW</option>
+					<option value="onElementContainerClass">PLG_FORM_PHP_PROCESS_ONELEMENTCONTAINERCLASS</option>
+			</field>
+
+			<field description="PLG_FORM_PHP_FILE_DESC" directory="plugins/fabrik_form/php/scripts/" hide_default="1" label="PLG_FORM_PHP_FILE_LABEL" name="form_php_file" repeat="true" type="filelist"/>
+
+			<field name="form_php_require_once"
+				type="radio"
+				class="btn-group"
+				default="0"
+				repeat = "true"
+				layout="joomla.form.field.radio.switcher"
+				label="PLG_FORM_PHP_REQUIRE_ONCE_LABEL"
+				description="PLG_FORM_PHP_REQUIRE_ONCE_DESC">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+			<field name="curl_code"
+      	type="fabrikeditor"
+				mode="php"
+				cols="60"
+				rows="6"
+				description="PLG_FORM_PHP_CODE_DESC"
+				label="PLG_FORM_PHP_CODE_LABEL"
+				repeat="true" />
+
+		</fieldset>
+	</fields>
+</form>

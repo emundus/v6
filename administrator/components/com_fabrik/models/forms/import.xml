@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<form>
+	<name>Import list from CSV</name>
+	
+	<fieldset name="details">
+			
+		<field description="COM_FABRIK_FIELD_CSV_FILE_DESC" label="COM_FABRIK_FIELD_CSV_FILE_LABEL" name="userfile" required="true" type="file"/>
+		
+	</fieldset>
+	
+	<fieldset name="drop">
+	
+		<field 
+			class="btn-group"
+			default="0"
+				layout="joomla.form.field.radio.switcher"
+			description="COM_FABRIK_FIELD_CSV_IMPORT_DROP_DATA_DESC"
+			label="COM_FABRIK_FIELD_CSV_IMPORT_DROP_DATA_LABEL"
+			name="drop_data"
+			type="radio">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+		</field>
+		
+	</fieldset>
+	
+	<fieldset name="append">
+		
+		<field name="overwrite"
+			type="radio"
+			class="btn-group"
+			default="0"
+				layout="joomla.form.field.radio.switcher"
+			description="COM_FABRIK_FIELD_CSV_IMPORT_OVERWRITE_DESC"
+			label="COM_FABRIK_FIELD_CSV_IMPORT_OVERWRITE_LABEL" >
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+		</field>
+		
+		<field name="inPutFormat"
+			type="list"
+			default="csv"
+			description="COM_FABRIK_FIELD_CSV_IMPORT_FORMAT_DESC"
+			label="COM_FABRIK_FIELD_CSV_IMPORT_FORMAT_LABEL" >
+				<option value="csv">CSV</option>
+				<option value="fabrikexcel">COM_FABRIK_FABRIK_EXCEL_IMPORT_FORMAT</option>
+				<option value="excel">COM_FABRIK_EXCEL_IMPORT_FORMAT</option>
+			</field>
+	</fieldset>
+	
+	<fieldset name="format">
+		
+		<field name="field_delimiter"
+			type="text"
+			class="col-sm-2"
+			size="2"
+			default=","
+			description="COM_FABRIK_FIELD_CSV_IMPORT_FIELD_DELIMITER_DESC"
+			label="COM_FABRIK_FIELD_CSV_IMPORT_FIELD_DELIMITER_LABEL" />
+		
+		<field name="tabdelimited" 
+			type="checkbox"
+			default="0"
+			description="COM_FABRIK_FIELD_CSV_IMPORT_TAB_DELIMITER_DESC"
+			label="COM_FABRIK_FIELD_CSV_IMPORT_TAB_DELIMITER_LABEL" />
+			
+		<field name="text_delimiter"
+			type="text"
+			class="col-sm-2"
+			default="&quot;"
+			description="COM_FABRIK_FIELD_CSV_IMPORT_TEXT_DELIMITER_DESC"
+			label="COM_FABRIK_FIELD_CSV_IMPORT_TEXT_DELIMITER_LABEL"
+			size="2" />
+			
+	</fieldset>
+	
+	<fieldset name="creation">
+		
+		<field description="COM_FABRIK_FIELD_CONNECTION_DESC" label="COM_FABRIK_FIELD_CONNECTION_LABEL" name="connection_id" required="true" type="connections"/>
+			
+		<field description="COM_FABRIK_FIELD_CSV_IMPORT_DB_TABLE_NAME_DESC" label="COM_FABRIK_FIELD_CSV_IMPORT_DB_TABLE_NAME_LABEL" name="db_table_name" required="true" type="field"/>
+				
+		<field description="COM_FABRIK_FIELD_CSV_IMPORT_LIST_LABEL_DESC" label="COM_FABRIK_FIELD_CSV_IMPORT_LIST_LABEL_LABEL" name="label" required="true" type="field"/>
+				
+			<field class="btn-group" default="0" description="COM_FABRIK_FIELD_CSV_IMPORT_CREATE_PK_DESC" label="COM_FABRIK_FIELD_CSV_IMPORT_CREATE_PK_LABEL" name="addkey" required="true" type="radio" layout="joomla.form.field.radio.switcher">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>		
+			</field>
+	</fieldset>
+</form>

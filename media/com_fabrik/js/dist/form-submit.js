@@ -1,0 +1,3 @@
+/*! Fabrik */
+
+var FbFormSubmit=new Class({elements:$H({}),running:!1,results:{},addElement:function(n,t){this.elements[n]=t},enabled:function(){return this.running},submit:function(n){this.running=!0,this.elements.each(function(n,t){this.results[t]=null,n.onsubmit(function(n){this.results[t]=n}.bind(this))}.bind(this)),this.checker=this.check.periodical(500,this,[n])},check:function(n){var t=Object.values(this.results);t.every(function(n){return!0===n})&&(clearInterval(this.checker),this.running=!1,n()),t.contains(!1)&&(this.running=!1,clearInterval(this.checker))}});

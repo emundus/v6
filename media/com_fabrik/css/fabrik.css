@@ -1,0 +1,728 @@
+.fabrikHide {
+	display: none !important;
+}
+
+.listfilter {
+	text-align: right;
+}
+
+.fabrikShow {
+	display: block;
+}
+
+div.calendar {
+	z-index: 99999;
+}
+
+div.calendar table {
+	width: 100%;
+}
+div.calendar .headrow .nav {display:table-cell;}
+
+.lt-ie9 a.close {
+	background-image: url(../images/delete.png);
+}
+
+.lt-ie9 a.expand {
+	background-image: url(../images/maximize.png);
+	width: 16px;
+	height: 16px;
+	margin-top: -3px;
+}
+
+/* Otherwise <a> can have a smaller height than the image (or other content) it contains,
+which means the tip appears too low and is hence toggled off again, if the mouse cursor is on
+the part of the image 'above' the top of the <a>'
+*/
+a.fabrikTip {
+	display: inline-block;
+}
+
+/** bootstrap 3 (possibly just t3 framework templates) remove the label if it has a tip on it
+when you move the mouse out of the label */
+label.fabrikLabel.fabrikTip, span.fabrikTip {
+	display:inline!important
+}
+
+/** bootstrap 3 fix */
+.fabrikButtonsContainer  li.dropdown {
+	display:inline!important
+}
+
+/*** stoopid beez20 fixes */
+#main .fabrikForm  a:hover {
+	color: #000 !important;
+	/* background-color: transparent !important; */
+}
+
+#main .floating-tip-wrapper ul,
+ul.slider-labels {
+	list-style: none;
+}
+
+/**start: flexible box model short cuts **/
+.displayBox {
+	display: -webkit-box;
+	display: -moz-box;
+	display: box;
+	moz-box-pack: center;
+	box-pack: center;
+}
+
+.mozilla .displayBox,.webkit .displayBox {
+	/* ff needs to stipulate a width otherwise box-flex is not applied */
+	width: 100%;
+}
+
+.boxFlex {
+	-webkit-box-flex: 1;
+	-moz-box-flex: 1;
+	box-flex: 1;
+}
+/**end: flexible box model short cuts **/
+#fabrikOverlay {
+	background-color: #000000;
+	cursor: pointer;
+	left: 0;
+	top: 0;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: 9999;
+}
+
+#fbPackageLoader {
+	position: absolute;
+	background-color: #fff;
+	padding: 20px;
+	font-size: 2em;
+	border: 2px solid #666;
+	border-radius: 6px;
+	-moz-border-radius: 6px;
+}
+
+.fbPackageStatus {
+	position: absolute;
+	top: 50%;
+}
+
+/****************************************/
+/****** mootools spinner css*************/
+/****************************************/
+.spinner {
+	position: absolute;
+	opacity: 0.9;
+	filter: alpha(opacity =     90);
+	-ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=90 );
+	z-index: 999;
+	background: #fff;
+	border-radius: 2px;
+}
+
+.spinner-msg {
+	text-align: center;
+	font-weight: bold;
+}
+
+.spinner-img {
+	background: url(../images/ajax-loader.gif) no-repeat;
+	width: 24px;
+	height: 24px;
+	margin: 0 auto;
+}
+
+/****************************************/
+/****** window styling ******************/
+/****************************************/
+
+.fabrikWindow .dragger i,
+.fabrikWindow .dragger span {
+	transform:rotate(90deg);
+	-ms-transform:rotate(90deg); /* IE 9 */
+	-moz-transform:rotate(90deg); /* Firefox */
+	-webkit-transform:rotate(90deg); /* Safari and Chrome */
+	-o-transform:rotate(90deg); /* Opera */
+}
+.fabrikWindow .dragger i{
+	 margin-left: 5px;
+    margin-top: 8px;
+}
+.fabrikWindow {
+	z-index: 1010; /* one level under Bootstrap tips*/
+	position: absolute !important;
+	border-radius: 7px;
+	-moz-border-radius: 7px;
+	border: 1px solid #ccc;
+	min-height: 30px;
+	background-color: #fff;
+	box-shadow: 2px 5px 5px #888;
+	-moz-box-shadow: 2px 2px 2px #888;
+	-webkit-box-shadow: 2px 2px 2px #888;
+	background-color: #fff !important;
+}
+
+div.popover {
+	z-index: 1051 !important;
+}
+
+.fabrikWindow.modal {
+	display: block;
+	z-index: 1050 !important;
+	overflow: hidden !important;
+}
+
+.auto-complete-container.advanced {
+	z-index: 11000;
+}
+
+.fabrikWindow-modal{
+	z-index: 10001;
+}
+
+.itemContent {
+	margin: auto;
+	overflow: auto;
+	height: 100%;
+	text-align: left;
+}
+
+.itemContentPadder {
+	padding: 10px;
+}
+
+.draggable {
+	cursor: move;
+}
+
+
+.slick-list.draggable {
+	cursor: auto;
+}
+
+.draghandle {
+	background: #E4E4E4 url(../images/vert-drag.png) no-repeat center center !important;
+	margin:3px 2.5%;
+	cursor: move;
+	width: 5%;
+	border-radius: 7px !important;
+	border: 2px solid white;
+}
+
+.handle {
+	border-radius: 7px 7px 0px 0px;
+	-moz-border-radius: 7px 7px 0px 0px;
+	background: #ccc;
+	text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25);
+	filter: progid:    DXImageTransform.Microsoft.gradient(    startColorstr=
+
+
+		'#cccccc', endColorstr=    '#666666' ); /* for IE < 10 */
+	background: -webkit-gradient(linear, left top, left bottom, from(#eee),
+		to(#ccc) ); /* for webkit browsers */
+	background: -moz-linear-gradient(top, #eee, #ccc);
+	background-image: -ms-linear-gradient(top, #eee, #ccc);
+	padding: 4px 11px;
+	height: 15px;
+}
+
+.expand {
+	position: absolute;
+	right: 20px;
+	top: 6px;
+}
+
+.fabrikWindow.modal .expand{
+	right: 40px;
+	top: 14px;
+}
+
+.close {
+	position: absolute;
+	right: 0;
+	top: 5px;
+}
+
+.closeFabWin {
+	position: absolute;
+	right: 15px;
+	top: 15px;
+}
+
+span.handlelabel {
+	color: #444444;
+	display: block;
+	font-size: 0.8em;
+	height: 13px;
+}
+
+.ui-resizable { position: relative;}
+.ui-resizable-handle { position: absolute;font-size: 0.1px; display: block; }
+.ui-resizable-disabled .ui-resizable-handle, .ui-resizable-autohide .ui-resizable-handle { display: none; }
+.ui-resizable-n { cursor: n-resize; height: 7px; width: 100%; top: -5px; left: 0; }
+.ui-resizable-s { cursor: s-resize; height: 7px; width: 100%; bottom: -5px; left: 0; }
+.ui-resizable-e { cursor: e-resize; width: 7px; right: -5px; top: 0; height: 100%; }
+.ui-resizable-w { cursor: w-resize; width: 7px; left: -5px; top: 0; height: 100%; }
+.ui-resizable-se { cursor: se-resize; width: 12px; height: 12px; right: 1px; bottom: 1px; }
+.ui-resizable-sw { cursor: sw-resize; width: 9px; height: 9px; left: -5px; bottom: -5px; }
+.ui-resizable-nw { cursor: nw-resize; width: 9px; height: 9px; left: -5px; top: -5px; }
+.ui-resizable-ne { cursor: ne-resize; width: 9px; height: 9px; right: -5px; top: -5px;}
+
+/* ensure overlays go above windows */
+.floating-tip,#fbPackageLoader {
+	z-index: 10001;
+}
+
+.floating-tip ul {
+	padding: 0;
+	margin: 0;
+	min-width: 100px;
+}
+
+.floating-tip>span {
+	display: block;
+}
+
+.floating-tip ul.fabrikElementContainer li {
+	float: none !important;
+}
+
+.floating-tip ul.fabrikElementContainer .fabrik_subelement {
+	width: 100% !important;
+	float: none !important;
+}
+
+.floating-tip ul.fabrik_buttons {
+	list-style: none;
+	margin-top: 10px;
+}
+
+.floating-tip-wrapper.inlineedit .ajax-controls {
+	float: left;
+	width: 48%;
+}
+
+.floating-tip-wrapper.inlineedit .ajax-controls a {
+	display: inline;
+	padding: 5px 16px;
+	text-decoration: none;
+}
+
+.floating-tip-wrapper.inlineedit {
+	text-align: left;
+	min-width: 220px;
+	text-align: left;
+	font-size: 1.05em;
+	z-index:999;
+}
+
+ul.validation-notices{
+	padding: 3px;
+	margin: 0;
+}
+
+/** Inline edit focus class */
+.focusClass {
+	box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.25);
+	-moz-box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.25);
+	-webkit-box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.25);
+}
+
+/****************************************/
+/*** end window styling *****************/
+/****************************************/
+
+/****************************************/
+/*** basic admin form css ***************/
+/****************************************/
+.adminform {
+	background-color: #FFFFFF;
+	padding: 5px 17px 17px;
+	border: 1px solid #CCCCCC;
+	margin-bottom: 10px;
+	text-align: left;
+}
+
+fieldset.adminform fieldset.radio,fieldset.panelform fieldset.radio,fieldset.adminform-legacy fieldset.radio
+	{
+	border: 0 none;
+	float: left;
+	margin: 0 0 5px;
+	padding: 0;
+}
+
+fieldset.adminform label,fieldset.adminform span.faux-label {
+	clear: left;
+	display: block;
+	float: left;
+	margin: 5px 0;
+	min-width: 135px;
+	padding: 0 5px 0 0;
+}
+
+fieldset.adminform ul {
+	list-style-type: none !important;
+}
+
+fieldset.adminform fieldset.radio label,fieldset.panelform fieldset.radio label
+	{
+	clear: none;
+	display: inline;
+	float: left;
+	min-width: 60px;
+	padding-left: 0;
+	padding-right: 10px;
+}
+
+fieldset.adminform input,fieldset.adminform textarea,fieldset.adminform select,fieldset.adminform img,fieldset.adminform button
+	{
+	float: left;
+	margin: 5px 5px 5px 0;
+	width: auto;
+}
+
+/*****************************************************/
+/********** the context menu that appears ************/
+/********** when you click row checkboxes ************/
+/*****************************************************/
+
+/*** adds css arrow and borders around the tip ***/
+.floating-tip {
+	z-index: 999;
+}
+
+.floating-tip ul {
+	list-style: none;
+	z-index: 999;
+}
+
+.floating-tip li a:hover {
+	background-color: #DBF5FA;
+	color: #000;
+}
+
+.floating-tip span {
+	padding: 2px;
+}
+
+.floating-tip a {
+	text-decoration: none;
+	display: block;
+	padding: 5px 16px;
+}
+
+.floating-tip-wrapper {
+	z-index: 10001;
+	font-size: 0.8em;
+	min-width: 100px;
+	text-align: center;
+	color: black;
+	background: #fff;
+	/** will add a border round the shadow **/
+	background-clip: padding-box;
+	box-shadow: 0 0px 2px rgba(0, 0, 0, 0.5);
+	border: 5px solid #111;
+	border: 5px solid rgba(0, 0, 0, 0.5);
+	border-radius: 3px;
+	-webkit-transition: opacity 0.5s linear;
+	-moz-transition: opacity 0.5s linear;
+	-ms-transition: opacity 0.5s linear;
+	-o-transition: opacity 0.5s linear;
+	transition: opacity 0.5s linear;
+}
+
+/** set transparent borders for top/bottom tips */
+.floating-tip-wrapper .floating-tip.tipbottom:before,.floating-tip-wrapper .floating-tip.tipbottom:after,.floating-tip-wrapper .floating-tip.tiptop:before,.floating-tip-wrapper .floating-tip.tiptop:after
+	{
+	content: "";
+	position: absolute;
+	border-left: 10px solid transparent;
+	border-right: 10px solid transparent;
+	/** center the tip - left 50% plus border offset in margin-left*/
+	left: 50%;
+	margin-left: -10px;
+}
+
+/* bottom position so arrow @ top **/
+.floating-tip-wrapper .floating-tip.tipbottom:before {
+	border-bottom: 10px solid #111;
+	border-bottom: 10px solid rgba(0, 0, 0, 0.5);
+	margin-top: -15px;
+}
+
+.floating-tip-wrapper .floating-tip.tipbottom:after {
+	border-bottom: 10px solid #fff;
+	top: 0;
+	margin-top: -10px;
+	z-index: 1;
+}
+
+/** top position so arrow should be @ bottom */
+.floating-tip-wrapper .floating-tip.tiptop:before {
+	border-top: 10px solid #111;
+	border-top: 10px solid rgba(0, 0, 0, 0.5);
+	bottom: -15px;
+}
+
+.floating-tip-wrapper .floating-tip.tiptop:after {
+	border-top: 10px solid #fff;
+	margin-top: 0px;
+}
+
+/** set transparent borders for right/left tips */
+.floating-tip-wrapper .floating-tip.tipright:before,.floating-tip-wrapper .floating-tip.tipright:after,.floating-tip-wrapper .floating-tip.tipleft:before,.floating-tip-wrapper .floating-tip.tipleft:after
+	{
+	content: "";
+	position: absolute;
+	border-top: 10px solid transparent;
+	border-bottom: 10px solid transparent;
+	/** center the tip - top 50% plus border offset in margin-top*/
+	top: 50%;
+	margin-top: -10px;
+}
+
+/** right position so arrow should be @ left */
+.floating-tip-wrapper .floating-tip.tipright:before {
+	border-right: 10px solid #111;
+	border-right: 10px solid rgba(0, 0, 0, 0.5);
+	left: 0;
+	margin-left: -15px;
+}
+
+.floating-tip-wrapper .floating-tip.tipright:after {
+	border-right: 10px solid #fff;
+	margin-left: -9px;
+	left: 0;
+}
+
+/** left position so arrow should be @ right */
+.floating-tip-wrapper .floating-tip.tipleft:before {
+	border-left: 10px solid #111;
+	border-left: 10px solid rgba(0, 0, 0, 0.5);
+	margin-right: -15px;
+	right: 0;
+}
+
+.floating-tip-wrapper .floating-tip.tipleft:after {
+	border-left: 10px solid #fff;
+	right: 0;
+	margin-right: -9px;
+}
+
+/** inline edit error message **/
+.inlineedit .fabrikError{
+	color: #c00;
+	background: #EFE7B8;
+	padding: 5px;
+	font-weight: bold;
+}
+
+/*********************************************************/
+/****** Basis table styling (used for filters in viz) ****/
+/*********************************************************/
+
+table.fabrikList {
+	clear:right;
+	border-collapse: collapse;
+	margin-top: 10px;
+	color: #444444;
+}
+
+table .fabrik___heading span.heading{
+	white-space: nowrap;
+}
+
+div.fabrik___heading{
+	white-space: nowrap;
+	font-weight: bold;
+}
+
+table.fabrikList td,
+table.fabrikList th{
+	padding: 5px;
+	border: 1px solid #cccccc;
+}
+
+table.fabrikList th{
+	background: -moz-linear-gradient(center top , #F3F3F3, #D7D7D7) repeat scroll 0 0 #E7E7E7;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#D7D7D7', endColorstr='#F3F3F3'); /* for IE < 10*/
+	background: -webkit-gradient(linear, left top, left bottom, from(#F3F3F3),
+		to(#D7D7D7) );
+	background-image: -ms-linear-gradient(top, #F3F3F3, #D7D7D7);
+}
+
+table.fabrikList .oddRow0 {
+	background-color: #FAFAFA;
+}
+
+table.fabrikList .oddRow1 {
+	background-color: #Efefef;
+}
+
+/*********************************************************/
+/************  End basic table styling *******************/
+/*********************************************************/
+
+/** repeat data ***/
+
+td.repeat-merge,
+td.repeat-reduce {
+	padding: 0 !important;
+	vertical-align: top;
+}
+
+td.repeat-merge ul.fabrikRepeatData li,
+td.repeat-reduce ul.fabrikRepeatData li {
+	padding: 5px !important;
+	border-bottom: 1px solid #CCCCCC;
+}
+/*********************************************************/
+/************  Misc. Workarounds *************************/
+/*********************************************************/
+
+/** add a top margin for read only elements **/
+.fabrikElementReadOnly {
+	margin-top: 10px;
+}
+
+/** Workaround for Gantry's date class stomping on our date element class **/
+.fabrikGroup ul li.date {
+	font-weight: normal;
+	text-align: left;
+}
+.fabrikGroup ul li.date span {
+	display:inline
+}
+
+/** Bootstrap google maps fun */
+
+.fabrikElement .map img,
+.fabrik_visualization .mapviz img {
+  max-width: none;
+}
+
+[class^="icon-"].small{
+	font-size: 10px;
+}
+
+.fabrikElement .map label {
+  width: auto; display:inline;
+}
+
+img[src*="gstatic.com/"], img[src*="googleapis.com/"]  {
+    max-width: 99999px;
+}
+
+/** Bootstrap select list in fieldset.row-fluid would auto close **/
+
+fieldset.row-fluid:before {
+    content: normal;
+}
+
+.fabrikElement select[multiple], .fabrikElement select[size] {
+    height: auto !important;
+}
+
+/** Remove bootstrap textarea fixed height **/
+
+textarea.fabrikinput {
+	height: initial;
+}
+/** Time Picker button group alignment **/
+
+.fbDateTime .btn-group + .btn-group {
+    margin-left: 0px;
+}
+
+/** file upload styling **/
+
+.plupload_content ul {
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+#main .fabrikForm .plupload_content  .plupload_file_action a:hover,
+#main .fabrikForm .plupload_content  .plupload_file_action a:active,
+#main .fabrikForm .plupload_content  .plupload_file_action a:focus {
+	background: url("../../../plugins/fabrik_element/fileupload/lib/plupload/img/done.gif") repeat scroll 0 0 transparent;
+}
+
+select.fabrikinput[multiple],
+select.fabrik_filter[multiple] {
+	height: auto;
+}
+
+/** Fix pointer for form labels which are form labels without tooltips - checkbox / radio labels stay pointer **/
+form.fabrikForm label {
+	cursor: default;
+}
+
+form.fabrikForm label.fabrikTip,
+form.fabrikForm label.checkbox,
+form.fabrikForm label.radio {
+	cursor: pointer;
+}
+
+/** radius search responsive **/
+
+@media only screen and (max-device-width: 499px)
+{
+	.fabrikWindow.modal {
+		max-width:100% !important;
+		left:0 !important;
+	}
+
+	.fabrikWindow.modal .contentWrapper {
+		max-width:100% !important;
+	}
+
+	.fabrikWindow .radius_search table.radius_table {
+		table-layout:fixed;
+		max-width:100%;
+	}
+
+	.fabrikWindow .radius_search table.radius_table td:first-child {
+		width:70px;
+	}
+
+	.radius_search_geocode_map {
+		width:300px;
+		height:275px;
+		margin-top:15px;
+	}
+}
+
+@media only screen and (min-device-width: 500px)
+{
+	.radius_search_geocode_map {
+		width:400px;
+		height:275px;
+		margin-top:15px;
+	}
+}
+
+/** Fix for some templates without input-append, like Purity III */
+
+.input-append input, .input-append select {
+	display: inline-block;
+}
+
+/** Prevent line breaks between sort icon and heading label in lists */
+
+.fabrikTag {
+	white-space: nowrap;
+}
+
+.chzn-container {
+	text-align: start;
+}
+
+/** Prevent links from showing in print view - Bootstrap related */
+
+@media print {
+	a[href]:after { content: none !important; }
+	.fabrikPrintIcon { display: none !important; }
+	table {
+		page-break-inside: avoid;
+	}
+
+}

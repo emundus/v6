@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension client="administrator" method="upgrade" type="module" version="4">
+	<name>mod_fabrik_quickicon</name>
+	<author>Media A-Team, Inc.</author>
+	<creationDate>March 2023</creationDate>
+	<copyright>Copyright (C) 2005-2023 Media A-Team, Inc. - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>rob@pollen-8.co.uk</authorEmail>
+	<authorUrl>www.fabrikar.com</authorUrl>
+	<version>4.0gamma3</version>
+	<description>MOD_FABRIK_QUICKICON_XML_DESCRIPTION</description>
+	<files>
+		<filename module="mod_fabrik_quickicon">mod_fabrik_quickicon.php</filename>
+		<filename>helper.php</filename>
+		<filename>index.html</filename>
+		<folder>language</folder>
+		<folder>tmpl</folder>
+	</files>
+	<config>
+		<fields name="params">
+			<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields" name="advanced">
+
+				<field name="layout" type="list" default="menu" label="JFIELD_ALT_LAYOUT_LABEL" description="JFIELD_ALT_MODULE_LAYOUT_DESC">
+					<option value="menu">menu</option>
+					<option value="default">default</option>
+				</field>
+
+				<field name="show_menu_links" type="list" default="1" layout="joomla.form.field.radio.switcher" description="MOD_FABRIK_QUICKICON_SHOW_MENU_LINKS_DESC" label="MOD_FABRIK_QUICKICON_SHOW_MENU_LINKS">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+			</fieldset>
+		</fields>
+	</config>
+</extension>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-element-folder">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_FOLDER_HELP_SERVER" />
+
+			<field description="PLG_ELEMENT_FOLDER_PATH_DESC" label="PLG_ELEMENT_FOLDER_PATH_LABEL" name="fbfolder_path" size="20" type="text"/>
+
+			<field name="bootstrap_class"
+				type="bootstrapfieldclass"
+				default="col-sm-6"
+				label="PLG_ELEMENT_BOOTSTRAP_CLASS_LABEL"
+				description="PLG_ELEMENT_BOOTSTRAP_CLASS_DESC" />
+
+			<field default="1"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				label="PLG_ELEMENT_FOLDER_LIST_FOLDERS_LABEL" name="folder_listfolders" type="radio">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+			<field default="0"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				label="PLG_ELEMENT_FOLDER_LIST_FILES_LABEL" name="folder_listfiles" type="radio">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+			<field default="1"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				label="PLG_ELEMENT_FOLDER_ALLOW_NONE_LABEL" name="folder_allownone" type="radio">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+		</fieldset>
+
+		</fields>
+</form>

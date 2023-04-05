@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields>
+
+		<fieldset name="plg-element-cascadingdropdown" label="COM_FABRIK_OPTIONS">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_CASCADINGDROPDOWN_HELP_SERVER" />
+
+			<field name="hidden"
+				type="radio"
+				default="0"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				label="PLG_ELEMENT_CDD_HIDDEN"
+				description="PLG_ELEMENT_CDD_HIDDEN_DESC"
+			>
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<field name="eval"
+				type="radio"
+				default="0"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				label="PLG_ELEMENT_CDD_EVAL_LABEL"
+				description="PLG_ELEMENT_CDD_EVAL_DESC"
+			>
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<field name="default"
+				type="fabrikeditor"
+				mode="php"
+				cols="60"
+				rows="6"
+				label="PLG_ELEMENT_CDD_DEFAULT_LABEL"
+				description="PLG_ELEMENT_CDD_DEFAULT_DESC"
+			/>
+
+		</fieldset>
+
+	</fields>
+
+	<fields name="params">
+
+		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields" name="plg-element-cascadingdropdown-params" label="COM_FABRIK_DATA">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_CASCADINGDROPDOWN_HELP_SERVER" />
+
+			<field name="cdd_display_type"
+				type="list"
+				default="dropdown"
+				label="PLG_ELEMENT_CDD_DISPLAY_AS_LABEL"
+				description="PLG_ELEMENT_CDD_DISPLAY_AS_LABEL">
+					<option value="dropdown">PLG_ELEMENT_CDD_DROPDOWN</option>
+					<option value="auto-complete">PLG_ELEMENT_CDD_AUTOCOMPLETE</option>
+					<option value="checkbox">PLG_ELEMENT_CDD_CHECKBOX_LIST</option>
+					<option value="multilist">PLG_ELEMENT_CDD_MULTILIST</option>
+					<option value="radio">PLG_ELEMENT_CDD_RADIO_LIST</option>
+				</field>
+
+			<field name="cascadingdropdown_connection"
+				type="connections"
+				label="PLG_ELEMENT_CDD_CONNECTION_LABEL" />
+
+			<field name="cascadingdropdown_table"
+				type="fabriktables"
+				connection_in_repeat="false"
+				description="PLG_ELEMENT_CDD_TABLE_DESC"
+				label="PLG_ELEMENT_CDD_TABLE_LABEL"
+				observe="params_cascadingdropdown_connection" />
+
+			<field name="cascadingdropdown_id"
+				type="element"
+				connection="params_cascadingdropdown_connection"
+				connection_in_repeat="false"
+				description="PLG_ELEMENT_CDD_ID_DESC"
+				excludejoined="1"
+				highlightpk="true"
+				label="PLG_ELEMENT_CDD_ID_LABEL"
+				showintable="true"
+				table="params_cascadingdropdown_table" />
+
+			<field name="cascadingdropdown_label"
+				type="element"
+				connection="params_cascadingdropdown_connection"
+				connection_in_repeat="false"
+				description="PLG_ELEMENT_CDD_LABEL_DESC"
+				excludejoined="1"
+				label="PLG_ELEMENT_CDD_LABEL_LABEL"
+				table="params_cascadingdropdown_table" />
+
+			<field name="cascadingdropdown_label_concat"
+				type="textarea"
+				cols="40"
+				description="PLG_ELEMENT_CDD_LABEL_CONCAT_DESC"
+				label="PLG_ELEMENT_CDD_LABEL_CONCAT_LABEL"
+				rows="8" />
+
+			<field name="placeholder"
+				type="text"
+				description="PLG_ELEMENT_CDD_PLACEHOLDER_DESC"
+				label="PLG_ELEMENT_CDD_PLACEHOLDER_LABEL" />
+
+			<field name="max-width"
+				type="text"
+				size="10"
+				class="col-sm-2"
+				description="PLG_ELEMENT_CDD_DROPDOWN_MAXWIDTH_DESC"
+				label="PLG_ELEMENT_CDD_DROPDOWN_MAXWIDTH_LABEL"/>
+
+		</fieldset>
+
+		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields" name="plg-cascadingdropdown-watch" label="PLG_ELEMENT_CDD_WATCH">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_CASCADINGDROPDOWN_HELP_SERVER" />
+
+			<field name="cascadingdropdown_observe"
+				type="listfields"
+				description="PLG_ELEMENT_CDD_WATCH_DESC"
+				label="PLG_ELEMENT_CDD_WATCH_LABEL" />
+
+			<field name="cascadingdropdown_key"
+				type="element"
+				connection="params_cascadingdropdown_connection"
+				connection_in_repeat="false"
+				description="PLG_ELEMENT_CDD_KEY_DESC"
+				label="PLG_ELEMENT_CDD_KEY_LABEL"
+				table="params_cascadingdropdown_table" />
+
+		</fieldset>
+
+		<fieldset name="cascadingdropdown-please-select" label="COM_FABRIK_PLEASE_SELECT">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_CASCADINGDROPDOWN_HELP_SERVER" />
+
+			<field name="cascadingdropdown_showpleaseselect"
+				type="radio"
+				default="1"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				description="PLG_ELEMENT_CDD_SHOW_PLEASE_SELECT_DESC"
+				label="PLG_ELEMENT_CDD_SHOW_PLEASE_SELECT_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+			<field name="cascadingdropdown_noselectionvalue"
+				type="text"
+				description="PLG_ELEMENT_CDD_NO_SELECTION_VALUE_DESC"
+				label="PLG_ELEMENT_CDD_NO_SELECTION_VALUE_LABEL"
+				size="35" />
+
+			<field name="cascadingdropdown_noselectionlabel"
+				type="text"
+				description="PLG_ELEMENT_CDD_NO_SELECTION_LABEL_DESC"
+				label="PLG_ELEMENT_CDD_NO_SELECTION_LABEL_LABEL"
+				size="35" />
+
+		</fieldset>
+
+		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields" name="plg-cascadingdropdown-advanced" label="COM_FABRIK_ADVANCED">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_CASCADINGDROPDOWN_HELP_SERVER" />
+
+			<field name="cascadingdropdown_filter"
+				type="fabrikeditor"
+				mode="mysql"
+				cols="60"
+				rows="6"
+				description="PLG_ELEMENT_CDD_WHERE_DESC"
+				label="PLG_ELEMENT_CDD_WHERE_LABEL" />
+
+			<field name="cdd_join_label_eval"
+			 	type="fabrikeditor"
+				mode="php"
+				cols="60"
+				rows="6"
+				description="PLG_ELEMENT_CDD_OPTIONS_EVAL_DESC"
+				label="PLG_ELEMENT_CDD_OPTIONS_EVAL_LABEL" />
+
+		</fieldset>
+
+		<fieldset label="COM_FABRIK_LAYOUT"
+		          name="plg-databasejoin-formatting">
+
+			<field type="helplink"
+			       url="PLG_ELEMENT_CASCADINGDROPDOWN_HELP_SERVER"/>
+
+			<field name="advanced_behavior"
+			       type="radio"
+			       default="0"
+			       class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+			       label="PLG_ELEMENT_DROPDOWN_JQUERY_CHOSEN_LABEL"
+			       description="PLG_ELEMENT_DROPDOWN_JQUERY_CHOSEN_DESC" >
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<!-- Yes, it's called dbjoin_, don't ask, don't change -->
+			<field name="dbjoin_options_per_row"
+			       type="width"
+			       class="col-sm-2"
+			       default="1"
+			       description="PLG_ELEMENT_CDD_OPTIONS_PER_ROW_DESC"
+			       label="PLG_ELEMENT_CDD_OPTIONS_PER_ROW_LABEL"
+			       size="2"/>
+
+		</fieldset>
+		<fieldset name="plg-cascadingdropdown-frontend" label="COM_FABRIK_FRONT_END">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_CASCADINGDROPDOWN_HELP_SERVER" />
+
+			<field name="cascadingdropdown_readonly_link"
+				type="radio"
+				default="0"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				description="PLG_ELEMENT_CDD_READONLY_LINK_DESC"
+				label="PLG_ELEMENT_CDD_READONLY_LINK_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+			<field name="bootstrap_class"
+				default="col-sm-8"
+				type="bootstrapfieldclass"
+				description="PLG_ELEMENT_CDD_CLASS_DESC"
+				label="PLG_ELEMENT_CDD_CLASS_LABEL" />
+
+		</fieldset>
+
+	</fields>
+</form>

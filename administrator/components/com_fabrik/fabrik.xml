@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension client="site" method="upgrade" type="component" version="4">
+	<name>com_fabrik</name>
+    <author>Henk van Klinken</author>
+    <creationDate>March 2023</creationDate>
+    <copyright>Copyright (C) 2005-2023 Media A-Team, Inc. - All rights reserved.</copyright>
+    <license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<version>4.0gamma3</version>
+	<description>COM_FABRIK_XML_DESCRIPTION</description>
+
+	<scriptfile>com_fabrik.manifest.class.php</scriptfile>
+
+	<files folder="site">
+		<folder>controllers</folder>
+		<folder>helpers</folder>
+		<folder>language</folder>
+		<folder>layouts</folder>
+		<folder>libs</folder>
+		<folder>models</folder>
+		<folder>views</folder>
+		<file>controller.php</file>
+		<file>fabrik.php</file>
+		<file>router.php</file>
+		<file>user_ajax_example.php</file>
+	</files>
+
+	<media folder="media">
+		<folder>com_fabrik/images</folder>
+		<folder>com_fabrik/css</folder>
+		<folder>com_fabrik/js</folder>
+		<file>com_fabrik/index.html</file>
+	</media>
+
+	<administration>
+		<menu img="../administrator/components/com_fabrik/images/fabrik.png" view="home">com_fabrik</menu>
+		<submenu>
+			<menu alt="Home" img="../administrator/components/com_fabrik/images/fabrik.png" link="option=com_fabrik&amp;view=home" view="home">Home</menu>
+			<menu alt="Lists" img="../administrator/components/com_fabrik/images/lists.png" link="option=com_fabrik&amp;view=lists" view="lists">com_fabrik_lists</menu>
+			<menu alt="Forms" img="../administrator/components/com_fabrik/images/forms.png" link="option=com_fabrik&amp;view=forms" view="forms">com_fabrik_forms</menu>
+			<menu alt="Groups" img="../administrator/components/com_fabrik/images/groups.png" link="option=com_fabrik&amp;view=groups" view="groups">com_fabrik_groups</menu>
+			<menu alt="Elements" img="../administrator/components/com_fabrik/images/elements.png" link="option=com_fabrik&amp;view=elements" view="elements">com_fabrik_elements</menu>
+			<menu alt="Visualizations" img="../administrator/components/com_fabrik/images/visualizations.png" link="option=com_fabrik&amp;view=visualizations" view="visualizations">com_fabrik_visualizations</menu>
+			<menu alt="Connections" img="../administrator/components/com_fabrik/images/connections.png" link="option=com_fabrik&amp;view=connections" view="connections">com_fabrik_connections</menu>
+			<menu alt="Schedule" img="../administrator/components/com_fabrik/images/schedules.png" link="option=com_fabrik&amp;view=crons" view="crons">com_fabrik_schedule</menu>
+		</submenu>
+
+		<files folder="admin">
+
+			<file>fabrik.php</file>
+			<folder>sql</folder>
+			<folder>classes</folder>
+			<folder>contentelements</folder>
+			<folder>controllers</folder>
+			<folder>helpers</folder>
+			<folder>forms</folder>
+			<folder>images</folder>
+			<folder>language</folder>
+			<folder>layouts</folder>
+			<folder>models</folder>
+			<folder>overrides</folder>
+			<folder>tables</folder>
+			<folder>views</folder>
+			<file>access.xml</file>
+			<file>config.xml</file>
+			<file>controller.php</file>
+			<file>header.php</file>
+			<file>headings.css</file>
+			<file>index.html</file>
+		</files>
+
+	</administration>
+
+	<install>
+		<sql>
+			<file charset="utf8" driver="mysqli">sql/install.mysqli.uft8.sql</file>
+		</sql>
+	</install>
+
+	<uninstall>
+		<sql>
+			<file charset="utf8" driver="mysqli">sql/uninstall.mysqli.uft8.sql</file>
+		</sql>
+	</uninstall>
+
+	<update>
+		<schemas>
+			<schemapath type="mysql">sql/updates/mysql/</schemapath>
+		</schemas>
+	</update>
+
+</extension>

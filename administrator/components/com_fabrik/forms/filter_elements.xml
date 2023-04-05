@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+
+	<fields name="filter">
+
+		<field
+			name="search"
+			type="text"
+			label="COM_FABRIK_SEARCH_IN_TITLE"
+			description="COM_FABRIK_SEARCH_IN_TITLE"
+			hint="JSEARCH_FILTER"
+		/>
+
+		<field
+			name="published"
+			type="status"
+			label="JOPTION_SELECT_PUBLISHED"
+			onchange="this.form.submit();"
+			>
+			<option value="">JOPTION_SELECT_PUBLISHED</option>
+		</field>
+
+		<field
+			name="form"
+			type="formlist"
+			label="COM_FABRIK_SELECT_FORM"
+			onchange="this.form.submit();"
+			>
+			<option value="">COM_FABRIK_SELECT_FORM</option>
+		</field>
+
+		<field
+			name="group"
+			type="grouplist"
+			label="COM_FABRIK_SELECT_GROUP"
+			onchange="this.form.submit();"
+			>
+			<option value="">COM_FABRIK_SELECT_GROUP</option>
+		</field>
+
+		<field
+			name="plugin"
+			type="pluginlist"
+			plugin="fabrik_element"
+			label="COM_FABRIK_SELECT_PLUGIN"
+			onchange="this.form.submit();"
+			>
+			<option value="">COM_FABRIK_SELECT_PLUGIN</option>
+		</field>
+
+		<field
+			name="showinlist"
+			type="list"
+			label="COM_FABRIK_SELECT_SHOW_IN_LIST"
+			onchange="this.form.submit();"
+			>
+			<option value="">COM_FABRIK_SELECT_SHOW_IN_LIST</option>
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+
+	</fields>
+
+	<fields name="list">
+<!--
+
+		<field
+			name="fullordering"
+			type="list"
+			label="JGLOBAL_SORT_BY"
+			default="e.name ASC"
+			onchange="this.form.submit();"
+			>
+			<option value="">JGLOBAL_SORT_BY</option>
+			<option value="e.id ASC">JGRID_HEADING_ID_ASC</option>
+			<option value="e.id DESC">JGRID_HEADING_ID_DESC</option>
+			<option value="e.name ASC">JGLOBAL_TITLE_ASC</option>
+			<option value="e.name DESC">JGLOBAL_TITLE_DESC</option>
+			<option value="e.label ASC">JGLOBAL_TITLE_ASC</option>
+			<option value="e.label DESC">JGLOBAL_TITLE_DESC</option>
+			<option value="e.how_in_list_summary ASC">JGLOBAL_TITLE_ASC</option>
+			<option value="e.how_in_list_summary DESC">JGLOBAL_TITLE_DESC</option>
+			<option value="e.published ASC">JSTATUS_ASC</option>
+			<option value="e.published DESC">JSTATUS_DESC</option>
+			<option value="e.ordering ASC">JSTATUS_ASC</option>
+			<option value="e.ordering DESC">JSTATUS_DESC</option>
+			<option value="g.label ASC">JSTATUS_ASC</option>
+			<option value="g.label DESC">JSTATUS_DESC</option>
+			<option value="e.plugin ASC">JSTATUS_ASC</option>
+			<option value="e.plugin DESC">JSTATUS_DESC</option>
+			<option value="g.name ASC">JSTATUS_ASC</option>
+			<option value="g.name DESC">JSTATUS_DESC</option>
+		</field>
+-->
+		<field
+			name="limit"
+			type="limitbox"
+			label="JGLOBAL_LIST_LIMIT"
+			default="25"
+			onchange="this.form.submit();"
+		/>
+	</fields>
+</form>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_element" method="upgrade" type="plugin" version="4">
+	<name>plg_fabrik_element_time</name>
+	<author>Jaanus Nurmoja</author>
+	<creationDate>March 2023</creationDate>
+	<copyright>Copyright (C) 2005-2023 Media A-Team, Inc. - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>jaanus.nurmoja@gmail.com</authorEmail>
+	<authorUrl>www.facebook.com/jaanus.nurmoja</authorUrl>
+	<version>4.0gamma3</version>
+	<help url="PLG_ELEMENT_TIME_HELP_SERVER"/>
+	<description>PLG_ELEMENT_TIME_DESCRIPTION</description>
+	<files>
+		<filename plugin="time">time.php</filename>
+		<filename>index.html</filename>
+		<filename>time.js</filename>
+		<filename>time-min.js</filename>
+		<folder>forms</folder>
+		<folder>language</folder>
+		<folder>layouts</folder>
+	</files>
+
+</extension>

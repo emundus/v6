@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_element" method="upgrade" type="plugin" version="4">
+	<name>plg_fabrik_element_radiobutton</name>
+	<author>Media A-Team, Inc.</author>
+	<creationDate>March 2023</creationDate>
+	<copyright>Copyright (C) 2005-2023 Media A-Team, Inc. - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>rob@pollen-8.co.uk</authorEmail>
+	<authorUrl>www.fabrikar.com</authorUrl>
+	<version>4.0gamma3</version>
+	<help url="PLG_ELEMENT_RADIOBUTTON_HELP_SERVER"/>
+	<description>PLG_ELEMENT_RADIOBUTTON_DESCRIPTION</description>
+	<files>
+		<filename plugin="radiobutton">radiobutton.php</filename>
+		<filename>radiobutton.js</filename>
+		<filename>radiobutton-min.js</filename>
+		<filename>index.html</filename>
+		<folder>forms</folder>
+		<folder>language</folder>
+		<folder>layouts</folder>
+	</files>
+
+	<config>
+		<fields name="params">
+			<fieldset label="PLG_ELEMENT_FABRIK_OPTIONS" name="params">
+				<field default="TEXT" description="PLG_ELEMENT_FABRIK_FIELD_TYPE_DESC" label="PLG_ELEMENT_FABRIK_FIELD_TYPE_LABEL" name="defaultFieldType" size="20" type="text"/>
+			</fieldset>
+		</fields>
+	</config>
+</extension>

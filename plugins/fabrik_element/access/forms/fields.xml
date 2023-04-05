@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields name="params">
+		<fieldset name="plg-access">
+		
+			<field type="helplink"
+				url="PLG_ELEMENT_ACCESS_HELP_SERVER" />
+
+			<field name="bootstrap_class"
+				type="bootstrapfieldclass"
+				default="col-sm-6"
+				label="PLG_ELEMENT_BOOTSTRAP_CLASS_LABEL"
+				description="PLG_ELEMENT_BOOTSTRAP_CLASS_DESC" />
+
+		</fieldset>
+	</fields>
+</form>

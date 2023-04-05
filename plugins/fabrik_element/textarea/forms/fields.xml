@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields>
+		<fieldset label="COM_FABRIK_OPTIONS" addfieldpath="/administrator/components/com_fabrik/models/fields" name="plg-element-textarea">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_TEXTAREA_HELP_SERVER" />
+
+			<field name="default"
+				type="fabrikeditor"
+				mode="php"
+				cols="60"
+				rows="6"
+				label="PLG_ELEMENT_TEXTAREA_DEFAULT_LABEL" />
+
+			<field name="eval"
+				type="radio"
+				default="0"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				label="PLG_ELEMENT_TEXTAREA_EVAL_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+		</fieldset>
+
+	</fields>
+
+	<fields name="params">
+		<fieldset name="plg-textarea-layout" label="COM_FABRIK_LAYOUT">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_TEXTAREA_HELP_SERVER" />
+
+			<field name="bootstrap_class"
+				type="bootstrapfieldclass"
+				default="col-sm-6"
+				label="PLG_ELEMENT_BOOTSTRAP_CLASS_LABEL"
+				description="PLG_ELEMENT_BOOTSTRAP_CLASS_DESC" />
+
+			<field name="height"
+				type="text"
+				class="col-sm-2"
+				default="6"
+				label="PLG_ELEMENT_TEXTAREA_HEIGHT_LABEL"
+				size="3" />
+
+		</fieldset>
+
+		<fieldset name="plg-textarea-extra" label="COM_FABRIK_ADVANCED">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_TEXTAREA_HELP_SERVER" />
+
+			<field name="textarea_showlabel"
+				type="radio"
+				default="1"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				label="PLG_ELEMENT_TEXTAREA_SHOW_LABEL_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+			<field name="textarea_placeholder"
+				type="text"
+				description="PLG_ELEMENT_TEXTAREA_PLACEHOLDER_DESC"
+				label="PLG_ELEMENT_TEXTAREA_PLACEHOLDER_LABEL"
+				size="60" />
+
+			<field name="use_wysiwyg"
+				type="radio"
+				default="0"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				description="PLG_ELEMENT_TEXTAREA_USE_WYSIWYG_EDITOR_DESC"
+				label="PLG_ELEMENT_TEXTAREA_USE_WYSIWYG_EDITOR_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+			<field name="wysiwyg_extra_buttons"
+				type="radio"
+				class="btn-group"
+				default="1"
+				layout="joomla.form.field.radio.switcher"
+				label="PLG_ELEMENT_TEXTAREA_WYSIWYG_EXTRA_BUTTONS_LABEL"
+				description="PLG_ELEMENT_TEXTAREA_WYSIWYG_EXTRA_BUTTONS_DESC">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+			<field name="textarea_field_type"
+			       type="list"
+			       default="TEXT"
+			       description="PLG_ELEMENT_TEXTAREA_FIELD_TYPE_DESC"
+			       label="PLG_ELEMENT_TEXTAREA_FIELD_TYPE_LABEL" >
+				<option value="TEXT">PLG_ELEMENT_TEXTAREA_FIELD_TYPE_TEXT</option>
+				<option value="MEDIUMTEXT">PLG_ELEMENT_TEXTAREA_FIELD_TYPE_MEDIUMTEXT</option>
+			</field>
+
+		</fieldset>
+
+		<fieldset label="PLG_ELEMENT_TEXTAREA_LIMIT" name="plt-textarea-limit">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_TEXTAREA_HELP_SERVER" />
+
+			<field name="textarea-showmax"
+				type="radio"
+				default="0"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				description="PLG_ELEMENT_TEXTAREA_SHOW_MAX_LIMIT_DESC"
+				label="PLG_ELEMENT_TEXTAREA_SHOW_MAX_LIMIT_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+			<field name="textarea-maxlength"
+				type="text"
+				class="col-sm-2"
+				default="255"
+				description="PLG_ELEMENT_TEXTAREA_MAXLENGTH_DESC"
+				label="PLG_ELEMENT_TEXTAREA_MAXLENGTH_LABEL"
+				size="5" />
+
+			<field name="textarea_limit_type"
+				type="list"
+				default="char"
+				description="PLG_ELEMENT_TEXTAREA_LIMIT_TYPE_DESC"
+				label="PLG_ELEMENT_TEXTAREA_LIMIT_TYPE_LABEL" >
+					<option value="char">PLG_ELEMENT_TEXTAREA_CHARACTERS</option>
+					<option value="word">PLG_ELEMENT_TEXTAREA_WORDS</option>
+			</field>
+
+		</fieldset>
+
+		<fieldset label="PLG_ELEMENT_TEXTAREA_TAGIFY" name="plt-textarea-tagify">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_TEXTAREA_HELP_SERVER" />
+
+			<field name="textarea-tagify"
+				type="radio"
+				default="0"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				description="PLG_ELEMENT_TEXTAREA_TAGIFY_DESC"
+				label="PLG_ELEMENT_TEXTAREA_TAGIFY_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+			<field name="textarea_tagifyurl"
+				type="text"
+				class="col-sm-12"
+				description="PLG_ELEMENT_TEXTAREA_TAGIFY_URL_DESC"
+				label="PLG_ELEMENT_TEXTAREA_TAGIFY_URL_LABEL"
+				size="60" />
+
+		</fieldset>
+
+		<fieldset label="PLG_ELEMENT_TEXTAREA_TRUNCATE" name="plt-textarea-truncate">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_TEXTAREA_HELP_SERVER" />
+
+			<field name="textarea-truncate-where"
+				type="list"
+				default="0"
+				description="PLG_ELEMENT_TEXTAREA_TRUNCATE_WHERE_DESC"
+				label="PLG_ELEMENT_TEXTAREA_TRUNCATE_WHERE_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">PLG_ELEMENT_TEXTAREA_TRUNCATE_WHERE_LIST</option>
+					<option value="2">PLG_ELEMENT_TEXTAREA_TRUNCATE_WHERE_DETAILS</option>
+					<option value="3">PLG_ELEMENT_TEXTAREA_TRUNCATE_WHERE_BOTH</option>
+			</field>
+			
+			<field name="textarea-truncate-html"
+				type="radio"
+				default="0"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				description="PLG_ELEMENT_TEXTAREA_TRUNCATE_HTML_DESC"
+				label="PLG_ELEMENT_TEXTAREA_TRUNCATE_HTML_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+			
+			<field name="textarea-truncate"
+				type="text"
+				class="col-sm-2"
+				default="0"
+				description="PLG_ELEMENT_TEXTAREA_TRUNCATE_DESC"
+				label="PLG_ELEMENT_TEXTAREA_TRUNCATE_LABEL"
+				size="3" />
+
+			<field name="textarea-hover"
+				type="radio"
+				default="1"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				description="PLG_ELEMENT_TEXTAREA_SHOW_HOVER_DESC"
+				label="PLG_ELEMENT_TEXTAREA_SHOW_HOVER_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+			<field name="textarea_hover_location"
+				type="list"
+				default="top"
+				description="PLG_ELEMENT_TEXTAREA_HOVER_LOCATION_DESC"
+				label="PLG_ELEMENT_TEXTAREA_HOVER_LOCATION_LABEL">
+					<option value="top">top</option>
+					<option value="right">right</option>
+					<option value="bottom">bottom</option>
+					<option value="left">left</option>
+			</field>
+
+		</fieldset>
+
+	</fields>
+</form>

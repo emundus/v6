@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="library" method="upgrade" version="4">
+    <name>Fabrik Vendor Library</name>
+    <libraryname>fabrik/vendor</libraryname>
+    <author>Henk van Klinken</author>
+    <creationDate>February 2023</creationDate>
+    <copyright>Copyright (C) 2005-2023 Media A-Team, Inc. - All rights reserved.</copyright>
+    <license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+    <version>4.0beta5a</version>
+    <description>Fabrik - Vendor Library files</description>
+    <files>
+        <folder>vendor</folder>
+        <file>vendor.xml</file>
+    </files>
+</extension>

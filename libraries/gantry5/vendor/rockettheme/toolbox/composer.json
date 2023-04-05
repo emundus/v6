@@ -1,0 +1,41 @@
+{
+    "name": "rockettheme/toolbox",
+    "type": "library",
+    "description": "RocketTheme Toolbox Library",
+    "keywords": ["rockettheme", "php"],
+    "homepage": "http://www.rockettheme.com",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.6.0",
+        "ext-json": "*",
+        "pimple/pimple": "^3.0",
+        "symfony/yaml": "^3.4|^4.0|^5.0",
+        "symfony/event-dispatcher": "^3.4|^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "RocketTheme\\Toolbox\\ArrayTraits\\": "ArrayTraits/src",
+            "RocketTheme\\Toolbox\\Blueprints\\": "Blueprints/src",
+            "RocketTheme\\Toolbox\\Compat\\": "Compat/src",
+            "RocketTheme\\Toolbox\\DI\\": "DI/src",
+            "RocketTheme\\Toolbox\\Event\\": "Event/src",
+            "RocketTheme\\Toolbox\\File\\": "File/src",
+            "RocketTheme\\Toolbox\\ResourceLocator\\": "ResourceLocator/src",
+            "RocketTheme\\Toolbox\\Session\\": "Session/src",
+            "RocketTheme\\Toolbox\\StreamWrapper\\": "StreamWrapper/src"
+        },
+        "exclude-from-classmap": [
+            "**/tests/"
+        ]
+    },
+    "archive": {
+        "exclude": [
+            "tests"
+        ]
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit run unit",
+        "test-windows": "vendor\\bin\\phpunit run unit",
+        "phpstan": "vendor/bin/phpstan analyse -l 8 -c ./tests/phpstan/phpstan.neon . --memory-limit=128M --no-progress"
+    }
+}

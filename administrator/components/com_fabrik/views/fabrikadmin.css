@@ -1,0 +1,81 @@
+.addButton {
+	background: #efefef url(../images/add.png) no-repeat scroll 5px center;
+	border: 1px dotted #CCCCCC;
+	display: block;
+	height: 23px;
+	line-height: 23px;
+	padding-left: 23px;
+	padding-right: 20px;
+	width: 1em;
+}
+
+.repeatGroup {
+	border-top:1px dotted #666;
+	margin:10px 0;
+}
+
+.removeButton {
+	background: transparent url(../images/remove.png) no-repeat 5px center;
+	border: 1px dotted #CCCCCC;
+	display: block;
+	height: 23px;
+	line-height: 23px;
+	padding-left: 23px;
+	padding-right: 30px;
+	width: 1em;
+	/** for repeatgroups */
+	clear:left;
+}
+
+.removeButton:hover{
+	background: #ffffee url(../images/remove.png) no-repeat 5px center;
+}
+
+.addButton:hover{
+	background: #ffffee url(../images/add.png) no-repeat 5px center;
+}
+
+ul.subelements {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	margin-bottom:7px;
+}
+
+ul.subelements table:hover{
+	background-color:#ffffee;
+}
+
+.handle {
+	background: #E4E4E4 url(../images/vert-drag.png) no-repeat center center !important;
+	margin:3px 2.5%;
+	cursor: move;
+	width: 5%;
+	border-radius: 7px !important;
+	border: 2px solid white;
+}
+
+#jform_params_prefilters_modal-table > tbody > tr:first-child td:first-child {
+    opacity: 0;
+}
+
+/* hack to prevent MCE editors from stepping across the page if you have more than one */
+table.mceLayout {
+	clear: both;
+}
+
+/* May not be compatible with BS5 in J!4 */
+.textarea {
+	height: auto;
+}
+
+/* J!4 adjustments for pre-filter table fields */
+.table>:not(caption)>*>* {
+    padding: 0.75rem 0.3rem;
+}
+div#prefilters label.btn {
+	padding: 0.1rem 0.6rem 0.1rem 0.2rem;
+}
+.switcher {
+    width: 10rem;
+}

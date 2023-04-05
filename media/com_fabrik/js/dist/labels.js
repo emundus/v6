@@ -1,0 +1,3 @@
+/*! Fabrik */
+
+var Labels=new Class({Implements:[Events],initialize:function(){$$(".fabrikElementContainer").each(function(e){var n=e.getElement("label");if("null"!==typeOf(n)){var t=e.getElement("input");"null"===typeOf(t)&&(t=e.getElement("textarea")),"null"!==typeOf(t)&&(t.value=n.innerHTML,t.addEvent("click",function(e){this.toogleLabel(e,t,n.innerHTML)}.bind(this)),t.addEvent("blur",function(e){this.toogleLabel(e,t,n.innerHTML)}.bind(this)),n.set("html",""),e.getElement(".fabrikLabel").dispose())}}.bind(this))},toogleLabel:function(e,n,t){new Event(e).stop(),"click"===e.type?n.get("value")===t&&(n.value=""):""===n.get("value")&&(n.value=t)}});window.addEvent("fabrik.loaded",function(){new Labels});

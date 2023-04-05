@@ -28,6 +28,11 @@
 # not take effect until you have restarted the web server.
 ##
 
+## Custom Value for : upload_max_filesize set to 10M
+php_value post_max_size 10M
+php_value upload_max_filesize 10M
+
+
 ## Can be commented out if causes errors, see notes above.
 Options +FollowSymlinks
 Options -Indexes

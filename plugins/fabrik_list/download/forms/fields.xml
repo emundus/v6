@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-list-download">
+		
+			<field type="helplink"
+				url="PLG_LIST_DOWNLOAD_HELP_SERVER" />
+				
+			<field name="download_access"
+				type="accesslevel"
+				default="1"
+				label="PLG_FABRIK_LIST_DOWNLOAD_ACCESS_LABEL"
+				repeat="true" />
+				
+			<field name="download_button_label"
+				type="text"
+				label="PLG_FABRIK_LIST_DOWNLOAD_BUTTON_LABEL"
+				repeat="true"
+				size="30" />
+
+			<field name="download_pdfs"
+				type="radio"
+				class="btn-group"
+				default="0"
+				layout="joomla.form.field.radio.switcher"
+				label="PLG_FABRIK_LIST_DOWNLOAD_PDFS_LABEL"
+				description="PLG_FABRIK_LIST_DOWNLOAD_PDFS_DESC">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>	
+			</field>
+							
+			<field name="download_table"
+				type="text"
+				description="PLG_FABRIK_LIST_DOWNLOAD_TABLE_DESC"
+				label="PLG_FABRIK_LIST_DOWNLOAD_TABLE_LABEL"
+				repeat="true"
+				size="35" />
+				  
+			<field name="download_fk"
+				type="text"
+				description="PLG_FABRIK_LIST_DOWNLOAD_FK_DESC"
+				label="PLG_FABRIK_LIST_DOWNLOAD_FK_LABEL"
+				repeat="true"
+				size="35" />
+				  
+			<field name="download_file"
+				type="text" 
+				description="PLG_FABRIK_LIST_DOWNLOAD_FILE_DESC"
+				label="PLG_FABRIK_LIST_DOWNLOAD_FILE_LABEL"
+				repeat="true"
+				size="35"/>
+				  
+			<field name="download_width"
+				type="text"
+				class="col-sm-2"
+				description="PLG_FABRIK_LIST_DOWNLOAD_WIDTH_DESC"
+				label="PLG_FABRIK_LIST_DOWNLOAD_WIDTH_LABEL"
+				repeat="true"
+				size="4"/>
+				  
+			<field name="download_height"
+				type="text" 
+				class="col-sm-2"
+				description="PLG_FABRIK_LIST_DOWNLOAD_HEIGHT_DESC"
+				label="PLG_FABRIK_LIST_DOWNLOAD_HEIGHT_LABEL"
+				repeat="true"
+				size="4"/>
+				  
+			<field name="download_image_library"
+				type="imagelibs"
+				label="PLG_FABRIK_LIST_IMAGE_LIBRARY_LABEL"
+				repeat="true" />
+				
+		</fieldset>
+	</fields>
+</form>

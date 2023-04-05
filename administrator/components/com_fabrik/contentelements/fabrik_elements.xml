@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<joomfish type="contentelement">
+  <name>Fabrik - Elements</name>
+  <author>Manel Zaera, manelzaera@yahoo.es Benjamin Rivalland - www.decisionpublique.fr</author>
+  <version>1.8</version>
+  <description>Definition for Fabrik  Elements</description>
+  <reference>
+  	<table name="fabrik_elements">
+  		<field name="id" translate="0" type="referenceid">ID</field>
+  		<field name="label" translate="1" type="titletext">Label</field>  		
+			<field name="default" translate="1" type="textarea">Default</field>	 
+			<field name="sub_labels" translate="1" type="textarea">Sub labels</field> 		
+  		<field name="created" translate="0" type="created_date">Created</field>
+  		<field name="modified" translate="0" type="modified_date">Modified</field>  		
+  		<field name="checked_out" translate="0" type="checked_out_by">Check out by</field>
+  		<field name="checked_out_time" translate="0" type="checked_out_date">Check out date</field>
+  	</table>
+  </reference>
+   <translationfilters>
+    <keyword>label</keyword>
+    <fabrikgroup>group_id</fabrikgroup>
+    <author>created_by</author>
+    <published>published</published>
+  </translationfilters>
+</joomfish>

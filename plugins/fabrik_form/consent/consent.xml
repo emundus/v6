@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_form" method="upgrade" type="plugin" version="4">
+	<name>plg_fabrik_form_consent</name>
+	<author>Better Web</author>
+	<creationDate>March 2023</creationDate>
+	<copyright>Copyright (C) 2005-2023 Media A-Team, Inc. - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>info@betterweb.fr</authorEmail>
+	<authorUrl>https://www.betterweb.fr</authorUrl>
+	<version>4.0gamma3</version>
+	<help url="PLG_FORM_CONSENT_HELP_SERVER"/>
+	<description>PLG_FORM_GDPR_DESCRIPTION</description>
+	
+	<files>
+		<filename plugin="consent">consent.php</filename>
+		<folder>forms</folder>
+		<folder>language</folder>
+		<folder>layouts</folder>
+		<filename>consent.js</filename>
+		<filename>consent-min.js</filename>
+		<filename>index.html</filename>
+	</files>
+
+</extension>

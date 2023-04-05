@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields">
+		<fieldset name="plg-element-slider" label="COM_FABRIK_DEFAULT">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_SLIDER_HELP_SERVER" />
+
+			<field name="default"
+				type="fabrikeditor"
+				mode="php"
+				cols="60"
+				rows="6"
+				label="PLG_ELEMENT_SLIDER_DEFAULT_LABEL"
+				/>
+
+			<field name="eval"
+				type="radio"
+				class="radio btn-group"
+				default="0"
+				layout="joomla.form.field.radio.switcher"
+				label="PLG_ELEMENT_SLIDER_EVAL_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+		</fieldset>
+	</fields>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+
+		<fieldset label="COM_FABRIK_OPTIONS" name="plg-element-slider-params">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_SLIDER_HELP_SERVER" />
+
+			<field name="slider_width"
+				class="col-sm-2"
+				default="250"
+				label="PLG_ELEMENT_SLIDER_WIDTH_LABEL"
+				size="3"
+				type="text"/>
+
+			<field name="slider-steps"
+				type="text"
+				class="col-sm-2"
+				default="100"
+				description="PLG_ELEMENT_SLIDER_STEPS_DESC"
+				label="PLG_ELEMENT_SLIDER_STEPS_LABEL"/>
+
+			<field name="slider-labels"
+				type="text"
+				description="PLG_ELEMENT_SLIDER_LABELS_DESC"
+				label="PLG_ELEMENT_SLIDER_LABELS_LABEL"
+				size="30"/>
+
+			<field name="slider-shownone"
+				type="radio"
+				default="0"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				description="PLG_ELEMENT_SLIDER_SHOW_NONE_DESC"
+				label="PLG_ELEMENT_SLIDER_SHOW_NONE_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+		</fieldset>
+
+	</fields>
+</form>

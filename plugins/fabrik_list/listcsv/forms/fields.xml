@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-list-listcsv">
+		
+			<field type="helplink"
+				url="PLG_LIST_PHP_HELP_SERVER" />
+			
+			<field name="listcsv_import_php_file"
+				type="filelist"
+				description="PLG_FABRIK_LIST_LISTCSV_IMPORT_FILE_DESC"
+				directory="plugins/fabrik_list/listcsv/scripts/"
+				hide_default="1"
+				label="PLG_FABRIK_LIST_LISTCSV_IMPORT_FILE_LABEL"
+				repeat="true" />
+			
+			<field name="listcsv_import_php_code"
+				type="fabrikeditor"
+				mode="php"
+				cols="60"
+				rows="6"
+				default=""
+				description="PLG_FABRIK_LIST_LISTCSV_IMPORT_CODE_DESC"
+				label="PLG_FABRIK_LIST_LISTCSV_IMPORT_CODE_LABEL"
+				repeat="true" />
+			
+			<field name="listcsv_after_import_php_file"
+				type="filelist"
+				description="PLG_FABRIK_LIST_LISTCSV_AFTER_IMPORT_FILE_DESC"
+				directory="plugins/fabrik_list/listcsv/scripts/"
+				hide_default="1"
+				label="PLG_FABRIK_LIST_LISTCSV_AFTER_IMPORT_FILE_LABEL"
+				repeat="true" />
+			
+			<field name="listcsv_after_import_php_code"
+				type="fabrikeditor"
+				mode="php"
+				cols="60"
+				rows="6"
+				default=""
+				description="PLG_FABRIK_LIST_LISTCSV_AFTER_IMPORT_CODE_DESC"
+				label="PLG_FABRIK_LIST_LISTCSV_AFTER_IMPORT_CODE_LABEL"
+				repeat="true" />
+
+			<field name="listcsv_import_complete_php_file"
+			       type="filelist"
+			       description="PLG_FABRIK_LIST_LISTCSV_IMPORT_COMPLETE_FILE_DESC"
+			       directory="plugins/fabrik_list/listcsv/scripts/"
+			       hide_default="1"
+			       label="PLG_FABRIK_LIST_LISTCSV_IMPORT_COMPLETE_FILE_LABEL"
+			       repeat="true" />
+
+			<field name="listcsv_import_complete_php_code"
+			       type="fabrikeditor"
+			       mode="php"
+				cols="60"
+				rows="6"
+			       default=""
+			       description="PLG_FABRIK_LIST_LISTCSV_IMPORT_COMPLETE_CODE_DESC"
+			       label="PLG_FABRIK_LIST_LISTCSV_IMPORT_COMPLETE_CODE_LABEL"
+			       repeat="true" />
+
+			<field name="listcsv_import_start_php_file"
+			       type="filelist"
+			       description="PLG_FABRIK_LIST_LISTCSV_IMPORT_START_FILE_DESC"
+			       directory="plugins/fabrik_list/listcsv/scripts/"
+			       hide_default="1"
+			       label="PLG_FABRIK_LIST_LISTCSV_IMPORT_START_FILE_LABEL"
+			       repeat="true" />
+
+			<field name="listcsv_import_start_php_code"
+			       type="fabrikeditor"
+			       mode="php"
+				cols="60"
+				rows="6"
+			       default=""
+			       description="PLG_FABRIK_LIST_LISTCSV_IMPORT_START_CODE_DESC"
+			       label="PLG_FABRIK_LIST_LISTCSV_IMPORT_START_CODE_LABEL"
+			       repeat="true" />
+
+			<field name="listcsv_export_php_file"
+			       type="filelist"
+			       description="PLG_FABRIK_LIST_LISTCSV_EXPORT_FILE_DESC"
+			       directory="plugins/fabrik_list/listcsv/scripts/"
+			       hide_default="1"
+			       label="PLG_FABRIK_LIST_LISTCSV_EXPORT_FILE_LABEL"
+			       repeat="true" />
+
+			<field name="listcsv_export_php_code"
+			       type="fabrikeditor"
+			       mode="php"
+				cols="60"
+				rows="6"
+			       default=""
+			       description="PLG_FABRIK_LIST_LISTCSV_EXPORT_CODE_DESC"
+			       label="PLG_FABRIK_LIST_LISTCSV_EXPORT_CODE_LABEL"
+			       repeat="true" />
+
+			<field name="listcsv_export_headings_php_file"
+			       type="filelist"
+			       description="PLG_FABRIK_LIST_LISTCSV_EXPORT_HEADINGS_FILE_DESC"
+			       directory="plugins/fabrik_list/listcsv/scripts/"
+			       hide_default="1"
+			       label="PLG_FABRIK_LIST_LISTCSV_EXPORT_HEADINGS_FILE_LABEL"
+			       repeat="true" />
+
+			<field name="listcsv_export_headings_php_code"
+			       type="fabrikeditor"
+			       mode="php"
+				cols="60"
+				rows="6"
+			       default=""
+			       description="PLG_FABRIK_LIST_LISTCSV_EXPORT_HEADINGS_CODE_DESC"
+			       label="PLG_FABRIK_LIST_LISTCSV_EXPORT_HEADINGS_CODE_LABEL"
+			       repeat="true" />
+
+		</fieldset>
+	</fields>
+</form>
