@@ -991,6 +991,10 @@ class EmundusModelCampaign extends JModelList {
         $unpublished = false;
 
         if (!empty($data)) {
+			if (!is_array($data)) {
+				$data = [$data];
+			}
+
             $query = $this->_db->getQuery(true);
             foreach ($data as $key => $val) {
                 $data[$key] = htmlspecialchars($val);
@@ -1039,6 +1043,10 @@ class EmundusModelCampaign extends JModelList {
         $published = false;
 
         if (!empty($data)) {
+	        if (!is_array($data)) {
+		        $data = [$data];
+	        }
+
             $query = $this->_db->getQuery(true);
             foreach ($data as $key => $val) {
                 $data[$key] = htmlspecialchars($val);

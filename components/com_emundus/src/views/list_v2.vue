@@ -82,6 +82,7 @@
 													<ul style="list-style-type: none; margin: 0;">
 														<li v-for="action in tabActionsPopover"
 														    :key="action.action"
+														    :class="{'hidden': typeof action.showon === 'undefined' || item[action.showon.key] == action.showon.value ? false : true}"
 														    @click="onClickAction(action, item.id)"
 														    class="em-pointer em-p-8 em-font-weight-600"
 														>
@@ -249,12 +250,25 @@ export default {
 
 				client().get(url)
 						.then(response => {
-							if (response.data.status === true) {
+							if (response.data.status === true || response.data.status === 1) {
 								if (response.data.redirect) {
 									window.location.href = response.data.redirect;
 								}
 
 								this.getListItems();
+							} else {
+								if (response.data.msg) {
+									Swal.fire({
+										type: 'error',
+										title: this.translate(response.data.msg),
+										reverseButtons: true,
+										customClass: {
+											title: 'em-swal-title',
+											confirmButton: 'em-swal-confirm-button',
+											actions: 'em-swal-single-action'
+										}
+									});
+								}
 							}
 						})
 						.catch(error => {
