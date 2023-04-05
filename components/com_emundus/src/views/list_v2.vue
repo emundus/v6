@@ -41,8 +41,8 @@
 					<span
 							v-for="viewTypeOption in viewTypeOptions"
 							:key="viewTypeOption.value"
-							style="padding: 4px;"
-							class="material-icons-outlined em-pointer em-ml-8 em-border-radius-4"
+							style="padding: 4px;border-radius: 4px;"
+							class="material-icons-outlined em-pointer em-ml-8"
 							:class="{
 								'active em-main-500-color em-border-main-500': viewTypeOption.value === viewType,
 								'em-neutral-300-color em-border-neutral-300': viewTypeOption.value !== viewType
@@ -74,21 +74,23 @@
 										>
 											{{ translate(editAction.label) }}
 										</a>
-
-										<v-popover :popoverArrowClass="'custom-popover-arrow'">
-											<span class="tooltip-target b3 material-icons">more_vert</span>
-											<template slot="popover">
-												<ul style="list-style-type: none; margin: 0;">
-													<li v-for="action in tabActionsPopover"
-													    :key="action.action"
-													    @click="onClickAction(action, item.id)"
-													    class="em-pointer em-p-8 em-font-weight-600"
-													>
-														{{ translate(action.label) }}
-													</li>
-												</ul>
-											</template>
-										</v-popover>
+										<div class="em-flex-row">
+											<span v-if="previewAction" class="material-icons-outlined em-pointer" @click="onClickPreview(item)">visibility</span>
+											<v-popover v-if="tabActionsPopover && tabActionsPopover.length > 0" :popoverArrowClass="'custom-popover-arrow'">
+												<span class="tooltip-target b3 material-icons">more_vert</span>
+												<template slot="popover">
+													<ul style="list-style-type: none; margin: 0;">
+														<li v-for="action in tabActionsPopover"
+														    :key="action.action"
+														    @click="onClickAction(action, item.id)"
+														    class="em-pointer em-p-8 em-font-weight-600"
+														>
+															{{ translate(action.label) }}
+														</li>
+													</ul>
+												</template>
+											</v-popover>
+										</div>
 									</td>
 								</div>
 							</tr>
@@ -109,6 +111,7 @@ import Skeleton from '../components/Skeleton.vue';
 // Services
 import settingsService from '../services/settings.js';
 import client from '../services/axiosClient';
+import Swal from "sweetalert2";
 
 export default {
 	name: 'list_v2',
@@ -259,6 +262,20 @@ export default {
 						});
 			}
 		},
+		onClickPreview(item) {
+			if (this.previewAction && (this.previewAction.title || this.previewAction.content)) {
+				Swal.fire({
+					title: item[this.previewAction.title],
+					html: '<div style="text-align: left;">' + item[this.previewAction.content] + '</div>',
+					reverseButtons: true,
+					customClass: {
+						title: 'em-swal-title',
+						confirmButton: 'em-swal-confirm-button',
+						actions: "em-swal-single-action",
+					}
+				});
+			}
+		},
 		changeViewType(viewType) {
 			this.viewType = viewType.value;
 			localStorage.setItem('tchooz_view_type/' + document.location.hostname,viewType.value);
@@ -272,7 +289,7 @@ export default {
 		},
 		tabActionsPopover() {
 			return typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.filter((action) => {
-				return !(['add', 'edit'].includes(action.name));
+				return !(['add', 'edit', 'preview'].includes(action.name));
 			}): [];
 		},
 		editAction() {
@@ -283,6 +300,11 @@ export default {
 		addAction() {
 			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.find((action) => {
 				return action.name === 'add';
+			}): false;
+		},
+		previewAction() {
+			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.find((action) => {
+				return action.name === 'preview';
 			}): false;
 		},
 		displayedItems() {
