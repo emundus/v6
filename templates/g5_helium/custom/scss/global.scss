@@ -76,17 +76,53 @@ body {
   }
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: $accent-color-1;
-  margin-top: 50px;
-  margin-bottom: 50px;
-  font-weight: 600;
+h1 {
   font-family: get-font-family($font-family-title);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 40px;
+  color: $accent-color-1;
+}
+h2{
+  font-family: get-font-family($font-family-title);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 30px;
+  color: $accent-color-1;
+}
+h3{
+  font-family: get-font-family($font-family-title);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 25px;
+  color: $accent-color-1;
+}
+h4{
+  font-family: get-font-family($font-family-title);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 23px;
+  color: $accent-color-1;
+}
+h5{
+  font-family: get-font-family($font-family-title);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 20px;
+  color: $accent-color-1;
+}
+h6{
+  font-family: get-font-family($font-family-title);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 16px;
+  color: $accent-color-1;
 }
 
 .view-list, .g-back-office-emundus-tableau {
@@ -1367,11 +1403,7 @@ body > .g-container {
 
 /* PAGE ACCUEIL */
 .homepage {
-  h1:first-child {
-    margin-bottom: 12px;
-  }
-
-  /* MODULE EMUNDUS CAMPAIGN */
+   /* MODULE EMUNDUS CAMPAIGN */
   .campaigns-list {
 
     .campaingapplycontent {
@@ -3089,13 +3121,6 @@ label[for='clear-search'] img:hover:focus {
 
 .step a[title="Retour à mes dossiers"]:hover, .step a[title="Retour à mes dossiers"]:focus, .step a[title="Retour à mes dossiers"]:active {
   color: $base-secondary-color;
-}
-
-
-.candidacy-files-list h1,
-#em-panel h1 {
-  color: var(--neutral-900);
-  font-weight: 700;
 }
 
 //test

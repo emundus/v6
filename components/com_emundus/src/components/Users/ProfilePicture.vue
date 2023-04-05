@@ -12,7 +12,7 @@
       </span>
     </div>
     <div class="em-ml-32 em-m-xs-0 em-flex-column em-flex-col-start em-mt-xs-8">
-      <span class="em-h3">{{ user.lastname.toUpperCase() }} {{ user.firstname.charAt(0).toUpperCase() + user.firstname.slice(1) }}</span>
+      <h3 class="em-h3">{{ user.lastname.toUpperCase() }} {{ user.firstname.charAt(0).toUpperCase() + user.firstname.slice(1) }}</h3>
     </div>
   </div>
 </template>

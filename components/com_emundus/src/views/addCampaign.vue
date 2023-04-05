@@ -6,7 +6,7 @@
         <p class="em-ml-8">{{ translate('BACK') }}</p>
       </div>
 
-      <div class="em-h3 em-mt-16">{{ translate('COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN') }}</div>
+      <h3 class="em-h3 em-mt-16">{{ translate('COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN') }}</h3>
       <p class="em-mt-16">{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC') }}</p>
 
       <hr>
@@ -102,7 +102,7 @@
 
         <div class="em-mb-16">
           <div class="em-mb-16">
-            <div class="em-h4">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION') }}</div>
+            <h4 class="em-h4">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION') }}</h4>
           </div>
 
           <div class="em-mb-16">

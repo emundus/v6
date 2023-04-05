@@ -23,9 +23,9 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_use
                 <a href="/" class="em-profile-picture em-mb-32" style="width: 50px;height: 50px;background-image: url('images/custom/favicon.png')">
                 </a>
             <?php endif; ?>
-            <p class="em-mb-8 em-h3">
+            <h3 class="em-mb-8 em-h3">
                 <?php echo $this->escape($this->params->get('page_heading')); ?>
-            </p>
+            </h3>
 		</div>
 
         <form action="<?php echo JRoute::_('index.php?option=com_users&task=reset.confirm'); ?>" method="post" class="form-validate form-horizontal well">
