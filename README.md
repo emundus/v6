@@ -155,3 +155,4 @@ Below are several links that are essential for developers working on this projec
 [PHP-url]: https://www.php.net/manual/en/install.macosx.php
 [Mailtrap-url]: https://mailtrap.io
 
+

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  Layout
@@ -9,13 +10,16 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Language\Text;
+
 $buttons = $displayData;
 
 ?>
-<div id="editor-xtd-buttons" class="btn-toolbar pull-left" role="toolbar" aria-label="<?php echo JText::_('JTOOLBAR'); ?>">
-	<?php if ($buttons) : ?>
-		<?php foreach ($buttons as $button) : ?>
-			<?php echo $this->sublayout('button', $button); ?>
-		<?php endforeach; ?>
-	<?php endif; ?>
+<div class="editor-xtd-buttons" role="toolbar" aria-label="<?php echo Text::_('JTOOLBAR'); ?>">
+    <?php if ($buttons) : ?>
+        <?php foreach ($buttons as $button) : ?>
+            <?php echo $this->sublayout('button', $button); ?>
+            <?php echo $this->sublayout('modal', $button); ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
 </div>

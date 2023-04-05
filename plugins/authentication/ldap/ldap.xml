@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="3.1" type="plugin" group="authentication" method="upgrade">
+<extension type="plugin" group="authentication" method="upgrade">
 	<name>plg_authentication_ldap</name>
 	<author>Joomla! Project</author>
-	<creationDate>November 2005</creationDate>
+	<creationDate>2005-11</creationDate>
 	<copyright>(C) 2005 Open Source Matters, Inc.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>admin@joomla.org</authorEmail>
@@ -13,8 +13,8 @@
 		<filename plugin="ldap">ldap.php</filename>
 	</files>
 	<languages>
-		<language tag="en-GB">en-GB.plg_authentication_ldap.ini</language>
-		<language tag="en-GB">en-GB.plg_authentication_ldap.sys.ini</language>
+		<language tag="en-GB">language/en-GB/plg_authentication_ldap.ini</language>
+		<language tag="en-GB">language/en-GB/plg_authentication_ldap.sys.ini</language>
 	</languages>
 	<config>
 		<fields name="params">
@@ -23,82 +23,62 @@
 					name="host"
 					type="text"
 					label="PLG_LDAP_FIELD_HOST_LABEL"
-					description="PLG_LDAP_FIELD_HOST_DESC"
-					size="20"
 				/>
 
 				<field
 					name="port"
 					type="number"
 					label="PLG_LDAP_FIELD_PORT_LABEL"
-					description="PLG_LDAP_FIELD_PORT_DESC"
 					min="1"
 					max="65535"
 					default="389"
 					hint="389"
 					validate="number"
 					filter="integer"
-					size="5"
 				/>
 
 				<field
 					name="use_ldapV3"
 					type="radio"
+					layout="joomla.form.field.radio.switcher"
 					label="PLG_LDAP_FIELD_V3_LABEL"
-					description="PLG_LDAP_FIELD_V3_DESC"
 					default="0"
 					filter="integer"
-					class="btn-group btn-group-yesno"
 					>
-					<option value="1">JYES</option>
 					<option value="0">JNO</option>
+					<option value="1">JYES</option>
 				</field>
 
 				<field
 					name="negotiate_tls"
 					type="radio"
 					label="PLG_LDAP_FIELD_NEGOCIATE_LABEL"
-					description="PLG_LDAP_FIELD_NEGOCIATE_DESC"
 					default="0"
 					filter="integer"
-					class="btn-group btn-group-yesno"
+					layout="joomla.form.field.radio.switcher"
 					>
-					<option value="1">JYES</option>
 					<option value="0">JNO</option>
-				</field>
-
-				<field
-					name="ignore_reqcert_tls"
-					type="radio"
-					label="PLG_LDAP_FIELD_IGNORE_REQCERT_TLS_LABEL"
-					description="PLG_LDAP_FIELD_IGNORE_REQCERT_TLS_DESC"
-					default="0"
-					filter="integer"
-					class="btn-group btn-group-yesno"
-					>
 					<option value="1">JYES</option>
-					<option value="0">JNO</option>
 				</field>
 
 				<field
 					name="no_referrals"
 					type="radio"
 					label="PLG_LDAP_FIELD_REFERRALS_LABEL"
-					description="PLG_LDAP_FIELD_REFERRALS_DESC"
 					default="0"
 					filter="integer"
-					class="btn-group btn-group-yesno"
+					layout="joomla.form.field.radio.switcher"
 					>
-					<option value="1">JYES</option>
 					<option value="0">JNO</option>
+					<option value="1">JYES</option>
 				</field>
 
 				<field
 					name="auth_method"
 					type="list"
 					label="PLG_LDAP_FIELD_AUTHMETHOD_LABEL"
-					description="PLG_LDAP_FIELD_AUTHMETHOD_DESC"
 					default="bind"
+					validate="options"
 					>
 					<option value="search">PLG_LDAP_FIELD_VALUE_BINDSEARCH</option>
 					<option value="bind">PLG_LDAP_FIELD_VALUE_BINDUSER</option>
@@ -108,8 +88,6 @@
 					name="base_dn"
 					type="text"
 					label="PLG_LDAP_FIELD_BASEDN_LABEL"
-					description="PLG_LDAP_FIELD_BASEDN_DESC"
-					size="20"
 				/>
 
 				<field
@@ -117,7 +95,6 @@
 					type="text"
 					label="PLG_LDAP_FIELD_SEARCHSTRING_LABEL"
 					description="PLG_LDAP_FIELD_SEARCHSTRING_DESC"
-					size="20"
 				/>
 
 				<field
@@ -125,7 +102,6 @@
 					type="text"
 					label="PLG_LDAP_FIELD_USERSDN_LABEL"
 					description="PLG_LDAP_FIELD_USERSDN_DESC"
-					size="20"
 				/>
 
 				<field
@@ -133,7 +109,6 @@
 					type="text"
 					label="PLG_LDAP_FIELD_USERNAME_LABEL"
 					description="PLG_LDAP_FIELD_USERNAME_DESC"
-					size="20"
 				/>
 
 				<field
@@ -141,7 +116,6 @@
 					type="password"
 					label="PLG_LDAP_FIELD_PASSWORD_LABEL"
 					description="PLG_LDAP_FIELD_PASSWORD_DESC"
-					size="20"
 				/>
 
 				<field
@@ -150,7 +124,6 @@
 					label="PLG_LDAP_FIELD_FULLNAME_LABEL"
 					description="PLG_LDAP_FIELD_FULLNAME_DESC"
 					default="fullName"
-					size="20"
 				/>
 
 				<field
@@ -159,7 +132,6 @@
 					label="PLG_LDAP_FIELD_EMAIL_LABEL"
 					description="PLG_LDAP_FIELD_EMAIL_DESC"
 					default="mail"
-					size="20"
 				/>
 
 				<field
@@ -168,7 +140,6 @@
 					label="PLG_LDAP_FIELD_UID_LABEL"
 					description="PLG_LDAP_FIELD_UID_DESC"
 					default="uid"
-					size="20"
 				/>
 				<field
 					name="ldap_debug"
@@ -177,10 +148,10 @@
 					description="PLG_LDAP_FIELD_LDAPDEBUG_DESC"
 					default="0"
 					filter="integer"
-					class="btn-group btn-group-yesno"
+					layout="joomla.form.field.radio.switcher"
 					>
-					<option value="1">JYES</option>
 					<option value="0">JNO</option>
+					<option value="1">JYES</option>
 				</field>
 			</fieldset>
 		</fields>

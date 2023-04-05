@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  Template.system
@@ -9,21 +10,15 @@
 
 defined('_JEXEC') or die;
 
-/** @var JDocumentHtml $this */
-
-// Output as HTML5
-$this->setHtml5(true);
-
-// Add html5 shiv
-JHtml::_('script', 'jui/html5.js', array('version' => 'auto', 'relative' => true, 'conditional' => 'lt IE 9'));
+/** @var \Joomla\CMS\Document\HtmlDocument $this */
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
 <head>
-	<jdoc:include type="head" />
+    <jdoc:include type="head" />
 </head>
 <body class="contentpane">
-	<jdoc:include type="message" />
-	<jdoc:include type="component" />
+    <jdoc:include type="message" />
+    <jdoc:include type="component" />
 </body>
 </html>

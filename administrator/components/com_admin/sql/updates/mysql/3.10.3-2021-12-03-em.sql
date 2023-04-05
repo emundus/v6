@@ -1,2 +1,0 @@
-INSERT INTO jos_emundus_plugin_events (label, published, category) VALUES ('onBeforeImportCSV', 1, 'Import');
-INSERT INTO jos_emundus_plugin_events (label, published, category) VALUES ('onAfterImportCSV', 1, 'Import');

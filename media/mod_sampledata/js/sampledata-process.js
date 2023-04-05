@@ -1,96 +1,172 @@
 /**
- * @copyright  (C) 2017 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright  (C) 2018 Open Source Matters, Inc. <https://www.joomla.org>
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
+const SampleData = {
+  inProgress: false
+};
 
-!(function ($) {
-	"use strict";
+const sampledataAjax = (type, steps, step) => {
+  // Get variables
+  const baseUrl = `index.php?option=com_ajax&format=json&group=sampledata&${Joomla.getOptions('csrf.token')}=1`;
+  const options = Joomla.getOptions('sample-data'); // Create list
 
-	var inProgress = false;
+  const list = document.createElement('div');
+  list.classList.add(`sampledata-steps-${type}-${step}`);
+  list.setAttribute('role', 'region');
+  list.setAttribute('aria-live', 'polite'); // Create paragraph
 
-	var sampledataAjax = function(type, steps, step) {
-		if (step > steps) {
-			$('.sampledata-' + type + ' .row-title').append('<span class="icon-publish"> </span>');
-			inProgress = false;
-			return;
-		}
-		var stepClass = 'sampledata-steps-' + type + '-' + step,
-			$stepLi = $('<li class="' + stepClass + '"><p class="loader-image text-center"><img src="' + window.modSampledataIconProgress + '" width="30" height="30" ></p></li>'),
-			$progress = $(".sampledata-progress-" + type + " progress");
+  const para = document.createElement('p');
+  para.classList.add('loader-image');
+  para.classList.add('text-center'); // Create image
 
-		$("div.sampledata-progress-" + type + " ul").append($stepLi);
+  const img = document.createElement('img');
+  img.setAttribute('src', options.icon);
+  img.setAttribute('width', 30);
+  img.setAttribute('height', 30); // Append everything
 
-		var request = $.ajax({
-			url: window.modSampledataUrl,
-			type: 'POST',
-			dataType: 'json',
-			data: {
-				type: type,
-				plugin: 'SampledataApplyStep' + step,
-				step: step
-			}
-		});
-		request.done(function(response){
-			$stepLi.children('.loader-image').remove();
+  para.appendChild(img);
+  list.appendChild(para);
+  document.querySelector(`.sampledata-progress-${type}`).appendChild(list);
+  Joomla.request({
+    url: `${baseUrl}&type=${type}&plugin=SampledataApplyStep${step}&step=${step}`,
+    method: 'GET',
+    perform: true,
+    onSuccess: resp => {
+      // Remove loader image
+      const loader = list.querySelector('.loader-image');
+      loader.parentNode.removeChild(loader);
+      let response = {};
 
-			if (response.success && response.data && response.data.length > 0) {
-				var success, value, resultClass, $msg;
+      try {
+        response = JSON.parse(resp);
+      } catch (e) {
+        Joomla.renderMessages({
+          error: [Joomla.Text._('MOD_SAMPLEDATA_INVALID_RESPONSE')]
+        }, `.sampledata-steps-${type}-${step}`);
+        SampleData.inProgress = false;
+        return;
+      }
 
-				// Display all messages that we got
-				for(var i = 0, l = response.data.length; i < l; i++) {
-					value   = response.data[i];
-					success = value.success;
-					resultClass = success ? 'success' : 'error';
-					$stepLi.append($('<div>', {
-						html: value.message,
-						'class': 'alert alert-' + resultClass,
-					}));
-				}
+      let progressClass = '';
+      let success;
 
-				// Update progress
-				$progress.val(step/steps);
+      if (response.success && response.data && response.data.length > 0) {
+        const progress = document.querySelector(`.sampledata-progress-${type} .progress-bar`); // Display all messages that we got
 
-				// Move on next step
-				if (success) {
-					step++;
-					sampledataAjax(type, steps, step);
-				}
+        response.data.forEach(value => {
+          if (value === null) {
+            return;
+          } // eslint-disable-next-line prefer-destructuring
 
-			} else {
-				$stepLi.addClass('alert alert-error');
-				$stepLi.html(Joomla.JText._('MOD_SAMPLEDATA_INVALID_RESPONSE'));
-				inProgress = false;
-			}
-		});
-		request.fail(function(jqXHR, textStatus){
-			alert('Something went wrong! Please close and reopen the browser and try again!');
-		});
-	};
 
-	window.sampledataApply = function(el) {
-		var $el = $(el), type = $el.data('type'), steps = $el.data('steps');
+          success = value.success;
+          progressClass = success ? 'bg-success' : 'bg-danger'; // Display success alert
 
-		// Check whether the work in progress or we alredy proccessed with current item
-		if (inProgress) {
-			return;
-		}
-		if ($el.data('processed')) {
-			alert(Joomla.JText._('MOD_SAMPLEDATA_ITEM_ALREADY_PROCESSED'));
-			return;
-		}
+          if (success) {
+            Joomla.renderMessages({
+              message: [value.message]
+            }, `.sampledata-steps-${type}-${step}`, false, 3000);
+          } else {
+            Joomla.renderMessages({
+              error: [value.message]
+            }, `.sampledata-steps-${type}-${step}`, false);
+          }
+        }); // Update progress
 
-		// Make sure that use run this not by random clicking on the page links
-		if (!confirm(Joomla.JText._('MOD_SAMPLEDATA_CONFIRM_START'))) {
-			return false;
-		}
+        progress.innerText = `${step}/${steps}`;
+        progress.style.width = `${step / steps * 100}%`;
+        progress.setAttribute('aria-valuemin', 0);
+        progress.setAttribute('aria-valuemax', 100);
+        progress.setAttribute('aria-valuenow', step / steps * 100);
+        progress.classList.add(progressClass); // Move on next step
 
-		// Turn on the progress container
-		$('.sampledata-progress-' + type).show();
-		$el.data('processed', true)
+        if (success && step <= steps) {
+          const stepNew = step + 1;
 
-		inProgress = true;
-		sampledataAjax(type, steps, 1);
-		return false;
-	};
+          if (stepNew <= steps) {
+            sampledataAjax(type, steps, stepNew);
+          } else {
+            const bar = document.querySelector(`.sampledata-progress-${type}`);
+            bar.parentNode.removeChild(bar);
+            Joomla.renderMessages({
+              message: [Joomla.Text._('MOD_SAMPLEDATA_COMPLETED')]
+            });
+            window.scroll({
+              top: 0,
+              left: 0,
+              behavior: 'smooth'
+            });
+            SampleData.inProgress = false;
+          }
+        }
+      } else {
+        // Display error alert
+        Joomla.renderMessages({
+          error: [Joomla.Text._('MOD_SAMPLEDATA_INVALID_RESPONSE')]
+        });
+        window.scroll({
+          top: 0,
+          left: 0,
+          behavior: 'smooth'
+        });
+        SampleData.inProgress = false;
+      }
+    },
+    onError: () => {
+      Joomla.renderMessages({
+        error: [Joomla.Text._('MOD_SAMPLEDATA_ERROR_RESPONSE')]
+      });
+      window.scroll({
+        top: 0,
+        left: 0,
+        behavior: 'smooth'
+      });
+      SampleData.inProgress = false;
+    }
+  });
+};
 
-})(jQuery);
+const sampledataApply = element => {
+  const type = element.getAttribute('data-type');
+  const steps = element.getAttribute('data-steps'); // Check whether the work in progress or we already processed with current item
+
+  if (SampleData.inProgress) {
+    return;
+  }
+
+  if (element.getAttribute('data-processed')) {
+    alert(Joomla.Text._('MOD_SAMPLEDATA_ITEM_ALREADY_PROCESSED'));
+    SampleData.inProgress = false;
+    return;
+  } // Make sure that use run this not by random clicking on the page links
+  // @todo use the CE Modal here
+
+
+  if (!window.confirm(Joomla.Text._('MOD_SAMPLEDATA_CONFIRM_START'))) {
+    // eslint-disable-next-line consistent-return
+    return false;
+  } // Turn on the progress container
+
+
+  const progressElements = [].slice.call(document.querySelectorAll(`.sampledata-progress-${type}`));
+  progressElements.forEach(progressElement => {
+    progressElement.classList.remove('d-none');
+  });
+  element.setAttribute('data-processed', true);
+  SampleData.inProgress = true;
+  sampledataAjax(type, steps, 1); // eslint-disable-next-line consistent-return
+
+  return false;
+};
+
+const sampleDataWrapper = document.getElementById('sample-data-wrapper');
+
+if (sampleDataWrapper) {
+  const links = [].slice.call(sampleDataWrapper.querySelectorAll('.apply-sample-data'));
+  links.forEach(link => {
+    link.addEventListener('click', ({
+      currentTarget
+    }) => sampledataApply(currentTarget));
+  });
+}

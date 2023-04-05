@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  mod_multilangstatus
@@ -9,4 +10,11 @@
 
 defined('_JEXEC') or die;
 
-require JModuleHelper::getLayoutPath('mod_multilangstatus', $params->get('layout', 'default'));
+use Joomla\CMS\Factory;
+use Joomla\CMS\Helper\ModuleHelper;
+use Joomla\CMS\Language\Multilanguage;
+use Joomla\Database\DatabaseInterface;
+
+$multilanguageEnabled = Multilanguage::isEnabled($app, Factory::getContainer()->get(DatabaseInterface::class));
+
+require ModuleHelper::getLayoutPath('mod_multilangstatus', $params->get('layout', 'default'));

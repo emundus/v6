@@ -1,15 +1,23 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Privacy.contact
  *
  * @copyright   (C) 2018 Open Source Matters, Inc. <https://www.joomla.org>
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
+
+ * @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
  */
 
-defined('_JEXEC') or die;
+use Joomla\CMS\User\User;
+use Joomla\Component\Privacy\Administrator\Plugin\PrivacyPlugin;
+use Joomla\Component\Privacy\Administrator\Table\RequestTable;
+use Joomla\Database\ParameterType;
 
-JLoader::register('PrivacyPlugin', JPATH_ADMINISTRATOR . '/components/com_privacy/helpers/plugin.php');
+// phpcs:disable PSR1.Files.SideEffects
+\defined('_JEXEC') or die;
+// phpcs:enable PSR1.Files.SideEffects
 
 /**
  * Privacy plugin managing Joomla user contact data
@@ -18,54 +26,51 @@ JLoader::register('PrivacyPlugin', JPATH_ADMINISTRATOR . '/components/com_privac
  */
 class PlgPrivacyContact extends PrivacyPlugin
 {
-	/**
-	 * Processes an export request for Joomla core user contact data
-	 *
-	 * This event will collect data for the contact core tables:
-	 *
-	 * - Contact custom fields
-	 *
-	 * @param   PrivacyTableRequest  $request  The request record being processed
-	 * @param   JUser                $user     The user account associated with this request if available
-	 *
-	 * @return  PrivacyExportDomain[]
-	 *
-	 * @since   3.9.0
-	 */
-	public function onPrivacyExportRequest(PrivacyTableRequest $request, JUser $user = null)
-	{
-		if (!$user && !$request->email)
-		{
-			return array();
-		}
+    /**
+     * Processes an export request for Joomla core user contact data
+     *
+     * This event will collect data for the contact core tables:
+     *
+     * - Contact custom fields
+     *
+     * @param   RequestTable  $request  The request record being processed
+     * @param   User          $user     The user account associated with this request if available
+     *
+     * @return  \Joomla\Component\Privacy\Administrator\Export\Domain[]
+     *
+     * @since   3.9.0
+     */
+    public function onPrivacyExportRequest(RequestTable $request, User $user = null)
+    {
+        if (!$user && !$request->email) {
+            return [];
+        }
 
-		$domains   = array();
-		$domain    = $this->createDomain('user_contact', 'joomla_user_contact_data');
-		$domains[] = $domain;
+        $domains   = [];
+        $domain    = $this->createDomain('user_contact', 'joomla_user_contact_data');
+        $domains[] = $domain;
 
-		$query = $this->db->getQuery(true)
-			->select('*')
-			->from($this->db->quoteName('#__contact_details'))
-			->order($this->db->quoteName('ordering') . ' ASC');
+        $query = $this->db->getQuery(true)
+            ->select('*')
+            ->from($this->db->quoteName('#__contact_details'))
+            ->order($this->db->quoteName('ordering') . ' ASC');
 
-		if ($user)
-		{
-			$query->where($this->db->quoteName('user_id') . ' = ' . (int) $user->id);
-		}
-		else
-		{
-			$query->where($this->db->quoteName('email_to') . ' = ' . $this->db->quote($request->email));
-		}
+        if ($user) {
+            $query->where($this->db->quoteName('user_id') . ' = :id')
+                ->bind(':id', $user->id, ParameterType::INTEGER);
+        } else {
+            $query->where($this->db->quoteName('email_to') . ' = :email')
+                ->bind(':email', $request->email);
+        }
 
-		$items = $this->db->setQuery($query)->loadObjectList();
+        $items = $this->db->setQuery($query)->loadObjectList();
 
-		foreach ($items as $item)
-		{
-			$domain->addItem($this->createItemFromArray((array) $item));
-		}
+        foreach ($items as $item) {
+            $domain->addItem($this->createItemFromArray((array) $item));
+        }
 
-		$domains[] = $this->createCustomFieldsDomain('com_contact.contact', $items);
+        $domains[] = $this->createCustomFieldsDomain('com_contact.contact', $items);
 
-		return $domains;
-	}
+        return $domains;
+    }
 }

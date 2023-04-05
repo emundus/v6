@@ -1,8 +1,0 @@
-{
-"version":3,
-"file":"ImportExport.min.js",
-"lineCount":5,
-"mappings":"A;;;;AAOsC,WAAtC,EAAI,MAAOA,WAAAC,aAAX,GAECD,UAAAC,aAFD,CAE2B,wBACCC,QAAS,EAChC,CACC,IAAIC,EAAuBC,MAAAC,OAAA,CAAc,uBAAd,CAGW,EAAtC,EAF+BD,MAAAC,OAAAC,CAAc,kDAAdA,CAE3BC,IAAA,EAAJ,CAECJ,CAAAK,KAAA,EAFD,CAMCL,CAAAM,KAAA,EAVF,CAFsB,CAF3B,CAoBAL,OAAAC,OAAA,CAAcK,QAAd,CAAAC,MAAA,CAA8B,QAAS,CAACC,CAAD,CACvC,CACuBR,MAAAC,OAAAQ,CAAc,0CAAdA,CAEtBC,OAAA,CAAuB,QAAS,CAACC,CAAD,CAAG,CAClCf,UAAAC,aAAAC,uBAAA,CAA+Ca,CAA/C,CADkC,CAAnC,CAHD,CADA;",
-"sources":["../uncompressed/js/ImportExport.js"],
-"names":["admintools","ImportExport","onTemplateExportChange","emailTemplateWarning","akeeba","jQuery","exportdataemailtemplates","val","show","hide","document","ready","$","exportTemplates","change","e"]
-}

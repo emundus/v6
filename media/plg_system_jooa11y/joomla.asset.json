@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
+  "name": "plg_system_jooa11y",
+  "version": "4.0.0",
+  "description": "Joomla CMS",
+  "license": "GPL-2.0-or-later",
+  "assets": [
+    {
+      "name": "plg_system_jooa11y.jooa11y",
+      "type": "style",
+      "uri": "plg_system_jooa11y/jooa11y.min.css",
+      "version": "b4501b0fa316de153b56aff545b04b801649cf89"
+    },
+    {
+      "name": "plg_system_jooa11y.jooa11y",
+      "type": "script",
+      "uri": "plg_system_jooa11y/jooa11y.min.js",
+      "dependencies": [
+        "plg_system_jooa11y.jooa11y-es5"
+      ],
+      "attributes": {
+        "type": "module"
+      },
+      "version": "f50e8e9ed66efec6df872358214354458f7f4552"
+    },
+    {
+      "name": "plg_system_jooa11y.jooa11y-es5",
+      "type": "script",
+      "uri": "plg_system_jooa11y/jooa11y-es5.min.js",
+      "dependencies": [
+        "core"
+      ],
+      "attributes": {
+        "defer": true,
+        "nomodule": true
+      },
+      "version": "e79f8ea5b5b7ae22e60a3bdc7ada06bff1e84655"
+    }
+  ]
+}

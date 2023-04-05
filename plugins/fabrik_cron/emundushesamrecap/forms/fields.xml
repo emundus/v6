@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<form>
-	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
-		<fieldset name="plg-cron-emundushesamrecap" label="COM_FABRIK_OPTIONS">
-			<field name="reminder_mail_lbl" type="text" description="PLG_CRON_HESAM_RECAP_EMAIL_DESC" label="PLG_CRON_HESAM_RECAP_EMAIL" size="30" default="hesam_recap" />
-            <field name="number_of_weeks" type="text" description="PLG_CRON_HESAM_RECAP_WEEKS_DESC" label="PLG_CRON_HESAM_RECAP_WEEKS" size="30" default="2" />
-		</fieldset>
-	</fields>
-</form>

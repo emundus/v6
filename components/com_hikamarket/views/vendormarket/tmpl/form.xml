@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<metadata>
-	<state>
-		<name>Vendor registration form</name>
-	</state>
-	<layout title="COM_HIKAMARKET_VENDORMARKET_FORM_VIEW_DEFAULT_TITLE">
-		<message></message>
-	</layout>
-</metadata>

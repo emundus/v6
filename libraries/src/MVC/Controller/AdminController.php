@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -8,10 +9,19 @@
 
 namespace Joomla\CMS\MVC\Controller;
 
-defined('JPATH_PLATFORM') or die;
-
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
+use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use Joomla\CMS\MVC\Model\WorkflowModelInterface;
+use Joomla\CMS\Router\Route;
+use Joomla\Input\Input;
 use Joomla\Utilities\ArrayHelper;
+
+// phpcs:disable PSR1.Files.SideEffects
+\defined('JPATH_PLATFORM') or die;
+// phpcs:enable PSR1.Files.SideEffects
 
 /**
  * Base class for a Joomla Administrator Controller
@@ -23,387 +33,441 @@ use Joomla\Utilities\ArrayHelper;
  */
 class AdminController extends BaseController
 {
-	/**
-	 * The URL option for the component.
-	 *
-	 * @var    string
-	 * @since  1.6
-	 */
-	protected $option;
+    /**
+     * The URL option for the component.
+     *
+     * @var    string
+     * @since  1.6
+     */
+    protected $option;
 
-	/**
-	 * The prefix to use with controller messages.
-	 *
-	 * @var    string
-	 * @since  1.6
-	 */
-	protected $text_prefix;
+    /**
+     * The prefix to use with controller messages.
+     *
+     * @var    string
+     * @since  1.6
+     */
+    protected $text_prefix;
 
-	/**
-	 * The URL view list variable.
-	 *
-	 * @var    string
-	 * @since  1.6
-	 */
-	protected $view_list;
+    /**
+     * The URL view list variable.
+     *
+     * @var    string
+     * @since  1.6
+     */
+    protected $view_list;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param   array                $config   An optional associative array of configuration settings.
-	 * @param   MVCFactoryInterface  $factory  The factory.
-	 *
-	 * @see     \JControllerLegacy
-	 * @since   1.6
-	 * @throws  \Exception
-	 */
-	public function __construct($config = array(), MVCFactoryInterface $factory = null)
-	{
-		parent::__construct($config, $factory);
+    /**
+     * Constructor.
+     *
+     * @param   array                $config   An optional associative array of configuration settings.
+     *                                         Recognized key values include 'name', 'default_task', 'model_path', and
+     *                                         'view_path' (this list is not meant to be comprehensive).
+     * @param   MVCFactoryInterface  $factory  The factory.
+     * @param   CMSApplication       $app      The Application for the dispatcher
+     * @param   Input                $input    The Input object for the request
+     *
+     * @since   3.0
+     */
+    public function __construct($config = [], MVCFactoryInterface $factory = null, ?CMSApplication $app = null, ?Input $input = null)
+    {
+        parent::__construct($config, $factory, $app, $input);
 
-		// Define standard task mappings.
+        // Define standard task mappings.
 
-		// Value = 0
-		$this->registerTask('unpublish', 'publish');
+        // Value = 0
+        $this->registerTask('unpublish', 'publish');
 
-		// Value = 2
-		$this->registerTask('archive', 'publish');
+        // Value = 2
+        $this->registerTask('archive', 'publish');
 
-		// Value = -2
-		$this->registerTask('trash', 'publish');
+        // Value = -2
+        $this->registerTask('trash', 'publish');
 
-		// Value = -3
-		$this->registerTask('report', 'publish');
-		$this->registerTask('orderup', 'reorder');
-		$this->registerTask('orderdown', 'reorder');
+        // Value = -3
+        $this->registerTask('report', 'publish');
+        $this->registerTask('orderup', 'reorder');
+        $this->registerTask('orderdown', 'reorder');
 
-		// Guess the option as com_NameOfController.
-		if (empty($this->option))
-		{
-			$this->option = 'com_' . strtolower($this->getName());
-		}
+        // Guess the option as com_NameOfController.
+        if (empty($this->option)) {
+            $this->option = ComponentHelper::getComponentName($this, $this->getName());
+        }
 
-		// Guess the \JText message prefix. Defaults to the option.
-		if (empty($this->text_prefix))
-		{
-			$this->text_prefix = strtoupper($this->option);
-		}
+        // Guess the \Text message prefix. Defaults to the option.
+        if (empty($this->text_prefix)) {
+            $this->text_prefix = strtoupper($this->option);
+        }
 
-		// Guess the list view as the suffix, eg: OptionControllerSuffix.
-		if (empty($this->view_list))
-		{
-			$r = null;
+        // Guess the list view as the suffix, eg: OptionControllerSuffix.
+        if (empty($this->view_list)) {
+            $reflect = new \ReflectionClass($this);
 
-			if (!preg_match('/(.*)Controller(.*)/i', get_class($this), $r))
-			{
-				throw new \Exception(\JText::_('JLIB_APPLICATION_ERROR_CONTROLLER_GET_NAME'), 500);
-			}
+            $r = [0 => '', 1 => '', 2 => $reflect->getShortName()];
 
-			$this->view_list = strtolower($r[2]);
-		}
-	}
+            if ($reflect->getNamespaceName()) {
+                $r[2] = str_replace('Controller', '', $r[2]);
+            } elseif (!preg_match('/(.*)Controller(.*)/i', $reflect->getShortName(), $r)) {
+                throw new \Exception(Text::sprintf('JLIB_APPLICATION_ERROR_GET_NAME', __METHOD__), 500);
+            }
 
-	/**
-	 * Removes an item.
-	 *
-	 * @return  void
-	 *
-	 * @since   1.6
-	 */
-	public function delete()
-	{
-		// Check for request forgeries
-		$this->checkToken();
+            $this->view_list = strtolower($r[2]);
+        }
+    }
 
-		// Get items to remove from the request.
-		$cid = (array) $this->input->get('cid', array(), 'int');
+    /**
+     * Removes an item.
+     *
+     * @return  void
+     *
+     * @since   1.6
+     */
+    public function delete()
+    {
+        // Check for request forgeries
+        $this->checkToken();
 
-		// Remove zero values resulting from input filter
-		$cid = array_filter($cid);
+        // Get items to remove from the request.
+        $cid = (array) $this->input->get('cid', [], 'int');
 
-		if (empty($cid))
-		{
-			\JLog::add(\JText::_($this->text_prefix . '_NO_ITEM_SELECTED'), \JLog::WARNING, 'jerror');
-		}
-		else
-		{
-			// Get the model.
-			$model = $this->getModel();
+        // Remove zero values resulting from input filter
+        $cid = array_filter($cid);
 
-			// Remove the items.
-			if ($model->delete($cid))
-			{
-				$this->setMessage(\JText::plural($this->text_prefix . '_N_ITEMS_DELETED', count($cid)));
-			}
-			else
-			{
-				$this->setMessage($model->getError(), 'error');
-			}
+        if (empty($cid)) {
+            $this->app->getLogger()->warning(Text::_($this->text_prefix . '_NO_ITEM_SELECTED'), ['category' => 'jerror']);
+        } else {
+            // Get the model.
+            $model = $this->getModel();
 
-			// Invoke the postDelete method to allow for the child class to access the model.
-			$this->postDeleteHook($model, $cid);
-		}
+            // Remove the items.
+            if ($model->delete($cid)) {
+                $this->setMessage(Text::plural($this->text_prefix . '_N_ITEMS_DELETED', \count($cid)));
+            } else {
+                $this->setMessage($model->getError(), 'error');
+            }
 
-		$this->setRedirect(\JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false));
-	}
+            // Invoke the postDelete method to allow for the child class to access the model.
+            $this->postDeleteHook($model, $cid);
+        }
 
-	/**
-	 * Function that allows child controller access to model data
-	 * after the item has been deleted.
-	 *
-	 * @param   \JModelLegacy  $model  The data model object.
-	 * @param   integer        $id     The validated data.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.1
-	 */
-	protected function postDeleteHook(\JModelLegacy $model, $id = null)
-	{
-	}
+        $this->setRedirect(
+            Route::_(
+                'index.php?option=' . $this->option . '&view=' . $this->view_list
+                . $this->getRedirectToListAppend(),
+                false
+            )
+        );
+    }
 
-	/**
-	 * Method to publish a list of items
-	 *
-	 * @return  void
-	 *
-	 * @since   1.6
-	 */
-	public function publish()
-	{
-		// Check for request forgeries
-		$this->checkToken();
+    /**
+     * Function that allows child controller access to model data
+     * after the item has been deleted.
+     *
+     * @param   BaseDatabaseModel  $model  The data model object.
+     * @param   integer            $id     The validated data.
+     *
+     * @return  void
+     *
+     * @since   3.1
+     */
+    protected function postDeleteHook(BaseDatabaseModel $model, $id = null)
+    {
+    }
 
-		// Get items to publish from the request.
-		$cid = (array) $this->input->get('cid', array(), 'int');
-		$data = array('publish' => 1, 'unpublish' => 0, 'archive' => 2, 'trash' => -2, 'report' => -3);
-		$task = $this->getTask();
-		$value = ArrayHelper::getValue($data, $task, 0, 'int');
+    /**
+     * Method to publish a list of items
+     *
+     * @return  void
+     *
+     * @since   1.6
+     */
+    public function publish()
+    {
+        // Check for request forgeries
+        $this->checkToken();
 
-		// Remove zero values resulting from input filter
-		$cid = array_filter($cid);
+        // Get items to publish from the request.
+        $cid   = (array) $this->input->get('cid', [], 'int');
+        $data  = ['publish' => 1, 'unpublish' => 0, 'archive' => 2, 'trash' => -2, 'report' => -3];
+        $task  = $this->getTask();
+        $value = ArrayHelper::getValue($data, $task, 0, 'int');
 
-		if (empty($cid))
-		{
-			\JLog::add(\JText::_($this->text_prefix . '_NO_ITEM_SELECTED'), \JLog::WARNING, 'jerror');
-		}
-		else
-		{
-			// Get the model.
-			$model = $this->getModel();
+        // Remove zero values resulting from input filter
+        $cid = array_filter($cid);
 
-			// Publish the items.
-			try
-			{
-				$model->publish($cid, $value);
-				$errors = $model->getErrors();
-				$ntext = null;
+        if (empty($cid)) {
+            $this->app->getLogger()->warning(Text::_($this->text_prefix . '_NO_ITEM_SELECTED'), ['category' => 'jerror']);
+        } else {
+            // Get the model.
+            $model = $this->getModel();
 
-				if ($value === 1)
-				{
-					if ($errors)
-					{
-						\JFactory::getApplication()->enqueueMessage(\JText::plural($this->text_prefix . '_N_ITEMS_FAILED_PUBLISHING', count($cid)), 'error');
-					}
-					else
-					{
-						$ntext = $this->text_prefix . '_N_ITEMS_PUBLISHED';
-					}
-				}
-				elseif ($value === 0)
-				{
-					$ntext = $this->text_prefix . '_N_ITEMS_UNPUBLISHED';
-				}
-				elseif ($value === 2)
-				{
-					$ntext = $this->text_prefix . '_N_ITEMS_ARCHIVED';
-				}
-				else
-				{
-					$ntext = $this->text_prefix . '_N_ITEMS_TRASHED';
-				}
+            // Publish the items.
+            try {
+                $model->publish($cid, $value);
+                $errors = $model->getErrors();
+                $ntext = null;
 
-				if ($ntext !== null)
-				{
-					$this->setMessage(\JText::plural($ntext, count($cid)));
-				}
-			}
-			catch (\Exception $e)
-			{
-				$this->setMessage($e->getMessage(), 'error');
-			}
-		}
+                if ($value === 1) {
+                    if ($errors) {
+                        $this->app->enqueueMessage(Text::plural($this->text_prefix . '_N_ITEMS_FAILED_PUBLISHING', \count($cid)), 'error');
+                    } else {
+                        $ntext = $this->text_prefix . '_N_ITEMS_PUBLISHED';
+                    }
+                } elseif ($value === 0) {
+                    $ntext = $this->text_prefix . '_N_ITEMS_UNPUBLISHED';
+                } elseif ($value === 2) {
+                    $ntext = $this->text_prefix . '_N_ITEMS_ARCHIVED';
+                } else {
+                    $ntext = $this->text_prefix . '_N_ITEMS_TRASHED';
+                }
 
-		$extension = $this->input->get('extension');
-		$extensionURL = $extension ? '&extension=' . $extension : '';
-		$this->setRedirect(\JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list . $extensionURL, false));
-	}
+                if (\count($cid)) {
+                    $this->setMessage(Text::plural($ntext, \count($cid)));
+                }
+            } catch (\Exception $e) {
+                $this->setMessage($e->getMessage(), 'error');
+            }
+        }
 
-	/**
-	 * Changes the order of one or more records.
-	 *
-	 * @return  boolean  True on success
-	 *
-	 * @since   1.6
-	 */
-	public function reorder()
-	{
-		// Check for request forgeries.
-		$this->checkToken();
+        $this->setRedirect(
+            Route::_(
+                'index.php?option=' . $this->option . '&view=' . $this->view_list
+                . $this->getRedirectToListAppend(),
+                false
+            )
+        );
+    }
 
-		$ids = (array) $this->input->post->get('cid', array(), 'int');
-		$inc = $this->getTask() === 'orderup' ? -1 : 1;
+    /**
+     * Changes the order of one or more records.
+     *
+     * @return  boolean  True on success
+     *
+     * @since   1.6
+     */
+    public function reorder()
+    {
+        // Check for request forgeries.
+        $this->checkToken();
 
-		// Remove zero values resulting from input filter
-		$ids = array_filter($ids);
+        $ids = (array) $this->input->post->get('cid', [], 'int');
+        $inc = $this->getTask() === 'orderup' ? -1 : 1;
 
-		$model = $this->getModel();
-		$return = $model->reorder($ids, $inc);
+        // Remove zero values resulting from input filter
+        $ids = array_filter($ids);
 
-		if ($return === false)
-		{
-			// Reorder failed.
-			$message = \JText::sprintf('JLIB_APPLICATION_ERROR_REORDER_FAILED', $model->getError());
-			$this->setRedirect(\JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false), $message, 'error');
+        $model = $this->getModel();
+        $return = $model->reorder($ids, $inc);
 
-			return false;
-		}
-		else
-		{
-			// Reorder succeeded.
-			$message = \JText::_('JLIB_APPLICATION_SUCCESS_ITEM_REORDERED');
-			$this->setRedirect(\JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false), $message);
+        $redirect = Route::_('index.php?option=' . $this->option . '&view=' . $this->view_list . $this->getRedirectToListAppend(), false);
 
-			return true;
-		}
-	}
+        if ($return === false) {
+            // Reorder failed.
+            $message = Text::sprintf('JLIB_APPLICATION_ERROR_REORDER_FAILED', $model->getError());
+            $this->setRedirect($redirect, $message, 'error');
 
-	/**
-	 * Method to save the submitted ordering values for records.
-	 *
-	 * @return  boolean  True on success
-	 *
-	 * @since   1.6
-	 */
-	public function saveorder()
-	{
-		// Check for request forgeries.
-		$this->checkToken();
+            return false;
+        } else {
+            // Reorder succeeded.
+            $message = Text::_('JLIB_APPLICATION_SUCCESS_ITEM_REORDERED');
+            $this->setRedirect($redirect, $message);
 
-		// Get the input
-		$pks   = (array) $this->input->post->get('cid', array(), 'int');
-		$order = (array) $this->input->post->get('order', array(), 'int');
+            return true;
+        }
+    }
 
-		// Remove zero PK's and corresponding order values resulting from input filter for PK
-		foreach ($pks as $i => $pk)
-		{
-			if ($pk === 0)
-			{
-				unset($pks[$i]);
-				unset($order[$i]);
-			}
-		}
+    /**
+     * Method to save the submitted ordering values for records.
+     *
+     * @return  boolean  True on success
+     *
+     * @since   1.6
+     */
+    public function saveorder()
+    {
+        // Check for request forgeries.
+        $this->checkToken();
 
-		// Get the model
-		$model = $this->getModel();
+        // Get the input
+        $pks   = (array) $this->input->post->get('cid', [], 'int');
+        $order = (array) $this->input->post->get('order', [], 'int');
 
-		// Save the ordering
-		$return = $model->saveorder($pks, $order);
+        // Remove zero PKs and corresponding order values resulting from input filter for PK
+        foreach ($pks as $i => $pk) {
+            if ($pk === 0) {
+                unset($pks[$i]);
+                unset($order[$i]);
+            }
+        }
 
-		if ($return === false)
-		{
-			// Reorder failed
-			$message = \JText::sprintf('JLIB_APPLICATION_ERROR_REORDER_FAILED', $model->getError());
-			$this->setRedirect(\JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false), $message, 'error');
+        // Get the model
+        $model = $this->getModel();
 
-			return false;
-		}
-		else
-		{
-			// Reorder succeeded.
-			$this->setMessage(\JText::_('JLIB_APPLICATION_SUCCESS_ORDERING_SAVED'));
-			$this->setRedirect(\JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false));
+        // Save the ordering
+        $return = $model->saveorder($pks, $order);
 
-			return true;
-		}
-	}
+        $redirect = Route::_('index.php?option=' . $this->option . '&view=' . $this->view_list . $this->getRedirectToListAppend(), false);
 
-	/**
-	 * Check in of one or more records.
-	 *
-	 * @return  boolean  True on success
-	 *
-	 * @since   1.6
-	 */
-	public function checkin()
-	{
-		// Check for request forgeries.
-		$this->checkToken();
+        if ($return === false) {
+            // Reorder failed
+            $message = Text::sprintf('JLIB_APPLICATION_ERROR_REORDER_FAILED', $model->getError());
+            $this->setRedirect($redirect, $message, 'error');
 
-		$ids = (array) $this->input->post->get('cid', array(), 'int');
+            return false;
+        } else {
+            // Reorder succeeded.
+            $this->setMessage(Text::_('JLIB_APPLICATION_SUCCESS_ORDERING_SAVED'));
+            $this->setRedirect($redirect);
 
-		// Remove zero values resulting from input filter
-		$ids = array_filter($ids);
+            return true;
+        }
+    }
 
-		$model = $this->getModel();
-		$return = $model->checkin($ids);
+    /**
+     * Check in of one or more records.
+     *
+     * @return  boolean  True on success
+     *
+     * @since   1.6
+     */
+    public function checkin()
+    {
+        // Check for request forgeries.
+        $this->checkToken();
 
-		if ($return === false)
-		{
-			// Checkin failed.
-			$message = \JText::sprintf('JLIB_APPLICATION_ERROR_CHECKIN_FAILED', $model->getError());
-			$this->setRedirect(\JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false), $message, 'error');
+        $ids = (array) $this->input->post->get('cid', [], 'int');
 
-			return false;
-		}
-		else
-		{
-			// Checkin succeeded.
-			$message = \JText::plural($this->text_prefix . '_N_ITEMS_CHECKED_IN', count($ids));
-			$this->setRedirect(\JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false), $message);
+        // Remove zero values resulting from input filter
+        $ids = array_filter($ids);
 
-			return true;
-		}
-	}
+        $model = $this->getModel();
+        $return = $model->checkin($ids);
 
-	/**
-	 * Method to save the submitted ordering values for records via AJAX.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
-	public function saveOrderAjax()
-	{
-		// Check for request forgeries.
-		$this->checkToken();
+        if ($return === false) {
+            // Checkin failed.
+            $message = Text::sprintf('JLIB_APPLICATION_ERROR_CHECKIN_FAILED', $model->getError());
+            $this->setRedirect(
+                Route::_(
+                    'index.php?option=' . $this->option . '&view=' . $this->view_list . $this->getRedirectToListAppend(),
+                    false
+                ),
+                $message,
+                'error'
+            );
 
-		// Get the input
-		$pks   = (array) $this->input->post->get('cid', array(), 'int');
-		$order = (array) $this->input->post->get('order', array(), 'int');
+            return false;
+        } else {
+            // Checkin succeeded.
+            $message = Text::plural($this->text_prefix . '_N_ITEMS_CHECKED_IN', \count($ids));
+            $this->setRedirect(
+                Route::_(
+                    'index.php?option=' . $this->option . '&view=' . $this->view_list . $this->getRedirectToListAppend(),
+                    false
+                ),
+                $message
+            );
 
-		// Remove zero PK's and corresponding order values resulting from input filter for PK
-		foreach ($pks as $i => $pk)
-		{
-			if ($pk === 0)
-			{
-				unset($pks[$i]);
-				unset($order[$i]);
-			}
-		}
+            return true;
+        }
+    }
 
-		// Get the model
-		$model = $this->getModel();
+    /**
+     * Method to save the submitted ordering values for records via AJAX.
+     *
+     * @return  void
+     *
+     * @since   3.0
+     */
+    public function saveOrderAjax()
+    {
+        // Check for request forgeries.
+        $this->checkToken();
 
-		// Save the ordering
-		$return = $model->saveorder($pks, $order);
+        // Get the input
+        $pks   = (array) $this->input->post->get('cid', [], 'int');
+        $order = (array) $this->input->post->get('order', [], 'int');
 
-		if ($return)
-		{
-			echo '1';
-		}
+        // Remove zero PKs and corresponding order values resulting from input filter for PK
+        foreach ($pks as $i => $pk) {
+            if ($pk === 0) {
+                unset($pks[$i]);
+                unset($order[$i]);
+            }
+        }
 
-		// Close the application
-		\JFactory::getApplication()->close();
-	}
+        // Get the model
+        $model = $this->getModel();
+
+        // Save the ordering
+        $return = $model->saveorder($pks, $order);
+
+        if ($return) {
+            echo '1';
+        }
+
+        // Close the application
+        $this->app->close();
+    }
+
+    /**
+     * Method to run Transition by id of item.
+     *
+     * @return  boolean  Indicates whether the transition was successful.
+     *
+     * @since   4.0.0
+     */
+    public function runTransition()
+    {
+        // Check for request forgeries
+        $this->checkToken();
+
+        // Get the input
+        $pks = (array) $this->input->post->get('cid', [], 'int');
+
+        // Remove zero values resulting from input filter
+        $pks = array_filter($pks);
+
+        if (!\count($pks)) {
+            return false;
+        }
+
+        $transitionId = (int) $this->input->post->getInt('transition_id');
+
+        // Get the model
+        $model = $this->getModel();
+
+        if (!$model instanceof WorkflowModelInterface) {
+            return false;
+        }
+
+        $return = $model->executeTransition($pks, $transitionId);
+
+        $redirect = Route::_('index.php?option=' . $this->option . '&view=' . $this->view_list . $this->getRedirectToListAppend(), false);
+
+        if ($return === false) {
+            // Transition change failed.
+            $message = Text::sprintf('JLIB_APPLICATION_ERROR_RUN_TRANSITION', $model->getError());
+            $this->setRedirect($redirect, $message, 'error');
+
+            return false;
+        }
+
+        // Transition change succeeded.
+        $message = Text::_('JLIB_APPLICATION_SUCCESS_RUN_TRANSITION');
+        $this->setRedirect($redirect, $message);
+
+        return true;
+    }
+
+    /**
+     * Gets the URL arguments to append to a list redirect.
+     *
+     * @return  string  The arguments to append to the redirect URL.
+     *
+     * @since   4.0.0
+     */
+    protected function getRedirectToListAppend()
+    {
+        return '';
+    }
 }

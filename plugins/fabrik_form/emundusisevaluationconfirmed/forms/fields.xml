@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<form>
-	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
-		<fieldset name="plg-form-emundusisevaluationconfirmed" label="PLG_FABRIK_FORM_EMUNDUSISEVALUATIONCONFIRMED_FIELDS">
-			<field name="profile" type="field" description="PLG_FABRIK_FORM_EMUNDUSISEVALUATIONCONFIRMED_PROFILE_DESC" label="PLG_FABRIK_FORM_EMUNDUSISEVALUATIONCONFIRMED_PROFILE_LABEL" />
-		</fieldset>
-	</fields>
-</form>

@@ -1,1 +1,0 @@
-UPDATE `jos_extensions` SET `manifest_cache` = '{"legacy":true,"name":"Emundus","type":"component","creationDate":"August 2017","author":"EMUNDUS","copyright":"","authorEmail":"contact@emundus.fr","authorUrl":"http:\\/\\/www.emundus.fr","version":"6.5","description":"Candidate Relation Management.","group":""}' WHERE element like "com_emundus" AND type like "component"; 

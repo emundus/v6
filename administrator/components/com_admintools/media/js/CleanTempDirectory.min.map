@@ -1,8 +1,0 @@
-{
-"version":3,
-"file":"CleanTempDirectory.min.js",
-"lineCount":5,
-"mappings":"A;;;;AAO4C,WAA5C,EAAI,MAAOA,WAAAC,mBAAX,GAECD,UAAAC,mBAFD,CAEiC,SACpBC,QAAS,EACjB,CACUC,MAAAH,WAAAI,aAAAC,WAAA,EADV,CAF4B,CAFjC,CAUAC,OAAAC,OAAA,CAAcC,QAAd,CAAAC,MAAA,CAA8B,QAAS,CAACC,CAAD,CACvC,CACwBA,CAAAC,CAAE,gCAAFA,CAEnBC,OAAJ,CAECC,MAAAC,WAAA,CAAkBd,UAAAC,mBAAAC,QAAlB,CAAyD,GAAzD,CAFD,CAMCM,QAAAO,MAAAC,UAAAC,OAAA,EATF,CADA;",
-"sources":["../uncompressed/js/CleanTempDirectory.js"],
-"names":["admintools","CleanTempDirectory","closeMe","parent","ControlPanel","closeModal","akeeba","jQuery","document","ready","$","autoCloseElement","length","window","setTimeout","forms","adminForm","submit"]
-}

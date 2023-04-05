@@ -1,8 +1,0 @@
-{
-"version":3,
-"file":"ConfigureWAF.min.js",
-"lineCount":5,
-"mappings":"A;;;;AAOsC,WAAtC,EAAI,MAAOA,WAAAC,aAAX,GAECD,UAAAC,aAIG,CAJuB,CACzB,KAAQ,EADiB,CAIvB,CAAAD,UAAAC,aAAAC,iBAAA,CAA2CC,QAAS,CAACC,CAAD,CACpD,CACI,GAAkB,QAAlB,EAAK,MAAOA,EAAZ,EAA+BC,QAAAC,UAAAC,cAAA,CAAiCH,CAAjC,CAA/B,CAEI,IAAKI,CAAL,CAAS,CAAT,CAAYA,CAAZ,CAAgBJ,CAAAK,OAAhB,CAA2BD,CAAA,EAA3B,CAIIR,UAAAC,aAAAC,iBAAA,CAFQE,CAAAM,CAAGF,CAAHE,CAER,CANR,KAYAC,OAAAC,QAAAC,UAAA,CAAyBT,CAAzB,CAbJ,CAPJ,CAwBC,UAAS,CAACU,CAAD,CACV,CACCA,CAAA,CAAEC,QAAF,CAAAC,MAAA,CAAkB,QAAS,EAC3B,CAEOhB,UAAAC,aAAAC,iBAAA,CAAyCY,CAAA,CAAE,+BAAF,CAAzC,CAFP,CADA,CADD,CADC,CAAD,CAQGH,MAAAM,OARH;",
-"sources":["../uncompressed/js/ConfigureWAF.js"],
-"names":["admintools","ConfigureWAF","enablePopoverFor","admintools.ConfigureWAF.enablePopoverFor","el","NodeList","prototype","isPrototypeOf","i","length","e","akeeba","Tooltip","enableFor","$","document","ready","jQuery"]
-}

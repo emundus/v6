@@ -1,93 +1,48 @@
 /**
- * @copyright   (C) 2015 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright  (C) 2018 Open Source Matters, Inc. <https://www.joomla.org>
+ * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ * @since      3.5.0
  */
+(document => {
 
-/**
- * stats javascript behavior
- *
- * To allow users to accept & configure stats sending
- *
- * @package     Joomla
- * @since       3.5.0
- * @version  1.0
- */
+  const statsDataTogglerId = 'js-pstats-data-details-toggler';
+  const statsDataDetailsId = 'js-pstats-data-details';
+  const resetId = 'js-pstats-reset-uid';
+  const uniqueIdFieldId = 'jform_params_unique_id';
 
-(function ($) {
-	$(document).ready(function () {
-		var ajaxData = {
-			'option' : 'com_ajax',
-			'group'  : 'system',
-			'plugin' : 'renderStatsMessage',
-			'format' : 'raw'
-			},
-			messageContainer = $('#system-message-container');
+  const onToggle = event => {
+    event.preventDefault();
+    const element = document.getElementById(statsDataDetailsId);
 
-		/**
-		 * Initialise events for the message container
-		 *
-		 * @return  void
-		 */
-		function initStatsEvents()
-		{
-			var globalContainer = messageContainer.find('.js-pstats-alert'),
-				detailsContainer = messageContainer.find('.js-pstats-data-details');
+    if (element) {
+      element.classList.toggle('d-none');
+    }
+  };
 
-			// Show details about the information being sent
-			messageContainer.on('click', '.js-pstats-btn-details', function(e){
-				detailsContainer.toggle(200);
-				e.preventDefault();
-			});
+  const onReset = event => {
+    event.preventDefault();
+    document.getElementById(uniqueIdFieldId).value = '';
+    Joomla.submitbutton('plugin.apply');
+  };
 
-			// Always allow
-			messageContainer.on('click', '.js-pstats-btn-allow-always', function(e){
+  const onBoot = () => {
+    // Toggle stats details
+    const toggler = document.getElementById(statsDataTogglerId);
 
-				// Remove message
-				globalContainer.hide(200);
-				detailsContainer.remove();
-				ajaxData.plugin = 'sendAlways';
+    if (toggler) {
+      toggler.addEventListener('click', onToggle);
+    } // Reset the unique id
 
-				$.getJSON('index.php', ajaxData, function(response){});
-				e.preventDefault();
-			});
 
-			// Allow once
-			messageContainer.on('click', '.js-pstats-btn-allow-once', function(e){
+    const reset = document.getElementById(resetId);
 
-				// Remove message
-				globalContainer.hide(200);
-				detailsContainer.remove();
+    if (reset) {
+      reset.addEventListener('click', onReset);
+    } // Cleanup
 
-				ajaxData.plugin = 'sendOnce';
 
-				$.getJSON('index.php', ajaxData, function(response){});
-				e.preventDefault();
-			});
+    document.removeEventListener('DOMContentLoaded', onBoot);
+  };
 
-			// Never allow
-			messageContainer.on('click', '.js-pstats-btn-allow-never', function(e){
-
-				// Remove message
-				globalContainer.hide(200);
-				detailsContainer.remove();
-
-				ajaxData.plugin = 'sendNever';
-
-				$.getJSON('index.php', ajaxData, function(response){});
-				e.preventDefault();
-			});
-		}
-
-		ajaxData.plugin = 'sendStats';
-
-		$.getJSON('index.php', ajaxData, function(response){
-			if (response && response.html) {
-				messageContainer
-					.append(response.html)
-					.find('.js-pstats-alert').show(200);
-
-				initStatsEvents();
-			}
-		});
-	});
-})(jQuery);
+  document.addEventListener('DOMContentLoaded', onBoot);
+})(document, Joomla);

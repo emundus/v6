@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<form>
-	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
-		<fieldset name="plg-cron-migalftp">
-			<field name="product_url" type="text" description="PLG_CRON_MIGALFTP_GESCOF_PRODUCT_URL_DESC" label="PLG_CRON_MIGALFTP_GESCOF_PRODUCT_URL_LABEL" size="30" />
-			<field name="session_url" type="text" description="PLG_CRON_MIGALFTP_GESCOF_SESSION_URL_DESC" label="PLG_CRON_MIGALFTP_GESCOF_SESSION_URL_LABEL" size="30" />
-		</fieldset>
-	</fields>
-</form>

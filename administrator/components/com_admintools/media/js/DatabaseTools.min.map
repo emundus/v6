@@ -1,8 +1,0 @@
-{
-"version":3,
-"file":"DatabaseTools.min.js",
-"lineCount":5,
-"mappings":"A;;;;AAOuC,WAAvC,EAAI,MAAOA,WAAAC,cAAX,GAECD,UAAAC,cAFD,CAE4B,SACfC,QAAS,EACjB,CACUC,MAAAH,WAAAI,aAAAC,WAAA,EADV,CAFuB,CAF5B,CAUAC,OAAAC,OAAA,CAAcC,QAAd,CAAAC,MAAA,CAA8B,QAAS,CAACC,CAAD,CACvC,CACwBA,CAAAC,CAAE,qCAAFA,CAEnBC,OAAJ,CAECC,MAAAC,WAAA,CAAkBd,UAAAC,cAAAC,QAAlB,CAAoD,GAApD,CAFD,CAMCM,QAAAO,MAAAC,UAAAC,OAAA,EATF,CADA;",
-"sources":["../uncompressed/js/DatabaseTools.js"],
-"names":["admintools","DatabaseTools","closeMe","parent","ControlPanel","closeModal","akeeba","jQuery","document","ready","$","autoCloseElement","length","window","setTimeout","forms","adminForm","submit"]
-}

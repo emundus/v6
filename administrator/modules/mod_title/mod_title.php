@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  mod_title
@@ -9,10 +10,11 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Helper\ModuleHelper;
+
 // Get the component title div
-if (isset(JFactory::getApplication()->JComponentTitle))
-{
-	$title = JFactory::getApplication()->JComponentTitle;
+if (isset($app->JComponentTitle)) {
+    $title = $app->JComponentTitle;
 }
 
-require JModuleHelper::getLayoutPath('mod_title', $params->get('layout', 'default'));
+require ModuleHelper::getLayoutPath('mod_title', $params->get('layout', 'default'));

@@ -1,8 +1,0 @@
-{
-"version":3,
-"file":"QuickStart.min.js",
-"lineCount":6,
-"mappings":"A;;;;AAOoC,WAApC,EAAI,MAAOA,WAAAC,WAAX,GAECD,UAAAC,WAcG,CAdqB,CACvB,KAAQ,EADe,CAEvB,uBAA0BC,QAAS,EACnC,CACCC,MAAAC,OAAA,CAAc,+BAAd,CAAAC,KAAA,EACAF,OAAAC,OAAA,CAAc,YAAd,CAAAE,KAAA,EAFD,CAHuB,CAOvB,SAAYC,QAAS,EACrB,CACC,IAAIC,EAAuB,OAAvBA,CAA+DC,MAAAC,aAAA,CAAoB,EAApB,CAA/DF,CAAsL,iBAC1LL,OAAAC,OAAAO,KAAA,CAAmBH,CAAnB,CAA0C,wDAA1C,CAFD,CARuB,CAcrB,CAAAR,UAAAC,WAAAW,iBAAA,CAAyCC,QAAS,CAACC,CAAD,CAClD,CACI,GAAkB,QAAlB,EAAK,MAAOA,EAAZ,EAA+BC,QAAAC,UAAAC,cAAA,CAAiCH,CAAjC,CAA/B,CAEI,IAAKI,CAAL,CAAS,CAAT,CAAYA,CAAZ,CAAgBJ,CAAAK,OAAhB,CAA2BD,CAAA,EAA3B,CAIIlB,UAAAC,WAAAW,iBAAA,CAFQE,CAAAM,CAAGF,CAAHE,CAER,CANR;IAYAjB,OAAAkB,QAAAC,UAAA,CAAyBR,CAAzB,CAbJ,CAjBJ,CAkCAX,OAAAC,OAAA,CAAcmB,QAAd,CAAAC,MAAA,CAA8B,QAAS,CAACC,CAAD,CACvC,CACIzB,UAAAC,WAAAW,iBAAA,CAAuCa,CAAA,CAAE,+BAAF,CAAvC,CADJ,CADA;",
-"sources":["../uncompressed/js/QuickStart.js"],
-"names":["admintools","QuickStart","youWantToBreakYourSite","akeeba","jQuery","hide","show","detectIP","stupidHostWorkaround","String","fromCharCode","ajax","enablePopoverFor","admintools.QuickStart.enablePopoverFor","el","NodeList","prototype","isPrototypeOf","i","length","e","Tooltip","enableFor","document","ready","$"]
-}

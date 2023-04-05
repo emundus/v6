@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  mod_submenu
@@ -9,16 +10,31 @@
 
 defined('_JEXEC') or die;
 
-$list    = JSubMenuHelper::getEntries();
-$filters = JSubMenuHelper::getFilters();
-$action  = JSubMenuHelper::getAction();
+use Joomla\CMS\Factory;
+use Joomla\CMS\Helper\ModuleHelper;
+use Joomla\Component\Menus\Administrator\Helper\MenusHelper;
+use Joomla\Module\Submenu\Administrator\Menu\Menu;
 
-$displayMenu    = count($list);
-$displayFilters = count($filters);
+$menutype = $params->get('menutype', '*');
+$root     = false;
 
-$hide = JFactory::getApplication()->input->getBool('hidemainmenu');
+if ($menutype === '*') {
+    $name   = $params->get('preset', 'system');
+    $root = MenusHelper::loadPreset($name);
+} else {
+    $root = MenusHelper::getMenuItems($menutype, true);
+}
 
-if ($displayMenu || $displayFilters)
-{
-	require JModuleHelper::getLayoutPath('mod_submenu', $params->get('layout', 'default'));
+if ($root && $root->hasChildren()) {
+    Factory::getLanguage()->load(
+        'mod_menu',
+        JPATH_ADMINISTRATOR,
+        Factory::getLanguage()->getTag(),
+        true
+    );
+
+    Menu::preprocess($root);
+
+    // Render the module layout
+    require ModuleHelper::getLayoutPath('mod_submenu', $params->get('layout', 'default'));
 }

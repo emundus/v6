@@ -1,0 +1,65 @@
+{
+  "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
+  "name": "com_media",
+  "version": "4.0.0",
+  "description": "Joomla CMS",
+  "license": "GPL-2.0-or-later",
+  "assets": [
+    {
+      "name": "com_media.edit-images.es5",
+      "type": "script",
+      "uri": "com_media/edit-images-es5.min.js",
+      "dependencies": [
+        "core"
+      ],
+      "attributes": {
+        "nomodule": true,
+        "defer": true
+      },
+      "version": "117e12a508a88b37829ea657fc76280aadb9acb2"
+    },
+    {
+      "name": "com_media.edit-images",
+      "type": "script",
+      "uri": "com_media/edit-images.min.js",
+      "dependencies": [
+        "com_media.edit-images.es5"
+      ],
+      "attributes": {
+        "type": "module"
+      },
+      "version": "76f6c3fd813f8cb32fa76ffd7934e5a385b31fdc"
+    },
+    {
+      "name": "com_media.mediamanager",
+      "type": "style",
+      "uri": "com_media/media-manager.min.css",
+      "version": "af2635c1ad85bf983d87b37521a948e71edf8f8f"
+    },
+    {
+      "name": "com_media.mediamanager",
+      "type": "script",
+      "uri": "com_media/media-manager.min.js",
+      "dependencies": [
+        "com_media.mediamanager.es5"
+      ],
+      "attributes": {
+        "type": "module"
+      },
+      "version": "5410b07261d770c44c87239cb98185e06f493a93"
+    },
+    {
+      "name": "com_media.mediamanager.es5",
+      "type": "script",
+      "uri": "com_media/media-manager-es5.min.js",
+      "dependencies": [
+        "core"
+      ],
+      "attributes": {
+        "nomodule": true,
+        "defer": true
+      },
+      "version": "4cdcd22623c6d1b6ed4e2ea0c54f333017521c31"
+    }
+  ]
+}

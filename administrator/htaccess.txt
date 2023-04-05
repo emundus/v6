@@ -1,6 +1,0 @@
-AuthName "Private area"
-AuthType Basic
-AuthUserFile "/.htpasswd"
-<Limit GET POST>
-Require valid-user
-</Limit>

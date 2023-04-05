@@ -1,0 +1,105 @@
+version: '3.1'
+name: tchooz_j4
+
+services:
+  joomla:
+    container_name: joomla4
+    build:
+      context: ./.docker/
+      dockerfile: Dockerfile
+    image: tchooz-dev-app:2.0
+    ports:
+      - "8383:80"
+    restart: always
+    environment:
+      JOOMLA_DB_HOST: joomladb
+      JOOMLA_DB_USER: user
+      JOOMLA_DB_PASSWORD: password
+      JOOMLA_DB_NAME: joomla4
+      TCHOOZ_OFFLINE: 0
+      TCHOOZ_OFFLINE_MESSAGE: Offline
+      TCHOOZ_DISPLAY_OFFLINE_MESSAGE: 1
+      TCHOOZ_OFFLINE_IMAGE: images/logo.png
+      TCHOOZ_SITENAME: Tchooz
+      TCHOOZ_EDITOR: tinymce
+      TCHOOZ_DEBUG: 0
+      TCHOOZ_DEBUG_LANG: 0
+      TCHOOZ_LIVE_SITE:
+      TCHOOZ_SECRET: TXGin8XS4BEqA8cA
+      TCHOOZ_OFFSET: Europe/Paris
+      TCHOOZ_MAILER: smtp
+      TCHOOZ_MAIL_FROM:
+      TCHOOZ_MAIL_FROM_NAME: dev@emundus.fr
+      TCHOOZ_MAIL_SMTP_AUTH:
+      TCHOOZ_MAIL_SMTP_USER: 4e280ecaa19d8e
+      TCHOOZ_MAIL_SMTP_PASS: b86e475ed3d798
+      TCHOOZ_MAIL_SMTP_HOST: smtp.mailtrap.io
+      TCHOOZ_MAIL_SMTP_SECURITY: tls
+      TCHOOZ_MAIL_SMTP_PORT: 2525
+      TCHOOZ_CACHING: 0
+      TCHOOZ_CACHE_HANDLER: redis
+      TCHOOZ_CACHE_LIFETIME: 15
+      TCHOOZ_META_DESCRIPTION: Tchooz
+      TCHOOZ_META_KEYS: tchooz
+      TCHOOZ_LOG_PATH: /var/www/html/logs
+      TCHOOZ_TMP_PATH: /var/www/html/tmp
+      TCHOOZ_SESSION_LIFETIME: 15
+      TCHOOZ_SESSION_HANDLER: redis
+      TCHOOZ_FORCE_SSL: 0
+      TCHOOZ_REDIS_PERSIST: 1
+      TCHOOZ_REDIS_HOST: redis
+      TCHOOZ_REDIS_PORT: 6379
+      TCHOOZ_REDIS_DB: 0
+      TCHOOZ_MAIL_REPLY_TO:
+      TCHOOZ_MAIL_REPLY_TO_NAME:
+      TCHOOZ_SESSION_REDIS_PERSIST: 1
+      TCHOOZ_SESSION_REDIS_HOST: redis
+      TCHOOZ_SESSION_REDIS_PORT: 6379
+      TCHOOZ_SESSION_REDIS_DB: 0
+      TCHOOZ_PROSPECT: 0
+      TCHOOZ_PLAN_LIMIT_APP_FORMS: 0
+      TCHOOZ_PLAN_LIMIT_STORAGE_SPACE: 0
+      TCHOOZ_PLAN_LIMIT_FORMS: 0
+      TCHOOZ_BEHIND_LOADBALANCER: 0
+      TCHOOZ_ADMIN_ACCESS_TOKEN: TTbzQEXiJKNW57aYKNoV
+      TCHOOZ_COORD_USERNAME: coordinator
+      TCHOOZ_COORD_MAIL: dev@emundus.io
+      TCHOOZ_COORD_FIRST_NAME: Coordinator
+      TCHOOZ_COORD_LAST_NAME: Tchooz
+      TCHOOZ_COORD_PASSWORD: OU4T54P0l!xus*EFUEk.IGiY1uVvbW
+      TCHOOZ_SYSADMIN_USERNAME: sysadmin
+      TCHOOZ_SYSADMIN_MAIL: sysadmin@emundus.io
+      TCHOOZ_SYSADMIN_FIRST_NAME: Administrator
+      TCHOOZ_SYSADMIN_LAST_NAME: Tchooz
+      TCHOOZ_SYSADMIN_PASSWORD: password
+      TCHOOZ_INSTANCE_ID: 999999
+      TCHOOZ_CUSTOMER_ID: 999999
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      joomladb:
+        condition: service_healthy
+    links:
+      - joomladb:mysql
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  joomladb:
+    container_name: joomla4_db
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: joomla4
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 10
+      start_period: 15s
+    ports:
+      - "127.0.0.1:13308:3306"
+    restart: always
+    volumes:
+      - ./.docker/data/mysql:/var/lib/mysql
+      - ./.docker/mysql/conf/my.cnf:/etc/mysql/conf.d/my.cnf

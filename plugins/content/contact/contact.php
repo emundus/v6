@@ -1,129 +1,151 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Content.Contact
  *
  * @copyright   (C) 2014 Open Source Matters, Inc. <https://www.joomla.org>
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
+
+ * @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
  */
 
-defined('_JEXEC') or die;
-
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Multilanguage;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Router\Route;
+use Joomla\Component\Contact\Site\Helper\RouteHelper;
+use Joomla\Database\ParameterType;
 use Joomla\Registry\Registry;
+
+// phpcs:disable PSR1.Files.SideEffects
+\defined('_JEXEC') or die;
+// phpcs:enable PSR1.Files.SideEffects
 
 /**
  * Contact Plugin
  *
  * @since  3.2
  */
-class PlgContentContact extends JPlugin
+class PlgContentContact extends CMSPlugin
 {
-	/**
-	 * Database object
-	 *
-	 * @var    JDatabaseDriver
-	 * @since  3.3
-	 */
-	protected $db;
+    /**
+     * @var    \Joomla\Database\DatabaseDriver
+     *
+     * @since  3.3
+     */
+    protected $db;
 
-	/**
-	 * Plugin that retrieves contact information for contact
-	 *
-	 * @param   string   $context  The context of the content being passed to the plugin.
-	 * @param   mixed    &$row     An object with a "text" property
-	 * @param   mixed    $params   Additional parameters. See {@see PlgContentContent()}.
-	 * @param   integer  $page     Optional page number. Unused. Defaults to zero.
-	 *
-	 * @return  boolean	True on success.
-	 */
-	public function onContentPrepare($context, &$row, $params, $page = 0)
-	{
-		$allowed_contexts = array('com_content.category', 'com_content.article', 'com_content.featured');
+    /**
+     * Plugin that retrieves contact information for contact
+     *
+     * @param   string   $context  The context of the content being passed to the plugin.
+     * @param   mixed    &$row     An object with a "text" property
+     * @param   mixed    $params   Additional parameters. See {@see PlgContentContent()}.
+     * @param   integer  $page     Optional page number. Unused. Defaults to zero.
+     *
+     * @return  void
+     */
+    public function onContentPrepare($context, &$row, $params, $page = 0)
+    {
+        $allowed_contexts = ['com_content.category', 'com_content.article', 'com_content.featured'];
 
-		if (!in_array($context, $allowed_contexts))
-		{
-			return true;
-		}
+        if (!in_array($context, $allowed_contexts)) {
+            return;
+        }
 
-		// Return if we don't have valid params or don't link the author
-		if (!($params instanceof Registry) || !$params->get('link_author'))
-		{
-			return true;
-		}
+        // Return if we don't have valid params or don't link the author
+        if (!($params instanceof Registry) || !$params->get('link_author')) {
+            return;
+        }
 
-		// Return if an alias is used
-		if ((int) $this->params->get('link_to_alias', 0) === 0 && $row->created_by_alias != '')
-		{
-			return true;
-		}
+        // Return if an alias is used
+        if ((int) $this->params->get('link_to_alias', 0) === 0 && $row->created_by_alias != '') {
+            return;
+        }
 
-		// Return if we don't have a valid article id
-		if (!isset($row->id) || !(int) $row->id)
-		{
-			return true;
-		}
+        // Return if we don't have a valid article id
+        if (!isset($row->id) || !(int) $row->id) {
+            return;
+        }
 
-		$contact        = $this->getContactData($row->created_by);
-		$row->contactid = $contact->contactid;
-		$row->webpage   = $contact->webpage;
-		$row->email     = $contact->email_to;
-		$url            = $this->params->get('url', 'url');
+        $contact = $this->getContactData($row->created_by);
 
-		if ($row->contactid && $url === 'url')
-		{
-			JLoader::register('ContactHelperRoute', JPATH_SITE . '/components/com_contact/helpers/route.php');
-			$row->contact_link = JRoute::_(ContactHelperRoute::getContactRoute($contact->contactid . ':' . $contact->alias, $contact->catid));
-		}
-		elseif ($row->webpage && $url === 'webpage')
-		{
-			$row->contact_link = $row->webpage;
-		}
-		elseif ($row->email && $url === 'email')
-		{
-			$row->contact_link = 'mailto:' . $row->email;
-		}
-		else
-		{
-			$row->contact_link = '';
-		}
+        if ($contact === null) {
+            return;
+        }
 
-		return true;
-	}
+        $row->contactid = $contact->contactid;
+        $row->webpage   = $contact->webpage;
+        $row->email     = $contact->email_to;
+        $url            = $this->params->get('url', 'url');
 
-	/**
-	 * Retrieve Contact
-	 *
-	 * @param   int  $userId  Id of the user who created the article
-	 *
-	 * @return  mixed|null|integer
-	 */
-	protected function getContactData($userId)
-	{
-		static $contacts = array();
+        if ($row->contactid && $url === 'url') {
+            $row->contact_link = Route::_(RouteHelper::getContactRoute($contact->contactid . ':' . $contact->alias, $contact->catid));
+        } elseif ($row->webpage && $url === 'webpage') {
+            $row->contact_link = $row->webpage;
+        } elseif ($row->email && $url === 'email') {
+            $row->contact_link = 'mailto:' . $row->email;
+        } else {
+            $row->contact_link = '';
+        }
+    }
 
-		if (isset($contacts[$userId]))
-		{
-			return $contacts[$userId];
-		}
+    /**
+     * Retrieve Contact
+     *
+     * @param   int  $userId  Id of the user who created the article
+     *
+     * @return  stdClass|null  Object containing contact details or null if not found
+     */
+    protected function getContactData($userId)
+    {
+        static $contacts = [];
 
-		$query = $this->db->getQuery(true);
+        // Note: don't use isset() because value could be null.
+        if (array_key_exists($userId, $contacts)) {
+            return $contacts[$userId];
+        }
 
-		$query->select('MAX(contact.id) AS contactid, contact.alias, contact.catid, contact.webpage, contact.email_to');
-		$query->from($this->db->quoteName('#__contact_details', 'contact'));
-		$query->where('contact.published = 1');
-		$query->where('contact.user_id = ' . (int) $userId);
+        $db     = $this->db;
+        $query  = $db->getQuery(true);
+        $userId = (int) $userId;
 
-		if (JLanguageMultilang::isEnabled() === true)
-		{
-			$query->where('(contact.language in '
-				. '(' . $this->db->quote(JFactory::getLanguage()->getTag()) . ',' . $this->db->quote('*') . ') '
-				. ' OR contact.language IS NULL)');
-		}
+        $query->select($db->quoteName('contact.id', 'contactid'))
+            ->select(
+                $db->quoteName(
+                    [
+                        'contact.alias',
+                        'contact.catid',
+                        'contact.webpage',
+                        'contact.email_to',
+                    ]
+                )
+            )
+            ->from($db->quoteName('#__contact_details', 'contact'))
+            ->where(
+                [
+                    $db->quoteName('contact.published') . ' = 1',
+                    $db->quoteName('contact.user_id') . ' = :createdby',
+                ]
+            )
+            ->bind(':createdby', $userId, ParameterType::INTEGER);
 
-		$this->db->setQuery($query);
+        if (Multilanguage::isEnabled() === true) {
+            $query->where(
+                '(' . $db->quoteName('contact.language') . ' IN ('
+                . implode(',', $query->bindArray([Factory::getLanguage()->getTag(), '*'], ParameterType::STRING))
+                . ') OR ' . $db->quoteName('contact.language') . ' IS NULL)'
+            );
+        }
 
-		$contacts[$userId] = $this->db->loadObject();
+        $query->order($db->quoteName('contact.id') . ' DESC')
+            ->setLimit(1);
 
-		return $contacts[$userId];
-	}
+        $db->setQuery($query);
+
+        $contacts[$userId] = $db->loadObject();
+
+        return $contacts[$userId];
+    }
 }

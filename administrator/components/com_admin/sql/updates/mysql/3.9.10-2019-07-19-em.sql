@@ -1,3 +1,0 @@
-INSERT INTO `jos_emundus_setup_emails` (`lbl`, `subject`, `emailfrom`, `message`, `name`, `type`, `published`, `email_tmpl`, `letter_attachment`, `candidate_attachment`, `category`) VALUES
-('delete_file', 'Supression de dossier de candidature', '', '<p>Bonjour,</p>\r\n<p> </p>\r\n<p>Votre dossier de candidature vient d\'etre supprimé.</p>\r\n<p>Ci joint, une archive des informations qui ont étés supprimées du site.</p>', '', 1, 1, 1, NULL, NULL, ''),
-('delete_user', 'Compte utilisateur supprimé', '', '<p>Bonjour,</p>\r\n<p> </p>\r\n<p>Votre compte utilisateur à été supprimé.</p>\r\n<p>Ci joint, une archive de toutes vos données présentes sur le site.</p>', '', 1, 1, 1, NULL, NULL, '');

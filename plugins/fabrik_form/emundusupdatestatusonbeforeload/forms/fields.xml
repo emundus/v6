@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<form>
-	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
-		<fieldset name="plg-form-emunduscompletefilestatuschange" label="PLG_FORM_EMUNDUSUPDATESTUATUSONBEFORELOAD_FIELDS">
-			<field name="oldstatus" type="field" description="PLG_FORM_EMUNDUSUPDATESTUATUSONBEFORELOAD_OLD_STATUS_DESC" label="PLG_FORM_EMUNDUSUPDATESTUATUSONBEFORELOAD_OLD_STATUS_LABEL" />
-			<field name="newstatus" type="field" description="PLG_FORM_EMUNDUSUPDATESTUATUSONBEFORELOAD_NEW_STATUS_DESC" label="PLG_FORM_EMUNDUSUPDATESTUATUSONBEFORELOAD_NEW_STATUS_LABEL" />
-		</fieldset>
-	</fields>
-</form>

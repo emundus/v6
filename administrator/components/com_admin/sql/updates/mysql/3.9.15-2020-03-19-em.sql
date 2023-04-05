@@ -1,2 +1,0 @@
-alter table jos_emundus_setup_campaigns add admission_start_date datetime;
-alter table jos_emundus_setup_campaigns add admission_end_date datetime;

@@ -1,6 +1,0 @@
-"title","alias","rrule","start_date","end_date","all_day","location","color","url","description"
-"Yearly recurring","yearly","FREQ=YEARLY;UNTIL=20220514T000000Z","2017-12-23 14:12:35","2007-05-23 14:22:35","0",,"27CC37",,"Sample description"
-"Single day","single-event",,"2017-12-29 22:00:00","2007-12-29 22:20:00","0",,"A32929",,
-"All day","allday",,"2017-12-29 00:00:00","2017-12-30 00:00:00","1",,"A32929",,
-"Weekly recurring","weekly","FREQ=WEEKLY;BYDAY=TU,TH,SA;COUNT=1000","2017-12-10 20:00:00","2017-12-10 22:30:00","0","New York",,"http://www.digital-peak.com","<p>Desc</p><ul><li>with HTML</li><li>content</li></ul><p><strong>Strong text</strong></p>"
-"Dayli recurring","dayli","FREQ=DAILY","2017-12-11 20:00:00","2017-12-11 01:30:00","0","London",,"http://jooml.digital-peak.com","<p>Desc</p><ul><li>with HTML</li><li>content</li></ul><p><strong>Strong text</strong></p>"

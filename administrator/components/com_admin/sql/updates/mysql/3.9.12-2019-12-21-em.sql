@@ -1,1 +1,0 @@
-UPDATE `jos_emundus_email_templates` SET `Template`=REPLACE(`Template`, 'aria-hidden="true"', '');

@@ -1,1 +1,0 @@
-ALTER TABLE `#__emundus_setup_status` ADD COLUMN `profile` INT NULL ;

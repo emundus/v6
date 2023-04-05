@@ -1,3 +1,0 @@
-/*! Fabrik */
-
-var fbVisApprovals=new Class({Implements:[Options],options:{},initialize:function(t,e){this.setOptions(e),this.el=document.id(t),document.addEvent("click:relay(a.approve)",function(t){var e=t.target;t.stop(),"a"!==e.get("tag")&&(e=e.findUp("a")),new Request.HTML({url:e.href,onSuccess:function(){e.getParent("tr").dispose()}}).send()}),document.addEvent("click:relay(a.disapprove)",function(t){var e=t.target;t.stop(),"a"!==e.get("tag")&&(e=e.findUp("a")),new Request.HTML({url:e.href,onSuccess:function(){e.getParent("tr").dispose()}}).send()}),new FloatingTips(".approvalTip",{position:"right",content:function(t){var e=t.getNext();return e.store("trigger",t),e},hideOn:"mousedown"})}});

@@ -1,1 +1,0 @@
-UPDATE `jos_fabrik_lists` SET params=replace(params, '"list_delete_icon":"delete"', '"list_delete_icon":"remove"') 

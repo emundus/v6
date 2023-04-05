@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -8,7 +9,9 @@
 
 namespace Joomla\CMS\Table;
 
-defined('JPATH_PLATFORM') or die;
+// phpcs:disable PSR1.Files.SideEffects
+\defined('JPATH_PLATFORM') or die;
+// phpcs:enable PSR1.Files.SideEffects
 
 /**
  * UCM map table
@@ -17,15 +20,15 @@ defined('JPATH_PLATFORM') or die;
  */
 class Ucm extends Table
 {
-	/**
-	 * Constructor
-	 *
-	 * @param   \JDatabaseDriver  $db  A database connector object
-	 *
-	 * @since   3.1
-	 */
-	public function __construct($db)
-	{
-		parent::__construct('#__ucm_base', 'ucm_id', $db);
-	}
+    /**
+     * Constructor
+     *
+     * @param   \Joomla\Database\DatabaseDriver  $db  A database connector object
+     *
+     * @since   3.1
+     */
+    public function __construct($db)
+    {
+        parent::__construct('#__ucm_base', 'ucm_id', $db);
+    }
 }

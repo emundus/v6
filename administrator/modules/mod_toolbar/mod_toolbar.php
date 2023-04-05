@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  mod_toolbar
@@ -9,6 +10,9 @@
 
 defined('_JEXEC') or die;
 
-$toolbar = JToolbar::getInstance('toolbar')->render('toolbar');
+use Joomla\CMS\Helper\ModuleHelper;
+use Joomla\CMS\Toolbar\Toolbar;
 
-require JModuleHelper::getLayoutPath('mod_toolbar', $params->get('layout', 'default'));
+$toolbar = Toolbar::getInstance('toolbar')->render();
+
+require ModuleHelper::getLayoutPath('mod_toolbar', $params->get('layout', 'default'));

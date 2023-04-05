@@ -1,8 +1,0 @@
-{
-"version":3,
-"file":"Wafblacklist.min.js",
-"lineCount":4,
-"mappings":"A;;;AAMAA,MAAAC,OAAA,CAAcC,QAAd,CAAAC,MAAA,CAA8B,QAAS,CAACC,CAAD,CACvC,CACCA,CAAA,CAAE,aAAF,CAAAC,OAAA,CAAwB,QAAS,EAChC,CACsB,EAArB,EAAID,CAAA,CAAE,IAAF,CAAAE,IAAA,EAAJ,CAECF,CAAA,CAAE,SAAF,CAAAE,IAAA,CAAiB,EAAjB,CAAAC,OAAA,EAAAC,QAAA,EAFD,CAMCJ,CAAA,CAAE,SAAF,CAAAG,OAAA,EAAAE,UAAA,EAPF,CADD,CAAAJ,OAAA,EADD,CADA;",
-"sources":["../uncompressed/js/Wafblacklist.js"],
-"names":["akeeba","jQuery","document","ready","$","change","val","parent","slideUp","slideDown"]
-}

@@ -1,32 +1,30 @@
 /**
- * @copyright  (C) 2017 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright  (C) 2018 Open Source Matters, Inc. <https://www.joomla.org>
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
+(() => {
 
-window.insertReadmore = function(editor) {
-	"use strict";
-	if (!Joomla.getOptions('xtd-readmore')) {
-		// Something went wrong!
-		return false;
-	}
+  const options = window.Joomla.getOptions('xtd-readmore');
 
-	var content, options = window.Joomla.getOptions('xtd-readmore');
+  window.insertReadmore = editor => {
+    if (!options) {
+      // Something went wrong!
+      throw new Error('XTD Button \'read more\' not properly initialized');
+    }
 
-	if (window.Joomla && window.Joomla.editors && window.Joomla.editors.instances && window.Joomla.editors.instances.hasOwnProperty(editor)) {
-		content = window.Joomla.editors.instances[editor].getValue();
-	} else {
-		content = (new Function('return ' + options.editor))();
-	}
+    const content = window.Joomla.editors.instances[editor].getValue();
 
-	if (content.match(/<hr\s+id=("|')system-readmore("|')\s*\/*>/i)) {
-		alert(options.exists);
-		return false;
-	} else {
-		/** Use the API, if editor supports it **/
-		if (window.Joomla && window.Joomla.editors && window.Joomla.editors.instances && window.Joomla.editors.instances.hasOwnProperty(editor)) {
-			window.Joomla.editors.instances[editor].replaceSelection('<hr id="system-readmore" />');
-		} else {
-			window.jInsertEditorText('<hr id="system-readmore" />', editor);
-		}
-	}
-};
+    if (!content) {
+      Joomla.editors.instances[editor].replaceSelection('<hr id="system-readmore">');
+    } else if (content && !content.match(/<hr\s+id=("|')system-readmore("|')\s*\/*>/i)) {
+      Joomla.editors.instances[editor].replaceSelection('<hr id="system-readmore">');
+    } else {
+      Joomla.renderMessages({
+        error: [options.exists]
+      });
+      return false;
+    }
+
+    return true;
+  };
+})();

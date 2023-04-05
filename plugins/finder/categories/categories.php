@@ -1,401 +1,464 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Finder.Categories
  *
  * @copyright   (C) 2011 Open Source Matters, Inc. <https://www.joomla.org>
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
+
+ * @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
  */
 
-defined('_JEXEC') or die;
-
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Table\Table;
+use Joomla\Component\Finder\Administrator\Indexer\Adapter;
+use Joomla\Component\Finder\Administrator\Indexer\Helper;
+use Joomla\Component\Finder\Administrator\Indexer\Indexer;
+use Joomla\Component\Finder\Administrator\Indexer\Result;
+use Joomla\Database\DatabaseQuery;
+use Joomla\Database\ParameterType;
 use Joomla\Registry\Registry;
 
-JLoader::register('FinderIndexerAdapter', JPATH_ADMINISTRATOR . '/components/com_finder/helpers/indexer/adapter.php');
+// phpcs:disable PSR1.Files.SideEffects
+\defined('_JEXEC') or die;
+// phpcs:enable PSR1.Files.SideEffects
 
 /**
  * Smart Search adapter for Joomla Categories.
  *
  * @since  2.5
  */
-class PlgFinderCategories extends FinderIndexerAdapter
+class PlgFinderCategories extends Adapter
 {
-	/**
-	 * The plugin identifier.
-	 *
-	 * @var    string
-	 * @since  2.5
-	 */
-	protected $context = 'Categories';
+    /**
+     * The plugin identifier.
+     *
+     * @var    string
+     * @since  2.5
+     */
+    protected $context = 'Categories';
 
-	/**
-	 * The extension name.
-	 *
-	 * @var    string
-	 * @since  2.5
-	 */
-	protected $extension = 'com_categories';
+    /**
+     * The extension name.
+     *
+     * @var    string
+     * @since  2.5
+     */
+    protected $extension = 'com_categories';
 
-	/**
-	 * The sublayout to use when rendering the results.
-	 *
-	 * @var    string
-	 * @since  2.5
-	 */
-	protected $layout = 'category';
+    /**
+     * The sublayout to use when rendering the results.
+     *
+     * @var    string
+     * @since  2.5
+     */
+    protected $layout = 'category';
 
-	/**
-	 * The type of content that the adapter indexes.
-	 *
-	 * @var    string
-	 * @since  2.5
-	 */
-	protected $type_title = 'Category';
+    /**
+     * The type of content that the adapter indexes.
+     *
+     * @var    string
+     * @since  2.5
+     */
+    protected $type_title = 'Category';
 
-	/**
-	 * The table name.
-	 *
-	 * @var    string
-	 * @since  2.5
-	 */
-	protected $table = '#__categories';
+    /**
+     * The table name.
+     *
+     * @var    string
+     * @since  2.5
+     */
+    protected $table = '#__categories';
 
-	/**
-	 * The field the published state is stored in.
-	 *
-	 * @var    string
-	 * @since  2.5
-	 */
-	protected $state_field = 'published';
+    /**
+     * The field the published state is stored in.
+     *
+     * @var    string
+     * @since  2.5
+     */
+    protected $state_field = 'published';
 
-	/**
-	 * Load the language file on instantiation.
-	 *
-	 * @var    boolean
-	 * @since  3.1
-	 */
-	protected $autoloadLanguage = true;
+    /**
+     * Load the language file on instantiation.
+     *
+     * @var    boolean
+     * @since  3.1
+     */
+    protected $autoloadLanguage = true;
 
-	/**
-	 * Method to remove the link information for items that have been deleted.
-	 *
-	 * @param   string  $context  The context of the action being performed.
-	 * @param   JTable  $table    A JTable object containing the record to be deleted
-	 *
-	 * @return  boolean  True on success.
-	 *
-	 * @since   2.5
-	 * @throws  Exception on database error.
-	 */
-	public function onFinderDelete($context, $table)
-	{
-		if ($context === 'com_categories.category')
-		{
-			$id = $table->id;
-		}
-		elseif ($context === 'com_finder.index')
-		{
-			$id = $table->link_id;
-		}
-		else
-		{
-			return true;
-		}
+    /**
+     * Method to setup the indexer to be run.
+     *
+     * @return  boolean  True on success.
+     *
+     * @since   2.5
+     */
+    protected function setup()
+    {
+        return true;
+    }
 
-		// Remove item from the index.
-		return $this->remove($id);
-	}
+    /**
+     * Method to remove the link information for items that have been deleted.
+     *
+     * @param   string  $context  The context of the action being performed.
+     * @param   Table   $table    A Table object containing the record to be deleted
+     *
+     * @return  boolean  True on success.
+     *
+     * @since   2.5
+     * @throws  Exception on database error.
+     */
+    public function onFinderDelete($context, $table)
+    {
+        if ($context === 'com_categories.category') {
+            $id = $table->id;
+        } elseif ($context === 'com_finder.index') {
+            $id = $table->link_id;
+        } else {
+            return true;
+        }
 
-	/**
-	 * Smart Search after save content method.
-	 * Reindexes the link information for a category that has been saved.
-	 * It also makes adjustments if the access level of the category has changed.
-	 *
-	 * @param   string   $context  The context of the category passed to the plugin.
-	 * @param   JTable   $row      A JTable object.
-	 * @param   boolean  $isNew    True if the category has just been created.
-	 *
-	 * @return  boolean  True on success.
-	 *
-	 * @since   2.5
-	 * @throws  Exception on database error.
-	 */
-	public function onFinderAfterSave($context, $row, $isNew)
-	{
-		// We only want to handle categories here.
-		if ($context === 'com_categories.category')
-		{
-			// Check if the access levels are different.
-			if (!$isNew && $this->old_access != $row->access)
-			{
-				// Process the change.
-				$this->itemAccessChange($row);
-			}
+        // Remove item from the index.
+        return $this->remove($id);
+    }
 
-			// Reindex the category item.
-			$this->reindex($row->id);
+    /**
+     * Smart Search after save content method.
+     * Reindexes the link information for a category that has been saved.
+     * It also makes adjustments if the access level of the category has changed.
+     *
+     * @param   string   $context  The context of the category passed to the plugin.
+     * @param   Table    $row      A Table object.
+     * @param   boolean  $isNew    True if the category has just been created.
+     *
+     * @return  void
+     *
+     * @since   2.5
+     * @throws  Exception on database error.
+     */
+    public function onFinderAfterSave($context, $row, $isNew): void
+    {
+        // We only want to handle categories here.
+        if ($context === 'com_categories.category') {
+            // Check if the access levels are different.
+            if (!$isNew && $this->old_access != $row->access) {
+                // Process the change.
+                $this->itemAccessChange($row);
+            }
 
-			// Check if the parent access level is different.
-			if (!$isNew && $this->old_cataccess != $row->access)
-			{
-				$this->categoryAccessChange($row);
-			}
-		}
+            // Reindex the category item.
+            $this->reindex($row->id);
 
-		return true;
-	}
+            // Check if the parent access level is different.
+            if (!$isNew && $this->old_cataccess != $row->access) {
+                $this->categoryAccessChange($row);
+            }
+        }
+    }
 
-	/**
-	 * Smart Search before content save method.
-	 * This event is fired before the data is actually saved.
-	 *
-	 * @param   string   $context  The context of the category passed to the plugin.
-	 * @param   JTable   $row      A JTable object.
-	 * @param   boolean  $isNew    True if the category is just about to be created.
-	 *
-	 * @return  boolean  True on success.
-	 *
-	 * @since   2.5
-	 * @throws  Exception on database error.
-	 */
-	public function onFinderBeforeSave($context, $row, $isNew)
-	{
-		// We only want to handle categories here.
-		if ($context === 'com_categories.category')
-		{
-			// Query the database for the old access level and the parent if the item isn't new.
-			if (!$isNew)
-			{
-				$this->checkItemAccess($row);
-				$this->checkCategoryAccess($row);
-			}
-		}
+    /**
+     * Smart Search before content save method.
+     * This event is fired before the data is actually saved.
+     *
+     * @param   string   $context  The context of the category passed to the plugin.
+     * @param   Table    $row      A Table object.
+     * @param   boolean  $isNew    True if the category is just about to be created.
+     *
+     * @return  boolean  True on success.
+     *
+     * @since   2.5
+     * @throws  Exception on database error.
+     */
+    public function onFinderBeforeSave($context, $row, $isNew)
+    {
+        // We only want to handle categories here.
+        if ($context === 'com_categories.category') {
+            // Query the database for the old access level and the parent if the item isn't new.
+            if (!$isNew) {
+                $this->checkItemAccess($row);
+                $this->checkCategoryAccess($row);
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * Method to update the link information for items that have been changed
-	 * from outside the edit screen. This is fired when the item is published,
-	 * unpublished, archived, or unarchived from the list view.
-	 *
-	 * @param   string   $context  The context for the category passed to the plugin.
-	 * @param   array    $pks      An array of primary key ids of the category that has changed state.
-	 * @param   integer  $value    The value of the state that the category has been changed to.
-	 *
-	 * @return  void
-	 *
-	 * @since   2.5
-	 */
-	public function onFinderChangeState($context, $pks, $value)
-	{
-		// We only want to handle categories here.
-		if ($context === 'com_categories.category')
-		{
-			/*
-			 * The category published state is tied to the parent category
-			 * published state so we need to look up all published states
-			 * before we change anything.
-			 */
-			foreach ($pks as $pk)
-			{
-				$query = clone $this->getStateQuery();
-				$query->where('a.id = ' . (int) $pk);
+    /**
+     * Method to update the link information for items that have been changed
+     * from outside the edit screen. This is fired when the item is published,
+     * unpublished, archived, or unarchived from the list view.
+     *
+     * @param   string   $context  The context for the category passed to the plugin.
+     * @param   array    $pks      An array of primary key ids of the category that has changed state.
+     * @param   integer  $value    The value of the state that the category has been changed to.
+     *
+     * @return  void
+     *
+     * @since   2.5
+     */
+    public function onFinderChangeState($context, $pks, $value)
+    {
+        // We only want to handle categories here.
+        if ($context === 'com_categories.category') {
+            /*
+             * The category published state is tied to the parent category
+             * published state so we need to look up all published states
+             * before we change anything.
+             */
+            foreach ($pks as $pk) {
+                $pk    = (int) $pk;
+                $query = clone $this->getStateQuery();
 
-				$this->db->setQuery($query);
-				$item = $this->db->loadObject();
+                $query->where($this->db->quoteName('a.id') . ' = :plgFinderCategoriesId')
+                    ->bind(':plgFinderCategoriesId', $pk, ParameterType::INTEGER);
 
-				// Translate the state.
-				$state = null;
+                $this->db->setQuery($query);
+                $item = $this->db->loadObject();
 
-				if ($item->parent_id != 1)
-				{
-					$state = $item->cat_state;
-				}
+                // Translate the state.
+                $state = null;
 
-				$temp = $this->translateState($value, $state);
+                if ($item->parent_id != 1) {
+                    $state = $item->cat_state;
+                }
 
-				// Update the item.
-				$this->change($pk, 'state', $temp);
+                $temp = $this->translateState($value, $state);
 
-				// Reindex the item.
-				$this->reindex($pk);
-			}
-		}
+                // Update the item.
+                $this->change($pk, 'state', $temp);
 
-		// Handle when the plugin is disabled.
-		if ($context === 'com_plugins.plugin' && $value === 0)
-		{
-			$this->pluginDisable($pks);
-		}
-	}
+                // Reindex the item.
+                $this->reindex($pk);
+            }
+        }
 
-	/**
-	 * Method to index an item. The item must be a FinderIndexerResult object.
-	 *
-	 * @param   FinderIndexerResult  $item    The item to index as a FinderIndexerResult object.
-	 * @param   string               $format  The item format.  Not used.
-	 *
-	 * @return  void
-	 *
-	 * @since   2.5
-	 * @throws  Exception on database error.
-	 */
-	protected function index(FinderIndexerResult $item, $format = 'html')
-	{
-		// Check if the extension is enabled.
-		if (JComponentHelper::isEnabled($this->extension) === false)
-		{
-			return;
-		}
+        // Handle when the plugin is disabled.
+        if ($context === 'com_plugins.plugin' && $value === 0) {
+            $this->pluginDisable($pks);
+        }
+    }
 
-		// Check if the extension that owns the category is also enabled.
-		if (JComponentHelper::isEnabled($item->extension) === false)
-		{
-			return;
-		}
+    /**
+     * Method to index an item. The item must be a Result object.
+     *
+     * @param   Result  $item  The item to index as a Result object.
+     *
+     * @return  void
+     *
+     * @since   2.5
+     * @throws  Exception on database error.
+     */
+    protected function index(Result $item)
+    {
+        // Check if the extension is enabled.
+        if (ComponentHelper::isEnabled($this->extension) === false) {
+            return;
+        }
 
-		$item->setLanguage();
+        // Extract the extension element
+        $parts = explode('.', $item->extension);
+        $extension_element = $parts[0];
 
-		$extension = ucfirst(substr($item->extension, 4));
+        // Check if the extension that owns the category is also enabled.
+        if (ComponentHelper::isEnabled($extension_element) === false) {
+            return;
+        }
 
-		// Initialize the item parameters.
-		$item->params = new Registry($item->params);
+        $item->setLanguage();
 
-		$item->metadata = new Registry($item->metadata);
+        $extension = ucfirst(substr($extension_element, 4));
 
-		/*
-		 * Add the metadata processing instructions based on the category's
-		 * configuration parameters.
-		 */
-		// Add the meta author.
-		$item->metaauthor = $item->metadata->get('author');
+        // Initialize the item parameters.
+        $item->params = new Registry($item->params);
 
-		// Handle the link to the metadata.
-		$item->addInstruction(FinderIndexer::META_CONTEXT, 'link');
-		$item->addInstruction(FinderIndexer::META_CONTEXT, 'metakey');
-		$item->addInstruction(FinderIndexer::META_CONTEXT, 'metadesc');
-		$item->addInstruction(FinderIndexer::META_CONTEXT, 'metaauthor');
-		$item->addInstruction(FinderIndexer::META_CONTEXT, 'author');
+        $item->metadata = new Registry($item->metadata);
 
-		// Deactivated Methods
-		// $item->addInstruction(FinderIndexer::META_CONTEXT, 'created_by_alias');
+        /*
+         * Add the metadata processing instructions based on the category's
+         * configuration parameters.
+         */
 
-		// Trigger the onContentPrepare event.
-		$item->summary = FinderIndexerHelper::prepareContent($item->summary, $item->params);
+        // Add the meta author.
+        $item->metaauthor = $item->metadata->get('author');
 
-		// Build the necessary route and path information.
-		$item->url = $this->getUrl($item->id, $item->extension, $this->layout);
+        // Handle the link to the metadata.
+        $item->addInstruction(Indexer::META_CONTEXT, 'link');
+        $item->addInstruction(Indexer::META_CONTEXT, 'metakey');
+        $item->addInstruction(Indexer::META_CONTEXT, 'metadesc');
+        $item->addInstruction(Indexer::META_CONTEXT, 'metaauthor');
+        $item->addInstruction(Indexer::META_CONTEXT, 'author');
 
-		$class = $extension . 'HelperRoute';
+        // Deactivated Methods
+        // $item->addInstruction(Indexer::META_CONTEXT, 'created_by_alias');
 
-		// Need to import component route helpers dynamically, hence the reason it's handled here.
-		JLoader::register($class, JPATH_SITE . '/components/' . $item->extension . '/helpers/route.php');
+        // Trigger the onContentPrepare event.
+        $item->summary = Helper::prepareContent($item->summary, $item->params);
 
-		if (class_exists($class) && method_exists($class, 'getCategoryRoute'))
-		{
-			$item->route = $class::getCategoryRoute($item->id, $item->language);
-		}
-		else
-		{
-			$item->route = ContentHelperRoute::getCategoryRoute($item->id, $item->language);
-		}
+        // Create a URL as identifier to recognise items again.
+        $item->url = $this->getUrl($item->id, $item->extension, $this->layout);
 
-		$item->path = FinderIndexerHelper::getContentPath($item->route);
+        /*
+         * Build the necessary route information.
+         * Need to import component route helpers dynamically, hence the reason it's handled here.
+         */
+        $class = $extension . 'HelperRoute';
 
-		// Get the menu title if it exists.
-		$title = $this->getItemMenuTitle($item->url);
+        // Need to import component route helpers dynamically, hence the reason it's handled here.
+        JLoader::register($class, JPATH_SITE . '/components/' . $extension_element . '/helpers/route.php');
 
-		// Adjust the title if necessary.
-		if (!empty($title) && $this->params->get('use_menu_title', true))
-		{
-			$item->title = $title;
-		}
+        if (class_exists($class) && method_exists($class, 'getCategoryRoute')) {
+            $item->route = $class::getCategoryRoute($item->id, $item->language);
+        } else {
+            $class = 'Joomla\\Component\\' . $extension . '\\Site\\Helper\\RouteHelper';
 
-		// Translate the state. Categories should only be published if the parent category is published.
-		$item->state = $this->translateState($item->state);
+            if (class_exists($class) && method_exists($class, 'getCategoryRoute')) {
+                $item->route = $class::getCategoryRoute($item->id, $item->language);
+            } else {
+                // This category has no frontend route.
+                return;
+            }
+        }
 
-		// Add the type taxonomy data.
-		$item->addTaxonomy('Type', 'Category');
+        // Get the menu title if it exists.
+        $title = $this->getItemMenuTitle($item->url);
 
-		// Add the language taxonomy data.
-		$item->addTaxonomy('Language', $item->language);
+        // Adjust the title if necessary.
+        if (!empty($title) && $this->params->get('use_menu_title', true)) {
+            $item->title = $title;
+        }
 
-		// Get content extras.
-		FinderIndexerHelper::getContentExtras($item);
+        // Translate the state. Categories should only be published if the parent category is published.
+        $item->state = $this->translateState($item->state);
 
-		// Index the item.
-		$this->indexer->index($item);
-	}
+        // Add the type taxonomy data.
+        $item->addTaxonomy('Type', 'Category');
 
-	/**
-	 * Method to setup the indexer to be run.
-	 *
-	 * @return  boolean  True on success.
-	 *
-	 * @since   2.5
-	 */
-	protected function setup()
-	{
-		// Load com_content route helper as it is the fallback for routing in the indexer in this instance.
-		JLoader::register('ContentHelperRoute', JPATH_SITE . '/components/com_content/helpers/route.php');
+        // Add the language taxonomy data.
+        $item->addTaxonomy('Language', $item->language);
 
-		return true;
-	}
+        // Get content extras.
+        Helper::getContentExtras($item);
 
-	/**
-	 * Method to get the SQL query used to retrieve the list of content items.
-	 *
-	 * @param   mixed  $query  A JDatabaseQuery object or null.
-	 *
-	 * @return  JDatabaseQuery  A database object.
-	 *
-	 * @since   2.5
-	 */
-	protected function getListQuery($query = null)
-	{
-		$db = JFactory::getDbo();
+        // Index the item.
+        $this->indexer->index($item);
+    }
 
-		// Check if we can use the supplied SQL query.
-		$query = $query instanceof JDatabaseQuery ? $query : $db->getQuery(true)
-			->select('a.id, a.title, a.alias, a.description AS summary, a.extension')
-			->select('a.created_user_id AS created_by, a.modified_time AS modified, a.modified_user_id AS modified_by')
-			->select('a.metakey, a.metadesc, a.metadata, a.language, a.lft, a.parent_id, a.level')
-			->select('a.created_time AS start_date, a.published AS state, a.access, a.params');
+    /**
+     * Method to get the SQL query used to retrieve the list of content items.
+     *
+     * @param   mixed  $query  A DatabaseQuery object or null.
+     *
+     * @return  DatabaseQuery  A database object.
+     *
+     * @since   2.5
+     */
+    protected function getListQuery($query = null)
+    {
+        $db = $this->db;
 
-		// Handle the alias CASE WHEN portion of the query.
-		$case_when_item_alias = ' CASE WHEN ';
-		$case_when_item_alias .= $query->charLength('a.alias', '!=', '0');
-		$case_when_item_alias .= ' THEN ';
-		$a_id = $query->castAsChar('a.id');
-		$case_when_item_alias .= $query->concatenate(array($a_id, 'a.alias'), ':');
-		$case_when_item_alias .= ' ELSE ';
-		$case_when_item_alias .= $a_id . ' END as slug';
-		$query->select($case_when_item_alias)
-			->from('#__categories AS a')
-			->where($db->quoteName('a.id') . ' > 1');
+        // Check if we can use the supplied SQL query.
+        $query = $query instanceof DatabaseQuery ? $query : $db->getQuery(true);
 
-		return $query;
-	}
+        $query->select(
+            $db->quoteName(
+                [
+                    'a.id',
+                    'a.title',
+                    'a.alias',
+                    'a.extension',
+                    'a.metakey',
+                    'a.metadesc',
+                    'a.metadata',
+                    'a.language',
+                    'a.lft',
+                    'a.parent_id',
+                    'a.level',
+                    'a.access',
+                    'a.params',
+                ]
+            )
+        )
+            ->select(
+                $db->quoteName(
+                    [
+                        'a.description',
+                        'a.created_user_id',
+                        'a.modified_time',
+                        'a.modified_user_id',
+                        'a.created_time',
+                        'a.published',
+                    ],
+                    [
+                        'summary',
+                        'created_by',
+                        'modified',
+                        'modified_by',
+                        'start_date',
+                        'state',
+                    ]
+                )
+            );
 
-	/**
-	 * Method to get a SQL query to load the published and access states for
-	 * a category and its parents.
-	 *
-	 * @return  JDatabaseQuery  A database object.
-	 *
-	 * @since   2.5
-	 */
-	protected function getStateQuery()
-	{
-		$query = $this->db->getQuery(true)
-			->select($this->db->quoteName('a.id'))
-			->select($this->db->quoteName('a.parent_id'))
-			->select('a.' . $this->state_field . ' AS state, c.published AS cat_state')
-			->select('a.access, c.access AS cat_access')
-			->from($this->db->quoteName('#__categories') . ' AS a')
-			->join('LEFT', '#__categories AS c ON c.id = a.parent_id');
+        // Handle the alias CASE WHEN portion of the query.
+        $case_when_item_alias = ' CASE WHEN ';
+        $case_when_item_alias .= $query->charLength($db->quoteName('a.alias'), '!=', '0');
+        $case_when_item_alias .= ' THEN ';
+        $a_id = $query->castAsChar($db->quoteName('a.id'));
+        $case_when_item_alias .= $query->concatenate([$a_id, 'a.alias'], ':');
+        $case_when_item_alias .= ' ELSE ';
+        $case_when_item_alias .= $a_id . ' END AS slug';
 
-		return $query;
-	}
+        $query->select($case_when_item_alias)
+            ->from($db->quoteName('#__categories', 'a'))
+            ->where($db->quoteName('a.id') . ' > 1');
+
+        return $query;
+    }
+
+    /**
+     * Method to get a SQL query to load the published and access states for
+     * a category and its parents.
+     *
+     * @return  DatabaseQuery  A database object.
+     *
+     * @since   2.5
+     */
+    protected function getStateQuery()
+    {
+        $query = $this->db->getQuery(true);
+
+        $query->select(
+            $this->db->quoteName(
+                [
+                    'a.id',
+                    'a.parent_id',
+                    'a.access',
+                ]
+            )
+        )
+            ->select(
+                $this->db->quoteName(
+                    [
+                        'a.' . $this->state_field,
+                        'c.published',
+                        'c.access',
+                    ],
+                    [
+                        'state',
+                        'cat_state',
+                        'cat_access',
+                    ]
+                )
+            )
+            ->from($this->db->quoteName('#__categories', 'a'))
+            ->join(
+                'INNER',
+                $this->db->quoteName('#__categories', 'c'),
+                $this->db->quoteName('c.id') . ' = ' . $this->db->quoteName('a.parent_id')
+            );
+
+        return $query;
+    }
 }

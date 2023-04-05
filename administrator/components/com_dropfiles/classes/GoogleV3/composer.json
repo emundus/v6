@@ -1,9 +1,0 @@
-{
-    "name": "joomunited/google-v3",
-    "config": {
-        "vendor-dir": "packages"
-    },
-    "require": {
-        "google/apiclient": "^2.2.2"
-    }
-}
