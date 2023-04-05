@@ -114,7 +114,7 @@ if($currentCampaign->apply_online == 0){
             <?php endif; ?>
         </div>
         <?php if (!empty($mod_em_campaign_show_timezone)) : ?>
-            <div class="em-mt-24 em-applicant-text-color em-flex-row">
+            <div class="em-mt-16 em-applicant-text-color em-flex-row em-camp-time-zone">
                 <p class="em-flex-row"><span class="material-icons-outlined em-mr-8 em-font-size-16">public</span></p>
                 <span class="em-applicant-default-font"><?php echo JText::_('MOD_EM_CAMPAIGN_TIMEZONE').$offset ?></span>
             </div>
