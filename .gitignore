@@ -24,7 +24,8 @@ workspace.xml
 /administrator/logs
 /logs
 /cache
-/installation/*
+/installation/cache
+/installation/sessions
 /libraries/autoload_psr4.php
 /tmp
 /configuration.php
@@ -47,13 +48,6 @@ workspace.xml
 /selenium.log
 /composer.phar
 /test-install
-
-# Vendor directory handeling
-/libraries/vendor
-!libraries/vendor/.gitkeep
-
-/media/vendor
-!media/vendor/.gitkeep
 
 # Stubs file holding mapped classes
 /stubs.php

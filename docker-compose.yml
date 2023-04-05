@@ -75,6 +75,7 @@ services:
       TCHOOZ_INSTANCE_ID: 999999
       TCHOOZ_CUSTOMER_ID: 999999
     volumes:
+      - ./.docker/apache/000-default.conf:/etc/apache2/sites-available/000-default.conf
       - .:/var/www/html
     depends_on:
       joomladb:
