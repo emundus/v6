@@ -776,8 +776,7 @@ class EmundusModelCampaign extends JModelList {
         $date = new Date();
 
         // Get affected programs
-        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
-
+        require_once(JPATH_SITE . '/components/com_emundus/models/programme.php');
         $m_programme = new EmundusModelProgramme;
         $programs = $m_programme->getUserPrograms($this->_user->id);
 
@@ -848,7 +847,7 @@ class EmundusModelCampaign extends JModelList {
                     $this->_db->quoteName('sc.training')
                 );
 
-            $query->where($this->_db->quoteName('sc.training') . ' IN (' . implode(',',$this->_db->quote($programs)) . ')');
+			$query->where($this->_db->quoteName('sc.training') . ' IN (' . implode(',',$this->_db->quote($programs)) . ')');
 
             if(!empty($filterDate)) {
                 $query->andWhere($filterDate);
@@ -869,10 +868,16 @@ class EmundusModelCampaign extends JModelList {
                 $this->_db->setQuery($query, $offset, $limit);
                 $campaigns = $this->_db->loadObjectList();
 
+				if (!empty($campaigns)) {
+					foreach ($campaigns as $key => $campaign) {
+						$campaigns[$key]->label = ['fr' => $campaign->label, 'en' => $campaign->label];
+					}
+				}
+
                 if (empty($campaigns) && $offset != 0) {
                     return $this->getAssociatedCampaigns($filter, $sort, $recherche, $lim,0, $program, $session);
                 }
-                $associated_campaigns = array('datas' => $campaigns, 'count' => $campaigns_count);
+	            $associated_campaigns = array('datas' => $campaigns, 'count' => $campaigns_count);
             } catch (Exception $e) {
                 JLog::add('component/com_emundus/models/campaign | Error when try to get list of campaigns : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
             }

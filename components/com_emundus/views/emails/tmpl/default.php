@@ -178,8 +178,8 @@ if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml'
 ?>
 
 <list id="em-component-vue"
-      component="list"
-      type="email"
+      component="list_v2"
+      type="emails"
       coordinatorAccess="<?= $coordinator_access ?>"
       sysadminAccess="<?= $sysadmin_access ?>"
       shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"

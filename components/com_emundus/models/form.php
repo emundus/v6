@@ -43,7 +43,7 @@ class EmundusModelForm extends JModelList {
      * @return array|stdClass
      */
     function getAllForms(String $filter = '', String $sort = '', String $recherche = '', Int $lim = 0, Int $page = 0) : Array {
-        $forms = [];
+        $data = ['datas' => [], 'count' => 0];
 		require_once (JPATH_ROOT . '/components/com_emundus/models/users.php');
 
         $db = $this->getDbo();
@@ -104,9 +104,11 @@ class EmundusModelForm extends JModelList {
 
         try {
             $db->setQuery($query);
-			$forms = $db->loadObjectList();
+	        $data['count'] = sizeof($db->loadObjectList());
+	        $db->setQuery($query, $offset, $limit);
+	        $data['datas'] = $db->loadObjectList();
 
-			if (!empty($forms)) {
+	        if (!empty($data['datas'])) {
 				$path_to_file = basename(__FILE__) . '/../language/overrides/';
 				$path_to_files = array();
 				$Content_Folder = array();
@@ -119,12 +121,12 @@ class EmundusModelForm extends JModelList {
 
 					require_once (JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
 					$formbuilder = new EmundusModelFormbuilder;
-					foreach ($forms as $form) {
+					foreach ($data['datas'] as $key => $form) {
 						$label= [];
 						foreach ($languages as $language) {
 							$label[$language->sef] = $formbuilder->getTranslation($form->label,$language->lang_code) ?: $form->label;
 						}
-						$form->label = $label;
+						$data['datas'][$key]->label = $label;
 					}
 				}
 			}
@@ -132,7 +134,7 @@ class EmundusModelForm extends JModelList {
             JLog::add('component/com_emundus/models/form | Cannot getting the list of forms : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
         }
 
-		return $forms;
+		return $data;
     }
 
     /**
@@ -145,22 +147,8 @@ class EmundusModelForm extends JModelList {
      * @return array
      */
     function getAllGrilleEval($filter, $sort, $recherche, $lim, $page) : array{
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'formbuilder.php');
-
-        $formbuilder = new EmundusModelFormbuilder;
-
-        // Get translation files
-        $path_to_file = basename(__FILE__) . '/../language/overrides/';
-        $path_to_files = array();
-        $Content_Folder = array();
-        $languages = JLanguageHelper::getLanguages();
-        foreach ($languages as $language) {
-            $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
-            $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
-        }
-
-        $db = $this->getDbo();
+        $data = ['datas' => [], 'count' => 0];
+		$db = $this->getDbo();
         $query = $db->getQuery(true);
 
         try {
@@ -175,22 +163,35 @@ class EmundusModelForm extends JModelList {
 
             $evaluation_forms = $db->loadObjectList();
 
-            // Get the form translation value
-            foreach ( $evaluation_forms as $evaluation_form ) {
-                $label= [];
-                foreach ($languages as $language) {
-                    $label[$language->sef] = $formbuilder->getTranslation($evaluation_form->label,$language->lang_code) ?: $evaluation_form->label;
-                }
-                $evaluation_form->label=$label;
-            }
+	        if (!empty($evaluation_forms)) {
+		        require_once (JPATH_ROOT.'/components/com_emundus/models/formbuilder.php');
+		        $m_form_builder = new EmundusModelFormbuilder();
 
-            return $evaluation_forms;
+		        $path_to_file = basename(__FILE__) . '/../language/overrides/';
+		        $path_to_files = array();
+		        $Content_Folder = array();
+		        $languages = JLanguageHelper::getLanguages();
+		        foreach ($languages as $language) {
+			        $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
+			        $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+		        }
 
+		        foreach ( $evaluation_forms as $evaluation_form ) {
+			        $label= [];
+			        foreach ($languages as $language) {
+				        $label[$language->sef] = $m_form_builder->getTranslation($evaluation_form->label,$language->lang_code) ?: $evaluation_form->label;
+			        }
+			        $evaluation_form->label=$label;
+		        }
+	        }
+
+			$data['datas'] = $evaluation_forms;
+			$data['count'] = sizeof($evaluation_forms);
         } catch (Exception $e) {
-            echo $e->getMessage();
             JLog::add('component/com_emundus/models/form | Cannot getting the list of forms : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return [];
         }
+
+		return $data;
     }
 
     function getAllFormsPublished() {

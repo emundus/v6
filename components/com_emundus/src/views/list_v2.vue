@@ -163,7 +163,11 @@ export default {
 					client().get('index.php?option=com_emundus&controller=' + tab.controller + '&task=' + tab.getter)
 						.then(response => {
 							if (response.data.status === true) {
-								this.items[tab.key] = response.data.data;
+								if (typeof response.data.data.datas !== 'undefined') {
+									this.items[tab.key] = response.data.data.datas;
+									// todo: use count response.data.data.count to create pagination
+
+								}
 							}
 						})
 						.catch(error => {

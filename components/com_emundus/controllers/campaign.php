@@ -145,30 +145,26 @@ class EmundusControllerCampaign extends JControllerLegacy {
      * @since version 1.0
      */
     public function getallcampaign() {
+        $tab = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
 
-        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $jinput = JFactory::getApplication()->input;
-
-            $filter = $jinput->getString('filter');
-            $sort = $jinput->getString('sort');
-            $recherche = $jinput->getString('recherche');
-            $lim = $jinput->getInt('lim');
-            $page = $jinput->getInt('page');
-            $program = $jinput->getString('program');
-            $session = $jinput->getString('session');
-
+            $filter = $jinput->getString('filter', '');
+            $sort = $jinput->getString('sort', '');
+            $recherche = $jinput->getString('recherche', '');
+            $lim = $jinput->getInt('lim', 25);
+            $page = $jinput->getInt('page', 0);
+            $program = $jinput->getString('program', 'all');
+            $session = $jinput->getString('session', 'all');
             $campaigns = $this->m_campaign->getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page,$program,$session);
 
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $allow_pinned_campaign = $eMConfig->get('allow_pinned_campaign', 0);
 
             if (count($campaigns) > 0) {
-                $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGNS_RETRIEVED'), 'data' => $campaigns, 'allow_pinned_campaigns' => $allow_pinned_campaign);
+                $tab = array('status' => true, 'msg' => JText::_('CAMPAIGNS_RETRIEVED'), 'data' => $campaigns, 'allow_pinned_campaigns' => $allow_pinned_campaign);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('NO_CAMPAIGNS'), 'data' => $campaigns, 'allow_pinned_campaigns' => $allow_pinned_campaign);
+                $tab = array('status' => false, 'msg' => JText::_('NO_CAMPAIGNS'), 'data' => $campaigns, 'allow_pinned_campaigns' => $allow_pinned_campaign);
             }
         }
         echo json_encode((object)$tab);

@@ -1650,7 +1650,15 @@ class EmundusModelEmails extends JModelList {
             } else {
                 $this->_db->setQuery($query, $offset, $limit);
             }
-            return array('datas' => $this->_db->loadObjectList(), 'count' => $count_emails);
+
+            $emails = $this->_db->loadObjectList();
+            if (!empty($emails)) {
+                foreach ($emails as $key => $email) {
+                    $emails[$key]->label = ['fr' => $email->subject, 'en' => $email->subject];
+                }
+            }
+
+            return array('datas' => $emails, 'count' => $count_emails);
         } catch (Exception $e) {
             JLog::add('component/com_emundus/models/email | Error when try to get emails : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];

@@ -106,24 +106,22 @@ class EmundusControllerEmail extends JControllerLegacy {
      * Get emails filtered
      */
     public function getallemail() {
-        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $jinput = JFactory::getApplication()->input;
+	    $tab = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
 
+        if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+            $jinput = JFactory::getApplication()->input;
             $filter = $jinput->getString('filter') ? $jinput->getString('filter') : 'Publish';
-            $sort = $jinput->getString('sort');
-            $recherche = $jinput->getString('recherche');
-            $lim = $jinput->getInt('lim');
-            $page = $jinput->getInt('page');
+            $sort = $jinput->getString('sort', '');
+            $recherche = $jinput->getString('recherche', '');
+            $lim = $jinput->getInt('lim', 25);
+            $page = $jinput->getInt('page', 0);
 
             $emails = $this->m_emails->getAllEmails($lim, $page, $filter, $sort, $recherche);
 
             if (count($emails) > 0) {
-                $tab = array('status' => 1, 'msg' => JText::_('EMAIL_RETRIEVED'), 'data' => $emails);
+                $tab = array('status' => true, 'msg' => JText::_('EMAIL_RETRIEVED'), 'data' => $emails);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_EMAIL'), 'data' => $emails);
+                $tab = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_EMAIL'), 'data' => $emails);
             }
         }
         echo json_encode((object)$tab);

@@ -45,10 +45,10 @@ class EmundusControllerForm extends JControllerLegacy {
 	        $sort = $jinput->getString('sort', '');
 	        $recherche = $jinput->getString('recherche', '');
 
-            $forms = $this->m_form->getAllForms($filter, $sort, $recherche, $lim, $page);
+            $data = $this->m_form->getAllForms($filter, $sort, $recherche, $lim, $page);
 
-            if (!empty($forms)) {
-                $tab = array('status' => true, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $forms);
+            if (!empty($data)) {
+                $tab = array('status' => true, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $data);
             } else {
                 $tab['msg'] = JText::_('ERROR_CANNOT_RETRIEVE_FORM');
             }
