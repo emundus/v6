@@ -1459,6 +1459,14 @@ body > .g-container {
       display: none;
     }
 
+    .dropfiles_progress_block .dropfiles_progress_pause:after,
+    .dropfiles_progress_block .dropfiles_progress_cancel:after {
+      color: var(--main-500);
+    }
+
+    .dropfiles_progress_block .dropfiles_process_run {
+      background: var(--main-500);
+    }
     #mybootstrap {
 
       button.btn, a.btn {
