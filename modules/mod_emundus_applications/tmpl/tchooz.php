@@ -103,7 +103,7 @@ ksort($applications);
     <?php if (sizeof($applications) == 0) : ?>
         <hr>
         <div class="mod_emundus_applications__list_content--default">
-            <h5 class="em-text-neutral-900 em-h5 em-applicant-title-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE') ?></h5><br/>
+            <h2 class="em-text-neutral-900 em-h2 em-applicant-title-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE') ?></h2><br/>
             <p class="em-text-neutral-900 em-default-font em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT') ?></p>
             <p class="em-applicant-text-color em-default-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT_2') ?></p><br/>
             <div class="em-flex-row-justify-end mod_emundus_campaign__buttons em-mt-32">
@@ -124,7 +124,7 @@ ksort($applications);
 
             <?php if (sizeof($group['applications']) > 0) : ?>
                 <div class="em-mb-44">
-                    <h5 class="em-h5 em-mb-24"><?php echo JText::_($group['label']) ?></h5>
+                    <h3 class="em-h3 em-mb-24"><?php echo JText::_($group['label']) ?></h3>
 
                     <div class="<?= $moduleclass_sfx ?> mod_emundus_applications___content">
                         <?php foreach ($group['applications'] as $application) : ?>

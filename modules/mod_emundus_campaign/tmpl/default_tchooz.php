@@ -119,7 +119,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
         <!-- PINNED CAMPAIGN -->
         <?php if ($campaign_pinned) : ?>
-        <h4 class="em-h4"><?php echo JText::_('MOD_EM_CAMPAIGN_PINNED_CAMPAIGN') ?></h4>
+        <h3 class="em-h3"><?php echo JText::_('MOD_EM_CAMPAIGN_PINNED_CAMPAIGN') ?></h3>
         <div class="mod_emundus_campaign__pinned_campaign em-mt-32 em-mb-24">
             <?php if(strtotime($now) > strtotime($campaign_pinned->end_date)) :  ?>
             <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'">
