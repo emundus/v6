@@ -1565,6 +1565,10 @@ body > .g-container {
 
       #wpreview {
 
+       .dropfiles-number-files {
+          background-color: var(--main-500);
+        }
+
         #dropfiles-toolbar {
           position: inherit;
           display: flex;
