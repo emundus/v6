@@ -267,11 +267,7 @@ export default {
     {
       this.title = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, " ");
       this.$refs.formTitle.innerText = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, " ");
-      formService.updateFormLabel({
-        label: this.title,
-        prid: this.profile_id,
-	      form_id: this.form_id
-      });
+      formService.updateFormLabel({label: this.title, prid: this.profile_id, form_id: this.form_id});
     },
     updateFormTitleKeyup() {
       document.activeElement.blur();

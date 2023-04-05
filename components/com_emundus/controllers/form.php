@@ -259,14 +259,11 @@ class EmundusControllerForm extends JControllerLegacy {
 
     public function updateformlabel() {
         $user = JFactory::getUser();
+	    $tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+	    if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
-
-            $prid = $jinput->getInt('prid');
+            $prid = $jinput->getInt('prid', 0);
             $label = $jinput->getString('label');
 
             $result = $this->m_form->updateFormLabel($prid, $label);
@@ -277,6 +274,7 @@ class EmundusControllerForm extends JControllerLegacy {
                 $tab = array('status' => 0, 'msg' => JText::_('FORM_NOT_UPDATED'), 'data' => $result);
             }
         }
+
         echo json_encode((object)$tab);
         exit;
     }

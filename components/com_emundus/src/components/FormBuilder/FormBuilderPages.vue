@@ -95,8 +95,8 @@ export default {
           text: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE_CONFIRMATION_TEXT'),
           type: "warning",
           showCancelButton: true,
-          confirmButtonText: this.translate("COM_EMUNDUS_ACTIONS_DELETE"),
-          cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
+          confirmButtonText: this.translate('COM_EMUNDUS_ACTIONS_DELETE'),
+          cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
           reverseButtons: true,
           customClass: {
             title: 'em-swal-title',
@@ -121,9 +121,9 @@ export default {
         Swal.fire({
           title: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE_ERROR'),
           text: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE_ERROR_TEXT'),
-          type: "error",
+          type: 'error',
           showCancelButton: false,
-          confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+          confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
           reverseButtons: true,
           customClass: {
             title: 'em-swal-title',
@@ -134,12 +134,7 @@ export default {
       }
     },
     onDragEnd() {
-      const newOrder = this.pages.map((page, index) => {
-        return {
-          rgt: index,
-          link: page.link
-        };
-      });
+      const newOrder = this.pages.map((page, index) => {return {rgt: index, link: page.link};});
 
       formBuilderService.reorderMenu(newOrder, this.$props.profile_id).then((response) => {
 				if (response.status == 200 && response.data.status) {

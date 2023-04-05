@@ -195,7 +195,6 @@ export default {
       this.fabrikPage.show_title.label[this.shortDefaultLang] = this.$refs.pageTitle.innerText.trim().replace(/[\r\n]/gm, "");
       this.$refs.pageTitle.innerText = this.$refs.pageTitle.innerText.trim().replace(/[\r\n]/gm, "");
 
-
       formBuilderService.updateTranslation(null, this.fabrikPage.show_title.titleraw, this.fabrikPage.show_title.label).then(response => {
         if (response.status) {
           translationService.updateTranslations(this.fabrikPage.show_title.label[this.shortDefaultLang],'falang', this.shortDefaultLang, this.fabrikPage.menu_id,'title','menu');

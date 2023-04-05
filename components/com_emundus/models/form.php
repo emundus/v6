@@ -1107,42 +1107,44 @@ class EmundusModelForm extends JModelList {
         }
     }
 
-    public function updateFormLabel($prid,$label){
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+    public function updateFormLabel($prid, $label){
+	    $results = [];
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'formbuilder.php');
+		if (!empty($prid)) {
+			require_once (JPATH_SITE.'/components/com_emundus/models/formbuilder.php');
+			$formbuilder = new EmundusModelFormbuilder;
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
 
-        $formbuilder = new EmundusModelFormbuilder;
-        $results = array();
+			$query->update($db->quoteName('#__menu_types'))
+				->set($db->quoteName('title') . ' = ' . $db->quote($label))
+				->where($db->quoteName('menutype') . ' = ' . $db->quote('menu-profile'.$prid));
 
-        try {
-            $query->update($db->quoteName('#__menu_types'))
-                ->set($db->quoteName('title') . ' = ' . $db->quote($label))
-                ->where($db->quoteName('menutype') . ' = ' . $db->quote('menu-profile'.$prid));
-            $db->setQuery($query);
-            $results[] = $db->execute();
+			try {
+				$db->setQuery($query);
+				$results[] = $db->execute();
 
-            $query->clear()
-                ->update($db->quoteName('#__menu'))
-                ->set($db->quoteName('title') . ' = ' . $db->quote($label))
-                ->set($db->quoteName('alias') . ' = ' . $db->quote(str_replace($formbuilder->getSpecialCharacters(), '-', strtolower($label).'-'.$prid)))
-                ->where($db->quoteName('menutype') . ' = ' . $db->quote('menu-profile'.$prid))
-                ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
-            $db->setQuery($query);
-            $results[] = $db->execute();
+				$query->clear()
+					->update($db->quoteName('#__menu'))
+					->set($db->quoteName('title') . ' = ' . $db->quote($label))
+					->set($db->quoteName('alias') . ' = ' . $db->quote(str_replace($formbuilder->getSpecialCharacters(), '-', strtolower($label).'-'.$prid)))
+					->where($db->quoteName('menutype') . ' = ' . $db->quote('menu-profile'.$prid))
+					->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
+				$db->setQuery($query);
+				$results[] = $db->execute();
 
-            $query->clear()
-                ->update($db->quoteName('#__emundus_setup_profiles'))
-                ->set($db->quoteName('label') . ' = ' . $db->quote($label))
-                ->where($db->quoteName('id') . ' = ' . $db->quote($prid));
-            $db->setQuery($query);
-            $results[] = $db->execute();
-            return $results;
-        } catch (Exception $e) {
-            JLog::add('component/com_emundus/models/form | Cannot update the form ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
-        }
+				$query->clear()
+					->update($db->quoteName('#__emundus_setup_profiles'))
+					->set($db->quoteName('label') . ' = ' . $db->quote($label))
+					->where($db->quoteName('id') . ' = ' . $db->quote($prid));
+				$db->setQuery($query);
+				$results[] = $db->execute();
+			} catch (Exception $e) {
+				JLog::add('component/com_emundus/models/form | Cannot update the form ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $results;
     }
 
 

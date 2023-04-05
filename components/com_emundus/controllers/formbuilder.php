@@ -212,12 +212,10 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
      * @throws Exception
      */
     public function formsTrad() {
-        $user = JFactory::getUser();
+	    $response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+	    $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
 
             $element = $jinput->getInt('element', null);
@@ -228,11 +226,18 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 
             if (!empty($labelTofind) && !empty($newLabel)) {
                 $results = $this->m_formbuilder->formsTrad($labelTofind, $newLabel, $element, $group, $page);
+
+				if (!empty($results)) {
+		            $response = ['status' => true, 'msg' => 'Traductions effectués avec succès', 'data' => $results];
+	            } else {
+		            $response['msg'] = JText::_('NO_TRANSLATION_FOUND');
+	            }
+			} else {
+				$response['msg'] = JText::_('MISSING_PARAMS');
             }
-            $changeresponse = array('status' => !empty($results), 'msg' => 'Traductions effectués avec succès', 'data' => $results);
         }
 
-        echo json_encode((object)$changeresponse);
+        echo json_encode((object)$response);
         exit;
     }
 

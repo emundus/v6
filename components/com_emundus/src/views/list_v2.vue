@@ -32,8 +32,12 @@
 					<span
 							v-for="viewTypeOption in viewTypeOptions"
 							:key="viewTypeOption.value"
-							class="material-icons-outlined em-pointer em-ml-8"
-							:class="{'active': viewTypeOption.value === viewType}"
+							style="padding: 4px;"
+							class="material-icons-outlined em-pointer em-ml-8 em-border-radius-4"
+							:class="{
+								'active em-main-500-color em-border-main-500': viewTypeOption.value === viewType,
+								'em-neutral-300-color em-border-neutral-300': viewTypeOption.value !== viewType
+							}"
 							@click="changeViewType(viewTypeOption)"
 					>
 						{{ viewTypeOption.icon }}
@@ -184,9 +188,11 @@ export default {
 
 			if (action.type === 'redirect') {
 				let url = action.action;
-				Object.keys(item).forEach(key => {
-					url = url.replace('%' + key + '%', item[key]);
-				});
+				if (item !== null) {
+					Object.keys(item).forEach(key => {
+						url = url.replace('%' + key + '%', item[key]);
+					});
+				}
 
 				window.location.href = url;
 			} else {
@@ -195,9 +201,11 @@ export default {
 				if (itemId !== null) {
 					if (action.parameters) {
 						let url_parameters = action.parameters;
-						Object.keys(item).forEach(key => {
-							url_parameters = url_parameters.replace('%' + key + '%', item[key]);
-						});
+						if (item !== null) {
+							Object.keys(item).forEach(key => {
+								url_parameters = url_parameters.replace('%' + key + '%', item[key]);
+							});
+						}
 
 						url += url_parameters;
 					} else {
