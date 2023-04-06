@@ -89,7 +89,6 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         <div class="mod_emundus_campaign__list_content--default">
             <h2 class="em-text-neutral-900 em-h2 em-applicant-title-font"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN') ?></h2>
             <?php if(JFactory::getUser()->guest) : ?>
-                <br/>
                 <?php if($show_registration) : ?>
                 <h3 class="em-text-neutral-900 em-font-weight-500 em-h3 em-mb-4"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT') ?></h3>
                 <p class="em-applicant-text-color"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_2') ?></p><br/>
