@@ -57,7 +57,10 @@ class EmundusControllerExport extends JControllerLegacy
         $file_src_format = $jinput->getString('type', null);
         $file_dest = $jinput->getString('dest', null);
 
-        $user_id = (int)substr($fnum, -7);
+        require_once(JPATH_BASE.'/components/com_emundus/models/files.php');
+        $m_files = new EmundusModelFiles();
+
+        $user_id = $m_files->getApplicantIdByFnum($fnum);
 
         if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $fnum))
         {
