@@ -4832,7 +4832,7 @@ button.swal2-cancel.goback-btn {
 
     /* TITRE FORMULAIRE */
     .page-header h1 {
-      @include headline-5;
+      @include headline-1;
       color: var(--neutral-900);
     }
 
@@ -4890,7 +4890,7 @@ button.swal2-cancel.goback-btn {
 
         /* LEGEND */
         .legend {
-          @include headline-6;
+          @include headline-3;
           color: var(--neutral-900);
         }
 
