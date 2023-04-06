@@ -59,12 +59,14 @@
 						<thead>
 							<tr>
 								<th>{{ translate('COM_EMUNDUS_ONBOARD_LABEL') }}</th>
+								<th v-for="column in additionalColumns" :key="column"> {{ column }}</th>
 								<th>{{ translate('COM_EMUNDUS_ONBOARD_ACTIONS') }}</th>
 							</tr>
 						</thead>
 						<tbody>
-							<tr v-for="item in displayedItems" :key="item.id">
+							<tr v-for="item in displayedItems" :key="item.id" class="em-border-bottom-neutral-300">
 								<td class="em-pointer" @click="onClickAction(editAction, item.id)"><h3>{{ item.label[params.shortlang] }}</h3></td>
+								<td v-for="column in item.additionnal_columns" :key="column.key"> {{ column.value }} </td>
 								<div>
 									<hr v-if="viewType === 'blocs'" class="em-w-100">
 									<td class="actions">
@@ -327,6 +329,18 @@ export default {
 				return item.label[this.params.shortlang].toLowerCase().includes(this.search.toLowerCase());
 			});
 		},
+		additionalColumns() {
+			let columns = [];
+			let items = typeof this.items[this.selectedListTab] !== 'undefined' ? this.items[this.selectedListTab] : [];
+
+			if (items.length > 0 && typeof items[0].additionnal_columns !== 'undefined') {
+				items[0].additionnal_columns.forEach((column) => {
+					columns.push(column.key);
+				});
+			}
+
+			return columns;
+		}
 	}
 }
 </script>
@@ -340,16 +354,26 @@ export default {
 
 #list-table {
 	transition: all .3s;
+	border: 0;
+
+	thead th{
+		background-color: transparent;
+	}
 
 	h3 {
-		font-size: 18px;
+		font-size: 12px;
 	}
 
 	&.blocs {
 		border: 0;
 
+
 		thead {
 			display: none;
+
+			h3 {
+				font-size: 18px;
+			}
 		}
 
 		tbody {

@@ -870,7 +870,14 @@ class EmundusModelCampaign extends JModelList {
 
 				if (!empty($campaigns)) {
 					foreach ($campaigns as $key => $campaign) {
-						$campaigns[$key]->label = ['fr' => $campaign->label, 'en' => $campaign->label];
+						$campaign->label = ['fr' => $campaign->label, 'en' => $campaign->label];
+						$campaign->additionnal_columns = [
+							['key' => JText::_('COM_EMUNDUS_ONBOARD_NB_FILES'), 'value' => $campaign->nb_files],
+							['key' => JText::_('COM_EMUNDUS_ONBOARD_START_DATE'), 'value' => date('d/m/Y H\hi', strtotime($campaign->start_date))],
+							['key' => JText::_('COM_EMUNDUS_ONBOARD_END_DATE'), 'value' => date('d/m/Y H\hi', strtotime($campaign->end_date))],
+							['key' => JText::_('COM_EMUNDUS_ONBOARD_STATE'), 'value' => $campaign->published ? JText::_('PUBLISHED') : JText::_('UNPUBLISHED')]
+						];
+						$campaigns[$key] = $campaign;
 					}
 				}
 
