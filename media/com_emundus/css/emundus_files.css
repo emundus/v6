@@ -2801,7 +2801,7 @@ a.copy-0:focus {
 
 @media all and (max-width: 1239px) {
 
-    .g-back-office-emundus-tableau #g-main-mainbody .platform-content {
+    .g-back-office-emundus-tableau:not(.files-board) #g-main-mainbody .platform-content {
         width: 100% !important;
         margin: auto !important;
         padding: 0 20px !important;
