@@ -358,7 +358,7 @@ class EmundusModelCalendar extends JModelLegacy {
         $db     = JFactory::getDbo();
 
         require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
-        $h_emails = new EmundusModelEmails;
+        $h_emails = new EmundusHelperEmails;
         if (!$h_emails->assertCanSendMailToUser($user->id)) {
             return false;
         }
@@ -407,6 +407,10 @@ class EmundusModelCalendar extends JModelLegacy {
 
         // The post variable allows us to insert data that will be transformed by the tags.
         // In this case we want the dates and times as well as programmes, the fnum is there possibly temporarly as we do not know whether is it used yet.
+
+        $db->setQuery('SELECT title FROM #__categories WHERE id = '.$event->catid);
+        $event_category_title = $db->loadResult();
+
         $post = array(
             'FNUM'          => $user->fnum,
             'EVENT_DATE'    => $event_date,

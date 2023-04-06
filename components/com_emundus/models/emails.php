@@ -101,7 +101,7 @@ class EmundusModelEmails extends JModelList {
         }
 
         $query = $this->_db->getQuery(true);
-        $query->select('eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id, et.Template, GROUP_CONCAT(ert.tags) as tags, GROUP_CONCAT(erca.candidate_attachment) as attachments')
+        $query->select('eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id, et.Template, GROUP_CONCAT(ert.tags) as tags, GROUP_CONCAT(erca.candidate_attachment) as attachments, GROUP_CONCAT(erla.letter_attachment) as letter_attachment')
             ->from($this->_db->quoteName('#__emundus_setup_emails_trigger', 'eset'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_emails','ese').' ON '.$this->_db->quoteName('ese.id').' = '.$this->_db->quoteName('eset.email_id'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id','eserp').' ON '.$this->_db->quoteName('eserp.parent_id').' = '.$this->_db->quoteName('eset.id'))
@@ -112,6 +112,7 @@ class EmundusModelEmails extends JModelList {
             ->leftJoin($this->_db->quoteName('#__emundus_email_templates','et').' ON '.$this->_db->quoteName('et.id').' = '.$this->_db->quoteName('ese.email_tmpl'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_tags','ert').' ON '.$this->_db->quoteName('ert.parent_id').' = '.$this->_db->quoteName('eset.email_id'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment','erca').' ON '.$this->_db->quoteName('erca.parent_id').' = '.$this->_db->quoteName('eset.email_id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_letter_attachment','erla').' ON '.$this->_db->quoteName('erla.parent_id').' = '.$this->_db->quoteName('eset.email_id'))
             ->where($this->_db->quoteName('eset.step').' = '.$this->_db->quote($step))
             ->andWhere($this->_db->quoteName('eset.to_applicant').' IN ('.$to_applicant .')');
         if(!is_null($to_current_user)) {
@@ -143,6 +144,7 @@ class EmundusModelEmails extends JModelList {
                 $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['name'] = $trigger->name;
                 $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['tags'] = $trigger->tags;
                 $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['attachments'] = $trigger->attachments;
+                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['letter_attachment'] = $trigger->letter_attachment;
 
                 // This is the email template model, the HTML structure that makes the email look good.
                 $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['template'] = $trigger->Template;
@@ -301,12 +303,6 @@ class EmundusModelEmails extends JModelList {
                     $body = $this->setTagsFabrik($body, array($student->fnum));
 
 
-                    // If the email sender has the same domain as the system sender address.
-                    /*if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
-                        $mail_from_address = $from;
-                    } else {
-                        $mail_from_address = $email_from_sys;
-                    }*/
                     $mail_from_address = $email_from_sys;
 
                     // Set sender
@@ -315,9 +311,34 @@ class EmundusModelEmails extends JModelList {
                         $fromname
                     ];
 
+                    $toAttach= [];
+                    if(!empty($trigger_email[$student->code]['tmpl']['letter_attachment'])){
+                        include_once(JPATH_SITE . '/components/com_emundus/models/evaluation.php');
+                        $m_eval = new EmundusModelEvaluation();
+                        $letters = $m_eval->generateLetters($student->fnum, explode(',', $trigger_email[$student->code]['tmpl']['letter_attachment']), 1, 0, 0);
+
+                        foreach($letters->files as $filename){
+                            if(!empty($filename['filename'])) {
+                                $toAttach[] = EMUNDUS_PATH_ABS . $student->id . '/' . $filename['filename'];
+                            }
+                        }
+                    }
+                    if(!empty($trigger_email[$student->code]['tmpl']['attachments'])){
+                        require_once (JPATH_SITE . '/components/com_emundus/models/application.php');
+                        $m_application = new EmundusModelApplication();
+                        $attachments = $m_application->getAttachmentsByFnum($student->fnum,null, explode(',', $trigger_email[$student->code]['tmpl']['attachments']));
+
+                        foreach ($attachments as $attachment) {
+                            if(!empty($attachment->filename)) {
+                                $toAttach[] = EMUNDUS_PATH_ABS . $student->id . '/' . $attachment->filename;
+                            }
+                        }
+                    }
+
                     $mailer->setSender($sender);
                     $mailer->addReplyTo($from, $fromname);
                     $mailer->addRecipient($to);
+                    $mailer->addAttachment($toAttach);
                     $mailer->setSubject($subject);
                     $mailer->isHTML(true);
                     $mailer->Encoding = 'base64';
@@ -330,8 +351,8 @@ class EmundusModelEmails extends JModelList {
                     }
 
                     if ($send !== true) {
-                        echo 'Error sending email: ' . $send->__toString();
-                        JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                        echo 'Error sending email: ' . $send;
+                        JLog::add($send, JLog::ERROR, 'com_emundus');
                     } else {
                         $message = array(
                             'user_id_from' => $from_id,
