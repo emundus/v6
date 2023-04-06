@@ -1008,6 +1008,84 @@ if (password_value.match(regex) != null) {
             if (version_compare($cache_version, '1.35.9', '<=') || $firstrun) {
                 EmundusHelperUpdate::addColumn('jos_messages', 'email_cc', 'TEXT');
                 EmundusHelperUpdate::addColumn('jos_emundus_logs', 'timestamp', 'TIMESTAMP', null, 0);
+
+                $dashboard_files_by_status_params = array(
+                    'eval' => '$db = JFactory::getDbo();
+$query = $db->getQuery(true);
+
+try {
+    $query->select(\'*\')
+        ->from($db->quoteName(\'jos_emundus_setup_status\'))
+        ->order(\'ordering\');
+    $db->setQuery($query);
+    $status = $db->loadObjectList();
+
+    $datas = [];
+
+    foreach ($status as $statu) {
+        $file = new stdClass;
+        $file->label = $statu->value;
+
+        $colors = array(
+            \'lightpurple\' => \'#D444F1\',
+            \'purple\' => \'#7959F8\',
+            \'darkpurple\' => \'#663399\',
+            \'lightblue\' => \'#0BA4EB\',
+            \'blue\' => \'#2E90FA\',
+            \'darkblue\' => \'#2970FE\',
+            \'lightgreen\' => \'#15B79E\',
+            \'green\' => \'#238C69\',
+            \'darkgreen\' => \'#20835F\',
+            \'lightyellow\' => \'#5D5B00\',
+            \'yellow\' => \'#EAA907\',
+            \'darkyellow\' => \'#F79009\',
+            \'lightorange\' => \'#C87E00\',
+            \'orange\' => \'#EF681F\',
+            \'darkorange\' => \'#FF4305\',
+            \'lightred\' => \'#EC644B\',
+            \'red\' => \'#DB333E\',
+            \'darkred\' => \'#DB333E\',
+            \'lightpink\' => \'#B04748\',
+            \'pink\' => \'#EE46BC\',
+            \'darkpink\' => \'#F53D68\',
+            \'default\' => \'#5E6580\'
+        );
+
+        $file->color = $colors[$statu->class];
+
+        $query->clear()
+            ->select(\'COUNT(ecc.id) as files\')
+            ->from($db->quoteName(\'#__emundus_campaign_candidature\',\'ecc\'))
+            ->leftJoin($db->quoteName(\'#__emundus_setup_campaigns\',\'esc\').\' ON \'.$db->quoteName(\'esc.id\').\' = \'.$db->quoteName(\'ecc.campaign_id\'))
+            ->where($db->quoteName(\'ecc.status\') . \' = \' . $db->quote($statu->step))
+            ->andWhere($db->quoteName(\'ecc.published\') . \' = \' . $db->quote(1));
+
+        $db->setQuery($query);
+        $file->value = $db->loadResult();
+        $datas[] = $file;
+    }
+
+            $dataSource = new stdClass;
+            $dataSource->chart = new stdClass;
+            $dataSource->chart = array(
+                \'caption\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_CAPTION"),
+                \'xaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_STATUS"),
+                \'yaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_NUMBER"),
+                \'animation\' => 1,
+                \'numberScaleValue\' => "1",
+                \'numDivLines\' => 1,
+                \'numbersuffix\'=> "",
+                \'theme\'=> "fusion"
+            );
+            $dataSource->data = $datas;
+            return $dataSource;
+        } catch (Exception $e) {
+        return array(\'dataset\' => \'\');
+    }'
+                );
+
+                EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS',$dashboard_files_by_status_params);
+
             }
 
 
