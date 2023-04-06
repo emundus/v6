@@ -129,7 +129,9 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                 <div class="mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'">
                     <?php endif; ?>
 
+
                     <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
+                      <div class="mod_emundus_campaign__list_content_container">
                         <?php
                         $color = '#1C6EF2';
                         $background = '#C8E1FE';
@@ -249,38 +251,40 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
                         <hr>
 
-                        <div class="mod_emundus_campaign__list_content_resume em-applicant-text-color em-font-size-16">
-                            <?php
-                            $text = '';
-                            $textprog = '';
-                            $textcamp = '';
-                            if ($showcampaign) {
-                                $textcamp = $campaign_pinned->short_description;
-                            }
-                            echo $textcamp;
-                            ?>
-                        </div>
-
-	                    <?php if ($mod_em_campaign_show_apply_button == 1 && (strtotime($now) < strtotime($campaign_pinned->end_date)) && (strtotime($now) > strtotime($campaign_pinned->start_date))) : ?>
-                            <div>
-			                    <?php
-			                    $register_url = '';
-			                    // The register URL does not work  with SEF, this workaround helps counter this.
-			                    if ($sef == 0) {
-				                    if(empty($redirect_url)) {
-					                    $redirect_url = 'index.php?option=com_users&view=registration';
-				                    }
-				                    $register_url = $redirect_url.'&course='.$campaign_pinned->code.'&cid='.$campaign_pinned->id.'&Itemid='.$mod_em_campaign_itemid;
-			                    } else {
-				                    $register_url = $redirect_url.'?course='.$campaign_pinned->code.'&cid='.$campaign_pinned->id.'&Itemid='.$mod_em_campaign_itemid;
-			                    }
-
-			                    if(!$user->guest) {
-				                    $register_url .= '&redirect=' . $formUrl;
-			                    }
-			                    ?>
-                                <a class="btn btn-primary em-w-100 em-mt-12 em-applicant-default-font em-flex-column" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+                            <div class="mod_emundus_campaign__list_content_resume em-applicant-text-color em-font-size-16">
+                                <?php
+                                $text = '';
+                                $textprog = '';
+                                $textcamp = '';
+                                if ($showcampaign) {
+                                    $textcamp = $campaign_pinned->short_description;
+                                }
+                                echo $textcamp;
+                                ?>
                             </div>
+
+                      </div>
+
+                            <?php if ($mod_em_campaign_show_apply_button == 1 && (strtotime($now) < strtotime($campaign_pinned->end_date)) && (strtotime($now) > strtotime($campaign_pinned->start_date))) : ?>
+                                <div>
+                                    <?php
+                                    $register_url = '';
+                                    // The register URL does not work  with SEF, this workaround helps counter this.
+                                    if ($sef == 0) {
+                                        if(empty($redirect_url)) {
+                                            $redirect_url = 'index.php?option=com_users&view=registration';
+                                        }
+                                        $register_url = $redirect_url.'&course='.$campaign_pinned->code.'&cid='.$campaign_pinned->id.'&Itemid='.$mod_em_campaign_itemid;
+                                    } else {
+                                        $register_url = $redirect_url.'?course='.$campaign_pinned->code.'&cid='.$campaign_pinned->id.'&Itemid='.$mod_em_campaign_itemid;
+                                    }
+
+                                    if(!$user->guest) {
+                                        $register_url .= '&redirect=' . $formUrl;
+                                    }
+                                    ?>
+                                    <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+                                </div>
 	                    <?php endif; ?>
                     </div>
                 </div>
@@ -489,7 +493,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                             <?php endif; ?>
 
                             <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
-
+                                <div class="mod_emundus_campaign__list_content_container">
 
                                 <?php
                                 $color = '#1C6EF2';
@@ -629,41 +633,42 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
                                 <hr>
 
-                                <div class="mod_emundus_campaign__list_content_resume em-applicant-text-color em-font-size-16"
-                                    <?php if (empty($mod_em_campaign_show_timezone) || (strtotime($now) > strtotime($result->end_date)) ) : ?> style="-webkit-line-clamp: 4;" <?php endif; ?>
-                                >
-                                    <?php
-                                    $text = '';
-                                    $textprog = '';
-                                    $textcamp = '';
-                                    if ($showcampaign) {
-                                        $textcamp = $result->short_description;
-                                    }
-                                    echo $textcamp;
-                                    ?>
+                                    <div class="mod_emundus_campaign__list_content_resume em-applicant-text-color em-font-size-16"
+                                        <?php if (empty($mod_em_campaign_show_timezone) || (strtotime($now) > strtotime($result->end_date)) ) : ?> style="-webkit-line-clamp: 4;" <?php endif; ?>
+                                    >
+                                        <?php
+                                        $text = '';
+                                        $textprog = '';
+                                        $textcamp = '';
+                                        if ($showcampaign) {
+                                            $textcamp = $result->short_description;
+                                        }
+                                        echo $textcamp;
+                                        ?>
+                                    </div>
                                 </div>
 
-                                <?php if ($mod_em_campaign_show_apply_button == 1 && (strtotime($now) < strtotime($result->end_date)) && (strtotime($now) > strtotime($result->start_date))) : ?>
-                                    <div>
-                                        <?php
-                                        $register_url = '';
-                                        // The register URL does not work  with SEF, this workaround helps counter this.
-                                        if ($sef == 0) {
-                                            if(empty($redirect_url)) {
-                                                $redirect_url = 'index.php?option=com_users&view=registration';
+                                    <?php if ($mod_em_campaign_show_apply_button == 1 && (strtotime($now) < strtotime($result->end_date)) && (strtotime($now) > strtotime($result->start_date))) : ?>
+                                        <div>
+                                            <?php
+                                            $register_url = '';
+                                            // The register URL does not work  with SEF, this workaround helps counter this.
+                                            if ($sef == 0) {
+                                                if(empty($redirect_url)) {
+                                                    $redirect_url = 'index.php?option=com_users&view=registration';
+                                                }
+                                                $register_url = $redirect_url.'&course='.$result->code.'&cid='.$result->id.'&Itemid='.$mod_em_campaign_itemid;
+                                            } else {
+                                                $register_url = $redirect_url.'?course='.$result->code.'&cid='.$result->id.'&Itemid='.$mod_em_campaign_itemid;
                                             }
-                                            $register_url = $redirect_url.'&course='.$result->code.'&cid='.$result->id.'&Itemid='.$mod_em_campaign_itemid;
-                                        } else {
-                                            $register_url = $redirect_url.'?course='.$result->code.'&cid='.$result->id.'&Itemid='.$mod_em_campaign_itemid;
-                                        }
 
-                                        if(!$user->guest) {
-                                            $register_url .= '&redirect=' . $formUrl;
-                                        }
-                                        ?>
-                                        <a class="btn btn-primary em-w-100 em-mt-12 em-applicant-default-font em-flex-column" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
-                                    </div>
-                                <?php endif; ?>
+                                            if(!$user->guest) {
+                                                $register_url .= '&redirect=' . $formUrl;
+                                            }
+                                            ?>
+                                            <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+                                        </div>
+                                    <?php endif; ?>
                             </div>
                         </div>
                         <?php } } ?>
