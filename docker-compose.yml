@@ -102,5 +102,9 @@ services:
       - "127.0.0.1:13308:3306"
     restart: always
     volumes:
+      # Delete this folder to reset the database
       - ./.docker/data/mysql:/var/lib/mysql
+      # Uncomment this line to use a custom my.cnf file
       - ./.docker/mysql/conf/my.cnf:/etc/mysql/conf.d/my.cnf
+      # Uncomment this line to use a custom sql file to init database
+      - ./.docker/installation/core.sql:/docker-entrypoint-initdb.d/mysql.sql

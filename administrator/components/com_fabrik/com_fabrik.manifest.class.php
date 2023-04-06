@@ -371,7 +371,7 @@ class Com_FabrikInstallerScript
 	protected function templateOverride($install = true)
 	{
 		/* Get the current admin template, probably atum for J4 */
-		$templateName = Factory::getApplication()->getTemplate();
+		$templateName = Factory::getContainer()->get(\Joomla\CMS\Application\SiteApplication::class)->getTemplate();
 		/* We will do some validation before we blindly overwrite anything */
 		$overrides = [
 			'params.php' => [ "loc" => JPATH_ADMINISTRATOR.'/components/com_fabrik/overrides/joomla/edit/',

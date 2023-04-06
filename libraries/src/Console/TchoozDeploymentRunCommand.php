@@ -54,13 +54,51 @@ class TchoozDeploymentRunCommand extends AbstractCommand
 	 */
 	protected function doExecute(InputInterface $input, OutputInterface $output): int
 	{
+        $db    = $this->getDatabase();
+        $query = $db->getQuery(true);
+
 		$symfonyStyle = new SymfonyStyle($input, $output);
 
-		$symfonyStyle->title('Hello World Command Title');
+		$symfonyStyle->title('Tchooz deployment running...');
 
-		// You might want to do some stuff here in Joomla
+        $symfonyStyle->section('Enabling Fabrik extensions');
+        try {
+            $query->update($db->quoteName('#__extensions'))
+                ->set($db->quoteName('enabled') . ' = 1')
+                ->where($db->quoteName('element') . ' LIKE ' . $db->quote('%fabrik%'))
+                ->orWhere($db->quoteName('folder') . ' LIKE ' . $db->quote('fabrik_%'))
+                ->andWhere($db->quoteName('enabled') . ' = 0');
+            $db->setQuery($query);
+            if($db->execute()){
+                $symfonyStyle->success('Fabrik extensions enabled');
+            } else {
+                $symfonyStyle->error('Error enabling Fabrik extensions');
+            }
+        } catch (\Exception $e) {
+            $symfonyStyle->error('Error enabling Fabrik extensions: ' . $e->getMessage());
+            return 1;
+        }
 
-		$symfonyStyle->success('Hello World!');
+        $symfonyStyle->section('Enabling Gantry extensions');
+        try {
+            $query->clear()
+                ->update($db->quoteName('#__extensions'))
+                ->set($db->quoteName('enabled') . ' = 1')
+                ->where($db->quoteName('element') . ' LIKE ' . $db->quote('%fabrik%'))
+                ->orWhere($db->quoteName('folder') . ' LIKE ' . $db->quote('fabrik_'))
+                ->andWhere($db->quoteName('enabled') . ' = 0');
+            $db->setQuery($query);
+            if($db->execute()){
+                $symfonyStyle->success('Gantry extensions enabled');
+            } else {
+                $symfonyStyle->error('Error enabling Gantry extensions');
+            }
+        } catch (\Exception $e) {
+            $symfonyStyle->error('Error enabling Fabrik extensions: ' . $e->getMessage());
+            return 1;
+        }
+
+		$symfonyStyle->success('Tchooz is ready to use!');
 
 		return 0;
 	}
