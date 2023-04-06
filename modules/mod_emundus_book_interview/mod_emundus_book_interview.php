@@ -8,10 +8,12 @@ JHtml::stylesheet('media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css');
 $session = JFactory::getSession();
 $user = $session->get('emundusUser');
 $helper = new modEmundusBookInterviewHelper;
+
 $evaluated_status = $params->get('evaluated_status');
 
 $status = $helper->getLastFileInterviewStatus($user->id)->status;
 $fnum = $helper->getLastFileInterviewStatus($user->id)->fnum;
+
 if (isset($fnum)) {
 
     // First we need to check if the user has booked.
@@ -33,7 +35,7 @@ if (isset($fnum)) {
 
     } elseif ($status == $evaluated_status) {
 
-        $available_events = $helper->getEvents($user);
+        $available_events = $helper->getEvents($user,$fnum);
 
         $offset = JFactory::getConfig()->get('offset');
 
