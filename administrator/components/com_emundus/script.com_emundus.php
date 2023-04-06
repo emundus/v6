@@ -1005,7 +1005,7 @@ if (password_value.match(regex) != null) {
 				}
 			}
 
-            if (version_compare($cache_version, '1.35.8', '<=') || $firstrun) {
+            if (version_compare($cache_version, '1.35.9', '<=') || $firstrun) {
                 EmundusHelperUpdate::addColumn('jos_messages', 'email_cc', 'TEXT');
             }
 
