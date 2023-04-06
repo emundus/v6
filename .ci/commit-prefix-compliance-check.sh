@@ -54,9 +54,9 @@ done
 
 # If no commit uses valid prefixes then the job fails and the pipeline is stopped
 if [ $i -eq 0 ]; then
-   echo "ERROR: Please use at least one commit with a prefix that allows the triggering of a release ($COMMIT_PREFIXES_TRIGGERING_RELEASE)."
+   echo "ERROR: Please use at least one commit with a prefix that allows the triggering of a release."
    exit 1
 else
-   echo "Well done, you used at least one commit with a prefix that allows the triggering of a release ($COMMIT_PREFIXES_TRIGGERING_RELEASE)."
+   echo "Well done, you used at least one commit with a prefix that allows the triggering of a release."
    exit 0
 fi
