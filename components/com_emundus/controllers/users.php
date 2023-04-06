@@ -844,6 +844,15 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$m_users = new EmundusModelUsers();
 		$res = $m_users->setGroupRight($id, $action, $value);
 
+        try {
+            require_once (JPATH_ROOT . '/administrator/components/com_emundus/helpers/update.php');
+            EmundusHelperUpdate::clearJoomlaCache('mod_menu');
+        } catch (Exception $e) {
+            JLog::add('Cannot clear cache : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+
+
+
 		echo json_encode((object)array('status' => $res, 'msg' => $msg));
 		exit;
 	}
