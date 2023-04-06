@@ -139,6 +139,61 @@ class EmundusController extends JControllerLegacy {
         }
     }
 
+    function pdf_by_form() {
+        $user = JFactory::getSession()->get('emundusUser');
+        $jinput = JFactory::getApplication()->input;
+        $student_id = $jinput->get('user', null, 'string');
+        $fnum = $jinput->get('fnum', null, 'string');
+        $formid = [$jinput->get('form', null, 'string')];
+
+        $fnum = !empty($fnum)?$fnum:$user->fnum;
+        $m_profile = $this->getModel('profile');
+        $m_campaign = $this->getModel('campaign');
+
+        $options = array(
+            'aemail',
+            'afnum',
+            'adoc-print',
+            'aapp-sent',
+        );
+
+        $infos 		= $m_profile->getFnumDetails($fnum);
+
+
+        if (!empty($fnum)) {
+            $candidature = $m_profile->getFnumDetails($fnum);
+            $campaign = $m_campaign->getCampaignByID($candidature['campaign_id']);
+        }
+
+        $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$campaign['training'].'.php';
+        $file_custom = JPATH_LIBRARIES.DS.'emundus'.DS.'custom'.DS.'pdf_'.$campaign['training'].'.php';
+        if (!file_exists($file) && !file_exists($file_custom)) {
+            $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
+        }
+        else{
+            if (file_exists($file_custom)){
+                $file = $file_custom;
+            }
+        }
+
+        if (!file_exists(EMUNDUS_PATH_ABS.$student_id)) {
+            mkdir(EMUNDUS_PATH_ABS.$student_id);
+            chmod(EMUNDUS_PATH_ABS.$student_id, 0755);
+        }
+
+        require_once($file);
+
+        // Here we call the profile by fnum function, which will get the candidate's profile in the status table
+        // $profile_id = $m_profile->getProfileByFnum($fnum);
+
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+            //application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, $options, null, $profile_id,null,null);
+            application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, $formid, $options);
+            exit;
+        } else {
+            die(JText::_('ACCESS_DENIED'));
+        }
+    }
 
     /**
      * Function that will print the candidat's PDF depending on their file status

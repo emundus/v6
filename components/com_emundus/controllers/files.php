@@ -3032,7 +3032,8 @@ class EmundusControllerFiles extends JControllerLegacy
 
     public function exportzipdoc() {
         $jinput = JFactory::getApplication()->input;
-        $idFiles = explode(',', $jinput->getString('ids', ''));
+        $idFiles_str  = $jinput->getString('ids', '');
+        $idFiles = !empty($idfiles_str) ? explode(',', $idFiles_str) : [];
 
 	    $files = [];
         if (!empty($idFiles)) {

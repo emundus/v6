@@ -1005,6 +1005,10 @@ if (password_value.match(regex) != null) {
 				}
 			}
 
+            if (version_compare($cache_version, '1.35.8', '<=') || $firstrun) {
+                EmundusHelperUpdate::addColumn('jos_messages', 'email_cc', 'TEXT');
+            }
+
 
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
