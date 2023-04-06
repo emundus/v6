@@ -39,7 +39,7 @@
     margin-bottom: 64px;
 }
 
-.mod_emundus_campaign__content .em-h4 {
+.mod_emundus_campaign__content .em-h3 {
     font-family: var(--applicant-title-font);
     color: var(--em-applicant-title-color);
 }
@@ -339,9 +339,10 @@ a.em-blue-400-color:hover {
     border-radius: 16px !important;
     padding: 32px;
     background: #fff;
+    color: var(--em-applicant-title-color);
 }
 
-.mod_emundus_campaign__details_content p.em-h6 {
+.mod_emundus_campaign__details_content h4.em-h4 {
  font-family: var(--applicant-title-font);
  color: var(--em-applicant-title-color);
 }
