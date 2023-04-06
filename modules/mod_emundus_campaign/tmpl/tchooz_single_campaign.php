@@ -186,7 +186,7 @@ if($currentCampaign->apply_online == 0){
                     $register_url .= "&redirect=" . $formUrl;
                 }
                 ?>
-                <a class="btn btn-primary em-w-100 em-mt-24 em-applicant-default-font" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+                <a class="btn btn-primary em-w-100 em-applicant-default-font" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
             <?php elseif ($can_apply == -1) : ?>
                 <button class="em-disabled-button em-w-100 em-mt-24" role="button" data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_IS_FINISH'); ?></button>
             <?php endif; ?>
