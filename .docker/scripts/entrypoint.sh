@@ -130,6 +130,7 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
                 rm -rf installation/
         fi
 
+        # Prepare configuration
         if [ ! -e configuration.php ]; then
           cp configuration.php.dist configuration.php
 
@@ -139,17 +140,23 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
           sed -i "s:\$db = '.*':\$db = '$JOOMLA_DB_NAME':g" configuration.php
         fi
 
+        # Prepare .htaccess
         if [ ! -e .htaccess ]; then
           cp htaccess.txt .htaccess
         fi
+
+        # Prepare Gantry template configuration
+        if [ ! -e templates/g5_helium/templateDetails.xml ]; then
+          cp templates/g5_helium/templateDetails.xml.dist templates/g5_helium/templateDetails.xml
+        fi
+
         # Ensure the MySQL Database is created
         php /makedb.php "$JOOMLA_DB_HOST" "$JOOMLA_DB_USER" "$JOOMLA_DB_PASSWORD" "$JOOMLA_DB_NAME"
 
         # Install Tchooz product
-        php cli/joomla.php extension:discover
-        php cli/joomla.php extension:discover:install
-        php cli/joomla.php tchooz:deployment:run
-
+        #php cli/joomla.php extension:discover
+        #php cli/joomla.php extension:discover:install
+        #php cli/joomla.php tchooz:deployment:run
 
         # Remove the makedb script
         rm -rf /makedb.php

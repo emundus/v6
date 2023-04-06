@@ -84,9 +84,9 @@ class TchoozDeploymentRunCommand extends AbstractCommand
             $query->clear()
                 ->update($db->quoteName('#__extensions'))
                 ->set($db->quoteName('enabled') . ' = 1')
-                ->where($db->quoteName('element') . ' LIKE ' . $db->quote('%fabrik%'))
-                ->orWhere($db->quoteName('folder') . ' LIKE ' . $db->quote('fabrik_'))
-                ->andWhere($db->quoteName('enabled') . ' = 0');
+                ->where($db->quoteName('name') . ' LIKE ' . $db->quote('%gantry%'))
+                ->andWhere($db->quoteName('enabled') . ' = 0')
+                ->andWhere($db->quoteName('folder') . ' NOT LIKE ' . $db->quote('quickicon'));
             $db->setQuery($query);
             if($db->execute()){
                 $symfonyStyle->success('Gantry extensions enabled');
@@ -94,7 +94,7 @@ class TchoozDeploymentRunCommand extends AbstractCommand
                 $symfonyStyle->error('Error enabling Gantry extensions');
             }
         } catch (\Exception $e) {
-            $symfonyStyle->error('Error enabling Fabrik extensions: ' . $e->getMessage());
+            $symfonyStyle->error('Error enabling Gantry extensions: ' . $e->getMessage());
             return 1;
         }
 
