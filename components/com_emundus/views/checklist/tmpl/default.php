@@ -143,7 +143,7 @@ if (!empty($this->custom_title)) :?>
             } else {
                 $div .= '<span class="material-icons-outlined em-main-500-color em-mr-4">check_circle</span>';
             }
-            $div .= '<h4 class="em-h4">'.$attachment->value .'</h4>';
+            $div .= '<h4 class="em-h4 em-mt-0-important">'.$attachment->value .'</h4>';
             $div .= '</div>
                 <p class="em-ml-8 em-mt-8">'.$attachment->description .'</p>
                 <div>
