@@ -5,7 +5,7 @@ Help()
 {
    echo "file-search-in-gitlab-merge-request searches for a specific file in the list of modified files included in the changes of a Gitlab merge request."
    echo
-   echo "Usage: check-xml-version.sh [options] [-h] [args...] <GITLAB_URL> <GITLAB_TOKEN> <PROJECT_ID> <MERGE_REQUEST_IID> <FILE>"
+   echo "Usage: file-search-in-gitlab-merge-request.sh [options] [-h] [args...] <GITLAB_URL> <GITLAB_TOKEN> <PROJECT_ID> <MERGE_REQUEST_IID> <FILE>"
    echo
    echo "   -h                         Print this Help."
    echo "   \$1 <GITLAB_URL>            Your Gitlab URL, eg. https://git.emundus.io"

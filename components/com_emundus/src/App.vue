@@ -38,6 +38,8 @@ import messagescoordinator from "./components/Messages/MessagesCoordinator";
 import messages from "./components/Messages/Messages";
 import editprofile from "./views/Users/Edit";
 
+import settingsService from "./services/settings.js";
+
 export default {
 	props: {
     datas: NamedNodeMap,
@@ -95,6 +97,7 @@ export default {
 	    moment.locale(this.$store.state.global.currentLanguage);
     } else {
 	    this.$store.commit('global/initCurrentLanguage', 'fr');
+      moment.locale('fr');
     }
     if (typeof this.$props.shortLang != 'undefined') {
       this.$store.commit('global/initShortLang', this.$props.shortLang);
@@ -111,6 +114,12 @@ export default {
     if (typeof this.$props.coordinatorAccess != 'undefined') {
       this.$store.commit("global/initSysadminAccess", this.$props.sysadminAccess);
     }
+
+    settingsService.getOffset().then(response => {
+      if (response.status !== false) {
+        this.$store.commit("global/initOffset", response.data.data);
+      }
+    });
   },
 
   mounted() {
