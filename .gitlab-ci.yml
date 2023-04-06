@@ -43,6 +43,16 @@ check-tchooz-version-job:
   script:
     - .ci/file-search-in-gitlab-merge-request.sh "$CI_SERVER_URL" "$GITLAB_TOKEN" "$CI_PROJECT_ID" "$CI_MERGE_REQUEST_IID" "administrator/components/com_emundus/emundus.xml"
 
+check-commit-prefixes-job:
+  stage: prepare
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
+      when: always
+    - when: never
+  image: enix/ci-toolbox:1.22
+  script:
+    - .ci/commit-prefix-compliance-check.sh "$CI_SERVER_URL" "$GITLAB_TOKEN" "$CI_PROJECT_ID" "$CI_MERGE_REQUEST_IID"
+
 build-app-to-test-job:
   stage: build
   services:

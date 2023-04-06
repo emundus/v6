@@ -17,7 +17,7 @@ use Joomla\CMS\Table\Table;
 class EmundusHelperUpdate
 {
 
-	public static function clearJoomlaCache(){
+	public static function clearJoomlaCache($group = null){
 		require_once (JPATH_ROOT . '/administrator/components/com_cache/models/cache.php');
 		$m_cache = new CacheModelCache();
 		$clients    = array(1, 0);
@@ -25,14 +25,18 @@ class EmundusHelperUpdate
 		foreach ($clients as $client)
 		{
 			$mCache    = $m_cache->getCache($client);
-
-			foreach ($mCache->getAll() as $cache)
-			{
-				if ($mCache->clean($cache->group) === false)
-				{
-					return false;
-				}
-			}
+            if(!empty($group)) {
+                if ($mCache->clean($group) === false)
+                {
+                    return false;
+                }
+            } else {
+                foreach ($mCache->getAll() as $cache) {
+                    if ($mCache->clean($cache->group) === false) {
+                        return false;
+                    }
+                }
+            }
 		}
 
 		return true;
