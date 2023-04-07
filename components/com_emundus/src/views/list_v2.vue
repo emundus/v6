@@ -24,7 +24,7 @@
 							style="margin: 0;"
 							:placeholder="translate('COM_EMUNDUS_ONBOARD_SEARCH')"
 							v-model="search"
-							:class="{'em-disabled': items[this.selectedListTab].length < 1}"
+							:class="{'em-disabled-events': items[this.selectedListTab].length < 1}"
 							:disabled="items[this.selectedListTab].length < 1"
 					>
 				</div>
@@ -68,8 +68,8 @@
 					</span>
 				</div>
 			</div>
-			<div id="pagination" class="em-w-100 em-text-align-center">
-				<ul v-if="currentTab.pagination.total > 1" class="em-flex-row em-flex-center" style="list-style-type:none;margin-left:0;">
+			<div v-if="typeof currentTab.pagination !== undefined && currentTab.pagination.total > 1" id="pagination" class="em-w-100 em-text-align-center">
+				<ul class="em-flex-row em-flex-center" style="list-style-type:none;margin-left:0;">
 					<span :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === 1}"
 							class="material-icons-outlined em-pointer em-mr-8 em-ml-8"
 							@click="getListItems(currentTab.pagination.current - 1, selectedListTab)">chevron_left</span>
@@ -204,9 +204,33 @@ export default {
 	},
 	methods: {
 		initList() {
+			let lists = localStorage.getItem('tchooz_lists/' + document.location.hostname);
+
+			if (lists !== null) {
+				this.lists = JSON.parse(lists);
+				if (typeof this.lists[this.type] === 'undefined') {
+					console.error('List type ' + this.type + ' does not exist');
+					window.location.href = '/';
+				}
+
+				this.currentList = this.lists[this.type];
+				if (this.params.hasOwnProperty('tab')) {
+					this.selectedListTab = this.params.tab;
+				} else {
+					this.selectedListTab = this.currentList.tabs[0].key;
+				}
+
+				this.loading.lists = false;
+				this.getListItems();
+			} else {
+				this.getLists();
+			}
+		},
+		getLists() {
 			settingsService.getOnboardingLists().then(response => {
 				if (response.data.status) {
 					this.lists = response.data.data;
+					localStorage.setItem('tchooz_lists/' + document.location.hostname, JSON.stringify(this.lists));
 
 					if (typeof this.lists[this.type] === 'undefined') {
 						console.error('List type ' + this.type + ' does not exist');
