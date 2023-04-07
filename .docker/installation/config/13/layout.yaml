@@ -1,0 +1,194 @@
+version: 2
+preset:
+  image: 'gantry-admin://images/layouts/3-col.png'
+  name: _joomla_-_gantry4
+  timestamp: 1530009501
+layout:
+  drawer: {  }
+  top: {  }
+  navigation: {  }
+  /showcase/:
+    -
+      - position-position-6366
+  /feature/:
+    -
+      - system-messages-7972
+  /utility/:
+    -
+      - position-position-6313
+    -
+      - 'position-position-3312 33.3'
+      - 'position-position-3137 33.3'
+      - 'position-position-3100 33.3'
+  breadcrumb: {  }
+  maintop: {  }
+  /container-main/:
+    -
+      -
+        'main-mainbody 67': {  }
+      -
+        'sidebar 33': {  }
+  mainbottom: {  }
+  extension: {  }
+  bottom: {  }
+  footer: {  }
+  copyright: {  }
+  offcanvas: {  }
+structure:
+  drawer:
+    type: section
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+  top:
+    type: section
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - children
+  navigation:
+    type: section
+    inherit:
+      outline: default
+      include:
+        - children
+        - attributes
+  showcase:
+    type: section
+    attributes:
+      boxed: ''
+      class: g-container
+  feature:
+    type: section
+    attributes:
+      boxed: ''
+      class: g-container
+  utility:
+    type: section
+    attributes:
+      boxed: ''
+      class: g-container
+  breadcrumb:
+    type: section
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+  maintop:
+    type: section
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+  main-mainbody:
+    title: Mainbody
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+  sidebar:
+    type: section
+    subtype: aside
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+    block:
+      fixed: 1
+  container-main:
+    attributes:
+      boxed: ''
+  mainbottom:
+    type: section
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+  extension:
+    type: section
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+  bottom:
+    type: section
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+  footer:
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+  copyright:
+    type: section
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+  offcanvas:
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+content:
+  position-position-6366:
+    title: Breadcrumb
+    attributes:
+      key: breadcrumb
+    block:
+      id: breadcrumb
+      class: breadcrumb
+  position-position-6313:
+    title: Drawer
+    attributes:
+      key: drawer
+    block:
+      id: drawer
+      class: drawer
+  position-position-3312:
+    title: 'Drawer A'
+    attributes:
+      key: drawer-a
+    block:
+      id: drawer-a
+      class: drawer-a
+  position-position-3137:
+    title: 'Drawer B'
+    attributes:
+      key: drawer-b
+    block:
+      id: drawer-b
+      class: drawer-b
+  position-position-3100:
+    title: 'Drawer C'
+    attributes:
+      key: drawer-c
+    block:
+      id: drawer-c
+      class: drawer-c

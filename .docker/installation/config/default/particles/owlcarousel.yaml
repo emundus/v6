@@ -1,0 +1,9 @@
+enabled: '1'
+class: ''
+title: ''
+nav: disable
+dots: enable
+autoplay: disable
+autoplaySpeed: ''
+imageOverlay: enable
+items: {  }

@@ -1,0 +1,83 @@
+name: default
+timestamp: 1635347591
+version: 7
+preset:
+  image: 'gantry-admin://images/layouts/3-col.png'
+  name: _joomla_-_gantry4
+  timestamp: 1530009501
+positions:
+  top-b: 'Top B'
+  top-c: 'Top C'
+  header-a: 'Header A'
+  header-b: Header-b
+  header-c: 'Header C'
+  breadcrumb: Breadcrumb
+  drawer: Drawer
+  drawer-a: 'Drawer A'
+  drawer-b: 'Drawer B'
+  drawer-c: 'Drawer C'
+  content-top-a: content-top-a
+  content-top-b: content-top-b
+  content-top-c: content-top-c
+  content-bottom-a: content-bottom-a
+  content-bottom-b: content-bottom-b
+  content-bottom-c: content-bottom-c
+  sidebar-a: 'Sidebar A'
+  sidebar-b: 'Sidebar B'
+  sidebar-c: 'Sidebar C'
+  bottom-a: bottom-a
+  bottom-b: bottom-b
+  bottom-c: bottom-c
+  footer-a: footer-a
+  footer-b: footer-b
+sections:
+  drawer: Drawer
+  top: Top
+  navigation: Navigation
+  showcase: Showcase
+  feature: Feature
+  utility: Utility
+  breadcrumb: Breadcrumb
+  maintop: Maintop
+  mainbottom: Mainbottom
+  extension: Extension
+  bottom: Bottom
+  copyright: Copyright
+  main-mainbody: Mainbody
+  sidebar: Sidebar
+  footer: Footer
+  offcanvas: Offcanvas
+particles:
+  position:
+    position-position-4408: 'Top B'
+    position-position-7532: 'Top C'
+    position-position-6276: 'Header A'
+    position-position-5691: Header-b
+    position-position-5235: 'Header C'
+    position-position-6366: Breadcrumb
+    position-position-6313: Drawer
+    position-position-3312: 'Drawer A'
+    position-position-3137: 'Drawer B'
+    position-position-3100: 'Drawer C'
+    position-position-8748: content-top-a
+    position-position-8389: content-top-b
+    position-position-2887: content-top-c
+    position-position-1822: content-bottom-a
+    position-position-8774: content-bottom-b
+    position-position-3185: content-bottom-c
+    position-position-8186: 'Sidebar A'
+    position-position-9360: 'Sidebar B'
+    position-position-3949: 'Sidebar C'
+    position-position-3854: bottom-a
+    position-position-8649: bottom-b
+    position-position-5181: bottom-c
+    position-position-6744: footer-a
+    position-position-8794: footer-b
+  messages:
+    system-messages-7972: 'System Messages'
+  content:
+    system-content-4895: 'Page Content'
+  module:
+    position-module-2455: 'Mobile Menu'
+    position-module-3093: 'User menu phone'
+inherit: {  }

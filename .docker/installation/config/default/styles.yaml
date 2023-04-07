@@ -1,0 +1,62 @@
+preset: preset4
+base:
+  background: '#f8f8f8'
+  text-color: '#000000'
+  primary-color: '#353544'
+  secondary-color: '#20835F'
+accent:
+  color-1: '#353544'
+  color-2: '#20835F'
+font:
+  family-default: 'family=Inter:300,400,500,600,700,800,900,400&subset=latin,vietnamese,latin-ext'
+  family-title: 'family=Inter:300,400,500,600,700,800,900,400&subset=latin,vietnamese,latin-ext'
+link:
+  regular: '#20835F'
+  hover: '#2abd89'
+navigation:
+  background: '#ffffff'
+  text-color: '#2a363b'
+header:
+  background: '#ffffff'
+  background-image: ''
+  background-overlay: disabled
+  text-color: '#2a363b'
+intro:
+  background: '#ffffff'
+  text-color: '#2a363b'
+features:
+  background: '#ffffff'
+  text-color: '#2a363b'
+utility:
+  background: '#ffffff'
+  text-color: '#2a363b'
+above:
+  background: '#ffffff'
+  text-color: '#2a363b'
+testimonials:
+  background: '#ffffff'
+  background-image: ''
+  background-overlay: disabled
+  text-color: '#eceeef'
+expanded:
+  background: '#ffffff'
+  text-color: '#2a363b'
+footer:
+  background: '#eeeeee'
+  text-color: '#2a363b'
+offcanvas:
+  background: '#4e5b6d'
+  text-color: '#ffffff'
+  toggle-color: '#4e5b6d'
+  toggle-visibility: '1'
+  width: 16rem
+breakpoints:
+  large-desktop-container: 75rem
+  desktop-container: 60rem
+  tablet-container: 48rem
+  large-mobile-container: 30rem
+  mobile-menu-breakpoint: 48rem
+menu:
+  col-width: 11rem
+  animation: g-fade
+  hide-on-mobile: '0'

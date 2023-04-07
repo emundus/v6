@@ -1,0 +1,43 @@
+favicon: 'gantry-media://custom/favicon.png'
+touchicon: ''
+css:
+  -
+    location: 'gantry-assets://scss/global.scss'
+    inline: ''
+    extra: {  }
+    priority: '0'
+    name: Global
+  -
+    location: 'https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined'
+    inline: ''
+    extra: '{  }'
+    priority: '0'
+    name: 'Material Icons'
+  -
+    location: 'gantry-assets://custom/scss/quill.scss'
+    inline: ''
+    extra: '{  }'
+    priority: '0'
+    name: Quill
+javascript:
+  -
+    location: 'https://cdn.jsdelivr.net/npm/sweetalert2@8'
+    inline: ''
+    in_footer: '0'
+    extra: {  }
+    priority: '0'
+    name: 'Sweet Alert'
+  -
+    location: 'gantry-assets://custom/custom-js.js'
+    inline: ''
+    in_footer: '0'
+    extra: {  }
+    priority: '0'
+    name: custom-js
+  -
+    location: /media/com_emundus/js/fabrik.js
+    inline: ''
+    in_footer: '0'
+    extra: '{  }'
+    priority: '0'
+    name: Fabrik
