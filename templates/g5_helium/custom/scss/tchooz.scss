@@ -185,6 +185,12 @@ button[class ^= 'em-']{
     }
 }
 
+.em-disabled-events {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /** INPUTS **/
 .em-input{
   border: 1px solid #E3E3E3;
@@ -820,6 +826,15 @@ input:focus + .em-slider {
 }
 .em-lightgray-bg{
   background: #F5F6F6;
+}
+.em-bg-main-100{
+  background: var(--main-100);
+}
+.em-bg-main-200{
+  background: var(--main-200);
+}
+.em-bg-main-300{
+  background: var(--main-300);
 }
 .em-bg-main-500{
   background: var(--main-500);
@@ -1566,6 +1581,11 @@ button.em-swal-delete-button{
 /** **/
 
 /** Circles **/
+.em-circle {
+    border-radius: 50%;
+    padding: 12px;
+    box-shadow: 0 1px 4px rgba(32, 35, 44, 0.05);
+}
 .em-circle-blue-100{
   border-radius: 50%;
   padding: 12px;

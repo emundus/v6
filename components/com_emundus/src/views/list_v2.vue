@@ -28,7 +28,7 @@
 							:disabled="items[this.selectedListTab].length < 1"
 					>
 				</div>
-				<select name="numberOfItemsToDisplay" v-model="numberOfItemsToDisplay" @change="getListItems"
+				<select name="numberOfItemsToDisplay" v-model="numberOfItemsToDisplay" @change="getListItems()"
 					class="em-mt-16 em-mb-16"
 				>
 					<option value="2">{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 2</option>
@@ -71,10 +71,19 @@
 				</div>
 			</div>
 			<div id="pagination" class="em-w-100 em-text-align-center">
-				<ul class="em-flex-row em-flex-center" style="list-style-type:none;" v-if="currentTab.pagination.total > 1">
-					<li v-for="i in currentTab.pagination.total" :key="i" class="em-pointer em-mr-8 em-ml-8" :class="{'em-main-500-color': i === currentTab.pagination.current}">
-						<a @click="getListItems(i, selectedListTab)">{{ i }}</a>
+				<ul v-if="currentTab.pagination.total > 1" class="em-flex-row em-flex-center" style="list-style-type:none;margin-left:0;">
+					<span :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === 1}"
+							class="material-icons-outlined em-pointer em-mr-8 em-ml-8"
+							@click="getListItems(currentTab.pagination.current - 1, selectedListTab)">chevron_left</span>
+					<li v-for="i in currentTab.pagination.total" :key="i"
+					    class="em-pointer em-mr-8 em-ml-8 em-circle em-bg-main-100"
+					    :class="{'em-bg-main-500 label-text-darkpurple active': i === currentTab.pagination.current}"
+					    @click="getListItems(i, selectedListTab)">
+						{{ i }}
 					</li>
+					<span :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === currentTab.pagination.total}"
+							class="material-icons-outlined em-pointer em-mr-8 em-ml-8"
+							@click="getListItems(currentTab.pagination.current + 1, selectedListTab)">chevron_right</span>
 				</ul>
 			</div>
 
@@ -222,14 +231,13 @@ export default {
 				}
 			});
 		},
-		getListItems(page = 0, tab = null) {
+		getListItems(page = 1, tab = null) {
 			if (tab === null) {
 				this.loading.tabs = true;
+				this.items = Vue.observable(Object.assign({}, ...this.currentList.tabs.map(tab => ({[tab.key]: []}))));
 			} else {
 				this.loading.items = true;
 			}
-
-			this.items = Vue.observable(Object.assign({}, ...this.currentList.tabs.map(tab => ({[tab.key]: []}))));
 
 			const tabs = tab === null ? this.currentList.tabs : [this.currentTab];
 			tabs.forEach(tab => {
@@ -491,5 +499,21 @@ export default {
 	grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
 	column-gap: 10px;
 	row-gap: 15px;
+}
+
+#pagination {
+	transition: all .3s;
+
+	li {
+		transition: all .3s;
+		width: 40px;
+		height: 40px;
+		font-size: 12px;
+
+		&:hover:not(.active) {
+			background-color: #87D4B8;
+			color: white;
+		}
+	}
 }
 </style>

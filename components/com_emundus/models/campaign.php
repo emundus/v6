@@ -907,7 +907,7 @@ class EmundusModelCampaign extends JModelList {
 							],
 							[
 								'value' => $campaign->nb_files . ' ' . ( $campaign->nb_files > 1 ? JText::_('COM_EMUNDUS_FILES_FILES') : JText::_('COM_EMUNDUS_FILES_FILE')),
-								'classes' => '',
+								'classes' => 'label label-default',
 								'display' => 'blocs'
 							],
 						];
