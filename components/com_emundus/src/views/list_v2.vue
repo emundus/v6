@@ -29,13 +29,11 @@
 					>
 				</div>
 				<select name="numberOfItemsToDisplay" v-model="numberOfItemsToDisplay" @change="getListItems()"
-					class="em-mt-16 em-mb-16"
-				>
-					<option value="2">{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 2</option>
-					<option value="10">{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 10</option>
-					<option value="25">{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 25</option>
-					<option value="50">{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 50</option>
-					<option value="all">{{ translate('ALL') }}</option>
+					class='em-mt-16 em-mb-16'>
+					<option value='10'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 10</option>
+					<option value='25'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 25</option>
+					<option value='50'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 50</option>
+					<option value='all'>{{ translate('ALL') }}</option>
 				</select>
 			</section>
 			<nav v-if="currentList.tabs.length > 1" id="list-nav">
@@ -117,7 +115,7 @@
 										</a>
 										<div class="em-flex-row">
 											<span v-if="previewAction" class="material-icons-outlined em-pointer" @click="onClickPreview(item)">visibility</span>
-											<v-popover v-if="tabActionsPopover && tabActionsPopover.length > 0" :popoverArrowClass="'custom-popover-arrow'">
+											<v-popover v-if="tabActionsPopover && tabActionsPopover.length > 0 && filterShowOnActions(tabActionsPopover, item).length" :popoverArrowClass="'custom-popover-arrow'">
 												<span class="tooltip-target b3 material-icons">more_vert</span>
 												<template slot="popover">
 													<ul style="list-style-type: none; margin: 0;">
@@ -346,6 +344,15 @@ export default {
 		changeViewType(viewType) {
 			this.viewType = viewType.value;
 			localStorage.setItem('tchooz_view_type/' + document.location.hostname,viewType.value);
+		},
+		filterShowOnActions(actions, item) {
+			return actions.filter(action => {
+				if (action.hasOwnProperty('showon')) {
+					return this.evaluateShowOn(item, action.showon);
+				}
+
+				return true;
+			});
 		},
 		evaluateShowOn(item, showon) {
 			let show = true;

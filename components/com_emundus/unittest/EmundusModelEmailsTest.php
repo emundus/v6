@@ -41,4 +41,67 @@ class EmundusModelEmailsTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_emails = new EmundusModelEmails;
     }
+
+	public function testDeleteSystemEmails()
+	{
+		$data = $this->m_emails->getAllEmails(999, 0, '', '', '');
+		$this->assertNotEmpty($data);
+
+		// select one email with type 1
+		$system_emails = array_filter($data['datas'], function($email) {
+			return $email->type == 1;
+		});
+
+		$this->m_emails->deleteEmail(current($system_emails)->id);
+
+		$email = $this->m_emails->getEmailById(current($system_emails)->id);
+		$this->assertNotEmpty($email->id);
+	}
+
+	public function testCreateEmail()
+	{
+		$data = [
+			'lbl' => 'Test de la création',
+			'subject' => 'Test de la création',
+			'name' => '',
+			'emailfrom' => '',
+			'message' => '<p>Test de la création</p>',
+			'type' => 2,
+			'category' => '',
+			'published' => 1
+		];
+
+		$created = $this->m_emails->createEmail($data);
+		$this->assertNotFalse($created, 'La création de l\'email a fonctionné');
+		$created_email = $this->m_emails->getEmailById($created);
+
+		$this->assertNotNull($created_email, 'L\'email a bien été créé, on le retrouve par son sujet');
+
+		$email_by_id = $this->m_emails->getEmailById($created_email->id);
+		$this->assertNotNull($email_by_id, 'L\'email a bien été créé, on le retrouve par son id');
+		$this->assertSame($created_email->subject, $email_by_id->subject, 'L\'email a bien été créé, on le retrouve par son id et il est le même que par son libelle');
+	}
+
+	public function testDeleteEmails()
+	{
+		$lbl = 'Test de la création ' . rand(0, 1000);
+		$data = [
+			'lbl' => $lbl,
+			'subject' => 'Test de la création',
+			'name' => 'Test de la création',
+			'emailfrom' => '',
+			'message' => '<p>Test de la création</p>',
+			'type' => 2,
+			'category' => '',
+			'published' => 1
+		];
+		$created = $this->m_emails->createEmail($data);
+		$created_email = $this->m_emails->getEmailById($created);
+
+		$deleted = $this->m_emails->deleteEmail($created_email->id);
+		$this->assertTrue($deleted, 'La suppression de l\'email a fonctionné');
+
+		$email = $this->m_emails->getEmailById($created_email->id);
+		$this->assertNull($email, 'L\'email a bien été supprimé, on ne le retrouve plus');
+	}
 }
