@@ -871,11 +871,43 @@ class EmundusModelCampaign extends JModelList {
 				if (!empty($campaigns)) {
 					foreach ($campaigns as $key => $campaign) {
 						$campaign->label = ['fr' => $campaign->label, 'en' => $campaign->label];
-						$campaign->additionnal_columns = [
-							['key' => JText::_('COM_EMUNDUS_ONBOARD_NB_FILES'), 'value' => $campaign->nb_files],
-							['key' => JText::_('COM_EMUNDUS_ONBOARD_START_DATE'), 'value' => date('d/m/Y H\hi', strtotime($campaign->start_date))],
-							['key' => JText::_('COM_EMUNDUS_ONBOARD_END_DATE'), 'value' => date('d/m/Y H\hi', strtotime($campaign->end_date))],
-							['key' => JText::_('COM_EMUNDUS_ONBOARD_STATE'), 'value' => $campaign->published ? JText::_('PUBLISHED') : JText::_('UNPUBLISHED')]
+						$start_date = date('d/m/Y H\hi', strtotime($campaign->start_date));
+						$end_date = date('d/m/Y H\hi', strtotime($campaign->end_date));
+						$campaign->additional_columns = [
+							[
+								'key' => JText::_('COM_EMUNDUS_ONBOARD_START_DATE'),
+								'value' => $start_date,
+								'classes' => '',
+								'display' => 'table'
+							],
+							[
+								'key' => JText::_('COM_EMUNDUS_ONBOARD_END_DATE'),
+								'value' => $end_date,
+								'classes' => '',
+								'display' => 'table'
+							],
+							[
+								'key' => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
+								'value' => $campaign->published ? JText::_('PUBLISHED') : JText::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
+								'classes' => $campaign->published ? 'label label-lightgreen' : 'label label-default',
+								'display' => 'all'
+							],
+							[
+								'key' => JText::_('COM_EMUNDUS_ONBOARD_NB_FILES'),
+								'value' => $campaign->nb_files,
+								'classes' => '',
+								'display' => 'table'
+							],
+							[
+								'value' => JText::_('COM_EMUNDUS_DASHBOARD_CAMPAIGN_FROM') . ' ' . $start_date . ' ' . JText::_('COM_EMUNDUS_DASHBOARD_CAMPAIGN_TO') . ' ' . $end_date,
+								'classes' => '',
+								'display' => 'blocs'
+							],
+							[
+								'value' => $campaign->nb_files . ' ' . ( $campaign->nb_files > 1 ? JText::_('COM_EMUNDUS_FILES_FILES') : JText::_('COM_EMUNDUS_FILES_FILE')),
+								'classes' => '',
+								'display' => 'blocs'
+							],
 						];
 						$campaigns[$key] = $campaign;
 					}

@@ -65,8 +65,10 @@
 						</thead>
 						<tbody>
 							<tr v-for="item in displayedItems" :key="item.id" class="em-border-bottom-neutral-300">
-								<td class="em-pointer" @click="onClickAction(editAction, item.id)"><h3>{{ item.label[params.shortlang] }}</h3></td>
-								<td v-for="column in item.additionnal_columns" :key="column.key"> {{ column.value }} </td>
+								<td class="em-pointer" @click="onClickAction(editAction, item.id)">
+									<span :class="{'em-body-16-semibold em-mb-16':  viewType === 'blocs'}">{{ item.label[params.shortlang] }}</span>
+								</td>
+								<td v-for="column in item.additional_columns" :key="column.key" v-if="column.display === viewType || column.display === 'all'"><span class="em-mt-8 em-mb-8" :class="column.classes">{{ column.value }}</span></td>
 								<div>
 									<hr v-if="viewType === 'blocs'" class="em-w-100">
 									<td class="actions">
@@ -156,7 +158,7 @@ export default {
 		this.type = this.params.type;
 
 		this.viewType = localStorage.getItem('tchooz_view_type/' + document.location.hostname)
-		if(this.viewType === null || typeof this.viewType === 'undefined' || (this.viewType !== 'blocs' && this.viewType !== 'table')){
+		if (this.viewType === null || typeof this.viewType === 'undefined' || (this.viewType !== 'blocs' && this.viewType !== 'table')) {
 			this.viewType = 'blocs';
 			localStorage.setItem('tchooz_view_type/' + document.location.hostname,'blocs');
 		}
@@ -333,9 +335,11 @@ export default {
 			let columns = [];
 			let items = typeof this.items[this.selectedListTab] !== 'undefined' ? this.items[this.selectedListTab] : [];
 
-			if (items.length > 0 && typeof items[0].additionnal_columns !== 'undefined') {
-				items[0].additionnal_columns.forEach((column) => {
-					columns.push(column.key);
+			if (items.length > 0 && typeof items[0].additional_columns !== 'undefined') {
+				items[0].additional_columns.forEach((column) => {
+					if (column.display === 'all' || (column.display === this.viewType)) {
+						columns.push(column.key);
+					}
 				});
 			}
 
@@ -360,20 +364,12 @@ export default {
 		background-color: transparent;
 	}
 
-	h3 {
-		font-size: 12px;
-	}
-
 	&.blocs {
 		border: 0;
 
 
 		thead {
 			display: none;
-
-			h3 {
-				font-size: 18px;
-			}
 		}
 
 		tbody {
