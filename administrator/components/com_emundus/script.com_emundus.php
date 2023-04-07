@@ -1065,23 +1065,23 @@ try {
         $datas[] = $file;
     }
 
-            $dataSource = new stdClass;
-            $dataSource->chart = new stdClass;
-            $dataSource->chart = array(
-                \'caption\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_CAPTION"),
-                \'xaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_STATUS"),
-                \'yaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_NUMBER"),
-                \'animation\' => 1,
-                \'numberScaleValue\' => "1",
-                \'numDivLines\' => 1,
-                \'numbersuffix\'=> "",
-                \'theme\'=> "fusion"
-            );
-            $dataSource->data = $datas;
-            return $dataSource;
-        } catch (Exception $e) {
-        return array(\'dataset\' => \'\');
-    }'
+	$dataSource = new stdClass;
+	$dataSource->chart = new stdClass;
+	$dataSource->chart = array(
+		\'caption\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_CAPTION"),
+		\'xaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_STATUS"),
+		\'yaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_NUMBER"),
+		\'animation\' => 1,
+		\'numberScaleValue\' => "1",
+		\'numDivLines\' => 1,
+		\'numbersuffix\'=> "",
+		\'theme\'=> "fusion"
+	);
+	$dataSource->data = $datas;
+	return $dataSource;
+} catch (Exception $e) {
+	return array(\'dataset\' => \'\');
+}'
                 );
 
                 $dashboard_users_by_month_params = array(
@@ -1146,11 +1146,11 @@ try {
     $dataSource->data = array_reverse($users_by_day);
     return $dataSource;
 } catch (Exception $e) {
-                return array(\'users\' => \'\', \'days\' => \'\', \'total\' => 0);
-            }'
+	return array(\'users\' => \'\', \'days\' => \'\', \'total\' => 0);
+}'
                 );
 
-                $dashboard_files_associated_by_status = array(
+                $dashboard_files_associated_by_status_params = array(
                     'eval' => 'php|$db = JFactory::getDbo();
 $query = $db->getQuery(true);
 
@@ -1201,6 +1201,7 @@ try {
             ->from($db->quoteName(\'#__emundus_users_assoc\',\'eua\'))
             ->leftJoin($db->quoteName(\'#__emundus_campaign_candidature\',\'cc\').\' ON \'.$db->quoteName(\'cc.fnum\').\' = \'.$db->quoteName(\'eua.fnum\'))
             ->where($db->quoteName(\'cc.status\').\' = \'.$db->quote($statu->step))
+			->andWhere($db->quoteName(\'cc.published\').\' = \'.$db->quote(1))
             ->andWhere($db->quoteName(\'eua.user_id\').\' = \'.$db->quote($user_id));
 
         $db->setQuery($query);
@@ -1212,6 +1213,7 @@ try {
             ->leftJoin($db->quoteName(\'#__emundus_campaign_candidature\',\'cc\').\' ON \'.$db->quoteName(\'cc.fnum\').\' = \'.$db->quoteName(\'ega.fnum\'))
             ->leftJoin($db->quoteName(\'#__emundus_groups\',\'eg\').\' ON \'.$db->quoteName(\'eg.group_id\').\' = \'.$db->quoteName(\'ega.group_id\'))
             ->where($db->quoteName(\'cc.status\').\' = \'.$db->quote($statu->step))
+			->andWhere($db->quoteName(\'cc.published\').\' = \'.$db->quote(1))
             ->andWhere($db->quoteName(\'eg.user_id\').\' = \'.$db->quote($user_id));
 
         $db->setQuery($query);
@@ -1224,6 +1226,7 @@ try {
             ->leftJoin($db->quoteName(\'#__emundus_setup_campaigns\', \'esc\').\' ON \'.$db->quoteName(\'esc.training\').\' = \'.$db->quoteName(\'esgrc.course\'))
             ->leftJoin($db->quoteName(\'#__emundus_campaign_candidature\',\'cc\').\' ON \'.$db->quoteName(\'cc.campaign_id\').\' = \'.$db->quoteName(\'esc.id\'))
             ->where($db->quoteName(\'cc.status\').\' = \'.$db->quote($statu->step))
+			->andWhere($db->quoteName(\'cc.published\').\' = \'.$db->quote(1))
             ->andWhere($db->quoteName(\'eg.user_id\').\' = \'.$db->quote($user_id));
 
         $db->setQuery($query);
@@ -1233,28 +1236,72 @@ try {
         $datas[] = $file;
     }
 
-            $dataSource = new stdClass;
-            $dataSource->chart = new stdClass;
-            $dataSource->chart = array(
-                \'caption\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_ASSOCIATED_BY_STATUS_CAPTION"),
-                \'xaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_STATUS"),
-                \'yaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_NUMBER"),
-                \'animation\' => 1,
-                \'numberScaleValue\' => "1",
-                \'numDivLines\' => 1,
-                \'numbersuffix\'=> "",
-                \'theme\'=> "fusion"
-            );
-            $dataSource->data = $datas;
-            return $dataSource;
-        } catch (Exception $e) {
-        return array(\'dataset\' => \'\');
-    }'
+	$dataSource = new stdClass;
+	$dataSource->chart = new stdClass;
+	$dataSource->chart = array(
+		\'caption\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_ASSOCIATED_BY_STATUS_CAPTION"),
+		\'xaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_STATUS"),
+		\'yaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_NUMBER"),
+		\'animation\' => 1,
+		\'numberScaleValue\' => "1",
+		\'numDivLines\' => 1,
+		\'numbersuffix\'=> "",
+		\'theme\'=> "fusion"
+	);
+	$dataSource->data = $datas;
+	return $dataSource;
+} catch (Exception $e) {
+	return array(\'dataset\' => \'\');
+}'
+                );
+
+                $dashboard_files_by_tag_params = array(
+                    'eval' => 'php|$db = JFactory::getDbo();
+$query = $db->getQuery(true);
+
+try {
+	$query->select(\'*\')
+		->from($db->quoteName(\'jos_emundus_setup_action_tag\'));
+	$db->setQuery($query);
+	$tags = $db->loadObjectList();
+
+	$datas = array();
+
+	foreach ($tags as $tag) {
+		$file = new stdClass;
+		$file->label = $tag->label;
+
+		$query->clear()
+			->select(\'COUNT(distinct eta.fnum) as files\')
+			->from($db->quoteName(\'jos_emundus_tag_assoc\',\'eta\'))
+			->where($db->quoteName(\'eta.id_tag\').\' = \'.$db->quote($tag->id));
+
+		$db->setQuery($query);
+		$file->value = $db->loadResult();
+		$datas[] = $file;
+	}
+
+	$dataSource = new stdClass;
+	$dataSource->chart = new stdClass;
+	$dataSource->chart = array(
+		\'caption\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_TAG_CAPTION"),
+		\'xaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_TAGS"),
+		\'yaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_TAG_NUMBER"),
+		\'animation\' => 1,
+		\'numbersuffix\'=> "",
+		\'theme\'=> "fusion"
+	);
+	$dataSource->data = $datas;
+	return $dataSource;
+} catch (Exception $e) {
+	return array(\'dataset\' => \'\');
+}'
                 );
 
                 EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS',$dashboard_files_by_status_params);
                 EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_USERS_BY_MONTH',$dashboard_users_by_month_params);
                 EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_FILES_ASSOCIATED_BY_STATUS',$dashboard_files_associated_by_status_params);
+                EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_FILES_BY_TAG',$dashboard_files_by_tag_params);
 
             }
 
