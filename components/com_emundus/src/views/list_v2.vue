@@ -17,15 +17,12 @@
 		<div v-else class="list">
 			<section id="list-filter">
 				<div class="em-flex-row em-flex-row-center">
-					<span class="material-icons-outlined em-mr-8">search</span>
-					<input
-							name="search"
-							type="text"
-							style="margin: 0;"
+					<span class="material-icons-outlined em-mr-8 em-pointer" @click="searchItems">search</span>
+					<input name="search" type="text" v-model="search"
 							:placeholder="translate('COM_EMUNDUS_ONBOARD_SEARCH')"
-							v-model="search"
-							:class="{'em-disabled-events': items[this.selectedListTab].length < 1}"
-							:disabled="items[this.selectedListTab].length < 1"
+							:class="{'em-disabled-events': items[this.selectedListTab].length < 1 && search === ''}" style="margin: 0;"
+							:disabled="items[this.selectedListTab].length < 1 && search === ''"
+							@change="searchItems" @keyup="searchItems"
 					>
 				</div>
 				<select name="numberOfItemsToDisplay" v-model="numberOfItemsToDisplay" @change="getListItems()"
@@ -174,17 +171,10 @@ export default {
 			items: {},
 			title: '',
 			viewType: 'table',
-			viewTypeOptions: [
-				{
-					value: 'table',
-					icon: 'dehaze'
-				},
-				{
-					value: 'blocs',
-					icon: 'grid_view'
-				}
-			],
+			viewTypeOptions: [{value: 'table', icon: 'dehaze'}, {value: 'blocs', icon: 'grid_view'}],
 			search: '',
+			lastSearch: '',
+			searchDebounce: null,
 		}
 	},
 	created() {
@@ -264,7 +254,12 @@ export default {
 			const tabs = tab === null ? this.currentList.tabs : [this.currentTab];
 			tabs.forEach(tab => {
 				if (typeof tab.getter !== 'undefined') {
-					client().get('index.php?option=com_emundus&controller=' + tab.controller + '&task=' + tab.getter + '&lim=' + this.numberOfItemsToDisplay + '&page=' + page)
+					let url = 'index.php?option=com_emundus&controller=' + tab.controller + '&task=' + tab.getter + '&lim=' + this.numberOfItemsToDisplay + '&page=' + page;
+					if (this.search !== '') {
+						url += '&recherche=' + this.search;
+					}
+
+					client().get(url)
 						.then(response => {
 
 							if (response.data.status === true) {
@@ -289,6 +284,18 @@ export default {
 					this.loading.items = false;
 				}
 			});
+		},
+		searchItems() {
+			if (this.searchDebounce !== null) {
+				clearTimeout(this.searchDebounce);
+			}
+
+			this.searchDebounce = setTimeout(() => {
+				if (this.search !== this.lastSearch) {
+					this.lastSearch = this.search;
+					this.getListItems();
+				}
+			}, 500);
 		},
 		onClickAction(action, itemId = null) {
 			let item = null;
