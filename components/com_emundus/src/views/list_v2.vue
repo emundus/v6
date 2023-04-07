@@ -7,10 +7,10 @@
 		</div>
 		<hr class="em-w-100">
 
-		<div v-if="loading.items">
+		<div v-if="loading.tabs">
 			<skeleton height="40px" width="100%" class="em-mb-16 em-border-radius-8"></skeleton>
 			<div class="skeleton-grid" style="flex-wrap: wrap">
-				<skeleton v-for="i in 10" :key="i" class="em-m-16 em-border-radius-8" height="200px"></skeleton>
+				<skeleton v-for="i in 12" :key="i" class="em-m-16 em-border-radius-8" height="200px"></skeleton>
 			</div>
 		</div>
 
@@ -28,6 +28,15 @@
 							:disabled="items[this.selectedListTab].length < 1"
 					>
 				</div>
+				<select name="numberOfItemsToDisplay" v-model="numberOfItemsToDisplay" @change="getListItems"
+					class="em-mt-16 em-mb-16"
+				>
+					<option value="2">{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 2</option>
+					<option value="10">{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 10</option>
+					<option value="25">{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 25</option>
+					<option value="50">{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 50</option>
+					<option value="all">{{ translate('ALL') }}</option>
+				</select>
 			</section>
 			<nav v-if="currentList.tabs.length > 1" id="list-nav">
 				<ul style="list-style-type: none;margin-left:0;" class="em-flex-row">
@@ -61,7 +70,18 @@
 					</span>
 				</div>
 			</div>
-			<div>
+			<div id="pagination" class="em-w-100 em-text-align-center">
+				<ul class="em-flex-row em-flex-center" style="list-style-type:none;" v-if="currentTab.pagination.total > 1">
+					<li v-for="i in currentTab.pagination.total" :key="i" class="em-pointer em-mr-8 em-ml-8" :class="{'em-main-500-color': i === currentTab.pagination.current}">
+						<a @click="getListItems(i, selectedListTab)">{{ i }}</a>
+					</li>
+				</ul>
+			</div>
+
+			<div v-if="loading.items" class="skeleton-grid" style="flex-wrap: wrap">
+				<skeleton v-for="i in 12" :key="i" class="em-m-16 em-border-radius-8" height="200px"></skeleton>
+			</div>
+			<div v-else>
 				<div v-if="displayedItems.length > 0" id="list-items">
 					<table id="list-table" :class="{'blocs': viewType === 'blocs'}">
 						<thead>
@@ -135,8 +155,10 @@ export default {
 		return {
 			loading: {
 				'lists': false,
+				'tabs': false,
 				'items': false,
 			},
+			numberOfItemsToDisplay: 25,
 			lists: {},
 			type: 'forms',
 			params: {},
@@ -160,7 +182,7 @@ export default {
 	},
 	created() {
 		this.loading.lists = true;
-		this.loading.items = true;
+		this.loading.tabs = true;
 		const data = this.$store.getters['global/datas'];
 		this.params = Object.assign({}, ...Array.from(data).map(({name, value}) => ({[name]: value})));
 		this.type = this.params.type;
@@ -200,29 +222,40 @@ export default {
 				}
 			});
 		},
-		getListItems() {
-			this.loading.items = true;
+		getListItems(page = 0, tab = null) {
+			if (tab === null) {
+				this.loading.tabs = true;
+			} else {
+				this.loading.items = true;
+			}
+
 			this.items = Vue.observable(Object.assign({}, ...this.currentList.tabs.map(tab => ({[tab.key]: []}))));
 
-			this.currentList.tabs.forEach(tab => {
+			const tabs = tab === null ? this.currentList.tabs : [this.currentTab];
+			tabs.forEach(tab => {
 				if (typeof tab.getter !== 'undefined') {
-					client().get('index.php?option=com_emundus&controller=' + tab.controller + '&task=' + tab.getter)
+					client().get('index.php?option=com_emundus&controller=' + tab.controller + '&task=' + tab.getter + '&lim=' + this.numberOfItemsToDisplay + '&page=' + page)
 						.then(response => {
 
 							if (response.data.status === true) {
 								if (typeof response.data.data.datas !== 'undefined') {
 									this.items[tab.key] = response.data.data.datas;
-									// todo: use count response.data.data.count to create pagination
-
+									tab.pagination = {
+										current: page,
+										total: Math.ceil(response.data.data.count / this.numberOfItemsToDisplay)
+									}
 								}
 							}
+							this.loading.tabs = false;
 							this.loading.items = false;
 						})
 						.catch(error => {
 							console.error(error);
+							this.loading.tabs = false;
 							this.loading.items = false;
 						});
 				} else {
+					this.loading.tabs = false;
 					this.loading.items = false;
 				}
 			});
