@@ -755,7 +755,7 @@ class EmundusModelCampaign extends JModelList {
      *
      * @since version 1.0
      */
-    function getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page, $program, $session) {
+    function getAssociatedCampaigns($filter = '', $sort = 'DESC', $recherche = '', $lim = 25, $page = 0, $program = 'all', $session = 'all') {
         $associated_campaigns = [];
 
         $query = $this->_db->getQuery(true);
@@ -776,7 +776,7 @@ class EmundusModelCampaign extends JModelList {
         $date = new Date();
 
         // Get affected programs
-        require_once(JPATH_SITE . '/components/com_emundus/models/programme.php');
+	    require_once(JPATH_SITE . '/components/com_emundus/models/programme.php');
         $m_programme = new EmundusModelProgramme;
         $programs = $m_programme->getUserPrograms($this->_user->id);
 
@@ -788,7 +788,7 @@ class EmundusModelCampaign extends JModelList {
             }
             //
 
-            $filterDate = null;
+	        $filterDate = null;
             if ($filter == 'yettocome') {
                 $filterDate = 'Date(' . $this->_db->quoteName('sc.start_date') . ') > ' . $this->_db->quote($date);
             } elseif ($filter == 'ongoing') {

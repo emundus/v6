@@ -52,10 +52,11 @@ class EmundusModelEmailsTest extends TestCase
 			return $email->type == 1;
 		});
 
-		$this->m_emails->deleteEmail(current($system_emails)->id);
+		$deleted = $this->m_emails->deleteEmail(current($system_emails)->id);
+		$this->assertFalse($deleted, 'La suppression de l\'email n\'a pas fonctionné, car c\'est un email système');
 
 		$email = $this->m_emails->getEmailById(current($system_emails)->id);
-		$this->assertNotEmpty($email->id);
+		$this->assertNotEmpty($email->id, 'On retrouve bien l\'email par son id');
 	}
 
 	public function testCreateEmail()

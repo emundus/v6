@@ -1238,8 +1238,6 @@ class EmundusModelEmails extends JModelList {
                 continue;
             }
 
-
-
             $this->_db->setQuery('show tables');
             $existingTables = $this->_db->loadColumn();
             if (in_array('jos_emundus_files_request_1614_repeat', $existingTables)) {
@@ -1459,19 +1457,25 @@ class EmundusModelEmails extends JModelList {
      * @since v6
      */
     public function get_messages_to_from_user($user_id) {
+        $messages = [];
 
-        $query = 'SELECT * FROM #__messages WHERE user_id_to ='.$user_id.' AND folder_id <> 2 ORDER BY date_time desc';
+        if (!empty($user_id)) {
+            $query = $this->_db->getQuery(true);
+            $query->select('*')
+                ->from($this->_db->quoteName('#__messages'))
+                ->where($this->_db->quoteName('user_id_to').' = '.$user_id.' AND '.$this->_db->quoteName('folder_id').' <> 2')
+                ->order($this->_db->quoteName('date_time').' DESC');
 
-        try {
-
-            $this->_db->setquery($query);
-            return $this->_db->loadObjectList();
-
-        } catch (Exception $e) {
-            JLog::add('Error getting messages sent to or from user: '.$user_id.' at query: '.$query, JLog::ERROR, 'com_emundus');
-            return false;
+            try {
+                $this->_db->setquery($query);
+                $messages = $this->_db->loadObjectList();
+            } catch (Exception $e) {
+                JLog::add('Error getting messages sent to or from user: '.$user_id.' at query: '.$query, JLog::ERROR, 'com_emundus.error');
+                return false;
+            }
         }
 
+        return $messages;
     }
 
     /**
@@ -1706,7 +1710,23 @@ class EmundusModelEmails extends JModelList {
                 $query->andWhere($this->_db->quoteName('type') . ' != 1');
 
                 $this->_db->setQuery($query);
-                $deleted = $this->_db->execute();
+                $this->_db->execute();
+
+                // check if the emails were deleted, cannot just check db->execute() because it returns true even if no rows were deleted (e.g. if the email was a system email)
+                $query->clear();
+                $query->select($this->_db->quoteName('id'))
+                    ->from($this->_db->quoteName('#__emundus_setup_emails'));
+                if (is_array($ids)) {
+                    $query->where($this->_db->quoteName('id') . ' IN (' . implode(', ', $ids) . ')');
+                } else {
+                    $query->where($this->_db->quoteName('id') . ' = ' . $ids);
+                }
+
+                $this->_db->setQuery($query);
+
+                if (empty($this->_db->loadColumn())) {
+                    $deleted = true;
+                }
             } catch(Exception $e) {
                 JLog::add('component/com_emundus/models/email | Cannot delete emails: ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             }
