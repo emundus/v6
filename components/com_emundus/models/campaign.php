@@ -871,6 +871,8 @@ class EmundusModelCampaign extends JModelList {
 				if (!empty($campaigns)) {
 					foreach ($campaigns as $key => $campaign) {
 						$campaign->label = ['fr' => $campaign->label, 'en' => $campaign->label];
+
+						// this data formatted is used in onboarding lists
 						$start_date = date('d/m/Y H\hi', strtotime($campaign->start_date));
 						$end_date = date('d/m/Y H\hi', strtotime($campaign->end_date));
 						$campaign->additional_columns = [

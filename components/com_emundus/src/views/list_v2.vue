@@ -18,7 +18,15 @@
 			<section id="list-filter">
 				<div class="em-flex-row em-flex-row-center">
 					<span class="material-icons-outlined em-mr-8">search</span>
-					<input name="search" type="text" style="margin: 0;" :placeholder="translate('COM_EMUNDUS_ONBOARD_SEARCH')" v-model="search">
+					<input
+							name="search"
+							type="text"
+							style="margin: 0;"
+							:placeholder="translate('COM_EMUNDUS_ONBOARD_SEARCH')"
+							v-model="search"
+							:class="{'em-disabled': items[this.selectedListTab].length < 1}"
+							:disabled="items[this.selectedListTab].length < 1"
+					>
 				</div>
 			</section>
 			<nav v-if="currentList.tabs.length > 1" id="list-nav">
@@ -60,7 +68,7 @@
 							<tr>
 								<th>{{ translate('COM_EMUNDUS_ONBOARD_LABEL') }}</th>
 								<th v-for="column in additionalColumns" :key="column"> {{ column }}</th>
-								<th>{{ translate('COM_EMUNDUS_ONBOARD_ACTIONS') }}</th>
+								<th v-if="tabActionsPopover && tabActionsPopover.length > 0">{{ translate('COM_EMUNDUS_ONBOARD_ACTIONS') }}</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -86,7 +94,7 @@
 													<ul style="list-style-type: none; margin: 0;">
 														<li v-for="action in tabActionsPopover"
 														    :key="action.action"
-														    :class="{'hidden': typeof action.showon === 'undefined' || item[action.showon.key] == action.showon.value ? false : true}"
+														    :class="{'hidden': typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon) ? false : true}"
 														    @click="onClickAction(action, item.id)"
 														    class="em-pointer em-p-8 em-font-weight-600"
 														>
@@ -298,7 +306,35 @@ export default {
 			this.viewType = viewType.value;
 			localStorage.setItem('tchooz_view_type/' + document.location.hostname,viewType.value);
 		},
-	},
+		evaluateShowOn(item, showon) {
+			let show = true;
+			switch (showon.operator) {
+				case '==':
+				case '=':
+					show = item[showon.key] == showon.value;
+					break;
+				case '!=':
+					show = item[showon.key] != showon.value;
+					break;
+				case '>':
+					show = item[showon.key] > showon.value;
+					break;
+				case '<':
+					show = item[showon.key] < showon.value;
+					break;
+				case '>=':
+					show = item[showon.key] >= showon.value;
+					break;
+				case '<=':
+					show = item[showon.key] <= showon.value;
+					break;
+				default:
+					show = true;
+			}
+
+			return show;
+		}
+},
 	computed: {
 		currentTab() {
 			return this.currentList.tabs.find((tab) => {

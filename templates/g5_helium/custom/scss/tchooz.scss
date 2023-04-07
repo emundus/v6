@@ -172,6 +172,19 @@ button[class ^= 'em-']{
   }
 }
 
+.em-disabled {
+    background: var(--neutral-100) !important;
+    border: 1px solid var(--neutral-300) !important;
+    color: var(--neutral-600) !important;
+    cursor: not-allowed;
+
+    &:hover {
+      background: var(--neutral-100) !important;
+      border: 1px solid var(--neutral-300) !important;
+      color: var(--neutral-600) !important;
+    }
+}
+
 /** INPUTS **/
 .em-input{
   border: 1px solid #E3E3E3;
