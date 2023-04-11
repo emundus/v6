@@ -146,7 +146,7 @@ class EmundusControllerTrombinoscope extends EmundusController {
                 'CAMPAIGN_END' => $fnumInfo['end_date'],
                 'SITE_URL' => JURI::base()
             ];
-            $tags = $emails->setTags($fnum["applicant_id"], $post, $fnum['fnum'], '', $template);
+            $tags = $emails->setTags($fnum["applicant_id"], $post, $fnum['fnum'], '', $template, true);
             $body_tags = preg_replace($tags['patterns'], $tags['replacements'], $template);
             $body_tmp = $emails->setTagsFabrik($body_tags, array($fnum["fnum"]));
             $body .= $body_tmp;

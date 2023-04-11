@@ -553,7 +553,7 @@ class EmundusModelEmails extends JModelList {
      * @param string $content string containing tags to replace, ATTENTION : if empty all tags are computing
      * @return array[]
      */
-    public function setTags($user_id, $post=null, $fnum=null, $passwd='', $content='') {
+    public function setTags($user_id, $post=null, $fnum=null, $passwd='', $content='',$base64 = false) {
         require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'helpers'.DS.'tags.php');
         $h_tags = new EmundusHelperTags();
 
@@ -617,6 +617,12 @@ class EmundusModelEmails extends JModelList {
                                 $result = EMUNDUS_PATH_REL.$user_id.'/tn_'.$result;
                             } else {
                                 $result = EMUNDUS_PATH_REL.$user_id.'/'.$result;
+                            }
+
+                            if($base64) {
+                                $type = pathinfo($result, PATHINFO_EXTENSION);
+                                $data = file_get_contents($result);
+                                $result = 'data:image/' . $type . ';base64,' . base64_encode($data);
                             }
                         }
                     }
