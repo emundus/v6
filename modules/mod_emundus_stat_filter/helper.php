@@ -33,7 +33,7 @@ class modEmundusStatFilterHelper {
 		$db = JFactory::getDbo();
         $session = JFactory::getSession();
 		$user = $session->get('emundusUser');
-		$query = "SELECT * FROM `jos_emundus_setup_programmes` INNER JOIN `jos_emundus_setup_campaigns` ON `jos_emundus_setup_programmes`.`code` = `jos_emundus_setup_campaigns`.`training` WHERE `jos_emundus_setup_programmes`.`code` IN (".implode(",", $db->quote((new modEmundusStatFilterHelper)->codeProgramUser())).")";
+        $query = "SELECT `jos_emundus_setup_programmes`.* FROM `jos_emundus_setup_programmes` INNER JOIN `jos_emundus_setup_campaigns` ON `jos_emundus_setup_programmes`.`code` = `jos_emundus_setup_campaigns`.`training` WHERE `jos_emundus_setup_programmes`.`code` IN (".implode(",", $db->quote((new modEmundusStatFilterHelper)->codeProgramUser())).")";
 		$array = json_decode($filter, true);
 		if ($array["year"] != -1 || $array["campaign"] != -1) {
 			$query .= " AND ";
@@ -47,7 +47,7 @@ class modEmundusStatFilterHelper {
 				$query .= "`jos_emundus_setup_campaigns`.`id` = ".$array["campaign"];
 			}
 		}
-		$query .= " GROUP BY `jos_emundus_setup_programmes`.`code`";
+        $query .= " GROUP BY `jos_emundus_setup_programmes`.`code` ORDER BY `jos_emundus_setup_programmes`.`label`";
 		
         try {
 			$db->setQuery($query);

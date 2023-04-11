@@ -2347,4 +2347,74 @@ class EmundusHelperUpdate
 
 		return $updated;
 	}
+
+    public static function addWidget($label,$params = null){
+        $result = ['status' => false, 'message' => ''];
+
+        if (empty($label)) {
+            $result['message'] = 'CREATING WIDGET : Please specify a widget label.';
+            return $result;
+        }
+
+        if (empty($params)) {
+            $result['message'] = 'CREATING WIDGET : Please specify widget parameters.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $inserting_datas = array();
+
+            foreach ($params as $key => $value) {
+                $inserting_datas[] = $db->quoteName($key) . ' = ' . $db->quote($value);
+            }
+
+            $query->insert($db->quoteName('#__emundus_widgets'))
+                ->columns($db->quoteName(array_keys($inserting_datas)))
+                ->values(implode(',',$db->quote(array_values($inserting_datas))));
+            $db->setQuery($query);
+            $result['status'] = $db->execute();
+        } catch (Exception $e) {
+            $result['message'] = 'CREATING WIDGET : Error : ' . $e->getMessage();
+        }
+
+        return $result;
+    }
+
+    public static function updateWidget($label,$params = null){
+        $result = ['status' => false, 'message' => ''];
+
+        if (empty($label)) {
+            $result['message'] = 'UPDATING WIDGET : Please specify a widget label.';
+            return $result;
+        }
+
+        if (empty($params)) {
+            $result['message'] = 'UPDATING WIDGET : Please specify widget parameters.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $fields = array();
+
+            foreach ($params as $key => $value) {
+                $fields[] = $db->quoteName($key) . ' = ' . $db->quote($value);
+            }
+
+            $query->update($db->quoteName('#__emundus_widgets'))
+                ->set($fields)
+                ->where($db->quoteName('label') . ' = ' . $db->quote($label));
+            $db->setQuery($query);
+            $result['status'] = $db->execute();
+        } catch (Exception $e) {
+            $result['message'] = 'UPDATING WIDGET : Error : ' . $e->getMessage();
+        }
+
+        return $result;
+    }
 }

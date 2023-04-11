@@ -103,8 +103,11 @@ class EmundusControllerUsers extends JControllerLegacy {
 			$password = $h_users->generateStrongPassword();
 			$user->password = md5($password);
 		}
-		$user->registerDate = date('Y-m-d H:i:s');
-		$user->lastvisitDate = date('Y-m-d H:i:s');
+        $now = new DateTime();
+        $now->setTimezone(new DateTimeZone('UTC'));
+        $now = $now->format('Y-m-d H:i:s');
+        $user->registerDate = $now;
+        $user->lastvisitDate = null;
 		$user->groups = array($jgr);
 		$user->block = 0;
 

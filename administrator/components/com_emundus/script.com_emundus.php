@@ -1005,6 +1005,306 @@ if (password_value.match(regex) != null) {
 				}
 			}
 
+            if (version_compare($cache_version, '1.35.9', '<=') || $firstrun) {
+                EmundusHelperUpdate::addColumn('jos_messages', 'email_cc', 'TEXT');
+                EmundusHelperUpdate::addColumn('jos_emundus_logs', 'timestamp', 'TIMESTAMP', null, 0);
+
+                $dashboard_files_by_status_params = array(
+                    'eval' => 'php|$db = JFactory::getDbo();
+$query = $db->getQuery(true);
+
+try {
+    $query->select(\'*\')
+        ->from($db->quoteName(\'jos_emundus_setup_status\'))
+        ->order(\'ordering\');
+    $db->setQuery($query);
+    $status = $db->loadObjectList();
+
+    $datas = [];
+
+    foreach ($status as $statu) {
+        $file = new stdClass;
+        $file->label = $statu->value;
+
+        $colors = array(
+            \'lightpurple\' => \'#D444F1\',
+            \'purple\' => \'#7959F8\',
+            \'darkpurple\' => \'#663399\',
+            \'lightblue\' => \'#0BA4EB\',
+            \'blue\' => \'#2E90FA\',
+            \'darkblue\' => \'#2970FE\',
+            \'lightgreen\' => \'#15B79E\',
+            \'green\' => \'#238C69\',
+            \'darkgreen\' => \'#20835F\',
+            \'lightyellow\' => \'#5D5B00\',
+            \'yellow\' => \'#EAA907\',
+            \'darkyellow\' => \'#F79009\',
+            \'lightorange\' => \'#C87E00\',
+            \'orange\' => \'#EF681F\',
+            \'darkorange\' => \'#FF4305\',
+            \'lightred\' => \'#EC644B\',
+            \'red\' => \'#DB333E\',
+            \'darkred\' => \'#DB333E\',
+            \'lightpink\' => \'#B04748\',
+            \'pink\' => \'#EE46BC\',
+            \'darkpink\' => \'#F53D68\',
+            \'default\' => \'#5E6580\'
+        );
+
+        $file->color = $colors[$statu->class];
+
+        $query->clear()
+            ->select(\'COUNT(ecc.id) as files\')
+            ->from($db->quoteName(\'#__emundus_campaign_candidature\',\'ecc\'))
+            ->leftJoin($db->quoteName(\'#__emundus_setup_campaigns\',\'esc\').\' ON \'.$db->quoteName(\'esc.id\').\' = \'.$db->quoteName(\'ecc.campaign_id\'))
+            ->where($db->quoteName(\'ecc.status\') . \' = \' . $db->quote($statu->step))
+            ->andWhere($db->quoteName(\'ecc.published\') . \' = \' . $db->quote(1));
+
+        $db->setQuery($query);
+        $file->value = $db->loadResult();
+        $datas[] = $file;
+    }
+
+	$dataSource = new stdClass;
+	$dataSource->chart = new stdClass;
+	$dataSource->chart = array(
+		\'caption\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_CAPTION"),
+		\'xaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_STATUS"),
+		\'yaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_NUMBER"),
+		\'animation\' => 1,
+		\'numberScaleValue\' => "1",
+		\'numDivLines\' => 1,
+		\'numbersuffix\'=> "",
+		\'theme\'=> "fusion"
+	);
+	$dataSource->data = $datas;
+	return $dataSource;
+} catch (Exception $e) {
+	return array(\'dataset\' => \'\');
+}'
+                );
+
+                $dashboard_users_by_month_params = array(
+                    'eval' => 'php|$db = JFactory::getDbo();
+$query = $db->getQuery(true);
+$offset = JFactory::getApplication()->get(\'offset\', \'UTC\');
+$now = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone(\'UTC\'));
+$now = $now->setTimezone(new DateTimeZone($offset));
+
+try {
+    $users = array();
+    $days = array();
+    $users_by_day = array();
+
+    $query->select(\'COUNT(id) as users\')
+        ->from($db->quoteName(\'#__users\'));
+    $db->setQuery($query);
+    $totalUsers = $db->loadResult();
+
+    $dateTime = $now;
+
+    for ($d = 1;$d < 31;$d++){
+        $user = new stdClass;
+        $day = new stdClass;
+        $query->clear()
+            ->select(\'COUNT(id) as users\')
+            ->from($db->quoteName(\'#__users\'))
+            ->where($db->quoteName(\'id\') . \' != \' . $db->quote(62))
+            ->andWhere(\'YEAR(registerDate) = \' . $db->quote($dateTime->format(\'Y\')))
+            ->andWhere(\'MONTH(registerDate) = \' . $db->quote($dateTime->format(\'m\')))
+            ->andWhere(\'DAY(registerDate) = \' . $db->quote($dateTime->format(\'j\')));
+
+        $db->setQuery($query);
+        $user = (int) $db->loadResult();
+        $day = $dateTime->format(\'d\') . \'/\' . $dateTime->format(\'m\');
+        $users[] = $user;
+        $days[] = $day;
+        $users_by_day[] = array(\'label\' => $day, \'value\' => $user);
+
+        $dateTime->modify(\'-1 day\');
+    }
+
+    $dataSource = new stdClass;
+    $dataSource->chart = new stdClass;
+    $dataSource->chart = array(
+        \'caption\'=> JText::_("COM_EMUNDUS_DASHBOARD_USERS_BY_MONTH_CAPTION"),
+        \'subcaption\'=> JText::_("COM_EMUNDUS_DASHBOARD_USERS_TOTAL") . $totalUsers . JText::_("COM_EMUNDUS_DASHBOARD_USERS"),
+        \'xaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_USERS_DAYS"),
+        \'yaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_USERS_NUMBER"),
+        \'animation\' => 1,
+        \'yAxisMinValue\'=> 0,
+        \'setAdaptiveYMin\'=> 0,
+        \'adjustDiv\'=> 0,
+        \'yAxisValuesStep\'=> 10,
+        \'numbersuffix\'=> "",
+        \'theme\'=> "fusion"
+    );
+    $dataSource->categories = [];
+    $dataSource->categories[] = array(
+        \'category\' => $days
+    );
+    $dataSource->data = array_reverse($users_by_day);
+    return $dataSource;
+} catch (Exception $e) {
+	return array(\'users\' => \'\', \'days\' => \'\', \'total\' => 0);
+}'
+                );
+
+                $dashboard_files_associated_by_status_params = array(
+                    'eval' => 'php|$db = JFactory::getDbo();
+$query = $db->getQuery(true);
+
+$user_id = JFactory::getUser()->id;
+
+try {
+    $query->select(\'*\')
+        ->from($db->quoteName(\'jos_emundus_setup_status\'))
+        ->order(\'ordering\');
+    $db->setQuery($query);
+    $status = $db->loadObjectList();
+
+    $datas = [];
+
+    foreach ($status as $statu) {
+        $file = new stdClass;
+        $file->label = $statu->value;
+
+        $colors = array(
+            \'lightpurple\' => \'#D444F1\',
+            \'purple\' => \'#7959F8\',
+            \'darkpurple\' => \'#663399\',
+            \'lightblue\' => \'#0BA4EB\',
+            \'blue\' => \'#2E90FA\',
+            \'darkblue\' => \'#2970FE\',
+            \'lightgreen\' => \'#15B79E\',
+            \'green\' => \'#238C69\',
+            \'darkgreen\' => \'#20835F\',
+            \'lightyellow\' => \'#5D5B00\',
+            \'yellow\' => \'#EAA907\',
+            \'darkyellow\' => \'#F79009\',
+            \'lightorange\' => \'#C87E00\',
+            \'orange\' => \'#EF681F\',
+            \'darkorange\' => \'#FF4305\',
+            \'lightred\' => \'#EC644B\',
+            \'red\' => \'#DB333E\',
+            \'darkred\' => \'#DB333E\',
+            \'lightpink\' => \'#B04748\',
+            \'pink\' => \'#EE46BC\',
+            \'darkpink\' => \'#F53D68\',
+            \'default\' => \'#5E6580\'
+        );
+
+        $file->color = $colors[$statu->class];
+
+        $query->clear()
+            ->select(\'distinct eua.fnum as files\')
+            ->from($db->quoteName(\'#__emundus_users_assoc\',\'eua\'))
+            ->leftJoin($db->quoteName(\'#__emundus_campaign_candidature\',\'cc\').\' ON \'.$db->quoteName(\'cc.fnum\').\' = \'.$db->quoteName(\'eua.fnum\'))
+            ->where($db->quoteName(\'cc.status\').\' = \'.$db->quote($statu->step))
+			->andWhere($db->quoteName(\'cc.published\').\' = \'.$db->quote(1))
+            ->andWhere($db->quoteName(\'eua.user_id\').\' = \'.$db->quote($user_id));
+
+        $db->setQuery($query);
+        $files_user_assoc = $db->loadColumn();
+
+        $query->clear()
+            ->select(\'distinct ega.fnum as files\')
+            ->from($db->quoteName(\'#__emundus_group_assoc\',\'ega\'))
+            ->leftJoin($db->quoteName(\'#__emundus_campaign_candidature\',\'cc\').\' ON \'.$db->quoteName(\'cc.fnum\').\' = \'.$db->quoteName(\'ega.fnum\'))
+            ->leftJoin($db->quoteName(\'#__emundus_groups\',\'eg\').\' ON \'.$db->quoteName(\'eg.group_id\').\' = \'.$db->quoteName(\'ega.group_id\'))
+            ->where($db->quoteName(\'cc.status\').\' = \'.$db->quote($statu->step))
+			->andWhere($db->quoteName(\'cc.published\').\' = \'.$db->quote(1))
+            ->andWhere($db->quoteName(\'eg.user_id\').\' = \'.$db->quote($user_id));
+
+        $db->setQuery($query);
+        $files_group_assoc = $db->loadColumn();
+
+        $query->clear()
+            ->select(\'distinct cc.fnum as files\')
+            ->from($db->quoteName(\'#__emundus_groups\',\'eg\'))
+            ->leftJoin($db->quoteName(\'#__emundus_setup_groups_repeat_course\',\'esgrc\').\' ON \'.$db->quoteName(\'esgrc.parent_id\').\' = \'.$db->quoteName(\'eg.group_id\'))
+            ->leftJoin($db->quoteName(\'#__emundus_setup_campaigns\', \'esc\').\' ON \'.$db->quoteName(\'esc.training\').\' = \'.$db->quoteName(\'esgrc.course\'))
+            ->leftJoin($db->quoteName(\'#__emundus_campaign_candidature\',\'cc\').\' ON \'.$db->quoteName(\'cc.campaign_id\').\' = \'.$db->quoteName(\'esc.id\'))
+            ->where($db->quoteName(\'cc.status\').\' = \'.$db->quote($statu->step))
+			->andWhere($db->quoteName(\'cc.published\').\' = \'.$db->quote(1))
+            ->andWhere($db->quoteName(\'eg.user_id\').\' = \'.$db->quote($user_id));
+
+        $db->setQuery($query);
+        $files_group_programs = $db->loadColumn();
+
+        $file->value = sizeof(array_unique(array_merge($files_user_assoc,$files_group_assoc,$files_group_programs)));
+        $datas[] = $file;
+    }
+
+	$dataSource = new stdClass;
+	$dataSource->chart = new stdClass;
+	$dataSource->chart = array(
+		\'caption\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_ASSOCIATED_BY_STATUS_CAPTION"),
+		\'xaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_STATUS"),
+		\'yaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_NUMBER"),
+		\'animation\' => 1,
+		\'numberScaleValue\' => "1",
+		\'numDivLines\' => 1,
+		\'numbersuffix\'=> "",
+		\'theme\'=> "fusion"
+	);
+	$dataSource->data = $datas;
+	return $dataSource;
+} catch (Exception $e) {
+	return array(\'dataset\' => \'\');
+}'
+                );
+
+                $dashboard_files_by_tag_params = array(
+                    'eval' => 'php|$db = JFactory::getDbo();
+$query = $db->getQuery(true);
+
+try {
+	$query->select(\'*\')
+		->from($db->quoteName(\'jos_emundus_setup_action_tag\'));
+	$db->setQuery($query);
+	$tags = $db->loadObjectList();
+
+	$datas = array();
+
+	foreach ($tags as $tag) {
+		$file = new stdClass;
+		$file->label = $tag->label;
+
+		$query->clear()
+			->select(\'COUNT(distinct eta.fnum) as files\')
+			->from($db->quoteName(\'jos_emundus_tag_assoc\',\'eta\'))
+			->where($db->quoteName(\'eta.id_tag\').\' = \'.$db->quote($tag->id));
+
+		$db->setQuery($query);
+		$file->value = $db->loadResult();
+		$datas[] = $file;
+	}
+
+	$dataSource = new stdClass;
+	$dataSource->chart = new stdClass;
+	$dataSource->chart = array(
+		\'caption\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_TAG_CAPTION"),
+		\'xaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_TAGS"),
+		\'yaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_TAG_NUMBER"),
+		\'animation\' => 1,
+		\'numbersuffix\'=> "",
+		\'theme\'=> "fusion"
+	);
+	$dataSource->data = $datas;
+	return $dataSource;
+} catch (Exception $e) {
+	return array(\'dataset\' => \'\');
+}'
+                );
+
+                EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS',$dashboard_files_by_status_params);
+                EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_USERS_BY_MONTH',$dashboard_users_by_month_params);
+                EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_FILES_ASSOCIATED_BY_STATUS',$dashboard_files_associated_by_status_params);
+                EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_FILES_BY_TAG',$dashboard_files_by_tag_params);
+
+            }
+
 
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();

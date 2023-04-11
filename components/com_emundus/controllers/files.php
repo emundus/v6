@@ -3036,7 +3036,8 @@ class EmundusControllerFiles extends JControllerLegacy
 
 	    $files = [];
         if (!empty($idFiles)) {
-            $idFiles = array_unique($idFiles);
+            $idFiles_str  = $jinput->getString('ids', '');
+            $idFiles = !empty($idfiles_str) ? explode(',', $idFiles_str) : [];
             $m_files = $this->getModel('Files');
             $files = $m_files->getAttachmentsById($idFiles);
         }
