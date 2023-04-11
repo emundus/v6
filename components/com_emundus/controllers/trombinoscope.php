@@ -137,6 +137,15 @@ class EmundusControllerTrombinoscope extends EmundusController {
         $nb_cell = 0;
         $tab_body = array();
         $fnumInfo = $m_files->getFnumInfos($fnums[0]['fnum']);
+
+        $template = preg_replace_callback('/< *img[^>]*src *= *["\']?([^"\']*)/i', function ($match) {
+            $src = $match[1];
+            if (substr($src, 0, 1) === '/') {
+                $src = substr($src, 1);
+            }
+            return '<img src="'.$src;
+        }, $template);
+
         foreach ($fnums as $fnum) {
             $post = [
                 'FNUM' => $fnum['fnum'],
