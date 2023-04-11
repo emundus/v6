@@ -65,7 +65,7 @@ $user = $this->userid;
                     <label class="control-label em-filter-label"><?= JText::_('PROFILE_FORM'); ?></label>
                 </div>
 
-                <select class="chzn-select em-chosen-select" id="select_profile">
+                <select class="chzn-select em-chosen-select" id="select_profile" onchange="updateProfileForm()">
                     <option value="<?= $defaultpid->pid; ?>" selected style=""> <?= $defaultpid->label; ?></option>
                     <?php foreach($pids as $pid) : ?>
                         <optgroup class="step_group_profile" label ="<?= strtoupper($pid->lbl) ?>" style="">
@@ -106,42 +106,5 @@ $user = $this->userid;
 
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
-    })
-
-    $('#select_profile').on('change', function() {
-        /* get the selected profile id*/
-        var profile = $(this).val();      /* or just $(this).val() */
-
-        $('#show_profile').empty();
-        $('#show_profile').before('<div id="loading"><img src="'+loading+'" alt="loading"/></div>');
-
-        /* all other options will be normal */
-        $('#select_profile option').each(function() {
-            if($(this).attr('value') !== profile) {
-                $(this).prop('disabled', false);
-                $(this).css('font-style', 'unset');
-            }
-        })
-
-        /* call to ajax */
-        $.ajax({
-            type: 'post',
-            url: 'index.php?option=com_emundus&controller=application&task=getform',
-            dataType: 'json',
-            data: { profile: profile, user: $('#user_hidden').attr('value'), fnum: $('#fnum_hidden').attr('value') },
-            success: function(result) {
-                var form = result.data;
-
-                $('#loading').remove();
-
-                if(form) {
-                    $('#show_profile').append(form.toString());
-                    $('#download-pdf').attr('href', 'index.php?option=com_emundus&task=pdf&user=' + $('#user_hidden').attr('value') + '&fnum=' + $('#fnum_hidden').attr('value') + '&profile=' + profile);
-                }
-
-            }, error: function(jqXHR) {
-                console.log(jqXHR.responseText);
-            }
-        })
     })
 </script>
