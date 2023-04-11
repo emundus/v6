@@ -1,27 +1,25 @@
 <template>
   <div id="form-builder-page">
     <div class="em-flex-row em-flex-space-between">
-	    <span
-			    class="em-font-size-24 em-font-weight-800 editable-data"
+	    <span class="em-font-size-24 em-font-weight-800 editable-data"
 			    ref="pageTitle"
 			    @focusout="updateTitle"
 			    @keyup.enter="updateTitleKeyup"
 			    @keydown="(event) => checkMaxMinlength(event, 50, 3)"
 			    contenteditable="true"
 			    :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
-			    v-html="translate(title)"
-	    ></span>
-	    <span class="material-icons-outlined em-pointer" :title="translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')" @click="$emit('open-create-model', page.id)">save_as</span>
+			    v-html="translate(title)"></span>
+	    <span class="material-icons-outlined em-pointer"
+	          :title="translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')"
+	          @click="$emit('open-create-model', page.id)">post_add</span>
     </div>
-    <span
-      class="description editable-data"
+    <span class="description editable-data"
       id="pageDescription"
       ref="pageDescription"
       v-html="description"
       @focusout="updateDescription"
       contenteditable="true"
-      :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_INTRO_ADD')"
-    ></span>
+      :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_INTRO_ADD')"></span>
 
     <div class="form-builder-page-sections">
       <button v-if="sections.length > 0" id="add-section" class="em-secondary-button top" @click="addSection()">

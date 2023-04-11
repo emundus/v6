@@ -96,6 +96,7 @@
 	                  @delete-page="selectedPage = pages[0].id;"
 	                  @open-page-create="principalContainer = 'create-page';"
 	                  @reorder-pages="onReorderedPages"
+	                  @open-create-model="onOpenCreateModel"
 	              ></form-builder-pages>
 	              <hr>
 	              <form-builder-documents
@@ -367,6 +368,8 @@ export default {
 			if (pageId > 0) {
 				this.selectedPage = pageId;
 				this.showInRightPanel = 'create-model';
+			} else {
+				console.error('No page id provided');
 			}
 	  },
     onOpenCreateDocument(mandatory = "1")
