@@ -148,10 +148,9 @@ class EmundusControllerProgramme extends JControllerLegacy {
 	}
 
     public function getallprogram() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+	    $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+	    if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $jinput = JFactory::getApplication()->input;
 
             $filter = $jinput->getString('filter');
@@ -163,12 +162,12 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $programs = $this->m_programme->getAllPrograms($lim, $page, $filter, $sort, $recherche);
 
             if (count((array)$programs) > 0) {
-                $tab = array('status' => 1, 'msg' => JText::_('PROGRAMS_RETRIEVED'), 'data' => $programs);
+	            $response = ['status' => true, 'msg' => JText::_('PROGRAMS_RETRIEVED'), 'data' => $programs];
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_PROGRAMS'), 'data' => $programs);
+	            $response['msg'] = JText::_('ERROR_CANNOT_RETRIEVE_PROGRAMS');
             }
         }
-        echo json_encode((object)$tab);
+        echo json_encode((object)$response);
         exit;
     }
 

@@ -270,6 +270,8 @@ export default {
 										total: Math.ceil(response.data.data.count / this.numberOfItemsToDisplay)
 									}
 								}
+							} else {
+								console.error('Failed to get data : ' + response.data.data.msg);
 							}
 							this.loading.tabs = false;
 							this.loading.items = false;

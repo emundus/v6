@@ -52,19 +52,26 @@ class EmundusModelProgramme extends JModelList {
      * @since version v6
      */
     public function getAssociatedProgrammes($user) {
-        $query = 'select DISTINCT sc.training
-                  from #__emundus_users_assoc as ua
-                  LEFT JOIN #__emundus_campaign_candidature as cc ON cc.fnum=ua.fnum
-                  left join #__emundus_setup_campaigns as sc on sc.id = cc.campaign_id
-                  where ua.user_id='.$user;
-        try {
-            $db = JFactory::getDbo();
-            $db->setQuery($query);
-            return $db->loadColumn();
-        } catch(Exception $e) {
-            error_log($e->getMessage(), 0);
-            return false;
-        }
+		$associated_programs = [];
+
+		if (!empty($user)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query->select('DISTINCT sc.training')
+				->from($db->quoteName('#__emundus_users_assoc', 'ua'))
+				->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'cc').' ON '.$db->quoteName('cc.fnum').'='.$db->quoteName('ua.fnum'))
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'sc').' ON '.$db->quoteName('sc.id').'='.$db->quoteName('cc.campaign_id'))
+				->where($db->quoteName('ua.user_id').'='.$user);
+
+			try {
+				$db->setQuery($query);
+				$associated_programs = $db->loadColumn();
+			} catch(Exception $e) {
+				JLog::add('Error getting associated programmes in model/programme at query : '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $associated_programs;
     }
 
     /**
@@ -105,7 +112,7 @@ class EmundusModelProgramme extends JModelList {
     /**
      * @param $published  int     get published or unpublished programme
      * @param $codeList   array   array of IN and NOT IN programme code to get
-     * @return array
+     * @return mixed
      * get list of declared programmes
      * @since version v6
      */
@@ -472,12 +479,21 @@ class EmundusModelProgramme extends JModelList {
                 ->order($sortDb.$sort);
 
             try {
+	            $db->setQuery($query);
+				$all_programs['count'] = count($db->loadObjectList());
+
                 if(empty($lim)) {
                     $db->setQuery($query, $offset);
                 } else {
                     $db->setQuery($query, $offset, $limit);
                 }
-                $all_programs =  $db->loadObjectList();
+
+                $programs = $db->loadObjectList();
+				foreach ($programs as $key => $program) {
+					$programs[$key]->label = ['fr' => JText::_($program->label), 'en' => JText::_($program->label)];
+				}
+				
+				$all_programs['datas'] = $programs;
             } catch(Exception $e) {
                 JLog::add('component/com_emundus/models/program | Error at getting list of programs : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             }

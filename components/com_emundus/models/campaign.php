@@ -889,9 +889,14 @@ class EmundusModelCampaign extends JModelList {
 								'display' => 'table'
 							],
 							[
+								'value' => JText::_('COM_EMUNDUS_DASHBOARD_CAMPAIGN_FROM') . ' ' . $start_date . ' ' . JText::_('COM_EMUNDUS_DASHBOARD_CAMPAIGN_TO') . ' ' . $end_date,
+								'classes' => 'em-font-size-14 em-neutral-700-color',
+								'display' => 'blocs'
+							],
+							[
 								'key' => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
 								'value' => $campaign->published ? JText::_('PUBLISHED') : JText::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
-								'classes' => $campaign->published ? 'label label-lightgreen' : 'label label-default',
+								'classes' => $campaign->published ? 'label label-lightgreen em-p-5-12 em-font-weight-600' : 'label label-default em-p-5-12 em-font-weight-600',
 								'display' => 'all'
 							],
 							[
@@ -901,13 +906,8 @@ class EmundusModelCampaign extends JModelList {
 								'display' => 'table'
 							],
 							[
-								'value' => JText::_('COM_EMUNDUS_DASHBOARD_CAMPAIGN_FROM') . ' ' . $start_date . ' ' . JText::_('COM_EMUNDUS_DASHBOARD_CAMPAIGN_TO') . ' ' . $end_date,
-								'classes' => '',
-								'display' => 'blocs'
-							],
-							[
 								'value' => $campaign->nb_files . ' ' . ( $campaign->nb_files > 1 ? JText::_('COM_EMUNDUS_FILES_FILES') : JText::_('COM_EMUNDUS_FILES_FILE')),
-								'classes' => 'label label-default',
+								'classes' => 'label label-default em-p-5-12 em-font-weight-600',
 								'display' => 'blocs'
 							],
 						];
