@@ -491,6 +491,14 @@ class EmundusModelProgramme extends JModelList {
                 $programs = $db->loadObjectList();
 				foreach ($programs as $key => $program) {
 					$programs[$key]->label = ['fr' => JText::_($program->label), 'en' => JText::_($program->label)];
+					$programs[$key]->additional_columns = [
+						[
+							'key' => JText::_('COM_EMUNDUS_ONBOARD_PROGCODE'),
+							'value' => $program->code,
+							'classes' => '',
+							'display' => 'all'
+						],
+					];
 				}
 				
 				$all_programs['datas'] = $programs;

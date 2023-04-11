@@ -1236,6 +1236,23 @@ class EmundusModelsettings extends JModelList {
 				} else {
 					$lists = json_decode($data->default, true);
 				}
+
+				foreach($lists as $lk => $list) {
+					$list['title'] = JText::_($list['title']);
+
+					foreach($list['tabs'] as $tk => $tab) {
+						$tab['title'] = JText::_($tab['title']);
+
+						foreach($tab['actions'] as $ak => $action) {
+							$action['label'] = JText::_($action['label']);
+							$tab['actions'][$ak] = $action;
+						}
+
+						$list['tabs'][$tk] = $tab;
+					}
+
+					$lists[$lk] = $list;
+				}
 			}
 		} catch (Exception $e) {
 			JLog::add('Error getting onboarding lists in model at query : '. $e->getMessage(), JLog::ERROR, 'com_emundus.error');
