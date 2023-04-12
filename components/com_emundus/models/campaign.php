@@ -964,60 +964,75 @@ class EmundusModelCampaign extends JModelList {
      * Delete a campaign
      *
      * @param $data
-     *
-     * @return false|string
+     * @param bool $force_delete - if true, delete campaign even if it has files, and delete files too
+     * Force delete is only available for super admin users because it can be dangerous
+     * @return bool
      *
      * @since version 1.0
      */
-    public function deleteCampaign($data) {
-        $query = $this->_db->getQuery(true);
+    public function deleteCampaign($data, $force_delete = false) {
+		$deleted = false;
 
-        // TODO REPLACE BY TRANSLATION MODEL
-        $falang = JModelLegacy::getInstance('falang', 'EmundusModel');
+        if (!empty($data)) {
+	        if (!is_array($data)) {
+				$data = [$data];
+	        }
+			$query = $this->_db->getQuery(true);
+			$falang = JModelLegacy::getInstance('falang', 'EmundusModel');
 
-        if (count($data) > 0) {
             try {
                 $dispatcher = JEventDispatcher::getInstance();
                 $dispatcher->trigger('onBeforeCampaignDelete', $data);
                 $dispatcher->trigger('callEventHandler', ['onBeforeCampaignDelete', ['campaign' => $data]]);
 
                 foreach (array_values($data) as $id) {
-                    $falang->deleteFalang($id,'emundus_setup_campaigns','label');
+                    $falang->deleteFalang($id, 'emundus_setup_campaigns','label');
                 }
 
-                $cc_conditions = [
-                    $this->_db->quoteName('campaign_id').' IN ('.implode(", ", array_values($data)).')'
-                ];
+				if ($force_delete === true && EmundusHelperAccess::asAdministratorAccessLevel(JFactory::getUser()->id)) {
+					$query->delete($this->_db->quoteName('#__emundus_campaign_candidature'))
+						->where($this->_db->quoteName('campaign_id').' IN ('.implode(", ", array_values($data)).')');
 
-                $query->delete($this->_db->quoteName('#__emundus_campaign_candidature'))
-                    ->where($cc_conditions);
+					$this->_db->setQuery($query);
+					$this->_db->execute();
 
-                $this->_db->setQuery($query);
-                $this->_db->execute();
+					$query->clear()
+						->delete($this->_db->quoteName('#__emundus_setup_campaigns'))
+						->where($this->_db->quoteName('id').' IN ('.implode(", ", array_values($data)).')');
 
-                $sc_conditions = [
-                    $this->_db->quoteName('id').' IN ('.implode(", ", array_values($data)).')'
-                ];
+					$this->_db->setQuery($query);
+					$deleted = $this->_db->execute();
+				} else {
+					// delete only if there are no files attached to the campaign
+					$query->clear()
+						->select('count(*)')
+						->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+						->where($this->_db->quoteName('campaign_id').' IN ('.implode(", ", array_values($data)).')');
 
-                $query->clear()
-                    ->delete($this->_db->quoteName('#__emundus_setup_campaigns'))
-                    ->where($sc_conditions);
+					$this->_db->setQuery($query);
+					$nb_files = $this->_db->loadResult();
 
-                $this->_db->setQuery($query);
-                $res = $this->_db->execute();
+					if ($nb_files < 1) {
+						$query->clear()
+							->update($this->_db->quoteName('#__emundus_setup_campaigns'))
+							->set($this->_db->quoteName('published').' = 0')
+							->where($this->_db->quoteName('id').' IN ('.implode(", ", array_values($data)).')');
 
-                if ($res) {
+						$this->_db->setQuery($query);
+						$deleted = $this->_db->execute();
+					}
+				}
+
+                if ($deleted) {
                     $dispatcher->trigger('onAfterCampaignDelete', $data);
                     $dispatcher->trigger('callEventHandler', ['onAfterCampaignDelete', ['campaign' => $data]]);
                 }
-                return $res;
             } catch (Exception $e) {
                 JLog::add('component/com_emundus/models/campaign | Error when delete campaigns : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
-                return $e->getMessage();
             }
-        } else {
-            return false;
         }
+
+		return $deleted;
     }
 
     /**
