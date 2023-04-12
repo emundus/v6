@@ -276,82 +276,74 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function deleteprogram() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+	    $response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+
+	    if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $jinput = JFactory::getApplication()->input;
-
             $data = $jinput->getInt('id');
-
             $result = $this->m_programme->deleteProgram($data);
 
             if ($result) {
-                $tab = array('status' => 1, 'msg' => JText::_('PROGRAMS_ADDED'), 'data' => $result);
+	            $response = ['status' => true, 'msg' => JText::_('PROGRAMS_ADDED'), 'data' => $result];
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_PROGRAMS'), 'data' => $result);
+	            $response['msg'] = JText::_('ERROR_CANNOT_ADD_PROGRAMS');
             }
         }
-        echo json_encode((object)$tab);
+
+        echo json_encode((object)$response);
         exit;
     }
 
     public function unpublishprogram() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+	    $response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+
+	    if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $jinput = JFactory::getApplication()->input;
-
             $data = $jinput->getInt('id');
-
             $result = $this->m_programme->unpublishProgram($data);
 
             if ($result) {
-                $tab = array('status' => 1, 'msg' => JText::_('PROGRAMS_ADDED'), 'data' => $result);
+	            $response = array('status' => 1, 'msg' => JText::_('PROGRAMS_ADDED'), 'data' => $result);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_PROGRAMS'), 'data' => $result);
+	            $response = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_PROGRAMS'), 'data' => $result);
             }
         }
-        echo json_encode((object)$tab);
+        echo json_encode((object)$response);
         exit;
     }
 
     public function publishprogram() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $jinput = JFactory::getApplication()->input;
+	    $response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
 
+	    if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+            $jinput = JFactory::getApplication()->input;
             $data = $jinput->getInt('id');
 
             $result = $this->m_programme->publishProgram($data);
 
             if ($result) {
-                $tab = array('status' => 1, 'msg' => JText::_('PROGRAM_PUBLISHED'), 'data' => $result);
+	            $response = array('status' => 1, 'msg' => JText::_('PROGRAM_PUBLISHED'), 'data' => $result);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_PUBLISH_PROGRAM'), 'data' => $result);
+	            $response = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_PUBLISH_PROGRAM'), 'data' => $result);
             }
         }
-        echo json_encode((object)$tab);
+        echo json_encode((object)$response);
         exit;
     }
 
     public function getprogramcategories() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+	    $response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $program = $this->m_programme->getProgramCategories();
 
             if (!empty($program)) {
-                $tab = array('status' => 1, 'msg' => JText::_('PROGRAMS_RETRIEVED'), 'data' => $program);
+	            $response = array('status' => true, 'msg' => JText::_('PROGRAMS_RETRIEVED'), 'data' => $program);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_PROGRAMS'), 'data' => $program);
+	            $response = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_PROGRAMS'), 'data' => $program);
             }
         }
-        echo json_encode((object)$tab);
+        echo json_encode((object)$response);
         exit;
     }
 

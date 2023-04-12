@@ -495,9 +495,27 @@ class EmundusModelProgramme extends JModelList {
 						[
 							'key' => JText::_('COM_EMUNDUS_ONBOARD_PROGCODE'),
 							'value' => $program->code,
-							'classes' => '',
+							'classes' => 'em-font-size-14 em-neutral-700-color',
 							'display' => 'all'
 						],
+						[
+							'key' => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
+							'value' => $program->published ? JText::_('PUBLISHED') : JText::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
+							'classes' => $program->published ? 'label label-lightgreen em-p-5-12 em-font-weight-600' : 'label label-default em-p-5-12 em-font-weight-600',
+							'display' => 'all'
+						],
+						[
+							'key' => JText::_('COM_EMUNDUS_ONBOARD_PROGRAM_APPLY_ONLINE'),
+							'value' => $program->apply_online ? JText::_('COM_EMUNDUS_ONBOARD_PROGRAM_APPLY_ONLINE') : JText::_(''),
+							'classes' => $program->apply_online ? 'label label-lightgreen em-p-5-12 em-font-weight-600' : 'hidden',
+							'display' => 'blocs'
+						],
+						[
+							'key' => JText::_('COM_EMUNDUS_ONBOARD_PROGRAM_APPLY_ONLINE'),
+							'value' => $program->apply_online ? JText::_('JYES') : JText::_('JNO'),
+							'classes' => '',
+							'display' => 'table'
+						]
 					];
 				}
 				
@@ -769,58 +787,58 @@ class EmundusModelProgramme extends JModelList {
      * @since version 1.0
      */
     public function deleteProgram($data) {
+		$deleted = false;
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        if (count($data) > 0) {
+        if (!empty($data)) {
+			if (!is_array($data)) {
+				$data = [$data];
+			}
 
             // Call plugin event before we delete the programme
             JPluginHelper::importPlugin('emundus');
             $dispatcher = JEventDispatcher::getInstance();
             $dispatcher->trigger('callEventHandler', ['onBeforeProgramDelete', ['data' => $data]]);
 
+
+	        $db = JFactory::getDbo();
+	        $query = $db->getQuery(true);
+
             try {
-                $query->select($db->qn('sc.id'))
-                    ->from($db->qn('#__emundus_setup_campaigns', 'sc'))
-                    ->leftJoin($db->quoteName('#__emundus_setup_programmes', 'sp').' ON '.$db->quoteName('sc.training').' LIKE '.$db->quoteName('sp.code'))
-                    ->where($db->quoteName('sp.id') . ' IN (' . implode(", ", array_values($data)) . ')');
+	            $query->select($db->qn('sc.id'))
+		            ->from($db->qn('#__emundus_setup_campaigns', 'sc'))
+		            ->leftJoin($db->quoteName('#__emundus_setup_programmes', 'sp').' ON '.$db->quoteName('sc.training').' LIKE '.$db->quoteName('sp.code'))
+		            ->where($db->quoteName('sp.id') . ' IN (' . implode(", ", array_values($data)) . ')');
 
-                $db->setQuery($query);
-                $campaigns = $db->loadColumn();
+	            $db->setQuery($query);
+	            $campaigns = $db->loadColumn();
 
-                $m_campaign = new EmundusModelCampaign;
+	            if (!empty($campaigns)) {
+		            require_once (JPATH_SITE. '/components/com_emundus/models/campaign.php');
+		            $m_campaign = new EmundusModelCampaign;
+		            $campaign_deleted = $m_campaign->deleteCampaign($campaigns);
 
-                $m_campaign->deleteCampaign($campaigns);
+		            if (!$campaign_deleted) {
+			            JLog::add('Campaign has not been deleted', JLog::ERROR, 'com_emundus');
+		            }
+	            }
 
-                $conditions = array(
-                    $db->quoteName('id') . ' IN (' . implode(", ",array_values($data)) . ')'
-                );
+	            $query->clear()
+		            ->delete($db->quoteName('#__emundus_setup_programmes'))
+		            ->where(array($db->quoteName('id') . ' IN (' . implode(", ", array_values($data)) . ')'));
 
-                $query->clear()
-                    ->delete($db->quoteName('#__emundus_setup_programmes'))
-                    ->where($conditions);
+	            $db->setQuery($query);
+	            $deleted = $db->execute();
 
-                $db->setQuery($query);
-                $res = $db->execute();
-
-                if ($res) {
-                    // Call plugin event after we delete the programme
-                    $dispatcher = JEventDispatcher::getInstance();
-                    $dispatcher->trigger('callEventHandler', ['onAfterProgramDelete', ['id' => JFactory::getUser()->id, 'data' => $data]]);
-                }
-
-                return $res;
-
+	            if ($deleted) {
+		            $dispatcher = JEventDispatcher::getInstance();
+		            $dispatcher->trigger('callEventHandler', ['onAfterProgramDelete', ['id' => JFactory::getUser()->id, 'data' => $data]]);
+	            }
             } catch(Exception $e) {
-                JLog::add('component/com_emundus/models/program | Error wen delete programs : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-                return $e->getMessage();
+                JLog::add('component/com_emundus/models/program | Error wen delete programs : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
             }
-
-        } else {
-            return false;
         }
+
+		return $deleted;
     }
 
     /**
@@ -912,6 +930,7 @@ class EmundusModelProgramme extends JModelList {
      * @since version 1.0
      */
     public function getProgramCategories() {
+		$categories = [];
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -924,11 +943,13 @@ class EmundusModelProgramme extends JModelList {
 
         try {
             $db->setQuery($query);
-            return $db->loadColumn();
+	        $categories = $db->loadColumn();
+			$categories = array_filter($categories, function($value) { return !empty($value); });
         } catch(Exception $e) {
             JLog::add('component/com_emundus/models/program | Error at getting program categories : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
         }
+
+		return $categories;
     }
 
     /**
