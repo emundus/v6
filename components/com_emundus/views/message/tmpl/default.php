@@ -19,7 +19,7 @@ $tmpl = JRequest::getVar('tmpl', null, 'GET', 'none', 0);
 
 // Load the WYSIWYG editor used to edit the mail body.
 $editor = JFactory::getEditor('tinymce');
-$mail_body = $editor->display('mail_body', JText::_('COM_EMUNDUS_EMAILS_DEAR').' [NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, array('mode' => 'simple'));
+$mail_body = $editor->display('mail_body', $this->body, '100%', '400', '20', '20', false, 'mail_body', null, null, array('mode' => 'simple'));
 
 $m_messages = new EmundusModelMessages();
 
