@@ -1172,3 +1172,7 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
 .ql-container.ql-snow {
   border: 1px solid #ccc;
 }
+
+.ql-mention-list-item.selected{
+  background-color: var(--main-50);
+}

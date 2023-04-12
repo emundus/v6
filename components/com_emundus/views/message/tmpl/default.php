@@ -62,6 +62,7 @@ if ($allowed_attachments !== true) {
         align-items: center;
         padding: 0 12px;
         border: solid 1px #ccc;
+        border-radius: 8px;
     }
     .cc-bcc-mails{
         margin-bottom: 12px;
@@ -70,8 +71,23 @@ if ($allowed_attachments !== true) {
         border: 1px solid #ccc;
         border-radius: 8px;
     }
+    .cc-bcc-mails .items div[data-value]{
+        background: #C4F0E1;
+        border: unset;
+        border-radius: 4px !important;
+        box-shadow: unset !important;
+        padding: 4px 8px;
+    }
+    .cc-bcc-mails .items div[data-value] .remove{
+        font-size: 16px;
+        border: unset;
+        padding-right: 12px;
+    }
     .ql-editor .mention{
         background: unset;
+    }
+    .email-input-block::-webkit-scrollbar {
+        height: 6px;
     }
 </style>
 <link rel="stylesheet" href="components/com_jce/editor/libraries/css/editor.min.css" type="text/css">
@@ -100,7 +116,7 @@ if ($allowed_attachments !== true) {
             <!-- Dropdown to select the email categories used. -->
             <div class="form-group col-md-6 col-sm-6 em-form-selectCategory">
                 <label for="select_category"><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_CATEGORY'); ?></label>
-                <select name="select_category" class="form-control" onChange="setCategory(this);">
+                <select name="select_category" class="em-border-radius-8 em-mb-16 email-input-block em-w-100" onChange="setCategory(this);">
                     <?php if (!$message_categories) : ?>
                         <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_NO_CATEGORIES_FOUND'); ?> </option>
                     <?php else : ?>
@@ -117,7 +133,7 @@ if ($allowed_attachments !== true) {
             <!-- Dropdown to select the email template used. -->
             <div class="form-group col-md-6 col-sm-6 em-form-selectTypeEmail">
                 <label for="select_template"><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_TEMPLATE'); ?></label>
-                <select name="select_template" id="message_template" class="form-control" onChange="getTemplate(this);">
+                <select name="select_template" id="message_template" class="em-border-radius-8 em-mb-16 email-input-block em-w-100" onChange="getTemplate(this);">
                     <?php if (!$message_templates) : ?>
                         <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_NO_TEMPLATES_FOUND'); ?> </option>
                     <?php else : ?>
@@ -133,7 +149,7 @@ if ($allowed_attachments !== true) {
         </div>
 
         <input name="mail_from_id" type="hidden" class="inputbox" id="mail_from_id"
-               value="<?= $current_user->id; ?>"/><br>
+               value="<?= $current_user->id; ?>"/>
         <input name="fnums" type="hidden" class="inputbox" id="fnums" value="<?= implode(',', $this->fnums); ?>"/>
         <input name="tags" type="hidden" class="inputbox" id="tags" value=""/>
         <input name="mail_body" type="hidden" class="inputbox" id="mail_body" value=""/>
@@ -153,7 +169,7 @@ if ($allowed_attachments !== true) {
         <div class="form-group em-form-recipients">
             <!-- List of users / their emails, gotten from the fnums selected. -->
             <div class="em-border-radius-8 em-mb-16 email-input-block" id="em-recipitents">
-                <span class='label label-lightblue em-mr-8'><?= JText::_('COM_EMUNDUS_TO'); ?>:</span>
+                <span class='label label-lightgreen em-mr-8'><?= JText::_('COM_EMUNDUS_TO'); ?> :</span>
                 <?php foreach ($this->users as $user) : ?>
 
                     <?php if (!empty($user['email']) && !in_array($user['email'], $email_list)) : ?>
@@ -170,7 +186,7 @@ if ($allowed_attachments !== true) {
         </div>
         <div class="form-group em-form-sender">
             <div class="em-border-radius-8 em-mb-16 email-input-block">
-                <span class='label label-lightblue em-mr-8' for="mail_from"><?= JText::_('FROM'); ?>:</span>
+                <span class='label label-lightgreen em-mr-8' for="mail_from"><?= JText::_('FROM'); ?> :</span>
                 <div id="mail_from_name"
                      contenteditable="true"><?= $current_user->name; ?> </div>
                 <div id="mail_from" contenteditable="true">
@@ -179,7 +195,7 @@ if ($allowed_attachments !== true) {
         </div>
         <div class="form-group em-form-subject">
             <div class="em-border-radius-8 em-mb-16 email-input-block">
-                <span class='label label-lightblue em-mr-8' for="mail_from"><?= JText::_('COM_EMUNDUS_EMAILS_SUBJECT'); ?>:</span>
+                <span class='label label-lightgreen em-mr-8' for="mail_from"><?= JText::_('COM_EMUNDUS_EMAILS_SUBJECT'); ?> :</span>
                 <div id="mail_subject"
                      contenteditable="true"><?= JFactory::getConfig()->get('sitename'); ?></div>
             </div>
@@ -187,6 +203,11 @@ if ($allowed_attachments !== true) {
             <!-- Email WYSIWYG -->
             <div id="editor">
             </div>
+
+            <!-- TIP -->
+            <p class="em-text-neutral-600 em-mt-8">
+                <?= JText::_('COM_EMUNDUS_ONBOARD_VARIABLESTIP'); ?>
+            </p>
         </div>
 
         <div class="form-group">
@@ -197,7 +218,7 @@ if ($allowed_attachments !== true) {
         <div class="form-inline row em-form-attachments">
             <div class="form-group col-sm-12 col-md-5">
                 <label for="em-select_attachment_type"><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_ATTACHMENT_TYPE'); ?></label>
-                <select name="em-select_attachment_type" id="em-select_attachment_type" class="form-control download"
+                <select name="em-select_attachment_type" id="em-select_attachment_type" class="em-border-radius-8 em-mb-16 email-input-block em-w-100 download"
                         onChange="toggleAttachmentType(this);">
                     <option value=""> <?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?> </option>
                     <option value="upload"> <?= JText::_('COM_EMUNDUS_UPLOAD'); ?> </option>
@@ -283,6 +304,33 @@ if ($allowed_attachments !== true) {
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script type="text/javascript">
+    var DirectionAttribute = Quill.import('attributors/attribute/direction');
+    Quill.register(DirectionAttribute, true);
+    var AlignClass = Quill.import('attributors/class/align');
+    Quill.register(AlignClass, true);
+    var BackgroundClass = Quill.import('attributors/class/background');
+    Quill.register(BackgroundClass, true);
+    var ColorClass = Quill.import('attributors/class/color');
+    Quill.register(ColorClass, true);
+    var DirectionClass = Quill.import('attributors/class/direction');
+    Quill.register(DirectionClass, true);
+    var FontClass = Quill.import('attributors/class/font');
+    Quill.register(FontClass, true);
+    var SizeClass = Quill.import('attributors/class/size');
+    Quill.register(SizeClass, true);
+    var AlignStyle = Quill.import('attributors/style/align');
+    Quill.register(AlignStyle, true);
+    var BackgroundStyle = Quill.import('attributors/style/background');
+    Quill.register(BackgroundStyle, true);
+    var ColorStyle = Quill.import('attributors/style/color');
+    Quill.register(ColorStyle, true);
+    var DirectionStyle = Quill.import('attributors/style/direction');
+    Quill.register(DirectionStyle, true);
+    var FontStyle = Quill.import('attributors/style/font');
+    Quill.register(FontStyle, true);
+    var SizeStyle = Quill.import('attributors/style/size');
+    Quill.register(SizeStyle, true);
+
     let editor = null;
     // update css
     $('#cc-mails-selectized').css('vertical-align', '-10px');
@@ -440,7 +488,8 @@ if ($allowed_attachments !== true) {
                 }
                 editor = new Quill('#editor', options);
 
-                let delta = editor.clipboard.convert("<?php echo $this->body ?>");
+
+                let delta = editor.clipboard.convert("<?php echo htmlentities($this->body) ?>");
                 editor.setContents(delta);
 
                 editor.on('editor-change', (eventName, ...args) => {
@@ -628,6 +677,7 @@ if ($allowed_attachments !== true) {
                     $("#mail_subject").text(email.subject);
                     $("#mail_from").text(email.emailfrom);
                     $("#mail_from_name").text(email.name);
+                    console.log(email.message);
 
                     let delta = editor.clipboard.convert(email.message);
                     editor.setContents(delta);
