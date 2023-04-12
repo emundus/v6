@@ -206,7 +206,7 @@ if ($allowed_attachments !== true) {
 
             <!-- TIP -->
             <p class="em-text-neutral-600 em-mt-8">
-                <?= JText::_('COM_EMUNDUS_ONBOARD_VARIABLESTIP'); ?>
+                <?= JText::_('COM_EMUNDUS_ONBOARD_VARIABLESTIP'); ?> /
             </p>
         </div>
 
