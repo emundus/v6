@@ -19,7 +19,6 @@ $tmpl = JRequest::getVar('tmpl', null, 'GET', 'none', 0);
 
 // Load the WYSIWYG editor used to edit the mail body.
 $editor = JFactory::getEditor('tinymce');
-$mail_body = $editor->display('mail_body', JText::_('COM_EMUNDUS_EMAILS_DEAR').' [NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, array('mode' => 'simple'));
 
 $m_messages = new EmundusModelMessages();
 
@@ -53,6 +52,27 @@ if ($allowed_attachments !== true) {
     #emailForm #mceu_15 {
         display: none;
     }
+    .ql-editor{
+        height: 300px !important;
+        overflow-y: scroll;
+    }
+    .form-group .email-input-block{
+        height: 45px;
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        border: solid 1px #ccc;
+    }
+    .cc-bcc-mails{
+        margin-bottom: 12px;
+    }
+    .cc-bcc-mails .items{
+        border: 1px solid #ccc;
+        border-radius: 8px;
+    }
+    .ql-editor .mention{
+        background: unset;
+    }
 </style>
 <link rel="stylesheet" href="components/com_jce/editor/libraries/css/editor.min.css" type="text/css">
 <script data-cfasync="false" type="text/javascript" src="media/editors/tinymce/tinymce.min.js"></script>
@@ -67,7 +87,8 @@ if ($allowed_attachments !== true) {
 <div id="em-email-messages"></div>
 
 <div class="em-modal-sending-emails" id="em-modal-sending-emails">
-    <div id="em-sending-email-caption" class="em-sending-email-caption"><?= JText::_('COM_EMUNDUS_EMAILS_SENDING_EMAILS'); ?></div>
+    <div id="em-sending-email-caption"
+         class="em-sending-email-caption"><?= JText::_('COM_EMUNDUS_EMAILS_SENDING_EMAILS'); ?></div>
     <img class="em-sending-email-img" id="em-sending-email-img" src="media/com_emundus/images/sending-email.gif">
 </div>
 
@@ -78,7 +99,7 @@ if ($allowed_attachments !== true) {
 
             <!-- Dropdown to select the email categories used. -->
             <div class="form-group col-md-6 col-sm-6 em-form-selectCategory">
-                <label for="select_category" ><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_CATEGORY'); ?></label>
+                <label for="select_category"><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_CATEGORY'); ?></label>
                 <select name="select_category" class="form-control" onChange="setCategory(this);">
                     <?php if (!$message_categories) : ?>
                         <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_NO_CATEGORIES_FOUND'); ?> </option>
@@ -95,7 +116,7 @@ if ($allowed_attachments !== true) {
 
             <!-- Dropdown to select the email template used. -->
             <div class="form-group col-md-6 col-sm-6 em-form-selectTypeEmail">
-                <label for="select_template" ><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_TEMPLATE'); ?></label>
+                <label for="select_template"><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_TEMPLATE'); ?></label>
                 <select name="select_template" id="message_template" class="form-control" onChange="getTemplate(this);">
                     <?php if (!$message_templates) : ?>
                         <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_NO_TEMPLATES_FOUND'); ?> </option>
@@ -106,59 +127,67 @@ if ($allowed_attachments !== true) {
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </select>
-                <a class="em-font-size-14 em-pointer" href="emails" target="_blank"><?= JText::_('COM_EMUNDUS_EMAILS_ADD_TEMPLATE'); ?></a>
+                <a class="em-font-size-14 em-pointer" href="emails"
+                   target="_blank"><?= JText::_('COM_EMUNDUS_EMAILS_ADD_TEMPLATE'); ?></a>
             </div>
         </div>
 
-        <input name="mail_from_id" type="hidden" class="inputbox" id="mail_from_id" value="<?= $current_user->id; ?>" /><br>
-        <input name="fnums" type="hidden" class="inputbox" id="fnums" value="<?= implode(',', $this->fnums); ?>" />
-        <input name="tags" type="hidden" class="inputbox" id="tags" value="" />
+        <input name="mail_from_id" type="hidden" class="inputbox" id="mail_from_id"
+               value="<?= $current_user->id; ?>"/><br>
+        <input name="fnums" type="hidden" class="inputbox" id="fnums" value="<?= implode(',', $this->fnums); ?>"/>
+        <input name="tags" type="hidden" class="inputbox" id="tags" value=""/>
+        <input name="mail_body" type="hidden" class="inputbox" id="mail_body" value="<?= $this->body; ?>"/>
 
         <!-- Add current user to Cc -->
-        <div id="cc-box" class="input-group form-inline col-md-12" style="margin-bottom: 10px !important;">
+        <div id="cc-box" class="input-group form-inline col-md-12">
             <label for="select_action_tags"><?= JText::_('COM_EMUNDUS_EMAILS_CC_LABEL'); ?></label>
             <input type="text" id="cc-mails" class="cc-bcc-mails" style="vertical-align: -10px">
         </div><!-- /input-group -->
 
         <!-- Add current user to Bcc -->
-        <div id="bcc-box" class="input-group form-inline col-md-12" style="margin-top: 15px !important;">
+        <div id="bcc-box" class="input-group form-inline col-md-12">
             <label for="select_action_tags"><?= JText::_('COM_EMUNDUS_EMAILS_BCC_LABEL'); ?></label>
             <input type="text" id="bcc-mails" class="cc-bcc-mails">
         </div>
 
         <div class="form-group em-form-recipients">
             <!-- List of users / their emails, gotten from the fnums selected. -->
-            <div class="well well-sm" id="em-recipitents">
-                <span class='label label-grey'><?= JText::_('COM_EMUNDUS_TO'); ?>:</span>
+            <div class="em-border-radius-8 em-mb-16 email-input-block" id="em-recipitents">
+                <span class='label label-lightblue em-mr-8'><?= JText::_('COM_EMUNDUS_TO'); ?>:</span>
                 <?php foreach ($this->users as $user) : ?>
 
                     <?php if (!empty($user['email']) && !in_array($user['email'], $email_list)) : ?>
                         <?php $email_list[] = $user['email']; ?>
-                        <span class="label label-grey em-email-label">
-                            <?= $user['name'] . ' <em>&lt;' . $user['email'] . '&gt;</em>'; ?>
+                        <span class="label label-default em-mr-8 em-email-label">
+                            <?= $user['name'] . ' <em class="em-font-size-14">&lt;' . $user['email'] . '&gt;</em>'; ?>
                         </span>
 
-                        <input type="hidden" name="ud[]" id="ud" value="<?= $user['id']; ?>" />
+                        <input type="hidden" name="ud[]" id="ud" value="<?= $user['id']; ?>"/>
                     <?php endif; ?>
 
                 <?php endforeach; ?>
             </div>
         </div>
         <div class="form-group em-form-sender">
-            <div class="inputbox input-xlarge form-control form-inline">
-                <span class='label label-grey' for="mail_from"><?= JText::_('FROM'); ?>:</span>
-                <div class="form-group" style="display:inline-block !important;" id="mail_from_name" contenteditable="true"><?= $current_user->name; ?> </div>
-                <div class="form-group" style="display:inline-block !important;" id="mail_from" contenteditable="true"><strong> <?= $current_user->email; ?></strong></div>
+            <div class="em-border-radius-8 em-mb-16 email-input-block">
+                <span class='label label-lightblue em-mr-8' for="mail_from"><?= JText::_('FROM'); ?>:</span>
+                <div id="mail_from_name"
+                     contenteditable="true"><?= $current_user->name; ?> </div>
+                <div id="mail_from" contenteditable="true">
+                    <strong> <?= $current_user->email; ?></strong></div>
             </div>
         </div>
         <div class="form-group em-form-subject">
-            <div class="inputbox input-xlarge form-control form-inline">
-                <span class='label label-grey' for="mail_from" ><?= JText::_('COM_EMUNDUS_EMAILS_SUBJECT'); ?>:</span>
-                <div class="form-group" style="display:inline-block !important;" id="mail_subject" contenteditable="true"><?= JFactory::getConfig()->get('sitename'); ?></div>
+            <div class="em-border-radius-8 em-mb-16 email-input-block">
+                <span class='label label-lightblue em-mr-8' for="mail_from"><?= JText::_('COM_EMUNDUS_EMAILS_SUBJECT'); ?>:</span>
+                <div id="mail_subject"
+                     contenteditable="true"><?= JFactory::getConfig()->get('sitename'); ?></div>
             </div>
 
             <!-- Email WYSIWYG -->
-            <?= $mail_body; ?>
+            <div id="editor">
+                <div><?php echo $this->body ?></div>
+            </div>
         </div>
 
         <div class="form-group">
@@ -168,8 +197,9 @@ if ($allowed_attachments !== true) {
 
         <div class="form-inline row em-form-attachments">
             <div class="form-group col-sm-12 col-md-5">
-                <label for="em-select_attachment_type" ><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_ATTACHMENT_TYPE'); ?></label>
-                <select name="em-select_attachment_type" id="em-select_attachment_type" class="form-control download" onChange="toggleAttachmentType(this);">
+                <label for="em-select_attachment_type"><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_ATTACHMENT_TYPE'); ?></label>
+                <select name="em-select_attachment_type" id="em-select_attachment_type" class="form-control download"
+                        onChange="toggleAttachmentType(this);">
                     <option value=""> <?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?> </option>
                     <option value="upload"> <?= JText::_('COM_EMUNDUS_UPLOAD'); ?> </option>
                     <?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
@@ -190,7 +220,8 @@ if ($allowed_attachments !== true) {
                     <div class="file-browse">
                         <span id="em-filename"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_FILE_NAME'); ?></span>
 
-                        <label for="em-file_to_upload" type="button"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_SELECT_FILE_TO_UPLOAD') ?>
+                        <label for="em-file_to_upload"
+                               type="button"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_SELECT_FILE_TO_UPLOAD') ?>
                             <input type="file" id="em-file_to_upload" onChange="addFile();">
                         </label>
                     </div>
@@ -203,8 +234,9 @@ if ($allowed_attachments !== true) {
                 <!-- Get a file from setup_attachments -->
                 <?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
                     <div class="hidden em-form-attachments-candidateFile" id="candidate_file">
-                        <label for="em-select_candidate_file" ><?= JText::_('COM_EMUNDUS_UPLOAD'); ?></label>
-                        <select id="em-select_candidate_file" name="candidate_file" class="form-control download" onchange="addFile();">
+                        <label for="em-select_candidate_file"><?= JText::_('COM_EMUNDUS_UPLOAD'); ?></label>
+                        <select id="em-select_candidate_file" name="candidate_file" class="form-control download"
+                                onchange="addFile();">
                             <?php if (!$setup_attachments) : ?>
                                 <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_NO_FILES_FOUND'); ?> </option>
                             <?php else : ?>
@@ -218,8 +250,9 @@ if ($allowed_attachments !== true) {
                 <?php if (!empty($_applicant_letters)) { ?>
                     <?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
                         <div class="hidden em-form-attachments-setupLetters" id="setup_letters">
-                            <label for="em-select_setup_letters" ><?= JText::_('COM_EMUNDUS_UPLOAD'); ?></label>
-                            <select id="em-select_setup_letters" name="setup_letters" class="form-control" onchange="addFile();">
+                            <label for="em-select_setup_letters"><?= JText::_('COM_EMUNDUS_UPLOAD'); ?></label>
+                            <select id="em-select_setup_letters" name="setup_letters" class="form-control"
+                                    onchange="addFile();">
                                 <?php if (!$setup_letters) : ?>
                                     <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_NO_FILES_FOUND'); ?> </option>
                                 <?php else : ?>
@@ -243,16 +276,19 @@ if ($allowed_attachments !== true) {
         </ul>
     </div>
 
-    <a href="index.php?option=com_emundus&view=export_select_columns&format=html&layout=all_programs&Itemid=1173" target="_blank"><?= JText::_('COM_EMUNDUS_SEE_TAGS'); ?></a>
+    <a href="index.php?option=com_emundus&view=export_select_columns&format=html&layout=all_programs&Itemid=1173"
+       target="_blank"><?= JText::_('COM_EMUNDUS_SEE_TAGS'); ?></a>
 
-    <input type="hidden" name="task" value="" />
+    <input type="hidden" name="task" value=""/>
 </form>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script type="text/javascript">
+    let editor = null;
     // update css
     $('#cc-mails-selectized').css('vertical-align', '-10px');
     $('#bcc-mails-selectized').css('vertical-align', '-10px');
+
 
     // add cc
     var $selectize_cc = $("#cc-mails").selectize({
@@ -261,7 +297,7 @@ if ($allowed_attachments !== true) {
         preload: true,
         placeholder: '<?= JText::_('COM_EMUNDUS_EMAILS_CC_PLACEHOLDER'); ?>',
         render: {
-            item: function(data, escape) {
+            item: function (data, escape) {
                 var val = data.value;
                 return '<div>' +
                     '<span class="title">' +
@@ -279,7 +315,7 @@ if ($allowed_attachments !== true) {
         preload: true,
         placeholder: '<?= JText::_('COM_EMUNDUS_EMAILS_BCC_PLACEHOLDER'); ?>',
         render: {
-            item: function(data, escape) {
+            item: function (data, escape) {
                 var val = data.value;
                 return '<div>' +
                     '<span class="title">' +
@@ -299,7 +335,7 @@ if ($allowed_attachments !== true) {
         data: {
             fnums: fnums
         },
-        success: function(data) {
+        success: function (data) {
             /// get all profile id
             let profile_id = Object.keys(data.attachments);
             // $('#em-select_candidate_file').append('<option value="0" selected>'+Joomla.JText._('JGLOBAL_SELECT_AN_OPTION')+'</option>');
@@ -319,23 +355,102 @@ if ($allowed_attachments !== true) {
             })
 
         },
-        error: function(jqXHR) {
+        error: function (jqXHR) {
             console.log(jqXHR.responseText);
         }
     })
 
 
     // Editor loads disabled by default, we apply must toggle it active on page load.
-    $(document).ready(function() {
-        tinyMCE.execCommand('mceToggleEditor', true, 'mail_body');
+    $(document).ready(function () {
+        initQuill();
     });
 
     // Change file upload string to selected file and reset the progress bar.
-    $('#em-file_to_upload').change(function() {
+    $('#em-file_to_upload').change(function () {
         $('#em-filename').html(this.value.match(/([^\/\\]+)$/)[1]);
         $("#em-progress-wrp .progress-bar").css("width", +0 + "%");
         $("#em-progress-wrp .status").text(0 + "%");
     });
+
+    function initQuill() {
+        let variables = [];
+
+        fetch('index.php?option=com_emundus&controller=settings&task=geteditorvariables')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (variables) {
+                variables = variables.data;
+
+                let options = {
+                    modules: {
+                        toolbar: [
+                            ['bold', 'italic', 'underline', 'strike'],
+                            ['link'],
+
+                            [{'header': 1}, {'header': 2}],
+                            [{'list': 'ordered'}, {'list': 'bullet'}],
+                            [{'indent': '-1'}, {'indent': '+1'}],
+                            [{'size': ['small', false, 'large', 'huge']}],
+
+                            [{'color': []}],
+                            [{'align': []}],
+                        ],
+                        imageResize: {},
+                        mention: null
+                    },
+                    placeholder: '',
+                    theme: 'snow'
+                };
+                options.modules.mention = {
+                    allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
+                    mentionDenotationChars: ["/"],
+                    source: (searchTerm, renderList, mentionChar) => {
+                        let values;
+
+                        if (mentionChar === "/") {
+                            values = variables;
+                        }
+
+                        if (searchTerm.length === 0) {
+                            renderList(values, searchTerm);
+                        } else {
+                            const matches = [];
+                            for (let i = 0; i < values.length; i++)
+                                if (
+                                    ~values[i].value.toLowerCase().indexOf(searchTerm.toLowerCase())
+                                )
+                                    matches.push(values[i]);
+                            renderList(matches, searchTerm);
+                        }
+                    },
+                    onSelect: (item, insertItem) => {
+                        insertItem(
+                            {
+                                denotationChar: "",
+                                id: item.id,
+                                value: "[" + item.value + ']',
+                            },
+                            true
+                        );
+                    },
+                    renderItem: (item, searchTerm) => {
+                        return `<div><p>${item.value}</p><p class="em-font-size-12">${item.description}</p></div>`;
+                    }
+                }
+                editor = new Quill('#editor', options);
+
+                editor.on('editor-change', (eventName, ...args) => {
+                    if (eventName === 'text-change') {
+                        if(editor.root.innerHTML === null){
+                            editor.root.innerHTML = '';
+                        }
+                        $('#mail_body').val(editor.root.innerHTML);
+                    }
+                });
+            });
+    }
 
     // Loads the template and updates the WYSIWYG editor
     function getTemplate(select) {
@@ -365,13 +480,13 @@ if ($allowed_attachments !== true) {
             data: {
                 id: select.value
             },
-            success: function(data) {
+            success: function (data) {
                 if (data.status) {
                     $('#can-val').css('cursor', '');
                     $('#can-val .btn-success').attr('disabled', false);
 
                     /// reset #em-select_candidate_file
-                    $('#em-select_candidate_file option').each(function() {
+                    $('#em-select_candidate_file option').each(function () {
                         if ($(this).is(":disabled")) {
                             $(this).prop('disabled', false);
                         }
@@ -380,7 +495,7 @@ if ($allowed_attachments !== true) {
                     })
 
                     /// reset #em-select_setup_letters
-                    $('#em-select_setup_letters option').each(function() {
+                    $('#em-select_setup_letters option').each(function () {
                         if ($(this).is(":disabled")) {
                             $(this).prop('disabled', false);
                         }
@@ -450,7 +565,7 @@ if ($allowed_attachments !== true) {
                                 data: {
                                     elements: fabrik_cc
                                 },
-                                success: function(data) {
+                                success: function (data) {
                                     let emails = [];
 
                                     for (email in data.data) {
@@ -465,7 +580,7 @@ if ($allowed_attachments !== true) {
                                     }
 
                                 },
-                                error: function(jqXHR) {
+                                error: function (jqXHR) {
                                     console.log(jqXHR.responseText);
                                 }
                             })
@@ -482,7 +597,7 @@ if ($allowed_attachments !== true) {
                                 data: {
                                     elements: fabrik_bcc
                                 },
-                                success: function(data) {
+                                success: function (data) {
                                     let emails = [];
 
                                     for (email in data.data) {
@@ -496,7 +611,7 @@ if ($allowed_attachments !== true) {
                                         }
                                     }
                                 },
-                                error: function(jqXHR) {
+                                error: function (jqXHR) {
                                     console.log(jqXHR.responseText);
                                 }
                             })
@@ -511,9 +626,9 @@ if ($allowed_attachments !== true) {
                     $("#mail_subject").text(email.subject);
                     $("#mail_from").text(email.emailfrom);
                     $("#mail_from_name").text(email.name);
-                    $("#mail_body").val(email.message);
-                    tinyMCE.execCommand("mceSetContent", false, email.message);
-                    tinyMCE.execCommand("mceRepaint");
+
+                    let delta = editor.clipboard.convert(email.message);
+                    editor.setContents(delta);
 
                     /// get letter attachments block
                     if (data.data.letter_attachment !== null) {
@@ -535,29 +650,29 @@ if ($allowed_attachments !== true) {
 
                     /// get candidat attachments block * check in the user permission *
                     <?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
-                        if (data.data.candidate_attachment !== null) {
-                            let attachments = data.data.candidate_attachment;
-                            attachments.forEach(attachment => {
-                                $('#em-attachment-list').append('' +
-                                    '<li class="list-group-item candidate_file" style="padding: 6px 12px; display: flex; align-content: center; justify-content: space-between">' +
-                                    '<div class="value hidden">' + attachment.id + '</div>' + attachment.value +
-                                    '<div>' +
-                                    '<span class="badge">' + '<span class="glyphicon glyphicon-paperclip">' + '</span>' + '</span>' +
-                                    '<span class="badge btn-danger" onClick="removeAttachment(this);">' + '<span class="glyphicon glyphicon-remove"></span>' + '</span>' +
-                                    '</div>' +
-                                    '</li>');
-                                /// set selected letter
-                                $('#em-select_candidate_file option[value="' + attachment.id + '"]').prop('disabled', true);
-                                $('#em-select_candidate_file option[value="' + attachment.id + '"]').css('font-style', 'italic');
-                            })
-                        }
+                    if (data.data.candidate_attachment !== null) {
+                        let attachments = data.data.candidate_attachment;
+                        attachments.forEach(attachment => {
+                            $('#em-attachment-list').append('' +
+                                '<li class="list-group-item candidate_file" style="padding: 6px 12px; display: flex; align-content: center; justify-content: space-between">' +
+                                '<div class="value hidden">' + attachment.id + '</div>' + attachment.value +
+                                '<div>' +
+                                '<span class="badge">' + '<span class="glyphicon glyphicon-paperclip">' + '</span>' + '</span>' +
+                                '<span class="badge btn-danger" onClick="removeAttachment(this);">' + '<span class="glyphicon glyphicon-remove"></span>' + '</span>' +
+                                '</div>' +
+                                '</li>');
+                            /// set selected letter
+                            $('#em-select_candidate_file option[value="' + attachment.id + '"]').prop('disabled', true);
+                            $('#em-select_candidate_file option[value="' + attachment.id + '"]').css('font-style', 'italic');
+                        })
+                    }
                     <?php endif; ?>
                 } else {
                     /// lock send button
                     $('#can-val').css('cursor', 'not-allowed');
                 }
             },
-            error: function(jqXHR) {
+            error: function (jqXHR) {
                 console.log(jqXHR.responseText);
             }
         })
@@ -574,7 +689,7 @@ if ($allowed_attachments !== true) {
         $.ajax({
             type: "GET",
             url: "index.php?option=com_emundus&controller=messages&task=setcategory&category=" + category,
-            success: function(data) {
+            success: function (data) {
 
                 data = JSON.parse(data);
 
@@ -583,7 +698,7 @@ if ($allowed_attachments !== true) {
                     var $el = $("#message_template");
                     $('#message_template option:gt(0)').remove();
 
-                    $.each(data.templates, function(key, value) {
+                    $.each(data.templates, function (key, value) {
                         $el.append($("<option></option>")
                             .attr("value", value.id).text(value.subject));
                     });
@@ -591,7 +706,7 @@ if ($allowed_attachments !== true) {
                     $("#message_template").append('<span class="alert"> <?= JText::_('ERROR'); ?> </span>')
                 }
             },
-            error: function(error) {
+            error: function (error) {
                 // handle error
                 $("#message_template").append('<span class="alert"> <?= JText::_('ERROR'); ?> </span>')
             },
@@ -679,7 +794,7 @@ if ($allowed_attachments !== true) {
                     alreadyPicked.parent().css("justify-content", "space-between");
                     alreadyPicked.parent().css("padding", "6px 12px");
 
-                    setTimeout(function() {
+                    setTimeout(function () {
                         alreadyPicked.parent().css("background-color", "");
                     }, 500);
 
@@ -726,7 +841,7 @@ if ($allowed_attachments !== true) {
                     alreadyPicked.parent().css("justify-content", "space-between");
                     alreadyPicked.parent().css("padding", "6px 12px");
 
-                    setTimeout(function() {
+                    setTimeout(function () {
                         alreadyPicked.parent().css("background-color", "");
                     }, 500);
 
@@ -786,20 +901,20 @@ if ($allowed_attachments !== true) {
 
 
     // Helper function for uploading a file via AJAX.
-    var Upload = function(file) {
+    var Upload = function (file) {
         this.file = file;
     };
 
-    Upload.prototype.getType = function() {
+    Upload.prototype.getType = function () {
         return this.file.type;
     };
-    Upload.prototype.getSize = function() {
+    Upload.prototype.getSize = function () {
         return this.file.size;
     };
-    Upload.prototype.getName = function() {
+    Upload.prototype.getName = function () {
         return this.file.name;
     };
-    Upload.prototype.doUpload = function() {
+    Upload.prototype.doUpload = function () {
         var that = this;
         var formData = new FormData();
 
@@ -810,14 +925,14 @@ if ($allowed_attachments !== true) {
         $.ajax({
             type: "POST",
             url: "index.php?option=com_emundus&controller=messages&task=uploadfiletosend",
-            xhr: function() {
+            xhr: function () {
                 var myXhr = $.ajaxSettings.xhr();
                 if (myXhr.upload) {
                     myXhr.upload.addEventListener('progress', that.progressHandling, false);
                 }
                 return myXhr;
             },
-            success: function(data) {
+            success: function (data) {
                 data = JSON.parse(data);
 
                 if (data.status) {
@@ -833,7 +948,7 @@ if ($allowed_attachments !== true) {
                     $("#em-file_to_upload").append('<span class="alert"> <?= JText::_('UPLOAD_FAILED'); ?> </span>')
                 }
             },
-            error: function(error) {
+            error: function (error) {
                 // handle error
                 $("#em-file_to_upload").append('<span class="alert"> <?= JText::_('UPLOAD_FAILED'); ?> </span>')
             },
@@ -846,7 +961,7 @@ if ($allowed_attachments !== true) {
         });
     };
 
-    Upload.prototype.progressHandling = function(event) {
+    Upload.prototype.progressHandling = function (event) {
         var percent = 0;
         var position = event.loaded || event.position;
         var total = event.total;

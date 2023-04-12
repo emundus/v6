@@ -42,6 +42,12 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
   white-space: pre-wrap;
 }
 
+.mention{
+  background: unset;
+  border-radius: unset;
+  padding: unset;
+}
+
 #{$selectors}{
   box-sizing: border-box;
   line-height: 1.42;

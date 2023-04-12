@@ -6306,6 +6306,7 @@ $(document).ready(function() {
 async function sendMailQueue(fnums) {
     const steps = [1, 2];
     let currentStep;
+    let body = '';
 
     for (currentStep = 0; currentStep < 2;) {
         let title = '';
@@ -6327,7 +6328,8 @@ async function sendMailQueue(fnums) {
                     type: 'POST',
                     url: 'index.php?option=com_emundus&view=message&format=raw',
                     data: {
-                        fnums: fnums
+                        fnums: fnums,
+                        body: body,
                     },
                     success: function(result) {
                         $('#data').append(result);
@@ -6348,6 +6350,8 @@ async function sendMailQueue(fnums) {
 
                 // update the textarea with the WYSIWYG content.
                 tinymce.triggerSave();
+
+                body = $('#mail_body').val();
 
                 // Get all form elements.
                 var data = {
