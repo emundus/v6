@@ -939,12 +939,18 @@ class EmundusModelProgramme extends JModelList {
             ->from ($db->quoteName('#__emundus_setup_programmes'))
             ->order('id DESC');
 
-        $db->setQuery($query);
-
         try {
             $db->setQuery($query);
 	        $categories = $db->loadColumn();
-			$categories = array_filter($categories, function($value) { return !empty($value); });
+
+
+	        $tmp = [];
+			foreach ($categories as $category) {
+				if (!empty($category)) {
+					$tmp[] = ['value' => $category, 'label' => $category];
+				}
+	        }
+			$categories = $tmp;
         } catch(Exception $e) {
             JLog::add('component/com_emundus/models/program | Error at getting program categories : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
         }

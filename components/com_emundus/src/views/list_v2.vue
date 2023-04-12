@@ -41,8 +41,7 @@
 			</section>
 			<nav v-if="currentList.tabs.length > 1" id="list-nav">
 				<ul style="list-style-type: none;margin-left:0;" class="em-flex-row">
-					<li v-for="tab in currentList.tabs"
-					    key="tab.key"
+					<li v-for="tab in currentList.tabs" key="tab.key"
 					    class="em-pointer em-p-8 em-font-weight-600 em-p-16"
 					    :class="{
 								'em-main-500-color em-border-bottom-main-500 ': selectedListTab === tab.key,
@@ -56,13 +55,12 @@
 			</nav>
 			<section id="actions" class="em-flex-row em-flex-space-between em-mt-16 em-mb-16">
 				<section id="tab-actions">
-					<!-- TODO: tabs filters -->
-
+					<select v-for="filter in filters[selectedListTab]" :key="filter.key" v-model="filter.value" @change="onChangeFilter(filter)">
+						<option v-for="option in filter.options" :key="option.value" :value="option.value">{{ translate(option.label) }}</option>
+					</select>
 				</section>
 
 				<section id="default-actions" class="em-flex-row">
-					<!-- TODO: Make search by tabs -->
-
 					<div class="em-flex-row em-flex-row-center">
 						<input name="search" type="text" v-model="searches[selectedListTab].search"
 						       :placeholder="translate('COM_EMUNDUS_ONBOARD_SEARCH')"
@@ -181,6 +179,7 @@ export default {
 			viewType: 'table',
 			viewTypeOptions: [{value: 'table', icon: 'dehaze'}, {value: 'blocs', icon: 'grid_view'}],
 			searches: {},
+			filters: {}
 		}
 	},
 	created() {
@@ -266,11 +265,19 @@ export default {
 						debounce: null
 					};
 				}
+				this.setTabFilters(tab);
 
 				if (typeof tab.getter !== 'undefined') {
 					let url = 'index.php?option=com_emundus&controller=' + tab.controller + '&task=' + tab.getter + '&lim=' + this.numberOfItemsToDisplay + '&page=' + page;
 					if (this.searches[tab.key].search !== '') {
 						url += '&recherche=' + this.searches[tab.key].search;
+					}
+					if (typeof this.filters[tab.key] !== 'undefined') {
+						this.filters[tab.key].forEach(filter => {
+							if (filter.value !== '' && filter.value !== 'all') {
+								url += '&' + filter.key + '=' + filter.value;
+							}
+						});
 					}
 
 					client().get(url)
@@ -300,6 +307,36 @@ export default {
 					this.loading.items = false;
 				}
 			});
+		},
+		setTabFilters(tab) {
+			if (typeof tab.filters !== 'undefined' && tab.filters.length > 0) {
+				if (typeof this.filters[tab.key] === 'undefined') {
+					this.filters[tab.key] = [];
+
+					tab.filters.forEach(filter => {
+						if (filter.values === null) {
+							if (filter.getter) {
+								const controller = typeof filter.controller !== 'undefined' ? filter.controller : tab.controller;
+								client().get('index.php?option=com_emundus&controller=' + controller + '&task=' + filter.getter)
+										.then(response => {
+											if (response.data.status === true) {
+												let options = response.data.data;
+												options.unshift({value: 'all', label: this.translate(filter.label)});
+
+												this.filters[tab.key].push({
+													key: filter.key,
+													value: 'all',
+													options: options
+												});
+											}
+										});
+							}
+						} else {
+							this.filters[tab.key].options = filter.values;
+						}
+					});
+				}
+			}
 		},
 		searchItems() {
 			if (this.searches[this.selectedListTab].searchDebounce !== null) {
@@ -387,6 +424,9 @@ export default {
 					}
 				});
 			}
+		},
+		onChangeFilter(filter) {
+			this.getListItems(this.currentTab.pagination.current, this.selectedListTab);
 		},
 		changeViewType(viewType) {
 			this.viewType = viewType.value;

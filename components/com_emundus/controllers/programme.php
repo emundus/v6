@@ -335,12 +335,12 @@ class EmundusControllerProgramme extends JControllerLegacy {
 	    $response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
 
         if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $program = $this->m_programme->getProgramCategories();
+            $categories = $this->m_programme->getProgramCategories();
 
-            if (!empty($program)) {
-	            $response = array('status' => true, 'msg' => JText::_('PROGRAMS_RETRIEVED'), 'data' => $program);
+            if (!empty($categories)) {
+	            $response = array('status' => true, 'msg' => JText::_('PROGRAMS_RETRIEVED'), 'data' => $categories);
             } else {
-	            $response = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_PROGRAMS'), 'data' => $program);
+	            $response = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_PROGRAMS'));
             }
         }
         echo json_encode((object)$response);
