@@ -16,7 +16,7 @@
 
 		<div v-else class="list">
 			<section id="pagination-wrapper" class="em-flex-row em-flex-space-between">
-				<select name="numberOfItemsToDisplay" v-model="numberOfItemsToDisplay" @change="getListItems()" class='em-mt-16 em-mb-16'>
+				<select name="numberOfItemsToDisplay" v-model="numberOfItemsToDisplay" @change="getListItems()" class='em-mt-16 em-mb-16 em-default-input'>
 					<option value='10'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 10</option>
 					<option value='25'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 25</option>
 					<option value='50'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 50</option>
@@ -54,27 +54,39 @@
 					</li>
 				</ul>
 			</nav>
-			<div id="actions" class="em-flex-row em-flex-space-between em-mt-16 em-mb-16">
-				<div class="em-flex-row em-flex-row-center">
-					<span class="material-icons-outlined em-mr-8 em-pointer" @click="searchItems">search</span>
-					<input name="search" type="text" v-model="search"
-					       :placeholder="translate('COM_EMUNDUS_ONBOARD_SEARCH')"
-					       :class="{'em-disabled-events': items[this.selectedListTab].length < 1 && search === ''}" style="margin: 0;"
-					       :disabled="items[this.selectedListTab].length < 1 && search === ''"
-					       @change="searchItems" @keyup="searchItems">
-				</div>
-				<div class="view-type">
+			<section id="actions" class="em-flex-row em-flex-space-between em-mt-16 em-mb-16">
+				<section id="tab-actions">
+					<!-- TODO: tabs filters -->
+
+				</section>
+
+				<section id="default-actions" class="em-flex-row">
+					<!-- TODO: Make search by tabs -->
+
+					<div class="em-flex-row em-flex-row-center">
+						<input name="search" type="text" v-model="searches[selectedListTab].search"
+						       :placeholder="translate('COM_EMUNDUS_ONBOARD_SEARCH')"
+						       class="em-border-radius-8 em-default-input"
+						       :class="{'em-disabled-events': items[this.selectedListTab].length < 1 && searches[selectedListTab].search === ''}" style="margin: 0;"
+						       :disabled="items[this.selectedListTab].length < 1 && searches[selectedListTab].search === ''"
+						       @change="searchItems" @keyup="searchItems">
+						<span class="material-icons-outlined em-mr-8 em-pointer" style="margin-left: -32px" @click="searchItems">
+							search
+						</span>
+					</div>
+					<div class="view-type">
 					<span v-for="viewTypeOption in viewTypeOptions" :key="viewTypeOption.value"
-							style="padding: 4px;border-radius: 4px;"
-							class="material-icons-outlined em-pointer em-ml-8"
-							:class="{
+					      style="padding: 4px;border-radius: 4px;"
+					      class="material-icons-outlined em-pointer em-ml-8"
+					      :class="{
 								'active em-main-500-color em-border-main-500': viewTypeOption.value === viewType,
 								'em-neutral-300-color em-border-neutral-300': viewTypeOption.value !== viewType
 							}"
-							@click="changeViewType(viewTypeOption)"
+					      @click="changeViewType(viewTypeOption)"
 					>{{ viewTypeOption.icon }}</span>
-				</div>
-			</div>
+					</div>
+				</section>
+			</section>
 
 			<div v-if="loading.items" class="skeleton-grid" style="flex-wrap: wrap">
 				<skeleton v-for="i in 12" :key="i" class="em-m-16 em-border-radius-8" height="200px"></skeleton>
@@ -112,7 +124,7 @@
 													<ul style="list-style-type: none; margin: 0;">
 														<li v-for="action in tabActionsPopover"
 														    :key="action.action"
-														    :class="{'hidden': typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon) ? false : true}"
+														    :class="{'hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))}"
 														    @click="onClickAction(action, item.id)"
 														    class="em-pointer em-p-8 em-font-weight-600"
 														>
@@ -143,10 +155,12 @@ import Skeleton from '../components/Skeleton.vue';
 import settingsService from '../services/settings.js';
 import client from '../services/axiosClient';
 import Swal from "sweetalert2";
+import Section from "../components/Users/Section";
 
 export default {
 	name: 'list_v2',
 	components: {
+		Section,
 		Skeleton
 	},
 	data() {
@@ -166,9 +180,7 @@ export default {
 			title: '',
 			viewType: 'table',
 			viewTypeOptions: [{value: 'table', icon: 'dehaze'}, {value: 'blocs', icon: 'grid_view'}],
-			search: '',
-			lastSearch: '',
-			searchDebounce: null,
+			searches: {},
 		}
 	},
 	created() {
@@ -247,10 +259,18 @@ export default {
 
 			const tabs = tab === null ? this.currentList.tabs : [this.currentTab];
 			tabs.forEach(tab => {
+				if (typeof this.searches[tab.key] === 'undefined') {
+					this.searches[tab.key] = {
+						search: '',
+						lastSearch: '',
+						debounce: null
+					};
+				}
+
 				if (typeof tab.getter !== 'undefined') {
 					let url = 'index.php?option=com_emundus&controller=' + tab.controller + '&task=' + tab.getter + '&lim=' + this.numberOfItemsToDisplay + '&page=' + page;
-					if (this.search !== '') {
-						url += '&recherche=' + this.search;
+					if (this.searches[tab.key].search !== '') {
+						url += '&recherche=' + this.searches[tab.key].search;
 					}
 
 					client().get(url)
@@ -282,14 +302,14 @@ export default {
 			});
 		},
 		searchItems() {
-			if (this.searchDebounce !== null) {
-				clearTimeout(this.searchDebounce);
+			if (this.searches[this.selectedListTab].searchDebounce !== null) {
+				clearTimeout(this.searches[this.selectedListTab].searchDebounce);
 			}
 
-			this.searchDebounce = setTimeout(() => {
-				if (this.search !== this.lastSearch) {
-					this.lastSearch = this.search;
-					this.getListItems();
+			this.searches[this.selectedListTab].searchDebounce = setTimeout(() => {
+				if (this.searches[this.selectedListTab].search !== this.searches[this.selectedListTab].lastSearch) {
+					this.searches[this.selectedListTab].lastSearch = this.searches[this.selectedListTab].search;
+					this.getListItems(this.currentTab.pagination.current, this.selectedListTab);
 				}
 			}, 500);
 		},
@@ -439,7 +459,7 @@ export default {
 		displayedItems() {
 			let items = typeof this.items[this.selectedListTab] !== 'undefined' ? this.items[this.selectedListTab] : [];
 			return items.filter((item) => {
-				return item.label[this.params.shortlang].toLowerCase().includes(this.search.toLowerCase());
+				return item.label[this.params.shortlang].toLowerCase().includes(this.searches[this.selectedListTab].search.toLowerCase());
 			});
 		},
 		additionalColumns() {

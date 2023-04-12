@@ -221,6 +221,11 @@ button[class ^= 'em-']{
   }
 }
 
+.em-default-input {
+  height: 38px !important;
+  border-radius: 8px !important;
+}
+
 .em-editable-content{
   caret-color: var(--main-500);
   &:focus{
