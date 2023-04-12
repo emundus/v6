@@ -15,23 +15,29 @@
 		</div>
 
 		<div v-else class="list">
-			<section id="list-filter">
-				<div class="em-flex-row em-flex-row-center">
-					<span class="material-icons-outlined em-mr-8 em-pointer" @click="searchItems">search</span>
-					<input name="search" type="text" v-model="search"
-							:placeholder="translate('COM_EMUNDUS_ONBOARD_SEARCH')"
-							:class="{'em-disabled-events': items[this.selectedListTab].length < 1 && search === ''}" style="margin: 0;"
-							:disabled="items[this.selectedListTab].length < 1 && search === ''"
-							@change="searchItems" @keyup="searchItems"
-					>
-				</div>
-				<select name="numberOfItemsToDisplay" v-model="numberOfItemsToDisplay" @change="getListItems()"
-					class='em-mt-16 em-mb-16'>
+			<section id="pagination-wrapper" class="em-flex-row em-flex-space-between">
+				<select name="numberOfItemsToDisplay" v-model="numberOfItemsToDisplay" @change="getListItems()" class='em-mt-16 em-mb-16'>
 					<option value='10'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 10</option>
 					<option value='25'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 25</option>
 					<option value='50'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 50</option>
 					<option value='all'>{{ translate('ALL') }}</option>
 				</select>
+				<div v-if="typeof currentTab.pagination !== undefined && currentTab.pagination && currentTab.pagination.total > 1" id="pagination" class="em-text-align-center">
+					<ul class="em-flex-row em-flex-center" style="list-style-type:none;margin-left:0;">
+					<span :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === 1}"
+					      class="material-icons-outlined em-pointer em-mr-8 em-ml-8"
+					      @click="getListItems(currentTab.pagination.current - 1, selectedListTab)">chevron_left</span>
+						<li v-for="i in currentTab.pagination.total" :key="i"
+						    class="em-pointer em-mr-8 em-ml-8 em-circle em-bg-main-100"
+						    :class="{'em-bg-main-500 label-text-darkpurple active': i === currentTab.pagination.current}"
+						    @click="getListItems(i, selectedListTab)">
+							{{ i }}
+						</li>
+						<span :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === currentTab.pagination.total}"
+						      class="material-icons-outlined em-pointer em-mr-8 em-ml-8"
+						      @click="getListItems(currentTab.pagination.current + 1, selectedListTab)">chevron_right</span>
+					</ul>
+				</div>
 			</section>
 			<nav v-if="currentList.tabs.length > 1" id="list-nav">
 				<ul style="list-style-type: none;margin-left:0;" class="em-flex-row">
@@ -48,11 +54,17 @@
 					</li>
 				</ul>
 			</nav>
-			<div id="actions" class="em-flex-row-justify-end em-mt-16 em-mb-16">
+			<div id="actions" class="em-flex-row em-flex-space-between em-mt-16 em-mb-16">
+				<div class="em-flex-row em-flex-row-center">
+					<span class="material-icons-outlined em-mr-8 em-pointer" @click="searchItems">search</span>
+					<input name="search" type="text" v-model="search"
+					       :placeholder="translate('COM_EMUNDUS_ONBOARD_SEARCH')"
+					       :class="{'em-disabled-events': items[this.selectedListTab].length < 1 && search === ''}" style="margin: 0;"
+					       :disabled="items[this.selectedListTab].length < 1 && search === ''"
+					       @change="searchItems" @keyup="searchItems">
+				</div>
 				<div class="view-type">
-					<span
-							v-for="viewTypeOption in viewTypeOptions"
-							:key="viewTypeOption.value"
+					<span v-for="viewTypeOption in viewTypeOptions" :key="viewTypeOption.value"
 							style="padding: 4px;border-radius: 4px;"
 							class="material-icons-outlined em-pointer em-ml-8"
 							:class="{
@@ -60,26 +72,8 @@
 								'em-neutral-300-color em-border-neutral-300': viewTypeOption.value !== viewType
 							}"
 							@click="changeViewType(viewTypeOption)"
-					>
-						{{ viewTypeOption.icon }}
-					</span>
+					>{{ viewTypeOption.icon }}</span>
 				</div>
-			</div>
-			<div v-if="typeof currentTab.pagination !== undefined && currentTab.pagination.total > 1" id="pagination" class="em-w-100 em-text-align-center">
-				<ul class="em-flex-row em-flex-center" style="list-style-type:none;margin-left:0;">
-					<span :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === 1}"
-							class="material-icons-outlined em-pointer em-mr-8 em-ml-8"
-							@click="getListItems(currentTab.pagination.current - 1, selectedListTab)">chevron_left</span>
-					<li v-for="i in currentTab.pagination.total" :key="i"
-					    class="em-pointer em-mr-8 em-ml-8 em-circle em-bg-main-100"
-					    :class="{'em-bg-main-500 label-text-darkpurple active': i === currentTab.pagination.current}"
-					    @click="getListItems(i, selectedListTab)">
-						{{ i }}
-					</li>
-					<span :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === currentTab.pagination.total}"
-							class="material-icons-outlined em-pointer em-mr-8 em-ml-8"
-							@click="getListItems(currentTab.pagination.current + 1, selectedListTab)">chevron_right</span>
-				</ul>
 			</div>
 
 			<div v-if="loading.items" class="skeleton-grid" style="flex-wrap: wrap">
