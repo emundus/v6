@@ -55,7 +55,7 @@
 			</nav>
 			<section id="actions" class="em-flex-row em-flex-space-between em-mt-16 em-mb-16">
 				<section id="tab-actions">
-					<select v-for="filter in filters[selectedListTab]" :key="filter.key" v-model="filter.value" @change="onChangeFilter(filter)">
+					<select v-for="filter in filters[selectedListTab]" :key="filter.key" v-model="filter.value" @change="onChangeFilter(filter)" class="em-default-input">
 						<option v-for="option in filter.options" :key="option.value" :value="option.value">{{ translate(option.label) }}</option>
 					</select>
 				</section>
