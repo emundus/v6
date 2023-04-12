@@ -136,7 +136,7 @@ if ($allowed_attachments !== true) {
                value="<?= $current_user->id; ?>"/><br>
         <input name="fnums" type="hidden" class="inputbox" id="fnums" value="<?= implode(',', $this->fnums); ?>"/>
         <input name="tags" type="hidden" class="inputbox" id="tags" value=""/>
-        <input name="mail_body" type="hidden" class="inputbox" id="mail_body" value="<?= $this->body; ?>"/>
+        <input name="mail_body" type="hidden" class="inputbox" id="mail_body" value=""/>
 
         <!-- Add current user to Cc -->
         <div id="cc-box" class="input-group form-inline col-md-12">
@@ -186,7 +186,6 @@ if ($allowed_attachments !== true) {
 
             <!-- Email WYSIWYG -->
             <div id="editor">
-                <div><?php echo $this->body ?></div>
             </div>
         </div>
 
@@ -440,6 +439,9 @@ if ($allowed_attachments !== true) {
                     }
                 }
                 editor = new Quill('#editor', options);
+
+                let delta = editor.clipboard.convert("<?php echo $this->body ?>");
+                editor.setContents(delta);
 
                 editor.on('editor-change', (eventName, ...args) => {
                     if (eventName === 'text-change') {

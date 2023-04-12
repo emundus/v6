@@ -75,7 +75,7 @@ class EmundusViewMessage extends JViewLegacy {
 	        // Default = sending an email to an FNUM.
 		    default:
 			    $fnums = $jinput->getString('fnums', null);
-			    $body = $jinput->getString('body', null);
+			    $body = $jinput->getRaw('body', null);
                 if(empty($body)){
                     $body = JText::_('COM_EMUNDUS_EMAILS_DEAR') . ' [NAME], ';
                 }
