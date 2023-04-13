@@ -1795,14 +1795,15 @@ class EmundusModelFiles extends JModelLegacy
 
     /** Gets applicant_id from fnum
      * @param String $fnum
-     * @return bool|mixed
+     * @return int
      */
     public function getApplicantIdByFnum($fnum)
     {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
         try
         {
-            $db = $this->getDbo();
-            $query = $db->getQuery(true);
             $query->select($db->quoteName('applicant_id'))
                 ->from($db->quoteName('#__emundus_campaign_candidature'))
                 ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
@@ -1811,7 +1812,7 @@ class EmundusModelFiles extends JModelLegacy
         }
         catch (Exception $e)
         {
-            return false;
+            return 0;
         }
     }
 

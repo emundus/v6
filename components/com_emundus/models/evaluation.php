@@ -3222,7 +3222,7 @@ class EmundusModelEvaluation extends JModelList {
         try {
             $query->select('id')
                 ->from($db->quoteName($table_name))
-                ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+                ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
             $db->setQuery($query);
             return $db->loadResult();
         } catch (Exception $e) {
