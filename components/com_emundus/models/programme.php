@@ -621,30 +621,38 @@ class EmundusModelProgramme extends JModelList {
                     $programme = $db->loadObject();
 
                     // Create user group
+                    $columns = array('label', 'published', 'class');
+                    $values = array($db->quote($programme->label), $db->quote(1), $db->quote('label-default'));
+
                     $query->clear()
                         ->insert($db->quoteName('#__emundus_setup_groups'))
-                        ->set($db->quoteName('label') . ' = ' . $db->quote($programme->label))
-                        ->set($db->quoteName('published') . ' = 1')
-                        ->set($db->quoteName('class') . ' = ' . $db->quote('label-default'));
+                        ->columns($db->quoteName($columns))
+                        ->values(implode(',',$values));
                     $db->setQuery($query);
                     $db->execute();
                     $group_id = $db->insertid();
                     //
 
                     // Link group with programme
+                    $columns = array('parent_id', 'course');
+                    $values = array($group_id, $db->quote($programme->code));
+
                     $query->clear()
                         ->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
-                        ->set($db->quoteName('parent_id') . ' = ' . $group_id)
-                        ->set($db->quoteName('course') . ' = ' . $db->quote($programme->code));
+                        ->columns($db->quoteName($columns))
+                        ->values(implode(',',$values));
                     $db->setQuery($query);
                     $db->execute();
                     //
 
                     // Affect coordinator to the group of the program
+                    $columns = array('user_id', 'group_id');
+                    $values = array($db->quote($user_id), $group_id);
+
                     $query->clear()
                         ->insert($db->quoteName('#__emundus_groups'))
-                        ->set($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
-                        ->set($db->quoteName('group_id') . ' = ' . $group_id);
+                        ->columns($db->quoteName($columns))
+                        ->values(implode(',',$values));
                     $db->setQuery($query);
                     $db->execute();
                     //
@@ -652,17 +660,16 @@ class EmundusModelProgramme extends JModelList {
                     // Link All rights group with programme
                     $eMConfig = JComponentHelper::getParams('com_emundus');
                     $all_rights_group_id = $eMConfig->get('all_rights_group', 1);
+
+                    $columns = array('parent_id', 'course');
+                    $values = array($db->quote($all_rights_group_id), $db->quote($programme->code));
+
                     $query->clear()
                         ->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
-                        ->set($db->quoteName('parent_id') . ' = ' . $db->quote($all_rights_group_id))
-                        ->set($db->quoteName('course') . ' = ' . $db->quote($programme->code));
+                        ->columns($db->quoteName($columns))
+                        ->values(implode(',',$values));
                     $db->setQuery($query);
                     $db->execute();
-                    //
-
-                    // Create evaluator and manager group
-                    $this->addGroupToProgram($programme->label,$programme->code,2);
-                    $this->addGroupToProgram($programme->label,$programme->code,3);
                     //
 
                     // Call plugin triggers
