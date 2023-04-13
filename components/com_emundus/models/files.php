@@ -587,12 +587,14 @@ class EmundusModelFiles extends JModelLegacy
             '#__users', 'jos_users',
             '#__emundus_users', 'jos_emundus_users',
             '#__emundus_tag_assoc', 'jos_emundus_tag_assoc',
-            '#__messages', 'jos_messages',
-            '#__emundus_chatroom', 'jos_emundus_chatroom'
         ];
 
         if (in_array('overall', $em_other_columns)) {
             $lastTab[] = ['#__emundus_evaluations', 'jos_emundus_evaluations'];
+        }
+
+        if (in_array('unread_messages', $em_other_columns)) {
+            $lastTab[] = ['#__messages', 'jos_messages','#__emundus_chatroom', 'jos_emundus_chatroom'];
         }
 
         if (!empty($this->_elements)) {
@@ -615,14 +617,17 @@ class EmundusModelFiles extends JModelLegacy
                     LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
                     LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
                     LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
-                    LEFT JOIN #__emundus_chatroom as ec on ec.fnum = jecc.fnum
-                    LEFT JOIN #__messages as m on m.page = ec.id AND m.state = 0
                     LEFT JOIN #__users as u on u.id = jecc.applicant_id
                     LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
                     LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
 
         if (in_array('overall', $em_other_columns)) {
             $query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum = jecc.fnum ';
+        }
+
+        if (in_array('unread_messages', $em_other_columns)) {
+            $query.= ' LEFT JOIN #__emundus_chatroom as ec on ec.fnum = jecc.fnum
+            LEFT JOIN #__messages as m on m.page = ec.id AND m.state = 0 AND m.page IS NOT NULL ';
         }
 
         $q = $this->_buildWhere($lastTab);

@@ -1962,6 +1962,36 @@ class EmundusHelperUpdate
         return $result;
     }
 
+    public static function addColumnIndex($table,$column){
+        $result = ['status' => false, 'message' => ''];
+
+        if (empty($table)) {
+            $result['message'] = 'ADDING COLUMN INDEX : Please refer a database table.';
+            return $result;
+        }
+
+        if (empty($column)) {
+            $result['message'] = 'ADDING COLUMN INDEX : Please refer a column name.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $index_existing = $db->setQuery('SHOW INDEX FROM ' . $table . ' WHERE ' . $db->quoteName('Column_name') . ' = ' . $db->quote($column))->loadResult();
+
+        if (empty($index_existing)) {
+            try {
+                $index_name = $table . '_' . $column . '_INDEX';
+                $query = 'CREATE INDEX ' . $index_name . ' ON ' . $db->quoteName($table) . ' (' . $db->quoteName($column) . ')';
+                $db->setQuery($query);
+                $result['status'] = $db->execute();
+            } catch (Exception $e) {
+                $result['message'] = 'ADDING COLUMN INDEX : Error : ' . $e->getMessage();
+            }
+        }
+
+        return $result;
+    }
+
     public static function addFabrikElement($datas,$params = null) {
         $result = ['status' => false, 'message' => ''];
 

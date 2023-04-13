@@ -1303,6 +1303,8 @@ try {
                 EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_FILES_ASSOCIATED_BY_STATUS',$dashboard_files_associated_by_status_params);
                 EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_FILES_BY_TAG',$dashboard_files_by_tag_params);
 
+                EmundusHelperUpdate::addColumnIndex('jos_messages', 'page');
+
             }
 
 
