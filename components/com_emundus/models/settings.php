@@ -1248,6 +1248,11 @@ class EmundusModelsettings extends JModelList {
 							$tab['actions'][$ak] = $action;
 						}
 
+						foreach($tab['filters'] as $fk => $filter) {
+							$filter['label'] = JText::_($filter['label']);
+							$tab['filters'][$fk] = $filter;
+						}
+
 						$list['tabs'][$tk] = $tab;
 					}
 
