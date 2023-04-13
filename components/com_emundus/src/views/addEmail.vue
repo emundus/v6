@@ -12,7 +12,7 @@
         <div>
           <span class="em-red-500-color em-mb-8">{{translations.RequiredFieldsIndicate}}</span>
           <div class="em-mb-16">
-            <h2>{{ translations.Informations }}</h2>
+            <h1 class="em-h1">{{ translations.Informations }}</h1>
           </div>
 
           <div>
@@ -57,7 +57,7 @@
 
         <div>
           <div class="em-flex-row em-mb-16">
-            <p class="em-h4 em-pointer" @click="displayAdvanced">{{ translations.Advanced }}</p>
+            <h3 class="em-h3 em-pointer" @click="displayAdvanced">{{ translations.Advanced }}</h3>
             <button :title="translations.Advanced" type="button" class="em-transparent-button em-flex-column" @click="displayAdvanced" v-show="!displayAdvancedParameters">
               <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
             </button>
