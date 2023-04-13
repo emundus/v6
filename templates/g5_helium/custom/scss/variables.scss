@@ -5,15 +5,15 @@
 
   --neutral-0: #FFFFFF;
   --neutral-25: #FEFEFE;
-  --neutral-50: #FAFAFB;
+  --neutral-50: #FFFFFF;
   --neutral-100: #EBECF0;
   --neutral-200: #D4D6DF;
   --neutral-300: #B2B7C7;
-  --neutral-400: #8990A9;
+  --neutral-400: #E3E3E3;
   --neutral-500: #5E6580;
   --neutral-600: #363A49;
   --neutral-700: #20232C;
-  --neutral-800: #16181E;
+  --neutral-800: #2B313B;
   --neutral-900: #0B0C0F;
 
   --red-25: #FFFBFA;
@@ -522,7 +522,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin input-hover {
-  border: 1px solid var(--neutral-600);
+  border: 1px solid var(--neutral-500);
   box-shadow: none;
 }
 
@@ -756,6 +756,18 @@ $font:'Inter', sans-serif;
     padding: 0 !important;
   }
 
+  /* CALC */
+  &.plg-calc .controls {
+    span:nth-child(1):not(.fabrikinput){
+        display: none !important;
+    }
+    .fabrikinput {
+      height: auto !important;
+      padding: 2px !important;
+      color: $neutral-900 !important;
+    }
+  }
+
   /* LABEL */
   .fabrikLabel {
     @include body-14-medium;
@@ -932,13 +944,23 @@ $font:'Inter', sans-serif;
         li.search-choice {
           margin-top: 4px;
           border-radius: 8px;
-          border: var(--neutral-400);
-          background: var(--neutral-100);
+          border: var(--light-blue-400);
+          background: var(--light-blue-100);
           @include body-14;
+          align-items: center;
+          justify-content: space-between;
+          padding-right: 6px;
+          display: flex;
 
           span {
             margin: 0 !important;
             padding: 7px;
+          }
+
+          .search-choice-close{
+            position: relative;
+            top: 0;
+            right: 0;
           }
         }
 
@@ -1079,7 +1101,6 @@ $font:'Inter', sans-serif;
       .input-append {
         display: flex;
         flex-direction: row;
-        justify-content: flex-end;
 
         input {
           border-radius: 8px 0 0 8px;

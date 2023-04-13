@@ -83,6 +83,7 @@ h1 {
   font-size: 32px;
   line-height: 40px;
   color: $accent-color-1;
+  margin: 0;
 }
 h2{
   font-family: get-font-family($font-family-title);
@@ -91,6 +92,7 @@ h2{
   font-size: 24px;
   line-height: 30px;
   color: $accent-color-1;
+  margin: 0;
 }
 h3{
   font-family: get-font-family($font-family-title);
@@ -99,6 +101,7 @@ h3{
   font-size: 20px;
   line-height: 25px;
   color: $accent-color-1;
+  margin: 0;
 }
 h4{
   font-family: get-font-family($font-family-title);
@@ -107,6 +110,7 @@ h4{
   font-size: 18px;
   line-height: 23px;
   color: $accent-color-1;
+  margin: 0;
 }
 h5{
   font-family: get-font-family($font-family-title);
@@ -115,6 +119,7 @@ h5{
   font-size: 16px;
   line-height: 20px;
   color: $accent-color-1;
+  margin: 0;
 }
 h6{
   font-family: get-font-family($font-family-title);
@@ -123,6 +128,7 @@ h6{
   font-size: 14px;
   line-height: 16px;
   color: $accent-color-1;
+  margin: 0;
 }
 
 .view-list, .g-back-office-emundus-tableau {
@@ -3850,7 +3856,7 @@ ul.unstyled.em-linkForgot li a {
   }
 
   .chzn-results li.highlighted {
-    background-color: var(--neutral-300);
+    background-color: var(--light-blue-100);
     background-image: unset !important;
     color: black;
   }
@@ -4953,7 +4959,12 @@ button.swal2-cancel.goback-btn {
 
 .chzn-container-single .chzn-single div b,
 .chzn-container-active.chzn-with-drop .chzn-single div b {
-  top: 13px;
+  background-position-x: 0;
+  background-position-y: 40%;
+  -webkit-appearance: none;
+  background-image: url(/images/emundus/arrow.svg);
+  background-size: 8px;
+  background-repeat: no-repeat;
 }
 
 .chzn-container-single.chzn-container[id*="indicatif_chzn"],
@@ -5062,7 +5073,7 @@ button.swal2-cancel.goback-btn {
 
         p {
           @include body-16;
-          color: var(--neutral-600);
+          color: var(--neutral-500);
         }
       }
     }

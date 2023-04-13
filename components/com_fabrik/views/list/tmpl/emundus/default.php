@@ -29,7 +29,7 @@ endif;
 
 if ($this->showTitle == 1) : ?>
 	<div class="page-header em-flex-row em-flex-space-between emundus-list-page-header">
-		<h1 class="em-h3" style="margin: 0"><?php echo $this->table->label;?></h1>
+		<h1><?php echo $this->table->label;?></h1>
 		<?php if ($this->showAdd) :?>
 
             <div><a class="addbutton addRecord em-primary-button em-w-max-content" href="<?php echo $this->addRecordLink;?>">
