@@ -122,7 +122,7 @@
         </div>
 
         <div class="em-logo-box pointer em-mt-16" v-if="!banner_updating">
-          <img class="logo-settings" style="width: 250px" :src="bannerLink" :srcset="'/'+bannerLink" :alt="InsertBanner">
+          <img class="logo-settings" style="width: 180px" :src="bannerLink" :srcset="'/'+bannerLink" :alt="InsertBanner">
         </div>
         <div class="em-mt-16" v-if="banner_updating">
           <vue-dropzone
@@ -148,39 +148,6 @@
         </button>
       </div>
 
-      <!-- BANNER -->
-      <div v-if="bannerLink" class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
-        <div class="em-flex-row">
-          <div>
-            <h3 class="em-text-neutral-800" style="margin: 0">{{ translate("COM_EMUNDUS_ONBOARD_BANNER") }}</h3>
-            <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png</em></span><br/>
-            <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_RECOMMENDED_SIZE') }} : 1440x200px</em></span>
-          </div>
-          <span class="material-icons em-pointer" style="margin-left: 125px" v-if="banner_updating" @click="banner_updating = !banner_updating">close</span>
-        </div>
-
-        <div class="em-logo-box pointer em-mt-16" @click="banner_updating = !banner_updating" v-if="!banner_updating">
-          <img class="logo-settings" :src="bannerLink" :srcset="'/'+bannerLink" :alt="InsertBanner">
-        </div>
-        <div class="em-mt-16">
-          <vue-dropzone
-              v-if="banner_updating"
-              ref="dropzone"
-              id="customdropzone"
-              :include-styling="false"
-              :options="bannerDropzoneOptions"
-              :useCustomSlot=true
-              v-on:vdropzone-file-added="afterAdded"
-              v-on:vdropzone-thumbnail="thumbnail"
-              v-on:vdropzone-removed-file="afterRemoved"
-              v-on:vdropzone-complete="onComplete"
-              v-on:vdropzone-error="catchError">
-            <div class="dropzone-custom-content" id="dropzone-message">
-              {{ translate("COM_EMUNDUS_ONBOARD_DROP_HERE") }}
-            </div>
-          </vue-dropzone>
-        </div>
-      </div>
     </div>
 
     <div class="em-page-loader" v-if="loading"></div>

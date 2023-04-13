@@ -3169,7 +3169,7 @@ class EmundusModelEvaluation extends JModelList {
                     $url = $details_url;
                 }
                 // If evaluation period started and not passed and we have update rights
-                elseif ($update_access || $create_access) {
+                elseif ($update_access || ($create_access && $evaluation->user == $user->id)) {
                     $url = $view == 'form' ? $form_url : $details_url;
                 }
                 // If evaluation period started and not passed and we have read rights

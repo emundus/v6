@@ -28,7 +28,12 @@ class SmartAgenda
      */
     private $baseUrl = '';
 
-    /**
+	/**
+	 * @var string $baseUrl
+	 */
+	private $webServiceBaseUrl = '';
+
+	/**
      * @var string $token
      */
     private $token = '';
@@ -57,14 +62,10 @@ class SmartAgenda
             ]);
             $this->client = $client;
             $this->generateToken();
-
-            if (empty($this->token)) {
-                throw new Exception('Failed to generate API token. Please check Smart Agenda configuration.');
-            }
         }
     }
 
-    private function setAuth()
+    private function setAuth(): void
     {
         $config = JComponentHelper::getParams('com_emundus');
         $this->auth['login'] = $config->get('smart_agenda_login');
@@ -78,9 +79,9 @@ class SmartAgenda
         return $this->auth;
     }
 
-    private function setHeaders()
+    private function setHeaders($headers = [])
     {
-        $this->headers = array(
+        $this->headers = !empty($headers) ? $headers : array(
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
         );
@@ -94,13 +95,20 @@ class SmartAgenda
     private function setBaseUrl()
     {
         $config = JComponentHelper::getParams('com_emundus');
-        $this->baseUrl = $config->get('smart_agenda_base_url');
+        $this->baseUrl = $config->get('smart_agenda_base_url', '');
+		$this->webServiceBaseUrl = $config->get('smart_agenda_ws_base_url', '');
     }
 
     private function getBaseUrl(): string
     {
         return $this->baseUrl;
     }
+
+
+	private function getWSBaseUrl(): string
+	{
+		return $this->webServiceBaseUrl;
+	}
 
     private function getToken()
     {
@@ -111,7 +119,7 @@ class SmartAgenda
         return $this->token;
     }
 
-    private function setToken($token)
+    private function setToken($token): void
     {
         $this->token = $token;
     }
@@ -151,26 +159,51 @@ class SmartAgenda
         return $response;
     }
 
-    private function post($url, $json)
-    {
-        $response = '';
-        $token = $this->getToken();
+	/**
+	 * @param $url
+	 * @param $json
+	 * @param $use_token - In context of API, we need the token, but not for dedicated Web Service
+	 * @return mixed|string
+	 * @throws \GuzzleHttp\Exception\GuzzleException
+	 */
+	private function post($url, $json, $use_token = true)
+	{
+		$response = '';
 
-        if (!empty($token)) {
-            try {
-                $response = $this->client->post($url . '?' . http_build_query(['token' => $this->getToken()]), ['json' => $json]);
+		if ($use_token) {
+			$token = $this->getToken();
 
-                $response = json_decode($response->getBody());
-            } catch (\Exception $e) {
-                JLog::add('[POST] ' .$e->getMessage(), JLog::ERROR, 'com_emundus.smart_agenda');
-                $response = $e->getMessage();
-            }
-        } else {
-            $response = 'Missing api token';
-        }
+			if (!empty($token)) {
+				try {
+					$response = $this->client->post($url . '?' . http_build_query(['token' => $this->getToken()]), ['json' => $json]);
 
-        return $response;
-    }
+					$response = json_decode($response->getBody());
+				} catch (\Exception $e) {
+					JLog::add('[POST] ' .$e->getMessage(), JLog::ERROR, 'com_emundus.smart_agenda');
+					$response = $e->getMessage();
+				}
+			} else {
+				$response = 'Missing api token';
+			}
+		} else {
+			try {
+				$auth = $this->getAuth();
+				$client = new GuzzleClient([
+					'headers' => [
+						'Authorization' => 'Basic ' . base64_encode($auth['login'].':'.$auth['pwd'])
+					]
+				]);
+				$response = $client->request('POST', $url, ['json' => $json]);
+
+				$response = json_decode($response->getBody());
+			} catch (\Exception $e) {
+				JLog::add('[POST] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.smart_agenda');
+				$response = $e->getMessage();
+			}
+		}
+
+		return $response;
+	}
 
     private function generateToken()
     {
@@ -283,4 +316,53 @@ class SmartAgenda
 
         return $list;
     }
+
+	public function userInvit($params) {
+		$invited = false;
+
+		if (!empty($params) && !empty($params['id_interne_candidat']) && !empty($params['id_presta_smartagenda']) && !empty($params['mail']) && $params['_action'] == 'userinvit') {
+			$characters = 'abcdefghijklmnopqrstuvwxyz';
+			$sel = '';
+
+			for ($i = 0; $i < 10; $i++) {
+				$index = rand(0, strlen($characters) - 1);
+				$sel .= $characters[$index];
+			}
+			$userinvit_hash = $sel;
+			foreach($params as $key => $value) {
+				$userinvit_hash .= $value;
+			}
+
+			$params['hash'] = $sel . hash('sha1', $userinvit_hash);
+
+			$response = $this->post($this->getWSBaseUrl(), $params, false);
+			if (!empty($response) && $response->code == 0 && !empty($response->id_client)) {
+				$invited = true;
+
+				$db = JFactory::getDbo();
+				$query = $db->getQuery(true);
+
+				$query->update('#__emundus_users')
+					->set('smart_agenda_client_id = ' . $response->id_client)
+					->where('email LIKE ' . $db->quote($params['mail']));
+
+				try {
+					$db->setQuery($query);
+					$updated = $db->execute();
+
+					if (!$updated) {
+						JLog::add('Failed to save smart agenda user_id ' . $response->id . ' for user with mail ' . $params['mail'] . ' and fnum ' . $params['id_interne_candidat'], JLog::WARNING, 'com_emundus.smart_agenda');
+					}
+				} catch (Exception $e) {
+					JLog::add('Failed to save smart agenda user_id ' . $response->id . ' for user with mail ' . $params['mail'] . ' and fnum ' . $params['id_interne_candidat'] . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.smart_agenda');
+				}
+			} else {
+				JLog::add('Request failed for params ' . json_encode($params), JLog::WARNING, 'com_emundus.smart_agenda');
+			}
+		} else {
+			JLog::add('Wrong call to userinvit, missing params', JLog::WARNING, 'com_emundus.smart_agenda');
+		}
+
+		return $invited;
+	}
 }
