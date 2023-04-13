@@ -25,16 +25,16 @@
 				<div v-if="typeof currentTab.pagination !== undefined && currentTab.pagination && currentTab.pagination.total > 1" id="pagination" class="em-text-align-center">
 					<ul class="em-flex-row em-flex-center" style="list-style-type:none;margin-left:0;">
 					<span :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === 1}"
-					      class="material-icons-outlined em-pointer em-mr-8 em-ml-8"
+					      class="material-icons-outlined em-pointer em-mr-8"
 					      @click="getListItems(currentTab.pagination.current - 1, selectedListTab)">chevron_left</span>
 						<li v-for="i in currentTab.pagination.total" :key="i"
-						    class="em-pointer em-mr-8 em-ml-8 em-circle em-bg-main-100"
-						    :class="{'em-bg-main-500 label-text-darkpurple active': i === currentTab.pagination.current}"
+						    class="em-pointer em-square-button"
+						    :class="{'active': i === currentTab.pagination.current}"
 						    @click="getListItems(i, selectedListTab)">
 							{{ i }}
 						</li>
 						<span :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === currentTab.pagination.total}"
-						      class="material-icons-outlined em-pointer em-mr-8 em-ml-8"
+						      class="material-icons-outlined em-pointer em-ml-8"
 						      @click="getListItems(currentTab.pagination.current + 1, selectedListTab)">chevron_right</span>
 					</ul>
 				</div>
@@ -193,6 +193,10 @@ export default {
 		if (this.viewType === null || typeof this.viewType === 'undefined' || (this.viewType !== 'blocs' && this.viewType !== 'table')) {
 			this.viewType = 'blocs';
 			localStorage.setItem('tchooz_view_type/' + document.location.hostname,'blocs');
+		}
+		const storageNbItemsDisplay = localStorage.getItem('tchooz_number_of_items_to_display/' + document.location.hostname);
+		if (storageNbItemsDisplay !== null) {
+			this.numberOfItemsToDisplay = parseInt(storageNbItemsDisplay);
 		}
 
 		this.initList();
@@ -516,6 +520,11 @@ export default {
 
 			return columns;
 		}
+	},
+	watch: {
+		numberOfItemsToDisplay() {
+			localStorage.setItem('tchooz_number_of_items_to_display/' + document.location.hostname, this.numberOfItemsToDisplay);
+		},
 	}
 }
 </script>
@@ -600,14 +609,7 @@ export default {
 
 	li {
 		transition: all .3s;
-		width: 40px;
-		height: 40px;
 		font-size: 12px;
-
-		&:hover:not(.active) {
-			background-color: #87D4B8;
-			color: white;
-		}
 	}
 }
 </style>
