@@ -1976,7 +1976,7 @@ class EmundusHelperUpdate
         }
 
         $db = JFactory::getDbo();
-        $index_existing = $db->setQuery('SHOW INDEX FROM ' . $table . ' WHERE ' . $db->quoteName('Column_name') . ' = ' . $db->quote($column))->loadResult();
+        $index_existing = $db->setQuery('SHOW INDEX FROM ' . $table . ' WHERE ' . $db->quoteName('Column_name') . ' LIKE ' . $db->quote($column))->loadResult();
 
         if (empty($index_existing)) {
             try {
