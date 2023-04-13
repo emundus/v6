@@ -85,7 +85,7 @@ class EmundusModelEmailsTest extends TestCase
 
 	public function testDeleteEmails()
 	{
-		$lbl = 'Test de la création ' . rand(0, 1000);
+		$lbl = 'Test de la suppression ' . rand(0, 1000);
 		$data = [
 			'lbl' => $lbl,
 			'subject' => 'Test de la création',
@@ -96,13 +96,15 @@ class EmundusModelEmailsTest extends TestCase
 			'category' => '',
 			'published' => 1
 		];
+
+		sleep(1);
 		$created = $this->m_emails->createEmail($data);
-		$this->assertNotFalse($created, 'La création de l\'email a fonctionné');
+		$this->assertNotFalse($created, 'La création de l\'email a fonctionnée');
 
 		$deleted = $this->m_emails->deleteEmail($created);
-		$this->assertTrue($deleted, 'La suppression de l\'email a fonctionné');
+		$this->assertTrue($deleted, 'La suppression de l\'email a fonctionnée d\'après le retour de la fonction.');
 
 		$email = $this->m_emails->getEmailById($created);
-		$this->assertNull($email, 'L\'email a bien été supprimé, on ne le retrouve plus');
+		$this->assertNull($email, 'L\'email a bien été supprimé, on ne le retrouve plus en base');
 	}
 }
