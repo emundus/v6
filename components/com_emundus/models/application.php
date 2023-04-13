@@ -3924,7 +3924,7 @@ class EmundusModelApplication extends JModelList
      *
      * @return bool
      */
-    public function moveApplication(string $fnum_from, string $fnum_to, $campaign, $status = null): bool {
+    public function moveApplication(string $fnum_from, string $fnum_to, $campaign, $status = null, $params = array()): bool {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -3956,6 +3956,19 @@ class EmundusModelApplication extends JModelList
 
                 $db->setQuery($query);
                 $db->execute();
+
+                JPluginHelper::importPlugin('emundus');
+                $dispatcher = JDispatcher::getInstance();
+                $dispatcher->trigger('callEventHandler', array(
+                        'onAfterMoveApplication',
+                        array(
+                            'fnum_from' => $fnum_from,
+                            'fnum_to' => $fnum_to,
+                            'campaign_id' => $campaign,
+                            'params' => $params)
+                    )
+                );
+
                 return true;
 
             } else {
@@ -3977,7 +3990,7 @@ class EmundusModelApplication extends JModelList
      * @param $pid Int the profile_id to get list of forms
      * @return bool
      */
-    public function copyApplication($fnum_from, $fnum_to, $pid = null, $copy_attachment = 0, $campaign_id = null, $copy_tag = 0, $move_hikashop_command = 0, $delete_from_file = 0) {
+    public function copyApplication($fnum_from, $fnum_to, $pid = null, $copy_attachment = 0, $campaign_id = null, $copy_tag = 0, $move_hikashop_command = 0, $delete_from_file = 0, $params = array()) {
         $db = JFactory::getDbo();
         $pids = [];
 
@@ -4205,7 +4218,8 @@ class EmundusModelApplication extends JModelList
                 'campaign_id' => $campaign_id,
                 'copy_tag' => $copy_tag,
                 'move_hikashop_command' => $move_hikashop_command,
-                'delete_from_file' => $delete_from_file)
+                'delete_from_file' => $delete_from_file,
+                'params' => $params)
             )
         );
 

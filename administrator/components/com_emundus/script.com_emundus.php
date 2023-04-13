@@ -1305,6 +1305,7 @@ try {
 
                 EmundusHelperUpdate::addColumnIndex('jos_messages', 'page');
 
+                EmundusHelperUpdate::addCustomEvents([['label' => 'onAfterMoveApplication', 'category' => 'Campaign']]);
             }
 
 
