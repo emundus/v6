@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="3.0" method="upgrade">
+    <name>com_miniorange_saml</name>
+    <creationDate>April 2015</creationDate>
+    <copyright>2016 miniOrange</copyright>
+    <license>http://miniorange.com/usecases/miniOrange_User_Agreement.pdf</license>
+    <author>miniOrange Security Software Pvt. Ltd.</author>
+    <authorEmail>info@xecurify.com</authorEmail>
+    <authorUrl>http://www.miniorange.com</authorUrl>
+    <version>42.2</version>
+    <description></description>
+    
+    
+    
+    <install> <!-- Runs on install -->
+        <sql>
+            <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+        </sql>
+    </install>
+    <update> <!-- Runs on update -->
+        <schemas>
+            <schemapath type="mysql">sql/updates/mysql</schemapath>
+            <schemapath type="sqlsrv">sql/updates/sqlsrv</schemapath>
+        </schemas>
+    </update>
+    <uninstall> <!-- Runs on uninstall -->
+        <sql>
+            <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+        </sql>
+    </uninstall>
+
+    <files folder="site">
+        <filename>index.html</filename>
+        <filename>miniorange_saml.php</filename>
+        <filename>controller.php</filename>
+        <filename>router.php</filename>
+        <folder>views</folder>
+        <folder>models</folder>
+        <folder>controllers</folder>
+        <folder>helpers</folder>
+    </files>
+    <media destination="com_miniorange_saml" folder="media">
+        <folder>js</folder>
+        <folder>css</folder>
+    </media>
+    <languages folder="languages/site">
+        
+			<language tag="en-GB">en-GB/en-GB.com_miniorange_saml.ini</language>
+    </languages>
+    <administration>
+        <menu img="media/com_miniorange_saml/images/s_com_miniorange_saml.png" >COM_MINIORANGE_SAML</menu>
+        <submenu>
+            <menu link="option=com_miniorange_saml&amp;tab=account" view="accountsetup">COM_MINIORANGE_SAML_ACCOUNT</menu>
+            <menu link="option=com_miniorange_saml&amp;tab=description" view="accountsetup">COM_MINIORANGE_SAML_DESCRIPTION</menu>
+            <menu link="option=com_miniorange_saml&amp;tab=idp" view="accountsetup">COM_MINIORANGE_SAML_IDP</menu>
+            <menu link="option=com_miniorange_saml&amp;tab=domain_mapping" view="accountsetup">COM_MINIORANGE_SAML_DOMAIN_MAPPING</menu>
+            <menu link="option=com_miniorange_saml&amp;tab=sso_settings" view="accountsetup">COM_MINIORANGE_SAML_LOGIN_SETTINGS</menu>
+            <menu link="option=com_miniorange_saml&amp;tab=attribute_mapping" view="accountsetup">COM_MINIORANGE_SAML_MAPPING </menu>
+            <menu link="option=com_miniorange_saml&amp;tab=group_mapping" view="accountsetup">COM_MINIORANGE_SAML_GROUPMAPPING</menu>
+            <menu link="option=com_miniorange_saml&amp;tab=custom_certificate" view="accountsetup">COM_MINIORANGE_SAML_CERTIFICATE</menu>
+            <menu link="option=com_miniorange_saml&amp;tab=licensing" view="accountsetup">COM_MINIORANGE_SAML_LICENSING</menu>
+        </submenu>
+
+        <files folder="administrator">
+            <filename>access.xml</filename>
+            <filename>config.xml</filename>
+            <filename>controller.php</filename>
+            <filename>index.html</filename>
+            <filename>miniorange_saml.php</filename>
+            <folder>controllers</folder>
+            <folder>assets</folder>
+            <folder>helpers</folder>
+            <folder>models</folder>
+            <folder>sql</folder>
+            <folder>tables</folder>
+            <folder>views</folder>
+        </files>
+        <languages folder="languages/administrator">
+            
+			<language tag="en-GB">en-GB/en-GB.com_miniorange_saml.ini</language>
+			<language tag="en-GB">en-GB/en-GB.com_miniorange_saml.sys.ini</language>
+        </languages>
+    </administration>
+    <config>
+        <fields name="params">
+            <fieldset name="component">
+                <field name="save_history" default="0" />
+            </fieldset>
+        </fields>
+    </config>
+    <plugins>
+        <plugin group="search" plugin="miniorange_saml"/>
+    </plugins>
+    
+</extension>
+<!-- Component built by the Joomla Component Creator -->
+<!-- http://www.component-creator.com/ -->

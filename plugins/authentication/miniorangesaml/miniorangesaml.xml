@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.4" type="plugin" group="authentication" method="upgrade">
+	<name>plg_authentication_miniorangesaml</name>
+	<author>miniOrange Security Software Pvt. Ltd.</author>
+	<authorEmail>info@xecurify.com</authorEmail>
+	<authorUrl>www.miniorange.com</authorUrl>
+	<creationDate>April 2015</creationDate>
+	<copyright>Copyright 2015 miniOrange. All Rights Reserved.</copyright>
+	<license>http://miniorange.com/usecases/miniOrange_User_Agreement.pdf</license>
+	<version>42.2</version>
+	<description>PLG_MINIORANGE_SAML_DESCRIPTION</description>
+
+	<files>
+		<filename plugin="miniorangesaml">miniorangesaml.php</filename>
+		<folder>saml2</folder>
+		<folder>language</folder>
+		<folder>images</folder>
+		<filename>index.html</filename>
+	</files>
+	<languages>
+		<language tag="en-GB">language/en-GB/en-GB.plg_authentication_miniorangesaml.ini</language>
+		<language tag="en-GB">language/en-GB/en-GB.plg_authentication_miniorangesaml.sys.ini</language>
+	</languages>
+	<config>
+		<fields name="params">	
+		</fields>
+	</config>
+
+</extension>

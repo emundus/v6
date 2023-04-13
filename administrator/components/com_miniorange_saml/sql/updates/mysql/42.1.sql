@@ -1,0 +1,2 @@
+ALTER TABLE `#__miniorange_saml_config` ADD COLUMN `user_contact_attributes` TEXT DEFAULT NULL;
+ALTER TABLE `#__miniorange_saml_customer_details` ADD COLUMN `enable_do_not_auto_create_users` BOOLEAN DEFAULT FALSE;

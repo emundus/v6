@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.0" type="plugin" group="user" method="upgrade">
+	<name>PLG_USER_SAMLLOGOUT_NAME</name>
+	<author>miniOrange Security Software Pvt. Ltd.</author>
+	<authorEmail>info@xecurify.com</authorEmail>
+	<authorUrl>www.miniorange.com</authorUrl>
+	<creationDate>April 2015</creationDate>
+	<copyright>Copyright 2015 miniOrange. All Rights Reserved.</copyright>
+	<license>http://miniorange.com/usecases/miniOrange_User_Agreement.pdf</license>
+	<version>42.2</version>
+	<description>PLG_USER_SAMLLOGOUT_XML_DESCRIPTION</description>
+	<files>
+		<filename plugin="samllogout">samllogout.php</filename>
+		<filename plugin="samllogout">LogoutRequest.php</filename>
+		<folder>language</folder>
+		<folder>cert</folder>
+		<filename>index.html</filename>
+	</files>
+	<config />
+	<languages>
+		<language tag="en-GB">language/en-GB/en-GB.plg_user_samllogout.ini</language>
+		<language tag="en-GB">language/en-GB/en-GB.plg_user_samllogout.sys.ini</language>
+	</languages>
+</extension>

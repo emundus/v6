@@ -5,14 +5,14 @@
     <author>miniOrange Security Software Pvt. Ltd.</author>
 	<authorEmail>info@xecurify.com</authorEmail>
 	<authorUrl>www.miniorange.com</authorUrl>
-    <creationDate>May 2017</creationDate>
-    <copyright>Copyright 2017 miniOrange. All Rights Reserved.</copyright>
-    <license>GNU General Public License version 3</license>
-    <version>7.8</version>
+    <creationDate>April 2015</creationDate>
+    <copyright>Copyright 2015 miniOrange. All Rights Reserved.</copyright>
+    <license>http://miniorange.com/usecases/miniOrange_User_Agreement.pdf</license>
+    <version>42.2</version>
     <description>LIB_MINIORANGESAMLPLUGIN_XML_DESCRIPTION</description>
     <files>
-	<filename>index.html</filename>
         <folder>utility</folder>
+	<filename>index.html</filename>
     </files>
     <languages>
         <language tag="en-GB">language/en-GB/en-GB.lib_miniorangesamlplugin.ini</language>
