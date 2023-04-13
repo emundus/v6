@@ -206,6 +206,7 @@ export default {
 			let lists = localStorage.getItem('tchooz_lists/' + document.location.hostname);
 
 			if (lists !== null) {
+				lists = atob(lists);
 				this.lists = JSON.parse(lists);
 				if (typeof this.lists[this.type] === 'undefined') {
 					console.error('List type ' + this.type + ' does not exist');
@@ -229,7 +230,7 @@ export default {
 			settingsService.getOnboardingLists().then(response => {
 				if (response.data.status) {
 					this.lists = response.data.data;
-					localStorage.setItem('tchooz_lists/' + document.location.hostname, JSON.stringify(this.lists));
+					localStorage.setItem('tchooz_lists/' + document.location.hostname, btoa(JSON.stringify(this.lists)));
 
 					if (typeof this.lists[this.type] === 'undefined') {
 						console.error('List type ' + this.type + ' does not exist');
