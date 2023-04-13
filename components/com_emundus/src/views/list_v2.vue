@@ -620,7 +620,8 @@ export default {
 
 #tabs-loading, #items-loading {
 
-	:not(.skeleton-grid) .skeleton-item {
+	:not(.skeleton-grid) .skeleton-item,
+	&:not(.skeleton-grid) .skeleton-item {
 		height: 40px !important;
 		width: 100% !important;
 		margin-bottom: 16px !important;

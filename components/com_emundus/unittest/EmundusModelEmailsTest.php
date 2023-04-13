@@ -97,12 +97,12 @@ class EmundusModelEmailsTest extends TestCase
 			'published' => 1
 		];
 		$created = $this->m_emails->createEmail($data);
-		$created_email = $this->m_emails->getEmailById($created);
+		$this->assertNotFalse($created, 'La création de l\'email a fonctionné');
 
-		$deleted = $this->m_emails->deleteEmail($created_email->id);
+		$deleted = $this->m_emails->deleteEmail($created);
 		$this->assertTrue($deleted, 'La suppression de l\'email a fonctionné');
 
-		$email = $this->m_emails->getEmailById($created_email->id);
+		$email = $this->m_emails->getEmailById($created);
 		$this->assertNull($email, 'L\'email a bien été supprimé, on ne le retrouve plus');
 	}
 }
