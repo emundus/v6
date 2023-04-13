@@ -16,7 +16,6 @@
 				<skeleton v-for="i in 9" :key="i" class="em-border-radius-8 skeleton-item"></skeleton>
 			</div>
 		</div>
-
 		<div v-else class="list">
 			<section id="pagination-wrapper" class="em-flex-row em-flex-space-between">
 				<select name="numberOfItemsToDisplay" v-model="numberOfItemsToDisplay" @change="getListItems()" class='em-mt-16 em-mb-16 em-default-input'>
@@ -44,7 +43,7 @@
 			</section>
 			<nav v-if="currentList.tabs.length > 1" id="list-nav">
 				<ul style="list-style-type: none;margin-left:0;" class="em-flex-row">
-					<li v-for="tab in currentList.tabs" key="tab.key"
+					<li v-for="tab in currentList.tabs" :key="tab.key"
 					    class="em-pointer em-p-8 em-font-weight-600 em-p-16"
 					    :class="{
 								'em-main-500-color em-border-bottom-main-500 ': selectedListTab === tab.key,
@@ -94,7 +93,7 @@
 			     :class="{'skeleton-grid': viewType === 'blocs','em-flex-column em-mb-16': viewType === 'list'}"
 			     style="flex-wrap: wrap"
 			>
-				<skeleton v-for="i in 9" :key="i" class="em-m-16 em-border-radius-8 skeleton-item"></skeleton>
+				<skeleton v-for="i in 9" :key="i" class="em-border-radius-8 skeleton-item"></skeleton>
 			</div>
 			<div v-else>
 				<div v-if="displayedItems.length > 0" id="list-items">
@@ -145,9 +144,10 @@
 									</td>
 								</div>
 							</tr>
+						</tbody>
 					</table>
 				</div>
-				<p v-else id="list-empty">{{ translate('COM_EMUNDUS_ONBOARD_EMPTY_LIST') }}</p>
+				<p v-else id="empty-list">{{ translate('COM_EMUNDUS_ONBOARD_EMPTY_LIST') }}</p>
 			</div>
 		</div>
 	</div>
@@ -162,7 +162,7 @@ import Skeleton from '../components/Skeleton.vue';
 // Services
 import settingsService from '../services/settings.js';
 import client from '../services/axiosClient';
-import Swal from "sweetalert2";
+import Swal from 'sweetalert2';
 import Section from "../components/Users/Section";
 
 export default {
@@ -170,6 +170,12 @@ export default {
 	components: {
 		Section,
 		Skeleton
+	},
+	props: {
+		defaultType: {
+			type: String,
+			default: null
+		}
 	},
 	data() {
 		return {
@@ -195,8 +201,15 @@ export default {
 	created() {
 		this.loading.lists = true;
 		this.loading.tabs = true;
-		const data = this.$store.getters['global/datas'];
-		this.params = Object.assign({}, ...Array.from(data).map(({name, value}) => ({[name]: value})));
+
+		if (this.defaultType !== null) {
+			this.params = {
+				'type': this.defaultType
+			};
+		} else {
+			const data = this.$store.getters['global/datas'];
+			this.params = Object.assign({}, ...Array.from(data).map(({name, value}) => ({[name]: value})));
+		}
 		this.type = this.params.type;
 
 		this.viewType = localStorage.getItem('tchooz_view_type/' + document.location.hostname)
@@ -260,6 +273,7 @@ export default {
 				} else {
 					console.error('Error while getting onboarding lists');
 					window.location.href = '/';
+					this.loading.lists = false;
 				}
 			});
 		},
@@ -272,56 +286,65 @@ export default {
 			}
 
 			const tabs = tab === null ? this.currentList.tabs : [this.currentTab];
-			tabs.forEach(tab => {
-				if (typeof this.searches[tab.key] === 'undefined') {
-					this.searches[tab.key] = {
-						search: '',
-						lastSearch: '',
-						debounce: null
-					};
-				}
-				this.setTabFilters(tab);
-
-				if (typeof tab.getter !== 'undefined') {
-					let url = 'index.php?option=com_emundus&controller=' + tab.controller + '&task=' + tab.getter + '&lim=' + this.numberOfItemsToDisplay + '&page=' + page;
-					if (this.searches[tab.key].search !== '') {
-						url += '&recherche=' + this.searches[tab.key].search;
+			if (tabs.length > 0) {
+				tabs.forEach(tab => {
+					if (typeof this.searches[tab.key] === 'undefined') {
+						this.searches[tab.key] = {
+							search: '',
+							lastSearch: '',
+							debounce: null
+						};
 					}
-					if (typeof this.filters[tab.key] !== 'undefined') {
-						this.filters[tab.key].forEach(filter => {
-							if (filter.value !== '' && filter.value !== 'all') {
-								url += '&' + filter.key + '=' + filter.value;
-							}
-						});
-					}
-
-					client().get(url)
-						.then(response => {
-
-							if (response.data.status === true) {
-								if (typeof response.data.data.datas !== 'undefined') {
-									this.items[tab.key] = response.data.data.datas;
-									tab.pagination = {
-										current: page,
-										total: Math.ceil(response.data.data.count / this.numberOfItemsToDisplay)
-									}
+					this.setTabFilters(tab);
+					if (typeof tab.getter !== 'undefined') {
+						let url = 'index.php?option=com_emundus&controller=' + tab.controller + '&task=' + tab.getter + '&lim=' + this.numberOfItemsToDisplay + '&page=' + page;
+						if (this.searches[tab.key].search !== '') {
+							url += '&recherche=' + this.searches[tab.key].search;
+						}
+						if (typeof this.filters[tab.key] !== 'undefined') {
+							this.filters[tab.key].forEach(filter => {
+								if (filter.value !== '' && filter.value !== 'all') {
+									url += '&' + filter.key + '=' + filter.value;
 								}
-							} else {
-								console.error('Failed to get data : ' + response.data.data.msg);
-							}
+							});
+						}
+
+						try {
+							client().get(url)
+									.then(response => {
+										if (response.data.status === true) {
+											if (typeof response.data.data.datas !== 'undefined') {
+												this.items[tab.key] = response.data.data.datas;
+												tab.pagination = {
+													current: page,
+													total: Math.ceil(response.data.data.count / this.numberOfItemsToDisplay)
+												}
+											}
+										} else {
+											console.error('Failed to get data : ' + response.data.data.msg);
+										}
+										this.loading.tabs = false;
+										this.loading.items = false;
+									})
+									.catch(error => {
+										console.error(error);
+										this.loading.tabs = false;
+										this.loading.items = false;
+									});
+						} catch (e) {
+							console.error(e);
 							this.loading.tabs = false;
 							this.loading.items = false;
-						})
-						.catch(error => {
-							console.error(error);
-							this.loading.tabs = false;
-							this.loading.items = false;
-						});
-				} else {
-					this.loading.tabs = false;
-					this.loading.items = false;
-				}
-			});
+						}
+					} else {
+						this.loading.tabs = false;
+						this.loading.items = false;
+					}
+				});
+			} else {
+				this.loading.tabs = false;
+				this.loading.items = false;
+			}
 		},
 		setTabFilters(tab) {
 			if (typeof tab.filters !== 'undefined' && tab.filters.length > 0) {
@@ -441,12 +464,12 @@ export default {
 					customClass: {
 						title: 'em-swal-title',
 						confirmButton: 'em-swal-confirm-button',
-						actions: "em-swal-single-action",
+						actions: 'em-swal-single-action',
 					}
 				});
 			}
 		},
-		onChangeFilter(filter) {
+		onChangeFilter() {
 			this.getListItems(this.currentTab.pagination.current, this.selectedListTab);
 		},
 		changeViewType(viewType) {

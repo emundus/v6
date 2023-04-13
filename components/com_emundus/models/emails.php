@@ -83,9 +83,9 @@ class EmundusModelEmails extends JModelList {
                 ->from('#__emundus_setup_emails AS ese')
                 ->leftJoin('#__emundus_email_templates AS et ON et.id = ese.email_tmpl')
                 ->where('ese.id = ' . $this->_db->quote($id));
-            $this->_db->setQuery($query);
 
             try {
+                $this->_db->setQuery($query);
                 $email = $this->_db->loadObject();
             } catch (Exception $e) {
                 JLog::add('Failed to get email by id ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
