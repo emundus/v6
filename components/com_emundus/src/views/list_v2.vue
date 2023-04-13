@@ -100,7 +100,10 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr v-for="item in displayedItems" :key="item.id" class="em-border-bottom-neutral-300">
+							<tr v-for="item in displayedItems" :key="item.id"
+							    class="em-border-bottom-neutral-300"
+							    :class="{'em-card-neutral-100 em-card-shadow em-p-24' : viewType === 'blocs'}"
+							>
 								<td class="em-pointer" @click="onClickAction(editAction, item.id)">
 									<span :class="{'em-body-16-semibold em-mb-16':  viewType === 'blocs'}">{{ item.label[params.shortlang] }}</span>
 								</td>
@@ -556,17 +559,14 @@ export default {
 		tbody {
 			display: grid;
 			grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-			column-gap: 10px;
-			row-gap: 15px;
+			column-gap: 24px;
+			row-gap: 24px;
 
 			tr {
 				background: #fff;
 				display: flex;
 				flex-direction: column;
 				justify-content: space-between;
-				border: 1px solid #ddd;
-				border-radius: 4px;
-				padding: 12px;
 				min-height: 200px;
 
 				td {
@@ -601,8 +601,8 @@ export default {
 .skeleton-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-	column-gap: 10px;
-	row-gap: 15px;
+	column-gap: 24px;
+	row-gap: 24px;
 }
 
 #pagination {
