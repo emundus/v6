@@ -370,19 +370,19 @@ class EmundusControllerEmail extends JControllerLegacy {
     }
 
     public function getemailcategories() {
-        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $email = $this->m_emails->getEmailCategories();
+	    $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
-            if (!empty($email)) {
-                $tab = array('status' => 1, 'msg' => JText::_('EMAIL_RETRIEVED'), 'data' => $email);
+        if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+            $categories = $this->m_emails->getEmailCategories();
+
+            if (!empty($categories)) {
+	            $response = array('status' => true, 'msg' => JText::_('EMAIL_CATEGORIES_RETRIEVED'), 'data' => $categories);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_EMAIL'), 'data' => $email);
+	            $response['msg'] = JText::_('ERROR_CANNOT_RETRIEVE_EMAIL_CATEGORIES');
             }
         }
-        echo json_encode((object)$tab);
+
+        echo json_encode((object)$response);
         exit;
     }
 

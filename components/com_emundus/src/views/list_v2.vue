@@ -7,10 +7,13 @@
 		</div>
 		<hr class="em-w-100">
 
-		<div v-if="loading.tabs">
-			<skeleton height="40px" width="100%" class="em-mb-16 em-border-radius-8"></skeleton>
-			<div class="skeleton-grid" style="flex-wrap: wrap">
-				<skeleton v-for="i in 12" :key="i" class="em-m-16 em-border-radius-8" height="200px"></skeleton>
+		<div v-if="loading.tabs" id="tabs-loading">
+			<div class="em-flex-row em-flex-space-between">
+				<skeleton height="40px" width="20%" class="em-mb-16 em-border-radius-8"></skeleton>
+				<skeleton height="40px" width="5%" class="em-mb-16 em-border-radius-8"></skeleton>
+			</div>
+			<div :class="{'skeleton-grid': viewType === 'blocs','em-flex-column': viewType === 'list'}" style="flex-wrap: wrap">
+				<skeleton v-for="i in 9" :key="i" class="em-border-radius-8 skeleton-item"></skeleton>
 			</div>
 		</div>
 
@@ -86,8 +89,12 @@
 				</section>
 			</section>
 
-			<div v-if="loading.items" class="skeleton-grid" style="flex-wrap: wrap">
-				<skeleton v-for="i in 12" :key="i" class="em-m-16 em-border-radius-8" height="200px"></skeleton>
+			<div v-if="loading.items"
+			     id="items-loading"
+			     :class="{'skeleton-grid': viewType === 'blocs','em-flex-column em-mb-16': viewType === 'list'}"
+			     style="flex-wrap: wrap"
+			>
+				<skeleton v-for="i in 9" :key="i" class="em-m-16 em-border-radius-8 skeleton-item"></skeleton>
 			</div>
 			<div v-else>
 				<div v-if="displayedItems.length > 0" id="list-items">
@@ -329,6 +336,12 @@ export default {
 										.then(response => {
 											if (response.data.status === true) {
 												let options = response.data.data;
+
+												// if options is an array of strings, convert it to an array of objects
+												if (typeof options[0] === 'string') {
+													options = options.map(option => ({value: option, label: option}));
+												}
+
 												options.unshift({value: 'all', label: this.translate(filter.label)});
 
 												this.filters[tab.key].push({
@@ -603,6 +616,21 @@ export default {
 	grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
 	column-gap: 24px;
 	row-gap: 24px;
+}
+
+#tabs-loading, #items-loading {
+
+	:not(.skeleton-grid) .skeleton-item {
+		height: 40px !important;
+		width: 100% !important;
+		margin-bottom: 16px !important;
+	}
+
+	.skeleton-grid  .skeleton-item,
+	&.skeleton-grid  .skeleton-item {
+		height: 200px !important;
+		min-width: 340px !important;
+	}
 }
 
 #pagination {

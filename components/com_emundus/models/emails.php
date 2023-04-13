@@ -1642,7 +1642,8 @@ class EmundusModelEmails extends JModelList {
             $rechercheMessage = $this->_db->quoteName('se.message') . ' LIKE ' . $this->_db->quote('%'.$recherche.'%');
             $rechercheEmail = $this->_db->quoteName('se.emailfrom') . ' LIKE ' . $this->_db->quote('%'.$recherche.'%');
             $rechercheType = $this->_db->quoteName('se.type') . ' LIKE ' . $this->_db->quote('%'.$recherche.'%');
-            $fullRecherche = $rechercheSubject.' OR '.$rechercheMessage.' OR '.$rechercheEmail.' OR '.$rechercheType;
+            $rechercheCategory = $this->_db->quoteName('se.category') . ' LIKE ' . $this->_db->quote('%'.$recherche.'%');
+            $fullRecherche = $rechercheSubject.' OR '.$rechercheMessage.' OR '.$rechercheEmail.' OR '.$rechercheType .' OR '.$rechercheCategory;
         }
 
         $query->select('*')
@@ -1670,7 +1671,7 @@ class EmundusModelEmails extends JModelList {
                         [
                             'key' => JText::_('COM_EMUNDUS_ONBOARD_CATEGORY'),
                             'value' => $email->category,
-                            'classes' => 'label label-default',
+                            'classes' => 'em-mt-8 em-mb-8 label label-default em-p-5-12 em-font-weight-600',
                             'display' => 'all'
                         ],
                     ];
