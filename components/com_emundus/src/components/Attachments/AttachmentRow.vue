@@ -108,7 +108,9 @@ export default {
     },
     columns: {
       type: Array,
-	    default: ['name','date','desc','category','status','user','modified_by','modified','permissions','sync']
+	    default() {
+		    return ['name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync'];
+	    }
     }
 	},
 	mixins: [mixin],
