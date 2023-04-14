@@ -8,18 +8,19 @@
               type="text"
               ref="searchbar"
               :placeholder="translate('COM_EMUNDUS_ACTIONS_SEARCH')"
-              @input="searchInFiles"
+              v-model="search"
+              @input="onSearch"
           />
           <span class="material-icons-outlined search">search</span>
-          <span class="material-icons-outlined clear em-pointer" @click="resetSearch">clear</span>
+          <span class="material-icons-outlined clear em-pointer" @click="search = ''">clear</span>
         </div>
         <div class="actions em-flex-row">
           <select
               v-if="Object.entries(thisAttachmentCategories).length > 0"
               name="category"
               class="category-select"
-              ref="categoryFilter"
-              @change="filterByCategory"
+              v-model="category"
+              @change="onCategoryChange"
           >
             <option value="all">{{ translate("COM_EMUNDUS_ATTACHMENTS_SELECT_CATEGORY") }}</option>
             <option v-for="(category, key) in thisAttachmentCategories" :key="key" :value="key">
@@ -72,54 +73,54 @@
           {{ translate('COM_EMUNDUS_ATTACHMENTS_EXPORT_LINK') }}
         </a>
       </div>
-      <div v-if="attachments.length" class="table-wrapper">
+      <div v-if="attachments.length" class="table-wrapper em-w-100">
         <table :class="{ loading: loading }" aria-describedby="Table of attachments information">
           <thead>
           <tr>
             <th id="check-th"><input class="attachment-check" type="checkbox" @change="updateAllCheckedAttachments"/></th>
             <th v-if="columns.includes('name')" id="name" @click="orderBy('value')">
-              {{ translate("COM_EMUNDUS_ATTACHMENTS_NAME") }}
-              <span v-if="sort.orderBy == 'value' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
-              <span v-if="sort.orderBy == 'value' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
+	            <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_NAME") }}</span>
+              <span v-if="sort.orderBy === 'value' && sort.order === 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy === 'value' && sort.order === 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th v-if="columns.includes('date')" id="date" class="date" @click="orderBy('timedate')">
-              {{ translate("COM_EMUNDUS_ATTACHMENTS_SEND_DATE") }}
-              <span v-if="sort.orderBy == 'timedate' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
-              <span v-if="sort.orderBy == 'timedate' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
+              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_SEND_DATE") }}</span>
+              <span v-if="sort.orderBy === 'timedate' && sort.order === 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy === 'timedate' && sort.order === 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th v-if="columns.includes('desc')" id="desc" class="desc" @click="orderBy('upload_description')">
-              {{ translate("COM_EMUNDUS_ATTACHMENTS_DESCRIPTION") }}
-              <span v-if="sort.orderBy == 'upload_description' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
-              <span v-if="sort.orderBy == 'upload_description' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
+              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_DESCRIPTION") }}</span>
+              <span v-if="sort.orderBy === 'upload_description' && sort.order === 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy === 'upload_description' && sort.order === 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th v-if="columns.includes('category')" id="category" class="category" @click="orderBy('category')">
-              {{ translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY") }}
-              <span v-if="sort.orderBy == 'category' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
-              <span v-if="sort.orderBy == 'category' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
+              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY") }}</span>
+              <span v-if="sort.orderBy === 'category' && sort.order === 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy === 'category' && sort.order === 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th v-if="columns.includes('status')" id="status" class="status" @click="orderBy('is_validated')">
-              {{ translate("COM_EMUNDUS_ATTACHMENTS_CHECK") }}
-              <span v-if="sort.orderBy == 'is_validated' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
-              <span v-if="sort.orderBy == 'is_validated' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
+              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_CHECK") }}</span>
+              <span v-if="sort.orderBy === 'is_validated' && sort.order === 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy === 'is_validated' && sort.order === 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th v-if="canSee && columns.includes('user')" id="user" @click="orderBy('user_id')">
-              {{ translate("COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY") }}
-              <span v-if="sort.orderBy == 'user_id' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
-              <span v-if="sort.orderBy == 'user_id' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
+              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY") }}</span>
+              <span v-if="sort.orderBy === 'user_id' && sort.order === 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy === 'user_id' && sort.order === 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th v-if="canSee && columns.includes('modified_by')" id="modified_by" @click="orderBy('modified_by')">
-              {{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY") }}
-              <span v-if="sort.orderBy == 'modified_by' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
-              <span v-if="sort.orderBy == 'modified_by' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
+              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY") }}</span>
+              <span v-if="sort.orderBy === 'modified_by' && sort.order === 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy === 'modified_by' && sort.order === 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th v-if="columns.includes('modified')" id="modified" class="date" @click="orderBy('modified')">
-              {{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE") }}
-              <span v-if="sort.orderBy == 'modified' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
-              <span v-if="sort.orderBy == 'modified' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
+              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE") }}</span>
+              <span v-if="sort.orderBy === 'modified' && sort.order === 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy === 'modified' && sort.order === 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th v-if="columns.includes('permissions')" id="permissions" class="permissions">{{ translate("COM_EMUNDUS_ATTACHMENTS_PERMISSIONS") }}</th>
             <th v-if="sync && columns.includes('sync')" id="sync" class="sync" @click="orderBy('sync')">
-              {{ translate("COM_EMUNDUS_ATTACHMENTS_SYNC") }}
+              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_SYNC") }}</span>
             </th>
           </tr>
           </thead>
@@ -241,7 +242,9 @@ export default {
 	  },
     columns: {
       type: Array,
-      default: ['name','date','desc','category','status','user','modified_by','modified','permissions','sync']
+      default() {
+				return ['name','date','desc','category','status','user','modified_by','modified','permissions','sync'];
+			}
     },
     displayEdit: {
       type: Boolean,
@@ -253,7 +256,6 @@ export default {
     return {
       loading: true,
       attachments: [],
-	    displayedAttachments: [],
       categories: {},
       fnums: [],
       users: [],
@@ -262,11 +264,7 @@ export default {
       checkedAttachments: [],
       selectedAttachment: {},
       progress: '',
-      sort: {
-        last: '',
-        order: '',
-        orderBy: '',
-      },
+      sort: {last: '', order: '', orderBy: ''},
       canSee: true,
       canExport: false,
       canDelete: false,
@@ -280,6 +278,8 @@ export default {
       sync: false,
 	    syncSelectedPreview: null,
       exportLink: '',
+	    search: '',
+	    category: 'all',
     };
   },
   created() {
@@ -295,11 +295,10 @@ export default {
   mounted() {
     this.loading = true;
 		this.setDisplayedUser().then(() => {
-			if (this.defaultAttachments != null) {
+			if (this.defaultAttachments !== null) {
 				this.getAttachmentCategories().then((response) => {
 					this.categories = response ? response : {};
 					this.attachments = this.defaultAttachments;
-					this.setDisplayedAttachments();
 					this.$store.dispatch('attachment/setAttachmentsOfFnum', {
 						fnum: [this.displayedFnum],
 						attachments: this.attachments,
@@ -354,7 +353,6 @@ export default {
         await this.refreshAttachments();
       } else {
         this.attachments = this.$store.state.attachment.attachments[this.displayedFnum];
-	      this.setDisplayedAttachments();
 	      this.categories = this.$store.state.attachment.categories;
       }
     },
@@ -370,7 +368,6 @@ export default {
 
       if (response.status) {
         this.attachments = response.attachments;
-	      this.setDisplayedAttachments();
 	      this.$store.dispatch('attachment/setAttachmentsOfFnum', {
           fnum: [this.displayedFnum],
           attachments: this.attachments,
@@ -448,17 +445,21 @@ export default {
         this.displayErrorMessage(this.translate('COM_EMUNDUS_ATTACHMENTS_UNAUTHORIZED_ACTION'));
       }
     },
-    synchronizeAttachments(aids)
-    {
-      if (aids.length > 0) {
+    synchronizeAttachments(aids) {
+			let synchronized = false;
+
+      if (this.sync && aids.length > 0) {
         syncService.synchronizeAttachments(aids).then((response) => {
           if (response && response.status === false) {
             this.displayErrorMessage(response.msg);
           } else {
             this.refreshAttachments(true);
+						synchronized = true;
           }
         });
       }
+
+			return synchronized
     },
     async setAccessRights() {
       if (!this.$store.state.user.rights[this.displayedFnum]) {
@@ -475,11 +476,6 @@ export default {
       this.canDelete = this.$store.state.user.rights[this.displayedFnum] ? this.$store.state.user.rights[this.displayedFnum].canDelete : false;
       this.canUpdate = this.$store.state.user.rights[this.displayedFnum] ? this.$store.state.user.rights[this.displayedFnum].canUpdate : false;
     },
-	  setDisplayedAttachments() {
-		  this.displayedAttachments = this.attachments.filter((attachment) => {
-			  return ((attachment.show === true || typeof attachment.show == 'undefined' || attachment.show == null ));
-		  });
-	  },
     async exportAttachments() {
       if (this.canExport) {
         attachmentService.exportAttachments(
@@ -496,7 +492,6 @@ export default {
         });
       }
     },
-
     confirmDeleteAttachments() {
       if (this.canDelete) {
         let html = '<p>' + this.translate('CONFIRM_DELETE_SELETED_ATTACHMENTS') + '</p><br>';
@@ -542,11 +537,14 @@ export default {
         this.attachments = this.attachments.filter(
             (attachment) => !this.checkedAttachments.includes(attachment.aid)
         );
-				this.setDisplayedAttachments();
 
         let response = null;
         if (this.sync) {
-          syncService.deleteAttachments(this.checkedAttachments).then(async (response) => {
+          syncService.deleteAttachments(this.checkedAttachments).then(async (sync_response) => {
+						if (sync_response.status === false && sync_response.msg !== '') {
+							this.displayErrorMessage(sync_response.msg);
+						}
+
             response = await attachmentService.deleteAttachments(
                 this.displayedFnum,
                 this.displayedUser.user_id,
@@ -561,9 +559,9 @@ export default {
           );
         }
 
-        if (response.status === true) {
-          // Display tooltip deleted succesfully
-        }
+	      if (response.status === false && response.msg !== '') {
+		      this.displayErrorMessage(response.msg);
+	      }
       } else {
         this.displayErrorMessage(this.translate('YOU_NOT_HAVE_PERMISSION_TO_DELETE_ATTACHMENTS'));
       }
@@ -578,42 +576,8 @@ export default {
         this.modalLoading = false;
       }, 500);
     },
-
-    // Front methods
-    searchInFiles() {
-      this.attachments.forEach((attachment, index) => {
-        // if attachment description contains the search term, show it
-        // lowercase the search term to avoid case sensitivity
-        if (attachment.upload_description.toLowerCase().includes(this.$refs["searchbar"].value.toLowerCase()) ||
-            attachment.value.toLowerCase().includes(this.$refs["searchbar"].value.toLowerCase())) {
-          this.attachments[index].show = true;
-        } else {
-          this.checkedAttachments = this.checkedAttachments.filter((aid) => aid !== attachment.aid);
-          this.attachments[index].show = false;
-        }
-      });
-
-			this.setDisplayedAttachments();
-    },
-    resetSearch() {
-      this.attachments.forEach((attachment, index) => {
-        this.attachments[index].show = true;
-      });
-      this.$refs["searchbar"].value = "";
-
-	    this.setDisplayedAttachments();
-    },
     resetOrder() {
-      this.sort = {
-        last: '',
-        order: '',
-        orderBy: '',
-      };
-    },
-    resetCategoryFilters() {
-      if (this.$refs['categoryFilter']) {
-        this.$refs['categoryFilter'].value = 'all';
-      }
+      this.sort = {last: '', order: '', orderBy: ''};
     },
     orderBy(key) {
       // if last sort is the same as the current sort, reverse the order
@@ -638,39 +602,13 @@ export default {
       this.sort.orderBy = key;
       this.sort.last = key;
     },
-    filterByCategory(e) {
-      this.attachments.forEach((attachment) => {
-        if (e.target.value == 'all') {
-          attachment.show = true;
-        } else {
-          if (attachment.category == e.target.value) {
-            attachment.show = true;
-          } else {
-            // remove attachments from checkedAttachment list
-            this.checkedAttachments = this.checkedAttachments.filter(
-                (aid) => aid !== attachment.aid
-            );
-            attachment.show = false;
-          }
-        }
-      });
-
-	    this.setDisplayedAttachments();
-    },
     updateAllCheckedAttachments(e) {
       if (e.target.checked) {
         // check all input that has class attachment-check and add them to the checkedAttachments array
-        this.checkedAttachments = this.displayedAttachments.map(
-            (attachment) => attachment.aid
-        );
+        this.checkedAttachments = this.displayedAttachments.map((attachment) => attachment.aid);
       } else {
         this.checkedAttachments = [];
       }
-
-      this.$store.dispatch(
-          "attachment/setCheckedAttachments",
-          this.checkedAttachments
-      );
     },
     updateCheckedAttachments(attachments) {
       // check that attachments is an array
@@ -685,6 +623,21 @@ export default {
         this.checkedAttachments = [];
       }
     },
+	  filterCheckedAttachments() {
+		  this.checkedAttachments = this.checkedAttachments.filter((aid) => {
+			  return this.displayedAttachments.some((attachment) => {
+				  return attachment.aid == aid;
+			  });
+		  });
+	  },
+
+	  // events
+	  onCategoryChange() {
+			this.filterCheckedAttachments();
+	  },
+	  onSearch() {
+		  this.filterCheckedAttachments();
+	  },
 
     openModal(attachment) {
       if (this.displayedUser.user_id && this.displayedFnum) {
@@ -744,6 +697,13 @@ export default {
 
       return displayedCategories;
     },
+	  displayedAttachments() {
+		  const currentSearch = this.search.toLowerCase();
+
+		  return typeof this.attachments !== 'undefined' && this.attachments !== null ? this.attachments.filter((attachment) => {
+			  return (attachment.upload_description.toLowerCase().includes(currentSearch) || attachment.value.toLowerCase().includes(currentSearch)) && (this.category === 'all' || attachment.category === this.category);
+		  }) : [];
+	  },
   },
   watch: {
     "$store.state.global.anonyme": function () {
@@ -754,7 +714,10 @@ export default {
 			syncService.getAttachmentSyncNodeId(this.selectedAttachment.aid).then((response) => {
 				this.syncSelectedPreview = response;
 			});
-		}
+		},
+	  checkedAttachments: function() {
+		  this.$store.dispatch('attachment/setCheckedAttachments', this.checkedAttachments);
+	  }
   }
 };
 </script>
@@ -932,7 +895,6 @@ export default {
   }
 
   .table-wrapper {
-    width: 100%;
     overflow-x: scroll;
   }
 
