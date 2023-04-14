@@ -13,22 +13,15 @@
 			/>
 		</td>
 		<td v-if="columns.includes('name')" class="td-document" @click="openModal">
-			<span>{{ attachment.value }}</span>
-			<span
-				v-if="!attachment.existsOnServer"
-				class="material-icons-outlined warning file-not-found"
-				:title="translate('COM_EMUNDUS_ATTACHMENTS_FILE_NOT_FOUND')"
-			>
-				warning
-			</span>
+			<span v-if="!attachment.existsOnServer" class="material-icons-outlined warning file-not-found" :title="translate('COM_EMUNDUS_ATTACHMENTS_FILE_NOT_FOUND')">warning</span>
+			<span :title="attachment.value">{{ attachment.value }}</span>
 		</td>
 		<td v-if="columns.includes('date')" class="date">{{ formattedDate(attachment.timedate) }}</td>
 		<td v-if="columns.includes('desc')" class="desc"> {{ strippedHtml(attachment.upload_description) }}</td>
 		<td v-if="columns.includes('category')" class="category">
 			{{ category }}
 		</td>
-		<td
-        v-if="columns.includes('status')"
+		<td v-if="columns.includes('status')"
 			class="status valid-state"
 			:class="{
 				success: attachment.is_validated == 1,
@@ -147,7 +140,7 @@ export default {
 	mounted() {
 		this.categories = this.$store.state.attachment.categories;
 		if (Object.entries(this.categories).length > 0) {
-			this.category = this.categories[this.attachment.category] ? this.categories[this.attachment.category] : "";
+			this.category = this.categories[this.attachment.category] ? this.categories[this.attachment.category] : '';
 		}
 
 		this.checkedAttachments = this.checkedAttachmentsProp;

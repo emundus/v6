@@ -1,32 +1,31 @@
 <template>
   <div id="em-attachments" class="em-w-100">
     <div class="wrapper" :class="{loading: loading}">
-      <div id="filters" class="em-flex-row em-flex-space-between">
-        <div class="em-flex-row searchbar-wrapper">
-          <input
-              id="searchbar"
-              type="text"
-              ref="searchbar"
-              :placeholder="translate('COM_EMUNDUS_ACTIONS_SEARCH')"
-              v-model="search"
-              @input="onSearch"
-          />
-          <span class="material-icons-outlined search">search</span>
-          <span class="material-icons-outlined clear em-pointer" @click="search = ''">clear</span>
-        </div>
+      <section id="filters" class="em-flex-row em-flex-space-between">
+	      <div class="em-flex-row">
+		      <div class="em-flex-row searchbar-wrapper">
+			      <input
+					      id="searchbar"
+					      type="text"
+					      ref="searchbar"
+					      :placeholder="translate('COM_EMUNDUS_ACTIONS_SEARCH')"
+					      v-model="search"
+					      @input="onSearch"
+			      />
+			      <span class="material-icons-outlined search">search</span>
+			      <span class="material-icons-outlined clear em-pointer" @click="search = ''">clear</span>
+		      </div>
+		      <select v-if="Object.entries(thisAttachmentCategories).length > 0"
+		          name="category"
+				      class="category-select em-ml-16"
+				      v-model="category"
+				      @change="onCategoryChange"
+		      >
+			      <option value="all">{{ translate("COM_EMUNDUS_ATTACHMENTS_SELECT_CATEGORY") }}</option>
+			      <option v-for="(category, key) in thisAttachmentCategories" :key="key" :value="key">{{ category }}</option>
+		      </select>
+	      </div>
         <div class="actions em-flex-row">
-          <select
-              v-if="Object.entries(thisAttachmentCategories).length > 0"
-              name="category"
-              class="category-select"
-              v-model="category"
-              @change="onCategoryChange"
-          >
-            <option value="all">{{ translate("COM_EMUNDUS_ATTACHMENTS_SELECT_CATEGORY") }}</option>
-            <option v-for="(category, key) in thisAttachmentCategories" :key="key" :value="key">
-              {{ category }}
-            </option>
-          </select>
           <div
               v-if="canExport"
               class="btn-icon-text"
@@ -42,16 +41,12 @@
               @click="synchronizeAttachments(checkedAttachments)"
               :class="{ disabled: checkedAttachments.length < 1 }"
           >
-            <span
-                class="material-icons cloud_sync"
-                :title="translate('COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE')"
-            >
+            <span class="material-icons cloud_sync" :title="translate('COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE')">
               cloud_sync
             </span>
             <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE") }}</span>
           </div>
-          <span
-              class="material-icons-outlined refresh em-pointer"
+          <span class="material-icons-outlined refresh em-pointer"
               @click="refreshAttachments(true)"
               :title="translate('COM_EMUNDUS_ATTACHMENTS_REFRESH_TITLE')"
           >
@@ -67,65 +62,65 @@
 						delete_outlined
 					</span>
         </div>
-      </div>
-      <div class="em-mt-16 em-mb-16">
-        <a v-if="exportLink" :href="exportLink" target="_blank" @click="exportLink = ''">
+      </section>
+      <div v-if="exportLink" class="em-mt-16 em-mb-16">
+        <a :href="exportLink" target="_blank" @click="exportLink = ''">
           {{ translate('COM_EMUNDUS_ATTACHMENTS_EXPORT_LINK') }}
         </a>
       </div>
-      <div v-if="attachments.length" class="table-wrapper em-w-100">
+      <section v-if="attachments.length" class="table-wrapper em-w-100">
         <table :class="{ loading: loading }" aria-describedby="Table of attachments information">
           <thead>
-          <tr>
-            <th id="check-th"><input class="attachment-check" type="checkbox" @change="updateAllCheckedAttachments"/></th>
-            <th v-if="columns.includes('name')" id="name" @click="orderBy('value')">
-	            <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_NAME") }}</span>
-              <span v-if="sort.orderBy === 'value' && sort.order === 'asc'" class="material-icons-outlined">arrow_upward</span>
-              <span v-if="sort.orderBy === 'value' && sort.order === 'desc'" class="material-icons-outlined">arrow_downward</span>
-            </th>
-            <th v-if="columns.includes('date')" id="date" class="date" @click="orderBy('timedate')">
-              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_SEND_DATE") }}</span>
-              <span v-if="sort.orderBy === 'timedate' && sort.order === 'asc'" class="material-icons-outlined">arrow_upward</span>
-              <span v-if="sort.orderBy === 'timedate' && sort.order === 'desc'" class="material-icons-outlined">arrow_downward</span>
-            </th>
-            <th v-if="columns.includes('desc')" id="desc" class="desc" @click="orderBy('upload_description')">
-              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_DESCRIPTION") }}</span>
-              <span v-if="sort.orderBy === 'upload_description' && sort.order === 'asc'" class="material-icons-outlined">arrow_upward</span>
-              <span v-if="sort.orderBy === 'upload_description' && sort.order === 'desc'" class="material-icons-outlined">arrow_downward</span>
-            </th>
-            <th v-if="columns.includes('category')" id="category" class="category" @click="orderBy('category')">
-              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY") }}</span>
-              <span v-if="sort.orderBy === 'category' && sort.order === 'asc'" class="material-icons-outlined">arrow_upward</span>
-              <span v-if="sort.orderBy === 'category' && sort.order === 'desc'" class="material-icons-outlined">arrow_downward</span>
-            </th>
-            <th v-if="columns.includes('status')" id="status" class="status" @click="orderBy('is_validated')">
-              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_CHECK") }}</span>
-              <span v-if="sort.orderBy === 'is_validated' && sort.order === 'asc'" class="material-icons-outlined">arrow_upward</span>
-              <span v-if="sort.orderBy === 'is_validated' && sort.order === 'desc'" class="material-icons-outlined">arrow_downward</span>
-            </th>
-            <th v-if="canSee && columns.includes('user')" id="user" @click="orderBy('user_id')">
-              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY") }}</span>
-              <span v-if="sort.orderBy === 'user_id' && sort.order === 'asc'" class="material-icons-outlined">arrow_upward</span>
-              <span v-if="sort.orderBy === 'user_id' && sort.order === 'desc'" class="material-icons-outlined">arrow_downward</span>
-            </th>
-            <th v-if="canSee && columns.includes('modified_by')" id="modified_by" @click="orderBy('modified_by')">
-              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY") }}</span>
-              <span v-if="sort.orderBy === 'modified_by' && sort.order === 'asc'" class="material-icons-outlined">arrow_upward</span>
-              <span v-if="sort.orderBy === 'modified_by' && sort.order === 'desc'" class="material-icons-outlined">arrow_downward</span>
-            </th>
-            <th v-if="columns.includes('modified')" id="modified" class="date" @click="orderBy('modified')">
-              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE") }}</span>
-              <span v-if="sort.orderBy === 'modified' && sort.order === 'asc'" class="material-icons-outlined">arrow_upward</span>
-              <span v-if="sort.orderBy === 'modified' && sort.order === 'desc'" class="material-icons-outlined">arrow_downward</span>
-            </th>
-            <th v-if="columns.includes('permissions')" id="permissions" class="permissions">{{ translate("COM_EMUNDUS_ATTACHMENTS_PERMISSIONS") }}</th>
-            <th v-if="sync && columns.includes('sync')" id="sync" class="sync" @click="orderBy('sync')">
-              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_SYNC") }}</span>
-            </th>
-          </tr>
+	          <tr>
+	            <th id="check-th"><input class="attachment-check" type="checkbox" @change="updateAllCheckedAttachments"/></th>
+	            <th v-if="columns.includes('name')" id="name" @click="orderBy('value')">
+		            <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_NAME") }}</span>
+	              <span v-if="sort.orderBy === 'value' && sort.order === 'asc'" class="material-icons-outlined em-font-size-16">arrow_upward</span>
+	              <span v-if="sort.orderBy === 'value' && sort.order === 'desc'" class="material-icons-outlined em-font-size-16">arrow_downward</span>
+	            </th>
+	            <th v-if="columns.includes('date')" id="date" class="date" @click="orderBy('timedate')">
+	              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_SEND_DATE") }}</span>
+	              <span v-if="sort.orderBy === 'timedate' && sort.order === 'asc'" class="material-icons-outlined em-font-size-16">arrow_upward</span>
+	              <span v-if="sort.orderBy === 'timedate' && sort.order === 'desc'" class="material-icons-outlined em-font-size-16">arrow_downward</span>
+	            </th>
+	            <th v-if="columns.includes('desc')" id="desc" class="desc" @click="orderBy('upload_description')">
+	              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_DESCRIPTION") }}</span>
+	              <span v-if="sort.orderBy === 'upload_description' && sort.order === 'asc'" class="material-icons-outlined em-font-size-16">arrow_upward</span>
+	              <span v-if="sort.orderBy === 'upload_description' && sort.order === 'desc'" class="material-icons-outlined em-font-size-16">arrow_downward</span>
+	            </th>
+	            <th v-if="columns.includes('category')" id="category" class="category" @click="orderBy('category')">
+	              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY") }}</span>
+	              <span v-if="sort.orderBy === 'category' && sort.order === 'asc'" class="material-icons-outlined em-font-size-16">arrow_upward</span>
+	              <span v-if="sort.orderBy === 'category' && sort.order === 'desc'" class="material-icons-outlined em-font-size-16">arrow_downward</span>
+	            </th>
+	            <th v-if="columns.includes('status')" id="status" class="status" @click="orderBy('is_validated')">
+	              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_CHECK") }}</span>
+	              <span v-if="sort.orderBy === 'is_validated' && sort.order === 'asc'" class="material-icons-outlined em-font-size-16">arrow_upward</span>
+	              <span v-if="sort.orderBy === 'is_validated' && sort.order === 'desc'" class="material-icons-outlined em-font-size-16">arrow_downward</span>
+	            </th>
+	            <th v-if="canSee && columns.includes('user')" id="user" @click="orderBy('user_id')">
+	              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY") }}</span>
+	              <span v-if="sort.orderBy === 'user_id' && sort.order === 'asc'" class="material-icons-outlined em-font-size-16">arrow_upward</span>
+	              <span v-if="sort.orderBy === 'user_id' && sort.order === 'desc'" class="material-icons-outlined em-font-size-16">arrow_downward</span>
+	            </th>
+	            <th v-if="canSee && columns.includes('modified_by')" id="modified_by" @click="orderBy('modified_by')">
+	              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY") }}</span>
+	              <span v-if="sort.orderBy === 'modified_by' && sort.order === 'asc'" class="material-icons-outlined em-font-size-16">arrow_upward</span>
+	              <span v-if="sort.orderBy === 'modified_by' && sort.order === 'desc'" class="material-icons-outlined em-font-size-16">arrow_downward</span>
+	            </th>
+	            <th v-if="columns.includes('modified')" id="modified" class="date" @click="orderBy('modified')">
+	              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE") }}</span>
+	              <span v-if="sort.orderBy === 'modified' && sort.order === 'asc'" class="material-icons-outlined em-font-size-16">arrow_upward</span>
+	              <span v-if="sort.orderBy === 'modified' && sort.order === 'desc'" class="material-icons-outlined em-font-size-16">arrow_downward</span>
+	            </th>
+	            <th v-if="columns.includes('permissions')" id="permissions" class="permissions">{{ translate("COM_EMUNDUS_ATTACHMENTS_PERMISSIONS") }}</th>
+	            <th v-if="sync && columns.includes('sync')" id="sync" class="sync" @click="orderBy('sync')">
+	              <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_SYNC") }}</span>
+	            </th>
+	          </tr>
           </thead>
           <tbody>
-          <AttachmentRow
+            <AttachmentRow
               v-for="attachment in displayedAttachments"
               :key="attachment.aid"
               :attachment="attachment"
@@ -142,19 +137,14 @@
           </AttachmentRow>
           </tbody>
         </table>
-      </div>
+      </section>
       <p v-else>
         {{ translate("COM_EMUNDUS_ATTACHMENTS_NO_ATTACHMENTS_FOUND") }}
       </p>
     </div>
 
-    <modal
-        id="edit-modal"
-        name="edit"
-        :resizable="true"
-        :draggable="true"
-        styles="display:flex;flex-direction:column;justify-content:center;align-items:center;"
-    >
+    <modal id="edit-modal" name="edit" :resizable="true" :draggable="true"
+        styles="display:flex;flex-direction:column;justify-content:center;align-items:center;">
       <div class="modal-head em-w-100 em-flex-row em-flex-space-between">
         <div id="actions-left" class="em-flex-row em-flex-start"><span>{{ selectedAttachment.filename }}</span></div>
         <div id="actions-right" class="em-flex-row">
@@ -176,8 +166,7 @@
               <span class="material-icons"> navigate_before </span>
             </div>
             <span class="lvl">{{ selectedAttachmentPosition + 1 }} /{{ displayedAttachments.length }}</span>
-            <div
-                class="next em-flex-row em-ml-4"
+            <div class="next em-flex-row em-ml-4"
                 :class="{active: selectedAttachmentPosition < displayedAttachments.length - 1}"
                 @click="changeAttachment(selectedAttachmentPosition + 1)"
             >
@@ -190,14 +179,7 @@
       <transition :name="slideTransition" @before-leave="beforeLeaveSlide">
         <div v-if="!modalLoading && displayedUser.user_id && displayedFnum" class="modal-body em-flex-row" :class="{'only-preview': onlyPreview}">
           <AttachmentPreview @fileNotFound="canDownload = false" @canDownload="canDownload = true" :user="displayedUser.user_id"></AttachmentPreview>
-          <AttachmentEdit
-              v-if="displayEdit"
-		          :fnum="displayedFnum"
-							:is-displayed="!onlyPreview"
-		          @closeModal="closeModal"
-		          @saveChanges="updateAttachment"
-		          @update-displayed="toggleOnlyPreview"
-          ></AttachmentEdit>
+          <AttachmentEdit v-if="displayEdit" :fnum="displayedFnum" :is-displayed="!onlyPreview" @closeModal="closeModal" @saveChanges="updateAttachment" @update-displayed="toggleOnlyPreview"></AttachmentEdit>
         </div>
       </transition>
     </modal>
