@@ -70,11 +70,7 @@ describe('Attachments.vue', () => {
    * test searchInFiles
    */
   it('Expect searchInFiles to set attachment.show to false if attachment.value do not contains value', () => {
-    wrapper.vm.$refs.searchbar.value = wrapper.vm.attachments[0].value;
-    wrapper.vm.searchInFiles();
-
-    expect(wrapper.vm.attachments[0].show).toBe(true);
-    expect(wrapper.vm.attachments[1].show).toBe(false);
+    wrapper.vm.$data.search = wrapper.vm.attachments[0].value;
     expect(wrapper.vm.displayedAttachments.length).toBe(1);
   });
 
@@ -124,30 +120,19 @@ describe('Attachments.vue', () => {
    * If option value equals all, all attachments should be displayed
    */
   it('Expect filterByCategory to show only attachments with selected category', () => {
-    wrapper.vm.filterByCategory({
-      target: {
-        value: '2'
-      }
-    });
+    wrapper.vm.$data.category = '2';
 
     // check that only attachments with category 2 are displayed
-    wrapper.vm.attachments.forEach(element => {
-      expect(element.show).toBe(element.category === '2');
+    wrapper.vm.displayedAttachments.forEach(element => {
+        expect(element.category).toBe('2');
     });
   });
 
   it('Expect filterByCategory to show all attachments if category value is all', () => {
-    // call  filterByCategory with e
-    wrapper.vm.filterByCategory({
-      target: {
-        value: 'all'
-      }
-    });
+    wrapper.vm.$data.category = 'all';
 
     // check that all attachments are displayed
-    wrapper.vm.attachments.forEach(element => {
-      expect(element.show).toBe(true);
-    });
+    expect(wrapper.vm.displayedAttachments.length).toBe(wrapper.vm.attachments.length);
   });
 
   it('Expect .category-select to display only category options that are in attachments', () => {
@@ -164,7 +149,6 @@ describe('Attachments.vue', () => {
     expect(options.length).toBe(uniqCategories.length + 1);
   });
 });
-
 
 describe('Attachments.vue delete Methods', () => {
   const wrapper = shallowMount(Attachments, {
@@ -244,3 +228,26 @@ describe('Attachments.vue anonyme', () => {
     });
   });
 });
+
+describe('Attachments.vue sync', () => {
+  const wrapper = shallowMount(Attachments, {
+    propsData: {
+      user: '123',
+      fnum: '2021061714501700000010000123'
+    },
+    store: store,
+    localVue
+  });
+
+  // sync should be set to false by default
+  it('sync should be set to false by default', () => {
+    expect(wrapper.vm.$data.sync).toBe(false);
+  });
+
+  // synchronizeAttachments should always return false if sync is false
+  it('synchronizeAttachments should always return false if sync is false', () => {
+    expect(wrapper.vm.synchronizeAttachments()).toBe(false);
+  });
+
+});
+
