@@ -672,6 +672,11 @@ class EmundusModelProgramme extends JModelList {
                     $db->execute();
                     //
 
+                    // Create evaluator and manager group
+                    $this->addGroupToProgram($programme->label,$programme->code,2);
+                    $this->addGroupToProgram($programme->label,$programme->code,3);
+                    //
+
                     // Call plugin triggers
                     $dispatcher->trigger('callEventHandler', ['onAfterProgramCreate', ['programme' => $programme]]);
 
