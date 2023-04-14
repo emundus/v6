@@ -190,7 +190,7 @@ class EmundusViewChecklist extends JViewLegacy {
 
                 $offset = $app->get('offset', 'UTC');
                 $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
-                $now = $dateTime->setTimezone(new DateTimeZone($offset))->format("Y-m-d");
+                $now = $dateTime->setTimezone(new DateTimeZone($offset))->format("Y-m-d H:i:s");
 
                 // Check campaign limit, if the limit is obtained, then we set the deadline to true
                 $m_campaign = new EmundusModelCampaign;
