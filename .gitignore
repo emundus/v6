@@ -118,7 +118,7 @@ components/com_eventbooking/fields.xml
 /administrator/language/en-GB/en-GB.com_miniorange_saml.ini
 /administrator/language/en-GB/en-GB.com_miniorange_saml.sys.ini
 /administrator/manifests/libraries/miniorangesamlplugin.xml
-/administrator/manifests/packages/miniorangesamlsso
+/administrator/manifests/packages/miniorangesamlsso/
 /administrator/manifests/packages/pkg_miniorangesamlsso.xml
 /components/com_miniorange_saml/
 /language/en-GB/en-GB.lib_miniorangesamlplugin.ini
