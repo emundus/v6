@@ -134,6 +134,7 @@ font-size: 16px;
 	border: 1px solid #EDEDED;
 	box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
 	border-radius: 16px;
+	height: 100%;
 }
 
 .fabrikDataContainer{

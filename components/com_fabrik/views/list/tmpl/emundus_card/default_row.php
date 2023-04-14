@@ -28,7 +28,7 @@ defined('_JEXEC') or die('Restricted access');
                     <div class="fabrikImageBackground" style="background-image: url('<?php echo $src ?>')"></div>
                 </p>
             <?php else : ?>
-                <p class="em-mt-12 em-p-0-24 <?php echo $this->cellClass[$heading]['class']?>" <?php echo $style?>>
+                <p class="em-mt-12 em-p-8-12 <?php echo $this->cellClass[$heading]['class']?>" <?php echo $style?>>
 					<?php echo isset($this->_row->data) ? $this->_row->data->$heading : '';?>
                 </p>
             <?php endif; ?>

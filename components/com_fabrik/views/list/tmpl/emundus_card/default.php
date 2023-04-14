@@ -56,7 +56,7 @@ endforeach;
 
     <?php if ($this->showTitle == 1) : ?>
     <div class="page-header">
-        <p class="em-h3"><?php echo $this->table->label;?></p>
+        <h2><?php echo $this->table->label;?></h2>
         <div class="em-list-intro">
 	        <?php echo $this->table->intro; ?>
         </div>
