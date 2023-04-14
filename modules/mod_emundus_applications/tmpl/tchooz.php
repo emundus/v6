@@ -178,7 +178,7 @@ ksort($applications);
                                                             <a onclick="openFile(event,'<?php echo $first_page_url ?>')" class="em-text-neutral-900 em-pointer" href="<?= JRoute::_($first_page_url); ?>" id="actions_block_open_<?php echo $application->fnum ?>">
                                                                 <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
                                                             </a>
-                                                            <?php if(in_array($application->status,$status_for_delete)) :?>
+                                                            <?php if ((in_array($application->status, $status_for_send) && empty($status_for_delete)) || (in_array($application->status, $status_for_delete))) : ?>
                                                                 <a class="em-text-neutral-900 em-pointer" onclick="deletefile('<?php echo $application->fnum; ?>');" id="actions_block_delete_<?php echo $application->fnum ?>">
                                                                     <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
                                                                 </a>

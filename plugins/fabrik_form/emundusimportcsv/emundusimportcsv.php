@@ -683,15 +683,17 @@ class PlgFabrik_FormEmundusimportcsv extends plgFabrik_Form {
 							JLog::add('No email configuration!', JLog::ERROR, 'com_emundus.csvimport');
 						} else {
 
-							JLog::add('Email account sent: '.$email_row[$row_id], JLog::INFO, 'com_emundus.csvimport');
+                            JLog::add('Email account sent: ' . $email_row[$row_id], JLog::INFO, 'com_emundus.csvimport');
 
-							$message = array(
-								'user_id_to' => $user_id,
-								'subject' => $email->subject,
-								'message' => $body
-							);
-							$m_emails->logEmail($message);
-						}
+                            if (JComponentHelper::getParams('com_emundus')->get('logUserEmail', '0') == '1') {
+                                $message = array(
+                                    'user_id_to' => $uid,
+                                    'subject' => $email->subject,
+                                    'message' => $body
+                                );
+                                $m_emails->logEmail($message);
+                            }
+                        }
 
 					} catch (Exception $e) {
 						JLog::add('ERROR: Could not send email to user : '.$user_id, JLog::ERROR, 'com_emundus.csvimport');
