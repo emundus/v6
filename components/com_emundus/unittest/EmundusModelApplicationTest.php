@@ -55,6 +55,10 @@ class EmundusModelApplicationTest extends TestCase
     }
 
 	public function testGetUserAttachmentsByFnum() {
+		if (!defined('EMUNDUS_PATH_ABS')) {
+			define('EMUNDUS_PATH_ABS', JPATH_ROOT);
+		}
+
 		$attachments = $this->m_application->getUserAttachmentsByFnum('');
 		$this->assertSame([], $attachments);
 

@@ -219,8 +219,6 @@ class EmundusUnittestHelperSamples
 	public function createSampleUpload($fnum, $campaign_id, $user_id = 95, $attachment_id = 1) {
 		$inserted = false;
 
-		error_log('createSampleUpload(' . $fnum . ', ' . $campaign_id . ', ' . $user_id . ', ' . $attachment_id . ')');
-
 		if (!empty($fnum)) {
 			$filename = $user_id . '-' . $campaign_id . '-unittest' . rand(0, 100) . '.pdf';
 			$localFilename = 'Unit Test file.pdf';
