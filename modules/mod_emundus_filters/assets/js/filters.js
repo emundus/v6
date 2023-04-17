@@ -4,9 +4,18 @@ const filtersSelect = document.getElementById('filters-selection');
 let filters = [];
 
 function initFilters(){
-    if (filters.length > 0) {
-        applyFilters();
-    }
+    appliedFiltersSection.querySelectorAll('.filter-container').forEach(function (filterContainer) {
+        const filter = {
+            type: filterContainer.dataset.type,
+            id: filterContainer.dataset.id,
+            uid: filterContainer.dataset.uid,
+            label: filterContainer.dataset.name,
+            values: filterContainer.dataset.values,
+            value: ''
+        };
+
+        filters.push(filter);
+    });
 }
 
 function toggleFilterSelect() {
@@ -39,7 +48,7 @@ function createFilter(filter) {
     filterLabel.classList.add('em-w-100');
     filterLabel.style.margin = '0';
     filterLabel.for = 'filter-' + filter.id;
-    filterLabel.innerHTML = filter.name;
+    filterLabel.innerHTML = filter.label;
     filterHeader.appendChild(filterLabel);
 
     const filterRm = document.createElement('span');
@@ -112,7 +121,27 @@ function removeFilter(e) {
 }
 
 function applyFilters() {
+    let formData = new FormData();
+    formData.append('filters', JSON.stringify(filters));
 
+    fetch('/index.php?option=com_emundus&controller=files&task=applyfilters', {
+        method: 'POST',
+        body: formData
+    }).then(function (response) {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Something went wrong');
+        }
+    }).then(function (data) {
+        if (data.status) {
+            window.location.reload();
+        } else {
+            throw new Error('Something went wrong');
+        }
+    }).catch(function (error) {
+        console.log(error);
+    });
 }
 
 initFilters();
@@ -120,10 +149,10 @@ initFilters();
 document.getElementById('mod_emundus_filters').addEventListener('click', function (e) {
     if (e.target.id === 'add-filter') {
         addFilter(e);
+    } else if (e.target.id === 'apply-filters') {
+        applyFilters();
     } else if (e.target.matches('.remove-filter')) {
         removeFilter(e);
-    } else if (e.target.matches('.apply-filters')) {
-        applyFilters();
     }
 });
 
@@ -137,7 +166,7 @@ if (filtersSelect) {
                 type: selectedOption.dataset.type,
                 id: e.target.value,
                 uid: uid,
-                name: selectedOption.text,
+                label: selectedOption.text,
                 values: JSON.parse(atob(selectedOption.dataset.values)),
                 value: ''
             };

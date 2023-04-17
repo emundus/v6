@@ -22,7 +22,7 @@ class EmundusFilters
 			$this->setFilters();
 		}
 
-		$session_filters = JFactory::getSession()->get('applied_filters');
+		$session_filters = JFactory::getSession()->get('em-applied-filters', null);
 		if (!empty($session_filters)) {
 			$this->setAppliedFilters($session_filters);
 		}
@@ -188,8 +188,8 @@ class EmundusFilters
 					if (!empty($params['sub_options'])) {
 						foreach($params['sub_options']['sub_values'] as $sub_opt_key => $sub_opt) {
 							$label = \JText::_($params['sub_options']['sub_labels'][$sub_opt_key]);
-							if ($sub_opt == 0){
-								$label = '';
+							if (empty($label)) {
+								$label = $sub_opt;
 							}
 
 							$values[] = [

@@ -18,7 +18,7 @@ class EmundusFiltersFiles extends EmundusFilters
 		$this->setProfiles();
 		$this->setFilters();
 
-		$session_filters = JFactory::getSession()->get('applied_filters');
+		$session_filters = JFactory::getSession()->get('em-applied-filters', null);
 		if (!empty($session_filters)) {
 			$this->setAppliedFilters($session_filters);
 		}

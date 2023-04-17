@@ -16,7 +16,38 @@ JText::script('MOD_EMUNDUS_FILTERS_SELECT_VALUE');
             <?php
             if (!empty($applied_filters)) {
                 foreach($applied_filters as $filter) {
-
+	                ?>
+                    <div class="filter-container em-w-100 em-mb-16">
+                        <div class="filter-header em-w-100 em-flex-row em-flex-space-between em-mb-8">
+                            <label for="filter<?= $filter['id'] ?>" class="em-w-100"><?= $filter['label'] ?></label>
+                            <span class="material-icons-outlined em-pointer" data-filterUid="<?= $filter['uid'] ?>">delete</span>
+                        </div>
+                        <?php
+                            switch ($filter['type']) {
+                                case 'select':
+                                ?>
+                                    <select id="filter+<?= $filter['id'] ?>" name="filter<?= $filter['id'] ?>" class="em-w-100">
+                                        <option value="0"><?= JText::_('MOD_EMUNDUS_FILTERS_SELECT_VALUE') ?></option>
+                                        <?php foreach($filter['values'] as $value): ?>
+                                            <option value="<?= $value['value'] ?>" <?= $value['value'] == $filter['value'] ? 'selected' : '' ?>><?= $value['label'] ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                <?php
+                                    break;
+                                case 'text':
+                                ?>
+                                    <input type="text" id="filter+<?= $filter['id'] ?>" name="filter<?= $filter['id'] ?>" value="<?= $filter['value'] ?>" class="em-w-100"/>
+                                <?php
+                                    break;
+                                case 'date':
+                                ?>
+                                    <input type="date" id="filter+<?= $filter['id'] ?>" name="filter<?= $filter['id'] ?>" value="<?= $filter['value'] ?>" class="em-w-100"/>
+                                <?php
+                                    break;
+                            }
+                        ?>
+                    </div>
+                    <?php
                 }
             }
             ?>
