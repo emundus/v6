@@ -4,56 +4,68 @@ defined('JPATH_BASE') or die;
 
 // Add span with id so that element fxs work.
 $d = $displayData;
-
-if ($d->scanQR) :
-    $d->attributes['class'] .= ' qrcode-text';
-	?>
-    <style>
-        .qrcode-text-btn {
-            display: inline-block;
-            height: 1em;
-            width: 1em;
-            background: url(<?php echo COM_FABRIK_LIVESITE; ?>media/com_fabrik/images/qr_icon.svg) 50% 50% no-repeat;
-            cursor: pointer!important;
-        }
-
-        .qrcode-text-btn > input[type=file] {
-            position: absolute;
-            overflow: hidden;
-            width: 1px;
-            height: 1px;
-            opacity: 0;
-        }
-
-        .qrcode-text {
-            padding-right: 1.7em;
-            margin-right: 0;
-            vertical-align: middle;
-        }
-
-        .qrcode-text + .qrcode-text-btn {
-            width: 1.7em;
-            margin-left: -1.7em;
-            vertical-align: middle;
-        }
-    </style>
-<?php
-endif;
 ?>
 
-<input
-	<?php foreach ($d->attributes as $key => $value) :
-	echo $key . '="' . $value . '" ';
-endforeach;
-	?> /><?php
-if ($d->scanQR) :
-?><label class=qrcode-text-btn>
-		<input type=file
-		       accept="image/*"
-		       capture=environment
-		       tabindex=-1
-		       id="<?php echo $d->attributes['id'] . '_qr_upload'; ?>"
-		>
-	</label>
-<?php
-	endif;
+
+<!--
+<style>
+
+	.test2{
+		display: flex;
+		flex-direction: row;
+	}
+
+</style>
+-->
+
+<div id="div_<?php echo $d->attributes['name']; ?>" class="test2">
+
+
+	<select id="div_emundus_select_phone_code" class="input-small fabrikinput inputbox">
+		<option value="non">non</option>
+		<option value="oui">oui</option>
+	</select>
+
+
+	<input id="div_emundus_phone0"
+		<?php foreach ($d->attributes as $key => $value) :
+			echo $key . '="' . $value . '" ';
+		endforeach;
+
+		?>
+	>
+</div>
+
+
+
+
+
+<!--  TEST POUR MOI POUR PLUS TARD
+
+<script>
+
+	const handlerInputChange = (props) =>
+	{
+		if (props.target.value === "oui")
+		{
+			addOneToInput();
+		}
+	};
+
+	const addOneToInput = () =>
+	{
+		let input = document.getElementById("div_emundus_phone0");
+		input.value+="1";
+	}
+
+</script>
+
+
+<script>
+	let select = document.getElementById("div_emundus_select_phone_code");
+	select.addEventListener("change", handlerInputChange);
+</script>
+
+->
+
+
