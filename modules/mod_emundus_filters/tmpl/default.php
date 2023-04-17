@@ -1,46 +1,17 @@
 <?php
 defined('_JEXEC') or die;
+$filterjs_url = JURI::base().'modules/mod_emundus_filters/assets/js/filters.js';
+
+JText::script('MOD_EMUNDUS_FILTERS_SELECT_FILTER');
+JText::script('MOD_EMUNDUS_FILTERS_SELECT_VALUE');
 ?>
 
-<script type="text/javaScript" src="../assets/js/filters.js"></script>
 <section id="mod_emundus_filters">
     <input type="text" id="search" placeholder="<?= JText::_('SEARCH') ?>"/>
 
     <?php
     if (!empty($filters)) {
     ?>
-    <div id="filters" class="em-mt-16 hidden">
-        <?php
-        foreach($filters as $filter) {
-            ?>
-            <div>
-                <label><?= $filter['label'] ?></label>
-                <?php
-                switch ($filter['type']) {
-                    case 'field':
-                        echo '<input id="' . $filter['id'] . '" type="text" maxlength="255" />';
-                        break;
-                    case 'select':
-                        ?>
-                        <select id="<?= $filter['id'] ?>" class="em-w-100">
-                            <option value="0"><?= JText::_('PLEASE_SELECT'); ?></option>
-                            <?php foreach($filter['values'] as $value){ ?>
-                                <option value="<?=$value['value']?>"><?= $value['label'] ?></option>
-                            <?php } ?>
-                        </select>
-                        <?php
-                        break;
-                    case 'date':
-                        echo '<input id="' . $filter['id'] . '" type="date"/>';
-                        break;
-                }
-                ?>
-            </div>
-            <?php
-        }
-        ?>
-    </div>
-
     <div id="applied-filters" class="em-mt-16 em-mb-16">
         <?php
         foreach($applied_filters as $filter) {
@@ -48,16 +19,24 @@ defined('_JEXEC') or die;
         }
 	    ?>
     </div>
-    <div class="actions">
-        <button class="em-primary-button" onclick="applyFilters"><?= JText::_('SEARCH'); ?></button>
+    <select id="filters-selection" name="filters-selection" class="hidden em-w-100 em-mt-16 em-mb-16">
+        <option value="0"><?= JText::_('MOD_EMUNDUS_FILTERS_SELECT_FILTER') ?></option>
+        <?php foreach($filters as $filter): ?>
+            <option value="<?= $filter['id'] ?>" data-values="<?= base64_encode(json_encode($filter['values'])); ?>"><?= $filter['label'] ?></option>
+        <?php endforeach; ?>
+    </select>
+    <div class="actions em-mt-16">
+        <button id="apply-filters" class="em-primary-button"><?= JText::_('MOD_EMUNDUS_FILTERS_APPLY_FILTERS'); ?></button>
+        <button id="add-filter" class="em-secondary-button em-mt-16"><?= JText::_('MOD_EMUNDUS_FILTERS_ADD_FILTER'); ?></button>
     </div>
     <?php
     } else {
     ?>
     <div class="no-default-filters">
-        <p><?= JText::_('COM_EMUNDUS_EMPTY_FILTERS'); ?></p>
+        <p><?= JText::_('MOD_EMUNDUS_FILTERS_EMPTY_FILTER'); ?></p>
     </div>
     <?php
     }
     ?>
 </section>
+<script src="<?= $filterjs_url ?>"></script>

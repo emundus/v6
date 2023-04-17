@@ -156,7 +156,7 @@ function reloadActions(view, fnum, onCheck, async, display = 'none') {
     });
 }
 
-function addElement() {
+/*function addElement() {
     $.ajax({
         type: 'GET',
         url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getadvfilters&Itemid=' + itemId,
@@ -234,25 +234,9 @@ function addElement() {
         }
     });
 
-}
+}*/
 
 function refreshFilter(view) {
-    /*view = (typeof view === 'undefined') ? 'files' : view;
-    $.ajax({
-        type: 'GET',
-        url: 'index.php?option=com_emundus&view='+view+'&layout=filters&format=raw&Itemid=' + itemId,
-        dataType: 'html',
-        success: function(data) {
-            let panelBody = $('#em-files-filters .panel-body');
-            panelBody.empty();
-            panelBody.append(data);
-            $('.chzn-select').chosen();
-            reloadData($('#view').val());
-        },
-        error: function(jqXHR) {
-            console.log(jqXHR.responseText);
-        }
-    });*/
     reloadData($('#view').val());
 
 }
@@ -4894,8 +4878,9 @@ $(document).ready(function() {
         }
     });
 
+    const handledIds = ['del-filter', 'em-close-file', 'em-mini-file', 'em-next-file', 'em-prev-file', 'em-see-files', 'em-delete-files'];
     $(document).on('click', 'button', function(e) {
-        if (e.handle != true) {
+        if (e.handle != true && handledIds.indexOf(this.id) != -1) {
             e.handle = true;
             var id = this.id;
             var cfnum = '';
@@ -4937,11 +4922,6 @@ $(document).ready(function() {
                     } else {
                         alert(nodelete);
                     }
-                    break;
-
-                case 'add-filter':
-                    $.ajaxQ.abortAll();
-                    addElement();
                     break;
 
                 case 'em-close-file':
