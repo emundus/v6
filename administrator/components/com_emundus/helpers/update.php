@@ -1962,6 +1962,36 @@ class EmundusHelperUpdate
         return $result;
     }
 
+    public static function addColumnIndex($table,$column){
+        $result = ['status' => false, 'message' => ''];
+
+        if (empty($table)) {
+            $result['message'] = 'ADDING COLUMN INDEX : Please refer a database table.';
+            return $result;
+        }
+
+        if (empty($column)) {
+            $result['message'] = 'ADDING COLUMN INDEX : Please refer a column name.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $index_existing = $db->setQuery('SHOW INDEX FROM ' . $table . ' WHERE ' . $db->quoteName('Column_name') . ' LIKE ' . $db->quote($column))->loadResult();
+
+        if (empty($index_existing)) {
+            try {
+                $index_name = $table . '_' . $column . '_INDEX';
+                $query = 'CREATE INDEX ' . $index_name . ' ON ' . $db->quoteName($table) . ' (' . $db->quoteName($column) . ')';
+                $db->setQuery($query);
+                $result['status'] = $db->execute();
+            } catch (Exception $e) {
+                $result['message'] = 'ADDING COLUMN INDEX : Error : ' . $e->getMessage();
+            }
+        }
+
+        return $result;
+    }
+
     public static function addFabrikElement($datas,$params = null) {
         $result = ['status' => false, 'message' => ''];
 
@@ -2347,4 +2377,74 @@ class EmundusHelperUpdate
 
 		return $updated;
 	}
+
+    public static function addWidget($label,$params = null){
+        $result = ['status' => false, 'message' => ''];
+
+        if (empty($label)) {
+            $result['message'] = 'CREATING WIDGET : Please specify a widget label.';
+            return $result;
+        }
+
+        if (empty($params)) {
+            $result['message'] = 'CREATING WIDGET : Please specify widget parameters.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $inserting_datas = array();
+
+            foreach ($params as $key => $value) {
+                $inserting_datas[] = $db->quoteName($key) . ' = ' . $db->quote($value);
+            }
+
+            $query->insert($db->quoteName('#__emundus_widgets'))
+                ->columns($db->quoteName(array_keys($inserting_datas)))
+                ->values(implode(',',$db->quote(array_values($inserting_datas))));
+            $db->setQuery($query);
+            $result['status'] = $db->execute();
+        } catch (Exception $e) {
+            $result['message'] = 'CREATING WIDGET : Error : ' . $e->getMessage();
+        }
+
+        return $result;
+    }
+
+    public static function updateWidget($label,$params = null){
+        $result = ['status' => false, 'message' => ''];
+
+        if (empty($label)) {
+            $result['message'] = 'UPDATING WIDGET : Please specify a widget label.';
+            return $result;
+        }
+
+        if (empty($params)) {
+            $result['message'] = 'UPDATING WIDGET : Please specify widget parameters.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $fields = array();
+
+            foreach ($params as $key => $value) {
+                $fields[] = $db->quoteName($key) . ' = ' . $db->quote($value);
+            }
+
+            $query->update($db->quoteName('#__emundus_widgets'))
+                ->set($fields)
+                ->where($db->quoteName('label') . ' = ' . $db->quote($label));
+            $db->setQuery($query);
+            $result['status'] = $db->execute();
+        } catch (Exception $e) {
+            $result['message'] = 'UPDATING WIDGET : Error : ' . $e->getMessage();
+        }
+
+        return $result;
+    }
 }
