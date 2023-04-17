@@ -35,7 +35,7 @@ if ($this->hasButtons):
 	echo $this->loadTemplate('buttons');
 endif;
 ?>
-<div style="display: grid;grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));grid-gap: 24px">
+<div class="filter-data-align">
     <?php
 if ($this->showFilters && $this->bootShowFilters) :
 	echo $this->layoutFilters();
@@ -47,7 +47,7 @@ $headingsHtml = $this->loadTemplate('headings');
 echo $this->loadTemplate('tabs');
 ?>
 
-<div class="fabrikDataContainer">
+<div class="fabrikDataContainer em-w-100">
 
 <?php foreach ($this->pluginBeforeList as $c) :
 	echo $c;
@@ -56,7 +56,13 @@ endforeach;
 
     <?php if ($this->showTitle == 1) : ?>
     <div class="page-header">
-        <h2><?php echo $this->table->label;?></h2>
+        <div class="em-flex-row em-flex-space-between">
+            <h2><?php echo $this->table->label;?></h2>
+            <div class="em-flex-row em-gap-8">
+                <span onclick="switchView('grid')" class="em-pointer material-icons-outlined fabrik-switch-view-icon" id="fabrik_switch_view_grid_icon">grid_view</span>
+                <span onclick="switchView('list')" class="em-pointer material-icons-outlined fabrik-switch-view-icon" id="fabrik_switch_view_list_icon">menu</span>
+            </div>
+        </div>
         <div class="em-list-intro">
 	        <?php echo $this->table->intro; ?>
         </div>
@@ -65,7 +71,7 @@ endforeach;
     <div class="em-mt-8">
 	    <?php echo $this->nav;?>
     </div>
-    <div class="em-grid-3 <?php echo $this->list->class;?>" id="list_<?php echo $this->table->renderid;?>" >
+    <div class="em-grid-3-2-1 <?php echo $this->list->class;?>" id="list_<?php echo $this->table->renderid;?>" >
         <?php if(empty($this->rows)) : ?>
             <div class="emptyDataMessage" style="<?php echo $this->emptyStyle?>">
 		        <?php echo $this->emptyDataMessage; ?>
@@ -121,6 +127,15 @@ endif;
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // Check view mode
+        let view_mode = localStorage.getItem('view_mode');
+        if(view_mode === null){
+            localStorage.setItem('view_mode', 'grid');
+            view_mode = 'grid';
+        }
+
+        switchView(view_mode);
+
         // Load skeleton
         let header = document.querySelector('.page-header');
         if (header) {
@@ -160,4 +175,33 @@ endif;
             card.classList.add('skeleton');
         }
     });
+
+    function switchView(view){
+        localStorage.setItem('view_mode', view);
+        let list = document.getElementById('list_<?php echo $this->table->renderid;?>');
+
+        switch (view){
+            case 'grid':
+                document.getElementById('fabrik_switch_view_grid_icon').classList.add('active');
+                document.getElementById('fabrik_switch_view_list_icon').classList.remove('active');
+                updateStyleOfClass('fabrikImageBackground', 'display', 'block');
+                list.classList.remove('em-grid-1');
+                list.classList.add('em-grid-3-2-1');
+                break;
+            case 'list':
+                document.getElementById('fabrik_switch_view_grid_icon').classList.remove('active');
+                document.getElementById('fabrik_switch_view_list_icon').classList.add('active');
+                updateStyleOfClass('fabrikImageBackground', 'display', 'none');
+                list.classList.remove('em-grid-3-2-1');
+                list.classList.add('em-grid-1');
+                break;
+        }
+    }
+
+    function updateStyleOfClass(className, style, value) {
+        var elements = document.querySelectorAll('.'+className);
+        elements.forEach(element => {
+            element.style[style] = value;
+        });
+    }
 </script>

@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 ?>
-<div id="<?php echo $this->_row->id;?>" class="<?php echo $this->_row->class;?> em-repeat-card-no-padding em-pb-24">
+<div id="<?php echo $this->_row->id;?>" class="<?php echo $this->_row->class;?> em-repeat-card-no-padding em-pb-24 em-pointer">
 	<?php foreach ($this->headings as $heading => $label) {
 		$style = empty($this->cellClass[$heading]['style']) ? '' : 'style="'.$this->cellClass[$heading]['style'].'"';
 		?>

@@ -32,7 +32,7 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
 			?>
             <div class="filtertable table table-striped">
                 <div class="em-flex-row em-flex-space-between em-mb-24">
-                    <p class="em-h6"><?php echo FText::_('COM_FABRIK_FILTER') ?></p>
+                    <h4><?php echo FText::_('COM_FABRIK_FILTER') ?></h4>
 	                <?php if ($d->showClearFilters) : ?>
                         <a class="<?php echo $clearFiltersClass; ?>" href="#">
                             <span class="material-icons-outlined">filter_alt_off</span>
