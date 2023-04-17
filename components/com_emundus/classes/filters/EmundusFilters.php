@@ -1,26 +1,21 @@
 <?php
-/**
- * Filters model used for
- *
- * @package    Joomla
- * @subpackage eMundus
- *             components/com_emundus/emundus.php
- * @link       http://www.emundus.fr
- * @license    GNU/GPL
- */
 
-// No direct access
-defined('_JEXEC') or die('Restricted access');
-
-class EmundusModelFilters extends JModelList
+class EmundusFilters
 {
-	private $default_element = 0;
-	private $filters = [];
-	private $applied_filters = [];
+	protected $user = null;
+	protected $default_element = 0;
+	protected $filters = [];
+	protected $applied_filters = [];
 
-	public function __construct($config = array(), \Joomla\CMS\MVC\Factory\MVCFactoryInterface $factory = null)
+	public function __construct($config = array())
 	{
-		parent::__construct($config, $factory);
+		JLog::addLogger(['text_file' => 'com_emundus.filters.php'], JLog::ALL, 'com_emundus.filters');
+
+		$this->user = JFactory::getUser();
+
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
+			throw new Exception('Access denied', 403);
+		}
 
 		if (!empty($config['element_id'])) {
 			$this->default_element = $config['element_id'];
@@ -33,81 +28,92 @@ class EmundusModelFilters extends JModelList
 		}
 	}
 
-	private function getDefaultElement()
+	protected function getDefaultElement()
 	{
 		return $this->default_element;
 	}
 
-	private function setFilters()
+	protected function setFilters()
 	{
 		$element = $this->getDefaultElement();
 
 		if (!empty($element)) {
-			$data = [];
+			$elements = $this->getAllAssociatedElements($element);
+			$this->createFiltersFromFabrikElements($elements);
+		}
+	}
 
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
 
-			$query->select('jfl.id, jfl.db_table_name, jfl.form_id')
+	protected function createFiltersFromFabrikElements($elements)
+	{
+		if (!empty($elements)) {
+			foreach($elements as $element) {
+				$filter = [
+					'id' => $element['id'],
+					'label' => JText::_($element['label']),
+					'type' => 'text',
+					'values' => []
+				];
+
+				switch ($element['plugin']) {
+					case 'dropdown':
+					case 'checkbox':
+					case 'radiobutton':
+					case 'databasejoin':
+						$filter['type'] = 'select';
+						$filter['values'] = $this->getFabrikElementValues($element);
+						break;
+					case 'date':
+					case 'jdate':
+					case 'birthday':
+						$filter['type'] = 'date';
+						break;
+				}
+
+				$this->filters[] = $filter;
+			}
+		}
+	}
+
+	protected function getAllAssociatedElements($element_id)
+	{
+		$elements = [];
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('jfl.id, jfl.db_table_name, jfl.form_id')
+			->from('jos_fabrik_elements as jfe')
+			->join('inner', 'jos_fabrik_groups as jfg ON jfg.id = jfe.group_id')
+			->join('inner', 'jos_fabrik_formgroup as jffg ON jffg.group_id = jfg.id')
+			->join('inner', 'jos_fabrik_lists as jfl ON jffg.form_id = jfl.form_id')
+			->where('jfe.id = ' . $element_id);
+
+		try {
+			$db->setQuery($query);
+			$data = $db->loadAssoc();
+		} catch (Exception $e) {
+			JLog::add('Failed to get infos from fabrik element id ' . $element_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+		}
+
+		if (!empty($data['form_id'])) {
+			$query->clear()
+				->select('jfe.id, jfe.plugin, jfe.label, jfe.params')
 				->from('jos_fabrik_elements as jfe')
-				->join('inner', 'jos_fabrik_groups as jfg ON jfg.id = jfe.group_id')
-				->join('inner', 'jos_fabrik_formgroup as jffg ON jffg.group_id = jfg.id')
-				->join('inner', 'jos_fabrik_lists as jfl ON jffg.form_id = jfl.form_id')
-				->where('jfe.id = ' . $element);
+				->join('inner', 'jos_fabrik_formgroup as jffg ON jfe.group_id = jffg.group_id')
+				->where('jffg.form_id = ' . $data['form_id'])
+				->andWhere('published = 1')
+				->andWhere('hidden = 0');
 
 			try {
 				$db->setQuery($query);
-				$data = $db->loadAssoc();
+				$elements = $db->loadAssocList();
 			} catch (Exception $e) {
-				JLog::add('Failed to get infos from fabrik element id ' . $element . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
-			}
-
-			if (!empty($data['form_id'])) {
-				$query->clear()
-					->select('jfe.id, jfe.plugin, jfe.label, jfe.params')
-					->from('jos_fabrik_elements as jfe')
-					->join('inner', 'jos_fabrik_formgroup as jffg ON jfe.group_id = jffg.group_id')
-					->where('jffg.form_id = ' . $data['form_id'])
-					->andWhere('published = 1')
-					->andWhere('hidden = 0');
-
-				try {
-					$db->setQuery($query);
-					$elements = $db->loadAssocList();
-				} catch (Exception $e) {
-					JLog::add('Failed to get elements associated element id ' . $element . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
-				}
-
-				if (!empty($elements)) {
-					foreach($elements as $element) {
-						$filter = [
-							'id' => $element['id'],
-							'label' => JText::_($element['label']),
-							'type' => 'text',
-							'values' => []
-						];
-
-						switch ($element['plugin']) {
-							case 'dropdown':
-							case 'checkbox':
-							case 'radiobutton':
-							case 'databasejoin':
-								$filter['type'] = 'select';
-								$filter['values'] = $this->getFabrikElementValues($element);
-							break;
-							case 'date':
-							case 'jdate':
-							case 'birthday':
-								$filter['type'] = 'date';
-								break;
-							default:
-						}
-
-						$this->filters[] = $filter;
-					}
-				}
+				JLog::add('Failed to get elements associated element id ' . $element_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
 			}
 		}
+
+		return $elements;
 	}
 
 	public function getFilters()
@@ -115,7 +121,7 @@ class EmundusModelFilters extends JModelList
 		return $this->filters;
 	}
 
-	private function setAppliedFilters($applied_filters)
+	protected function setAppliedFilters($applied_filters)
 	{
 		$this->applied_filters = $applied_filters;
 	}
@@ -130,7 +136,7 @@ class EmundusModelFilters extends JModelList
 
 	}
 
-	private function getFabrikElementValues($element)
+	protected function getFabrikElementValues($element)
 	{
 		$values = [];
 
@@ -199,4 +205,3 @@ class EmundusModelFilters extends JModelList
 		return $values;
 	}
 }
-?>

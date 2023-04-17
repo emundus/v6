@@ -18,8 +18,13 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
-                <field type="text" name="element_id" label="MOD_EM_FILTER_FABRIK_ELEMENT_ID" description="MOD_EM_FILTER_FABRIK_ELEMENT_ID_DESC" default="0"></field>
-                <field name="default_filter_element_ids"
+                <field type="list" name="filter_on_fnums" label="MOD_EMUNDUS_FILTER_FILTER_ON_FNUM" default="1">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field showon="filter_on_fnums:0" type="text" name="element_id" label="MOD_EM_FILTER_FABRIK_ELEMENT_ID" description="MOD_EM_FILTER_FABRIK_ELEMENT_ID_DESC" default="0"></field>
+                <field showon="filter_on_fnums:0"
+                       name="default_filter_element_ids"
                        type="subform"
                        label="MOD_EM_FILTER_DEFAULT_ELEMENTS"
                        description="MOD_EM_FILTER_DEFAULT_ELEMENTS_DESC"
