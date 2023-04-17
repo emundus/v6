@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 ?>
-<div id="<?php echo $this->_row->id;?>" class="<?php echo $this->_row->class;?> em-repeat-card-no-padding em-pb-24 em-pointer">
+<a id="<?php echo $this->_row->id;?>" class="<?php echo $this->_row->class;?> em-repeat-card-no-padding em-pb-24 em-pointer" href="<?php echo $this->_row->data->fabrik_view_url ?>">
 	<?php foreach ($this->headings as $heading => $label) {
 		$style = empty($this->cellClass[$heading]['style']) ? '' : 'style="'.$this->cellClass[$heading]['style'].'"';
 		?>
@@ -34,4 +34,4 @@ defined('_JEXEC') or die('Restricted access');
             <?php endif; ?>
         <?php endif; ?>
 	<?php }?>
-</div>
+</a>

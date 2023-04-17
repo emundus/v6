@@ -4512,6 +4512,7 @@ div#em-appli-block {
     border-color: var(--main-500);
     border-radius: var(--em-border-radius);
     font-family: var(--font);
+    transition: all 0.2s ease-in-out;
 
     &:hover, &:active, &:focus {
       background: var(--neutral-50);
