@@ -15,14 +15,14 @@
 			      <span class="material-icons-outlined search">search</span>
 			      <span class="material-icons-outlined clear em-pointer" @click="search = ''">clear</span>
 		      </div>
-		      <select v-if="Object.entries(thisAttachmentCategories).length > 0"
+		      <select v-if="Object.entries(displayedAttachmentCategories).length > 0"
 		          name="category"
 				      class="category-select em-ml-16"
 				      v-model="category"
 				      @change="onCategoryChange"
 		      >
 			      <option value="all">{{ translate("COM_EMUNDUS_ATTACHMENTS_SELECT_CATEGORY") }}</option>
-			      <option v-for="(category, key) in thisAttachmentCategories" :key="key" :value="key">{{ category }}</option>
+			      <option v-for="(category, key) in displayedAttachmentCategories" :key="key" :value="key">{{ category }}</option>
 		      </select>
 	      </div>
         <div class="actions em-flex-row">
@@ -271,6 +271,7 @@ export default {
 		syncService.isSyncModuleActive().then((response) => {
 		  this.sync = response.data;
 	  }).catch((error) => {
+			console.log(error);
 		  this.sync = false;
 	  });
   },
@@ -563,8 +564,8 @@ export default {
     },
     orderBy(key) {
       // if last sort is the same as the current sort, reverse the order
-      if (this.sort.last == key) {
-        this.sort.order = this.sort.order == 'asc' ? 'desc' : 'asc';
+      if (this.sort.last === key) {
+        this.sort.order = this.sort.order === 'asc' ? 'desc' : 'asc';
         this.attachments.reverse();
       } else {
         // sort in ascending order by key
@@ -597,11 +598,8 @@ export default {
       if (Array.isArray(attachments)) {
         this.checkedAttachments = attachments;
       } else {
-        console.warn("updateCheckedAttachments() expects an array as argument");
-
-        this.displayErrorMessage(
-            "Something went wrong while updating the checked attachments"
-        );
+        console.warn('updateCheckedAttachments() expects an array as argument');
+        this.displayErrorMessage('Something went wrong while updating the checked attachments');
         this.checkedAttachments = [];
       }
     },
@@ -615,6 +613,11 @@ export default {
 
 	  // events
 	  onCategoryChange() {
+		  if (this.category !== 'all') {
+			  localStorage.setItem('vue-attachment-category', this.category);
+		  } else {
+			  localStorage.removeItem('vue-attachment-category');
+		  }
 			this.filterCheckedAttachments();
 	  },
 	  onSearch() {
@@ -623,36 +626,36 @@ export default {
 
     openModal(attachment) {
       if (this.displayedUser.user_id && this.displayedFnum) {
-        this.$modal.show("edit");
+        this.$modal.show('edit');
         this.selectedAttachment = attachment;
-        this.$store.dispatch("attachment/setSelectedAttachment", attachment);
+        this.$store.dispatch('attachment/setSelectedAttachment', attachment);
       }
     },
     closeModal() {
-      this.$modal.hide("edit");
+      this.$modal.hide('edit');
       this.selectedAttachment = {};
-      this.$store.dispatch("attachment/setSelectedAttachment", {});
+      this.$store.dispatch('attachment/setSelectedAttachment', {});
     },
     displayErrorMessage(msg) {
       Swal.fire({
-        title: this.translate("ERROR"),
+        title: this.translate('ERROR'),
         text: msg,
-        type: "error",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: this.translate("COM_EMUNDUS_ATTACHMENTS_CLOSE"),
+        type: 'error',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: this.translate('COM_EMUNDUS_ATTACHMENTS_CLOSE'),
       });
     },
 
     // Transition hooks
     beforeLeaveSlide(el) {
-      if (this.slideTransition == "slide-fade") {
+      if (this.slideTransition === 'slide-fade') {
         el.style.transform = "translateX(-100%)";
       }
 
       el.setAttribute("class", "modal-body " + this.slideTransition + "-leave-active " + this.slideTransition + "-leave-to");
     },
 	  toggleOnlyPreview(editDisplayed) {
-			this.onlyPreview = editDisplayed ? false : true;
+			this.onlyPreview = !editDisplayed;
 	  }
   },
   computed: {
@@ -663,9 +666,9 @@ export default {
       return this.displayedAttachments.indexOf(this.selectedAttachment);
     },
     attachmentPath() {
-      return this.$store.state.attachment.attachmentPath + this.displayedUser.user_id + "/" + this.selectedAttachment.filename;
+      return this.$store.state.attachment.attachmentPath + this.displayedUser.user_id + '/' + this.selectedAttachment.filename;
     },
-    thisAttachmentCategories() {
+    displayedAttachmentCategories() {
       let displayedCategories = {};
       if (Object.entries(this.categories).length > 0) {
         for (let category in this.categories) {
@@ -699,6 +702,13 @@ export default {
 		},
 	  checkedAttachments: function() {
 		  this.$store.dispatch('attachment/setCheckedAttachments', this.checkedAttachments);
+	  },
+	  categories: function() {
+		  const localCategory = localStorage.getItem('vue-attachment-category');
+		  if (localCategory && this.displayedAttachmentCategories[localCategory]) {
+			  this.category = localCategory;
+				this.onCategoryChange();
+		  }
 	  }
   }
 };
@@ -886,13 +896,11 @@ export default {
       visibility: hidden;
     }
 
-    border: 0;
-
     tr {
       th:first-of-type {
         width: 39px;
         input {
-          margin-right: 0px;
+          margin-right: 0;
         }
       }
     }
@@ -940,7 +948,7 @@ export default {
     .attachment-check {
       width: 15px;
       height: 15px;
-      border-radius: 0px;
+      border-radius: 0;
     }
   }
 
@@ -979,11 +987,11 @@ export default {
         }
 
         .prev {
-          border-radius: 4px 0px 0px 4px;
+          border-radius: 4px 0 0 4px;
         }
 
         .next {
-          border-radius: 0px 4px 4px 0px;
+          border-radius: 0 4px 4px 0;
         }
 
         .prev,
@@ -1048,7 +1056,7 @@ export default {
 		  }
 
 		  #attachment-edit {
-			  width: 0% !important;
+			  width: 0 !important;
 			  padding: 0;
 
 			  .wrapper, .actions {
