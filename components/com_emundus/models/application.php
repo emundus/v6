@@ -168,7 +168,7 @@ class EmundusModelApplication extends JModelList
 				->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum))
 				->andWhere('esa.lbl NOT LIKE ' . $this->_db->quote('_application_form'));
 
-			if (EmundusHelperAccess::isExpert($this->_user->id)) {
+			if (!empty($this->_user) && EmundusHelperAccess::isExpert($this->_user->id)) {
 				$query->andWhere($this->_db->quoteName('esa.attachment_id') . ' != ' . $expert_document_id);
 			}
 
