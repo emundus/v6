@@ -27,12 +27,31 @@ function createFilter(filter) {
     filterContainer.classList.add('em-w-100');
     filterContainer.classList.add('em-mb-16');
 
+    const filterHeader = document.createElement('div');
+    filterHeader.classList.add('filter-header');
+    filterHeader.classList.add('em-w-100');
+    filterHeader.classList.add('em-flex-row');
+    filterHeader.classList.add('em-flex-space-between');
+    filterHeader.classList.add('em-mb-8');
+
     const filterLabel = document.createElement('label');
     filterLabel.classList.add('filter-label');
     filterLabel.classList.add('em-w-100');
+    filterLabel.style.margin = '0';
     filterLabel.for = 'filter-' + filter.id;
     filterLabel.innerHTML = filter.name;
-    filterContainer.appendChild(filterLabel);
+    filterHeader.appendChild(filterLabel);
+
+    const filterRm = document.createElement('span');
+    filterRm.classList.add('material-icons-outlined');
+    filterRm.classList.add('remove-filter');
+    filterRm.classList.add('em-pointer');
+    filterRm.innerHTML = 'delete';
+    filterRm.dataset.filterUid = filter.uid;
+
+    filterHeader.appendChild(filterRm);
+
+    filterContainer.appendChild(filterHeader);
 
     switch (filter.type) {
         case 'select':
@@ -81,7 +100,15 @@ function createFilter(filter) {
 }
 
 function removeFilter(e) {
+    const filterUid = Number(e.target.dataset.filterUid);
+    filters = filters.filter((filter) => {
+        return filter.uid !== filterUid;
+    });
 
+    const filterContainer = e.target.closest('.filter-container');
+    if (filterContainer) {
+        filterContainer.remove();
+    }
 }
 
 function applyFilters() {
@@ -104,11 +131,12 @@ if (filtersSelect) {
     filtersSelect.addEventListener('change', function (e) {
         if (e.target.value !== '0') {
             toggleFilterSelect(e);
-
+            const uid = Date.now();
             const selectedOption = e.target.options[e.target.selectedIndex];
             const filter = {
                 type: selectedOption.dataset.type,
                 id: e.target.value,
+                uid: uid,
                 name: selectedOption.text,
                 values: JSON.parse(atob(selectedOption.dataset.values)),
                 value: ''

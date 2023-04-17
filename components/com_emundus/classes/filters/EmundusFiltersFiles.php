@@ -89,7 +89,8 @@ class EmundusFiltersFiles extends EmundusFilters
 			$query->select('link')
 				->from('#__menu')
 				->where('menutype IN ('. implode(',', $db->quote($menus)) .')')
-				->andWhere('link LIKE "index.php?option=com_fabrik&view=form&formid=%"');
+				->andWhere('link LIKE "index.php?option=com_fabrik&view=form&formid=%"')
+				->andWhere('published = 1');
 
 			$db->setQuery($query);
 			$form_links = $db->loadColumn();
@@ -99,9 +100,10 @@ class EmundusFiltersFiles extends EmundusFilters
 				foreach ($form_links as $link) {
 					$form_ids[] = (int) str_replace('index.php?option=com_fabrik&view=form&formid=', '', $link);
 				}
+				$form_ids = array_unique($form_ids);
 
 				$query->clear()
-					->select('jfe.id, jfe.plugin, jfe.label, jfe.params')
+					->select('jfe.id, jfe.plugin, jfe.label, jfe.params, jffg.form_id')
 					->from('jos_fabrik_elements as jfe')
 					->join('inner', 'jos_fabrik_formgroup as jffg ON jfe.group_id = jffg.group_id')
 					->where('jffg.form_id IN (' . implode(',', $form_ids) . ')')
@@ -111,6 +113,10 @@ class EmundusFiltersFiles extends EmundusFilters
 				try {
 					$db->setQuery($query);
 					$elements = $db->loadAssocList();
+
+					foreach ($elements as $key => $element) {
+						$elements[$key][label] = JText::_($element[label]) . ' (' . $element[form_id] . ')';
+					}
 				} catch (Exception $e) {
 					JLog::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
 				}
