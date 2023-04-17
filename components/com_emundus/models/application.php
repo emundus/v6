@@ -148,78 +148,88 @@ class EmundusModelApplication extends JModelList
         return $this->_db->loadObjectList();
     }
 
-    function getUserAttachmentsByFnum($fnum, $search = '',$profile = null)
+    function getUserAttachmentsByFnum($fnum, $search = '', $profile = null)
     {
-        $eMConfig = JComponentHelper::getParams('com_emundus');
-        $expert_document_id = $eMConfig->get('expert_document_id', '36');
+		$attachments = [];
 
-	    $query = $this->_db->getQuery(true);
-	    $query->select('eu.id AS aid, eu.user_id, esa.*, eu.attachment_id, eu.filename, eu.description  AS upload_description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, eu.modified, eu.modified_by, esc.label as campaign_label, esc.year, esc.training')
-		    ->from($this->_db->quoteName('#__emundus_uploads', 'eu'))
-		    ->leftJoin($this->_db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $this->_db->quoteName('eu.attachment_id') . ' = ' . $this->_db->quoteName('esa.id'));
+		if (!empty($fnum)) {
+			$eMConfig = JComponentHelper::getParams('com_emundus');
+			$expert_document_id = $eMConfig->get('expert_document_id', '36');
 
-	    if(!empty($profile)){
-		    $query->leftJoin($this->_db->quoteName('#__emundus_setup_attachment_profiles', 'esap') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('esap.attachment_id'));
-	    }
-	    $query->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('eu.campaign_id'))
-		    ->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum))
-		    ->andWhere('esa.lbl NOT LIKE ' . $this->_db->quote('_application_form'));
+			$query = $this->_db->getQuery(true);
+			$query->select('eu.id AS aid, eu.user_id, esa.*, eu.attachment_id, eu.filename, eu.description  AS upload_description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, eu.modified, eu.modified_by, esc.label as campaign_label, esc.year, esc.training')
+				->from($this->_db->quoteName('#__emundus_uploads', 'eu'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $this->_db->quoteName('eu.attachment_id') . ' = ' . $this->_db->quoteName('esa.id'));
 
-        if (EmundusHelperAccess::isExpert($this->_user->id)) {
-	        $query->andWhere($this->_db->quoteName('esa.attachment_id') . ' != ' . $expert_document_id);
-        }
+			if(!empty($profile)){
+				$query->leftJoin($this->_db->quoteName('#__emundus_setup_attachment_profiles', 'esap') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('esap.attachment_id'));
+			}
+			$query->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('eu.campaign_id'))
+				->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum))
+				->andWhere('esa.lbl NOT LIKE ' . $this->_db->quote('_application_form'));
 
-	    if (isset($search) && !empty($search)) {
-		    $query->andWhere($this->_db->quoteName('esa.value') . ' LIKE ' . $this->_db->quote('%' . $search . '%')
-			    . ' OR ' . $this->_db->quoteName('esa.description') . ' LIKE ' . $this->_db->quote('%' . $search . '%')
-			    . ' OR ' . $this->_db->quoteName('eu.timedate') . ' LIKE ' . $this->_db->quote('%' . $search . '%'));
-	    }
+			if (EmundusHelperAccess::isExpert($this->_user->id)) {
+				$query->andWhere($this->_db->quoteName('esa.attachment_id') . ' != ' . $expert_document_id);
+			}
 
-	    if (!empty($profile)){
-		    $query->andWhere($this->_db->quoteName('esap.profile_id') . ' = ' . $this->_db->quote($profile));
-		    $query->order($this->_db->quoteName('esap.mandatory') . ' DESC, ' . $this->_db->quoteName('esap.ordering') . ', ' . $this->_db->quoteName('esa.value') . ' ASC');
-	    } else {
-		    $query->order($this->_db->quoteName('esa.category') . ', ' . $this->_db->quoteName('esa.ordering') . ', ' . $this->_db->quoteName('esa.value') . ' DESC');
-	    }
+			if (isset($search) && !empty($search)) {
+				$query->andWhere($this->_db->quoteName('esa.value') . ' LIKE ' . $this->_db->quote('%' . $search . '%')
+					. ' OR ' . $this->_db->quoteName('esa.description') . ' LIKE ' . $this->_db->quote('%' . $search . '%')
+					. ' OR ' . $this->_db->quoteName('eu.timedate') . ' LIKE ' . $this->_db->quote('%' . $search . '%'));
+			}
 
-        $this->_db->setQuery($query);
-        $attachments = $this->_db->loadObjectList();
+			if (!empty($profile)) {
+				$query->andWhere($this->_db->quoteName('esap.profile_id') . ' = ' . $this->_db->quote($profile));
+				$query->order($this->_db->quoteName('esap.mandatory') . ' DESC, ' . $this->_db->quoteName('esap.ordering') . ', ' . $this->_db->quoteName('esa.value') . ' ASC');
+			} else {
+				$query->order($this->_db->quoteName('esa.category') . ', ' . $this->_db->quoteName('esa.ordering') . ', ' . $this->_db->quoteName('esa.value') . ' DESC');
+			}
 
-        $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
-        if ($allowed_attachments !== true) {
-            foreach ($attachments as $key => $attachment) {
-                if (!in_array($attachment->id, $allowed_attachments)) {
-                    unset($attachments[$key]);
-                }
-            }
-        }
+			try {
+				$this->_db->setQuery($query);
+				$attachments = $this->_db->loadObjectList();
+			} catch(Exception $e) {
+				JLog::add('Error getting user attachments in model at query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.error');
+			}
 
-	    $query->clear()
-			->select('applicant_id')
-			->from($this->_db->quoteName('#__emundus_campaign_candidature'))
-			->where($this->_db->quoteName('fnum').' LIKE '.$this->_db->quote($fnum));
+			if (!empty($attachments)) {
+				$allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+				if ($allowed_attachments !== true) {
+					foreach ($attachments as $key => $attachment) {
+						if (!in_array($attachment->id, $allowed_attachments)) {
+							unset($attachments[$key]);
+						}
+					}
+				}
 
-		$this->_db->setQuery($query);
-		$applicant_id = $this->_db->loadResult();
+				$query->clear()
+					->select('applicant_id')
+					->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+					->where($this->_db->quoteName('fnum').' LIKE '.$this->_db->quote($fnum));
 
-        foreach($attachments as $attachment) {
-            if (!file_exists(EMUNDUS_PATH_ABS.$applicant_id.DS.$attachment->filename)) {
-                $attachment->existsOnServer = false;
-            } else {
-                $attachment->existsOnServer = true;
-            }
+				$this->_db->setQuery($query);
+				$applicant_id = $this->_db->loadResult();
 
-	        $query->clear()
-		        ->select('profile_id')
-		        ->from($this->_db->quoteName('#__emundus_setup_attachment_profiles'))
-		        ->where($this->_db->quoteName('attachment_id').' = '.$this->_db->quote($attachment->attachment_id));
-			$this->_db->setQuery($query);
-			$attachment->profiles = $this->_db->loadColumn();
-        }
+				foreach($attachments as $attachment) {
+					if (!file_exists(EMUNDUS_PATH_ABS.$applicant_id.'/'.$attachment->filename)) {
+						$attachment->existsOnServer = false;
+					} else {
+						$attachment->existsOnServer = true;
+					}
 
-        if ($attachments !== array_values($attachments)) {
-            $attachments = array_values($attachments);
-        }
+					$query->clear()
+						->select('profile_id')
+						->from($this->_db->quoteName('#__emundus_setup_attachment_profiles'))
+						->where($this->_db->quoteName('attachment_id').' = '.$this->_db->quote($attachment->attachment_id));
+					$this->_db->setQuery($query);
+					$attachment->profiles = $this->_db->loadColumn();
+				}
+
+				if ($attachments !== array_values($attachments)) {
+					$attachments = array_values($attachments);
+				}
+			}
+		}
 
         return $attachments;
     }
