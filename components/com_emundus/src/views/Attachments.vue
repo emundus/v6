@@ -19,7 +19,6 @@
 		          name="category"
 				      class="category-select em-ml-16"
 				      v-model="category"
-				      @change="onCategoryChange"
 		      >
 			      <option value="all">{{ translate("COM_EMUNDUS_ATTACHMENTS_SELECT_CATEGORY") }}</option>
 			      <option v-for="(category, key) in displayedAttachmentCategories" :key="key" :value="key">{{ category }}</option>
@@ -139,7 +138,7 @@
         </table>
       </section>
       <p v-else>
-        {{ translate("COM_EMUNDUS_ATTACHMENTS_NO_ATTACHMENTS_FOUND") }}
+        {{ translate('COM_EMUNDUS_ATTACHMENTS_NO_ATTACHMENTS_FOUND') }}
       </p>
     </div>
 
@@ -611,15 +610,6 @@ export default {
 		  });
 	  },
 
-	  // events
-	  onCategoryChange() {
-		  if (this.category !== 'all') {
-			  localStorage.setItem('vue-attachment-category', this.category);
-		  } else {
-			  localStorage.removeItem('vue-attachment-category');
-		  }
-			this.filterCheckedAttachments();
-	  },
 	  onSearch() {
 		  this.filterCheckedAttachments();
 	  },
@@ -707,9 +697,16 @@ export default {
 		  const localCategory = localStorage.getItem('vue-attachment-category');
 		  if (localCategory && this.displayedAttachmentCategories[localCategory]) {
 			  this.category = localCategory;
-				this.onCategoryChange();
 		  }
-	  }
+	  },
+	  category: function() {
+		  if (this.category !== 'all') {
+			  localStorage.setItem('vue-attachment-category', this.category);
+		  } else {
+			  localStorage.removeItem('vue-attachment-category');
+		  }
+		  this.filterCheckedAttachments();
+	  },
   }
 };
 </script>

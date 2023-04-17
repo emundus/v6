@@ -14,10 +14,7 @@ localVue.use(VModal);
 
 describe('Attachments.vue', () => {
   const wrapper = shallowMount(Attachments, {
-    propsData: {
-      user: '123',
-      fnum: '2021061714501700000010000123'
-    },
+    propsData: {user: '123', fnum: '2021061714501700000010000123'},
     store: store,
     localVue
   });
@@ -28,7 +25,7 @@ describe('Attachments.vue', () => {
 
   // set attachments data
   wrapper.vm.users = mockAttachment.users;
-  wrapper.vm.displayedUser = mockAttachment.users.find(user => user.id === "123");
+  wrapper.vm.displayedUser = mockAttachment.users.find(user => user.id === '123');
   wrapper.vm.attachments = mockAttachment.attachments;
   wrapper.vm.fnums = mockAttachment.fnums;
 
@@ -67,14 +64,27 @@ describe('Attachments.vue', () => {
   });
 
   /**
-   * test searchInFiles
+   * test search
    */
-  it('Expect searchInFiles to set attachment.show to false if attachment.value do not contains value', () => {
+  it('Expect displayedAttachments length to adapt to search value', () => {
+    // values are 'Courrier' and 'ZIP'
     wrapper.vm.$data.search = wrapper.vm.attachments[0].value;
+    expect(wrapper.vm.displayedAttachments.length).toBe(1);
+
+    wrapper.vm.$data.search = 'test';
+    expect(wrapper.vm.displayedAttachments.length).toBe(0);
+
+    wrapper.vm.$data.search = '';
+    expect(wrapper.vm.displayedAttachments.length).toBe(wrapper.vm.attachments.length);
+
+    wrapper.vm.$data.search = 'i';
+    expect(wrapper.vm.displayedAttachments.length).toBe(2);
+
+    wrapper.vm.$data.search = 'Cour';
     expect(wrapper.vm.displayedAttachments.length).toBe(1);
   });
 
-  it('Expect searchInFiles clear button to reset all attachments show value to true', () => {
+  it('Expect search clear button to reset all attachments show value to true', () => {
     const clearSearch = wrapper.find('.searchbar-wrapper .clear');
     clearSearch.trigger('click');
 
@@ -102,13 +112,12 @@ describe('Attachments.vue', () => {
   /**
    * category select should be displayed if more than one category
    */
-  wrapper.vm.categories = {
+  wrapper.vm.$data.categories = {
     '1': 'category1',
     '2': 'category2',
     '3': 'category3',
     '4': 'category4'
   };
-
   it('Expect category select to be displayed if there are category option available', () => {
     const categorySelect = wrapper.find('.category-select');
     expect(categorySelect.exists()).toBe(true);
@@ -122,17 +131,23 @@ describe('Attachments.vue', () => {
   it('Expect filterByCategory to show only attachments with selected category', () => {
     wrapper.vm.$data.category = '2';
 
-    // check that only attachments with category 2 are displayed
     wrapper.vm.displayedAttachments.forEach(element => {
         expect(element.category).toBe('2');
     });
   });
 
-  it('Expect filterByCategory to show all attachments if category value is all', () => {
+  if('Local storage should be set with category value', () => {
+    expect(localStorage.getItem('vue-attachment-category')).toBe('2');
+  });
+
+  it('Expect category to show all attachments if category value is all', () => {
     wrapper.vm.$data.category = 'all';
 
-    // check that all attachments are displayed
     expect(wrapper.vm.displayedAttachments.length).toBe(wrapper.vm.attachments.length);
+  });
+
+  if('Local storage should be set with category value', () => {
+    expect(localStorage.getItem('vue-attachment-category')).toBe(null);
   });
 
   it('Expect .category-select to display only category options that are in attachments', () => {
@@ -150,19 +165,32 @@ describe('Attachments.vue', () => {
   });
 });
 
+describe('Attachments.vue empty categories', () => {
+  const wrapper = shallowMount(Attachments, {
+    propsData: {user: '123', fnum: '2021061714501700000010000123'},
+    store: store,
+    localVue
+  });
+
+  wrapper.vm.$data.categories = {};
+  it('Expect category select to be hidden if there are no category option available', () => {
+    expect(wrapper.vm.$data.categories).toEqual({});
+    expect(wrapper.vm.displayedAttachmentCategories).toEqual({});
+    const categorySelect = wrapper.find('.category-select');
+    expect(categorySelect.exists()).toBe(false);
+  });
+});
+
 describe('Attachments.vue delete Methods', () => {
   const wrapper = shallowMount(Attachments, {
-    propsData: {
-      user: '123',
-      fnum: '2021061714501700000010000123'
-    },
+    propsData: {user: '123', fnum: '2021061714501700000010000123'},
     store: store,
     localVue
   });
 
   // set attachments data
   wrapper.vm.users = mockAttachment.users;
-  wrapper.vm.displayedUser = mockAttachment.users.find(user => user.id === "123");
+  wrapper.vm.displayedUser = mockAttachment.users.find(user => user.id === '123');
   wrapper.vm.attachments = mockAttachment.attachments;
   wrapper.vm.fnums = mockAttachment.fnums;
   wrapper.vm.canDelete = true;
@@ -205,7 +233,7 @@ describe('Attachments.vue anonyme', () => {
 
   // set attachments data
   wrapper.vm.users = mockAttachment.users;
-  wrapper.vm.displayedUser = mockAttachment.users.find(user => user.id === "123");
+  wrapper.vm.displayedUser = mockAttachment.users.find(user => user.id === '123');
   wrapper.vm.attachments = mockAttachment.attachments;
   wrapper.vm.fnums = mockAttachment.fnums;
 
@@ -231,10 +259,7 @@ describe('Attachments.vue anonyme', () => {
 
 describe('Attachments.vue sync', () => {
   const wrapper = shallowMount(Attachments, {
-    propsData: {
-      user: '123',
-      fnum: '2021061714501700000010000123'
-    },
+    propsData: {user: '123', fnum: '2021061714501700000010000123'},
     store: store,
     localVue
   });
