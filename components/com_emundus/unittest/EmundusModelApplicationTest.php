@@ -90,4 +90,21 @@ class EmundusModelApplicationTest extends TestCase
 		$this->assertSame($attachments[0]->value, $search);
 		$this->assertSame(count($attachments), 1);
 	}
+
+	public function testuploadAttachment() {
+		$upload = $this->m_application->uploadAttachment([]);
+		$this->assertSame($upload, false);
+
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$program = $this->h_sample->createSampleProgram();
+		$campaign_id = $this->h_sample->createSampleCampaign($program);
+		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+
+		$data = [];
+		$data['key'] = ['fnum', 'user_id', 'campaign_id', 'attachment_id', 'filename', 'local_filename', 'timedate', 'can_be_deleted', 'can_be_viewed'];
+		$data['value'] = [$fnum, $user_id, $campaign_id, 1, 'test.pdf', 'test.pdf', date('Y-m-d H:i:s'), 1, 1];
+
+		$upload = $this->m_application->uploadAttachment($data);
+		$this->assertGreaterThan(0, $upload);
+	}
 }

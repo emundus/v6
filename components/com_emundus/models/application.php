@@ -525,21 +525,28 @@ class EmundusModelApplication extends JModelList
 
     public function uploadAttachment($data)
     {
-        try {
-            /* $i = 0;
-             foreach ($data['value'] as $key=>$value) {
-                 $data['value'][$i] =  str_replace('"','', $value);
-                 $i++;
-             }*/
-            $query = "INSERT INTO #__emundus_uploads (" . implode(',', $data["key"]) . ") VALUES ('" . implode("','", $data["value"]) . "')";
-            $this->_db->setQuery($query);
-            $this->_db->execute();
-            return $this->_db->insertid();
-        } catch (RuntimeException $e) {
-            JFactory::getApplication()->enqueueMessage($e->getMessage());
+		$upload_id = false;
 
-            return false;
-        }
+		if (!empty($data) && !empty($data['key']) && !empty($data['value'])) {
+			try {
+				$values = implode(',', $this->_db->quote($data['value']));
+
+				$query = $this->_db->getQuery(true);
+				$query->insert($this->_db->quoteName('#__emundus_uploads'))
+					->columns($data['key'])
+					->values($values);
+
+				error_log($query->__toString());
+
+				$this->_db->setQuery($query);
+				$this->_db->execute();
+				$upload_id = $this->_db->insertid();
+			} catch (RuntimeException $e) {
+				JFactory::getApplication()->enqueueMessage($e->getMessage());
+			}
+		}
+
+		return $upload_id;
     }
 
     public function getAttachmentByID($id)
