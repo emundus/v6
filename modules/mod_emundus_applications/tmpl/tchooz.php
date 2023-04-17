@@ -249,12 +249,12 @@ ksort($applications);
                                                         </div>
                                                     <?php endif; ?>
                                                 </div>
-                                                <a href="<?= JRoute::_($first_page_url); ?>" class="em-h6 mod_emundus_applications___title" id="application_title_<?php echo $application->fnum ?>">
+                                                <a href="<?= JRoute::_($first_page_url); ?>" class="em-h4 mod_emundus_applications___title" id="application_title_<?php echo $application->fnum ?>">
                                                     <span><?= ($is_admission &&  $add_admission_prefix)?JText::_('COM_EMUNDUS_INSCRIPTION').' - '.$application->label:$application->label; ?></span>
                                                 </a>
                                             <?php else : ?>
                                                 <div class="em-flex-row em-flex-space-between em-flex-align-start em-mb-12">
-                                                    <a href="<?= JRoute::_($first_page_url); ?>" class="em-h6 mod_emundus_applications___title" id="application_title_<?php echo $application->fnum ?>">
+                                                    <a href="<?= JRoute::_($first_page_url); ?>" class="em-h4 mod_emundus_applications___title" id="application_title_<?php echo $application->fnum ?>">
                                                         <span><?= ($is_admission &&  $add_admission_prefix)?JText::_('COM_EMUNDUS_INSCRIPTION').' - '.$application->label:$application->label; ?></span>
                                                     </a>
                                                     <?php if (!$show_fnum) : ?>
