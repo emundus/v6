@@ -44,6 +44,10 @@ endif;
 //template causes an error as $this->_path['template'] doesn't contain the correct
 // path to this template - go figure!
 $headingsHtml = $this->loadTemplate('headings');
+$notes = $this->params->get('note', '');
+if(!empty($notes)){
+    $notes = explode(',',$notes);
+}
 echo $this->loadTemplate('tabs');
 ?>
 
@@ -58,10 +62,12 @@ endforeach;
     <div class="page-header">
         <div class="em-flex-row em-flex-space-between">
             <h2><?php echo $this->table->label;?></h2>
-            <div class="em-flex-row em-gap-8">
-                <span onclick="switchView('grid')" class="em-pointer material-icons-outlined fabrik-switch-view-icon" id="fabrik_switch_view_grid_icon">grid_view</span>
-                <span onclick="switchView('list')" class="em-pointer material-icons-outlined fabrik-switch-view-icon" id="fabrik_switch_view_list_icon">menu</span>
-            </div>
+            <?php if(!in_array('list_only', $notes) && !in_array('grid_only', $notes)) : ?>
+                <div class="em-flex-row em-gap-8">
+                    <span onclick="switchView('grid')" class="em-pointer material-icons-outlined fabrik-switch-view-icon" id="fabrik_switch_view_grid_icon">grid_view</span>
+                    <span onclick="switchView('list')" class="em-pointer material-icons-outlined fabrik-switch-view-icon" id="fabrik_switch_view_list_icon">menu</span>
+                </div>
+            <?php endif; ?>
         </div>
         <div class="em-list-intro">
 	        <?php echo $this->table->intro; ?>
@@ -127,8 +133,16 @@ endif;
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Check view mode
         let view_mode = localStorage.getItem('view_mode');
+
+        <?php if(in_array('list_only', $notes)) : ?>
+        view_mode = 'list';
+        <?php elseif(in_array('grid_only', $notes)) : ?>
+        view_mode = 'grid';
+        <?php endif; ?>
+
+        console.log(view_mode);
+        // Check view mode
         if(view_mode === null){
             localStorage.setItem('view_mode', 'grid');
             view_mode = 'grid';
@@ -182,15 +196,19 @@ endif;
 
         switch (view){
             case 'grid':
-                document.getElementById('fabrik_switch_view_grid_icon').classList.add('active');
-                document.getElementById('fabrik_switch_view_list_icon').classList.remove('active');
+                <?php if(!in_array('list_only', $notes) && !in_array('grid_only', $notes)) : ?>
+                    document.getElementById('fabrik_switch_view_grid_icon').classList.add('active');
+                    document.getElementById('fabrik_switch_view_list_icon').classList.remove('active');
+                <?php endif; ?>
                 updateStyleOfClass('fabrikImageBackground', 'display', 'block');
                 list.classList.remove('em-grid-1');
                 list.classList.add('em-grid-3-2-1');
                 break;
             case 'list':
-                document.getElementById('fabrik_switch_view_grid_icon').classList.remove('active');
-                document.getElementById('fabrik_switch_view_list_icon').classList.add('active');
+                <?php if(!in_array('list_only', $notes) && !in_array('grid_only', $notes)) : ?>
+                    document.getElementById('fabrik_switch_view_grid_icon').classList.remove('active');
+                    document.getElementById('fabrik_switch_view_list_icon').classList.add('active');
+                <?php endif; ?>
                 updateStyleOfClass('fabrikImageBackground', 'display', 'none');
                 list.classList.remove('em-grid-3-2-1');
                 list.classList.add('em-grid-1');

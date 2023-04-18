@@ -11,9 +11,12 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-$parent_tag = $this->params->get('note', 'a')
+$notes = $this->params->get('note', '');
+if(!empty($notes)){
+    $notes = explode(',',$notes);
+}
 ?>
-<?php if($parent_tag != 'details') : ?>
+<?php if(!in_array('details',$notes)) : ?>
     <a id="<?php echo $this->_row->id;?>" class="<?php echo $this->_row->class;?> em-repeat-card-no-padding em-pb-24 em-pointer" href="<?php echo $this->_row->data->fabrik_view_url ?>">
         <?php foreach ($this->headings as $heading => $label) {
             $style = empty($this->cellClass[$heading]['style']) ? '' : 'style="'.$this->cellClass[$heading]['style'].'"';
