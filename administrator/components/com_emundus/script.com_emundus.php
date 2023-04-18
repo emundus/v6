@@ -1005,6 +1005,9 @@ if (password_value.match(regex) != null) {
 				}
 			}
 
+			if ((version_compare($cache_version, '1.36.0', '<') || $firstrun)) {
+				EmundusHelperUpdate::installExtension('plg_fabrik_cron_emunduscampaignrecurrence', 'emunduscampaignrecurrence', '{"name":"plg_fabrik_cron_emunduscampaignrecurrence","type":"plugin","creationDate":"April 2023","author":"LEGENDRE J\u00e9r\u00e9my","copyright":"Copyright (C) 2021 emundus.fr - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"1.36.0","description":"PLG_FABRIK_CRON_EMUNDUSCAMPAIGNRECURRENCE_DESCRIPTION","group":"","filename":"emunduscampaignrecurrence"}', 'plugin', 1, 'fabrik_cron');
+			}
 
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
