@@ -224,7 +224,7 @@
 			      <strong class="b em-toggle-track"></strong>
 		      </div>
 
-		      <div v-if="form.params.is_recurring == '1'" class="em-mb-16">
+		      <div v-if="form.params.is_recurring == '1'" id="recurring-delay" class="em-mb-16">
 			      <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RECURRING_DELAY') }}</label>
 			      <input type="number" name="recurring_delay" v-model="form.params.recurring_delay" min="0" max="365" @change="onFormChange"/>
 		      </div>

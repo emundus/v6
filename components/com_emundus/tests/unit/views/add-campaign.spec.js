@@ -9,9 +9,7 @@ localVue.mixin(translate);
 
 describe('addCampaign.vue, impossible to submit campaign data if missing required fields', () => {
     const wrapper = mount(addCampaign, {
-        propsData: {
-            campaign: 0
-        },
+        propsData: {campaign: 0},
         localVue,
         store
     });
@@ -43,5 +41,37 @@ describe('addCampaign.vue, impossible to submit campaign data if missing require
         wrapper.vm.form.year = '2022';
         const submitResponse = wrapper.vm.submit();
         expect(submitResponse).toEqual(0);
+    });
+
+    wrapper.vm.ready = true;
+    it('Recurrent settings should exists', () => {
+        expect(wrapper.find('#recurrent-settings').exists()).toBeTruthy();
+    });
+
+    it('Is recurrent should be false by default', () => {
+        expect(wrapper.vm.form.params.is_recurring).toBe(0);
+    });
+
+    it('Recurring delay should be equal to 0 by default', () => {
+        expect(wrapper.vm.form.params.recurring_delay).toBe(0);
+    });
+
+    it('Recurring delay should not be visible if is_recurring is false', () => {
+        expect(wrapper.find('#recurring-delay').exists()).toBeFalsy();
+    });
+});
+
+describe('addCampaign.vue, reccurent settings', () => {
+    const wrapper = mount(addCampaign, {
+        propsData: {campaign: 0},
+        localVue,
+        store
+    });
+
+    wrapper.vm.actualLanguage = 'fr';
+    wrapper.vm.form.params.is_recurring = 1;
+
+    it('Recurring delay should be visible if is_recurring is true', () => {
+        expect(wrapper.find('#recurring-delay').exists()).toBeTruthy();
     });
 });
