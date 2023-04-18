@@ -204,11 +204,36 @@
 
         <hr/>
 
+	      <section id="recurrent-settings" class="em-mt-32">
+		      <div class="em-mb-16">
+			      <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RECURRING_PARAMETERS') }}</h2>
+		      </div>
+
+		      <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_IS_RECURRING') }}</label>
+		      <div class="em-toggle em-mb-16">
+			      <input type="checkbox"
+			             true-value="1"
+			             false-value="0"
+			             class="em-toggle-check"
+			             id="is_reccuring"
+			             name="is_reccuring"
+			             v-model="form.params.is_recurring"
+			             @click="onFormChange()"
+			      />
+			      <strong class="b em-toggle-switch"></strong>
+			      <strong class="b em-toggle-track"></strong>
+		      </div>
+
+		      <div v-if="form.params.is_recurring == '1'" class="em-mb-16">
+			      <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RECURRING_DELAY') }}</label>
+			      <input type="number" name="recurring_delay" v-model="form.params.recurring_delay" min="0" max="365" @change="onFormChange"/>
+		      </div>
+	      </section>
+
+	      <hr/>
+
         <div class="em-flex-row em-flex-space-between em-float-right">
-          <button
-              type="button"
-              class="em-primary-button em-w-auto"
-              @click="quit = 1; submit()">
+          <button type="button" class="em-primary-button em-w-auto" @click="quit = 1; submit()">
             {{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
           </button>
         </div>
@@ -259,14 +284,14 @@ export default {
   data: () => ({
     // props
     campaignId: 0,
-    actualLanguage: "",
+    actualLanguage: '',
     coordinatorAccess: 0,
     quit: 1,
 
     isHiddenProgram: false,
 
     // Date picker rules
-    minDate: "",
+    minDate: '',
     //
 
     programs: [],
@@ -282,35 +307,39 @@ export default {
 
     form: {
       label: {},
-      start_date: "",
-      end_date: "",
-      short_description: "",
+      start_date: '',
+      end_date: '',
+      short_description: '',
       description: null,
-      training: "",
-      year: "",
+      training: '',
+      year: '',
       published: 1,
       is_limited: 0,
       profile_id: 9,
       limit: 50,
       limit_status: [],
+	    params: {
+		    is_recurring: 0,
+		    recurring_delay: 0
+	    }
     },
     programForm: {
-      code: "",
-      label: "",
-      notes: "",
-      programmes: "",
+      code: '',
+      label: '',
+      notes: '',
+      programmes: '',
       published: 1,
       apply_online: 1,
       color: "#1C6EF2"
     },
 
     year: {
-      label: "",
-      code: "",
-      schoolyear: "",
+      label: '',
+      code: '',
+      schoolyear: '',
       published: 1,
-      profile_id: "",
-      programmes: ""
+      profile_id: '',
+      programmes: ''
     },
 
     errors: {
@@ -323,10 +352,10 @@ export default {
     },
 
     colors: [
-        {
-          text: '#1C6EF2',
-          background: '#79B6FB',
-        },
+	    {
+		    text: '#1C6EF2',
+		    background: '#79B6FB',
+	    },
       {
         text: '#20835F',
         background: '#87D4B8',
@@ -371,11 +400,12 @@ export default {
     getCampaignById() {
       // Check if we add or edit a campaign
       if (typeof this.campaignId !== 'undefined' && this.campaignId !== '' && this.campaignId > 0) {
-        axios.get(
-            `index.php?option=com_emundus&controller=campaign&task=getcampaignbyid&id=${this.campaignId}`
-        ).then(response => {
+        axios.get(`index.php?option=com_emundus&controller=campaign&task=getcampaignbyid&id=${this.campaignId}`).then(response => {
           let label = response.data.data.campaign.label;
 
+					if (response.data.data.campaign.params !== null) {
+						response.data.data.campaign.params = JSON.parse(response.data.data.campaign.params);
+					}
           this.form = response.data.data.campaign;
           this.$emit('getInformations',this.form);
           this.programForm = response.data.data.program;
@@ -573,9 +603,9 @@ export default {
         }
       }
 
-      if (this.form.training == "") {
+      if (this.form.training == '') {
         if (this.isHiddenProgram) {
-          if (this.programForm.label == "") {
+          if (this.programForm.label == '') {
             this.errors.progLabel = true;
 	          document.getElementById('prog_label').focus();
 	          return 0;
@@ -605,7 +635,7 @@ export default {
       this.year.profile_id = this.form.profile_id;
       //
 
-      if (this.form.label.en == "" || this.form.label.en == null || typeof this.form.label.en == "undefined") {
+      if (this.form.label.en == '' || this.form.label.en === null || typeof this.form.label.en === 'undefined') {
         this.form.label.en = this.form.label.fr;
       }
 
@@ -616,10 +646,10 @@ export default {
           this.updateCampaign();
         } else {
 	        axios({
-		        method: "post",
-		        url: "index.php?option=com_emundus&controller=programme&task=createprogram",
+		        method: 'post',
+		        url: 'index.php?option=com_emundus&controller=programme&task=createprogram',
 		        headers: {
-			        "Content-Type": "application/x-www-form-urlencoded"
+			        'Content-Type': 'application/x-www-form-urlencoded'
 		        },
 		        data: qs.stringify( {body: this.programForm})
 	        }).then((response) => {
@@ -633,7 +663,7 @@ export default {
         }
       } else {
         // get program code if there is training value
-        if (this.form.training !== "")  {
+        if (this.form.training !== '')  {
           this.programForm = this.programs.find(program => program.code == this.form.training);
           this.form.training = this.programForm.code;
           this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();

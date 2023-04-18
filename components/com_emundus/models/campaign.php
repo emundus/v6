@@ -1339,6 +1339,10 @@ class EmundusModelCampaign extends JModelList {
                     case 'status':
                         // do nothing
                         break;
+	                case 'params':
+						$params = json_encode($val);
+						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($params);
+						break;
                     default:
                         $insert = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
                         $fields[] = $insert;
@@ -1346,7 +1350,7 @@ class EmundusModelCampaign extends JModelList {
                 }
             }
 
-            $m_falang->updateFalang($labels,$cid,'emundus_setup_campaigns','label');
+            $m_falang->updateFalang($labels, $cid,'emundus_setup_campaigns','label');
 
             $query->update($this->_db->quoteName('#__emundus_setup_campaigns'))
                 ->set($fields)

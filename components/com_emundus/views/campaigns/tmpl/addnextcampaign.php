@@ -223,6 +223,10 @@ JText::script('COM_EMUNDUS_FORM_ATTACHMENTS_PREVIEW');
 JText::script('COM_EMUNDUS_ONBOARD_NO_FORM_FOUND_ADD_FORM');
 JText::script('COM_EMUNDUS_ONBOARD_EDIT_FORM');
 
+JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_RECURRING_PARAMETERS');
+JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_IS_RECURRING');
+JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_RECURRING_DELAY');
+
 $lang = JFactory::getLanguage();
 $short_lang = substr($lang->getTag(), 0 , 2);
 $current_lang = $lang->getTag();

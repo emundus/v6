@@ -33,7 +33,6 @@
 				<!--- start Menu --->
 				<div class="em-flex-row" >
 					<ul class="nav nav-tabs topnav">
-
 						<li v-for="(formCat, index) in formCategories" :key="'category-' + index" v-show="closeSubmenu">
 							<a  @click="profileId != null ? changeToCampMenu(index): ''"
 							    class="em-neutral-700-color em-pointer"
