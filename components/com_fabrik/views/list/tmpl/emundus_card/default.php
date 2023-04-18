@@ -26,7 +26,6 @@ endif;
 if ($this->params->get('show_page_heading')) :
 	echo '<h1>' . $this->params->get('page_heading') . '</h1>';
 endif;
-
 ?>
 <form class="fabrikForm form-search" action="<?php echo $this->table->action;?>" method="post" id="<?php echo $this->formid;?>" name="fabrikList">
 
@@ -79,7 +78,7 @@ endforeach;
 	    <?php echo $this->nav;?>
     </div>
     <div class="em-grid-3-2-1 <?php echo $this->list->class;?>" id="list_<?php echo $this->table->renderid;?>" >
-        <?php if(empty($this->rows)) : ?>
+        <?php if(empty($this->rows) || empty($this->rows[0])) : ?>
             <div class="emptyDataMessage" style="<?php echo $this->emptyStyle?>">
 		        <?php echo $this->emptyDataMessage; ?>
             </div>
