@@ -4,6 +4,8 @@ defined('JPATH_BASE') or die;
 
 // Add span with id so that element fxs work.
 $d = $displayData;
+
+$dataSelect = $d->dataSelect; // on récup les données pour les options du select
 ?>
 
 
@@ -24,6 +26,13 @@ $d = $displayData;
 	<select id="div_emundus_select_phone_code" class="input-small fabrikinput inputbox">
 		<option value="non">non</option>
 		<option value="oui">oui</option>
+
+		<?php foreach ($dataSelect as $key => $value) : // petit boucle pour les montrer et roule ! ?>
+
+		<option value="<?php echo $value->iso2 ?>"><?php echo $value->iso2 ?></option>
+
+		<?php endforeach; ?>
+
 	</select>
 
 
@@ -39,14 +48,13 @@ $d = $displayData;
 
 
 
-
-<!--  TEST POUR MOI POUR PLUS TARD
+<!-- TEST POUR MOI, CELA ROULE !
 
 <script>
 
 	const handlerInputChange = (props) =>
 	{
-		if (props.target.value === "oui")
+		if (props.target.value === "ES")
 		{
 			addOneToInput();
 		}
@@ -66,6 +74,6 @@ $d = $displayData;
 	select.addEventListener("change", handlerInputChange);
 </script>
 
-->
+-->
 
 

@@ -147,6 +147,9 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 		$layoutData = new stdClass;
 		$layoutData->scanQR = $params->get('scan_qrcode', '0') === '1';
 		$layoutData->attributes = $bits;
+
+        $layoutData->dataSelect = $this->BDRequest(); // pour envoyer les données de la BD vers le front
+
 		$layoutData->sizeClass = $params->get('bootstrap_class', '');
 
 		return $layout->render($layoutData);
@@ -245,7 +248,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 	 */
 	public function storeDatabaseFormat($val, $data)
 	{
-        var_dump($data);exit;
+
 		if (is_array($val))
 		{
 			foreach ($val as $k => $v)
@@ -274,5 +277,17 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 	{
 		return $this->unNumberFormat($val);
 	}
+
+
+    public function BDRequest() // pour récup les donées de la table data_country_phone_info
+    {
+        $db = JFactory::getDbo();
+        $query = 'SELECT * FROM data_country_phone_info';
+        $db->setQuery($query);
+
+        $db->execute();
+
+        return $db->loadObjectList(); // on renvoit toutes les données sous forme de liste d'object (format JSON)
+    }
 
 }
