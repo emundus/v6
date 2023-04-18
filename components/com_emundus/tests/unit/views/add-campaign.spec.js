@@ -67,7 +67,7 @@ describe('addCampaign.vue, reccurent settings', () => {
         localVue,
         store
     });
-
+    wrapper.vm.ready = true;
     wrapper.vm.actualLanguage = 'fr';
     wrapper.vm.form.params.is_recurring = 1;
 
