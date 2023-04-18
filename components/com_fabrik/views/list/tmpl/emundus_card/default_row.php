@@ -34,9 +34,18 @@ if(!empty($notes)){
                         <div class="fabrikImageBackground" style="background-image: url('<?php echo $src ?>')"></div>
                     </p>
                 <?php else : ?>
-                    <p class="em-mt-12 em-p-8-12 <?php echo $this->cellClass[$heading]['class']?>" <?php echo $style?>>
-                        <?php echo isset($this->_row->data) ? $this->_row->data->$heading : '';?>
-                    </p>
+                    <?php if (strpos($this->headingClass[$heading]['class'],'displayed')) : ?>
+                        <div class="em-mt-12 em-p-8-12">
+                            <label class="em-font-weight-600 em-mb-0-important"><?php echo FText::_($label) ?></label>
+                            <p class="em-mt-8 <?php echo $this->cellClass[$heading]['class']?>" <?php echo $style?>>
+                                <?php echo isset($this->_row->data) ? $this->_row->data->$heading : '';?>
+                            </p>
+                        </div>
+                    <?php else : ?>
+                        <p class="em-mt-12 em-p-8-12 <?php echo $this->cellClass[$heading]['class']?>" <?php echo $style?>>
+                            <?php echo isset($this->_row->data) ? $this->_row->data->$heading : '';?>
+                        </p>
+                    <?php endif; ?>
                 <?php endif; ?>
             <?php endif; ?>
         <?php }?>
@@ -60,7 +69,7 @@ if(!empty($notes)){
             <?php if (isset($this->_row->data) && strpos($this->cellClass[$heading]['class'],'summary') === false) : ?>
                 <?php if (strpos($this->headingClass[$heading]['class'],'displayed')) : ?>
                     <div class="em-mt-12 em-p-8-12">
-                        <label class="em-font-weight-500 em-mb-0-important"><?php echo FText::_($label) ?></label>
+                        <label class="em-font-weight-600 em-mb-0-important"><?php echo FText::_($label) ?></label>
                         <p class="em-mt-8 <?php echo $this->cellClass[$heading]['class']?>" <?php echo $style?>>
                             <?php echo isset($this->_row->data) ? $this->_row->data->$heading : '';?>
                         </p>

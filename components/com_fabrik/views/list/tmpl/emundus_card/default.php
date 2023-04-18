@@ -48,6 +48,7 @@ $notes = $this->params->get('note', '');
 if(!empty($notes)){
     $notes = explode(',',$notes);
 }
+$showTitle = $this->params->get('show-title');
 echo $this->loadTemplate('tabs');
 ?>
 
@@ -58,7 +59,7 @@ echo $this->loadTemplate('tabs');
 endforeach;
 ?>
 
-    <?php if ($this->showTitle == 1) : ?>
+    <?php if ($showTitle == 1) : ?>
     <div class="page-header">
         <div class="em-flex-row em-flex-space-between">
             <h2><?php echo $this->table->label;?></h2>
