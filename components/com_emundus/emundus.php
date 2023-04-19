@@ -659,7 +659,7 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
     JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
 
     JHtml::styleSheet('media/com_emundus/css/reset.css');
-    JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
+    //JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
     //JHtml::styleSheet('media/com_emundus/lib/chosen/chosen.min.css');
     JHtml::styleSheet('media/jui/css/chosen.css');
     JHtml::styleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');

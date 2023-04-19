@@ -179,9 +179,6 @@ a.btn.btn-success:not(.btn-xs) {
         justify-content: center;
         align-items: center;
     }
-    .mod_emundus_applications___content .row{
-        max-width: 330px;
-    }
 
     .view-featured .candidacy-files-list .row .main-page-application-title  {
         align-self: flex-start;
