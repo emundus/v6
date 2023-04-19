@@ -21,7 +21,6 @@ include_once(JPATH_BASE.'/components/com_emundus/models/users.php');
 
 
 $document = JFactory::getDocument();
-$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
 $document->addStyleSheet("media/com_emundus/css/emundus.css" );
 $document->addStyleSheet("modules/mod_emunduspanel/style/emundus.css" );
 

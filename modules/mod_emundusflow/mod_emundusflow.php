@@ -57,7 +57,6 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
 
     if($layout != '_:tchooz') {
-        $document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
         $document->addStyleSheet("modules/mod_emundusflow/style/emundus.css" );
     }
 

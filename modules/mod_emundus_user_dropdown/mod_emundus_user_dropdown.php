@@ -36,7 +36,6 @@ $show_registration = $params->get('show_registration', '0');
 $link_edit_profile = JRoute::_('index.php?Itemid=' . $params->get('link_edit_profile', 2805));
 
 $document = JFactory::getDocument();
-$document->addStyleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css');
 
 if ($jooomla_menu_name !== 0 || $jooomla_menu_name !== '0') {
 	$list = modEmundusUserDropdownHelper::getList($jooomla_menu_name);

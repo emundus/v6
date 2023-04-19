@@ -15,7 +15,7 @@ requirejs(['fab/fabrik'], function () {
 
     function removeFabrikFormSkeleton() {
         // Load skeleton
-        let header = document.querySelector('.page-header h2');
+        let header = document.querySelector('.page-header');
         if(header) {
             document.querySelector('.page-header h2').style.opacity = 1;
             document.querySelector('.page-header .em-list-intro').style.opacity = 1;
