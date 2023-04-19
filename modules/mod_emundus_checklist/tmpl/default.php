@@ -40,7 +40,7 @@ if($show_preliminary_documents && !empty($preliminary_documents)): ?>
         <?php foreach($preliminary_documents as $document): ?>
             <div class="em-flex-row em-mb-16 mod_emundus_campaign__details_file">
                 <span class="material-icons-outlined mod_emundus_campaign__details_file_icon">insert_drive_file</span>
-                <a href="files/<?php echo $document->catid."/".$document->title_category."/".$document->id."/".$document->title_file.".".$document->ext; ?>" target="_blank" rel="noopener noreferrer" >
+                <a href="<?php echo $document->href ?>" target="_blank" rel="noopener noreferrer" >
 			        <?php echo $document->title_file.".".$document->ext; ?>
                 </a>
             </div>
