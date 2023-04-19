@@ -1138,8 +1138,8 @@ if (password_value.match(regex) != null) {
 					$sql = "create table jos_emundus_campaign_workflow_repeat_documents(
 						    id        int auto_increment primary key,
 						    parent_id int  null,
-						    href      varchar(255) null,
-						    title 	  varchar(255) null,
+						    href      text null,
+						    title 	  varchar(255) null
 						)";
 					$db->setQuery($sql);
 					$created = $db->execute();
