@@ -41,4 +41,52 @@ class EmundusModelSettingsTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_settings = new EmundusModelsettings;
     }
+
+	public function testgetStatus() {
+		$all_status = $this->m_settings->getStatus();
+
+		$this->assertIsArray($all_status);
+		$this->assertNotEmpty($all_status, 'La récupération des status fonctionne');
+	}
+
+	public function testgetTags() {
+		$all_tags = $this->m_settings->getTags();
+
+		$this->assertIsArray($all_tags);
+		$this->assertNotEmpty($all_tags, 'La récupération des étiquettes fonctionne');
+	}
+
+	public function testcreateTag() {
+		$tag = $this->m_settings->createTag();
+		$this->assertNotNull($tag, 'La création d\'une étiquette fonctionne');
+
+		$this->assertGreaterThan(0, $tag->id, 'La création d\'une étiquette fonctionne');
+		$this->assertSame($tag->label, 'Nouvelle étiquette', 'Le tag a un titre par défaut');
+	}
+
+	public function testupdateTags() {
+		$tag = $this->m_settings->createTag();
+		$label = 'Nouvelle étiquette modifiée';
+		$colors = $this->m_settings->getColorClasses();
+		$color = current($colors);
+		$color_key = array_search($color, $colors);
+
+		$update = $this->m_settings->updateTags($tag->id, $label, $color);
+		$this->assertTrue($update, 'La modification d\'une étiquette fonctionne');
+
+		$tags = $this->m_settings->getTags();
+		$tags_found = array_filter($tags, function($t) use ($tag) {
+			return $t->id == $tag->id;
+		});
+		$tag_found = current($tags_found);
+
+		$this->assertSame($label, $tag_found->label, 'Le titre de l\'étiquette a été modifié');
+		$this->assertSame('label-' . $color_key, $tag_found->class, 'Le titre de l\'étiquette a été modifié');
+	}
+
+	public function testdeleteTag() {
+		$tag = $this->m_settings->createTag();
+		$delete = $this->m_settings->deleteTag($tag->id);
+		$this->assertTrue($delete, 'La suppression d\'une étiquette fonctionne');
+	}
 }

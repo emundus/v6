@@ -377,7 +377,7 @@ class EmundusModelsettings extends JModelList {
      *
      * @since 1.0
      */
-    function updateTags($tag,$label,$color) {
+    function updateTags($tag, $label, $color) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -385,6 +385,8 @@ class EmundusModelsettings extends JModelList {
 
         try {
             $class = array_search($color, $classes);
+			$class = !empty($class) ? $class : 'default';
+
             $query->clear()
                 ->update('#__emundus_setup_action_tag')
                 ->set($db->quoteName('label') . ' = ' . $db->quote($label))
