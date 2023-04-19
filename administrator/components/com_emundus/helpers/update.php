@@ -2351,4 +2351,80 @@ class EmundusHelperUpdate
 
 		return $updated;
 	}
+
+	/**
+	 * @param $table
+	 * @param $columns (need to be formatted as object (name,type = 'VARCHAR',length,null)
+	 * @param $foreigns_key (need to be formatted as object (name,from_column,ref_table,ref_column,update_cascade,delete_cascade)
+	 *
+	 * @return array
+	 *
+	 * @since version 1.35.0
+	 */
+	public static function createTable($table,$columns = [],$foreigns_key = [], $comment = ''){
+		$result = ['status' => false, 'message' => ''];
+
+		if (empty($table)) {
+			$result['message'] = 'CREATE TABLE : Please refer a database name.';
+			return $result;
+		}
+
+		try {
+			$db = JFactory::getDbo();
+			$table_existing = $db->setQuery('SHOW TABLE STATUS WHERE Name LIKE ' . $db->quote($table))->loadResult();
+
+			if (empty($table_existing)) {
+				$query = 'CREATE TABLE ' . $table . '(';
+				$query .= 'id INT AUTO_INCREMENT PRIMARY KEY';
+				if(!empty($columns)) {
+					foreach ($columns as $column) {
+						$query_column = ',' . $column['name'];
+						if (!empty($column['type'])) {
+							$query_column .= ' ' . $column['type'];
+						}
+						else {
+							$query_column .= ' VARCHAR';
+						}
+						if (!empty($column['length'])) {
+							$query_column .= '(' . $column['length'] . ')';
+						}
+						if (!empty($column['default'])) {
+							$query_column .= ' DEFAULT ' . $column['default'];
+						}
+						if ($column['null'] == 1) {
+							$query_column .= ' NULL';
+						}
+						else {
+							$query_column .= ' NOT NULL';
+						}
+
+						$query .= $query_column;
+					}
+				}
+				if(!empty($foreigns_key)) {
+					foreach ($foreigns_key as $fk) {
+						if(!empty($fk['name']) && !empty($fk['from_column']) && !empty($fk['ref_table']) && !empty($fk['ref_column'])) {
+							$query .= ',CONSTRAINT ' . $fk['name'] . ' FOREIGN KEY (' . $fk['from_column'] . ') REFERENCES ' . $fk['ref_table'] . '(' . $fk['ref_column'] . ')';
+						}
+						if(!empty($fk['update_cascade'])){
+							$query .= ' ON UPDATE CASCADE';
+						}
+						if(!empty($fk['delete_cascade'])){
+							$query .= ' ON DELETE CASCADE';
+						}
+					}
+				}
+				$query .= ')';
+				if(!empty($comment)){
+					$query .= ' COMMENT ' . $db->quote($comment);
+				}
+				$db->setQuery($query);
+				$result['status'] = $db->execute();
+			}
+		} catch (Exception $e) {
+			$result['message'] = 'ADDING TABLE : Error : ' . $e->getMessage();
+		}
+
+		return $result;
+	}
 }

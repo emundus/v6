@@ -830,4 +830,205 @@ class EmundusControllerApplication extends JControllerLegacy
         echo json_encode($response);
         exit;
     }
+	
+	public function createtab(){
+		$response = array();
+
+		$user = JFactory::getUser();
+
+		$jinput = JFactory::getApplication()->input;
+		
+		$tab_name = $jinput->getString('name', '');
+
+		$m_application = $this->getModel('Application');
+
+		$tab_created = $m_application->createTab($tab_name,$user->id);
+
+		$response['tab'] = $tab_created;
+		$response['msg'] =  $tab_created ? JText::_('SUCCESS') : JText::_('FAILED');
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function gettabs(){
+		$response = array();
+
+		$user = JFactory::getUser();
+
+		$m_application = $this->getModel('Application');
+
+		$response['tabs'] = $m_application->getTabs($user->id);
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function updatetabs(){
+		$response = array();
+
+		$user = JFactory::getUser();
+
+		$jinput = JFactory::getApplication()->input;
+		$tabs = json_decode($jinput->getRaw('tabs'));
+
+		$m_application = $this->getModel('Application');
+
+		$response['updated'] = $m_application->updateTabs($tabs,$user->id);
+
+		$response['msg'] =  $response['updated'] ? JText::_('SUCCESS') : JText::_('FAILED');
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function deletetab(){
+		$response = array();
+
+		$user = JFactory::getUser();
+
+		$jinput = JFactory::getApplication()->input;
+		$tab = $jinput->getInt('tab');
+
+		$m_application = $this->getModel('Application');
+
+		$response['deleted'] = $m_application->deleteTab($tab,$user->id);
+
+		$response['msg'] =  $response['deleted'] ? JText::_('SUCCESS') : JText::_('FAILED');
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function copyfile(){
+		$response = array('status' => 0, 'msg' => '');
+
+		$user = JFactory::getUser();
+
+		$jinput = JFactory::getApplication()->input;
+		$fnum = $jinput->getString('fnum');
+		$campaign = $jinput->getString('campaign');
+
+		if(!empty($fnum) && !empty($campaign)){
+			$m_files = $this->getModel('Files');
+			$fnumInfos = $m_files->getFnumInfos($fnum);
+
+			if($fnumInfos['applicant_id'] !== $user->id){
+				$response['msg'] = JText::_('ACCESS_DENIED');
+			} else {
+				$fnum_to = $m_files->createFile($campaign,$fnumInfos['applicant_id']);
+
+				if(!empty($fnum_to)) {
+					$m_application      = $this->getModel('Application');
+					$response['status'] = $m_application->copyFile($fnum, $fnum_to);
+					$response['first_page'] = 'index.php?option=com_emundus&task=openfile&fnum=' . $fnum_to;
+				}
+				$response['msg'] =  $response['status'] ? JText::_('SUCCESS') : JText::_('FAILED');
+			}
+		}
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function movetotab(){
+		$response = array('status' => 0, 'msg' => '');
+
+		$user = JFactory::getUser();
+
+		$jinput = JFactory::getApplication()->input;
+		$fnum = $jinput->getString('fnum');
+		$tab = $jinput->getString('tab');
+
+		if(!empty($tab) && !empty($fnum)){
+			$m_files = $this->getModel('Files');
+			$fnumInfos = $m_files->getFnumInfos($fnum);
+
+			if($fnumInfos['applicant_id'] !== $user->id){
+				$response['msg'] = JText::_('ACCESS_DENIED');
+			} else {
+				$m_application      = $this->getModel('Application');
+				$response['status'] = $m_application->moveToTab($fnum, $tab);
+
+				$response['msg'] =  $response['status'] ? JText::_('SUCCESS') : JText::_('FAILED');
+			}
+		}
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function renamefile(){
+		$response = array('status' => 0, 'msg' => '');
+
+		$user = JFactory::getUser();
+
+		$jinput = JFactory::getApplication()->input;
+		$fnum = $jinput->getString('fnum');
+		$new_name = $jinput->getString('new_name');
+
+		if(!empty($fnum)){
+			$m_files = $this->getModel('Files');
+			$fnumInfos = $m_files->getFnumInfos($fnum);
+
+			if($fnumInfos['applicant_id'] !== $user->id){
+				$response['msg'] = JText::_('ACCESS_DENIED');
+			} else {
+				$m_application      = $this->getModel('Application');
+				$response['status'] = $m_application->renameFile($fnum, $new_name);
+
+				$response['msg'] =  $response['status'] ? JText::_('SUCCESS') : JText::_('FAILED');
+			}
+		}
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function getcampaignsavailableforcopy(){
+		$response = array('status' => 0, 'msg' => '');
+
+		$user = JFactory::getUser();
+
+		$jinput = JFactory::getApplication()->input;
+		$fnum = $jinput->getString('fnum');
+
+		if(!empty($fnum)){
+			$m_files = $this->getModel('Files');
+			$fnumInfos = $m_files->getFnumInfos($fnum);
+
+			if($fnumInfos['applicant_id'] !== $user->id){
+				$response['msg'] = JText::_('ACCESS_DENIED');
+			} else {
+				$m_application      = $this->getModel('Application');
+				$response['campaigns'] = $m_application->getCampaignsAvailableForCopy($fnum);
+
+				$response['msg'] =  !empty($response['campaigns']) ? JText::_('SUCCESS') : JText::_('FAILED');
+			}
+		}
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function filterapplications(){
+		$response = array('status' => 1, 'msg' => JText::_('SUCCESS'));
+
+		$jinput = JFactory::getApplication()->input;
+		$type = $jinput->getString('type');
+		$value = $jinput->getString('value');
+
+		if(!empty($type) && !empty($value) && in_array($type,['applications_order_by','applications_filter_by'])){
+			JFactory::getSession()->set($type,$value);
+		}
+		elseif (empty($value)){
+			JFactory::getSession()->clear($type);
+		}
+		else {
+			$response = array('status' => 0, 'msg' => JText::_('FAILED'));
+		}
+
+		echo json_encode($response);
+		exit;
+	}
 }

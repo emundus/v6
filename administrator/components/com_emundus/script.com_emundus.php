@@ -1005,7 +1005,71 @@ if (password_value.match(regex) != null) {
 				}
 			}
 
-            if (version_compare($cache_version, '1.36.0', '<=') || $firstrun) {
+			if(version_compare($cache_version, '1.36.0', '<=') || $firstrun){
+				$columns = [
+					[
+						'name' => 'name',
+						'type' => 'VARCHAR',
+						'length' => 255,
+						'null' => 0,
+					],
+					[
+						'name' => 'applicant_id',
+						'type' => 'INT',
+						'null' => 0,
+					],
+					[
+						'name' => 'ordering',
+						'type' => 'INT',
+						'default' => 1,
+						'null' => 1,
+					]
+				];
+				$foreign_keys = [
+					[
+						'name' => 'jos_emundus_users_fk_applicant_id',
+						'from_column' => 'applicant_id',
+						'ref_table' => 'jos_emundus_users',
+						'ref_column' => 'user_id',
+						'update_cascade' => true,
+						'delete_cascade' => true,
+					]
+				];
+				EmundusHelperUpdate::createTable('jos_emundus_campaign_candidature_tabs',$columns,$foreign_keys,'Storage tab for filing');
+
+				$columns = [
+					[
+						'name' => 'date_time',
+						'type' => 'datetime',
+						'null' => 1,
+					],
+					[
+						'name' => 'fnum_from',
+						'type' => 'VARCHAR',
+						'length' => 255,
+						'null' => 0,
+					],
+					[
+						'name' => 'fnum_to',
+						'type' => 'VARCHAR',
+						'length' => 255,
+						'null' => 0,
+					],
+					[
+						'name' => 'published',
+						'type' => 'TINYINT',
+						'default' => 1,
+						'null' => 0,
+					]
+				];
+				$foreign_keys = [];
+				EmundusHelperUpdate::createTable('jos_emundus_campaign_candidature_links',$columns,$foreign_keys,'Links between two fnums');
+
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','tab','INT',10);
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','name','VARCHAR',255);
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','updated','DATETIME');
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','updated_by','INT',10);
+
                 /* Init new profile method */
                 // First install the module
                 EmundusHelperUpdate::installExtension('MOD_EMUNDUS_PROFILE','mod_emundus_profile','{"name":"MOD_EMUNDUS_PROFILE","type":"module","creationDate":"April 2023","author":"Brice Hubinet","copyright":"Copyright (C) 2023 eMundus. All rights reserved.","authorEmail":"brice.hubinet@emundus.fr","authorUrl":"www.emundus.fr","version":"1.36.0","description":"MOD_EMUNDUS_PROFILE_DESC","group":"","filename":"mod_emundus_profile"}','module',1,'','{"show_profile_picture":"1","update_profile_picture":"1","show_name":"1","show_account_edit_button":"1","intro":""}');

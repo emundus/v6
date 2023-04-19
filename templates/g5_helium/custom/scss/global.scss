@@ -65,7 +65,7 @@ div#frame.outline {
 }
 
 *:focus {
-  outline: none;
+  outline: 5px auto -webkit-focus-ring-color;
 }
 
 body {
@@ -223,10 +223,6 @@ legend {
   font-weight: 400;
   font-style: normal;
   line-height: normal;
-}
-
-a:focus {
-  outline: none;
 }
 
 a {
@@ -1242,6 +1238,62 @@ body > .g-container {
 .list-group.candidacy-files-list .row .ui.yellow.segment:not(.inverted) {
   border-top: 2px solid $base-secondary-color !important;
 }
+
+/* TEMPLATE TCHOOZ */
+.candidacy-files-list .em-light-selected-tab {
+  border-bottom: 1px solid $base-secondary-color;
+}
+.swal2-actions button.swal2-styled.swal2-cancel:not(.mod_emundus_application_swal_manage_tabs_cancel):not(.em-swal-cancel-button) {
+  border: 1px solid rgb(220, 53, 69) !important;
+  color: #fff !important;
+}
+
+.swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled {
+  &:hover, &:active, &:focus {
+    border: none !important;
+  }
+}
+
+.mod_emundus_application___buttons_switch_view_enable{
+  color: $base-secondary-color;
+}
+.mod_emundus_application___buttons_enable{
+  border: 1px solid $base-secondary-color;
+}
+#tab_adding_link a span.material-icons-outlined{
+  color: $base-primary-color;
+}
+
+.mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-cancel {
+  background: transparent;
+  border: 1px solid $base-primary-color;
+  border-radius: 8px;
+  color: $base-primary-color;
+  padding: 11px 20px;
+  font-weight: inherit;
+
+  &:hover, &:focus, &:active  {
+    background: $base-primary-color;
+    border: 1px solid $base-primary-color;
+    color: #fff;
+  }
+}
+
+.mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-confirm {
+  background: $base-secondary-color;
+  border: 1px solid $base-secondary-color;
+  border-radius: 8px;
+  color: #fff;
+  padding: 11px 20px;
+  font-weight: inherit;
+
+  &:hover, &:focus, &:active  {
+    background: transparent;
+    border: 1px solid $base-secondary-color;
+    color: $base-secondary-color;
+  }
+}
+
 
 /* MODULE APPLICATIONS COULEUR BTN IMPRIMER*/
 .homepage #g-main-mainbody #content-bottom-a {
@@ -2623,7 +2675,6 @@ button.btn-primary {
   &:hover {
     background-color: transparent;
     color: $base-secondary-color;
-    outline: none;
   }
 }
 
@@ -2636,7 +2687,6 @@ button.btn-secondary {
   &:hover {
     background-color: transparent;
     color: $base-secondary-color;
-    outline: none;
 
     span {
       color: $base-secondary-color !important;
@@ -2659,7 +2709,6 @@ span.btn {
   &:active {
     background-color: transparent;
     color: $base-primary-color;
-    outline: none;
     border: 1px solid $base-primary-color;
   }
 }
@@ -2990,7 +3039,6 @@ a#em-doc-zip:focus,
 .choice-statut-btn:focus {
   background-color: transparent;
   color: $base-primary-color;
-  outline: none;
   border: 1px solid $base-primary-color !important;
 }
 
@@ -3004,7 +3052,6 @@ a#em-doc-zip:focus,
   &:active {
     background-color: transparent;
     color: $base-primary-color;
-    outline: none;
   }
 }
 
@@ -3021,7 +3068,6 @@ a#em-doc-zip:focus,
     background-color: transparent;
     color: $base-primary-color;
     border: 1px solid $base-primary-color;
-    outline: none;
   }
 }
 
@@ -3033,7 +3079,6 @@ a#em-doc-zip:focus,
   &:hover {
     background-color: transparent !important;
     color: $base-secondary-color !important;
-    outline: none;
   }
 }
 
@@ -3063,7 +3108,6 @@ button#back,
   &:focus {
     background-color: $base-secondary-color;
     color: var(--neutral-50);
-    outline: none;
     border-color: unset;
   }
 }
@@ -3121,7 +3165,6 @@ button#back,
   &:focus,
   &:active {
     background-color: var(--night-blue);
-    outline: none;
   }
 
   span {
@@ -4910,6 +4953,28 @@ div#em-appli-block {
   color: var(--neutral-900);
   margin: 10px 0 20px 0;
   font-family: var(--font);
+}
+.swal2-popup{
+  border-radius: 16px !important;
+}
+
+button.swal2-styled.swal2-confirm{
+  background: var(--blue-500);
+  border-radius: 8px;
+  padding: 11px 20px;
+  color: white;
+}
+button.swal2-styled.swal2-cancel{
+  background: #FFFFFF;
+  border: 1px solid var(--blue-500);
+  border-radius: 8px;
+  color: var(--blue-500);
+  padding: 11px 20px;
+  &:hover, &:active, &:focus {
+    background: var(--blue-500);
+    color: #FFFFFF;
+    background-image: none !important;
+  }
 }
 
 button.swal2-confirm.save-btn.sauvegarder.save_continue {
@@ -6709,10 +6774,6 @@ fieldset[disabled] .multiselect {
   box-sizing: border-box;
 }
 
-.multiselect:focus {
-  outline: none;
-}
-
 .multiselect--disabled {
   background: var(--neutral-300);
   pointer-events: none;
@@ -6808,7 +6869,6 @@ fieldset[disabled] .multiselect {
 .multiselect__input:focus,
 .multiselect__single:focus {
   border-color: #a8a8a8;
-  outline: none;
 }
 
 .multiselect__single {
@@ -7008,7 +7068,6 @@ fieldset[disabled] .multiselect {
 
 .multiselect__option--highlight {
   background: #41b883;
-  outline: none;
   color: var(--neutral-50);
 }
 

@@ -31,7 +31,7 @@ class modemundusApplicationsHelper {
 			}
 		}
 
-        $query = 'SELECT ecc.date_time AS campDateTime, ecc.*, esc.*, ess.step, ess.value, ess.class, ecc.published as published,p.label as programme,p.color as tag_color';
+        $query = 'SELECT ecc.date_time AS campDateTime, ecc.*, esc.*, ess.step, ess.value, ess.class, ecc.published as published,p.label as programme,p.color as tag_color,ecc.tab as tab_id,ecct.name as tab_name,ecct.ordering as tab_ordering';
 
 		// CCI-RS layout needs to get the start and end date of each application
 		if ($layout == '_:ccirs') {
@@ -44,6 +44,7 @@ class modemundusApplicationsHelper {
 		}
 
 		$query .= ' FROM #__emundus_campaign_candidature AS ecc
+					LEFT JOIN #__emundus_campaign_candidature_tabs AS ecct ON ecct.id=ecc.tab
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
 					LEFT JOIN #__emundus_setup_status AS ess ON ess.step=ecc.status 
 					LEFT JOIN #__emundus_setup_programmes AS p ON p.code = esc.training';
@@ -56,9 +57,29 @@ class modemundusApplicationsHelper {
 			$query .= ' LEFT JOIN #__emundus_projet AS pro ON pro.fnum=ecc.fnum ';
 		}
 
-		$query .= ' WHERE ecc.applicant_id ='.$user->id.'
-					ORDER BY ' . $order_by;
+		$query .= ' WHERE ecc.applicant_id ='.$user->id;
 
+		$order_by_session = JFactory::getSession()->get('applications_order_by');
+		switch ($order_by_session) {
+			case 'status':
+				$query .= ' ORDER BY ess.ordering ASC,ecc.date_time DESC';
+				break;
+			case 'campaigns':
+				$query .= ' ORDER BY esc.start_date DESC,ess.ordering ASC,ecc.date_time DESC';
+				break;
+			case 'last_update':
+				$query .= ' ORDER BY ecc.updated DESC,ecc.date_time DESC';
+				break;
+			case 'programs':
+				$query .= ' ORDER BY esc.training ASC,ess.ordering ASC,ecc.date_time DESC';
+				break;
+			case 'years':
+				$query .= ' ORDER BY esc.year DESC,ess.ordering ASC,ecc.date_time DESC';
+				break;
+			default:
+				$query .= ' ORDER BY ' . $order_by;
+				break;
+		}
 		$db->setQuery($query);
 
 		$result = $db->loadObjectList('fnum');
@@ -98,7 +119,7 @@ class modemundusApplicationsHelper {
 
 		$db = JFactory::getDbo();
 
-		$query = 'SELECT count(c.id)
+		$query = 'SELECT c.id,c.label
 					FROM #__emundus_setup_campaigns AS c
 					LEFT JOIN #__emundus_setup_programmes AS p ON p.code LIKE c.training
 					WHERE c.published = 1
@@ -111,11 +132,8 @@ class modemundusApplicationsHelper {
 						where applicant_id='. $uid .'
 					)';
 		try {
-
 			$db->setQuery($query);
-
-			return $db->loadResult() > 0;
-
+			return $db->loadAssocList();
 		} catch (Exception $e) {
 			JLog::add("Error at query : ".$query, JLog::ERROR, 'com_emundus');
 			return false;
@@ -126,7 +144,7 @@ class modemundusApplicationsHelper {
 
 		$db = JFactory::getDbo();
 
-		$query = 'SELECT count(c.id)
+		$query = 'SELECT c.id,c.label
 					FROM #__emundus_setup_campaigns AS c
 					LEFT JOIN #__emundus_setup_programmes AS p ON p.code LIKE c.training
 					WHERE c.published = 1
@@ -141,11 +159,8 @@ class modemundusApplicationsHelper {
 					)';
 
 		try {
-
 			$db->setQuery($query);
-
-			return $db->loadResult() > 0;
-
+			return $db->loadAssocList();
 		} catch (Exception $e) {
 			JLog::add("Error at query : ".$query, JLog::ERROR, 'com_emundus');
 			return false;
@@ -156,18 +171,17 @@ class modemundusApplicationsHelper {
 
 		$db = JFactory::getDbo();
 
-		$query = 'SELECT c.id
+		$query = 'SELECT c.id,c.label
 					FROM #__emundus_setup_campaigns AS c
 					LEFT JOIN #__emundus_setup_programmes AS p ON p.code LIKE c.training
 					WHERE c.published = 1
 					AND p.apply_online = 1
 					AND c.end_date >= NOW()
-					AND c.start_date <= NOW()
-					LIMIT 1';
+					AND c.start_date <= NOW()';
 
 		try {
 			$db->setQuery($query);
-			return !empty($db->loadResult());
+			return $db->loadAssocList();
 		} catch (Exception $e) {
 			JLog::add("Error at query : ".$query, JLog::ERROR, 'com_emundus');
 			return false;
