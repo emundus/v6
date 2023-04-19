@@ -2230,7 +2230,7 @@ class EmundusHelperUpdate
         return $response;
     }
 
-    public static function createModule($title, $position, $module, $params, $published = 0, $all_pages = 0, $access = 1, $showtitle = 0, $client_id = 0)
+    public static function createModule($title, $position, $module, $params, $published = 0, $page = 0, $access = 1, $showtitle = 0, $client_id = 0)
     {
         $created = false;
 
@@ -2270,11 +2270,15 @@ class EmundusHelperUpdate
                 $db->execute();
                 $module_id = $db->insertid();
 
-                if (!empty($module_id) && $all_pages) {
+                if (!empty($module_id) && !empty($page)) {
                     $query->clear()
                         ->insert($db->quoteName('#__modules_menu'))
-                        ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module_id))
-                        ->set($db->quoteName('menuid') . ' = ' . $db->quote(0));
+                        ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module_id));
+                    if($page == 1) {
+                        $query->set($db->quoteName('menuid') . ' = ' . $db->quote(0));
+                    } else {
+                        $query->set($db->quoteName('menuid') . ' = ' . $db->quote($page));
+                    }
                     $db->setQuery($query);
                     $created = $db->execute();
                 }

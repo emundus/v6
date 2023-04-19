@@ -1005,6 +1005,88 @@ if (password_value.match(regex) != null) {
 				}
 			}
 
+            if (version_compare($cache_version, '1.36.0', '<=') || $firstrun) {
+                /* Init new profile method */
+                // First install the module
+                EmundusHelperUpdate::installExtension('MOD_EMUNDUS_PROFILE','mod_emundus_profile','{"name":"MOD_EMUNDUS_PROFILE","type":"module","creationDate":"April 2023","author":"Brice Hubinet","copyright":"Copyright (C) 2023 eMundus. All rights reserved.","authorEmail":"brice.hubinet@emundus.fr","authorUrl":"www.emundus.fr","version":"1.36.0","description":"MOD_EMUNDUS_PROFILE_DESC","group":"","filename":"mod_emundus_profile"}','module',1,'','{"show_profile_picture":"1","update_profile_picture":"1","show_name":"1","show_account_edit_button":"1","intro":""}');
+
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                // We get the profile Fabrik form id
+                $query->select('form_id')
+                    ->from($db->quoteName('#__emundus_setup_formlist'))
+                    ->where($db->quoteName('type') . ' LIKE ' . $db->quote('profile'));
+                $db->setQuery($query);
+                $form_id = $db->loadResult();
+
+                if(!empty($form_id)){
+                    // We get the menu id of the user edit page
+                    $query->clear()
+                        ->select('id')
+                        ->from($db->quoteName('#__menu'))
+                        ->where($db->quoteName('menutype') . ' LIKE ' . $db->quote('usermenu'))
+                        ->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_emundus&view=users&layout=edit'));
+                    $db->setQuery($query);
+                    $menu_id = $db->loadResult();
+
+                    if(!empty($menu_id)){
+                        // We update the menu link and params with Fabrik form id
+                        $query->clear()
+                            ->update($db->quoteName('#__menu'))
+                            ->set($db->quoteName('link') . ' = ' . $db->quote('index.php?option=com_fabrik&view=form&formid='.$form_id))
+                            ->set($db->quoteName('params') . ' = ' . $db->quote('{"rowid":"-1","usekey":"user_id","random":"0","fabriklayout":"","extra_query_string":"","menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_image_css":"","menu_text":1,"menu_show":0,"page_title":"","show_page_heading":"","page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0}'))
+                            ->where($db->quoteName('id') . ' = ' . $menu_id);
+                        $db->setQuery($query);
+                        $db->execute();
+
+                        // We create the module and link it to the menu
+                        EmundusHelperUpdate::createModule('Edit my profile','content-top-a','mod_emundus_profile','{"show_profile_picture":"1","update_profile_picture":"1","show_name":"1","show_account_edit_button":"1","intro":"\u00c9ditez votre photo de profil et vos informations personnelles. Attention votre photo de profil sera visible sur tous vos dossiers de candidature.","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}',1,$menu_id,2);
+                    }
+
+                    // We update the Fabrik form params to lock the user_id field
+                    $query->clear()
+                        ->select('params')
+                        ->from($db->quoteName('#__fabrik_forms'))
+                        ->where($db->quoteName('id') . ' = ' . $form_id);
+                    $db->setQuery($query);
+                    $params = $db->loadResult();
+
+                    if(!empty($params)){
+                        $params = json_decode($params, true);
+                        $params['show-title'] = 0;
+                        $params['curl_code'] = '$user = JFactory::getUser()->id;\r\n$rowid = JFactory::getApplication()->input->get(\'rowid\');\r\n$formid = JFactory::getApplication()->input->get(\'formid\');\r\n\r\nif(!empty($rowid)){\r\n  JFactory::getApplication()->redirect(\'mon-profil\');\r\n}';
+
+                        $query->clear()
+                            ->update($db->quoteName('#__fabrik_forms'))
+                            ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+                            ->where($db->quoteName('id') . ' = ' . $form_id);
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+
+                    // We update the Fabrik list params to only allow current user to edit his profile
+                    $query->clear()
+                        ->select('params')
+                        ->from($db->quoteName('#__fabrik_lists'))
+                        ->where($db->quoteName('form_id') . ' = ' . $form_id);
+                    $db->setQuery($query);
+                    $params = $db->loadResult();
+
+                    if(!empty($params)){
+                        $params = json_decode($params, true);
+                        $params['allow_view_details'] = 10;
+                        $params['allow_edit_details'] = 10;
+                        $params['allow_edit_details2'] = "jos_emundus_users.id";
+                        $params['allow_add'] = 10;
+                        $params['allow_delete'] = 10;
+                        $params['allow_delete2'] = "";
+                        $params['allow_drop'] = 10;
+                        $params['menu_access_only'] = 1;
+                    }
+                }
+            }
+
 
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
