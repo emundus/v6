@@ -845,8 +845,12 @@ class EmundusHelperEmails {
             } else {
                 $domain = substr($email, strpos($email, '@') + 1);
                 if (!checkdnsrr($domain)) {
-                    JLog::add('Invalid email domain ' . $email, JLog::INFO, 'com_emundus.email');
-                    $is_correct = false;
+                    // TODO: loop to check for multiple subdomains
+                    $primary_domain = substr($domain, strpos($domain, '.') + 1);
+                    if (!checkdnsrr($primary_domain)) {
+                        JLog::add('Invalid email domain ' . $email, JLog::INFO, 'com_emundus.email');
+                        $is_correct = false;
+                    }
                 }
             }
         }
