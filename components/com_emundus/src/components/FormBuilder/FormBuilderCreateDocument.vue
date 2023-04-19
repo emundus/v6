@@ -29,7 +29,7 @@
       <div class="em-mb-16">
         <label for="title" class="em-font-weight-500">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_NAME") }}</label>
         <incremental-select
-		        v-if="models.length > 0 && document.id != 1"
+		        v-if="models.length > 0"
 		        :options="documentList"
 		        :defaultValue="incSelectDefaultValue"
 		        :locked="mode != 'create'"
@@ -90,10 +90,25 @@
 		    </div>
 	    </div>
 
-	    <!--<div v-show="hasPDF" id="pdfs" class="em-mb-16">
-		    <label for="max_pages_pdf" class="em-font-weight-400">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_MAX_PAGES_PDF") }}</label>
-		    <input type="number" id="max_pages_pdf" class="em-w-100" v-model="document.max_pages_pdf">
-	    </div>-->
+	    <div id="document-sample">
+		    <label class="em-font-weight-500">{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_TITLE') }}</label>
+		    <div class="em-mb-16 em-flex-row em-flex-space-between">
+			    <label for="has-model" class="em-font-weight-500">{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_GIVE_MODEL') }}</label>
+			    <div class="em-toggle">
+				    <input type="checkbox" id="has-model" name="has-model" class="em-toggle-check" v-model="hasSample" @change="onHasSampleChange">
+				    <strong class="b em-toggle-switch"></strong>
+				    <strong class="b em-toggle-track"></strong>
+			    </div>
+		    </div>
+		    <div v-if="currentSample">
+			    <span>{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_CURRENT_MODEL') }}</span>
+			    <a v-if="currentSample" :href="currentSample" target="_blank">{{ currentSample }}</a>
+		    </div>
+		    <div v-if="hasSample">
+			    <label for="sample">{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL') }}</label>
+			    <input id="sample" name="sample" type="file" v-model="newSample" accept=".pdf,.doc,.docx,.png,.jpg"/>
+		    </div>
+	    </div>
     </div>
     <div id="advanced-properties" class="em-p-16" v-if="tabs[1].active"></div>
 
@@ -181,7 +196,11 @@ export default {
         }
       ],
 	    hasPDF: false,
-	    hasImg: false
+	    hasImg: false,
+	    hasSample: false,
+	    currentSample: '',
+	    newSample: '',
+	    sampleFromDocumentId: null
     };
   },
   created() {
@@ -231,8 +250,7 @@ export default {
 			this.hasImgFormat();
 			this.hasPDFFormat();
     },
-     selectModel(event, mandatory = null) {
-			console.log(mandatory, 'select-model');
+	  selectModel(event, mandatory = null) {
       if (event.target.value !== 'none') {
         const model = this.models.find(model => model.id == event.target.value);
         this.document.id = model.id;
@@ -335,8 +353,12 @@ export default {
         const data = {
           pid:  this.profile_id,
           types: JSON.stringify(types),
-          document: JSON.stringify(this.document)
+          document: JSON.stringify(this.document),
         };
+
+	      if (this.hasSample && this.newSample !== null) {
+		      data.sample = this.newSample;
+	      }
 
         campaignService.updateDocument(data, true).then(response => {
           this.$emit('documents-updated');
@@ -348,6 +370,10 @@ export default {
 		      types: JSON.stringify(types),
 		      document: JSON.stringify(this.document)
 	      };
+
+	      if (this.hasSample && this.newSample !== null) {
+		      data.sample = this.newSample;
+	      }
 
 	      if (Object.keys(this.modelsUsage).includes(this.document.id) && this.modelsUsage[this.document.id].usage > 1) {
 					this.swalConfirm(
@@ -403,7 +429,31 @@ export default {
 		  });
 
 		  this.hasPDF = hasPDF;
-	  }
+	  },
+	  onHasSampleChange() {
+			if (!this.hasSample) {
+				this.newSample = '';
+			}
+	  },
+	  getCurrentSample() {
+		  this.sampleFromDocumentId = this.document.id;
+
+		  if (this.document.id === null) {
+				this.hasSample = false;
+				this.currentSample = '';
+		  }	else {
+				formBuilderService.getDocumentSample(Number(this.document.id), Number(this.profile_id)).then((response) => {
+
+					if (response.status && response.data) {
+						this.hasSample = response.data.has_sample === '1';
+						this.currentSample = this.hasSample ? response.data.sample_filepath : '';
+					} else {
+						this.hasSample = false;
+						this.currentSample = '';
+					}
+				});
+			}
+	  },
   },
   computed: {
     activeTabs() {
@@ -432,8 +482,6 @@ export default {
   },
   watch: {
     current_document(newValue) {
-			console.log(newValue, 'curr doc watcher');
-
       if (newValue && (newValue.docid || newValue.id)) {
         if (this.models.length < 1) {
           this.getDocumentModels().then(() => {
@@ -452,7 +500,14 @@ export default {
         }
       }
     },
-	  deep: true
+	  document: {
+		  handler(newValue) {
+				if (newValue.id !== this.sampleFromDocumentId) {
+					this.getCurrentSample();
+				}
+		  },
+		  deep: true
+	  },
   }
 }
 </script>

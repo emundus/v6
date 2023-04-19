@@ -306,4 +306,29 @@ class EmundusModelFormbuilderTest extends TestCase
             JLog::add('Failed to insert model for unit tests ' . $e->getMessage(), JLog::ERROR, 'com_emundus.tests');
         }
     }
+
+	public function testgetDocumentSample() {
+		$document = $this->m_formbuilder->getDocumentSample(0, 0);
+		$this->assertEmpty($document, 'Le document de test est vide si aucun identifiant de document et/ou profile n\'est donné');
+
+		$document = $this->m_formbuilder->getDocumentSample(9999999, 0);
+		$this->assertEmpty($document, 'Le document de test est vide si aucun identifiant de profile n\'est donné');
+
+		$document = $this->m_formbuilder->getDocumentSample(0, 9999999);
+		$this->assertEmpty($document, 'Le document de test est vide si aucun identifiant de document n\'est donné');
+
+		// Création d'un document de test
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->insert('#__emundus_setup_attachment_profiles')
+			->columns(['profile_id', 'campaign_id', 'attachment_id', 'displayed', 'mandatory', 'ordering', 'published', 'bank_needed', 'duplicate', 'sample_filepath', 'has_sample'])
+			->values('1, null, 1, 1, 1, 1, 1, null, 0, null, 0');
+		$db->setQuery($query);
+		$db->execute();
+
+		$document = $this->m_formbuilder->getDocumentSample(1, 1);
+		$this->assertNotEmpty($document, 'Le document de test est bien renvoyé');
+
+	}
 }

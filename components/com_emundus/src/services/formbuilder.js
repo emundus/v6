@@ -728,5 +728,27 @@ export default {
         } else {
             return {status: false, message: 'MISSING_PARAMS'};
         }
+    },
+    async getDocumentSample(documentId, profileId) {
+        if (documentId > 0 && profileId > 0) {
+            try {
+                const response = await client().get(
+                    'index.php?option=com_emundus&controller=formbuilder&task=getdocumentsample',
+                    {
+                        params: {
+                            document_id: documentId,
+                            profile_id: profileId
+                        }
+                    }
+                );
+
+                return response.data;
+            } catch (e) {
+                return {status: false, message: e.message};
+            }
+        } else {
+            return {status: false, message: 'MISSING_PARAMS'};
+        }
+
     }
 };

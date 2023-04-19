@@ -1173,6 +1173,29 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         echo json_encode((object)$response);
         exit;
     }
+
+	public function getdocumentsample()
+	{
+		$user = JFactory::getUser();
+		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'), 'code' => 403);
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$response = array('status' => false, 'msg' => JText::_('MISSING_PARAMS'));
+
+			$jinput = JFactory::getApplication()->input;
+			$document_id = $jinput->getInt('document_id');
+			$profile_id = $jinput->getInt('profile_id');
+
+			if (!empty($document_id) && !empty($profile_id)) {
+				$document = $this->m_formbuilder->getDocumentSample($document_id, $profile_id);
+				$document = empty($document) ? array('has_sample' => 0, 'sample_filepath' => '') : $document;
+				$response = array('status' => true, 'msg' => JText::_('SUCCESS'), 'code' => 200, 'data' => $document);
+			}
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
 }
 
 

@@ -125,6 +125,7 @@
             <form-builder-create-document
                 v-if="showInRightPanel === 'create-document'"
                 ref="formBuilderCreateDocument"
+                :key="formBuilderCreateDocumentKey"
                 :profile_id="parseInt(profile_id)"
                 :current_document="selectedDocument ? selectedDocument : null"
                 :mandatory="createDocumentMandatory"
@@ -213,6 +214,8 @@ export default {
           },
         ],
       },
+	    formBuilderCreateDocumentKey: 0,
+	    createDocumentMode: 'create'
     }
   },
   created() {
@@ -339,27 +342,19 @@ export default {
     onOpenCreateDocument(mandatory = "1")
     {
       this.selectedDocument = null;
-	    if (this.$refs.formBuilderCreateDocument) {
-		    this.$refs.formBuilderCreateDocument.document.mandatory = mandatory;
-		    this.$refs.formBuilderCreateDocument.mode = 'create';
-	    } else {
-		    this.createDocumentMandatory = mandatory;
-		    this.createDocumentMode = 'create';
-
-	    }
+	    this.createDocumentMandatory = mandatory;
+	    this.createDocumentMode = 'create';
+	    this.formBuilderCreateDocumentKey++;
 	    this.showInRightPanel = 'create-document';
 	    this.setSectionShown('documents');
     },
     onEditDocument(document)
     {
 	    this.selectedDocument = document;
-	    this.showInRightPanel = 'create-document';
 	    this.createDocumentMode = 'update';
-			if (this.$refs.formBuilderCreateDocument) {
-				this.$refs.formBuilderCreateDocument.document.mandatory = document !== undefined && document !== null ? document.mandatory : this.createDocumentMandatory;
-				this.$refs.formBuilderCreateDocument.$forceUpdate();
-			}
-
+	    this.createDocumentMandatory = document.mandatory;
+	    this.formBuilderCreateDocumentKey++;
+	    this.showInRightPanel = 'create-document';
 	    this.setSectionShown('documents');
     },
     onDeleteDocument(){

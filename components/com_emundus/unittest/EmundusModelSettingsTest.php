@@ -49,6 +49,13 @@ class EmundusModelSettingsTest extends TestCase
 		$this->assertNotEmpty($all_status, 'La récupération des status fonctionne');
 	}
 
+	public function testcreateStatus() {
+		$status = $this->m_settings->createStatus();
+		$this->assertNotNull($status, 'La création d\'un status fonctionne');
+
+		$this->assertGreaterThan(0, $status->id, 'La création d\'un status fonctionne');
+	}
+
 	public function testgetTags() {
 		$all_tags = $this->m_settings->getTags();
 
@@ -88,5 +95,8 @@ class EmundusModelSettingsTest extends TestCase
 		$tag = $this->m_settings->createTag();
 		$delete = $this->m_settings->deleteTag($tag->id);
 		$this->assertTrue($delete, 'La suppression d\'une étiquette fonctionne');
+
+		$delete = $this->m_settings->deleteTag(0);
+		$this->assertFalse($delete, 'On ne peut pas supprimer une étiquette qui n\'existe pas');
 	}
 }
