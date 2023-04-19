@@ -1060,6 +1060,7 @@ if (password_value.match(regex) != null) {
                         $query->clear()
                             ->update($db->quoteName('#__fabrik_forms'))
                             ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+                            ->set($db->quoteName('publish_down') . ' = ' . $db->quote('2099-01-12 00:00:00'))
                             ->where($db->quoteName('id') . ' = ' . $form_id);
                         $db->setQuery($query);
                         $db->execute();
