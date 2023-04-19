@@ -1,8 +1,4 @@
 /* Module CAS */
- .em-formRegistrationCenter .container-module-cas  {
-     margin-top: 150px !important;
- }
-
 .container-module-cas {
     display: flex !important;
     flex-direction: column;
@@ -48,12 +44,11 @@
 .container-module-cas .sous-container-module-cas #connexion {
     display: flex;
     flex-direction: row;
-    height: 25rem;
-    width: 85%;
     justify-content: center;
     align-items: center;
     margin-left: auto;
     margin-right: auto;
+    margin-top: 32px;
 }
 
 .container-module-cas .sous-container-module-cas #connexion .container {
@@ -88,14 +83,14 @@
     flex-direction: column;
     justify-content: flex-end;
     align-items: center;
-    height: 100%;
     border-radius: 5px;
+    margin-top: 32px;
 }
 
 .container-module-cas  .sous-container-module-cas #inscription .formulaire {
-    width: 85%;
     margin-left: auto;
     margin-right: auto;
+    width: 100%;
 }
 
 .container-module-cas  .sous-container-module-cas #inscription .formulaire .btn.btn-danger {
@@ -103,15 +98,9 @@
 }
 
 .container-module-cas .sous-container-module-cas #inscription .container {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    width: 85%;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .container-module-cas  .sous-container-module-cas #inscription .container p:nth-child(1),
@@ -176,7 +165,7 @@
 .container-module-cas .sous-container-module-cas #connexion .btn-cas a.btn.btn-primary:not(.logo) {
     border-radius: 0px 4px 4px 0px !important;
    opacity: 0.9;
-    width: 90%;
+    width: 100%;
     height: 50px;
     display: flex;
     justify-content: center;
@@ -203,7 +192,7 @@
 
     .container-module-cas {
         width: 90%;
+        max-width: unset;
     }
-
 }
 
