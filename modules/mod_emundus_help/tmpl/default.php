@@ -25,9 +25,9 @@ defined('_JEXEC') or die;
                     "<a href='https://emundus.atlassian.net/servicedesk/customer/portals' target='_blank'><span class='material-icons'>textsms</span><p><?= JText::_('MOD_EMUNDUS_HELP_HELP_CENTER'); ?></p></a>" +
                     "<hr/>" +
                     <?php if($current_lang == 'fr') : ?>
-                    "<a href='https://emundus.atlassian.net/wiki/external/2448949262/MDE2MDBmOTc5MWU5NDAzNzk0ZmI1MjdhNDIyYmY3Mzg?atlOrigin=eyJpIjoiZmE2ZjNiNTI0MmNiNDBmMmFmZDcxMDhjNmFlMjA4MzYiLCJwIjoiYyJ9' target='_blank'><span class='material-icons'>new_releases</span><p><?= JText::_('MOD_EMUNDUS_HELP_LAST_RELEASE'); ?></p></a>" +
+                    "<a href='https://emundus.atlassian.net/wiki/external/2456584208/YTIyZmRmNTFmODc1NDg5YWI1MDdkMmZhYjc0YjBmNjY?atlOrigin=eyJpIjoiZDgzYmE2NzVlZjI2NDQxMmEyNmJhNzgxNGE5N2M3YzYiLCJwIjoiYyJ9' target='_blank'><span class='material-icons'>new_releases</span><p><?= JText::_('MOD_EMUNDUS_HELP_LAST_RELEASE'); ?></p></a>" +
                     <?php else : ?>
-                    "<a href='https://emundus.atlassian.net/wiki/external/2449276929/YzMwYTE4N2FkMWUwNDIwNWE3YTg1NGRiNjFmMDYwNDk?atlOrigin=eyJpIjoiMGVkNWM3N2UxZDMyNDQxOTg3MTRlYzA4NDViOTg0Y2QiLCJwIjoiYyJ9' target='_blank'><span class='material-icons'>new_releases</span><p><?= JText::_('MOD_EMUNDUS_HELP_LAST_RELEASE'); ?></p></a>" +
+                    "<a href='https://emundus.atlassian.net/wiki/external/2472378369/NTY1MDA4NWJlNTk5NGY2NWEzMjkwNTUwMzBkYWZkMWQ' target='_blank'><span class='material-icons'>new_releases</span><p><?= JText::_('MOD_EMUNDUS_HELP_LAST_RELEASE'); ?></p></a>" +
                     <?php endif; ?>
                     "<hr/>" +
                     "<span>Version <?php echo trim($file_version) ?></span>",

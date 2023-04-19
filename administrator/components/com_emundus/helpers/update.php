@@ -17,7 +17,7 @@ use Joomla\CMS\Table\Table;
 class EmundusHelperUpdate
 {
 
-	public static function clearJoomlaCache(){
+	public static function clearJoomlaCache($group = null){
 		require_once (JPATH_ROOT . '/administrator/components/com_cache/models/cache.php');
 		$m_cache = new CacheModelCache();
 		$clients    = array(1, 0);
@@ -25,14 +25,18 @@ class EmundusHelperUpdate
 		foreach ($clients as $client)
 		{
 			$mCache    = $m_cache->getCache($client);
-
-			foreach ($mCache->getAll() as $cache)
-			{
-				if ($mCache->clean($cache->group) === false)
-				{
-					return false;
-				}
-			}
+            if(!empty($group)) {
+                if ($mCache->clean($group) === false)
+                {
+                    return false;
+                }
+            } else {
+                foreach ($mCache->getAll() as $cache) {
+                    if ($mCache->clean($cache->group) === false) {
+                        return false;
+                    }
+                }
+            }
 		}
 
 		return true;
@@ -226,6 +230,9 @@ class EmundusHelperUpdate
                 $query->select('extension_id')
                     ->from($db->quoteName('#__extensions'))
                     ->where($db->quoteName('element') . ' LIKE ' . $db->quote($element));
+				if(!empty($folder)){
+					$query->where($db->quoteName('folder') . ' LIKE ' . $db->quote($folder));
+				}
                 $db->setQuery($query);
                 $is_existing = $db->loadResult();
 
@@ -413,19 +420,24 @@ class EmundusHelperUpdate
      * @since version 1.33.0
      */
     public static function updateConfigurationFile($param, $value) {
-        $formatter = new JRegistryFormatPHP();
-        $config = new JConfig();
+		if(!empty($param) && !empty($value) && !in_array($param,['host','user','password','db','secret','mailfrom','smtpuser','smpthost','smtppass','smtpsecure','smtpport','webhook_token'])) {
+			$formatter = new JRegistryFormatPHP();
+			$config    = new JConfig();
 
-        $config->$param = $value;
-        $params = array('class' => 'JConfig', 'closingtag' => false);
-        $str = $formatter->objectToString($config, $params);
-        $config_file = JPATH_CONFIGURATION . '/configuration.php';
+			$config->$param = $value;
+			$params         = array('class' => 'JConfig', 'closingtag' => false);
+			$str            = $formatter->objectToString($config, $params);
+			$config_file    = JPATH_CONFIGURATION . '/configuration.php';
 
-        if (file_exists($config_file) and is_writable($config_file)){
-            file_put_contents($config_file, $str);
-        } else {
-            echo ("Update Configuration file failed");
-        }
+			if (file_exists($config_file) and is_writable($config_file)) {
+				file_put_contents($config_file, $str);
+			}
+			else {
+				echo("Update Configuration file failed");
+			}
+		} else {
+			echo("Update Configuration file failed");
+		}
     }
 
     /**

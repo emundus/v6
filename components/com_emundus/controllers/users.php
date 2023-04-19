@@ -134,6 +134,14 @@ class EmundusControllerUsers extends JControllerLegacy {
 			exit;
 		}
 
+        // If index.html does not exist, create the file otherwise the process will stop with the next step
+        if (!file_exists(EMUNDUS_PATH_ABS.'index.html')) {
+            $filename = EMUNDUS_PATH_ABS.'index.html';
+            $file = fopen($filename, 'w');
+            fwrite($file, '');
+            fclose($file);
+        }
+
 		if (!mkdir(EMUNDUS_PATH_ABS.$uid, 0755) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$uid.DS.'index.html')) {
 			echo json_encode((object) array('status' => false, 'uid' => $uid, 'msg' => JText::_('COM_EMUNDUS_USERS_CANT_CREATE_USER_FOLDER_CONTACT_ADMIN')));
 			exit;
@@ -835,6 +843,15 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		$m_users = new EmundusModelUsers();
 		$res = $m_users->setGroupRight($id, $action, $value);
+
+        try {
+            require_once (JPATH_ROOT . '/administrator/components/com_emundus/helpers/update.php');
+            EmundusHelperUpdate::clearJoomlaCache('mod_menu');
+        } catch (Exception $e) {
+            JLog::add('Cannot clear cache : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+
+
 
 		echo json_encode((object)array('status' => $res, 'msg' => $msg));
 		exit;

@@ -2633,49 +2633,49 @@ class EmundusModelFormbuilder extends JModelList {
                                 $db->execute();
 
                                 foreach ($elements as $element) {
-                                    try {
-                                        $newelement = $element->copyRow($element->element->id, 'Copy of %s', $newgroupid);
-                                        $newelementid = $newelement->id;
+	                                try {
+		                                $newelement = $element->copyRow($element->element->id, 'Copy of %s', $newgroupid);
+		                                $newelementid = $newelement->id;
 
-                                        $el_params = json_decode($element->element->params);
+		                                $el_params = json_decode($element->element->params);
 
-                                        // Update translation files
-                                        if (($element->element->plugin === 'checkbox' || $element->element->plugin === 'radiobutton' || $element->element->plugin === 'dropdown') && $el_params->sub_options) {
-                                            $sub_labels = [];
-                                            foreach ($el_params->sub_options->sub_labels as $index => $sub_label) {
-                                                $labels_to_duplicate = array();
-                                                foreach ($languages as $language) {
-                                                    $labels_to_duplicate[$language->sef] = str_replace($model_prefix, '', $this->getTranslation($sub_label,$language->lang_code));
-                                                    if ($label[$language->sef] == '') {
-                                                        $label[$language->sef] = $sub_label;
-                                                    }
-                                                }
-                                                $this->translate('SUBLABEL_' . $newgroupid. '_' . $newelementid . '_' . $index,$labels_to_duplicate,'fabrik_elements',$newelementid,'sub_labels');
-                                                $sub_labels[] = 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index;
-                                            }
-                                            $el_params->sub_options->sub_labels = $sub_labels;
-                                        }
-                                        $query->clear();
-                                        $query->update($db->quoteName('#__fabrik_elements'));
+		                                // Update translation files
+		                                if (($element->element->plugin === 'checkbox' || $element->element->plugin === 'radiobutton' || $element->element->plugin === 'dropdown') && $el_params->sub_options) {
+			                                $sub_labels = [];
+			                                foreach ($el_params->sub_options->sub_labels as $index => $sub_label) {
+				                                $labels_to_duplicate = array();
+				                                foreach ($languages as $language) {
+					                                $labels_to_duplicate[$language->sef] = str_replace($model_prefix, '', $this->getTranslation($sub_label,$language->lang_code));
+					                                if ($label[$language->sef] == '') {
+						                                $label[$language->sef] = $sub_label;
+					                                }
+				                                }
+				                                $this->translate('SUBLABEL_' . $newgroupid. '_' . $newelementid . '_' . $index,$labels_to_duplicate,'fabrik_elements',$newelementid,'sub_labels');
+				                                $sub_labels[] = 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index;
+			                                }
+			                                $el_params->sub_options->sub_labels = $sub_labels;
+		                                }
+		                                $query->clear();
+		                                $query->update($db->quoteName('#__fabrik_elements'));
 
-                                        $labels_to_duplicate = array();
-                                        foreach ($languages as $language) {
-                                            $labels_to_duplicate[$language->sef] = str_replace($model_prefix, '', $this->getTranslation($element->element->label,$language->lang_code));
-                                            if ($label[$language->sef] == '') {
-                                                $label[$language->sef] = $element->element->label;
-                                            }
-                                        }
-                                        $this->translate('ELEMENT_' . $newgroupid. '_' . $newelementid, $labels_to_duplicate,'fabrik_elements', $newelementid,'label');
+		                                $labels_to_duplicate = array();
+		                                foreach ($languages as $language) {
+			                                $labels_to_duplicate[$language->sef] = str_replace($model_prefix, '', $this->getTranslation($element->element->label,$language->lang_code));
+			                                if ($label[$language->sef] == '') {
+				                                $label[$language->sef] = $element->element->label;
+			                                }
+		                                }
+		                                $this->translate('ELEMENT_' . $newgroupid. '_' . $newelementid, $labels_to_duplicate,'fabrik_elements', $newelementid,'label');
 
-                                        $query->set('label = ' . $db->quote('ELEMENT_' . $newgroupid . '_' . $newelementid));
-                                        $query->set('published = 1');
-                                        $query->set('params = ' . $db->quote(json_encode($el_params)));
-                                        $query->where('id =' . $newelementid);
-                                        $db->setQuery($query);
-                                        $db->execute();
-                                    } catch (Exception $e) {
-                                        JLog::add('component/com_emundus/models/formbuilder | Error at create a page from the model ' . $formid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-                                    }
+		                                $query->set('label = ' . $db->quote('ELEMENT_' . $newgroupid . '_' . $newelementid));
+		                                $query->set('published = ' . $element->element->published);
+		                                $query->set('params = ' . $db->quote(json_encode($el_params)));
+		                                $query->where('id =' . $newelementid);
+		                                $db->setQuery($query);
+		                                $db->execute();
+	                                } catch (Exception $e) {
+		                                JLog::add('component/com_emundus/models/formbuilder | Error at create a page from the model ' . $formid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+	                                }
                                 }
                             }
 
