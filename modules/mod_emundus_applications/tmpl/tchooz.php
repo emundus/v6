@@ -110,7 +110,7 @@ $current_tab = 0;
 <div class="mod_emundus_applications___header mod_emundus_applications___tmp_tchooz">
 	<?php if ($mod_em_applications_show_hello_text == 1) : ?>
         <div class="em-flex-row em-flex-space-between em-w-100 em-mb-16">
-            <h1 class="em-h3 em-mb-8"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_HELLO') . $user->firstname ?></h1>
+            <h1 class="em-mb-8"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_HELLO') . $user->firstname ?></h1>
 			<?php if (sizeof($applications) > 0) : ?>
                 <div class="em-flex-row em-w-auto">
 					<?php if ($show_add_application && ($position_add_application == 3 || $position_add_application == 4) && $applicant_can_renew) : ?>
@@ -456,13 +456,13 @@ $current_tab = 0;
                                                         <a href="<?= JRoute::_($first_page_url); ?>"
                                                            class="em-h6 mod_emundus_applications___title"
                                                            id="application_title_<?php echo $application->fnum ?>">
-                                                            <span><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></span>
+                                                            <h5><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></h5>
                                                         </a>
 													<?php else : ?>
                                                         <a href="<?= JRoute::_($first_page_url); ?>"
                                                            class="em-h6 mod_emundus_applications___title"
                                                            id="application_title_<?php echo $application->fnum ?>">
-                                                            <span><?= $application->name; ?></span>
+                                                            <h5><?= $application->name; ?></h5>
                                                         </a>
 													<?php endif; ?>
 													<?php if ($show_fnum) : ?>
