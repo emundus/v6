@@ -1027,8 +1027,7 @@ if (password_value.match(regex) != null) {
 				$query->clear()
 					->select('COLUMN_NAME')
 					->from('INFORMATION_SCHEMA.COLUMNS')
-					->where('TABLE_SCHEMA = ' . $db->quote($db->getDatabase()))
-					->andWhere('TABLE_NAME = ' . $db->quote('jos_emundus_campaign_workflow'))
+					->where('TABLE_NAME = ' . $db->quote('jos_emundus_campaign_workflow'))
 					->andWhere('COLUMN_NAME = ' . $db->quote('display_preliminary_documents'));
 
 				$db->setQuery($query);
@@ -1077,8 +1076,7 @@ if (password_value.match(regex) != null) {
 				$query->clear()
 					->select('COLUMN_NAME')
 					->from('INFORMATION_SCHEMA.COLUMNS')
-					->where('TABLE_SCHEMA = ' . $db->quote($db->getDatabase()))
-					->andWhere('TABLE_NAME = ' . $db->quote('jos_emundus_campaign_workflow'))
+					->where('TABLE_NAME = ' . $db->quote('jos_emundus_campaign_workflow'))
 					->andWhere('COLUMN_NAME = ' . $db->quote('specific_documents'));
 
 				$db->setQuery($query);
@@ -1140,14 +1138,17 @@ if (password_value.match(regex) != null) {
 					$sql = "create table jos_emundus_campaign_workflow_repeat_documents(
 						    id        int auto_increment primary key,
 						    parent_id int  null,
-						    href      text null
-						);
-
-						create index fb_parent_fk_parent_id_INDEX on jos_emundus_campaign_workflow_repeat_documents (parent_id);";
+						    href      varchar(255) null,
+						    title 	  varchar(255) null,
+						)";
 					$db->setQuery($sql);
 					$created = $db->execute();
 
 					if ($created) {
+						$sql = "create index fb_parent_fk_parent_id_INDEX on jos_emundus_campaign_workflow_repeat_documents (parent_id)";
+						$db->setQuery($sql);
+						$db->execute();
+
 						$values = ['Documents à télécharger', '', 'Documents à télécharger', 1, '2023-04-19 08:36:17', 62, 'sysadmin', '0000-00-00 00:00:00', 0, 0, '0000-00-00 00:00:00', 1, 0, '{"split_page":"0","list_view_and_query":"1","access":"1","intro":"","outro":"","repeat_group_button":1,"repeat_template":"repeatgroup","repeat_max":"","repeat_min":"","repeat_num_element":"","repeat_sortable":"0","repeat_order_element":"","repeat_error_message":"","repeat_no_data_message":"","repeat_intro":"","repeat_add_access":"1","repeat_delete_access":"1","repeat_delete_access_user":"","repeat_copy_element_values":"0","group_columns":"1","group_column_widths":"","repeat_group_show_first":"1","random":"0","labels_above":"-1","labels_above_details":"-1"}'];
 						$query->clear()
 							->insert($db->quoteName('#__fabrik_groups'))
