@@ -40,8 +40,10 @@ $dataSelect = $d->dataSelect; // on récup les données pour les options du sele
 
 	</select>
 
-
-	<input id="div_emundus_phone0" class="input-xlarge fabrikinput text">
+	<!-- class="input-xlarge  fabrikinput inputbox text" value="" -->
+	<input id="div_emundus_phone0" class="input-medium fabrikinput inputbox text"
+		   name="<?php echo $d->attributes['name']; ?>"
+	>
 </div>
 
 
