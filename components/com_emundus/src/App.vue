@@ -36,7 +36,6 @@ import evaluationbuilder from "./views/evaluationBuilder"
 import settings from "./views/globalSettings"
 import messagescoordinator from "./components/Messages/MessagesCoordinator";
 import messages from "./components/Messages/Messages";
-import editprofile from "./views/Users/Edit";
 
 import settingsService from "./services/settings.js";
 
@@ -72,7 +71,6 @@ export default {
     settings,
     messagescoordinator,
     messages,
-    editprofile,
     Files
 	},
 
