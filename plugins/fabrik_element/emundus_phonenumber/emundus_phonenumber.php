@@ -282,7 +282,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
     public function BDRequest() // pour récup les donées de la table data_country_phone_info
     {
         $db = JFactory::getDbo();
-        $query = 'SELECT * FROM data_country_phone_info';
+        $query = 'SELECT * FROM data_country_phone';
         $db->setQuery($query);
 
         $db->execute();
