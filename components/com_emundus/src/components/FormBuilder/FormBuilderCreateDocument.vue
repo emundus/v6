@@ -102,11 +102,11 @@
 		    </div>
 		    <div v-if="hasSample && currentSample" class="em-mb-16">
 			    <p>{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_CURRENT_MODEL') }}</p>
-			    <a v-if="currentSample" :href="currentSample" target="_blank">{{ currentSample }}</a>
+			    <a v-if="currentSample" :href="currentSample" target="_blank">{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_DOWNLOAD_SAMPLE') }}</a>
 		    </div>
 		    <div v-if="hasSample">
 			    <label for="sample">{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL') }}</label>
-			    <input id="sample" name="sample" type="file" ref="sampleFileInput" v-model="newSample" accept=".pdf,.doc,.docx,.png,.jpg"/>
+			    <input id="sample" name="sample" type="file" ref="sampleFileInput" @change="onSampleFileInputChange" accept=".pdf,.doc,.docx,.png,.jpg"/>
 		    </div>
 	    </div>
     </div>
@@ -440,6 +440,30 @@ export default {
 			if (!this.hasSample) {
 				this.newSample = '';
 			}
+	  },
+	  onSampleFileInputChange(event) {
+		  const files = event.target.files || [];
+		  if (files.length > 0) {
+			  const allowedExtensions = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'];
+				const fileExtension = files[0].name.split('.').pop().toLowerCase();
+				if (!allowedExtensions.includes(fileExtension)) {
+					Swal.fire({
+						type: 'warning',
+						title: this.translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_SAMPLE_WRONG_FORMAT'),
+						reverseButtons: true,
+						customClass: {
+							title: 'em-swal-title',
+							confirmButton: 'em-swal-confirm-button',
+							actions: 'em-swal-single-action',
+						},
+					});
+					return false;
+				}
+
+			  this.newSample = files[0];
+		  } else {
+			  this.newSample = null;
+		  }
 	  },
 	  getCurrentSample() {
 		  this.sampleFromDocumentId = this.document.id;
