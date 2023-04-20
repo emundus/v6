@@ -104,7 +104,7 @@ class EmundusModelChecklist extends JModelList
 	function getAttachmentsList() {
 
         if (!empty($this->_user->campaign_id)) {
-			$query = 'SELECT attachments.*, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, profiles.mandatory as mandatory, profiles.duplicate as duplicate
+			$query = 'SELECT attachments.*, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, profiles.mandatory as mandatory, profiles.duplicate as duplicate, profiles.has_sample, profiles.sample_filepath
 					FROM #__emundus_setup_attachments AS attachments
 						INNER JOIN #__emundus_setup_attachment_profiles AS profiles ON attachments.id = profiles.attachment_id
 						LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.user_id = '.$this->_user->id.'  AND fnum like '.$this->_db->Quote($this->_user->fnum).'
@@ -116,7 +116,7 @@ class EmundusModelChecklist extends JModelList
         }
 
         if (empty($attachments)) {
-            $query = 'SELECT attachments.id, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, attachments.nbmax, attachments.value, attachments.lbl, attachments.description, attachments.allowed_types, profiles.mandatory, profiles.duplicate
+            $query = 'SELECT attachments.id, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, attachments.nbmax, attachments.value, attachments.lbl, attachments.description, attachments.allowed_types, profiles.mandatory, profiles.duplicate,  profiles.has_sample, profiles.sample_filepath
 					FROM #__emundus_setup_attachments AS attachments
 						INNER JOIN #__emundus_setup_attachment_profiles AS profiles ON attachments.id = profiles.attachment_id
 						LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.user_id = '.$this->_user->id.'  AND fnum like '.$this->_db->Quote($this->_user->fnum).'

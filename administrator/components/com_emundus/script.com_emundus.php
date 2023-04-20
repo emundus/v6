@@ -1024,15 +1024,8 @@ if (password_value.match(regex) != null) {
 				$form_id = $sql_result['form_id'];
 				$list_id = $sql_result['list_id'];
 
-				$query->clear()
-					->select('COLUMN_NAME')
-					->from('INFORMATION_SCHEMA.COLUMNS')
-					->where('TABLE_NAME = ' . $db->quote('jos_emundus_campaign_workflow'))
-					->andWhere('COLUMN_NAME = ' . $db->quote('display_preliminary_documents'));
-
-				$db->setQuery($query);
-				$column = $db->loadResult();
-				if (empty($column)) {
+				$exists = EmundusHelperUpdate::columnExists('jos_emundus_campaign_workflow', 'display_preliminary_documents');
+				if (!$exists) {
 					$db->setQuery('ALTER TABLE `jos_emundus_campaign_workflow` ADD `display_preliminary_documents` TINYINT(1) DEFAULT 0 AFTER `programs`');
 					$db->execute();
 				}
@@ -1073,15 +1066,8 @@ if (password_value.match(regex) != null) {
 					}
 				}
 
-				$query->clear()
-					->select('COLUMN_NAME')
-					->from('INFORMATION_SCHEMA.COLUMNS')
-					->where('TABLE_NAME = ' . $db->quote('jos_emundus_campaign_workflow'))
-					->andWhere('COLUMN_NAME = ' . $db->quote('specific_documents'));
-
-				$db->setQuery($query);
-				$column = $db->loadResult();
-				if (empty($column)) {
+				$exists = EmundusHelperUpdate::columnExists('jos_emundus_campaign_workflow', 'specific_documents');
+				if (!$exists) {
 					$db->setQuery('ALTER TABLE `jos_emundus_campaign_workflow` ADD `specific_documents` TINYINT(1) DEFAULT 0 AFTER `display_preliminary_documents`');
 					$db->execute();
 				}
@@ -1203,6 +1189,18 @@ if (password_value.match(regex) != null) {
 				//////////////////////////////////////////////////////////////////////////////////////
 				// END add campaign workflows documents;
 				//////////////////////////////////////////////////////////////////////////////////////
+
+				$exists = EmundusHelperUpdate::columnExists('jos_emundus_setup_attachment_profiles', 'has_sample');
+				if (!$exists) {
+					$db->setQuery('ALTER TABLE `jos_emundus_setup_attachment_profiles` ADD `has_sample` TINYINT(1) DEFAULT 0');
+					$db->execute();
+				}
+
+				$exists = EmundusHelperUpdate::columnExists('jos_emundus_setup_attachment_profiles', 'sample_filepath');
+				if (!$exists) {
+					$db->setQuery('ALTER TABLE `jos_emundus_setup_attachment_profiles` ADD `sample_filepath` varchar(255)');
+					$db->execute();
+				}
 			}
 
 			// Insert new translations in overrides files
