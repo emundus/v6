@@ -886,12 +886,10 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 
     public function updatedocument()
     {
-        $tab = array('status' => false, 'msg' => JText::_("ERROR"));
-        $user = JFactory::getUser();
+        $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+	    $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $tab['msg'] = JText::_("ACCESS_DENIED");
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
             $document_id = $jinput->getInt('document_id');
             $profile_id = $jinput->getInt('profile_id');
@@ -899,21 +897,26 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
             $document = json_decode($document, true);
             $types = $jinput->getString('types');
             $types = json_decode($types, true);
+	        $params = ['has_sample' => $jinput->getBool('has_sample', false)];
+
+			if ($params['has_sample'] && !empty($_FILES['file'])) {
+				$params['file'] = $_FILES['file'];
+			}
 
             if (!empty($document_id) && !empty($document) && !empty($profile_id)) {
                 require_once JPATH_SITE . '/components/com_emundus/models/campaign.php';
                 $m_campaign = new EmundusModelCampaign();
 
-                $result = $m_campaign->updateDocument($document, $types, $document_id, $profile_id);
+                $result = $m_campaign->updateDocument($document, $types, $document_id, $profile_id, $params);
 
                 if ($result) {
-                    $tab['status'] = true;
-                    $tab['msg'] = 'SUCCESS';
+	                $response['status'] = true;
+	                $response['msg'] = 'SUCCESS';
                 }
             }
         }
 
-        echo json_encode((object)$tab);
+        echo json_encode((object)$response);
         exit;
     }
 

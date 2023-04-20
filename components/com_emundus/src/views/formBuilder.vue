@@ -339,7 +339,7 @@ export default {
 				this.showInRightPanel = 'create-model';
 			}
 	  },
-    onOpenCreateDocument(mandatory = "1")
+    onOpenCreateDocument(mandatory = '1')
     {
       this.selectedDocument = null;
 	    this.createDocumentMandatory = mandatory;

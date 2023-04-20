@@ -1764,7 +1764,7 @@ class EmundusModelCampaign extends JModelList {
      *
      * @since version 1.0
      */
-    public function updateDocument($document, $types, $did, $pid) {
+    public function updateDocument($document, $types, $did, $pid, $params = []) {
         $query = $this->_db->getQuery(true);
 
         $lang = JFactory::getLanguage();
@@ -1854,25 +1854,60 @@ class EmundusModelCampaign extends JModelList {
                 $this->_db->setQuery($query);
                 $ordering = $this->_db->loadResult();
 
-                if ($did !== 20) {
-                    $query->clear()
-                        ->insert($this->_db->quoteName('#__emundus_setup_attachment_profiles'));
-                    $query->set($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($pid))
-                        ->set($this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($did))
-                        ->set($this->_db->quoteName('mandatory') . ' = ' . $this->_db->quote($document['mandatory']))
-                        ->set($this->_db->quoteName('ordering') . ' = ' . $this->_db->quote($ordering + 1));
-                    $this->_db->setQuery($query);
-                } else {
-                    $query->clear()
-                        ->insert($this->_db->quoteName('#__emundus_setup_attachment_profiles'));
-                    $query->set($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($pid))
-                        ->set($this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($did))
-                        ->set($this->_db->quoteName('mandatory') . ' = ' . $this->_db->quote($document['mandatory']))
-                        ->set($this->_db->quoteName('displayed') . ' = '. 0)
-                        ->set($this->_db->quoteName('ordering') . ' = ' . $this->_db->quote($ordering + 1));
+	            $query->clear()
+		            ->insert($this->_db->quoteName('#__emundus_setup_attachment_profiles'));
+	            $query->set($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($pid))
+		            ->set($this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($did))
+		            ->set($this->_db->quoteName('mandatory') . ' = ' . $this->_db->quote($document['mandatory']))
+		            ->set($this->_db->quoteName('ordering') . ' = ' . $this->_db->quote($ordering + 1))
+		            ->set($this->_db->quoteName('has_sample') . ' = '. $params['has_sample']);
+
+				if ($did === 20) {
+					$query->set($this->_db->quoteName('displayed') . ' = '. 0);
                 }
-                $this->_db->execute();
+
+	            $this->_db->setQuery($query);
+	            $this->_db->execute();
             }
+
+	        if (!empty($params['file']) && $params['has_sample']) {
+				$allowed_ext = array('jpg', 'jpeg', 'png', 'doc', 'docx', 'pdf');
+				$ext = strtolower(pathinfo($params['file']['name'], PATHINFO_EXTENSION));
+				if (in_array($ext, $allowed_ext)) {
+					$filename = $params['file']['name'];
+					$directory = "/images/custom/attachments/$did/$pid/";
+
+					if (!file_exists(JPATH_ROOT . '/images/custom/attachments')) {
+						$created = mkdir(JPATH_ROOT . '/images/custom/attachments', 0775);
+					}
+					if (!file_exists(JPATH_ROOT . '/images/custom/attachments/'. $did)) {
+						$created = mkdir(JPATH_ROOT . '/images/custom/attachments/' . $did, 0775);
+					}
+					if (!file_exists(JPATH_ROOT . '/images/custom/attachments/'. $did . '/' . $pid)) {
+						$created = mkdir(JPATH_ROOT . '/images/custom/attachments/' . $did . '/' . $pid, 0775);
+					}
+
+					$filepath = $directory . "$filename";
+					$destination = JPATH_ROOT . $filepath;
+					if (move_uploaded_file($params['file']['tmp_name'], $destination)) {
+						$query->clear()
+							->update($this->_db->quoteName('#__emundus_setup_attachment_profiles'))
+							->set($this->_db->quoteName('sample_filepath') . ' = ' . $this->_db->quote($filepath))
+							->set('has_sample = 1')
+							->where($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($pid))
+							->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($did));
+
+						$this->_db->setQuery($query);
+						$this->_db->execute();
+					} else {
+						JLog::add('component/com_emundus/models/campaign | Cannot upload a document model for ' . $did . ' and profile ' .$pid,  JLog::ERROR, 'com_emundus.error');
+
+					}
+				} else {
+					JLog::add(JFactory::getUser()->id . ' Cannot upload a document model for ' . $did . ' and profile ' .$pid,  JLog::INFO, 'com_emundus');
+				}
+			}
+
             return true;
         } catch (Exception $e) {
             JLog::add('component/com_emundus/models/campaign | Cannot update a document ' . $did . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');

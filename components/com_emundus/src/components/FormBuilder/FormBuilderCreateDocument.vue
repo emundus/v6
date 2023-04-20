@@ -100,13 +100,13 @@
 				    <strong class="b em-toggle-track"></strong>
 			    </div>
 		    </div>
-		    <div v-if="currentSample">
-			    <span>{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_CURRENT_MODEL') }}</span>
+		    <div v-if="hasSample && currentSample" class="em-mb-16">
+			    <p>{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_CURRENT_MODEL') }}</p>
 			    <a v-if="currentSample" :href="currentSample" target="_blank">{{ currentSample }}</a>
 		    </div>
 		    <div v-if="hasSample">
 			    <label for="sample">{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL') }}</label>
-			    <input id="sample" name="sample" type="file" v-model="newSample" accept=".pdf,.doc,.docx,.png,.jpg"/>
+			    <input id="sample" name="sample" type="file" ref="sampleFileInput" v-model="newSample" accept=".pdf,.doc,.docx,.png,.jpg"/>
 		    </div>
 	    </div>
     </div>
@@ -160,7 +160,7 @@ export default {
       document: {
         id: null,
         type: {},
-        mandatory: "1",
+        mandatory: '1',
         nbmax: 1,
         description: {
           fr: '',
@@ -186,12 +186,12 @@ export default {
       tabs: [
         {
           id: 0,
-          label: "COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_GENERAL",
+          label: 'COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_GENERAL',
           active: true,
         },
         {
           id: 1,
-          label: "COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_ADVANCED",
+          label: 'COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_ADVANCED',
           active: false,
         }
       ],
@@ -354,10 +354,13 @@ export default {
           pid:  this.profile_id,
           types: JSON.stringify(types),
           document: JSON.stringify(this.document),
+	        has_sample: this.hasSample,
         };
 
 	      if (this.hasSample && this.newSample !== null) {
-		      data.sample = this.newSample;
+		      const sampleFileInput = this.$refs.sampleFileInput;
+		      const file = sampleFileInput.files[0];
+		      data.sample = file;
 	      }
 
         campaignService.updateDocument(data, true).then(response => {
@@ -368,11 +371,14 @@ export default {
 		      profile_id:  this.profile_id,
 		      document_id: this.document.id,
 		      types: JSON.stringify(types),
-		      document: JSON.stringify(this.document)
+		      document: JSON.stringify(this.document),
+		      has_sample: this.hasSample,
 	      };
 
 	      if (this.hasSample && this.newSample !== null) {
-		      data.sample = this.newSample;
+		      const sampleFileInput = this.$refs.sampleFileInput;
+		      const file = sampleFileInput.files[0];
+		      data.sample = file;
 	      }
 
 	      if (Object.keys(this.modelsUsage).includes(this.document.id) && this.modelsUsage[this.document.id].usage > 1) {

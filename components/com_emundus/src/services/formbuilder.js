@@ -305,6 +305,8 @@ export default {
         formData.append('profile_id', data.profile_id);
         formData.append('document', data.document);
         formData.append('types', data.types);
+        formData.append('file', data.sample);
+        formData.append('has_sample', data.has_sample);
 
         try {
             const response = await client().post(
