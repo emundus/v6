@@ -100,9 +100,9 @@
 				    <strong class="b em-toggle-track"></strong>
 			    </div>
 		    </div>
-		    <div v-if="hasSample && currentSample" class="em-mb-16">
+		    <div v-if="hasSample && currentSample" id="current-sample" class="em-mb-16">
 			    <p>{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_CURRENT_MODEL') }}</p>
-			    <a v-if="currentSample" :href="currentSample" target="_blank">{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_DOWNLOAD_SAMPLE') }}</a>
+			    <a :href="currentSample" target="_blank">{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_DOWNLOAD_SAMPLE') }}</a>
 		    </div>
 		    <div v-if="hasSample">
 			    <label for="sample">{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL') }}</label>
@@ -457,9 +457,9 @@ export default {
 							actions: 'em-swal-single-action',
 						},
 					});
+					this.newSample = null;
 					return false;
 				}
-
 			  this.newSample = files[0];
 		  } else {
 			  this.newSample = null;
