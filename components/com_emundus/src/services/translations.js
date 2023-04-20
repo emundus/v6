@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 import client from './axiosClient';
 import axios from 'axios';
 import qs from 'qs';

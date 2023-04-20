@@ -329,6 +329,5 @@ class EmundusModelFormbuilderTest extends TestCase
 
 		$document = $this->m_formbuilder->getDocumentSample(1, 1);
 		$this->assertNotEmpty($document, 'Le document de test est bien renvoyé');
-
 	}
 }

@@ -16,4 +16,16 @@ describe('Service for form builder Http calls',  () => {
             expect(data.status).toBe(false);
         });
     });
+
+    test('deleteFormModel, missing params should return false', () => {
+        return formService.deleteFormModel(0).then(data => {
+            expect(data.status).toBe(false);
+        });
+    });
+
+    test('deleteFormModelFromId, missing params should return false', () => {
+        return formService.deleteFormModelFromId([]).then(data => {
+            expect(data.status).toBe(false);
+        });
+    });
 });
