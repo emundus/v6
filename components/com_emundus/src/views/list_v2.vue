@@ -44,10 +44,10 @@
 			<nav v-if="currentList.tabs.length > 1" id="list-nav">
 				<ul style="list-style-type: none;margin-left:0;" class="em-flex-row">
 					<li v-for="tab in currentList.tabs" :key="tab.key"
-					    class="em-pointer em-p-8 em-font-weight-600 em-p-16"
+					    class="em-pointer em-p-8 em-font-weight-400 em-p-16"
 					    :class="{
-								'em-main-500-color em-border-bottom-main-500 ': selectedListTab === tab.key,
-							  'em-border-bottom-neutral-300': selectedListTab !== tab.key
+								'em-border-bottom-main-500 em-neutral-900-color ': selectedListTab === tab.key,
+							  'em-neutral-700-color em-border-bottom-neutral-300': selectedListTab !== tab.key
 							}"
 					    @click="selectedListTab = tab.key"
 					>
@@ -111,7 +111,7 @@
 							    :class="{'em-card-neutral-100 em-card-shadow em-p-24' : viewType === 'blocs'}"
 							>
 								<td class="em-pointer" @click="onClickAction(editAction, item.id)">
-									<span :class="{'em-body-16-semibold em-mb-16':  viewType === 'blocs'}">{{ item.label[params.shortlang] }}</span>
+									<span :class="{'em-font-weight-600 em-mb-16':  viewType === 'blocs'}">{{ item.label[params.shortlang] }}</span>
 								</td>
 								<td v-for="column in item.additional_columns" :key="column.key" v-if="column.display === viewType || column.display === 'all'"><span class="em-mt-8 em-mb-8" :class="column.classes">{{ column.value }}</span></td>
 								<div>
