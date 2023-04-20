@@ -433,8 +433,8 @@
 				label="COM_EMUNDUS_YOUSIGN_DESC"
 		/>
 		<field name="yousign_prod" type="list" menu="hide" default="1" label="COM_EMUNDUS_YOUSIGN_PROD" description="COM_EMUNDUS_YOUSIGN_PROD_DESC">
-			<option value="https://api.yousign.com">PROD</option>
-			<option value="https://staging-api.yousign.com">PREPROD</option>
+			<option value="https://api.yousign.app/v3">PROD</option>
+			<option value="https://api-sandbox.yousign.app/v3">PREPROD</option>
 		</field>
 		<field name="yousign_api_key" type="field" description="COM_EMUNDUS_YOUSIGN_KEY_DESC" label="COM_EMUNDUS_YOUSIGN_KEY_LABEL" />
 		<field
