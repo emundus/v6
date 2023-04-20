@@ -50,21 +50,4 @@ export default {
             };
         }
     },
-    async saveUser(user) {
-        try {
-            return await client().post(`index.php?option=com_emundus&controller=users&task=saveuser`,
-                JSON.stringify(user),
-                {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-        } catch (e) {
-            return {
-                status: false,
-                msg: e.message
-            };
-        }
-    },
 };
