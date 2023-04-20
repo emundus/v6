@@ -60,7 +60,7 @@ describe('AttachmentRow.vue', () => {
 	});
 
 	// .visibility-permission should have class active if can_be_viewed is true
-	it('should have class active if can_be_viewed is true', () => {
+	it('should have class active if can_be_viewed is true and profiles is not empty', () => {
 		expect(wrapper.find('.visibility-permission').classes()).toContain('active');
 	});
 
