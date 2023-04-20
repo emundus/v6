@@ -300,6 +300,13 @@ export default {
       }
     },
     async updateDocument(data) {
+        if (data.document_id == undefined || data.profile_id == undefined || data.document == undefined) {
+            return {
+                status: false,
+                msg: 'Missing data'
+            };
+        }
+
         const formData = new FormData();
         formData.append('document_id', data.document_id);
         formData.append('profile_id', data.profile_id);
