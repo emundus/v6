@@ -48,4 +48,69 @@ describe('List view', () => {
             expect(wrapper.find('#empty-list').exists()).toBeFalsy();
         }
     });
+
+    it ('Add action button should exists if current tab has add action', () => {
+        if (wrapper.vm.addAction) {
+            expect(wrapper.find('#add-action-btn').exists()).toBeTruthy();
+        } else {
+            expect(wrapper.find('#add-action-btn').exists()).toBeFalsy();
+        }
+    });
+
+    it ('tabActionsPopover should never include add, edit or preview actions', () => {
+        wrapper.vm.tabActionsPopover.forEach(action => {
+            expect(action.name).not.toBe('add');
+            expect(action.name).not.toBe('edit');
+            expect(action.name).not.toBe('preview');
+        });
+    });
+
+    it ('on click action should return false if no action is defined', () => {
+        expect(wrapper.vm.onClickAction(null)).toBeFalsy();
+        expect(wrapper.vm.onClickAction(['test'])).toBeFalsy();
+    });
+});
+
+describe('List view search function', () => {
+    const wrapper = mount(List, {
+        propsData: {
+            defaultType: 'forms'
+        },
+        localVue,
+        store
+    });
+
+    const getListItems = jest.spyOn(wrapper.vm, 'getListItems');
+
+    jest.useFakeTimers();
+    test('We should try to get the list items on searchItems, and it should have been called with page = 1 and current tab', () => {
+        wrapper.vm.searches[wrapper.vm.currentTab.key].search = 'test';
+        wrapper.vm.searchItems();
+        jest.advanceTimersByTime(600);
+
+        expect(getListItems).toHaveBeenCalledWith(1, wrapper.vm.currentTab.key);
+    });
+});
+
+describe('List view filter function', () => {
+    const wrapper = mount(List, {
+        propsData: {
+            defaultType: 'forms'
+        },
+        localVue,
+        store
+    });
+
+    const getListItems = jest.spyOn(wrapper.vm, 'getListItems');
+
+    const mockFilters = {'programs':[{'key':'recherche','value':'all','options':[{'value':'all','label':'Toutes les catégories'},{'value':'RECHERCHE','label':'RECHERCHE'}]}]};
+    wrapper.vm.$data.filters = mockFilters;
+
+    jest.useFakeTimers();
+    test('We should try to get the list items when filtering items, and it should have been called with page = 1 and current tab', () => {
+        wrapper.vm.onChangeFilter();
+        jest.advanceTimersByTime(600);
+
+        expect(getListItems).toHaveBeenCalledWith(1, wrapper.vm.currentTab.key);
+    });
 });

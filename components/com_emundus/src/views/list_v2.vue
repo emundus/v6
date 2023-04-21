@@ -3,7 +3,7 @@
 		<skeleton v-if="loading.lists" height="40px" width="100%" class="em-mb-16 em-mt-16 em-border-radius-8"></skeleton>
 		<div v-else class="head em-flex-row em-flex-space-between em-mb-16 em-mt-16">
 			<h2 style="margin:0;">{{ translate(currentList.title) }}</h2>
-			<a v-if="addAction" class="em-primary-button em-w-auto em-pointer" @click="onClickAction(addAction)">{{ translate(addAction.label) }}</a>
+			<a v-if="addAction" id="add-action-btn" class="em-primary-button em-w-auto em-pointer" @click="onClickAction(addAction)">{{ translate(addAction.label) }}</a>
 		</div>
 		<hr class="em-w-100">
 
@@ -124,10 +124,7 @@
 								<div>
 									<hr v-if="viewType === 'blocs'" class="em-w-100">
 									<td class="actions">
-										<a v-if="viewType === 'blocs' && editAction"
-										   @click="onClickAction(editAction, item.id)"
-										   class="em-primary-button em-font-size-14 em-pointer em-w-auto"
-										>
+										<a v-if="viewType === 'blocs' && editAction" @click="onClickAction(editAction, item.id)" class="em-primary-button em-font-size-14 em-pointer em-w-auto">
 											{{ translate(editAction.label) }}
 										</a>
 										<div class="em-flex-row">
@@ -404,6 +401,10 @@ export default {
 			}, 500);
 		},
 		onClickAction(action, itemId = null) {
+			if (action === null || typeof action !== 'object') {
+				return false;
+			}
+
 			let item = null;
 			if (itemId !== null) {
 				item = this.items[this.selectedListTab].find(item => item.id === itemId);
