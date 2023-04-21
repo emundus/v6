@@ -86,7 +86,7 @@ describe('List view search function', () => {
     test('We should try to get the list items on searchItems, and it should have been called with page = 1 and current tab', () => {
         wrapper.vm.searches[wrapper.vm.currentTab.key].search = 'test';
         wrapper.vm.searchItems();
-        jest.advanceTimersByTime(600);
+        jest.advanceTimersByTime(501);
 
         expect(getListItems).toHaveBeenCalledWith(1, wrapper.vm.currentTab.key);
     });
@@ -109,7 +109,7 @@ describe('List view filter function', () => {
     jest.useFakeTimers();
     test('We should try to get the list items when filtering items, and it should have been called with page = 1 and current tab', () => {
         wrapper.vm.onChangeFilter();
-        jest.advanceTimersByTime(600);
+        jest.advanceTimersByTime(501);
 
         expect(getListItems).toHaveBeenCalledWith(1, wrapper.vm.currentTab.key);
     });
