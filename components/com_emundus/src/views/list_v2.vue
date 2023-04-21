@@ -113,7 +113,14 @@
 								<td class="em-pointer" @click="onClickAction(editAction, item.id)">
 									<span :class="{'em-font-weight-600 em-mb-16':  viewType === 'blocs'}">{{ item.label[params.shortlang] }}</span>
 								</td>
-								<td v-for="column in item.additional_columns" :key="column.key" v-if="column.display === viewType || column.display === 'all'"><span class="em-mt-8 em-mb-8" :class="column.classes">{{ column.value }}</span></td>
+								<td class="columns" v-for="column in item.additional_columns" :key="column.key" v-if="column.display === viewType || column.display === 'all'">
+									<div v-if="column.type === 'tags'" class="em-flex-row em-flex-wrap" :class="column.classes">
+										<span v-for="tag in column.values" :key="tag.key" class="em-mr-8" :class="tag.classes">{{ tag.value }}</span>
+									</div>
+									<span v-else class="em-mt-8 em-mb-8" :class="column.classes">
+										{{ column.value }}
+									</span>
+								</td>
 								<div>
 									<hr v-if="viewType === 'blocs'" class="em-w-100">
 									<td class="actions">

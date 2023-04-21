@@ -77,6 +77,9 @@ class com_emundusInstallerScript
 		}
 
 		if ($this->manifest_cache) {
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
 			# First run condition
 			if (version_compare($cache_version, '1.33.0', '<') || $firstrun) {
 				# Delete emundus sql files in con_admin
@@ -242,9 +245,6 @@ class com_emundusInstallerScript
 			}
 
 			if (version_compare($cache_version, '1.34.0', '<') || $firstrun) {
-				$db    = JFactory::getDbo();
-				$query = $db->getQuery(true);
-
 				EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns', 'pinned', 'TINYINT', 1);
 				EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns', 'eval_start_date', 'DATETIME');
 				EmundusHelperUpdate::addColumn('jos_emundus_setup_programmes', 'color', 'VARCHAR', 10);
