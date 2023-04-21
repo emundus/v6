@@ -522,6 +522,11 @@ input:focus + .em-slider {
   align-items: start;
 }
 
+.em-flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 .em-grid-simple {
   display: grid;
 }
