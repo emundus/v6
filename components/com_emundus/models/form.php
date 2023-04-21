@@ -704,7 +704,7 @@ class EmundusModelForm extends JModelList {
 
 									foreach ($formsid_arr as $formid) {
 										$query->clear()
-											->select('label', 'intro')
+											->select('label, intro')
 											->from($db->quoteName('#__fabrik_forms'))
 											->where($db->quoteName('id') . ' = ' . $db->quote($formid));
 										$db->setQuery($query);
@@ -714,10 +714,20 @@ class EmundusModelForm extends JModelList {
 										$intro = array();
 
 										foreach ($languages as $language) {
-											$label[$language->sef] = $formbuilder->getTranslation($form->label,$language->lang_code);
-											$intro[$language->sef] = $formbuilder->getTranslation($form->intro,$language->lang_code);
-											if($label[$language->sef] == ''){
+											# Fabrik has a functionnality that adds <p> tags around the intro text, we need to remove them
+											$stripped_intro = strip_tags($form->intro);
+											if ($form->intro == '<p>' . $stripped_intro . '</p>') {
+												$form->intro = $stripped_intro;
+											}
+
+											$label[$language->sef] = $formbuilder->getTranslation($form->label, $language->lang_code);
+											$intro[$language->sef] = $formbuilder->getTranslation($form->intro, $language->lang_code);
+
+											if ($label[$language->sef] == ''){
 												$label[$language->sef] = $form->label;
+											}
+											if ($intro[$language->sef] == ''){
+												$intro[$language->sef] = $form->intro;
 											}
 										}
 
