@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<extension
+        type="module"
+        version="4.2.9"
+        client="site"
+        method="upgrade">
+    <name>eMundus- InternetExplorer</name>
+    <author>Anne-laure Drouard</author>
+    <creationDate>Juin 2020</creationDate>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <description>MOD_EMUNDUS_INTERNET_EXPLORER_XML_DESCRIPTION</description>
+    <files>
+        <filename>helper.php</filename>
+        <filename>mod_emundus_internet_explorer.xml</filename>
+        <filename module="mod_emundus_internet_explorer">mod_emundus_internet_explorer.php</filename>
+        <filename>index.html</filename>
+        <folder>tmpl</folder>
+        <folder>style</folder>
+        <folder>language</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.mod_emundus_internet_explorer.ini</language>
+        <language tag="en-GB">en-GB.mod_emundus_internet_explorer.sys.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_internet_explorer.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_internet_explorer.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic" addfieldpath="/modules/mod_emundus_internet_explorer/tmpl">
+                <field
+                        name="message"
+                        type="textarea"
+                        label="MESSAGE_LABEL"
+                        description="MESSAGE_DESC"
+                        size="60"
+                        default="TEXT_DEFAULT"
+                />
+            </fieldset>
+            <fieldset name="advanced">
+                <field
+                        name="layout"
+                        type="modulelayout"
+                        label="JFIELD_ALT_LAYOUT_LABEL"
+                        description="JFIELD_ALT_MODULE_LAYOUT_DESC"
+                />
+            </fieldset>
+        </fields>
+    </config>
+</extension>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="4" type="plugin" group="user">
+	<name>plg_user_emundus_su_emplois</name>
+	<author>Benjamin Rivalland</author>
+	<creationDate>December 2015</creationDate>
+	<copyright>(C) 2016 eMundus. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>admin@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<description>PLG_USER_EMUNDUS_SU_EMPLOIS_XML_DESCRIPTION</description>
+	<files>
+		<filename>emundus_su_emplois.xml</filename>
+		<filename plugin="emundus_su_emplois">emundus_su_emplois.php</filename>
+		<filename>index.html</filename>
+	</files>
+</extension>

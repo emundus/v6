@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_form" method="upgrade" type="plugin" version="4">
+	<name>eMundus - Expert Agreement</name>
+	<author>Hugo Moracchini</author>
+	<creationDate>March 2019</creationDate>
+	<copyright>Copyright (C) 2019 eMundus.fr - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>hugo.moracchini@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<description>A plugin which assigns an expert to a group.</description>
+	<files>
+		<filename>emundusexpertagreement.xml</filename>
+		<filename plugin="emundusexpertagreement">emundusexpertagreement.php</filename>
+		<filename>index.html</filename>
+		<folder>forms</folder>
+		<folder>language</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">en-GB.plg_fabrik_form_emundusexpertagreement.ini</language>
+		<language tag="en-GB">en-GB.plg_fabrik_form_emundusexpertagreement.sys.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_form_emundusexpertagreement.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_form_emundusexpertagreement.sys.ini</language>
+	</languages>
+</extension>

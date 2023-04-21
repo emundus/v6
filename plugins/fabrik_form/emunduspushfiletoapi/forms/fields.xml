@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-form-emunduspushfiletoapi" label="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_FIELDS">
+			<field name="use_api" type="list" default="false" description="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_USE_EM_API_DESC" label="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_USE_EM_API_LABEL" >
+				<option value="false">JNO</option>
+				<option value="true">JYES</option>
+			</field>
+
+			<field name="em_api_url" type="field" default="" description="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_EM_URL_DESC" label="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_EM_URL_LABEL" />
+			<field name="em_api_route" type="field" default="" description="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_EM_ROUTE_DESC" label="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_EM_ROUTE_LABEL" />
+			<field name="em_api_token" type="field" default="" description="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_EM_TOKEN_DESC" label="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_EM_TOKEN_LABEL" />
+
+
+			<field name="api_url" type="field" default="" description="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_URL_DESC" label="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_URL_LABEL" />
+			<field name="api_route" type="field" default="" description="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_ROUTE_DESC" label="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_ROUTE_LABEL" />
+			<field name="api_user" type="field" default="" description="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_USER_DESC" label="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_USER_LABEL" />
+			<field name="api_token" type="field" default="" description="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_TOKEN_DESC" label="PLG_FABRIK_FORM_EMUNDUS_PUSH_TO_API_TOKEN_LABEL" />
+		</fieldset>
+	</fields>
+</form>

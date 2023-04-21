@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension
+		group="fabrik_cron"
+		method="upgrade"
+		type="plugin"
+		version="4.2.9">
+	<name>plg_fabrik_cron_emundushesamrecap</name>
+	<author>Hugo Moracchini</author>
+	<creationDate>February 2019</creationDate>
+	<copyright>Copyright (C) 2019 emundus.fr - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<description>A plugin used for sending a bi-weekly recap email of all of the new offers available on 1000Doctorants</description>
+	<files>
+		<filename>emundushesamrecap.xml</filename>
+		<filename plugin="emundushesamrecap">emundushesamrecap.php</filename>
+		<folder>forms</folder>
+		<filename>index.html</filename>
+		<folder>language</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">en-GB.plg_fabrik_cron_emundushesamrecap.ini</language>
+		<language tag="en-GB">en-GB.plg_fabrik_cron_emundushesamrecap.sys.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_cron_emundushesamrecap.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_cron_emundushesamrecap.sys.ini</language>
+	</languages>
+</extension>

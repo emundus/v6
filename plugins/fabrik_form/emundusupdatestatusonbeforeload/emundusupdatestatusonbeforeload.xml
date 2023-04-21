@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_form" method="upgrade" type="plugin" version="4">
+	<name>eMundus - Set the status of file before load</name>
+	<author>James Dean</author>
+	<creationDate>June 2020</creationDate>
+	<copyright>Copyright (C) 2018 eMundus.fr - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>james.dean@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<help url="https://www.emundus.fr"/>
+	<description>PLG_FORM_EMUNDUSUPDATESTUATUSONBEFORELOAD_DESCRIPTION</description>
+	<files>
+		<filename>emundusupdatestatusonbeforeload.xml</filename>
+		<filename plugin="emundusupdatestatusonbeforeload">emundusupdatestatusonbeforeload.php</filename>
+		<filename>index.html</filename>
+		<folder>forms</folder>
+		<folder>language</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">fr-FR.plg_fabrik_form_emunduscompletefilestatuschange.ini</language>
+		<language tag="en-GB">en-GB.plg_fabrik_form_emunduscompletefilestatuschange.sys.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_form_emunduscompletefilestatuschange.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_form_emunduscompletefilestatuschange.sys.ini</language>
+	</languages>
+</extension>

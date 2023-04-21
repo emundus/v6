@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension version="4" type="plugin" group="user" method="upgrade">
+	<name>eMundus - Send the user a recap of all of his data.</name>
+	<author>Hugo Moracchini</author>
+	<creationDate>July 2019</creationDate>
+	<copyright>(C) 2010 - 2019 Emundus. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<description>This plugin sends a user of all of their information on the site when the user is deleted.</description>
+	<files>
+		<filename>emundus_user_recap.xml</filename>
+		<filename plugin="emundus_user_recap">emundus_user_recap.php</filename>
+		<filename>index.html</filename>
+		<folder>language</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">en-GB.plg_user_emundus_user_recap.ini</language>
+		<language tag="fr-FR">fr-FR.plg_user_emundus_user_recap.ini</language>
+	</languages>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="email" type="field" default="delete_user" label="Email to send" description="The ID or lbl of the email to be sent containing the archive."/>
+			</fieldset>
+		</fields>
+	</config>
+</extension>

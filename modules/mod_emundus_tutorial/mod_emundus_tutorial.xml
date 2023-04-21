@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension
+        type="module"
+        version="4.2.9"
+        client="site"
+        method="upgrade">
+    <name>eMundus - Tutorial popup</name>
+    <author>Hugo Moracchini</author>
+    <creationDate>May 2020</creationDate>
+    <copyright>Copyright (C) 2020 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>hugo.moracchini@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <description>Displays a tutorial popup containing the contents of one or more defined Joomla articles, Content is
+        automatically shown once to the user, or can be toggled by a button on the page.
+    </description>
+    <files>
+        <filename module="mod_emundus_tutorial">mod_emundus_tutorial.php</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+        <folder>style</folder>
+        <filename>helper.php</filename>
+        <filename>index.html</filename>
+        <filename>mod_emundus_tutorial.xml</filename>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.mod_emundus_tutorial.ini</language>
+        <language tag="en-GB">en-GB.mod_emundus_tutorial.sys.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_tutorial.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_tutorial.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="artids" type="text" label="MOD_EMUNDUS_TUTORIAL_ARTICLE_IDS"
+                       description="MOD_EMUNDUS_TUTORIAL_ARTICLE_IDS_DESC"/>
+                <field name="user_param" type="text" label="MOD_EMUNDUS_TUTORIAL_USER_PARAM"
+                       description="MOD_EMUNDUS_TUTORIAL_USER_PARAM_DESC"/>
+                <field name="layout" type="modulelayout" label="JFIELD_ALT_LAYOUT_LABEL"
+                       description="JFIELD_ALT_MODULE_LAYOUT_DESC"/>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension
+		version="4.2.9"
+		type="plugin"
+		group="authentication">
+	<name>Authentication - eMundus</name>
+	<author>Jérémy LEGENDRE</author>
+	<creationDate>March 2023</creationDate>
+	<copyright>(C) 2023 eMundus All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<authorUrl>emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<description>PLG_AUTHENTICATION_EMUNDUS_XML_DESCRIPTION</description>
+	<files>
+		<filename>emundus.xml</filename>
+		<filename plugin="emundus">emundus.php</filename>
+		<filename>index.html</filename>
+		<folder>language</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">language/en-GB/en-GB.plg_authentication_emundus.ini</language>
+		<language tag="en-GB">language/en-GB/en-GB.plg_authentication_emundus.sys.ini</language>
+		<language tag="fr-FR">language/fr-FR/fr-FR.plg_authentication_emundus.ini</language>
+		<language tag="fr-Fr">language/fr-FR/fr-FR.plg_authentication_emundus.sys.ini</language>
+	</languages>
+</extension>

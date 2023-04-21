@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension
+        type="module"
+        version="4.2.9"
+        client="site"
+        method="upgrade">
+    <name>mod_emundus_payment</name>
+    <author>LEGENDRE Jérémy</author>
+    <creationDate>May 2022</creationDate>
+    <copyright>Copyright (C) 2022 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>jeremy.legendre@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <description></description>
+    <files>
+        <filename module="mod_emundus_payment" label="MOD_EMUNDUS_PAYMENT">mod_emundus_payment.php</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+        <folder>assets</folder>
+        <folder>sql</folder>
+        <filename>helper.php</filename>
+        <filename>mod_emundus_payment.xml</filename>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.mod_emundus_payment.ini</language>
+        <language tag="en-GB">en-GB.mod_emundus_payment.sys.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_payment.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_payment.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                        name="payment_methods"
+                        type="repeatable"
+                        label="Méthodes de paiement"
+                        description="Choix des méthodes de paiement rendues disponible"
+                >
+                    <field name="payment_method" type="list" default="flywire">
+                        <option value="flywire">Flywire</option>
+                        <option value="transfer">Virement</option>
+                        <option value="hikashop">Hikashop</option>
+                        <option value="axepta">Axepta</option>
+                    </field>
+                    <field
+                            name="payment_highlighted"
+                            type="radio"
+                            label="Mise en avant"
+                            description="Afficher 'recommandé' sur le mode de paiement"
+                            class="btn-group btn-group-yesno"
+                            default="0"
+                            filter="integer"
+                    >
+                        <option value="0">JNO</option>
+                        <option value="1">JYES</option>
+                    </field>
+                    <field
+                            name="payment_confirmed_state"
+                            type="sql"
+                            multiple="false"
+                            query="SELECT id, step, value FROM #__emundus_setup_status GROUP BY ordering"
+                            default="1"
+                            label="MOD_EMUNDUS_MODULES_PAYMENT_FIELD_CONFIRMED_STATE"
+                            key_field="step"
+                            value_field="value"
+                    >
+                    </field>
+                </field>
+            </fieldset>
+            <fieldset name="flywire" label="MOD_EMUNDUS_FLYWIRE_FIELDSET_LABEL">
+                <field name="MOD_EMUNDUS_FLYWIRE_FIELDSET_DESC" type="spacer"></field>
+                <field name="contact_support" label="MOD_EMUNDUS_FLYWIRE_CONTACT_SUPPORT" type="text"></field>
+            </fieldset>
+            <fieldset name="transfert" label="Paiement par virement">
+                <field name="reference_prefix" label="Préfixe de la référence du paiement" type="text"
+                       default=""></field>
+                <field name="beneficiary_bank" label="BIC" type="text" default=""></field>
+                <field name="beneficiary_bank_address" label="Domiciliation" type="text" default=""></field>
+                <field name="account_holder" label="Titulaire du compte" type="text" default=""></field>
+                <field name="beneficiary_iban" label="IBAN du bénéficaire" type="text" default=""></field>
+                <field
+                        name="proof_attachment"
+                        type="sql"
+                        multiple="false"
+                        query="SELECT id, value FROM #__emundus_setup_attachments WHERE published = '1' ORDER BY ordering"
+                        default=""
+                        label="Type du document justificatif à déposer"
+                        key_field="id"
+                        value_field="value"
+                >
+                </field>
+            </fieldset>
+            <fieldset name="axepta" label="MOD_EMUNDUS_AXEPTA_LABEL">
+                <field name="MOD_EMUNDUS_AXEPTA_FIELDSET_DESC" type="spacer"></field>
+                <field
+                        name="axepta_test_mode"
+                        type="radio"
+                        label="MOD_EMUNDUS_AXEPTA_TEST_MODE"
+                        description="Activer le mode de test pour Axepta"
+                        class="btn-group btn-group-yesno"
+                        default="0"
+                        filter="integer"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field name="axepta_notify_url" label="MOD_EMUNDUS_AXEPTA_NOTIFY_URL" type="text"></field>
+                <field name="axepta_success_url" label="MOD_EMUNDUS_AXEPTA_SUCCESS_URL" type="text"></field>
+                <field name="axepta_failed_url" label="MOD_EMUNDUS_AXEPTA_FAILED_URL" type="text"></field>
+                <field name="axepta_currency" label="MOD_EMUNDUS_AXEPTA_CURRENCY" type="text" default="EUR"></field>
+                <field name="axepta_order_desc" label="MOD_EMUNDUS_AXEPTA_ORDER_DESC" type="text" default=""></field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

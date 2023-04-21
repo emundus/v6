@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_form" method="upgrade" type="plugin" version="4">
+	<name>PLG_FABRIK_FORM_EMUNDUSFINALGRADE</name>
+	<author>James Dean</author>
+	<creationDate>August 2020</creationDate>
+	<copyright>Copyright (C) 2017-2018 eMundus.fr - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>james.dean@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<description>PLG_FABRIK_FORM_EMUNDUSFINALGRADE_DESCRIPTION</description>
+	<files>
+		<filename>emundusfinalgrade.xml</filename>
+		<filename plugin="emundusfinalgrade">emundusfinalgrade.php</filename>
+		<filename>index.html</filename>
+		<folder>forms</folder>
+		<folder>language</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">en-GB.plg_fabrik_form_emundusfinalgrade.ini</language>
+		<language tag="en-GB">en-GB.plg_fabrik_form_emundusfinalgrade.sys.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_form_emundusfinalgrade.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_form_emundusfinalgrade.sys.ini</language>
+	</languages>
+</extension>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-cron-emundusrecall" label="COM_FABRIK_OPTIONS">
+
+			<field name="reminder_mail_id"
+				   type="text"
+				   description="PLG_CRON_EMAIL_TEMPLATE_DESC"
+				   label="PLG_CRON_EMAIL_TEMPLATE"
+				   size="30"
+				   default="15" />
+
+			<field name="reminder_programme_code"
+				   type="text"
+				   description="PLG_CRON_EMAIL_PROGRAMME_DESC"
+				   label="PLG_CRON_EMAIL_PROGRAMME"
+				   size="30"
+				   default="" />
+
+			<field name="reminder_days"
+				   type="text"
+				   description="PLG_CRON_NUMBER_OF_DAYS_BETWEEN_EACH_REMIND_DESC"
+				   label="PLG_CRON_NUMBER_OF_DAYS_BETWEEN_EACH_REMIND"
+				   size="30"
+				   default="30" />
+			<field name="reminder_option" menu="hide" type="list" default="1" label="PLG_CRON_REMIND_OPTION" description="PLG_CRON_REMIND_OPTION_DESC">
+				<option value="0">PLG_CRON_DAY_OF_MONTH</option>
+				<option value="1">PLG_CRON_DAY_BEFORE_DEALINE</option>
+			</field>
+			<field name="reminder_deadline"
+				   type="text"
+				   cols="60"
+				   description="PLG_CRON_DEADLINE_REMIND_DESC"
+				   label="PLG_CRON_DEADLINE_REMIND"
+				   size="30"
+				   default="14,7,1" />
+
+			<field name="reminder_status"
+				   type="text"
+				   cols="60"
+				   description="PLG_CRON_DEADLINE_STATUS_DESC"
+				   label="PLG_CRON_DEADLINE_STATUS"
+				   size="30"
+				   default="" />
+
+		</fieldset>
+
+	</fields>
+</form>

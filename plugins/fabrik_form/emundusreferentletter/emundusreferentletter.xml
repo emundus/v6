@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_form" method="upgrade" type="plugin" version="4">
+	<name>eMundus - Referent letter</name>
+	<author>Hugo Moracchini</author>
+	<creationDate>October 2018</creationDate>
+	<copyright>Copyright (C) 2018 eMundus.fr - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>hugo.moracchini@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<help url="PLG_FORM_EMUNDUS_REFERENT_LETTER_HELP_SERVER"/>
+	<description>PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_DESCRIPTION</description>
+	<files>
+		<filename>emundusreferentletter.xml</filename>
+		<filename plugin="emundusreferentletter">emundusreferentletter.php</filename>
+		<filename>index.html</filename>
+		<folder>forms</folder>
+		<folder>language</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">en-GB.plg_fabrik_form_emundusreferentletter.ini</language>
+		<language tag="en-GB">en-GB.plg_fabrik_form_emundusreferentletter.sys.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_form_emundusreferentletter.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_form_emundusreferentletter.sys.ini</language>
+	</languages>
+</extension>

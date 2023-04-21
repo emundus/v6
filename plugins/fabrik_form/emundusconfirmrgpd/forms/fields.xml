@@ -1,0 +1,13 @@
+<form>
+    <fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+        <fieldset name="plg-form-confirmrgpd">
+
+            <field name="emundusdpo_email"
+                   type="text"
+                   description="PLG_FORM_REQUEST_RGPD_DESC"
+                   label="PLG_FORM_REQUEST_RGPD_LABEL"
+                   repeat="true" />
+
+        </fieldset>
+    </fields>
+</form>

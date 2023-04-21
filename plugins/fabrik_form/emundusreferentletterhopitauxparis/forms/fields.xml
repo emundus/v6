@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-form-emundusreferentletter" label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_FIELDS">
+			<field name="url" type="field" default="index.php?option=com_fabrik&amp;c=form&amp;view=form&amp;formid=68&amp;tableid=71" description="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_URL_DESC" label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_URL_LABEL" />
+			<field name="sef_url" type="radio" default="false" class="btn-group" description="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_SEF_URL_DESC" label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_SEF_URL">
+				<option value="false">JNO</option>
+				<option value="true">JYES</option>
+			</field>
+			<field name="email_tmpl" type="field" default="referent_letter" description="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_EMAIL_TMPL_DESC" label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_EMAIL_TMPL_LABEL" />
+			<field name="emails" type="field" default="jos_emundus_references___Email_1,jos_emundus_references___Email_2,jos_emundus_references___Email_3,jos_emundus_references___Email_4" description="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_EMAILS_DESC" label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_EMAILS_LABEL" />
+			<field name="names" type="field" default="jos_emundus_references___Last_Name_1,jos_emundus_references___Last_Name_2,jos_emundus_references___Last_Name_3,jos_emundus_references___Last_Name_4" description="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_NAMES_DESC" label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_NAMES_LABEL" />
+			<field name="firstnames" type="field" default="jos_emundus_references___First_Name_1,jos_emundus_references___First_Name_2,jos_emundus_references___First_Name_3,jos_emundus_references___First_Name_4" description="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_FIRSTNAMES_DESC" label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_FIRSTNAMES_LABEL" />
+			<field name="send_attachement" type="radio" default="false" class="btn-group" description="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_SEND_ATTACHMENT_DESC" label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_SEND_ATTACHMENT_LABEL">
+				<option value="false">JNO</option>
+				<option value="true">JYES</option>
+			</field>
+			<field name="attachments" type="field" default="jos_emundus_references___attachment_id_1,jos_emundus_references___attachment_id_2,jos_emundus_references___attachment_id_3,jos_emundus_references___attachment_id_4" description="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_ATTACHMENT_DESC" label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_ATTACHMENT_LABEL" />
+		</fieldset>
+	</fields>
+</form>

@@ -1,0 +1,139 @@
+.emundus_home_page a {
+    opacity: 1;
+}
+.emundus_home_page a:hover {
+    opacity: 1;
+}
+a.text {
+    opacity: 1;
+}
+/*Accueil connecté*/
+.select select {
+    border: 1px solid #999;
+    color: #666;
+}
+.select select:hover, .select select:focus {
+    background: #ddd;
+}
+.form-control:focus {
+    border-color: #000;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+/* Accueil Coordinateur */
+.update {
+    text-align: right;
+    margin-top: 3rem;
+}
+#content-bottom-a .list-group a.btn.btn-success span::before {
+    content: "\f067";
+    font-family: FontAwesome;
+    margin-right: 8px;
+    font-weight: 400;
+}
+div#em-panel legend {
+    color: #4E5B6D;
+    font-size: 22px;
+}
+.candidacy-files-list h2::before {
+    content: "\f07b";
+    font-family: FontAwesome;
+    margin-right: 10px;
+}
+div#em-panel legend a {
+    display: none;
+}
+/* 3 Cercles Accueil Coordinateur */
+div#em-panel .ui.grid {
+    text-align: center;
+}
+.emundus_home_page .select_arrow {
+    transform: translate(-50%, -50%) rotate(45deg);
+    top: 42%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    right: 20px;
+}
+
+.emundus_home_page select#profile.form-control.form-control-sm {
+    border: none;
+    border-radius: 4px !important;
+}
+#em-panel.emundus_home_page p {
+    text-align: left;
+}
+
+div#em-panel legend {
+    color: #4E5B6D;
+    font-size: 22px;
+}
+
+.candidacy-files-list h2,
+#em-panel h2 {
+    font-weight: 600;
+    padding-left: 0;
+    margin-bottom: 10px !important;
+}
+
+.select select {
+    background-color: #eee;
+    color: #666;
+}
+
+@media all and (max-width: 767px) {
+    #em-panel h2 {
+        margin-left: 0;
+    }
+
+    div#em-panel legend {
+        margin-left: 0;
+    }
+
+    .emundus_home_page legend {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+}
+
+/** TCHOOZ DASHBOARD **/
+#em-panel .section-sub-menu {
+    margin-left: 30px;
+    background-color: white;
+    box-shadow: 0 1px 2px 0 hsla(0, 0%, 41%, 0.19);
+    padding: 30px 30px;
+    border-radius: 4px;
+}
+#em-panel .container-2 {
+    height: 100%;
+}
+#em-panel .w-container {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 940px;
+}
+#em-panel .d-flex{
+    display: flex;
+    align-items: center;
+}
+#em-panel .tchooz-icon-title{
+    width: 30px;
+    margin-right: 20px;
+}
+#em-panel .tchooz-section-titles{
+    margin-bottom: 0 !important;
+    margin-top: -8px;
+}
+#em-panel .actions-add-block {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 20px;
+}
+#em-panel .tchooz-section-description{
+    width: 50%;
+}
+#g-container-main .g-container{
+    width: 90%;
+}

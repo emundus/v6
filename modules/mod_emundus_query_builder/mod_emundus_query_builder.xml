@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<extension
+        type="module"
+        version="4.2.9"
+        client="site"
+        method="upgrade">
+    <name>MOD_EMUNDUS_QUERY_BUILDER_XML</name>
+    <author>Anne-laure Drouard</author>
+    <creationDate>May 2020</creationDate>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <description>MOD_EMUNDUS_QUERY_BUILDER_XML_DESCRIPTION</description>
+    <files>
+        <filename>helper.php</filename>
+        <filename>mod_emundus_query_builder.xml</filename>
+        <filename module="mod_emundus_query_builder">mod_emundus_query_builder.php</filename>
+        <filename>index.html</filename>
+        <folder>tmpl</folder>
+        <folder>style</folder>
+        <folder>language</folder>
+    </files>
+	<languages>
+		<language tag="en-GB">en-GB.mod_emundus_query_builder.ini</language>
+		<language tag="en-GB">en-GB.mod_emundus_query_builder.sys.ini</language>
+		<language tag="fr-FR">fr-FR.mod_emundus_query_builder.ini</language>
+		<language tag="fr-FR">fr-FR.mod_emundus_query_builder.sys.ini</language>
+	</languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic" addfieldpath="/modules/mod_emundus_query_builder/tmpl">
+
+            </fieldset>
+        </fields>
+    </config>
+</extension>

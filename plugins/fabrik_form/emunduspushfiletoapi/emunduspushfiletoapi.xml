@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_form" method="upgrade" type="plugin" version="4">
+	<name>eMundus - Push to API</name>
+	<author>Hugo Moracchini</author>
+	<creationDate>January 2019</creationDate>
+	<copyright>Copyright (C) 2019 eMundus.fr - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>hugo.moracchini@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<description>Used to send information about an application file to an external API via the eMundus one.</description>
+	<files>
+		<filename>emunduspushfiletoapi.xml</filename>
+		<filename plugin="emunduspushfiletoapi">emunduspushfiletoapi.php</filename>
+		<filename>index.html</filename>
+		<folder>forms</folder>
+		<folder>language</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">en-GB.plg_fabrik_form_emunduspushfiletoapi.ini</language>
+		<language tag="en-GB">en-GB.plg_fabrik_form_emunduspushfiletoapi.sys.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_form_emunduspushfiletoapi.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_form_emunduspushfiletoapi.sys.ini</language>
+	</languages>
+</extension>

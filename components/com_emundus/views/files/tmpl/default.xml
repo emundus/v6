@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+	<layout title="COM_EMUNDUS_FILES_VIEW_DEFAULT_TITLE">
+		<message>
+			<![CDATA[COM_EMUNDUS_FILES_VIEW_DEFAULT_TITLE_DESC]]>
+		</message>
+	</layout>
+	
+	<fields name="params">
+		<fieldset addfieldpath="/administrator/components/com_emundus/models/fields" name="basic">
+			<field name="em_tables_id" value="" type="textarea" rows="6" cols="40" label="COM_EMUNDUS_TABLES_FILTER" description="COM_EMUNDUS_TABLES_FILTER_DESC"/>
+			<field name="em_elements_id" value="0" type="textarea" rows="6" cols="40" label="COM_EMUNDUS_ELEMENTS_LIST" description="COM_EMUNDUS_ELEMENTS_LIST_DESC"/>
+			<field name="em_elements_values" value="" type="textarea" rows="6" cols="40" label="COM_EMUNDUS_ELEMENTS_VALUES" description="COM_EMUNDUS_ELEMENTS_VALUES_DESC"/>
+			<field name="em_filters_names" value="profile,evaluator,evaluator_group,schoolyear,missing_doc,finalgrade,other" type="textarea" rows="6" cols="40" label="COM_EMUNDUS_FILTERS_LIST" description="COM_EMUNDUS_FILTERS_LIST_DESC"/>
+			<field name="em_filters_values" value="" type="textarea" rows="6" cols="40" label="COM_EMUNDUS_FILTERS_VALUES" description="COM_EMUNDUS_FILTERS_VALUES_DESC"/>
+			<field name="em_filters_options" value="" type="textarea" rows="6" cols="40" label="COM_EMUNDUS_FILTERS_OPTIONS" description="COM_EMUNDUS_FILTERS_OPTIONS_DESC"/>
+			<field name="em_other_columns" value="" type="textarea" rows="6" cols="40" label="COM_EMUNDUS_OTHER_COLUMNS" description="COM_EMUNDUS_OTHER_COLUMNS_DESC"/>
+			<field name="em_actions" value="actions" type="list" label="COM_EMUNDUS_ACTIONS" description="COM_EMUNDUS_ACTIONS_DESC">
+				<option value="actions">actions</option>
+				<option value="actions-users">actions-users</option>
+				<option value="actions-shared-files">actions-shared-files</option>
+			</field>
+		</fieldset>
+	</fields>
+</metadata>

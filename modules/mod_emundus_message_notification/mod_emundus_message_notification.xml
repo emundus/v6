@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension
+        type="module"
+        version="4.2.9"
+        client="site"
+        method="upgrade">
+    <name>MOD_EMUNDUS_MESSAGE_NOTIFICATIONS_XML</name>
+    <author>James Dean</author>
+    <creationDate>August 2018</creationDate>
+    <copyright>Copyright (C) 2018 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>james.dean@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <description>MOD_EMUNDUS_MESSAGE_NOTIFICATIONS_XML_DESCRIPTION</description>
+    <files>
+        <filename>mod_emundus_message_notification.xml</filename>
+        <filename module="mod_emundus_message_notification">mod_emundus_message_notification.php</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+        <filename>helper.php</filename>
+        <filename>index.html</filename>
+    </files>
+	<languages>
+		<language tag="en-GB">en-GB.mod_emundus_message_notification.ini</language>
+		<language tag="en-GB">en-GB.mod_emundus_message_notification.sys.ini</language>
+		<language tag="fr-FR">fr-FR.mod_emundus_message_notification.ini</language>
+		<language tag="fr-FR">fr-FR.mod_emundus_message_notification.sys.ini</language>
+	</languages>
+
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                        name="layout"
+                        type="list"
+                        label="JFIELD_ALT_LAYOUT_LABEL"
+                        description="JFIELD_ALT_MODULE_LAYOUT_DESC"
+                >
+                    <option value="default">default</option>
+                    <option value="dropdown_menu">dropdown_menu</option>
+                    <option value="list">list</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

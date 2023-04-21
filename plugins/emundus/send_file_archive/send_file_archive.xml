@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension
+		type="plugin"
+		version="4.2.9"
+		method="upgrade"
+		group="emundus">
+	<name>Emundus - Send ZIP file to user.</name>
+	<creationDate>19 July 2019</creationDate>
+	<version>2.0.0</version>
+	<author>eMundus</author>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<authorUrl>https://www.emundus.fr</authorUrl>
+	<copyright>(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<description>This plugin sends a ZIP of the file when it is changed to a certain status or when it is deleted.</description>
+	<files>
+		<filename>index.html</filename>
+		<filename>send_file_archive.xml</filename>
+		<filename plugin="send_file_archive">send_file_archive.php</filename>
+	</files>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="delete_email" type="field" default="delete_file" label="Email to send on delete" description="The ID or lbl of the email to be sent containing the archive on delete, leave blank to not send." />
+				<field name="event_status" type="field" label="Status values to trigger email" description="The steps of the status which trigger the status email, can be multiple steps separated by comma." />
+				<field name="status_email" type="field" label="Email to send on update to status" description="The ID or lbl of the email to be sent containing the archive when the file reaches the specified status, leave blank to not send mails." />
+			</fieldset>
+		</fields>
+	</config>
+</extension>

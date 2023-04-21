@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-cron-emundusnantesscholargpush" label="COM_FABRIK_OPTIONS">
+			<field name="api_url" type="text" label="API URL" size="30" default="https://tabasco-test.univ-nantes.fr/api" />
+			<field name="api_route" type="text" label="API route" size="30" default="/emundus" />
+			<field name="token" type="text" label="X-Auth-Token" size="30" />
+            <field name="status" type="text" label="Status of files to push" size="30" />
+			<field name="tag" type="text" label="Tag to apply to files once pushed" size="30" />
+			<field name="profile" type="text" label="Profile of applicants to be pushed" size="30" />
+		</fieldset>
+	</fields>
+</form>

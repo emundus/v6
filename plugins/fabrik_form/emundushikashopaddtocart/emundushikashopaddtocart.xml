@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_form" method="upgrade" type="plugin" version="4">
+    <name>eMundus - Add hikashop products to cart</name>
+    <author>Brice HUBINET</author>
+    <creationDate>April 2020</creationDate>
+    <copyright>Copyright (C) 2020 eMundus.fr - All rights reserved.</copyright>
+    <license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+    <authorEmail>brice.hubinet@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <help url="PLG_FORM_EMUNDUSHIKASHOPADDTOCART_HELP_SERVER"/>
+    <description>PLG_FORM_EMUNDUSHIKASHOPADDTOCART_DESCRIPTION</description>
+    <files>
+        <filename>emundushikashopaddtocart.xml</filename>
+        <filename plugin="emundushikashopaddtocart">emundushikashopaddtocart.php</filename>
+        <filename>index.html</filename>
+        <folder>forms</folder>
+        <folder>language</folder>
+    </files>
+    <languages>
+        <language tag="fr-FR">fr-FR.plg_fabrik_form_emundushikashopaddtocart.ini</language>
+        <language tag="fr-FR">fr-FR.plg_fabrik_form_emundushikashopaddtocart.sys.ini</language>
+    </languages>
+</extension>

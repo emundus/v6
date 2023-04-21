@@ -1,0 +1,26 @@
+<extension group="system" method="upgrade" type="plugin" version="4">
+    <name>emunduszoommeeting</name>
+    <author>Duy Tran</author>
+    <creationDate>Decembre 2021</creationDate>
+    <copyright>(C) 2010-2020 EMUNDUS SOFTWARE. All rights reserved.</copyright>
+    <license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+    <authorEmail>duy.tran@emundus.fr</authorEmail>
+    <authorUrl>https://www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <description>eMundus Zoom Meeting - this plugin is used to do with Zoom API</description>
+    <files>
+        <filename>emunduszoommeeting.xml</filename>
+        <filename plugin="emunduszoommeeting">emunduszoommeeting.php</filename>
+        <filename>index.html</filename>
+        <filename>ZoomAPIWrapper.php</filename>
+        <folder>api_templates</folder>
+        <folder>forms</folder>
+        <folder>language</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.plg_fabrik_form_emunduszoommeeting.ini</language>
+        <language tag="en-GB">en-GB.plg_fabrik_form_emunduszoommeeting.sys.ini</language>
+        <language tag="fr-FR">fr-FR.plg_fabrik_form_emunduszoommeeting.ini</language>
+        <language tag="fr-FR">fr-FR.plg_fabrik_form_emunduszoommeeting.sys.ini</language>
+    </languages>
+</extension>

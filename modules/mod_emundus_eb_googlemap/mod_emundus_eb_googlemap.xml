@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension
+        type="module"
+        version="4.2.9"
+        client="site"
+        method="upgrade">
+    <name>eMundus Events Booking - Google Map</name>
+    <author>HUBINET Brice</author>
+    <authorEmail>brice.hubinet@emundus.fr</authorEmail>
+    <authorUrl>emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <creationDate>April 2022</creationDate>
+    <copyright>Copyright (C) 2022 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <description>This module display event locations and it's event on a google map</description>
+    <files>
+        <filename>mod_emundus_eb_googlemap.xml</filename>
+        <filename module="mod_emundus_eb_googlemap">mod_emundus_eb_googlemap.php</filename>
+        <filename>helper.php</filename>
+        <folder>asset</folder>
+        <folder>tmpl</folder>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset name="basic" addfieldpath="/administrator/components/com_eventbooking/elements">
+                <field name="moduleclass_sfx" type="text"
+                       label="Module Class Suffix" description="PARAMMODULECLASSSUFFIX"/>
+                <field
+                        name="center_coordinates"
+                        type="text"
+                        default=""
+                        label="Center Coordinates"
+                        description="Center Coordinates of the map, for example 37.09024,-95.712891. Default to the coordinates of the location of first event"/>
+                <field
+                        name="width"
+                        type="text"
+                        default="100"
+                        label="Width"
+                        description="Map with (in %)"/>
+                <field
+                        name="height"
+                        type="text"
+                        default="400"
+                        label="Height"
+                        description="Map height (in px)"/>
+                <field
+                        name="zoom_level"
+                        type="text"
+                        default="14"
+                        label="Zoom level"
+                        description=""/>
+                <field
+                        name="number_events"
+                        type="text"
+                        default="15"
+                        label="Max number events per location"
+                        description=""/>
+                <field
+                        name="category_ids"
+                        type="ebcategory"
+                        multiple="true"
+                        default=""
+                        label="Categories"
+                        description=""/>
+                <field
+                        name="exclude_category_ids"
+                        type="ebcategory"
+                        multiple="true"
+                        default=""
+                        label="Exclude Categories"
+                        description="Select categories which you want to exclude events from"/>
+                <field
+                        name="location_ids"
+                        type="eblocation"
+                        multiple="true"
+                        default=""
+                        label="Select Locations"
+                        description=""/>
+                <field
+                        name="hide_past_events"
+                        type="radio"
+                        default="1"
+                        class="btn-group btn-group-yesno"
+                        label="Hide past events"
+                        description="">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="duration_filter" type="list" default="" label="Duration Filter">
+                    <option value="">All Dates</option>
+                    <option value="today">Today</option>
+                    <option value="tomorrow">Tomorrow</option>
+                    <option value="this_week">This Week</option>
+                    <option value="next_week">Next Week</option>
+                    <option value="this_month">This Month</option>
+                    <option value="next_month">Next Month</option>
+                </field>
+                <field name="Itemid" type="text"
+                       label="Menu Item ID" description="Menu Item ID" default=""/>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

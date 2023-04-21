@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="4" type="plugin" group="system">
+	<name>System - eMundus Waiting Room</name>
+	<creationDate>11 May 2022</creationDate>
+	<version>2.0.0</version>
+	<author>eMundus</author>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<authorUrl>http://www.emundus.fr</authorUrl>
+	<copyright>(C) 2017-2022 EMUNDUS SOFTWARE. All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<description>Provides control on max active users sessions</description>
+	<files>
+		<filename>emunduswaitingroom.xml</filename>
+		<filename plugin="emunduswaitingroom">emunduswaitingroom.php</filename>
+		<filename>index.html</filename>
+		<folder>language</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">en-GB.emunduswaitingroom.ini</language>
+		<language tag="en-GB">en-GB.emunduswaitingroom.sys.ini</language>
+		<language tag="fr-FR">fr-FR.plg_emunduswaitingroom.ini</language>
+		<language tag="fr-FR">fr-FR.plg_emunduswaitingroom.sys.ini</language>
+	</languages>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="force_redirect" type="radio" size="5" default="1" label="Force redirect" description="Force the redirection to the waiting page URL. If no, then display a message.">
+					<option value="1">JENABLED</option>
+					<option value="0">JDISABLED</option>
+				</field>
+				<field name="redirection_url" type="text" size="5" default="waiting-room.html" label="Waiting page URL" description="The URL for the waiting room page, you can put a JText tag here for SEF URls that are translated."/>
+				<field name="message_displayed" type="text" size="5" default="PLG_EMUNDUSWAITINGROOM_MAX_SESSIONS_REACHED" label="Message displayed if Force redirection is set to No" description="Display a warning message if max session is reached."/>
+				<field name="max_sessions" type="text" size="5" default="5000" label="Max activated sessions" description="The number of max activated sessions allowed."/>
+				<field name="ips_allowed" type="text" size="5" default="" label="IPs to exclude of waiting room" description=""/>
+				<field name="strings_allowed"
+					   type="subform"
+					   label="No redirection if URL contains"
+					   description="If one of these strings is found in an URL, the request will ignore the waiting room."
+					   multiple="true"
+					   min="1"
+					   layout="joomla.form.field.subform.repeatable-table"
+				>
+					<form>
+						<field name="string_allowed_text"
+							   type="text"
+							   label="String" description="String to exclude from waiting room redirection"
+						/>
+					</form>
+				</field>
+			</fieldset>
+		</fields>
+	</config>
+</extension>

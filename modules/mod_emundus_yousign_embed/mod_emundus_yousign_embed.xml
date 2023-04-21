@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension
+        type="module"
+        version="4.2.9"
+        client="site"
+        method="upgrade">
+    <name>eMundus - YouSign embed</name>
+    <author>Hugo Moracchini</author>
+    <creationDate>November 2020</creationDate>
+    <copyright>Copyright (C) 2020 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>hugo.moracchini@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <description>Displays the iFrame for the user to sign his YouSign document.</description>
+    <files>
+        <filename>mod_emundus_yousign_embed.xml</filename>
+        <filename module="mod_emundus_yousign_embed">mod_emundus_yousign_embed.php</filename>
+        <folder>tmpl</folder>
+        <filename>index.html</filename>
+    </files>
+    <help key="EMUNDUS_SITE"/>
+    <config>
+        <fields name="params">
+            <fieldset name="standard" label="Settings">
+                <field name="signature_ui" type="text" size="5" label="Signature UI ID"
+                       description="For custom iFrame styling, provide signature UI ID here."/>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

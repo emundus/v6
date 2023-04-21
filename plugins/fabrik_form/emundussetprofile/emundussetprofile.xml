@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_form" method="upgrade" type="plugin" version="4">
+	<name>eMundus - Set profile</name>
+	<author>Hugo Moracchini</author>
+	<creationDate>December 2018</creationDate>
+	<copyright>Copyright (C) 2018 eMundus.fr - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>hugo.moracchini@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<help url="PLG_FORM_EMUNDUSSETPROFILE_HELP_SERVER"/>
+	<description>PLG_FORM_EMUNDUSSETPROFILE_DESCRIPTION</description>
+	<files>
+		<filename plugin="emundussetprofile">emundussetprofile.php</filename>
+		<filename>index.html</filename>
+		<folder>forms</folder>
+		<folder>language</folder>
+	</files>
+</extension>

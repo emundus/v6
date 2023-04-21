@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_form" method="upgrade" type="plugin" version="4">
+	<name>PLG_FABRIK_FORM_EMUNDUSCAMPAIGN</name>
+	<author>Hugo Moracchini</author>
+	<creationDate>May 2018</creationDate>
+	<copyright>Copyright (C) 2017-2018 eMundus.fr - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>hugo.moracchini@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<description>PLG_FABRIK_FORM_EMUNDUSCAMPAIGN_DESCRIPTION</description>
+	<files>
+		<filename>emunduscampaign.xml</filename>
+		<filename plugin="emunduscampaign">emunduscampaign.php</filename>
+		<filename>index.html</filename>
+		<folder>forms</folder>
+		<folder>language</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">en-GB.plg_fabrik_form_emunduscampaign.ini</language>
+		<language tag="en-GB">en-GB.plg_fabrik_form_emunduscampaign.sys.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_form_emunduscampaign.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_form_emunduscampaign.sys.ini</language>
+	</languages>
+</extension>

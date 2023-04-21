@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-form-emundusassigntoevaluator" label="PLG_FABRIK_FORM_EMUNDUS_ASSIGNTOEVALUATOR_FIELDS">
+			<field  name="fabrik_elt" 
+					type="textarea" 
+					default="" 
+					placeholder="E.g. my_column1___table_name"
+					description="PLG_FABRIK_FORM_EMUNDUS_ASSIGNTOEVALUATOR_FABRIK_ELT_DESC"
+					label="PLG_FABRIK_FORM_EMUNDUS_ASSIGNTOEVALUATOR_FABRIK_ELT_LABEL"
+					repeat="true"
+					size="30" />
+
+			<field name="reset"
+				type="radio"
+				class="btn-group"
+				repeat="true"
+				default="0"
+				description="PLG_FABRIK_FORM_EMUNDUS_ASSIGNTOEVALUATOR_RESET_DESC"
+				label="PLG_FABRIK_FORM_EMUNDUS_ASSIGNTOEVALUATOR_RESET_LABEL">
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+			</field>
+			
+			<field name="help"
+			       type="spacer"
+			       label="PLG_FABRIK_FORM_EMUNDUS_ASSIGNTOEVALUATOR_HELP_LABEL"/>
+					
+		</fieldset>
+	</fields>
+</form>

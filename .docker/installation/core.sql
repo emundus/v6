@@ -2320,7 +2320,22 @@ CREATE TABLE `jos_viewlevels` (
 
 LOCK TABLES `jos_viewlevels` WRITE;
 /*!40000 ALTER TABLE `jos_viewlevels` DISABLE KEYS */;
-INSERT INTO `jos_viewlevels` VALUES (1,'Public',0,'[1]'),(2,'Registered',2,'[6,2,8]'),(3,'Special',3,'[6,3,8]'),(5,'Guest',1,'[9]'),(6,'Super Users',4,'[8]');
+INSERT INTO `jos_viewlevels` (id, title, ordering, rules)
+VALUES  (1, 'Public', 0, '[1]'),
+        (2, 'Registered', 1, '[2,11,6]'),
+        (3, 'Special', 2, '[6,7,8]'),
+        (4, 'Applicant', 0, '[26,2,11,18]'),
+        (5, 'Evaluator', 0, '[13,14,6,7]'),
+        (6, 'Partner', 0, '[3,4,13,14,6,7,15,8]'),
+        (7, 'Coordinator', 0, '[6,7,8]'),
+        (8, 'Administrator', 0, '[8]'),
+        (9, 'Guest', 0, '[9]'),
+        (10, 'Nobody', 0, '[10]'),
+        (11, 'Forms', 0, '[2,11,3,4,5,13,14,6,7,15,8]'),
+        (12, 'Expert', 0, '[]'),
+        (17, 'Responsable de programme', 0, '[20,7]'),
+        (24, 'Menu-accueil', 0, '[9,2]');
+
 /*!40000 ALTER TABLE `jos_viewlevels` ENABLE KEYS */;
 UNLOCK TABLES;
 

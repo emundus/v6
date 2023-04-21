@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension
+        group="emundus"
+        method="upgrade"
+        type="plugin"
+        version="4.2.9">
+    <name>generate_opi_by_status</name>
+    <author>Duy Tran</author>
+    <creationDate>Octobre 2021</creationDate>
+    <copyright>(C) 2010-2020 EMUNDUS SOFTWARE. All rights reserved.</copyright>
+    <license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+    <authorEmail>duy.tran@emundus.fr</authorEmail>
+    <authorUrl>https://www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <description>eMundus Generate OPI Code by status - used to create OPI from status</description>
+    <files>
+        <filename>index.html</filename>
+        <filename>generate_opi_by_status.xml</filename>
+        <filename plugin="generate_opi_by_status">generate_opi_by_status.php</filename>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="opi_status_step" type="field" label="Status *" description="Status to defined when the OPI code has to been generated" />
+                <field name="opi_prefix" type="field" default="EM" label="Prefixe de OPI *" description="OPI Code prefix (e.g: EM1)" />
+            </fieldset>
+        </fields>
+    </config>
+</extension>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="library" method="upgrade" version="4">
+	<name>eMundus library</name>
+	<libraryname>emundus</libraryname>
+    <author>eMundus</author>
+    <creationDate>April 2023</creationDate>
+    <copyright>Copyright (C) 2015-2023 eMundus - All rights reserved.</copyright>
+    <license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<version>2.0.0</version>
+	<description>eMundus - Library files</description>
+	<files>
+        <folder>attachment_classification</folder>
+        <folder>font</folder>
+        <folder>selectize</folder>
+        <folder>sql</folder>
+        <folder>sumoselect</folder>
+        <folder>tcpdf</folder>
+        <file>composer.json</file>
+        <file>composer.lock</file>
+        <file>composer.phar</file>
+        <file>email.class.php</file>
+        <file>emundus.xml</file>
+        <file>fpdf.php</file>
+        <file>fpdi.php</file>
+        <file>MYPDF.php</file>
+        <file>pdf.php</file>
+        <file>pdf_admission.php</file>
+        <file>pdf_communs.php</file>
+        <file>pdf_covoiturage.php</file>
+        <file>pdf_decision.php</file>
+        <file>pdf_emploi.php</file>
+        <file>pdf_evaluation.php</file>
+        <file>pdf_evaluationpiu.php</file>
+        <file>pdf_evaluationrin50.php</file>
+        <file>pdf_evaluationrin100.php</file>
+        <file>pdf_glisse-urbaine.php</file>
+        <file>pdf_interview.php</file>
+        <file>pdf_mobin.php</file>
+        <file>pdf_thesis.php</file>
+        <file>phpunit.phar</file>
+        <file>update-db.sh</file>
+        <file>vanilla-dumper.sh</file>
+        <file>zip.php</file>
+        <file>emundus.xml</file>
+	</files>
+</extension>

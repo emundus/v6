@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="4" method="upgrade">
+	<name>com_emundus</name>
+	<creationDate>2023-03-31</creationDate>
+	<author>eMundus</author>
+	<authorUrl>https://emundus.fr</authorUrl>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<copyright>Copyright (C) 2005-2023 eMundus - All rights reserved.</copyright>
+	<license>GNU, GPLv3</license>
+	<version>2.0.0</version>
+	<description><![CDATA[COM_TCHOOZ_COMPONENT_DESCRIPTION]]></description>
+
+	<scriptfile>com_emundus.manifest.class.php</scriptfile>
+
+	<files folder="site">
+		<folder>assets</folder>
+		<folder>classes</folder>
+		<folder>contentelements</folder>
+		<folder>controllers</folder>
+		<folder>data</folder>
+		<folder>helpers</folder>
+		<folder>language</folder>
+		<folder>models</folder>
+		<folder>public</folder>
+		<folder>src</folder>
+		<folder>tests</folder>
+		<folder>unittest</folder>
+		<folder>views</folder>
+		<file>babel.config.js</file>
+		<file>controller.php</file>
+		<file>emundus.php</file>
+		<file>index.html</file>
+		<file>package.json</file>
+		<file>README.md</file>
+		<file>router.php</file>
+		<file>vue.config.js</file>
+	</files>
+
+	<media folder="media" destination="com_tchooz">
+		<folder>com_emundus/css</folder>
+		<folder>com_emundus/images</folder>
+		<folder>com_emundus/js</folder>
+		<folder>com_emundus/lib</folder>
+		<folder>com_emundus/tinymce</folder>
+		<file>com_emundus/fullcalendar.min.js</file>
+		<file>com_emundus/index.html</file>
+	</media>
+
+	<administration>
+		<menu view="panel">Tchooz</menu>
+		<submenu>
+			<menu alt="Home" link="option=com_emundus&amp;view=panel" view="panel">Home</menu>
+			<menu alt="Webhook" link="option=com_emundus&amp;view=webhook" view="webhook">Webhook</menu>
+			<menu alt="Modules" link="option=com_emundus&amp;view=modules" view="webhook">Modules</menu>
+			<menu alt="Samples" link="option=com_emundus&amp;view=samples" view="samples">Samples</menu>
+		</submenu>
+
+		<languages folder="admin">
+			<language tag="fr-FR">language/fr-FR/fr-FR.com_emundus.ini</language>
+			<language tag="fr-FR">language/fr-FR/fr-FR.com_emundus.sys.ini</language>
+			<language tag="en-GB">language/en-GB/en-GB.com_emundus.ini</language>
+			<language tag="en-GB">language/en-GB/en-GB.com_emundus.sys.ini</language>
+		</languages>
+
+		<files folder="admin">
+			<folder>assets</folder>
+			<folder>controllers</folder>
+			<folder>elements</folder>
+			<folder>help</folder>
+			<folder>helpers</folder>
+			<folder>language</folder>
+			<folder>models</folder>
+			<folder>sql</folder>
+			<folder>tables</folder>
+			<folder>views</folder>
+			<file>access.xml</file>
+			<file>config.xml</file>
+			<file>controller.php</file>
+			<file>emundus.php</file>
+			<file>index.html</file>
+			<file>logo.png</file>
+			<file>script.com_emundus.php</file>
+			<file>toolbar.emundus.php</file>
+		</files>
+	</administration>
+
+	<install>
+		<sql>
+			<file charset="utf8" driver="mysqli">sql/install.mysqli.uft8.sql</file>
+		</sql>
+	</install>
+
+	<uninstall>
+		<sql>
+			<file charset="utf8" driver="mysqli">sql/uninstall.mysqli.uft8.sql</file>
+		</sql>
+	</uninstall>
+</extension>

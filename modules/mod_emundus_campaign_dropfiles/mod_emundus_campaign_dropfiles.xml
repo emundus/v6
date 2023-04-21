@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<extension
+        type="module"
+        version="4.2.9"
+        client="site"
+        method="upgrade">
+    <name>eMundus Campaign Dropfiles</name>
+    <author>eMundus</author>
+    <creationDate>JULY 2020</creationDate>
+    <copyright>Copyright (C) 2020 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <description>Besoin impératif du composant dropfile. Fonctionne avec le plugin emundus setup_category. Il permet de
+        mettre à disposition les fichiers à télécharger pour la campagne sélectionnée.
+    </description>
+    <files>
+        <filename>helper.php</filename>
+        <filename>mod_emundus_campaign_dropfiles.xml</filename>
+        <filename module="mod_emundus_campaign_dropfiles">mod_emundus_campaign_dropfiles.php</filename>
+        <filename>index.html</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+        <folder>style</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.mod_emundus_campaign_dropfiles.ini</language>
+        <language tag="en-GB">en-GB.mod_emundus_campaign_dropfiles.sys.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_campaign_dropfiles.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_campaign_dropfiles.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic" addfieldpath="/modules/mod_emundus_campaign_dropfiles/tmpl">
+                <field type="text" name="mod_em_dropfile_column" label="MOD_EM_CAMPAIGN_DROPFILE_COLUMN"
+                       description="MOD_EM_CAMPAIGN_DROPFILE_COLUMN" default=""/>
+                <field type="text" name="mod_em_dropfile_desc" label="MOD_EM_CAMPAIGN_DROPFILE_DESC"
+                       description="MOD_EM_CAMPAIGN_DROPFILE_DESC_DESC" default=""/>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

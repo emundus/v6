@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension
+        group="fabrik_cron"
+        method="upgrade"
+        type="plugin"
+        version="4.2.9">
+    <name>plg_fabrik_cron_emundusehespsiscole</name>
+    <author>Retord Benjamin</author>
+    <creationDate>December 2020</creationDate>
+    <copyright>Copyright (C) 2015 emundus.fr - All rights reserved.</copyright>
+    <license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+    <authorEmail>benjamin.retord@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <help url="PLG_FABRIK_CRON_EMAIL_HELP_SERVER"/>
+    <description>PLG_FABRIK_CRON_EMUNDUSEHESPSISCOLE_DESCRIPTION</description>
+    <files>
+        <filename>index.html</filename>
+        <filename>emundusehespsiscole.xml</filename>
+        <filename plugin="emundusehespsiscole">emundusehespsiscole.php</filename>
+        <folder>forms</folder>
+        <folder>language</folder>
+    </files>
+</extension>

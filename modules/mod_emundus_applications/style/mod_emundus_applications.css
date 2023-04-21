@@ -1,0 +1,432 @@
+button.save-btn, .btn-success, button.save, button.save_continue, button.send, a.btn-attach, #trombi_preview, #trombi_generate,
+.indicateurs-page .btn, .fabrik_filter_submit, button.importation, a.btn-warning, a.btn-info, .header-right .btn-danger, button.btn-primary,
+.em-generated-docs .em-doc-zip, .xclsform .panel-body button#savefilter, .modal-dialog #chargement a.btn, a#em-doc-zip,
+.btn.advanced-search-apply, .toggle-addoption.btn, .candidacy-files-list a#send, .choice-statut-btn {
+    text-shadow: none;
+    text-transform: none;
+    max-height: 38px;
+}
+
+.btn-success:active:hover, .btn-warning:active:hover, .btn-danger:active:hover  {
+    background-color: transparent !important;
+}
+
+
+
+button.save-btn:hover, button.save-btn:active, button.save-btn:focus,
+.btn-success:hover, .btn-success:focus, .btn-success:active,
+button.save:hover, button.save:active, button.save:focus,
+button.save_continue:hover, button.save_continue:active, button.save_continue:focus,
+button.send:hover, button.send:active, button.send:focus,
+a.btn-attach:hover, a.btn-attach:active, a.btn-attach:focus,
+#trombi_preview:hover, #trombi_preview:active, #trombi_preview:focus,
+#trombi_generate:hover, #trombi_generate:active, #trombi_generate:focus,
+.indicateurs-page .btn:hover, .indicateurs-page .btn:active, .indicateurs-page .btn:focus,
+.fabrik_filter_submit:hover, .fabrik_filter_submit:active, .fabrik_filter_submit:focus,
+button.importation:hover, button.importation:active, button.importation:focus,
+a.btn-warning:hover, a.btn-warning:active, a.btn-warning:focus,
+a.btn-info:hover, a.btn-info:active, a.btn-info:focus,
+.header-right .btn-danger:hover, .header-right .btn-danger:focus, .header-right .btn-danger:active,
+button.btn-primary:hover, button.btn-primary:active, button.btn-primary:focus,
+.em-generated-docs .em-doc-zip:hover, .em-generated-docs .em-doc-zip:active, .em-generated-docs .em-doc-zip:focus,
+.xclsform .panel-body button#savefilter:hover, .xclsform .panel-body button#savefilter:active, .xclsform .panel-body button#savefilter:focus,
+.modal-dialog #chargement a.btn:hover, .modal-dialog #chargement a.btn:active, .modal-dialog #chargement a.btn:focus,
+a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
+.btn.advanced-search-apply:hover, .btn.advanced-search-apply:active, .btn.advanced-search-apply:focus,
+.toggle-addoption.btn:hover, .toggle-addoption.btn:active, .toggle-addoption.btn:focus,
+.candidacy-files-list a#send:hover, .candidacy-files-list a#send:active, .candidacy-files-list a#send:focus,
+.choice-statut-btn:hover, .choice-statut-btn:active, .choice-statut-btn:focus {
+    background-color: transparent;
+    outline: none;
+}
+
+button.goback-btn, .btn-danger, .pull-right .btn:not(.dropdown-toggle), .below-content a, #member-profile .controls a, .toggle-editor .btn,
+.xclsform .panel-body button#delfilter, button#back, .btn.advanced-search-clearall, .emails-setup-page .form-actions button:not(.save),
+.documents-type-candidacy-page .fabrikDetails .btn, .fabrikUploadDelete .btn, #em_select_filter #del-filter, .btn-toolbar .btn-group:nth-child(2) .btn {
+    text-shadow: none;
+    text-transform: none;
+}
+button.goback-btn:hover, button.goback-btn:active, button.goback-btn:focus,
+.btn-danger:hover, .btn-danger:active, .btn-danger:focus,
+.pull-right .btn:not(.dropdown-toggle):hover, .pull-right .btn:not(.dropdown-toggle):focus, .pull-right .btn:not(.dropdown-toggle):active,
+.below-content a:hover, .below-content a:active, .below-content a:focus,
+#member-profile .controls a:hover, #member-profile .controls a:active, #member-profile .controls a:focus,
+.toggle-editor .btn:hover, .toggle-editor .btn:active, .toggle-editor .btn:focus,
+.xclsform .panel-body button#delfilter:hover, .xclsform .panel-body button#delfilter:active, .xclsform .panel-body button#delfilter:focus,
+button#back:hover, button#back:active, button#back:focus,
+.btn.advanced-search-clearall:hover, .btn.advanced-search-clearall:active, .btn.advanced-search-clearall:focus,
+.emails-setup-page .form-actions button:not(.save):hover, .emails-setup-page .form-actions button:not(.save):active, .emails-setup-page .form-actions button:not(.save):focus,
+.documents-type-candidacy-page .fabrikDetails .btn:hover, .documents-type-candidacy-page .fabrikDetails .btn:active, .documents-type-candidacy-page .fabrikDetails .btn:focus,
+.fabrikUploadDelete .btn:hover, .fabrikUploadDelete .btn:active, .fabrikUploadDelete .btn:focus,
+#em_select_filter #del-filter:hover, #em_select_filter #del-filter:active, #em_select_filter #del-filter:focus,
+.btn-toolbar .btn-group:nth-child(2) .btn:hover, .btn-toolbar .btn-group:nth-child(2) .btn:active, .btn-toolbar .btn-group:nth-child(2) .btn:focus {
+    background-color: transparent;
+    outline: none;
+}
+
+    /* Accueil Dossiers */
+.main-page-application-title {
+    font-size: 20px;
+    width:55%;
+}
+
+    /*******************Mes dossiers de candidature*****************/
+
+.main-page-file-info p {
+    padding-bottom: 10px;
+}
+
+.select {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 0;
+    width: 100%;
+}
+
+.blog-featuredhomepage a:hover {
+    text-decoration: underline;
+}
+
+.navsearch-content .form-control,
+.navsearch-content button {
+    margin-bottom: 0 !important;
+}
+
+.navsearch-content button {
+    border-radius: 0 0 0 0 !important;
+}
+
+.navsearch-content .form-control {
+    border-radius: 0 0 0 0 !important;
+    padding: 8px 12px;
+    height: 33px !important;
+}
+
+.navsearch-content input[type="text"]:focus,
+.navsearch-content input[type="text"]:hover {
+    border-color: #d5d5d5;
+    box-shadow: none;
+}
+
+.main-page-file-progress {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: -30px;
+}
+
+.forget-mdp {
+    margin-top: 5px;
+    display: block;
+}
+
+.forget-mdp:hover {
+    text-decoration: underline;
+}
+
+.campaigntext.blue h4 a {
+    color: #292929;
+}
+
+.homepage .candidacy-files-list .icon-plus-sign {
+    width: auto !important;
+}
+
+.homepage .candidacy-files-list .btn i {
+    display: inline !important;
+}
+
+.candidacy-files-list .col-xs-6:nth-child(2) a {
+    margin: 5px 0 !important;
+}
+
+.homepage #g-main-mainbody #content-bottom-a .platform-content i.icon-print, .homepage #g-main-mainbody #content-bottom-a .platform-content i.icon-trash {
+    padding-left: 2px;
+}
+
+.list-group .col-xs-6.col-md-4 a {
+    margin-bottom: 2px;
+}
+
+a.btn.btn-success:not(.btn-xs) {
+    width: 100%;
+    text-align: center;
+    border-radius: var(--applicant-border-radius) !important;
+}
+
+/*** Progression bar percentage ***/
+.main-page-file-progress text.timer {
+    color: #000 !important;
+    font-size: 30px !important;
+    font-weight: 600;
+    fill: #000 !important;
+}
+.g-block.size-100.content-bottom-a hr:last-child {
+    display: none !important;
+}
+.main-page-file-progress .svg-container{
+    width: 100px;
+}
+@media all and (max-width: 479px) {
+    .main-page-file-info a {
+        margin-bottom: 4px;
+    }
+
+    .view-featured .candidacy-files-list .row {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .mod_emundus_applications___content .row{
+        max-width: 330px;
+    }
+
+    .view-featured .candidacy-files-list .row .main-page-application-title  {
+        align-self: flex-start;
+        text-align: left;
+    }
+
+    .view-featured .candidacy-files-list .row .main-page-file-info {
+        text-align: left;
+    }
+
+}
+
+@media all and (min-width: 480px) and (max-width: 767px) {
+    .main-page-file-info a {
+        margin-bottom: 4px;
+    }
+
+    .view-featured .candidacy-files-list .row {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
+@media all and (min-width: 768px) and (max-width: 959px) {
+    .view-featured .candidacy-files-list .row .main-page-application-title {
+        width: 100%;
+    }
+
+    .view-featured .candidacy-files-list .row .main-page-file-info {
+        width: 100%;
+    }
+}
+
+@media all and (min-width: 768px) and (max-width: 992px) {
+    .view-featured .candidacy-files-list .row {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+}
+
+@media screen and (max-width: 991px) {
+    .main-page-file-info {
+        width: auto;
+    }
+
+    .main-page-file-progress {
+        width: 100%;
+        margin-top: 10px;
+    }
+}
+
+@media screen and (max-width: 958px) {
+
+    .candidacy-files-list .btn-warning {
+        z-index: 5;
+        position: relative;
+    }
+
+    .candidacy-files-list .main-page-file-progress {
+        top: 40px;
+        padding-bottom: 40px;
+    }
+}
+
+@media all and (max-width: 959px) {
+    .main-page-application-title {
+        text-align: center;
+    }
+
+    .main-page-file-progress {
+        margin-top: 0;
+    }
+
+    .main-page-file-info {
+        text-align: center;
+    }
+
+    .view-featured .candidacy-files-list .row .col-md-4 {
+        text-align: center;
+    }
+    .view-featured .candidacy-files-list .row .col-md-4:nth-child(3) {
+        display: inline-flex;
+        align-items: center;
+    }
+}
+
+
+.mod_emundus_applications___header{
+    max-width: 720px;
+    width: 100%;
+}
+
+.mod_emundus_applications___header #add-application {
+    width: 40%;
+}
+
+.mod_emundus_applications___footer {
+    max-width: 720px;
+    width: 100%;
+}
+
+.mod_emundus_applications___footer a.btn.btn-success:not(.btn-xs){
+    width: 40%;
+    margin-bottom: 24px;
+}
+
+.mod_emundus_applications___header p.em-h3 {
+ font-family: var(--applicant-title-font);
+ color: var(--em-applicant-title-color);
+margin-top: 16px;
+}
+
+.mod_emundus_applications___header_desc h2 {
+    margin-top: 24px;
+    font-family: var(--applicant-title-font);
+}
+
+.mod_emundus_applications___header_desc p{
+    color: #727272;
+}
+
+.mod_emundus_applications___content{
+    display: grid;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 32px;
+    grid-template-columns: repeat(2,1fr);
+}
+.mod_emundus_applications___content_app{
+    box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+    border-radius: 16px !important;
+    padding: 32px;
+    height: auto;
+    background: #fff;
+}
+.mod_emundus_applications___date{
+    display: flex;
+    align-items: center;
+}
+.mod_emundus_applications___informations{
+    display: grid;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 16px;
+    grid-template-columns: repeat(2,1fr);
+}
+
+.mod_emundus_applications___circle{
+    height: 8px;
+    width: 8px;
+    border-radius: 50%;
+}
+.mod_emundus_applications___programme_tag{
+    border-radius: 8px;
+    padding: 5px 12px;
+    width: fit-content;
+    font-size: 12px;
+    font-weight: 600;
+}
+.mod_emundus_applications___title{
+    margin-bottom: 8px !important;
+    color: var(--em-applicant-title-color) !important;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    max-height: 48px;
+    display: -webkit-box;
+    line-height: 140%;
+    min-height: 50px;
+    font-family: var(--applicant-title-font) !important;
+}
+
+.mod_emundus_applications___title:hover,
+.mod_emundus_applications___title:focus {
+    text-decoration: none;
+}
+
+.mod_emundus_applications__actions{
+    margin-top: 8px;
+    flex-direction: column;
+    box-shadow: 0px 12px 17px rgba(5, 47, 55, 0.07), 0px 5px 22px rgba(5, 47, 55, 0.06), 0px 7px 8px rgba(5, 47, 55, 0.1);
+    border-radius: 8px;
+    padding: 24px;
+    position: absolute;
+    background: white;
+}
+.mod_emundus_applications__actions a:not(:last-child){
+    margin-bottom: 20px;
+}
+
+.mod_emundus_applications__actions a:hover {
+    color: #727272;
+    text-decoration: none;
+}
+
+.mod_emundus_applications__list_content--default {
+    box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+    border-radius: 16px !important;
+    padding: 32px;
+    background: #fff;
+}
+
+.mod_emundus_applications___content_text {
+    justify-content: space-between;
+}
+
+@media screen and (max-width: 767px) {
+    .mod_emundus_applications___header #add-application {
+        width: 100% !important;
+    }
+
+    .mod_emundus_applications___footer a.btn.btn-success:not(.btn-xs){
+        width: 100%;
+    }
+
+
+    span.material-icons-outlined {
+       flex-basis: auto !important;
+    }
+
+    .em-font-size-16 {
+        flex-basis: auto !important;
+    }
+
+    .view-featured .candidacy-files-list .row {
+        align-items: flex-start;
+    }
+
+    .mod_emundus_applications___content {
+        grid-template-columns: repeat(1,1fr);
+    }
+
+    .mod_emundus_applications___content_text {
+        justify-content: flex-start;
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 959px) {
+
+    .view-featured .candidacy-files-list .row {
+        align-items: flex-start;
+    }
+
+}

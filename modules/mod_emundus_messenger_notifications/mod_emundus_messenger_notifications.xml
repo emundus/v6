@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension
+        type="module"
+        version="4.2.9"
+        client="site"
+        method="upgrade">
+    <name>MOD_EMUNDUS_MESSENGER_NOTIFICATIONS_XML</name>
+    <author>HUBINET Brice</author>
+    <creationDate>2021 June</creationDate>
+    <copyright>Copyright (C) 2015 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>brice.hubinet@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <description>MOD_EMUNDUS_MESSENGER_NOTIFICATIONS_XML_DESC</description>
+    <files>
+        <filename>babel.config.js</filename>
+        <filename>mod_emundus_messenger_notifications.xml</filename>
+        <filename module="mod_emundus_messenger_notifications">mod_emundus_messenger_notifications.php</filename>
+        <filename>index.html</filename>
+        <filename>package.json</filename>
+        <filename>package-lock.json</filename>
+        <filename>vue.config.js</filename>
+        <filename>yarn.lock</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+        <folder>public</folder>
+        <folder>src</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.mod_emundus_messenger_notifications.ini</language>
+        <language tag="en-GB">en-GB.mod_emundus_messenger_notifications.sys.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_messenger_notifications.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_messenger_notifications.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+        </fields>
+    </config>
+</extension>

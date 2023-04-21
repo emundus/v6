@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-form-emundusassigntogroup" label="PLG_FABRIK_FORM_EMUNDUS_ASSIGNTOGROUP_FIELDS">
+			<field  name="fabrik_elt" 
+					type="textarea" 
+					default="" 
+					placeholder="E.g. my_column1___table_name"
+					description="PLG_FABRIK_FORM_EMUNDUS_ASSIGNTOGROUP_FABRIK_ELT_DESC" 
+					label="PLG_FABRIK_FORM_EMUNDUS_ASSIGNTOGROUP_FABRIK_ELT_LABEL" 
+					repeat="true"
+					size="30" />
+					
+			<field 	name="value" 
+					type="textarea" 
+					default="" 
+					placeholder="E.g. val1,val2,val3"
+					description="PLG_FABRIK_FORM_EMUNDUS_ASSIGNTOGROUP_VALUE_DESC" 
+					label="PLG_FABRIK_FORM_EMUNDUS_ASSIGNTOGROUP_VALUE_LABEL" 
+					repeat="true"
+					size="30" />
+					
+			<field  name="group_id" 
+					type="textarea" 
+					default="" 
+					placeholder="E.g. 33,34,35"
+					description="PLG_FABRIK_FORM_EMUNDUS_ASSIGNTOGROUP_GROUP_DESC" 
+					label="PLG_FABRIK_FORM_EMUNDUS_ASSIGNTOGROUP_GROUP_LABEL" 
+					repeat="true"
+					size="30" />
+					
+			<field name="reset"
+				type="radio"
+				class="btn-group"
+				repeat="true"
+				default="0"
+				description="PLG_FABRIK_FORM_EMUNDUS_ASSIGNTOGROUP_RESET_DESC"
+				label="PLG_FABRIK_FORM_EMUNDUS_ASSIGNTOGROUP_RESET_LABEL">
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+			</field>
+			
+			<field name="help"
+			       type="spacer"
+			       label="PLG_FABRIK_FORM_EMUNDUS_ASSIGNTOGROUP_HELP_LABEL"/>
+					
+		</fieldset>
+	</fields>
+</form>

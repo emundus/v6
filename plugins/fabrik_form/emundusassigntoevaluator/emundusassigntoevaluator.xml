@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension
+		group="fabrik_form"
+		method="upgrade"
+		type="plugin"
+		version="4">
+	<name>eMundus - Assign to evaluator</name>
+	<author>Benjamin Retord</author>
+	<creationDate>June 2020</creationDate>
+	<copyright>Copyright (C) 2020 eMundus.fr - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>benjamin.retord@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<help url="PLG_FORM_EMUNDUS_ASSIGNTOEVALUATOR_HELP_SERVER"/>
+	<description>PLG_FABRIK_FORM_EMUNDUS_ASSIGNTOEVALUATOR_DESCRIPTION</description>
+	<files>
+		<filename>emundusassigntoevaluator.xml</filename>
+		<filename plugin="emundusassigntoevaluator">emundusassigntoevaluator.php</filename>
+		<filename>index.html</filename>
+		<folder>forms</folder>
+		<folder>language</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">en-GB.plg_fabrik_form_emundusassigntoevaluator.ini</language>
+		<language tag="en-GB">en-GB.plg_fabrik_form_emundusassigntoevaluator.sys.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_form_emundusassigntoevaluator.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_form_emundusassigntoevaluator.sys.ini</language>
+	</languages>
+</extension>

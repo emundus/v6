@@ -1,0 +1,71 @@
+#mod_emundus_help .popover {
+    font-family: unset !important;
+    position: fixed !important;
+    padding: 0;
+    margin-top: 0 !important;
+}
+
+#mod_emundus_help .popover.top{
+    left: 25px !important;
+}
+
+#mod_emundus_help .popover-content{
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+    padding: 0;
+}
+
+#mod_emundus_help .popover-content .material-icons{
+    font-size: 18px !important;
+}
+
+#mod_emundus_help hr{
+    margin: 0;
+}
+
+#mod_emundus_help .popover-content a{
+    display: flex;
+    align-items: center;
+    justify-content: start;
+}
+
+#mod_emundus_help .popover-content a .material-icons{
+    padding: 0 8px 0 0;
+}
+
+#mod_emundus_help .popover-content a:hover{
+    background-color: #E3E5E8;
+    cursor: pointer;
+    text-decoration: unset;
+}
+
+#mod_emundus_help .popover-content a:focus{
+    text-decoration: unset;
+}
+
+#mod_emundus_help .popover-content a, #mod_emundus_help .popover-content span{
+    padding: 8px 12px;
+    color: black;
+}
+
+#mod_emundus_help .arrow {
+    display: none !important;
+}
+
+#mod_emundus_help .mod_emundus_help__popover{
+    z-index: 20;
+    position: fixed;
+    left: 25px;
+    bottom: 70px;
+    cursor: pointer;
+}
+
+.mod_emundus_help__popover .material-icons{
+    font-size: 24px !important;
+    color: rgb(94, 100, 110);
+}
+
+.mod_emundus_help__popover .material-icons:hover{
+    color: #2B313B !important;
+}

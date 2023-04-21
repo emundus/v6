@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="4" type="plugin" group="user">
+	<name>plg_user_emundus_univ_poitiers</name>
+	<author>eMundus</author>
+	<creationDate>December 2015</creationDate>
+	<copyright>(C) 2005 - 2009 Open Source Matters. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<description>PLG_USER_EMUNDUS_UNIV_POITIERS_XML_DESCRIPTION</description>
+	<files>
+		<filename>emundus_univ_poitiers.xml</filename>
+		<filename plugin="emundus_univ_poitiers">emundus_univ_poitiers.php</filename>
+		<filename>index.html</filename>
+	</files>
+</extension>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" version="4" method="upgrade" group="hikashop">
+    <name>eMundus - Hikashop</name>
+    <creationDate>20 November 2019</creationDate>
+    <version>2.0.0</version>
+    <author>James Dean</author>
+    <authorEmail>james@emundus.fr</authorEmail>
+    <authorUrl>https://www.emundus.fr</authorUrl>
+    <copyright>(C) 2010-${year} eMundus SAS. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <description>This plugin will insert and update orders in jos_emundus_hikashop</description>
+    <files>
+        <filename>emundus_hikashop.xml</filename>
+        <filename plugin="emundus_hikashop">emundus_hikashop.php</filename>
+        <folder>language</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.plg_hikashop_emundus_hikashop.ini</language>
+        <language tag="en-GB">en-GB.plg_hikashop_emundus_hikashop.sys.ini</language>
+        <language tag="fr-FR">fr-FR.plg_hikashop_emundus_hikashop.ini</language>
+        <language tag="fr-FR">fr-FR.plg_hikashop_emundus_hikashop.sys.ini</language>
+    </languages>
+</extension>

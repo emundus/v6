@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="4" type="plugin" group="user">
+	<name>plg_user_emundus_su</name>
+	<author>Benjamin Rivalland</author>
+	<creationDate>September 2016</creationDate>
+	<copyright>(C) 2016 eMundus. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>admin@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<description>PLG_USER_EMUNDUS_SU_XML_DESCRIPTION</description>
+	<files>
+		<filename>emundus_su.xml</filename>
+		<filename plugin="emundus_su">emundus_su.php</filename>
+		<filename>index.html</filename>
+	</files>
+</extension>

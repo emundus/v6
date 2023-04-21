@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-form-emundusreferentletter" label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_FIELDS">
+			<field name="url" type="field" default="index.php?option=com_fabrik&amp;c=form&amp;view=form&amp;formid=68&amp;tableid=71" description="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_URL_DESC" label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_URL_LABEL" />
+			<field name="sef_url" type="list" default="false" class="btn-group" description="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_SEF_URL_DESC" label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_SEF_URL">
+				<option value="false">JNO</option>
+				<option value="true">JYES</option>
+			</field>
+			<field name="email_tmpl" type="field" default="referent_letter" description="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_EMAIL_TMPL_DESC" label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_EMAIL_TMPL_LABEL" />
+		</fieldset>
+	</fields>
+</form>

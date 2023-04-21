@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension
+        type="module"
+        version="4.2.9"
+        client="site"
+        method="upgrade">
+    <name>MOD_EMUNDUS_SWITCH_PROFILE_SYS_XML</name>
+    <author>Brice HUBINET</author>
+    <creationDate>April 2022</creationDate>
+    <copyright>Copyright (C) 2022 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>brice.hubinet@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <description>MOD_EMUNDUS_SWITCH_PROFILE_XML_DESCRIPTION</description>
+    <files>
+        <filename>mod_emundus_switch_profile.xml</filename>
+        <filename module="mod_emundus_switch_profile">mod_emundus_switch_profile.php</filename>
+        <folder>tmpl</folder>
+        <filename>index.html</filename>
+        <folder>language</folder>
+        <folder>style</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.mod_emundus_switch_profile.ini</language>
+        <language tag="en-GB">en-GB.mod_emundus_switch_profile.sys.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_switch_profile.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_switch_profile.sys.ini</language>
+    </languages>
+
+    <config>
+        <fields name="params">
+        </fields>
+    </config>
+</extension>

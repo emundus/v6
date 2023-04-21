@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension
+        type="module"
+        version="4.2.9"
+        client="site"
+        method="upgrade">
+    <name>MOD_EMUNDUS_CIFRE_OFFERS_XML</name>
+    <author>Hugo Moracchini</author>
+    <creationDate>August 2018</creationDate>
+    <copyright>Copyright (C) 2018 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>hugo.moracchini@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <description>MOD_EMUNDUS_CIFRE_OFFERS_XML_DESCRIPTION</description>
+    <files>
+        <filename module="mod_emundus_cifre_offers">mod_emundus_cifre_offers.php</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+        <filename>helper.php</filename>
+        <filename>index.html</filename>
+        <filename>mod_emundus_cifre_offers.xml</filename>
+    </files>
+	<languages>
+		<language tag="en-GB">en-GB.mod_emundus_cifre_offers.ini</language>
+		<language tag="en-GB">en-GB.mod_emundus_cifre_offers.sys.ini</language>
+		<language tag="fr-FR">fr-FR.mod_emundus_cifre_offers.ini</language>
+		<language tag="fr-FR">fr-FR.mod_emundus_cifre_offers.sys.ini</language>
+	</languages>
+    <config>
+        <fields name="params">
+        </fields>
+    </config>
+</extension>

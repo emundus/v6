@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension version="4" type="plugin" group="user">
+    <name>eMundus - Registration email</name>
+    <author>Hugo Moracchini</author>
+    <creationDate>December 2018</creationDate>
+    <copyright>eMundus SA 2018</copyright>
+    <license>GPLv2 or later</license>
+    <authorEmail>hugo.moracchini@emundus.fr</authorEmail>
+    <version>2.0.0</version>
+    <description>A plugin which sends an email on new user creation containing a registration link.</description>
+    <files>
+        <filename>emundus_registration_email.xml</filename>
+        <filename plugin="emundus_registration_email">emundus_registration_email.php</filename>
+        <filename>index.html</filename>
+        <folder>language</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.plg_user_emundus_registration_email.ini</language>
+        <language tag="fr-FR">fr-FR.plg_user_emundus_registration_email.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="email" type="field" default="registration_email" label="Email to send" description="The ID or lbl of the email to be sent contaning the registration URL. Put [ACTIVATION_URL] in the email to add the link." />
+                <field name="activation_redirect" default="/connexion" label="Redirect after activation." description="The URL to go to on successful activation." />
+            </fieldset>
+        </fields>
+    </config>
+</extension>

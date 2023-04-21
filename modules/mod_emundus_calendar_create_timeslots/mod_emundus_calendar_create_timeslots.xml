@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<extension
+        type="module"
+        version="4.2.9"
+        client="site"
+        method="upgrade">
+    <name>MOD_EM_CALENDAR_CREATE_TIMESLOTS_XML</name>
+    <author>Hugo Moracchini</author>
+    <creationDate>Febuary 2018</creationDate>
+    <copyright>Copyright (C) 2018 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>hugo@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <description>MOD_EM_CALENDAR_CREATE_TIMESLOTS_XML_DESCRIPTION</description>
+    <files>
+        <filename>mod_emundus_calendar_create_timeslots.xml</filename>
+        <filename module="mod_emundus_calendar_create_timeslots">mod_emundus_calendar_create_timeslots.php</filename>
+        <filename>index.html</filename>
+        <filename>helper.php</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.mod_emundus_calendar_create_timeslots.ini</language>
+        <language tag="en-GB">en-GB.mod_emundus_calendar_create_timeslots.sys.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_calendar_create_timeslots.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_calendar_create_timeslots.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="advanced">
+                <field name="layout" type="modulelayout" label="JFIELD_ALT_LAYOUT_LABEL"
+                       description="JFIELD_ALT_MODULE_LAYOUT_DESC"/>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="4" type="plugin" group="system">
+	<name>System - eMundus Check candidature period</name>
+	<author>eMundus</author>
+	<creationDate>December 2016</creationDate>
+	<copyright>Copyright (C) 2016 eMundus</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<authorEmail>admin@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<description>Provides control on candidature period</description>
+	<files>
+		<filename>emundus_period.xml</filename>
+		<filename plugin="emundus_period">emundus_period.php</filename>
+		<filename>index.html</filename>
+	</files>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="force_redirect" type="radio" size="5" default="1" label="Force redirect" description="Force the redirection to the new file page.">
+					<option value="1">JENABLED</option>
+					<option value="0">JDISABLED</option>
+				</field>
+			</fieldset>
+		</fields>
+	</config>
+</extension>

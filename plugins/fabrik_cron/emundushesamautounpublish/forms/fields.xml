@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-cron-emundushesamautounpublish" label="COM_FABRIK_OPTIONS">
+
+			<field name="reminder_mail_id" type="text" label="PLG_CRON_EMAIL_TEMPLATE" size="30" default="99" />
+			<field name="reminder_deadline" type="text" label="PLG_CRON_DEADLINE_REMIND" size="30" default="2" />
+			<field name="reminder_status" type="text" cols="60" label="PLG_CRON_DEADLINE_STATUS" size="30" default="1" />
+			<field name="unpublish_status" type="text" cols="60" label="PLG_CRON_UNPUBLISH_STATUS" size="30" default="6" />
+
+		</fieldset>
+	</fields>
+</form>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset>
+
+              <field name="id" type="text" default="0" label="COM_EMUNDUS_FORM_LBL_JOB_ID"
+            readonly="true" class="readonly"
+            description="JGLOBAL_FIELD_ID_DESC" /> 
+
+       <field name="date_time" type="timecreated" default="" 
+            label="COM_EMUNDUS_FORM_LBL_JOB_DATE_TIME"
+            description="COM_EMUNDUS_FORM_DESC_JOB_DATE_TIME"  hidden="true" /> 
+
+       <field name="user" type="createdby" default="" 
+            label="COM_EMUNDUS_FORM_LBL_JOB_USER"
+            description="COM_EMUNDUS_FORM_DESC_JOB_USER"  /> 
+
+ <field name="etablissement" type="foreignkey" class="inputbox"
+            label="COM_EMUNDUS_FORM_LBL_JOB_ETABLISSEMENT"
+            description="COM_EMUNDUS_FORM_DESC_JOB_ETABLISSEMENT" input_type="list" table="#__categories" key_field="id" value_field="title"  required="true"  /> 
+
+       <field name="filter_etablissement" type="sql" class="inputbox"
+            onchange="this.form.submit();"
+            query="SELECT 0 AS `id`, '- Please select Etablissement -' AS `title` UNION SELECT `id`, `title` FROM `#__categories`" key_field="id" value_field="title"
+             /> 
+
+       <field name="service" type="text"
+                
+            label="COM_EMUNDUS_FORM_LBL_JOB_SERVICE"
+            description="COM_EMUNDUS_FORM_DESC_JOB_SERVICE" 
+                
+                
+                 required="true"  /> 
+
+       <field name="intitule_poste" type="text"
+                
+            label="COM_EMUNDUS_FORM_LBL_JOB_INTITULE_POSTE"
+            description="COM_EMUNDUS_FORM_DESC_JOB_INTITULE_POSTE" 
+                
+                
+                 required="true"  /> 
+
+       <field name="domaine" type="text"
+                
+            label="COM_EMUNDUS_FORM_LBL_JOB_DOMAINE"
+            description="COM_EMUNDUS_FORM_DESC_JOB_DOMAINE" 
+                
+                
+                 required="true"  /> 
+
+       <field name="nb_poste" type="integer"
+                
+            label="COM_EMUNDUS_FORM_LBL_JOB_NB_POSTE"
+            description="COM_EMUNDUS_FORM_DESC_JOB_NB_POSTE" 
+                 default="1" 
+                
+                 required="true" 
+            first="1"
+            last="20"
+            step="1" /> 
+
+         <field
+        name="published"
+        type="list"
+        label="JSTATUS"
+        description="JFIELD_PUBLISHED_DESC"
+        class="inputbox"
+        size="1"
+        default="1">
+        <option value="1">JPUBLISHED</option>
+        <option value="0">JUNPUBLISHED</option>
+        <option value="2">JARCHIVED</option>
+        <option value="-2">JTRASHED</option>
+    </field> 
+
+ </fieldset> 
+
+ <fieldset 
+                        name="accesscontrol">
+                       <field name="asset_id" type="hidden" filter="unset" />
+                       <field name="rules"
+                            type="rules"
+                            label="JFIELD_RULES_LABEL"
+                            translate_label="false"
+                            filter="rules"
+                            validate="rules"
+                            class="inputbox"
+                            component="com_emundus"
+                            section="job"
+                        />
+
+	</fieldset>
+
+</form>

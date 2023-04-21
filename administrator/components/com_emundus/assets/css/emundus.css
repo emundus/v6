@@ -1,0 +1,38 @@
+.icon-48-jobs {
+      background-image: url(../images/l_jobs.png);
+      padding-left:60px!important;
+}
+
+.icon-48-job {
+      background-image: url(../images/l_jobs.png);
+      padding-left:60px!important;
+}
+
+.em-primary-button {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      padding: 0 16px;
+      border-radius: 4px;
+      border: unset;
+      height: 40px;
+      color: white;
+      background-color: #20835F;
+      border: solid 1px transparent;
+}
+.em-primary-button:hover {
+      background-color: white;
+      color: #20835F;
+      border: 1px solid #20835F;
+      text-decoration: none;
+}
+.em-w-auto{
+      width: auto;
+}
+
+a[target=_blank].em-admin-link:before{
+     content: "";
+}
+

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension
+        type="module"
+        version="4.2.9"
+        client="site"
+        method="upgrade">
+    <name>MOD_EMUNDUS_DASHBOARD_VUE_SYS_XML</name>
+    <author>HUBINET Brice</author>
+    <creationDate>2020 December</creationDate>
+    <copyright>Copyright (C) 2015 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <description>MOD_EMUNDUS_DASHBOARD_VUE_SYS_XML_DESC</description>
+
+    <files>
+        <filename>mod_emundus_dashboard_vue.xml</filename>
+        <filename module="mod_emundus_dashboard_vue">mod_emundus_dashboard_vue.php</filename>
+        <filename>package.json</filename>
+        <filename>package-lock.json</filename>
+        <filename>vue.config.js</filename>
+        <filename>yarn.lock</filename>
+        <filename>jest.config.js</filename>
+        <filename>babel.config.js</filename>
+        <folder>language</folder>
+        <folder>src</folder>
+        <folder>tmpl</folder>
+        <folder>tests</folder>
+        <folder>elements</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.mod_emundus_dashboard_vue.ini</language>
+        <language tag="en-GB">en-GB.mod_emundus_dashboard_vue.sys.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_dashboard_vue.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_dashboard_vue.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset addfieldpath="/modules/mod_emundus_dashboard_vue/elements" name="basic">
+                <field name="profile"
+                       type="sql"
+                       multiple="true"
+                       query="SELECT id, label FROM #__emundus_setup_profiles WHERE published = 0"
+                       default=""
+                       label="Profil"
+                       description="Profils eMundus ayant accès à ce dashboard"
+                       key_field="id"
+                       value_field="label">
+                </field>
+
+                <field name="filter_programmes" type="radio" default="0" label="Filtrer par programme"
+                       description="Affiche un menu déroulant pour filtrer les graphiques par programmes"
+                       class="btn-group btn-group-yesno">
+                    <option value="0">JNo</option>
+                    <option value="1">JYes</option>
+                </field>
+
+                <field name="widgets" type="multilist" default="" label="Widgets"/>
+                <field name="colors" type="textarea" default="#16AFE1, #78dc6e" label="Palette de couleurs"
+                       description="Palette de couleurs permettant de personnaliser les graphiques en fonction du client"
+                       hint="#de6339,#1b1f3c" rows="10" cols="5"/>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

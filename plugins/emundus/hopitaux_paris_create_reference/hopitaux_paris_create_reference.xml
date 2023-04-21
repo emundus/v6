@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension
+        group="emundus"
+        method="upgrade"
+        type="plugin"
+        version="4.2.9">
+    <name>eMundus | Hopitaux de Paris - Create reference when project pass to a specific status</name>
+    <author>Brice Hubinet</author>
+    <creationDate>Juillet 2021</creationDate>
+    <copyright>(C) 2010-2021 EMUNDUS SOFTWARE. All rights reserved.</copyright>
+    <license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+    <authorEmail>brice.hubinet@emundus.fr</authorEmail>
+    <authorUrl>https://www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <description>Emundus Final Grade Complete, complete final grade at status changes</description>
+    <files>
+        <filename>index.html</filename>
+        <filename>hopitaux_paris_create_reference.xml</filename>
+        <filename plugin="hopitaux_paris_create_reference">hopitaux_paris_create_reference.php</filename>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="reference_status_step" type="field" default="5" label="Status *" description="Status to defined when the reference has to been created" />
+            </fieldset>
+        </fields>
+    </config>
+</extension>

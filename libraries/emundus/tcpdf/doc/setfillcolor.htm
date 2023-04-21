@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+<TITLE>SetFillColor</TITLE>
+<LINK TYPE="text/css" REL="stylesheet" HREF="../fpdf.css">
+</HEAD>
+<BODY>
+<H2>SetFillColor</H2>
+<TT>SetFillColor(<B>int</B> r [, <B>int</B> g, <B>int</B> b])</TT>
+<H4 CLASS='st'>Version</H4>
+1.3
+<H4 CLASS='st'>Description</H4>
+Fixe la couleur pour toutes les opérations de remplissage (rectangles pleins et fonds de
+cellules). Elle peut être indiquée en composantes RGB ou en niveau de gris. La méthode
+peut être appelée avant que la première page ne soit créée et la valeur est conservée de
+page en page.
+<H4 CLASS='st'>Paramètres</H4>
+<TT><U>r</U></TT>
+<BLOCKQUOTE>
+Si <TT>g</TT> et <TT>b</TT> sont renseignés, composante de rouge; sinon, indique le
+niveau de gris. Valeur comprise entre 0 et 255.
+</BLOCKQUOTE>
+<TT><U>g</U></TT>
+<BLOCKQUOTE>
+Composante de vert (entre 0 et 255).
+</BLOCKQUOTE>
+<TT><U>b</U></TT>
+<BLOCKQUOTE>
+Composante de bleu (entre 0 et 255).
+</BLOCKQUOTE>
+<H4 CLASS='st'>Voir</H4>
+<A HREF="setdrawcolor.htm">SetDrawColor()</A>,
+<A HREF="settextcolor.htm">SetTextColor()</A>,
+<A HREF="rect.htm">Rect()</A>,
+<A HREF="cell.htm">Cell()</A>,
+<A HREF="multicell.htm">MultiCell()</A>.
+<HR STYLE="margin-top:1.2em">
+<DIV ALIGN="CENTER"><A HREF="index.htm">Index</A></DIV>
+</BODY>
+</HTML>

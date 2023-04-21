@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-form-emundusdocusign" label="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_FIELDS">
+			<field name="username" type="field" description="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_USERNAME_DESC" label="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_USERNAME_LABEL" />
+			<field name="password" type="password" description="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_PASSWORD_DESC" label="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_PASSWORD_LABEL" />
+			<field name="integrator_key" type="field" description="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_INTEGRATOR_DESC" label="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_INTEGRATOR_LABEL" />
+			<field name="host" type="field" default="https://demo.docusign.net/restapi" description="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_HOST_DESC" label="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_HOST_LABEL" />
+
+			<field name="signer_name_1" type="field" default="[USER_NAME]" description="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SIGNER_1_NAME_DESC" label="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SIGNER_1_NAME_LABEL" />
+			<field name="signer_email_1" type="field" default="[USER_EMAIL]" description="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SIGNER_1_EMAIL_DESC" label="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SIGNER_1_EMAIL_LABEL" />
+			<field name="signer_name_2" type="field" description="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SIGNER_2_NAME_DESC" label="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SIGNER_2_NAME_LABEL" />
+			<field name="signer_email_2" type="field" description="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SIGNER_2_EMAIL_DESC" label="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SIGNER_2_EMAIL_LABEL" />
+			<field name="signer_name_3" type="field" description="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SIGNER_3_NAME_DESC" label="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SIGNER_3_NAME_LABEL" />
+			<field name="signer_email_3" type="field" description="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SIGNER_3_EMAIL_DESC" label="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SIGNER_3_EMAIL_LABEL" />
+
+			<field name="email_subject" type="field" description="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_EMAIL_SUBJECT_DESC" label="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_EMAIL_SUBJECT_LABEL" />
+
+			<field name="attachment_id" type="field" description="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_ATTACHMENT_ID_DESC" label="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_ATTACHMENT_ID_LABEL" />
+			<field name="custom_attachment" type="field" description="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_CUSTOM_ATTACHMENT_DESC" label="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_CUSTOM_ATTACHMENT_LABEL" />
+		</fieldset>
+	</fields>
+</form>

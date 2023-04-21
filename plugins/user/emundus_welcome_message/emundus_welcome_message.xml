@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension version="4" type="plugin" group="user" method="upgrade">
+	<name>eMundus Welcome Message</name>
+	<author>eMundus</author>
+	<creationDate>October 2018</creationDate>
+	<authorEmail>hugo.moracchini@emundus.fr</authorEmail>
+	<version>2.0.0</version>
+	<description>Shows Welcome message when user logged in first time at your site. If you want to display the user's Name, UserName, Site Name, and site URL than use the keywords [NAME], [USERNAME], [SITENAME], and [SITEURL] respectively.</description>
+	<files>
+		<filename>emundus_welcome_message.xml</filename>
+		<filename plugin="emundus_welcome_message">emundus_welcome_message.php</filename>
+	</files>
+	
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="EnqueueMessage" type="radio" default="0" label="Joomla message" class="btn-group" description="Select 'Yes' if you want to show message on screen in a standard Joomla message box.">
+					<option value="1">Yes</option>
+					<option value="0">No</option>
+				</field>
+				<field name="Email" type="radio" default="0" label="Send email" class="btn-group" description="Select 'Yes' if you want to send Email else select 'No'.">
+						<option value="1">Yes</option>
+						<option value="0">No</option>
+				</field>
+				<field name="subject" type="editor" width="50" filter="safehtml" hide="readmore,pagebreak" default="" label='Subject'/>
+				<field name="message" type="editor" width="50" filter="safehtml" hide="readmore,pagebreak" default="" label='Message'/>
+			</fieldset>
+		</fields>
+	</config>
+</extension>

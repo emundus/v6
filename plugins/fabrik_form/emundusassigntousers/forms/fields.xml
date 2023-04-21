@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-form-emundusassigntousers" label="Params">
+			<field name="fk_field" type="field" default="" description="PLG_FABRIK_FORM_EMUNDUS_USERS_ASSIGN_FK_FIELD_DESC" label="PLG_FABRIK_FORM_EMUNDUS_USERS_ASSIGN_FK_FIELD_LABEL" />
+			<field name="assignment_rule" type="list" default="0" description="PLG_FABRIK_FORM_EMUNDUS_USERS_ASSIGN_RULE_OF_ASSIGNMENT_DESC" label="PLG_FABRIK_FORM_EMUNDUS_USERS_ASSIGN_RULE_OF_ASSIGNMENT_LABEL" >
+				<option value="user_id">User ID</option>
+				<option value="organisation_id">University/Organisation ID</option>
+				<option value="organisation_note">University/Organisation NOTE</option>
+			</field>
+		</fieldset>
+	</fields>
+</form>

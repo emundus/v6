@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" version="4" method="upgrade" group="hikashop">
+    <name>Emundus - update price</name>
+    <creationDate>03 décembre 2018</creationDate>
+    <version>2.0.0</version>
+    <author>eMundus</author>
+    <authorEmail>dev@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <copyright>(C) 2008-${year} emundus.fr</copyright>
+    <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+    <description>This plugin enables you to check your mail's history</description>
+    <files>
+        <filename>index.html</filename>
+        <filename>emundusprice.xml</filename>
+        <filename plugin="emundusprice">emundusprice.php</filename>
+        <folder>form</folder>
+        <folder>language</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.plg_hikashop_emundusprice.ini</language>
+        <language tag="en-GB">en-GB.plg_hikashop_emundusprice.sys.ini</language>
+        <language tag="fr-FR">fr-FR.plg_hikashop_emundusprice.ini</language>
+        <language tag="fr-FR">fr-FR.plg_hikashop_emundusprice.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params" addfieldpath="/components/com_hikashop/fields">
+            <fieldset name="basic">
+                <field name="table" type="text" description="PLG_HIKASHOP_TABLE_DESC" label="PLG_HIKASHOP_TABLE_LABEL"/>
+                <field name="element" type="text" description="PLG_HIKASHOP_ELEMENT_DESC" label="PLG_HIKASHOP_ELEMENT_LABEL" />
+            </fieldset>
+        </fields>
+    </config>
+
+</extension>

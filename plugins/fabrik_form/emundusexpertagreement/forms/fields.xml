@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-form-emundusexpertagreement" label="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_FIELDS">
+			<field name="group" type="field" description="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_GROUP_DESC" label="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_GROUP_LABEL" />
+			<field name="profile_id" type="field" description="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_PROFILE_DESC" label="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_PROFILE_LABEL" />
+			<field name="pick_fnums" type="list" default="0" description="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_PICK_FNUMS_DESC" label="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_PICK_FNUMS_LABEL" >
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+			<field name="redirect" type="list" default="1" description="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_REDIRECT_DESC" label="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_REDIRECT_LABEL" >
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+		</fieldset>
+	</fields>
+</form>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_form" method="upgrade" type="plugin" version="4">
+	<name>eMundus - Set the status of complete files</name>
+	<author>Hugo Moracchini</author>
+	<creationDate>December 2018</creationDate>
+	<copyright>Copyright (C) 2018 eMundus.fr - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>hugo.moracchini@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<help url="https://www.emundus.fr"/>
+	<description>PLG_FORM_EMUNDUSCOMPLETEFILESTATUSCHANGE_DESCRIPTION</description>
+	<files>
+		<filename>emunduscompletefilestatuschange.xml</filename>
+		<filename plugin="emunduscompletefilestatuschange">emunduscompletefilestatuschange.php</filename>
+		<filename>index.html</filename>
+		<folder>forms</folder>
+		<folder>language</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">en-GB.plg_fabrik_form_emunduscompletefilestatuschange.ini</language>
+		<language tag="en-GB">en-GB.plg_fabrik_form_emunduscompletefilestatuschange.sys.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_form_emunduscompletefilestatuschange.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_form_emunduscompletefilestatuschange.sys.ini</language>
+	</languages>
+</extension>

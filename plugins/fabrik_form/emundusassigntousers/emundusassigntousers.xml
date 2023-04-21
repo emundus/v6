@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_form" method="upgrade" type="plugin" version="4">
+	<name>eMundus - Assign to users</name>
+	<author>Hugo Moracchini</author>
+	<creationDate>September 2020</creationDate>
+	<copyright>Copyright (C) 2020 eMundus.fr - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>hugo.moracchini@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<description>PLG_FABRIK_FORM_EMUNDUS_USER_ASSIGN_DESCRIPTION</description>
+	<files>
+		<filename>emundusassigntousers.xml</filename>
+		<filename plugin="emundusassigntousers">emundusassigntousers.php</filename>
+		<filename>index.html</filename>
+		<folder>forms</folder>
+		<folder>language</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">en-GB.plg_fabrik_form_emundusassigntousers.ini</language>
+		<language tag="en-GB">en-GB.plg_fabrik_form_emundusassigntousers.sys.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_form_emundusassigntousers.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_form_emundusassigntousers.sys.ini</language>
+	</languages>
+</extension>

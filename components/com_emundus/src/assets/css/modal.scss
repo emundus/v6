@@ -1,0 +1,87 @@
+#modalAddTriggercandidate .v--modal,
+#modalAddTriggermanual .v--modal,
+span[id*='modalEmailPreview_'] .v--modal,
+#modalUpdateLogo .v--modal,
+#modalUpdateIcon .v--modal,
+#modalUpdateColors .v--modal {
+  padding: 32px !important;
+}
+
+span[id*='modalEditElement'] .v--modal,
+#modalAddDocuments .v--modal,
+#modalAffectCampaign .v--modal,
+#modalMenu .v--modal,
+#modalSide .v--modal{
+  position: fixed;
+  right: 0;
+  left: unset !important;
+  height: 100% !important;
+  padding: 32px;
+  top: 0 !important;
+  overflow: scroll;
+}
+
+span[id*='modalEditElement'] .v--modal-overlay,
+#modalAddDocuments .v--modal-overlay,
+#modalMenu .v--modal-overlay,
+#modalSide .v--modal-overlay{
+  background: unset;
+}
+
+  /**** CUSTOM VUE DROPZONE ****/
+  #customdropzone {
+    letter-spacing: 0.2px;
+    background: #fff;
+    color: #C5C8CE;
+    transition: background-color .2s linear;
+    height: 200px;
+    padding: 40px;
+    border: dashed;
+    border-radius: 5px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    cursor: pointer;
+  }
+
+  .dz-preview {
+    width: 100%;
+    display: inline-block;
+    text-align: center;
+  }
+
+  .dz-image {
+    width: auto;
+    height: 100px;
+    margin-bottom: 10px;
+  }
+  .dz-image >div{
+    height: 100px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+  }
+
+  .dz-details {
+    color: black;
+    transition: opacity .2s linear;
+    text-align: center;
+  }
+
+  .dz-success-mark {
+    display: none;
+  }
+
+  .dz-default.dz-message {
+    text-align: center !important;
+  }
+
+  .dz-error-mark {
+    display: none;
+  }
+
+  .dz-remove{
+    color: #1C6EF2FF;
+  }
+
+  /**** END ****/

@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension
+		group="fabrik_element"
+		method="upgrade"
+		type="plugin"
+		version="4.2.9">
+	<name>plg_fabrik_element_emundusreferent</name>
+	<author>Benjamin Rivalland</author>
+	<creationDate>${createdate}</creationDate>
+	<copyright>(C) 2008-${year} emundus.fr</copyright>
+	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+	<authorEmail>contact@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<help url="PLG_ELEMENT_EMUNDUSREFERENT_HELP_SERVER"/>
+	<description>PLG_ELEMENT_EMUNDUSREFERENT_DESCRIPTION</description>
+	<files>
+		<filename>emundusreferent.xml</filename>
+		<filename plugin="emundusreferent">emundusreferent.php</filename>
+		<filename>index.html</filename>
+		<filename>emundusreferent.js</filename>
+		<filename>emundusreferent-min.js</filename>
+		<folder>forms</folder>
+		<folder>css</folder>
+		<folder>language</folder>
+		<folder>img</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">en-GB.plg_fabrik_element_emundusreferent.ini</language>
+		<language tag="en-GB">en-GB.plg_fabrik_element_emundusreferent.sys.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_element_emundusreferent.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_element_emundusreferent.sys.ini</language>
+	</languages>
+</extension>

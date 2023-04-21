@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension
+        group="fabrik_cron"
+        method="upgrade"
+        type="plugin"
+        version="4.2.9">
+    <name>plg_fabrik_cron_emundusreferentrecall</name>
+    <author>Benjamin Retord</author>
+    <creationDate>Decembre 2019</creationDate>
+    <copyright>Copyright (C) 2015 emundus.fr - All rights reserved.</copyright>
+    <license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+    <authorEmail>dev@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <help url="PLG_FABRIK_CRON_EMAIL_HELP_SERVER"/>
+    <description>PLG_FABRIK_CRON_EMUNDUSRECALL_DESCRIPTION</description>
+    <files>
+        <filename>emundusreferentrecall.xml</filename>
+        <filename plugin="emundusreferentrecall">emundusreferentrecall.php</filename>
+        <folder>forms</folder>
+        <filename>index.html</filename>
+        <folder>language</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.plg_fabrik_cron_emundusreferentrecall.ini</language>
+        <language tag="en-GB">en-GB.plg_fabrik_cron_emundusreferentrecall.sys.ini</language>
+        <language tag="fr-FR">fr-FR.plg_fabrik_cron_emundusreferentrecall.ini</language>
+        <language tag="fr-FR">fr-FR.plg_fabrik_cron_emundusreferentrecall.sys.ini</language>
+    </languages>
+</extension>

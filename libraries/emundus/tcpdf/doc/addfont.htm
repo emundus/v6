@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+<TITLE>AddFont</TITLE>
+<LINK TYPE="text/css" REL="stylesheet" HREF="../fpdf.css">
+</HEAD>
+<BODY>
+<H2>AddFont</H2>
+<TT>AddFont(<B>string</B> family [, <B>string</B> style [, <B>string</B> file]])</TT>
+<H4 CLASS='st'>Version</H4>
+1.5
+<H4 CLASS='st'>Description</H4>
+Importe une police TrueType ou Type1 et la rend disponible. Il faut au préalable avoir généré un
+fichier de définition de police avec l'utilitaire makefont.php.
+<BR>
+Le fichier de définition (ainsi que le fichier de police en cas d'incorporation) doit être présent
+dans le répertoire des polices. S'il n'est pas trouvé, l'erreur "Could not include font definition file"
+est renvoyée.
+<H4 CLASS='st'>Paramètres</H4>
+<TT><U>family</U></TT>
+<BLOCKQUOTE>
+Famille de la police. Le nom peut être choisi arbitrairement. S'il est celui d'une famille
+standard, la police correspondante sera masquée.
+</BLOCKQUOTE>
+<TT><U>style</U></TT>
+<BLOCKQUOTE>
+Style de la police. Les valeurs possibles sont (indépendamment de la casse) :
+<UL>
+<LI>chaîne vide : normal
+<LI><TT>B</TT> : gras
+<LI><TT>I</TT> : italique
+<LI><TT>BI</TT> ou <TT>IB</TT> : gras italique
+</UL>
+La valeur par défaut est le style normal.
+</BLOCKQUOTE>
+<TT><U>file</U></TT>
+<BLOCKQUOTE>
+Le fichier de définition de police.
+<BR>
+Par défaut, le nom est construit à partir du nom de la famille et du style, en minuscules et
+sans espace.
+</BLOCKQUOTE>
+<H4 CLASS='st'>Exemple</H4>
+<TABLE WIDTH="100%" BGCOLOR="#E0E0E0"><TR><TD>
+<TT>
+$pdf-&gt;AddFont('Comic','I');
+</TT>
+</TD></TR></TABLE><BR>
+est équivalent à :
+<BR>
+<BR>
+<TABLE WIDTH="100%" BGCOLOR="#E0E0E0"><TR><TD>
+<TT>
+$pdf-&gt;AddFont('Comic','I','comici.php');
+</TT>
+</TD></TR></TABLE><BR>
+<H4 CLASS='st'>Voir</H4>
+<A HREF="setfont.htm">SetFont()</A>.
+<HR STYLE="margin-top:1.2em">
+<DIV ALIGN="CENTER"><A HREF="index.htm">Index</A></DIV>
+</BODY>
+</HTML>

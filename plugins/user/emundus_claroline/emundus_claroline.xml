@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="4" type="plugin" group="user">
+	<name>eMundus - Claroline user sync</name>
+	<author>eMundus</author>
+	<creationDate>July 2019</creationDate>
+	<copyright>(C) 2019 eMundus. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>admin@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<description>Inserts a user to a table on distant DB linked to a Claroline instance.</description>
+	<files>
+		<filename>emundus_claroline.xml</filename>
+		<filename plugin="emundus_claroline">emundus_claroline.php</filename>
+		<filename>index.html</filename>
+	</files>
+</extension>

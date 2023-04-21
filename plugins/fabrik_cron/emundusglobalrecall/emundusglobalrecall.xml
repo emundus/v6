@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension
+		group="fabrik_cron"
+		method="upgrade"
+		type="plugin"
+		version="4.2.9">
+	<name>plg_fabrik_cron_emundusglobalrecall</name>
+	<author>HUBINET Brice</author>
+	<creationDate>January 2022</creationDate>
+	<copyright>Copyright (C) 2015 emundus.fr - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>brice.hubinet@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<help url="PLG_FABRIK_CRON_EMAIL_HELP_SERVER"/>
+	<description>PLG_FABRIK_CRON_EMUNDUSGLOBALRECALL_DESCRIPTION</description>
+	<files>
+		<filename plugin="emundusglobalrecall">emundusglobalrecall.php</filename>
+		<folder>forms</folder>
+		<filename>index.html</filename>
+		<folder>language</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">en-GB.plg_fabrik_cron_emundusglobalrecall.ini</language>
+		<language tag="en-GB">en-GB.plg_fabrik_cron_emundusglobalrecall.sys.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_cron_emundusglobalrecall.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_cron_emundusglobalrecall.sys.ini</language>
+	</languages>
+</extension>

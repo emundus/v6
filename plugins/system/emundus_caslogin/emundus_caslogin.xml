@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="4" type="plugin" group="system">
+    <name>eMundus - Login CAS</name>
+    <author>eMundus</author>
+    <creationDate>April 2022</creationDate>
+    <copyright>Copyright (C) 2022 eMundus</copyright>
+    <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+    <authorEmail>admin@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <description>Provides a cas login more advanced to get other attributes</description>
+    <files>
+        <filename>emundus_caslogin.xml</filename>
+        <filename plugin="emundus_caslogin">emundus_caslogin.php</filename>
+        <filename>index.html</filename>
+        <folder>forms</folder>
+    </files>
+    <config>
+        <fields name="params">
+        </fields>
+    </config>
+</extension>

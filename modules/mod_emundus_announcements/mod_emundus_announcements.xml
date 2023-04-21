@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="4.2.9" client="site" method="upgrade">
+	<name>MOD_EMUNDUS_ANNOUNCEMENTS_SYS_XML</name>
+	<author>eMundus</author>
+	<creationDate>September 2022</creationDate>
+	<copyright>Copyright (C) 2022 eMundus. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<description>MOD_EMUNDUS_ANNOUNCEMENTS_XML_DESCRIPTION</description>
+
+	<files>
+		<filename module="mod_emundus_announcements">mod_emundus_announcements.php</filename>
+		<folder>tmpl</folder>
+		<folder>language</folder>
+	</files>
+	<languages folder="language">
+		<language tag="en-GB">en-GB.mod_emundus_announcements.ini</language>
+		<language tag="fr-FR">fr-FR.mod_emundus_announcements.ini</language>
+	</languages>
+
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="announcement_content"
+						type="textarea" rows="5" cols="10" filter="safehtml" hide="readmore,pagebreak"
+						default=""
+						label="MOD_EMUNDUS_ANNOUNCEMENTS_CONTENT"
+						description="MOD_EMUNDUS_ANNOUNCEMENTS_CONTENT_DESC">
+				</field>
+			</fieldset>
+		</fields>
+	</config>
+</extension>

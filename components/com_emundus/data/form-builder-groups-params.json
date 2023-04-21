@@ -1,0 +1,59 @@
+{
+  "parameters": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_SECTIONS_INTRO",
+      "name": "intro",
+      "type": "textarea",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_SECTIONS_OUTRO",
+      "name": "outro",
+      "type": "textarea",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_SECTIONS_REPEAT",
+      "name": "repeat_group_button",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_SECTIONS_REPEAT_MIN",
+      "name": "repeat_min",
+      "type": "number",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_SECTIONS_REPEAT_MAX",
+      "name": "repeat_max",
+      "type": "number",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    }
+  ]
+}

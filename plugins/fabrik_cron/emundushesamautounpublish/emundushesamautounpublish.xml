@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension
+		group="fabrik_cron"
+		method="upgrade"
+		type="plugin"
+		version="4.2.9">
+	<name>eMundus - HESAM auto-unpublish</name>
+	<author>Hugo Moracchini</author>
+	<creationDate>June 2020</creationDate>
+	<copyright>Copyright (C) 2020 emundus.fr - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>hugo@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<description>Automatic status change and email sent to the user of the offer.</description>
+	<files>
+		<filename>emundushesamautounpublish.xml</filename>
+		<filename plugin="emundushesamautounpublish">emundushesamautounpublish.php</filename>
+		<folder>forms</folder>
+		<filename>index.html</filename>
+		<folder>language</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">en-GB.plg_fabrik_cron_emundushesamautounpublish.ini</language>
+		<language tag="en-GB">en-GB.plg_fabrik_cron_emundushesamautounpublish.sys.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_cron_emundushesamautounpublish.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_cron_emundushesamautounpublish.sys.ini</language>
+	</languages>
+</extension>

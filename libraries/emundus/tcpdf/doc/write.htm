@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+<TITLE>Write</TITLE>
+<LINK TYPE="text/css" REL="stylesheet" HREF="../fpdf.css">
+</HEAD>
+<BODY>
+<H2>Write</H2>
+<TT>Write(<B>float</B> h, <B>string</B> txt [, <B>mixed</B> link])</TT>
+<H4 CLASS='st'>Version</H4>
+1.5
+<H4 CLASS='st'>Description</H4>
+Cette méthode imprime du texte à partir de la position courante. Lorsque la marge droite est
+atteinte (ou que le caractère \n est rencontré), un saut de ligne est effectué et le texte
+continue à partir de la marge gauche. Au retour de la méthode, la position courante est située
+juste à la fin du texte.
+<BR>
+Il est possible de mettre un lien sur le texte.
+<H4 CLASS='st'>Paramètres</H4>
+<TT><U>h</U></TT>
+<BLOCKQUOTE>
+Hauteur de la ligne.
+</BLOCKQUOTE>
+<TT><U>txt</U></TT>
+<BLOCKQUOTE>
+Chaîne à imprimer.
+</BLOCKQUOTE>
+<TT><U>link</U></TT>
+<BLOCKQUOTE>
+URL ou identifiant retourné par AddLink().
+</BLOCKQUOTE>
+<H4 CLASS='st'>Exemple</H4>
+<TABLE WIDTH="100%" BGCOLOR="#E0E0E0"><TR><TD>
+<TT>
+//D&eacute;but en police normale<BR>
+$pdf-&gt;SetFont('Arial','',14);<BR>
+$pdf-&gt;Write(5,'Visitez ');<BR>
+//Lien en bleu soulign&eacute;<BR>
+$pdf-&gt;SetTextColor(0,0,255);<BR>
+$pdf-&gt;SetFont('','U');<BR>
+$pdf-&gt;Write(5,'www.fpdf.org','http://www.fpdf.org');
+</TT>
+</TD></TR></TABLE><BR>
+<H4 CLASS='st'>Voir</H4>
+<A HREF="setfont.htm">SetFont()</A>,
+<A HREF="settextcolor.htm">SetTextColor()</A>,
+<A HREF="addlink.htm">AddLink()</A>,
+<A HREF="multicell.htm">MultiCell()</A>,
+<A HREF="setautopagebreak.htm">SetAutoPageBreak()</A>.
+<HR STYLE="margin-top:1.2em">
+<DIV ALIGN="CENTER"><A HREF="index.htm">Index</A></DIV>
+</BODY>
+</HTML>

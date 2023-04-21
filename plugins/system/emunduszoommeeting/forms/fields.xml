@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+    <fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+        <fieldset name="plg-form-juseremundus" label="Params">
+
+            <field name="emunduszoommeeting_first_email_to_send"
+                   type="field"
+                   description="PLG_FABRIK_FORM_EMUNDUSZOOMMEETINGEMAIL_FIRST_EMAIL"
+                   label="PLG_FABRIK_FORM_EMUNDUSZOOMMEETINGEMAIL_FIRST_EMAIL_LABEL"
+            />
+
+            <field name="emunduszoommeeting_secondary_email_to_send"
+                   type="field"
+                   description="PLG_FABRIK_FORM_EMUNDUSZOOMMEETINGEMAIL_SECONDARY_EMAIL"
+                   label="PLG_FABRIK_FORM_EMUNDUSZOOMMEETINGEMAIL_SECONDARY_EMAIL_LABEL"
+            />
+
+        </fieldset>
+    </fields>
+</form>

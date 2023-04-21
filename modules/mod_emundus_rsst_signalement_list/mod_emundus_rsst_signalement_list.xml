@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="4" client="site" method="upgrade">
+    <name>eMundus - Module liste fabrik en VueJS</name>
+    <author>Merveille Gbetegan</author>
+    <creationDate>July 2022</creationDate>
+    <copyright>Copyright (C) 2015 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>benjamin@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <description>Affiche en VueJS un tableau à partir des données du liste Fabrik</description>
+    <files>
+        <filename>mod_emundus_rsst_signalement_list.xml</filename>
+        <filename module="mod_emundus_rsst_signalement_list">mod_emundus_rsst_signalement_list.php</filename>
+        <filename>babel.config.js</filename>
+        <filename>index.html</filename>
+        <filename>package.json</filename>
+        <filename>vue.config.js</filename>
+        <filename>yarn.lock</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.mod_emundus_rsst_signalement_list.ini</language>
+        <language tag="en-GB">en-GB.mod_emundus_rsst_signalement_list.sys.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_rsst_signalement_list.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_rsst_signalement_list.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                        name="fabrik_list_id"
+                        type="sql"
+                        multiple="false"
+                        label="Liste fabrik"
+                        query="SELECT id, label FROM #__fabrik_lists where published = 1"
+                        description="Liste Fabrik à afficher"
+                        key_field="id"
+                        value_field="label"
+                >
+                </field>
+                <field name="fabrik_list_particular_action_column" type="number" label="Fabrik List Action Column"></field>
+                <field name="fabrik_list_particular_conditional_column" type="string" label="Particular Showing column list (SQL where clause column name). Columns list separed by comma Ex: col1,col2,col3"></field>
+                <field name="fabrik_list_particular_conditional_column_values" type="string" label="Particular Showing where column value (SQL clause column values), multiple column values separed by '|' . Ex : col1_value_1|col1_value_2,col2_value,col3_value"></field>
+                <field name="fabrik_list_column_to_be_shown_as_badge" type="string" label="Particular Showing column as badge . Columns list separed by comma Ex: col1,col2,col3"></field>
+                <field name="fabrik_list_column_to_not_show_when_filtered_by" type="string" label="Unwanted columns to show in table list when filtered by . Columns list separed by comma Ex: col1,col2,col3"></field>
+                <field
+                        name="fabrik_list_readonly_profiles"
+                        type="sql"
+                        multiple="true"
+                        label="Profiles eMundus en lecture seule"
+                        query="SELECT id, label FROM #__emundus_setup_profiles where published = 0"
+                        description="Liste Fabrik à afficher"
+                        key_field="id"
+                        value_field="label"
+                >
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

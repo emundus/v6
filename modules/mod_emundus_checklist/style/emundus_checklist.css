@@ -1,0 +1,87 @@
+#g-sidebar{
+    background: transparent !important;
+    margin: 0 !important;
+}
+
+#g-sidebar .moduletable{
+    padding: 0 !important;
+}
+
+.mod_emundus_checklist{
+    margin-left: 32px;
+    box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+    border-radius: 16px !important;
+    padding: 24px;
+    background: #fff;
+}
+
+.mod_emundus_checklist___buttons{
+    margin-left: 32px;
+    margin-top: 24px;
+}
+
+.mod_emundus_checklist___grid{
+    display: grid;
+    grid-template-columns: 32px 90%;
+    align-items: baseline;
+}
+
+.mod_emundus_checklist___form_item a:not(.mod_emundus_checklist___attachment_links){
+    border-bottom: unset !important;
+    padding: unset !important;
+    min-height: 40px;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    color: black;
+    font-family: var(--font);
+}
+.mod_emundus_checklist___attachment_links{
+    color: black;
+}
+
+.mod_emundus_checklist #mod_emundus_checklist___expand_icon{
+    font-size: 24px !important;
+    color: var(--neutral-800);
+}
+
+#mod_emundus_checklist___content{
+    overflow: hidden;
+    max-height: 1000px;
+    transition: max-height 300ms linear;
+}
+.mod_emundus_checklist___content_closed{
+    max-height: 0 !important;
+    /* margin-top: 0 !important; */
+}
+#mod_emundus_checklist___expand_icon{
+    transition: transform 300ms linear;
+}
+
+.mod_emundus_checklist___attachment{
+    margin-top: -12px;
+    margin-left: 36px;
+}
+
+.mod_emundus_checklist___count{
+    border-radius: 4px;
+    background: #F3F3F3;
+    padding: 3px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font);
+    color: var(--neutral-800);
+}
+
+@media all and (max-width: 479px) {
+    .mod_emundus_checklist{
+        margin-left: 0;
+    }
+    .mod_emundus_checklist___buttons{
+        margin-left: 0;
+        width: 100%;
+    }
+}
+

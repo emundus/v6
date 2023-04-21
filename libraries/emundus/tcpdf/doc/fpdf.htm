@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+<TITLE>FPDF</TITLE>
+<LINK TYPE="text/css" REL="stylesheet" HREF="../fpdf.css">
+</HEAD>
+<BODY>
+<H2>FPDF</H2>
+<TT>FPDF([<B>string</B> orientation [, <B>string</B> unit [, <B>mixed</B> format]]])</TT>
+<H4 CLASS='st'>Version</H4>
+1.0
+<H4 CLASS='st'>Description</H4>
+Il s'agit du constructeur de la classe. Il permet de fixer le format des pages, leur
+orientation par défaut ainsi que l'unité de mesure utilisée dans toutes les méthodes (sauf
+pour les tailles de police).
+<H4 CLASS='st'>Paramètres</H4>
+<TT><U>orientation</U></TT>
+<BLOCKQUOTE>
+Orientation des pages par défaut. Les valeurs possibles sont (indépendamment de la casse) :
+<UL>
+<LI><TT>P</TT> ou <TT>Portrait</TT>
+<LI><TT>L</TT> ou <TT>Landscape</TT>
+</UL>
+La valeur par défaut est <TT>P</TT>.
+</BLOCKQUOTE>
+<TT><U>unit</U></TT>
+<BLOCKQUOTE>
+Unité de mesure utilisateur. Les valeurs possibles sont :
+<UL>
+<LI><TT>pt</TT> : point
+<LI><TT>mm</TT> : millimètre
+<LI><TT>cm</TT> : centimètre
+<LI><TT>in</TT> : pouce
+</UL>
+Un point est égal à 1/72ème de pouce, c'est-à-dire environ 0,35 millimètre. C'est une unité
+très courante en typographie; les tailles de police sont exprimées dans cette unité.
+<BR>
+Un pouce vaut 2,54 centimètres.
+<BR>
+<BR>
+La valeur par défaut est <TT>mm</TT>.
+</BLOCKQUOTE>
+<TT><U>format</U></TT>
+<BLOCKQUOTE>
+Le format utilisé pour les pages. Il peut s'agir d'une des valeurs ci-dessous (indépendamment
+de la casse) :
+<UL>
+<LI><TT>A3</TT>
+<LI><TT>A4</TT>
+<LI><TT>A5</TT>
+<LI><TT>Letter</TT>
+<LI><TT>Legal</TT>
+</UL>
+ou bien d'un format personnalisé sous la forme d'un tableau à deux éléments contenant la
+largeur et la hauteur (exprimées dans l'unité donnée par <TT>unit</TT>).
+</BLOCKQUOTE>
+<HR STYLE="margin-top:1.2em">
+<DIV ALIGN="CENTER"><A HREF="index.htm">Index</A></DIV>
+</BODY>
+</HTML>

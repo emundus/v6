@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset addfieldpath="/plugins/user/emundus_profile/fields"
+	/>
+	<fields name="emundus_profile">
+		<fieldset name="default"
+				  label="PLG_USER_EMUNDUS_PROFILE_SLIDER_LABEL"
+		>
+			<field
+					name="email"
+					type="email"
+					id="email"
+					description="PLG_USER_EMUNDUS_PROFILE_FIELD_EMAIL_DESC"
+					filter="string"
+					label="PLG_USER_EMUNDUS_PROFILE_FIELD_EMAIL_LABEL"
+					message="PLG_USER_EMUNDUS_PROFILE_FIELD_EMAIL_MESSAGE"
+					size="30"
+					hint="PLG_USER_EMUNDUS_PROFILE_FIELD_EMAIL_LABEL"
+			/>
+			<!--<field
+					name="lastname"
+					type="text"
+					id="lastname"
+					description="PLG_USER_EMUNDUS_PROFILE_FIELD_LASTNAME_DESC"
+					filter="string"
+					label="PLG_USER_EMUNDUS_PROFILE_FIELD_LASTNAME_LABEL"
+					message="PLG_USER_EMUNDUS_PROFILE_FIELD_LASTNAME_MESSAGE"
+					size="30"
+					hint="PLG_USER_EMUNDUS_PROFILE_FIELD_LASTNAME_LABEL"
+			/>
+			<field
+					name="firstname"
+					type="text"
+					id="firstname"
+					description="PLG_USER_EMUNDUS_PROFILE_FIELD_FIRSTNAME_DESC"
+					filter="string"
+					label="PLG_USER_EMUNDUS_PROFILE_FIELD_FIRSTNAME_LABEL"
+					message="PLG_USER_EMUNDUS_PROFILE_FIELD_FIRSTNAME_MESSAGE"
+					size="30"
+					hint="PLG_USER_EMUNDUS_PROFILE_FIELD_FIRSTNAME_LABEL"
+			/>-->
+			<field
+					name="profile"
+					type="sql"
+					query="SELECT id, label FROM #__emundus_setup_profiles WHERE published=1"
+					key_field="id"
+					value_field="label"
+					description="PLG_USER_EMUNDUS_PROFILE_FIELD_PROFILE_DESC"
+					filter="string"
+					label="PLG_USER_EMUNDUS_PROFILE_FIELD_PROFILE_LABEL"
+					message="PLG_USER_EMUNDUS_PROFILE_FIELD_PROFILE_MESSAGE"
+					hint="PLG_USER_EMUNDUS_PROFILE_FIELD_PROFILE_LABEL"
+			/>
+			<field
+					name="campaign"
+					type="campaign"
+					query="SELECT id, CONCAT(label,' (',year,')') AS label FROM #__emundus_setup_campaigns WHERE published=1 AND NOW() >= start_date AND end_date >= NOW() ORDER BY label"
+					key_field="id"
+					value_field="label"
+					description="PLG_USER_EMUNDUS_PROFILE_FIELD_CAMPAIGN_DESC"
+					filter="string"
+					label="PLG_USER_EMUNDUS_PROFILE_FIELD_CAMPAIGN_LABEL"
+					message="PLG_USER_EMUNDUS_PROFILE_FIELD_CAMPAIGN_MESSAGE"
+					hint="PLG_USER_EMUNDUS_PROFILE_FIELD_CAMPAIGN_LABEL"
+			/>
+			<field
+					name="cgu"
+					type="checkbox"
+					value="1"
+					default="0"
+					filter="string"
+					label="PLG_USER_EMUNDUS_PROFILE_FIELD_CGU_LABEL"
+					description="PLG_USER_EMUNDUS_PROFILE_FIELD_CGU_DESC"
+			>
+
+			</field>
+			<field
+					name="newsletter"
+					type="checkbox"
+					value="1"
+					default="0"
+					filter="string"
+					label="PLG_USER_EMUNDUS_PROFILE_FIELD_NEWSLETTER_LABEL"
+					description="PLG_USER_EMUNDUS_PROFILE_FIELD_NEWSLETTER_DESC"
+			>
+
+			</field>
+
+			<field
+					name="alert"
+					type="checkbox"
+					value="1"
+					default="0"
+					filter="string"
+					label="PLG_USER_EMUNDUS_PROFILE_FIELD_ALERT_LABEL"
+					description="PLG_USER_EMUNDUS_PROFILE_FIELD_ALERT_DESC"
+			>
+
+			</field>
+		</fieldset>
+	</fields>
+</form>

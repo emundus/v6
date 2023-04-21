@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension
+        type="module"
+        version="4.2.9"
+        client="site"
+        method="upgrade">
+    <name>MOD_EMUNDUS_FOOTER_XML</name>
+    <author>eMundus</author>
+    <creationDate>July 2021</creationDate>
+	<copyright>Copyright (C) 2021 eMundus. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>benjamin@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+    <description>MOD_EMUNDUS_FOOTER_XML_DESCRIPTION</description>
+    <files>
+        <filename>mod_emundus_footer.xml</filename>
+        <filename module="mod_emundus_footer">mod_emundus_footer.php</filename>
+        <filename>index.html</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+        <folder>css</folder>
+    </files>
+	<languages>
+		<language tag="en-GB">en-GB.mod_emundus_footer.ini</language>
+		<language tag="en-GB">en-GB.mod_emundus_footer.sys.ini</language>
+		<language tag="fr-FR">fr-FR.mod_emundus_footer.ini</language>
+		<language tag="fr-FR">fr-FR.mod_emundus_footer.sys.ini</language>
+	</languages>
+    <help key="JHELP_EXTENSIONS_MODULE_MANAGER_LOGIN"/>
+    <config>
+        <fields name="params">
+            <fieldset name="basic"
+                      addfieldpath="/administrator/components/com_menus/models/fields"
+            >
+
+                <field
+                        name="mod_emundus_footer_client_link"
+                        type="text"
+                        default=""
+                        label="MOD_EM_FOOTER_CLIENT_LINK"
+                        description="MOD_EM_FOOTER_CLIENT_LINK_DESC">
+                </field>
+
+                <field
+                        name="mod_emundus_footer_merge_two_columns"
+                        type="radio"
+                        label="MOD_EM_FOOTER_MERGE_TWO_COLUMNS"
+                        description="MOD_EM_FOOTER_BIG_COL_DESC"
+                        class="btn-group btn-group-yesno"
+                        default="0"
+                        filter="integer">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field
+                        name="mod_emundus_footer_texte_col_1"
+                        type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+                        default=""
+                        label="MOD_EM_FOOTER_COL_1"
+                        description="MOD_EM_FOOTER_COL_1">
+                </field>
+                <field
+                        name="mod_emundus_footer_texte_col_2"
+                        type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+                        default=""
+                        label="MOD_EM_FOOTER_COL_2"
+                        description="MOD_EM_FOOTER_COL_2">
+                </field>
+
+                <field
+                        name="mod_emundus_footer_display_tchooz_logo"
+                        type="radio"
+                        label="MOD_EM_FOOTER_DISPLAY_TCHOOZ_LOGO"
+                        description="MOD_EM_FOOTER_DISPLAY_TCHOOZ_LOGO"
+                        class="btn-group btn-group-yesno"
+                        default="0"
+                        filter="integer">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
+                        name="mod_emundus_footer_display_powered_by"
+                        type="radio"
+                        label="MOD_EM_FOOTER_DISPLAY_POWERED_BY"
+                        description="MOD_EM_FOOTER_DISPLAY_POWERED_BY"
+                        class="btn-group btn-group-yesno"
+                        default="1"
+                        filter="integer">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+
+                <field class="text" label="spacer2" name="spacer2" type="spacer" hr="true"/>
+
+                <field type="note" name="MOD_EM_FOOTER_GDPR_ARTICLES" label="MOD_EM_FOOTER_GDPR_ARTICLES"/>
+
+                <field
+                        name="mod_emundus_footer_legal_info"
+                        type="radio"
+                        label="MOD_EM_FOOTER_LEGAL_INFO_LINK_SWITCH"
+                        description="MOD_EM_FOOTER_LEGAL_INFO_LINK_SWITCH"
+                        class="btn-group btn-group-yesno"
+                        default="1"
+                        filter="integer">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
+                        name="mod_emundus_footer_data_privacy"
+                        type="radio"
+                        label="MOD_EM_FOOTER_DATA_PRIVACY_LINK_SWITCH"
+                        description="MOD_EM_FOOTER_DATA_PRIVACY_LINK_SWITCH"
+                        class="btn-group btn-group-yesno"
+                        default="1"
+                        filter="integer">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
+                        name="mod_emundus_footer_rights"
+                        type="radio"
+                        label="MOD_EM_FOOTER_RIGHTS_LINK_SWITCH"
+                        description="MOD_EM_FOOTER_RIGHTS_LINK_SWITCH"
+                        class="btn-group btn-group-yesno"
+                        default="1"
+                        filter="integer">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
+                        name="mod_emundus_footer_cookies"
+                        type="radio"
+                        label="MOD_EM_FOOTER_COOKIES_LINK_SWITCH"
+                        description="MOD_EM_FOOTER_COOKIES_LINK_SWITCH"
+                        class="btn-group btn-group-yesno"
+                        default="1"
+                        filter="integer">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+            </fieldset>
+        </fields>
+    </config>
+</extension>

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<extension
+        type="module"
+        version="4.2.9"
+        client="site"
+        method="upgrade">
+    <name>EmundusUpdate</name>
+    <author>James Dean</author>
+    <creationDate>August 2018</creationDate>
+    <copyright>Copyright (C) 2018 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>james.dean@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <description>The eMundus Update Module</description>
+    <files>
+        <filename>mod_emundus_update.xml</filename>
+        <filename module="mod_emundus_update">mod_emundus_update.php</filename>
+        <filename>index.html</filename>
+        <filename>helper.php</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+    </files>
+	<languages>
+		<language tag="en-GB">en-GB.mod_emundus_update.ini</language>
+		<language tag="en-GB">en-GB.mod_emundus_update.sys.ini</language>
+		<language tag="fr-FR">fr-FR.mod_emundus_update.ini</language>
+		<language tag="fr-FR">fr-FR.mod_emundus_update.sys.ini</language>
+	</languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic" addfieldpath="/modules/mod_emundus_update/tmpl">
+            </fieldset>
+        </fields>
+    </config>
+</extension>

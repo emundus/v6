@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension
+        type="plugin"
+        version="4.2.9"
+        method="upgrade"
+        group="emundus">
+    <name>Emundus - Add tag</name>
+    <creationDate>19 July 2019</creationDate>
+    <version>2.0.0</version>
+    <author>eMundus</author>
+    <authorEmail>dev@emundus.fr</authorEmail>
+    <authorUrl>https://www.emundus.fr</authorUrl>
+    <copyright>(C) 2019 eMundus All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <description>This plugin sends a ZIP of the file when it is changed to a certain status or when it is deleted.</description>
+    <files>
+        <filename>index.html</filename>
+        <filename>add_tag.xml</filename>
+        <filename plugin="add_tag">add_tag.php</filename>
+    </files>
+</extension>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension
+		type="plugin"
+		version="4.2.9"
+		method="upgrade"
+		group="emundus">
+	<name>Emundus - HESAM tutorial events.</name>
+	<creationDate>27 May 2020</creationDate>
+	<version>2.0.0</version>
+	<author>Hugo Moracchini</author>
+	<authorEmail>hugo@emundus.fr</authorEmail>
+	<authorUrl>https://www.emundus.fr</authorUrl>
+	<copyright>(C) 2020 EMUNDUS SOFTWARE. All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<description>This plugin sets a number of user params when an action is done for the first time.</description>
+	<files>
+		<filename>index.html</filename>
+		<filename>hesam_tutorial_events.xml</filename>
+		<filename plugin="hesam_tutorial_events">hesam_tutorial_events.php</filename>
+	</files>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+			</fieldset>
+		</fields>
+	</config>
+</extension>
