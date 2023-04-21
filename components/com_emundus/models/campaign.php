@@ -868,53 +868,6 @@ class EmundusModelCampaign extends JModelList {
                 $this->_db->setQuery($query, $offset, $limit);
                 $campaigns = $this->_db->loadObjectList();
 
-				if (!empty($campaigns)) {
-					foreach ($campaigns as $key => $campaign) {
-						$campaign->label = ['fr' => $campaign->label, 'en' => $campaign->label];
-
-						// this data formatted is used in onboarding lists
-						$start_date = date('d/m/Y H\hi', strtotime($campaign->start_date));
-						$end_date = date('d/m/Y H\hi', strtotime($campaign->end_date));
-						$campaign->additional_columns = [
-							[
-								'key' => JText::_('COM_EMUNDUS_ONBOARD_START_DATE'),
-								'value' => $start_date,
-								'classes' => '',
-								'display' => 'table'
-							],
-							[
-								'key' => JText::_('COM_EMUNDUS_ONBOARD_END_DATE'),
-								'value' => $end_date,
-								'classes' => '',
-								'display' => 'table'
-							],
-							[
-								'value' => JText::_('COM_EMUNDUS_DASHBOARD_CAMPAIGN_FROM') . ' ' . $start_date . ' ' . JText::_('COM_EMUNDUS_DASHBOARD_CAMPAIGN_TO') . ' ' . $end_date,
-								'classes' => 'em-font-size-14 em-neutral-700-color',
-								'display' => 'blocs'
-							],
-							[
-								'key' => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
-								'value' => $campaign->published ? JText::_('PUBLISHED') : JText::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
-								'classes' => $campaign->published ? 'label label-lightgreen em-p-5-12 em-font-weight-600' : 'label label-default em-p-5-12 em-font-weight-600',
-								'display' => 'all'
-							],
-							[
-								'key' => JText::_('COM_EMUNDUS_ONBOARD_NB_FILES'),
-								'value' => $campaign->nb_files,
-								'classes' => '',
-								'display' => 'table'
-							],
-							[
-								'value' => $campaign->nb_files . ' ' . ( $campaign->nb_files > 1 ? JText::_('COM_EMUNDUS_FILES_FILES') : JText::_('COM_EMUNDUS_FILES_FILE')),
-								'classes' => 'label label-default em-p-5-12 em-font-weight-600',
-								'display' => 'blocs'
-							],
-						];
-						$campaigns[$key] = $campaign;
-					}
-				}
-
                 if (empty($campaigns) && $offset != 0) {
                     return $this->getAssociatedCampaigns($filter, $sort, $recherche, $lim,0, $program, $session);
                 }

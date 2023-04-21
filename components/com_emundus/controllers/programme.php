@@ -162,6 +162,65 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $programs = $this->m_programme->getAllPrograms($lim, $page, $filter, $sort, $recherche);
 
             if (count((array)$programs) > 0) {
+				foreach($programs['datas'] as $key => $program) {
+					$programs['datas'][$key]->label = ['fr' => JText::_($program->label), 'en' => JText::_($program->label)];
+					$programs['datas'][$key]->additional_columns = [
+							[
+								'key' => JText::_('COM_EMUNDUS_ONBOARD_PROGCODE'),
+								'value' => $program->code,
+								'classes' => 'em-font-size-14 em-neutral-700-color',
+								'display' => 'all'
+							],
+							[
+								'key' => JText::_('COM_EMUNDUS_ONBOARD_CATEGORY'),
+								'value' => $program->programmes,
+								'classes' => 'em-font-size-14 em-neutral-700-color',
+								'display' => 'all'
+							],
+							[
+								'key' => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
+								'value' => $program->published ? JText::_('PUBLISHED') : JText::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
+								'classes' => $program->published ? 'label label-lightgreen em-p-5-12 em-font-weight-600' : 'label label-default em-p-5-12 em-font-weight-600',
+								'display' => 'table'
+							],
+							[
+								'key' => JText::_('COM_EMUNDUS_ONBOARD_PROGRAM_APPLY_ONLINE'),
+								'value' => $program->apply_online ? JText::_('JYES') : JText::_('JNO'),
+								'classes' => '',
+								'display' => 'table'
+							],
+							[
+								'key' => JText::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE'),
+								'value' => $program->nb_campaigns,
+								'classes' => '',
+								'display' => 'table'
+							],
+							[
+								'type' => 'tags',
+								'key' => JText::_('COM_EMUNDUS_ONBOARD_PROGRAM_TAGS'),
+								'values' => [
+									[
+										'key' => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
+										'value' => $program->published ? JText::_('PUBLISHED') : JText::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
+										'classes' => $program->published ? 'label label-lightgreen em-p-5-12 em-font-weight-600' : 'label label-default em-p-5-12 em-font-weight-600',
+									],
+									[
+										'key' => JText::_('COM_EMUNDUS_ONBOARD_PROGRAM_APPLY_ONLINE'),
+										'value' => $program->apply_online ? JText::_('COM_EMUNDUS_ONBOARD_PROGRAM_APPLY_ONLINE') : JText::_(''),
+										'classes' => $program->apply_online ? 'label label-lightgreen em-p-5-12 em-font-weight-600' : 'hidden',
+									],
+									[
+										'key' => '',
+										'value' => $program->nb_campaigns > 1 ? $program->nb_campaigns . ' ' . JText::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED') : $program->nb_campaigns . ' ' . JText::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_SINGLE'),
+										'classes' => 'em-mt-8 em-mb-8 label label-default em-p-5-12 em-font-weight-600',
+									]
+								],
+								'display' => 'blocs',
+								'classes' => 'em-mt-8 em-mb-8'
+							]
+						];
+				}
+
 	            $response = ['status' => true, 'msg' => JText::_('PROGRAMS_RETRIEVED'), 'data' => $programs];
             } else {
 	            $response['msg'] = JText::_('ERROR_CANNOT_RETRIEVE_PROGRAMS');
