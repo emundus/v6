@@ -57,7 +57,7 @@
 			</nav>
 			<section id="actions" class="em-flex-row em-flex-space-between em-mt-16 em-mb-16">
 				<section id="tab-actions">
-					<select v-for="filter in filters[selectedListTab]" :key="filter.key" v-model="filter.value" @change="onChangeFilter(filter)" class="em-default-input">
+					<select v-for="filter in filters[selectedListTab]" :key="selectedListTab + '-' + filter.key" v-model="filter.value" @change="onChangeFilter(filter)" class="em-default-input em-mr-8">
 						<option v-for="option in filter.options" :key="option.value" :value="option.value">{{ translate(option.label) }}</option>
 					</select>
 				</section>
@@ -373,14 +373,18 @@ export default {
 
 												this.filters[tab.key].push({
 													key: filter.key,
-													value: 'all',
+													value: filter.default ? filter.default : 'all',
 													options: options
 												});
 											}
 										});
 							}
 						} else {
-							this.filters[tab.key].options = filter.values;
+							this.filters[tab.key].push({
+								key: filter.key,
+								value: filter.default ? filter.default : 'all',
+								options: filter.values
+							});
 						}
 					});
 				}

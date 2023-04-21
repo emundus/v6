@@ -147,6 +147,30 @@ class EmundusControllerProgramme extends JControllerLegacy {
 		exit;
 	}
 
+	public function getallprogramforfilter() {
+		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+			$programs = $this->m_programme->getAllPrograms(9999, 0, '', 'DESC', '');
+
+			if (count((array)$programs) > 0) {
+				$values = [];
+				foreach($programs['datas'] as $key => $program) {
+					$values[] = [
+						'label' => $program->label,
+						'value' => $program->code
+					];
+				}
+
+				$response = ['status' => true, 'msg' => JText::_('PROGRAMS_FILTER_RETRIEVED'), 'data' => $values];
+			} else {
+				$response['msg'] = JText::_('ERROR_CANNOT_RETRIEVE_PROGRAMS');
+			}
+		}
+		echo json_encode((object)$response);
+		exit;
+	}
+
     public function getallprogram() {
 	    $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 

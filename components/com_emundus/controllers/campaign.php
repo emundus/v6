@@ -162,12 +162,41 @@ class EmundusControllerCampaign extends JControllerLegacy {
             $allow_pinned_campaign = $eMConfig->get('allow_pinned_campaign', 0);
 
             if (count($campaigns) > 0) {
+                // this data formatted is used in onboarding lists
                 foreach($campaigns['datas'] as $key => $campaign) {
                     $campaign->label = ['fr' => $campaign->label, 'en' => $campaign->label];
 
-                    // this data formatted is used in onboarding lists
+                    $now = time();
+                    $start_date = strtotime($campaign->start_date);
+                    $end_date = strtotime($campaign->end_date);
+
+                    if ($now < $start_date) {
+                        $campaign_time_state_label = JText::_('COM_EMUNDUS_CAMPAIGN_YET_TO_COME');
+                        $campaign_time_state_class = 'label label-default em-p-5-12 em-font-weight-600';
+                    } else if ($now > $end_date) {
+                        $campaign_time_state_label = JText::_('COM_EMUNDUS_ONBOARD_FILTER_CLOSE');
+                        $campaign_time_state_class = 'label label-black em-p-5-12 em-font-weight-600';
+                    } else {
+                        $campaign_time_state_label = JText::_('COM_EMUNDUS_CAMPAIGN_ONGOING');
+                        $campaign_time_state_class = 'label label-default em-p-5-12 em-font-weight-600';
+                    }
+
                     $start_date = date('d/m/Y H\hi', strtotime($campaign->start_date));
                     $end_date = date('d/m/Y H\hi', strtotime($campaign->end_date));
+
+                    $state_values = [
+                        [
+                            'key' => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
+                            'value' => $campaign->published ? JText::_('PUBLISHED') : JText::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
+                            'classes' => $campaign->published ? 'label label-lightgreen em-p-5-12 em-font-weight-600' : 'label label-default em-p-5-12 em-font-weight-600',
+                        ],
+                        [
+                            'key' => JText::_('COM_EMUNDUS_ONBOARD_TIME_STATE'),
+                            'value' => $campaign_time_state_label,
+                            'classes' => $campaign_time_state_class
+                        ]
+                    ];
+
                     $campaign->additional_columns = [
                         [
                             'key' => JText::_('COM_EMUNDUS_ONBOARD_START_DATE'),
@@ -182,15 +211,10 @@ class EmundusControllerCampaign extends JControllerLegacy {
                             'display' => 'table'
                         ],
                         [
-                            'value' => JText::_('COM_EMUNDUS_DASHBOARD_CAMPAIGN_FROM') . ' ' . $start_date . ' ' . JText::_('COM_EMUNDUS_DASHBOARD_CAMPAIGN_TO') . ' ' . $end_date,
-                            'classes' => 'em-font-size-14 em-neutral-700-color',
-                            'display' => 'blocs'
-                        ],
-                        [
                             'key' => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
-                            'value' => $campaign->published ? JText::_('PUBLISHED') : JText::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
-                            'classes' => $campaign->published ? 'label label-lightgreen em-p-5-12 em-font-weight-600' : 'label label-default em-p-5-12 em-font-weight-600',
-                            'display' => 'all'
+                            'type' => 'tags',
+                            'values' => $state_values,
+                            'display' => 'table'
                         ],
                         [
                             'key' => JText::_('COM_EMUNDUS_ONBOARD_NB_FILES'),
@@ -199,10 +223,25 @@ class EmundusControllerCampaign extends JControllerLegacy {
                             'display' => 'table'
                         ],
                         [
-                            'value' => $campaign->nb_files . ' ' . ( $campaign->nb_files > 1 ? JText::_('COM_EMUNDUS_FILES_FILES') : JText::_('COM_EMUNDUS_FILES_FILE')),
-                            'classes' => 'label label-default em-p-5-12 em-font-weight-600',
+                            'value' => JText::_('COM_EMUNDUS_DASHBOARD_CAMPAIGN_FROM') . ' ' . $start_date . ' ' . JText::_('COM_EMUNDUS_DASHBOARD_CAMPAIGN_TO') . ' ' . $end_date,
+                            'classes' => 'em-font-size-14 em-neutral-700-color',
                             'display' => 'blocs'
                         ],
+                        [
+                            'type' => 'tags',
+                            'key' => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
+                            'values' => [
+                                $state_values[0],
+                                $state_values[1],
+                                [
+                                    'key' => JText::_('COM_EMUNDUS_FILES_FILES'),
+                                    'value' => $campaign->nb_files . ' ' . ( $campaign->nb_files > 1 ? JText::_('COM_EMUNDUS_FILES_FILES') : JText::_('COM_EMUNDUS_FILES_FILE')),
+                                    'classes' => 'label label-default em-p-5-12 em-font-weight-600',
+                                ]
+                            ],
+                            'classes' => 'em-mt-8 em-mb-8',
+                            'display' => 'blocs'
+                        ]
                     ];
                     $campaigns['datas'][$key] = $campaign;
                 }
