@@ -397,7 +397,9 @@ export default {
 			this.searches[this.selectedListTab].searchDebounce = setTimeout(() => {
 				if (this.searches[this.selectedListTab].search !== this.searches[this.selectedListTab].lastSearch) {
 					this.searches[this.selectedListTab].lastSearch = this.searches[this.selectedListTab].search;
-					this.getListItems(this.currentTab.pagination.current, this.selectedListTab);
+
+					// when we are searching through the list, we reset the pagination
+					this.getListItems(1, this.selectedListTab);
 				}
 			}, 500);
 		},
@@ -477,7 +479,8 @@ export default {
 			}
 		},
 		onChangeFilter() {
-			this.getListItems(this.currentTab.pagination.current, this.selectedListTab);
+			// when we change a filter, we reset the pagination
+			this.getListItems(1, this.selectedListTab);
 		},
 		changeViewType(viewType) {
 			this.viewType = viewType.value;
