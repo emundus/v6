@@ -26,6 +26,12 @@ jimport('joomla.application.component.model');
 class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 {
 
+    /**
+     * All the countries data from the database
+     *
+     * @var array
+     */
+    protected $countries;
 
 	/**
 	 * Format the string for use in list view, email data
@@ -72,6 +78,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 		$params = $this->getParams();
 		$element = $this->getElement();
 		$bits = $this->inputProperties($repeatCounter);
+        $this->BDRequest();
 		/* $$$ rob - not sure why we are setting $data to the form's data
 		 * but in table view when getting read only filter value from url filter this
 		 * _form_data was not set to no readonly value was returned
@@ -148,7 +155,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 		$layoutData->scanQR = $params->get('scan_qrcode', '0') === '1';
 		$layoutData->attributes = $bits;
 
-        $layoutData->dataSelect = $this->BDRequest(); // pour envoyer les données de la BD vers le front
+        $layoutData->dataSelect = $this->countries; // pour envoyer les données de la BD vers le front
 
 		$layoutData->sizeClass = $params->get('bootstrap_class', '');
 
@@ -248,6 +255,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 	 */
 	public function storeDatabaseFormat($val, $data)
 	{
+        $this->getAJAX();
 
 		if (is_array($val))
 		{
@@ -279,15 +287,28 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 	}
 
 
-    public function BDRequest() // pour récup les donées de la table data_country_phone_info
+    public function BDRequest(): void // pour récup les donées de la table data_country_phone_info
     {
         $db = JFactory::getDbo();
-        $query = 'SELECT * FROM data_country_phone';
+        $query = 'SELECT * FROM data_country_phone'; // à changer plus tard
         $db->setQuery($query);
 
         $db->execute();
 
-        return $db->loadObjectList(); // on renvoit toutes les données sous forme de liste d'object (format JSON)
+        $this->countries = $db->loadObjectList(); // on renvoit toutes les données sous forme de liste d'object (format JSON)
+    }
+
+    protected function getAJAX()
+    {
+
+        //$indice = $_POST['indiceLigne'];
+        var_dump($_POST);
+        exit;
+
+        foreach ($_POST as $key => $value) {
+            var_dump($key, $value);
+        }
+        exit;
     }
 
 }

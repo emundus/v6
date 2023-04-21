@@ -15,7 +15,7 @@ const prepareInput = () =>
 {
     input.pattern = prepareMaskFormat();
     input.required = true;
-    input.value = "";
+    input.value = countrySelected.country_code;
 };
 
 const handlerInputChange = (props) => {
@@ -31,5 +31,64 @@ let indiceCountry; let countrySelected;
 
 
 newCountry(0);
+prepareInput();
 
 select.addEventListener("change", handlerInputChange);
+
+/*
+const sendAjax = {
+
+    initialize: () =>
+    {
+        const urlphp = window.location.href;
+        const indice = JSON.encode(indiceCountry);
+
+
+        let httpRequest = new XMLHttpRequest();
+
+        httpRequest.open('POST', urlphp, true);
+        httpRequest.setRequestHeader('Content-Type', 'test/plain');
+        httpRequest.send('jesuisla='+indice);
+
+
+
+        const packagesRequest = new Request.HTML({
+
+            url: urlphp,
+            header: '\'Content-Type\', \'test/plain\'',
+            method: 'post',
+            data: '{"JE SUIS LAAAAAAAAAAAAAAAAAAAA": indice}',
+
+
+            onSuccess: () =>
+            {
+                //alert("gros coup de chance");
+
+            },
+
+            onFailure: () =>
+            {
+                //alert("pas réussi noob");
+            }
+
+        });
+        packagesRequest.send();
+
+
+    }
+}
+
+const buttonSubmit = document.getElementsByName("Submit")[0];
+select.addEventListener("click", () =>
+{
+
+    sendAjax.initialize();
+});
+*/
+
+const lib = libphonenumber;
+
+
+const lib2 = lib.isPossibleNumber("oui");
+
+console.log(lib2);
