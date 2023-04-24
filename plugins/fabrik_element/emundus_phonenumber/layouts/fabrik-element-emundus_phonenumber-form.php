@@ -5,7 +5,6 @@ defined('JPATH_BASE') or die;
 // Add span with id so that element fxs work.
 $doc = JFactory::getDocument();
 $doc->addScript(JURI::root() . "plugins/fabrik_element/emundus_phonenumber/assets/js/emundus_phonenumber_libphone-min.js");
-$doc->addScript(JURI::root() . "plugins/fabrik_element/emundus_phonenumber/assets/css/emundus_phonenumber.css");
 ?>
 
 <div id="div_<?php echo $displayData->attributes['name']; ?>" class="em-flex-row">
