@@ -26,13 +26,6 @@ jimport('joomla.application.component.model');
 class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 {
 
-    /**
-     * All the countries data from the database
-     *
-     * @var array
-     */
-    protected $countries;
-
 	/**
 	 * Format the string for use in list view, email data
 	 *
@@ -155,7 +148,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 		$layoutData->scanQR = $params->get('scan_qrcode', '0') === '1';
 		$layoutData->attributes = $bits;
 
-        $layoutData->dataSelect = $this->countries; // pour envoyer les données de la BD vers le front
+        $layoutData->dataSelect = $this->BDRequest();
 
 		$layoutData->sizeClass = $params->get('bootstrap_class', '');
 
@@ -296,20 +289,8 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 
         $db->execute();
 
-        $this->countries = $db->loadObjectList(); // on renvoit toutes les données sous forme de liste d'object (format JSON)
+        return $db->loadObjectList(); // on renvoit toutes les données sous forme de liste d'object (format JSON)
     }
 
-    protected function getAJAX()
-    {
-
-        //$indice = $_POST['indiceLigne'];
-        var_dump($_POST);
-        exit;
-
-        foreach ($_POST as $key => $value) {
-            var_dump($key, $value);
-        }
-        exit;
-    }
 
 }
