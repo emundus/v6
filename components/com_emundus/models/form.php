@@ -734,6 +734,9 @@ class EmundusModelForm extends JModelList {
 										$formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile);
 									}
 
+									// Copy attachments
+									$copied = $this->copyAttachmentsToNewProfile($pid, $newprofile);
+
 									// Create checklist menu
 									$this->addChecklistMenu($newprofile);
 
@@ -758,6 +761,64 @@ class EmundusModelForm extends JModelList {
 		return $duplicated;
     }
 
+	public function copyAttachmentsToNewProfile($oldprofile, $newprofile) {
+		$copied = false;
+
+		if (!empty($oldprofile) && !empty($newprofile)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('*')
+				->from($db->quoteName('#__emundus_setup_attachment_profiles'))
+				->where($db->quoteName('profile_id') . ' = ' . $oldprofile);
+
+			try {
+				$db->setQuery($query);
+				$attachments = $db->loadAssocList();
+			} catch (Exception $e) {
+				JLog::add('component/com_emundus/models/form | Error when get attachments to copy : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+
+
+			if (!empty($attachments)) {
+				$query->clear();
+
+				$columns = array_keys($attachments[0]);
+				$id_key = array_search('id', $columns);
+				unset($columns[$id_key]);
+
+				$values = array();
+				foreach ($attachments as $attachment) {
+					$attachment['profile_id'] = $newprofile;
+					unset($attachment['id']);
+
+					foreach ($attachment as $key => $value) {
+						if (empty($value)) {
+							$attachment[$key] = null;
+						}
+					}
+
+					// do not use db->quote() every time, only if the value is not an integer and not null
+					$values[] = implode(',', array_map(function($value) use ($db) {
+						return is_null($value) ? 'NULL' : $db->quote($value);
+					}, $attachment));
+				}
+
+				$query->insert($db->quoteName('#__emundus_setup_attachment_profiles'))
+					->columns($db->quoteName($columns))
+					->values($values);
+
+				try {
+					$db->setQuery($query);
+					$copied = $db->execute();
+				} catch (Exception $e) {
+					JLog::add('component/com_emundus/models/form | Error when copy attachments to new profile : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+				}
+			}
+		}
+
+		return $copied;
+	}
 
     public function getFormById($id) {
         if (empty($id)) {
