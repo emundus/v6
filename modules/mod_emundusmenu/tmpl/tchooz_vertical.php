@@ -126,6 +126,7 @@ defined('_JEXEC') or die;
     }
     .tchooz-vertical-item a img{
         width: 30px;
+        height: 30px;
         padding: 5px;
     }
 
@@ -229,8 +230,12 @@ defined('_JEXEC') or die;
         <button class="g-menu-item g-standard burger-button" onclick="enableTitles()"><img src="<?php echo JURI::base()?>images/emundus/menus/menu.png" style="width: 30px"></button>
         <?php
 
-        if(file_exists(JPATH_SITE . '/images/custom/favicon.png')){
-            $favicon = JURI::base().'/images/custom/favicon.png';
+        $target_dir = "images/custom/";
+        $filename = 'favicon';
+        $favicon = glob("{$target_dir}{$filename}.*");
+
+        if(file_exists(JPATH_SITE . '/' . $favicon[0])){
+            $favicon = JURI::base().'/' . $favicon[0];
         } else {
             $favicon = JURI::base().'/images/emundus/tchooz_favicon.png';
         }

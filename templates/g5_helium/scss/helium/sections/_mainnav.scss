@@ -4,7 +4,7 @@
     padding: $content-padding/2 0;
     white-space: normal;
     @include word-wrap(break-word);
-    @include transition(0.35s ease);
+    transition: 0.35s ease;
 }
 
 %dropdown-column {
@@ -98,7 +98,7 @@
                     margin-top: -0.35rem;
 
                     &:after {
-                        content: "\f0da";
+                        content: $fa-caret-right;
                         position: relative;
                         opacity: 1;
                         top: 0.75rem;
@@ -128,7 +128,7 @@
 // Preset Thumbnails
 .g-preset-thumbnails {
     .g-block {
-        @include flex(1 1 auto !important);
+        flex: 1 1 auto !important;
 
         > .g-content {
             margin: 1rem 0;

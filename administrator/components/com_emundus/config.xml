@@ -19,10 +19,30 @@
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
-		<field showon="log_forms_update:1" name="log_forms_update_forms" label="COM_EMUNDUS_LOG_FORMS_UPDATE_FORMS" type="field" description="COM_EMUNDUS_LOG_FORMS_UPDATE_FORMS_DESC"/>
+		<field showon="log_forms_update:1"
+			   name="log_forms_update_forms"
+			   label="COM_EMUNDUS_LOG_FORMS_UPDATE_FORMS"
+			   description="COM_EMUNDUS_LOG_FORMS_UPDATE_FORMS_DESC"
+			   type="sql"
+			   query="SELECT id, CONCAT(id, ' - ', label) as label FROM jos_fabrik_forms WHERE published = 1"
+			   key_field="id"
+			   value_field="label"
+			   multiple="true"
+			   default=""
+		/>
 		<field name="com_emundus_show_tags_category" menu="hide" type="list" default="0" label="COM_EMUNDUS_SHOW_TAGS_CATEGORY" description="COM_EMUNDUS_SHOW_TAGS_CATEGORY_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
+		</field>
+
+		<field name="log_show_timeformat" type="list" default="0" label="COM_EMUNDUS_LOG_SHOW_TIMEFORMAT" description="COM_EMUNDUS_LOG_SHOW_TIMEFORMAT_DESC">
+			<option value="0">UTC_FORMAT</option>
+			<option value="1">LOCAL_FORMAT</option>
+		</field>
+
+		<field name="log_show_timeorder" type="list" default="DESC" label="COM_EMUNDUS_LOG_SHOW_TIMEORDER" description="COM_EMUNDUS_LOG_SHOW_TIMEORDER_DESC">
+			<option value="ASC">ASC</option>
+			<option value="DESC">DESC</option>
 		</field>
 
 		<field name="display_other_user_editing_same_file" type="list" default="0" label="DISPLAY_OTHER_USER_EDITING_SAME_FILE" description="DISPLAY_OTHER_USER_EDITING_SAME_FILE_DESC">
@@ -71,11 +91,6 @@
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
-		<!-- <field name="can_evaluators_see_all_applicants" menu="hide" type="list" default="0" label="CAN_EVALUATORS_SEE_ALL_APPLICANTS" description="CAN_EVALUATORS_SEE_ALL_APPLICANTS_DESC">
-			<option value="0">No</option>
-			<option value="1">Can see all applicants</option>
-			<option value="2">Can see and evaluate all applicants</option>
-		</field> -->
 		<field name="evaluators_can_see" menu="hide" type="list" default="0" label="COM_EMUNDUS_EVALUATORS_CAN_SEE" description="COM_EMUNDUS_EVALUATORS_CAN_SEE_DESC">
 			<option value="0">COM_EMUNDUS_NONE</option>
 			<option value="1">COM_EMUNDUS_AFFECTED</option>
@@ -118,17 +133,6 @@
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
-		<!--
-		<field name="nb_months_registration_period_access" type="text" size="2" default="11" label="NB_MONTHS_REGISTRATION_PERIOD_ACCESS" description="NB_MONTHS_REGISTRATION_PERIOD_ACCESS_DESC" />
-		<field name="alert_new_applicant" type="radio" default="0" label="ALERT_NEW_APPLICANT" description="ALERT_NEW_APPLICANT_DESC">
-			<option value="0">JNo</option>
-			<option value="1">JYes</option>
-		</field>
-		<field name="alert_new_attachment" type="radio" default="0" label="ALERT_NEW_ATTACHMENT" description="ALERT_NEW_ATTACHMENT_DESC">
-			<option value="0">JNo</option>
-			<option value="1">JYes</option>
-		</field>
-		-->
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_APPLICANTS" name="applicants" description="COM_EMUNDUS_APPLICANTS_DESC">
 		<field name="id_applicants" type="text" size="50" default="" label="ID_APPLICANTS" description="ID_APPLICANTS_DESC" />
@@ -254,14 +258,13 @@
 			<option value="1">JYES</option>
 		</field>
 
-		<field name="export_application_pdf_title_color" type="text" default="#ee1c25" label="COM_EMUNDUS_EXPORT_APPLICATION_TITLE_COLOR" description="COM_EMUNDUS_EXPORT_APPLICATION_TITLE_COLOR_DESC"/>
+		<field name="export_application_pdf_title_color" type="text" default="#000000" label="COM_EMUNDUS_EXPORT_APPLICATION_TITLE_COLOR" description="COM_EMUNDUS_EXPORT_APPLICATION_TITLE_COLOR_DESC"/>
 
 		<filed name="show_empty_fields" type="radio" default="1" label="COM_EMUNDUS_SHOW_EMPTY_FIELDS" description="COM_EMUNDUS_SHOW_EMPTY_FIELDS_DESC"/>
 		<field name="export_path" type="text" size="6" label="COM_EMUNDUS_EXPORT_PATH" description="COM_EMUNDUS_EXPORT_PATH_DESC"/>
 		<field name="application_form_order" type="text" size="6" label="COM_EMUNDUS_APPLICATION_FORM_ORDER" description="COM_EMUNDUS_APPLICATION_FORM_ORDER_DESC"/>
 		<field name="attachment_order" type="text" size="6" label="COM_EMUNDUS_CANDIDACY_FORM_ORDER" description="COM_EMUNDUS_CANDIDACY_FORM_ORDER_DESC"/>
 
-		<!-- replace generated documents (means : just get the last generated document) -->
 		<field name="export_replace_doc" type="radio" default="0" label="COM_EMUNDUS_EXPORT_REPLACE_DOC" description="COM_EMUNDUS_EXPORT_REPLACE_DOC_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
@@ -293,11 +296,6 @@
 	<fieldset label="COM_EMUNDUS_IMPORTS" name="imports" description="COM_EMUNDUS_IMPORTS_DESC">
 		<field name="ldapFiltersImport" type="text" required="false" label="COM_EMUNDUS_LDAP_FILTERS_IMPORT_LABEL" description="COM_EMUNDUS_LDAP_FILTERS_IMPORT_DESC" />
 	</fieldset>
-	<!--
-        <fieldset addfieldpath="/administrator/components/com_emundus/models/fields" label="COM_EMUNDUS_PDF" name="pdf" description="COM_EMUNDUS_PDF_DESC" >
-            <field name="export_pdf" type="text" size="60" default="" label="Select items for the pdf export"/>
-        </fieldset>
-    -->
 
 	<fieldset label="COM_EMUNDUS_OFFERS" name="offers" description="COM_EMUNDUS_OFFERS_DESC">
 		<field name="fabrik_elements_title" type="text" required="false" label="COM_EMUNDUS_OFFERS_PDF_TITLE_LABEL" description="COM_EMUNDUS_OFFERS_PDF_TITLE_DESC" class="inputbox" default="2113" />
@@ -359,6 +357,8 @@
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_INTEGRATION" name="ametys" description="COM_EMUNDUS_INTEGRATION_DESC">
 
+		<field name="callback_whitelist_ip" type="text" default="" label="COM_EMUNDUS_INTEGRATION_WHITELIST_IP" description="COM_EMUNDUS_INTEGRATION_WHITELIST_IP_DESC" />
+
 		<field name="headerCheck" type="list" menu="hide" default="0" label="COM_EMUNDUS_HEADER_CHECK" description="COM_EMUNDUS_HEADER_CHECK_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
@@ -370,6 +370,10 @@
 				label="COM_EMUNDUS_GOTENBERG_DESC"
 		/>
 		<field name="gotenberg_activation" type="list" menu="hide" default="0" label="COM_EMUNDUS_GOTENBERG_ACTIVATION" description="COM_EMUNDUS_GOTENBERG_ACTIVATION_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="gotenberg_merge_activation" type="list" menu="hide" default="0" label="COM_EMUNDUS_GOTENBERG_MERGE_ACTIVATION" description="COM_EMUNDUS_GOTENBERG_MERGE_ACTIVATION_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
@@ -429,8 +433,8 @@
 				label="COM_EMUNDUS_YOUSIGN_DESC"
 		/>
 		<field name="yousign_prod" type="list" menu="hide" default="1" label="COM_EMUNDUS_YOUSIGN_PROD" description="COM_EMUNDUS_YOUSIGN_PROD_DESC">
-			<option value="https://api.yousign.com">PROD</option>
-			<option value="https://staging-api.yousign.com">PREPROD</option>
+			<option value="https://api.yousign.app/v3">PROD</option>
+			<option value="https://api-sandbox.yousign.app/v3">PREPROD</option>
 		</field>
 		<field name="yousign_api_key" type="field" description="COM_EMUNDUS_YOUSIGN_KEY_DESC" label="COM_EMUNDUS_YOUSIGN_KEY_LABEL" />
 		<field
@@ -526,6 +530,18 @@
 			<field name="saml_default_profile" label="COM_EMUNDUS_SAML_INTEGRATION_DEFAULT_PROFILE" type="text"></field>
 		</fieldset>
 
+
+		<field name="spacer11" type="spacer" hr="true"/>
+		<field name="smart_agenda" type="note" label="COM_EMUNDUS_SMART_AGENDA"/>
+		<fieldset label="COM_EMUNDUS_SMART_AGENDA">
+			<field name="smart_agenda_login" type="text" label="COM_EMUNDUS_SMART_AGENDA_LOGIN"/>
+			<field name="smart_agenda_pwd" type="password" label="COM_EMUNDUS_SMART_AGENDA_PWD"/>
+			<field name="smart_agenda_api_id" type="text" label="COM_EMUNDUS_SMART_AGENDA_API_ID"/>
+			<field name="smart_agenda_api_key" type="password" label="COM_EMUNDUS_SMART_AGENDA_API_KEY"/>
+			<field name="smart_agenda_base_url" type="text" label="COM_EMUNDUS_SMART_AGENDA_BASE_URL"/>
+			<field name="smart_agenda_ws_base_url" type="text" label="COM_EMUNDUS_SMART_AGENDA_BASE_URL_WS"/>
+		</fieldset>
+
 	</fieldset>
 	<fieldset
 			name="permissions"
@@ -547,6 +563,13 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+
+		<field name="messenger_notify_users_programs" type="list" default="0" label="COM_EMUNDUS_MESSENGER_NOTIFY_USERS_PROGRAMS" description="COM_EMUNDUS_MESSENGER_NOTIFY_USERS_PROGRAMS_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="messenger_notify_groups" type="textarea" default="" label="COM_EMUNDUS_MESSENGER_NOTIFY_GROUPS" description="COM_EMUNDUS_MESSENGER_NOTIFY_GROUPS_DESC"/>
+		<field name="messenger_notify_users" type="textarea" default="" label="COM_EMUNDUS_MESSENGER_NOTIFY_USERS" description="COM_EMUNDUS_MESSENGER_NOTIFY_USERS_DESC"/>
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_MODULES" name="modules" description="COM_EMUNDUS_MODULES_DESC">
 		<field name="style" label="COM_EMUNDUS_MODULES_STYLE" type="radio" default="1" description="COM_EMUNDUS_MODULES_STYLE_DESC">

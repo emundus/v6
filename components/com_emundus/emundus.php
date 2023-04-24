@@ -214,7 +214,8 @@ JText::script('COM_EMUNDUS_USERS_DEFAULT_LANGAGE');
 JText::script('COM_EMUNDUS_USERS_NATIONALITY');
 JText::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PASSWORD');
 JText::script('COM_EMUNDUS_PUBLISH_UPDATE');
-
+JText::script('COM_EMUNDUS_FILES_FILTER');
+JText::script('COM_EMUNDUS_FILES_APPLY_FILTER');
 
 // view user
 JText::script('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_EMAIL');
@@ -361,6 +362,7 @@ JText::script('COM_EMUNDUS_EXPORTS_CREATE_ZIP');
 //WHO'S WHO
 JText::script('COM_EMUNDUS_TROMBI_GENERATE');
 JText::script('COM_EMUNDUS_TROMBI_DOWNLOAD');
+JText::script('COM_EMUNDUS_TROMBINOSCOPE_GENERATE_FAILED');
 
 // Email to applicant
 JText::script('COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL');
@@ -603,6 +605,11 @@ JText::script('COM_EMUNDUS_FORM_MY_FORMS');
 JText::script('COM_EMUNDUS_PASSWORD_WRONG_FORMAT_TITLE');
 JText::script('COM_EMUNDUS_PASSWORD_WRONG_FORMAT_DESCRIPTION');
 
+// DELETE ADVANCED FILTERS
+JText::script('COM_EMUNDUS_DELETE_ADVANCED_FILTERS');
+
+JText::script('COM_EMUNDUS_MAIL_GB_BUTTON');
+
 
 // ONBOARD
 
@@ -624,6 +631,7 @@ $controller   = new $classname();
 
 $user = JFactory::getUser();
 $secret = JFactory::getConfig()->get('secret');
+$webhook_token = JFactory::getConfig()->get('webhook_token') ?: '';
 
 $name = $app->input->get('view', '', 'CMD');
 $task = $app->input->get('task', '', 'CMD');
@@ -676,13 +684,20 @@ if ($task == 'getproductpdf') {
     $controller->execute($task);
 }
 
-if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name == 'job' || $name == 'thesiss' || $name == 'thesis')) {
+if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name == 'job' || $name == 'thesiss' || $name == 'thesis'))
+{
     $controller->execute($task);
-} elseif($user->guest && (($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && $secret === $token) {
+}
+elseif ($user->guest && (($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == JApplicationHelper::getHash($token)))
+{
     $controller->execute($task);
-} elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $json != 'json') && $task != 'passrequest' && $task != 'getusername') {
+}
+elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $json != 'json') && $task != 'passrequest' && $task != 'getusername')
+{
     $controller->setRedirect('index.php', JText::_("ACCESS_DENIED"), 'error');
-} else {
+}
+else
+{
     if ($name != 'search_engine') {
        // Perform the Request task
        $controller->execute($task);

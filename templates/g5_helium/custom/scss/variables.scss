@@ -1,47 +1,199 @@
 /** VARIABLES **/
 
 :root {
+  --attachment-width: 75%;
 
-  --neutral-50: #FFFFFF;
-  --neutral-100: #FAFAFA;
-  --neutral-200: #F3F3F3;
-  --neutral-300: #EDEDED;
-  --neutral-400: #E3E3E3;
-  --neutral-500: #A4A4A4;
-  --neutral-600: #727272;
-  --neutral-700: #4B4B4B;
-  --neutral-800: #2B2B2B;
-  --neutral-900: #000000;
+  --neutral-0: #FFFFFF;
+  --neutral-25: #FEFEFE;
+  --neutral-50: #FAFAFB;
+  --neutral-100: #EBECF0;
+  --neutral-200: #D4D6DF;
+  --neutral-300: #B2B7C7;
+  --neutral-400: #8990A9;
+  --neutral-500: #5E6580;
+  --neutral-600: #363A49;
+  --neutral-700: #20232C;
+  --neutral-800: #16181E;
+  --neutral-900: #0B0C0F;
 
-  --red-100: #FFEEEE;
-  --red-200: #FEDCDC;
-  --red-300: #FBABAB;
-  --red-400: #E76767;
-  --red-500: #DB333E;
-  --red-600: #C31924;
-  --red-700: #9F0B15;
-  --red-800: #7F050D;
-  --red-900: #480005;
+  --red-25: #FFFBFA;
+  --red-50: #FEF3F2;
+  --red-100: #FEE4E2;
+  --red-200: #FECDCA;
+  --red-300: #FCA19B;
+  --red-400: #F97066;
+  --red-500: #F04437;
+  --red-600: #D92C20;
+  --red-700: #B42318;
+  --red-800: #912018;
+  --red-900: #7A2619;
 
-  --main-100: #DFF5E9;
-  --main-200: #CCEDE1;
-  --main-300: #87D4B8;
-  --main-400: #34B385;
+  --main-25: #F7FBF9;
+  --main-50: #E4F0EC;
+  --main-100: #BEDBD0;
+  --main-200: #98C6B5;
+  --main-300: #72B19A;
+  --main-400: #48997C;
   --main-500: #20835F;
-  --main-600: #106949;
-  --main-700: #0D5946;
-  --main-800: #00473D;
-  --main-900: #00322B;
+  --main-600: #1A6B4E;
+  --main-700: #15553E;
+  --main-800: #104331;
+  --main-900: #073122;
 
-  --blue-100: #F0F6FD;
-  --blue-200: #C8E1FE;
-  --blue-300: #79B6FB;
-  --blue-400: #007AFF;
-  --blue-500: #1C6EF2;
-  --blue-600: #0A53CC;
-  --blue-700: #0738AB;
-  --blue-800: #042A80;
-  --blue-900: #011C5B;
+  --secondary-main-25: #FCFEFE;
+  --secondary-main-50: #E5F8F2;
+  --secondary-main-100: #C4F0E1;
+  --secondary-main-200: #A1E7D0;
+  --secondary-main-300: #70DBB7;
+  --secondary-main-400: #32C694;
+  --secondary-main-500: #238C69;
+  --secondary-main-600: #185F47;
+  --secondary-main-700: #0E382A;
+  --secondary-main-800: #061A13;
+  --secondary-main-900: #020705;
+
+  --light-green-25: #F6FEFC;
+  --light-green-50: #F0FDF9;
+  --light-green-100: #CCFBEF;
+  --light-green-200: #99F6E0;
+  --light-green-300: #5EE9CF;
+  --light-green-400: #2ED2B7;
+  --light-green-500: #15B79E;
+  --light-green-600: #0E9384;
+  --light-green-700: #0F7569;
+  --light-green-800: #134E48;
+  --light-green-900: #125D56;
+
+  --light-blue-25: #F4FAFF;
+  --light-blue-50: #F0F9FF;
+  --light-blue-100: #E0F2FE;
+  --light-blue-200: #B9E6FE;
+  --light-blue-300: #7BD4FD;
+  --light-blue-400: #36BFF9;
+  --light-blue-500: #0BA4EB;
+  --light-blue-600: #0085C9;
+  --light-blue-700: #016AA2;
+  --light-blue-800: #065986;
+  --light-blue-900: #0A4A6F;
+
+  --blue-25: #F4F9FF;
+  --blue-50: #EFF8FF;
+  --blue-100: #D1E9FF;
+  --blue-200: #B2DDFF;
+  --blue-300: #84CAFF;
+  --blue-400: #53B0FD;
+  --blue-500: #2E90FA;
+  --blue-600: #156FEE;
+  --blue-700: #175CD3;
+  --blue-800: #1849A9;
+  --blue-900: #194084;
+
+  --dark-blue-25: #F5F8FF;
+  --dark-blue-50: #EFF4FF;
+  --dark-blue-100: #D1E0FF;
+  --dark-blue-200: #B2CBFF;
+  --dark-blue-300: #83ADFF;
+  --dark-blue-400: #518BFF;
+  --dark-blue-500: #2970FE;
+  --dark-blue-600: #155DEE;
+  --dark-blue-700: #004EEA;
+  --dark-blue-800: #0040C1;
+  --dark-blue-900: #00349E;
+
+  --fuchsia-25: #FEFAFF;
+  --fuchsia-50: #FDF4FF;
+  --fuchsia-100: #FBE8FF;
+  --fuchsia-200: #F6D0FE;
+  --fuchsia-300: #EDAAFC;
+  --fuchsia-400: #E477FA;
+  --fuchsia-500: #D444F1;
+  --fuchsia-600: #BA24D5;
+  --fuchsia-700: #9F1AB0;
+  --fuchsia-800: #821890;
+  --fuchsia-900: #6E1876;
+
+  --purple-25: #FAFAFF;
+  --purple-50: #F4F3FF;
+  --purple-100: #EBE9FE;
+  --purple-200: #D9D6FE;
+  --purple-300: #BCB4FD;
+  --purple-400: #9B8AFB;
+  --purple-500: #7959F8;
+  --purple-600: #6838EE;
+  --purple-700: #5925DB;
+  --purple-800: #4A1FB7;
+  --purple-900: #3E1C96;
+
+  --warning-25: #FFFCF5;
+  --warning-50: #FFFAEB;
+  --warning-100: #FEF0C7;
+  --warning-200: #FEDF89;
+  --warning-300: #FEC84B;
+  --warning-400: #FDB022;
+  --warning-500: #F79009;
+  --warning-600: #DC6803;
+  --warning-700: #B54707;
+  --warning-800: #93370C;
+  --warning-900: #7A2E0E;
+
+  --yellow-25: #FEFDF0;
+  --yellow-50: #FEFBE8;
+  --yellow-100: #FDF7C3;
+  --yellow-200: #FEEE94;
+  --yellow-300: #FDE272;
+  --yellow-400: #FAC414;
+  --yellow-500: #EAA907;
+  --yellow-600: #CA8403;
+  --yellow-700: #A15B06;
+  --yellow-800: #85490D;
+  --yellow-900: #713B11;
+
+  --orange-25: #FEFAF5;
+  --orange-50: #FEF6EE;
+  --orange-100: #FCEAD7;
+  --orange-200: #F8DBAF;
+  --orange-300: #F7B279;
+  --orange-400: #F38743;
+  --orange-500: #EF681F;
+  --orange-600: #DF4F16;
+  --orange-700: #B93814;
+  --orange-800: #932F18;
+  --orange-900: #772917;
+
+  --dark-orange-25: #FFF9F5;
+  --dark-orange-50: #FFF3ED;
+  --dark-orange-100: #FFE5D5;
+  --dark-orange-300: #FF9B65;
+  --dark-orange-400: #FE692D;
+  --dark-orange-500: #FF4305;
+  --dark-orange-600: #E52D04;
+  --dark-orange-700: #BB1B05;
+  --dark-orange-800: #96170C;
+  --dark-orange-900: #77190D;
+
+  --pink-25: #FEF6FB;
+  --pink-50: #FDF2FA;
+  --pink-100: #FCE7F6;
+  --pink-200: #FCCEEE;
+  --pink-300: #F9A7DF;
+  --pink-400: #F570C7;
+  --pink-500: #EE46BC;
+  --pink-600: #DC2590;
+  --pink-700: #C01573;
+  --pink-800: #9E155E;
+  --pink-900: #851651;
+
+  --dark-pink-25: #FFF5F6;
+  --dark-pink-50: #FFF1F3;
+  --dark-pink-100: #FFE4E8;
+  --dark-pink-200: #FECDD6;
+  --dark-pink-300: #FEA2B3;
+  --dark-pink-400: #FC6F8D;
+  --dark-pink-500: #F53D68;
+  --dark-pink-600: #E31A53;
+  --dark-pink-700: #C00F47;
+  --dark-pink-800: #A10F42;
+  --dark-pink-900: #89113D;
 
   --night-blue: #353544;
   --dark-grey: #5A5A72;
@@ -125,15 +277,29 @@ $red-700: #9F0B15;
 $red-800: #7F050D;
 $red-900: #480005;
 
-$yellow-100: #FFFBDB;
-$yellow-200: #FFF0B5;
-$yellow-300: #FEEBA1;
-$yellow-400: #FDD46A;
-$yellow-500: #FFC633;
-$yellow-600: #FFB800;
-$yellow-700: #CC8100;
-$yellow-800: #805100;
-$yellow-900: #3E2200;
+$yellow-25: #FFFCF5;
+$yellow-50: #FFFAEB;
+$yellow-100: #FEF0C7;
+$yellow-200: #FEDF89;
+$yellow-300: #FEC84B;
+$yellow-400: #FDB022;
+$yellow-500: #F79009;
+$yellow-600: #DC6803;
+$yellow-700: #B54707;
+$yellow-800: #93370C;
+$yellow-900: #7A2E0E;
+
+$success-25: #F6FEF9;
+$success-50: #ECFDF3;
+$success-100: #D1FADF;
+$success-200: #A6F4C5;
+$success-300: #6BE9A6;
+$success-400: #31D583;
+$success-500: #12B669;
+$success-600: #039754;
+$success-700: #027A48;
+$success-800: #055F3A;
+$success-900: #054E31;
 
 // Padding
 $p-4: 4px;
@@ -331,11 +497,12 @@ $font:'Inter', sans-serif;
 
 @mixin input-default {
   height: 48px;
-  border-radius: 4px;
+  border-radius: 8px;
   padding: 0 12px 0 12px;
   border: 1px solid var(--neutral-400);
   box-shadow: none;
-  margin-top: 12px;
+  margin-top: 6px;
+  margin-bottom: 0;
 }
 
 @mixin input-checkbox {
@@ -370,7 +537,7 @@ $font:'Inter', sans-serif;
 @mixin input-readonly {
   background: var(--neutral-400);
   border: 1px solid var(--neutral-400);
-  border-radius: 4px;
+  border-radius: 8px;
   box-shadow: none;
 }
 
@@ -399,7 +566,7 @@ $font:'Inter', sans-serif;
 
 @mixin select-button-default {
   height: 48px !important;
-  background: var(--neutral-200);
+  background: var(--neutral-100);
   border-radius: 4px 0 0 4px !important;
   color: var(--neutral-800);
 }
@@ -601,7 +768,7 @@ $font:'Inter', sans-serif;
   }
 
   /* TEXTE D AIDE */
-  span:not(.badge):not([class^="material-icons"]):not(.icon-handle):not([class^="tox"]):not(.mceIcon) {
+  span:not(.badge):not([class^="material-icons"]):not(.icon-handle):not([class^="tox"]):not(.mceIcon):not(.mceText):not(.mcePathLabel) {
     @include body-14;
     color: var(--neutral-600);
     display: flex;
@@ -704,6 +871,8 @@ $font:'Inter', sans-serif;
       margin-top: 12px !important;
       resize: vertical;
       color: var(--neutral-800);
+      border: 1px solid var(--neutral-400);
+      border-radius: 8px;
       @include body-16;
 
       &.input-medium, &.input-small {
@@ -755,21 +924,24 @@ $font:'Inter', sans-serif;
         width: 100%;
         margin-top: 12px;
         padding-left: 8px;
-        height: 100% !important;
+        height: 60px !important;
+        border-radius: 8px;
 
         li.search-choice {
+          margin-top: 4px;
+          border-radius: 8px;
           border: var(--neutral-400);
-          background: var(--neutral-200);
+          background: var(--neutral-100);
           @include body-14;
 
           span {
-            margin: 0;
+            margin: 0 !important;
             padding: 7px;
           }
         }
 
         li.search-field {
-          input {
+          input[type="text"] {
             margin-top: 6px;
             @include body-14;
             font-size: 13px !important;
@@ -788,7 +960,7 @@ $font:'Inter', sans-serif;
     }
 
     .fabrikSubElementContainer {
-      margin-top: 12px;
+      margin-top: 6px;
       color: var(--neutral-800);
 
       /* YES/NO & RADIO GROUPES */
@@ -863,7 +1035,7 @@ $font:'Inter', sans-serif;
 
           span {
             @include body-16-medium;
-            margin-top: 0;
+            margin-top: 0 !important;
             color: var(--neutral-900);
           }
         }
@@ -908,7 +1080,7 @@ $font:'Inter', sans-serif;
         justify-content: flex-end;
 
         input {
-          border-radius: 4px 0 0 4px;
+          border-radius: 8px 0 0 8px;
         }
 
         input[id$='cal'].inputbox, input.inputbox.timeField{
@@ -919,19 +1091,24 @@ $font:'Inter', sans-serif;
         button.calendarbutton,
         button.timeButton {
           border: 1px solid var(--neutral-400);
-          margin-top: 12px;
+          margin-top: 6px;
+          margin-left: -2px;
           width: 48px !important;
           display: flex;
           justify-content: center;
           align-items: center;
           height: 48px !important;
-          background: var(--neutral-200);
-          border-radius: 0 4px 4px 0 !important;
-          color: var(--neutral-800);
+          background: var(--neutral-100);
+          border-radius: 0 8px 8px 0 !important;
+          color: var(--neutral-500);
           z-index: 10;
 
           i.icon-clock {
             margin: 0;
+          }
+
+          i {
+            color: var(--neutral-500);
           }
 
           &:hover {
@@ -969,9 +1146,9 @@ $font:'Inter', sans-serif;
     .row-fluid .fabrikgrid_radio,
     .row-fluid .fabrikgrid_checkbox,
     .row-fluid .plg-databasejoin.mode-checkbox {
-      margin-top: 12px;
+      margin-top: 8px;
       min-height: auto;
-
+      
       &.span2 {
         margin-right: auto;
       }

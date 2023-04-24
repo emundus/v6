@@ -6,14 +6,26 @@ import mimeTypes from '../data/mimeTypes';
 
 var mixin = {
 	methods: {
-		formattedDate: function (date = '',format = 'LLLL') {
+		formattedDate: function (date = '',format = 'LLLL',utc = null) {
 			let formattedDate = '';
+
+			if (utc === null) {
+				utc = this.$store.state.global.offset;
+			}
 
 			if (date !== null) {
 				if (date !== '') {
-					formattedDate = moment(date).format(format);
+					let year = date.substring(0, 4);
+					let month = date.substring(5, 7);
+					let day = date.substring(8, 10);
+					let hour = date.substring(11, 13);
+					let minute = date.substring(14, 16);
+					let second = date.substring(17, 19);
+					const stringDate = year + '-' + month + '-' + day + 'T' + hour + ':' + minute + ':' + second + '+00:00';
+
+					formattedDate = moment(stringDate).utcOffset(utc).format(format);
 				} else {
-					formattedDate = moment().format(format);
+					formattedDate = moment().utcOffset(utc).format(format);
 				}
 			}
 
@@ -28,7 +40,6 @@ var mixin = {
 		},
 		getUserNameById: function (id) {
 			let completeName = '';
-			// id to int
 			id = parseInt(id);
 
 			if (id > 0) {
@@ -36,11 +47,10 @@ var mixin = {
 				if (user) {
 					completeName = user.firstname + ' ' + user.lastname;
 				} else {
-					userService.getUserById(id).then(data => {
-						if (data.status && data.user[0]) {
-							completeName = data.user[0].firstname + ' ' + data.user[0].lastname;
-							data.user[0].id = id;
-							this.$store.dispatch('user/setUsers', data.user);
+					userService.getUserNameById(id).then(data => {
+						if (data.status && data.user.user_id == id) {
+							completeName = data.user.firstname + ' ' + data.user.lastname;
+							this.$store.dispatch('user/setUsers', [data.user]);
 						}
 					});
 				}

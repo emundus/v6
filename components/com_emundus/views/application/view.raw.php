@@ -318,7 +318,7 @@ class EmundusViewApplication extends JViewLegacy {
                     if (EmundusHelperAccess::asAccessAction(37, 'r', $this->_user->id, $fnum)) {
                         EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 37, 'r', 'COM_EMUNDUS_ACCESS_LOGS_READ');
 
-                        $fileLogs = EmundusModelLogs::getActionsOnFnum($fnum);
+                        $fileLogs = EmundusModelLogs::getActionsOnFnum($fnum, null, null, ["c", "u", "d"]);
 
                         foreach ($fileLogs as $key => $log) {
                             $log->timestamp = EmundusHelperDate::displayDate($log->timestamp);
@@ -366,6 +366,10 @@ class EmundusViewApplication extends JViewLegacy {
 
                         $m_user = new EmundusModelUsers;
                         $m_campaign = new EmundusModelCampaign;
+	                    $applicant = $m_user->getUserById($fnumInfos['applicant_id']);
+						if(!isset($applicant[0]->profile_picture) || empty($applicant[0]->profile_picture)){
+							$applicant[0]->profile_picture = $m_user->getIdentityPhoto($fnum,$fnumInfos['applicant_id']);
+						}
 
                         /* detect user_id from fnum */
                         $userId = $fnumInfos['applicant_id'];
@@ -419,6 +423,7 @@ class EmundusViewApplication extends JViewLegacy {
 
                         $forms = $m_application->getForms(intval($fnumInfos['applicant_id']), $fnum, $pid);
                         $this->assignRef('forms', $forms);
+                        $this->assignRef('applicant', $applicant[0]);
 
                     } else {
                         echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");

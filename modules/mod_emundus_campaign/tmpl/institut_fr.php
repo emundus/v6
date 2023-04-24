@@ -4,7 +4,6 @@ defined('_JEXEC') or die;
 header('Content-Type: text/html; charset=utf-8');
 
 $app = JFactory::getApplication();
-$user = JFactory::getUser();
 $searchword = $app->input->getString('searchword', null);
 
 $lang = JFactory::getLanguage();
@@ -25,9 +24,9 @@ $site_offset = $config->get('offset');
     }
 </style>
 
-<div class = "navfilter">
-    <div class = "depositor">
-        <select id = "depositor_select" onchange="searchCampaign()">
+<div class="navfilter">
+    <div class="depositor">
+        <select id="depositor_select" onchange="searchCampaign()">
             <option value=""><?php echo JText::_('MOD_EM_CAMPAIGN_SELECT_DEPOSITOR');?></option>
             <option value="2"><?php echo JText::_('MOD_EM_CAMPAIGN_HORS_RESEAUX');?></option>
             <option value="1"><?php echo JText::_('MOD_EM_CAMPAIGN_RESEAUX');?></option>
@@ -39,13 +38,13 @@ $site_offset = $config->get('offset');
     </div>
     -->
     <div class = "type">
-        <select id= "program_type" onchange="searchCampaign()">
+        <select id="program_type" onchange="searchCampaign()">
             <option value=""><?php echo JText::_('MOD_EM_CAMPAIGN_SELECT_PROG_TYPE');?></option>
 
             <?php
             $programs = array_unique(array_column($programs, 'programmes'));
             foreach($programs as $program => $value) :?>
-                <option value = "<?=$value;?>"><?= ucfirst(strtolower($value)); ?></option>
+                <option value="<?=$value;?>"><?= ucfirst(strtolower($value)); ?></option>
             <?php endforeach ;?>
         </select>
     </div>
@@ -60,7 +59,41 @@ $site_offset = $config->get('offset');
                 <div class="alert alert-warning"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_RESULT_FOUND') ?></div>
             <?php else :?>
                 <?php foreach ($currentCampaign as $result) :?>
-                    <?php $resaux = $helper->getReseaux($result->id); ?>
+                    <?php
+                    $resaux = $helper->getReseaux($result->id);
+
+                    // Get number of files compared to limit if limit is enabled
+                    if ($result->is_limited == 1) {
+                        $db = JFactory::getDbo();
+                        $query = $db->getQuery(true);
+
+                        $query->clear()
+                            ->select($db->quoteName('limit_status'))
+                            ->from($db->quoteName('jos_emundus_setup_campaigns_repeat_limit_status'))
+                            ->where($db->quoteName('parent_id') . ' = ' . $db->quote($result->id));
+                        $db->setQuery($query);
+                        $limit_status = $db->loadColumn();
+
+                        $query->clear()
+                            ->select($db->quoteName('limit'))
+                            ->from($db->quoteName('jos_emundus_setup_campaigns'))
+                            ->where($db->quoteName('id') . ' = ' . $db->quote($result->id));
+                        $db->setQuery($query);
+                        $file_limit = $db->loadResult();
+
+                        $files_sent = 0;
+                        if (!empty($limit_status)) {
+                            $query->clear()
+                                ->select('COUNT(id)')
+                                ->from($db->quoteName('jos_emundus_campaign_candidature'))
+                                ->where($db->quoteName('campaign_id') . ' = ' . $db->quote($result->id))
+                                ->andWhere($db->quoteName('status') . ' IN (' . implode(',', $limit_status) . ')');
+                            $db->setQuery($query);
+                            $files_sent = $db->loadResult();
+                        }
+                    }
+
+                    ?>
                     <div class="campaign-content" data-row="<?php echo $result->prog_type;?>" data-reseaux1="<?php echo $resaux->reseaux_cult; ?>" data-reseaux2="<?php echo $resaux->hors_reseaux; ?>">
                         <div class="left-side campaigntext <?php echo $mod_em_campaign_class; ?>">
                             <h4>
@@ -72,6 +105,7 @@ $site_offset = $config->get('offset');
                             <p>
                                 <?php echo $result->short_description;?>
                             </p>
+                            <?php if ($result->is_limited == 1) { echo '<p style="display:inline-block;padding:10px;border:1px solid red;border-radius:4px;font-weight:bold;color:red;">' . $files_sent . ' ' . JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_SENT_NUMBER') . ' ' . $file_limit . '</p>'; } ?>
                         </div>
                         <div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
                             <div class="campaingapplycontent">
@@ -123,12 +157,9 @@ $site_offset = $config->get('offset');
                                         if (!isset($redirect_url) || empty($redirect_url)) {
                                             $redirect_url = "index.php?option=com_users&view=registration";
                                         }
-                                        $register_url = $redirect_url . "&course=" . $result->code . "&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid;
+                                        $register_url = $redirect_url . "&course=" . $result->code . "&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid . "&redirect=" . $formUrl;
                                     } else {
-                                        $register_url = $redirect_url . "?course=" . $result->code . "&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid;
-                                    }
-                                    if(!$user->guest) {
-                                        $register_url .= "&redirect=" . $formUrl;
+                                        $register_url = $redirect_url . "?course=" . $result->code . "&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid . "&redirect=" . $formUrl;
                                     }
                                     ?>
                                     <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo $register_url; ?>'

@@ -530,7 +530,10 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_yoorecipe','component','1.0.0','>=','3.0.0','>=','Yoorecipe Component','Sql Injection vulnerability','Apr 21 2021','All versions','none','No details'),
 ('Joomla!','core','3.9.26','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','May 25 2020','Joomla 3.0.0 through 3.9.26','update','3.9.27'),
 ('Joomla!','core','3.9.27','<=','3.0.0','>=','Joomla! core','Five low vulnerabilities','Jul 07 2020','Joomla 2.5.0 through 3.9.27','update','3.9.28'),
-('Joomla!','core','4.0.0','<=','4.0.0','>=','Joomla! core','One vulnerability','Aug 24 2021','Joomla 4.0.0','update','4.0.1');
+('Joomla!','core','4.0.0','<=','4.0.0','>=','Joomla! core','One vulnerability','Aug 24 2021','Joomla 4.0.0','update','4.0.1'),
+('Joomla!','core','3.10.8','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','Mar 31 2022','Joomla 2.5.0 through 3.10.6','update','3.10.8'),
+('Joomla!','core','4.1.2','<=','4.0.0','>=','Joomla! core','Seven low vulnerabilities','Mar 31 2022','Joomla 4.0.0 through 4.1.0','update','4.1.2'),
+('com_sexypolling','component','2.1.7','<=','3.0.0','>=','Sexypolling Component','Sql Injection vulnerability','May 20 2022','Versions bellow 2.1.8','update','2.1.8');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
@@ -545,7 +548,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
 `uri` VARCHAR(100),
 `component` VARCHAR(150) DEFAULT '---',
 `marked` TINYINT(1) DEFAULT 0,
-`original_string` VARCHAR(700),
+`original_string` MEDIUMTEXT,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -606,6 +609,7 @@ PRIMARY KEY (`id`)
 INSERT INTO `#__securitycheckpro_file_manager` (`estado`,`estado_integrity`,`estado_cambio_permisos`,`estado_clear_data`,`estado_malwarescan`) VALUES 
 ('ENDED','ENDED','ENDED','DELETING_ENTRIES','ENDED');
 
+DROP TABLE IF EXISTS `#__securitycheckpro_storage`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_storage` (
 `storage_key` varchar(255) NOT NULL,
 `storage_value` longtext NOT NULL,
@@ -652,7 +656,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.3.4');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.3.8');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
 CREATE TABLE `#__securitycheckpro_users_control` (

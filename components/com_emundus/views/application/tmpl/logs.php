@@ -131,7 +131,7 @@ JFactory::getSession()->set('application_layout', 'logs');
 
                     results.data.forEach(log => {
                         typeLogs.append('<option value="' + log.id + '">' + Joomla.JText._(log.label) + '</option>');           /// append data
-                        typeLogs.trigger("chosen:updated");
+                        typeLogs.trigger("liszt:updated");
                     })
                 } else {
                    $('#filters-logs').remove();
@@ -169,7 +169,7 @@ JFactory::getSession()->set('application_layout', 'logs');
 
                     results.data.forEach((user) => {
                         actorsLog.append('<option value="' + user.uid + '">' + user.name + '</option>');           /// append data
-                        actorsLog.trigger("chosen:updated");
+                        actorsLog.trigger("liszt:updated");
                     });
                 } else {
                     $('#actors').remove();
@@ -185,7 +185,7 @@ JFactory::getSession()->set('application_layout', 'logs');
             let crud = $('#crud-logs').val();
 
             if (!crud) {
-                crud = ['c','u', 'd'];
+                crud = ['c','r', 'u', 'd'];
             }
 
             const types = $('#type-logs').val();

@@ -167,13 +167,13 @@ function addElement() {
                 var num = ($('#nb-adv-filter').val() - 1) + 2;
                 $('#nb-adv-filter').val(num);
                 var newId = 'em-adv-father-' + num;
-                ni.append('<fieldset id="' + newId + '" class="em-nopadding em-flex-row">' +
-                    '<select class="chzn-select em-filt-select" name="elements" id="elements-'+num+'">' +
+                ni.append('<fieldset id="' + newId + '" class="em-nopadding">' +
+                    '<a id="suppr-filt" class="em-mb-4 em-flex-start">' +
+                    '<span class="em-font-size-14 em-red-500-color em-pointer">' + Joomla.JText._('COM_EMUNDUS_DELETE_ADVANCED_FILTERS') + '</span>' +
+                    '</a>' +
+                    '<select class="chzn-select em-filt-select em-mb-4" name="elements" id="elements-'+num+'">' +
                     '<option value="">' + result.default +'</option>' +
                     '</select> ' +
-                    '<button id="suppr-filt" class="em-tertiary-button em-flex-start">' +
-                    '<span class="material-icons em-red-500-color">delete_outline</span>' +
-                    '</button>'+
                     '</fieldset>');
 
                 var options = '';
@@ -1177,17 +1177,14 @@ function runAction(action, url = '', option = '') {
 
         case 15:
         case 16:
-            // TODO : make thiw work
+            // TODO : make this work
 
             const iframeFastMails = document.querySelector('#iframe-fast-emails');
             const fastMailForm = iframeFastMails.contentWindow.document.querySelector('#adminForm');
             fastMailForm.submit();
             break;
 
-        // TODO : Generate letter
         case 27:
-            addLoader();
-
             generate_letter();
             break;
 
@@ -1633,8 +1630,8 @@ $(document).ready(function() {
         url +='&action_id='+id;
 
         var checkInput = getUserCheck();
-        var prghtml = "";
-        var atthtml = "";
+        var prghtml = '';
+        var atthtml = '';
 
         switch (id) {
             /**
@@ -3177,7 +3174,6 @@ $(document).ready(function() {
 
                     $('#em-export-prg').on('change', function() {
                         var code = $(this).val();
-                        console.log(code);
 
                         if (code != 0) {
                             $.ajax({
@@ -3227,7 +3223,7 @@ $(document).ready(function() {
                                                             if (result.status) {
 
                                                                 prghtml = result.html;
-                                                                $('#felts-'+code+camp).parent('div').remove();
+                                                                $('#felts').empty();
                                                                 $('#felts').append(result.html);
                                                                 $('#felts').show();
 
@@ -3240,7 +3236,7 @@ $(document).ready(function() {
                                                                     success: function(result) {
                                                                         if (result.status) {
                                                                             atthtml = result.html;
-                                                                            $('#aelts-'+code+camp).parent('div').remove();
+                                                                            $('#aelts').empty();
                                                                             $('#aelts').append(result.html);
                                                                             $('#aelts').show();
                                                                         }
@@ -6106,20 +6102,20 @@ $(document).ready(function() {
             $('#merge-div').show();
             $("label[for='em-combine-pdf']").css('text-decoration', 'none');
             if(showMode == 0) {
-                $('#export-tooltips').append('<div id="candidat-export-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_EXPORT_TOOLTIP') + '</div>');
+                $('#export-tooltips').append('<div id="candidat-export-tooltip" style="font-size: .8rem; color: #406AFF">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_EXPORT_TOOLTIP') + '</div>');
                 $('#em-doc-pdf-merge').prop('checked', false);
 
                 if($('#em-doc-pdf-merge').is(':checked')) {
-                    setTimeout(function() {$('#merge-tooltips').append('<div id="candidat-merge-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_MERGE_TOOLTIP') + '</div>');}, 100);
+                    setTimeout(function() {$('#merge-tooltips').append('<div id="candidat-merge-tooltip" style="font-size: .8rem; color: #406AFF">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_MERGE_TOOLTIP') + '</div>');}, 100);
                 } else {
                     $('#merge-tooltips').empty();
                 }
             } else if(showMode == 1) {
-                $('#export-tooltips').append('<div id="document-export-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_EXPORT_TOOLTIP') + '</div>');
+                $('#export-tooltips').append('<div id="document-export-tooltip" style="font-size: .8rem; color: #406AFF">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_EXPORT_TOOLTIP') + '</div>');
                 $('#em-doc-pdf-merge').prop('checked', false);
 
                 if($('#em-doc-pdf-merge').is(':checked')) {
-                    setTimeout(function() {$('#merge-tooltips').append('<div id="document-merge-tooltip" style="font-size: 1rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_MERGE_TOOLTIP') + '</div>');}, 100);
+                    setTimeout(function() {$('#merge-tooltips').append('<div id="document-merge-tooltip" style="font-size: 1rem; color: #406AFF">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_MERGE_TOOLTIP') + '</div>');}, 100);
                 } else {
                     $('#merge-tooltips').empty();
                 }
@@ -6131,10 +6127,10 @@ $(document).ready(function() {
         if ($('#em-doc-pdf-merge').is(':checked')) {
             setTimeout(function() {$('#merge-tooltips').empty();}, 100);
             if ($('#em-doc-export-mode').val() == 0) {
-                setTimeout(function(){$('#merge-tooltips').append('<div id="candidat-merge-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_MERGE_TOOLTIP') + '</div>');}, 100);
+                setTimeout(function(){$('#merge-tooltips').append('<div id="candidat-merge-tooltip" style="font-size: .8rem; color: #406AFF">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_MERGE_TOOLTIP') + '</div>');}, 100);
                 $('#merge-tooltips').fadeIn();
             } else if ($('#em-doc-export-mode').val() == 1) {
-                setTimeout(function(){$('#merge-tooltips').append('<div id="document-merge-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_MERGE_TOOLTIP') + '</div>');}, 100);
+                setTimeout(function(){$('#merge-tooltips').append('<div id="document-merge-tooltip" style="font-size: .8rem; color: #406AFF">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_MERGE_TOOLTIP') + '</div>');}, 100);
                 $('#merge-tooltips').fadeIn();
             }
         } else {
@@ -6152,7 +6148,7 @@ $(document).ready(function() {
         }
     });
 
-    $(document).on('click', '[id^=showelements_]', function() {
+    $(document).on('click', 'div[id^=showelements_]', function() {
         var id = $(this).attr('id').split('_')[1];
 
         var elements_block = document.getElementById('felts' + id);
@@ -6306,10 +6302,48 @@ $(document).ready(function() {
     });
 });
 
+function updateProfileForm(){
+    /* get the selected profile id*/
+    var profile = $('#select_profile').val();
+
+    $('#show_profile').empty();
+    $('#show_profile').before('<div id="loading"><img src="'+loading+'" alt="loading"/></div>');
+
+    /* all other options will be normal */
+    $('#select_profile option').each(function() {
+        if($(this).attr('value') !== profile) {
+            $(this).prop('disabled', false);
+            $(this).css('font-style', 'unset');
+        }
+    })
+
+    /* call to ajax */
+    $.ajax({
+        type: 'post',
+        url: 'index.php?option=com_emundus&controller=application&task=getform',
+        dataType: 'json',
+        data: { profile: profile, user: $('#user_hidden').attr('value'), fnum: $('#fnum_hidden').attr('value') },
+        success: function(result) {
+            var form = result.data;
+
+            $('#loading').remove();
+
+            if(form) {
+                $('#show_profile').append(form.toString());
+                $('#download-pdf').attr('href', 'index.php?option=com_emundus&task=pdf&user=' + $('#user_hidden').attr('value') + '&fnum=' + $('#fnum_hidden').attr('value') + '&profile=' + profile);
+            }
+
+        }, error: function(jqXHR) {
+            console.log(jqXHR.responseText);
+        }
+    })
+}
+
 
 async function sendMailQueue(fnums) {
     const steps = [1, 2];
     let currentStep;
+    let body = '';
 
     for (currentStep = 0; currentStep < 2;) {
         let title = '';
@@ -6331,7 +6365,8 @@ async function sendMailQueue(fnums) {
                     type: 'POST',
                     url: 'index.php?option=com_emundus&view=message&format=raw',
                     data: {
-                        fnums: fnums
+                        fnums: fnums,
+                        body: body,
                     },
                     success: function(result) {
                         $('#data').append(result);
@@ -6353,6 +6388,8 @@ async function sendMailQueue(fnums) {
                 // update the textarea with the WYSIWYG content.
                 tinymce.triggerSave();
 
+                body = $('#mail_body').val();
+
                 // Get all form elements.
                 var data = {
                     recipients      : $('#fnums').val(),
@@ -6360,7 +6397,7 @@ async function sendMailQueue(fnums) {
                     mail_from_name  : $('#mail_from_name').text(),
                     mail_from       : $('#mail_from').text(),
                     mail_subject    : $('#mail_subject').text(),
-                    message         : $('#mail_body').val(),
+                    message         : body,
                     bcc             : [],
                     cc              : [],
                     tags            : $('#tags').val(),

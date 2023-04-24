@@ -127,16 +127,68 @@ class EmundusController extends JControllerLegacy {
 
         require_once($file);
 
-        // Here we call the profile by fnum function, which will get the candidate's profile in the status table
-//        $profile_id = $m_profile->getProfileByFnum($fnum);
 
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            //application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, $options, null, $profile_id,null,null);
             application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, $options, null, $profile,null,null);
             exit;
         } elseif (EmundusHelperAccess::isApplicant($user->id)) {
-            //application_form_pdf($user->id, $fnum, true, 1, $formid, $options, null, $profile_id,null,null);
             application_form_pdf($user->id, $fnum, true, 1, $formid, $options, null, $profile,null,null);
+            exit;
+        } else {
+            die(JText::_('ACCESS_DENIED'));
+        }
+    }
+
+    function pdf_by_form() {
+        $user = JFactory::getSession()->get('emundusUser');
+        $jinput = JFactory::getApplication()->input;
+        $student_id = $jinput->get('user', null, 'string');
+        $fnum = $jinput->get('fnum', null, 'string');
+        $formid = [$jinput->get('form', null, 'string')];
+
+        $fnum = !empty($fnum)?$fnum:$user->fnum;
+        $m_profile = $this->getModel('profile');
+        $m_campaign = $this->getModel('campaign');
+
+        $options = array(
+            'aemail',
+            'afnum',
+            'adoc-print',
+            'aapp-sent',
+        );
+
+        $infos 		= $m_profile->getFnumDetails($fnum);
+
+
+        if (!empty($fnum)) {
+            $candidature = $m_profile->getFnumDetails($fnum);
+            $campaign = $m_campaign->getCampaignByID($candidature['campaign_id']);
+        }
+
+        $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$campaign['training'].'.php';
+        $file_custom = JPATH_LIBRARIES.DS.'emundus'.DS.'custom'.DS.'pdf_'.$campaign['training'].'.php';
+        if (!file_exists($file) && !file_exists($file_custom)) {
+            $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
+        }
+        else{
+            if (file_exists($file_custom)){
+                $file = $file_custom;
+            }
+        }
+
+        if (!file_exists(EMUNDUS_PATH_ABS.$student_id)) {
+            mkdir(EMUNDUS_PATH_ABS.$student_id);
+            chmod(EMUNDUS_PATH_ABS.$student_id, 0755);
+        }
+
+        require_once($file);
+
+        // Here we call the profile by fnum function, which will get the candidate's profile in the status table
+        // $profile_id = $m_profile->getProfileByFnum($fnum);
+
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+            //application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, $options, null, $profile_id,null,null);
+            application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, $formid, $options);
             exit;
         } else {
             die(JText::_('ACCESS_DENIED'));
@@ -1158,64 +1210,63 @@ class EmundusController extends JControllerLegacy {
             $this->_db->setQuery($image_resolution_query);
             $image_resolution = $this->_db->loadObject();
 
-            if(is_null($image_resolution->min_width) and is_null($image_resolution->max_width) and is_null($image_resolution->min_height) and is_null($image_resolution->max_height)) { }
-            else {
-                if ($w_src * $h_src > (int)$image_resolution->max_width * (int)$image_resolution->max_height) {
+            if ((!empty($image_resolution->max_width) && !empty($image_resolution->max_height)) && ($w_src * $h_src > (int)$image_resolution->max_width * (int)$image_resolution->max_height)) {
 
-                    if($w_src > $h_src) {
-                        $ratio = $h_src / $w_src;
+                if($w_src > $h_src) {
+                    $ratio = $h_src / $w_src;
 
-                        $new_width = max((int)$image_resolution->max_width, (int)$image_resolution->max_height);
-                        $new_height = round($new_width * $ratio);
+                    $new_width = max((int)$image_resolution->max_width, (int)$image_resolution->max_height);
+                    $new_height = round($new_width * $ratio);
 
-                    } else if($w_src < $h_src) {
-                        $ratio = $w_src / $h_src;
+                } else if($w_src < $h_src) {
+                    $ratio = $w_src / $h_src;
 
-                        $new_height = max((int)$image_resolution->max_width, (int)$image_resolution->max_height);
-                        $new_width = round($new_height * $ratio);
+                    $new_height = max((int)$image_resolution->max_width, (int)$image_resolution->max_height);
+                    $new_width = round($new_height * $ratio);
 
-                    } else {
-                        $new_height = min((int)$image_resolution->max_width, (int)$image_resolution->max_height);
-                        $new_width = min((int)$image_resolution->max_width, (int)$image_resolution->max_height);
-                    }
-
-                    switch ($type) {
-                        case 1:   // gif
-                            $original_img = imagecreatefromgif($file_src);
-                            break;
-                        case 2: // jpeg
-                            $original_img = imagecreatefromjpeg($file_src);
-                            break;
-                        case 3: // png
-                            $original_img = imagecreatefrompng($file_src);
-                            break;
-                        default:    // jpg
-                            $original_img = imagecreatefromjpeg($file_src);
-                            break;
-                    }
-
-                    /* $new_width = (int)$image_resolution->max_width;
-                    $new_height = (int)$image_resolution->max_height; */
-
-                    $resized_img = imagecreatetruecolor($new_width, $new_height);
-
-                    // copy resample
-                    imagecopyresampled($resized_img, $original_img, 0, 0, 0, 0, $new_width, $new_height, $w_src, $h_src);
-
-                    // export new image to jpeg
-                    imagejpeg($resized_img, $chemin . $user->id . DS . 'tn_' . $paths);
-
-                    /// remove old image
-                    unlink($file_src);
-
-                    /// change name the resize image
-                    rename($chemin . $user->id . DS . 'tn_' . $paths, $file_src);
-                } else if ($w_src * $h_src < (int)$image_resolution->min_width * (int)$image_resolution->min_height) {
-                    $errorInfo = "COM_EMUNDUS_ERROR_IMAGE_TOO_SMALL";
-                    echo '{"aid":"0","status":false,"message":"' . JText::_('COM_EMUNDUS_ERROR_IMAGE_TOO_SMALL') . " " . (int)$image_resolution->min_width . 'px x ' . (int)$image_resolution->min_height . 'px' . '"}';
-                    unlink($file_src);          /// remove uploaded file
-                    return false;
+                } else {
+                    $new_height = min((int)$image_resolution->max_width, (int)$image_resolution->max_height);
+                    $new_width = min((int)$image_resolution->max_width, (int)$image_resolution->max_height);
                 }
+
+                switch ($type) {
+                    case 1:   // gif
+                        $original_img = imagecreatefromgif($file_src);
+                        break;
+                    case 2: // jpeg
+                        $original_img = imagecreatefromjpeg($file_src);
+                        break;
+                    case 3: // png
+                        $original_img = imagecreatefrompng($file_src);
+                        break;
+                    default:    // jpg
+                        $original_img = imagecreatefromjpeg($file_src);
+                        break;
+                }
+
+                /* $new_width = (int)$image_resolution->max_width;
+                $new_height = (int)$image_resolution->max_height; */
+
+                $resized_img = imagecreatetruecolor($new_width, $new_height);
+
+                // copy resample
+                imagecopyresampled($resized_img, $original_img, 0, 0, 0, 0, $new_width, $new_height, $w_src, $h_src);
+
+                // export new image to jpeg
+                imagejpeg($resized_img, $chemin . $user->id . DS . 'tn_' . $paths);
+
+                /// remove old image only if resize was successful
+                if ($resized_img !== false) {
+                    unlink($file_src);
+                }
+
+                /// change name the resize image
+                rename($chemin . $user->id . DS . 'tn_' . $paths, $file_src);
+            } else if ((!empty($image_resolution->min_width) && !empty($image_resolution->min_height)) && ($w_src * $h_src < (int)$image_resolution->min_width * (int)$image_resolution->min_height)) {
+                $errorInfo = "COM_EMUNDUS_ERROR_IMAGE_TOO_SMALL";
+                echo '{"aid":"0","status":false,"message":"' . JText::_('COM_EMUNDUS_ERROR_IMAGE_TOO_SMALL') . " " . (int)$image_resolution->min_width . 'px x ' . (int)$image_resolution->min_height . 'px' . '"}';
+                unlink($file_src);          /// remove uploaded file
+                return false;
             }
         }
 
@@ -1544,10 +1595,10 @@ class EmundusController extends JControllerLegacy {
                 die (JText::_('ACCESS_DENIED'));
             }
         }
-        // If the user has the rights to open attachments.
-        elseif (!empty($fileInfo) && !EmundusHelperAccess::asAccessAction(4,'r', $current_user->id, $fileInfo->fnum)) {
+        // If the user has the rights to open attachments, or to create a PDF export (he needs to be able to open it, even if he can't access the documents).
+        elseif (!empty($fileInfo) && (!EmundusHelperAccess::asAccessAction(4,'r', $current_user->id, $fileInfo->fnum) && !EmundusHelperAccess::asAccessAction(8,'c', $current_user->id, $fileInfo->fnum))) {
             die (JText::_('ACCESS_DENIED'));
-        } elseif (empty($fileInfo) && !EmundusHelperAccess::asAccessAction(4,'r')) {
+        } elseif (empty($fileInfo) && (!EmundusHelperAccess::asAccessAction(4,'r') && !EmundusHelperAccess::asAccessAction(8,'c'))) {
             die (JText::_('ACCESS_DENIED'));
         }
 

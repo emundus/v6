@@ -14,10 +14,11 @@ define('_JEXEC', 1);
 define('DS', DIRECTORY_SEPARATOR);
 define('JPATH_BASE', dirname(__DIR__) . '/../../');
 
-include_once ( JPATH_BASE . 'includes/defines.php' );
-include_once ( JPATH_BASE . 'includes/framework.php' );
-include_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
-include_once (JPATH_SITE . '/components/com_emundus/models/application.php');
+include_once(JPATH_BASE . 'includes/defines.php' );
+include_once(JPATH_BASE . 'includes/framework.php' );
+include_once(JPATH_SITE . '/components/com_emundus/unittest/helpers/samples.php');
+include_once(JPATH_SITE . '/components/com_emundus/models/application.php');
+include_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
 
 jimport('joomla.user.helper');
 jimport( 'joomla.application.application' );
@@ -35,11 +36,13 @@ session_start();
 class EmundusModelApplicationTest extends TestCase
 {
     private $m_application;
+	private $h_sample;
 
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
         $this->m_application = new EmundusModelApplication;
+		$this->h_sample = new EmundusUnittestHelperSamples;
     }
 
     public function testGetApplicantInfos(){
@@ -50,4 +53,58 @@ class EmundusModelApplicationTest extends TestCase
         $this->assertNotEmpty($applicant_infos);
         $this->assertSame(intval($applicant_infos['id']), 62);
     }
+
+	public function testGetUserAttachmentsByFnum() {
+		if (!defined('EMUNDUS_PATH_ABS')) {
+			define('EMUNDUS_PATH_ABS', JPATH_ROOT);
+		}
+
+		$attachments = $this->m_application->getUserAttachmentsByFnum('');
+		$this->assertSame([], $attachments);
+
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$program = $this->h_sample->createSampleProgram();
+		$campaign_id = $this->h_sample->createSampleCampaign($program);
+		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+		$attachments = $this->m_application->getUserAttachmentsByFnum($fnum);
+		$this->assertEmpty($attachments);
+
+		$this->h_sample->createSampleUpload($fnum, $campaign_id, $user_id);
+		$this->h_sample->createSampleUpload($fnum, $campaign_id, $user_id,2);
+		$attachments = $this->m_application->getUserAttachmentsByFnum($fnum);
+		$this->assertNotEmpty($attachments);
+		$this->assertSame(count($attachments), 2);
+
+
+		// attachments should contain 1 element with existsOnServer = false
+		$current_attachment = $attachments[0];
+		$this->assertSame($current_attachment->existsOnServer, false);
+
+		// attachments should contain profiles attribute
+		$this->assertObjectHasAttribute('profiles', $current_attachment);
+
+		// if i use search parameter, only pertinent attachments should be returned
+		$search = $attachments[0]->value;
+		$attachments = $this->m_application->getUserAttachmentsByFnum($fnum, $search);
+		$this->assertNotEmpty($attachments);
+		$this->assertSame($attachments[0]->value, $search);
+		$this->assertSame(count($attachments), 1);
+	}
+
+	public function testuploadAttachment() {
+		$upload = $this->m_application->uploadAttachment([]);
+		$this->assertSame($upload, false);
+
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$program = $this->h_sample->createSampleProgram();
+		$campaign_id = $this->h_sample->createSampleCampaign($program);
+		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+
+		$data = [];
+		$data['key'] = ['fnum', 'user_id', 'campaign_id', 'attachment_id', 'filename', 'local_filename', 'timedate', 'can_be_deleted', 'can_be_viewed'];
+		$data['value'] = [$fnum, $user_id, $campaign_id, 1, 'test.pdf', 'test.pdf', date('Y-m-d H:i:s'), 1, 1];
+
+		$upload = $this->m_application->uploadAttachment($data);
+		$this->assertGreaterThan(0, $upload);
+	}
 }

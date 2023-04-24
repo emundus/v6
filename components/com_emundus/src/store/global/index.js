@@ -1,5 +1,4 @@
 const state = {
-    lang: '',
     datas: [],
     currentLanguage: '',
     shortLang: '',
@@ -8,6 +7,7 @@ const state = {
     coordinatorAccess: '',
     sysadminAccess: false,
     anonyme: false,
+    offset: 0,
 };
 
 const getters = {
@@ -18,6 +18,7 @@ const getters = {
     defaultLang: state => state.defaultLang,
     coordinatorAccess: state => state.coordinatorAccess,
     sysadminAccess: state => state.sysadminAccess,
+    offset: state => state.offset,
 };
 
 const actions = {
@@ -30,10 +31,6 @@ const actions = {
 };
 
 const mutations = {
-    setLang(state, lang) {
-        state.lang = lang;
-    },
-
     initDatas(state, datas) {
         state.datas = datas;
         return state.datas;
@@ -42,6 +39,11 @@ const mutations = {
     initCurrentLanguage(state, language) {
         state.currentLanguage = language;
         return state.currentLanguage;
+    },
+
+    initOffset(state, offset) {
+        state.offset = offset;
+        return state.offset;
     },
 
     initShortLang(state, language) {

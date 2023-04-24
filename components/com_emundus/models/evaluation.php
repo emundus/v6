@@ -1786,187 +1786,145 @@ class EmundusModelEvaluation extends JModelList {
         }
     }
 
-    /// generate letters
     public function generateLetters($fnums, $templates, $canSee, $showMode, $mergeMode) {
+		$query = $this->_db->getQuery(true);
         $user = JFactory::getUser();
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
-
-        /* replace old documents by the latest */
         $replace_document = $eMConfig->get('export_replace_doc', 0);
+	    $generated_doc_name = $eMConfig->get('generated_doc_name', "");
+	    $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
 
-        $tmp_path = JPATH_SITE . DS . 'tmp' . DS;
+        $tmp_path = JPATH_SITE.DS.'tmp'.DS;
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+        require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'fpdi.php');
+	    require_once(JPATH_LIBRARIES.'/emundus/vendor/autoload.php');
+        $_mEval = new EmundusModelEvaluation();
+        $_mFile = new EmundusModelFiles();
+        $_mEmail = new EmundusModelEmails();
+        $_mUsers = new EmundusModelUsers();
 
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'emails.php');
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'users.php');
-        require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
+	    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
 
-        $_mEval = new EmundusModelEvaluation;
-        $_mFile = new EmundusModelFiles;
-        $_mEmail = new EmundusModelEmails;
-        $_mUser = new EmundusModelUsers;
-
-        $user = JFactory::getUser();
-
-        $fnum_Array = explode(',', $fnums);
+        $fnum_array = explode(',', $fnums);
 
         $res = new stdClass();
         $res->status = true;
         $res->files = [];
 
-        $letters_ids = $_mEval->getLettersByFnumsTemplates($fnums,$templates);
-
-        $letter_count = [];
-
-        foreach($letters_ids as $key => $letter) {
-            foreach($letter as $data => $value) {
-                $letter_count[] = $value->id;
-            }
-        }
-
-        $available_fnums = [];
-
-        /// a partir de $fnums + $templates --> generer les lettres qui correspondent
-        foreach($fnum_Array as $key => $fnum) {
-            $generated_letters = $_mEval->getLetterTemplateForFnum($fnum,$templates); // return :: Array
+        foreach($fnum_array as $fnum) {
+            $generated_letters = $_mEval->getLetterTemplateForFnum($fnum,$templates);
             $fnumInfo = $_mFile->getFnumsTagsInfos([$fnum]);
 
-            if(empty($generated_letters)) {
+	        $applicant_path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'];
+			$applicant_url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
+			$applicant_tmp_path = EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'];
+	        if(!file_exists($applicant_path)) { mkdir($applicant_path, 0755, true); }
+	        if(!file_exists($applicant_tmp_path)) { mkdir($applicant_tmp_path, 0755, true); }
 
-                $path = EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'] . '_tmp';
-                $url = JURI::base() . EMUNDUS_PATH_REL . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'] . '_tmp' . DS;
-
-                if(!file_exists($path)) {mkdir($path, 0755, true);}
-                continue;
-            } else {
-                $available_fnums[] = $fnum;
-            }
+	        $post = [
+		        'TRAINING_CODE' => $fnumInfo[$fnum]['campaign_code'],
+		        'TRAINING_PROGRAMME' => $fnumInfo[$fnum]['campaign_label'],
+		        'CAMPAIGN_LABEL' => $fnumInfo[$fnum]['campaign_label'],
+		        'CAMPAIGN_YEAR' => $fnumInfo[$fnum]['campaign_year'],
+		        'USER_NAME' => $fnumInfo[$fnum]['applicant_name'],
+		        'USER_EMAIL' => $fnumInfo[$fnum]['applicant_email'],
+		        'FNUM' => $fnum
+	        ];
+	        $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
+	        $special = ['user_dob_age','evaluation_radar'];
 
             foreach($generated_letters as $key => $letter) {
-                // get attachment info
                 $attachInfo = $_mFile->getAttachmentInfos($letter->attachment_id);
 
-                /* before to generate letter, refresh all previous generated letters of current day - if $replace_document = true */
                 if($replace_document == 1) {
-                    $refreshQuery = 'DELETE FROM #__emundus_uploads WHERE #__emundus_uploads.attachment_id = ' . $attachInfo['id'] .
-                        ' AND DATE(#__emundus_uploads.timedate) = current_date() ' .
-                        ' AND #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum);
+					$refreshQuery = $this->_db->getQuery(true);
 
+					$refreshQuery->delete($this->_db->quoteName('#__emundus_uploads'))
+						// TODO: We have to check an other param if this attachment_id is used for an applicant upload
+						->where($this->_db->quoteName('attachment_id') . ' = ' . $attachInfo['id'])
+						// TODO: Why we delete files only generated current day
+						->andWhere('DATE(timedate) = CURRENT_DATE()')
+						->andWhere($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
                     $this->_db->setQuery($refreshQuery);
                     $this->_db->execute();
                 }
 
-                $type = $letter->template_type;
+	            $type = $letter->template_type;
+	            $letter_file = JPATH_SITE . $letter->file;
 
+	            switch ((int)$type) {
+		            case 1:
+			            $ext  = pathinfo($letter_file)['extension'];
+			            break;
+		            case 2:
+			            $ext = 'pdf';
+						break;
+		            case 3:
+			            $ext = 'docx';
+			            break;
+		            case 4:
+			            $ext = 'xlsx';
+			            break;
+		            default:
+						$ext = 'pdf';
+	            }
+
+	            $rand = rand(0, 1000000);
+	            if (!$anonymize_data) {
+		            if (!empty($generated_doc_name)) {
+			            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+			            $m_checklist = new EmundusModelChecklist;
+			            $filename = $m_checklist->formatFileName($generated_doc_name, $fnum, $post);
+		            } else {
+			            $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']);
+		            }
+		            $filename = $filename.$attachInfo['lbl'].'-'.md5($rand.time()).'.'.$ext;
+	            } else {
+		            $filename = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '.' . $ext;
+	            }
+
+	            $dest = $applicant_path . DS . $filename;
+				$dest_tmp = $applicant_tmp_path . DS . $filename;
+	            if (file_exists($dest) || file_exists($dest_tmp)) {
+		            unlink($dest);
+		            unlink($dest_tmp);
+
+		            $query->clear()
+			            ->delete($this->_db->quoteName('#__emundus_uploads'))
+			            ->where($this->_db->quoteName('filename') . ' LIKE ' . $this->_db->quote($filename))
+			            ->andWhere('DATE(timedate) = CURRENT_DATE()')
+			            ->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $attachInfo['id'])
+			            ->andWhere($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
+		            $this->_db->setQuery($query);
+		            $this->_db->execute();
+	            }
+
+	            /**
+	             * 1: Generate simple file without conversion
+	             * 2: Generate PDF file from HTML
+	             * 3: Generate DOCX (can be converted to PDF with Gotenberg)
+	             * 4: Generate XLSX file
+	             */
                 switch ((int)$type) {
-                    case 1:     // simple file
-                        /*@unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".pdf");          //// remove existing file
-                        @unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_.' . ".pdf");*/                                                    //// remove existing file
-                        $file = JPATH_SITE . $letter->file;
-                        if (file_exists($file)) {
-                            $res->status = true;
-                            $rand = rand(0, 1000000);
-                            $post = [
-                                'TRAINING_CODE' => $fnumInfo[$fnum]['campaign_code'],
-                                'TRAINING_PROGRAMME' => $fnumInfo[$fnum]['campaign_label'],
-                                'CAMPAIGN_LABEL' => $fnumInfo[$fnum]['campaign_label'],
-                                'CAMPAIGN_YEAR' => $fnumInfo[$fnum]['campaign_year'],
-                                'USER_NAME' => $fnumInfo[$fnum]['applicant_name'],
-                                'USER_EMAIL' => $fnumInfo[$fnum]['applicant_email'],
-                                'FNUM' => $fnum
-                            ];
-                            // make file name --- logically, we should avoid to generate many files which have same contents but different name --> fnum will distinguish the file name
-                            $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+                    case 1:
+                        if (file_exists($letter_file)) {
+	                        if (copy($letter_file, $dest) && copy($letter_file, $dest_tmp)) {
+		                        $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
 
-                            if (!$anonymize_data) {
-                                //$name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_.' . pathinfo($file)['extension'];
-                                $eMConfig = JComponentHelper::getParams('com_emundus');
-                                $generated_doc_name = $eMConfig->get('generated_doc_name', "");
-                                if (!empty($generated_doc_name)) {
-                                    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
-                                    $m_checklist = new EmundusModelChecklist;
-                                    $name = $m_checklist->formatFileName($generated_doc_name, $fnum, $post);
-                                } else {
-                                    $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']);
-                                }
-                                $name = $name.$attachInfo['lbl']."-".md5($rand.time())."_.".pathinfo($file)['extension'];
-                            } else {
-                                $name = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_.' . pathinfo($file)['extension'];
-                            }
-
-                            // get file path --> original path + file path, e.g: images/emundus/files/95
-                            $original_path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'];
-                            $original_name = $original_path . DS . $name;
-
-                            // get file path --> letter path + letter file path, e.g: images/emundus/files/95--letters (they will be removed after using)
-                            $path = EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'];               /// temp path (remove '_tmp')
-                            $path_name = $path . DS . $name;
-
-                            // get url of both original and letter cases
-                            $original_url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
-                            $url = JURI::base() . EMUNDUS_PATH_REL . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'] . '_tmp' . DS;               /// temp url
-
-                            // mkdir original folder if does not exist
-                            if(!file_exists($original_path)) { mkdir($original_path, 0755, true); }
-
-                            // mkdir letter folder if does not exist
-                            if (!file_exists($path)) { mkdir($path, 0755, true); }
-
-                            /// if exists
-                            if (file_exists($original_name) or file_exists($path_name))   {
-                                /// remove this file and then create new file (good idea?)
-                                unlink($path_name);
-                                unlink($original_name);
-
-                                /// remove it in database
-
-                                $query = 'DELETE FROM #__emundus_uploads 
-                                                WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
-                                                    ' AND #__emundus_uploads.filename = ' . $this->_db->quote($name) .
-                                                        ' AND DATE(#__emundus_uploads.timedate) = current_date()';
-
-                                $this->_db->setQuery($query);
-                                $this->_db->execute();
-
-                                /// recopy
-                                copy($file, $path_name);
-                                copy($file, $original_name);
-
-                                /// reupdate in database
-                                $upId = $_mFile->addAttachment($fnum, $name, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
-                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
-                            } else {
-                                if (copy($file, $path_name) and copy($file, $original_name)) {
-                                    $upId = $_mFile->addAttachment($fnum, $name, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
-
-                                    $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
-                                }
-                            }
+		                        $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $applicant_url, 'type' => $attachInfo['id']);
+	                        }
                         } else {
                             $res->status = false;
                             $res->msg = JText::_('COM_EMUNDUS_LETTERS_ERROR_CANNOT_GENERATE_FILE');
                         }
                         break;
 
-                    /// end of case 1 ///
-
-                    case 2:     /// pdf file from html (tinymce)
-                        /*@unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".pdf");
-                        @unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".pdf");*/
+                    case 2:
                         if (isset($fnumInfo)) {
-                            $post = [
-                                'TRAINING_CODE' => $fnumInfo[$fnum]['campaign_code'],
-                                'TRAINING_PROGRAMME' => $fnumInfo[$fnum]['campaign_label'],
-                                'CAMPAIGN_LABEL' => $fnumInfo[$fnum]['campaign_label'],
-                                'CAMPAIGN_YEAR' => $fnumInfo[$fnum]['campaign_year'],
-                                'USER_NAME' => $fnumInfo[$fnum]['applicant_name'],
-                                'USER_EMAIL' => $fnumInfo[$fnum]['applicant_email'],
-                                'FNUM' => $fnum
-                            ];
-
-                            // Generate PDF
                             $tags = $_mEmail->setTags($fnumInfo[$fnum]['applicant_id'], $post, $fnum, '', $letter->title.$letter->body.$letter->footer);
 
                             require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'MYPDF.php');
@@ -1974,37 +1932,19 @@ class EmundusModelEvaluation extends JModelList {
                             $pdf->SetCreator(PDF_CREATOR);
                             $pdf->SetAuthor($user->name);
                             $pdf->SetTitle($letter->title);
-
-                            // Set margins
-                            $pdf->SetMargins(5, 40, 5);
+                            $pdf->SetMargins(5, 20, 5);
                             $pdf->footer = $letter->footer;
-
-                            // Get logo
                             preg_match('#src="(.*?)"#i', $letter->header, $tab);
                             $pdf->logo = JPATH_SITE . DS . @$tab[1];
-
-                            // Get footer
                             preg_match('#src="(.*?)"#i', $letter->footer, $tab);
                             $pdf->logo_footer = JPATH_SITE . DS . @$tab[1];
-                            unset($logo, $logo_footer);
-
                             $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
-
-                            // Set default monospaced font
                             $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-
-                            // Set default font subsetting mode
                             $pdf->setFontSubsetting(true);
-
-                            // Set font
-                            $pdf->SetFont('freeserif', '', 8);
+                            $pdf->SetFont('freeserif', '', 10);
 
                             $htmldata = $_mEmail->setTagsFabrik($letter->body, array($fnum));
-
-                            // clean html
                             $htmldata = preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $htmldata))));
-
-                            // base64 images to link
                             $htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', function ($match) {
                                 list(, $img, $type, $base64, $end) = $match;
 
@@ -2015,736 +1955,449 @@ class EmundusModelEvaluation extends JModelList {
 
                                 return "$img$fn$end";  // new <img> tag
                             }, $htmldata);
-
                             $htmldata = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $htmldata);
 
                             $pdf->AddPage();
-
-                            // Print text using writeHTMLCell()
                             $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $htmldata, $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = '', $autopadding = true);
 
-                            $rand = rand(0, 1000000);
+                            $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);         ////
 
-                            // make file name --- logically, we should avoid to generate many files which have same contents but different name --> fnum will distinguish the file name
-                            $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-                            if (!$anonymize_data) {
-                                //$name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".pdf";
-                                $eMConfig = JComponentHelper::getParams('com_emundus');
-                                $generated_doc_name = $eMConfig->get('generated_doc_name', "");
-                                if (!empty($generated_doc_name)) {
-                                    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
-                                    $m_checklist = new EmundusModelChecklist;
-                                    $name = $m_checklist->formatFileName($generated_doc_name, $fnum, $post);
-                                } else {
-                                    $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']);
-                                }
-                                $name = $name.$attachInfo['lbl']."-".md5($rand.time()).".pdf";
-                            } else {
-                                $name = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".pdf";
-                            }
-
-                            $original_path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'];
-                            $original_name = $original_path . DS . $name;
-
-                            $path = EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'];           /// tmp path (remove '_tmp')
-                            $path_name = $path . DS . $name;
-
-                            $original_url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
-                            $url = JURI::base() . EMUNDUS_PATH_REL . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'] . '_tmp' . DS;     /// tmp path
-
-                            ///@ mkdir original folder if does not exists
-                            if(!file_exists($original_path)) { mkdir($original_path, 0755, true); }
-
-                            ///@ mkdir new folder which contains only the generated documents
-                            if (!file_exists($path)) { mkdir($path, 0755, true); }
-
-                            if (file_exists($path_name) or file_exists($original_name)) {
-                                // remove old file and reupdate in database
-                                unlink($original_name);
-                                unlink($path_name);
-
-                                $query = 'DELETE FROM #__emundus_uploads 
-                                                WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
-                                                    ' AND #__emundus_uploads.filename = ' . $this->_db->quote($name) .
-                                                        ' AND DATE(#__emundus_uploads.timedate) = current_date()';
-
-                                $this->_db->setQuery($query);
-                                $this->_db->execute();
-                            }
-                            /// copy generated letter to --letters folder
-                            $upId = $_mFile->addAttachment($fnum, $name, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);         ////
-
-                            $pdf->Output($path_name, 'F');
-                            $pdf->Output($original_name, 'F');
-                            $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
-                        }
-                        unset($pdf, $path_name, $name, $url, $upIdn);
-                        unset($pdf, $original_name, $name, $original_url, $upIdn);
-                        break;
-
-                    /// end of case 2
-
-                    case 3: /// generate pdf from docx --> using Gotenberg
-                        /*@unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".docx");
-                        @unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".pdf");
-
-                        @unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".docx");
-                        @unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".pdf");*/
-
-                        require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
-                        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'export.php');
-
-                        $m_Export = new EmundusModelExport;
-                        $eMConfig = JComponentHelper::getParams('com_emundus');
-                        $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
-
-                        $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
-                        $post = [
-                            'TRAINING_CODE' => $fnumInfo[$fnum]['campaign_code'],
-                            'TRAINING_PROGRAMME' => $fnumInfo[$fnum]['campaign_label'],
-                            'CAMPAIGN_LABEL' => $fnumInfo[$fnum]['campaign_label'],
-                            'CAMPAIGN_YEAR' => $fnumInfo[$fnum]['campaign_year'],
-                            'USER_NAME' => $fnumInfo[$fnum]['applicant_name'],
-                            'USER_EMAIL' => $fnumInfo[$fnum]['applicant_email'],
-                            'FNUM' => $fnum
-                        ];
-
-                        $special = ['user_dob_age', 'evaluation_radar'];
-
-                        try {
-                            $phpWord = new \PhpOffice\PhpWord\PhpWord();
-                            \PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(true);
-                            $preprocess = $phpWord->loadTemplate(JPATH_SITE . $letter->file);
-                            $tags = $preprocess->getVariables();
-
-                            $idFabrik = array();
-                            $setupTags = array();
-
-                            foreach ($tags as $i => $val) {
-                                $tag = strip_tags($val);
-                                if (is_numeric($tag)) {
-                                    $idFabrik[] = $tag;
-                                } else {
-                                    if(strpos($tag, 'IMG_') !== false) {
-                                        $setupTags[] = trim(explode(":", $tag)[0]);
-                                    } else {
-                                        $setupTags[] = $tag;
-                                    }
-                                }
-                            }
-
-                            if (!empty($idFabrik)) {
-                                $fabrikElts = $_mFile->getValueFabrikByIds($idFabrik);
-                            } else {
-                                $fabrikElts = array();
-                            }
-
-                            $fabrikValues = array();
-                            foreach ($fabrikElts as $elt) {
-                                $params = json_decode($elt['params']);
-                                $groupParams = json_decode($elt['group_params']);
-                                $isDate = ($elt['plugin'] == 'date');
-                                $isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
-
-                                if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
-                                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
-                                } else {
-                                    if ($isDate) {
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);                   /// $fnum_Array or $fnum ???
-                                    } else {
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);                                              /// $fnum_Array or $fnum ???
-                                    }
-                                }
-
-                                if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
-
-                                    foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-
-                                        if ($elt['plugin'] == "checkbox") {
-                                            $val = json_decode($val['val']);
-                                        } else {
-                                            $val = explode(',', $val['val']);
-                                        }
-
-                                        if (count($val) > 0) {
-                                            foreach ($val as $k => $v) {
-                                                $index = array_search($v, $params->sub_options->sub_values);
-                                                $val[$k] = JText::_($params->sub_options->sub_labels[$index]);
-                                            }
-                                            $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
-                                        } else {
-                                            $fabrikValues[$elt['id']][$fnum]['val'] = "";
-                                        }
-                                    }
-
-                                } elseif ($elt['plugin'] == "birthday") {
-
-                                    foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-                                        $val = explode(',', $val['val']);
-                                        foreach ($val as $k => $v) {
-                                            if(!empty($v)){
-                                                $val[$k] = date($params->details_date_format, strtotime($v));
-                                            }
-                                        }
-                                        $fabrikValues[$elt['id']][$fnum]['val'] = implode(",", $val);
-                                    }
-
-                                } else {
-                                    if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);              /// $fnum_Array or $fnum ???
-                                    } else {
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);                                                  /// $fnum_Array or $fnum ???
-                                    }
-                                }
-                            }
-
-                            $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_SITE . $letter->file);
-                            if (isset($fnumInfo[$fnum])) {
-                                $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
-
-                                foreach ($setupTags as $tag) {
-                                    $val = "";
-                                    $lowerTag = strtolower($tag);
-
-                                    if (array_key_exists($lowerTag, $const)) {
-                                        $preprocess->setValue($tag, $const[$lowerTag]);
-                                    } elseif (in_array($lowerTag, $special)) {
-                                        switch ($lowerTag) {
-
-                                            // dd-mm-YYYY (YY)
-                                            case 'user_dob_age':
-                                                $birthday = $_mFile->getBirthdate($fnum, 'd/m/Y', true);
-                                                $preprocess->setValue($tag, $birthday->date . ' (' . $birthday->age . ')');
-                                                break;
-
-                                            default:
-                                                $preprocess->setValue($tag, '');
-                                                break;
-                                        }
-                                    } elseif (!empty(@$fnumInfo[$fnum][$lowerTag])) {
-                                        $preprocess->setValue($tag, @$fnumInfo[$fnum][$lowerTag]);
-                                    } else {
-                                        //$tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
-                                        $i = 0;
-                                        foreach ($tags['patterns'] as $value) {
-                                            if ($value == $tag) {
-                                                $val = $tags['replacements'][$i];
-                                                break;
-                                            }
-                                            $i++;
-                                        }
-                                        // replace tag by image if tag name start by IMG_
-                                       if(strpos($tag, 'IMG_') !== false) {
-                                            $preprocess->setImageValue($tag, $val);
-                                        } else {
-                                            $preprocess->setValue($tag, htmlspecialchars($val));
-                                       }
-                                    }
-                                }
-
-                                /// foreach
-                                foreach ($idFabrik as $id) {
-                                    if (isset($fabrikValues[$id][$fnum])) {
-                                        $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
-                                        $preprocess->setValue($id, htmlspecialchars($value));
-                                    } else {
-                                        $preprocess->setValue($id, '');
-                                    }
-                                }
-
-                                $rand = rand(0, 1000000);
-
-                                /// check if the filename is anonymized -- logically, we should avoid to generate many files which have the same contents, but different name --> bad performance
-                                $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-                                if (!$anonymize_data) {
-//                                    $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".docx";
-                                    $eMConfig = JComponentHelper::getParams('com_emundus');
-                                    $generated_doc_name = $eMConfig->get('generated_doc_name', "");
-                                    if (!empty($generated_doc_name)) {
-                                        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
-                                        $m_checklist = new EmundusModelChecklist;
-                                        $filename = $m_checklist->formatFileName($generated_doc_name, $fnum, $post);
-                                    } else {
-                                        $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']);
-                                    }
-                                    $filename = $filename.$attachInfo['lbl']."-".md5($rand.time()).".docx";
-                                } else {
-                                    $filename = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".docx";
-                                }
-
-                                $original_path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'];
-                                $original_name = $original_path . DS . $filename;
-
-                                $path = EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'];        /// tmp path (remove '_tmp')
-                                $path_name = $path . DS . $filename;
-
-                                $original_url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
-                                $url = JURI::base() . EMUNDUS_PATH_REL . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'] . '_tmp' . DS;
-
-                                if(!file_exists($original_path)) { mkdir($original_path, 0755, true); }
-
-                                if (!file_exists($path)) { mkdir($path, 0755, true); }
-
-                                /// check if file exists or not
-                                if (file_exists($path_name) or file_exists($original_path)) {
-                                    $query = 'DELETE FROM #__emundus_uploads 
-                                                    WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
-                                                        ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
-                                                            ' AND DATE(#__emundus_uploads.timedate) = current_date()';
-
-                                    $this->_db->setQuery($query);
-                                    $this->_db->execute();
-
-                                    unlink($original_name);
-                                    unlink($path_name);
-                                }
-
-                                $preprocess->saveAs($original_name);
-                                if ($gotenberg_activation == 1 && $letter->pdf == 1) {
-                                    //convert to PDF
-                                    $dest = str_replace('.docx', '.pdf', $original_name);
-                                    $filename = str_replace('.docx', '.pdf', $filename);
-                                    try {
-                                        $m_Export->toPdf($original_name, $dest, 'docx', $fnum);
-                                    } catch(Exception $e) {
-                                        JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-                                        return false;
-                                    }
-
-                                    copy($original_path . DS . $filename, $path . DS . $filename);
-
-                                    unlink($path . $original_name);
-                                    unlink($original_path . DS . $original_name);
-
-                                    $query = 'DELETE FROM #__emundus_uploads 
-                                                    WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
-                                                        ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
-                                                            ' AND DATE(#__emundus_uploads.timedate) = current_date()';
-
-                                    $this->_db->setQuery($query);
-                                    $this->_db->execute();
-                                } else {
-                                    copy($original_name, $path_name);
-                                }
-
-                                $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
-                                $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
-                            }
-                        } catch (Exception $e) {
-                            $res->status = false;
-                            $res->msg = JText::_("AN_ERROR_OCURRED") . ':' . $e->getMessage();
+                            $pdf->Output($dest_tmp, 'F');
+                            $pdf->Output($dest, 'F');
+                            $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $applicant_url, 'type' => $attachInfo['id']);
                         }
                         break;
 
-                    /// end of case 3
+                    case 3:
+	                    if (file_exists($letter_file)) {
+		                    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'export.php');
+		                    $m_Export = new EmundusModelExport();
+
+		                    try {
+			                    $phpWord = new \PhpOffice\PhpWord\PhpWord();
+			                    \PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(true);
+			                    $preprocess = $phpWord->loadTemplate($letter_file);
+			                    $tags       = $preprocess->getVariables();
+
+			                    $idFabrik  = [];
+			                    $setupTags = [];
+			                    foreach ($tags as $i => $val) {
+				                    $tag = strip_tags($val);
+				                    if (is_numeric($tag)) {
+					                    $idFabrik[] = $tag;
+				                    }
+				                    else {
+					                    if (strpos($tag, 'IMG_') !== false) {
+						                    $setupTags[] = trim(explode(":", $tag)[0]);
+					                    }
+					                    else {
+						                    $setupTags[] = $tag;
+					                    }
+				                    }
+			                    }
+
+			                    $fabrikElts = [];
+			                    if (!empty($idFabrik)) {
+				                    $fabrikElts = $_mFile->getValueFabrikByIds($idFabrik);
+			                    }
+
+			                    $fabrikValues = [];
+
+			                    // TODO: Move this to a global method by passing the fabrik element
+			                    foreach ($fabrikElts as $elt) {
+				                    $params      = json_decode($elt['params']);
+				                    $groupParams = json_decode($elt['group_params']);
+
+				                    if (@$groupParams->repeat_group_button == 1 || $elt['plugin'] === 'databasejoin') {
+					                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
+				                    }
+				                    else {
+					                    if ($elt['plugin'] == 'date') {
+						                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);
+					                    }
+					                    else {
+						                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
+					                    }
+				                    }
+
+				                    if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
+
+					                    foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+						                    if ($elt['plugin'] == "checkbox") {
+							                    $val = json_decode($val['val']);
+						                    }
+						                    else {
+							                    $val = explode(',', $val['val']);
+						                    }
+
+						                    if (count($val) > 0) {
+							                    foreach ($val as $k => $v) {
+								                    $index   = array_search($v, $params->sub_options->sub_values);
+								                    $val[$k] = JText::_($params->sub_options->sub_labels[$index]);
+							                    }
+							                    $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
+						                    }
+						                    else {
+							                    $fabrikValues[$elt['id']][$fnum]['val'] = "";
+						                    }
+					                    }
+
+				                    }
+				                    elseif ($elt['plugin'] == "birthday") {
+
+					                    foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+						                    $val = explode(',', $val['val']);
+						                    foreach ($val as $k => $v) {
+							                    if (!empty($v)) {
+								                    $val[$k] = date($params->details_date_format, strtotime($v));
+							                    }
+						                    }
+						                    $fabrikValues[$elt['id']][$fnum]['val'] = implode(",", $val);
+					                    }
+
+				                    }
+				                    else {
+					                    if (@$groupParams->repeat_group_button == 1 || $elt['plugin'] === 'databasejoin') {
+						                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
+					                    }
+					                    else {
+						                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
+					                    }
+				                    }
+			                    }
+
+			                    $preprocess = new \PhpOffice\PhpWord\TemplateProcessor($letter_file);
+			                    if (isset($fnumInfo[$fnum])) {
+				                    $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
+
+				                    foreach ($setupTags as $tag) {
+					                    $val      = '';
+					                    $lowerTag = strtolower($tag);
+
+					                    if (array_key_exists($lowerTag, $const)) {
+						                    $preprocess->setValue($tag, $const[$lowerTag]);
+					                    }
+					                    elseif (in_array($lowerTag, $special)) {
+						                    switch ($lowerTag) {
+
+							                    // dd-mm-YYYY (YY)
+							                    case 'user_dob_age':
+								                    $birthday = $_mFile->getBirthdate($fnum, 'd/m/Y', true);
+								                    $preprocess->setValue($tag, $birthday->date . ' (' . $birthday->age . ')');
+								                    break;
+
+							                    default:
+								                    $preprocess->setValue($tag, '');
+								                    break;
+						                    }
+					                    }
+					                    elseif (!empty(@$fnumInfo[$fnum][$lowerTag])) {
+						                    $preprocess->setValue($tag, @$fnumInfo[$fnum][$lowerTag]);
+					                    }
+					                    else {
+						                    $i = 0;
+						                    foreach ($tags['patterns'] as $value) {
+							                    if ($value == $tag) {
+								                    $val = $tags['replacements'][$i];
+								                    break;
+							                    }
+							                    $i++;
+						                    }
+
+						                    if (strpos($tag, 'IMG_') !== false) {
+							                    $preprocess->setImageValue($tag, $val);
+						                    }
+						                    else {
+							                    $preprocess->setValue($tag, $val);
+						                    }
+					                    }
+				                    }
+
+				                    foreach ($idFabrik as $id) {
+					                    if (isset($fabrikValues[$id][$fnum])) {
+						                    $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
+						                    $preprocess->setValue($id, $value);
+					                    }
+					                    else {
+						                    $preprocess->setValue($id, '');
+					                    }
+				                    }
+
+				                    $preprocess->saveAs($dest);
+				                    if ($gotenberg_activation == 1 && $letter->pdf == 1) {
+					                    $dest_pdf = str_replace('.docx', '', $dest);
+					                    $dest_tmp_pdf = str_replace('.docx', '.pdf', $dest_tmp);
+					                    $filename = str_replace('.docx', '.pdf', $filename);
+
+					                    try {
+						                    $gotenberg_results = $m_Export->toPdf($dest, $dest_pdf, 'docx', $fnum);
+											if($gotenberg_results->status){
+												copy($gotenberg_results->file,$dest_tmp_pdf);
+												unlink($dest);
+											}
+					                    }
+					                    catch (Exception $e) {
+						                    JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+
+						                    return false;
+					                    }
+				                    } else {
+										copy($dest,$dest_tmp);
+				                    }
+
+				                    $upId         = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
+				                    $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $applicant_url, 'type' => $attachInfo['id']);
+			                    }
+		                    }
+		                    catch (Exception $e) {
+			                    $res->status = false;
+			                    $res->msg    = JText::_("AN_ERROR_OCURRED") . ':' . $e->getMessage();
+		                    }
+	                    } else {
+		                    $res->status = false;
+		                    $res->msg = JText::_('COM_EMUNDUS_LETTERS_ERROR_CANNOT_GENERATE_FILE');
+	                    }
+                        break;
 
                     case 4:
-                        /*@unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".xlsx");
-                        @unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".xlsx");*/
+	                    if (file_exists($letter_file)) {
+		                    $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($letter_file);
+		                    $reader        = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
 
-                        require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+		                    $reader->setIncludeCharts(true);
+		                    $spreadsheet = $reader->load($letter_file);
 
-                        $inputFileName = JPATH_SITE . $letter->file;
-                        $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($inputFileName);
-                        $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+		                    if (isset($fnumInfo[$fnum])) {
+			                    $preprocess = $spreadsheet->getAllSheets(); //Search in each sheet of the workbook
 
-                        $reader->setIncludeCharts(true);
-                        $spreadsheet = $reader->load($inputFileName);
+			                    foreach ($preprocess as $sheet) {
+				                    foreach ($sheet->getRowIterator() as $row) {
+					                    $cellIterator = $row->getCellIterator();
+					                    foreach ($cellIterator as $cell) {
 
-                        $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
-                        $post = [
-                            'TRAINING_CODE' => $fnumInfo[$fnum]['campaign_code'],
-                            'TRAINING_PROGRAMME' => $fnumInfo[$fnum]['campaign_label'],
-                            'CAMPAIGN_LABEL' => $fnumInfo[$fnum]['campaign_label'],
-                            'CAMPAIGN_YEAR' => $fnumInfo[$fnum]['campaign_year'],
-                            'USER_NAME' => $fnumInfo[$fnum]['applicant_name'],
-                            'USER_EMAIL' => $fnumInfo[$fnum]['applicant_email'],
-                            'FNUM' => $fnum
-                        ];
+						                    $cell->getValue();
 
-                        $special = ['user_dob_age'];
+						                    $regex = '/\$\{(.*?)}|\[(.*?)]/';
+						                    preg_match_all($regex, $cell, $matches);
 
-                        if (isset($fnumInfo[$fnum])) {
-                            $preprocess = $spreadsheet->getAllSheets(); //Search in each sheet of the workbook
+						                    $idFabrik  = array();
+						                    $setupTags = array();
 
-                            foreach ($preprocess as $sheet) {
-                                foreach ($sheet->getRowIterator() as $row) {
-                                    $cellIterator = $row->getCellIterator();
-                                    foreach ($cellIterator as $cell) {
+						                    foreach ($matches[1] as $i => $val) {
+							                    $tag = strip_tags($val);
 
-                                        $cell->getValue();
+							                    if (is_numeric($tag)) {
+								                    $idFabrik[] = $tag;
+							                    } else {
+								                    $setupTags[] = $tag;
+							                    }
+						                    }
 
-                                        $regex = '/\$\{(.*?)}|\[(.*?)]/';
-                                        preg_match_all($regex, $cell, $matches);
+						                    if (!empty($idFabrik)) {
+							                    $fabrikElts = $_mFile->getValueFabrikByIds($idFabrik);
+						                    } else {
+							                    $fabrikElts = array();
+						                    }
 
-                                        $idFabrik = array();
-                                        $setupTags = array();
+						                    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'files.php');
+						                    $_cFiles = new EmundusControllerFiles;
 
-                                        foreach ($matches[1] as $i => $val) {
+						                    $fabrikValues = $_cFiles->getValueByFabrikElts($fabrikElts, [$fnum]);
 
-                                            $tag = strip_tags($val);
+						                    foreach ($setupTags as $tag) {
+							                    $val      = "";
+							                    $lowerTag = strtolower($tag);
 
-                                            if (is_numeric($tag)) {
-                                                $idFabrik[] = $tag;
-                                            } else {
-                                                $setupTags[] = $tag;
-                                            }
-                                        }
+							                    if (array_key_exists($lowerTag, $const)) {
+								                    $cell->setValue($const[$lowerTag]);
+							                    } elseif (in_array($lowerTag, $special)) {
+								                    switch ($lowerTag) {
+									                    case 'user_dob_age':
+										                    $birthday = $_mFile->getBirthdate($fnum, 'd/m/Y', true);
+										                    $cell->setValue($birthday->date . ' (' . $birthday->age . ')');
+										                    break;
+									                    default:
+										                    $cell->setValue('');
+										                    break;
+								                    }
+							                    } elseif (!empty(@$fnumInfo[$fnum][$lowerTag])) {
+								                    $cell->setValue(@$fnumInfo[$fnum][$lowerTag]);
+							                    } else {
+								                    $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
+								                    $i    = 0;
+								                    foreach ($tags['patterns'] as $value) {
+									                    if ($value == $tag) {
+										                    $val = $tags['replacements'][$i];
+										                    break;
+									                    }
+									                    $i++;
+								                    }
+								                    $cell->setValue(htmlspecialchars($val));
+							                    }
+						                    }
+						                    foreach ($idFabrik as $id) {
+							                    if (isset($fabrikValues[$id][$fnum])) {
+								                    $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
+								                    $cell->setValue(htmlspecialchars($value));
+							                    } else {
+								                    $cell->setValue('');
+							                    }
+						                    }
+					                    }
+				                    }
+			                    }
 
-                                        if (!empty($idFabrik)) {
-                                            $fabrikElts = $_mFile->getValueFabrikByIds($idFabrik);
-                                        } else {
-                                            $fabrikElts = array();
-                                        }
+			                    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+			                    $writer->setIncludeCharts(true);
+			                    $writer->save($dest);
 
-                                        /// call to file controller
-                                        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'files.php');
-                                        $_cFiles = new EmundusControllerFiles;
-
-                                        $fabrikValues = $_cFiles->getValueByFabrikElts($fabrikElts, [$fnum]);
-
-                                        foreach ($setupTags as $tag) {
-                                            $val = "";
-                                            $lowerTag = strtolower($tag);
-
-                                            if (array_key_exists($lowerTag, $const)) {
-                                                $cell->setValue($const[$lowerTag]);
-                                            } elseif (in_array($lowerTag, $special)) {
-
-                                                // Each tag has it's own logic requiring special work.
-                                                switch ($lowerTag) {
-
-                                                    // dd-mm-YYYY (YY)
-                                                    case 'user_dob_age':
-                                                        $birthday = $_mFile->getBirthdate($fnum, 'd/m/Y', true);
-                                                        $cell->setValue($birthday->date . ' (' . $birthday->age . ')');
-                                                        break;
-
-                                                    default:
-                                                        $cell->setValue('');
-                                                        break;
-                                                }
-
-                                            } elseif (!empty(@$fnumInfo[$fnum][$lowerTag])) {
-                                                $cell->setValue(@$fnumInfo[$fnum][$lowerTag]);
-                                            } else {
-                                                $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
-                                                $i = 0;
-                                                foreach ($tags['patterns'] as $value) {
-                                                    if ($value == $tag) {
-                                                        $val = $tags['replacements'][$i];
-                                                        break;
-                                                    }
-                                                    $i++;
-                                                }
-                                                $cell->setValue(htmlspecialchars($val));
-                                            }
-                                        }
-                                        foreach ($idFabrik as $id) {
-
-                                            if (isset($fabrikValues[$id][$fnum])) {
-                                                $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
-                                                $cell->setValue(htmlspecialchars($value));
-                                            } else {
-                                                $cell->setValue('');
-                                            }
-                                        }
-                                    }
-                                }
-
-                            }
-                            $rand = rand(0, 1000000);
-
-                            /// check if the filename is anonymized -- logically, we should avoid to generate many files which have the same contents, but different name --> bad performance
-                            $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-                            if (!$anonymize_data) {
-                                //$filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".xlsx";
-                                $eMConfig = JComponentHelper::getParams('com_emundus');
-                                $generated_doc_name = $eMConfig->get('generated_doc_name', "");
-                                if (!empty($generated_doc_name)) {
-                                    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
-                                    $m_checklist = new EmundusModelChecklist;
-                                    $filename = $m_checklist->formatFileName($generated_doc_name, $fnum, $post);
-                                } else {
-                                    $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']);
-                                }
-                                $filename = $filename.$attachInfo['lbl']."-".md5($rand.time()).".xlsx";
-                            } else {
-                                $filename = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".xlsx";
-                            }
-
-                            $original_path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'];
-                            $original_name = $original_path . DS . $filename;
-
-                            $path = EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'];            /// tmp path (remove '_tmp')
-                            $path_name = $path . DS . $filename;
-
-                            $original_url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
-                            $url = JURI::base() . EMUNDUS_PATH_REL . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'] . '_tmp' . DS;
-
-                            if (!file_exists($path)) { mkdir($path, 0755, true); }
-
-                            if (!file_exists($original_path)) { mkdir($original_path, 0755, true); }
-
-                            /// check if file exists or not
-                            if (file_exists($original_name) or file_exists($path_name)) {
-                                unlink($original_name);
-                                unlink($path_name);
-
-                                $query = 'DELETE FROM #__emundus_uploads 
-                                                    WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
-                                                        ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
-                                                            ' AND DATE(#__emundus_uploads.timedate) = current_date()';
-
-                                $this->_db->setQuery($query);
-                                $this->_db->execute();
-
-                                $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-                                $writer->setIncludeCharts(true);
-                                $writer->save($original_name);
-
-                                copy($original_name, $path_name);
-
-                                $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
-                                $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
-
-                            } else {
-                                $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
-
-                                $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-                                $writer->setIncludeCharts(true);
-                                $writer->save($original_name);
-
-                                copy($original_name, $path_name);
-
-                                $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
-                            }
-                            break;
-                        }
-                }
-            }
-
-            $_ids = array();
-            $getLastUploadIdQuery = "SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.fnum LIKE " . $this->_db->quote($fnum) . " GROUP BY #__emundus_uploads.attachment_id ORDER BY attachment_id DESC";
-
-            $this->_db->setQuery($getLastUploadIdQuery);
-            $availableUploads = $this->_db->loadObjectList();
-
-            foreach($availableUploads as $_upload) {
-                $_ids[] = $_upload->id;
-            }
-
-            /// remove all duplicate attachments (just keep the last) -- unlink
-            $getDuplicateAttachmentQuery = 'SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.id NOT IN ( ' . implode(',', $_ids) . ' ) AND #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum);
-
-            $this->_db->setQuery($getDuplicateAttachmentQuery);
-            $duplicateAttachments = $this->_db->loadObjectList();
-
-            /// remove unnecessary records for same attachment id in database
-            if($replace_document == 1) {
-                $deleteDuplicateAttachmentsQuery = 'DELETE FROM #__emundus_uploads WHERE #__emundus_uploads.id NOT IN ( ' . implode(',', $_ids) . ' ) AND #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum);
-                $this->_db->setQuery($deleteDuplicateAttachmentsQuery);
-                $this->_db->execute();
-            }
-
-//            foreach($duplicateAttachments as $attachment) {
-//                unlink(EMUNDUS_PATH_ABS . $attachment->user_id . DS . $attachment->filename);
-//                unlink(EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'] . DS . $attachment->filename);
-//            }
+								copy($dest,$dest_tmp);
+			                    $upId         = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
+			                    $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $applicant_url, 'type' => $attachInfo['id']);
+		                    }
+	                    } else {
+		                    $res->status = false;
+		                    $res->msg = JText::_('COM_EMUNDUS_LETTERS_ERROR_CANNOT_GENERATE_FILE');
+	                    }
+						break;
+				}
+			}
         }
 
-        /// lastly, we get all records in jos_emundus_uploads
-        if($replace_document == 1) {
-            unset($res->files);
-
-            $availableFilesName = [];
-
-            $getAllUploadsQuery = 'SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.fnum IN (' . implode(',', $fnum_Array) . ') AND DATE(#__emundus_uploads.timedate) = current_date() AND #__emundus_uploads.attachment_id IN (' . implode(',', $templates) . ' )';
-            $this->_db->setQuery($getAllUploadsQuery);
-            $_upAttachments = $this->_db->loadObjectList();
-
-            foreach ($_upAttachments as $_upload) {
-                $folder_id = current($_mFile->getFnumsInfos(array($_upload->fnum)))['applicant_id'];
-                $res->files[] = array('filename' => $_upload->filename, 'upload' => $_upload->id, 'url' => JURI::base() . EMUNDUS_PATH_REL . $folder_id . DS);
-                $availableFilesName[] = $_upload->filename;
-            }
-
-            foreach ($fnum_Array as $fnum) {
-                $fnumInfo = $_mFile->getFnumsTagsInfos([$fnum]);
-                $files = glob(EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] . '_' . $fnumInfo[$fnum]['applicant_id'] . DS . '*');
-
-                foreach ($files as $_f) {
-                    $fname = end(explode('/', $_f));
-                    if (!in_array($fname, $availableFilesName)) {
-                        unlink($_f);
-                    }
-                }
-            }
-        } else {
-            $_idList = array();
-            /* get max upload id for each fnum and for each attachment id and in currrent_date() */
-            foreach($templates as $tmpl) {
-                $getLastUploadIdQuery = 'SELECT MAX(#__emundus_uploads.id) as uid
-                                            FROM #__emundus_uploads 
-                                                WHERE #__emundus_uploads.fnum IN (' . implode(',', $fnum_Array) . ') 
-                                                    AND DATE(#__emundus_uploads.timedate) = current_date() 
-                                                        AND #__emundus_uploads.attachment_id IN (' . $tmpl . ' ) 
-                                                            GROUP BY fnum';
-                $this->_db->setQuery($getLastUploadIdQuery);
-                $_idList[$tmpl] = $this->_db->loadAssocList();
-            }
-
-            $raw = array_reduce($_idList, 'array_merge', array());
-            $out = array();
-
-            foreach($raw as $r) { $out[] = $r['uid']; }
-
-            /* from $out, get the filename of each */
-            unset($res->files);
-            $getFiles = $_mFile->getAttachmentsById($out);
-
-            foreach($getFiles as $f) {
-                $folder_id = current($_mFile->getFnumsInfos(array($f['fnum'])))['applicant_id'];
-                $res->files[] = array('filename' => $f['filename'], 'upload' => $f['id'], 'url' => JURI::base() . EMUNDUS_PATH_REL . $folder_id . DS, 'type' => $f['attachment_id']);
-            }
-        }
-
-        // group letters by candidat
-
-        $fnumsInfos = $_mFile->getFnumsInfos($fnum_Array);
+        $fnumsInfos = $_mFile->getFnumsInfos($fnum_array);
 
         $res->zip_data_by_candidat = [];
         $res->zip_all_data_by_candidat = [];
-        $res->zip_all_data_by_document = [];
+	    $res->zip_all_data_by_document = [];
 
-        $applicant_id = [];
+	    $applicant_id = [];
+	    foreach ($fnumsInfos as $key => $value) {
+		    $applicant_id[] = $value['applicant_id'];
+	    }
+	    $applicant_id = array_unique(array_filter($applicant_id));
+	    $res->affected_users = count($applicant_id);
 
-        foreach ($fnumsInfos as $key => $value) { $applicant_id[] = $value['applicant_id']; }
+	    /**
+	     * showMode
+	     * 0: Group by applicants
+	     * 1: Group by attachment type
+	     *
+	     * mergeMode
+	     * 0: No merge
+	     * 1: Merge letters into one PDF
+	     */
+        if($showMode == 0)
+		{
+            foreach ($applicant_id as $uid) {
+                $user_info = $_mUsers->getUsersById($uid);
 
-        $applicant_id = array_unique(array_filter($applicant_id));
-        $res->affected_users = count($applicant_id);
-
-        if($showMode == 0) {
-            unset($res->zip_all_data_by_document);
-
-            foreach ($applicant_id as $key => $uid) {
-                $user_info = $_mUser->getUsersById($uid);           /// change "getUserById" to "getUsersById"
+	            $applicant_tmp_path = EMUNDUS_PATH_ABS . 'tmp' . DS . $user_info[0]->name . '_' . $user_info[0]->id;
+	            $applicant_tmp_files = glob($applicant_tmp_path . DS . '*');
 
                 if($mergeMode == 0) {
-                    $_zipName = $user_info[0]->name . '_' . $user_info[0]->id . '_' . date("Y-m-d") . '_' . '.zip';            // make zip file name
+                    $_zipName = $user_info[0]->name . '_' . $user_info[0]->id . '_' . date("Y-m-d") . '_' . '.zip';
+                    if(file_exists($tmp_path . $_zipName)) { unlink($tmp_path . $_zipName); }
 
-                    if(file_exists($tmp_path . $_zipName)) { unlink($tmp_path . $_zipName); }                   // if zip name exist in /tmp/ :: remove
-
-                    $_tmpFolder = EMUNDUS_PATH_ABS . 'tmp' . DS . $user_info[0]->name . '_' . $user_info[0]->id;
-
-                    $_isEmptyTmpFolder = glob($_tmpFolder . DS . '*');
-
-                    $mergeZipAllName = date("Y-m-d") . '-total-by-candidats';                                                    // make zip --all file name
-                    $mergeZipAllPath = $tmp_path . $mergeZipAllName;                                                                   // make the zip --all path
-
+                    $mergeZipAllName = date("Y-m-d_H-i") . '-total-by-applicants';
+                    $mergeZipAllPath = $tmp_path . $mergeZipAllName;
                     if(!file_exists($mergeZipAllPath)) { mkdir($mergeZipAllPath, 0755, true); }
 
-                    if(sizeof($_isEmptyTmpFolder) > 0) {
+                    if(sizeof($applicant_tmp_files) > 0) {
                         if($replace_document == 0) {
                             $keepFiles = [];
                             foreach($res->files as $_f) {
-                                $keepFiles[] = $_tmpFolder . DS . $_f['filename'];
-                                if(!file_exists($_tmpFolder . DS . $_f['filename'])) {
-                                    $index = array_search($_tmpFolder . DS . $_f['filename'], $keepFiles);
+                                $keepFiles[] = $applicant_tmp_path . DS . $_f['filename'];
+                                if(!file_exists($applicant_tmp_path . DS . $_f['filename'])) {
+                                    $index = array_search($applicant_tmp_path . DS . $_f['filename'], $keepFiles);
                                     unset($keepFiles[$index]);
 
-                                    unlink($_tmpFolder . DS . $_f['filename']);     // remove fake files
+                                    unlink($applicant_tmp_path . DS . $_f['filename']);
                                 }
                             }
 
-                            $diffFiles = array_diff($_isEmptyTmpFolder,$keepFiles);
+                            $diffFiles = array_diff($applicant_tmp_files,$keepFiles);
                             foreach($diffFiles as $df) { unlink($df); }
                         }
 
-                        $this->ZipLetter($_tmpFolder, $tmp_path . $_zipName, 'true');
-                        $this->copy_directory($_tmpFolder . DS, $mergeZipAllPath . DS . str_replace('_tmp' , '', end(explode('/', $_tmpFolder))));
+                        $this->ZipLetter($applicant_tmp_path, $tmp_path . $_zipName, 'true');
+                        $this->copy_directory($applicant_tmp_path . DS, $mergeZipAllPath . DS . $user_info[0]->name . '_' . $user_info[0]->id);
                     }
 
-                    /// lastly, zip this folder
                     $this->ZipLetter($mergeZipAllPath,$mergeZipAllPath . '.zip', true);                       // zip this new file
 
-                    if(sizeof($_isEmptyTmpFolder) > 0) { $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->name, 'zip_url' => DS . 'tmp/' . $_zipName); }
+                    if(sizeof($applicant_tmp_files) > 0) {
+						$res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->name, 'zip_url' => DS . 'tmp/' . $_zipName);
+					}
                 }
 
-                // merge pdf by candidats
                 if($mergeMode == 1) {
-                    /// if merge mode --> 1, mkdir new directory in / tmp / with suffix "--merge"
-                    $mergeDirName = $user_info[0]->name . '_' . $user_info[0]->id . '__merge';                 // for example: 95--merge
-                    $mergeDirPath = $tmp_path . $mergeDirName;       // for example: /tmp/95--merge
-
+                    $mergeDirName = $user_info[0]->name . '_' . $user_info[0]->id . '--merge';
+                    $mergeDirPath = $tmp_path . $mergeDirName;
                     if (!file_exists($mergeDirPath)) { mkdir($mergeDirPath, 0755, true); }
 
-                    /// begin -- merge zip all
-                    $mergeZipAllName = date("Y-m-d") . '__merge-total-by-candidats';
+                    $mergeZipAllName = date("Y-m-d_H-i") . '--merge-total-by-candidats';
                     $mergeZipAllPath = $tmp_path . $mergeZipAllName;
-
                     if(!file_exists($mergeZipAllPath)) { mkdir($mergeZipAllPath, 0755, true); }
-                    /// end -- merge zip all
 
                     $pdf_files = array();
-                    $_tmpFolder = EMUNDUS_PATH_ABS . 'tmp' . DS . $user_info[0]->name . '_' . $user_info[0]->id;
 
-                    $fileList = glob($_tmpFolder . DS . '*');
-
-                    if(sizeof($fileList) > 0 and $replace_document == 0) {
+                    if(sizeof($applicant_tmp_files) > 0 and $replace_document == 0) {
                         $keepFiles = [];
                         foreach($res->files as $_f) {
-                            $keepFiles[] = $_tmpFolder . DS . $_f['filename'];
-                            if(!file_exists($_tmpFolder . DS . $_f['filename'])) {
-                                $index = array_search($_tmpFolder . DS . $_f['filename'], $keepFiles);
+                            $keepFiles[] = $applicant_tmp_path . DS . $_f['filename'];
+                            if(!file_exists($applicant_tmp_path . DS . $_f['filename'])) {
+                                $index = array_search($applicant_tmp_path . DS . $_f['filename'], $keepFiles);
                                 unset($keepFiles[$index]);
-                                unlink($_tmpFolder . DS . $_f['filename']);     // remove fake files
+                                unlink($applicant_tmp_path . DS . $_f['filename']);     // remove fake files
                             }
                         }
-                        $diffFiles = array_diff($fileList,$keepFiles);
+                        $diffFiles = array_diff($applicant_tmp_files,$keepFiles);
                         foreach($diffFiles as $df) { unlink($df); }
                         // re-update $fileList
-                        $fileList = glob($_tmpFolder . DS . '*');
+	                    $applicant_tmp_files = glob($applicant_tmp_path . DS . '*');
                     }
 
-                    foreach ($fileList as $filename) {
-                        // if extension is pdf --> push into the array $pdf_files
-                        $_name = end(explode('/', $filename));
+                    foreach ($applicant_tmp_files as $filename) {
+                        $_name = explode('/', $filename);
+	                    $_name = end($_name);
                         $_file_extension = pathinfo($filename)['extension'];
 
-                        if ($_file_extension == "pdf") { $pdf_files[] = $filename; }
-                        else {
-                            // if not, just copy it to --merge directory
+                        if ($_file_extension == "pdf") {
+							$pdf_files[] = $filename;
+						} else {
                             copy($filename, $mergeDirPath . DS . $_name);
                         }
                     }
 
                     if (count($pdf_files) >= 1) {
-                        /// check if the merged file exists
-                        $mergePdfName = $mergeDirPath . DS . $user_info[0]->name . '__merge.pdf';
-                        if (file_exists($mergePdfName, 'F')) { unlink($mergePdfName); }
+                        $mergePdfName = $mergeDirPath . DS . $user_info[0]->name . '--merge.pdf';
+                        if (file_exists($mergePdfName, 'F')) {
+							unlink($mergePdfName);
+						}
                         $pdf = new ConcatPdf();
                         $pdf->setFiles($pdf_files);
                         $pdf->concat();
                         $pdf->Output($mergePdfName, 'F');
                     }
 
-                    // last one :: make a zip folder of merge
-                    $_mergeZipName = $mergeDirName . '_' . date("Y-m-d") . '.zip';                        // for example: 95--merge.zip
+                    $_mergeZipName = $mergeDirName . '_' . date("Y-m-d") . '.zip';
 
-                    $_mergeZipPath = $tmp_path . $_mergeZipName;                                                // for example: / tmp / 95--merge.zip
+                    $_mergeZipPath = $tmp_path . $_mergeZipName;
                     $this->ZipLetter($mergeDirPath, $_mergeZipPath, true);
 
                     $mergeFiles = glob($mergeDirPath . DS . '*');
 
-                    if(sizeof($mergeFiles) > 0) { $this->copy_directory($mergeDirPath, $mergeZipAllPath . DS . str_replace('_tmp', '', end(explode('/', $mergeDirPath)))); }
-
-                    /// lastly, zip this folder
+                    if(sizeof($mergeFiles) > 0) {
+						$this->copy_directory($mergeDirPath, $mergeZipAllPath . DS . $mergeDirName);
+					}
                     $this->ZipLetter($mergeZipAllPath,$mergeZipAllPath . '.zip', true);
 
-                    /// remove all unzipped files -- no merge files
                     $delete_untotal_files = glob($mergeDirPath . DS . '*');
-                    foreach($delete_untotal_files as $_file) { if(is_file($_file)) { unlink($_file); } }
+                    foreach($delete_untotal_files as $_file) {
+						if(is_file($_file)) {
+							unlink($_file);
+						}
+					}
                     rmdir($mergeDirPath);
 
                     if(sizeof($mergeFiles) > 0) {
@@ -2753,7 +2406,6 @@ class EmundusModelEvaluation extends JModelList {
                 }
             }
 
-            /// remove unzipped folder
             if (!empty($mergeZipAllPath)) {
                 $_deleteFolders = glob($mergeZipAllPath . DS . '*');
                 foreach($_deleteFolders as $_deleteFolder) {
@@ -2763,104 +2415,102 @@ class EmundusModelEvaluation extends JModelList {
                 $res->zip_all_data_by_candidat = DS . 'tmp/' . $mergeZipAllName . '.zip';
             }
         }
-
-        // group letters by document type --> using table "jos_emundus_upload" --> user_id, fnum, campaign_id, attachment_id
-        elseif ($showMode == 1) {
-
-            /* get real files */
+		elseif ($showMode == 1)
+		{
             $raw = [];
-            foreach($res->files as $rf) { $raw[] = $rf['filename']; }
-
-            unset($res->zip_data_by_candidat);
-            unset($res->zip_all_data_by_candidat);
+            foreach($res->files as $rf) {
+				$raw[] = $rf['filename'];
+			}
 
             $res->letter_dir = [];
-
             $zip_dir = [];
 
-            // mkdir --total files
-            $zip_All_Name = date("Y-m-d") . '-total-by-documents';
+            $zip_All_Name = date("Y-m-d_H-i") . '-total-by-documents';
             $zip_All_Path = $tmp_path . $zip_All_Name;
 
-            $zip_All_Merge_Name = date("Y-m-d") . '__merge-total-by-documents';
+            $zip_All_Merge_Name = date("Y-m-d_H-i") . '--merge-total-by-documents';
             $zip_All_Merge_Path = $tmp_path . $zip_All_Merge_Name;
 
-            if($mergeMode == 0) { if(!file_exists($zip_All_Path)) { mkdir($zip_All_Path, 0755, true); }}
-            else { if(!file_exists($zip_All_Merge_Path)) { mkdir($zip_All_Merge_Path, 0755, true); } }
+            if($mergeMode == 0) {
+				if(!file_exists($zip_All_Path)) {
+					mkdir($zip_All_Path, 0755, true);
+				}
+			} else {
+				if(!file_exists($zip_All_Merge_Path)) {
+					mkdir($zip_All_Merge_Path, 0755, true);
+				}
+			}
 
-            foreach ($templates as $index => $template) {
+            foreach ($templates as $template) {
                 $attachInfos = $_mFile->getAttachmentInfos($template);
 
-                $dir_Name = $attachInfos['value'];                                                // unmere file name
-                $dir_Name_Path = $tmp_path . $dir_Name;                                         // unmerge file path
+                $dir_Name = $attachInfos['value'];
+                $dir_Name_Path = $tmp_path . $dir_Name;
 
-                $dir_Merge_Name = $dir_Name . '__merge';                                        // merge file name
-                $dir_Merge_Path = $tmp_path . $dir_Merge_Name;                                  // merge file path
+                $dir_Merge_Name = $dir_Name . '--merge';
+                $dir_Merge_Path = $tmp_path . $dir_Merge_Name;
+
+	            $_mergeZipName = $dir_Merge_Name . '_' . date("Y-m-d_H-i") . '.zip';
+	            $_zipName = $dir_Name . '_' . date("Y-m-d_H-i") . '.zip';
 
                 if(!file_exists($dir_Name_Path)) {
                     mkdir($dir_Name_Path, 0755, true);
-                    if($mergeMode == 1) { if (!file_exists($dir_Merge_Path)) { mkdir($dir_Merge_Path, 0755, true); } }
+                    if($mergeMode == 1) {
+						if (!file_exists($dir_Merge_Path)) {
+							mkdir($dir_Merge_Path, 0755, true);
+						}
+					}
                 }
 
-                $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_Array);                    // get uploaded file by fnums
+                $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_array);
 
-                foreach ($uploaded_Files as $key => $file) {
-                    $_uRaw = $_mFile->getFnumInfos($file->fnum);                                                // get applicant id (not evaluator id)
+                foreach ($uploaded_Files as $file) {
+                    $_uRaw = $_mFile->getFnumInfos($file->fnum);
 
                     $_uId = $_uRaw['applicant_id'];
                     $_uName = $_uRaw['name'];
 
-                    //$source = EMUNDUS_PATH_ABS . $file->user_id . '--letters' . DS . $file->filename;
                     $source = EMUNDUS_PATH_ABS . 'tmp' . DS . $_uName . '_' . $_uId . DS . $file->filename;
 
                     if(!in_array($file->filename, $raw)) {
                         unlink($source);
                     } else {
-                        copy($source, $dir_Name_Path . DS . $file->filename);                                       /// copy file
+                        copy($source, $dir_Name_Path . DS . $file->filename);
                     }
 
-                    /// copy into /tmp/
-                    $_zipName = $dir_Name . '_' . date("Y-m-d") . '.zip';                                   // zip file name (e.g: "Convention de financement")
                     $this->ZipLetter($dir_Name_Path, $tmp_path . $_zipName, 'true');
-                    $zip_dir = $tmp_path . $_zipName;                                                               // get zip url
+                    $zip_dir = $tmp_path . $_zipName;
 
                     if($mergeMode == 1) {
                         $pdf_files = array();
                         $fileList = glob($dir_Name_Path . DS . '*');
                         foreach ($fileList as $filename) {
-                            // if extension is pdf --> push into the array $pdf_files
                             $_name = explode($dir_Name_Path . DS, $filename)[1];
                             $_file_extension = pathinfo($filename)['extension'];
-                            if ($_file_extension == "pdf") {
+                            if ($_file_extension == 'pdf') {
                                 $pdf_files[] = $filename;
                             } else {
-                                // if not, just copy it to --merge directory
                                 copy($filename, $dir_Merge_Path . DS . $_name);
                             }
                         }
 
-                        /// from $pdf_files --> concat them
                         if (count($pdf_files) >= 1) {
                             $mergeFileName = $dir_Merge_Path . DS . $attachInfos['value'] . '.pdf';
                             if (file_exists($mergeFileName)) {
-                                // remove old file
                                 unlink($mergeFileName);
                             }
                             $pdf = new ConcatPdf();
                             $pdf->setFiles($pdf_files);
                             $pdf->concat();
-                            $pdf->Output($mergeFileName, 'F');          /// export the merged pdf
+                            $pdf->Output($mergeFileName, 'F');
                         }
 
-                        /// last one --> zip this --merge into / tmp /
-                        $_mergeZipName = $dir_Merge_Name . '_' . date("Y-m-d") . '.zip';
-
-                        $this->copy_directory($dir_Merge_Path, $zip_All_Merge_Path . DS . str_replace('__merge', '', str_replace('_tmp', '', end(explode('/', $dir_Merge_Path)))));
+                        $this->copy_directory($dir_Merge_Path, $zip_All_Merge_Path . DS . str_replace('__merge', '', $dir_Merge_Name));
 
                         $this->ZipLetter($dir_Merge_Path, $tmp_path . $_mergeZipName, true);
                         $this->ZipLetter($zip_All_Merge_Path, $zip_All_Merge_Path . '_' . '.zip', true);
                     } else {
-                        $this->copy_directory($dir_Name_Path, $zip_All_Path . DS . str_replace('_tmp', '', end(explode('/', $dir_Name_Path))));
+                        $this->copy_directory($dir_Name_Path, $zip_All_Path . DS . $dir_Name);
 
                         $this->ZipLetter($zip_All_Path, $zip_All_Path . '_' . '.zip', true);
                     }
@@ -2869,20 +2519,25 @@ class EmundusModelEvaluation extends JModelList {
                 if($mergeMode == 1) {
                     $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_merge_dir' => DS . 'tmp/' . $_mergeZipName);
 
-                    // remove --merge path
                     $delete_merge_files = glob($dir_Merge_Path . DS . '*');
-                    foreach($delete_merge_files as $_file) { if(is_file($_file)) { unlink($_file); } }
+                    foreach($delete_merge_files as $_file) {
+						if(is_file($_file)) {
+							unlink($_file);
+						}
+					}
                     rmdir($dir_Merge_Path);
                     unlink($zip_dir);
-
                 } else {
                     $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => DS. 'tmp/' . $_zipName);
                 }
 
                 $delete_files = glob($dir_Name_Path . DS . '*');
 
-                foreach($delete_files as $_file) { if(is_file($_file)) { unlink($_file); } }
-
+                foreach($delete_files as $_file) {
+					if(is_file($_file)) {
+						unlink($_file);
+					}
+				}
                 rmdir($dir_Name_Path);
             }
 
@@ -2907,44 +2562,24 @@ class EmundusModelEvaluation extends JModelList {
             }
         }
 
-        // remove temporary folders in images/emundus/files/tmp
-        foreach($fnum_Array as $key => $fnum) {
-            $fnum_info = $_mFile->getFnumInfos($fnum);
+	    $_tmpFolders = glob(EMUNDUS_PATH_ABS . 'tmp' . DS . '*');
+	    foreach($_tmpFolders as $_tmpFolder) { $this->deleteAll($_tmpFolder); }
 
-            $_tmpFolders = glob(EMUNDUS_PATH_ABS . 'tmp' . DS . '*');
-            foreach($_tmpFolders as $_tmpFolder) { $this->deleteAll($_tmpFolder); }
-        }
+	    $res->recapitulatif_count = [];
+		$raw = [];
 
-        // build the recap table (just get generated documents of current date)
-        if($replace_document == 1) {
-            $query = 'SELECT #__emundus_uploads.attachment_id, COUNT(#__emundus_uploads.attachment_id) AS _count 
-                        FROM #__emundus_uploads
-                            WHERE #__emundus_uploads.fnum in (' . implode(',', $available_fnums) . ') 
-                                AND #__emundus_uploads.attachment_id IN (' . implode(',', $templates) . ')
-                                    AND DATE(#__emundus_uploads.timedate) = current_date()
-                                        GROUP BY #__emundus_uploads.attachment_id';
+		foreach($res->files as $file) {
+			$raw[$file['type']] += 1;
+		}
 
-            $this->_db->setQuery($query);
-            $document_count = $this->_db->loadAssocList();
-            $res->recapitulatif_count = [];
-
-            foreach ($document_count as $key => $document) {
-                $query = "SELECT #__emundus_setup_attachments.value FROM #__emundus_setup_attachments WHERE #__emundus_setup_attachments.id = " . $document['attachment_id'];
-                $this->_db->setQuery($query);
-                $res->recapitulatif_count[] = array('document' => $this->_db->loadResult(), 'count' => $document['_count']);
-            }
-        } else {
-            $res->recapitulatif_count = [];
-            $raw = [];
-
-            foreach($res->files as $file) { $raw[$file['type']] += 1; }
-
-           foreach($raw as $k => $v) {
-               $query = "SELECT #__emundus_setup_attachments.value FROM #__emundus_setup_attachments WHERE #__emundus_setup_attachments.id = " . $k;
-               $this->_db->setQuery($query);
-               $res->recapitulatif_count[] = array('document' => $this->_db->loadResult(), 'count' => $v);
-           }
-        }
+		foreach($raw as $k => $v) {
+			$query->clear()
+				->select('value')
+				->from($this->_db->quoteName('#__emundus_setup_attachments'))
+				->where($this->_db->quoteName('id') . ' = ' . $k);
+			$this->_db->setQuery($query);
+			$res->recapitulatif_count[] = array('document' => $this->_db->loadResult(), 'count' => $v);
+		}
 
         return $res;
     }
@@ -3028,7 +2663,7 @@ class EmundusModelEvaluation extends JModelList {
     }
 
     private function deleteAll($dir) {
-        if(!empty($dir) && strpos($dir,JPATH_BASE . DS . 'tmp/') !== false) {
+        if(!empty($dir) && (strpos($dir,JPATH_BASE . DS . 'tmp/') !== false || strpos($dir,EMUNDUS_PATH_ABS . 'tmp/') !== false)) {
             foreach (glob($dir . '/*') as $file) {
                 if (is_dir($file)) {
                     $this->deleteAll($file);
@@ -3447,7 +3082,7 @@ class EmundusModelEvaluation extends JModelList {
         }
     }
 
-    public function getEvaluationUrl($fnum,$formid,$rowid = 0,$student_id = 0,$redirect = 0){
+    public function getEvaluationUrl($fnum, $formid, $rowid = 0, $student_id = 0, $redirect = 0, $view = 'form') {
         $url = 'index.php';
         $message = '';
 
@@ -3534,8 +3169,8 @@ class EmundusModelEvaluation extends JModelList {
                     $url = $details_url;
                 }
                 // If evaluation period started and not passed and we have update rights
-                elseif ($update_access || $create_access) {
-                    $url = $form_url;
+                elseif ($update_access || ($create_access && $evaluation->user == $user->id)) {
+                    $url = $view == 'form' ? $form_url : $details_url;
                 }
                 // If evaluation period started and not passed and we have read rights
                 elseif ($read_access){
@@ -3544,7 +3179,7 @@ class EmundusModelEvaluation extends JModelList {
                 // If we do not have any rights on evaluation
                 else {
                     $message = 'COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS';
-                    $url = 'index.php';
+                    $url = '';
                 }
             }
             // If no evaluation found but period is not started or passed
@@ -3558,7 +3193,7 @@ class EmundusModelEvaluation extends JModelList {
             }
             // If no evaluation and period is started and not passed and I have create rights
             elseif ((!$passed && $started) && $create_access) {
-                $url = $form_url;
+	            $url = $view == 'form' ? $form_url : $details_url;
             }
             // I don't have rights to evaluate
             else {
@@ -3578,5 +3213,21 @@ class EmundusModelEvaluation extends JModelList {
         }
 
         return ['url' => $url, 'message' => $message];
+    }
+
+    public function getRowByFnum($fnum,$table_name){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('id')
+                ->from($db->quoteName($table_name))
+                ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+            $db->setQuery($query);
+            return $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('Problem to get row by fnum '.$fnum.' in table '.$table_name.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return 0;
+        }
     }
 }

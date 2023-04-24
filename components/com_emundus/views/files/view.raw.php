@@ -253,7 +253,13 @@ class EmundusViewFiles extends JViewLegacy
 								$data[0]['attachment_progress'] = JText::_('COM_EMUNDUS_ATTACHMENT_PROGRESS');
 								$colsSup['attachment_progress'] = array();
 								break;
-							case 'module':
+
+                            case 'unread_messages':
+                                $data[0]['unread_messages'] = JText::_('COM_EMUNDUS_UNREAD_MESSAGES');
+                                $colsSup['unread_messages'] = array();
+                                break;
+
+                            case 'module':
 								// Get every module without a positon.
 								$mod_emundus_custom = array();
 								foreach (JModuleHelper::getModules('') as $module) {
@@ -293,10 +299,10 @@ class EmundusViewFiles extends JViewLegacy
 								if ($displayPhoto) {
 									$userObj->photo = $h_files->getPhotos($value);
 								}
-								$userObj->user = JFactory::getUser((int)substr($value, -7));
+                                $userObj->user = JFactory::getUser((int)$user['applicant_id']);
 								$userObj->user->name = $user['name'];
 								$line['fnum'] = $userObj;
-							} elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'applicant_id' || $key == 'campaign_id') {
+							} elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'applicant_id' || $key == 'campaign_id' || $key == 'unread_messages') {
 								continue;
 							} elseif (isset($elements) && in_array($key, array_keys($elements))) {
 								$userObj->val 			= $value;
@@ -364,7 +370,21 @@ class EmundusViewFiles extends JViewLegacy
 					if (isset($colsSup['attachment_progress'])) {
 						$attachments_progress = $m_files->getAttachmentProgress($fnumArray);
 						$colsSup['attachment_progress'] = $h_files->createAttachmentProgressList($attachments_progress);
-					}
+                    }
+
+                    if (isset($colsSup['unread_messages'])) {
+                        $unread_messages = array();
+                        $unread_messages[] = $m_files->getUnreadMessages();
+                        $unread_messages = $h_files->createUnreadMessageList($unread_messages[0]);
+
+                        $keys = array_keys($unread_messages);
+                        natsort($keys);
+
+                        foreach ($keys as $k) {
+                            $colsSup['unread_messages'][$k] = $unread_messages[$k];
+                        }
+                    }
+
 
 					if (!empty($mod_emundus_custom)) {
 						foreach ($mod_emundus_custom as $key => $module) {
