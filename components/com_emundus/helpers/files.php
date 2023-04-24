@@ -2719,10 +2719,10 @@ class EmundusHelperFiles
      * @return  string      FNUM for application.
      * @since   1.6
      */
-    public function createFnum($campaign_id, $user_id){
+    public function createFnum($campaign_id, $user_id, $redirect = true){
 		$fnum = '';
 	    $app = JFactory::getApplication();
-	    JLog::addLogger(array('text_file' => 'com_emundus.fnum.php'), JLog::ALL, 'com_emundus.fnum');
+	    //JLog::addLogger(array('text_file' => 'com_emundus.fnum.php'), JLog::ALL, 'com_emundus.fnum');
 
 		if (empty($user_id)) {
 			$user_id = JFactory::getUser()->id;
@@ -2743,7 +2743,10 @@ class EmundusHelperFiles
 		} else {
 			JLog::add('Error creating FNUM, user_id is empty for ' . $_SERVER['REMOTE_ADDR'], JLog::WARNING, 'com_emundus.fnum');
 			$app->enqueueMessage(JText::_('COM_EMUNDUS_FAILED_TO_CREATE_FNUM_NO_USER'), 'error');
-			$app->redirect('index.php');
+
+			if ($redirect) {
+				$app->redirect('index.php');
+			}
 		}
 
 		return $fnum;
