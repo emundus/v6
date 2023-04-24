@@ -1,28 +1,99 @@
 
-
-const prepareMaskFormat = () =>
+const setInputBGColor = (color) =>
 {
-    return "\\"+countrySelected.country_code+countrySelected.area_code+countrySelected.subscriber_number;
-};
+    input.style.backgroundColor = color;
+}
 
 const newCountry = (id) =>
 {
-    indiceCountry = id;
-    countrySelected = allCountry[indiceCountry];
+    countrySelected = allCountry[id];
+
+    try
+    {
+        countrySelected.country_code = "+" + libphonenumber.parsePhoneNumber("00", countrySelected.iso2).countryCallingCode;
+    }
+    catch (e)
+    {
+        // unsupported country
+    }
+
 };
 
 const prepareInput = () =>
 {
-    input.pattern = prepareMaskFormat();
-    input.required = true;
-    input.value = countrySelected.country_code;
+
+    if (countrySelected.country_code)
+    {
+        input.value = countrySelected.country_code;
+    }
+    else // unsupported country
+    {
+        input.value = "";
+        setInputBGColor(unsupportedNumberColor)
+    }
 };
 
-const handlerInputChange = (props) => {
+const handlerSelectChange = (props) =>
+{
     newCountry(props.target.options.selectedIndex);
     prepareInput();
+
+    if (countrySelected.country_code)
+    {
+        setInputBGColor(defaultInputColor);
+    }
+    else
+    {
+        setInputBGColor(unsupportedNumberColor);
+    }
 };
 
+const handlerInputFocusOut = (props) =>
+{
+
+    if (countrySelected.country_code)
+    {
+        const number = input.value;
+        let format;
+
+        try // test if number.lengh > 1
+        {
+            format = libphonenumber.parsePhoneNumber(number.substring(countrySelected.country_code.length, number.length), countrySelected.iso2).format("E.164")
+        }
+        catch (e)
+        {
+            alert("Veuillez entrer un numéro !")
+        }
+
+
+        if (format && libphonenumber.isValidNumber(format))
+        {
+            setInputBGColor(validNumberColor);
+            input.value = format;
+        }
+        else
+        {
+            setInputBGColor(errorNumberColor);
+        }
+    }
+    //else, unsupported country
+
+}
+
+
+const handlerInputFocuIn = (props) =>
+{
+
+    if (countrySelected.country_code)
+    {
+        setInputBGColor(defaultInputColor);
+    }
+}
+
+const validNumberColor = "palegreen";
+const errorNumberColor = "lightpink";
+const unsupportedNumberColor = "lightsalmon";
+const defaultInputColor = "white";
 
 const select = document.getElementById("div_emundus_select_phone_code");
 const input = document.getElementById("div_emundus_phone");
@@ -33,7 +104,9 @@ let indiceCountry; let countrySelected;
 newCountry(0);
 prepareInput();
 
-select.addEventListener("change", handlerInputChange);
+select.addEventListener("change", handlerSelectChange);
+input.addEventListener("focusout", handlerInputFocusOut);
+input.addEventListener("focusin", handlerInputFocuIn);
 
 /*
 const sendAjax = {
@@ -86,9 +159,16 @@ select.addEventListener("click", () =>
 });
 */
 
-const lib = libphonenumber;
+//const lib = libphonenumber;
+
+//const lib2 = lib.isPossibleNumber("oui");
+
+//const number = libphonenumber.parsePhoneNumber("46771093", 'FR').format("E.164");
+//console.log(number);
+//console.log(libphonenumber.isValidNumber(number));
+
+//console.log(number.metadata);
+//console.log(number.format("E.164"));
 
 
-const lib2 = lib.isPossibleNumber("oui");
-
-console.log(lib2);
+//console.log(lib2);
