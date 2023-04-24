@@ -8,7 +8,7 @@ $doc->addScript(JURI::root() . "plugins/fabrik_element/emundus_phonenumber/asset
 $doc->addScript(JURI::root() . "plugins/fabrik_element/emundus_phonenumber/assets/css/emundus_phonenumber.css");
 ?>
 
-<div id="div_<?php echo $displayData->attributes['name']; ?>" class="divBox">
+<div id="div_<?php echo $displayData->attributes['name']; ?>" class="em-flex-row">
 
 	<select id="div_emundus_select_phone_code" class="input-small fabrikinput inputbox"
 			data-countries="<?php echo base64_encode(json_encode($displayData->dataSelect)); // encode base64?>"

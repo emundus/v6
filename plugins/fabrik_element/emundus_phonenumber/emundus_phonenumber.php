@@ -293,4 +293,40 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
     }
 
 
+    public function validate($data, $repeatCounter = 0)
+    {
+
+        $value = (string)$data;
+
+        if (preg_match("/^\+.+$/", $value)) // verifi si il commence par un "+"
+        {
+            if (preg_match("/\+\d+$/", $value)) // verif si il possède bien que des nombres (sans compter le "+")
+            {
+                if (strlen($value) > 6) // verif si le nombre de chiffre > 5 (sans compter le "+")
+                {
+                    if (strlen($value) <= 16) // verif si le nombre de chiffre <= 15 (sans compter le "+")
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_TOO_LONG');
+                    }
+                }
+                else
+                {
+                    $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_TOO_SHORT');
+                }
+            }
+            else
+            {
+                $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_ONLY_NUMBERS');
+            }
+        }
+        else
+        {
+            $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_BEGIN_WITH_PLUS');
+        }
+        return false;
+    }
 }

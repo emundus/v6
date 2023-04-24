@@ -62,7 +62,7 @@ const handlerInputFocusOut = (props) =>
         }
         catch (e)
         {
-            alert("Veuillez entrer un numéro !")
+            // the number isn't long enough, meh
         }
 
 
