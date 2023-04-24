@@ -46,7 +46,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 				<thead>
 				<tr>
 					<?php foreach ($this->datas[0] as $kl => $v): ?>
-						<th title="<?= JText::_(strip_tags($v)); ?>" id="<?= $kl; ?>" >
+						<th title="<?= strip_tags(JText::_($v)); ?>" id="<?= $kl; ?>" >
 							<div class="em-cell">
 								<?php if($kl == 'check'): ?>
 
@@ -80,10 +80,10 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 										<span class="glyphicon glyphicon-sort-by-attributes"></span>
 									<?php endif;?>
 									<strong>
-										<?= JText::_($v); ?>
+										<?= strip_tags(JText::_($v)); ?>
 									</strong>
 								<?php else: ?>
-									<?= JText::_($v); ?>
+									<?= strip_tags(JText::_($v)); ?>
 								<?php endif;?>
 
 							</div>
