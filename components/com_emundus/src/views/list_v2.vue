@@ -230,7 +230,8 @@ export default {
 	},
 	methods: {
 		initList() {
-			let lists = localStorage.getItem('tchooz_lists/' + document.location.hostname);
+			let lists = null;
+			//let lists = localStorage.getItem('tchooz_lists/' + document.location.hostname);
 
 			if (lists !== null) {
 				lists = atob(lists);
