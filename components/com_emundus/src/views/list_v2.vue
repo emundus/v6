@@ -226,12 +226,16 @@ export default {
 			this.numberOfItemsToDisplay = parseInt(storageNbItemsDisplay);
 		}
 
+		if (this.params.hasOwnProperty('reload')) {
+			localStorage.removeItem('tchooz_lists/' + document.location.hostname + '/' + new Date().toISOString().slice(0, 10));
+		}
+
 		this.initList();
 	},
 	methods: {
 		initList() {
-			let lists = null;
-			//let lists = localStorage.getItem('tchooz_lists/' + document.location.hostname);
+			const today = new Date().toISOString().slice(0, 10);
+			let lists = localStorage.getItem('tchooz_lists/' + document.location.hostname + '/' + today);
 
 			if (lists !== null) {
 				lists = atob(lists);
@@ -258,7 +262,8 @@ export default {
 			settingsService.getOnboardingLists().then(response => {
 				if (response.data.status) {
 					this.lists = response.data.data;
-					localStorage.setItem('tchooz_lists/' + document.location.hostname, btoa(JSON.stringify(this.lists)));
+					const today = new Date().toISOString().slice(0, 10);
+					localStorage.setItem('tchooz_lists/' + document.location.hostname + '/' + today, btoa(JSON.stringify(this.lists)));
 
 					if (typeof this.lists[this.type] === 'undefined') {
 						console.error('List type ' + this.type + ' does not exist');
