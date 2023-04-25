@@ -27,7 +27,7 @@ class EmundusControllerSamples extends JControllerLegacy
             $input->set('view', $default);
         }
 
-        $this->user = Factory::getApplication()->getIdentity();
+        $this->user = Factory::getUser();
 
         parent::display();
 	}

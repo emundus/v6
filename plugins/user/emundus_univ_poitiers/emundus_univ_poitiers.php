@@ -42,8 +42,10 @@ class plgUserEmundus_univ_poitiers extends JPlugin
         $app            = JFactory::getApplication();
         $session        = JFactory::getSession();
         $current_user   = $session->get('emundusUser');
-        
-        if (!$app->isAdmin() && EmundusHelperAccess::isApplicant($current_user->id) ) {
+
+        $isAdmin = JFactory::getApplication()->isClient('administrator');
+
+        if (!$isAdmin && EmundusHelperAccess::isApplicant($current_user->id) ) {
             
             $db             = JFactory::getDBO();
 

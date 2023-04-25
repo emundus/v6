@@ -91,8 +91,8 @@ class EmundusModelUsers extends JModelList {
         $group          = @$params['group'];
         $institution    = @$params['institution'];
 
-        $uid = JRequest::getVar('rowid', null, 'GET', 'none', 0);
-        $edit = JRequest::getVar('edit', 0, 'GET', 'none', 0);
+        $uid = JFactory::getApplication()->input->get('rowid', null, 'GET', 'none', 0);
+        $edit = JFactory::getApplication()->input->get('edit', 0, 'GET', 'none', 0);
         $list_user="";
 
         if (!empty($schoolyears) && (empty($campaigns) || $campaigns[0]=='%') && $schoolyears[0]!='%') {
@@ -409,7 +409,7 @@ class EmundusModelUsers extends JModelList {
 
     public function getUsersProfiles() {
         $user = JFactory::getUser();
-        $uid = JRequest::getVar('rowid', $user->id, 'get','int');
+        $uid = JFactory::getApplication()->input->get('rowid', $user->id, 'get','int');
         $db = JFactory::getDBO();
         $query = 'SELECT eup.profile_id FROM #__emundus_users_profiles eup WHERE eup.user_id='.$uid;
         $db->setQuery($query);
@@ -550,7 +550,7 @@ class EmundusModelUsers extends JModelList {
 
     public function getCampaignsCandidature($aid = 0) {
         $db = JFactory::getDBO();
-        $uid = ($aid!=0)?$aid:JRequest::getVar('rowid', null, 'GET', 'none', 0);
+        $uid = ($aid!=0)?$aid:JFactory::getApplication()->input->get('rowid', null, 'GET', 'none', 0);
         $query = 'SELECT * FROM #__emundus_campaign_candidature AS cc  WHERE applicant_id='.$uid;
         $db->setQuery($query);
         return $db->loadObjectList();

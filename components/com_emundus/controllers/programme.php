@@ -36,9 +36,9 @@ class EmundusControllerProgramme extends JControllerLegacy {
 
     function display($cachable = false, $urlparams = false) {
         // Set a default view if none exists
-        if ( ! JRequest::getCmd( 'view' ) ) {
+        if ( ! JFactory::getApplication()->input->get( 'view' ) ) {
             $default = 'programme';
-            JRequest::setVar('view', $default );
+            JFactory::getApplication()->input->set('view', $default );
         }
         parent::display();
     }
@@ -61,7 +61,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function addprogrammes(){
-        $data = JRequest::getVar('data', null, 'POST', 'none',0);
+        $data = JFactory::getApplication()->input->get('data', null, 'POST', 'none',0);
 
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $result = 0;
@@ -80,7 +80,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function editprogrammes() {
-        $data = JRequest::getVar('data', null, 'POST', 'none',0);
+        $data = JFactory::getApplication()->input->get('data', null, 'POST', 'none',0);
 
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $result = 0;

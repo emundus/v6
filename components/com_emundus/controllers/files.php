@@ -70,10 +70,10 @@ class EmundusControllerFiles extends JControllerLegacy
     public function display($cachable = false, $urlparams = false)
     {
         // Set a default view if none exists
-        if ( ! JRequest::getCmd( 'view' ) )
+        if ( ! JFactory::getApplication()->input->get( 'view' ) )
         {
             $default = 'files';
-            JRequest::setVar('view', $default );
+            JFactory::getApplication()->input->set('view', $default );
         }
 
         parent::display();
@@ -264,10 +264,10 @@ class EmundusControllerFiles extends JControllerLegacy
      *
      */
     public function savefilters() {
-        $name = JRequest::getVar('name', null, 'POST', 'none',0);
+        $name = JFactory::getApplication()->input->get('name', null, 'POST', 'none',0);
         $current_user = JFactory::getUser();
         $user_id = $current_user->id;
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        $itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
 
         $session = JFactory::getSession();
         $filt_params = $session->get('filt_params');
@@ -277,7 +277,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $constraints = json_encode($constraints);
 
         if (empty($itemid)) {
-            $itemid = JRequest::getVar('Itemid', null, 'POST', 'none', 0);
+            $itemid = JFactory::getApplication()->input->get('Itemid', null, 'POST', 'none', 0);
         }
 
         $time_date = (date('Y-m-d H:i:s'));
@@ -2728,7 +2728,7 @@ class EmundusControllerFiles extends JControllerLegacy
     function export_zip($fnums, $form_post = 1, $attachment = 1, $assessment = 1, $decision = 1, $admission = 1, $form_ids = null, $attachids = null, $options = null, $acl_override = false) {
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
-        $view = JRequest::getCmd( 'view' );
+        $view = JFactory::getApplication()->input->get( 'view' );
         $current_user = JFactory::getUser();
 
         if ((!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) && $view != 'renew_application' && !$acl_override) {
@@ -2933,7 +2933,7 @@ class EmundusControllerFiles extends JControllerLegacy
      */
     function export_zip_pcl($fnums)
     {
-        $view           = JRequest::getCmd( 'view' );
+        $view           = JFactory::getApplication()->input->get( 'view' );
         $current_user   = JFactory::getUser();
 
         if ((!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) && $view != 'renew_application')

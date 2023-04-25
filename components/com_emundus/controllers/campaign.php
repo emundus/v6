@@ -39,9 +39,9 @@ class EmundusControllerCampaign extends JControllerLegacy {
     }
     function display($cachable = false, $urlparams = false) {
         // Set a default view if none exists
-        if ( ! JRequest::getCmd( 'view' ) ) {
+        if ( ! JFactory::getApplication()->input->get( 'view' ) ) {
             $default = 'campaign';
-            JRequest::setVar('view', $default );
+            JFactory::getApplication()->input->set('view', $default );
         }
         parent::display();
     }
@@ -62,11 +62,11 @@ class EmundusControllerCampaign extends JControllerLegacy {
      */
     public function addcampaigns(){
         $data = array();
-        $data['start_date'] = JRequest::getVar('start_date', null, 'POST', 'none',0);
-        $data['end_date'] = JRequest::getVar('end_date', null, 'POST', 'none',0);
-        $data['profile_id'] = JRequest::getVar('profile_id', null, 'POST', 'none',0);
-        $data['year'] = JRequest::getVar('year', null, 'POST', 'none',0);
-        $data['short_description'] = JRequest::getVar('short_description', null, 'POST', 'none',0);
+        $data['start_date'] = JFactory::getApplication()->input->get('start_date', null, 'POST', 'none',0);
+        $data['end_date'] = JFactory::getApplication()->input->get('end_date', null, 'POST', 'none',0);
+        $data['profile_id'] = JFactory::getApplication()->input->get('profile_id', null, 'POST', 'none',0);
+        $data['year'] = JFactory::getApplication()->input->get('year', null, 'POST', 'none',0);
+        $data['short_description'] = JFactory::getApplication()->input->get('short_description', null, 'POST', 'none',0);
 
         $m_programme = $this->getModel('programme');
 

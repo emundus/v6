@@ -12,10 +12,10 @@
 defined('_JEXEC') or die('Restricted access');
 
 $current_user = JFactory::getUser();
-$itemid = JRequest::getVar('Itemid', null, 'GET', 'none', 0);
-$view = JRequest::getVar('view', null, 'GET', 'none', 0);
-$task = JRequest::getVar('task', null, 'GET', 'none', 0);
-$tmpl = JRequest::getVar('tmpl', null, 'GET', 'none', 0);
+$itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none', 0);
+$view = JFactory::getApplication()->input->get('view', null, 'GET', 'none', 0);
+$task = JFactory::getApplication()->input->get('task', null, 'GET', 'none', 0);
+$tmpl = JFactory::getApplication()->input->get('tmpl', null, 'GET', 'none', 0);
 
 // Load the WYSIWYG editor used to edit the mail body.
 $editor = JFactory::getEditor('tinymce');

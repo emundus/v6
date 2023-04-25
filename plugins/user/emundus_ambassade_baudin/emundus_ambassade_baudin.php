@@ -44,8 +44,9 @@ class plgUserEmundus_ambassade_baudin extends JPlugin
         $current_user   = $session->get('emundusUser');
 
         $profil_baudin = array(1027, 1028, 1029, 1030, 1031);
-        
-        if (!$app->isAdmin() && in_array($current_user->profile, $profil_baudin) && EmundusHelperAccess::isApplicant($current_user->id) ) {
+
+        $isAdmin = JFactory::getApplication()->isClient('administrator');
+        if (!$isAdmin && in_array($current_user->profile, $profil_baudin) && EmundusHelperAccess::isApplicant($current_user->id) ) {
             
             $db             = JFactory::getDBO();
 

@@ -22,13 +22,13 @@ function zip_file($cids) {
 	//clearstatcache();
 	$current_user =& JFactory::getUser();
 	//$allowed = array("Super Administrator", "Administrator", "Editor", "Author");
-	$view = JRequest::getCmd( 'view' );
+	$view = JFactory::getApplication()->input->get( 'view' );
 	
 	foreach($cids as $cid){
 		$params=explode('|',$cid);
 		$users[]=$params[0];
 	}
-	//JRequest::getVar('view', null, 'GET', 'none',0);
+	//JFactory::getApplication()->input->get('view', null, 'GET', 'none',0);
 	if ((!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id) && !EmundusHelperAccess::isEvaluator($current_user->id)) && $view != 'renew_application') 
 		die( JText::_('RESTRICTED_ACCESS') );
 	

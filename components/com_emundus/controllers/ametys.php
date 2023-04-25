@@ -25,17 +25,17 @@ class EmundusControllerAmetys extends EmundusController {
      */
     function display($cachable = false, $urlparams = false) {
         // Set a default view if none exists
-        if ( ! JRequest::getCmd( 'view' ) ){
+        if ( ! JFactory::getApplication()->input->get( 'view' ) ){
             $default = 'default';
-            JRequest::setVar('view', $default );
+            JFactory::getApplication()->input->set('view', $default );
         }
         parent::display();
     }
 
     public function getprogrammes(){
         $user = JFactory::getUser();
-        $view = JRequest::getVar('view', null, 'GET', 'none',0);
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        $view = JFactory::getApplication()->input->get('view', null, 'GET', 'none',0);
+        $itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
 
         $model = $this->getModel('ametys');
 
@@ -56,14 +56,14 @@ class EmundusControllerAmetys extends EmundusController {
 
     public function addcampaigns(){
         $user = JFactory::getUser();
-        $view = JRequest::getVar('view', null, 'GET', 'none',0);
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        $view = JFactory::getApplication()->input->get('view', null, 'GET', 'none',0);
+        $itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
         $data = array();
-        $data['start_date'] = JRequest::getVar('start_date', null, 'POST', 'none',0);
-        $data['end_date'] = JRequest::getVar('end_date', null, 'POST', 'none',0);
-        $data['profile_id'] = JRequest::getVar('profile_id', null, 'POST', 'none',0);
-        $data['year'] = JRequest::getVar('year', null, 'POST', 'none',0);
-        $data['short_description'] = JRequest::getVar('short_description', null, 'POST', 'none',0);
+        $data['start_date'] = JFactory::getApplication()->input->get('start_date', null, 'POST', 'none',0);
+        $data['end_date'] = JFactory::getApplication()->input->get('end_date', null, 'POST', 'none',0);
+        $data['profile_id'] = JFactory::getApplication()->input->get('profile_id', null, 'POST', 'none',0);
+        $data['year'] = JFactory::getApplication()->input->get('year', null, 'POST', 'none',0);
+        $data['short_description'] = JFactory::getApplication()->input->get('short_description', null, 'POST', 'none',0);
 
         $mcampaign = $this->getModel('campaign');
         $mprogramme = $this->getModel('programme');

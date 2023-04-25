@@ -903,7 +903,7 @@ class EmundusModelEmails extends JModelList {
             $student = JFactory::getUser($mail_to_id);
             $mail_to = $student->email;
 
-            $mail_body = $this->setBody($student, JRequest::getVar('mail_body', null, 'POST', 'VARCHAR', JREQUEST_ALLOWHTML), '');
+            $mail_body = $this->setBody($student, JFactory::getApplication()->input->get('mail_body', null, 'POST', 'VARCHAR', JREQUEST_ALLOWHTML), '');
             $mail_attachments = $jinput->get('mail_attachments', null, 'STRING');
 
             if (!empty($mail_attachments)) {

@@ -7,6 +7,8 @@
 // no direct access
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+
 /**
  * @package		Joomla.Site
  * @subpackage	mod_emundusmenu
@@ -26,6 +28,7 @@ class modEmundusMenuHelper
 	{
 		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
+		$is_sef = (bool)Factory::getApplication()->getConfig()->get('sef');
 		$menu = $app->getMenu();
 
 		// If no active menu, use default
@@ -42,6 +45,7 @@ class modEmundusMenuHelper
 			$cache = JFactory::getCache('mod_emundusmenu', '');
 			$items = $cache->get($key);
 		}
+
 		if ((isset($user->menutype) || !empty($default_menutype)) && empty($items)) {
 			// Initialise variables.
 			$list		= array();
@@ -62,6 +66,8 @@ class modEmundusMenuHelper
 			if ($items) {
 				foreach($items as $i => $item)
 				{
+					$params = $item->getParams();
+
 					if (($start && $start > $item->level)
 						|| ($end && $item->level > $end)
 						|| (!$showAll && $item->level > 1 && !in_array($item->parent_id, $path))
@@ -103,12 +109,11 @@ class modEmundusMenuHelper
 
 						case 'alias':
 							// If this is an alias use the item id stored in the parameters to make the link.
-							$item->flink = 'index.php?Itemid='.$item->params->get('aliasoptions');
+							$item->flink = 'index.php?Itemid='.$params->get('aliasoptions');
 							break;
 
 						default:
-							$router = JSite::getRouter();
-							if ($router->getMode() == JROUTER_MODE_SEF) {
+							if ($is_sef) {
 								$item->flink = 'index.php?Itemid='.$item->id;
 							}
 							else {
@@ -118,18 +123,18 @@ class modEmundusMenuHelper
 					}
 
 					if (strcasecmp(substr($item->flink, 0, 4), 'http') && (strpos($item->flink, 'index.php?') !== false)) {
-						$item->flink = JRoute::_($item->flink, true, $item->params->get('secure'));
+						$item->flink = JRoute::_($item->flink, true, $params->get('secure'));
 					}
 					else {
 						$item->flink = JRoute::_($item->flink);
 					}
 
 					$item->title        = htmlspecialchars($item->title, ENT_COMPAT, 'UTF-8', false);
-					$item->anchor_css   = htmlspecialchars($item->params->get('menu-anchor_css', ''), ENT_COMPAT, 'UTF-8', false);
-					$item->anchor_title = htmlspecialchars($item->params->get('menu-anchor_title', ''), ENT_COMPAT, 'UTF-8', false);
-					$item->anchor_rel = htmlspecialchars($item->params->get('menu-anchor_rel', ''), ENT_COMPAT, 'UTF-8', false);
-					$item->menu_image   = $item->params->get('menu_image', '') ?
-						htmlspecialchars($item->params->get('menu_image', ''), ENT_COMPAT, 'UTF-8', false) : '';
+					$item->anchor_css   = htmlspecialchars($params->get('menu-anchor_css', ''), ENT_COMPAT, 'UTF-8', false);
+					$item->anchor_title = htmlspecialchars($params->get('menu-anchor_title', ''), ENT_COMPAT, 'UTF-8', false);
+					$item->anchor_rel = htmlspecialchars($params->get('menu-anchor_rel', ''), ENT_COMPAT, 'UTF-8', false);
+					$item->menu_image   = $params->get('menu_image', '') ?
+						htmlspecialchars($params->get('menu_image', ''), ENT_COMPAT, 'UTF-8', false) : '';
 				}
 
 				if (isset($items[$lastitem])) {

@@ -1,0 +1,208 @@
+button.btn-primary{
+    background: #e03c32;
+    background-color: #e03c32;
+    border: 1px solid #e03c32;
+    border-radius: 4px;
+    padding: 8px 12px!important;
+}
+button.btn-primary:hover{
+    background-color: transparent;
+    color: #e03c32;
+    outline: none;
+}
+a.btn{
+    background: #29d4ff;
+    background-color: #29d4ff;
+    border: 1px solid #29d4ff;
+    border-radius: 4px;
+    padding: 8px 12px;
+}
+a.btn:hover{
+    background-color: transparent;
+    color: #29d4ff;
+    outline: none;
+}
+
+.form-horizontal .control-group .control-label {
+    text-align: left;
+    padding: 0;
+}
+
+
+form#member-profile.well {
+    background: #fff;
+    border: none;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    padding: 32px 32px 24px 32px;
+    border-radius: 16px !important;
+    width: 84%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+form#member-profile  fieldset .em-heading-form {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    margin-bottom: 1em;
+}
+
+#member-profile > .control-group .controls {
+    margin-left: 0;
+    text-align: center;
+    padding-top: 24px;
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: row;
+}
+
+form#member-profile .control-group:last-child{
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+form#member-profile > .control-group{
+    margin: 0 !important;
+}
+
+form#member-profile .control-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 24px 0 0 0;
+
+}
+
+form#member-profile .control-group .controls {
+    margin-left: 0 !important;
+    width: 100%;
+}
+
+#member-profile .control-group.hidden {
+  display: none;
+}
+
+form#member-profile.well legend {
+    color: var(--neutral-800);
+    font-weight: 600;
+    margin: 0 !important;
+    font-family: var(--font);
+}
+
+form#member-profile.form-validate.form-horizontal.well input {
+    width: 100%;
+    color: var(--neutral-600);
+    font-family: var(--font);
+    height: 48px;
+    border-radius: 8px;
+    padding: 0 12px 0 12px;
+    border: 1px solid var(--neutral-400);
+    box-shadow: none;
+    margin-top: 6px;
+    margin-bottom: 0;
+    background-color: #fff;
+    width: 100%;
+}
+
+form#member-profile.form-validate.form-horizontal.well input:hover {
+    border: 1px solid var(--neutral-600);
+    box-shadow: none;
+}
+
+form#member-profile.form-validate.form-horizontal.well input:focus {
+    border: 1px solid var(--blue-500);
+    box-shadow: none;
+    color: var(--neutral-800) !important;
+}
+
+form#member-profile .control-group .control-label label {
+    font-family: var(--font);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 17px;
+    letter-spacing: 0.0025em;
+    text-align: left;
+    color: var(--neutral-800);
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+}
+form#member-profile.form-validate.form-horizontal.well button.btn.btn-primary.validate {
+    text-transform: capitalize;
+    border-radius: 4px;
+    margin-bottom: 0;
+    height: 38px;
+    display: flex;
+    align-items: center;
+}
+form#member-profile.form-validate.form-horizontal.well a.btn {
+    font-weight: 300;
+    margin-right: 16px !important;
+    margin-bottom: 0;
+    height: 38px;
+    display: flex;
+    align-items: center;
+}
+form#member-profile.form-validate.form-horizontal.well fieldset:nth-child(2) {
+    margin-top: 20px;
+}
+form#member-profile.form-validate.form-horizontal.well label {
+    font-size: 14px;
+    color: var(--neutral-800);
+    font-family: var(--font);
+}
+
+form#member-profile.form-validate.form-horizontal.well span {
+    color: var(--neutral-600);
+    font-family: var(--font);
+    font-size: 12px;
+}
+
+form#member-profile.form-validate.form-horizontal.well span.star {
+    display: none;
+}
+form#member-profile.form-validate.form-horizontal.well  label.required::after{
+    content: "\f005";
+    color: #c30505;
+    padding-left: 2px;
+    top: -10px;
+    position: relative;
+    font-family: FontAwesome, sans-serif;
+    font-size: 5px;
+}
+
+@media all and (max-width: 767px) {
+    form#member-profile {
+        padding: 2rem 3rem 1rem 3rem;
+    }
+
+    .view-profile #member-profile > .control-group .controls {
+        flex-direction: column;
+        row-gap: 8px;
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .view-profile form#member-profile.form-validate.form-horizontal.well button.btn.btn-primary.validate {
+        margin-right: 0 !important;
+    }
+
+}
+
+@media all and (min-width: 768px) and (max-width: 959px) {
+    .view-profile .form-horizontal .controls {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 1366px) {
+    .view-profile.layout-edit #g-container-main .g-container {
+        width: 95%;
+    }
+}

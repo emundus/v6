@@ -4,7 +4,7 @@
 function application_form_pdf($user_id, $rowid, $output = true) {
 	jimport( 'joomla.html.parameter' );
 
-	//$rowid = JRequest::getVar('rowid', null, 'GET', 'none',0);
+	//$rowid = JFactory::getApplication()->input->get('rowid', null, 'GET', 'none',0);
 
 	$db = JFactory::getDBO();
 

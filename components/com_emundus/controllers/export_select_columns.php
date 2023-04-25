@@ -12,9 +12,9 @@ class EmundusControllerExport_select_columns extends JControllerLegacy {
 
 	function display(){
 		// Set a default view if none exists
-		if ( ! JRequest::getCmd( 'view' ) ){
+		if ( ! JFactory::getApplication()->input->get( 'view' ) ){
 			$default = 'export_select_columns';
-			JRequest::setVar('view', $default );
+			JFactory::getApplication()->input->set('view', $default );
 		}
 		parent::display();
     }
@@ -38,13 +38,13 @@ class EmundusControllerExport_select_columns extends JControllerLegacy {
 		if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isEvaluator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id))
 			die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 
-		$view = JRequest::getVar('v', null, 'GET');
+		$view = JFactory::getApplication()->input->get('v', null, 'GET');
 		$session = JFactory::getSession();
 		$cid = $session->get( 'uid' );
 		$quick_search = $session->get( 'quick_search' );
 
 		//require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'export_xls'.DS.'xls_'.$view.'.php');
-		$elements = JRequest::getVar('ud', null, 'POST', 'array', 0);
+		$elements = JFactory::getApplication()->input->get('ud', null, 'POST', 'array', 0);
 		//export_xls($cid, $elements);
 		$xls = $this->getModel('xls_'.$view);
 		$xls->export_xls($cid, $elements);

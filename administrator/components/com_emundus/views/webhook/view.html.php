@@ -23,7 +23,7 @@ class EmundusAdminViewWebhook extends HtmlView
     function __construct($config = array()) {
         require_once (JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
-        $this->_user = Factory::getApplication()->getIdentity();
+        $this->_user = Factory::getUser();
 
         parent::__construct($config);
     }

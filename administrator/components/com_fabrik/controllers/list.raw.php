@@ -231,7 +231,7 @@ class FabrikAdminControllerList extends FabControllerForm
 		$model = Factory::getApplication()->bootComponent('com_fabrik')->getMVCFactory()->createModel('List', 'FabrikFEModel');
 		$id = $app->input->getInt('listid');
 		$model->setId($id);
-		JRequest::setVar('cid', $id);
+		JFactory::getApplication()->input->set('cid', $id);
 		$app->input->set('cid', $id);
 		$request = $model->getRequestData();
 		$model->storeRequestData($request);

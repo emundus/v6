@@ -62,7 +62,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 			$type = "hidden";
 		}
 
-		if (JRequest::getCmd('task') == 'processForm') {
+		if (JFactory::getApplication()->input->get('task') == 'processForm') {
 			$value = $this->unNumberFormat($value);
 		}
 		$value = $this->numberFormat($value);

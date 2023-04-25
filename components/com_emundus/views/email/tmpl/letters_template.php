@@ -15,8 +15,8 @@ $current_user = JFactory::getUser();
 if (EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
 
 	$student_id = 62; 
-	$itemid = JRequest::getVar('Itemid', null, 'GET', 'INT',0); 
-	$letter_id = JRequest::getVar('rowid', null, 'GET', 'INT',0); 
+	$itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'INT',0); 
+	$letter_id = JFactory::getApplication()->input->get('rowid', null, 'GET', 'INT',0); 
 
 	$user = JFactory::getUser($student_id);
 

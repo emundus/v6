@@ -147,7 +147,7 @@ trait AjaxHandlerLogin
         class_exists('Joomla\\CMS\\Authentication\\Authentication', true);
 
         // Fake a successful login message
-        $isAdmin = $this->getApplication()->isClient('administrator');
+        $isAdmin = JFactory::getApplication()->isClient('administrator');
         $user    = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
 
         // Does the user account have a pending activation?

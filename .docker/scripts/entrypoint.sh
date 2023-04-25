@@ -146,7 +146,10 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
         fi
 
         # Ensure the MySQL Database is created
-        php /makedb.php "$JOOMLA_DB_HOST" "$JOOMLA_DB_USER" "$JOOMLA_DB_PASSWORD" "$JOOMLA_DB_NAME"
+        if [ ! -e /makedb.php ]; then
+          php /makedb.php "$JOOMLA_DB_HOST" "$JOOMLA_DB_USER" "$JOOMLA_DB_PASSWORD" "$JOOMLA_DB_NAME"
+          rm -rf /makedb.php
+        fi
 
         # Install Tchooz product
         php cli/joomla.php extension:discover
@@ -167,8 +170,7 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
         fi
 
 
-        # Remove the makedb script
-        rm -rf /makedb.php
+
 
         echo >&2 "========================================================================"
         echo >&2

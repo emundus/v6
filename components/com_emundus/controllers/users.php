@@ -43,9 +43,9 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 	public function display($cachable = false, $urlparams = false)  {
 		// Set a default view if none exists
-		if (!JRequest::getCmd( 'view' )) {
+		if (!JFactory::getApplication()->input->get( 'view' )) {
 			$default = 'users';
-			JRequest::setVar('view', $default );
+			JFactory::getApplication()->input->set('view', $default );
 		}
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
@@ -256,10 +256,10 @@ class EmundusControllerUsers extends JControllerLegacy {
 	public function archive() {
 		$itemid = JFactory::getApplication()->getMenu()->getActive()->id;
 
-		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
-		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
-		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
+		$limitstart = JFactory::getApplication()->input->get('limitstart', null, 'POST', 'none',0);
+		$filter_order = JFactory::getApplication()->input->get('filter_order', null, 'POST', null, 0);
+		$filter_order_Dir = JFactory::getApplication()->input->get('filter_order_Dir', null, 'POST', null, 0);
+		$ids = JFactory::getApplication()->input->get('ud', null, 'POST', 'array', 0);
 		if (!empty($ids)) {
 			foreach ($ids as $id) {
 				$query = 'UPDATE #__emundus_users SET profile=999 WHERE user_id='.$id;
@@ -281,7 +281,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 	}
 
 	public function getConstraintsFilter() {
-		$filter_id = JRequest::getVar('filter_id', null, 'POST', 'none',0);
+		$filter_id = JFactory::getApplication()->input->get('filter_id', null, 'POST', 'none',0);
 
 		$query = "SELECT constraints FROM #__emundus_filters WHERE id=".$filter_id;
 		$this->_db->setQuery( $query );
@@ -290,8 +290,8 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 	////// EXPORT SELECTED XLS ///////////////////
 	public function export_selected_xls() {
-	     $cids = JRequest::getVar('ud', null, 'POST', 'array', 0);
-		 $page= JRequest::getVar('limitstart',0,'get');
+	     $cids = JFactory::getApplication()->input->get('ud', null, 'POST', 'array', 0);
+		 $page= JFactory::getApplication()->input->get('limitstart',0,'get');
 		 if (!empty($cids)) {
 		 	$this->export_to_xls($cids);
 		} else {
@@ -301,22 +301,22 @@ class EmundusControllerUsers extends JControllerLegacy {
 
    ////// EXPORT ALL XLS ///////////////////
 	public function export_account_to_xls($reqids = array(), $el = array()) {
-		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
+		$cid = JFactory::getApplication()->input->get('ud', null, 'POST', 'array', 0);
 		require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'export_xls'.DS.'xls_users.php');
 		export_xls($cid, array());
 	}
 
 	public function export_zip() {
 		require_once('libraries/emundus/zip.php');
-		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
-		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
-		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
+		$cid = JFactory::getApplication()->input->get('ud', null, 'POST', 'array', 0);
+		$limitstart = JFactory::getApplication()->input->get('limitstart', null, 'POST', 'none',0);
+		$filter_order = JFactory::getApplication()->input->get('filter_order', null, 'POST', null, 0);
+		$filter_order_Dir = JFactory::getApplication()->input->get('filter_order_Dir', null, 'POST', null, 0);
 		JArrayHelper::toInteger($cid, 0);
 
 		if (count( $cid ) == 0) {
 			JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_NO_ITEMS_SELECTED' ) );
-			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
+			$this->setRedirect('index.php?option=com_emundus&view='.JFactory::getApplication()->input->get( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JFactory::getApplication()->input->get( 'Itemid' ));
 			exit;
 		}
 		zip_file($cid);
@@ -325,7 +325,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 	public function addsession() {
 		global $option;
-		$select_filter = JRequest::getVar('select_id', null, 'GET', 'none',0);
+		$select_filter = JFactory::getApplication()->input->get('select_id', null, 'GET', 'none',0);
 		$mainframe = JFactory::getApplication();
 		$mainframe->setUserState( $option."select_filter", $select_filter );
 	}
@@ -449,8 +449,8 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$current_user = JFactory::getUser();
 		$user_id = $current_user->id;
 
-		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-		$name = JRequest::getVar('name', null, 'POST', 'none',0);
+		$itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
+		$name = JFactory::getApplication()->input->get('name', null, 'POST', 'none',0);
 
 		$filt_params = JFactory::getSession()->get('filt_params');
 		$adv_params = JFactory::getSession()->get('adv_cols');
@@ -459,7 +459,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$constraints = json_encode($constraints);
 
 		if (empty($itemid))
-			$itemid = JRequest::getVar('Itemid', null, 'POST', 'none',0);
+			$itemid = JFactory::getApplication()->input->get('Itemid', null, 'POST', 'none',0);
 
 		$time_date = (date('Y-m-d H:i:s'));
 
@@ -675,20 +675,20 @@ class EmundusControllerUsers extends JControllerLegacy {
 			return;
 		}
 
-		$newuser['id'] 				= JRequest::getVar('id', null, 'POST', '', 0);
-		$newuser['firstname'] 		= JRequest::getVar('firstname', null, 'POST', '', 0);
-		$newuser['lastname'] 		= JRequest::getVar('lastname', null, 'POST', '', 0);
-		$newuser['username'] 		= JRequest::getVar('login', null, 'POST', '', 0);
+		$newuser['id'] 				= JFactory::getApplication()->input->get('id', null, 'POST', '', 0);
+		$newuser['firstname'] 		= JFactory::getApplication()->input->get('firstname', null, 'POST', '', 0);
+		$newuser['lastname'] 		= JFactory::getApplication()->input->get('lastname', null, 'POST', '', 0);
+		$newuser['username'] 		= JFactory::getApplication()->input->get('login', null, 'POST', '', 0);
 		$newuser['name'] 			= $newuser['firstname'].' '.$newuser['lastname'];
-		$newuser['email'] 			= JRequest::getVar('email', null, 'POST', '', 0);
+		$newuser['email'] 			= JFactory::getApplication()->input->get('email', null, 'POST', '', 0);
 		$newuser['same_login_email']= JFactory::getApplication()->input->post->getInt('sameLoginEmail', null);
-		$newuser['profile'] 		= JRequest::getVar('profile', null, 'POST', '', 0);
-		$newuser['em_oprofiles']	= JRequest::getVar('oprofiles', null, 'POST', 'string',0);
-		$newuser['groups'] 			= array(JRequest::getVar('jgr', null, 'POST', '', 0));
-		$newuser['university_id'] 	= JRequest::getVar('university_id', null, 'POST', '', 0);
-		$newuser['em_campaigns'] 	= JRequest::getVar('campaigns', null, 'POST', '', 0);
-		$newuser['em_groups'] 		= JRequest::getVar('groups', null, 'POST', '', 0);
-		$newuser['news'] 			= JRequest::getVar('newsletter', null, 'POST', 'string',0);
+		$newuser['profile'] 		= JFactory::getApplication()->input->get('profile', null, 'POST', '', 0);
+		$newuser['em_oprofiles']	= JFactory::getApplication()->input->get('oprofiles', null, 'POST', 'string',0);
+		$newuser['groups'] 			= array(JFactory::getApplication()->input->get('jgr', null, 'POST', '', 0));
+		$newuser['university_id'] 	= JFactory::getApplication()->input->get('university_id', null, 'POST', '', 0);
+		$newuser['em_campaigns'] 	= JFactory::getApplication()->input->get('campaigns', null, 'POST', '', 0);
+		$newuser['em_groups'] 		= JFactory::getApplication()->input->get('groups', null, 'POST', '', 0);
+		$newuser['news'] 			= JFactory::getApplication()->input->get('newsletter', null, 'POST', 'string',0);
 
 		if (preg_match('/^[0-9a-zA-Z\_\@\-\.\+]+$/', $newuser['username']) !== 1) {
 			echo json_encode((object)array('status' => false, 'msg' => 'LOGIN_NOT_GOOD'));

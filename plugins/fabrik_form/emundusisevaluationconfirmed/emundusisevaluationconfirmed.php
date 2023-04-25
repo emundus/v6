@@ -88,7 +88,9 @@ class PlgFabrik_FormEmundusisevaluationconfirmed extends plgFabrik_Form {
 		$view = $jinput->get('view');
 		$itemid = $jinput->get('Itemid');
 
-		if (!$app->isAdmin() && $view == 'form') {
+        $isAdmin = JFactory::getApplication()->isClient('administrator');
+
+        if (!$isAdmin && $view == 'form') {
 			require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 
 			jimport('joomla.log.log');

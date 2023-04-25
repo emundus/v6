@@ -34,7 +34,7 @@ class EmundusModelGroups extends JModelList
 
         // Get pagination request variables
         $limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-        $limitstart = JRequest::getVar('limitstart', 0, '', 'int');
+        $limitstart = JFactory::getApplication()->input->get('limitstart', 0, '', 'int');
 
         // In case limit has been changed, adjust it
         $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
@@ -93,13 +93,13 @@ class EmundusModelGroups extends JModelList
 
 	function _buildQuery()
 	{
-		$gid = JRequest::getVar('groups', null, 'POST', 'none', 0);
-		$profile = JRequest::getVar('profile', null, 'POST', 'none', 0);
-		$uid = JRequest::getVar('user', null, 'POST', 'none', 0);
-		$quick_search = JRequest::getVar('s', null, 'POST', 'none', 0);
-		$search = JRequest::getVar('elements', null, 'POST', 'array', 0);
-		$search_values = JRequest::getVar('elements_values', null, 'POST', 'array', 0);
-		$schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'none', 0);
+		$gid = JFactory::getApplication()->input->get('groups', null, 'POST', 'none', 0);
+		$profile = JFactory::getApplication()->input->get('profile', null, 'POST', 'none', 0);
+		$uid = JFactory::getApplication()->input->get('user', null, 'POST', 'none', 0);
+		$quick_search = JFactory::getApplication()->input->get('s', null, 'POST', 'none', 0);
+		$search = JFactory::getApplication()->input->get('elements', null, 'POST', 'array', 0);
+		$search_values = JFactory::getApplication()->input->get('elements_values', null, 'POST', 'array', 0);
+		$schoolyears = JFactory::getApplication()->input->get('schoolyears', null, 'POST', 'none', 0);
 
 		$db = JFactory::getDatabase();
 

@@ -31,7 +31,7 @@ class EmundusAdminViewModules extends HtmlView
     {
         require_once (JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
-        $this->_user = Factory::getApplication()->getIdentity();
+        $this->_user = Factory::getUser();
 
         parent::__construct($config);
     }

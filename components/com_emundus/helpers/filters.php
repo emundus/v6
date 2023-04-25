@@ -532,7 +532,7 @@ class EmundusHelperFilters {
 	}
 
 	function getEmundusFilters() {
-		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		$itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
 		if (isset($itemid) && !empty($itemid)) {
 			$user = JFactory::getUser();
 			$db = JFactory::getDBO();

@@ -238,6 +238,38 @@ class TchoozDeploymentRunCommand extends AbstractCommand
             return 1;
         }
 
+        $symfonyStyle->section('Enable standard plugins');
+        try {
+            $plugins_to_enabled = [
+                'emundus',
+                'send_file_archive',
+                'setup_category',
+                'limit_obtained_alert',
+                'custom_event_handler',
+                'emundus_hikashop',
+                'emunduswaitingroom',
+                'emundus_block_user',
+                'emundusregistrationredirect',
+                'emundus_assign_to_files',
+                'emundus_registration_email',
+            ];
+            $query->clear()
+                ->update($db->quoteName('#__extensions'))
+                ->set($db->quoteName('enabled') . ' = 1')
+                ->where($db->quoteName('element') . ' IN (' . implode(',',$db->quote($plugins_to_enabled)) . ')')
+                ->andWhere($db->quoteName('enabled') . ' = 0')
+                ->andWhere($db->quoteName('type') . ' LIKE ' . $db->quote('plugin'));
+            $db->setQuery($query);
+            if($db->execute()){
+                $symfonyStyle->success('Standard plugins enabled');
+            } else {
+                $symfonyStyle->error('Error enabling Standard plugins');
+            }
+        } catch (\Exception $e) {
+            $symfonyStyle->error('Error enabling standard plugins: ' . $e->getMessage());
+            return 1;
+        }
+
 
 		$symfonyStyle->success('Tchooz is ready to use!');
 

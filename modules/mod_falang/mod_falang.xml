@@ -1,0 +1,207 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<extension 	type="module" version="4.0"	client="site" method="upgrade">
+	<name>mod_falang</name>
+	<author>Stéphane Bouey</author>
+	<creationDate>20 September 2021</creationDate>
+	<copyright>2011-2021, Faboba</copyright>
+	<license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
+	<authorEmail>stephane.bouey@faboba.com</authorEmail>
+	<authorUrl>www.faboba.com</authorUrl>
+	<version>4.0.0</version>
+	<description>MOD_FALANG_XML_DESCRIPTION</description>
+	<files>
+		<filename module="mod_falang">mod_falang.php</filename>
+		<folder>tmpl</folder>
+		<filename>helper.php</filename>
+		<filename>index.html</filename>
+		<filename>mod_falang.xml</filename>
+	</files>
+	<languages>
+		<language tag="en-GB">language/en-GB/en-GB.mod_falang.ini</language>
+		<language tag="en-GB">language/en-GB/en-GB.mod_falang.sys.ini</language>
+	</languages>
+	<help key="JHELP_EXTENSIONS_MODULE_MANAGER_LANGUAGE_SWITCHER" />
+
+	<media destination="mod_falang" folder="media">
+		<filename>index.html</filename>
+		<folder>images</folder>
+        <folder>css</folder>
+	</media>
+
+	<config>
+		<fieldset>
+			<field name="language"
+				type="list"
+				description="JFIELD_MODULE_LANGUAGE_DESC"
+				label="JFIELD_LANGUAGE_LABEL">
+				<option value="*">JALL</option>
+			</field>
+		</fieldset>
+		<fields name="params">
+			<fieldset name="basic">
+				<field
+					name="dropdown"
+					type="radio"
+                    class="btn-group btn-group-yesno"
+					default="0"
+					label="MOD_FALANG_FIELD_DROPDOWN_LABEL"
+					description="MOD_FALANG_FIELD_DROPDOWN_DESC" >
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field
+						name="advanced_dropdown"
+						type="radio"
+						class="btn-group btn-group-yesno"
+						default="0"
+						label="MOD_FALANG_FIELD_ADV_DROPDOWN_LABEL"
+						description="MOD_FALANG_FIELD_ADV_DROPDOWN_DESC" >
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field name="spacer1" type="spacer" class="text"
+					   label="MOD_FALANG_SPACERDROP_LABEL"
+						/>
+
+				<field
+					name="inline"
+					type="radio"
+                    class="btn-group btn-group-yesno"
+					default="1"
+					label="MOD_FALANG_FIELD_INLINE_LABEL"
+					description="MOD_FALANG_FIELD_INLINE_DESC" >
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+
+				<field name="spacer2" type="spacer" class="text"
+					   label="MOD_FALANG_COMMON_LABEL"
+						/>
+
+				<field
+						name="show_active"
+						type="radio"
+						class="btn-group btn-group-yesno"
+						default="1"
+						label="MOD_FALANG_FIELD_ACTIVE_LABEL"
+						description="MOD_FALANG_FIELD_ACTIVE_DESC" >
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+
+				<field
+						name="image"
+						type="radio"
+						class="btn-group btn-group-yesno"
+						default="1"
+						label="MOD_FALANG_FIELD_USEIMAGE_LABEL"
+						description="MOD_FALANG_FIELD_USEIMAGE_DESC" >
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field
+						name="show_name"
+						type="radio"
+						class="btn-group btn-group-yesno"
+						default="0"
+						label="MOD_FALANG_FIELD_SHOW_NAME_LABEL"
+						description="MOD_FALANG_FIELD_SHOW_NAME_DESC" >
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field
+					name="full_name"
+					type="radio"
+                    class="btn-group btn-group-yesno"
+					default="1"
+					label="MOD_FALANG_FIELD_FULL_NAME_LABEL"
+					description="MOD_FALANG_FIELD_FULL_NAME_DESC" >
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+
+				<field
+						name="header_text"
+						type="textarea"
+						filter="safehtml"
+						rows="3"
+						cols="40"
+						label="MOD_FALANG_FIELD_HEADER_LABEL"
+						description="MOD_FALANG_FIELD_HEADER_DESC" />
+				<field
+						name="footer_text"
+						type="textarea"
+						filter="safehtml"
+						rows="3"
+						cols="40"
+						label="MOD_FALANG_FIELD_FOOTER_LABEL"
+						description="MOD_FALANG_FIELD_FOOTER_DESC" />
+
+			</fieldset>
+            <fieldset name="options" addfieldpath="/administrator/components/com_falang/models/fields">
+                
+                <!-- >>> [PAID] >>> -->
+                <field
+                        name="imagespath"
+                        type="text"
+                        label="MOD_FALANG_FIELD_IMAGEPATH_LABEL"
+                        description="MOD_FALANG_FIELD_IMAGEPATH_DESC" />
+                <field
+                        name="imagestype"
+                        type="list"
+                        default="gif"
+                        label="MOD_FALANG_FIELD_IMAGETYPE_LABEL"
+                        description="MOD_FALANG_FIELD_IMAGETYPE_DESC">
+                    <option
+                            value="gif">gif</option>
+                    <option
+                            value="png">png</option>
+                    <option
+                            value="jpg">jpg</option>
+                    <option
+                            value="jpeg">jpeg</option>
+                </field>
+                <!-- <<< [PAID] <<< -->
+            </fieldset>
+			<fieldset name="advanced">
+				<field
+					name="layout"
+					type="modulelayout"
+					label="JFIELD_ALT_LAYOUT_LABEL"
+					description="MOD_FALANG_FIELD_MODULE_LAYOUT_DESC" />
+				<field
+					name="moduleclass_sfx"
+					type="text"
+					label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
+					description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC" />
+
+                <field
+                    name="cache"
+                    type="list"
+                    default="1"
+                    label="COM_MODULES_FIELD_CACHING_LABEL"
+                    description="COM_MODULES_FIELD_CACHING_DESC">
+                    <option
+                        value="1">JGLOBAL_USE_GLOBAL</option>
+                    <option
+                        value="0">COM_MODULES_FIELD_VALUE_NOCACHING</option>
+                </field>
+
+				<field
+					name="cache_time"
+					type="text"
+					default="900"
+					label="COM_MODULES_FIELD_CACHE_TIME_LABEL"
+					description="COM_MODULES_FIELD_CACHE_TIME_DESC" />
+
+                <field
+					name="cachemode"
+					type="hidden"
+					default="itemid">
+					<option
+						value="itemid"></option>
+				</field>
+			</fieldset>
+		</fields>
+	</config>
+</extension>

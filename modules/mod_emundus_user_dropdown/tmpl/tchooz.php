@@ -271,19 +271,20 @@ else {
 
         var url = window.location.origin.toString() + '/' + redirect_url;
 
-        jQuery.ajax({
-            type: 'POST',
-            url: 'index.php?option=com_emundus&task=switchprofile',
-            data: ({
-                profnum: current_fnum
-            }),
-            success: function (result) {
+        let formData = new FormData();
+        formData.append('profnum', current_fnum);
+
+        fetch('index.php?option=com_emundus&task=switchprofile', {
+            method: 'POST',
+            body: formData,
+        }).then(response => {
+            if (response.ok) {
                 window.location.href = url;
-                //location.reload(true);
-            },
-            error : function (jqXHR, status, err) {
-                alert("Error switching porfiles.");
+            } else {
+                throw new Error('Error switching profiles.');
             }
+        }).catch(error => {
+            alert(error.message);
         });
     }
 

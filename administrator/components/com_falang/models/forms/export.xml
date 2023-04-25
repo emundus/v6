@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset addfieldpath="/components/com_falang/forms/fields" position="left"
+	>
+
+    <field name="destinationlanguage" type="flanguage"
+           label="COM_FALANG_EXPORT_DST_LANGUAGE_LBL" description="COM_FALANG_EXPORT_DST_LANGUAGE_DESC"
+           class="inputbox" size="1" default="1" >
+    </field>
+
+		<field name="format" type="list"
+			label="COM_FALANG_EXPORT_FORMAT_LBL" description="COM_JDICTION_THE_TYPE_OF_THE_TRANSLATION_DOCUMENT"
+			class="inputbox" size="1" default="xml" readonly="readonly">
+  			  <option value="xml">XML</option>
+		      <option value="xliff-12">XLIFF (1.2)</option>
+		</field>
+		
+		<field name="tables" type="ftables"
+			   label="COM_FALANG_EXPORT_TABLES_LBL" description="COM_FALANG_EXPORT_TABLES_DESC"
+			   class="inputbox" size="8" multiple="false" required="required">
+		</field>
+
+		<field name="state" type="list"
+			   label="COM_FALANG_EXPORT_STATE_LBL" description="COM_FALANG_EXPORT_STATE_DESC"
+			   class="inputboy" size="1" default="notexisting">
+			<option value="notexisting">COM_FALANG_EXPORT_STATE_NOT_EXISTING</option>
+			<option value="all">COM_FALANG_EXPORT_STATE_ALL</option>
+		</field>
+
+	</fieldset>
+
+</form>

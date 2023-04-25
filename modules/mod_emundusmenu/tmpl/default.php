@@ -12,9 +12,7 @@ defined('_JEXEC') or die;
 // Note. It is important to remove spaces between elements.
 ?>
 <ul class="<?php echo $class_sfx;?>"<?php
-	$tag = '';
-	if ($params->get('tag_id')!=NULL) {
-		$tag = $params->get('tag_id').'';
+	if (!empty($tag)) {;
 		echo ' id="'.$tag.'"';
 	}
 ?>>
@@ -30,7 +28,7 @@ foreach ($list as $i => &$item) :
 		$class .= ' active';
 	}
 	elseif ($item->type == 'alias') {
-		$aliasToId = $item->params->get('aliasoptions');
+		$aliasToId = $item->getParams()->get('aliasoptions');
 		if (count($path) > 0 && $aliasToId == $path[count($path)-1]) {
 			$class .= ' active';
 		}

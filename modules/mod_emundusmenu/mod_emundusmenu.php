@@ -8,12 +8,15 @@
 
 // no direct access
 defined('_JEXEC') or die;
+
 $document 	= JFactory::getDocument();
 $document->addStyleSheet("modules/mod_emundusmenu/style/mod_emundusmenu.css" );
+
 // Include the syndicate functions only once
 require_once dirname(__FILE__).'/helper.php';
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+
 // needed when default top menu is missing
 global $gantry;
 if (!empty($gantry)) {
@@ -34,6 +37,9 @@ if($params->get('menu_style') == 'tchooz_vertical') {
 $display_applicant_menu = $params->get('display_applicant_menu', 1);
 $applicant_menu = $params->get('applicant_menu', '');
 $display_tchooz = $params->get('displayTchooz', 1);
+$class_sfx = htmlspecialchars($params->get('class_sfx'));
+$showAll = $params->get('showAllChildren');
+$tag = $params->get('tag_id');
 
 $user = JFactory::getSession()->get('emundusUser');
 $m_profile = new EmundusModelProfile();
@@ -62,9 +68,8 @@ $menu = $app->getMenu();
 $active	= $menu->getActive();
 $active_id = isset($active) ? $active->id : $menu->getDefault()->id;
 $path = isset($active) ? $active->tree : array();
-$showAll = $params->get('showAllChildren');
 $coordinatorAccess = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
-$class_sfx = htmlspecialchars($params->get('class_sfx'));
+
 
 if (count($list)) {
     require JModuleHelper::getLayoutPath('mod_emundusmenu', $layout);

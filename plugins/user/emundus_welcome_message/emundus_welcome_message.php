@@ -54,7 +54,7 @@ class plgUserEmundus_welcome_message extends JPlugin {
 	}
 	
 	function afterLogin($user, $option) {
-		$username  = JRequest::getVar('username');
+		$username  = JFactory::getApplication()->input->get('username');
 		
 		$mainframe = JFactory::getApplication();
 		$userid    = JUserHelper::getUserId($username);

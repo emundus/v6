@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="4.0" method="upgrade">
+	<name>com_falang</name>
+	<author>Stéphane Bouey</author>
+	<creationDate>20 September 2021</creationDate>
+	<copyright>2011-2021, Faboba</copyright>
+	<license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
+	<authorEmail>stephane.bouey@faboba.com</authorEmail>
+	<authorUrl>www.faboba.com</authorUrl>
+	<version>4.0.0</version>
+	<description>COM_FALANG_XML_DESCRIPTION</description>
+
+    <!-- Runs on install/uninstall -->
+    <scriptfile>script.php</scriptfile>
+
+	<install>
+		<sql>
+			<file driver="mysql" charset="utf8">sql/install/mysql/install.mysql.utf8.sql</file>
+		</sql>
+	</install>
+
+    <!-- Runs on uninstall -->
+	<uninstall>
+		<sql>
+		</sql>
+	</uninstall>
+
+    <!-- SQL files to run on update -->
+    <update>
+        <schemas>
+            <schemapath type="mysql">sql/updates/mysql</schemapath>
+        </schemas>
+    </update>
+
+
+	<files folder="site">
+		<filename>index.html</filename>
+		<filename>falang.php</filename>
+		<folder>helpers</folder>
+		<folder>images</folder>
+	</files>
+
+	<administration>
+		<!-- Administration Menu Section -->
+		<menu img="components/com_falang/assets/images/icon-16-falang.png">COM_FALANG_MENU</menu>
+        <submenu>
+			<menu link="option=com_falang">COM_FALANG_SUBMENU_CONTROL_PANEL</menu>
+            <menu link="option=com_falang&amp;task=translate.overview">COM_FALANG_SUBMENU_TRANSLATE</menu>
+            <menu link="option=com_falang&amp;task=translate.orphans">COM_FALANG_SUBMENU_ORPHANS</menu>
+			<menu link="option=com_falang&amp;task=elements.show">COM_FALANG_SUBMENU_CONTENT_ELEMENT</menu>
+			<menu link="option=com_falang&amp;task=help.show">COM_FALANG_SUBMENU_HELP_AND_HOWTO</menu>
+        </submenu>
+	
+		<files folder="admin">
+            <filename>access.xml</filename>
+			<filename>config.xml</filename>
+			<filename>controller.php</filename>
+			<filename>index.html</filename>
+			<filename>falang.php</filename>
+			<filename>version.php</filename>
+			<folder>assets</folder>
+			<folder>classes</folder>
+			<folder>contentelements</folder>
+			<folder>controllers</folder>
+			<folder>documentation</folder>
+			<folder>editors</folder>
+			<folder>help</folder>
+			<folder>helpers</folder>
+			<folder>sql</folder>
+            <folder>liveupdate</folder>
+			<folder>models</folder>
+			<folder>tables</folder>
+			<folder>views</folder>
+		</files>
+		<languages folder="admin">
+			<language tag="en-GB">language/en-GB/en-GB.com_falang.sys.ini</language>
+			<language tag="en-GB">language/en-GB/en-GB.com_falang.ini</language>
+		</languages>
+	</administration>
+</extension>

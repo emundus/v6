@@ -22,7 +22,8 @@ $app = JFactory::getApplication();
 $session = JFactory::getSession();
 $db = JFactory::getDbo();
 
-$user = Factory::getApplication()->getIdentity();
+
+$user = Factory::getUser();
 $e_user = JFactory::getSession()->get('emundusUser');
 $app_prof = $m_profiles->getApplicantsProfilesArray();
 

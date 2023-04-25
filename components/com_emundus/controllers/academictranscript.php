@@ -23,9 +23,9 @@ class EmundusControllerAcademicTranscript extends JControllerLegacy {
 
 	function display($cachable = false, $urlparams = false) {
 		// Set a default view if none exists
-		if (! JRequest::getCmd( 'view' )) {
+		if (! JFactory::getApplication()->input->get( 'view' )) {
 			$default = 'academicTranscript';
-			JRequest::setVar('view', $default );
+			JFactory::getApplication()->input->set('view', $default );
 		}
 		$user = JFactory::getUser();
 		$menu = JFactory::getApplication()->getMenu()->getActive();
@@ -44,9 +44,9 @@ class EmundusControllerAcademicTranscript extends JControllerLegacy {
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access))
 			die("You are not allowed to access to this page.");
 		$db = JFactory::getDBO();
-		$student_id 	= JRequest::getVar('student_id', null, 'POST', 'none', 0);
-		$grades 		= JRequest::getVar('grade', null, 'POST', 'array', 0);
-		$obtained 		= JRequest::getVar('obtained', null, 'POST', 'array', 0);
+		$student_id 	= JFactory::getApplication()->input->get('student_id', null, 'POST', 'none', 0);
+		$grades 		= JFactory::getApplication()->input->get('grade', null, 'POST', 'array', 0);
+		$obtained 		= JFactory::getApplication()->input->get('obtained', null, 'POST', 'array', 0);
 		//die(print_r($obtained));
 		
 		$db->setQuery('DELETE FROM `#__emundus_academic_transcript` WHERE student_id='.$student_id);
@@ -80,8 +80,8 @@ class EmundusControllerAcademicTranscript extends JControllerLegacy {
 		}
 		$db = JFactory::getDBO();
 		$user = JFactory::getUser();
-		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
-		$student_id = JRequest::getVar('student_id', null, 'POST', 'none', 0);
+		$ids = JFactory::getApplication()->input->get('ud', null, 'POST', 'array', 0);
+		$student_id = JFactory::getApplication()->input->get('student_id', null, 'POST', 'none', 0);
 		//UPDATE Selected units
 		$db->setQuery('DELETE FROM `#__emundus_learning_agreement` WHERE user_id='.$student_id);
 		$db->Query() or die($db->getErrorMsg());
@@ -109,7 +109,7 @@ class EmundusControllerAcademicTranscript extends JControllerLegacy {
 			die("You are not allowed to access to this page.");
 		}
 		$db = JFactory::getDBO();
-		$student_id = JRequest::getVar('student_id', null, 'POST', 'none', 0);
+		$student_id = JFactory::getApplication()->input->get('student_id', null, 'POST', 'none', 0);
 		$query = 'DELETE FROM `#__emundus_learning_agreement_status` WHERE `user_id`='.$student_id.' AND `status`=1';
 		$db->setQuery($query);
 		$db->Query() or die($db->getErrorMsg());

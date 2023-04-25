@@ -20,7 +20,7 @@ class EmundusAdminControllerWebhook extends JControllerLegacy
     function generate() {
         $results = ['status' => true];
 
-		if(EmundusHelperAccess::asAdministratorAccessLevel(Factory::getApplication()->getIdentity()->id)) {
+		if(EmundusHelperAccess::asAdministratorAccessLevel(Factory::getUser()->id)) {
 			$results['token'] = JUserHelper::genRandomPassword(32);
 			$hash_token       = JApplicationHelper::getHash($results['token']);
 

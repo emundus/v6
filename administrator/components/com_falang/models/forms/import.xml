@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset addfieldpath="/components/com_falang/forms/fields" position="left"
+	>
+
+    <field name="destinationlanguage" type="flanguage"
+           label="COM_FALANG_IMPORT_DST_LANGUAGE_LBL" description="COM_FALANG_IMPORT_DST_LANGUAGE_DESC"
+           class="inputbox" size="1" default="1" >
+    </field>
+
+	<field name="translationFile" type="file" class="inputbox" label="COM_FALANG_IMPORT_FILE" />
+
+	</fieldset>
+
+</form>

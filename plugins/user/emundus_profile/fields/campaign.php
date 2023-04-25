@@ -17,7 +17,7 @@ class JFormFieldCampaign extends JFormField
     protected $type = 'campaign';
 
     protected function getInput() {
-        $course = JRequest::getVar('course', '', '', 'str');
+        $course = JFactory::getApplication()->input->get('course', '', '', 'str');
         $course = !empty($course)?$course:"%";
 
         $offset = JFactory::getApplication()->get('offset', 'UTC');

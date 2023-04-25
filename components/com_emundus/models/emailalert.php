@@ -158,7 +158,7 @@ class EmundusModelEmailalert extends JModelList{
 	}
 
 	function getKey(){
-		$key = JRequest::getVar('keyid', null, 'GET');
+		$key = JFactory::getApplication()->input->get('keyid', null, 'GET');
 		$p_key = $this->_eMConfig->get('keyid', '100');
 
 		if($key == $p_key) return true;

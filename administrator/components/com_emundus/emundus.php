@@ -18,7 +18,7 @@ $app = Factory::getApplication();
 $input = $app->input;
 
 // Access check.
-if (!$app->getIdentity()->authorise('core.manage', 'com_emundus'))
+if (!JFactory::getUser()->authorise('core.manage', 'com_emundus'))
 {
 	throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'), 404);
 }

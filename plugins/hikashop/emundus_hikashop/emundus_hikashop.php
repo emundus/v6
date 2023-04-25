@@ -342,7 +342,9 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
     public function onBeforeProductListingLoad(&$filters,&$order,&$parent, &$select, &$select2, &$a, &$b, &$on) {
         $app = JFactory::getApplication();
 
-        if(!$app->isAdmin()) {
+        $isAdmin = JFactory::getApplication()->isClient('administrator');
+
+        if(!$isAdmin) {
             JPluginHelper::importPlugin('emundus','custom_event_handler');
             \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopBeforeProductListingLoad',
                 ['filters' => $filters, 'order' => $order,'parent' => $parent, 'select' => $select, 'select2' => $select2, 'a' => $a, 'b' => $b, 'on' => $on]
