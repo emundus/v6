@@ -10,7 +10,7 @@ $doc->addScript(JURI::root() . "plugins/fabrik_element/emundus_phonenumber/asset
 
 <div id="<?php echo $displayData->attributes['id']; ?>" class="em-flex-row fabrikSubElementContainer">
 
-	<select class="input-small form-control fabrikinput input inputbox"
+	<select name="<?php echo $displayData->attributes['name']; ?>" class="input-small form-control fabrikinput input inputbox"
 			data-countries="<?php echo base64_encode(json_encode($displayData->dataSelect)); // encode base64?>"
 	>
 
@@ -22,6 +22,6 @@ $doc->addScript(JURI::root() . "plugins/fabrik_element/emundus_phonenumber/asset
 
 	</select>
 
-	<input class="input-medium fabrikinput inputbox text"
+	<input name="<?php echo $displayData->attributes['name']; ?>" class="input-medium fabrikinput inputbox text"
 	>
 </div>

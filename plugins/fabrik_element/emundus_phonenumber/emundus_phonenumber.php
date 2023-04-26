@@ -248,7 +248,6 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 	 */
 	public function storeDatabaseFormat($val, $data)
 	{
-        $this->getAJAX();
 
 		if (is_array($val))
 		{
@@ -299,7 +298,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
         $value = (string)$data;
         $isValid = false;
 
-        if (preg_match("/^\+\d{5,15}$/"))
+        if (preg_match("/^\+\d{5,15}$/", $value))
         {
             $isValid = true;
         }
