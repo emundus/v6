@@ -166,7 +166,10 @@ class EmundusControllerCampaign extends JControllerLegacy {
                 foreach($campaigns['datas'] as $key => $campaign) {
                     $campaign->label = ['fr' => $campaign->label, 'en' => $campaign->label];
 
-                    $now = time();
+                    $config = JFactory::getConfig();
+                    $offset = $config->get('offset');
+                    $now_date_time = new DateTime('now', new DateTimeZone($offset));
+                    $now = $now_date_time->format('U');
                     $start_date = strtotime($campaign->start_date);
                     $end_date = strtotime($campaign->end_date);
 
