@@ -53,11 +53,13 @@ class PlgFabrik_Cronemunduscampaignrecurrence extends PlgFabrik_Cron {
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
+		$current_date = EmundusHelperDate::getCurrentDate('Y-m-d H:i:s', true);
+
 		$query->select('*')
 			->from('#__emundus_setup_campaigns')
 			->where('published = 1')
-			->andWhere('start_date <= NOW()')
-			->andWhere('end_date >= NOW()')
+			->andWhere('start_date <= ' . $db->quote($current_date))
+			->andWhere('end_date >= ' . $db->quote($current_date))
 			->andWhere('params IS NOT NULL AND JSON_EXTRACT(params, "$.is_recurring") = "1"');
 
 		try {

@@ -71,4 +71,20 @@ class EmundusHelperDate {
     static function isNull($date) {
         return (empty($date) || $date === '0000-00-00 00:00:00' || $date === '0000-00-00');
     }
+
+	static function getCurrentDate($format = 'Y-m-d H:i:s', $campaign_context = false) {
+
+		if (!$campaign_context) {
+			$date = gmdate($format);
+		} else {
+			$config = JFactory::getConfig();
+			$offset = $config->get('offset');
+
+			$date = new DateTime(gmdate('Y-m-d H:i:s'), new DateTimeZone('UTC'));
+			$date->setTimezone(new DateTimeZone($offset));
+			$date = $date->format($format);
+		}
+
+		return $date;
+	}
 }
