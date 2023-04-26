@@ -313,7 +313,7 @@ ul {
 /* ARTICLE */
 
 
-.view-article.com_content {
+.view-article.com_content:not(.indicateurs-page) {
   .page-header h2[itemprop="headline"] {
     margin-bottom: 32px;
   }
@@ -1451,24 +1451,207 @@ body > .g-container {
 
 /* DROPFILE */
 
-.com_dropfiles.view-manage #newcategory {
-  width: fit-content;
+.com_dropfiles.view-manage {
 
-  .btn.btn-default {
-    font-size: 11px;
-    display: flex;
-    align-items: center;
-  }
+  #g-main-mainbody {
 
-  i.material-icons {
-    margin-right: 8px;
+    #navigation {
+      display: none;
+    }
+
+    .dropfiles_progress_block .dropfiles_progress_pause:after,
+    .dropfiles_progress_block .dropfiles_progress_cancel:after {
+      color: var(--main-500);
+    }
+
+    .dropfiles_progress_block .dropfiles_process_run {
+      background: var(--main-500);
+    }
+
+    #mybootstrap {
+
+      button.btn, a.btn {
+        text-transform: inherit;
+        border-radius: var(--em-border-radius) !important;
+        font-family: var(--font);
+        letter-spacing: inherit;
+      }
+
+      #pwrapper #preview {
+        background: var(--background-color);
+
+        #dropbox {
+          height: calc(100vh - 70px);
+        }
+
+        .restableMenu .restableMenuButton {
+          margin-top: 24px !important;
+        }
+
+        tr.file.selected,  tr.file:hover {
+          box-shadow: 0 0 0 1px var(--main-500);
+        }
+      }
+
+      #mycategories {
+
+        .bs-docs-sidenav2 > li a.edit {
+          top: 11px;
+
+          i {
+            filter: grayscale(1);
+          }
+        }
+
+        .bs-docs-sidenav2 > li a.trash {
+          top: 11px;
+
+          i {
+            filter: hue-rotate(135deg);
+          }
+        }
+
+        .dd-item.active {
+          & > .dd-content {
+            background: var(--main-100);
+
+            span {
+              color: var(--main-500);
+            }
+          }
+
+          .dropfiles-folder::before {
+            color: var(--main-500);
+          }
+        }
+
+        .dd-item {
+          & > .dd-content:hover {
+            background: var(--main-100);
+            color: var(--main-500);
+
+            span {
+              color: var(--main-500);
+            }
+          }
+
+          .dropfiles-folder::before {
+            color: var(--main-500);
+          }
+        }
+
+
+        #newcategory {
+          width: fit-content;
+
+          .btn.btn-default {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--main-500);
+            background: var(--neutral-0);
+            color: var(--main-500);
+
+            &:hover, &:focus, &:active {
+              border: 1px solid var(--main-500);
+              background: var(--main-500);
+              color: var(--neutral-0);
+            }
+          }
+
+          i.material-icons {
+            margin-right: 8px;
+          }
+        }
+      }
+
+      #wpreview {
+
+       .dropfiles-number-files {
+          background-color: var(--main-500);
+        }
+
+        #dropfiles-toolbar {
+          position: inherit;
+          display: flex;
+        }
+
+        .dropfiles-search-file {
+
+          a.btn.dropfiles-btn-exit-search {
+              border: 1px solid var(--main-500);
+              background: var(--neutral-0);
+              color: var(--main-500);
+
+              &:hover, &:focus, &:active {
+                border: 1px solid var(--main-500);
+                background: var(--main-500);
+                color: var(--neutral-0);
+              }
+            }
+
+            #dropfiles_filter_catid:focus {
+              background-image: linear-gradient(45deg, var(--main-500) 50%, transparent 55%), linear-gradient(135deg, transparent 55%, var(--main-500) 50%), linear-gradient(to right, var(--main-500), var(--main-500));
+            }
+
+           a.dropfiles-btn-search {
+            border: 1px solid var(--main-500);
+            background: var(--main-500);
+            color: var(--neutral-0);
+
+            &:hover, &:focus, &:active {
+              border: 1px solid var(--main-500);
+              background: var(--neutral-0);
+              color: var(--main-500);
+            }
+          }
+        }
+      }
+
+      #rightcol {
+
+       .field-multiple-user-wrapper a {
+          top: 55%;
+        }
+
+        .field-user-wrapper a {
+          top: 20%;
+        }
+
+         select.dropfilesinput:not(.ju-multiselect):focus, .fileblock .ju-settings-option .paraminput select:focus {
+          background-image: linear-gradient(45deg, var(--main-500) 50%, transparent 55%), linear-gradient(135deg, transparent 55%, var(--main-500) 50%), linear-gradient(to right, var(--main-500), var(--main-500));
+        }
+
+        .fileblock .dropfilesparams .ju-settings-option.jform_hits .paraminput > button,
+        .fileblock .dropfilesparams .ju-settings-option.jform_file_direct_link .paraminput > button.copy-btn,
+         div#fileversion #upload_button_version{
+          border: 1px solid var(--main-500);
+          background-color: var(--neutral-0) !important;
+          color: var(--main-500);
+          &:hover, &:focus, &:active {
+            border: 1px solid var(--main-500);
+            background-color: var(--main-500) !important;
+            color: var(--neutral-0);
+
+          }
+        }
+
+        .dropfiles-save-submit {
+          width: fit-content !important;
+          border: 1px solid var(--main-500);
+          background-color: var(--main-500) !important;
+          color: var(--neutral-0);
+
+          &:hover, &:focus, &:active {
+            border: 1px solid var(--main-500);
+            background-color: var(--neutral-0) !important;
+            color: var(--main-500);
+          }
+        }
+      }
+    }
   }
 }
 
-.com_dropfiles.view-manage #mybootstrap #rightcol .dropfiles-save-submit {
-  font-size: 11px !important;
-  width: fit-content !important;
-}
 
 /** MODULE SINGLE CAMPAIGN **/
 
@@ -3591,6 +3774,7 @@ ul.unstyled.em-linkForgot li a {
     border-radius: 4px;
     width: 100%;
     overflow: auto;
+    cursor: auto;
 
     li.search-field {
       input[type="text"] {
@@ -4091,6 +4275,23 @@ div#em-appli-block {
     }
   }
 }
+
+  .view-list.task-list\.view {
+    .table.tabData thead, .table.tabData tbody.fabrik_groupdata {
+      border-width: 1px;
+    }
+
+    .fabrikFilterContainer .filtertable.table  {
+      .fabrik_row td select {
+        width: fit-content;
+      }
+
+      >tbody>tr>td:first-child {
+        padding-left: 0!important;
+        width: fit-content !important;
+      }
+    }
+  }
 
 
 /* ??? - menu déroulant */
@@ -4666,6 +4867,12 @@ div#em-appli-block {
 }
 
 /******************************* SWEET ALERT ***********************************/
+
+  .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled {
+    &:hover, &:active, &:focus {
+      border: none !important;
+    }
+  }
 
 .swal2-title {
   color: var(--neutral-900);

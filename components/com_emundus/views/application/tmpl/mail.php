@@ -30,6 +30,7 @@ JFactory::getSession()->set('application_layout', 'mail');
                     <?php foreach ($this->messages as $message) :?>
                         <div class='panel panel-default em-container-mail-content'>
                             <div class="panel-heading em-container-mail-content-heading"><h3><?= $message->subject; ?> <small> <?= JText::_('COM_EMUNDUS_EMAILS_MESSAGE_FROM').': '.JFactory::getUser($message->user_id_from)->name.' '.date('d/m/Y H:i:s', strtotime($message->date_time)); ?> </small></h3></div>
+                            <?php if (!empty($message->email_cc)): ?><div class="panel-body em-container-mail-content-body"><i><?= JText::_('COM_EMUNDUS_EMAIL_PEOPLE_CC').' '.$message->email_cc; ?></i></div><?php endif; ?>
                             <div class="panel-body em-container-mail-content-body">
                                 <?= $message->message; ?>
                             </div>

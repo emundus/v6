@@ -37,7 +37,7 @@ defined('_JEXEC') or die;
 
         var eventId = document.getElementById('em-book-interview').value,
             userId = <?php echo $user->id; ?>,
-            fnum = <?php echo $user->fnum; ?>;
+            fnum = <?php echo $fnum; ?>;
 
         var bookBtn = document.getElementById('btnBook');
 

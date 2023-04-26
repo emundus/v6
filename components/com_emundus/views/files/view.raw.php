@@ -331,7 +331,7 @@ class EmundusViewFiles extends JViewLegacy
 								if ($displayPhoto) {
 									$userObj->photo = $h_files->getPhotos($value);
 								}
-								$userObj->user = JFactory::getUser((int)substr($value, -7));
+                                $userObj->user = JFactory::getUser((int)$user['applicant_id']);
 								$userObj->user->name = $user['name'];
 								$line['fnum'] = $userObj;
 							} elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'applicant_id' || $key == 'campaign_id' || $key == 'unread_messages') {

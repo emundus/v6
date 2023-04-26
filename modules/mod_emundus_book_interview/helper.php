@@ -35,7 +35,7 @@ class modEmundusBookInterviewHelper {
 	 * @return mixed
 	 * @throws Exception
 	 */
-    public function getEvents($user) {
+    public function getEvents($user,$fnum) {
 
         $db = JFactory::getDbo();
         $offset = JFactory::getConfig()->get('offset');
@@ -53,7 +53,7 @@ class modEmundusBookInterviewHelper {
                 SELECT GROUP_CONCAT(id)
                 FROM jos_categories
                 WHERE extension LIKE \"com_dpcalendar\"
-                AND params LIKE '%\"program\":\"".$user->code."\"%'
+                AND params LIKE '%\"program\":\"".$user->fnums[$fnum]->training."\"%'
                 GROUP BY id
             )
             ORDER BY catid ASC";
@@ -92,9 +92,9 @@ class modEmundusBookInterviewHelper {
 
 	        // Get the timestamp for the event as well as maybe some other info?
             $query->select($db->qn(['dpe.id', 'start_date','cat.title']))
-            ->from($db->qn('#__dpcalendar_events','dpe'))
-            ->leftjoin($db->qn('#__categories','cat'). ' ON '. $db->qn('cat.id'). ' = '. $db->qn('dpe.catid'))
-            ->where($db->qn('booking_information').' LIKE '.$db->q($user->id));
+                ->from($db->qn('#__dpcalendar_events','dpe'))
+                ->leftjoin($db->qn('#__categories','cat'). ' ON '. $db->qn('cat.id'). ' = '. $db->qn('dpe.catid'))
+                ->where($db->qn('booking_information').' LIKE '.$db->q($user->id));
             $db->setQuery($query);
             return $db->loadObject();
 

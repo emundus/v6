@@ -319,7 +319,7 @@ class EmundusViewApplication extends JViewLegacy {
                         EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 37, 'r', 'COM_EMUNDUS_ACCESS_LOGS_READ');
 						$m_logs = new EmundusModelLogs();
 
-                        $fileLogs = $m_logs->getActionsOnFnum($fnum);
+                        $fileLogs = $m_logs->getActionsOnFnum($fnum, null, null, ["c", "u", "d"]);
 
                         foreach ($fileLogs as $key => $log) {
                             $log->timestamp = EmundusHelperDate::displayDate($log->timestamp);

@@ -122,37 +122,39 @@ switch ($order) {
         <?php if ($showcampaign) :?>
             <div class="col-md-12">
                 <?php
-                // Get number of files compared to limit if limit is enabled
-                if ($currentCampaign->is_limited == '1') {
-                    $db = JFactory::getDbo();
-                    $query = $db->getQuery(true);
+                if ($now < $currentCampaign->end_date) {
+                    // Get number of files compared to limit if limit is enabled
+                    if ($currentCampaign->is_limited == '1') {
+                        $db = JFactory::getDbo();
+                        $query = $db->getQuery(true);
 
-                    $query->clear()
-                        ->select($db->quoteName('limit_status'))
-                        ->from($db->quoteName('jos_emundus_setup_campaigns_repeat_limit_status'))
-                        ->where($db->quoteName('parent_id') . ' = ' . $db->quote($currentCampaign->id));
-                    $db->setQuery($query);
-                    $limit_status = $db->loadColumn();
-
-                    $query->clear()
-                        ->select($db->quoteName('limit'))
-                        ->from($db->quoteName('jos_emundus_setup_campaigns'))
-                        ->where($db->quoteName('id') . ' = ' . $db->quote($currentCampaign->id));
-                    $db->setQuery($query);
-                    $file_limit = $db->loadResult();
-
-                    $files_sent = 0;
-                    if (!empty($limit_status)) {
                         $query->clear()
-                            ->select('COUNT(id)')
-                            ->from($db->quoteName('jos_emundus_campaign_candidature'))
-                            ->where($db->quoteName('campaign_id') . ' = ' . $db->quote($currentCampaign->id))
-                            ->andWhere($db->quoteName('status') . ' IN (' . implode(',', $limit_status) . ')');
+                            ->select($db->quoteName('limit_status'))
+                            ->from($db->quoteName('jos_emundus_setup_campaigns_repeat_limit_status'))
+                            ->where($db->quoteName('parent_id') . ' = ' . $db->quote($currentCampaign->id));
                         $db->setQuery($query);
-                        $files_sent = $db->loadResult();
-                    }
+                        $limit_status = $db->loadColumn();
 
-                    echo '<div style="width:100%;display:flex;justify-content:center;"><p style="display:inline-block;padding:10px;border:1px solid red;border-radius:4px;font-weight:bold;color:red;">' . $files_sent . ' ' . JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_SENT_NUMBER') . ' ' . $file_limit . '</p></div>';
+                        $query->clear()
+                            ->select($db->quoteName('limit'))
+                            ->from($db->quoteName('jos_emundus_setup_campaigns'))
+                            ->where($db->quoteName('id') . ' = ' . $db->quote($currentCampaign->id));
+                        $db->setQuery($query);
+                        $file_limit = $db->loadResult();
+
+                        $files_sent = 0;
+                        if (!empty($limit_status)) {
+                            $query->clear()
+                                ->select('COUNT(id)')
+                                ->from($db->quoteName('jos_emundus_campaign_candidature'))
+                                ->where($db->quoteName('campaign_id') . ' = ' . $db->quote($currentCampaign->id))
+                                ->andWhere($db->quoteName('status') . ' IN (' . implode(',', $limit_status) . ')');
+                            $db->setQuery($query);
+                            $files_sent = $db->loadResult();
+                        }
+
+                        echo '<div style="width:100%;display:flex;justify-content:center;"><p style="display:inline-block;padding:10px;border:1px solid red;border-radius:4px;font-weight:bold;color:red;">' . $files_sent . ' ' . JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_SENT_NUMBER') . ' ' . $file_limit . '</p></div>';
+                    }
                 }
                 ?>
                 <span><?php echo $currentCampaign->description ?></span>

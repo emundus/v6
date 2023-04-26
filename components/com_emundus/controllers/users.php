@@ -101,8 +101,11 @@ class EmundusControllerUsers extends JControllerLegacy {
 			$password = $h_users->generateStrongPassword();
 			$user->password = md5($password);
 		}
-		$user->registerDate = date('Y-m-d H:i:s');
-		$user->lastvisitDate = date('Y-m-d H:i:s');
+        $now = new DateTime();
+        $now->setTimezone(new DateTimeZone('UTC'));
+        $now = $now->format('Y-m-d H:i:s');
+        $user->registerDate = $now;
+        $user->lastvisitDate = null;
 		$user->groups = array($jgr);
 		$user->block = 0;
 
@@ -842,6 +845,15 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		$m_users = new EmundusModelUsers();
 		$res = $m_users->setGroupRight($id, $action, $value);
+
+        try {
+            require_once (JPATH_ROOT . '/administrator/components/com_emundus/helpers/update.php');
+            EmundusHelperUpdate::clearJoomlaCache('mod_menu');
+        } catch (Exception $e) {
+            JLog::add('Cannot clear cache : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+
+
 
 		echo json_encode((object)array('status' => $res, 'msg' => $msg));
 		exit;

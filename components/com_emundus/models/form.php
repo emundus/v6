@@ -1197,7 +1197,7 @@ class EmundusModelForm extends JModelList {
             ->from($db->quoteName('#__emundus_setup_attachments','a'))
             ->join('LEFT', $db->quoteName('#__emundus_setup_attachment_profiles', 'b') . ' ON ' . $db->quoteName('b.attachment_id') . ' = ' . $db->quoteName('a.id'))
             ->where($db->quoteName('a.published') . ' = ' . 1)
-            ->order($db->quoteName('ordering'));
+            ->order($db->quoteName('a.value'));
 
         $db->setQuery($query);
 

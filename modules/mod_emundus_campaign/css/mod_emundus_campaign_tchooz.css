@@ -3,6 +3,14 @@
    background: transparent;
 }
 
+.mod_emundus_campaign__list_content_head.blue {
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+}
+
 .mod_emundus_campaign__intro{
     width: 66%;
     max-width: 750px;
@@ -110,7 +118,7 @@
     box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
     border-radius: 16px !important;
     padding: 24px;
-    height: 330px;
+    height: 345px;
     background: #fff;
 }
 
@@ -131,7 +139,7 @@
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     max-height: 100px;
-    min-height: 76px;
+    min-height: 60px;
     line-height: 160%;
     font-family: var(--applicant-default-font);
     color: var(--em-applicant-text-color);
@@ -428,6 +436,14 @@ a.em-blue-400-color:hover {
     }
 }
 @media (max-width: 768px) {
+    .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content {
+        height: 360px;
+    }
+
+    .mod_emundus_campaign__list_content{
+        height: 380px;
+    }
+
     .mod_emundus_campaign__list_items {
         grid-template-columns: repeat(1, 1fr);
     }
