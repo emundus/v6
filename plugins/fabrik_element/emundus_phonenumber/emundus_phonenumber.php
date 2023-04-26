@@ -320,4 +320,23 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
         }
         return $isValid;
     }
+
+    /**
+     * Returns javascript which creates an instance of the class defined in formJavascriptClass()
+     *
+     * @param   int  $repeatCounter  Repeat group counter
+     *
+     * @return  array
+     */
+    public function elementJavascript($repeatCounter)
+    {
+        $params = $this->getParams();
+
+        $id = $this->getHTMLId($repeatCounter);
+
+        $opts = $this->getElementJSOptions($repeatCounter);
+        $opts->countrySelected = $params->get("pays");
+
+        return array('FbPhoneNumber', $id, $opts);
+    }
 }
