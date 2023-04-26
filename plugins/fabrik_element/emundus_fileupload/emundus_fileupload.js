@@ -14,6 +14,7 @@
  */
 function watch(elementId, attachId) {
     var myFormData = new FormData();
+    var divCtrlGroup = document.querySelector('div.fb_el_'+elementId);
     var div = document.querySelector('div#div_'+elementId);
     var fnum = document.querySelector('input#'+elementId.split('___')[0]+'___fnum').value;
     myFormData.append('attachId', attachId);
@@ -39,9 +40,11 @@ function watch(elementId, attachId) {
                     if (result.limitObtained) {
                         div.querySelector('div .btn-upload').hide();
                         div.querySelector('input#'+elementId).hide();
+                        divCtrlGroup.querySelector('.control-label').style.cursor = 'default';
                     } else {
                         div.querySelector('div .btn-upload').show();
                         div.querySelector('input#'+elementId).show();
+                        divCtrlGroup.querySelector('.control-label').style.cursor = 'pointer';
                     }
 
                     if (result.files) {
