@@ -79,4 +79,14 @@ class EmundusHelperCache
 
 		return $stored;
 	}
+
+	public function clean() {
+		$cleaned = false;
+
+		if ($this->isEnabled()) {
+			$cleaned = $this->cache->__call('clean', array($this->group));
+		}
+
+		return $cleaned;
+	}
 }
