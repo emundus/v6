@@ -420,7 +420,7 @@ var FbFileUpload = {
 
                         file.parentElement.parentElement.remove();
 
-                        var attachmentList = document.querySelectorAll('.em-fileAttachment-link').length;
+                        var attachmentList = div_parent.querySelectorAll('.em-fileAttachment-link').length;
                         if (attachmentList === 0) {
                             document.querySelector('div#'+elementId+'_attachment > .em-fileAttachmentTitle').remove();
                         }
