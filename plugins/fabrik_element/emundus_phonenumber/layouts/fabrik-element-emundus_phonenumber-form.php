@@ -8,9 +8,9 @@ $doc->addScript(JURI::root() . "plugins/fabrik_element/emundus_phonenumber/asset
 $doc->addScript(JURI::root() . "plugins/fabrik_element/emundus_phonenumber/assets/js/emundus_phonenumber_ValidatorJS.js");
 ?>
 
-<div id="div_<?php echo $displayData->attributes['name']; ?>" class="em-flex-row">
+<div id="<?php echo $displayData->attributes['id']; ?>" class="em-flex-row fabrikSubElementContainer">
 
-	<select id="div_emundus_select_phone_code" class="input-small fabrikinput inputbox"
+	<select class="input-small form-control fabrikinput input inputbox"
 			data-countries="<?php echo base64_encode(json_encode($displayData->dataSelect)); // encode base64?>"
 	>
 
@@ -22,7 +22,6 @@ $doc->addScript(JURI::root() . "plugins/fabrik_element/emundus_phonenumber/asset
 
 	</select>
 
-	<input id="div_emundus_phone" class="input-medium fabrikinput inputbox text"
-		   name="<?php echo $displayData->attributes['name']; ?>"
+	<input class="input-medium fabrikinput inputbox text"
 	>
 </div>
