@@ -21,7 +21,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 
         cloned: function (c)
         {
-            this.options.countrySelected = this.ValidatorJS.indiceCountry;
+            this.options.countrySelected = 0;
 
             this.initValidatorJS();
             this.parent(c);
