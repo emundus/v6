@@ -373,23 +373,24 @@ class EmundusControllerCampaign extends JControllerLegacy {
      * @since version 1.0
      */
     public function getcampaignbyid() {
+        $response = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'), 'data' => null, 'display_reccurence' => false);
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $jinput = JFactory::getApplication()->input;
             $id = $jinput->getInt('id');
 
             $campaign = $this->m_campaign->getCampaignDetailsById($id);
 
             if (!empty($campaign)) {
-                $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_RETRIEVED'), 'data' => $campaign);
+                $emConfig = JComponentHelper::getParams('com_emundus');
+                $display_reccurence = $emConfig->get('display_campaign_reccurrence', false);
+                $response = array('status' => 1, 'msg' => JText::_('CAMPAIGN_RETRIEVED'), 'data' => $campaign, 'display_reccurence' => $display_reccurence);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_CAMPAIGN'), 'data' => $campaign);
+                $response['msg'] = JText::_('ERROR_CANNOT_RETRIEVE_CAMPAIGN');
+                $response['data'] = $campaign;
             }
         }
-        echo json_encode((object)$tab);
+        echo json_encode((object)$response);
         exit;
     }
 

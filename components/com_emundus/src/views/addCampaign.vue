@@ -204,7 +204,7 @@
 
         <hr/>
 
-	      <section id="recurrent-settings" class="em-mt-32">
+	      <section v-if="displayReccurence" id="recurrent-settings" class="em-mt-32">
 		      <div class="em-mb-16">
 			      <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RECURRING_PARAMETERS') }}</h2>
 		      </div>
@@ -304,6 +304,7 @@ export default {
     old_program_form: "",
     editorKey: 0,
     editorResumeKey: 0,
+	  displayReccurence: false,
 
     form: {
       label: {},
@@ -403,9 +404,13 @@ export default {
         axios.get(`index.php?option=com_emundus&controller=campaign&task=getcampaignbyid&id=${this.campaignId}`).then(response => {
           let label = response.data.data.campaign.label;
 
-					if (response.data.data.campaign.params !== null) {
+					this.displayReccurence = response.data.display_reccurence;
+					if (response.data.data.campaign.params !== null && typeof response.data.data.campaign.params != 'undefined') {
 						response.data.data.campaign.params = JSON.parse(response.data.data.campaign.params);
+					} else {
+						response.data.data.campaign.params = {is_recurring: 0, recurring_delay: 0}
 					}
+
           this.form = response.data.data.campaign;
           this.$emit('getInformations',this.form);
           this.programForm = response.data.data.program;

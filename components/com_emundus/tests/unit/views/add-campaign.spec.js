@@ -44,8 +44,12 @@ describe('addCampaign.vue, impossible to submit campaign data if missing require
     });
 
     wrapper.vm.ready = true;
-    it('Recurrent settings should exists', () => {
-        expect(wrapper.find('#recurrent-settings').exists()).toBeTruthy();
+    it('displayReccurence should be false by default', () => {
+        expect(wrapper.vm.displayReccurence).toBe(false);
+    });
+
+    it('Recurrent settings should not exists', () => {
+        expect(wrapper.find('#recurrent-settings').exists()).toBeFalsy();
     });
 
     it('Is recurrent should be false by default', () => {
@@ -61,7 +65,7 @@ describe('addCampaign.vue, impossible to submit campaign data if missing require
     });
 });
 
-describe('addCampaign.vue, reccurent settings', () => {
+describe('addCampaign.vue, reccurence enabled', () => {
     const wrapper = mount(addCampaign, {
         propsData: {campaign: 0},
         localVue,
@@ -70,6 +74,11 @@ describe('addCampaign.vue, reccurent settings', () => {
     wrapper.vm.ready = true;
     wrapper.vm.actualLanguage = 'fr';
     wrapper.vm.form.params.is_recurring = 1;
+    wrapper.vm.displayReccurence = true;
+
+    it('Recurrent settings should exists', () => {
+        expect(wrapper.find('#recurrent-settings').exists()).toBeTruthy();
+    });
 
     it('Recurring delay should be visible if is_recurring is true', () => {
         expect(wrapper.find('#recurring-delay').exists()).toBeTruthy();

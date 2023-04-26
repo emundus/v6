@@ -61,11 +61,6 @@
 			<option value="1">JYES</option>
 		</field>
 
-		<field name="allow_pinned_campaign" label="COM_EMUNDUS_ALLOW_PINNED_CAMPAIGN" type="list" default="0" description="">
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
-		</field>
-
 		<field
 				name="spacer0"
 				type="spacer"
@@ -85,6 +80,20 @@
 			<option value="1">JYES</option>
 		</field>
 		<field name="forgotten_password_link" type="text" default="" label="COM_EMUNDUS_LOGIN_FORGOTTEN_PASSWORD_LINK"></field>
+
+		<field name="spacer1" type="spacer" hr="true"/>
+		<field name="campaigns" label="Campagnes" type="note" default="0" description=""></field>
+
+		<field name="allow_pinned_campaign" label="COM_EMUNDUS_ALLOW_PINNED_CAMPAIGN" type="list" default="0" description="">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
+		<field name="display_campaign_reccurrence" label="COM_EMUNDUS_DISPLAY_RECURRENCE_SETTINGS" type="list" default="0" description="">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_EVALUATORS" name="evaluators" description="COM_EMUNDUS_EVALUATORS_DESC">
 		<field name="multi_eval" type="radio" default="0" label="ALLOW_MULTIPLE_EVALUATIONS" description="ALLOW_MULTIPLE_EVALUATIONS_DESC">
