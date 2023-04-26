@@ -176,6 +176,10 @@ export default {
 		Skeleton
 	},
 	props: {
+		defaultLists: {
+			type: String,
+			default: null
+		},
 		defaultType: {
 			type: String,
 			default: null
@@ -226,20 +230,12 @@ export default {
 			this.numberOfItemsToDisplay = parseInt(storageNbItemsDisplay);
 		}
 
-		if (this.params.hasOwnProperty('reload')) {
-			localStorage.removeItem('tchooz_lists/' + document.location.hostname + '/' + new Date().toISOString().slice(0, 10));
-		}
-
 		this.initList();
 	},
 	methods: {
 		initList() {
-			const today = new Date().toISOString().slice(0, 10);
-			let lists = localStorage.getItem('tchooz_lists/' + document.location.hostname + '/' + today);
-
-			if (lists !== null) {
-				lists = atob(lists);
-				this.lists = JSON.parse(lists);
+			if (this.defaultLists !== null) {
+				this.lists = JSON.parse(atob(this.defaultLists));
 				if (typeof this.lists[this.type] === 'undefined') {
 					console.error('List type ' + this.type + ' does not exist');
 					window.location.href = '/';
@@ -262,8 +258,6 @@ export default {
 			settingsService.getOnboardingLists().then(response => {
 				if (response.data.status) {
 					this.lists = response.data.data;
-					const today = new Date().toISOString().slice(0, 10);
-					localStorage.setItem('tchooz_lists/' + document.location.hostname + '/' + today, btoa(JSON.stringify(this.lists)));
 
 					if (typeof this.lists[this.type] === 'undefined') {
 						console.error('List type ' + this.type + ' does not exist');
@@ -282,7 +276,7 @@ export default {
 					this.getListItems();
 				} else {
 					console.error('Error while getting onboarding lists');
-					window.location.href = '/';
+					//window.location.href = '/';
 					this.loading.lists = false;
 				}
 			});

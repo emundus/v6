@@ -1219,48 +1219,64 @@ class EmundusModelsettings extends JModelList {
 	function getOnboardingLists() {
 		$lists = [];
 
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
-		$query->select('`default`, value')
-			->from($db->quoteName('#__emundus_setup_config'))
-			->where($db->quoteName('namekey') . ' = ' . $db->quote('onboarding_lists'));
+		$group = 'com_emundus';
+		$cache_id = 'onboarding_lists';
+		$cache_data = null;
 
-		try {
-			$db->setQuery($query);
+		require_once (JPATH_ROOT .'/components/com_emundus/helpers/cache.php');
+		$h_cache = new EmundusHelperCache('com_emundus', '', 86400, 'component');
+		if ($h_cache->isEnabled()) {
+			$cache_data = $h_cache->get($cache_id);
+		}
 
-			$data = $db->loadObject();
+		if (empty($cache_data)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query->select('`default`, value')
+				->from($db->quoteName('#__emundus_setup_config'))
+				->where($db->quoteName('namekey') . ' = ' . $db->quote('onboarding_lists'));
 
-			if (!empty($data)) {
-				if (!empty($data->value)) {
-					$lists = json_decode($data->value, true);
-				} else {
-					$lists = json_decode($data->default, true);
-				}
+			try {
+				$db->setQuery($query);
 
-				foreach($lists as $lk => $list) {
-					$list['title'] = JText::_($list['title']);
-
-					foreach($list['tabs'] as $tk => $tab) {
-						$tab['title'] = JText::_($tab['title']);
-
-						foreach($tab['actions'] as $ak => $action) {
-							$action['label'] = JText::_($action['label']);
-							$tab['actions'][$ak] = $action;
-						}
-
-						foreach($tab['filters'] as $fk => $filter) {
-							$filter['label'] = JText::_($filter['label']);
-							$tab['filters'][$fk] = $filter;
-						}
-
-						$list['tabs'][$tk] = $tab;
+				$data = $db->loadObject();
+				if (!empty($data)) {
+					if (!empty($data->value)) {
+						$lists = json_decode($data->value, true);
+					} else {
+						$lists = json_decode($data->default, true);
 					}
 
-					$lists[$lk] = $list;
+					foreach($lists as $lk => $list) {
+						$list['title'] = JText::_($list['title']);
+
+						foreach($list['tabs'] as $tk => $tab) {
+							$tab['title'] = JText::_($tab['title']);
+
+							foreach($tab['actions'] as $ak => $action) {
+								$action['label'] = JText::_($action['label']);
+								$tab['actions'][$ak] = $action;
+							}
+
+							foreach($tab['filters'] as $fk => $filter) {
+								$filter['label'] = JText::_($filter['label']);
+								$tab['filters'][$fk] = $filter;
+							}
+
+							$list['tabs'][$tk] = $tab;
+						}
+
+						$lists[$lk] = $list;
+					}
+					if ($h_cache->isEnabled()) {
+						$h_cache->set($cache_id, $lists);
+					}
 				}
+			} catch (Exception $e) {
+				JLog::add('Error getting onboarding lists in model at query : '. $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 			}
-		} catch (Exception $e) {
-			JLog::add('Error getting onboarding lists in model at query : '. $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		} else {
+			$lists = $cache_data;
 		}
 
 		return $lists;
