@@ -1,28 +1,41 @@
 
-const select = document.getElementById("div_emundus_select_phone_code");
-const input = document.getElementById("div_emundus_phone");
-const allCountry = JSON.parse(atob(select.getAttribute("data-countries"))); // décode base64 + récupération du JSON sous format d'array
-
-
-const js = new ValidatorJS(input, select, allCountry, 0);
 
 const allColor =  getComputedStyle(document.querySelector(':root'));
 const errorColor = allColor.getPropertyValue("--red-600");
 const validColor = allColor.getPropertyValue("--secondary-main-400");
 const defaultColor = allColor.getPropertyValue("--neutral-900");
 const unsupportedColor = allColor.getPropertyValue("--orange-400")
-js.setColors(validColor, errorColor, unsupportedColor, defaultColor);
 
-//const lib = libphonenumber;
+define(['jquery', 'fab/element'], function (jQuery, FbElement) {
+    window.FbPhoneNumber = new Class({
+        Extends: FbElement,
 
-//const lib2 = lib.isPossibleNumber("oui");
+        initialize: function (element, options)
+        {
+            this.setPlugin('emundus_phonenumber');
+            this.parent(element, options);
 
-//const number = libphonenumber.parsePhoneNumber("46771093", 'FR').format("E.164");
-//console.log(number);
-//console.log(libphonenumber.isValidNumber(number));
+            this.options.countrySelected = parseInt(this.options.countrySelected) - 1;
+            this.initValidatorJS();
+        },
 
-//console.log(number.metadata);
-//console.log(number.format("E.164"));
+        cloned: function (c)
+        {
+            this.options.countrySelected = this.ValidatorJS.indiceCountry;
 
+            this.initValidatorJS();
+            this.parent(c);
+        },
 
-//console.log(lib2);
+        initValidatorJS: function ()
+        {
+            const select = this.element.getElement("select");
+            const input = this.element.getElement("input");
+            const allCountry = JSON.parse(atob(select.getAttribute("data-countries"))); // decode base64 + get JSON to array type
+
+            !isNaN(this.options.countrySelected) ? this.ValidatorJS = new ValidatorJS(input, select, allCountry, this.options.countrySelected) : this.ValidatorJS = new ValidatorJS(input, select, allCountry);
+            this.ValidatorJS.setColors(validColor, errorColor, unsupportedColor, defaultColor);
+        }
+    });
+    return window.FbPhoneNumber;
+});

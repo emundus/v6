@@ -2,7 +2,7 @@
 
 class ValidatorJS {
 
-    constructor(initInput, initSelect, initAllCountry, initIndiceCountry)
+    constructor(initInput, initSelect, initAllCountry, initIndiceCountry = 0)
     {
         this.input = initInput;
         this.select = initSelect;
@@ -78,7 +78,8 @@ class ValidatorJS {
 
     newCountry(id)
     {
-        this.countrySelected = this.allCountry[id];
+        this.indiceCountry = id;
+        this.countrySelected = this.allCountry[this.indiceCountry];
 
         try
         {
