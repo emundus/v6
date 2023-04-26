@@ -41,6 +41,8 @@ class EmundusModelSettingsTest extends TestCase
     {
         parent::__construct($name, $data, $dataName);
         $this->m_settings = new EmundusModelsettings;
+	    $config = JFactory::getConfig();
+	    $config->set('cache_handler', 'file');
     }
 
 	public function testFoo()

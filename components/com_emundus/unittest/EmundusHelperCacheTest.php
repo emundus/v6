@@ -37,6 +37,8 @@ class EmundusHelperCacheTest extends TestCase
 	{
 		$foo = true;
 		$this->assertSame(true, $foo);
+		$config = JFactory::getConfig();
+		$config->set('cache_handler', 'file');
 	}
 
 	/**
@@ -49,19 +51,19 @@ class EmundusHelperCacheTest extends TestCase
 		$config->set('caching', 0);
 
 		$this->h_cache = new EmundusHelperCache();
-		$this->assertSame(false, $this->h_cache->isEnabled());
+		$this->assertSame(false, $this->h_cache->isEnabled(), 'When cache is disabled, isEnabled() should return false');
 
 		$config->set('caching', 1);
 		$this->h_cache = new EmundusHelperCache();
-		$this->assertSame(true, $this->h_cache->isEnabled());
+		$this->assertSame(true, $this->h_cache->isEnabled(), 'When cache is enabled, isEnabled() should return true');
 
 		// cache isEnabled should be false if context is not component and cache is only conservative
 		$this->h_cache = new EmundusHelperCache('mod_emundus_testunit', '', 0, 'module');
-		$this->assertSame(false, $this->h_cache->isEnabled());
+		$this->assertSame(false, $this->h_cache->isEnabled(), 'When cache is conservative, isEnabled() should return false if context is not component');
 
 		$config->set('caching', 2); // cache is now progressive
 		$this->h_cache = new EmundusHelperCache('mod_emundus_testunit', '', 0, 'module');
-		$this->assertSame(true, $this->h_cache->isEnabled());
+		$this->assertSame(true, $this->h_cache->isEnabled(), 'When cache is progressive, isEnabled() should return true even if context is not component');
 	}
 
 	/**
@@ -73,15 +75,15 @@ class EmundusHelperCacheTest extends TestCase
 		$config->set('caching', 0);
 
 		$this->h_cache = new EmundusHelperCache();
-		$this->assertSame(null, $this->h_cache->get('foo'));
+		$this->assertSame(null, $this->h_cache->get('foo'), 'When cache is disabled, get() should return null');
 
 		$config->set('caching', 1);
 		$this->h_cache = new EmundusHelperCache();
 		$this->h_cache->clean();
-		$this->assertSame(false, $this->h_cache->get('foo'));
+		$this->assertSame(false, $this->h_cache->get('foo'), 'When cache is enabled, get() should return false if key is not set');
 
 		$this->h_cache->set('foo', 'bar');
-		$this->assertSame('bar', $this->h_cache->get('foo'));
+		$this->assertSame('bar', $this->h_cache->get('foo'), 'When cache is enabled, get() should return value if key is set');
 	}
 
 	/**
@@ -93,12 +95,12 @@ class EmundusHelperCacheTest extends TestCase
 		$config->set('caching', 0);
 
 		$this->h_cache = new EmundusHelperCache();
-		$this->assertSame(false, $this->h_cache->set('foo', 'bar'));
+		$this->assertSame(false, $this->h_cache->set('foo', 'bar'), 'When cache is disabled, set() should return false');
 
 		$config->set('caching', 1);
 		$this->h_cache = new EmundusHelperCache();
-		$this->assertSame(true, $this->h_cache->set('foo', 'bar'));
-		$this->assertSame('bar', $this->h_cache->get('foo'));
+		$this->assertSame(true, $this->h_cache->set('foo', 'bar'), 'When cache is enabled, set() should return true');
+		$this->assertSame('bar', $this->h_cache->get('foo'), 'When cache is enabled, set() should set value for key');
 	}
 
 	/**
@@ -114,6 +116,6 @@ class EmundusHelperCacheTest extends TestCase
 		$this->assertSame('bar', $this->h_cache->get('foo'));
 
 		$this->h_cache->clean();
-		$this->assertSame(false, $this->h_cache->get('foo'));
+		$this->assertSame(false, $this->h_cache->get('foo'), 'clean() should remove all keys');
 	}
 }
