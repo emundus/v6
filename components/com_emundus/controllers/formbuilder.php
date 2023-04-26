@@ -1127,7 +1127,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 		 $user = JFactory::getUser();
 		 $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
-		 if (EmundusHelperAccess::PartnerAccessLevel($user->id)) {
+		 if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 			 $models = $this->m_formbuilder->getPagesModel();
 			 $response['status'] = true;
 			 $response['data'] = ['datas' => $models, 'count' => count($models)];
