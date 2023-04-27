@@ -154,11 +154,11 @@
             >
               <option value="">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG') }}</option>
               <option
-                  v-for="(item, index) in this.programs"
+                  v-for="(item, index) in programs"
                   v-bind:value="item.code"
                   v-bind:data-category="item.programmes"
                   :key="index">
-                {{ item.label }}
+                {{ item.label && item.label[actualLanguage] !== null && typeof item.label[actualLanguage] != 'undefined' ? item.label[actualLanguage] : item.label }}
               </option>
             </select>
             <button v-if="coordinatorAccess != 0" :title="translate('COM_EMUNDUS_ONBOARD_ADDPROGRAM')" type="button" id="add-program" class="em-ml-8 em-transparent-button" @click="displayProgram">
@@ -416,10 +416,11 @@ export default {
       this.getAllPrograms();
     },
     getAllPrograms() {
-      axios.get("index.php?option=com_emundus&controller=programme&task=getallprogram")
+      axios.get('index.php?option=com_emundus&controller=programme&task=getallprogram')
           .then(response => {
-	          if (response.data.status > 0) {
-		          this.programs = response.data.data;
+
+	          if (response.data.status) {
+		          this.programs = response.data.data.datas;
 		          if(Object.keys(this.programs).length !== 0) {
 			          this.programs.sort((a, b) => a.id - b.id);
 		          }
@@ -432,7 +433,7 @@ export default {
       this.getYears();
     },
     getYears() {
-      axios.get("index.php?option=com_emundus&controller=campaign&task=getyears")
+      axios.get('index.php?option=com_emundus&controller=campaign&task=getyears')
         .then(response => {
           this.years = response.data.data;
 
