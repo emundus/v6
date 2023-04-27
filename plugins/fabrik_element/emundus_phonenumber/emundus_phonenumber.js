@@ -3,7 +3,7 @@
 const allColor =  getComputedStyle(document.querySelector(':root'));
 const errorColor = allColor.getPropertyValue("--red-600");
 const validColor = allColor.getPropertyValue("--secondary-main-400");
-const defaultColor = allColor.getPropertyValue("--neutral-900");
+const defaultColor = allColor.getPropertyValue("--neutral-400");
 const unsupportedColor = allColor.getPropertyValue("--orange-400")
 
 define(['jquery', 'fab/element'], function (jQuery, FbElement) {
