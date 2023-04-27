@@ -13,7 +13,7 @@ if (!empty($user) && EmundusHelperAccess::asAccessAction(1, 'r', $user->id)) {
 			require_once JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFiltersFiles.php';
 
 			try {
-				$m_filters = new EmundusFiltersFiles();
+				$m_filters = new EmundusFiltersFiles($params->toArray());
 			} catch (Exception $e) {
 				$app->enqueueMessage($e->getMessage());
 				$app->redirect('/');

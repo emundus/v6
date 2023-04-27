@@ -37,7 +37,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 				</div>
 
 				<div class="panel-body em-containerFilter-body">
-					<?php echo JHtml::_('content.prepare', '{loadposition filter}'); ?>
+					<?php echo JHtml::_('content.prepare', '{loadposition emundus_filters}'); ?>
 				</div>
 			</div>
 

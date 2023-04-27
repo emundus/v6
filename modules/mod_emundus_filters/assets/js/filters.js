@@ -1,3 +1,114 @@
+class MultiSelectFilter {
+    filterUid = null;
+    filterId = null;
+    options = [];
+    operators = [
+        {
+            value: '=',
+            label: 'is'
+        },
+        {
+            value: '!=',
+            label: 'is not'
+        },
+        {
+            value: 'LIKE',
+            label: 'contains'
+        },
+        {
+            value: 'NOT LIKE',
+            label: 'does not contain'
+        }
+    ];
+    andOrOperators = [
+        {
+            value: 'AND',
+            label: 'and'
+        },
+        {
+            value: 'OR',
+            label: 'or'
+        }
+    ];
+
+    selectedValues = [];
+    selectedOperator = this.operators[0].value;
+
+    constructor(filterContainer) {
+        const select = filterContainer.querySelector('select');
+        this.filterUid = Number(select.dataset.filterUid);
+        this.filterId = select.dataset.filterId;
+
+        select.querySelectorAll('option').forEach((option) => {
+            this.options.push({
+                value: option.value,
+                label: option.innerText
+            });
+        });
+
+        select.multiple = true;
+        //select.classList.add('hidden');
+
+        let filterRecap = document.createElement('div');
+        filterRecap.classList.add('filter-recap');
+        filterRecap.classList.add('em-w-100');
+        filterRecap.classList.add('em-border');
+        filterContainer.appendChild(filterRecap);
+
+        let filterModal = document.createElement('div');
+        filterModal.classList.add('filter-modal');
+        filterModal.classList.add('hidden');
+
+        let listOperators = document.createElement('ul');
+        listOperators.classList.add('filter-operators');
+
+        this.operators.forEach((operator) => {
+            const listItem = document.createElement('li');
+            listItem.classList.add('filter-operator');
+            listItem.classList.add('em-pointer');
+            listItem.dataset.value = operator.value;
+            listItem.innerText = operator.label;
+            listOperators.appendChild(listItem);
+        });
+
+        filterModal.appendChild(listOperators);
+
+        let andOrOperators = document.createElement('ul');
+        andOrOperators.classList.add('filter-andor-operators');
+        this.andOrOperators.forEach((operator) => {
+            const listItem = document.createElement('li');
+            listItem.classList.add('filter-operator');
+            listItem.classList.add('em-pointer');
+            listItem.dataset.value = operator.value;
+            listItem.innerText = operator.label;
+            andOrOperators.appendChild(listItem);
+        });
+
+        filterModal.appendChild(andOrOperators);
+
+        const hr = document.createElement('hr');
+        filterModal.appendChild(hr);
+
+        let listOptions = document.createElement('ul');
+        listOptions.classList.add('filter-options');
+        listOptions.classList.add('em-w-100');
+
+        this.options.forEach((option) => {
+            const listItem = document.createElement('li');
+            listItem.classList.add('filter-option');
+            listItem.classList.add('em-w-100');
+            listItem.classList.add('em-pointer');
+            listItem.dataset.value = option.value;
+            listItem.innerText = option.label;
+
+            listOptions.appendChild(listItem);
+        });
+
+        filterModal.appendChild(listOptions);
+        filterContainer.appendChild(filterModal);
+    }
+}
+
 const appliedFiltersSection = document.getElementById('applied-filters');
 const filtersSelectWrapper = document.querySelector('#filters-selection-wrapper');
 const filtersSelect = document.getElementById('filters-selection');
@@ -15,6 +126,8 @@ function initFilters(){
         };
 
         filters.push(filter);
+
+        new MultiSelectFilter(filterContainer);
     });
 }
 
@@ -106,6 +219,8 @@ function createFilter(filter) {
     }
 
     appliedFiltersSection.appendChild(filterContainer);
+
+    new MultiSelectFilter(filterContainer);
 }
 
 function removeFilter(e) {

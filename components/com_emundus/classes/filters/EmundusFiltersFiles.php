@@ -17,6 +17,7 @@ class EmundusFiltersFiles extends EmundusFilters
 
 		$this->setProfiles();
 		$this->setFilters();
+		$this->setDefaultFilters($config);
 
 		$session_filters = JFactory::getSession()->get('em-applied-filters', null);
 		if (!empty($session_filters)) {
@@ -115,7 +116,7 @@ class EmundusFiltersFiles extends EmundusFilters
 					$elements = $db->loadAssocList();
 
 					foreach ($elements as $key => $element) {
-						$elements[$key][label] = JText::_($element[label]) . ' (' . $element[form_id] . ')';
+						$elements[$key]['label'] = JText::_($element['label']) . ' (' . $element['form_id'] . ')';
 					}
 				} catch (Exception $e) {
 					JLog::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
@@ -124,5 +125,69 @@ class EmundusFiltersFiles extends EmundusFilters
 		}
 
 		return $elements;
+	}
+
+	private function setDefaultFilters($config) {
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		if ($config['filter_status']) {
+			$query->select('id, step, value')
+				->from('#__emundus_setup_status');
+
+			$db->setQuery($query);
+			$statuses = $db->loadObjectList();
+
+			$values = [];
+			foreach($statuses as $status) {
+				$values[] = [
+					'value' => $status->step,
+					'label' => $status->value
+				];
+			}
+
+			$this->applied_filters[] = [
+				'id' => 'status',
+				'label' => JText::_('COM_EMUNDUS_FILTERS_STATUS'),
+				'type' => 'select',
+				'values' => $values,
+				'value' => ''
+			];
+		}
+
+		if ($config['filter_campaign']) {
+			$query->clear()
+				->select('id as value, label')
+				->from('#__emundus_setup_campaigns')
+				->where('published = 1');
+
+			$db->setQuery($query);
+			$campaigns = $db->loadAssocList();
+
+			$this->applied_filters[] = [
+				'id' => 'campaigns',
+				'label' => JText::_('COM_EMUNDUS_FILTERS_CAMPAIGNS'),
+				'type' => 'select',
+				'values' => $campaigns,
+				'value' => ''
+			];
+		}
+
+		if ($config['filter_tags']) {
+			$query->clear()
+				->select('id as value, label')
+				->from('#__emundus_setup_action_tag');
+
+			$db->setQuery($query);
+			$tags = $db->loadAssocList();
+
+			$this->applied_filters[] = [
+				'id' => 'tags',
+				'label' => JText::_('COM_EMUNDUS_FILTERS_TAG'),
+				'type' => 'select',
+				'values' => $tags,
+				'value' => ''
+			];
+		}
 	}
 }
