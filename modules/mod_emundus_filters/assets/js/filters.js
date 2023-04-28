@@ -9,7 +9,9 @@ class MultiSelectFilter {
         { value: '=', label: 'is'},
         { value: '!=', label: 'is not'},
         { value: 'LIKE', label: 'contains'},
-        { value: 'NOT LIKE', label: 'does not contain'}
+        { value: 'NOT LIKE', label: 'does not contain'},
+        { value: 'IN', label: 'is one of'},
+        { value: 'NOT IN', label: 'is not one of'}
     ];
     andOrOperators = [
         { value: 'AND', label: 'and'},
@@ -66,6 +68,52 @@ class MultiSelectFilter {
             filterOptions.appendChild(optionContainer);
         });
 
+        const filterOperators = filterSampleContainerCopy.querySelector('.filter-operators');
+        this.operators.forEach((operator) => {
+            let operatorSpan = document.createElement('span');
+            operatorSpan.innerText = operator.label;
+            operatorSpan.dataset.operator = operator.value;
+            operatorSpan.classList.add('filter-operator');
+            operatorSpan.classList.add('em-mb-8');
+            operatorSpan.classList.add('label');
+
+            if (operator.value === this.selectedOperator) {
+                operatorSpan.classList.add('label-default');
+            } else {
+                operatorSpan.classList.add('label-darkblue');
+                operatorSpan.classList.add('em-pointer');
+            }
+
+            operatorSpan.addEventListener('click', (e) => {
+                this.onChangeOperator(e);
+            });
+
+            filterOperators.appendChild(operatorSpan);
+        });
+
+        const filterAndOrOperators = filterSampleContainerCopy.querySelector('.filter-andor-operators');
+        this.andOrOperators.forEach((operator) => {
+            let operatorSpan = document.createElement('span');
+            operatorSpan.innerText = operator.label;
+            operatorSpan.dataset.operator = operator.value;
+            operatorSpan.classList.add('filter-and-or-operator');
+            operatorSpan.classList.add('em-mb-8');
+            operatorSpan.classList.add('label');
+
+            if (operator.value === this.selectedAndOrOperator) {
+                operatorSpan.classList.add('label-default');
+            } else {
+                operatorSpan.classList.add('em-pointer');
+                operatorSpan.classList.add('label-darkblue');
+            }
+
+            operatorSpan.addEventListener('click', (e) => {
+                this.onChangeAndOrOperator(e);
+            });
+
+            filterAndOrOperators.appendChild(operatorSpan);
+        });
+
         filterContainer.appendChild(filterSampleContainerCopy);
 
         this.recap = filterContainer.querySelector('.filter-recap');
@@ -82,6 +130,50 @@ class MultiSelectFilter {
                 this.closeModal();
             }
         });
+    }
+
+    onChangeOperator(e) {
+        if (this.selectedOperator !== e.target.dataset.operator) {
+            this.selectedOperator = e.target.dataset.operator;
+
+            this.operators.forEach((operator) => {
+                if (operator.value !== this.selectedOperator) {
+                    const operatorSpan = document.querySelector('.filter-operator[data-operator="' + operator.value + '"]');
+                    operatorSpan.classList.remove('label-default');
+                    operatorSpan.classList.add('label-darkblue');
+                    operatorSpan.classList.add('em-pointer');
+                } else {
+                    const operatorSpan = document.querySelector('.filter-operator[data-operator="' + operator.value + '"]');
+                    operatorSpan.classList.remove('em-pointer');
+                    operatorSpan.classList.remove('label-darkblue');
+                    operatorSpan.classList.add('label-default');
+                }
+            });
+
+            this.updateRecap();
+        }
+    }
+
+    onChangeAndOrOperator(e) {
+        if (this.selectedAndOrOperator !== e.target.dataset.operator) {
+            this.selectedAndOrOperator = e.target.dataset.operator;
+
+            this.andOrOperators.forEach((operator) => {
+                if (operator.value !== this.selectedAndOrOperator) {
+                    const operatorSpan = document.querySelector('.filter-and-or-operator[data-operator="' + operator.value + '"]');
+                    operatorSpan.classList.remove('label-default');
+                    operatorSpan.classList.add('label-darkblue');
+                    operatorSpan.classList.add('em-pointer');
+                } else {
+                    const operatorSpan = document.querySelector('.filter-and-or-operator[data-operator="' + operator.value + '"]');
+                    operatorSpan.classList.remove('em-pointer');
+                    operatorSpan.classList.remove('label-darkblue');
+                    operatorSpan.classList.add('label-default');
+                }
+            });
+
+            this.updateRecap();
+        }
     }
 
     onCheckboxChange(e) {

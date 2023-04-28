@@ -76,3 +76,10 @@ JText::script('MOD_EMUNDUS_FILTERS_SELECT_VALUE');
     ?>
 </section>
 <script src="<?= $filterjs_url ?>"></script>
+
+<style>
+    .filter-options {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+</style>
