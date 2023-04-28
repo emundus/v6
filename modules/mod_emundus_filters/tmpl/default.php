@@ -27,7 +27,7 @@ JText::script('MOD_EMUNDUS_FILTERS_SELECT_VALUE');
                                 case 'select':
                                 ?>
                                     <select id="filter+<?= $filter['id'] ?>" name="filter<?= $filter['id'] ?>" class="em-w-100">
-                                        <option value="0"><?= JText::_('MOD_EMUNDUS_FILTERS_SELECT_VALUE') ?></option>
+                                        <option value="all"><?= JText::_('ALL') ?></option>
                                         <?php foreach($filter['values'] as $value): ?>
                                             <option value="<?= $value['value'] ?>" <?= $value['value'] == $filter['value'] ? 'selected' : '' ?>><?= $value['label'] ?></option>
                                         <?php endforeach; ?>

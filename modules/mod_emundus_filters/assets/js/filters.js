@@ -1,117 +1,111 @@
+var filterSampleContainer = null;
+
 class MultiSelectFilter {
     filterUid = null;
     filterId = null;
     options = [];
     modal = null;
     operators = [
-        {
-            value: '=',
-            label: 'is'
-        },
-        {
-            value: '!=',
-            label: 'is not'
-        },
-        {
-            value: 'LIKE',
-            label: 'contains'
-        },
-        {
-            value: 'NOT LIKE',
-            label: 'does not contain'
-        }
+        { value: '=', label: 'is'},
+        { value: '!=', label: 'is not'},
+        { value: 'LIKE', label: 'contains'},
+        { value: 'NOT LIKE', label: 'does not contain'}
     ];
     andOrOperators = [
-        {
-            value: 'AND',
-            label: 'and'
-        },
-        {
-            value: 'OR',
-            label: 'or'
-        }
+        { value: 'AND', label: 'and'},
+        { value: 'OR', label: 'or'}
     ];
 
     selectedValues = [];
-    selectedOperator = this.operators[0].value;
+    selectedOperator = '=';
+    selectedAndOrOperator = 'AND';
 
     constructor(filterContainer) {
         const select = filterContainer.querySelector('select');
         this.filterUid = Number(select.dataset.filterUid);
-        this.filterId = select.dataset.filterId;
+        this.filterId = select.id;
 
         select.querySelectorAll('option').forEach((option) => {
-            this.options.push({
-                value: option.value,
-                label: option.innerText
-            });
+            this.options.push({value: option.value, label: option.innerText});
         });
 
         select.multiple = true;
-        //select.classList.add('hidden');
-
-        let filterRecap = document.createElement('div');
-        filterRecap.classList.add('filter-recap');
-        filterRecap.classList.add('em-w-100');
-        filterRecap.classList.add('em-border');
-        filterContainer.appendChild(filterRecap);
-
-        let filterModal = document.createElement('div');
-        filterModal.classList.add('filter-modal');
-        filterModal.classList.add('hidden');
-
-        let listOperators = document.createElement('ul');
-        listOperators.classList.add('filter-operators');
-
-        this.operators.forEach((operator) => {
-            const listItem = document.createElement('li');
-            listItem.classList.add('filter-operator');
-            listItem.classList.add('em-pointer');
-            listItem.dataset.value = operator.value;
-            listItem.innerText = operator.label;
-            listOperators.appendChild(listItem);
+        select.classList.add('hidden');
+        select.querySelectorAll('option').forEach((option) => {
+            if (option.selected) {
+                this.selectedValues.push(option.value);
+            }
         });
 
-        filterModal.appendChild(listOperators);
-
-        let andOrOperators = document.createElement('ul');
-        andOrOperators.classList.add('filter-andor-operators');
-        this.andOrOperators.forEach((operator) => {
-            const listItem = document.createElement('li');
-            listItem.classList.add('filter-operator');
-            listItem.classList.add('em-pointer');
-            listItem.dataset.value = operator.value;
-            listItem.innerText = operator.label;
-            andOrOperators.appendChild(listItem);
-        });
-
-        filterModal.appendChild(andOrOperators);
-
-        const hr = document.createElement('hr');
-        filterModal.appendChild(hr);
-
-        let listOptions = document.createElement('ul');
-        listOptions.classList.add('filter-options');
-        listOptions.classList.add('em-w-100');
-
+        const filterSampleContainerCopy = filterSampleContainer.cloneNode(true);
+        const filterOptions = filterSampleContainerCopy.querySelector('.filter-options');
         this.options.forEach((option) => {
-            const listItem = document.createElement('li');
-            listItem.classList.add('filter-option');
-            listItem.classList.add('em-w-100');
-            listItem.classList.add('em-pointer');
-            listItem.dataset.value = option.value;
-            listItem.innerText = option.label;
+            let optionInput = document.createElement('input');
+            optionInput.type = 'checkbox';
+            optionInput.value = option.value;
+            optionInput.id = 'filter-' + this.filterId + '-' + option.value;
+            optionInput.name = 'filter[' + this.filterId + '][]';
+            if (this.selectedValues.includes(option.value) || option.value ==='all') {
+                optionInput.checked = true;
+            }
+            optionInput.addEventListener('change', (e) => {
+                this.onCheckboxChange(e);
+            });
 
-            listOptions.appendChild(listItem);
+            let optionLabel = document.createElement('label');
+            optionLabel.innerText = option.label;
+            optionLabel.setAttribute('for', 'filter-' + this.filterId + '-' + option.value);
+
+            let optionContainer = document.createElement('li');
+            optionContainer.classList.add('filter-option');
+            optionContainer.classList.add('em-flex-row');
+            optionContainer.classList.add('em-mb-8');
+            optionContainer.appendChild(optionInput);
+            optionContainer.appendChild(optionLabel);
+
+            filterOptions.appendChild(optionContainer);
         });
 
-        filterModal.appendChild(listOptions);
-        filterContainer.appendChild(filterModal);
+        filterContainer.appendChild(filterSampleContainerCopy);
 
-        this.modal = filterModal;
+        this.recap = filterContainer.querySelector('.filter-recap');
+        this.modal = filterContainer.querySelector('.filter-options-modal');
+
+        this.addEventListeners();
+    }
+
+    addEventListeners() {
+        this.recap.addEventListener('click', () => {
+            if (this.modal.classList.contains('hidden')) {
+                this.openModal();
+            } else {
+                this.closeModal();
+            }
+        });
+    }
+
+    onCheckboxChange(e) {
+        if (e.target.checked) {
+            this.selectedValues.push(e.target.value);
+        } else {
+            this.selectedValues = this.selectedValues.filter((value) => {
+                return value !== e.target.value;
+            });
+        }
+
+        console.log(this.selectedValues);
+
+        this.updateRecap();
+    }
+
+    updateRecap() {
+
     }
 
     openModal() {
+        document.querySelectorAll('.filter-options-modal').forEach((modal) => {
+            modal.classList.add('hidden');
+        });
         this.modal.classList.remove('hidden');
     }
 
@@ -133,7 +127,7 @@ function initFilters(){
             uid: filterContainer.dataset.uid,
             label: filterContainer.dataset.name,
             values: filterContainer.dataset.values,
-            value: ''
+            value: 'all'
         };
 
         filters.push(filter);
@@ -194,11 +188,6 @@ function createFilter(filter) {
             filterSelect.name = 'filter[' + filter.id + ']';
             filterSelect.id = 'filter-' + filter.id;
 
-            const option = document.createElement('option');
-            option.value = '0';
-            option.text = Joomla.JText._('MOD_EMUNDUS_FILTERS_SELECT_VALUE');
-            filterSelect.appendChild(option);
-
             filter.values.forEach(function (value) {
                 const option = document.createElement('option');
                 option.value = value.value;
@@ -207,6 +196,8 @@ function createFilter(filter) {
             });
 
             filterContainer.appendChild(filterSelect);
+            new MultiSelectFilter(filterContainer);
+
             break;
         case 'date':
             const filterDate = document.createElement('input');
@@ -230,8 +221,6 @@ function createFilter(filter) {
     }
 
     appliedFiltersSection.appendChild(filterContainer);
-
-    new MultiSelectFilter(filterContainer);
 }
 
 function removeFilter(e) {
@@ -270,7 +259,13 @@ function applyFilters() {
     });
 }
 
-initFilters();
+fetch('../../modules/mod_emundus_filters/tmpl/filter-sample.html')
+    .then(response => response.text())
+    .then(data => {
+        filterSampleContainer = document.createElement('div');
+        filterSampleContainer.innerHTML = data;
+        initFilters();
+    });
 
 document.getElementById('mod_emundus_filters').addEventListener('click', function (e) {
     if (e.target.id === 'add-filter') {
