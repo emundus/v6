@@ -5597,4 +5597,27 @@ class EmundusModelApplication extends JModelList
 
         return $select;
     }
+
+	public function applicantCustomAction($action, $fnum) {
+		$done = false;
+
+		if (!empty($action) && !empty($fnum)) {
+			$db = JFactory::getDBO();
+			$query = $db->getQuery(true);
+
+			$query->select('params')
+				->from('#__modules')
+				->where('module LIKE ' . $db->quote('mod_emundus_applications'))
+				->where('published = 1');
+
+			$db->setQuery($query);
+			$params = json_decode($db->loadResult());
+
+			if (!empty($params)) {
+				// TODO:
+			}
+		}
+
+		return $done;
+	}
 }

@@ -594,8 +594,11 @@ ksort($applications);
                     cancelButtonText: "<?php echo JText::_('JNO');?>"
                 }).then((confirm) => {
                     if (confirm.value) {
-                        // TODO: fetch the action URL from the component
-                        //"index.php?option=com_emundus&task=customaction&action=" + action
+                        // get closest .mod_emundus_applications__actions
+                        const actions = customAction.closest('.mod_emundus_applications__actions');
+                        const fnum = actions.id.replace('actions_block_', '');
+
+                        fetch('index.php?option=com_emundus&controller=application&task=applicantcustomaction&action=' + action + '&fnum=' + fnum);
                     }
                 })
             });

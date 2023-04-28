@@ -830,4 +830,32 @@ class EmundusControllerApplication extends JControllerLegacy
         echo json_encode($response);
         exit;
     }
+
+	public function applicantcustomaction() {
+		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::isApplicant(JFactory::getUser()->id)) {
+			$jinput = JFactory::getApplication()->input;
+			$action = $jinput->getString('action', '');
+			$fnum = $jinput->getString('fnum', '');
+
+			if (!empty($action) && !empty($fnum)) {
+				$emundusUser = JFactory::getSession()->get('emundusUser');
+				$emundusUserFnums = array_keys($emundusUser->fnums);
+
+				if (in_array($fnum, $emundusUserFnums)) {
+					$m_application = $this->getModel('Application');
+					$m_application->applicantCustomAction($action, $fnum);
+				} else {
+					$response['msg'] = JText::_('INVALID_PARAMETERS');
+					$response['code'] = 400;
+				}
+			}
+		}
+
+		header('Content-Type: application/json');
+		header('HTTP/1.1 ' . $response['code'] . ' ' . $response['msg']);
+		echo json_encode($response);
+		exit;
+	}
 }
