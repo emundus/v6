@@ -469,6 +469,10 @@ input:focus + .em-slider {
   margin: unset;
 }
 
+.em-flex-wrap {
+    flex-wrap: wrap;
+}
+
 .em-flex-row{
   display: flex;
   flex-direction: row;

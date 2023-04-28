@@ -147,11 +147,13 @@ class EmundusFiltersFiles extends EmundusFilters
 			}
 
 			$this->applied_filters[] = [
+				'uid' => 'status',
 				'id' => 'status',
-				'label' => JText::_('COM_EMUNDUS_FILTERS_STATUS'),
+				'label' => JText::_('MOD_EMUNDUS_FILTERS_STATUS'),
 				'type' => 'select',
 				'values' => $values,
-				'value' => ''
+				'value' => '',
+				'default' => true
 			];
 		}
 
@@ -165,11 +167,13 @@ class EmundusFiltersFiles extends EmundusFilters
 			$campaigns = $db->loadAssocList();
 
 			$this->applied_filters[] = [
+				'uid' => 'campaigns',
 				'id' => 'campaigns',
-				'label' => JText::_('COM_EMUNDUS_FILTERS_CAMPAIGNS'),
+				'label' => JText::_('MOD_EMUNDUS_FILTERS_CAMPAIGNS'),
 				'type' => 'select',
 				'values' => $campaigns,
-				'value' => ''
+				'value' => '',
+				'default' => true
 			];
 		}
 
@@ -182,11 +186,13 @@ class EmundusFiltersFiles extends EmundusFilters
 			$tags = $db->loadAssocList();
 
 			$this->applied_filters[] = [
+				'uid' => 'tags',
 				'id' => 'tags',
-				'label' => JText::_('COM_EMUNDUS_FILTERS_TAG'),
+				'label' => JText::_('MOD_EMUNDUS_FILTERS_TAGS'),
 				'type' => 'select',
 				'values' => $tags,
-				'value' => ''
+				'value' => '',
+				'default' => true
 			];
 		}
 	}

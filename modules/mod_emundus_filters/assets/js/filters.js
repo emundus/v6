@@ -1,30 +1,36 @@
+var filtersInstances = [];
 var filterSampleContainer = null;
+var basicOperators = [
+    { value: '=', label: translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS')},
+    { value: '!=', label:  translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_NOT')},
+    { value: 'LIKE', label: translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_CONTAINS')},
+    { value: 'NOT LIKE', label: translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_DOES_NOT_CONTAIN')},
+    { value: 'IN', label:  translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_ONE_OF')},
+    { value: 'NOT IN', label: translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_NOT_ONE_OF')},
+];
+var andOrOperators = [
+    { value: 'AND', label: translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_AND')},
+    { value: 'OR', label: translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_OR')},
+];
+
+function translate(str) {
+    return Joomla.JText._(str);
+}
 
 class MultiSelectFilter {
-    filterUid = null;
+    uid = null;
     filterId = null;
     options = [];
     modal = null;
-    operators = [
-        { value: '=', label: 'is'},
-        { value: '!=', label: 'is not'},
-        { value: 'LIKE', label: 'contains'},
-        { value: 'NOT LIKE', label: 'does not contain'},
-        { value: 'IN', label: 'is one of'},
-        { value: 'NOT IN', label: 'is not one of'}
-    ];
-    andOrOperators = [
-        { value: 'AND', label: 'and'},
-        { value: 'OR', label: 'or'}
-    ];
-
+    operators = basicOperators;
+    andOrOperators = andOrOperators;
     selectedValues = [];
     selectedOperator = '=';
     selectedAndOrOperator = 'AND';
 
     constructor(filterContainer) {
         const select = filterContainer.querySelector('select');
-        this.filterUid = Number(select.dataset.filterUid);
+        this.uid = filterContainer.dataset.filterUid;
         this.filterId = select.id;
 
         select.querySelectorAll('option').forEach((option) => {
@@ -47,7 +53,7 @@ class MultiSelectFilter {
             optionInput.value = option.value;
             optionInput.id = 'filter-' + this.filterId + '-' + option.value;
             optionInput.name = 'filter[' + this.filterId + '][]';
-            if (this.selectedValues.includes(option.value) || option.value ==='all') {
+            if (this.selectedValues.includes(option.value) || option.value === 'all') {
                 optionInput.checked = true;
             }
             optionInput.addEventListener('change', (e) => {
@@ -116,10 +122,11 @@ class MultiSelectFilter {
 
         filterContainer.appendChild(filterSampleContainerCopy);
 
-        this.recap = filterContainer.querySelector('.filter-recap');
+        this.recap = filterContainer.querySelector('.filter-recap-container');
         this.modal = filterContainer.querySelector('.filter-options-modal');
 
         this.addEventListeners();
+        this.updateRecap();
     }
 
     addEventListeners() {
@@ -185,19 +192,65 @@ class MultiSelectFilter {
             });
         }
 
-        console.log(this.selectedValues);
-
         this.updateRecap();
     }
 
     updateRecap() {
+        const recap = this.recap.querySelector('.filter-recap');
+        const oldElements = recap.querySelectorAll('.filter-recap-element');
+        if (oldElements.length > 0) {
+            oldElements.forEach((element) => {
+                element.remove();
+            });
+        }
 
+        // first element is the operator
+        let recapElement = document.createElement('span');
+        recapElement.classList.add('filter-recap-element');
+        recapElement.classList.add('label');
+        recapElement.classList.add('label-darkblue');
+        recapElement.classList.add('em-mr-8');
+        recapElement.innerText = this.operators.find((operator) => {
+            return operator.value === this.selectedOperator;
+        }).label;
+
+        recap.querySelector('.operator').appendChild(recapElement);
+
+        const recapOptions = recap.querySelector('.options');
+        let valuesCount = this.selectedValues.length;
+        this.selectedValues.forEach((value, index) => {
+            recapElement = document.createElement('span');
+            recapElement.classList.add('filter-recap-element');
+            recapElement.classList.add('label');
+            recapElement.classList.add('label-default');
+            recapElement.classList.add('em-mr-8');
+
+            const valueLabel = this.options.find((option) => {
+                return option.value === value;
+            }).label;
+            recapElement.innerText = valueLabel ? valueLabel : value;
+            recapOptions.appendChild(recapElement);
+
+            if (index < valuesCount - 1) {
+                recapElement = document.createElement('span');
+                recapElement.classList.add('filter-recap-element');
+                recapElement.classList.add('label');
+                recapElement.classList.add('label-darkblue');
+                recapElement.classList.add('em-mr-8');
+                recapElement.innerText = this.andOrOperators.find((operator) => {
+                    return operator.value === this.selectedAndOrOperator;
+                }).label;
+                recapOptions.appendChild(recapElement);
+            }
+        });
     }
 
     openModal() {
         document.querySelectorAll('.filter-options-modal').forEach((modal) => {
             modal.classList.add('hidden');
         });
+
+        this.modal.style.top = (this.recap.getHeight() + 16) + 'px';
         this.modal.classList.remove('hidden');
     }
 
@@ -209,7 +262,6 @@ class MultiSelectFilter {
 const appliedFiltersSection = document.getElementById('applied-filters');
 const filtersSelectWrapper = document.querySelector('#filters-selection-wrapper');
 const filtersSelect = document.getElementById('filters-selection');
-let filters = [];
 
 function initFilters(){
     appliedFiltersSection.querySelectorAll('.filter-container').forEach(function (filterContainer) {
@@ -219,12 +271,11 @@ function initFilters(){
             uid: filterContainer.dataset.uid,
             label: filterContainer.dataset.name,
             values: filterContainer.dataset.values,
-            value: 'all'
+            value: ''
         };
 
-        filters.push(filter);
-
-        new MultiSelectFilter(filterContainer);
+        const filterInstance = new MultiSelectFilter(filterContainer);
+        filtersInstances.push(filterInstance);
     });
 }
 
@@ -245,6 +296,7 @@ function createFilter(filter) {
     filterContainer.classList.add('filter-container');
     filterContainer.classList.add('em-w-100');
     filterContainer.classList.add('em-mb-16');
+    filterContainer.dataset.filterUid = filter.uid;
 
     const filterHeader = document.createElement('div');
     filterHeader.classList.add('filter-header');
@@ -269,7 +321,6 @@ function createFilter(filter) {
     filterRm.dataset.filterUid = filter.uid;
 
     filterHeader.appendChild(filterRm);
-
     filterContainer.appendChild(filterHeader);
 
     switch (filter.type) {
@@ -279,6 +330,7 @@ function createFilter(filter) {
             filterSelect.classList.add('em-w-100');
             filterSelect.name = 'filter[' + filter.id + ']';
             filterSelect.id = 'filter-' + filter.id;
+            filterSelect.dataset.filterUid = filter.uid;
 
             filter.values.forEach(function (value) {
                 const option = document.createElement('option');
@@ -288,7 +340,8 @@ function createFilter(filter) {
             });
 
             filterContainer.appendChild(filterSelect);
-            new MultiSelectFilter(filterContainer);
+            const filterInstance = new MultiSelectFilter(filterContainer);
+            filtersInstances.push(filterInstance);
 
             break;
         case 'date':
@@ -298,7 +351,9 @@ function createFilter(filter) {
             filterDate.type = 'date';
             filterDate.name = 'filter[' + filter.id + ']';
             filterDate.id = 'filter-' + filter.id;
+            filterDate.dataset.filterUid = filter.uid;
             filterContainer.appendChild(filterDate);
+            filtersInstances.push(filter);
             break;
         case 'text':
         default:
@@ -308,7 +363,9 @@ function createFilter(filter) {
             filterInput.type = 'text';
             filterInput.name = 'filter[' + filter.id + ']';
             filterInput.id = 'filter-' + filter.id;
+            filterInput.dataset.filterUid = filter.uid;
             filterContainer.appendChild(filterInput);
+            filtersInstances.push(filter);
             break;
     }
 
@@ -317,7 +374,7 @@ function createFilter(filter) {
 
 function removeFilter(e) {
     const filterUid = Number(e.target.dataset.filterUid);
-    filters = filters.filter((filter) => {
+    filtersInstances = filtersInstances.filter((filter) => {
         return filter.uid !== filterUid;
     });
 
@@ -328,8 +385,10 @@ function removeFilter(e) {
 }
 
 function applyFilters() {
+    console.log(filtersInstances);
+    return;
     let formData = new FormData();
-    formData.append('filters', JSON.stringify(filters));
+    formData.append('filters', JSON.stringify(filtersInstances));
 
     fetch('/index.php?option=com_emundus&controller=files&task=applyfilters', {
         method: 'POST',
@@ -384,7 +443,6 @@ if (filtersSelect) {
                 value: ''
             };
 
-            filters.push(filter);
             createFilter(filter);
             e.target.value = '0';
         }
