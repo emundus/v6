@@ -2,6 +2,7 @@ class MultiSelectFilter {
     filterUid = null;
     filterId = null;
     options = [];
+    modal = null;
     operators = [
         {
             value: '=',
@@ -106,6 +107,16 @@ class MultiSelectFilter {
 
         filterModal.appendChild(listOptions);
         filterContainer.appendChild(filterModal);
+
+        this.modal = filterModal;
+    }
+
+    openModal() {
+        this.modal.classList.remove('hidden');
+    }
+
+    closeModal() {
+        this.modal.classList.add('hidden');
     }
 }
 
