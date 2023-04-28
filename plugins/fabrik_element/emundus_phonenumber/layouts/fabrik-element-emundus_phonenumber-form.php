@@ -22,6 +22,6 @@ $doc->addScript(JURI::root() . "plugins/fabrik_element/emundus_phonenumber/asset
 
 	</select>
 
-	<input name="<?php echo $displayData->attributes['name']; ?>" class="input-medium fabrikinput"
+	<input name="<?php echo $displayData->attributes['name']; ?>" class="input-medium fabrikinput em-ml-8" maxlength="16"
 	>
 </div>
