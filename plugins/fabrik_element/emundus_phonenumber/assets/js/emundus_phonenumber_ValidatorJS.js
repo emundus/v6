@@ -2,13 +2,14 @@
 
 class ValidatorJS {
 
-    constructor(initInput, initSelect, initAllCountry, initIndiceCountry = 0)
+    constructor(initInput, initSelect, initAllCountry, initIndiceCountry = 0, initDefaultValue = "")
     {
         this.input = initInput;
         this.select = initSelect;
         this.allCountry = initAllCountry;
         this.indiceCountry = initIndiceCountry;
         this.countrySelected = this.allCountry[this.indiceCountry];
+        this.defaultValue = initDefaultValue;
 
         this.newCountry(this.indiceCountry);
         this.setOptionSelected(this.indiceCountry);
@@ -66,14 +67,7 @@ class ValidatorJS {
         this.newCountry(props.target.options.selectedIndex);
         this.prepareInput();
 
-        if (this.countrySelected.country_code)
-        {
-            this.setInputBorderColor(this.defaultColor);
-        }
-        else
-        {
-            this.setInputBorderColor(this.unsupportedColor);
-        }
+        this.countrySelected.country_code ? this.setInputBorderColor(this.defaultColor) : this.setInputBorderColor(this.unsupportedColor);
     }
 
     newCountry(id)
@@ -93,14 +87,18 @@ class ValidatorJS {
 
     prepareInput()
     {
-        if (this.countrySelected.country_code)
+        // unsupported country
+        this.input.value = "";
+        this.setInputBorderColor(this.unsupportedColor)
+
+        if (this.defaultValue !== "")
+        {
+            this.input.value = this.defaultValue;
+            this.defaultValue = "";
+        }
+        else if (this.countrySelected.country_code)
         {
             this.input.value = this.countrySelected.country_code;
-        }
-        else // unsupported country
-        {
-            this.input.value = "";
-            this.setInputBorderColor(this.unsupportedColor)
         }
     }
 

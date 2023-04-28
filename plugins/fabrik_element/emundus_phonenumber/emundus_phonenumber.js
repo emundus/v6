@@ -19,6 +19,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 
         cloned: function (c)
         {
+            this.element.getElement("input").value = "";
             this.initValidatorJS();
             this.parent(c);
         },
@@ -29,32 +30,44 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             const input = this.element.getElement("input");
             const allCountries = JSON.parse(atob(select.getAttribute("data-countries"))); // decode base64 + get JSON to array type
 
+            let defaultValue; // use if already have value in input
+            let selectedCountryIndex = this.getSelectedCountryIndex(allCountries, this.options.countrySelected);
+
+            if (input.value.length > 4) // different from +XXX (max)
+            {
+                defaultValue = input.value.replace("-", ""); // +XX-YYYY format to +XXYYYY
+
+                const countryIso2 = libphonenumber.parsePhoneNumber(defaultValue + "00").country; // get iso2 from +XX
+                selectedCountryIndex = this.getSelectedCountryIndex(allCountries, countryIso2); // get index array from iso2
+            }
+
+            this.ValidatorJS = new ValidatorJS(input, select, allCountries, selectedCountryIndex, defaultValue);
+            this.ValidatorJS.setColors(validColor, errorColor, unsupportedColor, defaultColor);
+        },
+
+        getSelectedCountryIndex: function (allCountries, searchCountry)
+        {
             let selectedCountryIndex = 0;
-            if (this.options.countrySelected !== null && typeof this.options.countrySelected !== 'undefined' && this.options.countrySelected !== '') {
+            if (searchCountry !== null && typeof searchCountry !== 'undefined' && searchCountry !== '') {
                 selectedCountryIndex = allCountries.findIndex(country => {
-                    return country.iso2 === this.options.countrySelected;
+                    return country.iso2 === searchCountry;
                 });
 
                 selectedCountryIndex = selectedCountryIndex === -1 ? 0 : selectedCountryIndex;
             }
-
-            this.ValidatorJS = new ValidatorJS(input, select, allCountries, selectedCountryIndex);
-            this.ValidatorJS.setColors(validColor, errorColor, unsupportedColor, defaultColor);
+            return selectedCountryIndex;
         },
 
-        getCountryIndexFromIso2: function (countries, iso2Search)
+        onsubmit: function(c)
         {
-            let index = 0;
-            countries.forEach((element, key) =>
-            {
-                if (element.iso2 === iso2Search)
-                {
-                    index = key;
-                }
-            });
-            return index;
-        },
+            const input = this.ValidatorJS.input;
+            const country_code = this.ValidatorJS.countrySelected.country_code;
+            const number = input.value.substring(country_code.length, input.value.length);
 
+            input.value = country_code + "-" + number; // +XXYYYY format to +XX-YYYY
+
+            this.parent(c);
+        },
     });
     return window.FbPhoneNumber;
 });

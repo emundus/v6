@@ -58,6 +58,53 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 		return $d;
 	}
 
+
+    /**
+     * Pre-render just the element (no labels etc.)
+     * Was _getElement but this was ambiguous with getElement() and method is public
+     *
+     * @param   array $data          data
+     * @param   int   $repeatCounter repeat group counter
+     *
+     * @return  string
+     */
+    public function preRenderElement($data, $repeatCounter = 0)
+    {
+
+        $groupModel = $this->getGroupModel();
+
+        if (!$this->canView() && !$this->canUse())
+        {
+            return '';
+        }
+        // Used for working out if the element should behave as if it was in a new form (joined grouped) even when editing a record
+        $this->inRepeatGroup = $groupModel->canRepeat();
+        $this->_inJoin       = $groupModel->isJoin();
+        $opts                = array('runplugins' => 1);
+        $this->getValue($data, $repeatCounter, $opts);
+
+        if ($this->isEditable())
+        {
+            return $this->render($data, $repeatCounter);
+        }
+        else
+        {
+            $htmlId = $this->getHTMLId($repeatCounter);
+
+            // $$$ rob even when not in ajax mode the element update() method may be called in which case we need the span
+            // $$$ rob changed from span wrapper to div wrapper as element's content may contain divs which give html error
+
+            // Placeholder to be updated by ajax code
+            // @TODO the entity decode causes problems on RO with tooltips
+            $v = $this->getROElement($data, $repeatCounter);
+            $v = html_entity_decode($v);
+            $v = $this->DBFormatToNormal($v);
+            //$v = $v == '' ? '&nbsp;' : $v;
+
+            return '<div class="fabrikElementReadOnly" id="' . $htmlId . '">' . $v . '</div>';
+        }
+    }
+
 	/**
 	 * Draws the html form element
 	 *
@@ -166,14 +213,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 	 */
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
-		$value = parent::getValue($data, $repeatCounter, $opts);
-
-		if (is_array($value))
-		{
-			return array_pop($value);
-		}
-
-		return $value;
+        return parent::getValue($data, $repeatCounter, $opts);
 	}
 
 	/**
@@ -238,6 +278,24 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 		}
 	}
 
+    /**
+     * Shows the data formatted for the list view
+     *
+     * @param   string   $data     Elements data
+     * @param   stdClass &$thisRow All the data in the lists current row
+     * @param   array    $opts     Rendering options
+     *
+     * @return  string    formatted value
+     */
+    public function renderListData($data, stdClass &$thisRow, $opts = array())
+    {
+        if (!is_null($data))
+        {
+            $data = $this->DBFormatToNormal($data);
+        }
+        return parent::renderListData($data, $thisRow, $opts);
+    }
+
 	/**
 	 * Manipulates posted form data for insertion into database
 	 *
@@ -294,8 +352,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 
     public function validate($data, $repeatCounter = 0)
     {
-
-        $value = (string)$data;
+        $value = $this->DBFormatToNormal((string)$data); // +XX-YYYY format to +XXYYYY format for tests only
         $isValid = false;
 
         if (preg_match("/^\+\d{5,15}$/", $value))
@@ -334,8 +391,14 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
         $id = $this->getHTMLId($repeatCounter);
 
         $opts = $this->getElementJSOptions($repeatCounter);
-        $opts->countrySelected = $params->get("default_country");
+        $opts->countrySelected = $params->get('default_country');
 
         return array('FbPhoneNumber', $id, $opts);
     }
+
+    public function DBFormatToNormal($number)
+    {
+        return str_replace('-', '', $number);
+    }
+
 }
