@@ -1822,11 +1822,15 @@ div.fabrikFilterContainer {
       .fabrikDateListFilterRange {
         display: flex;
 
+        input.fabrik_filter {
+          border-radius: 4px 0 0 4px !important;
+        }
+
         .calendarbutton {
           height: 40px;
           color: var(--neutral-900);
           border: solid 1px #ececee;
-          border-radius: 0 4px 4px 0;
+          border-radius: 0 4px 4px 0 !important;
         }
 
         .input-append:first-child {
