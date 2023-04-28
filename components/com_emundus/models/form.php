@@ -793,7 +793,7 @@ class EmundusModelForm extends JModelList {
 					unset($attachment['id']);
 
 					foreach ($attachment as $key => $value) {
-						if (empty($value)) {
+						if (empty($value) && $value != 0) {
 							$attachment[$key] = null;
 						}
 					}
@@ -804,7 +804,8 @@ class EmundusModelForm extends JModelList {
 					}, $attachment));
 				}
 
-				$query->insert($db->quoteName('#__emundus_setup_attachment_profiles'))
+				$query->clear()
+                    ->insert($db->quoteName('#__emundus_setup_attachment_profiles'))
 					->columns($db->quoteName($columns))
 					->values($values);
 
