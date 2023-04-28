@@ -185,11 +185,16 @@ ksort($applications);
                                                             <?php endif; ?>
 	                                                        <?php
 	                                                        foreach($custom_actions as $custom_action_key => $custom_action) {
-
-		                                                        if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)){
-			                                                        ?>
-                                                                    <a id="actions_button_custom_<?= $custom_action_key; ?>" class="em-text-neutral-900 em-pointer" href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?> ><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></a>
-			                                                        <?php
+		                                                        if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)) {
+                                                                    if ($custom_action->mod_em_application_custom_action_type == 2) {
+                                                                        ?>
+                                                                        <span id="actions_button_custom_<?= $custom_action_key; ?>" class="em-text-neutral-900 em-pointer em-custom-action-launch-action" data-text="<?= $custom_action->mod_em_application_custom_action_new_status_message; ?>"><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></span>
+	                                                                    <?php
+                                                                    } else {
+                                                                        ?>
+                                                                        <a id="actions_button_custom_<?= $custom_action_key; ?>" class="em-text-neutral-900 em-pointer" href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?> ><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></a>
+                                                                        <?php
+                                                                    }
 		                                                        }
 	                                                        }
 	                                                        ?>
@@ -237,11 +242,16 @@ ksort($applications);
                                                                 <?php endif; ?>
                                                                 <?php
                                                                 foreach($custom_actions as $custom_action_key => $custom_action) {
-
-                                                                    if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)){
+                                                                    if ($custom_action->mod_em_application_custom_action_type == 2) {
                                                                         ?>
-                                                                        <a id="actions_button_custom_<?= $custom_action_key; ?>" class="em-text-neutral-900 em-pointer" href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?> ><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></a>
+                                                                        <span id="actions_button_custom_<?= $custom_action_key; ?>" class="em-text-neutral-900 em-pointer em-custom-action-launch-action" data-text="<?= $custom_action->mod_em_application_custom_action_new_status_message; ?>"><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></span>
                                                                         <?php
+                                                                    } else {
+                                                                        if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)){
+                                                                            ?>
+                                                                            <a id="actions_button_custom_<?= $custom_action_key; ?>" class="em-text-neutral-900 em-pointer" href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?> ><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></a>
+                                                                            <?php
+                                                                        }
                                                                     }
                                                                 }
                                                                 ?>
@@ -273,11 +283,16 @@ ksort($applications);
                                                                 <?php endif; ?>
                                                                 <?php
                                                                 foreach($custom_actions as $custom_action_key => $custom_action) {
-
-                                                                    if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)){
+                                                                    if ($custom_action->mod_em_application_custom_action_type == 2) {
                                                                         ?>
-                                                                        <a id="actions_button_custom_<?= $custom_action_key; ?>" class="em-text-neutral-900 em-pointer" href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?> ><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></a>
+                                                                        <span id="actions_button_custom_<?= $custom_action_key; ?>" class="em-text-neutral-900 em-pointer em-custom-action-launch-action" data-text="<?= $custom_action->mod_em_application_custom_action_new_status_message; ?>"><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></span>
                                                                         <?php
+                                                                    } else {
+                                                                        if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)){
+                                                                            ?>
+                                                                            <a id="actions_button_custom_<?= $custom_action_key; ?>" class="em-text-neutral-900 em-pointer" href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?> ><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></a>
+                                                                            <?php
+                                                                        }
                                                                     }
                                                                 }
                                                                 ?>
@@ -557,4 +572,33 @@ ksort($applications);
         }
 
     }, 500));
+</script>
+
+<script>
+    const customActions = document.querySelectorAll('.em-custom-action-launch-action');
+
+    if (customActions.length > 0) {
+        customActions.forEach((customAction) => {
+            const action = customAction.id.replace('actions_button_custom_', '');
+
+            customAction.addEventListener('click', function () {
+                Swal.fire({
+                    title: customAction.innerText,
+                    text: customAction.dataset.text,
+                    type: 'info',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#dc3545',
+                    reverseButtons: true,
+                    confirmButtonText: "<?php echo JText::_('JYES');?>",
+                    cancelButtonText: "<?php echo JText::_('JNO');?>"
+                }).then((confirm) => {
+                    if (confirm.value) {
+                        // TODO: fetch the action URL from the component
+                        //"index.php?option=com_emundus&task=customaction&action=" + action
+                    }
+                })
+            });
+        });
+    }
 </script>
