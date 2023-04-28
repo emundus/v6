@@ -25,10 +25,12 @@
 			<field type="helplink"
 				url="PLG_ELEMENT_FIELD_HELP_SERVER" />
 
-			<field name="pays"
+			<field name="default_country"
 				   type="sql"
 				   label="PLG_ELEMENT_PHONE_NUMBER_SELECT_COUNTRY"
-				   query="SELECT id AS value, iso2 AS pays from data_country"
+				   query="SELECT id, iso2 from data_country"
+				   key_field="iso2"
+				   value_field="iso2"
 			>
 				<option value=" "></option>
 			</field>

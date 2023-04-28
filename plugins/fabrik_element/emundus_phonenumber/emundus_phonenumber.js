@@ -14,15 +14,11 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
         {
             this.setPlugin('emundus_phonenumber');
             this.parent(element, options);
-
-            this.options.countrySelected = parseInt(this.options.countrySelected) - 1;
             this.initValidatorJS();
         },
 
         cloned: function (c)
         {
-            this.options.countrySelected = 0;
-
             this.initValidatorJS();
             this.parent(c);
         },
@@ -33,14 +29,16 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             const input = this.element.getElement("input");
             const allCountries = JSON.parse(atob(select.getAttribute("data-countries"))); // decode base64 + get JSON to array type
 
-            if (isNaN(this.options.countrySelected)) // if the default country isn't set
-            {
-                this.options.countrySelected = this.getCountryIndexFromIso2(allCountries, navigator.language.substring(3,navigator.language.length));
-                // try to get index from country from navigator's language
-                // work only language format : "en-US" so we get "US"
+            let selectedCountryIndex = 0;
+            if (this.options.countrySelected !== null && typeof this.options.countrySelected !== 'undefined' && this.options.countrySelected !== '') {
+                selectedCountryIndex = allCountries.findIndex(country => {
+                    return country.iso2 === this.options.countrySelected;
+                });
+
+                selectedCountryIndex = selectedCountryIndex === -1 ? 0 : selectedCountryIndex;
             }
 
-            this.ValidatorJS = new ValidatorJS(input, select, allCountries, this.options.countrySelected);
+            this.ValidatorJS = new ValidatorJS(input, select, allCountries, selectedCountryIndex);
             this.ValidatorJS.setColors(validColor, errorColor, unsupportedColor, defaultColor);
         },
 

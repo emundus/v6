@@ -334,7 +334,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
         $id = $this->getHTMLId($repeatCounter);
 
         $opts = $this->getElementJSOptions($repeatCounter);
-        $opts->countrySelected = $params->get("pays");
+        $opts->countrySelected = $params->get("default_country");
 
         return array('FbPhoneNumber', $id, $opts);
     }
