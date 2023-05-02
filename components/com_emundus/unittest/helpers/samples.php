@@ -241,4 +241,35 @@ class EmundusUnittestHelperSamples
 
 		return $inserted;
 	}
+
+	public function  duplicateSampleProfile($profile_id)
+	{
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		// Get profile
+		$query->clear()
+			->select('*')
+			->from($db->quoteName('#__emundus_setup_profiles'))
+			->where($db->quoteName('id') . ' = ' . $db->quote($profile_id));
+		$db->setQuery($query);
+		$oldprofile = $db->loadObject();
+
+		if (!empty($oldprofile)) {
+			// Create a new profile
+			$query->clear()
+				->insert('#__emundus_setup_profiles')
+				->set($db->quoteName('label') . ' = ' . $db->quote($oldprofile->label . ' - Copy'))
+				->set($db->quoteName('published') . ' = 1')
+				->set($db->quoteName('menutype') . ' = ' . $db->quote($oldprofile->menutype))
+				->set($db->quoteName('acl_aro_groups') . ' = ' . $db->quote($oldprofile->acl_aro_groups))
+				->set($db->quoteName('status') . ' = ' . $db->quote($oldprofile->status));
+			$db->setQuery($query);
+			$db->execute();
+			$newprofile = $db->insertid();
+		}
+
+		return $newprofile;
+	}
 }
