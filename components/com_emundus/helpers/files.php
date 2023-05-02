@@ -2719,11 +2719,38 @@ class EmundusHelperFiles
      * @return  string      FNUM for application.
      * @since   1.6
      */
-    public function createFnum($campaign_id, $user_id){
-        if (!empty($campaign_id)) {
-            $fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
-            return $fnum;
-        }
+    public function createFnum($campaign_id, $user_id, $redirect = true){
+		$fnum = '';
+	    $app = JFactory::getApplication();
+	    JLog::addLogger(array('text_file' => 'com_emundus.fnum.php'), JLog::ALL, 'com_emundus.fnum');
+
+		if (empty($user_id)) {
+			$user_id = JFactory::getUser()->id;
+			JLog::add('User ID is empty, using current user ID : '. $user_id, JLog::INFO, 'com_emundus.fnum');
+		}
+
+		if (!empty($user_id)){
+			if (!empty($campaign_id)) {
+				$fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
+
+				if (!empty($fnum)) {
+					JLog::add('FNUM created : '.$fnum, JLog::INFO, 'com_emundus.fnum');
+				}
+			} else {
+				JLog::add('Error creating FNUM, campaign_id is empty', JLog::WARNING, 'com_emundus.fnum');
+				$app->enqueueMessage(JText::_('COM_EMUNDUS_FAILED_TO_CREATE_FNUM_NO_CAMPAIGN'), 'error');
+			}
+		} else {
+			$ip = !empty($_SERVER) && !empty($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+			JLog::add('Error creating FNUM, user_id is empty for ip : ' . $ip, JLog::WARNING, 'com_emundus.fnum');
+			$app->enqueueMessage(JText::_('COM_EMUNDUS_FAILED_TO_CREATE_FNUM_NO_USER'), 'error');
+
+			if ($redirect) {
+				$app->redirect('index.php');
+			}
+		}
+
+		return $fnum;
     }
 
     /**

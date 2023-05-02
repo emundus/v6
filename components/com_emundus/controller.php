@@ -781,8 +781,10 @@ class EmundusController extends JControllerLegacy {
         $can_submit_encrypted = $eMConfig->get('can_submit_encrypted', 1);
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'checklist.php');
+        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'checklist.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
         $m_profile = new EmundusModelProfile;
+        $h_checklist = new EmundusHelperChecklist();
         $m_checklist = new EmundusModelChecklist;
         $m_application = new EmundusModelApplication;
 
@@ -1103,10 +1105,7 @@ class EmundusController extends JControllerLegacy {
 
                 } elseif (isset($file['name']) && $file['error'] == UPLOAD_ERR_OK) {
                     $fnumInfos = $m_files->getFnumInfos($fnum);
-                    //$paths = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($user->lastname.'_'.$user->firstname,ENT_NOQUOTES,'UTF-8'))));
-                    //$file_array = explode(".", $file['name']);
-                    //$paths .= $labels.'-'.rand().'.'.end($file_array);
-                    $paths = $m_checklist->setAttachmentName($file['name'], $labels, $fnumInfos);
+                    $paths = $h_checklist->setAttachmentName($file['name'], $labels, $fnumInfos);
 
                     if (copy( $file['tmp_name'], $chemin.$user->id.DS.$paths)) {
                         $can_be_deleted = @$post['can_be_deleted_'.$attachments]!=''?$post['can_be_deleted_'.$attachments]:JRequest::getVar('can_be_deleted', 1, 'POST', 'none',0);
