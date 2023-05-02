@@ -5598,7 +5598,7 @@ class EmundusModelApplication extends JModelList
         return $select;
     }
 
-	public function applicantCustomAction($action, $fnum, $redirect = true) {
+	public function applicantCustomAction($action, $fnum, $redirect = false) {
 		$done = false;
 
 		if (!empty($action) && !empty($fnum)) {

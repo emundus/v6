@@ -845,7 +845,14 @@ class EmundusControllerApplication extends JControllerLegacy
 
 				if (in_array($fnum, $emundusUserFnums)) {
 					$m_application = $this->getModel('Application');
-					$m_application->applicantCustomAction($action, $fnum);
+					$response['status'] = $m_application->applicantCustomAction($action, $fnum);
+					$response['code'] = 200;
+
+					if ($response['status']) {
+						$response['msg'] = JText::_('SUCCESS');
+					} else {
+						$response['msg'] = JText::_('FAILED');
+					}
 				} else {
 					$response['msg'] = JText::_('INVALID_PARAMETERS');
 					$response['code'] = 400;
