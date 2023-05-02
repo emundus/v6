@@ -364,6 +364,7 @@ class EmundusViewApplication extends JViewLegacy {
                         EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 1, 'r', 'COM_EMUNDUS_ACCESS_FORM_READ');
 
                         $m_campaign = new EmundusModelCampaign;
+	                    $m_user = new EmundusModelUsers;
 	                    $applicant = $m_user->getUserById($fnumInfos['applicant_id']);
 						if(!isset($applicant[0]->profile_picture) || empty($applicant[0]->profile_picture)){
 							$applicant[0]->profile_picture = $m_user->getIdentityPhoto($fnum,$fnumInfos['applicant_id']);
