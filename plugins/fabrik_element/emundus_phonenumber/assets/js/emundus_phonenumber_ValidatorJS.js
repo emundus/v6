@@ -109,8 +109,6 @@ class ValidatorJS {
 
     setOptionSelected(id)
     {
-        console.log(id);
-
         this.select.options[id].selected = true;
     }
 

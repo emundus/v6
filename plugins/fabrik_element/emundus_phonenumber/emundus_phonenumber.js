@@ -31,13 +31,13 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             const allCountries = JSON.parse(atob(select.getAttribute("data-countries"))); // decode base64 + get JSON to array type
 
             let defaultValue; // use if already have value in input
-            let selectedCountryIndex = this.getSelectedCountryIndex(allCountries, this.options.countrySelected);
+            let selectedCountryIndex = this.getSelectedCountryIndex(allCountries, this.options.countrySelected); // get default country
 
-            if (input.value.length > 4) // different from +XXX (max)
+            if (input.value.length > 4) // already have value
             {
-                defaultValue = input.value.replace("-", ""); // +XX-YYYY format to +XXYYYY
+                defaultValue = input.value;
 
-                const countryIso2 = libphonenumber.parsePhoneNumber(defaultValue + "00").country; // get iso2 from +XX
+                const countryIso2 = select.getAttribute("value"); // get iso2
                 selectedCountryIndex = this.getSelectedCountryIndex(allCountries, countryIso2); // get index array from iso2
             }
 
@@ -61,10 +61,9 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
         onsubmit: function(c)
         {
             const input = this.ValidatorJS.input;
-            const country_code = this.ValidatorJS.countrySelected.country_code;
-            const number = input.value.substring(country_code.length, input.value.length);
+            const iso2 = this.ValidatorJS.allCountry[this.ValidatorJS.indiceCountry].iso2;
 
-            input.value = country_code + "-" + number; // +XXYYYY format to +XX-YYYY
+            input.value = iso2 + input.value // +XXYYYY format to FR+XXYYYY
 
             this.parent(c);
         },

@@ -118,7 +118,6 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 		$params = $this->getParams();
 		$element = $this->getElement();
 		$bits = $this->inputProperties($repeatCounter);
-        $this->BDRequest();
 		/* $$$ rob - not sure why we are setting $data to the form's data
 		 * but in table view when getting read only filter value from url filter this
 		 * _form_data was not set to no readonly value was returned
@@ -131,73 +130,14 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 		}
 
 		$value = $this->getValue($data, $repeatCounter);
-
-
-		if (!$this->getFormModel()->failedValidation())
-		{
-			if ($this->isEditable())
-			{
-				$value = $this->numberFormat($value);
-			}
-		}
-
-		if (!$this->isEditable())
-		{
-			if ($params->get('render_as_qrcode', '0') === '1')
-			{
-				// @TODO - skip this is new form
-				if (!empty($value))
-				{
-					$value = $this->qrCodeLink($data);
-				}
-			}
-			else
-			{
-				$this->_guessLinkType($value, $data);
-				$value = $this->format($value, false);
-				$value = $this->getReadOnlyOutput($value, $value);
-			}
-
-			return ($element->hidden == '1') ? "<!-- " . $value . " -->" : $value;
-		}
-		else
-		{
-			if ($params->get('autocomplete', '0') === '3')
-			{
-				$bits['class'] .= ' fabrikGeocomplete';
-				$bits['autocomplete'] = 'off';
-			}
-		}
-
-		/* stop "'s from breaking the content out of the field.
-		 * $$$ rob below now seemed to set text in field from "test's" to "test&#039;s" when failed validation
-		 * so add false flag to ensure its encoded once only
-		 * $$$ hugh - the 'double encode' arg was only added in 5.2.3, so this is blowing some sites up
-		 */
-		if (version_compare(phpversion(), '5.2.3', '<'))
-		{
-			$bits['value'] = htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
-		}
-		else
-		{
-			$bits['value'] = htmlspecialchars($value, ENT_COMPAT, 'UTF-8', false);
-		}
-
-		$bits['class'] .= ' ' . $params->get('text_format');
-
-		if ($params->get('speech', 0))
-		{
-			$bits['x-webkit-speech'] = 'x-webkit-speech';
-		}
+        $bits['inputValue'] = $this->DBFormatToNormal($value);
+        $bits['selectValue'] = substr($value, 0, 2);
 
 		$layout = $this->getLayout('form');
 		$layoutData = new stdClass;
-		$layoutData->scanQR = $params->get('scan_qrcode', '0') === '1';
 		$layoutData->attributes = $bits;
 
-        $layoutData->dataSelect = $this->BDRequest();
-
-		$layoutData->sizeClass = $params->get('bootstrap_class', '');
+        $layoutData->dataSelect = $this->DBRequest();
 
 		return $layout->render($layoutData);
 	}
@@ -214,68 +154,6 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
         return parent::getValue($data, $repeatCounter, $opts);
-	}
-
-	/**
-	 * Format guess link type
-	 *
-	 * @param   string  &$value         Original field value
-	 * @param   array   $data           Record data
-	 *
-	 * @return  void
-	 */
-	protected function _guessLinkType(&$value, $data) // PAS TOUCHE
-	{
-		$params = $this->getParams();
-
-		if ($params->get('guess_linktype') == '1')
-		{
-			$w = new FabrikWorker;
-			$opts = $this->linkOpts();
-			$title = $params->get('link_title', '');
-			$attrs = $params->get('link_attributes', '');
-
-			if (!empty($attrs))
-			{
-				$attrs = $w->parseMessageForPlaceHolder($attrs);
-				$attrs = explode(' ', $attrs);
-
-				foreach ($attrs as $attr)
-				{
-					list($k, $v) = explode('=', $attr);
-					$opts[$k] = trim($v, '"');
-				}
-			}
-			else
-			{
-				$attrs = array();
-			}
-
-			if ((new MediaHelper)->isImage($value))
-			{
-				$alt = empty($title) ? '' : 'alt="' . strip_tags($w->parseMessageForPlaceHolder($title, $data)) . '"';
-				$value = '<img src="' . $value . '" ' . $alt . ' ' . implode(' ', $attrs) . ' />';
-			}
-			else
-			{
-				if (FabrikWorker::isEmail($value) || JString::stristr($value, 'http'))
-				{
-				}
-				elseif (JString::stristr($value, 'www.'))
-				{
-					$value = 'http://' . $value;
-				}
-
-				if ($title !== '')
-				{
-					$opts['title'] = strip_tags($w->parseMessageForPlaceHolder($title, $data));
-				}
-
-				$label = FArrayHelper::getValue($opts, 'title', '') !== '' ? $opts['title'] : $value;
-
-				$value = FabrikHelperHTML::a($value, $label, $opts);
-			}
-		}
 	}
 
     /**
@@ -337,7 +215,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 	}
 
 
-    public function BDRequest() // pour récup les donées de la table data_country_phone_info
+    public function DBRequest() // pour récup les donées de la table data_country_phone_info
     {
         $db = JFactory::getDbo();
         $query = 'SELECT dc.iso2, dc.flag FROM data_country dc
@@ -398,7 +276,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 
     public function DBFormatToNormal($number)
     {
-        return str_replace('-', '', $number);
+        return substr($number, 2, strlen($number));
     }
 
 }
