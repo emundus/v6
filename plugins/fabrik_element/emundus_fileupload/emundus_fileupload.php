@@ -444,16 +444,16 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
      */
     public function getFileName($user, $attachId, $label, $file, $fnum) {
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'checklist.php');
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
         $m_profile = new EmundusModelProfile();
-        $m_cheklist = new EmundusModelChecklist();
+        $h_checklist = new EmundusHelperChecklist();
         $m_files = new EmundusModelFiles();
 
         $profile = $m_profile->getProfileByApplicant($user);
         $fnumInfos = $m_files->getFnumInfos($fnum);
-        $fileName = $m_cheklist->setAttachmentName($file, $label, $fnumInfos);
+        $fileName = $h_checklist->setAttachmentName($file, $label, $fnumInfos);
 
         /*$fileName = strtolower(preg_replace(array('([\40])', '([^a-zA-Z0-9-])', '(-{2,})'), array('_', '', '_'), preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/', '$1', htmlentities(strtoupper($profile['lastname']) . '_' . ucfirst($profile['firstname']), ENT_NOQUOTES, 'UTF-8'))));
         $fileName .= $label . '-' . rand() . '.' . pathinfo($file, PATHINFO_EXTENSION);*/
