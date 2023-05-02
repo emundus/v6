@@ -32,13 +32,13 @@ class ValidatorJS {
             const number = props.target.value;
             let format;
 
-            try // test if number.lengh > 1
+            try // test number.lengh > 1
             {
                 format = libphonenumber.parsePhoneNumber(number.substring(this.countrySelected.country_code.length, number.length), this.countrySelected.iso2).format("E.164")
             }
             catch (e)
             {
-                // the number isn't long enough, meh
+                // too short, meh
             }
 
             if (format && libphonenumber.isValidNumber(format))
@@ -77,7 +77,7 @@ class ValidatorJS {
 
         try
         {
-            this.countrySelected.country_code = "+" + libphonenumber.parsePhoneNumber("00", this.countrySelected.iso2).countryCallingCode;
+            this.countrySelected.country_code = "+" + libphonenumber.parsePhoneNumber("00", this.countrySelected.iso2).countryCallingCode; // +XX format
         }
         catch (e)
         {

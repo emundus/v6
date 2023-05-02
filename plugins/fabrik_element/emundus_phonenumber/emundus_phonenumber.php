@@ -10,10 +10,6 @@
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-use Joomla\CMS\Helper\MediaHelper;
-use Joomla\Utilities\ArrayHelper;
-
 jimport('joomla.application.component.model');
 
 /**
@@ -25,39 +21,6 @@ jimport('joomla.application.component.model');
  */
 class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 {
-
-	/**
-	 * Format the string for use in list view, email data
-	 *
-	 * @param   mixed $d               data
-	 * @param   bool  $doNumberFormat  run numberFormat()
-	 *
-	 * @return string
-	 */
-	protected function format(&$d, $doNumberFormat = true) // PAS TOUCHE
-	{
-		$params = $this->getParams();
-		$format = $params->get('text_format_string');
-		$formatBlank = $params->get('field_format_string_blank', true);
-
-		if ($doNumberFormat)
-		{
-			$d = $this->numberFormat($d);
-		}
-
-		if ($format != '' && ($formatBlank || $d != ''))
-		{
-			$d = sprintf($format, $d);
-		}
-
-		if ($params->get('password') == '1')
-		{
-			$d = str_pad('', JString::strlen($d), '*');
-		}
-
-		return $d;
-	}
-
 
     /**
      * Pre-render just the element (no labels etc.)
@@ -81,8 +44,9 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
         $this->inRepeatGroup = $groupModel->canRepeat();
         $this->_inJoin       = $groupModel->isJoin();
         $opts                = array('runplugins' => 1);
+
         $value = $this->getValue($data, $repeatCounter, $opts);
-        $value = $this->DBFormatToNormal($value);
+        $value = $this->DBFormatToE164Format($value);
 
         if ($this->isEditable())
         {
@@ -105,22 +69,10 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 	 */
 	public function render($data, $repeatCounter = 0) // first à ce render
 	{
-		$params = $this->getParams();
-		$element = $this->getElement();
 		$bits = $this->inputProperties($repeatCounter);
-		/* $$$ rob - not sure why we are setting $data to the form's data
-		 * but in table view when getting read only filter value from url filter this
-		 * _form_data was not set to no readonly value was returned
-		 * added little test to see if the data was actually an array before using it
-		 */
-
-		if (is_array($this->getFormModel()->data))
-		{
-			$data = $this->getFormModel()->data;
-		}
 
 		$value = $this->getValue($data, $repeatCounter);
-        $bits['inputValue'] = $this->DBFormatToNormal($value);
+        $bits['inputValue'] = $this->DBFormatToE164Format($value);
         $bits['selectValue'] = substr($value, 0, 2);
 
 		$layout = $this->getLayout('form');
@@ -159,7 +111,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
     {
         if (!is_null($data))
         {
-            $data = $this->DBFormatToNormal($data);
+            $data = $this->DBFormatToE164Format($data);
         }
         return parent::renderListData($data, $thisRow, $opts);
     }
@@ -179,33 +131,25 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 		{
 			foreach ($val as $k => $v)
 			{
-				$val[$k] = $this->_indStoreDatabaseFormat($v);
+				$val[$k] = $this->unNumberFormat($v);
 			}
 
 			$val = implode(GROUPSPLITTER, $val);
 		}
 		else
 		{
-			$val = $this->_indStoreDatabaseFormat($val);
+			$val = $this->unNumberFormat($val);
 		}
 
 		return $val;
 	}
 
-	/**
-	 * Manipulates individual values posted form data for insertion into database
-	 *
-	 * @param   string  $val  This elements posted form data
-	 *
-	 * @return  string
-	 */
-	protected function _indStoreDatabaseFormat($val)
-	{
-		return $this->unNumberFormat($val);
-	}
-
-
-    public function DBRequest() // pour récup les donées de la table data_country_phone_info
+    /**
+     * Get all iso2 and flags (not null) from table data_country
+     *
+     * @return  array|mixed         JSON object array
+     */
+    public function DBRequest()
     {
         $db = JFactory::getDbo();
         $query = 'SELECT dc.iso2, dc.flag FROM data_country dc
@@ -213,17 +157,23 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
         $db->setQuery($query);
 
         $db->execute();
-
-        return $db->loadObjectList(); // on renvoit toutes les données sous forme de liste d'object (format JSON)
+        return $db->loadObjectList();
     }
 
-
+    /**
+     * Internal element validation
+     *
+     * @param   array $data          Form data
+     * @param   int   $repeatCounter Repeat group counter
+     *
+     * @return  bool
+     */
     public function validate($data, $repeatCounter = 0)
     {
-        $value = $this->DBFormatToNormal((string)$data); // +XX-YYYY format to +XXYYYY format for tests only
+        $value = $this->DBFormatToE164Format((string)$data); // ZZ+XXYYYY to +XXYYYY format
         $isValid = false;
 
-        if (preg_match("/^\+\d{5,15}$/", $value))
+        if (preg_match('/^\+\d{5,15}$/', $value))
         {
             $isValid = true;
         }
@@ -233,7 +183,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
             {
                 $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_BEGIN_WITH_PLUS');
             }
-            else if (!(preg_match("/\+\d+$/", $value)))
+            else if (!(preg_match('/\+\d+$/', $value)))
             {
                 $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_ONLY_NUMBERS');
             }
@@ -264,7 +214,13 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
         return array('FbPhoneNumber', $id, $opts);
     }
 
-    public function DBFormatToNormal($number)
+    /**
+     * Returns +XXYYYY format from ZZ+XXYYYY DB format data
+     *
+     * @param   string    $number       string DB format
+     * @return  string
+     */
+    public function DBFormatToE164Format($number)
     {
         return substr($number, 2, strlen($number));
     }
