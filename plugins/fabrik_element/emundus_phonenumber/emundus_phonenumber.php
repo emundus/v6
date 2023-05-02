@@ -81,7 +81,8 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
         $this->inRepeatGroup = $groupModel->canRepeat();
         $this->_inJoin       = $groupModel->isJoin();
         $opts                = array('runplugins' => 1);
-        $this->getValue($data, $repeatCounter, $opts);
+        $value = $this->getValue($data, $repeatCounter, $opts);
+        $value = $this->DBFormatToNormal($value);
 
         if ($this->isEditable())
         {
@@ -90,18 +91,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
         else
         {
             $htmlId = $this->getHTMLId($repeatCounter);
-
-            // $$$ rob even when not in ajax mode the element update() method may be called in which case we need the span
-            // $$$ rob changed from span wrapper to div wrapper as element's content may contain divs which give html error
-
-            // Placeholder to be updated by ajax code
-            // @TODO the entity decode causes problems on RO with tooltips
-            $v = $this->getROElement($data, $repeatCounter);
-            $v = html_entity_decode($v);
-            $v = $this->DBFormatToNormal($v);
-            //$v = $v == '' ? '&nbsp;' : $v;
-
-            return '<div class="fabrikElementReadOnly" id="' . $htmlId . '">' . $v . '</div>';
+            return '<div class="fabrikElementReadOnly" id="' . $htmlId . '">' . $value . '</div>';
         }
     }
 

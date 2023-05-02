@@ -1839,7 +1839,7 @@ class EmundusModelApplication extends JModelList
                                                         $elements[$j]->content = empty($elements[$j]->eval) ? $elements[$j]->default : $r_elt;
                                                         $elt = JText::_($elements[$j]->content);
                                                     } elseif ($elements[$j]->plugin == 'emundus_phonenumber') {
-                                                        $elt = str_replace('-', '', $r_elt);
+                                                        $elt = substr($r_elt, 2, strlen($r_elt));
                                                     } else {
                                                         $elt = $r_elt;
                                                     }
@@ -2094,7 +2094,7 @@ class EmundusModelApplication extends JModelList
                                                     $elt = '';
                                                 }
                                             } elseif ($element->plugin == 'emundus_phonenumber') {
-                                                $elt = str_replace('-', '', $element->content);
+                                                $elt = substr($element->content, 2, strlen($element->content));
                                             } else {
                                                 $elt = $element->content;
                                             }
@@ -2417,7 +2417,7 @@ class EmundusModelApplication extends JModelList
                                                 } elseif ($elements[$j]->plugin == 'yesno') {
                                                     $elt = ($r_elt == 1) ? JText::_("JYES") : JText::_("JNO");
                                                 } elseif($elements[$j]->plugin == 'emundus_phonenumber'){
-                                                    $elt = str_replace('-', '', $r_elt);
+                                                    $elt = substr($r_elt, 2, strlen($r_elt));
                                                 } else {
                                                     $elt = JText::_($r_elt);
                                                 }
@@ -2599,7 +2599,7 @@ class EmundusModelApplication extends JModelList
                                                 } elseif ($elements[$j]->plugin == 'display') {
                                                     $elt = empty($elements[$j]->eval) ? $elements[$j]->default : $r_elt;
                                                 } elseif ($elements[$j]->plugin == 'emundus_phonenumber'){
-                                                    $elt = str_replace('-', '', $r_elt);
+                                                    $elt = substr($r_elt, 2, strlen($r_elt));
                                                 } else {
                                                     $elt = JText::_($r_elt);
                                                 }
@@ -2796,7 +2796,7 @@ class EmundusModelApplication extends JModelList
                                                     $elt = $element->content;
                                                 }
                                             } elseif ($element->plugin == 'emundus_phonenumber'){
-                                                $elt = str_replace('-', '', $element->content);
+                                                $elt = substr($element->content, 2, strlen($element->content));
                                             } else {
                                                 $elt = JText::_($element->content);
                                             }
@@ -5548,7 +5548,7 @@ class EmundusModelApplication extends JModelList
                     break;
 
                 case 'emundus_phonenumber':
-                    $elt = str_replace('-', '', $value);
+                    $elt = substr($value, 2, strlen($value));
                     break;
 
                 default:

@@ -28,21 +28,24 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
         {
             const select = this.element.getElement("select");
             const input = this.element.getElement("input");
-            const allCountries = JSON.parse(atob(select.getAttribute("data-countries"))); // decode base64 + get JSON to array type
 
-            let defaultValue; // use if already have value in input
-            let selectedCountryIndex = this.getSelectedCountryIndex(allCountries, this.options.countrySelected); // get default country
+            if (select !== null && input !== null) { // not in details format
+                const allCountries = JSON.parse(atob(select.getAttribute("data-countries"))); // decode base64 + get JSON to array type
 
-            if (input.value.length > 4) // already have value
-            {
-                defaultValue = input.value;
+                let defaultValue; // use if already have value in input
+                let selectedCountryIndex = this.getSelectedCountryIndex(allCountries, this.options.countrySelected); // get default country
 
-                const countryIso2 = select.getAttribute("value"); // get iso2
-                selectedCountryIndex = this.getSelectedCountryIndex(allCountries, countryIso2); // get index array from iso2
+                if (input.value.length > 4) // already have value
+                {
+                    defaultValue = input.value;
+
+                    const countryIso2 = select.getAttribute("selectedValue"); // get iso2
+                    selectedCountryIndex = this.getSelectedCountryIndex(allCountries, countryIso2); // get index array from iso2
+                }
+
+                this.ValidatorJS = new ValidatorJS(input, select, allCountries, selectedCountryIndex, defaultValue);
+                this.ValidatorJS.setColors(validColor, errorColor, unsupportedColor, defaultColor);
             }
-
-            this.ValidatorJS = new ValidatorJS(input, select, allCountries, selectedCountryIndex, defaultValue);
-            this.ValidatorJS.setColors(validColor, errorColor, unsupportedColor, defaultColor);
         },
 
         getSelectedCountryIndex: function (allCountries, searchCountry)
