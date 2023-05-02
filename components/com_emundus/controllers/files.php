@@ -1305,7 +1305,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $session = JFactory::getSession();
         $fnums = $session->get('fnums_export');
-        $anonymize_data = false;
+        $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
 
         if (count($fnums) == 0) {
             $fnums = array($session->get('application_fnum'));
@@ -1356,7 +1356,6 @@ class EmundusControllerFiles extends JControllerLegacy
 
             switch ($col[0]) {
                 case "photo":
-                    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                     if (!$anonymize_data) {
                         $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
                         if ($allowed_attachments === true || in_array('10', $allowed_attachments)) {
@@ -1441,7 +1440,6 @@ class EmundusControllerFiles extends JControllerLegacy
         // On traite les en-têtes
         if ($start == 0) {
 
-            $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
             if ($anonymize_data) {
                 $line = JText::_('COM_EMUNDUS_FILE_F_NUM')."\t".JText::_('COM_EMUNDUS_STATUS')."\t".JText::_('COM_EMUNDUS_PROGRAMME')."\t";
             } else {

@@ -5,7 +5,7 @@
     </p>
 	  <input v-if="formats.length > 0" id="search" v-model="search" type="text" class="em-mt-16 em-w-100" placeholder=""/>
     <draggable
-        v-model="formats"
+        v-model="displayedFormats"
         class="draggables-list"
         :group="{ name: 'form-builder-documents', pull: 'clone', put: false }"
         :sort="false"
@@ -16,7 +16,7 @@
       <transition-group>
         <div
 		        v-for="format in displayedFormats"
-            :key="format.id + '-' + format.mandatory"
+            :key="format.id"
             class="em-flex-row em-flex-space-between draggable-element em-mt-8 em-mb-8 em-p-16"
         >
           <span id="format-name" class="em-w-100 em-p-16" :title="format.name[shortDefaultLang]">{{ format.name[shortDefaultLang] }}</span>
