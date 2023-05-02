@@ -24,8 +24,8 @@ jimport('joomla.application.component.view');
  */
 class EmundusViewFiles extends JViewLegacy
 {
-	protected int|null $itemId;
-	protected string|null $cfnum;
+	protected $itemId;
+	protected $cfnum;
 
 	protected JPagination $pagination;
 	protected string $pageNavigation;
@@ -33,7 +33,7 @@ class EmundusViewFiles extends JViewLegacy
 	protected array $lists;
 	protected array $actions;
 	protected array $users;
-	protected string|array $datas;
+	protected $datas;
 	protected string $delayAct;
 	protected string $submitForm;
 	protected array $accessObj;
