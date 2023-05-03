@@ -704,7 +704,7 @@ class EmundusModelForm extends JModelList {
 
 									foreach ($formsid_arr as $formid) {
 										$query->clear()
-											->select('label', 'intro')
+											->select('label, intro')
 											->from($db->quoteName('#__fabrik_forms'))
 											->where($db->quoteName('id') . ' = ' . $db->quote($formid));
 										$db->setQuery($query);
@@ -714,15 +714,28 @@ class EmundusModelForm extends JModelList {
 										$intro = array();
 
 										foreach ($languages as $language) {
-											$label[$language->sef] = $formbuilder->getTranslation($form->label,$language->lang_code);
-											$intro[$language->sef] = $formbuilder->getTranslation($form->intro,$language->lang_code);
-											if($label[$language->sef] == ''){
+											# Fabrik has a functionnality that adds <p> tags around the intro text, we need to remove them
+											$stripped_intro = strip_tags($form->intro);
+											if ($form->intro == '<p>' . $stripped_intro . '</p>') {
+												$form->intro = $stripped_intro;
+											}
+
+											$label[$language->sef] = $formbuilder->getTranslation($form->label, $language->lang_code);
+											$intro[$language->sef] = $formbuilder->getTranslation($form->intro, $language->lang_code);
+
+											if ($label[$language->sef] == ''){
 												$label[$language->sef] = $form->label;
+											}
+											if ($intro[$language->sef] == ''){
+												$intro[$language->sef] = $form->intro;
 											}
 										}
 
 										$formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile);
 									}
+
+									// Copy attachments
+									$copied = $this->copyAttachmentsToNewProfile($pid, $newprofile);
 
 									// Create checklist menu
 									$this->addChecklistMenu($newprofile);
@@ -748,6 +761,65 @@ class EmundusModelForm extends JModelList {
 		return $duplicated;
     }
 
+	public function copyAttachmentsToNewProfile($oldprofile, $newprofile) {
+		$copied = false;
+
+		if (!empty($oldprofile) && !empty($newprofile)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('*')
+				->from($db->quoteName('#__emundus_setup_attachment_profiles'))
+				->where($db->quoteName('profile_id') . ' = ' . $oldprofile);
+
+			try {
+				$db->setQuery($query);
+				$attachments = $db->loadAssocList();
+			} catch (Exception $e) {
+				JLog::add('component/com_emundus/models/form | Error when get attachments to copy : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+
+
+			if (!empty($attachments)) {
+				$query->clear();
+
+				$columns = array_keys($attachments[0]);
+				$id_key = array_search('id', $columns);
+				unset($columns[$id_key]);
+
+				$values = array();
+				foreach ($attachments as $attachment) {
+					$attachment['profile_id'] = $newprofile;
+					unset($attachment['id']);
+
+					foreach ($attachment as $key => $value) {
+						if (empty($value) && $value != 0) {
+							$attachment[$key] = null;
+						}
+					}
+
+					// do not use db->quote() every time, only if the value is not an integer and not null
+					$values[] = implode(',', array_map(function($value) use ($db) {
+						return is_null($value) ? 'NULL' : $db->quote($value);
+					}, $attachment));
+				}
+
+				$query->clear()
+                    ->insert($db->quoteName('#__emundus_setup_attachment_profiles'))
+					->columns($db->quoteName($columns))
+					->values($values);
+
+				try {
+					$db->setQuery($query);
+					$copied = $db->execute();
+				} catch (Exception $e) {
+					JLog::add('component/com_emundus/models/form | Error when copy attachments to new profile : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+				}
+			}
+		}
+
+		return $copied;
+	}
 
     public function getFormById($id) {
         if (empty($id)) {
@@ -1197,7 +1269,7 @@ class EmundusModelForm extends JModelList {
             ->from($db->quoteName('#__emundus_setup_attachments','a'))
             ->join('LEFT', $db->quoteName('#__emundus_setup_attachment_profiles', 'b') . ' ON ' . $db->quoteName('b.attachment_id') . ' = ' . $db->quoteName('a.id'))
             ->where($db->quoteName('a.published') . ' = ' . 1)
-            ->order($db->quoteName('ordering'));
+            ->order($db->quoteName('a.value'));
 
         $db->setQuery($query);
 

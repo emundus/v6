@@ -139,6 +139,62 @@ class EmundusController extends JControllerLegacy {
         }
     }
 
+    function pdf_by_form() {
+        $user = JFactory::getSession()->get('emundusUser');
+        $jinput = JFactory::getApplication()->input;
+        $student_id = $jinput->get('user', null, 'string');
+        $fnum = $jinput->get('fnum', null, 'string');
+        $formid = [$jinput->get('form', null, 'string')];
+
+        $fnum = !empty($fnum)?$fnum:$user->fnum;
+        $m_profile = $this->getModel('profile');
+        $m_campaign = $this->getModel('campaign');
+
+        $options = array(
+            'aemail',
+            'afnum',
+            'adoc-print',
+            'aapp-sent',
+        );
+
+        $infos 		= $m_profile->getFnumDetails($fnum);
+
+
+        if (!empty($fnum)) {
+            $candidature = $m_profile->getFnumDetails($fnum);
+            $campaign = $m_campaign->getCampaignByID($candidature['campaign_id']);
+        }
+
+        $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$campaign['training'].'.php';
+        $file_custom = JPATH_LIBRARIES.DS.'emundus'.DS.'custom'.DS.'pdf_'.$campaign['training'].'.php';
+        if (!file_exists($file) && !file_exists($file_custom)) {
+            $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
+        }
+        else{
+            if (file_exists($file_custom)){
+                $file = $file_custom;
+            }
+        }
+
+        if (!file_exists(EMUNDUS_PATH_ABS.$student_id)) {
+            mkdir(EMUNDUS_PATH_ABS.$student_id);
+            chmod(EMUNDUS_PATH_ABS.$student_id, 0755);
+        }
+
+        require_once($file);
+
+        // Here we call the profile by fnum function, which will get the candidate's profile in the status table
+        // $profile_id = $m_profile->getProfileByFnum($fnum);
+
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+            //application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, $options, null, $profile_id,null,null);
+            application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, $formid, $options);
+            exit;
+        } else {
+            die(JText::_('ACCESS_DENIED'));
+        }
+    }
+
 
     /**
      * Function that will print the candidat's PDF depending on their file status
@@ -725,8 +781,10 @@ class EmundusController extends JControllerLegacy {
         $can_submit_encrypted = $eMConfig->get('can_submit_encrypted', 1);
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'checklist.php');
+        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'checklist.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
         $m_profile = new EmundusModelProfile;
+        $h_checklist = new EmundusHelperChecklist();
         $m_checklist = new EmundusModelChecklist;
         $m_application = new EmundusModelApplication;
 
@@ -1047,10 +1105,7 @@ class EmundusController extends JControllerLegacy {
 
                 } elseif (isset($file['name']) && $file['error'] == UPLOAD_ERR_OK) {
                     $fnumInfos = $m_files->getFnumInfos($fnum);
-                    //$paths = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($user->lastname.'_'.$user->firstname,ENT_NOQUOTES,'UTF-8'))));
-                    //$file_array = explode(".", $file['name']);
-                    //$paths .= $labels.'-'.rand().'.'.end($file_array);
-                    $paths = $m_checklist->setAttachmentName($file['name'], $labels, $fnumInfos);
+                    $paths = $h_checklist->setAttachmentName($file['name'], $labels, $fnumInfos);
 
                     if (copy( $file['tmp_name'], $chemin.$user->id.DS.$paths)) {
                         $can_be_deleted = @$post['can_be_deleted_'.$attachments]!=''?$post['can_be_deleted_'.$attachments]:JRequest::getVar('can_be_deleted', 1, 'POST', 'none',0);
