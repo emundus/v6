@@ -130,7 +130,10 @@ ksort($applications);
                         <?php foreach ($group['applications'] as $application) : ?>
 
                             <?php
-                            $is_admission = in_array($application->status, $admission_status);
+	                        $is_admission = false;
+                            if(!empty($admission_status)) {
+	                            $is_admission = in_array($application->status, $admission_status);
+                            }
                             $display_app = true;
                             if(!empty($show_status) && !in_array($application->status, $show_status)) {
                                 $display_app = false;
@@ -266,7 +269,7 @@ ksort($applications);
                                                                 <a class="em-text-neutral-900 em-pointer" href="<?= JRoute::_($first_page_url); ?>" id="actions_block_open_<?php echo $application->fnum ?>">
                                                                     <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
                                                                 </a>
-                                                                <?php if (in_array($application->status, $status_for_delete)) : ?>
+                                                                <?php if (!empty($status_for_delete) && in_array($application->status, $status_for_delete)) : ?>
                                                                     <a class="em-text-neutral-900 em-pointer" onclick="deletefile('<?php echo $application->fnum; ?>');" id="actions_block_delete_<?php echo $application->fnum ?>">
                                                                         <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
                                                                     </a>
@@ -356,7 +359,7 @@ ksort($applications);
                                                         <span class="mod_emundus_applications___circle em-mr-8 label-<?= $application->class; ?>-500"></span>
                                                         <span class="mod_emundus_applications___status_label em-neutral-800-color em-applicant-default-font"><?= $application->value; ?></span>
                                                     </div>
-                                                <?php elseif (in_array($application->status,$visible_status)) :?>
+                                                <?php elseif (!empty($visible_status) && in_array($application->status,$visible_status)) :?>
                                                     <label class="em-applicant-text-color"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_STATUS'); ?> :</label>
                                                     <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row" id="application_status_<?php echo $application->fnum ?>">
                                                         <span class="mod_emundus_applications___circle em-mr-8 label-<?= $application->class; ?>-500"></span>

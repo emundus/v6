@@ -47,7 +47,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
     }
 
     function clear() {
-        EmundusHelperFilters::clear();
+        EmundusHelperFiles::clear();
     }
 
     function setCampaign()
@@ -600,8 +600,8 @@ class EmundusControllerCampaign extends JControllerLegacy {
         $text->fr=$jinput->getString('text_fr');
         $text->en=$jinput->getString('text_en');
         $reference_id=$jinput->getInt('did');
-        $falang=$this->getModel('falang');
-        $result=$falang->updateFalang($text,$reference_id,'emundus_setup_attachments','value');
+        $falang = new EmundusModelFalang();
+        $result = $falang->updateFalang($text,$reference_id,'emundus_setup_attachments','value');
 
         if ($result) {
             $tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_UPDATED'), 'data' => $result);
@@ -622,7 +622,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
         $jinput = JFactory::getApplication()->input;
 
         $reference_id = $jinput->getInt('docid');
-        $falang = $this->getModel('falang');
+        $falang = new EmundusModelFalang();
 
         $result = $falang->getFalang($reference_id,'emundus_setup_attachments','value');
 

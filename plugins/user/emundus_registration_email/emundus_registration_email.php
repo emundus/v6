@@ -256,7 +256,9 @@ class plgUserEmundus_registration_email extends JPlugin {
      * @throws Exception
      */
     private function sendActivationEmail($data, $token) {
-        if (json_decode($data['params'])->skip_activation) {
+
+        $params = json_decode($data['params']);
+        if (isset($params->skip_activation)) {
             return false;
         }
 

@@ -6,8 +6,9 @@ require_once JPATH_CONFIGURATION . '/configuration.php';
 
 class com_emundusInstallerScript
 {
-	protected $manifest_cache;
-	protected $schema_version;
+    protected $manifest_cache;
+    protected $schema_version;
+    protected EmundusHelperUpdate $h_update;
 
 	public function __construct()
 	{
@@ -28,8 +29,9 @@ class com_emundusInstallerScript
 		$db->setQuery($query);
 		$this->schema_version = $db->loadResult();
 
-		require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
-	}
+        require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+        $this->h_update = new EmundusHelperUpdate();
+    }
 
 
 	/**
@@ -1342,6 +1344,18 @@ try {
 			echo "\033[31mYou have to run update-db.sh before CLI ! \033[0m\n";
 			exit;
 		}
+
+        if(version_compare(PHP_VERSION, '8.0.0', '>=')) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->clear()
+                ->update('#__extensions')
+                ->set($db->quoteName('enabled') . ' = 0')
+                ->where($db->quoteName('name') . ' LIKE ' . $db->quote('%dpcalendar%'));
+            $db->setQuery($query);
+            $db->execute();
+        }
 	}
 
 

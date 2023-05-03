@@ -985,10 +985,8 @@ class EmundusModelEmails extends JModelList {
 
             //tags from Fabrik ID
             $element_ids = $this->getFabrikElementIDs($mail_body);
-            $synthesis = new stdClass();
             if (count(@$element_ids[0]) > 0) {
                 $element_values     = $this->getFabrikElementValues($fnum, $element_ids[1]);
-                $synthesis->block   = $this->setElementValues($mail_body, $element_values);
             }
 
             $mail_attachments = $jinput->get('mail_attachments', null, 'STRING');
@@ -1212,10 +1210,8 @@ class EmundusModelEmails extends JModelList {
 
         // Tags from Fabrik ID
         $element_ids = $this->getFabrikElementIDs($mail_body);
-        $synthesis = new stdClass();
         if (count(@$element_ids[0]) > 0) {
             $element_values = $this->getFabrikElementValues($example_fnum, $element_ids[1]);
-            $synthesis->block = $this->setElementValues($mail_body, $element_values);
         }
 
         $mail_attachments = $jinput->post->getString('mail_attachments');
@@ -1296,8 +1292,8 @@ class EmundusModelEmails extends JModelList {
             // 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
             $link_accept = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid->accepted.'&keyid='.$key1.'&cid='.$campaign_id;
             $link_refuse = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid->refused.'&keyid='.$key1.'&cid='.$campaign_id.'&usekey=keyid&rowid='.$key1;
-            $link_accept_noform = 'index.php?option=com_fabrik&c=form&view=form&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id;
-            $link_refuse_noform = 'index.php?option=com_fabrik&c=form&view=form&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id.'&usekey=keyid&rowid='.$key1;
+            $link_accept_noform = 'index.php?option=com_fabrik&c=form&view=form&keyid='.$key1.'&sid='.$fnum_info['applicant_id'].'&email='.$m_to.'&cid='.$campaign_id;
+            $link_refuse_noform = 'index.php?option=com_fabrik&c=form&view=form&keyid='.$key1.'&sid='.$fnum_info['applicant_id'].'&email='.$m_to.'&cid='.$campaign_id.'&usekey=keyid&rowid='.$key1;
 
             $post = array(
                 'EXPERT_ACCEPT_LINK'    => JURI::base().$link_accept,

@@ -940,36 +940,39 @@ class EmundusHelperUpdate
                 $params = json_decode($result->params);
                 $old_events = json_decode($params->event_handlers);
 
-                $events = array_values($old_events->event);
+				if(!empty($old_events->event)) {
+					$events = array_values($old_events->event);
 
-                if(!empty($events)) {
-                    $codes = array_values($old_events->code);
+					if (!empty($events) && !empty($old_events->code)) {
+						$codes = array_values($old_events->code);
 
-                    $new_events = new stdClass;
-                    $new_events->event_handlers = new stdClass;
+						$new_events                 = new stdClass;
+						$new_events->event_handlers = new stdClass;
 
-                    foreach ($events as $key => $event) {
-                        $new_events->event_handlers->{'event_handlers' . $key} = new stdClass;
-                        $new_events->event_handlers->{'event_handlers' . $key}->event = $event;
+						foreach ($events as $key => $event) {
+							$new_events->event_handlers->{'event_handlers' . $key}        = new stdClass;
+							$new_events->event_handlers->{'event_handlers' . $key}->event = $event;
 
-                        $backed_file = fopen('libraries/emundus/custom/'.strtolower($event) . '_' . $key . '.php', 'w');
-                        if ($backed_file) {
-                            fwrite($backed_file, '<?php ' . $codes[$key]);
-                            fclose($backed_file);
-                        } else {
-                            JLog::add('Failed to backup events', JLog::WARNING, 'com_emundus.cli');
-                        }
+							$backed_file = fopen('libraries/emundus/custom/' . strtolower($event) . '_' . $key . '.php', 'w');
+							if ($backed_file) {
+								fwrite($backed_file, '<?php ' . $codes[$key]);
+								fclose($backed_file);
+							}
+							else {
+								JLog::add('Failed to backup events', JLog::WARNING, 'com_emundus.cli');
+							}
 
-                        $new_events->event_handlers->{'event_handlers' . $key}->code = $codes[$key];
-                    }
+							$new_events->event_handlers->{'event_handlers' . $key}->code = $codes[$key];
+						}
 
-                    $query->clear()
-                        ->update($db->quoteName('#__extensions'))
-                        ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($new_events)))
-                        ->where($db->quoteName('extension_id') . ' = ' . $db->quote($result->extension_id));
-                    $db->setQuery($query);
-                    $db->execute();
-                }
+						$query->clear()
+							->update($db->quoteName('#__extensions'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($new_events)))
+							->where($db->quoteName('extension_id') . ' = ' . $db->quote($result->extension_id));
+						$db->setQuery($query);
+						$db->execute();
+					}
+				}
             }
         } catch (Exception $e) {
             $updated = ['status' => false, 'message' => "Error when convert event handlers : " . $e->getMessage()];

@@ -27,6 +27,7 @@ class EmundusController extends JControllerLegacy {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         include_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+        include_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
         include_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
         include_once (JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
 
@@ -76,8 +77,8 @@ class EmundusController extends JControllerLegacy {
         $profile = $jinput->get('profile', null, 'string');
 
         $fnum = !empty($fnum)?$fnum:$user->fnum;
-        $m_profile = $this->getModel('profile');
-        $m_campaign = $this->getModel('campaign');
+        $m_profile = new EmundusModelProfile();
+        $m_campaign = new EmundusModelCampaign();
 
         $options = array(
           'aemail',
@@ -100,6 +101,7 @@ class EmundusController extends JControllerLegacy {
         $h_menu = new EmundusHelperMenu;
         $getformids = $h_menu->getUserApplicationMenu($profile);
 
+	    $formid = [];
         foreach ($getformids as $getformid) {
             $formid[] = $getformid->form_id;
         }
@@ -126,7 +128,6 @@ class EmundusController extends JControllerLegacy {
         }
 
         require_once($file);
-
 
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, $options, null, $profile,null,null);
@@ -1557,7 +1558,10 @@ class EmundusController extends JControllerLegacy {
         if($current_user->id == $uid){
             $fnum = $current_user->fnum;
         }
-        $fnums = array_keys($current_user->fnums);
+	    $fnums = [];
+		if(!empty($current_user->fnums)) {
+			$fnums = array_keys($current_user->fnums);
+		}
 
 
         // This query checks if the file can actually be viewed by the user, in the case a file uploaded to his file by a coordniator is opened.
