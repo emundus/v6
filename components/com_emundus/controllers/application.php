@@ -839,6 +839,7 @@ class EmundusControllerApplication extends JControllerLegacy
 			$jinput = JFactory::getApplication()->input;
 			$action = $jinput->getString('action', '');
 			$fnum = $jinput->getString('fnum', '');
+			$module_id = $jinput->getInt('module_id', 0);
 
 			if (!empty($action) && !empty($fnum)) {
 				require_once JPATH_ROOT.'/components/com_emundus/helpers/files.php';
@@ -849,7 +850,7 @@ class EmundusControllerApplication extends JControllerLegacy
 				if (in_array($fnum, $current_user_fnums)) {
 					require_once (JPATH_COMPONENT . '/models/application.php');
 					$m_application = new EmundusModelApplication;
-					$response['status'] = $m_application->applicantCustomAction($action, $fnum);
+					$response['status'] = $m_application->applicantCustomAction($action, $fnum, $module_id);
 					$response['code'] = 200;
 
 					if ($response['status']) {

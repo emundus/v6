@@ -7,7 +7,6 @@
  */
 // no direct access
 defined('_JEXEC') or die;
-
 $config = JFactory::getConfig();
 $site_offset = $config->get('offset');
 
@@ -174,7 +173,7 @@ ksort($applications);
                                                         <span class="material-icons em-text-neutral-600" id="actions_button_<?php echo $application->fnum ?>" style="font-size: 24px">more_vert</span>
 
                                                         <!-- ACTIONS BLOCK -->
-                                                        <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color" id="actions_block_<?php echo $application->fnum ?>" style="display: none">
+                                                        <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color" id="actions_block_<?php echo $application->fnum ?>" style="display: none" data-mid="<?= $module->id ?>">
                                                             <a onclick="openFile(event,'<?php echo $first_page_url ?>')" class="em-text-neutral-900 em-pointer" href="<?= JRoute::_($first_page_url); ?>" id="actions_block_open_<?php echo $application->fnum ?>">
                                                                 <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
                                                             </a>
@@ -231,7 +230,7 @@ ksort($applications);
                                                             <span class="material-icons em-text-neutral-600" id="actions_button_<?php echo $application->fnum ?>" style="font-size: 16px">more_vert</span>
 
                                                             <!-- ACTIONS BLOCK -->
-                                                            <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color" id="actions_block_<?php echo $application->fnum ?>" style="display: none">
+                                                            <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color" id="actions_block_<?php echo $application->fnum ?>" style="display: none" data-mid="<?= $module->id ?>">
                                                                 <a class="em-text-neutral-900 em-pointer" href="<?= JRoute::_($first_page_url); ?>" id="actions_block_open_<?php echo $application->fnum ?>">
                                                                     <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
                                                                 </a>
@@ -274,7 +273,7 @@ ksort($applications);
                                                             <span class="material-icons em-text-neutral-600" id="actions_button_<?php echo $application->fnum ?>" style="font-size: 16px">more_vert</span>
 
                                                             <!-- ACTIONS BLOCK -->
-                                                            <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color" id="actions_block_<?php echo $application->fnum ?>" style="display: none">
+                                                            <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color" id="actions_block_<?php echo $application->fnum ?>" style="display: none" data-mid="<?= $module->id ?>">
                                                                 <a class="em-text-neutral-900 em-pointer" href="<?= JRoute::_($first_page_url); ?>" id="actions_block_open_<?php echo $application->fnum ?>">
                                                                     <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
                                                                 </a>
@@ -603,8 +602,9 @@ ksort($applications);
                         // get closest .mod_emundus_applications__actions
                         const actions = customAction.closest('.mod_emundus_applications__actions');
                         const fnum = actions.id.replace('actions_block_', '');
+                        const module_id = actions.dataset.mid;
 
-                        fetch('index.php?option=com_emundus&controller=application&task=applicantcustomaction&action=' + action + '&fnum=' + fnum)
+                        fetch('index.php?option=com_emundus&controller=application&task=applicantcustomaction&action=' + action + '&fnum=' + fnum + '&module_id=' + module_id)
                             .then((response) => {
                                 if (response.ok) {
                                     return response.json();

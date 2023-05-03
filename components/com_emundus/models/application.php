@@ -5598,7 +5598,14 @@ class EmundusModelApplication extends JModelList
         return $select;
     }
 
-	public function applicantCustomAction($action, $fnum, $redirect = false) {
+	/**
+	 * @param $action
+	 * @param $fnum
+	 * @param $module_id if not specified, will use the first published module
+	 * @param $redirect
+	 * @return bool true if the action was done successfully
+	 */
+	public function applicantCustomAction($action, $fnum, $module_id = 0, $redirect = false) {
 		$done = false;
 
 		if (!empty($action) && !empty($fnum)) {
@@ -5608,7 +5615,11 @@ class EmundusModelApplication extends JModelList
 			$query->select('id, params')
 				->from('#__modules')
 				->where('module LIKE ' . $db->quote('mod_emundus_applications'))
-				->where('published = 1');
+				->andWhere('published = 1');
+
+			if (!empty($module_id)) {
+				$query->andWhere('id = ' . $db->quote($module_id));
+			}
 
 			$db->setQuery($query);
 			$module = $db->loadAssoc();
