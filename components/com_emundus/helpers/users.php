@@ -16,9 +16,6 @@
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
-use Joomla\CMS\Language\Text;
-use Joomla\CMS\Date\Date;
-use Joomla\CMS\HTML\HTMLHelper;
 /**
  * Content Component Query Helper
  *

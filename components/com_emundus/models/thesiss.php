@@ -121,7 +121,6 @@ class EmundusModelThesiss extends JModelList
 
 					// Just to keep the default case
 					default:
-						$value = $value;
 						break;
 				}
 
@@ -178,7 +177,7 @@ class EmundusModelThesiss extends JModelList
 	protected function getListQuery() {
         $user = JFactory::getUser();
 		$config     = JFactory::getConfig();
-        
+
 		// Get current date and set it to timezone defined in settings
         $timezone = new DateTimeZone( $config->get('offset') );
 		$now = JFactory::getDate()->setTimezone($timezone);
@@ -208,7 +207,7 @@ class EmundusModelThesiss extends JModelList
 
 		// @TODO activate when application form will be created
         if (!JFactory::getUser()->guest) {
-        	
+
            	$query->select('etc.user as student_id, etc.fnum, etc.date_time');
             $query->join('LEFT', '#__emundus_thesis_candidat AS etc ON etc.thesis_proposal = a.id and etc.user='.$user->id);
 
@@ -263,7 +262,7 @@ class EmundusModelThesiss extends JModelList
 
     /**
      * Get applied thesis
-     * @return int  id of the thesis proposal aplied
+     * @return mixed  id of the thesis proposal aplied
      */
     public function getApplied(){
         $db = JFactory::getDbo();
@@ -283,7 +282,6 @@ class EmundusModelThesiss extends JModelList
 	            return $db->loadObjectList();
 	        } catch(Exception $e) {
 	            throw $e;
-	            return false;
 	        }
 	    } else {
 	    	return array();

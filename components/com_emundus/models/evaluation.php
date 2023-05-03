@@ -3214,4 +3214,20 @@ class EmundusModelEvaluation extends JModelList {
 
         return ['url' => $url, 'message' => $message];
     }
+
+    public function getRowByFnum($fnum,$table_name){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('id')
+                ->from($db->quoteName($table_name))
+                ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+            $db->setQuery($query);
+            return $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('Problem to get row by fnum '.$fnum.' in table '.$table_name.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return 0;
+        }
+    }
 }

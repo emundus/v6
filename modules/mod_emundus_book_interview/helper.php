@@ -108,11 +108,8 @@ class modEmundusBookInterviewHelper {
         require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $now = EmundusHelperDate::displayDate(date('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0);
-
 
         try {
-
             // Get the timestamp for the event as well as maybe some other info?
             $query->select($db->qn(['status','fnum']))
                 ->from($db->qn('#__emundus_campaign_candidature','cc'))
