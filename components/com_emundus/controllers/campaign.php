@@ -47,7 +47,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
     }
 
     function clear() {
-        EmundusHelperFilters::clear();
+        EmundusHelperFiles::clear();
     }
 
     function setCampaign()
@@ -70,7 +70,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
 
         $m_programme = $this->getModel('programme');
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -101,7 +101,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
         $jinput = JFactory::getApplication()->input;
         $course = $jinput->get('course');
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"), 'campaigns' => []);
         } else {
@@ -120,7 +120,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
     public function getcampaignsbyprogramme() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -146,7 +146,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
      */
     public function getallcampaign() {
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -182,7 +182,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
      */
     public function deletecampaign() {
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -209,7 +209,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
      */
     public function unpublishcampaign() {
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -235,7 +235,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
      */
     public function publishcampaign() {
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -262,7 +262,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
      */
     public function duplicatecampaign() {
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -291,7 +291,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
      */
     public function getyears() {
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -314,7 +314,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
      */
     public function createcampaign() {
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -343,7 +343,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
     public function updatecampaign() {
         $tab = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('body');
             $cid = $jinput->getInt('cid');
@@ -600,8 +600,8 @@ class EmundusControllerCampaign extends JControllerLegacy {
         $text->fr=$jinput->getString('text_fr');
         $text->en=$jinput->getString('text_en');
         $reference_id=$jinput->getInt('did');
-        $falang=$this->getModel('falang');
-        $result=$falang->updateFalang($text,$reference_id,'emundus_setup_attachments','value');
+        $falang = new EmundusModelFalang();
+        $result = $falang->updateFalang($text,$reference_id,'emundus_setup_attachments','value');
 
         if ($result) {
             $tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_UPDATED'), 'data' => $result);
@@ -622,7 +622,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
         $jinput = JFactory::getApplication()->input;
 
         $reference_id = $jinput->getInt('docid');
-        $falang = $this->getModel('falang');
+        $falang = new EmundusModelFalang();
 
         $result = $falang->getFalang($reference_id,'emundus_setup_attachments','value');
 

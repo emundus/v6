@@ -3,7 +3,7 @@
 /**
  * @package   Gantry5
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
  * @license   Dual License: MIT or GNU/GPLv2 and later
  *
  * http://opensource.org/licenses/MIT
@@ -46,7 +46,7 @@ class ThemeDetails implements \ArrayAccess
         /** @var UniformResourceLocator $locator */
         $locator = $gantry['locator'];
 
-        $filename = $locator->findResource("gantry-themes://{$theme}/gantry/theme.yaml");
+        $filename = $locator->findResource("gantry-themes://{$theme}/custom/gantry/theme.yaml") ?: $locator->findResource("gantry-themes://{$theme}/gantry/theme.yaml");
         if (!$filename) {
             throw new \RuntimeException(sprintf('Theme %s not found', $theme), 404);
         }

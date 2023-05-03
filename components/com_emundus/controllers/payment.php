@@ -39,7 +39,7 @@ class EmundusControllerPayment extends JControllerLegacy
 
         if (!empty($fnum)) {
             $params = JComponentHelper::getParams('com_emundus');
-            $model = $this->getModel('payment');
+            $model = new EmundusModelPayment();
             $model->createPaymentOrder($fnum, 'flywire');
 
             $response = array(
@@ -94,7 +94,7 @@ class EmundusControllerPayment extends JControllerLegacy
         $fnum = $jinput->get('fnum', '');
 
         if (!empty($fnum) && !empty($data['callback_id'])) {
-            $model = $this->getModel('payment');
+            $model = new EmundusModelPayment();
             $model->updateFlywirePaymentInfos($fnum, $data['callback_id'], $data);
         } else {
             JLog::add('Can not update payment infos : fnum or callback_id is empty, received : ' . json_encode($data), JLog::WARNING, 'com_emundus.payment');
@@ -105,10 +105,40 @@ class EmundusControllerPayment extends JControllerLegacy
     {
         $emundusUser = JFactory::getSession()->get('emundusUser');
 
-        $model = $this->getModel('payment');
+        $model = new EmundusModelPayment();
         $updated = $model->updateFileTransferPayment($emundusUser);
 
         echo json_encode(array('status' => $updated));
+        exit;
+    }
+
+    public function resetpaymentsession()
+    {
+        $app = JFactory::getApplication();
+        $jinput = $app->input;
+        $redirect = $jinput->get('redirect', false);
+        $model = $this->getModel('payment');
+        $model->resetPaymentSession();
+
+        if ($redirect) {
+            $app->redirect('/');
+        }
+    }
+
+
+    public function checkpaymentsession()
+    {
+        $is_valid = true;
+        $app = JFactory::getApplication();
+        $jinput = $app->input;
+        $fnum = $jinput->get('fnum', false);
+
+        if (!empty($fnum)) {
+            $model = $this->getModel('payment');
+            $is_valid = $model->checkPaymentSession();
+        }
+
+        echo json_encode(array('response' => $is_valid));
         exit;
     }
 }

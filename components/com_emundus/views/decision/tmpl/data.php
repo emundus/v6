@@ -45,7 +45,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 			<thead>
 			<tr>
 				<?php foreach($this->datas[0] as $kl => $v) :?>
-						<th title="<?= JText::_(strip_tags($v)); ?>" id="<?= $kl; ?>" >
+						<th title="<?= strip_tags(JText::_($v)); ?>" id="<?= $kl; ?>" >
 						<div class="em-cell">
 							<?php if ($kl == 'check') :?>
                                 <div class="selectContainer" id="selectContainer">
@@ -58,7 +58,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                                     </div>
                                 </div>
 
-                                <div class="selectAll" id="selectAll">
+                                <div class="selectAll" id="selectAll_decision">
                                         <label>
                                             <input value="-1" id="em-check-all-page" class="em-check-all-page" type="checkbox" />
                                         <span id="span-check-all"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL');?></span>
@@ -78,10 +78,10 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 									<span class="glyphicon glyphicon-sort-by-attributes"></span>
 								<?php endif; ?>
 								<strong>
-									<?= JText::_($v); ?>
+									<?= strip_tags(JText::_($v)); ?>
 								</strong>
 							<?php else: ?>
-								<?= JText::_($v); ?>
+								<?= strip_tags(JText::_($v)); ?>
 							<?php endif;?>
 						</div>
 					</th>
@@ -205,7 +205,6 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
         $('#rt-mainbody-surround').children().addClass('mainemundus');
         $('#rt-main').children().addClass('mainemundus');
         $('#rt-main').children().children().addClass('mainemundus');
-        //$('.em-data-container').doubleScroll();
 
         menuAction = document.querySelector('.em-menuaction');
         headerNav = document.querySelector('#g-navigation .g-container');
@@ -214,6 +213,11 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
             $('.container-result').css('top', (headerNav.offsetHeight + menuAction.offsetHeight) + 'px');
             $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
         },2000);
+
+        const dataContainer = document.querySelector('.em-data-container')
+        if (dataContainer) {
+            DoubleScroll(dataContainer);
+        }
     });
     window.parent.$("html, body").animate({scrollTop : 0}, 300);
 
@@ -221,7 +225,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
 
 <script>
-    const selectDropdownContainer = document.querySelector('.selectAll');
+    const selectDropdownContainer = document.querySelector('#selectAll_decision');
     const countFiles = document.querySelector('#countCheckedCheckbox');
     selectDropdownContainer.style.display = 'none';
 
@@ -287,8 +291,8 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
     }
 
 
-    $('.selectAll>span').click(function() {
-        $('.selectAll').slideUp();
+    $('#selectAll_decision>span').click(function() {
+        $('#selectAll_decision').slideUp();
     });
 
     $('#span-check-none').click(function(){

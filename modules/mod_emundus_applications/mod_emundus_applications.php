@@ -18,6 +18,8 @@ $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 $specific_profiles = $params->get('for_specific_profiles', '');
 if (!empty($specific_profiles)) {
     $specific_profiles = explode(',',$specific_profiles);
+} else {
+	$specific_profiles = [];
 }
 
 if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!empty($specific_profiles) && in_array($user->profile, $specific_profiles))) {
@@ -47,7 +49,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
     $status_for_send = explode(',', $eMConfig->get('status_for_send', 0));
-    $status_for_delete = $eMConfig->get('status_for_delete', null);
+    $status_for_delete = $eMConfig->get('status_for_delete', 0);
     if (!empty($status_for_delete) || $status_for_delete == '0') {
         $status_for_delete = explode(',', $status_for_delete);
     }
@@ -55,10 +57,14 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');
     $display_poll = $eMConfig->get('display_poll', 0);
     $display_poll_id = $eMConfig->get('display_poll_id', null);
-    $id_applicants = $eMConfig->get('id_applicants', '0');
-    $id_profiles = $eMConfig->get('id_profiles', '0');
-    $applicants = explode(',', $id_applicants);
-    $id_profiles = explode(',', $id_profiles);
+    $id_applicants = $eMConfig->get('id_applicants', null);
+    $id_profiles = $eMConfig->get('id_profiles', '');
+    $applicants = !empty($id_applicants) ? explode(',', $id_applicants) : [];
+	if(!empty($id_profiles)) {
+		$id_profiles = explode(',', $id_profiles);
+	} else {
+		$id_profiles = [];
+	}
 
     $description = JText::_($params->get('description', ''));
     $show_fnum = $params->get('show_fnum', 0);
@@ -74,7 +80,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $show_progress_color = $params->get('show_progress_color', '#EA5012');
     $show_progress_color_forms = $params->get('show_progress_color_forms', '#EA5012');
     $show_progress_documents = $params->get('show_progress_documents', '#EA5012');
-    $admission_status = $params->get('admission_status') ? explode(',', $params->get('admission_status')) : null;
+    $admission_status = $params->get('admission_status') ? explode(',', $params->get('admission_status')) : [];
     $add_admission_prefix = $params->get('add_admission_prefix', 1);
     $absolute_urls = $params->get('absolute_urls', 1);
 
@@ -87,6 +93,8 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $visible_status = $params->get('visible_status', '');
     if ($visible_status != "") {
       $visible_status = explode(',', $params->get('visible_status', ''));
+    } else {
+		$visible_status = [];
     }
     $mod_em_applications_show_search = $params->get('mod_em_applications_show_search', 1);
 
@@ -102,7 +110,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $title_other_section = $params->get('mod_em_application_group_title_other', 'MOD_EMUNDUS_APPLICATIONS_OTHER_FILES');
     $date_format = $params->get('mod_em_application_date_format', 'd/m/Y H:i');
     $mod_em_applications_show_hello_text = $params->get('mod_em_applications_show_hello_text',1);
-
+    $custom_actions  = $params->get('mod_em_application_custom_actions');
 
     // Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
     if ($layout == '_:ccirs-drh') {
@@ -216,7 +224,10 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 
     $status = $m_files->getStatus();
 
-	require JModuleHelper::getLayoutPath('mod_emundus_applications', $layout);
+    JPluginHelper::importPlugin('emundus','custom_event_handler');
+    \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeRenderApplications', ['applications' => $applications, 'layout' => $layout, 'params' => $params, 'user' => $user]]);
+
+    require JModuleHelper::getLayoutPath('mod_emundus_applications', $layout);
 }
 
 

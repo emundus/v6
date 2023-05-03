@@ -24,78 +24,103 @@ jimport( 'joomla.plugin.plugin' );
  */
 class plgSystemEmunduswaitingroom extends JPlugin
 {
-    /**
-     * Load the language file on instantiation.
-     *
-     * @var    boolean
-     * @since  3.1
-     */
-    protected $autoloadLanguage = true;
+	/**
+	 * Load the language file on instantiation.
+	 *
+	 * @var    boolean
+	 * @since  3.1
+	 */
+	protected $autoloadLanguage = true;
 
-    /**
-     * Constructor
-     *
-     * For php4 compatability we must not use the __constructor as a constructor for plugins
-     * because func_get_args ( void ) returns a copy of all passed arguments NOT references.
-     * This causes problems with cross-referencing necessary for the observer design pattern.
-     *
-     * @access  protected
-     * @param   object $subject The object to observe
-     * @param   array  $config  An array that holds the plugin configuration
-     * @since   1.0
-     */
-    function __construct(& $subject, $config)
-    {
-        $lang = JFactory::getLanguage();
-        $lang->load('plg_emunduswaitingroom', dirname(__FILE__));
+	/**
+	 * Constructor
+	 *
+	 * For php4 compatability we must not use the __constructor as a constructor for plugins
+	 * because func_get_args ( void ) returns a copy of all passed arguments NOT references.
+	 * This causes problems with cross-referencing necessary for the observer design pattern.
+	 *
+	 * @access  protected
+	 * @param   object $subject The object to observe
+	 * @param   array  $config  An array that holds the plugin configuration
+	 * @since   1.0
+	 */
+	function __construct(& $subject, $config)
+	{
+		$lang = JFactory::getLanguage();
+		$lang->load('plg_emunduswaitingroom', dirname(__FILE__));
 
-        parent::__construct($subject, $config);
-    }
+		parent::__construct($subject, $config);
+	}
 
 
-    function onAfterInitialise() {
+	function onAfterInitialise() {
 
-        $app    =  JFactory::getApplication();
-        $user   =  JFactory::getUser();
+		$app    =  JFactory::getApplication();
+		$user   =  JFactory::getUser();
 
-        if ($user->guest) {
+		// Get plugin param which defines if we should always redirect the user or not.
+		$plugin = JPluginHelper::getPlugin('system', 'emunduswaitingroom');
+		$params = new JRegistry($plugin->params);
+		$ips_allowed = explode(',',$params->get('ips_allowed',''));
+        $strings_allowed = $params->get('strings_allowed');
 
-            // Get plugin param which defines if we should always redirect the user or not.
-            $plugin = JPluginHelper::getPlugin('system', 'emunduswaitingroom');
-            $params = new JRegistry($plugin->params);
+		$allowed = false;
+		if(!empty($ips_allowed)){
+			if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+				$ip = $_SERVER['HTTP_CLIENT_IP'];
+			} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+				$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+			} else {
+				$ip = $_SERVER['REMOTE_ADDR'];
+			}
 
-            $force_redirect = $params->get('force_redirect','1');
-            $redirection_url = $params->get('redirection_url','waiting-queue');
-            $message_displayed = $params->get('message_displayed','PLG_EMUNDUSWAITINGROOM_MAX_SESSIONS_REACHED');
-            $max_sessions = $params->get('max_sessions', '5000');
+			$allowed = in_array($ip,$ips_allowed);
+		}
 
-            $db = JFactory::getDBo();
-            $query = $db->getQuery(true);
-            $query->select('count(userid)')
-                ->from($db->quoteName('#__session'))
-                ->where($db->quoteName('guest').' = 0');
-            $db->setQuery($query);
-            
-            try {
-                $active_session = $db->loadResult();
-            } catch (Exception $e) {
-                JLog::add('Error getting count session plugins/system/emunduswaitingroom:' .  $query->___toString(), JLog::ERROR, 'com_emundus');
-            }
+		if ($user->guest && !$allowed) {
+			$uri = JUri::getInstance();
+			$current_url = $uri->toString();
 
-            if ($active_session > $max_sessions) {
-                if ($force_redirect) {
-                    $uri = JUri::getInstance();
-                    $current_url = $uri->toString();
-                    $parsed_url = parse_url($current_url);
-                    $current_path = $parsed_url['path'];
-
-                    if ($current_path !== '/' . $redirection_url) {
-                        $app->redirect('/' . $redirection_url);
-                    }
-                } else {
-                    $app->enqueueMessage(JText::_($message_displayed), 'warning');
+            $string_continue = false;
+            foreach($strings_allowed as $string_allowed) {
+                if (strpos($current_url, $string_allowed->string_allowed_text)) {
+                    $string_continue = true;
                 }
             }
-        }
-    }
+
+			if (!$string_continue) {
+
+				$force_redirect = $params->get('force_redirect','1');
+				$redirection_url = $params->get('redirection_url','waiting-queue');
+				$message_displayed = $params->get('message_displayed','PLG_EMUNDUSWAITINGROOM_MAX_SESSIONS_REACHED');
+				$max_sessions = $params->get('max_sessions', '5000');
+
+				$db = JFactory::getDBo();
+				$query = $db->getQuery(true);
+				$query->select('count(userid)')
+					->from($db->quoteName('#__session'))
+					->where($db->quoteName('guest').' = 0');
+				$db->setQuery($query);
+
+				try {
+					$active_session = $db->loadResult();
+				} catch (Exception $e) {
+					JLog::add('Error getting count session plugins/system/emunduswaitingroom:' .  $query->___toString(), JLog::ERROR, 'com_emundus');
+				}
+
+				if ($active_session > $max_sessions) {
+					if ($force_redirect) {
+						$parsed_url = parse_url($current_url);
+						$current_path = $parsed_url['path'];
+
+						if ($current_path !== '/' . $redirection_url) {
+							$app->redirect('/' . $redirection_url);
+						}
+					} else {
+						$app->enqueueMessage(JText::_($message_displayed), 'warning');
+					}
+				}
+			}
+		}
+	}
 }

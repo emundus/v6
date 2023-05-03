@@ -716,7 +716,7 @@ export default {
 
 <style scoped>
 .emails__add-email{
-  width: calc(100% - 75px) !important;
+  width: 100%;
   margin-left: auto;
 }
 </style>

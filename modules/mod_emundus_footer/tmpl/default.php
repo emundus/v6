@@ -79,7 +79,7 @@ if($applicant = !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
         <?php endif; ?>
 
         <?php if ($mod_emundus_footer_rights == '1') :?>
-            <p><a href="<?php echo $actualLanguage ?>/gestion-de-vos-droits"><?= JText::_('MOD_EM_FOOTER_RIGHTS_LINK'); ?></a></p>
+            <p><a href="<?php echo $actualLanguage ?>/gestion-des-droits"><?= JText::_('MOD_EM_FOOTER_RIGHTS_LINK'); ?></a></p>
         <?php endif; ?>
 
         <?php if ($mod_emundus_footer_cookies == '1') :?>

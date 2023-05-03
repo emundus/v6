@@ -82,6 +82,18 @@ class plgUserEmundus extends JPlugin
         }
         closedir($dh);
         @rmdir($dir);
+
+	    // Send email to inform applicant
+	    if($this->params->get('send_email_delete', 0) == 1) {
+		    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
+		    $c_messages = new EmundusControllerMessages();
+		    $post       = [
+			    'NAME' => $user['name']
+		    ];
+		    $c_messages->sendEmailNoFnum($user['email'], 'delete_user', $post);
+	    }
+	    //
+
         return true;
     }
 
@@ -100,6 +112,7 @@ class plgUserEmundus extends JPlugin
         $app = JFactory::getApplication();
         $jinput = $app->input;
         $fabrik = $jinput->post->get('listid', null);
+
 
         // In case we are signing up a new user via Fabrik, check that the profile ID is either an applicant, or one of the allowed non-applicant profiles.
         if ($isnew && !empty($fabrik)) {
@@ -533,7 +546,7 @@ class plgUserEmundus extends JPlugin
             $table = JTable::getInstance('user', 'JTable');
 
             $user = JFactory::getSession()->get('emundusUser');
-            if(empty($user)) {
+            if(empty($user) || empty($user->id)) {
                 include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
                 $m_profile = new EmundusModelProfile();
                 $m_profile->initEmundusSession();
@@ -559,6 +572,14 @@ class plgUserEmundus extends JPlugin
 
             if ($options['redirect'] === 0) {
                 $previous_url = '';
+            } else {
+				if ($user->activation != -1) {
+					$cid_session = JFactory::getSession()->get('login_campaign_id');
+					if (!empty($cid_session)){
+						$previous_url = 'index.php?option=com_fabrik&view=form&formid=102&cid='.$cid_session;
+						JFactory::getSession()->clear('login_campaign_id');
+					}
+				}
             }
 
             JPluginHelper::importPlugin('emundus', 'custom_event_handler');

@@ -419,7 +419,7 @@ class modEmundusPaymentHelper
 
     function getAxeptaConfig($params,$fnum,$product): string {
         require_once JPATH_ROOT . '/components/com_emundus/models/payment.php';
-        require_once JPATH_ROOT . '/components/com_emundus/payment/Axepta.php';
+        require_once JPATH_ROOT . '/components/com_emundus/classes/payment/Axepta.php';
         $m_payment = new EmundusModelPayment();
         $axepta = new Axepta();
 

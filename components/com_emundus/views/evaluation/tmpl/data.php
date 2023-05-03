@@ -40,7 +40,7 @@ $limits = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 15 => 15,
                 <thead>
                     <tr>
                         <?php foreach ($this->datas[0] as $kl => $v) :?>
-                                <th title="<?= JText::_(strip_tags($v)); ?>" id="<?= $kl; ?>" >
+                            <th title="<?= strip_tags(JText::_($v)); ?>" id="<?= $kl; ?>" >
                             <div class="em-cell">
                                 <?php if (@$this->lists['order'] == $kl) :?>
                                     <?php if (@$this->lists['order_dir'] == 'desc') :?>
@@ -49,7 +49,7 @@ $limits = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 15 => 15,
                                         <span class="glyphicon glyphicon-sort-by-attributes"></span>
                                     <?php endif; ?>
                                     <strong>
-                                        <?= JText::_($v); ?>
+                                        <?= strip_tags(JText::_($v)); ?>
                                     </strong>
 
                                 <?php elseif ($kl == 'check') :?>
@@ -63,7 +63,7 @@ $limits = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 15 => 15,
                                     </div>
 
                                 </div>
-                                    <div class="selectAll" id="selectAll">
+                                    <div class="selectAll" id="selectAll_evaluation">
                                                 <label>
                                                     <input value="-1" id="em-check-all-page" class="em-check-all-page" type="checkbox" />
                                             <span id="span-check-all"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL');?></span>
@@ -77,7 +77,7 @@ $limits = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 15 => 15,
                                         </label>
                                     </div>
                                 <?php else:?>
-                                    <?= JText::_($v); ?>
+                                    <?= strip_tags(JText::_($v)); ?>
                                 <?php endif;?>
                             </div>
                         </th>
@@ -185,7 +185,7 @@ $limits = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 15 => 15,
 
 
 <script>
-    const selectDropdownContainer = document.querySelector('.selectAll');
+    const selectDropdownContainer = document.querySelector('#selectAll_evaluation');
     const countFiles = document.querySelector('#countCheckedCheckbox');
     selectDropdownContainer.style.display = 'none';
 
@@ -251,8 +251,8 @@ $limits = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 15 => 15,
     }
 
 
-    $('.selectAll>span').click(function() {
-        $('.selectAll').slideUp();
+    $('#selectAll_evaluation>span').click(function() {
+        $('#selectAll_evaluation').slideUp();
     });
 
     $('#span-check-none').click(function(){

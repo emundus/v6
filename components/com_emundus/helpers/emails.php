@@ -305,7 +305,7 @@ class EmundusHelperEmails {
 									\'</div>\';
 								}
 					        },
-					        onDelete: function(val) {
+					        onDelete: function() {
 					            return true;
 					        },
 					        create: function(input) {
@@ -407,7 +407,7 @@ class EmundusHelperEmails {
         return $db->loadObjectList();
     }
 
-    function getTemplate(){
+    public static function getTemplate(){
         $db = JFactory::getDBO();
         $select = JRequest::getVar('select', null, 'POST', 'none', 0);
         $query = 'SELECT * FROM #__emundus_setup_emails WHERE id='.$select;
@@ -592,7 +592,7 @@ class EmundusHelperEmails {
 
     }
 
-    function sendApplicantEmail() {
+    public static function sendApplicantEmail() {
 
         $current_user = JFactory::getUser();
         $config = JFactory::getConfig();
@@ -632,22 +632,22 @@ class EmundusHelperEmails {
 
         if ($captcha !== 1) {
             JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_NOT_A_VALID_POST' ) );
-            $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
+            $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&Itemid='.JRequest::getCmd( 'Itemid' ));
             return;
         }
         if (count( $users_id ) == 0) {
             JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_NO_ITEMS_SELECTED' ) );
-            $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
+            $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&Itemid='.JRequest::getCmd( 'Itemid' ));
             return;
         }
         if ($subject == '') {
             JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_YOU_MUST_PROVIDE_SUBJECT' ) );
-            $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
+            $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&Itemid='.JRequest::getCmd( 'Itemid' ));
             return;
         }
         if ($message == '') {
             JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_YOU_MUST_PROVIDE_A_MESSAGE' ) );
-            $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
+            $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&Itemid='.JRequest::getCmd( 'Itemid' ));
             return;
         }
 
@@ -793,7 +793,7 @@ class EmundusHelperEmails {
                     ->where('id = ' . $user_id);
                 $db->setQuery($query);
             } else {
-                $query->select('params')
+                $query->select('ju.email, ju.params')
                     ->from('#__users AS ju')
                     ->leftJoin('#__emundus_campaign_candidature AS jecc ON jecc.applicant_id = ju.id')
                     ->where('jecc.fnum LIKE ' . $db->quote($fnum));

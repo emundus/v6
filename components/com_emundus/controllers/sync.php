@@ -17,7 +17,6 @@ jimport('joomla.application.component.controller');
 class EmundusControllerSync extends JControllerLegacy
 {
     private $_user = null;
-    private $_db = null;
     private $m_sync = null;
 
     public function __construct($config = array())
@@ -28,7 +27,6 @@ class EmundusControllerSync extends JControllerLegacy
         require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
 
         $this->_user = JFactory::getSession()->get('emundusUser');
-        $this->_db = JFactory::getDBO();
         $this->m_sync = new EmundusModelSync();
     }
 
@@ -36,14 +34,17 @@ class EmundusControllerSync extends JControllerLegacy
     {
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            $tab = array('status' => $result, 'msg' => JText::_('ACCESS_DENIED'));
         } else {
             $jinput = JFactory::getApplication()->input;
             $type = $jinput->getString('type', null);
 
-            $config = $this->m_sync->getConfig($type);
-
-            $tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => json_decode($config));
+            if (!empty($type)) {
+                $config = $this->m_sync->getConfig($type);
+                $tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => json_decode($config));
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('MISSING_PARAMS'));
+            }
         }
         echo json_encode((object)$tab);
         exit;

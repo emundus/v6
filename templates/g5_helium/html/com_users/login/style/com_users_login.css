@@ -65,9 +65,9 @@ button.btn-primary:hover{
     flex-direction: column;
     align-items: center;
     background: white;
-    margin-top: 50px;
+    margin-top: 24px;
     border-radius: 16px;
-    padding: 80px 64px 80px 64px;
+    padding: 0 64px 80px 64px;
     width: 50%;
     margin-left: auto;
     margin-right: auto;
@@ -340,7 +340,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 @media all and (max-width: 479px) {
     .view-login #g-container-main div.login {
         width: 100%;
-        padding: 48px 24px 0 24px;
+        padding: 0px 24px 0 24px;
     }
 }
 

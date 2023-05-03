@@ -532,7 +532,11 @@
 .sourcecoast .container-fluid:after {
   clear: both;
 }
-.sourcecoast .modal-backdrop {
+/** Remove .sourcecoast namespacing. With JFBC v9, we're having Joomla generate the modal and there's no
+* way to set the namespace name.
+* May cause issues with some templates though..
+*/
+.modal-backdrop {
   position: fixed;
   top: 0;
   right: 0;
@@ -540,22 +544,31 @@
   left: 0;
   z-index: 1040;
   background-color: #000000;
+  opacity: 0.8;
 }
+/* Removed for JFBConnect version 9 */
+/*
 .sourcecoast .modal-backdrop.fade {
   opacity: 0;
+  -webkit-transition: opacity 0.15s linear;
+  -moz-transition: opacity 0.15s linear;
+  -o-transition: opacity 0.15s linear;
+  transition: opacity 0.15s linear;
 }
 .sourcecoast .modal-backdrop,
 .sourcecoast .modal-backdrop.fade.in {
   opacity: 0.8;
   filter: alpha(opacity=80);
-}
+}*/
 .sourcecoast .modal {
+  bottom: inherit;
   position: fixed;
-  top: 10%;
+  top: 25%;
   left: 50%;
-  z-index: 1050;
-  width: 560px;
-  margin-left: -280px;
+  z-index: 99999 !important;
+  max-width: 560px;
+  width: 80%;
+  margin: 0 0 0 -40%;
   background-color: #ffffff;
   border: 1px solid #999;
   border: 1px solid rgba(0, 0, 0, 0.3);
@@ -578,9 +591,11 @@
   -o-transition: opacity .3s linear, top .3s ease-out;
   transition: opacity .3s linear, top .3s ease-out;
   top: -25%;
+  opacity: 0;
 }
 .sourcecoast .modal.fade.in {
-  top: 10%;
+  top: 25%;
+  opacity: 1;
 }
 .sourcecoast .modal-header {
   padding: 9px 15px;
@@ -598,6 +613,7 @@
   overflow-y: auto;
   max-height: 400px;
   padding: 15px;
+  width: 94%;
 }
 .sourcecoast .modal-form {
   margin-bottom: 0;
@@ -4062,9 +4078,7 @@
 .sourcecoast .invisible {
   visibility: hidden;
 }
+
 .sourcecoast .affix {
   position: fixed;
-}
-.sourcecoast.modal {
-  bottom: inherit;
 }

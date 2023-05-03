@@ -45,8 +45,10 @@ class EmundusModelMessages extends JModelList {
         $query = $db->getQuery(true);
 
         $query->select('*')
-                ->from($db->quoteName('#__emundus_setup_emails'))
-                ->where($db->quoteName('type').' IN ('.$db->Quote($type).') AND published=1');
+            ->from($db->quoteName('#__emundus_setup_emails'))
+            ->where($db->quoteName('type').' IN ('.$db->Quote($type).')')
+            ->andWhere($db->quoteName('published') . ' = ' . $db->quote(1))
+            ->order($db->quoteName('subject'));
 
         try {
 
@@ -74,8 +76,10 @@ class EmundusModelMessages extends JModelList {
         $query = $db->getQuery(true);
 
         $query->select('DISTINCT(category)')
-                ->from($db->quoteName('#__emundus_setup_emails'))
-                ->where($db->quoteName('type').' IN ('.$db->Quote($type).') AND published=1');
+            ->from($db->quoteName('#__emundus_setup_emails'))
+            ->where($db->quoteName('type').' IN ('.$db->Quote($type).')')
+            ->andWhere($db->quoteName('published') . ' = ' . $db->quote(1))
+            ->order($db->quoteName('category'));
 
         try {
 
@@ -233,7 +237,7 @@ class EmundusModelMessages extends JModelList {
      *
      * @since 3.8.6
      * @param String $category The name of the category.
-     * @return Object The list of templates corresponding.
+     * @return Object|false The list of templates corresponding.
      */
     function getEmailsByCategory($category) {
 
@@ -328,8 +332,7 @@ class EmundusModelMessages extends JModelList {
      *
      * @since 3.8.6
      * @param Int $letter_id the ID of the letter used in setup_letters
-     * @return Object The letter object as found in the DB, also contains the status and training.
-     * @return Boolean False if ther query fails.
+     * @return Object|false The letter object as found in the DB, also contains the status and training.
      */
     function get_letter($letter_id) {
 
@@ -360,7 +363,7 @@ class EmundusModelMessages extends JModelList {
      *
      * @since 3.8.6
      * @param String The IDs of the candidate files to get the names of
-     * @return Array A list of objects containing the names and ids of the candidate files.
+     * @return Array|false A list of objects containing the names and ids of the candidate files.
      */
     function getCandidateFileNames($ids) {
 
@@ -389,7 +392,7 @@ class EmundusModelMessages extends JModelList {
      *
      * @since 3.8.6
      * @param String The IDs of the candidate files to get the names of
-     * @return Array A list of objects containing the names and ids of the candidate files.
+     * @return Array|false A list of objects containing the names and ids of the candidate files.
      */
     function getLetterFileNames($ids) {
 
@@ -1314,66 +1317,68 @@ class EmundusModelMessages extends JModelList {
     }
 
     /// get attachments by profile (jos_emundus_setup_attachment_profiles)
-    public function getAttachmentsByProfiles($fnums=array()) {
+    public function getAttachmentsByProfiles($fnums = []) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        if(!empty($fnums) and !is_null($fnums)) {
+		$results = [];
+
+        if(!empty($fnums))
+		{
             try {
                 require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'profile.php');
                 require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
 
-                $_mProfiles = new EmundusModelProfile;
-                $_mFiles = new EmundusModelFiles;
+                $m_profiles = new EmundusModelProfile;
+                $m_files = new EmundusModelFiles;
 
-                $_profiles = array();
+	            $profiles = [];
+	            $attachments = new stdClass();
 
                 foreach($fnums as $fnum) {
-                    $fnumInfos = $_mFiles->getFnumInfos($fnum);
+                    $fnumInfos = $m_files->getFnumInfos($fnum);
 
-                    //$profile = $_mProfiles->getProfileByStatus($fnum)['profile'];
-                    $profiles = $_mProfiles->getProfilesIDByCampaign([$fnumInfos['id']]);
+                    $profiles_by_campaign = $m_profiles->getProfilesIDByCampaign([$fnumInfos['id']]);
 
-                    if(!is_null($profiles)) {
-                        foreach ($profiles as $profile) {
-                            $_profiles[] = $profile;
+                    if(!empty($profiles_by_campaign)) {
+                        foreach ($profiles_by_campaign as $profile) {
+                            $profiles[] = $profile;
                         }
-                    }
-                    else {
-                        /// if profile is null, get default profile of campaign
-                        $_fnumInfo = $_mFiles->getFnumInfos($fnum);
-                        $_profiles[] = $_fnumInfo['profile_id'];
+	                    $profiles = array_unique($profiles);
+                    } else {
+                        $_fnumInfo = $m_files->getFnumInfos($fnum);
+	                    $profiles[] = $_fnumInfo['profile_id'];
                     }
                 }
 
-                $_profiles = array_unique($_profiles);
+                foreach($profiles as $profile) {
+	                $attachments->{$profile} = new stdClass();
+                    $letters = [];
 
-                $attachments = new stdClass();
-
-                foreach($_profiles as $_p) {
-                    $letters = array();
                     $query->clear()
                         ->select('#__emundus_setup_attachments.*, #__emundus_setup_profiles.id AS pr_id, #__emundus_setup_profiles.label as pr_label')
                         ->from($db->quoteName('#__emundus_setup_attachments'))
                         ->leftJoin($db->quoteName('#__emundus_setup_attachment_profiles') . ' ON ' . $db->quoteName('#__emundus_setup_attachment_profiles.attachment_id') . ' = ' . $db->quoteName('#__emundus_setup_attachments.id'))
                         ->leftJoin($db->quoteName('#__emundus_setup_profiles') . ' ON ' . $db->quoteName('#__emundus_setup_attachment_profiles.profile_id') . ' = ' . $db->quoteName('#__emundus_setup_profiles.id'))
-                        ->where($db->quoteName('#__emundus_setup_attachment_profiles.profile_id') . ' = ' . $_p);
+                        ->where($db->quoteName('#__emundus_setup_attachment_profiles.profile_id') . ' = ' . $profile);
                     $db->setQuery($query);
-
                     $res = $db->loadObjectList();
 
-                    foreach($res as $_r) { $letters[] = array('letter_id' => $_r->id, 'letter_label' => $_r->value); }
+                    foreach($res as $r) {
+						$letters[] = ['letter_id' => $r->id, 'letter_label' => $r->value];
+					}
 
-                    $attachments->$_p->label = $_mProfiles->getProfileById($_p)['label'];
-                    $attachments->$_p->letters = $letters;
+                    $attachments->{$profile}->label = $m_profiles->getProfileById($profile)['label'];
+                    $attachments->{$profile}->letters = $letters;
                 }
 
-                return (array)$attachments;
+	            $results = (array)$attachments;
             } catch(Exception $e) {
                 JLog::add('Cannot get attachments by profiles : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-                return [];      /// return empty array
             }
-        } else { return false; }
+        }
+
+		return $results;
     }
 
     /// get all attachments

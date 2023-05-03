@@ -141,7 +141,25 @@ export default {
         };
       });
 
-      formBuilderService.reorderMenu(newOrder,this.$props.profile_id);
+      formBuilderService.reorderMenu(newOrder, this.$props.profile_id).then((response) => {
+				if (response.status == 200 && response.data.status) {
+					this.$emit('reorder-pages', this.pages);
+				} else {
+					Swal.fire({
+						title: this.translate('COM_EMUNDUS_FORM_BUILDER_UPDATE_ORDER_PAGE_ERROR'),
+						text: result.msg,
+						type: 'error',
+						showCancelButton: false,
+						confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
+						reverseButtons: true,
+						customClass: {
+							title: 'em-swal-title',
+							confirmButton: 'em-swal-confirm-button',
+							actions: "em-swal-single-action",
+						},
+					});
+				}
+      });
     }
   },
   computed: {

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2023 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -384,7 +384,7 @@ ENDBODY;
 				$db->q(1) . ',' .
 				$db->q(1) . ',' .
 				$db->q(0) . ',' .
-				$db->q('{"name":"Admin Tools package","type":"package","creationDate":"2016-06-01","author":"Nicholas K. Dionysopoulos","copyright":"Copyright (c)2006-2016 Akeeba Ltd \/ Nicholas K. Dionysopoulos","authorEmail":"","authorUrl":"","version":"' . $this->version . '","description":"Admin Tools installation package, for updating from version 3.x only","group":"","filename":"pkg_admintools"}') . ',' .
+				$db->q('{"name":"Admin Tools package","type":"package","creationDate":"2016-06-01","author":"Nicholas K. Dionysopoulos","copyright":"Copyright (c)2010-2023 Akeeba Ltd \/ Nicholas K. Dionysopoulos","authorEmail":"","authorUrl":"","version":"' . $this->version . '","description":"Admin Tools installation package, for updating from version 3.x only","group":"","filename":"pkg_admintools"}') . ',' .
 				$db->q('{}') . ',' .
 				$db->q('') . ',' .
 				$db->q('') . ',' .
@@ -431,7 +431,7 @@ ENDBODY;
     <url>https://www.akeeba.com</url>
     <packager>Akeeba Ltd</packager>
     <packagerurl>https://www.akeeba.com</packagerurl>
-    <copyright>Copyright (c)2006-2016 Akeeba Ltd / Nicholas K. Dionysopoulos</copyright>
+    <copyright>Copyright (c)2010-2023 Akeeba Ltd / Nicholas K. Dionysopoulos</copyright>
     <license>GNU GPL v3 or later</license>
     <description>Admin Tools installation package v.3.9.999</description>
 

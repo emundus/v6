@@ -1,4 +1,18 @@
 <?php die() ?>
+Admin Tools 6.1.8
+================================================================================
+~ Remove the warning about the version being too old.
+
+Admin Tools 6.1.7
+================================================================================
+# [LOW] Htaccess Maker: Fixed explicitly allowing CORS
+# [LOW] NginX Conf Maker: Fixed explicitly allowing CORS
+# [LOW] WebConfig Maker: Fixed explicitly allowing CORS
+
+Admin Tools 6.1.6
+================================================================================
++ Added .xsl to the allowed file types in front- and backend directories in the .htaccess Maker, NginX Conf Maker and web.config Maker
+
 Admin Tools 6.1.5
 ================================================================================
 # [LOW] Fixed default enable/disable values of some WAF features

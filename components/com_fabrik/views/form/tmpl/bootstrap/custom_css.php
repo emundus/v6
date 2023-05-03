@@ -586,7 +586,7 @@ form#member-profile .form-horizontal .control-label {
     align-items: flex-end;
     flex-direction: row;
     width: 100%;
-    padding: 80px 64px 32px 64px;
+    padding: 0 20px 16px 48px;
 }
 
 form.fabrikForm label {
@@ -1084,7 +1084,7 @@ ol {
 
 .view-registration .login.em-formRegistrationCenter ol,
 .view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) ol {
-    padding: 0px 64px 0px 83px !important;
+    padding: 0px 20px 0px 48px;
     text-align: justify;
     margin-left: 0px !important;
     margin-bottom: 0px !important;

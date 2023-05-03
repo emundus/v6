@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
  *
  * @since  1.5
  */
-abstract class ModEmunduspanelHelper
+class ModEmunduspanelHelper
 {
     public function getFeaturesList(){
         $eMConfig = JComponentHelper::getParams('com_emundus');

@@ -188,12 +188,9 @@ class EmundusViewChecklist extends JViewLegacy {
 
                 $profile_attachments_not_uploaded_ids = implode(',', $profile_attachments_not_uploaded_ids);
 
-
-                $end_date = !empty($is_admission) ? $this->_user->fnums[$this->_user->fnum]->admission_end_date : $this->_user->fnums[$this->_user->fnum]->end_date;
-
                 $offset = $app->get('offset', 'UTC');
                 $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
-                $now = $dateTime->setTimezone(new DateTimeZone($offset))->format("Y-m-d");
+                $now = $dateTime->setTimezone(new DateTimeZone($offset))->format("Y-m-d H:i:s");
 
                 // Check campaign limit, if the limit is obtained, then we set the deadline to true
                 $m_campaign = new EmundusModelCampaign;
@@ -211,6 +208,7 @@ class EmundusViewChecklist extends JViewLegacy {
                 }
 
                 $isLimitObtained = $m_campaign->isLimitObtained($this->_user->fnums[$this->_user->fnum]->campaign_id);
+                $is_campaign_started = $now > $current_start_date;
                 $is_dead_line_passed = $current_end_date < $now;
 
                 if (($is_dead_line_passed || $isLimitObtained === true) && $eMConfig->get('can_edit_after_deadline', 0) == 0) {
@@ -220,6 +218,7 @@ class EmundusViewChecklist extends JViewLegacy {
                 }
 
                 $this->assignRef('current_phase', $current_phase);
+                $this->assignRef('is_campaign_started', $is_campaign_started);
                 $this->assignRef('is_dead_line_passed', $is_dead_line_passed);
                 $this->assignRef('isLimitObtained', $isLimitObtained);
                 $this->assignRef('user', $this->_user);

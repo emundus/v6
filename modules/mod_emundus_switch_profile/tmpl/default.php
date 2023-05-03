@@ -63,8 +63,9 @@ if($just_logged && !$only_applicant) {
         cursor: pointer;
         color: var(--main-500);
         transition: all 0.3s ease-in-out;
-        width: 45%;
+        width: auto;
         margin: 10px;
+        padding: 8px 12px;
     }
     .em-switch-profile-card:hover {
         background: var(--main-500);

@@ -726,9 +726,7 @@ class EmundusModelPayment extends JModelList
             }
 
             $config = json_decode($params, true);
-            if (!empty($config) && !empty($config['sender_first_name'])) {
-                // do nothing
-            } else {
+            if (empty($config) && empty($config['sender_first_name']))  {
                 $query->clear()
                     ->select('ju.email, jepd.first_name, jepd.last_name, dc.code_iso_2, jepd.city_1, jepd.telephone_1, jepd.street_1')
                     ->from('#__users as ju')
@@ -1005,6 +1003,54 @@ class EmundusModelPayment extends JModelList
 		return $updated;
 	}
 
+    public function resetPaymentSession() {
+	    JPluginHelper::importPlugin('emundus','custom_event_handler');
+	    \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopResetSession', ['fnum' => JFactory::getSession()->get('emundusUser')->fnum]]);
+
+	    JFactory::getSession()->set('emundusPayment', null);
+    }
+
+    /**
+     * @return bool
+     */
+    function checkPaymentSession($fnum = null, $caller = ''): bool
+    {
+        $valid_session = true;
+        $app = JFactory::getApplication();
+
+        if (!$app->isAdmin()) {
+            $emundus_payment = JFactory::getSession()->get('emundusPayment');
+            $user = JFactory::getSession()->get('emundusUser');
+
+            $fnum_to_check = empty($fnum) ? $user->fnum : $fnum;
+
+            if (empty($emundus_payment)) {
+                $emundus_payment = new StdClass();
+                $emundus_payment->user_id = $user->id;
+                $emundus_payment->fnum = empty($fnum) ? $user->fnum : $fnum;
+
+                JFactory::getSession()->set('emundusPayment', $emundus_payment);
+            } else if ($emundus_payment->fnum != $fnum_to_check) {
+                $user->fnum = $emundus_payment->fnum;
+                JFactory::getSession()->set('emundusUser', $user);
+
+                if ($caller == 'onAfterCheckoutStep') {
+                    $app->enqueueMessage(JText::_('CANT_GO_TO_TPE_WRONG_SESSION'), 'error');
+                } else {
+                    $app->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
+                }
+
+                $this->resetPaymentSession();
+                $app->redirect('/');
+                $valid_session = false;
+            }
+        }
+
+        return $valid_session;
+    }
+
+}
+
     private function getHikashopUser($fnum)
     {
         $hikashop_user = null;
@@ -1112,14 +1158,3 @@ class EmundusModelPayment extends JModelList
                 }
             }
         }
-
-        return $discount_code;
-    }
-
-    public function resetPaymentSession() {
-        JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopResetSession', ['fnum' => JFactory::getSession()->get('emundusUser')->fnum]]);
-
-        JFactory::getSession()->set('emundusPayment', null);
-    }
-}

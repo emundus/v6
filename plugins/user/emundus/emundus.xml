@@ -13,4 +13,21 @@
 		<filename plugin="joomla">emundus.php</filename>
 		<filename>index.html</filename>
 	</files>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field
+						name="send_email_delete"
+						type="list"
+						default="1"
+						label="Send email at delete"
+						description="Send email to user when his account is delete">
+					<option
+							value="0">JNo</option>
+					<option
+							value="1">JYes</option>
+				</field>
+			</fieldset>
+		</fields>
+	</config>
 </extension>

@@ -438,7 +438,7 @@ class EmundusControllerGroups extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-	        $m_groups = $this->getModel('groups');
+	        $m_groups = new EmundusModelGroups();
             $result = $m_groups->addGroupsByProgrammes($data);
 
             if ($result === true) {

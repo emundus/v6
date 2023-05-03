@@ -22,9 +22,13 @@ function reloadActions(view) {
 	});
 }
 
-function clearchosen(cible) {
+/*function clearchosen(cible) {
 	$(cible).val("%");
 	$(cible).trigger('chosen:updated');
+}*/
+
+function clearchosen(target){
+	$(target)[0].sumo.unSelectAll();
 }
 
 function getUserCheck() {
@@ -1070,9 +1074,9 @@ $(document).ready(function () {
 				break;
 
 			case 24:
-				var groups = "";
-				var campaigns = "";
-				var oprofiles = "";
+				var groups = '';
+				var campaigns = '';
+				var oprofiles = '';
 
 				if ($("#groups").val() != null && $("#groups").val().length > 0) {
 					for (var i = 0; i < $("#groups").val().length; i++) {
@@ -1097,6 +1101,7 @@ $(document).ready(function () {
 				var ln = $('#lname').val();
 				var email = $('#mail').val();
 				var profile = $('#profiles').val();
+				let sameLoginEmail = document.getElementById('same_login_email').checked ? 1 : 0;
 
 				if (!formCheck('fname') || !formCheck('lname') || !formCheck('login') || !formCheck('mail')) {
 					return false;
@@ -1110,6 +1115,8 @@ $(document).ready(function () {
 
 				let addUserData = {
 					login: login,
+					email: email,
+					sameLoginEmail: sameLoginEmail,
 					firstname: fn,
 					lastname: ln,
 					campaigns: campaigns.substr(0, campaigns.length - 1),
@@ -1117,18 +1124,18 @@ $(document).ready(function () {
 					groups: groups.substr(0, groups.length - 1),
 					profile: profile,
 					jgr: $('#profiles option:selected').attr('id'),
-					email: email,
 					newsletter: $('#news').is(':checked') ? 1 : 0,
 					university_id: $('#univ').val()
 				}
 
-				if($('#em-add-user').attr('action').indexOf('edituser') !== -1) {
+				const action = document.getElementById('em-add-user').getAttribute('action');
+				if(action.indexOf('edituser') !== -1) {
 					addUserData.id =  $('.em-check:checked').attr('id').split('_')[0];
 				}
 
 				$.ajax({
 					type: 'POST',
-					url: $('#em-add-user').attr('action'),
+					url: action,
 					data: addUserData,
 					dataType: 'json',
 					success: function (result) {
@@ -1399,3 +1406,54 @@ $(document).ready(function () {
 		});
 	}
 })
+
+function DoubleScroll(element) {
+	const id = Math.random();
+	if (element.scrollWidth > element.offsetWidth) {
+		createScrollbarForElement(element, id);
+	}
+
+	window.addEventListener('resize', function () {
+		let scrollbar = document.getElementById(id);
+		if (scrollbar) {
+			if (element.scrollWidth > element.offsetWidth) {
+				scrollbar.firstChild.style.width = element.scrollWidth + 'px';
+			} else {
+				scrollbar.remove();
+			}
+		} else {
+			if (element.scrollWidth > element.offsetWidth) {
+				createScrollbarForElement(element, id);
+			}
+		}
+	});
+}
+
+function createScrollbarForElement(element, id) {
+	let new_scrollbar = document.createElement('div');
+	new_scrollbar.appendChild(document.createElement('div'));
+	new_scrollbar.style.overflowX = 'auto';
+	new_scrollbar.style.overflowY = 'hidden';
+	new_scrollbar.firstChild.style.height = '1px';
+	new_scrollbar.firstChild.style.width = element.scrollWidth + 'px';
+	new_scrollbar.firstChild.appendChild(document.createTextNode('\xA0'));
+	new_scrollbar.id = id;
+	let running = false;
+	new_scrollbar.onscroll = function () {
+		if (running) {
+			running = false;
+			return;
+		}
+		running = true;
+		element.scrollLeft = new_scrollbar.scrollLeft;
+	};
+	element.onscroll = function () {
+		if (running) {
+			running = false;
+			return;
+		}
+		running = true;
+		new_scrollbar.scrollLeft = element.scrollLeft;
+	};
+	element.parentNode.insertBefore(new_scrollbar, element);
+}

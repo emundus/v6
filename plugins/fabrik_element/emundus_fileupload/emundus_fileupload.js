@@ -14,6 +14,7 @@
  */
 function watch(elementId, attachId) {
     var myFormData = new FormData();
+    var divCtrlGroup = document.querySelector('div.fb_el_'+elementId);
     var div = document.querySelector('div#div_'+elementId);
     var fnum = document.querySelector('input#'+elementId.split('___')[0]+'___fnum').value;
     myFormData.append('attachId', attachId);
@@ -36,17 +37,20 @@ function watch(elementId, attachId) {
                 var result = JSON.parse(xhr.responseText);
 
                 if (result != null) {
-
                     if (result.limitObtained) {
+                        div.querySelector('div .btn-upload').hide();
                         div.querySelector('input#'+elementId).hide();
+                        divCtrlGroup.querySelector('.control-label').style.cursor = 'default';
                     } else {
+                        div.querySelector('div .btn-upload').show();
                         div.querySelector('input#'+elementId).show();
+                        divCtrlGroup.querySelector('.control-label').style.cursor = 'pointer';
                     }
 
                     if (result.files) {
                         if (!div.querySelector('.em-fileAttachmentTitle')) {
-                            var attachmentTitle = document.createElement('p');
-                            attachmentTitle.setAttribute("class", 'em-fileAttachmentTitle');
+                            var attachmentTitle = document.createElement('span');
+                            attachmentTitle.setAttribute("class", 'em-fileAttachmentTitle em-mt-8');
                             attachmentTitle.innerText= Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_UPLOADED_FILES');
                             divAttachment.appendChild(attachmentTitle);
                         } else {
@@ -62,28 +66,34 @@ function watch(elementId, attachId) {
                                 divAttachment.appendChild(divLink);
                             }
 
-                            var link = document.createElement('a');
-                            var linkText = document.createTextNode(result.files[i].filename);
-                            link.setAttribute("href", result.files[i].target);
-                            link.setAttribute("target", "_blank");
+                            if (result.files[i].can_be_viewed == 1) {
+                                var link = document.createElement('a');
+                                link.setAttribute("href", result.files[i].target);
+                                link.setAttribute("target", "_blank");
+                            } else {
+                                var link = document.createElement('p');
+                            }
+                            var linkText = document.createTextNode(result.files[i].local_filename);
 
                             divLink.appendChild(link);
                             link.appendChild(linkText);
 
-                            var deleteButton = document.createElement('a');
-                            deleteButton.setAttribute("class", 'em-pointer em-deleteFile em-ml-8');
-                            deleteButton.setAttribute('value', result.files[i].filename);
+                            if (result.files[i].can_be_deleted == 1) {
+                                var deleteButton = document.createElement('a');
+                                deleteButton.setAttribute("class", 'em-pointer em-deleteFile em-ml-8');
+                                deleteButton.setAttribute('value', result.files[i].filename);
 
-                            var deleteIcon = document.createElement('span');
-                            deleteIcon.setAttribute("class", 'material-icons-outlined');
-                            deleteIcon.setAttribute("style",'font-size: 16px');
-                            deleteIcon.appendChild(document.createTextNode('clear'));
-                            deleteButton.appendChild(deleteIcon);
+                                var deleteIcon = document.createElement('span');
+                                deleteIcon.setAttribute("class", 'material-icons-outlined');
+                                deleteIcon.setAttribute("style",'font-size: 16px');
+                                deleteIcon.appendChild(document.createTextNode('clear'));
+                                deleteButton.appendChild(deleteIcon);
 
-                            divLink.appendChild(deleteButton);
+                                divLink.appendChild(deleteButton);
 
-                            var button = document.querySelector('#' + elementId + '_attachment_link' + i + ' > a.em-deleteFile');
-                            button.addEventListener('click', () => FbFileUpload.delete(elementId, attachId));
+                                var button = document.querySelector('#' + elementId + '_attachment_link' + i + ' > a.em-deleteFile');
+                                button.addEventListener('click', () => FbFileUpload.delete(elementId, attachId));
+                            }
                         }
                     }
 
@@ -299,7 +309,9 @@ var FbFileUpload = {
                         });
 
                         input.value = '';
-                        deleteButton.style.display = 'none';
+                        if(deleteButton != null) {
+                            deleteButton.style.display = 'none';
+                        }
                     }
 
                     if (result[j].encrypt == false){
@@ -367,13 +379,15 @@ var FbFileUpload = {
     },
 
     delete: function(elementId, attachId) {
+        var div_parent = document.querySelector('div#div_'+elementId);
         var file = event.target;
-        var fileName = file.parentElement.parentElement.firstChild.innerText;
-        var parentDiv = file.parentNode;
+        var local_filename = file.parentElement.parentElement.firstChild.innerText;
+        var fileName = file.parentElement.parentElement.firstChild.href.split('/');
+        fileName = fileName[fileName.length - 1];
 
         Swal.fire({
             title: Joomla.JText._('PLG_ELEMENT_FIELD_SURE'),
-            text: Joomla.JText._('PLG_ELEMENT_FIELD_SURE_TEXT'),
+            html: Joomla.JText._('PLG_ELEMENT_FIELD_SURE_TEXT') + '<strong>'+ local_filename + '</strong> ?',
             type: 'warning',
             showCancelButton: true,
             reverseButtons: true,
@@ -401,9 +415,12 @@ var FbFileUpload = {
                     }
                 }).then((res) => {
                     if (res.status) {
-                        parentDiv.remove();
+                        div_parent.querySelector('div.btn-upload').show();
+                        div_parent.querySelector('input#'+elementId).show();
 
-                        var attachmentList = div.querySelectorAll('.em-fileAttachment-link').length;
+                        file.parentElement.parentElement.remove();
+
+                        var attachmentList = div_parent.querySelectorAll('.em-fileAttachment-link').length;
                         if (attachmentList === 0) {
                             document.querySelector('div#'+elementId+'_attachment > .em-fileAttachmentTitle').remove();
                         }
@@ -418,10 +435,6 @@ var FbFileUpload = {
                                 confirmButton: 'em-swal-confirm-button',
                                 actions: 'em-swal-single-action',
                             }
-                        });
-
-                        document.querySelectorAll('div#'+elementId+'_attachment').forEach(element => {
-                            element.remove();
                         });
                     } else {
                         Swal.fire({

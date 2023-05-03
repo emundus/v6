@@ -12,64 +12,42 @@
 				:checked="checkedAttachments.includes(attachment.aid)"
 			/>
 		</td>
-		<td class="td-document" @click="openModal">
-			<span>{{ attachment.value }}</span>
-			<span
-				v-if="!attachment.existsOnServer"
-				class="material-icons-outlined warning file-not-found"
-				:title="translate('COM_EMUNDUS_ATTACHMENTS_FILE_NOT_FOUND')"
-			>
-				warning
-			</span>
+		<td v-if="columns.includes('name')" class="td-document" @click="openModal">
+			<span v-if="!attachment.existsOnServer" class="material-icons-outlined warning file-not-found em-mr-16" :title="translate('COM_EMUNDUS_ATTACHMENTS_FILE_NOT_FOUND')">warning</span>
+			<span :title="attachment.value">{{ attachment.value }}</span>
 		</td>
-		<td class="date">{{ formattedDate(attachment.timedate) }}</td>
-		<td class="desc"> {{ strippedHtml(attachment.upload_description) }}</td>
-		<td class="category">
+		<td v-if="columns.includes('date')" class="date">{{ formattedDate(attachment.timedate) }}</td>
+		<td v-if="columns.includes('desc')" class="desc"> {{ strippedHtml(attachment.upload_description) }}</td>
+		<td v-if="columns.includes('category')" class="category">
 			{{ category }}
 		</td>
-		<td
+		<td v-if="columns.includes('status')"
 			class="status valid-state"
-			:class="{
-				success: attachment.is_validated == 1,
-				warning: attachment.is_validated == 2,
-				error: attachment.is_validated == 0,
-			}"
+			:class="{success: attachment.is_validated == 1,warning: attachment.is_validated == 2,error: attachment.is_validated == 0}"
 		>
 			<select @change="(e) => updateStatus(e)" :disabled="canUpdate === false ? true : false">
-				<option value="1" :selected="attachment.is_validated == 1">
-					{{ translate("VALID") }}
-				</option>
-				<option value="0" :selected="attachment.is_validated == 0">
-					{{ translate("INVALID") }}
-				</option>
-				<option value="2" :selected="attachment.is_validated == 2">
-					{{ translate("COM_EMUNDUS_ATTACHMENTS_WARNING") }}
-				</option>
-				<option value="-2" :selected="attachment.is_validated == -2 || attachment.is_validated === null">
-					{{ translate("COM_EMUNDUS_ATTACHMENTS_WAITING") }}
-				</option>
+				<option value="1" :selected="attachment.is_validated == 1">{{ translate("VALID") }}</option>
+				<option value="0" :selected="attachment.is_validated == 0">{{ translate("INVALID") }}</option>
+				<option value="2" :selected="attachment.is_validated == 2">{{ translate("COM_EMUNDUS_ATTACHMENTS_WARNING") }}</option>
+				<option value="-2" :selected="attachment.is_validated == -2 || attachment.is_validated === null">{{ translate("COM_EMUNDUS_ATTACHMENTS_WAITING") }}</option>
 			</select>
 		</td>
-		<td v-if="canSee">{{ getUserNameById(attachment.user_id) }}</td>
-		<td v-if="canSee">{{ getUserNameById(attachment.modified_by) }}</td>
-		<td class="date">{{ formattedDate(attachment.modified) }}</td>
-		<td class="permissions">
-			<span
+		<td v-if="canSee && columns.includes('user')">{{ getUserNameById(attachment.user_id) }}</td>
+		<td v-if="canSee && columns.includes('modified_by')">{{ getUserNameById(attachment.modified_by) }}</td>
+		<td class="date" v-if="columns.includes('modified')">{{ formattedDate(attachment.modified) }}</td>
+		<td v-if="columns.includes('permissions')" class="permissions">
+			<span v-if="attachment.profiles.length > 0"
 				class="material-icons-outlined visibility-permission em-pointer"
 				:class="{ active: attachment.can_be_viewed == '1' }"
 				@click="changePermission('can_be_viewed', attachment)"
-				:title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_VIEW')"
-				>visibility</span
-			>
-			<span
+				:title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_VIEW')">visibility</span>
+			<span v-if="attachment.profiles.length > 0"
 				class="material-icons-outlined delete-permission em-pointer"
 				:class="{ active: attachment.can_be_deleted == '1' }"
 				@click="changePermission('can_be_deleted', attachment)"
-				:title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE')"
-				>delete_outlined</span
-			>
+				:title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE')">delete_outlined</span>
 		</td>
-    <td v-if="sync">
+    <td v-if="sync && columns.includes('sync')">
       <div v-if="attachment.sync > 0">
         <span
             v-if="attachment.sync_method == 'write' && !syncLoading"
@@ -128,6 +106,12 @@ export default {
       type: Boolean,
       default: true,
     },
+    columns: {
+      type: Array,
+	    default() {
+		    return ['name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync'];
+	    }
+    }
 	},
 	mixins: [mixin],
 	data() {
@@ -142,7 +126,7 @@ export default {
 	mounted() {
 		this.categories = this.$store.state.attachment.categories;
 		if (Object.entries(this.categories).length > 0) {
-			this.category = this.categories[this.attachment.category] ? this.categories[this.attachment.category] : "";
+			this.category = this.categories[this.attachment.category] ? this.categories[this.attachment.category] : '';
 		}
 
 		this.checkedAttachments = this.checkedAttachmentsProp;

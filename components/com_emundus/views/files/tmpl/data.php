@@ -46,7 +46,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 				<thead>
 				<tr>
 					<?php foreach ($this->datas[0] as $kl => $v): ?>
-						<th title="<?= JText::_(strip_tags($v)); ?>" id="<?= $kl; ?>" >
+						<th title="<?= strip_tags(JText::_($v)); ?>" id="<?= $kl; ?>" >
 							<div class="em-cell">
 								<?php if($kl == 'check'): ?>
 
@@ -80,10 +80,10 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 										<span class="glyphicon glyphicon-sort-by-attributes"></span>
 									<?php endif;?>
 									<strong>
-										<?= JText::_($v); ?>
+										<?= strip_tags(JText::_($v)); ?>
 									</strong>
 								<?php else: ?>
-									<?= JText::_($v); ?>
+									<?= strip_tags(JText::_($v)); ?>
 								<?php endif;?>
 
 							</div>
@@ -189,6 +189,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
         if (url[1] != null && url[1].length >= 20) {
             url = url[1].split("|");
+            url = url[0].split('%7C');
             var fnum = {};
             fnum.fnum = url[0];
 
@@ -231,7 +232,6 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
         $('#rt-mainbody-surround').children().addClass('mainemundus');
         $('#rt-main').children().addClass('mainemundus');
         $('#rt-main').children().children().addClass('mainemundus');
-		//$('.em-data-container').doubleScroll();
 
         menuAction = document.querySelector('.em-menuaction');
         headerNav = document.querySelector('#g-navigation .g-container');
@@ -240,9 +240,13 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
             $('.container-result').css('top', (headerNav.offsetHeight + menuAction.offsetHeight) + 'px');
             $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
         },2000);
+
+        const dataContainer = document.querySelector('.em-data-container')
+        if (dataContainer) {
+            DoubleScroll(document.querySelector('.em-data-container'));
+        }
 	});
     window.parent.$("html, body").animate({scrollTop : 0}, 300);
-
 </script>
 
 

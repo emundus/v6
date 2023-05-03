@@ -51,10 +51,10 @@
 
 <script>
 import Multiselect from 'vue-multiselect';
-import syncService from "../../../services/sync";
+import syncService from '../../../services/sync';
 
 export default {
-  name: "FilesName",
+  name: 'FilesName',
   components: {
     Multiselect
   },
@@ -103,28 +103,37 @@ export default {
 				});
 			}
 
-			if (this.$props.name !== '') {
-        this.$props.name.replace('[', '');
-        this.$props.name.replace(']', '');
+			if (this.name !== '') {
+				this.selectedSeparator = this.name.indexOf('-') === -1 ? '_' : '-';
 
-        let tags_regex = this.$props.name.split('-')
+				let tags_regex = [];
+				if (this.selectedSeparator == '_') {
+					const splitted_name = this.name.split(']_[');
 
-        this.selectedSeparator = '-';
+					splitted_name.forEach((tag, index) => {
+						tag = tag.replace(/\[/g, '');
+						tag = tag.replace(/]/g, '');
 
-			  tags_regex.forEach((tag,index) => {
-				  if (tag !== '_') {
-					  tags_regex[index] = '[' + tag + ']';
+						if (tag !== '') {
+							tags_regex.push(tag);
+						}
+					});
+				} else {
+					this.name = this.name.replace(/\[/g, '');
+					this.name = this.name.replace(/]/g, '');
+					tags_regex = this.name.split(this.selectedSeparator);
+				}
 
-					  let tag_found = this.tags.findIndex(function(element, key) {
-						  if(element.value === '[' + tag + ']')
-							  return true;
-					  });
+			  tags_regex.forEach((tag, index) => {
+				  tags_regex[index] = '[' + tag + ']';
 
-					  if(tag_found !== -1) {
-						  this.selectedTags.push(this.tags[tag_found]);
-					  }
-				  } else {
-					  this.selectedSeparator = '_';
+				  let tag_found = this.tags.findIndex(function(element, key) {
+					  if(element.value === '[' + tag + ']')
+						  return true;
+				  });
+
+				  if(tag_found !== -1) {
+					  this.selectedTags.push(this.tags[tag_found]);
 				  }
 			  });
 		  } else {
@@ -160,17 +169,16 @@ export default {
     },
 
     resetName(){
-      this.selectedTags = [];
-      this.selectedTags.push(
-          {
-            label: 'N° de dossier',
-            value: '[FNUM]'
-          },
-          {
-            label: 'Type de document',
-            value: '[DOCUMENT_TYPE]'
-          }
-      );
+      this.selectedTags = [
+	      {
+		      label: 'N° de dossier',
+		      value: '[FNUM]'
+	      },
+	      {
+		      label: 'Type de document',
+		      value: '[DOCUMENT_TYPE]'
+	      }
+      ];
 
       this.updateName();
     },
@@ -184,7 +192,7 @@ export default {
           name += tag.value;
           this.$emit('updateName',name);
         }
-      })
+      });
     }
   },
 

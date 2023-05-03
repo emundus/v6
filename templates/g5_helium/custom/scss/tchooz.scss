@@ -129,14 +129,15 @@
   border-radius: var(--em-applicant-border-radius);
   padding: 8px 12px;
   color: $neutral-600;
+  cursor: unset;
 }
 
 .em-back-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: $neutral-200;
-  border: 1px solid $neutral-200;
+  background: transparent;
+  border: 1px solid transparent;
   border-radius: var(--em-border-radius);
   padding: 6px 20px;
   color: $neutral-900;
@@ -163,6 +164,12 @@
 }
 button[class ^= 'em-']{
   transition: all 0.3s ease-in-out;
+}
+.em-disabled-state{
+  background: var(--neutral-100) !important;
+  span{
+    color: var(--neutral-300);
+  }
 }
 
 /** INPUTS **/
@@ -539,6 +546,18 @@ input:focus + .em-slider {
   grid-template-columns: repeat(4, 1fr);
 }
 
+.em-gap-4{
+  gap: 4px;
+}
+
+.em-gap-8{
+  gap: 8px;
+}
+
+.em-gap-16{
+  gap: 16px;
+}
+
 .em-float-left{
   float: left;
 }
@@ -548,6 +567,10 @@ input:focus + .em-slider {
 
 .em-pointer{
   cursor: pointer;
+}
+
+.em-pointer-disbabled{
+  cursor: not-allowed;
 }
 
 .em-grab{
@@ -787,6 +810,9 @@ input:focus + .em-slider {
 }
 .em-bg-main-500{
   background: var(--main-500);
+}
+.em-bg-main-900{
+  background: $main-900;
 }
 .em-bg-neutral-100{
   background: $neutral-100;
@@ -1119,11 +1145,41 @@ input:focus + .em-slider {
 .em-underline{
   text-decoration: underline;
 }
+
+/** BOXES **/
 .em-box-shadow{
   box-shadow: inset 0px -1px 0px #E3E5E8;
 }
 .em-neutral-100-box{
   background: #FAFAFA;
+}
+.em-light-tabs{
+  padding: 12px 0;
+  span{
+    color: var(--neutral-500);
+  }
+}
+.em-light-selected-tab{
+  border-bottom: 1px solid var(--main-400);
+  span{
+    color: var(--neutral-900);
+  }
+}
+.em-tabs{
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #D4D6DF;
+  box-shadow: 0 1px 4px rgba(32, 35, 44, 0.05);
+}
+.em-selected-tab{
+  background: var(--main-50);
+  border: 1px solid var(--main-300);
+}
+.em-status{
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /**
@@ -1180,6 +1236,7 @@ input:focus + .em-slider {
 
 .em-applicant-default-font {
   font-family: var(--font);
+  text-transform: inherit;
 }
 
 .em-applicant-title-font {
@@ -1334,8 +1391,10 @@ input:focus + .em-slider {
   align-items: center;
   border: solid 1px $neutral-400;
   padding: 10px;
-  width: 100px;
-  border-radius: 4px;
+  border-radius: 8px;
+  img{
+    width: 100px;
+  }
 }
 
 .em-notifications-yellow{
@@ -1510,6 +1569,7 @@ button.em-swal-delete-button{
   border-radius: 50%;
   padding: 12px;
   background: $main-200;
+  box-shadow: 0 1px 4px rgba(32, 35, 44, 0.05);
 }
 /** **/
 
@@ -1542,7 +1602,7 @@ button.em-swal-delete-button{
   background-position: center;
   border: solid 5px white;
   transition: all 0.3s ease-in-out;
-  &:hover{
+  &:hover:not(.no-hover){
     filter: brightness(80%);
   }
 }
@@ -1557,6 +1617,10 @@ button.em-swal-delete-button{
   margin-bottom: 12px;
   font-family: var(--applicant-default-font);
   height: fit-content;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 250px;
 }
 
 /** SEARCHBAR **/
@@ -1639,13 +1703,13 @@ button.em-swal-delete-button{
 
   .em-grid-3{
     display: grid;
-    grid-gap: 24px;
+    grid-gap: 12px;
     grid-template-columns: repeat(2, 1fr);
   }
 
   .em-grid-4{
     display: grid;
-    grid-gap: 24px;
+    grid-gap: 12px;
     grid-template-columns: repeat(2, 1fr);
   }
 }

@@ -105,7 +105,7 @@ class EmundusControllerTrombinoscope extends EmundusController {
      * @throws Exception
      * @since version
      */
-    public function generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $templHeader, $templFooter,  $generate, $preview = false, $checkHeader = false, $border, $headerHeight) {
+    public function generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $templHeader, $templFooter,  $generate, $preview = false, $checkHeader = false, $border = null, $headerHeight = null) {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         $m_files = new EmundusModelFiles();
         // Traitement du nombre de colonnes max par ligne
@@ -137,6 +137,15 @@ class EmundusControllerTrombinoscope extends EmundusController {
         $nb_cell = 0;
         $tab_body = array();
         $fnumInfo = $m_files->getFnumInfos($fnums[0]['fnum']);
+
+        $template = preg_replace_callback('/< *img[^>]*src *= *["\']?([^"\']*)/i', function ($match) {
+            $src = $match[1];
+            if (substr($src, 0, 1) === '/') {
+                $src = substr($src, 1);
+            }
+            return '<img src="'.$src;
+        }, $template);
+
         foreach ($fnums as $fnum) {
             $post = [
                 'FNUM' => $fnum['fnum'],
@@ -146,7 +155,7 @@ class EmundusControllerTrombinoscope extends EmundusController {
                 'CAMPAIGN_END' => $fnumInfo['end_date'],
                 'SITE_URL' => JURI::base()
             ];
-            $tags = $emails->setTags($fnum["applicant_id"], $post, $fnum['fnum'], '', $template);
+            $tags = $emails->setTags($fnum["applicant_id"], $post, $fnum['fnum'], '', $template, true);
             $body_tags = preg_replace($tags['patterns'], $tags['replacements'], $template);
             $body_tmp = $emails->setTagsFabrik($body_tags, array($fnum["fnum"]));
             $body .= $body_tmp;
@@ -209,7 +218,7 @@ body {
     display: inline-block;
     text-overflow: ellipsis;
     overflow: hidden;
-    whitespace: no-wrap;
+    white-space: no-wrap;
     line-height: 1;
     width: '.$cell_width.'px;
     height: '.$cell_height.'px;
@@ -292,35 +301,48 @@ footer {
 	 * @since version
 	 */
     public function generate_pdf() {
-        $return_value = false;
-        $jinput = JFactory::getApplication()->input;
-        $gridL = $jinput->get('gridL');
-        $gridH = $jinput->get('gridH');
-        $margin = $jinput->get('margin');
-        $template = $jinput->post->get('template', '', 'raw');
-        $header = $jinput->post->get('header', '', 'raw');
-        $footer = $jinput->post->get('footer', '', 'raw');
-        $string_fnums = $jinput->post->get('string_fnums', null, 'raw');
-        $generate = $jinput->get('generate');
-        $checkHeader = $jinput->get('checkHeader');
-        $format = $jinput->get('format');
-        $border = $jinput->get('border');
-        $headerHeight = $jinput->get('headerHeight');
+        $response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+		$current_user = JFactory::getUser();
 
-        if (!empty($format)) {
-            $fnums = $this->fnums_json_decode($string_fnums);
-            $html_content = $this->generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $header, $footer, $generate, false, $checkHeader, $border, $headerHeight);
+		if (EmundusHelperAccess::asAccessAction(31, 'c', $current_user->id)) {
+			$response['msg'] = JText::_('BAD_REQUEST');
+			$jinput = JFactory::getApplication()->input;
+			$format = $jinput->get('format');
 
-            require_once (JPATH_COMPONENT.DS.'models'.DS.'trombinoscope.php');
-            $m_trombinoscrope = new EmundusModelTrombinoscope();
-            $generated_pdf_url = $m_trombinoscrope->generate_pdf($html_content, $format);
+			if (!empty($format)) {
+				$string_fnums = $jinput->post->get('string_fnums', null, 'raw');
+				$fnums = $this->fnums_json_decode($string_fnums);
 
-            $return_value = json_encode(array(
-                'pdf_url' => $generated_pdf_url
-            ));
-        }
+				if (!empty($fnums)) {
+					$gridL = $jinput->get('gridL');
+					$gridH = $jinput->get('gridH');
+					$margin = $jinput->get('margin');
+					$template = $jinput->post->get('template', '', 'raw');
+					$header = $jinput->post->get('header', '', 'raw');
+					$footer = $jinput->post->get('footer', '', 'raw');
+					$generate = $jinput->get('generate');
+					$checkHeader = $jinput->get('checkHeader');
+					$format = $jinput->get('format');
+					$border = $jinput->get('border');
+					$headerHeight = $jinput->get('headerHeight');
+					$html_content = $this->generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $header, $footer, $generate, false, $checkHeader, $border, $headerHeight);
 
-        echo $return_value;
+					if (!empty($html_content)) {
+						require_once (JPATH_COMPONENT.'/models/trombinoscope.php');
+						$m_trombinoscrope = new EmundusModelTrombinoscope();
+						$response['pdf_url'] = $m_trombinoscrope->generate_pdf($html_content, $format);
+						$response['status'] = true;
+						$response['code'] = 200;
+						$response['msg'] = JText::_('SUCCESS');
+					} else {
+						$response['code'] = 500;
+						$response['msg'] = JText::_('FAIL');
+					}
+				}
+			}
+		}
+
+        echo json_encode($response);
         exit();
     }
 }

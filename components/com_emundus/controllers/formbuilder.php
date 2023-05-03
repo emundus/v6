@@ -34,12 +34,10 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     }
 
     public function updateOrder() {
+	    $update = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $update = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
 
             $elements = $jinput->getString('elements');
@@ -49,11 +47,13 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
             $moved_el = json_decode($moved_el, true);
 
             if (empty($moved_el)) {
-                $update = array('status' => 0, 'msg' => JText::_("INVALID_PARAMETERS"));
+                $update['msg'] = JText::_('INVALID_PARAMETERS');
             } else {
-                $update = $this->m_formbuilder->updateOrder($elements, $group_id, $user->id, $moved_el);
+                $update['status'] = $this->m_formbuilder->updateOrder($elements, $group_id, $user->id, $moved_el);
+	            $update['msg'] = $update['status'] ? JText::_('SUCCESS') : JText::_('FAILURE');
             }
         }
+
         echo json_encode((object)$update);
         exit;
     }
@@ -597,20 +597,23 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 
 
     public function reordermenu() {
+		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
-
-            $menus = json_decode($_POST['menus']);
+			$menus = json_decode($_POST['menus']);
             $profile = $jinput->getInt('profile');
 
-            $changeresponse = $this->m_formbuilder->reorderMenu($menus,$profile);
+			if (!empty($profile)) {
+				$response['status'] = $this->m_formbuilder->reorderMenu($menus,$profile);
+				$response['msg'] = $response['status'] ? JText::_('MENU_ORDER_UPDATED') : JText::_('MENU_ORDER_NOT_UPDATED');
+			} else {
+				$response['msg'] = JText::_('MISSING_PARAMS');
+			}
         }
-        echo json_encode((object)$changeresponse);
+
+        echo json_encode((object)$response);
         exit;
     }
 

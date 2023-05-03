@@ -85,8 +85,9 @@
 
                 &:before {
                     text-align: center;
-                    font-family: FontAwesome;
-                    content: "\f054";
+                    font-family: "Font Awesome 5 Pro", "Font Awesome 5 Free", FontAwesome;
+                    font-weight: 900;
+                    content: $fa-chevron-right;
                     position: absolute;
                     vertical-align: middle;
                 }

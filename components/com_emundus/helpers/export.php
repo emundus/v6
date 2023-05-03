@@ -64,9 +64,13 @@ class EmundusHelperExport {
 		if (!function_exists('application_form_pdf')) {
 			require_once($file);
 		}
-        application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $options, $application_form_order,null,null,$elements);
+        $result = application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $options, $application_form_order,null,null,$elements);
         /// application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $options, $application_form_order, null, null, null);           /// review this function
-		return EMUNDUS_PATH_ABS.$sid.DS.$fnum.'_application.pdf';
+		if($result) {
+			return EMUNDUS_PATH_ABS . $sid . DS . $fnum . '_application.pdf';
+		}
+
+		return $result;
     }
 
     /*
@@ -78,7 +82,7 @@ class EmundusHelperExport {
      *      --> $elements (Object)
      *      --> $options (Array) [null]
      * */
-    public function buildCustomizedPDF($fnumInfos, $forms = 1, $elements, $options=null, $application_form_order = null) {
+    public function buildCustomizedPDF($fnumInfos, $forms, $elements, $options=null, $application_form_order = null) {
         $_profile_model = JModelLegacy::getInstance('profile','EmundusModel');   /// invoke model of profile
 
         $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$fnumInfos['training'].'.php';

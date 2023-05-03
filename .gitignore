@@ -114,4 +114,19 @@ components/com_eventbooking/fields.xml
 /components/com_emundus/models/custom.php
 
 ## miniorange ##
-/plugins/authentication/miniorangesaml/saml2/cert/
+/administrator/components/com_miniorange_saml/
+/administrator/language/en-GB/en-GB.com_miniorange_saml.ini
+/administrator/language/en-GB/en-GB.com_miniorange_saml.sys.ini
+/administrator/manifests/libraries/miniorangesamlplugin.xml
+/administrator/manifests/packages/miniorangesamlsso/
+/administrator/manifests/packages/pkg_miniorangesamlsso.xml
+/components/com_miniorange_saml/
+/language/en-GB/en-GB.lib_miniorangesamlplugin.ini
+/language/en-GB/en-GB.lib_miniorangesamlplugin.sys.ini
+/language/en-GB/en-GB.pkg_miniorangesamlsso.ini
+/language/en-GB/en-GB.pkg_miniorangesamlsso.sys.ini
+/libraries/miniorangesamlplugin/
+/media/com_miniorange_saml/
+/plugins/authentication/miniorangesaml/
+/plugins/system/samlredirect/
+/plugins/user/samllogout/

@@ -22,7 +22,7 @@
 
 .mod_emundus_checklist___grid{
     display: grid;
-    grid-template-columns: 32px 90%;
+    grid-template-columns: 32px 86%;
     align-items: baseline;
 }
 
@@ -60,8 +60,8 @@
 }
 
 .mod_emundus_checklist___attachment{
+    margin-top: -12px;
     margin-left: 36px;
-    margin-top: 12px;
 }
 
 .mod_emundus_checklist___count{

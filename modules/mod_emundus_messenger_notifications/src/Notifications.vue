@@ -51,7 +51,7 @@ export default {
            return qs.stringify(params);
         }
       }).then(response => {
-        if(response.data.data != null) {
+        if(response.data.data != null && response.data.status) {
           this.counter = response.data.data.notifications;
           this.notifications = response.data.data;
         }

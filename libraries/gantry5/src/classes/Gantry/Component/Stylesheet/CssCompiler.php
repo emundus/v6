@@ -146,10 +146,12 @@ abstract class CssCompiler implements CssCompilerInterface
             /** @var UniformResourceLocator $locator */
             $locator = Gantry::instance()['locator'];
 
-            $this->realPaths = [];
+            $list = [[]];
             foreach ($paths as $path) {
-                $this->realPaths = array_merge($this->realPaths, $locator->findResources($path));
+                $list[] = $locator->findResources($path);
             }
+
+            $this->realPaths = array_merge(...$list);
         }
 
         return $this;
@@ -237,7 +239,7 @@ abstract class CssCompiler implements CssCompilerInterface
             return false;
         }
 
-        $uri = basename($out);
+        $uri = Gantry::basename($out);
         $metaFile = PhpFile::instance($locator->findResource("gantry-cache://theme/scss/{$uri}.php", true, true));
 
         // Check if meta file exists.
@@ -284,7 +286,11 @@ abstract class CssCompiler implements CssCompilerInterface
         }
 
         foreach ($imports as $resource => $timestamp) {
-            $import = $locator->isStream($resource) ? $locator->findResource($resource) : realpath($resource);
+            if ($locator->isStream($resource)) {
+                $import = $locator->findResource($resource);
+            } else {
+                $import = $this->tryImport($resource);
+            }
             if (!$import || filemtime($import) !== $timestamp) {
                 return true;
             }
@@ -301,7 +307,18 @@ abstract class CssCompiler implements CssCompilerInterface
     {
         $this->variables = array_filter($variables);
 
-        foreach($this->variables as &$value) {
+        foreach($this->variables as $var => &$value) {
+            if (strpos($var, 'breakpoints-') === 0) {
+                // Breakpoints need to be in rem
+                $len = strlen($value);
+                if (strpos($value, 'px', $len - 2)) {
+                    $value = ((float)substr($value, 0, $len - 2) / 16.0) . 'rem';
+                } else {
+                    $value = preg_replace('/(\d+(\.\d+))em$/i', '\1rem', $value);
+                }
+
+            }
+
             if (is_numeric($value)) {
                 continue;
             }
@@ -385,7 +402,7 @@ abstract class CssCompiler implements CssCompilerInterface
         /** @var UniformResourceLocator $locator */
         $locator = $gantry['locator'];
 
-        $uri = basename($out);
+        $uri = Gantry::basename($out);
         $metaFile = PhpFile::instance($locator->findResource("gantry-cache://theme/scss/{$uri}.php", true, true));
         $data = [
             'file' => $out,
