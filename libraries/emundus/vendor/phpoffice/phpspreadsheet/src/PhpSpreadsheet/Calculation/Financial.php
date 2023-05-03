@@ -12,6 +12,8 @@ use PhpOffice\PhpSpreadsheet\Calculation\Financial\TreasuryBill;
 
 /**
  * @deprecated 1.18.0
+ *
+ * @codeCoverageIgnore
  */
 class Financial
 {

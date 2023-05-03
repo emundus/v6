@@ -1,16 +1,16 @@
 ﻿<?php
 /**
  * Export  Model for eMundus Component
- * 
+ *
  * @package    eMundus
  * @subpackage Components
  * @link       http://www.emundus.fr
  * @license    GNU/GPL
  */
- 
+
 // No direct access
 defined( '_JEXEC' ) or die( 'Restricted access' );
- 
+
 jimport( 'joomla.application.component.model' );
 
 use Gotenberg\Gotenberg;
@@ -78,7 +78,7 @@ class EmundusModelExport extends JModelList {
 		                ->convert(
 			                Stream::path($file_src)
 		                );
-					
+
 	                Gotenberg::save($request, $dest_path .'/');
                 } else {
 	                $request = Gotenberg::chromium($gotenberg_url)

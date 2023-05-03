@@ -726,9 +726,7 @@ class EmundusModelPayment extends JModelList
             }
 
             $config = json_decode($params, true);
-            if (!empty($config) && !empty($config['sender_first_name'])) {
-                // do nothing
-            } else {
+            if (empty($config) && empty($config['sender_first_name']))  {
                 $query->clear()
                     ->select('ju.email, jepd.first_name, jepd.last_name, dc.code_iso_2, jepd.city_1, jepd.telephone_1, jepd.street_1')
                     ->from('#__users as ju')

@@ -53,7 +53,7 @@ class EmundusControllerEmail extends JControllerLegacy {
     }
 
 	function clear() {
-		EmundusHelperFilters::clear();
+		EmundusHelperFiles::clear();
 
 		$itemid=JFactory::getApplication()->getMenu()->getActive()->id;
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
@@ -67,13 +67,13 @@ class EmundusControllerEmail extends JControllerLegacy {
 	////// EMAIL ASSESSORS WITH DEFAULT MESSAGE///////////////////
 	function defaultEmail($reqids = null) {
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
-		@EmundusHelperEmails::sendDefaultEmail();
+		//@EmundusHelperEmails::sendDefaultEmail();
 	}
 
 	////// EMAIL ASSESSORS WITH CUSTOM MESSAGE///////////////////
 	function customEmail() {
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
-		@EmundusHelperEmails::sendCustomEmail();
+		//@EmundusHelperEmails::sendCustomEmail();
 	}
 
 	////// EMAIL APPLICANT WITH CUSTOM MESSAGE///////////////////

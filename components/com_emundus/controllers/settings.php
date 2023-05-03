@@ -24,6 +24,7 @@ jimport('joomla.application.component.controller');
 class EmundusControllersettings extends JControllerLegacy {
 
     var $m_settings = null;
+
     public function __construct($config = array()) {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         parent::__construct($config);
@@ -781,7 +782,8 @@ class EmundusControllersettings extends JControllerLegacy {
             echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
         } else {
 
-            $m_campaign = $this->getModel('campaign');
+	        require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
+            $m_campaign = new EmundusModelCampaign();
 
             $jinput = JFactory::getApplication()->input;
             $file = $jinput->files->get('file');
@@ -832,7 +834,7 @@ class EmundusControllersettings extends JControllerLegacy {
                 $config = JFactory::getConfig();
 
                 /* Clean sitename for folder */
-                $m_formbuilder = $this->getModel('formbuilder');
+                $m_formbuilder = new EmundusModelFormbuilder();
 
                 $sitename = strtolower(str_replace(array('\\','=','&',',','#','_','*',';','!','?',':','+','$','\'',' ','£',')','(','@','%'),'_',$config->get('sitename')));
                 $sitename = $m_formbuilder->replaceAccents($sitename);
@@ -1053,10 +1055,6 @@ class EmundusControllersettings extends JControllerLegacy {
 
 	public function updatebanner() {
 		$user = JFactory::getUser();
-		$results = [
-			'status' => false,
-			'msg' => ''
-		];
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$results['status'] = false;

@@ -33,7 +33,7 @@ class EmundusControllerJobForm extends EmundusController {
         $app->setUserState('com_emundus.edit.job.id', $editId);
 
         // Get the model.
-        $model = $this->getModel('JobForm', 'EmundusModel');
+        $model = new EmundusModelJobForm();
 
         // Check out the item
         if ($editId) {
@@ -52,7 +52,7 @@ class EmundusControllerJobForm extends EmundusController {
     /**
      * Method to save a user's profile data.
      *
-     * @return	void
+     * @return	void|mixed
      * @since	1.6
      */
     public function save() {
@@ -61,7 +61,7 @@ class EmundusControllerJobForm extends EmundusController {
 
         // Initialise variables.
         $app = JFactory::getApplication();
-        $model = $this->getModel('JobForm', 'EmundusModel');
+        $model = new EmundusModelJobForm();
 
         // Get the user data.
         $data = JFactory::getApplication()->input->get('jform', array(), 'array');
@@ -138,31 +138,38 @@ class EmundusControllerJobForm extends EmundusController {
     }
 
     function cancel() {
-        
+
         $app = JFactory::getApplication();
 
         // Get the current edit id.
         $editId = (int) $app->getUserState('com_emundus.edit.job.id');
 
         // Get the model.
-        $model = $this->getModel('JobForm', 'EmundusModel');
+        $model = new EmundusModelJobForm();
 
         // Check in the item
         if ($editId) {
             $model->checkin($editId);
         }
-        
+
         $menu = JFactory::getApplication()->getMenu();
         $item = $menu->getActive();
         $url = (empty($item->link) ? 'index.php?option=com_emundus&view=jobs' : $item->link);
         $this->setRedirect(JRoute::_($url, false));
     }
 
+    /**
+     *
+     * @return false|void
+     *
+     * @throws Exception
+     * @since version
+     */
     public function remove() {
 
         // Initialise variables.
         $app = JFactory::getApplication();
-        $model = $this->getModel('JobForm', 'EmundusModel');
+        $model = new EmundusModelJobForm();
 
         // Get the user data.
         $data = array();
