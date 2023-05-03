@@ -467,6 +467,14 @@ class EmundusControllerWebhook extends JControllerLegacy {
 		}
 		return true;
 	}
+
+    /**
+     *
+     * @return false|void
+     *
+     * @throws Exception
+     * @since version
+     */
     public function export_siscole(){
 
         $eMConfig 	= JComponentHelper::getParams('com_emundus');
