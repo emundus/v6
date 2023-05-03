@@ -2,14 +2,15 @@
 
 class ValidatorJS {
 
-    constructor(initInput, initSelect, initAllCountry, initIndiceCountry = 0, initDefaultValue = "")
+    constructor(initDiv, initAllCountry, initIndiceCountry = 0, initDefaultValue = "")
     {
-        this.input = initInput;
-        this.select = initSelect;
+        this.select = initDiv.getElement('select');
+        this.input = initDiv.getElement('input');
+        this.divError = initDiv.parentNode.parentNode.getElementsByClassName("fabrikErrorMessage")[0]; // awfull but necessary
         this.allCountry = initAllCountry;
         this.indiceCountry = initIndiceCountry;
-        this.countrySelected = this.allCountry[this.indiceCountry];
         this.defaultValue = initDefaultValue;
+        this.countrySelected = this.allCountry[this.indiceCountry];
 
         this.newCountry(this.indiceCountry);
         this.setOptionSelected(this.indiceCountry);
@@ -27,10 +28,11 @@ class ValidatorJS {
 
     handlerInputFocusOut(props)
     {
-        if (this.countrySelected.country_code !== undefined)
+        if (this.countrySelected.country_code !== "+")
         {
             const number = props.target.value;
             let format;
+            this.divError.innerHTML = '';
 
             try // test number.lengh > 1
             {
@@ -49,6 +51,7 @@ class ValidatorJS {
             else
             {
                 this.setInputBorderColor(this.errorColor);
+                this.divError.innerHTML = Joomla.JText._('PLG_ELEMENT_PHONE_NUMBER_INVALID');
             }
         }
         //else, unsupported country
@@ -56,7 +59,7 @@ class ValidatorJS {
 
     handlerInputFocusIn(props)
     {
-        if (this.countrySelected.country_code !== undefined)
+        if (this.countrySelected.country_code !== "+")
         {
             this.setInputBorderColor(this.defaultColor);
         }
@@ -64,10 +67,9 @@ class ValidatorJS {
 
     handlerSelectChange(props)
     {
+        this.divError.innerHTML = '';
         this.newCountry(props.target.options.selectedIndex);
         this.prepareInput();
-
-        this.countrySelected.country_code ? this.setInputBorderColor(this.defaultColor) : this.setInputBorderColor(this.unsupportedColor);
     }
 
     newCountry(id)
@@ -75,13 +77,14 @@ class ValidatorJS {
         this.indiceCountry = id;
         this.countrySelected = this.allCountry[this.indiceCountry];
 
+        this.countrySelected.country_code = "+";
         try
         {
-            this.countrySelected.country_code = "+" + libphonenumber.parsePhoneNumber("00", this.countrySelected.iso2).countryCallingCode; // +XX format
+            this.countrySelected.country_code += libphonenumber.parsePhoneNumber("00", this.countrySelected.iso2).countryCallingCode; // +XX format
         }
         catch (e)
         {
-            // unsupported country
+            this.divError.innerHTML = Joomla.JText._('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
         }
     }
 
@@ -89,7 +92,7 @@ class ValidatorJS {
     {
         // unsupported country
         this.input.value = "";
-        this.setInputBorderColor(this.unsupportedColor)
+        this.countrySelected.country_code !== "+" ? this.setInputBorderColor(this.defaultColor) : this.setInputBorderColor(this.unsupportedColor);
 
         if (this.defaultValue !== "")
         {

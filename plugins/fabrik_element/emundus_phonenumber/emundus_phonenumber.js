@@ -57,7 +57,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     selectedCountryIndex = this.getSelectedCountryIndex(allCountries, countryIso2); // get index array from iso2
                 }
 
-                this.ValidatorJS = new ValidatorJS(input, select, allCountries, selectedCountryIndex, defaultValue);
+                this.ValidatorJS = new ValidatorJS(this.element, allCountries, selectedCountryIndex, defaultValue);
                 this.ValidatorJS.setColors(validColor, errorColor, unsupportedColor, defaultColor);
             }
         },

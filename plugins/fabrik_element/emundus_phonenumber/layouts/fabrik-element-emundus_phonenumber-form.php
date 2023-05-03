@@ -6,11 +6,14 @@ defined('JPATH_BASE') or die;
 $doc = JFactory::getDocument();
 $doc->addScript(JURI::root() . "plugins/fabrik_element/emundus_phonenumber/assets/js/emundus_phonenumber_libphone-min.js");
 $doc->addScript(JURI::root() . "plugins/fabrik_element/emundus_phonenumber/assets/js/emundus_phonenumber_ValidatorJS.js");
+
+JText::script('PLG_ELEMENT_PHONE_NUMBER_INVALID');
+JText::script('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
 ?>
 
 <div id="<?php echo $displayData->attributes['id']; ?>" class="em-flex-row fabrikSubElementContainer">
 
-	<select class="input-small fabrikinput"
+	<select name="<?php echo $displayData->attributes['name']; ?>" class="input-small fabrikinput"
 			data-countries="<?php echo base64_encode(json_encode($displayData->dataSelect)); // encode base64?>"
 			selectedValue="<?echo $displayData->attributes['selectValue']; ?>"
 	>
