@@ -437,13 +437,15 @@ $current_tab = 0;
 																<?php
 																foreach ($custom_actions as $custom_action_key => $custom_action) {
 
-																	if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)) {
+																	if (in_array($application->status, $custom_action->mod_em_application_custom_action_status) && !empty($custom_action->mod_em_application_custom_action_link)) {
 																		?>
                                                                         <a id="actions_button_custom_<?= $custom_action_key; ?>_card_tab<?php echo $key ?>"
                                                                            class="em-text-neutral-900 em-pointer em-flex-row"
                                                                            href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?>>
-                                                                            <span class="material-icons-outlined em-font-size-16 em-mr-8"><?php echo $custom_action->mod_em_application_custom_action_icon ?></span>
-																			<?= JText::_($custom_action->mod_em_application_custom_action_label) ?>
+	                                                                        <? if ($custom_action->mod_em_application_custom_action_icon): ?>
+                                                                                <span class="material-icons-outlined em-font-size-16 em-mr-8"><?php echo $custom_action->mod_em_application_custom_action_icon ?></span>
+	                                                                        <? endif; ?>
+                                                                            <?= JText::_($custom_action->mod_em_application_custom_action_label) ?>
                                                                         </a>
 																		<?php
 																	}
@@ -538,7 +540,7 @@ $current_tab = 0;
 																<?php if (empty($application->updated)) : ?>
 																	<?php echo JFactory::getDate(new JDate($application->submitted_date, $site_offset))->format('d/m/Y H:i'); ?>
 																<?php else : ?>
-																	<?php echo EmundusHelperDate::displayDate($application->updated, 'd/m/Y H:i', 0); ?>
+																	<?php echo EmundusHelperDate::displayDate($application->updated, 'DATE_FORMAT_LC2', 0); ?>
 																<?php endif; ?>
                                                             </p>
                                                         </div>
@@ -792,12 +794,14 @@ $current_tab = 0;
 															<?php
 															foreach ($custom_actions as $custom_action_key => $custom_action) {
 
-																if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)) {
+																if (in_array($application->status, $custom_action->mod_em_application_custom_action_status) && !empty($custom_action->mod_em_application_custom_action_link)) {
 																	?>
                                                                     <a id="actions_button_custom_<?= $custom_action_key; ?>_list_tab<?php echo $key ?>"
                                                                        class="em-text-neutral-900 em-pointer em-flex-row"
                                                                        href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?>>
-                                                                        <span class="material-icons-outlined em-font-size-16 em-mr-8"><?php echo $custom_action->mod_em_application_custom_action_icon ?></span>
+                                                                        <? if ($custom_action->mod_em_application_custom_action_icon): ?>
+                                                                            <span class="material-icons-outlined em-font-size-16 em-mr-8"><?php echo $custom_action->mod_em_application_custom_action_icon ?></span>
+                                                                        <? endif; ?>
 																		<?= JText::_($custom_action->mod_em_application_custom_action_label) ?>
                                                                     </a>
 																	<?php
