@@ -5654,61 +5654,81 @@ class EmundusModelApplication extends JModelList
 		return $tabs;
 	}
 	
-	public function updateTabs($tabs,$user_id){
-		try {
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+	public function updateTabs($tabs, $user_id){
+		$updated = false;
 
-			foreach ($tabs as $tab) {
-				$query->clear()
-					->update($db->quoteName('#__emundus_campaign_candidature_tabs'))
-					->set($db->quoteName('name') . ' = ' . $db->quote($tab->name))
-					->set($db->quoteName('ordering') . ' = ' . $tab->ordering)
-					->where($db->quoteName('id') . ' = ' . $tab->id);
-				$db->setQuery($query);
-				$db->execute();
+		if (!empty($tabs) && !empty($user_id)) {
+			try {
+				$db = JFactory::getDbo();
+				$query = $db->getQuery(true);
+
+				$updates = [];
+				foreach ($tabs as $tab) {
+					$tab->id = (int) $tab->id;
+
+					$query->clear()
+						->select('id')
+						->from($db->quoteName('#__emundus_campaign_candidature_tabs'))
+						->where($db->quoteName('id') . ' = ' . $tab->id)
+						->andWhere($db->quoteName('applicant_id') . ' = ' . $user_id);
+					$db->setQuery($query);
+					$tab_id = $db->loadResult();
+
+					if (!empty($tab_id)) {
+						$query->clear()
+							->update($db->quoteName('#__emundus_campaign_candidature_tabs'))
+							->set($db->quoteName('name') . ' = ' . $db->quote($tab->name))
+							->set($db->quoteName('ordering') . ' = ' . $tab->ordering)
+							->where($db->quoteName('id') . ' = ' . $tab->id);
+
+						$db->setQuery($query);
+						$updates[] = $db->execute();
+					}
+				}
+
+				$updated = !in_array(false, $updates);
+			} catch (Exception $e) {
+				JLog::add('Failed to update tabs for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 			}
+		}
 
-			return true;
-		}
-		catch (Exception $e) {
-			JLog::add('Failed to update tabs for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-			return false;
-		}
+		return $updated;
 	}
 
 	public function deleteTab($tab_id, $user_id){
 		$deleted = false;
 
-		try {
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+		if (!empty($tab_id) && !empty($user_id)) {
+			try {
+				$db = JFactory::getDbo();
+				$query = $db->getQuery(true);
 
-			$query->select('*')
-				->from($db->quoteName('#__emundus_campaign_candidature_tabs'))
-				->where($db->quoteName('id') . ' = ' . $tab_id)
-				->where($db->quoteName('applicant_id') . ' = ' . $user_id);
-			$db->setQuery($query);
-			$tab = $db->loadAssoc();
-
-			if (!empty($tab)){
-				$query->clear()
-					->update($db->quoteName('#__emundus_campaign_candidature'))
-					->set($db->quoteName('tab') . ' = NULL')
-					->where($db->quoteName('tab') . ' = ' . $tab['id'])
+				$query->select('*')
+					->from($db->quoteName('#__emundus_campaign_candidature_tabs'))
+					->where($db->quoteName('id') . ' = ' . $tab_id)
 					->where($db->quoteName('applicant_id') . ' = ' . $user_id);
 				$db->setQuery($query);
-				$db->execute();
+				$tab = $db->loadAssoc();
 
-				$query->clear()
-					->delete($db->quoteName('#__emundus_campaign_candidature_tabs'))
-					->where($db->quoteName('id') . ' = ' . $tab['id']);
-				$db->setQuery($query);
-				$deleted = $db->execute();
+				if (!empty($tab)){
+					$query->clear()
+						->update($db->quoteName('#__emundus_campaign_candidature'))
+						->set($db->quoteName('tab') . ' = NULL')
+						->where($db->quoteName('tab') . ' = ' . $tab['id'])
+						->where($db->quoteName('applicant_id') . ' = ' . $user_id);
+					$db->setQuery($query);
+					$db->execute();
+
+					$query->clear()
+						->delete($db->quoteName('#__emundus_campaign_candidature_tabs'))
+						->where($db->quoteName('id') . ' = ' . $tab['id']);
+					$db->setQuery($query);
+					$deleted = $db->execute();
+				}
+			} catch (Exception $e) {
+				JLog::add('Failed to create for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				$deleted = false;
 			}
-		} catch (Exception $e) {
-			JLog::add('Failed to create for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-			$deleted = false;
 		}
 
 		return $deleted;
@@ -5734,7 +5754,7 @@ class EmundusModelApplication extends JModelList
 
 			if (!empty($tab_exists)) {
 				try {
-					$query->clear
+					$query->clear()
 						->update($db->quoteName('#__emundus_campaign_candidature'))
 						->set($db->quoteName('tab') . ' = ' . $db->quote($tab))
 						->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
@@ -5749,7 +5769,7 @@ class EmundusModelApplication extends JModelList
 		return $moved;
 	}
 
-	public function copyFile($fnum,$fnum_to){
+	public function copyFile($fnum, $fnum_to){
 		$result = false;
 
 		if (!empty($fnum) && !empty($fnum_to)) {

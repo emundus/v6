@@ -870,7 +870,8 @@ class EmundusControllerApplication extends JControllerLegacy
 		$user = JFactory::getUser();
 
 		$jinput = JFactory::getApplication()->input;
-		$tabs = json_decode($jinput->getRaw('tabs'));
+		$tabs = $jinput->getRaw('tabs');
+		$tabs = json_decode($tabs);
 
 		$m_application = $this->getModel('Application');
 
