@@ -834,17 +834,21 @@ class EmundusControllerApplication extends JControllerLegacy
 	public function applicantcustomaction() {
 		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED'), 'code' => 403];
 
-		if (EmundusHelperAccess::isApplicant(JFactory::getUser()->id)) {
+		$user_id = JFactory::getUser()->id;
+		if (EmundusHelperAccess::isApplicant($user_id)) {
 			$jinput = JFactory::getApplication()->input;
 			$action = $jinput->getString('action', '');
 			$fnum = $jinput->getString('fnum', '');
 
 			if (!empty($action) && !empty($fnum)) {
-				$emundusUser = JFactory::getSession()->get('emundusUser');
-				$emundusUserFnums = array_keys($emundusUser->fnums);
+				require_once JPATH_ROOT.'/components/com_emundus/helpers/files.php';
+				$h_files = new EmundusHelperFiles;
+				$fnums = $h_files->getApplicantFnums($user_id);
+				$current_user_fnums = array_keys($fnums);
 
-				if (in_array($fnum, $emundusUserFnums)) {
-					$m_application = $this->getModel('Application');
+				if (in_array($fnum, $current_user_fnums)) {
+					require_once (JPATH_COMPONENT . '/models/application.php');
+					$m_application = new EmundusModelApplication;
 					$response['status'] = $m_application->applicantCustomAction($action, $fnum);
 					$response['code'] = 200;
 

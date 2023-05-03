@@ -32,16 +32,17 @@ class EmundusModelProfileTest extends TestCase
 {
     private $m_profile;
     private $m_formbuilder;
-    private $s_helper;
+	private $h_sample;
 
-    private $db;
+	private $db;
 
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
         $this->m_profile = new EmundusModelProfile;
         $this->m_formbuilder = new EmundusModelFormbuilder;
-        $this->db = JFactory::getDbo();
+	    $this->h_sample = new EmundusUnittestHelperSamples;
+	    $this->db = JFactory::getDbo();
     }
 
     // simple test case (example)
@@ -50,28 +51,25 @@ class EmundusModelProfileTest extends TestCase
         $this->assertSame(true, $foo);
     }
 
-    
-    /*public function testGetProfileByStatus() {
-        // TEST 1 - SUCCESS WAITING
-        $user = @EmundusUnittestHelperSamples::createSampleUser();
+	/**
+	 * @covers EmundusModelProfile::getApplicantFnums
+	 * @covers EmundusHelperFiles::getApplicantFnums
+	 * @return void
+	 */
+	public function testgetApplicantFnums() {
+		$user_id = JFactory::getUser()->id;
+		$fnums = $this->m_profile->getApplicantFnums($user_id);
+		$this->assertIsArray($fnums);
+		$this->assertEmpty($fnums, 'Empty user return empty array');
 
-        $fnum = @EmundusUnittestHelperSamples::createSampleFile(1,$user->id);
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$program = $this->h_sample->createSampleProgram();
+		$campaign_id = $this->h_sample->createSampleCampaign($program);
+		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
 
-        $output_data = array(
-                'firstname' => 'Test',
-                'lastname' => 'USER',
-                'profile' => '9',
-                'university_id' => '0',
-                'label' => 'Formulaire de base candidat',
-                'menutype' => 'menu-profile9',
-                'published' => '1',
-                'campaign_id' => '1',
-        );
-
-        $this->assertSame($output_data, $this->m_profile->getProfileByStatus($fnum));
-        //
-
-        $u = JUser::getInstance($user->id);
-        $u->delete();
-    }*/
+		$fnums = $this->m_profile->getApplicantFnums($user_id);
+		$this->assertIsArray($fnums);
+		$this->assertNotEmpty($fnums);
+		$this->assertContains($fnum, array_keys($fnums));
+	}
 }

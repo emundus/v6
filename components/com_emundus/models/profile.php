@@ -1019,22 +1019,9 @@ class EmundusModelProfile extends JModelList {
      * @throws Exception
      */
     public function getApplicantFnums(int $aid, $submitted = null, $start_date = null, $end_date = null) {
-        $db = JFactory::getDBO();
-
-        $query = 'SELECT ecc.*, esc.label, esc.start_date, esc.end_date, esc.admission_start_date, esc.admission_end_date, esc.training, esc.year, esc.profile_id
-                    FROM #__emundus_campaign_candidature as ecc
-                    LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id
-                    WHERE ecc.published=1 AND ecc.applicant_id='.$aid;
-        $query .= (!empty($submitted))?' AND ecc.submitted='.$submitted:'';
-        $query .= (!empty($start_date))?' AND esc.start_date<='.$db->Quote($start_date):'';
-        $query .= (!empty($end_date))?' AND esc.end_date>='.$db->Quote($end_date):'';
-
-        try {
-            $db->setQuery($query);
-            return $db->loadObjectList('fnum');
-        } catch(Exception $e) {
-            JLog::add(JUri::getInstance().' :: fct : getAttachmentsById :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-        }
+        require_once JPATH_ROOT.'/components/com_emundus/helpers/files.php';
+		$h_files = new EmundusHelperFiles;
+		return $h_files->getApplicantFnums($aid, $submitted, $start_date, $end_date);
     }
 
 	/**
