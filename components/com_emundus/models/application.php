@@ -431,7 +431,9 @@ class EmundusModelApplication extends JModelList
         if ($res) {
             $logsStd->details = $deleted_tag;
             $logsParams = array('deleted' => [$logsStd]);
-            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 14, 'd', 'COM_EMUNDUS_ACCESS_TAGS_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+            $user_id = JFactory::getUser()->id;
+            $user_id = empty($user_id) ? 62 : $user_id;
+            EmundusModelLogs::log($user_id, (int)substr($fnum, -7), $fnum, 14, 'd', 'COM_EMUNDUS_ACCESS_TAGS_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
         }
 
         return $res;
