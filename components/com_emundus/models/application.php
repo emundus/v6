@@ -5686,7 +5686,7 @@ class EmundusModelApplication extends JModelList
 					}
 				}
 
-				$updated = !in_array(false, $updates);
+				$updated = !in_array(false, $updates) && !empty($updates);
 			} catch (Exception $e) {
 				JLog::add('Failed to update tabs for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 			}

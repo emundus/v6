@@ -50,4 +50,48 @@ class EmundusModelApplicationTest extends TestCase
         $this->assertNotEmpty($applicant_infos);
         $this->assertSame(intval($applicant_infos['id']), 62);
     }
+
+	public function testgetTabs() {
+		$tabs = $this->m_application->getTabs(0);
+		$this->assertSame([], $tabs);
+	}
+
+	public function testdeleteTab() {
+		$deleted = $this->m_application->deleteTab(0, 0);
+		$this->assertSame(false, $deleted);
+	}
+
+	public function testmoveToTab() {
+		$moved = $this->m_application->moveToTab(0, 0);
+		$this->assertSame(false, $moved);
+	}
+
+	public function testupdateTabs() {
+		$updated = $this->m_application->updateTabs([], 0);
+		$this->assertSame(false, $updated, 'No tabs to update');
+
+		$updated = $this->m_application->updateTabs([], 95);
+		$this->assertSame(false, $updated, 'No tabs to update');
+
+		$tab = new stdClass();
+		$tab->id = 999;
+		$tab->name = 'Test';
+		$tab->ordering = 1;
+
+		$updated = $this->m_application->updateTabs([['id' => 1, 'name' => 'Test', 'ordering' => 1]], 0);
+		$this->assertSame(false, $updated, 'Missing user id');
+
+		$updated = $this->m_application->updateTabs([['id' => 1, 'name' => 'Test', 'ordering' => 1]], 95);
+		$this->assertSame(false, $updated, );
+
+		$tab->id = $this->m_application->createTab('Test', 95);
+		$this->assertNotEmpty($tab->id);
+
+		$updated = $this->m_application->updateTabs([$tab], 95);
+		$this->assertSame(true, $updated, 'Tab updated');
+
+		$tab->id = $tab->id . ' OR 1=1';
+		$updated = $this->m_application->updateTabs([$tab], 0);
+		$this->assertSame(false, $updated, 'SQL Injection impossible');
+	}
 }
