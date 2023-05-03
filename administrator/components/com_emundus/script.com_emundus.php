@@ -495,11 +495,12 @@ class com_emundusInstallerScript
 		        EmundusHelperUpdate::insertTranslationsTag('SEND_ON', 'Send on', 'override', null, null, null, 'en-GB');
 	        }
 
-            if (version_compare($cache_version, '1.35.0', '<') || $firstrun) {
+            if (version_compare($cache_version, '1.36.0', '<') || $firstrun) {
                 EmundusHelperUpdate::addCustomEvents([
                     ['label' => 'onBeforeEmundusRedirectToHikashopCart', 'category' => 'Hikashop'],
                     ['label' => 'onBeforeEmundusRedirectToHikashopCheckout', 'category' => 'Hikashop'],
-                    ['label' => 'onHikashopAfterCartProductsLoad', 'category' => 'Hikashop']
+                    ['label' => 'onHikashopAfterCartProductsLoad', 'category' => 'Hikashop'],
+	                ['label' => 'onBeforeApplicantEnterApplication', 'category' => 'Files']
                 ]);
             }
 

@@ -623,7 +623,9 @@ class EmundusController extends JControllerLegacy {
         EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 1, 'r', 'COM_EMUNDUS_ACCESS_FILE_READ');
 
         $dispatcher = JEventDispatcher::getInstance();
-        $dispatcher->trigger('callEventHandler', ['onBeforeApplicantEnterApplication', ['applicant_id' => $applicant_id, 'fnum' => $fnum, 'redirect' => $redirect]]);
+	    $dispatcher->trigger('onBeforeApplicantEnterApplication', ['fnum' => $fnum, 'aid' => $applicant_id, 'redirect' => $redirect]);
+	    $dispatcher->trigger('callEventHandler', ['onBeforeApplicantEnterApplication', ['fnum' => $fnum, 'aid' => $applicant_id, 'redirect' => $redirect]]);
+
         $app->redirect($redirect);
     }
 
