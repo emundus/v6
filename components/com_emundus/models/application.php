@@ -5629,8 +5629,10 @@ class EmundusModelApplication extends JModelList
 		}
 	}
 
-	public function getTabs($user_id){
-		try {
+	public function getTabs($user_id) {
+		$tabs = [];
+
+		if (!empty($user_id)) {
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
@@ -5640,13 +5642,16 @@ class EmundusModelApplication extends JModelList
 				->where($db->quoteName('ecct.applicant_id') . ' = ' . $user_id)
 				->group($db->quoteName('ecct.id'))
 				->order($db->quoteName('ecct.ordering'));
-			$db->setQuery($query);
-			return $db->loadAssocList();
+
+			try {
+				$db->setQuery($query);
+				$tabs =  $db->loadAssocList();
+			} catch (Exception $e) {
+				JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
 		}
-		catch (Exception $e) {
-			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-			return false;
-		}
+
+		return $tabs;
 	}
 	
 	public function updateTabs($tabs,$user_id){
@@ -5672,7 +5677,9 @@ class EmundusModelApplication extends JModelList
 		}
 	}
 
-	public function deleteTab($tab_id,$user_id){
+	public function deleteTab($tab_id, $user_id){
+		$deleted = false;
+
 		try {
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
@@ -5684,7 +5691,7 @@ class EmundusModelApplication extends JModelList
 			$db->setQuery($query);
 			$tab = $db->loadAssoc();
 
-			if(!empty($tab)){
+			if (!empty($tab)){
 				$query->clear()
 					->update($db->quoteName('#__emundus_campaign_candidature'))
 					->set($db->quoteName('tab') . ' = NULL')
@@ -5697,73 +5704,92 @@ class EmundusModelApplication extends JModelList
 					->delete($db->quoteName('#__emundus_campaign_candidature_tabs'))
 					->where($db->quoteName('id') . ' = ' . $tab['id']);
 				$db->setQuery($query);
-				return $db->execute();
-			} else {
-				return false;
+				$deleted = $db->execute();
 			}
-		}
-		catch (Exception $e) {
+		} catch (Exception $e) {
 			JLog::add('Failed to create for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-			return false;
+			$deleted = false;
 		}
+
+		return $deleted;
 	}
 
 	public function moveToTab($fnum, $tab){
-		$result = false;
+		$moved = false;
 
-		try {
+		if (!empty($fnum) && !empty($tab)) {
+			$tab = (int) $tab;
+
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
-			$query->update($db->quoteName('#__emundus_campaign_candidature'))
-				->set($db->quoteName('tab') . ' = ' . $db->quote($tab))
-				->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+			$query->select('ecct.id')
+				->from($db->quoteName('#__emundus_campaign_candidature_tabs', 'ecct'))
+				->leftJoin('#__emundus_campaign_candidature as ecc ON ecc.applicant_id = ecct.applicant_id')
+				->where('ecc.fnum LIKE ' . $db->quote($fnum))
+				->andWhere('ecct.id = ' . $tab);
+
 			$db->setQuery($query);
-			$result = $db->execute();
-		}
-		catch (Exception $e) {
-			JLog::add('Failed to move fnum ' . $fnum . ' in tab ' . $tab . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			$tab_exists = $db->loadResult();
+
+			if (!empty($tab_exists)) {
+				try {
+					$query->clear
+						->update($db->quoteName('#__emundus_campaign_candidature'))
+						->set($db->quoteName('tab') . ' = ' . $db->quote($tab))
+						->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+					$db->setQuery($query);
+					$moved = $db->execute();
+				} catch (Exception $e) {
+					JLog::add('Failed to move fnum ' . $fnum . ' in tab ' . $tab . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				}
+			}
 		}
 
-		return $result;
+		return $moved;
 	}
 
 	public function copyFile($fnum,$fnum_to){
 		$result = false;
 
-		try {
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+		if (!empty($fnum) && !empty($fnum_to)) {
+			try {
+				$db = JFactory::getDbo();
+				$query = $db->getQuery(true);
 
-			$query->insert($db->quoteName('#__emundus_campaign_candidature_links'))
-				->set($db->quoteName('date_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-				->set($db->quoteName('fnum_from') . ' = ' . $db->quote($fnum))
-				->set($db->quoteName('fnum_to') . ' = ' . $db->quote($fnum_to));
-			$db->setQuery($query);
-			$result = $db->execute();
-		}
-		catch (Exception $e) {
-			JLog::add('Failed to copy fnum from ' . $fnum . ' to ' . $fnum_to . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				$query->insert($db->quoteName('#__emundus_campaign_candidature_links'))
+					->set($db->quoteName('date_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+					->set($db->quoteName('fnum_from') . ' = ' . $db->quote($fnum))
+					->set($db->quoteName('fnum_to') . ' = ' . $db->quote($fnum_to));
+				$db->setQuery($query);
+				$result = $db->execute();
+			} catch (Exception $e) {
+				JLog::add('Failed to copy fnum from ' . $fnum . ' to ' . $fnum_to . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
 		}
 
 		return $result;
 	}
 
-	public function renameFile($fnum,$new_name){
+	public function renameFile($fnum, $new_name){
 		$result = false;
 
-		try {
+		if (!empty($fnum) && !empty($new_name) && strlen($new_name) <= 255 && strlen($new_name) >= 3) {
+			$new_name = preg_replace('/[^A-Za-z0-9 ]/', '', $new_name);
+
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
 			$query->update($db->quoteName('#__emundus_campaign_candidature'))
 				->set($db->quoteName('name') . ' = ' . $db->quote($new_name))
 				->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
-			$db->setQuery($query);
-			$result = $db->execute();
-		}
-		catch (Exception $e) {
-			JLog::add('Failed to rename file ' . $fnum . ' with name ' . $new_name . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+
+			try {
+				$db->setQuery($query);
+				$result = $db->execute();
+			} catch (Exception $e) {
+				JLog::add('Failed to rename file ' . $fnum . ' with name ' . $new_name . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
 		}
 
 		return $result;
