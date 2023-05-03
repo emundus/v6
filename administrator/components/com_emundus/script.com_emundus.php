@@ -1310,6 +1310,13 @@ try {
                 EmundusHelperUpdate::addCustomEvents([['label' => 'onAfterMoveApplication', 'category' => 'Campaign']]);
             }
 
+			if (version_compare($cache_version, '1.36.0', '<') || $firstrun) {
+				EmundusHelperUpdate::addCustomEvents([
+					['label' => 'onBeforeEmundusRedirectToHikashopCart', 'category' => 'Hikashop'],
+					['label' => 'onBeforeApplicantEnterApplication', 'category' => 'Files']
+				]);
+			}
+
 
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();

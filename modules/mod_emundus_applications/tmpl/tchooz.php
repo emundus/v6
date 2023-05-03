@@ -166,7 +166,7 @@ ksort($applications);
 	                                $current_phase = $m_campaign->getCurrentCampaignWorkflow($application->fnum);
 
                                     ?>
-                                    <div class="row em-border-neutral-300 mod_emundus_applications___content_app em-pointer" id="application_content<?php echo $application->fnum ?>" onclick="openFile(event,'<?php echo $first_page_url ?>')">
+                                    <div class="row em-border-neutral-300 mod_emundus_applications___content_app em-pointer" id="application_content<?php echo $application->fnum ?>" onclick="openFile(event,'<?php echo JRoute::_($first_page_url) ?>')">
                                         <div class="em-w-100">
                                             <div class="em-flex-row mod_emundus_applications___content_text">
                                                 <?php if ($show_fnum) : ?>
