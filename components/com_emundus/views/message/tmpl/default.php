@@ -12,25 +12,20 @@
 defined('_JEXEC') or die('Restricted access');
 
 $current_user = JFactory::getUser();
-$itemid = JRequest::getVar('Itemid', null, 'GET', 'none', 0);
-$view = JRequest::getVar('view', null, 'GET', 'none', 0);
-$task = JRequest::getVar('task', null, 'GET', 'none', 0);
-$tmpl = JRequest::getVar('tmpl', null, 'GET', 'none', 0);
-
-// Load the WYSIWYG editor used to edit the mail body.
-$editor = JFactory::getEditor('tinymce');
-
-$m_messages = new EmundusModelMessages();
+$jinput = JFactory::getApplication()->input;
+$itemid = $jinput->getInt('Itemid', null);
+$view = $jinput->getString('view', null);
+$task = $jinput->getString('task', null);
+$tmpl = $jinput->getString('tmpl', null);
 
 // load all of the available messages, categories (to sort messages),attachments, letters.
+$m_messages = new EmundusModelMessages();
 $message_categories = $m_messages->getAllCategories();
 $message_templates = $m_messages->getAllMessages();
-
 $setup_attachments = $m_messages->getAttachmentsByProfiles($this->fnums);
-
 $setup_letters = $m_messages->getAllDocumentsLetters();                 // get all attachments being letter 👻
 
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+require_once(JPATH_ROOT . '/components/com_emundus/models/evaluation.php');
 $_mEval = new EmundusModelEvaluation;
 
 $_applicant_letters = $_mEval->getLettersByFnums(implode(',', $this->fnums), false);
@@ -90,16 +85,6 @@ if ($allowed_attachments !== true) {
         height: 6px;
     }
 </style>
-<link rel="stylesheet" href="components/com_jce/editor/libraries/css/editor.min.css" type="text/css">
-<script data-cfasync="false" type="text/javascript" src="media/editors/tinymce/tinymce.min.js"></script>
-<script data-cfasync="false" type="text/javascript" src="media/editors/tinymce/js/tinymce.min.js"></script>
-<script data-cfasync="false" type="text/javascript">
-    tinyMCE.init({
-        menubar: false,
-        statusbar: false
-    })
-</script>
-
 <div id="em-email-messages"></div>
 
 <div class="em-modal-sending-emails" id="em-modal-sending-emails">
@@ -487,9 +472,8 @@ if ($allowed_attachments !== true) {
                     }
                 }
                 editor = new Quill('#editor', options);
-
-
-                let delta = editor.clipboard.convert("<?php echo htmlentities($this->body) ?>");
+                const editorContent = "<?php echo $this->body ?>";
+                let delta = editor.clipboard.convert(editorContent);
                 editor.setContents(delta);
 
                 editor.on('editor-change', (eventName, ...args) => {
@@ -677,7 +661,6 @@ if ($allowed_attachments !== true) {
                     $("#mail_subject").text(email.subject);
                     $("#mail_from").text(email.emailfrom);
                     $("#mail_from_name").text(email.name);
-                    console.log(email.message);
 
                     let delta = editor.clipboard.convert(email.message);
                     editor.setContents(delta);
