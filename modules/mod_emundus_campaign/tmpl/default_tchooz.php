@@ -84,7 +84,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
 
 <form action="<?php echo $CurPageURL ?>" method="post" id="search_program">
-    <?php if (sizeof($campaigns) == 0 && empty($codes_filters) && empty($categories_filters)) : ?>
+    <?php if (sizeof($campaigns) == 0 && empty($codes_filters) && empty($categories_filters) && empty($searchword)) : ?>
         <hr>
         <div class="mod_emundus_campaign__list_content--default">
             <p class="em-text-neutral-900 em-h5 em-applicant-title-font"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN') ?></p>
@@ -130,6 +130,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                     <?php endif; ?>
 
                     <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
+                        <div class="mod_emundus_campaign__list_content_container">
                         <?php
                         $color = '#1C6EF2';
                         $background = '#C8E1FE';
@@ -260,6 +261,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                             echo $textcamp;
                             ?>
                         </div>
+                        </div>
 
 	                    <?php if ($mod_em_campaign_show_apply_button == 1 && (strtotime($now) < strtotime($campaign_pinned->end_date)) && (strtotime($now) > strtotime($campaign_pinned->start_date))) : ?>
                             <div>
@@ -279,7 +281,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 				                    $register_url .= '&redirect=' . $formUrl;
 			                    }
 			                    ?>
-                                <a class="btn btn-primary em-w-100 em-mt-12 em-applicant-default-font em-flex-column" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+                                <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
                             </div>
 	                    <?php endif; ?>
                     </div>
@@ -454,13 +456,15 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
             <!-- LIST OF CAMPAIGNS -->
             <div class="mod_emundus_campaign__list em-mt-32">
-                <?php foreach ($campaigns as $key => $campaign) : ?>
                 <?php if (sizeof($campaign) == 0) : ?>
                     <div class="em-mb-24">
                         <p class="mod_emundus_campaign__programme_cat_title"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_FOUND') ?></p>
                         <hr style="margin-top: 8px">
                     </div>
-                <?php elseif($key == 'campaigns') : ?>
+                <?php endif; ?>
+
+                <?php foreach ($campaigns as $key => $campaign) : ?>
+                <?php if($key == 'campaigns') : ?>
                     <div class="em-mb-24">
                         <p class="mod_emundus_campaign__programme_cat_title"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_CAMPAIGNS') ?></p>
                         <hr style="margin-top: 8px">
@@ -489,7 +493,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                             <?php endif; ?>
 
                             <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
-
+                                <div class="mod_emundus_campaign__list_content_container">
 
                                 <?php
                                 $color = '#1C6EF2';
@@ -642,6 +646,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                     echo $textcamp;
                                     ?>
                                 </div>
+                                </div>
 
                                 <?php if ($mod_em_campaign_show_apply_button == 1 && (strtotime($now) < strtotime($result->end_date)) && (strtotime($now) > strtotime($result->start_date))) : ?>
                                     <div>
@@ -661,8 +666,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                             $register_url .= '&redirect=' . $formUrl;
                                         }
                                         ?>
-                                        <a class="btn btn-primary em-w-100 em-mt-12 em-applicant-default-font em-flex-column" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
-                                    </div>
+                                        <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>                                    </div>
                                 <?php endif; ?>
                             </div>
                         </div>

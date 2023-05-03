@@ -17,7 +17,7 @@ use Joomla\CMS\Table\Table;
 class EmundusHelperUpdate
 {
 
-	public static function clearJoomlaCache(){
+	public static function clearJoomlaCache($group = null){
 		require_once (JPATH_ROOT . '/administrator/components/com_cache/models/cache.php');
 		$m_cache = new CacheModelCache();
 		$clients    = array(1, 0);
@@ -25,14 +25,18 @@ class EmundusHelperUpdate
 		foreach ($clients as $client)
 		{
 			$mCache    = $m_cache->getCache($client);
-
-			foreach ($mCache->getAll() as $cache)
-			{
-				if ($mCache->clean($cache->group) === false)
-				{
-					return false;
-				}
-			}
+            if(!empty($group)) {
+                if ($mCache->clean($group) === false)
+                {
+                    return false;
+                }
+            } else {
+                foreach ($mCache->getAll() as $cache) {
+                    if ($mCache->clean($cache->group) === false) {
+                        return false;
+                    }
+                }
+            }
 		}
 
 		return true;
@@ -226,6 +230,9 @@ class EmundusHelperUpdate
                 $query->select('extension_id')
                     ->from($db->quoteName('#__extensions'))
                     ->where($db->quoteName('element') . ' LIKE ' . $db->quote($element));
+				if(!empty($folder)){
+					$query->where($db->quoteName('folder') . ' LIKE ' . $db->quote($folder));
+				}
                 $db->setQuery($query);
                 $is_existing = $db->loadResult();
 
@@ -413,19 +420,24 @@ class EmundusHelperUpdate
      * @since version 1.33.0
      */
     public static function updateConfigurationFile($param, $value) {
-        $formatter = new JRegistryFormatPHP();
-        $config = new JConfig();
+		if(!empty($param) && !empty($value) && !in_array($param,['host','user','password','db','secret','mailfrom','smtpuser','smpthost','smtppass','smtpsecure','smtpport','webhook_token'])) {
+			$formatter = new JRegistryFormatPHP();
+			$config    = new JConfig();
 
-        $config->$param = $value;
-        $params = array('class' => 'JConfig', 'closingtag' => false);
-        $str = $formatter->objectToString($config, $params);
-        $config_file = JPATH_CONFIGURATION . '/configuration.php';
+			$config->$param = $value;
+			$params         = array('class' => 'JConfig', 'closingtag' => false);
+			$str            = $formatter->objectToString($config, $params);
+			$config_file    = JPATH_CONFIGURATION . '/configuration.php';
 
-        if (file_exists($config_file) and is_writable($config_file)){
-            file_put_contents($config_file, $str);
-        } else {
-            echo ("Update Configuration file failed");
-        }
+			if (file_exists($config_file) and is_writable($config_file)) {
+				file_put_contents($config_file, $str);
+			}
+			else {
+				echo("Update Configuration file failed");
+			}
+		} else {
+			echo("Update Configuration file failed");
+		}
     }
 
     /**
@@ -928,36 +940,39 @@ class EmundusHelperUpdate
                 $params = json_decode($result->params);
                 $old_events = json_decode($params->event_handlers);
 
-                $events = array_values($old_events->event);
+				if(!empty($old_events->event)) {
+					$events = array_values($old_events->event);
 
-                if(!empty($events)) {
-                    $codes = array_values($old_events->code);
+					if (!empty($events) && !empty($old_events->code)) {
+						$codes = array_values($old_events->code);
 
-                    $new_events = new stdClass;
-                    $new_events->event_handlers = new stdClass;
+						$new_events                 = new stdClass;
+						$new_events->event_handlers = new stdClass;
 
-                    foreach ($events as $key => $event) {
-                        $new_events->event_handlers->{'event_handlers' . $key} = new stdClass;
-                        $new_events->event_handlers->{'event_handlers' . $key}->event = $event;
+						foreach ($events as $key => $event) {
+							$new_events->event_handlers->{'event_handlers' . $key}        = new stdClass;
+							$new_events->event_handlers->{'event_handlers' . $key}->event = $event;
 
-                        $backed_file = fopen('libraries/emundus/custom/'.strtolower($event) . '_' . $key . '.php', 'w');
-                        if ($backed_file) {
-                            fwrite($backed_file, '<?php ' . $codes[$key]);
-                            fclose($backed_file);
-                        } else {
-                            JLog::add('Failed to backup events', JLog::WARNING, 'com_emundus.cli');
-                        }
+							$backed_file = fopen('libraries/emundus/custom/' . strtolower($event) . '_' . $key . '.php', 'w');
+							if ($backed_file) {
+								fwrite($backed_file, '<?php ' . $codes[$key]);
+								fclose($backed_file);
+							}
+							else {
+								JLog::add('Failed to backup events', JLog::WARNING, 'com_emundus.cli');
+							}
 
-                        $new_events->event_handlers->{'event_handlers' . $key}->code = $codes[$key];
-                    }
+							$new_events->event_handlers->{'event_handlers' . $key}->code = $codes[$key];
+						}
 
-                    $query->clear()
-                        ->update($db->quoteName('#__extensions'))
-                        ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($new_events)))
-                        ->where($db->quoteName('extension_id') . ' = ' . $db->quote($result->extension_id));
-                    $db->setQuery($query);
-                    $db->execute();
-                }
+						$query->clear()
+							->update($db->quoteName('#__extensions'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($new_events)))
+							->where($db->quoteName('extension_id') . ' = ' . $db->quote($result->extension_id));
+						$db->setQuery($query);
+						$db->execute();
+					}
+				}
             }
         } catch (Exception $e) {
             $updated = ['status' => false, 'message' => "Error when convert event handlers : " . $e->getMessage()];
@@ -1950,6 +1965,36 @@ class EmundusHelperUpdate
         return $result;
     }
 
+    public static function addColumnIndex($table,$column){
+        $result = ['status' => false, 'message' => ''];
+
+        if (empty($table)) {
+            $result['message'] = 'ADDING COLUMN INDEX : Please refer a database table.';
+            return $result;
+        }
+
+        if (empty($column)) {
+            $result['message'] = 'ADDING COLUMN INDEX : Please refer a column name.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $index_existing = $db->setQuery('SHOW INDEX FROM ' . $table . ' WHERE ' . $db->quoteName('Column_name') . ' LIKE ' . $db->quote($column))->loadResult();
+
+        if (empty($index_existing)) {
+            try {
+                $index_name = $table . '_' . $column . '_INDEX';
+                $query = 'CREATE INDEX ' . $index_name . ' ON ' . $db->quoteName($table) . ' (' . $db->quoteName($column) . ')';
+                $db->setQuery($query);
+                $result['status'] = $db->execute();
+            } catch (Exception $e) {
+                $result['message'] = 'ADDING COLUMN INDEX : Error : ' . $e->getMessage();
+            }
+        }
+
+        return $result;
+    }
+
     public static function addFabrikElement($datas,$params = null) {
         $result = ['status' => false, 'message' => ''];
 
@@ -2335,4 +2380,74 @@ class EmundusHelperUpdate
 
 		return $updated;
 	}
+
+    public static function addWidget($label,$params = null){
+        $result = ['status' => false, 'message' => ''];
+
+        if (empty($label)) {
+            $result['message'] = 'CREATING WIDGET : Please specify a widget label.';
+            return $result;
+        }
+
+        if (empty($params)) {
+            $result['message'] = 'CREATING WIDGET : Please specify widget parameters.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $inserting_datas = array();
+
+            foreach ($params as $key => $value) {
+                $inserting_datas[] = $db->quoteName($key) . ' = ' . $db->quote($value);
+            }
+
+            $query->insert($db->quoteName('#__emundus_widgets'))
+                ->columns($db->quoteName(array_keys($inserting_datas)))
+                ->values(implode(',',$db->quote(array_values($inserting_datas))));
+            $db->setQuery($query);
+            $result['status'] = $db->execute();
+        } catch (Exception $e) {
+            $result['message'] = 'CREATING WIDGET : Error : ' . $e->getMessage();
+        }
+
+        return $result;
+    }
+
+    public static function updateWidget($label,$params = null){
+        $result = ['status' => false, 'message' => ''];
+
+        if (empty($label)) {
+            $result['message'] = 'UPDATING WIDGET : Please specify a widget label.';
+            return $result;
+        }
+
+        if (empty($params)) {
+            $result['message'] = 'UPDATING WIDGET : Please specify widget parameters.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $fields = array();
+
+            foreach ($params as $key => $value) {
+                $fields[] = $db->quoteName($key) . ' = ' . $db->quote($value);
+            }
+
+            $query->update($db->quoteName('#__emundus_widgets'))
+                ->set($fields)
+                ->where($db->quoteName('label') . ' = ' . $db->quote($label));
+            $db->setQuery($query);
+            $result['status'] = $db->execute();
+        } catch (Exception $e) {
+            $result['message'] = 'UPDATING WIDGET : Error : ' . $e->getMessage();
+        }
+
+        return $result;
+    }
 }

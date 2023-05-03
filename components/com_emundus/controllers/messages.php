@@ -441,7 +441,8 @@ class EmundusControllerMessages extends JControllerLegacy {
                 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
                 $m_files = new EmundusModelFiles();
 
-                $_letter = reset($m_files->getSetupAttachmentsById(array($setup_letter)));
+                $aids = $m_files->getSetupAttachmentsById(array($setup_letter));
+                $_letter = reset($aids);
                 $toAttach['letter'][] = $_letter['value'];
             }
         }
@@ -538,8 +539,8 @@ class EmundusControllerMessages extends JControllerLegacy {
         $mail_message = $jinput->post->get('message', null, 'RAW');
         $attachments = $jinput->post->get('attachments', null, null);
         $tags_str = $jinput->post->getString('tags', null, null);
-        $cc = $jinput->post->getString('cc');
-	    $bcc = $jinput->post->getString('bcc');
+        $cc = $jinput->post->getString('cc', null, null);
+        $bcc = $jinput->post->getString('bcc', null, null);
 
         if(!empty($cc) && is_array($cc)) {
             foreach ($cc as $key => $cc_to_test) {
@@ -796,6 +797,9 @@ class EmundusControllerMessages extends JControllerLegacy {
                     'type' => (empty($template->type))?'':$template->type,
 	                'email_id' => $template_id
                 ];
+                if (!empty($cc_final)) {
+                    $log['email_cc'] = implode(', ',$cc_final);
+                }
                 $m_emails->logEmail($log, $fnum->fnum);
             }
 
@@ -1243,10 +1247,9 @@ class EmundusControllerMessages extends JControllerLegacy {
         }
         $mail_from_address = $mail_from_sys;
 
+        $toAttach = array();
 		if (!empty($attachments) && is_array($attachments)) {
 			$toAttach = $attachments;
-		} else {
-			$toAttach[] = $attachments;
 		}
 
 		// In case no post value is supplied
@@ -1535,21 +1538,6 @@ class EmundusControllerMessages extends JControllerLegacy {
         return $db->loadObjectList() ;
     }
 
-    /// get letter templates by fnums
-    public function getlettertemplatesbyfnums() {
-        // call to jinput to get form variable (fnums)
-        $jinput = JFactory::getApplication()->input;
-
-        $fnums = $jinput->post->getRaw('fnums', null);
-
-        /// call to models/messages.php/getLetterTemplateByFnums
-        $_mMessages = new EmundusModelMessages;
-        $_templates = $_mMessages->getLetterTemplateByFnums($fnums);
-
-        echo json_encode((object)['status' => true, 'templates' => $_templates]);
-        exit;
-    }
-
     // get recap info by fnum
     public function getrecapbyfnum() {
         $jinput = JFactory::getApplication()->input;
@@ -1802,7 +1790,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
     // get all documents being letters
     public function getalldocumentsletters() {
-        $_mMessages = $this->getModel('Messages');
+        $_mMessages = new EmundusModelMessages();
         $_documents = $_mMessages->getAllDocumentsLetters();
 
         if($_documents) {
@@ -1819,7 +1807,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         $fnums = explode(',', $jinput->post->getRaw('fnums'));
 
-        $_mMessages = $this->getModel('Messages');
+        $_mMessages = new EmundusModelMessages();
         $_results = $_mMessages->getAttachmentsByProfiles($fnums);
 
         if($_results) {
@@ -1832,7 +1820,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
     // get all attachments
     public function getallattachments() {
-        $_mMessages = $this->getModel('Messages');
+        $_mMessages = new EmundusModelMessages();
         $_documents = $_mMessages->getAllAttachments();
 
         if($_documents) {
@@ -1854,7 +1842,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         $fnums = explode(',', $data['recipients']);
         $email_tmpl = $data['template'];
 
-        $_mMessages = $this->getModel('Messages');
+        $_mMessages = new EmundusModelMessages();
 
         $_tags = $_mMessages->addTagsByFnums($fnums,$email_tmpl);
 

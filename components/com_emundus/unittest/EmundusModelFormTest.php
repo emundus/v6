@@ -35,10 +35,47 @@ session_start();
 class EmundusModelFormTest extends TestCase
 {
     private $m_form;
+	private $h_sample;
 
-    public function __construct(?string $name = null, array $data = [], $dataName = '')
+
+	public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
         $this->m_form = new EmundusModelForm;
+	    $this->h_sample = new EmundusUnittestHelperSamples;
     }
+
+	/**
+	 * @test
+	 * @covers EmundusModelForm::copyAttachmentsToNewProfile()
+	 */
+	public function testCopyAttachmentsToNewProfile() {
+		$base_profile = 9;
+		$fake_new_profile = 64567657;
+
+		$copy = $this->m_form->copyAttachmentsToNewProfile(0, $fake_new_profile);
+		$this->assertFalse($copy, 'Copy attachments requires a valid old profile id');
+
+		$copy = $this->m_form->copyAttachmentsToNewProfile($base_profile, 0);
+		$this->assertFalse($copy, 'Copy attachments requires a valid new profile id');
+
+		$copy = $this->m_form->copyAttachmentsToNewProfile($base_profile, $fake_new_profile);
+		$this->assertFalse($copy, 'Copy attachments fails because new profile does not exist');
+
+		$fake_new_profile = $this->h_sample->duplicateSampleProfile($base_profile);
+		$copy = $this->m_form->copyAttachmentsToNewProfile($base_profile, $fake_new_profile);
+		$this->assertTrue($copy, 'Copy attachments succeeds');
+	}
+
+	/**
+	 * @test
+	 * @covers EmundusModelForm::duplicateForm()
+	 */
+	public function testDuplicateForm() {
+		$pids = [0];
+		$duplicate = $this->m_form->duplicateForm($pids);
+		$this->assertFalse($duplicate, 'Duplicate form requires a valid profile id');
+
+		// TODO: test duplicate form, error coming from cms language
+	}
 }

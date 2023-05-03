@@ -6,8 +6,9 @@ require_once JPATH_CONFIGURATION . '/configuration.php';
 
 class com_emundusInstallerScript
 {
-	protected $manifest_cache;
-	protected $schema_version;
+    protected $manifest_cache;
+    protected $schema_version;
+    protected EmundusHelperUpdate $h_update;
 
 	public function __construct()
 	{
@@ -28,8 +29,9 @@ class com_emundusInstallerScript
 		$db->setQuery($query);
 		$this->schema_version = $db->loadResult();
 
-		require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
-	}
+        require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+        $this->h_update = new EmundusHelperUpdate();
+    }
 
 
 	/**
@@ -516,18 +518,18 @@ class com_emundusInstallerScript
 					if (isset($params->curl_code)) {
 						foreach ($params->curl_code as $key => $code) {
 							if (strpos($code, 'media/com_emundus/lib/chosen/chosen.min.css') !== false) {
-								if(is_object($params->curl_code)){
+								if (is_object($params->curl_code)) {
 									$params->curl_code->{$key} = str_replace('media/com_emundus/lib/chosen/chosen.min.css', 'media/jui/css/chosen.css', $params->curl_code->{$key});
 								}
-								elseif(is_array($params->curl_code)){
+								elseif (is_array($params->curl_code)) {
 									$params->curl_code[$key] = str_replace('media/com_emundus/lib/chosen/chosen.min.css', 'media/jui/css/chosen.css', $params->curl_code[$key]);
 								}
 							}
 							if (strpos($code, 'media/com_emundus/lib/chosen/chosen.jquery.min.js') !== false) {
-								if(is_object($params->curl_code)) {
+								if (is_object($params->curl_code)) {
 									$params->curl_code->{$key} = str_replace('media/com_emundus/lib/chosen/chosen.jquery.min.js', 'media/jui/js/chosen.jquery.min.js', $params->curl_code->{$key});
 								}
-								elseif(is_array($params->curl_code)){
+								elseif (is_array($params->curl_code)) {
 									$params->curl_code[$key] = str_replace('media/com_emundus/lib/chosen/chosen.jquery.min.js', 'media/jui/js/chosen.jquery.min.js', $params->curl_code[$key]);
 								}
 							}
@@ -674,7 +676,7 @@ if (password_value.match(regex) != null) {
 					['label' => 'onWebhookCallbackProcess', 'category' => 'Webhook', 'published' => 1]
 				]);
 
-				EmundusHelperUpdate::updateEmundusParam('gotenberg_url','https://gotenberg.microservices.tchooz.app','https://docs.emundus.app');
+				EmundusHelperUpdate::updateEmundusParam('gotenberg_url', 'https://gotenberg.microservices.tchooz.app', 'https://docs.emundus.app');
 
 				// Install new flow module on old default layouts
 				$db    = JFactory::getDbo();
@@ -688,10 +690,10 @@ if (password_value.match(regex) != null) {
 				$db->setQuery($query);
 				$modules = $db->loadObjectList();
 
-				foreach ($modules as $module){
+				foreach ($modules as $module) {
 					$params = json_decode($module->params);
 
-					if(isset($params->layout) && $params->layout == '_:default') {
+					if (isset($params->layout) && $params->layout == '_:default') {
 						$params->layout = '_:tchooz';
 						$query->clear()
 							->update($db->quoteName('#__modules'))
@@ -709,10 +711,10 @@ if (password_value.match(regex) != null) {
 						$db->setQuery($query);
 						$module_translations = $db->loadObjectList();
 
-						foreach ($module_translations as $module_translation){
+						foreach ($module_translations as $module_translation) {
 							$translation_params = json_decode($module_translation->value);
 
-							if(isset($translation_params->layout) && $translation_params->layout == '_:default') {
+							if (isset($translation_params->layout) && $translation_params->layout == '_:default') {
 								$translation_params->layout = '_:tchooz';
 
 								$query->clear()
@@ -726,10 +728,10 @@ if (password_value.match(regex) != null) {
 					}
 				}
 
-				EmundusHelperUpdate::genericUpdateParams('#__fabrik_cron', 'plugin', 'emundusrecall', array('log_email') , array(''));
+				EmundusHelperUpdate::genericUpdateParams('#__fabrik_cron', 'plugin', 'emundusrecall', array('log_email'), array(''));
 
 				EmundusHelperUpdate::updateConfigurationFile('caching', '1');
-				EmundusHelperUpdate::updateModulesParams('mod_emundusmenu','cache',0);
+				EmundusHelperUpdate::updateModulesParams('mod_emundusmenu', 'cache', 0);
 
 				$query->clear()
 					->select('params')
@@ -738,7 +740,7 @@ if (password_value.match(regex) != null) {
 				$db->setQuery($query);
 				$fabrik_extension = $db->loadResult();
 
-				if(!empty($fabrik_extension)) {
+				if (!empty($fabrik_extension)) {
 					$fabrik_params                    = json_decode($fabrik_extension, true);
 					$fabrik_params['disable_caching'] = "1";
 
@@ -762,7 +764,7 @@ if (password_value.match(regex) != null) {
 				$new_values = [
 					'fr-FR' => 'Créez votre compte',
 				];
-				EmundusHelperUpdate::updateOverrideTag('FORM_REGISTRATION',$old_values,$new_values);
+				EmundusHelperUpdate::updateOverrideTag('FORM_REGISTRATION', $old_values, $new_values);
 
 				$query->clear()
 					->update($db->quoteName('#__fabrik_elements'))
@@ -773,7 +775,7 @@ if (password_value.match(regex) != null) {
 				$db->setQuery($query);
 				$db->execute();
 
-				EmundusHelperUpdate::updateEmundusParam('export_application_pdf_title_color','#000000','#ee1c25');
+				EmundusHelperUpdate::updateEmundusParam('export_application_pdf_title_color', '#000000', '#ee1c25');
 
 				$old_values = [
 					'fr-FR' => 'Table - Paramétrage des groupes',
@@ -783,7 +785,7 @@ if (password_value.match(regex) != null) {
 					'fr-FR' => 'Groupes',
 					'en-GB' => 'Groups',
 				];
-				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_GROUPS',$old_values,$new_values);
+				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_GROUPS', $old_values, $new_values);
 
 				$old_values = [
 					'fr-FR' => 'Table - Paramétrage des profils',
@@ -793,7 +795,7 @@ if (password_value.match(regex) != null) {
 					'fr-FR' => 'Profils',
 					'en-GB' => 'Profiles',
 				];
-				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_PROFILES',$old_values,$new_values);
+				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_PROFILES', $old_values, $new_values);
 
 				$old_values = [
 					'fr-FR' => 'Liste des programmes',
@@ -801,7 +803,7 @@ if (password_value.match(regex) != null) {
 				$new_values = [
 					'fr-FR' => 'Programmes',
 				];
-				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_PROGRAMS',$old_values,$new_values);
+				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_PROGRAMS', $old_values, $new_values);
 
 				$old_values = [
 					'fr-FR' => 'Liste des années par programme',
@@ -811,7 +813,7 @@ if (password_value.match(regex) != null) {
 					'fr-FR' => 'Années',
 					'en-GB' => 'Years',
 				];
-				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_YEARS',$old_values,$new_values);
+				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_YEARS', $old_values, $new_values);
 
 				$old_values = [
 					'fr-FR' => 'Paramétrage - Périodes de dépôt de dossiers',
@@ -821,7 +823,7 @@ if (password_value.match(regex) != null) {
 					'fr-FR' => 'Campagnes',
 					'en-GB' => 'Campaigns',
 				];
-				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_PERIODE',$old_values,$new_values);
+				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_PERIODE', $old_values, $new_values);
 
 				$old_values = [
 					'fr-FR' => 'Table - Tags',
@@ -831,7 +833,7 @@ if (password_value.match(regex) != null) {
 					'fr-FR' => 'Étiquettes',
 					'en-GB' => 'Stickers',
 				];
-				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_TAGS',$old_values,$new_values);
+				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_TAGS', $old_values, $new_values);
 
 				$old_values = [
 					'fr-FR' => 'Table - Invitation par email',
@@ -841,7 +843,7 @@ if (password_value.match(regex) != null) {
 					'fr-FR' => 'Sollicitation des référents',
 					'en-GB' => 'Solicitation of referees',
 				];
-				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_INVITATION_BY_EMAIL',$old_values,$new_values);
+				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_INVITATION_BY_EMAIL', $old_values, $new_values);
 
 				$old_values = [
 					'fr-FR' => 'Table - Paramétrages des documents',
@@ -851,7 +853,7 @@ if (password_value.match(regex) != null) {
 					'fr-FR' => 'Types de documents',
 					'en-GB' => 'Document types',
 				];
-				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_DOCUMENTS',$old_values,$new_values);
+				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_DOCUMENTS', $old_values, $new_values);
 
 				$old_values = [
 					'fr-FR' => 'ADMIN_SETUP_STATUS',
@@ -859,7 +861,7 @@ if (password_value.match(regex) != null) {
 				$new_values = [
 					'fr-FR' => 'Statuts de dossiers',
 				];
-				EmundusHelperUpdate::updateOverrideTag('ADMIN_SETUP_STATUS',$old_values,$new_values);
+				EmundusHelperUpdate::updateOverrideTag('ADMIN_SETUP_STATUS', $old_values, $new_values);
 
 				$old_values = [
 					'fr-FR' => 'Table - Paramétrages des emails',
@@ -869,7 +871,7 @@ if (password_value.match(regex) != null) {
 					'fr-FR' => 'Emails',
 					'en-GB' => 'Emails',
 				];
-				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_EMAILS',$old_values,$new_values);
+				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_EMAILS', $old_values, $new_values);
 
 				$old_values = [
 					'fr-FR' => 'Table- Paiements',
@@ -877,7 +879,7 @@ if (password_value.match(regex) != null) {
 				$new_values = [
 					'fr-FR' => 'Paiements',
 				];
-				EmundusHelperUpdate::updateOverrideTag('TABLE_PAYMENT',$old_values,$new_values);
+				EmundusHelperUpdate::updateOverrideTag('TABLE_PAYMENT', $old_values, $new_values);
 
 				$old_values = [
 					'fr-FR' => 'Table - Paramétrage déclencheurs mails',
@@ -885,7 +887,7 @@ if (password_value.match(regex) != null) {
 				$new_values = [
 					'fr-FR' => 'Déclencheurs d\'emails',
 				];
-				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_EMAILS_TRIGGER',$old_values,$new_values);
+				EmundusHelperUpdate::updateOverrideTag('TABLE_SETUP_EMAILS_TRIGGER', $old_values, $new_values);
 
 				$old_values = [
 					'fr-FR' => 'Paramétrage de périodes de dépôt de dossiers',
@@ -895,7 +897,7 @@ if (password_value.match(regex) != null) {
 					'fr-FR' => 'Paramétrage d\'une campagne',
 					'en-GB' => 'Campaign\'s settings',
 				];
-				EmundusHelperUpdate::updateOverrideTag('SETUP_PERIODS',$old_values,$new_values);
+				EmundusHelperUpdate::updateOverrideTag('SETUP_PERIODS', $old_values, $new_values);
 
 				$old_values = [
 					'fr-FR' => 'Paramétrage des tags',
@@ -905,7 +907,7 @@ if (password_value.match(regex) != null) {
 					'fr-FR' => 'Paramétrage d\'une étiquette',
 					'en-GB' => 'Stickers\'s settings',
 				];
-				EmundusHelperUpdate::updateOverrideTag('SETUP_TAGS',$old_values,$new_values);
+				EmundusHelperUpdate::updateOverrideTag('SETUP_TAGS', $old_values, $new_values);
 
 				$old_values = [
 					'fr-FR' => 'Form - Invitation par email',
@@ -915,7 +917,7 @@ if (password_value.match(regex) != null) {
 					'fr-FR' => 'Sollicitation d\'un référent',
 					'en-GB' => 'Solicitation of a referee',
 				];
-				EmundusHelperUpdate::updateOverrideTag('SETUP_INVITATION_BY_EMAIL',$old_values,$new_values);
+				EmundusHelperUpdate::updateOverrideTag('SETUP_INVITATION_BY_EMAIL', $old_values, $new_values);
 
 				$old_values = [
 					'fr-FR' => 'SETUP_STATUS',
@@ -923,7 +925,7 @@ if (password_value.match(regex) != null) {
 				$new_values = [
 					'fr-FR' => 'Paramétrer un statut de dossier',
 				];
-				EmundusHelperUpdate::updateOverrideTag('SETUP_STATUS',$old_values,$new_values);
+				EmundusHelperUpdate::updateOverrideTag('SETUP_STATUS', $old_values, $new_values);
 
 				$query->clear()
 					->select('id,params')
@@ -931,12 +933,12 @@ if (password_value.match(regex) != null) {
 				$db->setQuery($query);
 				$fabrik_lists = $db->loadObjectList();
 
-				if(!empty($fabrik_lists)){
-					foreach ($fabrik_lists as $list){
-						$params = json_decode($list->params,true);
+				if (!empty($fabrik_lists)) {
+					foreach ($fabrik_lists as $list) {
+						$params                    = json_decode($list->params, true);
 						$params['advanced-filter'] = "0";
 
-						if($params['show-table-filters'] != "0"){
+						if ($params['show-table-filters'] != "0") {
 							$params['show-table-filters'] = "1";
 						}
 
@@ -953,12 +955,367 @@ if (password_value.match(regex) != null) {
 				EmundusHelperUpdate::enableEmundusPlugins('emundus', 'authentication');
 			}
 
+			if (version_compare($cache_version, '1.35.5', '<=') || $firstrun) {
+				$db    = JFactory::getDbo();
+				$query = $db->getQuery(true);
+
+				$query->select('params')
+					->from($db->quoteName('#__extensions'))
+					->where($db->quoteName('element') . ' LIKE ' . $db->quote('emunduswaitingroom'));
+				$db->setQuery($query);
+				$waiting_room_params = $db->loadResult();
+
+				if (!empty($waiting_room_params)) {
+					$strings_allowed_to_add = [
+						'paybox_',
+						'stripeconnect_',
+						'notif_payment=monetico&ctrl=checkout&task=notify&option=com_hikashop&tmpl=component',
+						'option=com_hikashop&ctrl=checkout&task=notify&notif_payment=payzen&tmpl=component',
+					];
+					$strings                = [];
+
+					$params = json_decode($waiting_room_params, true);
+					if (empty($params['strings_allowed'])) {
+						$params['strings_allowed'] = [];
+					}
+
+					// We get values from the database.
+					foreach ($params['strings_allowed'] as $string) {
+						$strings[] = $string['string_allowed_text'];
+					}
+
+					foreach ($strings_allowed_to_add as $string_allowed_to_add) {
+						if (!in_array($string_allowed_to_add, $strings)) {
+							$strings[] = $string_allowed_to_add;
+						}
+					}
+
+					$params['strings_allowed'] = [];
+					foreach ($strings as $key => $string) {
+						$params['strings_allowed']['strings_allowed' . $key] = [
+							'string_allowed_text' => $string
+						];
+					}
+
+					$query->clear()
+						->update($db->quoteName('#__extensions'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('element') . ' LIKE ' . $db->quote('emunduswaitingroom'));
+					$db->setQuery($query);
+					$db->execute();
+
+				}
+			}
+
+            if (version_compare($cache_version, '1.35.9', '<=') || $firstrun) {
+                EmundusHelperUpdate::addColumn('jos_messages', 'email_cc', 'TEXT');
+                EmundusHelperUpdate::addColumn('jos_emundus_logs', 'timestamp', 'TIMESTAMP', null, 0);
+
+                $dashboard_files_by_status_params = array(
+                    'eval' => 'php|$db = JFactory::getDbo();
+$query = $db->getQuery(true);
+
+try {
+    $query->select(\'*\')
+        ->from($db->quoteName(\'jos_emundus_setup_status\'))
+        ->order(\'ordering\');
+    $db->setQuery($query);
+    $status = $db->loadObjectList();
+
+    $datas = [];
+
+    foreach ($status as $statu) {
+        $file = new stdClass;
+        $file->label = $statu->value;
+
+        $colors = array(
+            \'lightpurple\' => \'#D444F1\',
+            \'purple\' => \'#7959F8\',
+            \'darkpurple\' => \'#663399\',
+            \'lightblue\' => \'#0BA4EB\',
+            \'blue\' => \'#2E90FA\',
+            \'darkblue\' => \'#2970FE\',
+            \'lightgreen\' => \'#15B79E\',
+            \'green\' => \'#238C69\',
+            \'darkgreen\' => \'#20835F\',
+            \'lightyellow\' => \'#5D5B00\',
+            \'yellow\' => \'#EAA907\',
+            \'darkyellow\' => \'#F79009\',
+            \'lightorange\' => \'#C87E00\',
+            \'orange\' => \'#EF681F\',
+            \'darkorange\' => \'#FF4305\',
+            \'lightred\' => \'#EC644B\',
+            \'red\' => \'#DB333E\',
+            \'darkred\' => \'#DB333E\',
+            \'lightpink\' => \'#B04748\',
+            \'pink\' => \'#EE46BC\',
+            \'darkpink\' => \'#F53D68\',
+            \'default\' => \'#5E6580\'
+        );
+
+        $file->color = $colors[$statu->class];
+
+        $query->clear()
+            ->select(\'COUNT(ecc.id) as files\')
+            ->from($db->quoteName(\'#__emundus_campaign_candidature\',\'ecc\'))
+            ->leftJoin($db->quoteName(\'#__emundus_setup_campaigns\',\'esc\').\' ON \'.$db->quoteName(\'esc.id\').\' = \'.$db->quoteName(\'ecc.campaign_id\'))
+            ->where($db->quoteName(\'ecc.status\') . \' = \' . $db->quote($statu->step))
+            ->andWhere($db->quoteName(\'ecc.published\') . \' = \' . $db->quote(1));
+
+        $db->setQuery($query);
+        $file->value = $db->loadResult();
+        $datas[] = $file;
+    }
+
+	$dataSource = new stdClass;
+	$dataSource->chart = new stdClass;
+	$dataSource->chart = array(
+		\'caption\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_CAPTION"),
+		\'xaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_STATUS"),
+		\'yaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_NUMBER"),
+		\'animation\' => 1,
+		\'numberScaleValue\' => "1",
+		\'numDivLines\' => 1,
+		\'numbersuffix\'=> "",
+		\'theme\'=> "fusion"
+	);
+	$dataSource->data = $datas;
+	return $dataSource;
+} catch (Exception $e) {
+	return array(\'dataset\' => \'\');
+}'
+                );
+
+                $dashboard_users_by_month_params = array(
+                    'eval' => 'php|$db = JFactory::getDbo();
+$query = $db->getQuery(true);
+$offset = JFactory::getApplication()->get(\'offset\', \'UTC\');
+$now = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone(\'UTC\'));
+$now = $now->setTimezone(new DateTimeZone($offset));
+
+try {
+    $users = array();
+    $days = array();
+    $users_by_day = array();
+
+    $query->select(\'COUNT(id) as users\')
+        ->from($db->quoteName(\'#__users\'));
+    $db->setQuery($query);
+    $totalUsers = $db->loadResult();
+
+    $dateTime = $now;
+
+    for ($d = 1;$d < 31;$d++){
+        $user = new stdClass;
+        $day = new stdClass;
+        $query->clear()
+            ->select(\'COUNT(id) as users\')
+            ->from($db->quoteName(\'#__users\'))
+            ->where($db->quoteName(\'id\') . \' != \' . $db->quote(62))
+            ->andWhere(\'YEAR(registerDate) = \' . $db->quote($dateTime->format(\'Y\')))
+            ->andWhere(\'MONTH(registerDate) = \' . $db->quote($dateTime->format(\'m\')))
+            ->andWhere(\'DAY(registerDate) = \' . $db->quote($dateTime->format(\'j\')));
+
+        $db->setQuery($query);
+        $user = (int) $db->loadResult();
+        $day = $dateTime->format(\'d\') . \'/\' . $dateTime->format(\'m\');
+        $users[] = $user;
+        $days[] = $day;
+        $users_by_day[] = array(\'label\' => $day, \'value\' => $user);
+
+        $dateTime->modify(\'-1 day\');
+    }
+
+    $dataSource = new stdClass;
+    $dataSource->chart = new stdClass;
+    $dataSource->chart = array(
+        \'caption\'=> JText::_("COM_EMUNDUS_DASHBOARD_USERS_BY_MONTH_CAPTION"),
+        \'subcaption\'=> JText::_("COM_EMUNDUS_DASHBOARD_USERS_TOTAL") . $totalUsers . JText::_("COM_EMUNDUS_DASHBOARD_USERS"),
+        \'xaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_USERS_DAYS"),
+        \'yaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_USERS_NUMBER"),
+        \'animation\' => 1,
+        \'yAxisMinValue\'=> 0,
+        \'setAdaptiveYMin\'=> 0,
+        \'adjustDiv\'=> 0,
+        \'yAxisValuesStep\'=> 10,
+        \'numbersuffix\'=> "",
+        \'theme\'=> "fusion"
+    );
+    $dataSource->categories = [];
+    $dataSource->categories[] = array(
+        \'category\' => $days
+    );
+    $dataSource->data = array_reverse($users_by_day);
+    return $dataSource;
+} catch (Exception $e) {
+	return array(\'users\' => \'\', \'days\' => \'\', \'total\' => 0);
+}'
+                );
+
+                $dashboard_files_associated_by_status_params = array(
+                    'eval' => 'php|$db = JFactory::getDbo();
+$query = $db->getQuery(true);
+
+$user_id = JFactory::getUser()->id;
+
+try {
+    $query->select(\'*\')
+        ->from($db->quoteName(\'jos_emundus_setup_status\'))
+        ->order(\'ordering\');
+    $db->setQuery($query);
+    $status = $db->loadObjectList();
+
+    $datas = [];
+
+    foreach ($status as $statu) {
+        $file = new stdClass;
+        $file->label = $statu->value;
+
+        $colors = array(
+            \'lightpurple\' => \'#D444F1\',
+            \'purple\' => \'#7959F8\',
+            \'darkpurple\' => \'#663399\',
+            \'lightblue\' => \'#0BA4EB\',
+            \'blue\' => \'#2E90FA\',
+            \'darkblue\' => \'#2970FE\',
+            \'lightgreen\' => \'#15B79E\',
+            \'green\' => \'#238C69\',
+            \'darkgreen\' => \'#20835F\',
+            \'lightyellow\' => \'#5D5B00\',
+            \'yellow\' => \'#EAA907\',
+            \'darkyellow\' => \'#F79009\',
+            \'lightorange\' => \'#C87E00\',
+            \'orange\' => \'#EF681F\',
+            \'darkorange\' => \'#FF4305\',
+            \'lightred\' => \'#EC644B\',
+            \'red\' => \'#DB333E\',
+            \'darkred\' => \'#DB333E\',
+            \'lightpink\' => \'#B04748\',
+            \'pink\' => \'#EE46BC\',
+            \'darkpink\' => \'#F53D68\',
+            \'default\' => \'#5E6580\'
+        );
+
+        $file->color = $colors[$statu->class];
+
+        $query->clear()
+            ->select(\'distinct eua.fnum as files\')
+            ->from($db->quoteName(\'#__emundus_users_assoc\',\'eua\'))
+            ->leftJoin($db->quoteName(\'#__emundus_campaign_candidature\',\'cc\').\' ON \'.$db->quoteName(\'cc.fnum\').\' = \'.$db->quoteName(\'eua.fnum\'))
+            ->where($db->quoteName(\'cc.status\').\' = \'.$db->quote($statu->step))
+			->andWhere($db->quoteName(\'cc.published\').\' = \'.$db->quote(1))
+            ->andWhere($db->quoteName(\'eua.user_id\').\' = \'.$db->quote($user_id));
+
+        $db->setQuery($query);
+        $files_user_assoc = $db->loadColumn();
+
+        $query->clear()
+            ->select(\'distinct ega.fnum as files\')
+            ->from($db->quoteName(\'#__emundus_group_assoc\',\'ega\'))
+            ->leftJoin($db->quoteName(\'#__emundus_campaign_candidature\',\'cc\').\' ON \'.$db->quoteName(\'cc.fnum\').\' = \'.$db->quoteName(\'ega.fnum\'))
+            ->leftJoin($db->quoteName(\'#__emundus_groups\',\'eg\').\' ON \'.$db->quoteName(\'eg.group_id\').\' = \'.$db->quoteName(\'ega.group_id\'))
+            ->where($db->quoteName(\'cc.status\').\' = \'.$db->quote($statu->step))
+			->andWhere($db->quoteName(\'cc.published\').\' = \'.$db->quote(1))
+            ->andWhere($db->quoteName(\'eg.user_id\').\' = \'.$db->quote($user_id));
+
+        $db->setQuery($query);
+        $files_group_assoc = $db->loadColumn();
+
+        $query->clear()
+            ->select(\'distinct cc.fnum as files\')
+            ->from($db->quoteName(\'#__emundus_groups\',\'eg\'))
+            ->leftJoin($db->quoteName(\'#__emundus_setup_groups_repeat_course\',\'esgrc\').\' ON \'.$db->quoteName(\'esgrc.parent_id\').\' = \'.$db->quoteName(\'eg.group_id\'))
+            ->leftJoin($db->quoteName(\'#__emundus_setup_campaigns\', \'esc\').\' ON \'.$db->quoteName(\'esc.training\').\' = \'.$db->quoteName(\'esgrc.course\'))
+            ->leftJoin($db->quoteName(\'#__emundus_campaign_candidature\',\'cc\').\' ON \'.$db->quoteName(\'cc.campaign_id\').\' = \'.$db->quoteName(\'esc.id\'))
+            ->where($db->quoteName(\'cc.status\').\' = \'.$db->quote($statu->step))
+			->andWhere($db->quoteName(\'cc.published\').\' = \'.$db->quote(1))
+            ->andWhere($db->quoteName(\'eg.user_id\').\' = \'.$db->quote($user_id));
+
+        $db->setQuery($query);
+        $files_group_programs = $db->loadColumn();
+
+        $file->value = sizeof(array_unique(array_merge($files_user_assoc,$files_group_assoc,$files_group_programs)));
+        $datas[] = $file;
+    }
+
+	$dataSource = new stdClass;
+	$dataSource->chart = new stdClass;
+	$dataSource->chart = array(
+		\'caption\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_ASSOCIATED_BY_STATUS_CAPTION"),
+		\'xaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_STATUS"),
+		\'yaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_NUMBER"),
+		\'animation\' => 1,
+		\'numberScaleValue\' => "1",
+		\'numDivLines\' => 1,
+		\'numbersuffix\'=> "",
+		\'theme\'=> "fusion"
+	);
+	$dataSource->data = $datas;
+	return $dataSource;
+} catch (Exception $e) {
+	return array(\'dataset\' => \'\');
+}'
+                );
+
+                $dashboard_files_by_tag_params = array(
+                    'eval' => 'php|$db = JFactory::getDbo();
+$query = $db->getQuery(true);
+
+try {
+	$query->select(\'*\')
+		->from($db->quoteName(\'jos_emundus_setup_action_tag\'));
+	$db->setQuery($query);
+	$tags = $db->loadObjectList();
+
+	$datas = array();
+
+	foreach ($tags as $tag) {
+		$file = new stdClass;
+		$file->label = $tag->label;
+
+		$query->clear()
+			->select(\'COUNT(distinct eta.fnum) as files\')
+			->from($db->quoteName(\'jos_emundus_tag_assoc\',\'eta\'))
+			->where($db->quoteName(\'eta.id_tag\').\' = \'.$db->quote($tag->id));
+
+		$db->setQuery($query);
+		$file->value = $db->loadResult();
+		$datas[] = $file;
+	}
+
+	$dataSource = new stdClass;
+	$dataSource->chart = new stdClass;
+	$dataSource->chart = array(
+		\'caption\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_TAG_CAPTION"),
+		\'xaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_TAGS"),
+		\'yaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_TAG_NUMBER"),
+		\'animation\' => 1,
+		\'numbersuffix\'=> "",
+		\'theme\'=> "fusion"
+	);
+	$dataSource->data = $datas;
+	return $dataSource;
+} catch (Exception $e) {
+	return array(\'dataset\' => \'\');
+}'
+                );
+
+                EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS',$dashboard_files_by_status_params);
+                EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_USERS_BY_MONTH',$dashboard_users_by_month_params);
+                EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_FILES_ASSOCIATED_BY_STATUS',$dashboard_files_associated_by_status_params);
+                EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_FILES_BY_TAG',$dashboard_files_by_tag_params);
+
+                EmundusHelperUpdate::addColumnIndex('jos_messages', 'page');
+
+                EmundusHelperUpdate::addCustomEvents([['label' => 'onAfterMoveApplication', 'category' => 'Campaign']]);
+            }
+
 
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
 
 
-            // Recompile Gantry5 css at each update
+			// Recompile Gantry5 css at each update
 			$succeed['recompile_gantry_5'] = EmundusHelperUpdate::recompileGantry5();
 
 			// Clear Joomla Cache
@@ -987,20 +1344,69 @@ if (password_value.match(regex) != null) {
 			echo "\033[31mYou have to run update-db.sh before CLI ! \033[0m\n";
 			exit;
 		}
+
+        if(version_compare(PHP_VERSION, '8.0.0', '>=')) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->clear()
+                ->update('#__extensions')
+                ->set($db->quoteName('enabled') . ' = 0')
+                ->where($db->quoteName('name') . ' LIKE ' . $db->quote('%dpcalendar%'));
+            $db->setQuery($query);
+            $db->execute();
+        }
 	}
 
 
-    /**
-     * @param $type
-     * @param $parent
-     *
-     *
-     * @since version 1.33.0
-     */
-    function postflight($type, $parent)
-    {
-        return true;
-    }
+	/**
+	 * @param $type
+	 * @param $parent
+	 *
+	 *
+	 * @since version 1.33.0
+	 */
+	function postflight($type, $parent)
+	{
+		$config = JFactory::getConfig();
+
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('custom_data')
+			->from($db->quoteName('#__extensions'))
+			->where($db->quoteName('element') . ' LIKE ' . $db->quote('com_emundus'));
+		$db->setQuery($query);
+		$custom_data = $db->loadResult();
+
+		if (!empty($custom_data)) {
+			$custom_data = json_decode($custom_data, true);
+
+			$custom_data['sitename'] = $config->get('sitename');
+		}
+		else {
+			$custom_data = [
+				'sitename' => $config->get('sitename'),
+			];
+		}
+
+		$query->clear()
+			->update($db->quoteName('#__extensions'))
+			->set($db->quoteName('custom_data') . ' = ' . $db->quote(json_encode($custom_data)))
+			->where($db->quoteName('element') . ' LIKE ' . $db->quote('com_emundus'));
+		$db->setQuery($query);
+
+		if ($db->execute()) {
+			echo "Application name updated";
+
+			return true;
+		}
+		else {
+			echo "Application name not updated";
+
+			return false;
+		}
+	}
 
 
 	/**

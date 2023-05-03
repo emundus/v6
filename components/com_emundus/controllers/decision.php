@@ -332,7 +332,7 @@ class EmundusControllerDecision extends JControllerLegacy
         $title      = $jinput->getString('title', '');
         $comment    = $jinput->getString('comment', null);
         $fnums      = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
-        $appModel   = $this->getModel('Application');
+        $appModel   = new EmundusModelApplication();
 
 
         if (is_array($fnums)) {
@@ -467,7 +467,7 @@ class EmundusControllerDecision extends JControllerLegacy
         $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
         $m_files = $this->getModel('Files');
-        $m_application = $this->getModel('application');
+        $m_application = new EmundusModelApplication();
 
         if ($fnums == "all") {
             $fnums = $m_files->getAllFnums();
@@ -707,7 +707,7 @@ class EmundusControllerDecision extends JControllerLegacy
     public function getformelem()
     {
          //Filters
-        $model = $this->getModel('Decision');
+        $model = new EmundusModelDecision();
         $defaultElements = $model->getDecisionElementsName(0, 1);
         //var_dump($defaultElements);die();
         $elements = EmundusHelperFilters::getElements();
@@ -761,8 +761,8 @@ class EmundusControllerDecision extends JControllerLegacy
         if( !EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum) )
             die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
-        $m_profile = $this->getModel('profile');
-        $m_campaign = $this->getModel('campaign');
+        $m_profile = new EmundusModelProfile();
+        $m_campaign = new EmundusModelCampaign();
 
         if (!empty($fnum)) {
             $candidature = $m_profile->getFnumDetails($fnum);
@@ -796,8 +796,8 @@ class EmundusControllerDecision extends JControllerLegacy
         if( !EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum) )
             die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
-        $m_profile = $this->getModel('profile');
-        $m_campaign = $this->getModel('campaign');
+        $m_profile = new EmundusModelProfile();
+        $m_campaign = new EmundusModelCampaign();
 
         if (!empty($fnum)) {
             $candidature = $m_profile->getFnumDetails($fnum);
@@ -857,7 +857,7 @@ class EmundusControllerDecision extends JControllerLegacy
     {
         $ordered = array();
         $properties=get_object_vars($object);
-        return sortArrayByArray($properties,$orderArray);
+        return $this->sortArrayByArray($properties,$orderArray);
     }
 
     public function create_file_csv() {
@@ -921,7 +921,7 @@ class EmundusControllerDecision extends JControllerLegacy
         }
 
         $m_files = $this->getModel('Files');
-        $m_application = $this->getModel('Application');
+        $m_application = new EmundusModelApplication();
 
         $session = JFactory::getSession();
         $fnums = $session->get('fnums_export');
@@ -1256,7 +1256,7 @@ class EmundusControllerDecision extends JControllerLegacy
         //$filename = 'emundus_applicants_'.date('Y.m.d').'.xls';
 
         $model = $this->getModel('Files');
-        $modelApp = $this->getModel('Application');
+        $modelApp = new EmundusModelApplication();
         $modelEval = $this->getModel('Evaluation');
 
         $eval_elements_id = array();
