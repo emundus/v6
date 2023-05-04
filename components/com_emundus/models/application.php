@@ -5609,8 +5609,12 @@ class EmundusModelApplication extends JModelList
         return $select;
     }
 
-	public function createTab($name,$user_id){
-		try {
+	public function createTab($name, $user_id){
+		$tab_id = 0;
+
+		if (!empty($user_id) && !empty($name) && strlen($name) <= 255 && strlen($name) >= 3) {
+			$name = preg_replace('/[^A-Za-z0-9 ]/', '', $name);
+
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
@@ -5618,15 +5622,17 @@ class EmundusModelApplication extends JModelList
 				->set($db->quoteName('name') . ' = ' . $db->quote($name))
 				->set($db->quoteName('ordering') . ' = 1')
 				->set($db->quoteName('applicant_id') . ' = ' . $user_id);
-			$db->setQuery($query);
-			$db->execute();
+			try {
+				$db->setQuery($query);
+				$db->execute();
 
-			return $db->insertid();
+				$tab_id = $db->insertid();
+			} catch (Exception $e) {
+				JLog::add('Failed to create for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
 		}
-		catch (Exception $e) {
-			JLog::add('Failed to create for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-			return false;
-		}
+
+		return $tab_id;
 	}
 
 	public function getTabs($user_id) {
@@ -5665,21 +5671,14 @@ class EmundusModelApplication extends JModelList
 				$updates = [];
 				foreach ($tabs as $tab) {
 					$tab->id = (int) $tab->id;
+					$owned = $this->isTabOwnedByUser($tab->id, $user_id);
 
-					$query->clear()
-						->select('id')
-						->from($db->quoteName('#__emundus_campaign_candidature_tabs'))
-						->where($db->quoteName('id') . ' = ' . $tab->id)
-						->andWhere($db->quoteName('applicant_id') . ' = ' . $user_id);
-					$db->setQuery($query);
-					$tab_id = $db->loadResult();
-
-					if (!empty($tab_id)) {
+					if ($owned) {
 						$query->clear()
 							->update($db->quoteName('#__emundus_campaign_candidature_tabs'))
 							->set($db->quoteName('name') . ' = ' . $db->quote($tab->name))
-							->set($db->quoteName('ordering') . ' = ' . $tab->ordering)
-							->where($db->quoteName('id') . ' = ' . $tab->id);
+							->set($db->quoteName('ordering') . ' = ' . $db->quote($tab->ordering))
+							->where($db->quoteName('id') . ' = ' . $db->quote($tab->id));
 
 						$db->setQuery($query);
 						$updates[] = $db->execute();
@@ -5695,39 +5694,34 @@ class EmundusModelApplication extends JModelList
 		return $updated;
 	}
 
-	public function deleteTab($tab_id, $user_id){
+	public function deleteTab(int $tab_id, int $user_id){
 		$deleted = false;
 
 		if (!empty($tab_id) && !empty($user_id)) {
-			try {
+			$owned = $this->isTabOwnedByUser($tab_id, $user_id);
+
+			if ($owned) {
 				$db = JFactory::getDbo();
 				$query = $db->getQuery(true);
 
-				$query->select('*')
-					->from($db->quoteName('#__emundus_campaign_candidature_tabs'))
-					->where($db->quoteName('id') . ' = ' . $tab_id)
-					->where($db->quoteName('applicant_id') . ' = ' . $user_id);
-				$db->setQuery($query);
-				$tab = $db->loadAssoc();
-
-				if (!empty($tab)){
+				try {
 					$query->clear()
 						->update($db->quoteName('#__emundus_campaign_candidature'))
 						->set($db->quoteName('tab') . ' = NULL')
-						->where($db->quoteName('tab') . ' = ' . $tab['id'])
+						->where($db->quoteName('tab') . ' = ' . $tab_id)
 						->where($db->quoteName('applicant_id') . ' = ' . $user_id);
 					$db->setQuery($query);
 					$db->execute();
 
 					$query->clear()
 						->delete($db->quoteName('#__emundus_campaign_candidature_tabs'))
-						->where($db->quoteName('id') . ' = ' . $tab['id']);
+						->where($db->quoteName('id') . ' = ' . $tab_id);
 					$db->setQuery($query);
 					$deleted = $db->execute();
+				} catch (Exception $e) {
+					JLog::add('Failed to create for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					$deleted = false;
 				}
-			} catch (Exception $e) {
-				JLog::add('Failed to create for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-				$deleted = false;
 			}
 		}
 
@@ -5739,20 +5733,12 @@ class EmundusModelApplication extends JModelList
 
 		if (!empty($fnum) && !empty($tab)) {
 			$tab = (int) $tab;
+			$owned = $this->isTabOwnedByUser($tab, 0, $fnum);
 
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			if ($owned) {
+				$db = JFactory::getDbo();
+				$query = $db->getQuery(true);
 
-			$query->select('ecct.id')
-				->from($db->quoteName('#__emundus_campaign_candidature_tabs', 'ecct'))
-				->leftJoin('#__emundus_campaign_candidature as ecc ON ecc.applicant_id = ecct.applicant_id')
-				->where('ecc.fnum LIKE ' . $db->quote($fnum))
-				->andWhere('ecct.id = ' . $tab);
-
-			$db->setQuery($query);
-			$tab_exists = $db->loadResult();
-
-			if (!empty($tab_exists)) {
 				try {
 					$query->clear()
 						->update($db->quoteName('#__emundus_campaign_candidature'))
@@ -5849,5 +5835,47 @@ class EmundusModelApplication extends JModelList
 		}
 
 		return $campaigns;
+	}
+
+	/**
+	 * @param $tab_id
+	 * @param $user_id - if empty, check for fnum
+	 * @param $fnum - if empty, check for user_id
+	 * @return bool
+	 */
+	public function isTabOwnedByUser($tab_id, $user_id = 0, $fnum = '') {
+		$owned = false;
+
+		$tab_id = (int)$tab_id;
+		$user_id = (int)$user_id;
+		$fnum = preg_replace('/[^0-9]/', '', $fnum);
+
+		if (!empty($tab_id)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$tab_id_found = 0;
+			if (!empty($user_id)) {
+				$query->select('ecct.id')
+					->from($db->quoteName('#__emundus_campaign_candidature_tabs', 'ecct'))
+					->where('ecct.id = ' . $db->quote($tab_id))
+					->andWhere('ecct.applicant_id = ' .  $db->quote($user_id));
+
+				$db->setQuery($query);
+				$tab_id_found = $db->loadResult();
+			} elseif (!empty($fnum)) {
+				$query->select('ecct.id')
+					->from($db->quoteName('#__emundus_campaign_candidature_tabs', 'ecct'))
+					->leftJoin('#__emundus_campaign_candidature as ecc ON ecc.applicant_id = ecct.applicant_id')
+					->where('ecc.fnum = ' . $db->quote($fnum))
+					->andWhere('ecct.id = ' .  $db->quote($tab_id));
+
+				$db->setQuery($query);
+				$tab_id_found = $db->loadResult();
+			}
+			$owned = !empty($tab_id_found);
+		}
+
+		return $owned;
 	}
 }

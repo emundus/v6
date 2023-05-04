@@ -832,70 +832,73 @@ class EmundusControllerApplication extends JControllerLegacy
     }
 	
 	public function createtab(){
-		$response = array();
-
+		$response = array('tab' => 0, 'msg' => JText::_('FAILED'));
 		$user = JFactory::getUser();
 
-		$jinput = JFactory::getApplication()->input;
-		
-		$tab_name = $jinput->getString('name', '');
+		if (!empty($user->id)) {
+			$jinput = JFactory::getApplication()->input;
+			$tab_name = $jinput->getString('name', '');
 
-		$m_application = $this->getModel('Application');
+			if (!empty($tab_name)) {
+				$m_application = $this->getModel('Application');
+				$tab_created = $m_application->createTab($tab_name, $user->id);
 
-		$tab_created = $m_application->createTab($tab_name,$user->id);
-
-		$response['tab'] = $tab_created;
-		$response['msg'] =  $tab_created ? JText::_('SUCCESS') : JText::_('FAILED');
+				$response['tab'] = $tab_created;
+				$response['msg'] =  $tab_created ? JText::_('SUCCESS') : JText::_('FAILED');
+			}
+		}
 
 		echo json_encode($response);
 		exit;
 	}
 
 	public function gettabs(){
-		$response = array();
+		$response = array('tabs' => array());
 
 		$user = JFactory::getUser();
-
-		$m_application = $this->getModel('Application');
-
-		$response['tabs'] = $m_application->getTabs($user->id);
+		if (!empty($user->id)) {
+			$m_application = $this->getModel('Application');
+			$response['tabs'] = $m_application->getTabs($user->id);
+		}
 
 		echo json_encode($response);
 		exit;
 	}
 
 	public function updatetabs(){
-		$response = array();
-
+		$response = array('msg' =>  JText::_('FAILED'));
 		$user = JFactory::getUser();
 
-		$jinput = JFactory::getApplication()->input;
-		$tabs = $jinput->getRaw('tabs');
-		$tabs = json_decode($tabs);
+		if (!empty($user->id)) {
+			$jinput = JFactory::getApplication()->input;
+			$tabs = $jinput->getRaw('tabs');
+			$tabs = json_decode($tabs);
 
-		$m_application = $this->getModel('Application');
-
-		$response['updated'] = $m_application->updateTabs($tabs,$user->id);
-
-		$response['msg'] =  $response['updated'] ? JText::_('SUCCESS') : JText::_('FAILED');
+			if (!empty($tabs)) {
+				$m_application = $this->getModel('Application');
+				$response['updated'] = $m_application->updateTabs($tabs, $user->id);
+				$response['msg'] =  $response['updated'] ? JText::_('SUCCESS') : JText::_('FAILED');
+			}
+		}
 
 		echo json_encode($response);
 		exit;
 	}
 
 	public function deletetab(){
-		$response = array();
-
+		$response = array('msg' =>  JText::_('FAILED'));
 		$user = JFactory::getUser();
 
-		$jinput = JFactory::getApplication()->input;
-		$tab = $jinput->getInt('tab');
+		if (!empty($user->id)) {
+			$jinput = JFactory::getApplication()->input;
+			$tab = $jinput->getInt('tab');
 
-		$m_application = $this->getModel('Application');
-
-		$response['deleted'] = $m_application->deleteTab($tab,$user->id);
-
-		$response['msg'] =  $response['deleted'] ? JText::_('SUCCESS') : JText::_('FAILED');
+			if (!empty($tab)) {
+				$m_application = $this->getModel('Application');
+				$response['deleted'] = $m_application->deleteTab($tab, $user->id);
+				$response['msg'] =  $response['deleted'] ? JText::_('SUCCESS') : JText::_('FAILED');
+			}
+		}
 
 		echo json_encode($response);
 		exit;

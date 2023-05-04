@@ -94,4 +94,34 @@ class EmundusModelApplicationTest extends TestCase
 		$updated = $this->m_application->updateTabs([$tab], 0);
 		$this->assertSame(false, $updated, 'SQL Injection impossible');
 	}
+
+	/**
+	 * @covers EmundusModelApplication::isTabOwnedByUser
+	 * @return void
+	 */
+	public function testisTabOwnedByUser() {
+		$owned = $this->m_application->isTabOwnedByUser(0, 95);
+		$this->assertSame(false, $owned, 'An invalid tab id should return false');
+
+		$owned = $this->m_application->isTabOwnedByUser(1);
+		$this->assertSame(false, $owned, 'An invalid user id should return false');
+
+		$tab = new stdClass();
+		$tab->name = 'Unit Test ' . time();
+		$tab->ordering = 9999;
+		$tab->id = $this->m_application->createTab('Test', 95);
+		$this->assertNotEmpty($tab->id);
+
+		$owned = $this->m_application->isTabOwnedByUser($tab->id, 95);
+		$this->assertSame(true, $owned, 'Tab is owned by user');
+
+		$owned = $this->m_application->isTabOwnedByUser($tab->id, 0);
+		$this->assertSame(false, $owned, 'Tab is not owned by user');
+
+		$owned = $this->m_application->isTabOwnedByUser(9999 . ' OR 1=1', 95);
+		$this->assertSame(false, $owned, 'SQL Injection impossible');
+
+		$this->m_application->deleteTab($tab->id, 0 . 'OR 1=1');
+		$this->assertSame(false, $owned, 'SQL Injection impossible');
+	}
 }
