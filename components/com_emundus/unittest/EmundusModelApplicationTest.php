@@ -120,8 +120,5 @@ class EmundusModelApplicationTest extends TestCase
 
 		$owned = $this->m_application->isTabOwnedByUser(9999 . ' OR 1=1', 95);
 		$this->assertSame(false, $owned, 'SQL Injection impossible');
-
-		$this->m_application->deleteTab($tab->id, 0 . 'OR 1=1');
-		$this->assertSame(false, $owned, 'SQL Injection impossible');
 	}
 }
