@@ -27,7 +27,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
         flex-wrap: wrap;
         grid-gap: 24px;
     }
-    .mod_emundus_flow___intro .em-h4{
+    .mod_emundus_flow___intro .em-h2{
         max-width: 73%;
         display: -webkit-box;
         overflow: hidden;
@@ -53,7 +53,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
 <div class="em-mt-48" style="padding: 0 20px">
     <div class="em-flex-row em-flex-space-between  em-flex-row em-mt-8 mod_emundus_flow___intro">
         <div class="em-flex-row">
-            <p class="em-h4"><?php echo JText::_($user->campaign_name) ?></p>
+            <h2 class="em-h2 em-mb-0-important"><?php echo JText::_($user->campaign_name) ?></h2>
             <?php
             $color = '#1C6EF2';
             $background = '#C8E1FE';
