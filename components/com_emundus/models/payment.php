@@ -1004,7 +1004,10 @@ class EmundusModelPayment extends JModelList
 	}
 
     public function resetPaymentSession() {
-        JFactory::getSession()->set('emundusPayment', null);
+	    JPluginHelper::importPlugin('emundus','custom_event_handler');
+	    \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopResetSession', ['fnum' => JFactory::getSession()->get('emundusUser')->fnum]]);
+
+	    JFactory::getSession()->set('emundusPayment', null);
     }
 
     /**
@@ -1047,3 +1050,111 @@ class EmundusModelPayment extends JModelList
     }
 
 }
+
+    private function getHikashopUser($fnum)
+    {
+        $hikashop_user = null;
+
+        if (!empty($fnum)) {
+            $db = JFactory::getDBO();
+            $query = $db->getQuery(true);
+
+            $query->select('hu.user_id', 'hu.user_mail')
+                ->from($db->quoteName('#__hikashop_user', 'hu'))
+                ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.applicant_id = hu.user_cms_id')
+                ->where('ecc.fnum LIKE ' . $db->quote($fnum));
+
+            try {
+                $db->setQuery($query);
+                $hikashop_user = $db->loadObject();
+            } catch (Exception  $e) {
+                JLog::add('Failed to get hikashop user_id from fnum ' . $fnum . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.emundus_hikashop_plugin');
+            }
+        }
+
+        return $hikashop_user;
+    }
+
+    public function getGeneratedCoupon($fnum, $hikashop_product_category)
+    {
+        $discount_id = 0;
+
+        if (!empty($fnum)) {
+            $hikashop_user = $this->getHikashopUser($fnum);
+
+            if (!empty($hikashop_user->user_id)) {
+                $db = JFactory::getDBO();
+                $query = $db->getQuery(true);
+
+                $query->select('discount_code')
+                    ->from($db->quoteName('#__hikashop_discount'))
+                    ->where('discount_user_id = ' . $hikashop_user->user_id)
+                    ->andWhere('discount_code LIKE ' . $db->quote($fnum . '-REDUCTION-%'))
+                    ->andWhere('discount_published = 1')
+                    ->andWhere('discount_used_times < 1')
+                    ->andWhere('discount_start <= ' . time())
+                    ->andWhere('discount_end > '  . time());
+
+                try {
+                    $db->setQuery($query);
+                    $discount_id = $db->loadResult();
+                } catch (Exception $e) {
+                    JLog::add('Failed to get discount coupon for fnum ' . $fnum . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.emundus_hikashop_plugin');
+                }
+            }
+        }
+
+        return $discount_id;
+    }
+
+    /**
+     * Create a discount coupon for given user
+     * $fnum string
+     * $discount_amount price or percent of the discount
+     * $discount_amount_type flat (for price) OR percent
+     * $hikashop_product_category category on which discount can be applied
+     * $discount_duration
+     */
+    public function generateCoupon($fnum, $discount_amount, $discount_amount_type = 'flat', $hikashop_product_category, $discount_duration = 1800)
+    {
+        $discount_code = '';
+
+        if (!empty($fnum)) {
+            $discount_code = $fnum . '-REDUCTION-' . uniqid();
+            $db = JFactory::getDBO();
+            $query = $db->getQuery(true);
+
+            $hikashop_user = $this->getHikashopUser($fnum);
+
+            if (!empty($hikashop_user->user_id)) {
+                $columns = ['discount_code', 'discount_type', 'discount_start', 'discount_end', 'discount_user_id', 'discount_quota', 'discount_published', 'discount_currency_id'];
+                $values = $db->quote($discount_code) . ',' .$db->quote('coupon') . ',' . $db->quote(time()) . ',' . $db->quote(time() + $discount_duration) . ',' . $hikashop_user->user_id . ', 1, 1, 1';
+
+                if ($discount_amount_type == 'flat') {
+                    $columns[] = 'discount_flat_amount';
+                } else {
+                    $columns[] = 'discount_percent_amount';
+                }
+                $values .= ', ' . $db->quote($discount_amount);
+
+                if (!empty($hikashop_product_category)) {
+                    $columns[] = 'discount_category_id';
+                    $values .= ', ' . $db->quote($hikashop_product_category);
+                }
+
+                $query->clear()
+                    ->insert($db->quoteName('#__hikashop_discount'))
+                    ->columns($columns)
+                    ->values($values);
+                try {
+                    $db->setQuery($query);
+                    $inserted = $db->execute();
+
+                    if (!$inserted) {
+                        $discount_code = '';
+                    }
+                } catch (Exception $e) {
+                    JLog::add('Failed to generate discount coupon for fnum ' . $fnum . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.emundus_hikashop_plugin');
+                }
+            }
+        }

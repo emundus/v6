@@ -1030,6 +1030,11 @@ input:focus + .em-slider {
 .em-mr-120{
   margin-right: 120px;
 }
+
+.em-mt-0-important{
+  margin-top: 0 !important;
+}
+
 .em-mt-4{
   margin-top: 4px;
 }
@@ -1255,27 +1260,11 @@ input:focus + .em-slider {
   font-family: var(--font);
   font-style: normal;
   font-weight: 600;
-  font-size: 56px;
-  line-height: 70px;
-  color: $night-blue;
-}
-.em-h2{
-  font-family: var(--font);
-  font-style: normal;
-  font-weight: 600;
-  font-size: 48px;
-  line-height: 60px;
-  color: $night-blue;
-}
-.em-h3{
-  font-family: var(--font);
-  font-style: normal;
-  font-weight: 600;
   font-size: 32px;
   line-height: 40px;
   color: $night-blue;
 }
-.em-h4{
+.em-h2{
   font-family: var(--font);
   font-style: normal;
   font-weight: 600;
@@ -1283,7 +1272,7 @@ input:focus + .em-slider {
   line-height: 30px;
   color: $night-blue;
 }
-.em-h5{
+.em-h3{
   font-family: var(--font);
   font-style: normal;
   font-weight: 600;
@@ -1291,12 +1280,28 @@ input:focus + .em-slider {
   line-height: 25px;
   color: $night-blue;
 }
-.em-h6{
+.em-h4{
   font-family: var(--font);
   font-style: normal;
   font-weight: 600;
   font-size: 18px;
   line-height: 23px;
+  color: $night-blue;
+}
+.em-h5{
+  font-family: var(--font);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 20px;
+  color: $night-blue;
+}
+.em-h6{
+  font-family: var(--font);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 16px;
   color: $night-blue;
 }
 

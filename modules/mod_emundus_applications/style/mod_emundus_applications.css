@@ -292,7 +292,7 @@ a.btn.btn-success:not(.btn-xs) {
     margin-bottom: 24px;
 }
 
-.mod_emundus_applications___header p.em-h3 {
+.mod_emundus_applications___header h1.em-h1 {
  font-family: var(--applicant-title-font);
  color: var(--em-applicant-title-color);
 margin-top: 16px;
@@ -301,6 +301,7 @@ margin-top: 16px;
 .mod_emundus_applications___header_desc h2 {
     margin-top: 24px;
     font-family: var(--applicant-title-font);
+    color: var(--em-applicant-title-color);
 }
 
 .mod_emundus_applications___header_desc p{
