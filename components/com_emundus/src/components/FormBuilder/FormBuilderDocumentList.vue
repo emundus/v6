@@ -1,7 +1,7 @@
 <template>
   <div id="form-builder-document-list">
     <div id="required-documents" class="em-w-100 em-mb-32 em-mt-32">
-      <p class="em-font-size-24 em-font-weight-800">{{ translate('COM_EMUNDUS_FORM_BUILDER_REQUIRED_DOCUMENTS') }}</p>
+      <p class="em-font-size-24 em-font-weight-600">{{ translate('COM_EMUNDUS_FORM_BUILDER_REQUIRED_DOCUMENTS') }}</p>
 
       <div v-if="requiredDocuments.length > 0">
         <draggable v-model="requiredDocuments" group="form-builder-documents" :sort="false">
@@ -33,7 +33,7 @@
       <button id="add-document" class="em-secondary-button" @click="addDocument('1')">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_REQUIRED_DOCUMENT') }}</button>
     </div>
     <div id="optional-documents" class="em-w-100 em-mb-32 em-mt-32">
-      <p class="em-font-size-24 em-font-weight-800">{{ translate('COM_EMUNDUS_FORM_BUILDER_OPTIONAL_DOCUMENTS') }}</p>
+      <p class="em-font-size-24 em-font-weight-600">{{ translate('COM_EMUNDUS_FORM_BUILDER_OPTIONAL_DOCUMENTS') }}</p>
       <div v-if="optionalDocuments.length > 0">
         <draggable v-model="optionalDocuments" group="form-builder-documents" :sort="false">
           <transition-group id="optional-documents">

@@ -51,7 +51,7 @@ if($show_preliminary_documents && !empty($preliminary_documents)): ?>
 <div class="mod_emundus_checklist">
     <div class="em-flex-row em-flex-space-between em-pointer mod_emundus_checklist_expand">
         <div class="em-flex-row">
-            <p class="em-h6"><?php echo JText::_($forms_title) ?></p>
+            <h4 class="em-h4"><?php echo JText::_($forms_title) ?></h4>
         </div>
         <span id="mod_emundus_checklist___expand_icon" class="material-icons-outlined">expand_more</span>
     </div>
