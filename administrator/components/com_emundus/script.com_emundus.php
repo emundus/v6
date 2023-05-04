@@ -1316,8 +1316,72 @@ try {
 					['label' => 'onBeforeApplicantEnterApplication', 'category' => 'Files'],
 					['label' => 'onAccessDenied', 'category' => 'Access']
 				]);
-			}
 
+				// Campaign candidature tabs
+				$columns = [
+					[
+						'name' => 'name',
+						'type' => 'VARCHAR',
+						'length' => 255,
+						'null' => 0,
+					],
+					[
+						'name' => 'applicant_id',
+						'type' => 'INT',
+						'null' => 0,
+					],
+					[
+						'name' => 'ordering',
+						'type' => 'INT',
+						'default' => 1,
+						'null' => 1,
+					]
+				];
+				$foreign_keys = [
+					[
+						'name' => 'jos_emundus_users_fk_applicant_id',
+						'from_column' => 'applicant_id',
+						'ref_table' => 'jos_emundus_users',
+						'ref_column' => 'user_id',
+						'update_cascade' => true,
+						'delete_cascade' => true,
+					]
+				];
+				EmundusHelperUpdate::createTable('jos_emundus_campaign_candidature_tabs',$columns,$foreign_keys,'Storage tab for filing');
+
+				$columns = [
+					[
+						'name' => 'date_time',
+						'type' => 'datetime',
+						'null' => 1,
+					],
+					[
+						'name' => 'fnum_from',
+						'type' => 'VARCHAR',
+						'length' => 255,
+						'null' => 0,
+					],
+					[
+						'name' => 'fnum_to',
+						'type' => 'VARCHAR',
+						'length' => 255,
+						'null' => 0,
+					],
+					[
+						'name' => 'published',
+						'type' => 'TINYINT',
+						'default' => 1,
+						'null' => 0,
+					]
+				];
+				$foreign_keys = [];
+				EmundusHelperUpdate::createTable('jos_emundus_campaign_candidature_links',$columns,$foreign_keys,'Links between two fnums');
+
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','tab','INT',10);
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','name','VARCHAR',255);
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','updated','DATETIME');
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','updated_by','INT',10);
+			}
 
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
