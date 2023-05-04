@@ -30,7 +30,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
          */
         cloned: function (c)
         {
-            this.element.getElement('input').value = '';
+            this.element.getElementById('inputValue').value = '';
             this.initValidatorJS();
             this.parent(c);
         },
@@ -40,16 +40,16 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
          */
         initValidatorJS: function ()
         {
-            const select = this.element.getElement('select');
-            const input = this.element.getElement('input');
+            const select = this.element.getElementById('countrySelect');
+            const input = this.element.getElementById('inputValue');
 
             if (select !== null && input !== null) { // not in details format
-                const allCountries = JSON.parse(atob(select.getAttribute('data-countries'))); // decode base64 + get JSON to array type
+                const allCountries = this.options.allCountries;
 
                 let defaultValue;
-                let selectedCountryIndex = this.getSelectedCountryIndex(allCountries, this.options.countrySelected); // get default country
+                let selectedCountryIndex = this.getSelectedCountryIndex(allCountries, this.options.default_country); // get default country
 
-                if (input.value.length > 4) // already have value
+                if (select.getAttribute('selectedValue') !== "") // already have value
                 {
                     defaultValue = input.value;
 
@@ -82,21 +82,6 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             return selectedCountryIndex;
         },
 
-        /**
-         * Called before sending in back-end,
-         * Change input's value to DB format
-         *
-         * @param c
-         */
-        onsubmit: function(c)
-        {
-            const input = this.ValidatorJS.input;
-            const iso2 = this.ValidatorJS.allCountry[this.ValidatorJS.indiceCountry].iso2;
-
-            input.value = iso2 + input.value // +XXYYYY format to ZZ+XXYYYY
-
-            this.parent(c);
-        },
     });
     return window.FbPhoneNumber;
 });
