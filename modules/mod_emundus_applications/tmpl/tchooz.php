@@ -157,7 +157,7 @@ $current_tab = 0;
 </div>
 
 <?php if ($show_tabs == 1) : ?>
-    <div class="em-mt-32 em-flex-row em-border-bottom-neutral-300" style="flex-wrap: wrap;height: 50px">
+    <div class="em-mt-32 em-flex-row em-border-bottom-neutral-300" style="height: 50px; overflow:hidden; overflow-x: auto;">
 		<?php foreach ($tabs as $tab) : ?>
             <div id="tab_link_<?php echo $tab['id'] ?>" onclick="updateTab(<?php echo $tab['id'] ?>)"
                  class="em-mr-16 em-flex-row em-light-tabs em-pointer <?php if ($current_tab == $tab['id']) : ?>em-light-selected-tab<?php endif; ?>">
