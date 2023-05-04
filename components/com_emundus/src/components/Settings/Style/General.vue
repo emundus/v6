@@ -9,10 +9,10 @@
       <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
         <div class="em-flex-row">
           <div>
-            <p class="em-text-neutral-800 em-h5 em-flex-row em-mb-8">
+            <h4 class="em-text-neutral-800 em-h4 em-flex-row em-mb-8">
               Logo
               <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayLogoTip">help_outline</span>
-            </p>
+            </h4>
             <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, jpg, png, gif, svg</em></p>
             <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_LOGO_RECOMMENDED') }}</em></p>
           </div>
@@ -50,10 +50,10 @@
       <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
         <div class="em-flex-row">
           <div>
-            <p class="em-text-neutral-800 em-h5 em-flex-row em-mb-8">
+            <h4 class="em-text-neutral-800 em-h4 em-flex-row em-mb-8">
               {{ translate("COM_EMUNDUS_ONBOARD_ICON") }}
               <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayFaviconTip">help_outline</span>
-            </p>
+            </h4>
             <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, jpg, png</em></p>
             <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ICON_RECOMMENDED') }}</em></p>
           </div>
@@ -90,10 +90,10 @@
       <!-- COLORS -->
       <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
         <div>
-          <p class="em-text-neutral-800 em-h5 em-flex-row em-mb-8">
+          <h4 class="em-text-neutral-800 em-h4 em-flex-row em-mb-8">
             {{ translate("COM_EMUNDUS_ONBOARD_COLORS") }}
             <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayColorsTip">help_outline</span>
-          </p>
+          </h4>
           <span style="opacity: 0">Colors</span><br/>
           <span style="opacity: 0">Colors</span>
         </div>
@@ -112,10 +112,10 @@
       <div v-if="bannerLink" class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
         <div class="em-flex-row">
           <div>
-            <p class="em-text-neutral-800 em-h5 em-mb-8 em-flex-row">
+            <h4 class="em-text-neutral-800 em-h4 em-mb-8 em-flex-row">
               {{ translate("COM_EMUNDUS_ONBOARD_BANNER") }}
               <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayBannerTip">help_outline</span>
-            </p>
+            </h4>
             <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png</em></span><br/>
             <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_RECOMMENDED_SIZE') }} : 1440x200px</em></span>
           </div>

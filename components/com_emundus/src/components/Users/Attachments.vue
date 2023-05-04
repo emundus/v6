@@ -1,7 +1,7 @@
 <template>
   <div class="fabrikGroup em-container-profile-view-attach" v-if="attachments_allowed.length > 0">
     <div class="em-flex-row em-flex-space-between em-small-flex-column">
-      <p class="em-h3">{{ translate('COM_EMUNDUS_USERS_MY_DOCUMENTS') }}</p>
+      <h3 class="em-h3">{{ translate('COM_EMUNDUS_USERS_MY_DOCUMENTS') }}</h3>
       <button
           v-if="allowedAttachmentsICanAdd.length > 0"
           class="em-w-auto"

@@ -3801,7 +3801,7 @@ class EmundusModelFiles extends JModelLegacy
             $h_emails = new EmundusHelperEmails();
 
 
-            foreach ($trigger_emails as $trigger_email) {
+            foreach ($trigger_emails as $trigger_email_id => $trigger_email) {
                 // Manage with default recipient by programme
                 foreach ($trigger_email as $code => $trigger) {
 
@@ -3855,7 +3855,8 @@ class EmundusModelFiles extends JModelLegacy
                             $tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum'], '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
 
                             $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
-                            $from_id    = 62;
+                            $from_id    = JFactory::getUser()->id;
+							$from_id    = empty($from_id) ? 62 : $from_id;
                             $fromname   = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['name']);
                             $to         = $file['email'];
                             $subject    = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['subject']);
@@ -3895,6 +3896,7 @@ class EmundusModelFiles extends JModelLegacy
                             }
 
                             $send = $mailer->Send();
+
                             if ($send !== true) {
                                 $msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT').' : '.$to.' '.$send.'</div>';
                                 JLog::add($send, JLog::ERROR, 'com_emundus.email');
@@ -3922,13 +3924,14 @@ class EmundusModelFiles extends JModelLegacy
                                     }
                                 }
 
-                                $message = array(
+	                            $message = array(
                                     'user_id_from' => $from_id,
                                     'user_id_to' => $file['applicant_id'],
                                     'subject' => $subject,
-                                    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$to.'</i><br>'.$body
+                                    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$to.'</i><br>'.$body,
+	                                'email_id' => $trigger_email_id,
                                 );
-                                $m_email->logEmail($message);
+	                            $logged = $m_email->logEmail($message, $file['fnum']);
                                 $msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$to.'<br>';
                                 JLog::add($to.' '.$body, JLog::INFO, 'com_emundus.email');
                             }
@@ -4007,9 +4010,10 @@ class EmundusModelFiles extends JModelLegacy
                                 'user_id_from' => $from_id,
                                 'user_id_to' => $recipient['id'],
                                 'subject' => $subject,
-                                'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$to.'</i><br>'.$body
+                                'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$to.'</i><br>'.$body,
+	                            'email_id' => $trigger_email_id,
                             );
-                            $m_email->logEmail($message);
+                            $m_email->logEmail($message, $file['fnum']);
                             $msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$to.'<br>';
                             JLog::add($to.' '.$body, JLog::INFO, 'com_emundus.email');
                         }
