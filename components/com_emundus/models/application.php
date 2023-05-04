@@ -5623,4 +5623,42 @@ class EmundusModelApplication extends JModelList
 
         return $select;
     }
+
+    public function getFileMenu() {
+        $e_user = JFactory::getSession()->get('emundusUser');
+
+        $link = '';
+
+        if (!empty($e_user->profile)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            try {
+                $query->select('menutype')
+                    ->from($db->quoteName('#__emundus_setup_profiles'))
+                    ->where($db->quoteName('id') . ' = ' . $e_user->profile);
+                $db->setQuery($query);
+                $menutype = $db->loadResult();
+
+                if(!empty($menutype)) {
+                    $components = [
+                        'index.php?option=com_emundus&view=files',
+                        'index.php?option=com_emundus&view=evaluation',
+                        'index.php?option=com_emundus&view=decision',
+                    ];
+                    $query->clear()
+                        ->select('path')
+                        ->from($db->quoteName('#__menu'))
+                        ->where($db->quoteName('link') . ' IN (' . implode(',',$components) . ')')
+                        ->where($db->quoteName('menutype') . ' LIKE ' . $db->quote($menutype));
+                    $db->setQuery($query);
+                    $link = $db->loadResult();
+                }
+            } catch (Exception $e) {
+                JLog::add('Failed to get files menu for user ' . $e_user->id . ' with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            }
+        }
+
+        return $link;
+    }
 }

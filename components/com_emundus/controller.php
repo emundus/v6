@@ -648,16 +648,19 @@ class EmundusController extends JControllerLegacy {
         $aid = $session->get('emundusUser');
 
         $m_profile = new EmundusModelProfile;
+        $m_application 	= new EmundusModelApplication;
         $infos = $m_profile->getFnumDetails($fnum);
 
         if ($aid->id != $infos['applicant_id']) {
+            if(EmundusHelperAccess::asAccessAction(1,'r',JFactory::getUser()->id,$fnum)){
+                $m_application->getFileMenu();
+            }
             return;
         }
 
 	    $m_profile->initEmundusSession($fnum);
 
         if (empty($redirect)) {
-            $m_application 	= new EmundusModelApplication;
             if (empty($confirm)) {
                 $redirect = $m_application->getFirstPage();
             } else {
