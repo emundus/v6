@@ -224,7 +224,6 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import { Datetime } from "vue-datetime";
 import { DateTime as LuxonDateTime, Settings } from "luxon";
-import Editor from "../components/editor";
 import Autocomplete from "../components/autocomplete";
 import Translation from "../components/translation"
 
@@ -240,7 +239,6 @@ export default {
   components: {
     EditorQuill,
     Datetime,
-    Editor,
     Autocomplete,
     Translation
   },
