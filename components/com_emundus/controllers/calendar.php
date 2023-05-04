@@ -23,7 +23,6 @@ class EmundusControllerCalendar extends JControllerLegacy {
 	/**
 	 * Creates a calendar using the google API and by manually creating a category for dpcalendar to use.
 	 *
-	 * @return null
 	 * @throws Exception
 	 */
     public function createcalendar() {

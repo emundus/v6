@@ -309,12 +309,15 @@ $current_tab = 0;
                             <div class="<?= $moduleclass_sfx ?> mod_emundus_applications___content em-mb-32">
 								<?php foreach ($files as $application) : ?>
 
-									<?php
-									$is_admission = in_array($application->status, $admission_status);
-									$display_app  = true;
-									if (!empty($show_status) && !in_array($application->status, $show_status)) {
-										$display_app = false;
-									}
+                            <?php
+	                        $is_admission = false;
+                            if(!empty($admission_status)) {
+	                            $is_admission = in_array($application->status, $admission_status);
+                            }
+                            $display_app = true;
+                            if(!empty($show_status) && !in_array($application->status, $show_status)) {
+                                $display_app = false;
+                            }
 
 									if ($display_app) {
 										$state          = $application->published;

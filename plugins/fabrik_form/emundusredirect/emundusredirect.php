@@ -101,7 +101,7 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 		$user = JFactory::getSession()->get('emundusUser');
 		$db = JFactory::getDBO();
 
-		if(isset($user->fnum)){
+		if (isset($user->fnum)) {
 			try {
 				$query = $db->getQuery(true);
 
@@ -120,7 +120,7 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 			}
 		}
 
-		include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
+		require_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
 		$m_profile = new EmundusModelProfile();
 		$applicant_profiles = $m_profile->getApplicantsProfilesArray();
 

@@ -769,7 +769,7 @@ $font:'Inter', sans-serif;
   }
 
   /* TEXTE D AIDE */
-  span:not(.badge):not([class^="material-icons"]):not(.icon-handle):not([class^="tox"]):not(.mceIcon):not(.mceText):not(.mcePathLabel) {
+  span:not(.badge):not([class^="material-icons"]):not(.icon-handle):not([class^="tox"]):not(.mceIcon):not(.mceText):not(.mcePathLabel):not(.mce-txt) {
     @include body-14;
     color: var(--neutral-600);
     display: flex;

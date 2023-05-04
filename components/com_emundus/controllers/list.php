@@ -35,7 +35,7 @@ class EmundusControllerList extends JControllerLegacy {
         $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
         $user = JFactory::getUser();
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
             $listId = $jinput->getInt('listId');
             $listParticularConditionalColumn = json_decode($jinput->getString('listParticularConditionalColumn'));

@@ -694,6 +694,9 @@ elseif ($user->guest && (($name === 'webhook' || $app->input->get('controller', 
 }
 elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $json != 'json') && $task != 'passrequest' && $task != 'getusername')
 {
+    JPluginHelper::importPlugin('emundus', 'custom_event_handler');
+    $app->triggerEvent('callEventHandler', ['onAccessDenied', []]);
+
     $controller->setRedirect('index.php', JText::_("ACCESS_DENIED"), 'error');
 }
 else

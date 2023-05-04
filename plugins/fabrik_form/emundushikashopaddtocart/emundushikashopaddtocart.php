@@ -63,14 +63,13 @@ class PlgFabrik_FormEmundushikashopaddtocart extends plgFabrik_Form {
     public function onBeforeProcess() {
 
         $mainframe = JFactory::getApplication();
-        $jinput = JFactory::getApplication()->input;
-
-        $current_user = JFactory::getUser();
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
 
         if (!$mainframe->isAdmin()) {
+            $jinput = JFactory::getApplication()->input;
+            $current_user = JFactory::getUser();
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
             try {
                 require_once(JPATH_SITE . DS . 'administrator' . DS . 'components' . DS . 'com_hikashop' . DS . 'helpers' . DS . 'helper.php');
                 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
@@ -104,7 +103,7 @@ class PlgFabrik_FormEmundushikashopaddtocart extends plgFabrik_Form {
 
                 // Get old orders
                 $query->clear()
-                    ->select('GROUP_CONCAT(hop.product_id) as old_products,eh.id,eh.order_id,ho.order_status')
+                    ->select('GROUP_CONCAT(hop.product_id) as old_products, eh.id, eh.order_id, ho.order_status')
                     ->from($db->quoteName('#__emundus_hikashop','eh'))
                     ->leftJoin($db->quoteName('#__hikashop_order_product','hop').' ON '.$db->quoteName('hop.order_id').' = '.$db->quoteName('eh.order_id'))
                     ->leftJoin($db->quoteName('#__hikashop_product_category','hp').' ON '.$db->quoteName('hp.product_id').' = '.$db->quoteName('hop.product_id'))
@@ -134,7 +133,6 @@ class PlgFabrik_FormEmundushikashopaddtocart extends plgFabrik_Form {
                         $cart->cart_name = 'Cart of fnum ' . $fnum;
 
                         $emundus_cart = $cartClass->save($cart);
-                        //$cart_id = $cartClass->getCurrentCartId();
 
                         $query->clear()
                             ->update($db->quoteName('#__emundus_hikashop'))
@@ -150,6 +148,16 @@ class PlgFabrik_FormEmundushikashopaddtocart extends plgFabrik_Form {
                             ->where($db->quoteName('id') . ' = ' . $db->quote($emundus_order->id));
                         $db->setQuery($query);
                         $db->execute();
+
+                        $query->clear()
+                            ->select('product_id')
+                            ->from('#__hikashop_cart_product')
+                            ->where('cart_id = ' .  $emundus_cart);
+
+                        $db->setQuery($query);
+                        $old_products = $db->loadColumn();
+
+                        $emundus_order->old_products = empty($emundus_order->old_products) ? implode(',', $old_products) : $emundus_order->old_products . ',' . implode(',', $old_products);
                     }
                 } else {
                     // Create the cart
@@ -241,23 +249,24 @@ class PlgFabrik_FormEmundushikashopaddtocart extends plgFabrik_Form {
                     $data_elt_raw = $elt . '_raw';
                     // Add to products
                     if (in_array($data_elt_raw, array_keys($data))) {
+                        $order_old_products = explode(',', $emundus_order->old_products);
+
                         if(is_array($data[$data_elt_raw])) {
-                            foreach ($data[$data_elt_raw] as $product) {
-                                if (!empty($product) && !in_array((int)$product, explode(',',$emundus_order->old_products))) {
+                            foreach ($data[$data_elt_raw] as $product_key => $product) {
+                                if (!empty($product) && !in_array((int)$product, $order_old_products)) {
                                     $products[$index_p]['id'] = (int)$product;
                                     $products[$index_p]['qty'] = 1;
                                     $index_p++;
                                 }
                             }
                         } else {
-                            if (!empty($data[$data_elt_raw]) && !in_array((int)$data[$data_elt_raw], explode(',',$emundus_order->old_products))) {
+                            if (!empty($data[$data_elt_raw]) && !in_array((int)$data[$data_elt_raw], $order_old_products)) {
                                 $products[$index_p]['id'] = (int)$data[$data_elt_raw];
                                 $products[$index_p]['qty'] = 1;
                                 $index_p++;
                             }
                         }
                     }
-                    //
                 }
 
                 $result = $cartClass->addProduct((int)$emundus_cart, $products);
@@ -269,5 +278,4 @@ class PlgFabrik_FormEmundushikashopaddtocart extends plgFabrik_Form {
             }
         }
         return true;
-    }
-}
+    }}

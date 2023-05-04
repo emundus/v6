@@ -7,12 +7,11 @@
  */
 
 defined('_JEXEC') or die;
-define('JPATH_BASE', __DIR__);
 
-$parts = explode(DIRECTORY_SEPARATOR, JPATH_BASE);
+$parts = explode(DIRECTORY_SEPARATOR, __DIR__);
+$jpath_root = implode(DIRECTORY_SEPARATOR, $parts);
 
 // Defines.
-define('JPATH_ROOT',          implode(DIRECTORY_SEPARATOR, $parts));
-define('EMUNDUS_PATH_ABS',     JPATH_ROOT.DIRECTORY_SEPARATOR.'images/emundus/files/');
+define('EMUNDUS_PATH_ABS',     $jpath_root.DIRECTORY_SEPARATOR.'images/emundus/files/');
 define('EMUNDUS_PATH_REL', 'images/emundus/files/');
 define('EMUNDUS_PHOTO_AID', 10);

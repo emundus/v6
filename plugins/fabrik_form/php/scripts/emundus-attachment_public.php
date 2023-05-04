@@ -22,9 +22,9 @@ $alert_new_attachment = $eMConfig->get('alert_new_attachment');
 $mailer = JFactory::getMailer();
 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
 require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'checklist.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'checklist.php');
 $m_files = new EmundusModelFiles();
-$m_checklist = new EmundusModelChecklist;
+$h_checklist = new EmundusHelperChecklist();
 $m_emails   = new EmundusModelEmails();
 
 $files = JRequest::get('FILES');
@@ -92,7 +92,7 @@ try {
 
 	//$nom = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($student->name,ENT_NOQUOTES,'UTF-8'))));
 	$fnumInfos = $m_files->getFnumInfos($fnum);
-	$nom = $m_checklist->setAttachmentName($upload->filename, $attachement_params->lbl, $fnumInfos);
+	$nom = $h_checklist->setAttachmentName($upload->filename, $attachement_params->lbl, $fnumInfos);
 
 	//$nom .= $attachement_params->lbl.rand().'.'.end(explode('.', $upload->filename));
 
