@@ -458,13 +458,13 @@ $current_tab = 0;
                                                     </div>
 													<?php if (empty($application->name)) : ?>
                                                         <a href="<?= JRoute::_($first_page_url); ?>"
-                                                           class="em-h6 mod_emundus_applications___title"
+                                                           class="em-h4 mod_emundus_applications___title"
                                                            id="application_title_<?php echo $application->fnum ?>">
                                                             <span><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></span>
                                                         </a>
 													<?php else : ?>
                                                         <a href="<?= JRoute::_($first_page_url); ?>"
-                                                           class="em-h6 mod_emundus_applications___title"
+                                                           class="em-h4 mod_emundus_applications___title"
                                                            id="application_title_<?php echo $application->fnum ?>">
                                                             <span><?= $application->name; ?></span>
                                                         </a>
