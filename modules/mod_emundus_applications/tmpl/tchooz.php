@@ -670,7 +670,7 @@ $current_tab = 0;
 											$current_phase = $m_campaign->getCurrentCampaignWorkflow($application->fnum);
 
 											?>
-                                            <tr class="row em-pointer"
+                                            <tr class="em-pointer"
                                                 id="application_content<?php echo $application->fnum ?>"
                                                 onclick="openFile(event,'<?php echo $first_page_url ?>')">
                                                 <td style="width: 23.75%;">
