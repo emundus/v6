@@ -40,8 +40,6 @@ foreach ($messages as $message) {
   	if ($message['message'] == JText::_("COM_USERS_REGISTER_EMAIL1_MESSAGE")) {
 		try {
 			$chars 	= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?";
-			//$passwd_md5 = md5($passwd);
-
 
 			$m_users = new EmundusModelUsers;
 			$user = $m_users->getUserByEmail($jform["email2"]);
@@ -53,26 +51,19 @@ foreach ($messages as $message) {
 			$post = array();
 			$tags = $emails->setTags($uid, $post, null, '', $email->emailfrom.$email->name.$email->subject.$email->message);
 
-			//var_dump($jform);
-
-
 			$from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
 			$fromname = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
 			$to = $jform["email2"];
 			$subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
 			$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
 			$body = $emails->setTagsFabrik($body);
-
-
-
 			$email_from_sys = $app->getCfg('mailfrom');
-
+			$mail_from_address = $email_from_sys;
 
 			// If the email sender has the same domain as the system sender address.
-			if (!empty($email->emailfrom) && substr(strrchr($email->emailfrom, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+			if (!empty($email->emailfrom) && substr(strrchr($email->emailfrom, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
 				$mail_from_address = $email->emailfrom;
-			else
-				$mail_from_address = $email_from_sys;
+            }
 
 			// Set sender
 			$sender = [
@@ -87,7 +78,6 @@ foreach ($messages as $message) {
 			$mailer->isHTML(true);
 			$mailer->Encoding = 'base64';
 			$mailer->setBody($body);
-			//var_dump($body);
 			$send = $mailer->Send();
 			if ($send !== true) {
 				$res = false;
@@ -130,10 +120,6 @@ foreach ($messages as $message) {
 
 			}
 			$app->enqueueMessage(JText::_('COM_USERS_REGISTER_CHECK_YOUR_MAIL'), 'notice');
-			//$app->redirect('index.php');
-
-			//echo json_encode((object)array('status' => $res, 'msg' => $msg));
-
 			/***********************end mail sending ************************* */
 		}
 		catch(Exception $e){
@@ -143,14 +129,6 @@ foreach ($messages as $message) {
    }
 }
 //email sending
-
-/*if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)) {
-	echo json_encode((object)array('status' => false));
-	exit;
-}*/
-
-
-
 $course = JRequest::getVar('course', null, 'GET', null, 0);
 $cid 	= JRequest::getVar('cid', null, 'GET', null, 0);
 
