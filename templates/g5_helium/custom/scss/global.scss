@@ -76,17 +76,53 @@ body {
   }
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: $accent-color-1;
-  margin-top: 50px;
-  margin-bottom: 50px;
-  font-weight: 600;
+h1 {
   font-family: get-font-family($font-family-title);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 40px;
+  color: $accent-color-1;
+}
+h2{
+  font-family: get-font-family($font-family-title);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 30px;
+  color: $accent-color-1;
+}
+h3{
+  font-family: get-font-family($font-family-title);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 25px;
+  color: $accent-color-1;
+}
+h4{
+  font-family: get-font-family($font-family-title);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 23px;
+  color: $accent-color-1;
+}
+h5{
+  font-family: get-font-family($font-family-title);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 20px;
+  color: $accent-color-1;
+}
+h6{
+  font-family: get-font-family($font-family-title);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 16px;
+  color: $accent-color-1;
 }
 
 .view-list, .g-back-office-emundus-tableau {
@@ -98,12 +134,6 @@ h6 {
   h6 {
     color: var(--night-blue) !important;
   }
-}
-
-
-h1 {
-  font-size: 2em;
-  position: relative;
 }
 
 .view-login h1::after,
@@ -1367,11 +1397,7 @@ body > .g-container {
 
 /* PAGE ACCUEIL */
 .homepage {
-  h1:first-child {
-    margin-bottom: 12px;
-  }
-
-  /* MODULE EMUNDUS CAMPAIGN */
+   /* MODULE EMUNDUS CAMPAIGN */
   .campaigns-list {
 
     .campaingapplycontent {
@@ -3289,13 +3315,6 @@ label[for='clear-search'] img:hover:focus {
   color: $base-secondary-color;
 }
 
-
-.candidacy-files-list h1,
-#em-panel h1 {
-  color: var(--neutral-900);
-  font-weight: 700;
-}
-
 //test
 
 #em-appli-menu .panel-body .list-group-item:hover,
@@ -3675,7 +3694,7 @@ ul.unstyled.em-linkForgot li a {
   }
 }
 
-.com_emundus.view-users.layout-edit .em-container-profile-view-pict span.em-h3 {
+.com_emundus.view-users.layout-edit .em-container-profile-view-pict h1.em-h1 {
   font-family: var(--font);
 }
 
@@ -5035,7 +5054,7 @@ button.swal2-cancel.goback-btn {
 
     /* TITRE FORMULAIRE */
     .page-header h1 {
-      @include headline-5;
+      @include headline-1;
       color: var(--neutral-900);
     }
 
@@ -5093,7 +5112,7 @@ button.swal2-cancel.goback-btn {
 
         /* LEGEND */
         .legend {
-          @include headline-6;
+          @include headline-3;
           color: var(--neutral-900);
         }
 
@@ -6561,7 +6580,7 @@ screen and (max-height: 769px) {
     margin-left: 0 !important;
   }
 
-  #g-container-main {
+  .gantry:not(.files-board)  #g-container-main {
     padding: 20px;
   }
 
