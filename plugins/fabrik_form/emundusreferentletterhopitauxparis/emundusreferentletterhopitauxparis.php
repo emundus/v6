@@ -150,6 +150,7 @@ class PlgFabrik_FormEmundusReferentLetterHopitauxParis extends plgFabrik_Form
         $fnum_detail = $m_files->getFnumInfos($fnum);
 
         $student_id = $fnum_detail['applicant_id'];
+        $campaign_id = $fnum_detail['campaign_id'];
 
 
         /**/
@@ -256,8 +257,8 @@ class PlgFabrik_FormEmundusReferentLetterHopitauxParis extends plgFabrik_Form
 
                 require_once($file);
 
-                // Here we call the profile by fnum function, which will get the candidate's profile in the status table
-                $profile_id = $m_profile->getProfileByFnum($current_user->fnum);
+                // Here we call the profile by campaign function, which will get the profile of the campaign's initial phase
+                $profile_id = $m_profile->getProfileByCampaign($campaign_id)['profile_id'];
 
                 application_form_pdf($student->id, $current_user->fnum, true, 1, $formid, null, null, $profile_id);
 

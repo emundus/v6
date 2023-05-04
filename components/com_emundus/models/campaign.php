@@ -117,52 +117,56 @@ class EmundusModelCampaign extends JModelList {
             $uid = $this->_user->id;
         }
 
-		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-		$m_profile = new EmundusModelProfile();
-		$userProfiles = $m_profile->getUserProfiles($uid);
-        $userEmundusProfiles = $m_profile->getProfileByApplicant($uid);
+        $query = $this->_buildQuery();
 
-        $newObjectProfiles = (object) array(
-            'id' => $userEmundusProfiles['profile'],
-            'label' => $userEmundusProfiles['profile_label'],
-            'published' => $userEmundusProfiles['published'],
-            'status' => $userEmundusProfiles['status'],
-        );
+        if(!empty($uid)) {
+            require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
+            $m_profile = new EmundusModelProfile();
+            $userProfiles = $m_profile->getUserProfiles($uid);
+            $userEmundusProfiles = $m_profile->getProfileByApplicant($uid);
 
-        $userProfiles[] = $newObjectProfiles;
+            $newObjectProfiles = (object)array(
+                'id' => $userEmundusProfiles['profile'],
+                'label' => $userEmundusProfiles['profile_label'],
+                'published' => $userEmundusProfiles['published'],
+                'status' => $userEmundusProfiles['status'],
+            );
 
-		$eMConfig = JComponentHelper::getParams('com_emundus');
-		$applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');
-		$id_profiles = $eMConfig->get('id_profiles', '0');
-		$id_profiles = explode(',', $id_profiles);
+            $userProfiles[] = $newObjectProfiles;
 
-		foreach ($userProfiles as $profile) {
-			if (in_array($profile->id, $id_profiles)) {
-				$applicant_can_renew = 1;
-				break;
-			}
-		}
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');
+            $id_profiles = $eMConfig->get('id_profiles', '0');
+            $id_profiles = explode(',', $id_profiles);
 
-		$query = $this->_buildQuery();
-		switch ($applicant_can_renew) {
-			// Applicant can only have one file per campaign.
-			case 2:
-				$query .= ' AND id NOT IN (
+            foreach ($userProfiles as $profile) {
+                if (in_array($profile->id, $id_profiles)) {
+                    $applicant_can_renew = 1;
+                    break;
+                }
+            }
+
+
+            switch ($applicant_can_renew) {
+                // Applicant can only have one file per campaign.
+                case 2:
+                    $query .= ' AND id NOT IN (
 								select campaign_id
 								from #__emundus_campaign_candidature
-								where applicant_id='. $uid .'
+								where applicant_id=' . $uid . '
 							)';
-				break;
-			// Applicant can only have one file per year.
-			case 3:
-				$query .= ' AND year NOT IN (
+                    break;
+                // Applicant can only have one file per year.
+                case 3:
+                    $query .= ' AND year NOT IN (
 								select sc.year
 								from #__emundus_campaign_candidature as cc
 								LEFT JOIN #__emundus_setup_campaigns as sc ON sc.id = cc.campaign_id
-								where applicant_id='. $uid .'
+								where applicant_id=' . $uid . '
 							)';
-				break;
-		}
+                    break;
+            }
+        }
 
 		try {
 			$this->_db->setQuery($query);
@@ -927,7 +931,7 @@ class EmundusModelCampaign extends JModelList {
         $query = $this->_db->getQuery(true);
 
         // TODO REPLACE BY TRANSLATION MODEL
-        $falang = JModelLegacy::getInstance('falang', 'EmundusModel');
+        $falang = new EmundusModelFalang();
 
         if (count($data) > 0) {
             try {
@@ -2724,7 +2728,7 @@ class EmundusModelCampaign extends JModelList {
     }
 
     /**
-     * @return void
+     * @return array
      */
     public function findWorkflowIncoherences()
     {

@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class EmundusHelperMenu {
 
-	function buildMenuQuery($profile, $formids = null, $checklevel=true) {
+	public static function buildMenuQuery($profile, $formids = null, $checklevel=true) {
 	    if (empty($profile)) {
 	        return false;
         }
@@ -50,7 +50,7 @@ class EmundusHelperMenu {
 			$db->setQuery( $query );
 			$list = $db->loadObjectList();
 
-			if(empty($list)){
+			if(empty($list) || count($list) !== count($formids)){
 				$query->clear()
 					->select('fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) AS link, menu.id, menu.title, profile.menutype, fbforms.params')
 					->from($db->quoteName('#__menu','menu'))
@@ -78,7 +78,7 @@ class EmundusHelperMenu {
 	    }
 	}
 
-	function getUserApplicationMenu($profile, $formids = null) {
+	static function getUserApplicationMenu($profile, $formids = null) {
 		$user   = JFactory::getUser();
 		$levels = JAccess::getAuthorisedViewLevels($user->id);
 

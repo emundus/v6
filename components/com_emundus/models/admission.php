@@ -43,6 +43,8 @@ class EmundusModelAdmission extends JModelList
         $db = JFactory::getDbo();
         $mainframe = JFactory::getApplication();
 
+        $current_user = JFactory::getUser();
+
         // Get current menu parameters
         $menu = @JFactory::getApplication()->getMenu();
         $current_menu = $menu->getActive();
@@ -266,7 +268,7 @@ class EmundusModelAdmission extends JModelList
      * @param   int   $hidden
      * @param   null  $code
      *
-     * @return string list of Fabrik element ID used in admission form
+     * @return array list of Fabrik element ID used in admission form
      * @throws Exception
      */
     public function getAdmissionElementsName($show_in_list_summary = 1, $hidden = 0, $code = null) {
@@ -324,7 +326,7 @@ class EmundusModelAdmission extends JModelList
      * @param int hidden from Fabrik List ; yes=1
      * @param array code get elements from Decision form defined for programme list
      *
-     * @return    array list of Fabrik element ID used in admission form
+     * @return array list of Fabrik element ID used in admission form
      **@throws Exception
      */
     public function getApplicantAdmissionElementsName($show_in_list_summary=1, $hidden=0, $code = null, $all = null) {
@@ -372,9 +374,9 @@ class EmundusModelAdmission extends JModelList
      * Get list of ALL admission elements
      * @param 	  int displayed in Fabrik List ; yes=1
      * @param 	  string code of the programme
-     * @return    string list of Fabrik element ID used in admission form
+     * @return    array list of Fabrik element ID used in admission form
      **/
-    public function getAllAdmissionElements($show_in_list_summary=1, $programme_code) {
+    public function getAllAdmissionElements($show_in_list_summary, $programme_code) {
         $session = JFactory::getSession();
 
         if ($session->has('filt_params')) {
@@ -418,9 +420,9 @@ class EmundusModelAdmission extends JModelList
      * Get list of ALL admission elements from applicant form
      * @param 	  int displayed in Fabrik List ; yes=1
      * @param 	  string code of the programme
-     * @return    string list of Fabrik element ID used in admission form
+     * @return    array list of Fabrik element ID used in admission form
      **/
-    public function getAllApplicantAdmissionElements($show_in_list_summary=1, $programme_code) {
+    public function getAllApplicantAdmissionElements($show_in_list_summary, $programme_code) {
         $session = JFactory::getSession();
 
         if ($session->has('filt_params')) {
@@ -512,7 +514,7 @@ class EmundusModelAdmission extends JModelList
         return '';
     }
 
-    public function multi_array_sort($multi_array = array(), $sort_key, $sort = SORT_ASC) {
+    public function multi_array_sort($multi_array, $sort_key, $sort = SORT_ASC) {
         if (is_array($multi_array)) {
             foreach ($multi_array as $key => $row_array) {
 
@@ -617,7 +619,7 @@ class EmundusModelAdmission extends JModelList
                 }
                 $i++;
             }
-            if (count($cols > 0) && !empty($cols))
+            if (!empty($cols))
                 $cols = implode(', ', $cols);
         }
         return $cols;
@@ -885,18 +887,15 @@ class EmundusModelAdmission extends JModelList
             $limitStart = $session->get('limit');
             if ($limitStart > 0)
                 $query .= " limit $limit, $limitStart ";
-            /*
-            if (JFactory::getUser()->id == 63)
-                echo '<hr>FILES:'.str_replace('#_', 'jos', $query).'<hr>';*/
 
             $dbo->setQuery($query);
             $res = $dbo->loadAssocList();
-
-            return $res;
-
         } catch(Exception $e) {
             echo $e->getMessage();
+			$res = [];
         }
+
+	    return $res;
     }
 
     // get elements by groups
@@ -909,11 +908,6 @@ class EmundusModelAdmission extends JModelList
     // @params string List of Fabrik groups comma separated
     function getAllElementsByGroups($groups, $show_in_list_summary=null, $hidden=null) {
         return @EmundusHelperFilters::getAllElementsByGroups($groups, $show_in_list_summary, $hidden);
-    }
-
-
-    public function getActionsACL() {
-        return $this->_files->getActionsACL();
     }
 
     public function getDefaultElements() {
@@ -1190,20 +1184,20 @@ class EmundusModelAdmission extends JModelList
 	* 	@return array
 	*/
     function getAdmissionFnum($fnum) {
-        try {
+	    $res = [];
 
+        try {
             $query = 'SELECT *
 					FROM #__emundus_final_grade fg
 					WHERE fg.fnum like ' . $this->_db->Quote($fnum);
             $this->_db->setQuery($query);
-            return $this->_db->loadObjectList();
-
+            $res = $this->_db->loadObjectList();
         } catch (Exception $e) {
-
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-
         }
+
+		return $res;
     }
 
     /*
@@ -1212,6 +1206,7 @@ class EmundusModelAdmission extends JModelList
     * 	@return int 		The fabrik ID for the admission form
     */
     function getAdmissionFormByProgramme($code=null) {
+		$res = new stdClass();
 
         if ($code === NULL) {
             $session = JFactory::getSession();
@@ -1231,13 +1226,15 @@ class EmundusModelAdmission extends JModelList
                 ->leftJoin($this->_db->quoteName('jos_fabrik_lists', 'l').' ON '.$this->_db->quoteName('l.form_id').' = '.$this->_db->quoteName('ff.form_id'))
                 ->where('ff.group_id IN (SELECT fabrik_admission_group_id FROM #__emundus_setup_programmes WHERE code LIKE '.$this->_db->Quote($code).')');
             $this->_db->setQuery($query);
-            return $this->_db->loadObject();
-
+            $res = $this->_db->loadObject();
         } catch(Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
+
+		return $res;
     }
+
     /*
     * 	Get row id of admission user
     *	@param form_table 		table name of admission form
@@ -1245,20 +1242,21 @@ class EmundusModelAdmission extends JModelList
     * 	@return int 		The row Id of the user admission
     */
     function getAdmissionId($form_table, $fnum) {
+		$res = 0;
 
         try {
-
             $query = $this->_db->getQuery(true);
             $query->select($this->_db->quoteName('id'))
                 ->from($this->_db->quoteName($form_table))
                 ->where('fnum LIKE '.$this->_db->Quote($fnum));
             $this->_db->setQuery($query);
-            return $this->_db->loadResult();
-
+            $res = $this->_db->loadResult();
         } catch(Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
+
+		return $res;
     }
 
     /*

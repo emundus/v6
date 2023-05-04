@@ -60,7 +60,7 @@ class EmundusModelInterview extends JModelList
     public function getGroupsInterviewByProgramme($code) {
         $db = $this->getDbo();
         $query = 'select fabrik_interview_group_id from #__emundus_setup_programmes where code like '.$db->Quote($code);
-        
+
         try {
             if (!empty($code)) {
                 $db->setQuery($query);
@@ -114,7 +114,7 @@ class EmundusModelInterview extends JModelList
      * @return array list of Fabrik element ID used in evaluation form
      * @throws Exception
      */
-    public function getAllInterviewElements($show_in_list_summary=1, $programme_code) {
+    public function getAllInterviewElements($show_in_list_summary, $programme_code) {
         $session = JFactory::getSession();
 
         $jinput = JFactory::getApplication()->input;

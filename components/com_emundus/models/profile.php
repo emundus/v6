@@ -63,9 +63,9 @@ class EmundusModelProfile extends JModelList {
      */
     public function getApplicantsProfilesArray() {
         $obj_profiles = $this->getApplicantsProfiles();
-        $array_p = array();
+        $array_p = [];
         foreach ($obj_profiles as $profile){
-            array_push($array_p, $profile->id);
+            $array_p[] = $profile->id;
         }
         return $array_p;
     }
@@ -1013,8 +1013,8 @@ class EmundusModelProfile extends JModelList {
      * Get fnums for applicants
      * @param int $aid               Applicant ID
      * @param int $submitted         Submitted application
-     * @param date $start_date       campaigns as started after
-     * @param date $end_date         campaigns as ended before
+     * @param datetime $start_date       campaigns as started after
+     * @param datetime $end_date         campaigns as ended before
      * @return array
      * @throws Exception
      */
