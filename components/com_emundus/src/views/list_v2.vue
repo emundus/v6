@@ -151,7 +151,7 @@
 						</tbody>
 					</table>
 				</div>
-				<p v-else id="empty-list">{{ translate('COM_EMUNDUS_ONBOARD_EMPTY_LIST') }}</p>
+				<div v-else id="empty-list" class="noneDiscover"  v-html="noneDiscoverTranslation"></div>
 			</div>
 		</div>
 	</div>
@@ -574,7 +574,20 @@ export default {
 			}
 
 			return columns;
-		}
+		},
+    noneDiscoverTranslation() {
+      if (this.type === "campaigns") {
+        if(this.currentTab.key === 'programs'){
+          return this.translate('COM_EMUNDUS_ONBOARD_NOPROGRAM');
+        } else {
+          return this.translate('COM_EMUNDUS_ONBOARD_NOCAMPAIGN');
+        }
+      } else if (this.type === "emails") {
+        return this.translate('COM_EMUNDUS_ONBOARD_NOEMAIL');
+      } else if (this.type === "forms") {
+        return this.translate('COM_EMUNDUS_ONBOARD_NOFORM');
+      }
+    },
 	},
 	watch: {
 		numberOfItemsToDisplay() {

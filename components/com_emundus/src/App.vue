@@ -172,7 +172,7 @@ export default {
 .view-settings #g-container-main .g-container,
 .view-file #g-container-main .g-container,
 .view-users #g-container-main .g-container{
-  width: 75rem;
+  width: 85%;
 }
 
 @media all and (max-width: 1366px) {
