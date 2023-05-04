@@ -31,6 +31,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
         cloned: function (c)
         {
             this.element.getElementById('inputValue').value = '';
+            this.element.getElementById('countrySelect').setAttribute('selectedValue', this.options.allCountries[0].iso2); // reset with the first one
             this.initValidatorJS();
             this.parent(c);
         },

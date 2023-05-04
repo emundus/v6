@@ -25,7 +25,7 @@ JText::script('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
 
 	</select>
 
-	<input id="inputValue" name="<?php echo $displayData->attributes['name'].'[num_tel]'; ?>" class="input-medium fabrikinput em-ml-8" maxlength="16"
+	<input id="inputValue" name="<?php echo $displayData->attributes['name'].'[num_tel]'; ?>" class="input-medium fabrikinput em-ml-8" style="height: 46px" maxlength="16"
 		   value="<?php echo $displayData->attributes['inputValue']; ?>"
 	>
 	<input id="validationValue" type="checkbox" style="opacity: 0; position: absolute;" name="<?php echo $displayData->attributes['name'].'[is_valid]'; ?>"
