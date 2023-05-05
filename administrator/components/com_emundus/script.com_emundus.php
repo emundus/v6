@@ -1397,12 +1397,7 @@ try {
                 $form_id = $sql_result['form_id'];
                 $list_id = $sql_result['list_id'];
 
-                $exists = EmundusHelperUpdate::columnExists('jos_emundus_campaign_workflow', 'display_preliminary_documents');
-                if (!$exists) {
-                    $db->setQuery('ALTER TABLE `jos_emundus_campaign_workflow` ADD `display_preliminary_documents` TINYINT(1) DEFAULT 0 AFTER `programs`');
-                    $db->execute();
-                }
-
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_workflow','display_preliminary_documents','TINYINT(1)');
                 $query->clear()
                     ->select('id')
                     ->from($db->quoteName('#__fabrik_elements'))
@@ -1439,12 +1434,7 @@ try {
                     }
                 }
 
-                $exists = EmundusHelperUpdate::columnExists('jos_emundus_campaign_workflow', 'specific_documents');
-                if (!$exists) {
-                    $db->setQuery('ALTER TABLE `jos_emundus_campaign_workflow` ADD `specific_documents` TINYINT(1) DEFAULT 0 AFTER `display_preliminary_documents`');
-                    $db->execute();
-                }
-
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_workflow', 'specific_documents', 'TINYINT(1)');
                 $query->clear()
                     ->select('id')
                     ->from($db->quoteName('#__fabrik_elements'))
@@ -1572,17 +1562,8 @@ try {
                 // END add campaign workflows documents;
                 //////////////////////////////////////////////////////////////////////////////////////
 
-                $exists = EmundusHelperUpdate::columnExists('jos_emundus_setup_attachment_profiles', 'has_sample');
-                if (!$exists) {
-                    $db->setQuery('ALTER TABLE `jos_emundus_setup_attachment_profiles` ADD `has_sample` TINYINT(1) DEFAULT 0');
-                    $db->execute();
-                }
-
-                $exists = EmundusHelperUpdate::columnExists('jos_emundus_setup_attachment_profiles', 'sample_filepath');
-                if (!$exists) {
-                    $db->setQuery('ALTER TABLE `jos_emundus_setup_attachment_profiles` ADD `sample_filepath` varchar(255)');
-                    $db->execute();
-                }
+				EmundusHelperUpdate::addColumn('jos_emundus_setup_attachment_profiles', 'has_sample', 'TINYINT(1)');
+				EmundusHelperUpdate::addColumn('jos_emundus_setup_attachment_profiles', 'sample_filepath');
 
 				// check if table jos_emundus_setup_config exists
 				$str_query = 'SHOW TABLES LIKE ' . $db->quote('jos_emundus_setup_config');
