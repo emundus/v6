@@ -41,4 +41,29 @@ class EmundusModelChecklistTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_checklist = new EmundusModelChecklist;
     }
+
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
+
+	public function testgetAttachmentsList()
+	{
+		$attachments = $this->m_checklist->getAttachmentsList();
+		$this->assertIsArray($attachments);
+
+		// set session
+		$user = new stdClass();
+		$user->id = JFactory::getUser()->id;
+		$user->profile = 1;
+		$user->fnum = '00000000';
+		$user->applicant_id = 1;
+		$user->email = '';
+		$user->fnums = array('00000000');
+
+		JFactory::getSession()->set('emundusUser', $user);
+
+		$attachments = $this->m_checklist->getAttachmentsList();
+		$this->assertIsArray($attachments);
+	}
 }

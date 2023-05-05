@@ -41,4 +41,9 @@ class EmundusModelEmailalertTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_emailalert = new EmundusModelEmailalert;
     }
+
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
 }

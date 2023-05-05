@@ -126,5 +126,50 @@ class modEmundusBookInterviewHelper {
             return false;
         }
     }
+    public function getLastFileInterviewStatus($userid){
+        require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            // Get the timestamp for the event as well as maybe some other info?
+            $query->select($db->qn(['status','fnum']))
+                ->from($db->qn('#__emundus_campaign_candidature','cc'))
+                ->leftjoin($db->qn('#__emundus_setup_campaigns','sc').'  ON '. $db->qn('cc.campaign_id').' = '.$db->qn('sc.id'))
+                ->where($db->qn('applicant_id').' = '.$db->q($userid))
+                ->andwhere($db->qn('status').' = 5')
+                ->andwhere($db->qn('sc.id') . ' = (SELECT id FROM jos_emundus_setup_campaigns ORDER BY id DESC LIMIT 1)');
+            $db->setQuery($query);
+
+            return $db->loadObject();
+
+        } catch (Exception $e) {
+            JLog::add('Error in mod_emundus_book_interview at: getLastFileInterviewStatus', Jlog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    public function getLastFileInterviewStatus($userid){
+        require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
+        $db = JFactory::getDbo();$query = $db->getQuery(true);
+
+        try {
+
+           // Get the timestamp for the event as well as maybe some other info?
+           $query->select($db->qn(['status','fnum']))
+            ->from($db->qn('#__emundus_campaign_candidature','cc'))
+            ->leftjoin($db->qn('#__emundus_setup_campaigns','sc').'  ON '. $db->qn('cc.campaign_id').' = '.$db->qn('sc.id'))
+            ->where($db->qn('applicant_id').' = '.$db->q($userid))
+            ->andwhere($db->qn('status').' = 5')
+            ->andwhere($db->qn('sc.id') . ' = (SELECT id FROM jos_emundus_setup_campaigns ORDER BY id DESC LIMIT 1)');
+            $db->setQuery($query);
+
+            return $db->loadObject();
+
+        } catch (Exception $e) {
+           JLog::add('Error in mod_emundus_book_interview at: getLastFileInterviewStatus', Jlog::ERROR, 'com_emundus');
+          return false;
+        }
+ }
 
 }

@@ -141,12 +141,16 @@ if (!empty($this->custom_title)) :?>
             } else {
                 $div .= '<span class="material-icons-outlined em-main-500-color em-mr-4">check_circle</span>';
             }
-            $div .= '<span class="em-h5">'.$attachment->value .'</span>';
-            $div .= '</div>
-                <p class="em-ml-8 em-mt-8">'.$attachment->description .'</p>
-                <div>
-                <table id="'.$attachment->id .'" class="table em-fieldset-attachment-table">';
+            $div .= '<h4 class="em-h4 em-mt-0-important">'.$attachment->value .'</h4>';
+            $div .= '</div><p class="em-ml-8 em-mt-8">'.$attachment->description .'</p><div>';
 
+	        if ($attachment->has_sample && !empty($attachment->sample_filepath)) {
+		        $div .= '<div class="em-ml-8 em-mb-8 em-flex-row">
+                            <span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE') . '</span><a class="em-flex-row" href="'.JUri::root() . $attachment->sample_filepath.'" target="_blank"> <span class="em-ml-4"> ' . JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE_FILE').'</span><span class="material-icons-outlined em-ml-8 em-text-neutral-900">cloud_download</span></a>
+                         </div>';
+	        }
+
+            $div .= '<table id="'.$attachment->id .'" class="table em-fieldset-attachment-table">';
             if ($attachment->nb > 0) {
                 foreach ($attachment->liste as $key => $item) {
                     $nb = $key + 1;
@@ -597,7 +601,7 @@ if (!empty($this->custom_title)) :?>
       <div class="col-md-<?= (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_mand != '') {
-           echo '<div id="attachment_list_mand" class="em-container-attachments em-w-100"><p class="em-h3">'.JText::_('COM_EMUNDUS_ATTACHMENTS_MANDATORY_DOCUMENTS').'</p>'.$attachment_list_mand.'</div>';
+           echo '<div id="attachment_list_mand" class="em-container-attachments em-w-100"><h3 class="em-h3">'.JText::_('COM_EMUNDUS_ATTACHMENTS_MANDATORY_DOCUMENTS').'</h3>'.$attachment_list_mand.'</div>';
         }
     ?>
       </div>
@@ -609,7 +613,7 @@ if (!empty($this->custom_title)) :?>
       <div class="col-md-<?= (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_opt != '') {
-           echo '<div id="attachment_list_opt" class="em-container-attachmentsOpt em-mt-16 em-w-100"><p class="em-h3">'.JText::_('COM_EMUNDUS_ATTACHMENTS_OPTIONAL_DOCUMENTS').'</p>'.$attachment_list_opt.'</div>';
+           echo '<div id="attachment_list_opt" class="em-container-attachmentsOpt em-mt-16 em-w-100"><h3 class="em-h3">'.JText::_('COM_EMUNDUS_ATTACHMENTS_OPTIONAL_DOCUMENTS').'</h3>'.$attachment_list_opt.'</div>';
         }
     ?>
       </div>

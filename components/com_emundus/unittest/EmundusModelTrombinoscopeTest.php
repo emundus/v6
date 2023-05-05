@@ -41,4 +41,9 @@ class EmundusModelTrombinoscopeTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_trombinoscope = new EmundusModelTrombinoscope;
     }
+
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
 }

@@ -41,4 +41,9 @@ class EmundusModelStatsTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_stats = new EmundusModelStats;
     }
+
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
 }

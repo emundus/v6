@@ -33,7 +33,7 @@ class EmundusControllerThesisForm extends EmundusController {
         $app->setUserState('com_emundus.edit.thesis.id', $editId);
 
         // Get the model.
-        $model = $this->getModel('ThesisForm', 'EmundusModel');
+        $model = new EmundusModelThesisForm();
 
         // Check out the item
         if ($editId) {
@@ -52,7 +52,7 @@ class EmundusControllerThesisForm extends EmundusController {
     /**
      * Method to save a user's profile data.
      *
-     * @return	void
+     * @return	void|false
      * @since	1.6
      */
     public function save() {
@@ -61,7 +61,7 @@ class EmundusControllerThesisForm extends EmundusController {
 
         // Initialise variables.
         $app = JFactory::getApplication();
-        $model = $this->getModel('ThesisForm', 'EmundusModel');
+        $model = new EmundusModelThesisForm();
 
         // Get the user data.
         $data = JFactory::getApplication()->input->get('jform', array(), 'array');
@@ -138,31 +138,38 @@ class EmundusControllerThesisForm extends EmundusController {
     }
 
     function cancel() {
-        
+
         $app = JFactory::getApplication();
 
         // Get the current edit id.
         $editId = (int) $app->getUserState('com_emundus.edit.thesis.id');
 
         // Get the model.
-        $model = $this->getModel('ThesisForm', 'EmundusModel');
+        $model = new EmundusModelThesisForm();
 
         // Check in the item
         if ($editId) {
             $model->checkin($editId);
         }
-        
+
         $menu = JFactory::getApplication()->getMenu();
         $item = $menu->getActive();
         $url = (empty($item->link) ? 'index.php?option=com_emundus&view=thesiss' : $item->link);
         $this->setRedirect(JRoute::_($url, false));
     }
 
+    /**
+     *
+     * @return false|void
+     *
+     * @throws Exception
+     * @since version
+     */
     public function remove() {
 
         // Initialise variables.
         $app = JFactory::getApplication();
-        $model = $this->getModel('ThesisForm', 'EmundusModel');
+        $model = new EmundusModelThesisForm();
 
         // Get the user data.
         $data = array();

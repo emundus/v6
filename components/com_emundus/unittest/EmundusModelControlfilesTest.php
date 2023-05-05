@@ -41,4 +41,9 @@ class EmundusModelControlfilesTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_controlfiles = new EmundusModelControlfiles;
     }
+
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
 }
