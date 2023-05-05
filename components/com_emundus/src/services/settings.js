@@ -47,6 +47,13 @@ export default {
             return false;
         }
     },
+    async getOnboardingLists() {
+        try {
+            return await client().get('index.php?option=com_emundus&controller=settings&task=getonboardinglists');
+        } catch (e) {
+            return false;
+        }
+    },
 
     async getOffset() {
         try {

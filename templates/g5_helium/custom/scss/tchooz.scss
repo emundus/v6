@@ -162,6 +162,26 @@
 .em-transparent-button{
   background: transparent;
 }
+
+.em-square-button {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+  width: 24px;
+  height: 24px;
+
+  background: var(--neutral-50);
+  border: 1px solid transparent;
+  border-radius: 4px;
+
+  &.active {
+    border: 1px solid var(--neutral-300);
+  }
+}
+
 button[class ^= 'em-']{
   transition: all 0.3s ease-in-out;
 }
@@ -170,6 +190,25 @@ button[class ^= 'em-']{
   span{
     color: var(--neutral-300);
   }
+}
+
+.em-disabled {
+    background: var(--neutral-100) !important;
+    border: 1px solid var(--neutral-300) !important;
+    color: var(--neutral-600) !important;
+    cursor: not-allowed;
+
+    &:hover {
+      background: var(--neutral-100) !important;
+      border: 1px solid var(--neutral-300) !important;
+      color: var(--neutral-600) !important;
+    }
+}
+
+.em-disabled-events {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /** INPUTS **/
@@ -200,6 +239,11 @@ button[class ^= 'em-']{
   &::placeholder {
     color: dimgrey;
   }
+}
+
+.em-default-input {
+  height: 40px !important;
+  border-radius: 8px !important;
 }
 
 .em-editable-content{
@@ -476,6 +520,11 @@ input:focus + .em-slider {
 }
 .em-flex-align-start{
   align-items: start;
+}
+
+.em-flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .em-grid-simple {
@@ -813,6 +862,15 @@ input:focus + .em-slider {
 .em-lightgray-bg{
   background: #F5F6F6;
 }
+.em-bg-main-100{
+  background: var(--main-100);
+}
+.em-bg-main-200{
+  background: var(--main-200);
+}
+.em-bg-main-300{
+  background: var(--main-300);
+}
 .em-bg-main-500{
   background: var(--main-500);
 }
@@ -857,6 +915,10 @@ input:focus + .em-slider {
 
 .em-p-16-0{
   padding: 16px 0;
+}
+
+.em-p-5-12{
+  padding: 5px 12px;
 }
 
 .em-p-6-12{
@@ -1109,6 +1171,10 @@ input:focus + .em-slider {
 /*
   BORDERS
 */
+.em-border-radius-4{
+  border-radius: 4px;
+}
+
 .em-border-radius-5{
   border-radius: 5px;
 }
@@ -1432,6 +1498,10 @@ input:focus + .em-slider {
   cursor: pointer;
 }
 
+.em-card-shadow {
+  box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+}
+
 .em-card-white{
   background-color: #fff;
   border-radius: 16px;
@@ -1571,6 +1641,11 @@ button.em-swal-delete-button{
 /** **/
 
 /** Circles **/
+.em-circle {
+    border-radius: 50%;
+    padding: 12px;
+    box-shadow: 0 1px 4px rgba(32, 35, 44, 0.05);
+}
 .em-circle-blue-100{
   border-radius: 50%;
   padding: 12px;

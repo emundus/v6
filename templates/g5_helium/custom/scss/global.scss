@@ -76,6 +76,10 @@ body {
   }
 }
 
+h1,h2,h3,h4,h5{
+  margin: 0;
+}
+
 h1 {
   font-family: get-font-family($font-family-title);
   font-style: normal;
@@ -2508,6 +2512,12 @@ tr.fabrikFilterContainer {
   background-color: var(--dark-pink-500) !important;
 }
 
+.label-black{
+  background-color: var(--neutral-900) !important;
+  color: var(--neutral-0) !important;
+  text-shadow: none;
+}
+
 /* ERROR PAGE 404 */
 
 .error-page {
@@ -3721,7 +3731,7 @@ ul.unstyled.em-linkForgot li a {
   .em-w-custom form.fabrikForm textarea,
   .em-w-custom .em-document-dropzone-card,
   .em-w-custom .em-email-card,
-  ul li,
+  ul li:not(.em-pointer),
   select {
     color: initial;
   }

@@ -31,19 +31,18 @@
 
             <div class="em-mb-16">
               <label>{{translations.emailBody}} <span style="color: #E5283B">*</span></label>
-              <editor
-                  v-if="dynamicComponent"
-                  v-model="form.message"
-                  :id="'email'"
-                  :class="{ 'is-invalid': errors.message}"
-                  :height="'30em'"
+              <editor-quill
+                  style="height: 30em"
                   :text="form.message"
-                  :lang="actualLanguage"
+                  v-model="form.message"
                   :enable_variables="true"
                   :placeholder="translations.EmailResume"
+                  :id="'email'"
+                  :key="dynamicComponent"
+                  :class="{ 'is-invalid': errors.message}"
               >
-              </editor>
-              <div class="em-mt-8">
+              </editor-quill>
+              <div class="em-mt-48">
                 <a href="component/emundus/?view=export_select_columns&format=html&layout=all_programs&Itemid=1173" class="em-main-500-color em-hover-main-600" target="_blank">{{ translate('COM_EMUNDUS_EMAIL_SHOW_TAGS') }}</a>
               </div>
             </div>
@@ -214,9 +213,8 @@
 <script>
 import Autocomplete from "../components/autocomplete";
 import axios from "axios";
-import Editor from "../components/editor";
+import EditorQuill from "../components/editorQuill";
 import Multiselect from 'vue-multiselect';
-import {global} from "../store/global";
 
 const qs = require("qs");
 
@@ -224,7 +222,7 @@ export default {
   name: "addEmail",
 
   components: {
-    Editor,
+    EditorQuill,
     Autocomplete,
     Multiselect
   },

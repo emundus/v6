@@ -1085,6 +1085,20 @@ class EmundusControllersettings extends JControllerLegacy {
 		exit;
 	}
 
+	public function getonboardinglists() {
+		$user = JFactory::getUser();
+		$results = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$results['status'] = true;
+			$results['msg'] = JText::_('ONBOARDING_LISTS');
+			$results['data'] = $this->m_settings->getOnboardingLists();
+		}
+
+		echo json_encode((object)$results);
+		exit;
+	}
+
     public function getOffset() {
         $user = JFactory::getUser();
         $results = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];

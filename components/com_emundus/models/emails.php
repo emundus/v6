@@ -43,21 +43,31 @@ class EmundusModelEmails extends JModelList {
      * @since version v6
      */
     public function getEmail($lbl) {
-        $query = 'SELECT se.*, et.Template FROM #__emundus_setup_emails AS se LEFT JOIN #__emundus_email_templates AS et ON et.id = se.email_tmpl WHERE se.lbl like '.$this->_db->Quote($lbl);
+        $email = null;
 
-        try {
-            $this->_db->setQuery($query);
-            return $this->_db->loadObject();
-        } catch(Exception $e) {
-            error_log($e->getMessage(), 0);
-            JLog::add($query, JLog::ERROR, 'com_emundus.email');
-            return false;
+        if (!empty($lbl)) {
+            $query = $this->_db->getQuery(true);
+            $query->select('se.*, et.Template')
+                ->from('#__emundus_setup_emails AS se')
+                ->leftJoin('#__emundus_email_templates AS et ON et.id = se.email_tmpl')
+                ->where('se.lbl like ' . $this->_db->quote($lbl));
+
+            try {
+                $this->_db->setQuery($query);
+                $email = $this->_db->loadObject();
+            } catch(Exception $e) {
+                error_log($e->getMessage(), 0);
+                JLog::add($query, JLog::ERROR, 'com_emundus.email');
+            }
         }
+
+        return $email;
     }
 
     /**
      * Get email template by ID
      * @param   $id int The email template ID
+     * @param   $lbl string the email code
      * @return  object  The email template object
      *
      * @since version v6
@@ -72,11 +82,10 @@ class EmundusModelEmails extends JModelList {
             $query->select('ese.*, et.Template')
                 ->from('#__emundus_setup_emails AS ese')
                 ->leftJoin('#__emundus_email_templates AS et ON et.id = ese.email_tmpl')
-                ->where('ese.id = ' . $this->_db->Quote($id));
-
-            $this->_db->setQuery($query);
+                ->where('ese.id = ' . $this->_db->quote($id));
 
             try {
+                $this->_db->setQuery($query);
                 $email = $this->_db->loadObject();
             } catch (Exception $e) {
                 JLog::add('Failed to get email by id ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
@@ -1254,8 +1263,6 @@ class EmundusModelEmails extends JModelList {
                 continue;
             }
 
-
-
             $this->_db->setQuery('show tables');
             $existingTables = $this->_db->loadColumn();
             if (in_array('jos_emundus_files_request_1614_repeat', $existingTables)) {
@@ -1496,19 +1503,25 @@ class EmundusModelEmails extends JModelList {
      * @since v6
      */
     public function get_messages_to_from_user($user_id) {
+        $messages = [];
 
-        $query = 'SELECT * FROM #__messages WHERE user_id_to ='.$user_id.' AND folder_id <> 2 ORDER BY date_time desc';
+        if (!empty($user_id)) {
+            $query = $this->_db->getQuery(true);
+            $query->select('*')
+                ->from($this->_db->quoteName('#__messages'))
+                ->where($this->_db->quoteName('user_id_to').' = '.$user_id.' AND '.$this->_db->quoteName('folder_id').' <> 2')
+                ->order($this->_db->quoteName('date_time').' DESC');
 
-        try {
-
-            $this->_db->setquery($query);
-            return $this->_db->loadObjectList();
-
-        } catch (Exception $e) {
-            JLog::add('Error getting messages sent to or from user: '.$user_id.' at query: '.$query, JLog::ERROR, 'com_emundus');
-            return false;
+            try {
+                $this->_db->setquery($query);
+                $messages = $this->_db->loadObjectList();
+            } catch (Exception $e) {
+                JLog::add('Error getting messages sent to or from user: '.$user_id.' at query: '.$query, JLog::ERROR, 'com_emundus.error');
+                return false;
+            }
         }
 
+        return $messages;
     }
 
     /**
@@ -1662,9 +1675,7 @@ class EmundusModelEmails extends JModelList {
         }
         $sortDb = 'se.id ';
 
-        if ($filter == 'Publish') {
-            $filterDate = $this->_db->quoteName('se.published') . ' = 1';
-        } else if ($filter == 'Unpublish') {
+        if ($filter == 'Unpublish') {
             $filterDate = $this->_db->quoteName('se.published') . ' = 0';
         } else {
             $filterDate = $this->_db->quoteName('se.published') . ' = 1';
@@ -1677,7 +1688,8 @@ class EmundusModelEmails extends JModelList {
             $rechercheMessage = $this->_db->quoteName('se.message') . ' LIKE ' . $this->_db->quote('%'.$recherche.'%');
             $rechercheEmail = $this->_db->quoteName('se.emailfrom') . ' LIKE ' . $this->_db->quote('%'.$recherche.'%');
             $rechercheType = $this->_db->quoteName('se.type') . ' LIKE ' . $this->_db->quote('%'.$recherche.'%');
-            $fullRecherche = $rechercheSubject.' OR '.$rechercheMessage.' OR '.$rechercheEmail.' OR '.$rechercheType;
+            $rechercheCategory = $this->_db->quoteName('se.category') . ' LIKE ' . $this->_db->quote('%'.$recherche.'%');
+            $fullRecherche = $rechercheSubject.' OR '.$rechercheMessage.' OR '.$rechercheEmail.' OR '.$rechercheType .' OR '.$rechercheCategory;
         }
 
         $query->select('*')
@@ -1696,7 +1708,25 @@ class EmundusModelEmails extends JModelList {
             } else {
                 $this->_db->setQuery($query, $offset, $limit);
             }
-            return array('datas' => $this->_db->loadObjectList(), 'count' => $count_emails);
+
+            $emails = $this->_db->loadObjectList();
+            if (!empty($emails)) {
+                foreach ($emails as $key => $email) {
+                    $email->label = ['fr' => $email->subject, 'en' => $email->subject];
+                    $email->additional_columns = [
+                        [
+                            'key' => JText::_('COM_EMUNDUS_ONBOARD_CATEGORY'),
+                            'value' => $email->category,
+                            'classes' => 'em-mt-8 em-mb-8 label label-default em-p-5-12 em-font-weight-600',
+                            'display' => 'all'
+                        ],
+                    ];
+
+                    $emails[$key] = $email;
+                }
+            }
+
+            return array('datas' => $emails, 'count' => $count_emails);
         } catch (Exception $e) {
             JLog::add('component/com_emundus/models/email | Error when try to get emails : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];
@@ -1710,27 +1740,46 @@ class EmundusModelEmails extends JModelList {
      *
      * @since version 1.0
      */
-    public function deleteEmail($data) {
+    public function deleteEmail($ids) {
+        $deleted = false;
         $query = $this->_db->getQuery(true);
 
-        if (!empty($data)) {
+        if (!empty($ids)) {
             try {
-                $se_conditions = array(
-                    $this->_db->quoteName('id') . ' IN (' . implode(", ",array_values($data)) . ')',
-                );
+                $query->delete($this->_db->quoteName('#__emundus_setup_emails'));
+                if (is_array($ids)) {
+                    $query->where($this->_db->quoteName('id') . ' IN (' . implode(', ', $ids) . ')');
+                } else {
+                    $query->where($this->_db->quoteName('id') . ' = ' . $ids);
+                }
 
-                $query->delete($this->_db->quoteName('#__emundus_setup_emails'))
-                    ->where($se_conditions);
+                // Do not delete system emails
+                $query->andWhere($this->_db->quoteName('type') . ' != 1');
 
                 $this->_db->setQuery($query);
-                return $this->_db->execute();
+                $this->_db->execute();
+
+                // check if the emails were deleted, cannot just check db->execute() because it returns true even if no rows were deleted (e.g. if the email was a system email)
+                $query->clear();
+                $query->select($this->_db->quoteName('id'))
+                    ->from($this->_db->quoteName('#__emundus_setup_emails'));
+                if (is_array($ids)) {
+                    $query->where($this->_db->quoteName('id') . ' IN (' . implode(', ', $ids) . ')');
+                } else {
+                    $query->where($this->_db->quoteName('id') . ' = ' . $ids);
+                }
+
+                $this->_db->setQuery($query);
+
+                if (empty($this->_db->loadColumn())) {
+                    $deleted = true;
+                }
             } catch(Exception $e) {
                 JLog::add('component/com_emundus/models/email | Cannot delete emails: ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-                return false;
             }
-        } else {
-            return false;
         }
+
+        return $deleted;
     }
 
     /**
@@ -1959,6 +2008,7 @@ class EmundusModelEmails extends JModelList {
      * @since version 1.0
      */
     public function createEmail($data, $receiver_cc=null, $receiver_bcc = null, $letters=null, $documents=null, $tags=null) {
+        $created = false;
         $query = $this->_db->getQuery(true);
 
         // set regular expression for fabrik elem
@@ -1971,115 +2021,117 @@ class EmundusModelEmails extends JModelList {
 
             try {
                 $this->_db->setQuery($query);
-                $this->_db->execute();
-                $newemail = $this->_db->insertid();
-                $query->clear()
-                    ->update($this->_db->quoteName('#__emundus_setup_emails'))
-                    ->set($this->_db->quoteName('lbl') . ' = ' . $this->_db->quote('custom_'.date('YmdhHis')))
-                    ->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($newemail));
-                $this->_db->setQuery($query);
-                $this->_db->execute();
+                $inserted = $this->_db->execute();
 
-                // add cc for new email
-                if(!empty($receiver_cc)) {
-                    foreach ($receiver_cc as $key => $receiver) {
-                        $is_fabrik_tag = (bool) preg_match_all($fabrik_pattern, $receiver);
-                        if($is_fabrik_tag == true) {
+                if ($inserted) {
+                    $newemail = $this->_db->insertid();
+                    $created = $newemail;
+
+                    $query->clear()
+                        ->update($this->_db->quoteName('#__emundus_setup_emails'))
+                        ->set($this->_db->quoteName('lbl') . ' = ' . $this->_db->quote('custom_'.date('YmdhHis')))
+                        ->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($newemail));
+                    $this->_db->setQuery($query);
+                    $this->_db->execute();
+
+                    // add cc for new email
+                    if(!empty($receiver_cc)) {
+                        foreach ($receiver_cc as $key => $receiver) {
+                            $is_fabrik_tag = (bool) preg_match_all($fabrik_pattern, $receiver);
+                            if($is_fabrik_tag == true) {
+                                $query->clear()
+                                    ->insert($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers'))
+                                    ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' =  ' . (int)$newemail)
+                                    ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.receivers') . ' = ' . $this->_db->quote($receiver))
+                                    ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $this->_db->quote('receiver_cc_fabrik'));
+
+                                $this->_db->setQuery($query);
+                                $this->_db->execute();
+                            } else if(filter_var($receiver, FILTER_VALIDATE_EMAIL) !== false){
+                                $query->clear()
+                                    ->insert($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers'))
+                                    ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' =  ' . (int)$newemail)
+                                    ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.receivers') . ' = ' . $this->_db->quote($receiver))
+                                    ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $this->_db->quote('receiver_cc_email'));
+
+                                $this->_db->setQuery($query);
+                                $this->_db->execute();
+                            }
+                        }
+                    }
+
+                    // add bcc for new email
+                    if(!empty($receiver_bcc)) {
+                        foreach ($receiver_bcc as $key => $receiver) {
+                            $is_fabrik_tag = (bool) preg_match_all($fabrik_pattern, $receiver);
+                            if($is_fabrik_tag == true) {
+                                $query->clear()
+                                    ->insert($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers'))
+                                    ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' =  ' . (int)$newemail)
+                                    ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.receivers') . ' = ' . $this->_db->quote($receiver))
+                                    ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $this->_db->quote('receiver_bcc_fabrik'));
+
+                                $this->_db->setQuery($query);
+                                $this->_db->execute();
+                            } else if(filter_var($receiver, FILTER_VALIDATE_EMAIL) !== false) {
+                                $query->clear()
+                                    ->insert($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers'))
+                                    ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' =  ' . (int)$newemail)
+                                    ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.receivers') . ' = ' . $this->_db->quote($receiver))
+                                    ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $this->_db->quote('receiver_bcc_email'));
+
+                                $this->_db->setQuery($query);
+                                $this->_db->execute();
+                            }
+                        }
+                    }
+
+                    // add letter attachment to table #jos_emundus_setup_emails_repeat_letter_attachment
+                    if(!empty($letters)) {
+                        foreach ($letters as $key => $letter) {
                             $query->clear()
-                                ->insert($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers'))
-                                ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' =  ' . (int)$newemail)
-                                ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.receivers') . ' = ' . $this->_db->quote($receiver))
-                                ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $this->_db->quote('receiver_cc_fabrik'));
+                                ->insert($this->_db->quoteName('#__emundus_setup_emails_repeat_letter_attachment'))
+                                ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' =  ' . (int)$newemail)
+                                ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' = ' . (int)$letter);
 
                             $this->_db->setQuery($query);
                             $this->_db->execute();
-                        } else if(filter_var($receiver, FILTER_VALIDATE_EMAIL) !== false){
+                        }
+                    }
+
+                    // add candidate attachment to table #jos_emundus_setup_emails_repeat_candidate_attachment
+                    if(!empty($documents)) {
+                        foreach ($documents as $key => $document) {
                             $query->clear()
-                                ->insert($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers'))
-                                ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' =  ' . (int)$newemail)
-                                ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.receivers') . ' = ' . $this->_db->quote($receiver))
-                                ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $this->_db->quote('receiver_cc_email'));
+                                ->insert($this->_db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment'))
+                                ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment.parent_id') . ' =  ' . (int)$newemail)
+                                ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment.candidate_attachment') . ' = ' . (int)$document);
+
+                            $this->_db->setQuery($query);
+                            $this->_db->execute();
+                        }
+                    }
+
+                    // add tag to table #jos_emundus_setup_emails_repeat_tags
+                    if(!empty($tags)) {
+                        foreach ($tags as $key => $tag) {
+                            $query->clear()
+                                ->insert($this->_db->quoteName('#__emundus_setup_emails_repeat_tags'))
+                                ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id') . ' =  ' . (int)$newemail)
+                                ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_tags.tags') . ' = ' . (int)$tag);
 
                             $this->_db->setQuery($query);
                             $this->_db->execute();
                         }
                     }
                 }
-
-                // add bcc for new email
-                if(!empty($receiver_bcc)) {
-                    foreach ($receiver_bcc as $key => $receiver) {
-                        $is_fabrik_tag = (bool) preg_match_all($fabrik_pattern, $receiver);
-                        if($is_fabrik_tag == true) {
-                            $query->clear()
-                                ->insert($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers'))
-                                ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' =  ' . (int)$newemail)
-                                ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.receivers') . ' = ' . $this->_db->quote($receiver))
-                                ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $this->_db->quote('receiver_bcc_fabrik'));
-
-                            $this->_db->setQuery($query);
-                            $this->_db->execute();
-                        } else if(filter_var($receiver, FILTER_VALIDATE_EMAIL) !== false) {
-                            $query->clear()
-                                ->insert($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers'))
-                                ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' =  ' . (int)$newemail)
-                                ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.receivers') . ' = ' . $this->_db->quote($receiver))
-                                ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $this->_db->quote('receiver_bcc_email'));
-
-                            $this->_db->setQuery($query);
-                            $this->_db->execute();
-                        }
-                    }
-                }
-
-                // add letter attachment to table #jos_emundus_setup_emails_repeat_letter_attachment
-                if(!empty($letters)) {
-                    foreach ($letters as $key => $letter) {
-                        $query->clear()
-                            ->insert($this->_db->quoteName('#__emundus_setup_emails_repeat_letter_attachment'))
-                            ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' =  ' . (int)$newemail)
-                            ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' = ' . (int)$letter);
-
-                        $this->_db->setQuery($query);
-                        $this->_db->execute();
-                    }
-                }
-
-                // add candidate attachment to table #jos_emundus_setup_emails_repeat_candidate_attachment
-                if(!empty($documents)) {
-                    foreach ($documents as $key => $document) {
-                        $query->clear()
-                            ->insert($this->_db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment'))
-                            ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment.parent_id') . ' =  ' . (int)$newemail)
-                            ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment.candidate_attachment') . ' = ' . (int)$document);
-
-                        $this->_db->setQuery($query);
-                        $this->_db->execute();
-                    }
-                }
-
-                // add tag to table #jos_emundus_setup_emails_repeat_tags
-                if(!empty($tags)) {
-                    foreach ($tags as $key => $tag) {
-                        $query->clear()
-                            ->insert($this->_db->quoteName('#__emundus_setup_emails_repeat_tags'))
-                            ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id') . ' =  ' . (int)$newemail)
-                            ->set($this->_db->quoteName('#__emundus_setup_emails_repeat_tags.tags') . ' = ' . (int)$tag);
-
-                        $this->_db->setQuery($query);
-                        $this->_db->execute();
-                    }
-                }
-
-                return true;
-
             } catch(Exception $e) {
                 JLog::add('component/com_emundus/models/email | Cannot create an email: ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-                return false;
+                $created = false;
             }
-        } else {
-            return false;
         }
+
+        return $created;
     }
 
     /**
