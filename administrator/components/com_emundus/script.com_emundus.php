@@ -1592,7 +1592,10 @@ try {
 					$db->setQuery($query);
 					$db->execute();
 				}
-			}
+
+                EmundusHelperUpdate::addColumn('jos_emundus_users','token','VARCHAR',50);
+                EmundusHelperUpdate::addColumn('jos_emundus_users','anonym_user','TINYINT',1);
+            }
 
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
