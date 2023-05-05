@@ -27,9 +27,11 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+	$m_application = new EmundusModelApplication();
 
     $document = JFactory::getDocument();
     $document->addStyleSheet("media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
@@ -54,7 +56,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
         $status_for_delete = explode(',', $status_for_delete);
     }
 
-    $applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');
+	$applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');
     $display_poll = $eMConfig->get('display_poll', 0);
     $display_poll_id = $eMConfig->get('display_poll_id', null);
     $id_applicants = $eMConfig->get('id_applicants', null);
@@ -97,6 +99,8 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 		$visible_status = [];
     }
     $mod_em_applications_show_search = $params->get('mod_em_applications_show_search', 1);
+    $mod_em_applications_show_sort = $params->get('mod_em_applications_show_sort', 0);
+    $mod_em_applications_show_filters = $params->get('mod_em_applications_show_filters', 0);
 
     $order_applications = $params->get('order_applications', 'esc.end_date');
     $applications_as_desc = $params->get('order_applications_asc_des', 'DESC');
@@ -111,6 +115,8 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $date_format = $params->get('mod_em_application_date_format', 'd/m/Y H:i');
     $mod_em_applications_show_hello_text = $params->get('mod_em_applications_show_hello_text',1);
     $custom_actions  = $params->get('mod_em_application_custom_actions');
+	$show_tabs = $params->get('mod_em_applications_show_tabs',1);
+	$actions = $params->get('mod_emundus_applications_actions',[]);
 
     // Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
     if ($layout == '_:ccirs-drh') {
@@ -122,6 +128,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     } else {
         // We send the layout as a param because Hesam needs different information.
         $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by);
+		$tabs = $m_application->getTabs(JFactory::getUser()->id);
     }
 
     $linknames = $params->get('linknames', 0);
@@ -163,30 +170,32 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
             }
         }
 
-
+		$available_campaigns = [];
         // Check to see if the applicant meets the criteria to renew a file.
         switch ($applicant_can_renew) {
-
             // Applicants can apply as many times as they like
             case 1:
                 // We need to check if there are any available campaigns.
-                $applicant_can_renew = modemundusApplicationsHelper::getAvailableCampaigns();
+	            $available_campaigns = modemundusApplicationsHelper::getAvailableCampaigns();
                 break;
 
             // If the applicant can only have one file per campaign.
             case 2:
                 // True if does not have a file open in one or more of the available campaigns.
-                $applicant_can_renew = modemundusApplicationsHelper::getOtherCampaigns($user->id);
+	            $available_campaigns = modemundusApplicationsHelper::getOtherCampaigns($user->id);
                 break;
 
             // If the applicant can only have one file per year.
             case 3:
                 // True if periods are found for next year.
-                $applicant_can_renew = modemundusApplicationsHelper::getFutureYearCampaigns($user->id);
+	            $available_campaigns = modemundusApplicationsHelper::getFutureYearCampaigns($user->id);
                 break;
-
         }
-    }
+
+	    $applicant_can_renew = !empty($available_campaigns);
+	}
+
+
 
 	if ($display_poll == 1 && $display_poll_id > 0 && isset($user->fnum) && !empty($user->fnum)) {
 		$filled_poll_id = modemundusApplicationsHelper::getPoll();

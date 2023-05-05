@@ -51,6 +51,57 @@ class EmundusModelCampaignTest extends TestCase
         $this->h_sample = new EmundusUnittestHelperSamples;
     }
 
+	public function testCampaignWorkflowDatabase() {
+		/**
+		 * Table emundus_campaign_workflow should exists
+		 */
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select('*')
+			->from($db->quoteName('#__emundus_campaign_workflow'));
+
+		try {
+			$db->setQuery($query);
+			$db->loadObjectList();
+			$table_exists = true;
+		} catch(Exception $e) {
+			$table_exists = false;
+		}
+
+		$this->assertTrue($table_exists, 'Table #__emundus_campaign_workflow should exists');
+
+		$query->clear()
+			->select('*')
+			->from($db->quoteName('#__emundus_campaign_workflow'))
+			->where($db->quoteName('display_preliminary_documents') . ' IS NULL')
+			->orWhere($db->quoteName('specific_documents') . ' IS NULL');
+
+		try {
+			$db->setQuery($query);
+			$db->loadObjectList();
+			$columns_exists = true;
+		} catch(Exception $e) {
+			$columns_exists = false;
+		}
+
+		$this->assertTrue($columns_exists, 'Table #__emundus_campaign_workflow should have 2 new columns display_preliminary_documents and specific_documents');
+
+		$query->clear()
+			->select('*')
+			->from($db->quoteName('#__emundus_campaign_workflow_repeat_documents'));
+
+		try {
+			$db->setQuery($query);
+			$db->loadObjectList();
+			$table_exists = true;
+		} catch(Exception $e) {
+			$table_exists = false;
+		}
+
+		$this->assertTrue($table_exists, 'Table #__emundus_campaign_workflow_repeat_documents should exists');
+	}
+
     public function createUnitTestCampaign($program)
     {
         $campaign_id = 0;
@@ -235,6 +286,7 @@ class EmundusModelCampaignTest extends TestCase
 
                 $workflow_on_all = $this->m_campaign->createWorkflow(9, [0], 1, null, []);
                 $current_file_workflow = $this->m_campaign->getCurrentCampaignWorkflow($fnum);
+				$this->assertNotNull($current_file_workflow, 'La phase courante doit être non nulle.');
                 $this->assertSame(intval($workflow_on_all), intval($current_file_workflow->id), 'Le dossier est impacté par le workflow qui n\'a ni campagne ni programme par défaut, mais est sur le même statut.');
 
                 $workflow_on_program = $this->m_campaign->createWorkflow(9, [0], 1, null, ['programs' => [$program['programme_code']]]);
@@ -266,7 +318,16 @@ class EmundusModelCampaignTest extends TestCase
                 $this->assertSame(intval($new_workflow_id), intval($current_file_workflow->id));
 
                 $this->assertTrue($this->m_campaign->deleteWorkflows(), 'La suppression de workflow fonctionne');
-            }
+
+				$this->assertObjectHasAttribute('display_preliminary_documents', $current_file_workflow, 'Le workflow contient un attribut "Afficher les Documents à télécharger"');
+				$this->assertSame('0', $current_file_workflow->display_preliminary_documents, 'Le workflow contient un attribut "Afficher les Documents à télécharger" à 0 par défaut');
+
+				$this->assertObjectHasAttribute('specific_documents', $current_file_workflow, 'Le workflow contient un attribut "Documents spécifique"');
+				$this->assertSame('0', $current_file_workflow->specific_documents, 'Le workflow contient un attribut "Documents spécifique" à 0 par défaut');
+
+				$this->assertObjectHasAttribute('documents', $current_file_workflow, 'Le workflow contient des documents');
+				$this->assertSame([], $current_file_workflow->documents, 'Le workflow contient un tableau vide par défaut');
+			}
         }
     }
 

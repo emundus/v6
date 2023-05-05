@@ -42,6 +42,11 @@ class EmundusModelEmailsTest extends TestCase
         $this->m_emails = new EmundusModelEmails;
     }
 
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
+
 	public function testDeleteSystemEmails()
 	{
 		$data = $this->m_emails->getAllEmails(999, 0, '', '', '');

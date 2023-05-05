@@ -102,43 +102,47 @@ class EmundusModelChecklist extends JModelList
 	}
 
 	function getAttachmentsList() {
+		$attachments = [];
 
-        if (!empty($this->_user->campaign_id)) {
-			$query = 'SELECT attachments.*, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, profiles.mandatory as mandatory, profiles.duplicate as duplicate
+		if (!empty($this->_user->profile)) {
+			if (!empty($this->_user->campaign_id)) {
+				$query = 'SELECT attachments.*, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, profiles.mandatory as mandatory, profiles.duplicate as duplicate, profiles.has_sample, profiles.sample_filepath
 					FROM #__emundus_setup_attachments AS attachments
 						INNER JOIN #__emundus_setup_attachment_profiles AS profiles ON attachments.id = profiles.attachment_id
 						LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.user_id = '.$this->_user->id.'  AND fnum like '.$this->_db->Quote($this->_user->fnum).'
 					WHERE (profiles.campaign_id = '.$this->_user->campaign_id.' OR profiles.profile_id ='.$this->_user->profile.') AND profiles.displayed = 1
 					GROUP BY attachments.id
 					ORDER BY profiles.mandatory DESC, profiles.ordering ASC';
-            $this->_db->setQuery($query);
-            $attachments = $this->_db->loadObjectList();
-        }
+				$this->_db->setQuery($query);
+				$attachments = $this->_db->loadObjectList();
+			}
 
-        if (empty($attachments)) {
-            $query = 'SELECT attachments.id, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, attachments.nbmax, attachments.value, attachments.lbl, attachments.description, attachments.allowed_types, profiles.mandatory, profiles.duplicate
+			if (empty($attachments)) {
+				$query = 'SELECT attachments.id, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, attachments.nbmax, attachments.value, attachments.lbl, attachments.description, attachments.allowed_types, profiles.mandatory, profiles.duplicate,  profiles.has_sample, profiles.sample_filepath
 					FROM #__emundus_setup_attachments AS attachments
 						INNER JOIN #__emundus_setup_attachment_profiles AS profiles ON attachments.id = profiles.attachment_id
 						LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.user_id = '.$this->_user->id.'  AND fnum like '.$this->_db->Quote($this->_user->fnum).'
 					WHERE profiles.profile_id = '.$this->_user->profile.' AND profiles.displayed = 1 AND profiles.campaign_id IS NULL
 					GROUP BY attachments.id
 					ORDER BY profiles.mandatory DESC, attachments.ordering ASC';
-            $this->_db->setQuery($query);
-            $attachments = $this->_db->loadObjectList();
-        }
-
-		foreach ($attachments as $attachment) {
-			if ($attachment->nb > 0) {
-
-				$query = 'SELECT * FROM #__emundus_uploads WHERE user_id = '.$this->_user->id.' AND attachment_id = '.$attachment->id. ' AND fnum like '.$this->_db->Quote($this->_user->fnum);
 				$this->_db->setQuery($query);
-				$attachment->liste = $this->_db->loadObjectList();
+				$attachments = $this->_db->loadObjectList();
+			}
 
-			} elseif ($attachment->mandatory == 1) {
-				$this->_attachments = 1;
-				$this->_need = $this->_forms=1?1:0;
+			foreach ($attachments as $attachment) {
+				if ($attachment->nb > 0) {
+
+					$query = 'SELECT * FROM #__emundus_uploads WHERE user_id = '.$this->_user->id.' AND attachment_id = '.$attachment->id. ' AND fnum like '.$this->_db->Quote($this->_user->fnum);
+					$this->_db->setQuery($query);
+					$attachment->liste = $this->_db->loadObjectList();
+
+				} elseif ($attachment->mandatory == 1) {
+					$this->_attachments = 1;
+					$this->_need = $this->_forms=1?1:0;
+				}
 			}
 		}
+
 		return $attachments;
 	}
 

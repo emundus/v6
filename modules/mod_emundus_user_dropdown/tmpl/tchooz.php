@@ -163,7 +163,7 @@ else {
 <?= $intro; ?>
 
 <!-- Button which opens up the dropdown menu. -->
-<div class='dropdown <?php if($first_logged) : ?>userDropdown-tip<?php endif; ?>' id="userDropdown" style="float: right;">
+<div class='dropdown <?php if($first_logged) : ?>userDropdown-tip<?php endif; ?>' tabindex="0" id="userDropdown" style="float: right;">
     <?php if(!empty($profile_picture)): ?>
     <div class="em-profile-picture em-pointer em-user-dropdown-button" id="userDropdownLabel"
          style="background-image:url('<?php echo $profile_picture ?>');">

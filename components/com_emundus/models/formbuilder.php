@@ -3966,4 +3966,30 @@ class EmundusModelFormbuilder extends JModelList {
 
         return $copied;
     }
+
+	public function getDocumentSample($attachment_id, $profile_id)
+	{
+		$document = [];
+
+		if (!empty($attachment_id) && !empty($profile_id)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('has_sample, sample_filepath')
+				->from('#__emundus_setup_attachment_profiles')
+				->where($db->quoteName('attachment_id') . ' = ' . $attachment_id)
+				->andWhere($db->quoteName('profile_id') . ' = ' . $profile_id);
+
+			try {
+				$db->setQuery($query);
+				$document = $db->loadAssoc();
+			} catch (Exception $e) {
+				JLog::add('component/com_emundus/models/formbuilder | Error at getting document sample : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		if (!is_array($document)) $document = array();
+
+		return $document;
+	}
 }

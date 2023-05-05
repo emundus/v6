@@ -531,8 +531,6 @@ class EmundusModelApplication extends JModelList
 					->columns($data['key'])
 					->values($values);
 
-				error_log($query->__toString());
-
 				$this->_db->setQuery($query);
 				$this->_db->execute();
 				$upload_id = $this->_db->insertid();
@@ -5623,4 +5621,337 @@ class EmundusModelApplication extends JModelList
 
         return $select;
     }
+
+	public function createTab($name, $user_id){
+		$tab_id = 0;
+
+		if (!empty($user_id) && !empty($name) && strlen($name) <= 255 && strlen($name) >= 3) {
+			$name = preg_replace('/[^A-Za-z0-9 ]/', '', $name);
+
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->insert($db->quoteName('#__emundus_campaign_candidature_tabs'))
+				->set($db->quoteName('name') . ' = ' . $db->quote($name))
+				->set($db->quoteName('ordering') . ' = 1')
+				->set($db->quoteName('applicant_id') . ' = ' . $user_id);
+			try {
+				$db->setQuery($query);
+				$db->execute();
+
+				$tab_id = $db->insertid();
+			} catch (Exception $e) {
+				JLog::add('Failed to create for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $tab_id;
+	}
+
+	public function getTabs($user_id) {
+		$tabs = [];
+
+		if (!empty($user_id)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('ecct.*,count(ecc.id) as no_files')
+				->from($db->quoteName('#__emundus_campaign_candidature_tabs','ecct'))
+				->leftJoin($db->quoteName('#__emundus_campaign_candidature','ecc').' ON '.$db->quoteName('ecc.tab').' = '.$db->quoteName('ecct.id'))
+				->where($db->quoteName('ecct.applicant_id') . ' = ' . $user_id)
+				->group($db->quoteName('ecct.id'))
+				->order($db->quoteName('ecct.ordering'));
+
+			try {
+				$db->setQuery($query);
+				$tabs =  $db->loadAssocList();
+			} catch (Exception $e) {
+				JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $tabs;
+	}
+
+	public function updateTabs($tabs, $user_id){
+		$updated = false;
+
+		if (!empty($tabs) && !empty($user_id)) {
+			try {
+				$db = JFactory::getDbo();
+				$query = $db->getQuery(true);
+
+				$updates = [];
+				foreach ($tabs as $tab) {
+					$tab->id = (int) $tab->id;
+					$owned = $this->isTabOwnedByUser($tab->id, $user_id);
+
+					if ($owned) {
+						$query->clear()
+							->update($db->quoteName('#__emundus_campaign_candidature_tabs'))
+							->set($db->quoteName('name') . ' = ' . $db->quote($tab->name))
+							->set($db->quoteName('ordering') . ' = ' . $db->quote($tab->ordering))
+							->where($db->quoteName('id') . ' = ' . $db->quote($tab->id));
+
+						$db->setQuery($query);
+						$updates[] = $db->execute();
+					}
+				}
+
+				$updated = !in_array(false, $updates) && !empty($updates);
+			} catch (Exception $e) {
+				JLog::add('Failed to update tabs for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $updated;
+	}
+
+	public function deleteTab(int $tab_id, int $user_id){
+		$deleted = false;
+
+		if (!empty($tab_id) && !empty($user_id)) {
+			$owned = $this->isTabOwnedByUser($tab_id, $user_id);
+
+			if ($owned) {
+				$db = JFactory::getDbo();
+				$query = $db->getQuery(true);
+
+				try {
+					$query->clear()
+						->update($db->quoteName('#__emundus_campaign_candidature'))
+						->set($db->quoteName('tab') . ' = NULL')
+						->where($db->quoteName('tab') . ' = ' . $tab_id)
+						->where($db->quoteName('applicant_id') . ' = ' . $user_id);
+					$db->setQuery($query);
+					$db->execute();
+
+					$query->clear()
+						->delete($db->quoteName('#__emundus_campaign_candidature_tabs'))
+						->where($db->quoteName('id') . ' = ' . $tab_id);
+					$db->setQuery($query);
+					$deleted = $db->execute();
+				} catch (Exception $e) {
+					JLog::add('Failed to create for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					$deleted = false;
+				}
+			}
+		}
+
+		return $deleted;
+	}
+
+	public function moveToTab($fnum, $tab){
+		$moved = false;
+
+		if (!empty($fnum) && !empty($tab)) {
+			$tab = (int) $tab;
+			$owned = $this->isTabOwnedByUser($tab, 0, $fnum);
+
+			if ($owned) {
+				$db = JFactory::getDbo();
+				$query = $db->getQuery(true);
+
+				try {
+					$query->clear()
+						->update($db->quoteName('#__emundus_campaign_candidature'))
+						->set($db->quoteName('tab') . ' = ' . $db->quote($tab))
+						->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+					$db->setQuery($query);
+					$moved = $db->execute();
+				} catch (Exception $e) {
+					JLog::add('Failed to move fnum ' . $fnum . ' in tab ' . $tab . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				}
+			}
+		}
+
+		return $moved;
+	}
+
+	public function copyFile($fnum, $fnum_to){
+		$result = false;
+
+		if (!empty($fnum) && !empty($fnum_to)) {
+			try {
+				$db = JFactory::getDbo();
+				$query = $db->getQuery(true);
+
+				$query->insert($db->quoteName('#__emundus_campaign_candidature_links'))
+					->set($db->quoteName('date_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+					->set($db->quoteName('fnum_from') . ' = ' . $db->quote($fnum))
+					->set($db->quoteName('fnum_to') . ' = ' . $db->quote($fnum_to));
+				$db->setQuery($query);
+				$result = $db->execute();
+			} catch (Exception $e) {
+				JLog::add('Failed to copy fnum from ' . $fnum . ' to ' . $fnum_to . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $result;
+	}
+
+	public function renameFile($fnum, $new_name){
+		$result = false;
+
+		if (!empty($fnum) && !empty($new_name) && strlen($new_name) <= 255 && strlen($new_name) >= 3) {
+			$new_name = preg_replace('/[^A-Za-z0-9 ]/', '', $new_name);
+
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->update($db->quoteName('#__emundus_campaign_candidature'))
+				->set($db->quoteName('name') . ' = ' . $db->quote($new_name))
+				->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+
+			try {
+				$db->setQuery($query);
+				$result = $db->execute();
+			} catch (Exception $e) {
+				JLog::add('Failed to rename file ' . $fnum . ' with name ' . $new_name . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $result;
+	}
+
+	public function getCampaignsAvailableForCopy($fnum){
+		$campaigns = [];
+
+		try {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('esc.training')
+				->from($db->quoteName('#__emundus_campaign_candidature','ecc'))
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.id').' = '.$db->quoteName('ecc.campaign_id'))
+				->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
+			$db->setQuery($query);
+			$prog_code = $db->loadResult();
+
+			if(!empty($prog_code)){
+				$query->clear()
+					->select('esc.id,esc.label')
+					->from($db->quoteName('#__emundus_setup_campaigns','esc'))
+					->where($db->quoteName('esc.training') . ' LIKE ' . $db->quote($prog_code))
+					->where($db->quoteName('esc.start_date') . ' < NOW()')
+					->where($db->quoteName('esc.end_date') . ' > NOW()');
+				$db->setQuery($query);
+				$campaigns_object = $db->loadObjectList('id');
+
+				foreach ($campaigns_object as $key => $campaign){
+					$campaigns[$campaign->id] = $campaign->label;
+				}
+			}
+		}
+		catch (Exception $e) {
+			JLog::add('Failed to get available campaigns via fnum ' . $fnum . ' with error ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $campaigns;
+	}
+
+	/**
+	 * @param $tab_id
+	 * @param $user_id - if empty, check for fnum
+	 * @param $fnum - if empty, check for user_id
+	 * @return bool
+	 */
+	public function isTabOwnedByUser($tab_id, $user_id = 0, $fnum = '') {
+		$owned = false;
+
+		$tab_id = (int)$tab_id;
+		$user_id = (int)$user_id;
+		$fnum = preg_replace('/[^0-9]/', '', $fnum);
+
+		if (!empty($tab_id)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$tab_id_found = 0;
+			if (!empty($user_id)) {
+				$query->select('ecct.id')
+					->from($db->quoteName('#__emundus_campaign_candidature_tabs', 'ecct'))
+					->where('ecct.id = ' . $db->quote($tab_id))
+					->andWhere('ecct.applicant_id = ' .  $db->quote($user_id));
+
+				$db->setQuery($query);
+				$tab_id_found = $db->loadResult();
+			} elseif (!empty($fnum)) {
+				$query->select('ecct.id')
+					->from($db->quoteName('#__emundus_campaign_candidature_tabs', 'ecct'))
+					->leftJoin('#__emundus_campaign_candidature as ecc ON ecc.applicant_id = ecct.applicant_id')
+					->where('ecc.fnum = ' . $db->quote($fnum))
+					->andWhere('ecct.id = ' .  $db->quote($tab_id));
+
+				$db->setQuery($query);
+				$tab_id_found = $db->loadResult();
+			}
+			$owned = !empty($tab_id_found);
+		}
+
+		return $owned;
+	}
+
+	/**
+	 * @param $action
+	 * @param $fnum
+	 * @param $module_id if not specified, will use the first published module
+	 * @param $redirect
+	 * @return bool true if the action was done successfully
+	 */
+	public function applicantCustomAction($action, $fnum, $module_id = 0, $redirect = false) {
+		$done = false;
+
+		if (!empty($action) && !empty($fnum)) {
+			$db = JFactory::getDBO();
+			$query = $db->getQuery(true);
+
+			$query->select('id, params')
+				->from('#__modules')
+				->where('module LIKE ' . $db->quote('mod_emundus_applications'))
+				->andWhere('published = 1');
+
+			if (!empty($module_id)) {
+				$query->andWhere('id = ' . $db->quote($module_id));
+			}
+
+			$db->setQuery($query);
+			$module = $db->loadAssoc();
+
+			if (!empty($module['params'])) {
+				$params = json_decode($module['params'], true);
+
+				if (!empty($params['mod_em_application_custom_actions'][$action])) {
+					$current_action = $params['mod_em_application_custom_actions'][$action];
+
+					if (isset($current_action['mod_em_application_custom_action_new_status'])) {
+						$query->clear()
+							->select('status')
+							->from('#__emundus_campaign_candidature')
+							->where('fnum LIKE ' . $db->quote($fnum));
+
+						$db->setQuery($query);
+						$status = $db->loadResult();
+
+						if (in_array($status, $current_action['mod_em_application_custom_action_status']) && $status != $current_action['mod_em_application_custom_action_new_status']) {
+							require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+							$m_files = new EmundusModelFiles();
+							$updated = $m_files->updateState($fnum, $current_action['mod_em_application_custom_action_new_status']);
+
+							if ($updated) {
+								$done = true;
+
+								if ($redirect) {
+									$app = JFactory::getApplication();
+									$app->redirect('/');
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return $done;
+	}
 }
