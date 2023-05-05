@@ -61,13 +61,5 @@ export default {
         } catch (e) {
             return false;
         }
-    },
-
-    async getOffset() {
-        try {
-            return await client().get('index.php?option=com_emundus&controller=settings&task=getOffset');
-        } catch (e) {
-            return false;
-        }
     }
 };
