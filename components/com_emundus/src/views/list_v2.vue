@@ -25,10 +25,12 @@
 					<option value='all'>{{ translate('ALL') }}</option>
 				</select>
 				<div v-if="typeof currentTab.pagination !== undefined && currentTab.pagination && currentTab.pagination.total > 1" id="pagination" class="em-text-align-center">
-					<ul class="em-flex-row em-flex-center" style="list-style-type:none;margin-left:0;">
-					<span :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === 1}"
+					<ul class="em-flex-row" style="list-style-type:none;">
+						<span :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === 1}"
 					      class="material-icons-outlined em-pointer em-mr-8"
-					      @click="getListItems(currentTab.pagination.current - 1, selectedListTab)">chevron_left</span>
+					      @click="getListItems(currentTab.pagination.current - 1, selectedListTab)">
+							chevron_left
+						</span>
 						<li v-for="i in currentTab.pagination.total" :key="i"
 						    class="em-pointer em-square-button"
 						    :class="{'active': i === currentTab.pagination.current}"
@@ -37,7 +39,9 @@
 						</li>
 						<span :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === currentTab.pagination.total}"
 						      class="material-icons-outlined em-pointer em-ml-8"
-						      @click="getListItems(currentTab.pagination.current + 1, selectedListTab)">chevron_right</span>
+						      @click="getListItems(currentTab.pagination.current + 1, selectedListTab)">
+							chevron_right
+						</span>
 					</ul>
 				</div>
 			</section>
@@ -687,10 +691,16 @@ export default {
 
 #pagination {
 	transition: all .3s;
+	overflow: hidden;
+
+	ul {
+		overflow: auto;
+	}
 
 	li {
 		transition: all .3s;
 		font-size: 12px;
+		padding: 0 12px;
 	}
 }
 </style>
