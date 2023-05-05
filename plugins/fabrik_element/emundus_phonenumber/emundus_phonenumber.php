@@ -22,7 +22,7 @@ jimport('joomla.application.component.model');
 class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 {
 
-    protected $countries;
+    protected array $countries;
     /**
      * Pre-render just the element (no labels etc.)
      * Was _getElement but this was ambiguous with getElement() and method is public
@@ -84,8 +84,6 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
         }
 
         $this->validator->hasValidations() ? $bits['isValid'] = false : $bits['isValid'] = true; // is the element mandatory ?
-
-        //var_dump('validation', $bits['isValid']);
 
 		$layout = $this->getLayout('form');
 		$layoutData = new stdClass;
@@ -149,8 +147,9 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
     public function DBRequest()
     {
         $db = JFactory::getDbo();
-        $query = 'SELECT DISTINCT dc.iso2, dc.flag FROM data_country dc
-                    WHERE dc.flag IS NOT NULL';
+        $query = $db->getQuery(true);
+        $query->select('DISTINCT iso2, flag')
+            ->from($db->quoteName('data_country'));
         $db->setQuery($query);
 
         $db->execute();
@@ -171,13 +170,14 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
         $value = $data['num_tel'];
         $is_valid_JS = $data['is_valid'];
 
-        var_dump($value, $is_valid_JS);
+        $minimalNumberlength = 5; // without counting '+', minimal phone number length e.164 format
+        $maximalNumberlength = 15; // without counting '+', maximal phone number length e.164 format
 
         $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_INVALID'); // error as default value
 
         if ($this->validator->hasValidations()) { // phone mandatory so big validation
 
-            if (preg_match('/^\+\d{5,15}$/', $value) && $is_valid_JS)
+            if (preg_match('/^\+\d{'.$minimalNumberlength.','.$maximalNumberlength.'}$/', $value) && $is_valid_JS)
             {
                 $isValid = true;
             }
@@ -191,7 +191,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
                 {
                     $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_ONLY_NUMBERS');
                 }
-                else if (strlen($value) < 6)
+                else if (strlen($value) < $minimalNumberlength + 1) // counting the '+'
                 {
                     $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_SIZE_ERROR');
                 }

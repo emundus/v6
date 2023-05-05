@@ -13,6 +13,7 @@ class ValidatorJS {
         this.indiceCountry = initIndiceCountry;
         this.defaultValue = initDefaultValue;
         this.countrySelected = this.allCountry[this.indiceCountry];
+        this.hasAlreadyErrorMessage = this.divError.length !== 0;
 
         !this.isValid.checked ?  this.mustValidate = true : this.mustValidate = false;
 
@@ -103,6 +104,7 @@ class ValidatorJS {
         }
         // unsupported country
         this.input.value = '';
+        this.input.setAttribute('mask', this.countrySelected.country_code);
 
         if (this.defaultValue !== '')
         {
