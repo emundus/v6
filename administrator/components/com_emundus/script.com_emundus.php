@@ -1397,7 +1397,7 @@ try {
                 $form_id = $sql_result['form_id'];
                 $list_id = $sql_result['list_id'];
 
-				EmundusHelperUpdate::addColumn('jos_emundus_campaign_workflow','display_preliminary_documents','TINYINT', 1);
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_workflow','display_preliminary_documents','TINYINT', 1, 1, 0);
                 $query->clear()
                     ->select('id')
                     ->from($db->quoteName('#__fabrik_elements'))
@@ -1434,7 +1434,7 @@ try {
                     }
                 }
 
-				EmundusHelperUpdate::addColumn('jos_emundus_campaign_workflow', 'specific_documents', 'TINYINT', 1);
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_workflow', 'specific_documents', 'TINYINT', 1, 1, 0);
                 $query->clear()
                     ->select('id')
                     ->from($db->quoteName('#__fabrik_elements'))
