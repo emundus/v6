@@ -149,7 +149,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
     public function DBRequest()
     {
         $db = JFactory::getDbo();
-        $query = 'SELECT dc.iso2, dc.flag FROM data_country dc
+        $query = 'SELECT DISTINCT dc.iso2, dc.flag FROM data_country dc
                     WHERE dc.flag IS NOT NULL';
         $db->setQuery($query);
 
