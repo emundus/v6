@@ -722,7 +722,7 @@ class UpdateCli extends JApplicationCli
             }
             return 0;
         } catch  (Exception $e) {
-            Log::add($e->getMessage(), Log::ERROR, 'error');
+            $this->out('-> Error: ' . $e->getMessage());
             return 1;
         }
     }
