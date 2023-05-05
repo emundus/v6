@@ -17,7 +17,7 @@
             <div style="width: 100%">
               <p class="em-p-8-12 em-editable-content" contenteditable="true" :id="'tag_label_' + tag.id" @focusout="updateTag(tag)" @keyup.enter="manageKeyup(tag)" @keydown="checkMaxlength">{{tag.label}}</p>
             </div>
-            <input type="hidden" :class="tag.class">
+            <input type="hidden" :class="tag.class + '-500'">
           </div>
           <div class="em-flex-row">
             <v-swatches
@@ -79,9 +79,8 @@ export default {
       show: false,
       actualLanguage : '',
       swatches: [
-        '#DCC6E0', '#947CB0', '#663399', '#6BB9F0', '#19B5FE', '#013243', '#7BEFB2', '#3FC380', '#1E824C', '#FFFD7E',
-        '#FFFD54', '#F7CA18', '#FABE58', '#E87E04', '#D35400', '#EC644B', '#CF000F', '#E5283B', '#E08283', '#D2527F',
-        '#DB0A5B', '#999999'
+        '#5E6580', '#D444F1', '#7959F8', '#0BA4EB', '#2E90FA', '#2970FE', '#15B79E', '#238C69', '#20835F', '#EAA907',
+        '#F79009', '#EF681F', '#FF4305', '#DB333E', '#EE46BC', '#F53D68'
       ],
     };
   },
@@ -171,7 +170,7 @@ export default {
     },
 
     getHexColors(element) {
-      let tags_class = document.querySelector('.' + element.class);
+      let tags_class = document.querySelector('.' + element.class + '-500');
       let style = getComputedStyle(tags_class);
       let rgbs = style.backgroundColor.split('(')[1].split(')')[0].split(',');
       element.class = this.rgbToHex(parseInt(rgbs[0]),parseInt(rgbs[1]),parseInt(rgbs[2]));

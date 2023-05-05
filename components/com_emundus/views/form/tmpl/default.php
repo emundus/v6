@@ -25,10 +25,13 @@ JText::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED');
 JText::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_NOT');
 JText::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE');
 JText::script('COM_EMUNDUS_ONBOARD_CANT_REVERT');
+JText::script('COM_EMUNDUS_ONBOARD_EMPTY_LIST');
+JText::script('COM_EMUNDUS_FORM_MY_EVAL_FORMS');
 ## END ##
 
 ## ACTIONS ##
 JText::script('COM_EMUNDUS_ONBOARD_ACTION');
+JText::script('COM_EMUNDUS_ONBOARD_ACTIONS');
 JText::script('COM_EMUNDUS_ONBOARD_ACTION_PUBLISH');
 JText::script('COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH');
 JText::script('COM_EMUNDUS_ONBOARD_ACTION_DUPLICATE');
@@ -69,6 +72,8 @@ JText::script('COM_EMUNDUS_ONBOARD_FORMDUPLICATED');
 JText::script('COM_EMUNDUS_ONBOARD_FORMDUPLICATE_FAILED');
 JText::script('COM_EMUNDUS_ONBOARD_CAMPAIGN');
 JText::script('COM_EMUNDUS_ONBOARD_EVALUATION');
+JText::script('COM_EMUNDUS_ONBOARD_ADD_EVAL_FORM');
+JText::script('COM_EMUNDUS_ONBOARD_LABEL');
 ## END ##
 
 ## TUTORIAL ##
@@ -117,8 +122,8 @@ if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml'
 ?>
 
 <list id="em-component-vue"
-      component="list"
-      type="form"
+      component="list_v2"
+      type="forms"
       coordinatorAccess="<?= $coordinator_access ?>"
       sysadminAccess="<?= $sysadmin_access ?>"
       shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"

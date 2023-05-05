@@ -717,29 +717,30 @@ class EmundusModelModules extends JModelList {
                 $query->clear()
                     ->select('params')
                     ->from('#__extensions')
-                    ->where('name LIKE ' . $db->quote('com_emundus'));
-
-                $db-setQuery($query);
+                    ->where($db->quoteName('name') . ' LIKE ' . $db->quote('com_emundus'));
+                $db->setQuery($query);
                 $params = $db->loadResult();
 
                 if (!empty($params)) {
                     $params = json_decode($params, true);
-                    $params['form_buider_page_creation_modules'][] = $module_id;
 
-                    $query->clear()
-                        ->update('#__extensions')
-                        ->set('params = ' . $db->quote(json_encode($params)))
-                        ->where('name = ' . $db->quote('com_emundus'));
+                    if(!in_array($module_id, $params['form_buider_page_creation_modules'])) {
+                        $params['form_buider_page_creation_modules'][] = $module_id;
 
-                    $db->setQuery($query);
-                    $db->execute();
+                        $query->clear()
+                            ->update('#__extensions')
+                            ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+                            ->where($db->quoteName('name') . ' LIKE ' . $db->quote('com_emundus'));
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
                 }
             }
 
             $query->clear()
                 ->select('id, params')
                 ->from($db->quoteName('#__modules'))
-                ->where($db->quoteName('module') . ' like ' . $db->quote('mod_emundusflow'))
+                ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundusflow'))
                 ->andWhere($db->quoteName('published') . ' = 1');
             $db->setQuery($query);
             $modules = $db->loadObjectList();

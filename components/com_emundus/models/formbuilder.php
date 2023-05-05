@@ -439,7 +439,8 @@ class EmundusModelFormbuilder extends JModelList {
                 'rgt' => array_values($rgts)[strval(sizeof($rgts) - 1)] + 2,
             );
         } catch(Exception $e) {
-            JLog::add('component/com_emundus/models/formbuilder | Error when create a new page in form ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+			$query_str = !is_string($query) ? $query->__toString() : $query;
+            JLog::add('component/com_emundus/models/formbuilder | Error when create a new page in form ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query_str .' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return array();
         }
     }
@@ -448,18 +449,18 @@ class EmundusModelFormbuilder extends JModelList {
      * @param $prid int profile id
      * @param $label array labels by language
      * @param $intro array intros by language
+     * @param $type string (form || eval)
      * @return false|int|mixed
      */
-    function createFabrikForm($prid, $label, $intro) {
-        $formid = 0;
+    function createFabrikForm($prid, $label, $intro, $type = '') {
+	    $form_id = 0;
 
         if (!empty($prid) && !empty($label) && is_array($label)) {
             $db = $this->getDbo();
             $query = $db->getQuery(true);
 
             try {
-                $params = $this->h_fabrik->prepareFormParams();
-
+                $params = $this->h_fabrik->prepareFormParams(true, $type);
                 $data = array(
                     'label' => 'FORM_' . $prid,
                     'record_in_database' => 1,
@@ -483,25 +484,25 @@ class EmundusModelFormbuilder extends JModelList {
 
                 $query->insert($db->quoteName('#__fabrik_forms'))
                     ->columns($db->quoteName(array_keys($data)))
-                    ->values(implode(',',$db->quote(array_values($data))));
+                    ->values(implode(',', $db->quote(array_values($data))));
                 $db->setQuery($query);
                 $db->execute();
-                $formid = $db->insertid();
+                $form_id = $db->insertid();
 
-                if (!empty($formid)) {
+                if (!empty($form_id)) {
                     $query->clear()
                         ->update($db->quoteName('#__fabrik_forms'))
-                        ->set($db->quoteName('label') . ' = ' . $db->quote('FORM_' . $prid . '_' . $formid))
-                        ->set($db->quoteName('intro') . ' = ' . $db->quote('<p>' . 'FORM_' . $prid . '_INTRO_' . $formid . '</p>'));
-                    $query->where($db->quoteName('id') . ' = ' . $db->quote($formid));
+                        ->set($db->quoteName('label') . ' = ' . $db->quote('FORM_' . $prid . '_' . $form_id))
+                        ->set($db->quoteName('intro') . ' = ' . $db->quote('<p>' . 'FORM_' . $prid . '_INTRO_' . $form_id . '</p>'));
+                    $query->where($db->quoteName('id') . ' = ' . $db->quote($form_id));
                     $db->setQuery($query);
                     $db->execute();
 
                     // Add translation to translation files
-                    $this->translate('FORM_' . $prid . '_' . $formid, $label,'fabrik_forms', $formid,'label');
+                    $this->translate('FORM_' . $prid . '_' . $form_id, $label,'fabrik_forms', $form_id,'label');
 
                     if (!empty($intro) && is_array($intro)) {
-                        $this->translate('FORM_' . $prid . '_INTRO_' . $formid, $intro,'fabrik_forms', $formid,'intro');
+                        $this->translate('FORM_' . $prid . '_INTRO_' . $form_id, $intro,'fabrik_forms', $form_id,'intro');
                     }
                 }
             } catch (Exception $e) {
@@ -509,10 +510,12 @@ class EmundusModelFormbuilder extends JModelList {
             }
         }
 
-        return $formid;
+        return $form_id;
     }
 
     function createFabrikList($prid,$formid){
+		$response = [];
+
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -523,14 +526,7 @@ class EmundusModelFormbuilder extends JModelList {
                 ->where($db->quoteName('table_name') . ' LIKE ' . $db->quote('%jos_emundus_' . $prid . '%'));
             $db->setQuery($query);
             $result = $db->loadResult();
-
-            if ($result < 10) {
-                $increment = '0' . strval($result);
-            } elseif ($result > 10) {
-                $increment = strval($result);
-            } else {
-                $increment = '01';
-            }
+	        $increment = str_pad(strval($result), 2, '0', STR_PAD_LEFT);
 
             $query = "CREATE TABLE IF NOT EXISTS jos_emundus_" . $prid . "_" . $increment . " (
             id int(11) NOT NULL AUTO_INCREMENT,
@@ -541,84 +537,91 @@ class EmundusModelFormbuilder extends JModelList {
             UNIQUE KEY fnum (fnum)
             ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8";
             $db->setQuery($query);
-            $db->execute();
+            $table_created = $db->execute();
             //
 
-            // Add constraints
-            $query = "ALTER TABLE jos_emundus_" . $prid . "_" . $increment . "
-            ADD CONSTRAINT jos_emundus_" . $prid . "_" . $increment . "_ibfk_1
-            FOREIGN KEY (user) REFERENCES jos_emundus_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE;";
-            $db->setQuery($query);
-            $db->execute();
+	        if ($table_created) {
+		        // Add constraints
+		        $query = "ALTER TABLE jos_emundus_" . $prid . "_" . $increment . "
+		            ADD CONSTRAINT jos_emundus_" . $prid . "_" . $increment . "_ibfk_1
+		            FOREIGN KEY (user) REFERENCES jos_emundus_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE;";
+		        $db->setQuery($query);
+		        $db->execute();
 
-            $query = "ALTER TABLE jos_emundus_" . $prid . "_" . $increment . "
-            ADD CONSTRAINT jos_emundus_" . $prid . "_" . $increment . "_ibfk_2
-            FOREIGN KEY (fnum) REFERENCES jos_emundus_campaign_candidature (fnum) ON DELETE CASCADE ON UPDATE CASCADE;";
-            $db->setQuery($query);
-            $db->execute();
+		        $query = "ALTER TABLE jos_emundus_" . $prid . "_" . $increment . "
+		            ADD CONSTRAINT jos_emundus_" . $prid . "_" . $increment . "_ibfk_2
+		            FOREIGN KEY (fnum) REFERENCES jos_emundus_campaign_candidature (fnum) ON DELETE CASCADE ON UPDATE CASCADE;";
+		        $db->setQuery($query);
+		        $db->execute();
 
-            $query = "CREATE INDEX user
+		        $query = "CREATE INDEX user
             ON jos_emundus_" . $prid . "_" . $increment . " (user);";
-            $db->setQuery($query);
-            $db->execute();
-            //
+		        $db->setQuery($query);
+		        $db->execute();
+		        //
 
-            // INSERT FABRIK LIST
-            $params = $this->h_fabrik->prepareListParams();
+		        // INSERT FABRIK LIST
+		        $params = $this->h_fabrik->prepareListParams();
 
-            $data = array(
-                'label' => 'FORM_' . $prid,
-                'introduction' => '',
-                'form_id' => $formid,
-                'db_table_name' => 'jos_emundus_' . $prid . '_' . $increment,
-                'db_primary_key' => 'jos_emundus_' . $prid . '_' . $increment . '.id',
-                'auto_inc' => 1,
-                'connection_id' => 1,
-                'created' => date('Y-m-d h:i:s'),
-                'created_by' => JFactory::getUser()->id,
-                'created_by_alias' => JFactory::getUser()->username,
-                'modified' => date('Y-m-d h:i:s'),
-                'modified_by' => JFactory::getUser()->id,
-                'checked_out' => JFactory::getUser()->id,
-                'checked_out_time' => date('Y-m-d h:i:s'),
-                'published' => 1,
-                'publish_up' => date('Y-m-d h:i:s'),
-                'access' => 7,
-                'hits' => 0,
-                'rows_per_page' => 10,
-                'template' => 'bootstrap',
-                'order_by' => '[""]',
-                'order_dir' => '["ASC"]',
-                'filter_action' => 'onchange',
-                'group_by' => '',
-                'params' => json_encode($params),
-            );
+		        $data = array(
+			        'label' => 'FORM_' . $prid,
+			        'introduction' => '',
+			        'form_id' => $formid,
+			        'db_table_name' => 'jos_emundus_' . $prid . '_' . $increment,
+			        'db_primary_key' => 'jos_emundus_' . $prid . '_' . $increment . '.id',
+			        'auto_inc' => 1,
+			        'connection_id' => 1,
+			        'created' => date('Y-m-d h:i:s'),
+			        'created_by' => JFactory::getUser()->id,
+			        'created_by_alias' => JFactory::getUser()->username,
+			        'modified' => date('Y-m-d h:i:s'),
+			        'modified_by' => JFactory::getUser()->id,
+			        'checked_out' => JFactory::getUser()->id,
+			        'checked_out_time' => date('Y-m-d h:i:s'),
+			        'published' => 1,
+			        'publish_up' => date('Y-m-d h:i:s'),
+			        'access' => 7,
+			        'hits' => 0,
+			        'rows_per_page' => 10,
+			        'template' => 'bootstrap',
+			        'order_by' => '[""]',
+			        'order_dir' => '["ASC"]',
+			        'filter_action' => 'onchange',
+			        'group_by' => '',
+			        'params' => json_encode($params),
+		        );
 
-            $query = $db->getQuery(true);
-            $query->insert($db->quoteName('#__fabrik_lists'))
-                ->columns($db->quoteName(array_keys($data)))
-                ->values(implode(',',$db->quote(array_values($data))));
-            $db->setQuery($query);
-            $db->execute();
-            $listid = $db->insertid();
+		        $query = $db->getQuery(true);
+		        $query->insert($db->quoteName('#__fabrik_lists'))
+			        ->columns($db->quoteName(array_keys($data)))
+			        ->values(implode(',',$db->quote(array_values($data))));
+		        $db->setQuery($query);
+		        $list_inserted =$db->execute();
 
-            $query->clear();
-            $query->update($db->quoteName('#__fabrik_lists'))
-                ->set('label = ' . $db->quote('FORM_' . $prid . '_' . $formid))
-                ->set('access = ' . $db->quote($prid));
-            $query->where($db->quoteName('id') . ' = ' . $db->quote($listid));
-            $db->setQuery($query);
-            $db->execute();
-            //
+				if ($list_inserted) {
+					$list_id = $db->insertid();
 
-            return array(
-                'id' => $listid,
-                'db_table_name' => 'jos_emundus_' . $prid . '_' . $increment,
-            );
+					$query->clear();
+					$query->update($db->quoteName('#__fabrik_lists'))
+						->set('label = ' . $db->quote('FORM_' . $prid . '_' . $formid))
+						->set('access = ' . $db->quote($prid));
+					$query->where($db->quoteName('id') . ' = ' . $db->quote($list_id));
+					$db->setQuery($query);
+					$db->execute();
+					//
+
+					$response = array(
+						'id' => $list_id,
+						'db_table_name' => 'jos_emundus_' . $prid . '_' . $increment
+					);
+				}
+	        }
         } catch (Exception $e) {
-            JLog::add('component/com_emundus/models/formbuilder | Error when create a list ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return array();
+	        $query_str = is_string($query) ? $query : $query->__toString();
+            JLog::add('component/com_emundus/models/formbuilder | Error when create a list ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query_str.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
         }
+
+		return $response;
     }
 
     function joinFabrikListToProfile($listid, $prid) {
@@ -1095,17 +1098,15 @@ class EmundusModelFormbuilder extends JModelList {
         }
     }
 
-    function createSectionSimpleElements($gid, $plugins)
+    function createSectionSimpleElements($gid, $plugins, $mode = 'forms')
     {
         $created_elements = [];
         $user = JFactory::getUser()->id;
 
+		$evaluation = $mode === 'eval' ? 1 : 0;
+
         foreach ($plugins as $plugin) {
-
-
             switch ($plugin) {
-
-
                 case 'birthday':
 
                     $label = array(
@@ -1113,7 +1114,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Birthday',
                     );
 
-                    $created_elements[] = $this->createSimpleElement($gid, $plugin, null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, $plugin, null, $evaluation, $label);
                     break;
                 case 'date_debut':
                     $label = array(
@@ -1121,7 +1122,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Contract start date',
                     );
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'birthday', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'birthday', null, $evaluation, $label);
                     break;
                 case 'date_fin':
                     $label = array(
@@ -1129,7 +1130,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Contract end date',
                     );
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'birthday', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'birthday', null, $evaluation, $label);
                     break;
 
                 case 'telephone':
@@ -1139,7 +1140,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Phone',
                     );
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
                 case 'fonction':
 
@@ -1149,7 +1150,7 @@ class EmundusModelFormbuilder extends JModelList {
                     );
 
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
 
                 case 'employeur':
@@ -1158,7 +1159,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Employer',
                     );
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
 
                 case 'ville_employeur':
@@ -1169,7 +1170,7 @@ class EmundusModelFormbuilder extends JModelList {
                     );
 
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
                 case 'missions':
 
@@ -1179,7 +1180,7 @@ class EmundusModelFormbuilder extends JModelList {
                     );
 
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'textarea', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'textarea', null, $evaluation, $label);
                     break;
                 case 'adresse':
                     $label = array(
@@ -1188,21 +1189,21 @@ class EmundusModelFormbuilder extends JModelList {
                     );
 
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
                 case 'code postal':
                     $label = array(
                         'fr' => 'Code postal',
                         'en' => 'postal code',
                     );
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
                 case 'ville':
                     $label = array(
                         'fr' => 'Ville',
                         'en' => 'City',
                     );
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
                 case 'adresseComplementaire':
                     $label = array(
@@ -1211,7 +1212,7 @@ class EmundusModelFormbuilder extends JModelList {
                     );
 
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
 
                 case 'email':
@@ -1221,7 +1222,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Email',
                     );
 
-                    $created_elements[] = $this->createSimpleElement($gid, $plugin, null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, $plugin, null, $evaluation, $label);
 
                     break;
                 case 'nationalite':
@@ -1231,7 +1232,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Nationality',
                     );
 
-                    $el_id = $this->createSimpleElement($gid, 'databasejoin', null, 0, $label);
+                    $el_id = $this->createSimpleElement($gid, 'databasejoin', null, $evaluation, $label);
 
                     $created_elements[] = $el_id;
                     $element = json_decode(json_encode($this->getElement($el_id, $gid)), true);
@@ -1249,7 +1250,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Country',
                     );
 
-                    $el_id = $this->createSimpleElement($gid, 'databasejoin', null, 0, $label);
+                    $el_id = $this->createSimpleElement($gid, 'databasejoin', null, $evaluation, $label);
 
                     $created_elements[] = $el_id;
                     $element = json_decode(json_encode($this->getElement($el_id, $gid)), true);
@@ -1263,18 +1264,14 @@ class EmundusModelFormbuilder extends JModelList {
                     break;
 
                 default:
-
-                    $created_elements[] = $this->createSimpleElement($gid, $plugin);
+                    $created_elements[] = $this->createSimpleElement($gid, $plugin, null, $evaluation);
                     break;
-
-
             }
 
         }
 
 
-        return ["data" => $created_elements];
-
+        return $created_elements;
     }
 
     function createElement($name,$group_id,$plugin,$label,$default = '',$hidden = 0,$create_column = 1,$show_in_list_summary = 1,$published = 1,$parent_id = 0,$width = 20) {
@@ -3969,4 +3966,30 @@ class EmundusModelFormbuilder extends JModelList {
 
         return $copied;
     }
+
+	public function getDocumentSample($attachment_id, $profile_id)
+	{
+		$document = [];
+
+		if (!empty($attachment_id) && !empty($profile_id)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('has_sample, sample_filepath')
+				->from('#__emundus_setup_attachment_profiles')
+				->where($db->quoteName('attachment_id') . ' = ' . $attachment_id)
+				->andWhere($db->quoteName('profile_id') . ' = ' . $profile_id);
+
+			try {
+				$db->setQuery($query);
+				$document = $db->loadAssoc();
+			} catch (Exception $e) {
+				JLog::add('component/com_emundus/models/formbuilder | Error at getting document sample : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		if (!is_array($document)) $document = array();
+
+		return $document;
+	}
 }

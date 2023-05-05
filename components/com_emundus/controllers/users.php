@@ -24,7 +24,6 @@ jimport('joomla.application.component.controller');
 class EmundusControllerUsers extends JControllerLegacy {
 	private $_user = null;
 	private $_db = null;
-	private $m_user = null;
 
 	public function __construct($config = array()) {
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
@@ -35,7 +34,6 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		$this->_user  = JFactory::getSession()->get('emundusUser');
 		$this->_db    = JFactory::getDBO();
-		$this->m_user = new EmundusModelUsers();
 
 		parent::__construct($config);
 	}
@@ -103,8 +101,11 @@ class EmundusControllerUsers extends JControllerLegacy {
 			$password = $h_users->generateStrongPassword();
 			$user->password = md5($password);
 		}
-		$user->registerDate = date('Y-m-d H:i:s');
-		$user->lastvisitDate = date('Y-m-d H:i:s');
+        $now = new DateTime();
+        $now->setTimezone(new DateTimeZone('UTC'));
+        $now = $now->format('Y-m-d H:i:s');
+        $user->registerDate = $now;
+        $user->lastvisitDate = null;
 		$user->groups = array($jgr);
 		$user->block = 0;
 
@@ -333,7 +334,8 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 	/////////////Nouvelle Gestion /////////////////
 	public function clear() {
-		@EmundusHelperFiles::clear();
+        $h_files = new EmundusHelperFiles();
+        $h_files->clear();
 		echo json_encode((object)(array('status' => true)));
 		exit;
 	}
@@ -1006,11 +1008,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 	public function getattachmentaccessrights()
 	{
-		$rights = [
-			'canDelete' => false,
-			'canExport' => false,
-			'canUpdate' => false,
-		];
+		$rights = array();
 
 		$fnum = JFactory::getApplication()->input->getString('fnum', null);
 

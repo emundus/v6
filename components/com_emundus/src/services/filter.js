@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 import client from './axiosClient';
 
 export default {
