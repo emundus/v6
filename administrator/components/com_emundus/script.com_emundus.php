@@ -1611,7 +1611,9 @@ try {
 					$db->setQuery($query);
 					$db->execute();
 				}
-			}
+
+                EmundusHelperUpdate::installExtension('plg_fabrik_element_emundusphonenumber', 'emundus_phonenumber', '{"name":"plg_fabrik_element_emundusphonenumber","type":"plugin","creationDate":"April 2023","author":"eMundus - Thibaud Grignon","copyright":"Copyright (C) 2005-2021 Media A-Team, Inc. - All rights reserved.","authorEmail":"rob@pollen-8.co.uk","authorUrl":"www.fabrikar.com","version":"3.10","description":"PLG_ELEMENT_FIELD_DESCRIPTION","group":"","filename":"emundus_phonenumber"}', 'plugin', 1, 'fabrik_element');
+            }
 
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
