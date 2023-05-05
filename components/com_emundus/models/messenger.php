@@ -370,7 +370,8 @@ class EmundusModelMessenger extends JModelList
                         ->set($db->quoteName('fnum') . ' = ' . $db->quote($fnumInfos['fnum']))
                         ->set($db->quoteName('campaign_id') . ' = ' . $db->quote($fnumInfos['id']))
                         ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($attachment))
-                        ->set($db->quoteName('filename') . ' = ' . $db->quote($filesrc));
+                        ->set($db->quoteName('filename') . ' = ' . $db->quote($filesrc))
+                        ->set($db->quoteName('description').' = '.$db->quote(''));
                     $db->setQuery($query);
                     $inserted = $db->execute();
 

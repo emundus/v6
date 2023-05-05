@@ -169,7 +169,7 @@ class EmundusModelApplication extends JModelList
 				->andWhere('esa.lbl NOT LIKE ' . $this->_db->quote('_application_form'));
 
 			if (!empty($this->_user) && EmundusHelperAccess::isExpert($this->_user->id)) {
-				$query->andWhere($this->_db->quoteName('esa.attachment_id') . ' != ' . $expert_document_id);
+				$query->andWhere($this->_db->quoteName('esa.id') . ' != ' . $expert_document_id);
 			}
 
 			if (isset($search) && !empty($search)) {

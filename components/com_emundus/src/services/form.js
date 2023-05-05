@@ -69,6 +69,17 @@ export default {
             };
         }
     },
+    async getFormByFabrikId(id) {
+        try {
+            const response = await client().get(baseUrl + '&task=getFormByFabrikId', {params: {form_id: id}});
+            return response;
+        } catch (error) {
+            return {
+                status: false,
+                error: error
+            };
+        }
+    },
     async getProfileLabelByProfileId(id)
     {
         const formData = new FormData();
