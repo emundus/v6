@@ -41,4 +41,9 @@ class EmundusModelDecisionTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_decision = new EmundusModelDecision;
     }
+
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
 }

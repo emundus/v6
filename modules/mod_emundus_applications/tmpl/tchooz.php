@@ -110,7 +110,7 @@ $current_tab = 0;
 <div class="mod_emundus_applications___header mod_emundus_applications___tmp_tchooz">
 	<?php if ($mod_em_applications_show_hello_text == 1) : ?>
         <div class="em-flex-row em-flex-space-between em-w-100 em-mb-16">
-            <h1 class="em-mb-8"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_HELLO') . $user->firstname ?></h1>
+            <h1 class="em-h1 em-mb-8"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_HELLO') . $user->firstname ?></h1>
 			<?php if (sizeof($applications) > 0) : ?>
                 <div class="em-flex-row em-w-auto">
 					<?php if ($show_add_application && ($position_add_application == 3 || $position_add_application == 4) && $applicant_can_renew) : ?>
@@ -157,7 +157,7 @@ $current_tab = 0;
 </div>
 
 <?php if ($show_tabs == 1) : ?>
-    <div class="em-mt-32 em-flex-row em-border-bottom-neutral-300" style="flex-wrap: wrap;height: 50px">
+    <div class="em-mt-32 em-flex-row em-border-bottom-neutral-300" style="height: 50px; overflow:hidden; overflow-x: auto;">
 		<?php foreach ($tabs as $tab) : ?>
             <div id="tab_link_<?php echo $tab['id'] ?>" onclick="updateTab(<?php echo $tab['id'] ?>)"
                  class="em-mr-16 em-flex-row em-light-tabs em-pointer <?php if ($current_tab == $tab['id']) : ?>em-light-selected-tab<?php endif; ?>">
@@ -273,8 +273,7 @@ $current_tab = 0;
 	<?php if (sizeof($applications) == 0) : ?>
         <hr>
         <div class="mod_emundus_applications__list_content--default">
-            <p class="em-text-neutral-900 em-h5 em-applicant-title-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE') ?></p>
-            <br/>
+            <h2 class="em-text-neutral-900 em-h2 em-applicant-title-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE') ?></h2>
             <p class="em-text-neutral-900 em-default-font em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT') ?></p>
             <p class="em-applicant-text-color em-default-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT_2') ?></p>
             <br/>
@@ -303,18 +302,21 @@ $current_tab = 0;
                          class="em-mb-44 <?php if ($key != $current_tab) : ?>em-display-none<?php endif; ?>">
 						<?php foreach ($sub_group['applications'] as $f_key => $files) : ?>
 							<?php if (!is_integer($f_key) || $order_by_session == 'years') : ?>
-                                <p class="em-h5 em-ml-8"><?php echo $f_key ?></p>
+                                <h3 class="em-h3 em-ml-8"><?php echo $f_key ?></h3>
                                 <hr/>
 							<?php endif; ?>
                             <div class="<?= $moduleclass_sfx ?> mod_emundus_applications___content em-mb-32">
 								<?php foreach ($files as $application) : ?>
 
-									<?php
-									$is_admission = in_array($application->status, $admission_status);
-									$display_app  = true;
-									if (!empty($show_status) && !in_array($application->status, $show_status)) {
-										$display_app = false;
-									}
+                            <?php
+	                        $is_admission = false;
+                            if(!empty($admission_status)) {
+	                            $is_admission = in_array($application->status, $admission_status);
+                            }
+                            $display_app = true;
+                            if(!empty($show_status) && !in_array($application->status, $show_status)) {
+                                $display_app = false;
+                            }
 
 									if ($display_app) {
 										$state          = $application->published;
@@ -381,7 +383,9 @@ $current_tab = 0;
                                                             <!-- ACTIONS BLOCK -->
                                                             <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color"
                                                                  id="actions_block_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
-                                                                 style="display: none">
+                                                                 style="display: none"
+                                                                 data-mid="<?= $module->id ?>"
+                                                            >
                                                                 <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                    href="<?= JRoute::_($first_page_url); ?>"
                                                                    id="actions_block_open_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
@@ -436,16 +440,23 @@ $current_tab = 0;
 
 																<?php
 																foreach ($custom_actions as $custom_action_key => $custom_action) {
-
-																	if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)) {
-																		?>
-                                                                        <a id="actions_button_custom_<?= $custom_action_key; ?>_card_tab<?php echo $key ?>"
-                                                                           class="em-text-neutral-900 em-pointer em-flex-row"
-                                                                           href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?>>
-                                                                            <span class="material-icons-outlined em-font-size-16 em-mr-8"><?php echo $custom_action->mod_em_application_custom_action_icon ?></span>
-																			<?= JText::_($custom_action->mod_em_application_custom_action_label) ?>
-                                                                        </a>
-																		<?php
+                                                                    if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)) {
+                                                                        if ($custom_action->mod_em_application_custom_action_type == 2) {
+	                                                                        ?>
+                                                                            <span id="actions_button_custom_<?= $custom_action_key; ?>" class="em-text-neutral-900 em-pointer em-custom-action-launch-action" data-text="<?= $custom_action->mod_em_application_custom_action_new_status_message; ?>" data-fnum="<?=  $application->fnum ?>"><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></span>
+	                                                                        <?php
+                                                                        } else if (!empty($custom_action->mod_em_application_custom_action_link)) {
+                                                                            ?>
+                                                                            <a id="actions_button_custom_<?= $custom_action_key; ?>_card_tab<?php echo $key ?>"
+                                                                               class="em-text-neutral-900 em-pointer em-flex-row"
+                                                                               href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?>>
+                                                                                <? if ($custom_action->mod_em_application_custom_action_icon): ?>
+                                                                                    <span class="material-icons-outlined em-font-size-16 em-mr-8"><?php echo $custom_action->mod_em_application_custom_action_icon ?></span>
+                                                                                <? endif; ?>
+                                                                                <?= JText::_($custom_action->mod_em_application_custom_action_label) ?>
+                                                                            </a>
+                                                                            <?php
+                                                                        }
 																	}
 																}
 																?>
@@ -454,13 +465,13 @@ $current_tab = 0;
                                                     </div>
 													<?php if (empty($application->name)) : ?>
                                                         <a href="<?= JRoute::_($first_page_url); ?>"
-                                                           class="em-h6 mod_emundus_applications___title"
+                                                           class="em-h4 mod_emundus_applications___title"
                                                            id="application_title_<?php echo $application->fnum ?>">
                                                             <h5><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></h5>
                                                         </a>
 													<?php else : ?>
                                                         <a href="<?= JRoute::_($first_page_url); ?>"
-                                                           class="em-h6 mod_emundus_applications___title"
+                                                           class="em-h4 mod_emundus_applications___title"
                                                            id="application_title_<?php echo $application->fnum ?>">
                                                             <h5><?= $application->name; ?></h5>
                                                         </a>
@@ -538,7 +549,7 @@ $current_tab = 0;
 																<?php if (empty($application->updated)) : ?>
 																	<?php echo JFactory::getDate(new JDate($application->submitted_date, $site_offset))->format('d/m/Y H:i'); ?>
 																<?php else : ?>
-																	<?php echo EmundusHelperDate::displayDate($application->updated, 'd/m/Y H:i', 0); ?>
+																	<?php echo EmundusHelperDate::displayDate($application->updated, 'DATE_FORMAT_LC2', 0); ?>
 																<?php endif; ?>
                                                             </p>
                                                         </div>
@@ -665,7 +676,7 @@ $current_tab = 0;
 											$current_phase = $m_campaign->getCurrentCampaignWorkflow($application->fnum);
 
 											?>
-                                            <tr class="row em-pointer"
+                                            <tr class="em-pointer"
                                                 id="application_content<?php echo $application->fnum ?>"
                                                 onclick="openFile(event,'<?php echo $first_page_url ?>')">
                                                 <td style="width: 23.75%;">
@@ -736,7 +747,9 @@ $current_tab = 0;
                                                         <!-- ACTIONS BLOCK -->
                                                         <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color"
                                                              id="actions_block_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>"
-                                                             style="display: none">
+                                                             style="display: none"
+                                                             data-mid="<?= $module->id ?>"
+                                                        >
                                                             <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                href="<?= JRoute::_($first_page_url); ?>"
                                                                id="actions_block_open_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
@@ -791,16 +804,23 @@ $current_tab = 0;
 
 															<?php
 															foreach ($custom_actions as $custom_action_key => $custom_action) {
-
 																if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)) {
-																	?>
-                                                                    <a id="actions_button_custom_<?= $custom_action_key; ?>_list_tab<?php echo $key ?>"
-                                                                       class="em-text-neutral-900 em-pointer em-flex-row"
-                                                                       href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?>>
-                                                                        <span class="material-icons-outlined em-font-size-16 em-mr-8"><?php echo $custom_action->mod_em_application_custom_action_icon ?></span>
-																		<?= JText::_($custom_action->mod_em_application_custom_action_label) ?>
-                                                                    </a>
-																	<?php
+																	if ($custom_action->mod_em_application_custom_action_type == 2) {
+																		?>
+                                                                        <span id="actions_button_custom_<?= $custom_action_key; ?>" class="em-text-neutral-900 em-pointer em-custom-action-launch-action" data-text="<?= $custom_action->mod_em_application_custom_action_new_status_message; ?>"><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></span>
+																		<?php
+																	} else if (!empty($custom_action->mod_em_application_custom_action_link)) {
+																		?>
+                                                                        <a id="actions_button_custom_<?= $custom_action_key; ?>_card_tab<?php echo $key ?>"
+                                                                           class="em-text-neutral-900 em-pointer em-flex-row"
+                                                                           href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?>>
+																			<? if ($custom_action->mod_em_application_custom_action_icon): ?>
+                                                                                <span class="material-icons-outlined em-font-size-16 em-mr-8"><?php echo $custom_action->mod_em_application_custom_action_icon ?></span>
+																			<? endif; ?>
+																			<?= JText::_($custom_action->mod_em_application_custom_action_label) ?>
+                                                                        </a>
+																		<?php
+																	}
 																}
 															}
 															?>
@@ -1481,6 +1501,52 @@ $current_tab = 0;
                     timer: 3000
                 });
             }
+        });
+    }
+</script>
+
+<script>
+    const customActions = document.querySelectorAll('.em-custom-action-launch-action');
+
+    if (customActions.length > 0) {
+        customActions.forEach((customAction) => {
+            const action = customAction.id.replace('actions_button_custom_', '');
+
+            customAction.addEventListener('click', function () {
+                Swal.fire({
+                    title: customAction.innerText,
+                    text: customAction.dataset.text,
+                    type: 'info',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#dc3545',
+                    reverseButtons: true,
+                    confirmButtonText: "<?php echo JText::_('JYES');?>",
+                    cancelButtonText: "<?php echo JText::_('JNO');?>"
+                }).then((confirm) => {
+                    if (confirm.value) {
+                        const actions = customAction.closest('.mod_emundus_applications__actions');
+                        const module_id = actions.dataset.mid;
+                        const fnum = customAction.dataset.fnum;
+
+                        fetch('index.php?option=com_emundus&controller=application&task=applicantcustomaction&action=' + action + '&fnum=' + fnum + '&module_id=' + module_id)
+                            .then((response) => {
+                                if (response.ok) {
+                                    return response.json();
+                                } else {
+                                    throw new Error(response.statusText);
+                                }
+                            })
+                            .then((json) => {
+                                if (json.status) {
+                                    window.location.reload();
+                                } else {
+                                    console.error(json.msg);
+                                }
+                            });
+                    }
+                })
+            });
         });
     }
 </script>

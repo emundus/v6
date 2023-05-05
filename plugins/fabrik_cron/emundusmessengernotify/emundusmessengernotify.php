@@ -371,7 +371,7 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                     $path_fr = $db->loadResult();
 
                     // If there are both en and fr translations, use no link in the mail
-                    if (!empty($path_fr) && !empty($path_en)) {
+                    if ((!empty($path_fr) && !empty($path_en)) && $path_fr !== $path_en) {
                         $userLink = '';
                     } else {
                         if (!empty($path_fr)) {

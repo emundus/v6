@@ -1286,6 +1286,7 @@ input:focus + .em-slider {
 
 .em-applicant-default-font {
   font-family: var(--font);
+  text-transform: inherit;
 }
 
 .em-applicant-title-font {

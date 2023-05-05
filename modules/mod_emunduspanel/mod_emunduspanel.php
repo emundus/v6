@@ -43,7 +43,7 @@ if (isset($user->menutype)) {
 /*
  * TCHOOZ PARAMETERS
  */
-$profiles = $params->get('profiles');
+$profiles = $params->get('profiles',[]);
 $title = $params->get('title', '');
 $desc_text = $params->get('desc_text', '');
 

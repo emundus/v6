@@ -42,6 +42,11 @@ class EmundusModelDashboardTest extends TestCase
         $this->m_dashboard = new EmundusModeldashboard;
     }
 
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
+
     /*public function testGetarticle()
     {
         // TEST 1 : Article is return

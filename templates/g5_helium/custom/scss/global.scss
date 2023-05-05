@@ -114,6 +114,8 @@ h4{
   line-height: 23px;
   color: $accent-color-1;
   margin: 0;
+  font-weight: 600;
+  font-family: get-font-family($font-family-title);
 }
 h5{
   font-family: get-font-family($font-family-title);
@@ -1632,6 +1634,7 @@ body > .g-container {
           width: fit-content;
 
           .btn.btn-default {
+            font-size: 11px;
             display: flex;
             align-items: center;
             border: 1px solid var(--main-500);
@@ -1724,6 +1727,7 @@ body > .g-container {
 
         .dropfiles-save-submit {
           width: fit-content !important;
+          font-size: 11px !important;
           border: 1px solid var(--main-500);
           background-color: var(--main-500) !important;
           color: var(--neutral-0);
@@ -1876,6 +1880,14 @@ body > .g-container {
 }
 
 /* LISTES  */
+.view-list.com_fabrik .table tbody tr .modal .modal-footer a.btn {
+  color: var(--neutral-0);
+  text-transform: initial;
+
+  &:hover, &:focus, &:active {
+    color: $base-primary-color;
+  }
+}
 
 .view-list{
   .page-intro p{
@@ -2099,11 +2111,15 @@ div.fabrikFilterContainer {
       .fabrikDateListFilterRange {
         display: flex;
 
+        input.fabrik_filter {
+          border-radius: 4px 0 0 4px !important;
+        }
+
         .calendarbutton {
           height: 40px;
           color: var(--neutral-900);
           border: solid 1px #ececee;
-          border-radius: 0 4px 4px 0;
+          border-radius: 0 4px 4px 0 !important;
         }
 
         .input-append:first-child {
@@ -3852,6 +3868,7 @@ ul.unstyled.em-linkForgot li a {
     border-radius: 4px;
     width: 100%;
     overflow: auto;
+    cursor: auto;
 
     li.search-field {
       input[type="text"] {

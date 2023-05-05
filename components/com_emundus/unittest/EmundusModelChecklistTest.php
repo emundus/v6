@@ -41,4 +41,9 @@ class EmundusModelChecklistTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_checklist = new EmundusModelChecklist;
     }
+
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
 }
