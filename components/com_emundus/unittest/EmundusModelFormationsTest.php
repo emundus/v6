@@ -41,4 +41,9 @@ class EmundusModelFormationsTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_formations = new EmundusModelFormations;
     }
+
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
 }

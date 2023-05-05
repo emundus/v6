@@ -230,12 +230,12 @@ class EmundusUnittestHelperSamples
 				->columns(['fnum', 'user_id', 'campaign_id', 'attachment_id', 'filename', 'local_filename', 'timedate', 'can_be_deleted', 'can_be_viewed'])
 				->values($fnum . ',' . $user_id . ',' . $campaign_id . ',' . $attachment_id . ',' . $db->quote($filename) . ',' . $db->quote($localFilename) . ',' . $db->quote(date('Y-m-d H:i:s')) . ',1,1');
 
-
 			try {
 				$db->setQuery($query);
 				$inserted = $db->execute();
 			} catch (Exception $e) {
-				error_log($e->getMessage());
+				$inserted = false;
+				error_log('attachment insertion failed');
 			}
 		}
 

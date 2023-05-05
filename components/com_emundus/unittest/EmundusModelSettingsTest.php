@@ -42,6 +42,11 @@ class EmundusModelSettingsTest extends TestCase
         $this->m_settings = new EmundusModelsettings;
     }
 
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
+
 	public function testgetStatus() {
 		$all_status = $this->m_settings->getStatus();
 

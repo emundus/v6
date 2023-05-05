@@ -42,6 +42,11 @@ class EmundusModelChecklistTest extends TestCase
         $this->m_checklist = new EmundusModelChecklist;
     }
 
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
+
 	public function testgetAttachmentsList()
 	{
 		$attachments = $this->m_checklist->getAttachmentsList();

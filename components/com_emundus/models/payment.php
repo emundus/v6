@@ -1049,7 +1049,6 @@ class EmundusModelPayment extends JModelList
         return $valid_session;
     }
 
-}
 
     private function getHikashopUser($fnum)
     {
@@ -1117,44 +1116,46 @@ class EmundusModelPayment extends JModelList
      */
     public function generateCoupon($fnum, $discount_amount, $discount_amount_type = 'flat', $hikashop_product_category, $discount_duration = 1800)
     {
-        $discount_code = '';
+		$discount_code = '';
 
-        if (!empty($fnum)) {
-            $discount_code = $fnum . '-REDUCTION-' . uniqid();
-            $db = JFactory::getDBO();
-            $query = $db->getQuery(true);
+		if (!empty($fnum)) {
+			$discount_code = $fnum . '-REDUCTION-' . uniqid();
+			$db = JFactory::getDBO();
+			$query = $db->getQuery(true);
 
-            $hikashop_user = $this->getHikashopUser($fnum);
+			$hikashop_user = $this->getHikashopUser($fnum);
 
-            if (!empty($hikashop_user->user_id)) {
-                $columns = ['discount_code', 'discount_type', 'discount_start', 'discount_end', 'discount_user_id', 'discount_quota', 'discount_published', 'discount_currency_id'];
-                $values = $db->quote($discount_code) . ',' .$db->quote('coupon') . ',' . $db->quote(time()) . ',' . $db->quote(time() + $discount_duration) . ',' . $hikashop_user->user_id . ', 1, 1, 1';
+			if (!empty($hikashop_user->user_id)) {
+				$columns = ['discount_code', 'discount_type', 'discount_start', 'discount_end', 'discount_user_id', 'discount_quota', 'discount_published', 'discount_currency_id'];
+				$values = $db->quote($discount_code) . ',' . $db->quote('coupon') . ',' . $db->quote(time()) . ',' . $db->quote(time() + $discount_duration) . ',' . $hikashop_user->user_id . ', 1, 1, 1';
 
-                if ($discount_amount_type == 'flat') {
-                    $columns[] = 'discount_flat_amount';
-                } else {
-                    $columns[] = 'discount_percent_amount';
-                }
-                $values .= ', ' . $db->quote($discount_amount);
+				if ($discount_amount_type == 'flat') {
+					$columns[] = 'discount_flat_amount';
+				} else {
+					$columns[] = 'discount_percent_amount';
+				}
+				$values .= ', ' . $db->quote($discount_amount);
 
-                if (!empty($hikashop_product_category)) {
-                    $columns[] = 'discount_category_id';
-                    $values .= ', ' . $db->quote($hikashop_product_category);
-                }
+				if (!empty($hikashop_product_category)) {
+					$columns[] = 'discount_category_id';
+					$values .= ', ' . $db->quote($hikashop_product_category);
+				}
 
-                $query->clear()
-                    ->insert($db->quoteName('#__hikashop_discount'))
-                    ->columns($columns)
-                    ->values($values);
-                try {
-                    $db->setQuery($query);
-                    $inserted = $db->execute();
+				$query->clear()
+					->insert($db->quoteName('#__hikashop_discount'))
+					->columns($columns)
+					->values($values);
+				try {
+					$db->setQuery($query);
+					$inserted = $db->execute();
 
-                    if (!$inserted) {
-                        $discount_code = '';
-                    }
-                } catch (Exception $e) {
-                    JLog::add('Failed to generate discount coupon for fnum ' . $fnum . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.emundus_hikashop_plugin');
-                }
-            }
-        }
+					if (!$inserted) {
+						$discount_code = '';
+					}
+				} catch (Exception $e) {
+					JLog::add('Failed to generate discount coupon for fnum ' . $fnum . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.emundus_hikashop_plugin');
+				}
+			}
+		}
+	}
+}

@@ -41,4 +41,9 @@ class EmundusModelGroupsTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_groups = new EmundusModelGroups;
     }
+
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
 }

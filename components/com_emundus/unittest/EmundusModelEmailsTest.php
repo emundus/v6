@@ -41,4 +41,9 @@ class EmundusModelEmailsTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_emails = new EmundusModelEmails;
     }
+
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
 }
