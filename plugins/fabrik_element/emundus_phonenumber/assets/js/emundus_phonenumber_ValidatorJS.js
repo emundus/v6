@@ -26,7 +26,7 @@ class ValidatorJS {
     initEventListener()
     {
         this.select.addEventListener('change', this.handlerSelectChange.bind(this));
-        this.input.addEventListener('focusout', this.handlerInputFocusOut.bind(this));
+        this.input.addEventListener('input', this.handlerInputFocusOut.bind(this));
         this.input.addEventListener('focusin', this.handlerInputFocusIn.bind(this));
 
         if (this.mustValidate)
@@ -42,11 +42,14 @@ class ValidatorJS {
 
     inputValidation()
     {
-        if (this.countrySelected.country_code !== '+')
+        this.divError.innerHTML = Joomla.JText._('PLG_ELEMENT_PHONE_NUMBER_INVALID');
+        this.setInputBorderColor(this.errorColor);
+        this.isValid.checked = false; // invalid
+
+        if (this.countrySelected.country_code !== '+' && this.input.value[0] === '+')
         {
             const number = this.input.value;
             let format;
-            this.divError.innerHTML = '';
 
             try // test number.lengh > 1
             {
@@ -57,21 +60,20 @@ class ValidatorJS {
                 // too short, meh
             }
 
-            this.setInputBorderColor(this.errorColor);
-            this.isValid.checked = false; // invalid
-
             if (format && libphonenumber.isValidNumber(format))
             {
                 this.setInputBorderColor(this.validColor);
                 this.input.value = format;
                 this.isValid.checked = true; // valid
-            }
-            else
-            {
-                this.divError.innerHTML = Joomla.JText._('PLG_ELEMENT_PHONE_NUMBER_INVALID');
+                this.divError.innerHTML = '';
             }
         }
-        //else, unsupported country
+        else // unsupported country
+        {
+            this.divError.innerHTML = Joomla.JText._('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
+            this.isValid.checked = true; // unsupported but still valid
+            this.setInputBorderColor(this.unsupportedColor);
+        }
     }
 
     handlerInputFocusIn(props)
@@ -104,6 +106,7 @@ class ValidatorJS {
         {
             this.divError.innerHTML = Joomla.JText._('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
             this.isValid.checked = true; // unsupported but still valid
+            this.setInputBorderColor(this.unsupportedColor);
         }
     }
 
@@ -111,7 +114,6 @@ class ValidatorJS {
     {
         // unsupported country
         this.input.value = '';
-        this.countrySelected.country_code !== '+' ? this.setInputBorderColor(this.defaultColor) : this.setInputBorderColor(this.unsupportedColor);
 
         if (this.defaultValue !== '')
         {
