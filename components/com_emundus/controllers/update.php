@@ -37,6 +37,7 @@ class EmundusControllerUpdate extends JControllerLegacy {
         $ignoreVersion = $jinput->post->get('ignoreversion', null);
         $m_update = new EmundusModelUpdate();
 
+        $user = JFactory::getUser();
         // verify if version is not already set
         if($version != $oldVersion && $version != $ignoreVersion && EmundusHelperAccess::asCoordinatorAccessLevel(JFactory::getUser()->id)) {
             $config = JFactory::getConfig();
@@ -44,20 +45,20 @@ class EmundusControllerUpdate extends JControllerLegacy {
 
             $body = "Bonjour équipe eMundus,<br>
                     Vous avez reçu une demande de mise à jour eMundus v" . $version . " par " . JFactory::getUser()->name . " pour leur site " . JURI::base();
-    
+
             // Get default mail sender info
             $mail_from_sys = $config->get('mailfrom');
             $mail_from_sys_name = $config->get('fromname');
-    
+
             // Set sender
             $sender = [
                 $mail_from_sys,
                 $mail_from_sys_name
             ];
-    
+
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $emundusEmail = $eMConfig->get('emundus_email', 'support@emundus.fr');
-            
+
             // Configure email sender
             $mailer = JFactory::getMailer();
             $mailer->setSender($sender);
@@ -67,10 +68,10 @@ class EmundusControllerUpdate extends JControllerLegacy {
             $mailer->isHTML(true);
             $mailer->Encoding = 'base64';
             $mailer->setBody($body);
-            
+
             // Send and log the email.
             $send = $mailer->Send();
-            
+
             if ($send !== true) {
                 JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
                 echo json_encode((object)['status' => false, 'msg' => 'Internal error']);
@@ -103,7 +104,7 @@ class EmundusControllerUpdate extends JControllerLegacy {
         }
     }
 
-    /// Choose Update 
+    /// Choose Update
     public function choose() {
         $jinput = JFactory::getApplication()->input;
         $version = $jinput->post->get('version', null);
@@ -112,7 +113,7 @@ class EmundusControllerUpdate extends JControllerLegacy {
         $updateDate = $jinput->post->get('updateDate', null);
 
         $user = JFactory::getUser();
-        
+
 
         if($version != $oldVersion && $version != $ignoreVersion && EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 	        $m_calendar = new EmundusModelCalendar();
@@ -130,17 +131,17 @@ class EmundusControllerUpdate extends JControllerLegacy {
                     <br>
                     <br>
                     La date de cette mise à jour est prévue pour le ". $updateDate . " et enregistrée sur votre calendrier google.";
-    
+
             // Get default mail sender info
             $mail_from_sys = $config->get('mailfrom');
             $mail_from_sys_name = $config->get('fromname');
-    
+
             // Set sender
             $sender = [$mail_from_sys, $mail_from_sys_name];
     
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $emundusEmail = $eMConfig->get('emundus_email', 'support@emundus.fr');
-            
+
             // Configure email sender
             $mailer = JFactory::getMailer();
             $mailer->setSender($sender);
@@ -150,11 +151,10 @@ class EmundusControllerUpdate extends JControllerLegacy {
             $mailer->isHTML(true);
             $mailer->Encoding = 'base64';
             $mailer->setBody($body);
-            
+
             // Send and log the email.
             $send = $mailer->Send();
         }
 	}
 }
 
-    

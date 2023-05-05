@@ -5202,6 +5202,8 @@ $(document).ready(function() {
         e.preventDefault();
         var id = $(this).attr('id');
         var url = $(this).attr('href');
+        console.log(url)
+        console.log(window.location.origin)
 
         $.ajax({
             type: "get",
@@ -5209,7 +5211,8 @@ $(document).ready(function() {
             dataType: 'html',
             data: ({id: id}),
             success: function (result) {
-                const urlUsed = new URL(window.location.origin + url);
+                const urlUsed = new URL(window.location.origin + '/' + url);
+
                 var fnumUsed = urlUsed.searchParams.get('fnum');
 
                 checkIfSomeoneIsEditing(fnumUsed);

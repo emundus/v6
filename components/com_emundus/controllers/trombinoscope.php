@@ -105,7 +105,7 @@ class EmundusControllerTrombinoscope extends EmundusController {
      * @throws Exception
      * @since version
      */
-    public function generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $templHeader, $templFooter,  $generate, $preview = false, $checkHeader = false, $border, $headerHeight) {
+    public function generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $templHeader, $templFooter,  $generate, $preview = false, $checkHeader = false, $border = null, $headerHeight = null) {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         $m_files = new EmundusModelFiles();
         // Traitement du nombre de colonnes max par ligne
@@ -218,7 +218,7 @@ body {
     display: inline-block;
     text-overflow: ellipsis;
     overflow: hidden;
-    whitespace: no-wrap;
+    white-space: no-wrap;
     line-height: 1;
     width: '.$cell_width.'px;
     height: '.$cell_height.'px;

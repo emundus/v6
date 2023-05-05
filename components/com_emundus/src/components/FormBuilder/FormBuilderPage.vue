@@ -2,7 +2,7 @@
   <div id="form-builder-page">
     <div class="em-flex-row em-flex-space-between">
 	    <span
-			    class="em-font-size-24 em-font-weight-800 editable-data"
+			    class="em-font-size-24 em-font-weight-600 editable-data"
 			    ref="pageTitle"
 			    @focusout="updateTitle"
 			    @keyup.enter="updateTitleKeyup"

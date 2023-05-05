@@ -157,12 +157,27 @@
 					   label="MOD_EM_APPLICATION_GROUP_TITLE_OTHER" description="MOD_EM_APPLICATION_GROUP_TITLE_OTHER_DESC"
 				/>
 
+				<field showon="layout:_:tchooz" name="mod_em_applications_show_filters" type="radio" default="0" label="MOD_EMUNDUS_APPLICATIONS_SHOW_FILTERS" description="MOD_EMUNDUS_APPLICATIONS_SHOW_FILTERS_DESC">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+
+				<field showon="layout:_:tchooz" name="mod_em_applications_show_sort" type="radio" default="0" label="MOD_EMUNDUS_APPLICATIONS_SHOW_SORT" description="MOD_EMUNDUS_APPLICATIONS_SHOW_SORT_DESC">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+
 				<field showon="layout:_:tchooz" name="mod_em_applications_show_search" type="radio" default="1" label="MOD_EMUNDUS_APPLICATIONS_SHOW_SEARCHBAR" description="MOD_EMUNDUS_APPLICATIONS_SHOW_SEARCHBAR_DESC">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
 				</field>
 
 				<field showon="layout:_:tchooz" name="mod_em_applications_show_hello_text" type="radio" default="1" label="MOD_EMUNDUS_APPLICATIONS_SHOW_HELLO_TEXT" description="MOD_EMUNDUS_APPLICATIONS_SHOW_HELLO_TEXT_DESC">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+
+				<field showon="layout:_:tchooz" name="mod_em_applications_show_tabs" type="radio" default="1" label="MOD_EMUNDUS_APPLICATIONS_SHOW_TABS" description="MOD_EMUNDUS_APPLICATIONS_SHOW_TABS_DESC">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
 				</field>
@@ -298,6 +313,17 @@
 				</field>
 
 				<field showon="layout:_:tchooz"
+					   name="mod_emundus_applications_actions"
+					   type="checkboxes"
+					   default=""
+					   label="MOD_EMUNDUS_APPLICATIONS_ACTIONS"
+					   description="MOD_EMUNDUS_APPLICATIONS_ACTIONS_DESC">
+					<option value="rename">MOD_EMUNDUS_APPLICATIONS_ACTIONS_RENAME</option>
+					<option value="copy">MOD_EMUNDUS_APPLICATIONS_ACTIONS_COPY</option>
+					<option value="history">MOD_EMUNDUS_APPLICATIONS_ACTIONS_HISTORY</option>
+				</field>
+
+				<field showon="layout:_:tchooz"
 					   name="mod_em_application_custom_actions"
 					   type="subform"
 					   label="MOD_EM_APPLICATION_CUSTOM_ACTIONS"
@@ -315,6 +341,12 @@
 								value_field="value"
 								label="MOD_EM_APPLICATION_CUSTOM_ACTION_STATUS"
 								description="MOD_EM_APPLICATION_CUSTOM_ACTION_STATUS_DESC"
+						/>
+						<field
+								name="mod_em_application_custom_action_icon"
+								type="text"
+								label="MOD_EM_APPLICATION_CUSTOM_ACTION_ICON"
+								description="MOD_EM_APPLICATION_CUSTOM_ACTION_ICON_DESC"
 						/>
 						<field
 								name="mod_em_application_custom_action_label"

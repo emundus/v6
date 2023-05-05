@@ -13,7 +13,7 @@
 			/>
 		</td>
 		<td v-if="columns.includes('name')" class="td-document" @click="openModal">
-			<span v-if="!attachment.existsOnServer" class="material-icons-outlined warning file-not-found" :title="translate('COM_EMUNDUS_ATTACHMENTS_FILE_NOT_FOUND')">warning</span>
+			<span v-if="!attachment.existsOnServer" class="material-icons-outlined warning file-not-found em-mr-16" :title="translate('COM_EMUNDUS_ATTACHMENTS_FILE_NOT_FOUND')">warning</span>
 			<span :title="attachment.value">{{ attachment.value }}</span>
 		</td>
 		<td v-if="columns.includes('date')" class="date">{{ formattedDate(attachment.timedate) }}</td>

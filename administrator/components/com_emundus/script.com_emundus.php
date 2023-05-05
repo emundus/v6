@@ -6,8 +6,9 @@ require_once JPATH_CONFIGURATION . '/configuration.php';
 
 class com_emundusInstallerScript
 {
-	protected $manifest_cache;
-	protected $schema_version;
+    protected $manifest_cache;
+    protected $schema_version;
+    protected EmundusHelperUpdate $h_update;
 
 	public function __construct()
 	{
@@ -28,8 +29,9 @@ class com_emundusInstallerScript
 		$db->setQuery($query);
 		$this->schema_version = $db->loadResult();
 
-		require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
-	}
+        require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+        $this->h_update = new EmundusHelperUpdate();
+    }
 
 
 	/**
@@ -1308,6 +1310,78 @@ try {
                 EmundusHelperUpdate::addCustomEvents([['label' => 'onAfterMoveApplication', 'category' => 'Campaign']]);
             }
 
+			if (version_compare($cache_version, '1.36.0', '<') || $firstrun) {
+				EmundusHelperUpdate::addCustomEvents([
+					['label' => 'onBeforeEmundusRedirectToHikashopCart', 'category' => 'Hikashop'],
+					['label' => 'onBeforeApplicantEnterApplication', 'category' => 'Files'],
+					['label' => 'onAccessDenied', 'category' => 'Access']
+				]);
+
+				// Campaign candidature tabs
+				$columns = [
+					[
+						'name' => 'name',
+						'type' => 'VARCHAR',
+						'length' => 255,
+						'null' => 0,
+					],
+					[
+						'name' => 'applicant_id',
+						'type' => 'INT',
+						'null' => 0,
+					],
+					[
+						'name' => 'ordering',
+						'type' => 'INT',
+						'default' => 1,
+						'null' => 1,
+					]
+				];
+				$foreign_keys = [
+					[
+						'name' => 'jos_emundus_users_fk_applicant_id',
+						'from_column' => 'applicant_id',
+						'ref_table' => 'jos_emundus_users',
+						'ref_column' => 'user_id',
+						'update_cascade' => true,
+						'delete_cascade' => true,
+					]
+				];
+				EmundusHelperUpdate::createTable('jos_emundus_campaign_candidature_tabs',$columns,$foreign_keys,'Storage tab for filing');
+
+				$columns = [
+					[
+						'name' => 'date_time',
+						'type' => 'datetime',
+						'null' => 1,
+					],
+					[
+						'name' => 'fnum_from',
+						'type' => 'VARCHAR',
+						'length' => 255,
+						'null' => 0,
+					],
+					[
+						'name' => 'fnum_to',
+						'type' => 'VARCHAR',
+						'length' => 255,
+						'null' => 0,
+					],
+					[
+						'name' => 'published',
+						'type' => 'TINYINT',
+						'default' => 1,
+						'null' => 0,
+					]
+				];
+				$foreign_keys = [];
+				EmundusHelperUpdate::createTable('jos_emundus_campaign_candidature_links',$columns,$foreign_keys,'Links between two fnums');
+
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','tab','INT',10);
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','name','VARCHAR',255);
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','updated','DATETIME');
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','updated_by','INT',10);
+			}
 
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
@@ -1342,6 +1416,18 @@ try {
 			echo "\033[31mYou have to run update-db.sh before CLI ! \033[0m\n";
 			exit;
 		}
+
+        if(version_compare(PHP_VERSION, '8.0.0', '>=')) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->clear()
+                ->update('#__extensions')
+                ->set($db->quoteName('enabled') . ' = 0')
+                ->where($db->quoteName('name') . ' LIKE ' . $db->quote('%dpcalendar%'));
+            $db->setQuery($query);
+            $db->execute();
+        }
 	}
 
 
