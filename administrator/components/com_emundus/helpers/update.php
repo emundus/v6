@@ -2530,4 +2530,29 @@ class EmundusHelperUpdate
 
 		return $result;
 	}
+
+
+    public static function columnExists($column, $table) {
+        $exists = false;
+
+        if (!empty($column) && !empty($table)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->clear()
+                ->select('COLUMN_NAME')
+                ->from('INFORMATION_SCHEMA.COLUMNS')
+                ->where('TABLE_NAME = ' . $db->quote($table))
+                ->andWhere('COLUMN_NAME = ' . $db->quote($column));
+
+            $db->setQuery($query);
+            $column = $db->loadResult();
+
+            if (!empty($column)) {
+                $exists = true;
+            }
+        }
+
+        return $exists;
+    }
 }

@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 import client from './axiosClient';
 
 export default {
@@ -35,12 +36,15 @@ export default {
     },
     async getAccessRights(id, fnum) {
         try {
-            const response = await client().get('index.php?option=com_emundus&controller=users&task=getattachmentaccessrights', {
-                params: {
-                    id: id,
-                    fnum: fnum
+            const response = await client().get(
+                'index.php?option=com_emundus&controller=users&task=getattachmentaccessrights',
+                {
+                    params: {
+                        id: id,
+                        fnum: fnum
+                    }
                 }
-            });
+            );
 
             return response.data;
         } catch (e) {
