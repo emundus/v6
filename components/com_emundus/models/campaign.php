@@ -827,7 +827,7 @@ class EmundusModelCampaign extends JModelList {
 
             $query->select([
                 'sc.*',
-                'COUNT(cc.id) AS nb_files',
+                'COUNT(CASE cc.published WHEN 1 THEN 1 ELSE NULL END) as nb_files',
                 'sp.label AS program_label',
                 'sp.id AS program_id',
                 'sp.published AS published_prog'
