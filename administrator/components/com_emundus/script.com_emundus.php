@@ -1397,7 +1397,7 @@ try {
                 $form_id = $sql_result['form_id'];
                 $list_id = $sql_result['list_id'];
 
-				EmundusHelperUpdate::addColumn('jos_emundus_campaign_workflow','display_preliminary_documents','TINYINT(1)');
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_workflow','display_preliminary_documents','TINYINT', 1);
                 $query->clear()
                     ->select('id')
                     ->from($db->quoteName('#__fabrik_elements'))
@@ -1434,7 +1434,7 @@ try {
                     }
                 }
 
-				EmundusHelperUpdate::addColumn('jos_emundus_campaign_workflow', 'specific_documents', 'TINYINT(1)');
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_workflow', 'specific_documents', 'TINYINT', 1);
                 $query->clear()
                     ->select('id')
                     ->from($db->quoteName('#__fabrik_elements'))
@@ -1546,7 +1546,7 @@ try {
                 //////////////////////////////////////////////////////////////////////////////////////
 
 				EmundusHelperUpdate::addColumn('jos_emundus_setup_attachment_profiles', 'has_sample', 'TINYINT', 1);
-				EmundusHelperUpdate::addColumn('jos_emundus_setup_attachment_profiles', 'sample_filepath', 255);
+				EmundusHelperUpdate::addColumn('jos_emundus_setup_attachment_profiles', 'sample_filepath', 'VARCHAR', 255);
 
 				// check if table jos_emundus_setup_config exists
 				$str_query = 'SHOW TABLES LIKE ' . $db->quote('jos_emundus_setup_config');
