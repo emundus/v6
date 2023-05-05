@@ -26,7 +26,8 @@ class ValidatorJS {
     initEventListener()
     {
         this.select.addEventListener('change', this.handlerSelectChange.bind(this));
-        this.input.addEventListener('input', this.handlerInputFocusOut.bind(this));
+        this.input.addEventListener('input', this.inputValidation.bind(this));
+        this.input.addEventListener('focusout', this.inputValidation.bind(this));
         this.input.addEventListener('focusin', this.handlerInputFocusIn.bind(this));
 
         if (this.mustValidate)
@@ -35,18 +36,11 @@ class ValidatorJS {
         }
     }
 
-    handlerInputFocusOut(props)
-    {
-        this.inputValidation();
-    }
-
     inputValidation()
     {
-        this.divError.innerHTML = Joomla.JText._('PLG_ELEMENT_PHONE_NUMBER_INVALID');
-        this.setInputBorderColor(this.errorColor);
-        this.isValid.checked = false; // invalid
+        this.frontMessage('invalid');
 
-        if (this.countrySelected.country_code !== '+' && this.input.value[0] === '+')
+        if (this.countrySelected.country_code !== '+')
         {
             const number = this.input.value;
             let format;
@@ -62,17 +56,13 @@ class ValidatorJS {
 
             if (format && libphonenumber.isValidNumber(format))
             {
-                this.setInputBorderColor(this.validColor);
                 this.input.value = format;
-                this.isValid.checked = true; // valid
-                this.divError.innerHTML = '';
+                this.frontMessage('valid');
             }
         }
         else // unsupported country
         {
-            this.divError.innerHTML = Joomla.JText._('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
-            this.isValid.checked = true; // unsupported but still valid
-            this.setInputBorderColor(this.unsupportedColor);
+            this.frontMessage('unsupported');
         }
     }
 
@@ -80,14 +70,13 @@ class ValidatorJS {
     {
         if (this.countrySelected.country_code !== '+')
         {
-            this.setInputBorderColor(this.defaultColor);
+            this.frontMessage('default');
         }
     }
 
     handlerSelectChange(props)
     {
-        this.mustValidate ? this.divError.innerHTML = Joomla.JText._('PLG_ELEMENT_PHONE_NUMBER_INVALID') : this.divError.innerHTML = '';
-        this.isValid.checked = !this.mustValidate;
+        this.mustValidate ? this.frontMessage('invalid') : this.frontMessage('default');
         this.newCountry(props.target.options.selectedIndex);
         this.prepareInput();
     }
@@ -104,9 +93,7 @@ class ValidatorJS {
         }
         catch (e)
         {
-            this.divError.innerHTML = Joomla.JText._('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
-            this.isValid.checked = true; // unsupported but still valid
-            this.setInputBorderColor(this.unsupportedColor);
+            this.frontMessage('unsupported');
         }
     }
 
@@ -123,6 +110,37 @@ class ValidatorJS {
         else if (this.countrySelected.country_code)
         {
             this.input.value = this.countrySelected.country_code;
+        }
+    }
+
+    frontMessage(message)
+    {
+        switch (message)
+        {
+            case 'invalid':
+                this.divError.innerHTML = Joomla.JText._('PLG_ELEMENT_PHONE_NUMBER_INVALID');
+                this.isValid.checked = false; // invalid
+                this.setInputBorderColor(this.errorColor);
+                break;
+
+            case 'default':
+                this.divError.innerHTML = '';
+                this.isValid.checked = !this.mustValidate;
+                this.setInputBorderColor(this.defaultColor);
+                break;
+
+            case 'unsupported':
+                this.divError.innerHTML = Joomla.JText._('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
+                this.isValid.checked = true; // unsupported but still valid
+                this.setInputBorderColor(this.unsupportedColor);
+                break;
+
+
+            case 'valid':
+                this.divError.innerHTML = '';
+                this.isValid.checked = true; // valid
+                this.setInputBorderColor(this.validColor);
+                break;
         }
     }
 
