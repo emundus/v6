@@ -27,7 +27,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 					<div>
 						<h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_FILTERS')?></h3> &ensp;&ensp;
 					</div>
-                    <div class="buttons" style="float:right; margin-top:0px">
+                    <div class="buttons" style="float:right; margin-top:0">
                         <label for="clear-search">
                             <img src="<?= JURI::base() ;?>media/com_emundus/images/icones/clear-filters.png" style="width: 25px;filter: invert(1);"/>
                         </label>

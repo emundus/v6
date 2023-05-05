@@ -230,15 +230,46 @@ class EmundusUnittestHelperSamples
 				->columns(['fnum', 'user_id', 'campaign_id', 'attachment_id', 'filename', 'local_filename', 'timedate', 'can_be_deleted', 'can_be_viewed'])
 				->values($fnum . ',' . $user_id . ',' . $campaign_id . ',' . $attachment_id . ',' . $db->quote($filename) . ',' . $db->quote($localFilename) . ',' . $db->quote(date('Y-m-d H:i:s')) . ',1,1');
 
-
 			try {
 				$db->setQuery($query);
 				$inserted = $db->execute();
 			} catch (Exception $e) {
-				error_log($e->getMessage());
+				$inserted = false;
+				error_log('attachment insertion failed');
 			}
 		}
 
 		return $inserted;
+	}
+
+	public function  duplicateSampleProfile($profile_id)
+	{
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		// Get profile
+		$query->clear()
+			->select('*')
+			->from($db->quoteName('#__emundus_setup_profiles'))
+			->where($db->quoteName('id') . ' = ' . $db->quote($profile_id));
+		$db->setQuery($query);
+		$oldprofile = $db->loadObject();
+
+		if (!empty($oldprofile)) {
+			// Create a new profile
+			$query->clear()
+				->insert('#__emundus_setup_profiles')
+				->set($db->quoteName('label') . ' = ' . $db->quote($oldprofile->label . ' - Copy'))
+				->set($db->quoteName('published') . ' = 1')
+				->set($db->quoteName('menutype') . ' = ' . $db->quote($oldprofile->menutype))
+				->set($db->quoteName('acl_aro_groups') . ' = ' . $db->quote($oldprofile->acl_aro_groups))
+				->set($db->quoteName('status') . ' = ' . $db->quote($oldprofile->status));
+			$db->setQuery($query);
+			$db->execute();
+			$newprofile = $db->insertid();
+		}
+
+		return $newprofile;
 	}
 }

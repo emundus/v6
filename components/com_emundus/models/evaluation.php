@@ -2232,13 +2232,13 @@ class EmundusModelEvaluation extends JModelList {
 									                    }
 									                    $i++;
 								                    }
-								                    $cell->setValue(htmlspecialchars($val));
+								                    $cell->setValue(htmlspecialchars($val, ENT_NOQUOTES));
 							                    }
 						                    }
 						                    foreach ($idFabrik as $id) {
 							                    if (isset($fabrikValues[$id][$fnum])) {
 								                    $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
-								                    $cell->setValue(htmlspecialchars($value));
+								                    $cell->setValue(htmlspecialchars($value, ENT_NOQUOTES));
 							                    } else {
 								                    $cell->setValue('');
 							                    }

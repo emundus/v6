@@ -114,7 +114,7 @@ class PlgFabrik_FormEmundusFinalGrade extends plgFabrik_Form {
 
                     if (count($trigger_emails) > 0) {
 
-                        foreach ($trigger_emails as $trigger_email) {
+                        foreach ($trigger_emails as $trigger_email_id => $trigger_email) {
 
                             // Manage with default recipient by programme
                             foreach ($trigger_email as $code => $trigger) {
@@ -130,9 +130,8 @@ class PlgFabrik_FormEmundusFinalGrade extends plgFabrik_Form {
 
                                         $post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['label'], 'CAMPAIGN_END' => JHTML::_('date', $file['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null));
                                         $tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum'], '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
-
                                         $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
-                                        $from_id    = 62;
+	                                    $from_id    = 62;
                                         $fromname   = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['name']);
                                         $to         = $file['email'];
                                         $subject    = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['subject']);
@@ -178,9 +177,10 @@ class PlgFabrik_FormEmundusFinalGrade extends plgFabrik_Form {
                                                 'user_id_from' => $from_id,
                                                 'user_id_to' => $file['applicant_id'],
                                                 'subject' => $subject,
-                                                'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
+                                                'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body,
+	                                            'email_id' => $trigger_email_id,
                                             );
-                                            $m_email->logEmail($message);
+                                            $m_email->logEmail($message, $file['fnum']);
                                             JLog::add($to.' '.$body, JLog::INFO, 'emundus-final-grade');
                                         }
                                     }

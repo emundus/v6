@@ -41,4 +41,9 @@ class EmundusModelLogsTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_logs = new EmundusModelLogs();
     }
+
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
 }

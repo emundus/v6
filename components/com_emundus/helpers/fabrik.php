@@ -169,7 +169,7 @@ class EmundusHelperFabrik {
         );
     }
 
-    static function prepareFormParams($init_plugins = true) {
+    static function prepareFormParams($init_plugins = true, $type = '') {
         $params = array(
             'outro' => '',
             'copy_button' => '0',
@@ -229,14 +229,25 @@ class EmundusHelperFabrik {
 
         $plugins = [];
         if($init_plugins){
-            $plugins = [
-                'process-jplugins' => '2',
-                'plugins' => array("emundustriggers"),
-                'plugin_state' => array("1"),
-                'plugin_locations' => array("both"),
-                'plugin_events' => array("both"),
-                'plugin_description' => array("emundus_events"),
-            ];
+			if ($type == 'eval') {
+				$plugins = [
+					'process-jplugins' => '2',
+					'plugins' => array('emundusisevaluatedbyme'),
+					'plugin_state' => array('1'),
+					'plugin_locations' => array('both'),
+					'plugin_events' => array('both'),
+					'plugin_description' => array('Is evaluated by me'),
+				];
+			} else {
+				$plugins = [
+					'process-jplugins' => '2',
+					'plugins' => array("emundustriggers"),
+					'plugin_state' => array("1"),
+					'plugin_locations' => array("both"),
+					'plugin_events' => array("both"),
+					'plugin_description' => array("emundus_events"),
+				];
+			}
         }
 
         return array_merge($params,$plugins);

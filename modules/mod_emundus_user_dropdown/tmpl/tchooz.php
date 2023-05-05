@@ -162,26 +162,26 @@ if ($user != null) {
 
     <?= $intro; ?>
 
-    <!-- Button which opens up the dropdown menu. -->
-    <div class='dropdown <?php if($first_logged) : ?>userDropdown-tip<?php endif; ?>' id="userDropdown" style="float: right;">
-        <?php if(!empty($profile_picture)): ?>
-            <div class="em-profile-picture em-pointer em-user-dropdown-button" id="userDropdownLabel"
-                 style="background-image:url('<?php echo $profile_picture ?>');">
+<!-- Button which opens up the dropdown menu. -->
+<div class='dropdown <?php if($first_logged) : ?>userDropdown-tip<?php endif; ?>' tabindex="0" id="userDropdown" style="float: right;">
+    <?php if(!empty($profile_picture)): ?>
+    <div class="em-profile-picture em-pointer em-user-dropdown-button" id="userDropdownLabel"
+         style="background-image:url('<?php echo $profile_picture ?>');">
+    </div>
+    <?php else : ?>
+    <div class="em-user-dropdown-button <?php if($first_logged) : ?>userDropdownLabel-tip<?php endif; ?>" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
+        <?php if($first_logged) : ?>
+            <div class="em-user-dropdown-tip" id="userDropdownTip">
+                <p><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_TEXT') ?></p><br/>
+                <p class="em-user-dropdown-tip-link" onclick="closeTip()"><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_CLOSE') ?></p>
             </div>
-        <?php else : ?>
-            <div class="em-user-dropdown-button <?php if($first_logged) : ?>userDropdownLabel-tip<?php endif; ?>" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
-                <?php if($first_logged) : ?>
-                    <div class="em-user-dropdown-tip" id="userDropdownTip">
-                        <p><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_TEXT') ?></p><br/>
-                        <p class="em-user-dropdown-tip-link" onclick="closeTip()"><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_CLOSE') ?></p>
-                    </div>
-                <?php endif ;?>
-                <img src="<?php echo JURI::base()?>images/emundus/menus/user.svg" id="userDropdownIcon" class="<?php if($first_logged) : ?>userDropdownIcon-tip<?php endif; ?>" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">
-            </div>
-        <?php endif; ?>
-        <input type="hidden" value="<?= $switch_profile_redirect; ?>" id="switch_profile_redirect">
-        <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
-            <?php
+        <?php endif ;?>
+        <img src="<?php echo JURI::base()?>images/emundus/menus/user.svg" id="userDropdownIcon" class="<?php if($first_logged) : ?>userDropdownIcon-tip<?php endif; ?>" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">
+    </div>
+    <?php endif; ?>
+    <input type="hidden" value="<?= $switch_profile_redirect; ?>" id="switch_profile_redirect">
+    <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
+        <?php
             $ids_array = array();
             if (isset($user->fnums) && $user->fnums) {
                 foreach ($user->fnums as $fnum) {

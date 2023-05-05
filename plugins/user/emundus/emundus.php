@@ -113,6 +113,7 @@ class plgUserEmundus extends JPlugin
         $jinput = $app->input;
         $fabrik = $jinput->post->get('listid', null);
 
+
         // In case we are signing up a new user via Fabrik, check that the profile ID is either an applicant, or one of the allowed non-applicant profiles.
         if ($isnew && !empty($fabrik)) {
 
