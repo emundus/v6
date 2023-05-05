@@ -383,7 +383,9 @@ $current_tab = 0;
                                                             <!-- ACTIONS BLOCK -->
                                                             <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color"
                                                                  id="actions_block_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
-                                                                 style="display: none">
+                                                                 style="display: none"
+                                                                 data-mid="<?= $module->id ?>"
+                                                            >
                                                                 <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                    href="<?= JRoute::_($first_page_url); ?>"
                                                                    id="actions_block_open_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
@@ -438,13 +440,12 @@ $current_tab = 0;
 
 																<?php
 																foreach ($custom_actions as $custom_action_key => $custom_action) {
-
-																	if (in_array($application->status, $custom_action->mod_em_application_custom_action_status) && !empty($custom_action->mod_em_application_custom_action_link)) {
+                                                                    if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)) {
                                                                         if ($custom_action->mod_em_application_custom_action_type == 2) {
 	                                                                        ?>
-                                                                            <span id="actions_button_custom_<?= $custom_action_key; ?>" class="em-text-neutral-900 em-pointer em-custom-action-launch-action" data-text="<?= $custom_action->mod_em_application_custom_action_new_status_message; ?>"><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></span>
+                                                                            <span id="actions_button_custom_<?= $custom_action_key; ?>" class="em-text-neutral-900 em-pointer em-custom-action-launch-action" data-text="<?= $custom_action->mod_em_application_custom_action_new_status_message; ?>" data-fnum="<?=  $application->fnum ?>"><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></span>
 	                                                                        <?php
-                                                                        } else {
+                                                                        } else if (!empty($custom_action->mod_em_application_custom_action_link)) {
                                                                             ?>
                                                                             <a id="actions_button_custom_<?= $custom_action_key; ?>_card_tab<?php echo $key ?>"
                                                                                class="em-text-neutral-900 em-pointer em-flex-row"
@@ -746,7 +747,9 @@ $current_tab = 0;
                                                         <!-- ACTIONS BLOCK -->
                                                         <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color"
                                                              id="actions_block_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>"
-                                                             style="display: none">
+                                                             style="display: none"
+                                                             data-mid="<?= $module->id ?>"
+                                                        >
                                                             <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                href="<?= JRoute::_($first_page_url); ?>"
                                                                id="actions_block_open_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
@@ -801,12 +804,12 @@ $current_tab = 0;
 
 															<?php
 															foreach ($custom_actions as $custom_action_key => $custom_action) {
-																if (in_array($application->status, $custom_action->mod_em_application_custom_action_status) && !empty($custom_action->mod_em_application_custom_action_link)) {
+																if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)) {
 																	if ($custom_action->mod_em_application_custom_action_type == 2) {
 																		?>
                                                                         <span id="actions_button_custom_<?= $custom_action_key; ?>" class="em-text-neutral-900 em-pointer em-custom-action-launch-action" data-text="<?= $custom_action->mod_em_application_custom_action_new_status_message; ?>"><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></span>
 																		<?php
-																	} else {
+																	} else if (!empty($custom_action->mod_em_application_custom_action_link)) {
 																		?>
                                                                         <a id="actions_button_custom_<?= $custom_action_key; ?>_card_tab<?php echo $key ?>"
                                                                            class="em-text-neutral-900 em-pointer em-flex-row"
@@ -1522,17 +1525,16 @@ $current_tab = 0;
                     cancelButtonText: "<?php echo JText::_('JNO');?>"
                 }).then((confirm) => {
                     if (confirm.value) {
-                        // get closest .mod_emundus_applications__actions
                         const actions = customAction.closest('.mod_emundus_applications__actions');
-                        const fnum = actions.id.replace('actions_block_', '');
                         const module_id = actions.dataset.mid;
+                        const fnum = customAction.dataset.fnum;
 
                         fetch('index.php?option=com_emundus&controller=application&task=applicantcustomaction&action=' + action + '&fnum=' + fnum + '&module_id=' + module_id)
                             .then((response) => {
                                 if (response.ok) {
                                     return response.json();
                                 } else {
-                                    throw new Error('Network response was not ok.');
+                                    throw new Error(response.statusText);
                                 }
                             })
                             .then((json) => {

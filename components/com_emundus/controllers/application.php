@@ -1039,28 +1039,35 @@ class EmundusControllerApplication extends JControllerLegacy
 			$action = $jinput->getString('action', '');
 			$fnum = $jinput->getString('fnum', '');
 			$module_id = $jinput->getInt('module_id', 0);
+			$fnum_filtered = preg_replace('/[^0-9]/', '', $fnum);
 
-			if (!empty($action) && !empty($fnum)) {
-				require_once JPATH_ROOT.'/components/com_emundus/helpers/files.php';
-				$h_files = new EmundusHelperFiles;
-				$fnums = $h_files->getApplicantFnums($user_id);
-				$current_user_fnums = array_keys($fnums);
+			if ($fnum_filtered === $fnum) {
+				if (!empty($action) && !empty($fnum)) {
+					require_once JPATH_ROOT.'/components/com_emundus/helpers/files.php';
+					$h_files = new EmundusHelperFiles;
+					$fnums = $h_files->getApplicantFnums($user_id);
+					$current_user_fnums = array_keys($fnums);
 
-				if (in_array($fnum, $current_user_fnums)) {
-					require_once (JPATH_COMPONENT . '/models/application.php');
-					$m_application = new EmundusModelApplication;
-					$response['status'] = $m_application->applicantCustomAction($action, $fnum, $module_id);
-					$response['code'] = 200;
+					if (in_array($fnum, $current_user_fnums)) {
+						require_once (JPATH_COMPONENT . '/models/application.php');
+						$m_application = new EmundusModelApplication;
+						$response['status'] = $m_application->applicantCustomAction($action, $fnum, $module_id);
+						$response['code'] = 200;
 
-					if ($response['status']) {
-						$response['msg'] = JText::_('SUCCESS');
+						if ($response['status']) {
+							$response['msg'] = JText::_('SUCCESS');
+						} else {
+							$response['msg'] = JText::_('FAILED');
+						}
 					} else {
-						$response['msg'] = JText::_('FAILED');
+						$response['msg'] = JText::_('INVALID_PARAMETERS');
+						$response['code'] = 400;
 					}
-				} else {
-					$response['msg'] = JText::_('INVALID_PARAMETERS');
-					$response['code'] = 400;
 				}
+			} else {
+				// Log invalid fnum and ip address, to prevent brute force attacks
+				$ip = $_SERVER['REMOTE_ADDR'];
+				JLog::add('Call to custom action on Invalid fnum: ' . $fnum . ' from ip: ' . $ip, JLog::WARNING, 'com_emundus');
 			}
 		}
 
