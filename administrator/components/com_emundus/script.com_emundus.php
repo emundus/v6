@@ -1397,7 +1397,7 @@ try {
                 $form_id = $sql_result['form_id'];
                 $list_id = $sql_result['list_id'];
 
-				EmundusHelperUpdate::addColumn('jos_emundus_campaign_workflow','display_preliminary_documents','TINYINT(1)');
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_workflow','display_preliminary_documents','TINYINT', 1, 1, 0);
                 $query->clear()
                     ->select('id')
                     ->from($db->quoteName('#__fabrik_elements'))
@@ -1434,7 +1434,7 @@ try {
                     }
                 }
 
-				EmundusHelperUpdate::addColumn('jos_emundus_campaign_workflow', 'specific_documents', 'TINYINT(1)');
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_workflow', 'specific_documents', 'TINYINT', 1, 1, 0);
                 $query->clear()
                     ->select('id')
                     ->from($db->quoteName('#__fabrik_elements'))
@@ -1546,7 +1546,7 @@ try {
                 //////////////////////////////////////////////////////////////////////////////////////
 
 				EmundusHelperUpdate::addColumn('jos_emundus_setup_attachment_profiles', 'has_sample', 'TINYINT', 1);
-				EmundusHelperUpdate::addColumn('jos_emundus_setup_attachment_profiles', 'sample_filepath', 255);
+				EmundusHelperUpdate::addColumn('jos_emundus_setup_attachment_profiles', 'sample_filepath', 'VARCHAR', 255);
 
 				// check if table jos_emundus_setup_config exists
 				$str_query = 'SHOW TABLES LIKE ' . $db->quote('jos_emundus_setup_config');
@@ -1575,7 +1575,10 @@ try {
 					$db->setQuery($query);
 					$db->execute();
 				}
-			}
+
+                EmundusHelperUpdate::addColumn('jos_emundus_users','token','VARCHAR',50);
+                EmundusHelperUpdate::addColumn('jos_emundus_users','anonym_user','TINYINT',1);
+            }
 
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();

@@ -1930,7 +1930,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addColumn($table,$name,$type = 'VARCHAR',$length = null,$null = 1){
+    public static function addColumn($table,$name,$type = 'VARCHAR',$length = null, $null = 1, $default = null){
         $result = ['status' => false, 'message' => ''];
 
         if (empty($table)) {
@@ -1954,6 +1954,11 @@ class EmundusHelperUpdate
                 if(!empty($length)) {
                     $query .= ' (' . $length . ')';
                 }
+
+				if ($default !== null) {
+					$query .= ' DEFAULT ' . $db->quote($default);
+				}
+
                 $query .= ' ' . $null_query;
                 $db->setQuery($query);
                 $result['status'] = $db->execute();
