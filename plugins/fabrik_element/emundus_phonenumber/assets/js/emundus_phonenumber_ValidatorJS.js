@@ -39,7 +39,6 @@ class ValidatorJS {
     inputValidation()
     {
         this.frontMessage('invalid');
-
         if (this.countrySelected.country_code !== '+')
         {
             const number = this.input.value;
@@ -99,6 +98,9 @@ class ValidatorJS {
 
     prepareInput()
     {
+        if(typeof this.mask !== 'undefined') {
+            this.mask.destroy();
+        }
         // unsupported country
         this.input.value = '';
 
@@ -110,6 +112,21 @@ class ValidatorJS {
         else if (this.countrySelected.country_code)
         {
             this.input.value = this.countrySelected.country_code;
+            this.mask = IMask(
+                document.getElementById(this.input.id),
+                {
+                    mask: 'country_code`'+'num',
+                    blocks: {
+                        country_code:{
+                            mask: '{'+this.countrySelected.country_code+'}'
+                        },
+                        num: {
+                            // nested masks are available!
+                            mask: Number,
+                        }
+                    }
+                   ,
+                });
         }
     }
 
