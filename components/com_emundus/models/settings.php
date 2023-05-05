@@ -144,19 +144,25 @@ class EmundusModelsettings extends JModelList {
      * @since 1.0
      */
     function deleteTag($id) {
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
+		$deleted = false;
 
-        $query->delete($db->quoteName('#__emundus_setup_action_tag'))
-            ->where($db->quoteName('id') . ' = ' . $id);
+		if (!empty($id)) {
+			$db = $this->getDbo();
+			$query = $db->getQuery(true);
 
-        try {
-            $db->setQuery($query);
-            return $db->execute();
-        } catch(Exception $e) {
-            JLog::add('component/com_emundus/models/settings | Cannot delete the tag ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
-        }
+			$query->delete($db->quoteName('#__emundus_setup_action_tag'))
+				->where($db->quoteName('id') . ' = ' . $id);
+
+			try {
+				$db->setQuery($query);
+				$deleted=  $db->execute();
+			} catch(Exception $e) {
+				JLog::add('component/com_emundus/models/settings | Cannot delete the tag ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+				$deleted = false;
+			}
+		}
+
+		return $deleted;
     }
 
     /**
@@ -377,7 +383,7 @@ class EmundusModelsettings extends JModelList {
      *
      * @since 1.0
      */
-    function updateTags($tag,$label,$color) {
+    function updateTags($tag, $label, $color) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -385,6 +391,8 @@ class EmundusModelsettings extends JModelList {
 
         try {
             $class = array_search($color, $classes);
+			$class = !empty($class) ? $class : 'default';
+
             $query->clear()
                 ->update('#__emundus_setup_action_tag')
                 ->set($db->quoteName('label') . ' = ' . $db->quote($label))

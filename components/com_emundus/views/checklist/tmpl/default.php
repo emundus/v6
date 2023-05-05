@@ -142,11 +142,15 @@ if (!empty($this->custom_title)) :?>
                 $div .= '<span class="material-icons-outlined em-main-500-color em-mr-4">check_circle</span>';
             }
             $div .= '<h4 class="em-h4 em-mt-0-important">'.$attachment->value .'</h4>';
-            $div .= '</div>
-                <p class="em-ml-8 em-mt-8">'.$attachment->description .'</p>
-                <div>
-                <table id="'.$attachment->id .'" class="table em-fieldset-attachment-table">';
+            $div .= '</div><p class="em-ml-8 em-mt-8">'.$attachment->description .'</p><div>';
 
+	        if ($attachment->has_sample && !empty($attachment->sample_filepath)) {
+		        $div .= '<div class="em-ml-8 em-mb-8 em-flex-row">
+                            <span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE') . '</span><a class="em-flex-row" href="'.JUri::root() . $attachment->sample_filepath.'" target="_blank"> <span class="em-ml-4"> ' . JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE_FILE').'</span><span class="material-icons-outlined em-ml-8 em-text-neutral-900">cloud_download</span></a>
+                         </div>';
+	        }
+
+            $div .= '<table id="'.$attachment->id .'" class="table em-fieldset-attachment-table">';
             if ($attachment->nb > 0) {
                 foreach ($attachment->liste as $key => $item) {
                     $nb = $key + 1;
