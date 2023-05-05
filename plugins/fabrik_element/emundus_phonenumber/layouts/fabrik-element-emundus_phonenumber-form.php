@@ -15,7 +15,7 @@ JText::script('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
 <div id="<?php echo $displayData->attributes['id']; ?>" class="em-flex-row fabrikSubElementContainer">
 
 	<select id="countrySelect" name="<?php echo $displayData->attributes['name'].'[country]'; ?>" class="input-small fabrikinput"
-			selectedValue="<?echo $displayData->attributes['selectValue']; ?>"
+			selectedValue="<?php echo $displayData->attributes['selectValue']; ?>"
 	>
 
 		<?php foreach ($displayData->dataSelect as $key => $value) :?>

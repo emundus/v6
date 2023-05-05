@@ -28,7 +28,7 @@
 			<field name="default_country"
 				   type="sql"
 				   label="PLG_ELEMENT_PHONE_NUMBER_SELECT_COUNTRY"
-				   query="SELECT id, iso2 from data_country"
+				   query="SELECT id, iso2 from data_country WHERE flag IS NOT NULL"
 				   key_field="iso2"
 				   value_field="iso2"
 			>
