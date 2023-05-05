@@ -3768,5 +3768,41 @@ class EmundusHelperFiles
 
         return $table_names;
     }
+
+	public function getApplicantFnums(int $aid, $submitted = null, $start_date = null, $end_date = null) {
+		$fnums = [];
+
+		if (!empty($aid)) {
+			$db = JFactory::getDBO();
+			$query = $db->getQuery(true);
+
+			$query->select('ecc.*, esc.label, esc.start_date, esc.end_date, esc.admission_start_date, esc.admission_end_date, esc.training, esc.year, esc.profile_id')
+				->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.id = ecc.campaign_id')
+				->where('ecc.published = 1')
+				->where('ecc.applicant_id = ' . $aid);
+
+			if ($submitted !== null) {
+				$query->where('ecc.submitted = ' . $db->quote($submitted));
+			}
+
+			if ($start_date !== null) {
+				$query->where('esc.start_date <= ' . $db->quote($start_date));
+			}
+
+			if ($end_date !== null) {
+				$query->where('esc.end_date >= ' . $db->quote($end_date));
+			}
+
+			try {
+				$db->setQuery($query);
+				$fnums = $db->loadObjectList('fnum');
+			} catch(Exception $e) {
+				JLog::add(JUri::getInstance().' :: fct : getAttachmentsById :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $fnums;
+	}
 }
 

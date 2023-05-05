@@ -355,12 +355,25 @@
 								description="MOD_EM_APPLICATION_CUSTOM_ACTION_LABEL_DESC"
 						/>
 						<field
+								name="mod_em_application_custom_action_type"
+								type="list"
+								label="MOD_EM_APPLICATION_CUSTOM_ACTION_LINK"
+								description="MOD_EM_APPLICATION_CUSTOM_ACTION_LINK_DESC"
+								default="1"
+						>
+							<option value="1">Lien</option>
+							<option value="2">Changement de statut</option>
+						</field>
+						<fieldset>
+
+						</fieldset>
+						<field showon="mod_em_application_custom_action_type:1"
 								name="mod_em_application_custom_action_link"
 								type="text"
 								label="MOD_EM_APPLICATION_CUSTOM_ACTION_LINK"
 								description="MOD_EM_APPLICATION_CUSTOM_ACTION_LINK_DESC"
 						/>
-						<field
+						<field showon="mod_em_application_custom_action_type:1"
 								name="mod_em_application_custom_action_link_blank"
 								type="list"
 								label="MOD_EM_APPLICATION_CUSTOM_ACTION_LINK_BLANK"
@@ -369,6 +382,24 @@
 						>
 							<option value="1">JYES</option>
 							<option value="0">JNO</option>
+						</field>
+						<field showon="mod_em_application_custom_action_type:2"
+							   name="mod_em_application_custom_action_new_status"
+							   type="sql"
+							   query="SELECT step, value FROM #__emundus_setup_status"
+							   default=''
+							   key_field="step"
+							   value_field="value"
+							   label="MOD_EM_APPLICATION_CUSTOM_ACTION_STATUS"
+							   description="MOD_EM_APPLICATION_CUSTOM_ACTION_STATUS_DESC"
+						>
+						</field>
+						<field showon="mod_em_application_custom_action_type:2"
+							   name="mod_em_application_custom_action_new_status_message"
+							   type="text"
+							   label="MOD_EM_APPLICATION_CUSTOM_ACTION_STATUS_MESSAGE"
+							   description="MOD_EM_APPLICATION_CUSTOM_ACTION_STATUS_MESSAGE_DESC"
+						>
 						</field>
 					</form>
 				</field>

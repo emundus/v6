@@ -5674,7 +5674,7 @@ class EmundusModelApplication extends JModelList
 
 		return $tabs;
 	}
-	
+
 	public function updateTabs($tabs, $user_id){
 		$updated = false;
 
@@ -5892,5 +5892,68 @@ class EmundusModelApplication extends JModelList
 		}
 
 		return $owned;
+	}
+
+	/**
+	 * @param $action
+	 * @param $fnum
+	 * @param $module_id if not specified, will use the first published module
+	 * @param $redirect
+	 * @return bool true if the action was done successfully
+	 */
+	public function applicantCustomAction($action, $fnum, $module_id = 0, $redirect = false) {
+		$done = false;
+
+		if (!empty($action) && !empty($fnum)) {
+			$db = JFactory::getDBO();
+			$query = $db->getQuery(true);
+
+			$query->select('id, params')
+				->from('#__modules')
+				->where('module LIKE ' . $db->quote('mod_emundus_applications'))
+				->andWhere('published = 1');
+
+			if (!empty($module_id)) {
+				$query->andWhere('id = ' . $db->quote($module_id));
+			}
+
+			$db->setQuery($query);
+			$module = $db->loadAssoc();
+
+			if (!empty($module['params'])) {
+				$params = json_decode($module['params'], true);
+
+				if (!empty($params['mod_em_application_custom_actions'][$action])) {
+					$current_action = $params['mod_em_application_custom_actions'][$action];
+
+					if (isset($current_action['mod_em_application_custom_action_new_status'])) {
+						$query->clear()
+							->select('status')
+							->from('#__emundus_campaign_candidature')
+							->where('fnum LIKE ' . $db->quote($fnum));
+
+						$db->setQuery($query);
+						$status = $db->loadResult();
+
+						if (in_array($status, $current_action['mod_em_application_custom_action_status']) && $status != $current_action['mod_em_application_custom_action_new_status']) {
+							require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+							$m_files = new EmundusModelFiles();
+							$updated = $m_files->updateState($fnum, $current_action['mod_em_application_custom_action_new_status']);
+
+							if ($updated) {
+								$done = true;
+
+								if ($redirect) {
+									$app = JFactory::getApplication();
+									$app->redirect('/');
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return $done;
 	}
 }

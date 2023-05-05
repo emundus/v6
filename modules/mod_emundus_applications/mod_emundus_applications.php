@@ -56,7 +56,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
         $status_for_delete = explode(',', $status_for_delete);
     }
 
-    $applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');
+	$applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');
     $display_poll = $eMConfig->get('display_poll', 0);
     $display_poll_id = $eMConfig->get('display_poll_id', null);
     $id_applicants = $eMConfig->get('id_applicants', null);
