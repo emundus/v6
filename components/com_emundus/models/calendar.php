@@ -358,7 +358,7 @@ class EmundusModelCalendar extends JModelLegacy {
         $db     = JFactory::getDbo();
 
         require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
-        $h_emails = new EmundusHelperEmails();
+        $h_emails = new EmundusHelperEmails;
         if (!$h_emails->assertCanSendMailToUser($user->id)) {
             return false;
         }
