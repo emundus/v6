@@ -531,8 +531,6 @@ class EmundusModelApplication extends JModelList
 					->columns($data['key'])
 					->values($values);
 
-				error_log($query->__toString());
-
 				$this->_db->setQuery($query);
 				$this->_db->execute();
 				$upload_id = $this->_db->insertid();

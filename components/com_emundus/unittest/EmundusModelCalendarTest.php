@@ -41,4 +41,9 @@ class EmundusModelCalendarTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_calendar = new EmundusModelCalendar;
     }
+
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
 }

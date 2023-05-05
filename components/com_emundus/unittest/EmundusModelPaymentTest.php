@@ -41,4 +41,9 @@ class EmundusModelPaymentTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_payment = new EmundusModelPayment;
     }
+
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
 }

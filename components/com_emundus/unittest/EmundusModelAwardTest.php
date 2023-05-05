@@ -41,4 +41,9 @@ class EmundusModelAwardTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_award = new EmundusModelAward;
     }
+
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
 }
