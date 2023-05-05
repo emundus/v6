@@ -38,7 +38,7 @@ $link_edit_profile = JRoute::_('index.php?Itemid=' . $params->get('link_edit_pro
 $document = JFactory::getDocument();
 
 if ($jooomla_menu_name !== 0 || $jooomla_menu_name !== '0') {
-	$list = modEmundusUserDropdownHelper::getList($jooomla_menu_name);
+    $list = modEmundusUserDropdownHelper::getList($jooomla_menu_name);
 }
 
 if ($show_registration == 0 || ($show_registration == 1 && $user === null && modEmundusUserDropdownHelper::isCampaignActive())) {
@@ -76,6 +76,14 @@ if(!$only_applicant) {
 $profile_picture = '';
 if($show_profile_picture){
     $profile_picture = modEmundusUserDropdownHelper::getProfilePicture();
+}
+
+// Vérifier si il s'agit d'une session  anonyme et ci celles ci sont autorisés
+$eMConfig = JComponentHelper::getParams('com_emundus');
+$is_anonym_user = $user->anonym;
+$allow_anonym_files = $eMConfig->get('allow_anonym_files', false);
+if ($is_anonym_user && !$allow_anonym_files) {
+    return;
 }
 
 require JModuleHelper::getLayoutPath('mod_emundus_user_dropdown', $layout);

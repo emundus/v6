@@ -108,7 +108,7 @@ ksort($applications);
 $current_tab = 0;
 ?>
 <div class="mod_emundus_applications___header mod_emundus_applications___tmp_tchooz">
-	<?php if ($mod_em_applications_show_hello_text == 1) : ?>
+	<?php if ($mod_em_applications_show_hello_text == 1 && !$is_anonym_user) : ?>
         <div class="em-flex-row em-flex-space-between em-w-100 em-mb-16">
             <h1 class="em-h1 em-mb-8"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_HELLO') . $user->firstname ?></h1>
 			<?php if (sizeof($applications) > 0) : ?>

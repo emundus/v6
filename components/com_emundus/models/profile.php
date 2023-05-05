@@ -1106,6 +1106,12 @@ class EmundusModelProfile extends JModelList {
             $emundusSession->code = $campaign["training"];
             $emundusSession->campaign_name = $campaign["campaign_label"];
 
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $allow_anonym_files = $eMConfig->get('allow_anonym_files', false);
+            if ($allow_anonym_files) {
+                $emundusSession->anonym = $this->checkIsAnonymUser($current_user->id);
+                $emundusSession->anonym_token = $this->getAnonymSessionToken($current_user->id);
+            }
         } else {
             $emundusSession->profile                = $profile["profile"];
             $emundusSession->profile_label          = $profile["profile_label"];
@@ -1186,6 +1192,13 @@ class EmundusModelProfile extends JModelList {
             $emundus_user->fnum = $campaign["fnum"];
             $emundus_user->fnums = $this->getApplicantFnums($current_user->id, null, $profile["start_date"], $profile["end_date"]);
             $emundus_user->status = @$campaign["status"];
+
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $allow_anonym_files = $eMConfig->get('allow_anonym_files', false);
+            if ($allow_anonym_files) {
+                $emundus_user->anonym = $this->checkIsAnonymUser($current_user->id);
+                $emundus_user->anonym_token = $this->getAnonymSessionToken($current_user->id);
+            }
         } else {
             $emundus_user->profile = $profile["profile"];
             $emundus_user->profile_label = $profile["label"];
@@ -1243,5 +1256,49 @@ class EmundusModelProfile extends JModelList {
         }
 
         return $path;
+    }
+
+    private function checkIsAnonymUser($user_id) {
+        $anonym = false;
+
+        if (!empty($user_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('anonym_user')
+                ->from('#__emundus_users')
+                ->where('user_id = ' . $user_id);
+
+            try {
+                $db->setQuery($query);
+                $anonym = $db->loadResult();
+            } catch (Exception $e) {
+                JLog::add('Failed to get path of files view from profile', JLog::ERROR, 'com_emundus.error');
+            }
+        }
+
+        return $anonym;
+    }
+
+    private function getAnonymSessionToken($user_id) {
+        $token = false;
+
+        if (!empty($user_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('token')
+                ->from('#__emundus_users')
+                ->where('user_id = ' . $user_id);
+
+            try {
+                $db->setQuery($query);
+                $token = $db->loadResult();
+            } catch (Exception $e) {
+                JLog::add('Failed to get path of files view from profile', JLog::ERROR, 'com_emundus.error');
+            }
+        }
+
+        return $token;
     }
 }
