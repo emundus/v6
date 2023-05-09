@@ -5260,12 +5260,29 @@ button.swal2-cancel.goback-btn {
         }
 
         /* BLOC ELEMENT */
-        .row-fluid .fabrikElementContainer.control-group:not(.plg-display) {
-          margin: 24px 0 0 0;
-          flex-direction: column;
+        .row-fluid .fabrikElementContainer.control-group {
+          &:not(.plg-display) {
+            margin: 24px 0 0 0;
+            flex-direction: column;
 
-          @include fabrik-elements;
+            @include fabrik-elements;
+
+          }
+
+            &.plg-display {
+            .fabrikinput {
+              height: auto !important;
+              border: none !important;
+              padding: 0 !important;
+            }
+
+            .fabrikLabel.control-label {
+              color: var(--neutral-800);
+            }
+          }
         }
+
+
 
         /* PROFIL */
         .em-profile-element .fabrikElement .multiselect__tags {
