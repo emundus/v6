@@ -566,6 +566,8 @@ class EmundusModelFiles extends JModelLegacy
      * @throws Exception
      */
     public function getAllUsers($limitStart = 0, $limit = 20) {
+		$user_files = [];
+
         $app = JFactory::getApplication();
         $current_menu = $app->getMenu()->getActive();
         if (!empty($current_menu)) {
@@ -640,22 +642,23 @@ class EmundusModelFiles extends JModelLegacy
         $query .= ' GROUP BY jecc.fnum';
 
         $query .=  $this->_buildContentOrderBy();
-        $dbo->setQuery($query);
-        try {
-            $res = $dbo->loadAssocList();
-            $this->_applicants = $res;
+
+		try {
+	        $dbo->setQuery($query);
+	        $this->_applicants = $dbo->loadAssocList();
 
             if ($limit > 0) {
                 $query .= " limit $limitStart, $limit ";
             }
 
             $dbo->setQuery($query);
-            return $dbo->loadAssocList();
-
+	        $user_files = $dbo->loadAssocList();
         } catch(Exception $e) {
-            echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+			$app->enqueueMessage(JText::_('COM_EMUNDUS_GET_ALL_FILES_ERROR') . ' ' . $e->getMessage(), 'error');
+            JLog::add(JUri::getInstance().' :: USER ID : '. JFactory::getUser()->id.' ' . $e->getMessage() . ' -> '. $query, JLog::ERROR, 'com_emundus.error');
         }
+
+		return $user_files;
     }
 
 
