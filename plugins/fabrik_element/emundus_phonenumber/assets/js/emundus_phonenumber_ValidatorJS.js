@@ -19,7 +19,7 @@ class ValidatorJS {
 
         this.newCountry(this.indiceCountry);
         this.setOptionSelected(this.indiceCountry);
-        this.prepareInput();
+        this.changeInputPrefix();
         this.initEventListener();
         this.setColors();
     }
@@ -37,8 +37,9 @@ class ValidatorJS {
         }
     }
 
-    inputValidation()
+    inputValidation(e)
     {
+        //console.log(e);
         this.frontMessage('invalid');
         if (this.countrySelected.country_code !== '+')
         {
@@ -64,6 +65,22 @@ class ValidatorJS {
         {
             this.frontMessage('unsupported');
         }
+
+
+        if (e && e.inputType === 'deleteContentBackward') // when deleting
+        {
+            const currentValue = this.input.value.substring(this.countrySelected.country_code.length, this.input.value.length);
+            const currentPrefix = this.input.value.substring(0, this.countrySelected.country_code.length);
+            const countryCode = this.countrySelected.country_code;
+
+            if (currentPrefix !== countryCode)
+            {
+                this.mask.destroy(); // always here
+                this.input.value = countryCode + currentValue;
+                this.setMaskToInput(countryCode);
+            }
+            this.input.setSelectionRange(this.input.value.length, this.input.value.length);
+        }
     }
 
     handlerInputFocusIn(props)
@@ -78,7 +95,7 @@ class ValidatorJS {
     {
         this.mustValidate ? this.frontMessage('invalid') : this.frontMessage('default');
         this.newCountry(props.target.options.selectedIndex);
-        this.prepareInput();
+        this.changeInputPrefix();
     }
 
     newCountry(id)
@@ -97,7 +114,7 @@ class ValidatorJS {
         }
     }
 
-    prepareInput()
+    changeInputPrefix()
     {
         if(typeof this.mask !== 'undefined') {
             this.mask.destroy();
@@ -114,21 +131,25 @@ class ValidatorJS {
         else if (this.countrySelected.country_code) {
 
             const countryCode = this.countrySelected.country_code;
-            this.input.value = countryCode
-
-            // prepare the mask for the input
-            this.mask = IMask(
-                this.input,
-                {
-                    mask: countryCode + 'num',
-                    blocks: {
-                        num: {
-                            mask: Number,
-                        }
-                    },
-                    lazy: false, // can't remove the countryCode
-                });
+            this.input.value = countryCode;
+            this.setMaskToInput(countryCode);
         }
+    }
+
+    setMaskToInput(prefix)
+    {
+
+        this.mask = IMask(
+            this.input,
+            {
+                mask: prefix + 'num',
+                blocks: {
+                    num: {
+                        mask: Number,
+                    }
+                },
+                lazy: false, // can't remove the countryCode
+            });
     }
 
     frontMessage(message)
