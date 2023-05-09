@@ -36,7 +36,7 @@ function translate(str) {
 
 class MultiSelectFilter {
     uid = null;
-    filterId = null;
+    id = null;
     options = [];
     modal = null;
     operators = basicOperators;
@@ -47,8 +47,30 @@ class MultiSelectFilter {
 
     constructor(filterContainer) {
         const select = filterContainer.querySelector('select');
-        this.uid = filterContainer.dataset.filterUid;
-        this.filterId = select.getAttribute('id');
+
+        const defaultOperator = select.getAttribute('data-default-operator');
+        if (defaultOperator !== null && defaultOperator !== undefined && defaultOperator !== '') {
+            let found = false;
+            basicOperators.forEach((operator) => {
+                if (operator.value === defaultOperator) {
+                    found = true;
+                }
+            });
+
+            if (found) {
+                this.selectedOperator = defaultOperator;
+            }
+        }
+
+        const defaultAndorOperator = select.getAttribute('data-default-andor');
+        if (defaultAndorOperator !== null && defaultAndorOperator !== undefined && defaultAndorOperator !== '') {
+            if (defaultAndorOperator === 'AND' || defaultAndorOperator === 'OR') {
+                this.selectedAndOrOperator = defaultAndorOperator;
+            }
+        }
+
+        this.uid = filterContainer.dataset.filteruid;
+        this.id = select.getAttribute('id');
 
         select.querySelectorAll('option').forEach((option) => {
             this.options.push({value: option.value, label: option.innerText});
@@ -68,9 +90,9 @@ class MultiSelectFilter {
             let optionInput = document.createElement('input');
             optionInput.type = 'checkbox';
             optionInput.value = option.value;
-            optionInput.id = 'filter-' + this.filterId + '-' + option.value;
-            optionInput.name = 'filter[' + this.filterId + '][]';
-            if (this.selectedValues.includes(option.value) || option.value === 'all') {
+            optionInput.id = 'filter-' + this.id + '-' + option.value;
+            optionInput.name = 'filter[' + this.id + '][]';
+            if (this.selectedValues.includes(option.value) || (this.selectedValues.length < 1 && option.value === 'all')) {
                 optionInput.checked = true;
             }
             optionInput.addEventListener('change', (e) => {
@@ -281,15 +303,6 @@ const filtersSelect = document.getElementById('filters-selection');
 
 function initFilters(){
     appliedFiltersSection.querySelectorAll('.filter-container').forEach(function (filterContainer) {
-        /*const filter = {
-            type: filterContainer.dataset.type,
-            id: filterContainer.dataset.id,
-            uid: filterContainer.dataset.uid,
-            label: filterContainer.dataset.name,
-            values: filterContainer.dataset.values,
-            value: ''
-        };*/
-
         const filterInstance = new MultiSelectFilter(filterContainer);
         filtersInstances.push(filterInstance);
     });
@@ -401,8 +414,18 @@ function removeFilter(e) {
 }
 
 function applyFilters() {
+    const filters = filtersInstances.map((filter) => {
+        return {
+            id: filter.id,
+            uid: filter.uid,
+            value: filter.selectedValues,
+            operator: filter.selectedOperator,
+            andorOperator: filter.selectedAndOrOperator,
+        };
+    });
+
     let formData = new FormData();
-    formData.append('filters', JSON.stringify(filtersInstances));
+    formData.append('filters', JSON.stringify(filters));
 
     fetch('/index.php?option=com_emundus&controller=files&task=applyfilters', {
         method: 'POST',

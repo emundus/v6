@@ -26,21 +26,26 @@ JText::script('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_OR');
             if (!empty($applied_filters)) {
                 foreach($applied_filters as $filter) {
 	                ?>
-                    <div class="filter-container em-w-100 em-mb-16" data-filterUid="<?= $filter['uid'] ?>">
+                    <div class="filter-container em-w-100 em-mb-16" data-filteruid="<?= $filter['uid'] ?>">
                         <div class="filter-header em-w-100 em-flex-row em-flex-space-between em-mb-8">
                             <label for="filter<?= $filter['id'] ?>" class="em-w-100"><?= $filter['label'] ?></label>
                             <?php if (!$filter['default']) : ?>
-                                <span class="material-icons-outlined em-pointer" data-filterUid="<?= $filter['uid'] ?>">delete</span>
+                                <span class="material-icons-outlined em-pointer" data-filteruid="<?= $filter['uid'] ?>">delete</span>
                             <?php endif; ?>
                         </div>
                         <?php
-                            switch ($filter['type']) {
+                         switch ($filter['type']) {
                                 case 'select':
                                 ?>
-                                    <select id="filter+<?= $filter['id'] ?>" name="filter<?= $filter['id'] ?>" class="em-w-100">
+                                    <select id="filter+<?= $filter['id'] ?>" name="filter<?= $filter['id'] ?>"
+                                            class="em-w-100"
+                                            data-default-operator="<?= $filter['operator'] ?>"
+                                            data-default-andor="<?= $filter['andorOperator'] ?>"
+                                            multiple
+                                    >
                                         <option value="all"><?= JText::_('ALL') ?></option>
                                         <?php foreach($filter['values'] as $value): ?>
-                                            <option value="<?= $value['value'] ?>" <?= $value['value'] == $filter['value'] ? 'selected' : '' ?>><?= $value['label'] ?></option>
+                                            <option value="<?= $value['value'] ?>" <?= in_array($value['value'], $filter['value']) ? 'selected' : '' ?>><?= $value['label'] ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 <?php

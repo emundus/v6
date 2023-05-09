@@ -21,7 +21,7 @@ class EmundusFiltersFiles extends EmundusFilters
 
 		$session_filters = JFactory::getSession()->get('em-applied-filters', null);
 		if (!empty($session_filters)) {
-			$this->setAppliedFilters($session_filters);
+			$this->addSessionFilters($session_filters);
 		}
 	}
 
@@ -194,6 +194,42 @@ class EmundusFiltersFiles extends EmundusFilters
 				'value' => '',
 				'default' => true
 			];
+		}
+	}
+
+	private function addSessionFilters($session_values)
+	{
+		foreach($session_values as $session_filter) {
+			// look for filter in applied filters by uid
+			// if found, set value
+			// if not found, add filter to applied filters
+
+			$found = false;
+			foreach ($this->applied_filters as $key => $applied_filter) {
+				if ($applied_filter['uid'] == $session_filter['uid']) {
+					$this->applied_filters[$key]['value'] = $session_filter['value'];
+					$this->applied_filters[$key]['operator'] = $session_filter['operator'];
+					$this->applied_filters[$key]['andorOperator'] = $session_filter['andorOperator'];
+
+					$found = true;
+					break;
+				}
+			}
+
+			if (!$found) {
+				// find filter in filters
+				foreach ($this->filters as $f_key => $filter) {
+					if ($filter['id'] == $session_filter['id']) {
+						$new_filter = $filter;
+						$new_filter['value'] = $session_filter['value'];
+						$new_filter['operator'] = $session_filter['operator'];
+						$new_filter['andorOperator'] = $session_filter['andorOperator'];
+						$new_filter['uid'] = $session_filter['uid'];
+						$this->applied_filters[] = $new_filter;
+						break;
+					}
+				}
+			}
 		}
 	}
 }
