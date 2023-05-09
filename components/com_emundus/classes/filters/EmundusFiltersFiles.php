@@ -200,10 +200,6 @@ class EmundusFiltersFiles extends EmundusFilters
 	private function addSessionFilters($session_values)
 	{
 		foreach($session_values as $session_filter) {
-			// look for filter in applied filters by uid
-			// if found, set value
-			// if not found, add filter to applied filters
-
 			$found = false;
 			foreach ($this->applied_filters as $key => $applied_filter) {
 				if ($applied_filter['uid'] == $session_filter['uid']) {
@@ -218,8 +214,9 @@ class EmundusFiltersFiles extends EmundusFilters
 
 			if (!$found) {
 				// find filter in filters
+				$id = str_replace('filter-', '', $session_filter['id']);
 				foreach ($this->filters as $f_key => $filter) {
-					if ($filter['id'] == $session_filter['id']) {
+					if ($filter['id'] == $id) {
 						$new_filter = $filter;
 						$new_filter['value'] = $session_filter['value'];
 						$new_filter['operator'] = $session_filter['operator'];

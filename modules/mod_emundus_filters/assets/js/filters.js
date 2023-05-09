@@ -43,7 +43,7 @@ class MultiSelectFilter {
     andOrOperators = andOrOperators;
     selectedValues = [];
     selectedOperator = '=';
-    selectedAndOrOperator = 'AND';
+    selectedAndOrOperator = 'OR';
 
     constructor(filterContainer) {
         const select = filterContainer.querySelector('select');
