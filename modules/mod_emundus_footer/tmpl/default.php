@@ -58,9 +58,11 @@ if($applicant = !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
       </div>
     <?php endif; ?>
 
-      <div class="em-flex-row">
+      <div class="em-flex-row em-footer-container-row">
         <?php if((empty($mod_emundus_footer_texte_col_1) && empty($mod_emundus_footer_texte_col_2)) && !empty($mod_emundus_footer_client_link)) : ?>
+          <div class="footer-client">
             <a href="<?php echo $mod_emundus_footer_client_link ?>" target="_blank"><img style="width: 250px" src="<?php echo $logo ?>"/></a>
+          </div>
         <?php endif; ?>
         <div class="footer-rgpd">
         <?php if ($mod_emundus_footer_legal_info == '0' && $mod_emundus_footer_data_privacy == '0' && $mod_emundus_footer_rights == '0' && $mod_emundus_footer_cookies == '0' ) :?>
@@ -85,10 +87,16 @@ if($applicant = !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
         <?php if ($mod_emundus_footer_cookies == '1') :?>
             <p><a href="<?php echo $actualLanguage ?>/gestion-des-cookies"><?= JText::_('MOD_EM_FOOTER_COOKIES_LINK'); ?></a></p>
         <?php endif; ?>
+
+            <?php if ($mod_emundus_footer_accessibility== '1') :?>
+                <p><a href="<?php echo $actualLanguage ?>/accessibilite"><?= JText::_('MOD_EM_FOOTER_RGAA_LINK'); ?></a></p>
+            <?php endif; ?>
         </div>
         </div>
           <?php if(empty($mod_emundus_footer_texte_col_1) && empty($mod_emundus_footer_texte_col_2) && $mod_emundus_footer_display_powered_by == 1) : ?>
-          <p style="width: auto;white-space: nowrap;"><?= JText::_('MOD_EM_FOOTER_COPYRIGHT') ?><a href="<?= JText::_('MOD_EM_FOOTER_LINK') ?>" target="_blank">eMundus</a></p>
+          <div class="footer-emundus">
+              <p><?= JText::_('MOD_EM_FOOTER_COPYRIGHT') ?><a href="<?= JText::_('MOD_EM_FOOTER_LINK') ?>" target="_blank">eMundus</a></p>
+          </div>
           <?php endif; ?>
       </div>
 

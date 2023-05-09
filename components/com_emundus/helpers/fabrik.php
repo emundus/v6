@@ -169,7 +169,7 @@ class EmundusHelperFabrik {
         );
     }
 
-    static function prepareFormParams($init_plugins = true) {
+    static function prepareFormParams($init_plugins = true, $type = '') {
         $params = array(
             'outro' => '',
             'copy_button' => '0',
@@ -229,14 +229,25 @@ class EmundusHelperFabrik {
 
         $plugins = [];
         if($init_plugins){
-            $plugins = [
-                'process-jplugins' => '2',
-                'plugins' => array("emundustriggers"),
-                'plugin_state' => array("1"),
-                'plugin_locations' => array("both"),
-                'plugin_events' => array("both"),
-                'plugin_description' => array("emundus_events"),
-            ];
+			if ($type == 'eval') {
+				$plugins = [
+					'process-jplugins' => '2',
+					'plugins' => array('emundusisevaluatedbyme'),
+					'plugin_state' => array('1'),
+					'plugin_locations' => array('both'),
+					'plugin_events' => array('both'),
+					'plugin_description' => array('Is evaluated by me'),
+				];
+			} else {
+				$plugins = [
+					'process-jplugins' => '2',
+					'plugins' => array("emundustriggers"),
+					'plugin_state' => array("1"),
+					'plugin_locations' => array("both"),
+					'plugin_events' => array("both"),
+					'plugin_description' => array("emundus_events"),
+				];
+			}
         }
 
         return array_merge($params,$plugins);
@@ -807,6 +818,28 @@ class EmundusHelperFabrik {
             return true;
         } catch (Exception $e) {
             JLog::add('component/com_emundus/helpers/fabrik | Cannot create JS Action for element ' . $eid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    static function getTableFromFabrik($id, $object = 'list') {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('fl.db_table_name')
+                ->from($db->quoteName('#__fabrik_lists','fl'));
+            if($object == 'form'){
+                $query->leftJoin($db->quoteName('#__fabrik_forms','ff').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ff.id'))
+                    ->where($db->quoteName('ff.id') . ' = ' . $db->quote($id));
+            } else {
+                $query->where($db->quoteName('fl.id') . ' = ' . $db->quote($id));
+            }
+
+            $db->setQuery($query);
+            return $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/helpers/fabrik | Cannot get table from fabrik with type '. $object .' ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }

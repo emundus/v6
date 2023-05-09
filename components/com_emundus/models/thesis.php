@@ -63,7 +63,6 @@ class EmundusModelThesis extends JModelItem {
             return $db->loadObjectList();
         } catch(Exception $e) {
             throw $e;
-            return false;
         }
     }
 
@@ -220,7 +219,7 @@ class EmundusModelThesis extends JModelItem {
      * Method to cancel application to a thesis
      *
      * @param   integer     The id of the user.
-     * @param   varchar     The fnum of an application.
+     * @param   string     The fnum of an application.
      * @return  boolean     True on success, false on failure.
      * @since   1.6
      */
@@ -295,7 +294,7 @@ class EmundusModelThesis extends JModelItem {
                 $fnum = @EmundusHelperFiles::createFnum($thesis->campaign_id, $user->id);
 
                 try {
-                    
+
                     $query = "INSERT INTO #__emundus_campaign_candidature (`date_time` ,`applicant_id` ,`user_id` ,`campaign_id` ,`submitted` ,`date_submitted` ,`cancelled` ,`fnum` ,`status` ,`published`)
                               VALUES(NOW(), $user->id, $current_user->id, $thesis->campaign_id, 0, NULL, 0, '$fnum', 0, 1)";
                     $db->setQuery($query);
@@ -334,7 +333,7 @@ class EmundusModelThesis extends JModelItem {
                 $db->setQuery($query);
                 $db->execute();
                 $insertid = $db->insertid();
-            
+
             } catch(Exception $e) {
                 return false;
             }
@@ -352,19 +351,19 @@ class EmundusModelThesis extends JModelItem {
     /**
      * Method to get last thesis selected by applicant.
      *
-     * @param   strinf The fnum of user.
+     * @param   string The fnum of user.
      *
      * @return  mixed   Object on success, false on failure.
      */
     public function getLastThesisApplied($fnum) {
         $db = JFactory::getDBO();
-        
+
         $query = 'SELECT etc.*, et.*, eu.*, c.title 
                     FROM #__emundus_thesis_candidat AS etc 
                     LEFT JOIN #__emundus_thesis as et ON et.id=etc.thesis_proposal
                     LEFT JOIN #__emundus_users as eu ON eu.user_id=et.user
                     LEFT JOIN #__categories as c on c.id=et.doctoral_school
-                    WHERE etc.fnum like '.$db->Quote($fnum).' ORDER BY etc.id DESC'; 
+                    WHERE etc.fnum like '.$db->Quote($fnum).' ORDER BY etc.id DESC';
         $db->setQuery( $query );
         return $db->loadObject();
     }

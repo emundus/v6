@@ -27,16 +27,17 @@ import Attachments from "./views/Attachments.vue";
 import Files from './views/Files/Files.vue';
 
 import fileService from "./services/file.js";
-import list from "./views/list";
+import list_v2 from "./views/list_v2";
 import addcampaign from "./views/addCampaign"
 import addemail from "./views/addEmail"
 import addformnextcampaign from "./views/addFormNextCampaign"
 import formbuilder from "./views/formBuilder"
-import evaluationbuilder from "./views/evaluationBuilder"
 import settings from "./views/globalSettings"
 import messagescoordinator from "./components/Messages/MessagesCoordinator";
 import messages from "./components/Messages/Messages";
 import editprofile from "./views/Users/Edit";
+
+import settingsService from "./services/settings.js";
 
 export default {
 	props: {
@@ -61,17 +62,16 @@ export default {
 	},
 	components: {
 		Attachments,
-    list,
     addcampaign,
     addformnextcampaign,
     addemail,
     formbuilder,
-    evaluationbuilder,
     settings,
     messagescoordinator,
     messages,
     editprofile,
-    Files
+    Files,
+		list_v2
 	},
 
   created() {
@@ -95,6 +95,7 @@ export default {
 	    moment.locale(this.$store.state.global.currentLanguage);
     } else {
 	    this.$store.commit('global/initCurrentLanguage', 'fr');
+      moment.locale('fr');
     }
     if (typeof this.$props.shortLang != 'undefined') {
       this.$store.commit('global/initShortLang', this.$props.shortLang);
@@ -111,6 +112,12 @@ export default {
     if (typeof this.$props.coordinatorAccess != 'undefined') {
       this.$store.commit("global/initSysadminAccess", this.$props.sysadminAccess);
     }
+
+    settingsService.getOffset().then(response => {
+      if (response.status !== false) {
+        this.$store.commit("global/initOffset", response.data.data);
+      }
+    });
   },
 
   mounted() {
@@ -165,18 +172,10 @@ export default {
 .view-settings #g-container-main .g-container,
 .view-file #g-container-main .g-container,
 .view-users #g-container-main .g-container{
-  width: 75rem;
+  width: 85%;
 }
 
 @media all and (max-width: 1366px) {
-  .view-campaigns #g-container-main .g-container,
-  .view-emails #g-container-main .g-container,
-  .view-form #g-container-main .g-container,
-  .view-file #g-container-main .g-container,
-  .view-users #g-container-main .g-container{
-    width: 95%;
-  }
-
   .view-campaigns.layout-addnextcampaign #g-container-main .g-container,
   .view-emails.layout-add #g-container-main .g-container,
   .view-settings.no-layout #g-container-main .g-container {

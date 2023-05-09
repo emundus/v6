@@ -248,7 +248,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     $futurCampaign                      = $helper->getFutur($condition, $mod_em_campaign_get_teaching_unity);
     $allCampaign                        = $helper->getProgram($condition, $mod_em_campaign_get_teaching_unity);
 
-    if ($params->get('mod_em_campaign_layout') == "single_campaign" || $params->get('mod_em_campaign_layout') == "tchooz_single_campaign")
+    if ($params->get('mod_em_campaign_layout') == "single_campaign" || $params->get('mod_em_campaign_layout') == "tchooz_single_campaign" || $params->get('mod_em_campaign_layout') == "institut_fr_single_campaign")
     {
 // FAQ
         $faq_articles = $helper->getFaq();

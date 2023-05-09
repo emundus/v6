@@ -105,7 +105,7 @@ class EmundusControllerTrombinoscope extends EmundusController {
      * @throws Exception
      * @since version
      */
-    public function generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $templHeader, $templFooter,  $generate, $preview = false, $checkHeader = false, $border, $headerHeight) {
+    public function generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $templHeader, $templFooter,  $generate, $preview = false, $checkHeader = false, $border = null, $headerHeight = null) {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         $m_files = new EmundusModelFiles();
         // Traitement du nombre de colonnes max par ligne
@@ -137,6 +137,15 @@ class EmundusControllerTrombinoscope extends EmundusController {
         $nb_cell = 0;
         $tab_body = array();
         $fnumInfo = $m_files->getFnumInfos($fnums[0]['fnum']);
+
+        $template = preg_replace_callback('/< *img[^>]*src *= *["\']?([^"\']*)/i', function ($match) {
+            $src = $match[1];
+            if (substr($src, 0, 1) === '/') {
+                $src = substr($src, 1);
+            }
+            return '<img src="'.$src;
+        }, $template);
+
         foreach ($fnums as $fnum) {
             $post = [
                 'FNUM' => $fnum['fnum'],
@@ -146,7 +155,7 @@ class EmundusControllerTrombinoscope extends EmundusController {
                 'CAMPAIGN_END' => $fnumInfo['end_date'],
                 'SITE_URL' => JURI::base()
             ];
-            $tags = $emails->setTags($fnum["applicant_id"], $post, $fnum['fnum'], '', $template);
+            $tags = $emails->setTags($fnum["applicant_id"], $post, $fnum['fnum'], '', $template, true);
             $body_tags = preg_replace($tags['patterns'], $tags['replacements'], $template);
             $body_tmp = $emails->setTagsFabrik($body_tags, array($fnum["fnum"]));
             $body .= $body_tmp;
@@ -209,7 +218,7 @@ body {
     display: inline-block;
     text-overflow: ellipsis;
     overflow: hidden;
-    whitespace: no-wrap;
+    white-space: no-wrap;
     line-height: 1;
     width: '.$cell_width.'px;
     height: '.$cell_height.'px;

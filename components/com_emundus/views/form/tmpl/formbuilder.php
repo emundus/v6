@@ -358,6 +358,14 @@ JText::script('COM_EMUNDUS_FORM_BUILDER_MODEL_WITH_SAME_TITLE_EXISTS');
 JText::script('COM_EMUNDUS_FORM_BUILDER_MODEL_MUST_HAVE_TITLE');
 JText::script('COM_EMUNDUS_FORM_BUILDER_EMPTY_PAGE_MODELS');
 JText::script('COM_EMUNDUS_FORM_BUILDER_UPDATE_ORDER_PAGE_ERROR');
+JText::script('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_TITLE');
+JText::script('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_GIVE_MODEL');
+JText::script('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_ADD');
+JText::script('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_EDIT');
+JText::script('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_CURRENT_MODEL');
+JText::script('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_DOWNLOAD_SAMPLE');
+JText::script('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_SAMPLE_WRONG_FORMAT');
+JText::script('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_FILE_UPLOADED');
 ## END ##
 
 ## TUTORIAL ##
@@ -430,6 +438,8 @@ if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml'
     $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
 }
 
+$mode = JFactory::getApplication()->input->get('mode', '');
+
 ?>
 
 <div id="em-component-vue"
@@ -437,12 +447,14 @@ if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml'
      prid="<?= JFactory::getApplication()->input->get('prid') ?>"
      index="<?= JFactory::getApplication()->input->get('index') ?>"
      cid="<?= JFactory::getApplication()->input->get('cid') ?>"
-     eval="<?= JFactory::getApplication()->input->get('evaluation') ?>"
      shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
      manyLanguages="<?= $many_languages ?>"
      defaultLang="<?= $default_lang ?>"
      coordinatorAccess="<?= $coordinator_access ?>"
      sysadminAccess="<?= $sysadmin_access ?>"
+     <?php if (!empty($mode)) : ?>
+        mode="<?= $mode ?>"
+     <?php endif; ?>
 ></div>
 
 <script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>

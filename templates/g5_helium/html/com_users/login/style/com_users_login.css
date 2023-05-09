@@ -225,7 +225,7 @@ h1.em-titre-connectez-vous {
     text-align: center;
 }
 
-.page-header p.em-h3 {
+.page-header h1.em-h1 {
     font-family: var(--applicant-title-font);
     color: var(--em-applicant-title-color);
 }

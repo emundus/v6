@@ -722,7 +722,7 @@ class EmundusModelUsers extends JModelList {
      *
      * @param   array   $data       An optional array of data for the form to interogate.
      * @param   boolean $loadData   True if the form is to load its own data (default case), false if not.
-     * @return  JForm   A JForm object on success, false on failure
+     * @return  JForm|false   A JForm object on success, false on failure
      * @since   1.6
      */
     public function getForm($data = array(), $loadData = true) {
@@ -1050,7 +1050,7 @@ class EmundusModelUsers extends JModelList {
         // Get the application object.
         $app = JFactory::getApplication();
 
-        $db =& JFactory::getDBO();
+        $db = JFactory::getDBO();
         $query = 'SELECT `id`, `username`, `password`'
             . ' FROM `#__users`'
             . ' WHERE username=' . $db->Quote( $credentials['username'] )
@@ -2071,10 +2071,6 @@ class EmundusModelUsers extends JModelList {
         return EmundusHelperFiles::getMenuList($params);
     }
 
-    public function getActionsACL() {
-        return EmundusHelperFiles::getMenuActions();
-    }
-
 	/**
 	 * @param $aid
 	 * @param $fnum
@@ -2776,166 +2772,187 @@ class EmundusModelUsers extends JModelList {
      */
     public function onAfterAnonymUserMapping($data, $campaign_id = 0, $program_code = ''): array
     {
-        $app = JFactory::getApplication();
-        $user_id = $data['user_id'];
-        $profile_id = 1000;
         $message = '';
+        $eMConfig           = JComponentHelper::getParams('com_emundus');
+        $allow_anonym_files = $eMConfig->get('allow_anonym_files', false);
 
-        if (!empty($user_id)) {
-            $db = JFactory::getDBO();
-            $query = $db->getQuery(true);
+        if ($allow_anonym_files) {
+            $app = JFactory::getApplication();
+            $user_id = $data['user_id'];
 
-            $query->update($db->quoteName('#__emundus_users'))
-                ->set($db->quoteName('profile') . ' = ' . $profile_id)
-                ->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
+            if (!empty($user_id)) {
+                $profile_id = !empty($data['profile_id']) ? $data['profile_id'] : 1000;
 
-            try {
-                $db->setQuery($query);
-                $updated = $db->execute();
-            } catch (Exception $e) {
-                $updated = false;
-                JLog::add('Failed to update emundus user profile from user_id ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-            }
+                $db = JFactory::getDBO();
+                $query = $db->getQuery(true);
+                $query->update($db->quoteName('#__emundus_users'))
+                    ->set($db->quoteName('profile') . ' = ' . $profile_id)
+                    ->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
 
-            if ($updated) {
-                $app_profile = $this->addApplicantProfile($user_id);
-
-                $query->clear()
-                    ->update('#__user_usergroup_map')
-                    ->set('group_id = ' . 2)
-                    ->where('user_id = ' . $user_id);
                 try {
                     $db->setQuery($query);
-                    $db->execute();
+                    $updated = $db->execute();
                 } catch (Exception $e) {
-                    // catch any database errors.
-                    JLog::add('Failed to update user joomla group ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                    $updated = false;
+                    JLog::add('Failed to update emundus user profile from user_id ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                 }
 
-                $query->clear()
-                    ->update('#__users')
-                    ->set('activation = 1')
-                    ->set('block = 0')
-                    ->where('id = ' . $user_id);
-                try {
-                    $db->setQuery($query);
-                    $db->execute();
-                } catch (Exception $e) {
-                    // catch any database errors.
-                    JLog::add('Failed to update user ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-                }
+                if ($updated) {
+                    $app_profile = $this->addApplicantProfile($user_id);
 
-                if (empty($campaign_id)) {
-                    if (!empty($program_code)) {
-                        $query->clear()
-                            ->select('id, MAX(year) AS max_year')
-                            ->from('#__emundus_setup_campaigns')
-                            ->where('training = ' . $db->quote($program_code))
-                            ->andWhere('published = 1')
-                            ->group('id')
-                            ->order('max_year')
-                            ->setLimit(1);
-                    } else {
-                        $query->clear()
-                            ->select('id, MAX(year) AS max_year')
-                            ->from('#__emundus_setup_campaigns')
-                            ->where('published = 1')
-                            ->group('id')
-                            ->order('max_year')
-                            ->setLimit(1);
-                    }
-
-                    $db->setQuery($query);
-
-                    try {
-                        $result = $db->loadObject();
-                        $campaign_id = $result->id;
-                    } catch (Exception $e) {
-                        $campaign_id = 0;
-                        JLog::add('Failed to get campaign ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-                        $message = JText::_('COM_EMUNDUS_ANONYM_USERS_ERROR_TRYING_TO_FIND_CAMPAIGN');
-                    }
-                } else {
                     $query->clear()
-                        ->select('id')
-                        ->from('#__emundus_setup_campaigns')
-                        ->where('id = ' . $campaign_id)
-                        ->andWhere('published = 1');
+                        ->update('#__user_usergroup_map')
+                        ->set('group_id = ' . 2)
+                        ->where('user_id = ' . $user_id);
+                    try {
+                        $db->setQuery($query);
+                        $db->execute();
+                    } catch (Exception $e) {
+                        // catch any database errors.
+                        JLog::add('Failed to update user joomla group ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                    }
+
+                    $query->clear()
+                        ->update('#__users')
+                        ->set('activation = ' . $db->quote(''))
+                        ->set('block = 0')
+                        ->set('params = ' . $db->quote(json_encode(array('send_mail' => false))))
+                        ->where('id = ' . $user_id);
 
                     try {
-                        $campaign_id = $db->loadResult();
+                        $db->setQuery($query);
+                        $db->execute();
                     } catch (Exception $e) {
-                        $campaign_id = 0;
-                        JLog::add('Failed to check campaign existence ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                        // catch any database errors.
+                        JLog::add('Failed to update user ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                     }
-                }
 
-                if (!empty($campaign_id)) {
-                    require_once JPATH_ROOT . '/components/com_emundus/models/files.php';
-                    $m_files = new EmundusModelFiles();
-                    $fnum = $m_files->createFile($campaign_id, $user_id);
-
-                    if (!empty($fnum)) {
-                        $email = $data['email'];
-
-                        if (!$data['is_anonym'] && !empty($data['token']) && !empty($email)) {
-                            $template   = JFactory::getApplication()->getTemplate(true);
-                            $params     = $template->params;
-                            $config = JFactory::getConfig();
-
-                            // TODO: with 1.33, use function getLogo from settings
-                            if (!empty($params->get('logo')->custom->image)) {
-                                $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-                                $logo = !empty($logo['path']) ? JURI::base().$logo['path'] : "";
-
-                            } else {
-                                $logo_module = JModuleHelper::getModuleById('90');
-                                preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
-                                $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
-        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
-        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
-        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
-
-                                if ((bool) preg_match($pattern, $tab[1])) {
-                                    $tab[1] = parse_url($tab[1], PHP_URL_PATH);
-                                }
-
-                                $logo = JURI::base().$tab[1];
-                            }
-
-                            require_once(JPATH_ROOT . '/components/com_emundus/controllers/messages.php');
-                            $c_messages = new EmundusControllerMessages();
-                            $sent = $c_messages->sendEmailNoFnum($email, 'anonym_token_email', [
-                                'SITE_URL' => JURI::base(),
-                                'ACTIVATION_ANONYM_URL' => JURI::base() . '/index.php?option=com_emundus&controller=users&task=activation_anonym_user&token=' . $data['token'] . '&user_id=' . $user_id,
-                                'ANONYM_TOKEN' => $data['token'],
-                                'LOGO' => $logo,
-                                'USER_ID' => $user_id,
-                                'PASSWORD' => $data['password']
-                            ]);
+                    if (empty($campaign_id)) {
+                        if (!empty($program_code)) {
+                            $query->clear()
+                                ->select('id, MAX(year) AS max_year')
+                                ->from('#__emundus_setup_campaigns')
+                                ->where('training = ' . $db->quote($program_code))
+                                ->andWhere('published = 1')
+                                ->group('id')
+                                ->order('max_year DESC')
+                                ->setLimit(1);
+                        } else {
+                            $query->clear()
+                                ->select('id, MAX(year) AS max_year')
+                                ->from('#__emundus_setup_campaigns')
+                                ->where('published = 1')
+                                ->group('id')
+                                ->order('max_year DESC')
+                                ->setLimit(1);
                         }
 
-                        include_once(JPATH_ROOT.'/components/com_emundus/models/profile.php');
-                        $m_profile = new EmundusModelProfile;
-                        $m_profile->initEmundusSession();
-                        return [
-                            'status' => true,
-                            'data' => [
-                                'redirect_url' => '/component/emundus/?task=openfile&fnum=' . $fnum,
-                                'fnum' => $fnum
-                            ]
-                        ];
+                        $db->setQuery($query);
+
+                        try {
+                            $result = $db->loadObject();
+                            $campaign_id = $result->id;
+                        } catch (Exception $e) {
+                            $campaign_id = 0;
+                            JLog::add('Failed to get campaign ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                            $message = JText::_('COM_EMUNDUS_ANONYM_USERS_ERROR_TRYING_TO_FIND_CAMPAIGN');
+                        }
                     } else {
-                        JLog::add('Failed to create file for anonym user' . $user_id . ' campaign id :' . $campaign_id, JLog::WARNING, 'com_emundus.error');
-                        $message = 'Une erreur est survenue au cours de la création d\'un dossier.';
+                        $query->clear()
+                            ->select('id')
+                            ->from('#__emundus_setup_campaigns')
+                            ->where('id = ' . $campaign_id)
+                            ->andWhere('published = 1');
+
+                        try {
+                            $campaign_id = $db->loadResult();
+                        } catch (Exception $e) {
+                            $campaign_id = 0;
+                            JLog::add('Failed to check campaign existence ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                        }
+                    }
+
+                    if (!empty($campaign_id)) {
+                        require_once JPATH_ROOT . '/components/com_emundus/models/files.php';
+                        $m_files = new EmundusModelFiles();
+                        $fnum = $m_files->createFile($campaign_id, $user_id);
+
+                        if (!empty($fnum)) {
+                            $email = $data['email'];
+
+                            if (!$data['is_anonym'] && !empty($data['token']) && !empty($email)) {
+                                $template   = JFactory::getApplication()->getTemplate(true);
+                                $params     = $template->params;
+                                $config = JFactory::getConfig();
+
+                                if (!empty($params->get('logo')->custom->image)) {
+                                    $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+                                    $logo = !empty($logo['path']) ? JURI::base().$logo['path'] : "";
+                                } else {
+                                    $logo_module = JModuleHelper::getModuleById('90');
+                                    preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+                                    $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+                                        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
+                                        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
+                                        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+
+                                    if ((bool) preg_match($pattern, $tab[1])) {
+                                        $tab[1] = parse_url($tab[1], PHP_URL_PATH);
+                                    }
+
+                                    $logo = JURI::base().$tab[1];
+                                }
+
+                                require_once(JPATH_ROOT . '/components/com_emundus/controllers/messages.php');
+                                $c_messages = new EmundusControllerMessages();
+                                $sent = $c_messages->sendEmailNoFnum($email, 'anonym_token_email', [
+                                    'SITE_URL' => JURI::base(),
+                                    'ACTIVATION_ANONYM_URL' => JURI::base() . 'index.php?option=com_emundus&controller=users&task=activation_anonym_user&token=' . $data['token'] . '&user_id=' . $user_id,
+                                    'TOKEN' => $data['token'],
+                                    'LOGO' => $logo,
+                                    'USER_ID' => $user_id,
+                                    'PASSWORD' => $data['password'],
+                                    'SITE_NAME' => JFactory::getConfig()->get('sitename')
+                                ]);
+
+                                if (!$sent) {
+                                    JLog::add('Failed to send email to anonym user' . $user_id . ' campaign id :' . $campaign_id, JLog::WARNING, 'com_emundus.error');
+                                }
+                            }
+
+                            $this->login($user_id);
+                            $user_session = JFactory::getSession()->get('emundusUser');
+                            $user_session->id = $user_id;
+                            $user_session->anonym = true;
+                            JFactory::getSession()->set('emundusUser', $user_session);
+
+                            if (!empty($user_session->id)) {
+                                return [
+                                    'status' => true,
+                                    'data' => [
+                                        'redirect_url' => '/component/emundus/?task=openfile&fnum=' . $fnum,
+                                        'fnum' => $fnum
+                                    ]
+                                ];
+                            } else {
+                                JLog::add('Failed to open session for anonym user' . $user_id . ' campaign id :' . $campaign_id, JLog::WARNING, 'com_emundus.error');
+                                $message = JText::_('COM_EMUNDUS_ANONYM_USERS_CREATE_ANONYM_SESSION_ERROR');
+                            }
+                        } else {
+                            JLog::add('Failed to create file for anonym user' . $user_id . ' campaign id :' . $campaign_id, JLog::WARNING, 'com_emundus.error');
+                            $message = 'Une erreur est survenue au cours de la création d\'un dossier.';
+                        }
+                    } else {
+                        JLog::add('Failed to retrieve campaign for anonym user' . $user_id, JLog::WARNING, 'com_emundus.error');
+                        $message = JText::_('COM_EMUNDUS_ANONYM_USERS_NO_CAMPAIGN_FOUND');
                     }
                 } else {
-                    JLog::add('Failed to retrieve campaign for anonym user' . $user_id, JLog::WARNING, 'com_emundus.error');
-                    $message = JText::_('COM_EMUNDUS_ANONYM_USERS_NO_CAMPAIGN_FOUND');
+                    $message =  JText::_('COM_EMUNDUS_ANONYM_USERS_CREATE_ANONYM_SESSION_ERROR');
                 }
-            } else {
-                $message =  JText::_('COM_EMUNDUS_ANONYM_USERS_CREATE_ANONYM_SESSION_ERROR');
             }
+        } else {
+            $message = JText::_('ANONYM_FILES_ARE_FORBIDDEN');
+            JLog::add('Attempt to deposit an anonym file but emundus configuration forbid it.', JLog::INFO, 'com_emundus.users');
         }
 
         return [
@@ -3115,6 +3132,7 @@ class EmundusModelUsers extends JModelList {
                     } catch (Exception $e) {
                         JLog::add('Failed to check if user with same username already exists ' .  $emundusUser->email_anonym . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                     }
+
                     if (!empty($existing_user)) {
                         if ($existing_user == $user_id) {
                             JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_USERS_ANONYM_NOTHING_TO_UPDATE'));
@@ -3134,20 +3152,16 @@ class EmundusModelUsers extends JModelList {
                                 $updated = $m_files->bindFilesToUser($fnums, $existing_user);
 
                                 if ($updated) {
-                                    $existing_user_token = $this->getUserToken($existing_user);
-                                    if (!empty($existing_user_token)) {
-                                        $connected = $this->connectUserFromId($existing_user);
+                                    $connected = $this->connectUserFromId($existing_user);
 
-                                        if ($connected) {
-                                            $query->clear()
-                                                ->update('#__users')
-                                                ->set('block = 1')
-                                                ->set('activation = -1')
-                                                ->where('id = ' . $user_id);
-
-                                            $db->setQuery($query);
-                                            $db->execute();
-                                        }
+                                    if ($connected) {
+                                        $query->clear()
+                                            ->update('#__users')
+                                            ->set('block = 1')
+                                            ->set('activation = -1')
+                                            ->where('id = ' . $user_id);
+                                        $db->setQuery($query);
+                                        $db->execute();
                                     }
                                 }
                             } else {
@@ -3229,6 +3243,11 @@ class EmundusModelUsers extends JModelList {
             try {
                 $db->setQuery($query);
                 $token = $db->loadResult();
+
+                if (empty($token)) {
+                    $token = '';
+                    JLog::add('Existing user does not have token ' . $user_id, JLog::INFO, 'com_emundus.anonym');
+                }
             } catch(Exception $e) {
                 $token = '';
                 JLog::add('Failed to find token from user id ' . $user_id . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');

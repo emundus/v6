@@ -55,17 +55,17 @@ div#frame.outline {
 }
 
 .com_emundus_vue .fabrikElementContainer.control-group span.material-icons {
-  font-family: 'Material Icons' !important;
+  font-family: 'Material Icons', sans-serif !important;
   font-size: 24px !important;
 }
 
 .com_emundus_vue .fabrikElementContainer.control-group span.material-icons-outlined {
-  font-family: 'Material Icons Outlined' !important;
+  font-family: 'Material Icons Outlined', sans-serif !important;
   font-size: 24px !important;
 }
 
 *:focus {
-  outline: none;
+  outline: 5px auto -webkit-focus-ring-color;
 }
 
 body {
@@ -76,17 +76,57 @@ body {
   }
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: $accent-color-1;
-  margin-top: 50px;
-  margin-bottom: 50px;
-  font-weight: 600;
+h1,h2,h3,h4,h5{
+  margin: 0;
+}
+
+h1 {
   font-family: get-font-family($font-family-title);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 40px;
+  color: $accent-color-1;
+}
+h2{
+  font-family: get-font-family($font-family-title);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 30px;
+  color: $accent-color-1;
+}
+h3{
+  font-family: get-font-family($font-family-title);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 25px;
+  color: $accent-color-1;
+}
+h4{
+  font-family: get-font-family($font-family-title);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 23px;
+  color: $accent-color-1;
+}
+h5{
+  font-family: get-font-family($font-family-title);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 20px;
+  color: $accent-color-1;
+}
+h6{
+  font-family: get-font-family($font-family-title);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 16px;
+  color: $accent-color-1;
 }
 
 .view-list, .g-back-office-emundus-tableau {
@@ -98,12 +138,6 @@ h6 {
   h6 {
     color: var(--night-blue) !important;
   }
-}
-
-
-h1 {
-  font-size: 2em;
-  position: relative;
 }
 
 .view-login h1::after,
@@ -187,10 +221,6 @@ legend {
   font-weight: 400;
   font-style: normal;
   line-height: normal;
-}
-
-a:focus {
-  outline: none;
 }
 
 a {
@@ -312,8 +342,15 @@ ul {
 
 /* ARTICLE */
 
-.view-article.com_content .page-header h2[itemprop="headline"] {
-  margin-bottom: 32px;
+
+.view-article.com_content:not(.indicateurs-page) {
+  .page-header h2[itemprop="headline"] {
+    margin-bottom: 32px;
+  }
+
+  table td {
+    border: 1px solid #dce2e9;
+  }
 }
 
 .g-grid .span12 {
@@ -1200,6 +1237,62 @@ body > .g-container {
   border-top: 2px solid $base-secondary-color !important;
 }
 
+/* TEMPLATE TCHOOZ */
+.candidacy-files-list .em-light-selected-tab {
+  border-bottom: 1px solid $base-secondary-color;
+}
+.swal2-actions button.swal2-styled.swal2-cancel:not(.mod_emundus_application_swal_manage_tabs_cancel):not(.em-swal-cancel-button) {
+  border: 1px solid rgb(220, 53, 69) !important;
+  color: #fff !important;
+}
+
+.swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled {
+  &:hover, &:active, &:focus {
+    border: none !important;
+  }
+}
+
+.mod_emundus_application___buttons_switch_view_enable{
+  color: $base-secondary-color;
+}
+.mod_emundus_application___buttons_enable{
+  border: 1px solid $base-secondary-color;
+}
+#tab_adding_link a span.material-icons-outlined{
+  color: $base-primary-color;
+}
+
+.mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-cancel {
+  background: transparent;
+  border: 1px solid $base-primary-color;
+  border-radius: 8px;
+  color: $base-primary-color;
+  padding: 11px 20px;
+  font-weight: inherit;
+
+  &:hover, &:focus, &:active  {
+    background: $base-primary-color;
+    border: 1px solid $base-primary-color;
+    color: #fff;
+  }
+}
+
+.mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-confirm {
+  background: $base-secondary-color;
+  border: 1px solid $base-secondary-color;
+  border-radius: 8px;
+  color: #fff;
+  padding: 11px 20px;
+  font-weight: inherit;
+
+  &:hover, &:focus, &:active  {
+    background: transparent;
+    border: 1px solid $base-secondary-color;
+    color: $base-secondary-color;
+  }
+}
+
+
 /* MODULE APPLICATIONS COULEUR BTN IMPRIMER*/
 .homepage #g-main-mainbody #content-bottom-a {
   .platform-content .btn.btn-info {
@@ -1360,11 +1453,7 @@ body > .g-container {
 
 /* PAGE ACCUEIL */
 .homepage {
-  h1:first-child {
-    margin-bottom: 12px;
-  }
-
-  /* MODULE EMUNDUS CAMPAIGN */
+   /* MODULE EMUNDUS CAMPAIGN */
   .campaigns-list {
 
     .campaingapplycontent {
@@ -1441,6 +1530,212 @@ body > .g-container {
     color: $base-secondary-color;
   }
 }
+
+/* DROPFILE */
+
+.com_dropfiles.view-manage {
+
+  #g-main-mainbody {
+
+    #navigation {
+      display: none;
+    }
+
+    .dropfiles_progress_block .dropfiles_progress_pause:after,
+    .dropfiles_progress_block .dropfiles_progress_cancel:after {
+      color: var(--main-500);
+    }
+
+    .dropfiles_progress_block .dropfiles_process_run {
+      background: var(--main-500);
+    }
+
+    #mybootstrap {
+
+      button.btn, a.btn {
+        text-transform: inherit;
+        border-radius: var(--em-border-radius) !important;
+        font-family: var(--font);
+        letter-spacing: inherit;
+      }
+
+      #pwrapper #preview {
+        background: var(--background-color);
+
+        #dropbox {
+          height: calc(100vh - 70px);
+        }
+
+        .restableMenu .restableMenuButton {
+          margin-top: 24px !important;
+        }
+
+        tr.file.selected,  tr.file:hover {
+          box-shadow: 0 0 0 1px var(--main-500);
+        }
+      }
+
+      #mycategories {
+
+        .bs-docs-sidenav2 > li a.edit {
+          top: 11px;
+
+          i {
+            filter: grayscale(1);
+          }
+        }
+
+        .bs-docs-sidenav2 > li a.trash {
+          top: 11px;
+
+          i {
+            filter: hue-rotate(135deg);
+          }
+        }
+
+        .dd-item.active {
+          & > .dd-content {
+            background: var(--main-100);
+
+            span {
+              color: var(--main-500);
+            }
+          }
+
+          .dropfiles-folder::before {
+            color: var(--main-500);
+          }
+        }
+
+        .dd-item {
+          & > .dd-content:hover {
+            background: var(--main-100);
+            color: var(--main-500);
+
+            span {
+              color: var(--main-500);
+            }
+          }
+
+          .dropfiles-folder::before {
+            color: var(--main-500);
+          }
+        }
+
+
+        #newcategory {
+          width: fit-content;
+
+          .btn.btn-default {
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--main-500);
+            background: var(--neutral-0);
+            color: var(--main-500);
+
+            &:hover, &:focus, &:active {
+              border: 1px solid var(--main-500);
+              background: var(--main-500);
+              color: var(--neutral-0);
+            }
+          }
+
+          i.material-icons {
+            margin-right: 8px;
+          }
+        }
+      }
+
+      #wpreview {
+
+       .dropfiles-number-files {
+          background-color: var(--main-500);
+        }
+
+        #dropfiles-toolbar {
+          position: inherit;
+          display: flex;
+        }
+
+        .dropfiles-search-file {
+
+          a.btn.dropfiles-btn-exit-search {
+              border: 1px solid var(--main-500);
+              background: var(--neutral-0);
+              color: var(--main-500);
+
+              &:hover, &:focus, &:active {
+                border: 1px solid var(--main-500);
+                background: var(--main-500);
+                color: var(--neutral-0);
+              }
+            }
+
+            #dropfiles_filter_catid:focus {
+              background-image: linear-gradient(45deg, var(--main-500) 50%, transparent 55%), linear-gradient(135deg, transparent 55%, var(--main-500) 50%), linear-gradient(to right, var(--main-500), var(--main-500));
+            }
+
+           a.dropfiles-btn-search {
+            border: 1px solid var(--main-500);
+            background: var(--main-500);
+            color: var(--neutral-0);
+
+            &:hover, &:focus, &:active {
+              border: 1px solid var(--main-500);
+              background: var(--neutral-0);
+              color: var(--main-500);
+            }
+          }
+        }
+      }
+
+      #rightcol {
+
+       .field-multiple-user-wrapper a {
+          top: 55%;
+        }
+
+        .field-user-wrapper a {
+          top: 20%;
+        }
+
+         select.dropfilesinput:not(.ju-multiselect):focus, .fileblock .ju-settings-option .paraminput select:focus {
+          background-image: linear-gradient(45deg, var(--main-500) 50%, transparent 55%), linear-gradient(135deg, transparent 55%, var(--main-500) 50%), linear-gradient(to right, var(--main-500), var(--main-500));
+        }
+
+        .fileblock .dropfilesparams .ju-settings-option.jform_hits .paraminput > button,
+        .fileblock .dropfilesparams .ju-settings-option.jform_file_direct_link .paraminput > button.copy-btn,
+         div#fileversion #upload_button_version{
+          border: 1px solid var(--main-500);
+          background-color: var(--neutral-0) !important;
+          color: var(--main-500);
+          &:hover, &:focus, &:active {
+            border: 1px solid var(--main-500);
+            background-color: var(--main-500) !important;
+            color: var(--neutral-0);
+
+          }
+        }
+
+        .dropfiles-save-submit {
+          width: fit-content !important;
+          font-size: 11px !important;
+          border: 1px solid var(--main-500);
+          background-color: var(--main-500) !important;
+          color: var(--neutral-0);
+
+          &:hover, &:focus, &:active {
+            border: 1px solid var(--main-500);
+            background-color: var(--neutral-0) !important;
+            color: var(--main-500);
+          }
+        }
+      }
+    }
+  }
+}
+
 
 /** MODULE SINGLE CAMPAIGN **/
 
@@ -1578,6 +1873,15 @@ body > .g-container {
 }
 
 /* LISTES  */
+
+.view-list.com_fabrik .table tbody tr .modal .modal-footer a.btn {
+  color: var(--neutral-0);
+  text-transform: initial;
+
+  &:hover, &:focus, &:active {
+    color: $base-primary-color;
+  }
+}
 
 .view-list .dropdown-menu > li > a {
   overflow: hidden;
@@ -1794,11 +2098,15 @@ div.fabrikFilterContainer {
       .fabrikDateListFilterRange {
         display: flex;
 
+        input.fabrik_filter {
+          border-radius: 4px 0 0 4px !important;
+        }
+
         .calendarbutton {
           height: 40px;
           color: var(--neutral-900);
           border: solid 1px #ececee;
-          border-radius: 0 4px 4px 0;
+          border-radius: 0 4px 4px 0 !important;
         }
 
         .input-append:first-child {
@@ -1927,7 +2235,7 @@ tr.fabrikFilterContainer {
   border-radius: 8px !important;
   font-size: 14px !important;
   font-weight: 400 !important;
-  box-shadow: 0px 1px 4px rgba(32, 35, 44, 0.05);
+  box-shadow: 0 1px 4px rgba(32, 35, 44, 0.05);
   padding: 6px 10px;
 }
 
@@ -2204,6 +2512,12 @@ tr.fabrikFilterContainer {
   background-color: var(--dark-pink-500) !important;
 }
 
+.label-black{
+  background-color: var(--neutral-900) !important;
+  color: var(--neutral-0) !important;
+  text-shadow: none;
+}
+
 /* ERROR PAGE 404 */
 
 .error-page {
@@ -2373,7 +2687,6 @@ button.btn-primary {
   &:hover {
     background-color: transparent;
     color: $base-secondary-color;
-    outline: none;
   }
 }
 
@@ -2386,7 +2699,6 @@ button.btn-secondary {
   &:hover {
     background-color: transparent;
     color: $base-secondary-color;
-    outline: none;
 
     span {
       color: $base-secondary-color !important;
@@ -2409,7 +2721,6 @@ span.btn {
   &:active {
     background-color: transparent;
     color: $base-primary-color;
-    outline: none;
     border: 1px solid $base-primary-color;
   }
 }
@@ -2740,7 +3051,6 @@ a#em-doc-zip:focus,
 .choice-statut-btn:focus {
   background-color: transparent;
   color: $base-primary-color;
-  outline: none;
   border: 1px solid $base-primary-color !important;
 }
 
@@ -2754,7 +3064,6 @@ a#em-doc-zip:focus,
   &:active {
     background-color: transparent;
     color: $base-primary-color;
-    outline: none;
   }
 }
 
@@ -2771,7 +3080,6 @@ a#em-doc-zip:focus,
     background-color: transparent;
     color: $base-primary-color;
     border: 1px solid $base-primary-color;
-    outline: none;
   }
 }
 
@@ -2783,7 +3091,6 @@ a#em-doc-zip:focus,
   &:hover {
     background-color: transparent !important;
     color: $base-secondary-color !important;
-    outline: none;
   }
 }
 
@@ -2813,7 +3120,6 @@ button#back,
   &:focus {
     background-color: $base-secondary-color;
     color: var(--neutral-50);
-    outline: none;
     border-color: unset;
   }
 }
@@ -2871,7 +3177,6 @@ button#back,
   &:focus,
   &:active {
     background-color: var(--night-blue);
-    outline: none;
   }
 
   span {
@@ -3061,13 +3366,6 @@ label[for='clear-search'] img:hover:focus {
 
 .step a[title="Retour à mes dossiers"]:hover, .step a[title="Retour à mes dossiers"]:focus, .step a[title="Retour à mes dossiers"]:active {
   color: $base-secondary-color;
-}
-
-
-.candidacy-files-list h1,
-#em-panel h1 {
-  color: var(--neutral-900);
-  font-weight: 700;
 }
 
 //test
@@ -3433,7 +3731,7 @@ ul.unstyled.em-linkForgot li a {
   .em-w-custom form.fabrikForm textarea,
   .em-w-custom .em-document-dropzone-card,
   .em-w-custom .em-email-card,
-  ul li,
+  ul li:not(.em-pointer),
   select {
     color: initial;
   }
@@ -3449,7 +3747,7 @@ ul.unstyled.em-linkForgot li a {
   }
 }
 
-.com_emundus.view-users.layout-edit .em-container-profile-view-pict span.em-h3 {
+.com_emundus.view-users.layout-edit .em-container-profile-view-pict h1.em-h1 {
   font-family: var(--font);
 }
 
@@ -3563,6 +3861,7 @@ ul.unstyled.em-linkForgot li a {
     border-radius: 4px;
     width: 100%;
     overflow: auto;
+    cursor: auto;
 
     li.search-field {
       input[type="text"] {
@@ -4064,6 +4363,23 @@ div#em-appli-block {
   }
 }
 
+  .view-list.task-list\.view {
+    .table.tabData thead, .table.tabData tbody.fabrik_groupdata {
+      border-width: 1px;
+    }
+
+    .fabrikFilterContainer .filtertable.table  {
+      .fabrik_row td select {
+        width: fit-content;
+      }
+
+      >tbody>tr>td:first-child {
+        padding-left: 0!important;
+        width: fit-content !important;
+      }
+    }
+  }
+
 
 /* ??? - menu déroulant */
 
@@ -4255,7 +4571,7 @@ div#em-appli-block {
 
     &:hover, &:active, &:focus {
       background: var(--neutral-50);
-      border-color: var(--main-500);
+      border-color: var(--main-500) !important;
       color: var(--main-500);
     }
   }
@@ -4639,10 +4955,38 @@ div#em-appli-block {
 
 /******************************* SWEET ALERT ***********************************/
 
+  .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled {
+    &:hover, &:active, &:focus {
+      border: none !important;
+    }
+  }
+
 .swal2-title {
   color: var(--neutral-900);
   margin: 10px 0 20px 0;
   font-family: var(--font);
+}
+.swal2-popup{
+  border-radius: 16px !important;
+}
+
+button.swal2-styled.swal2-confirm{
+  background: var(--blue-500);
+  border-radius: 8px;
+  padding: 11px 20px;
+  color: white;
+}
+button.swal2-styled.swal2-cancel{
+  background: #FFFFFF;
+  border: 1px solid var(--blue-500);
+  border-radius: 8px;
+  color: var(--blue-500);
+  padding: 11px 20px;
+  &:hover, &:active, &:focus {
+    background: var(--blue-500);
+    color: #FFFFFF;
+    background-image: none !important;
+  }
 }
 
 button.swal2-confirm.save-btn.sauvegarder.save_continue {
@@ -4785,7 +5129,7 @@ button.swal2-cancel.goback-btn {
 
     /* TITRE FORMULAIRE */
     .page-header h1 {
-      @include headline-5;
+      @include headline-1;
       color: var(--neutral-900);
     }
 
@@ -4843,7 +5187,7 @@ button.swal2-cancel.goback-btn {
 
         /* LEGEND */
         .legend {
-          @include headline-6;
+          @include headline-3;
           color: var(--neutral-900);
         }
 
@@ -5058,8 +5402,7 @@ button.swal2-cancel.goback-btn {
 .mod_emundus_checklist___border_item {
   height: 32px;
   border-left: 2px solid var(--neutral-200);
-  margin: 1px 0 1px 11px;
-  margin-top: -18px;
+  margin: -18px 0 1px 11px;
 }
 
 .mod_emundus_checklist .active .mod_emundus_checklist___step_count {
@@ -5164,7 +5507,7 @@ screen and (max-height: 769px) {
       margin-bottom: 8px;
     }
     .fabrikinput.inputbox:nth-child(3) {
-      margin-left: 0px;
+      margin-left: 0;
     }
   }
 
@@ -5951,13 +6294,13 @@ screen and (max-height: 769px) {
 
   .user-menu-phone a.profile-btn-phone::before {
     content: "\f007";
-    font-family: FontAwesome;
+    font-family: FontAwesome, sans-serif;
     margin-right: 10px;
   }
 
   .user-menu-phone a.logout-phone-btn::before {
     content: "\f011";
-    font-family: FontAwesome;
+    font-family: FontAwesome, sans-serif;
     margin-right: 10px;
   }
 
@@ -6312,7 +6655,7 @@ screen and (max-height: 769px) {
     margin-left: 0 !important;
   }
 
-  #g-container-main {
+  .gantry:not(.files-board)  #g-container-main {
     padding: 20px;
   }
 
@@ -6438,10 +6781,6 @@ fieldset[disabled] .multiselect {
   box-sizing: border-box;
 }
 
-.multiselect:focus {
-  outline: none;
-}
-
 .multiselect--disabled {
   background: var(--neutral-300);
   pointer-events: none;
@@ -6537,7 +6876,6 @@ fieldset[disabled] .multiselect {
 .multiselect__input:focus,
 .multiselect__single:focus {
   border-color: #a8a8a8;
-  outline: none;
 }
 
 .multiselect__single {
@@ -6618,8 +6956,7 @@ fieldset[disabled] .multiselect {
   box-sizing: border-box;
   display: block;
   overflow: hidden;
-  padding: 8px 12px 0;
-  padding-right: 30px;
+  padding: 8px 30px 0 12px;
   white-space: nowrap;
   margin: 0;
   text-decoration: none;
@@ -6695,10 +7032,7 @@ fieldset[disabled] .multiselect {
 
 .multiselect--above .multiselect__content-wrapper {
   bottom: 100%;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
+  border-radius: 5px 5px 0 0;
   border-bottom: none;
   border-top: 1px solid #e8e8e8;
 }
@@ -6741,7 +7075,6 @@ fieldset[disabled] .multiselect {
 
 .multiselect__option--highlight {
   background: #41b883;
-  outline: none;
   color: var(--neutral-50);
 }
 
@@ -7489,7 +7822,7 @@ tbody .el-table__row:nth-child(odd){
   height: 20px;
   border-radius: 6px;
   &::after{
-    font-family: "Material Icons";
+    font-family: "Material Icons", sans-serif;
     content: "\e5ca";
     border: unset;
     height: 20px;

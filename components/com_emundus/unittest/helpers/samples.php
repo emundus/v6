@@ -22,6 +22,8 @@ include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
 include_once(JPATH_SITE.'/components/com_emundus/models/formbuilder.php');
 include_once(JPATH_SITE.'/components/com_emundus/models/settings.php');
 include_once(JPATH_SITE.'/components/com_emundus/classes/api/FileSynchronizer.php');
+include_once(JPATH_SITE.'/components/com_emundus/models/campaign.php');
+include_once(JPATH_SITE.'/components/com_emundus/models/programme.php');
 
 /**
  * eMundus Component Query Helper
@@ -178,4 +180,96 @@ class EmundusUnittestHelperSamples
 
         return $deleted;
     }
+
+	public function createSampleProgram()
+	{
+		$m_programme = new EmundusModelProgramme;
+		$program = $m_programme->addProgram(['label' => 'Programme Test Unitaire']);
+		return $program;
+	}
+
+	public function createSampleCampaign($program)
+	{
+		$campaign_id = 0;
+
+		if (!empty($program)) {
+			$m_campaign = new EmundusModelCampaign;
+
+			$start_date = new DateTime();
+			$start_date->modify('-1 day');
+			$end_date = new DateTime();
+			$end_date->modify('+1 year');
+			$campaign_id = $m_campaign->createCampaign([
+				'label' =>  json_encode(['fr' => 'Campagne test unitaire', 'en' => 'Campagne test unitaire']),
+				'description' => 'Lorem ipsum',
+				'short_description' => 'Lorem ipsum',
+				'start_date' => $start_date->format('Y-m-d H:i:s'),
+				'end_date' => $end_date->format('Y-m-d H:i:s'),
+				'profile_id' => 9,
+				'training' => $program['programme_code'],
+				'year' => '2022-2023',
+				'published' => 1,
+				'is_limited' => 0
+			]);
+		}
+
+		return $campaign_id;
+	}
+
+	public function createSampleUpload($fnum, $campaign_id, $user_id = 95, $attachment_id = 1) {
+		$inserted = false;
+
+		if (!empty($fnum)) {
+			$filename = $user_id . '-' . $campaign_id . '-unittest' . rand(0, 100) . '.pdf';
+			$localFilename = 'Unit Test file.pdf';
+
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->insert('#__emundus_uploads')
+				->columns(['fnum', 'user_id', 'campaign_id', 'attachment_id', 'filename', 'local_filename', 'timedate', 'can_be_deleted', 'can_be_viewed'])
+				->values($fnum . ',' . $user_id . ',' . $campaign_id . ',' . $attachment_id . ',' . $db->quote($filename) . ',' . $db->quote($localFilename) . ',' . $db->quote(date('Y-m-d H:i:s')) . ',1,1');
+
+			try {
+				$db->setQuery($query);
+				$inserted = $db->execute();
+			} catch (Exception $e) {
+				$inserted = false;
+				error_log('attachment insertion failed');
+			}
+		}
+
+		return $inserted;
+	}
+
+	public function  duplicateSampleProfile($profile_id)
+	{
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		// Get profile
+		$query->clear()
+			->select('*')
+			->from($db->quoteName('#__emundus_setup_profiles'))
+			->where($db->quoteName('id') . ' = ' . $db->quote($profile_id));
+		$db->setQuery($query);
+		$oldprofile = $db->loadObject();
+
+		if (!empty($oldprofile)) {
+			// Create a new profile
+			$query->clear()
+				->insert('#__emundus_setup_profiles')
+				->set($db->quoteName('label') . ' = ' . $db->quote($oldprofile->label . ' - Copy'))
+				->set($db->quoteName('published') . ' = 1')
+				->set($db->quoteName('menutype') . ' = ' . $db->quote($oldprofile->menutype))
+				->set($db->quoteName('acl_aro_groups') . ' = ' . $db->quote($oldprofile->acl_aro_groups))
+				->set($db->quoteName('status') . ' = ' . $db->quote($oldprofile->status));
+			$db->setQuery($query);
+			$db->execute();
+			$newprofile = $db->insertid();
+		}
+
+		return $newprofile;
+	}
 }

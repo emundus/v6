@@ -144,19 +144,25 @@ class EmundusModelsettings extends JModelList {
      * @since 1.0
      */
     function deleteTag($id) {
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
+		$deleted = false;
 
-        $query->delete($db->quoteName('#__emundus_setup_action_tag'))
-            ->where($db->quoteName('id') . ' = ' . $id);
+		if (!empty($id)) {
+			$db = $this->getDbo();
+			$query = $db->getQuery(true);
 
-        try {
-            $db->setQuery($query);
-            return $db->execute();
-        } catch(Exception $e) {
-            JLog::add('component/com_emundus/models/settings | Cannot delete the tag ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
-        }
+			$query->delete($db->quoteName('#__emundus_setup_action_tag'))
+				->where($db->quoteName('id') . ' = ' . $id);
+
+			try {
+				$db->setQuery($query);
+				$deleted=  $db->execute();
+			} catch(Exception $e) {
+				JLog::add('component/com_emundus/models/settings | Cannot delete the tag ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+				$deleted = false;
+			}
+		}
+
+		return $deleted;
     }
 
     /**
@@ -377,7 +383,7 @@ class EmundusModelsettings extends JModelList {
      *
      * @since 1.0
      */
-    function updateTags($tag,$label,$color) {
+    function updateTags($tag, $label, $color) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -385,6 +391,8 @@ class EmundusModelsettings extends JModelList {
 
         try {
             $class = array_search($color, $classes);
+			$class = !empty($class) ? $class : 'default';
+
             $query->clear()
                 ->update('#__emundus_setup_action_tag')
                 ->set($db->quoteName('label') . ' = ' . $db->quote($label))
@@ -1214,5 +1222,71 @@ class EmundusModelsettings extends JModelList {
 			JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 			return false;
 		}
+	}
+
+	function getOnboardingLists() {
+		$lists = [];
+
+		$group = 'com_emundus';
+		$cache_id = 'onboarding_lists';
+		$cache_data = null;
+
+		require_once (JPATH_ROOT .'/components/com_emundus/helpers/cache.php');
+		$h_cache = new EmundusHelperCache('com_emundus', '', 86400, 'component');
+		if ($h_cache->isEnabled()) {
+			$cache_data = $h_cache->get($cache_id);
+		}
+
+		if (empty($cache_data)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query->select('`default`, value')
+				->from($db->quoteName('#__emundus_setup_config'))
+				->where($db->quoteName('namekey') . ' = ' . $db->quote('onboarding_lists'));
+
+			try {
+				$db->setQuery($query);
+
+				$data = $db->loadObject();
+				if (!empty($data)) {
+					if (!empty($data->value)) {
+						$lists = json_decode($data->value, true);
+					} else {
+						$lists = json_decode($data->default, true);
+					}
+
+					foreach($lists as $lk => $list) {
+						$list['title'] = JText::_($list['title']);
+
+						foreach($list['tabs'] as $tk => $tab) {
+							$tab['title'] = JText::_($tab['title']);
+
+							foreach($tab['actions'] as $ak => $action) {
+								$action['label'] = JText::_($action['label']);
+								$tab['actions'][$ak] = $action;
+							}
+
+							foreach($tab['filters'] as $fk => $filter) {
+								$filter['label'] = JText::_($filter['label']);
+								$tab['filters'][$fk] = $filter;
+							}
+
+							$list['tabs'][$tk] = $tab;
+						}
+
+						$lists[$lk] = $list;
+					}
+					if ($h_cache->isEnabled()) {
+						$h_cache->set($cache_id, $lists);
+					}
+				}
+			} catch (Exception $e) {
+				JLog::add('Error getting onboarding lists in model at query : '. $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		} else {
+			$lists = $cache_data;
+		}
+
+		return $lists;
 	}
 }

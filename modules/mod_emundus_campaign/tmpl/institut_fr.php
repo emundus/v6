@@ -63,7 +63,7 @@ $site_offset = $config->get('offset');
                     $resaux = $helper->getReseaux($result->id);
 
                     // Get number of files compared to limit if limit is enabled
-                    if ($result->islimited == 1) {
+                    if ($result->is_limited == 1) {
                         $db = JFactory::getDbo();
                         $query = $db->getQuery(true);
 
@@ -86,7 +86,8 @@ $site_offset = $config->get('offset');
                             $query->clear()
                                 ->select('COUNT(id)')
                                 ->from($db->quoteName('jos_emundus_campaign_candidature'))
-                                ->where($db->quoteName('status') . ' IN (' . implode(',', $limit_status) . ')');
+                                ->where($db->quoteName('campaign_id') . ' = ' . $db->quote($result->id))
+                                ->andWhere($db->quoteName('status') . ' IN (' . implode(',', $limit_status) . ')');
                             $db->setQuery($query);
                             $files_sent = $db->loadResult();
                         }
@@ -104,7 +105,7 @@ $site_offset = $config->get('offset');
                             <p>
                                 <?php echo $result->short_description;?>
                             </p>
-                            <?php if ($result->islimited == 1) { echo '<p>' . $files_sent . ' / ' . $file_limit . ' ' . JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_SENT_NUMBER') . '</p>'; } ?>
+                            <?php if ($result->is_limited == 1) { echo '<p style="display:inline-block;padding:10px;border:1px solid red;border-radius:4px;font-weight:bold;color:red;">' . $files_sent . ' ' . JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_SENT_NUMBER') . ' ' . $file_limit . '</p>'; } ?>
                         </div>
                         <div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
                             <div class="campaingapplycontent">

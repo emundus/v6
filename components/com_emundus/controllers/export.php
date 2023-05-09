@@ -154,7 +154,7 @@ class EmundusControllerExport extends JControllerLegacy
     public function getprofiles() {
         $current_user = JFactory::getUser();
 
-        if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
             die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
         } else {
             $jinput = JFactory::getApplication()->input;
@@ -162,13 +162,14 @@ class EmundusControllerExport extends JControllerLegacy
             $code = $jinput->getVar('code', null);
             $camp = $jinput->getVar('camp', null);
 
-            $code = explode(",", $code);
-            $camp = explode(",", $camp);
+            $code = explode(',', $code);
+            $camp = explode(',', $camp);
 
-            $p_model = $this->getModel('profile');
-            $_profiles = $p_model->getProfileIDByCampaigns($camp,$code);
+	        require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+            $m_profile = new EmundusModelProfile();
+            $profiles = $m_profile->getProfileIDByCampaigns($camp,$code);
 
-            echo json_encode((object) $_profiles);
+            echo json_encode((object) $profiles);
             exit();
         }
     }

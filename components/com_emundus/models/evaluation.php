@@ -2232,13 +2232,13 @@ class EmundusModelEvaluation extends JModelList {
 									                    }
 									                    $i++;
 								                    }
-								                    $cell->setValue(htmlspecialchars($val));
+								                    $cell->setValue(htmlspecialchars($val, ENT_NOQUOTES));
 							                    }
 						                    }
 						                    foreach ($idFabrik as $id) {
 							                    if (isset($fabrikValues[$id][$fnum])) {
 								                    $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
-								                    $cell->setValue(htmlspecialchars($value));
+								                    $cell->setValue(htmlspecialchars($value, ENT_NOQUOTES));
 							                    } else {
 								                    $cell->setValue('');
 							                    }
@@ -3169,7 +3169,7 @@ class EmundusModelEvaluation extends JModelList {
                     $url = $details_url;
                 }
                 // If evaluation period started and not passed and we have update rights
-                elseif ($update_access || $create_access) {
+                elseif ($update_access || ($create_access && $evaluation->user == $user->id)) {
                     $url = $view == 'form' ? $form_url : $details_url;
                 }
                 // If evaluation period started and not passed and we have read rights
@@ -3213,5 +3213,21 @@ class EmundusModelEvaluation extends JModelList {
         }
 
         return ['url' => $url, 'message' => $message];
+    }
+
+    public function getRowByFnum($fnum,$table_name){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('id')
+                ->from($db->quoteName($table_name))
+                ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+            $db->setQuery($query);
+            return $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('Problem to get row by fnum '.$fnum.' in table '.$table_name.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return 0;
+        }
     }
 }

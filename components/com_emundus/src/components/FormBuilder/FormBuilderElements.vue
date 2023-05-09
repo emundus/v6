@@ -69,9 +69,13 @@ export default {
         return;
       }
 
-      formBuilderService.createSimpleElement({
+	    const data = this.$store.getters['global/datas'];
+			const mode = typeof data.mode !== 'undefined' ? data.mode.value : 'forms';
+
+	    formBuilderService.createSimpleElement({
         gid: group_id,
         plugin: this.cloneElement.value,
+	      mode: mode
       }).then(response => {
         formBuilderService.updateElementOrder(group_id, response.data.scalar, event.newDraggableIndex).then((response) => {
           this.$emit('element-created');

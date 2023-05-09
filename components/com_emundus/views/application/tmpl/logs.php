@@ -185,7 +185,7 @@ JFactory::getSession()->set('application_layout', 'logs');
             let crud = $('#crud-logs').val();
 
             if (!crud) {
-                crud = ['c','u', 'd'];
+                crud = ['c','r', 'u', 'd'];
             }
 
             const types = $('#type-logs').val();

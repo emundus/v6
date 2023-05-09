@@ -65,8 +65,12 @@ class EmundusModelLogs extends JModelList {
 
                         $ip = JFactory::getApplication()->input->server->get('REMOTE_ADDR','');
                         $user_to = empty($user_to) ? '' : $user_to;
-                        $columns = ['user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params', 'ip_from'];
-                        $values  = [$user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $db->quote($params), $db->quote($ip)];
+                        $now = new DateTime();
+                        $now->setTimezone(new DateTimeZone('UTC'));
+                        $now = $now->format('Y-m-d H:i:s');
+
+                        $columns = ['timestamp', 'user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params', 'ip_from'];
+                        $values  = [$db->quote($now), $user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $db->quote($params), $db->quote($ip)];
 
                         $query->insert($db->quoteName('#__emundus_logs'))
                             ->columns($db->quoteName($columns))

@@ -24,7 +24,6 @@ jimport('joomla.application.component.controller');
 class EmundusControllerUsers extends JControllerLegacy {
 	private $_user = null;
 	private $_db = null;
-	private $m_user = null;
 
 	public function __construct($config = array()) {
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
@@ -35,7 +34,6 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		$this->_user  = JFactory::getSession()->get('emundusUser');
 		$this->_db    = JFactory::getDBO();
-		$this->m_user = new EmundusModelUsers();
 
 		parent::__construct($config);
 	}
@@ -103,8 +101,11 @@ class EmundusControllerUsers extends JControllerLegacy {
 			$password = $h_users->generateStrongPassword();
 			$user->password = md5($password);
 		}
-		$user->registerDate = date('Y-m-d H:i:s');
-		$user->lastvisitDate = date('Y-m-d H:i:s');
+        $now = new DateTime();
+        $now->setTimezone(new DateTimeZone('UTC'));
+        $now = $now->format('Y-m-d H:i:s');
+        $user->registerDate = $now;
+        $user->lastvisitDate = null;
 		$user->groups = array($jgr);
 		$user->block = 0;
 
@@ -133,6 +134,14 @@ class EmundusControllerUsers extends JControllerLegacy {
 			echo json_encode((object) array('status' => false, 'user' => $user, 'msg' => $user->getError()));
 			exit;
 		}
+
+        // If index.html does not exist, create the file otherwise the process will stop with the next step
+        if (!file_exists(EMUNDUS_PATH_ABS.'index.html')) {
+            $filename = EMUNDUS_PATH_ABS.'index.html';
+            $file = fopen($filename, 'w');
+            fwrite($file, '');
+            fclose($file);
+        }
 
 		if (!mkdir(EMUNDUS_PATH_ABS.$uid, 0755) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$uid.DS.'index.html')) {
 			echo json_encode((object) array('status' => false, 'uid' => $uid, 'msg' => JText::_('COM_EMUNDUS_USERS_CANT_CREATE_USER_FOLDER_CONTACT_ADMIN')));
@@ -325,7 +334,8 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 	/////////////Nouvelle Gestion /////////////////
 	public function clear() {
-		@EmundusHelperFiles::clear();
+        $h_files = new EmundusHelperFiles();
+        $h_files->clear();
 		echo json_encode((object)(array('status' => true)));
 		exit;
 	}
@@ -836,6 +846,15 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$m_users = new EmundusModelUsers();
 		$res = $m_users->setGroupRight($id, $action, $value);
 
+        try {
+            require_once (JPATH_ROOT . '/administrator/components/com_emundus/helpers/update.php');
+            EmundusHelperUpdate::clearJoomlaCache('mod_menu');
+        } catch (Exception $e) {
+            JLog::add('Cannot clear cache : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+
+
+
 		echo json_encode((object)array('status' => $res, 'msg' => $msg));
 		exit;
 	}
@@ -989,11 +1008,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 	public function getattachmentaccessrights()
 	{
-		$rights = [
-			'canDelete' => false,
-			'canExport' => false,
-			'canUpdate' => false,
-		];
+		$rights = array();
 
 		$fnum = JFactory::getApplication()->input->getString('fnum', null);
 

@@ -12,7 +12,7 @@
         <div>
           <span class="em-red-500-color em-mb-8">{{translations.RequiredFieldsIndicate}}</span>
           <div class="em-mb-16">
-            <h2>{{ translations.Informations }}</h2>
+            <h1 class="em-h1">{{ translations.Informations }}</h1>
           </div>
 
           <div>
@@ -31,19 +31,18 @@
 
             <div class="em-mb-16">
               <label>{{translations.emailBody}} <span style="color: #E5283B">*</span></label>
-              <editor
-                  v-if="dynamicComponent"
-                  v-model="form.message"
-                  :id="'email'"
-                  :class="{ 'is-invalid': errors.message}"
-                  :height="'30em'"
+              <editor-quill
+                  style="height: 30em"
                   :text="form.message"
-                  :lang="actualLanguage"
+                  v-model="form.message"
                   :enable_variables="true"
                   :placeholder="translations.EmailResume"
+                  :id="'email'"
+                  :key="dynamicComponent"
+                  :class="{ 'is-invalid': errors.message}"
               >
-              </editor>
-              <div class="em-mt-8">
+              </editor-quill>
+              <div class="em-mt-48">
                 <a href="component/emundus/?view=export_select_columns&format=html&layout=all_programs&Itemid=1173" class="em-main-500-color em-hover-main-600" target="_blank">{{ translate('COM_EMUNDUS_EMAIL_SHOW_TAGS') }}</a>
               </div>
             </div>
@@ -57,7 +56,7 @@
 
         <div>
           <div class="em-flex-row em-mb-16">
-            <p class="em-h4 em-pointer" @click="displayAdvanced">{{ translations.Advanced }}</p>
+            <h3 class="em-h3 em-pointer" @click="displayAdvanced">{{ translations.Advanced }}</h3>
             <button :title="translations.Advanced" type="button" class="em-transparent-button em-flex-column" @click="displayAdvanced" v-show="!displayAdvancedParameters">
               <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
             </button>
@@ -214,9 +213,8 @@
 <script>
 import Autocomplete from "../components/autocomplete";
 import axios from "axios";
-import Editor from "../components/editor";
+import EditorQuill from "../components/editorQuill";
 import Multiselect from 'vue-multiselect';
-import {global} from "../store/global";
 
 const qs = require("qs");
 
@@ -224,7 +222,7 @@ export default {
   name: "addEmail",
 
   components: {
-    Editor,
+    EditorQuill,
     Autocomplete,
     Multiselect
   },

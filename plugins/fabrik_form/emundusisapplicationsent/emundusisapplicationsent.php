@@ -348,7 +348,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
 
                                     $store = EmundusHelperDate::displayDate($store, 'Y-m-d H:i:s', $timeStorageFormat);
                                 }
-                                
+
                                 $formModel->data[$table->db_table_name . '___' . $key] = $store;
                                 $formModel->data[$table->db_table_name . '___' . $key . '_raw'] = $store;
                             }

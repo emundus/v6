@@ -503,12 +503,8 @@ form#member-profile .form-horizontal .control-label {
 .view-registration .login.em-formRegistrationCenter .em-heading-registration h1, 
 .view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) .em-heading-registration h1 {
     margin-top: 0px !important; 
-    font-size: 32px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 39px;
-    letter-spacing: 0;
     color: var(--em-applicant-title-color);
+    margin-bottom: 8px;
 }
 
 .view-form.view-registration .span12. .login.em-formRegistrationCenter  p:first-of-type, 
@@ -531,7 +527,7 @@ form#member-profile .form-horizontal .control-label {
     padding: 80px 64px 80px 64px;
 }
 
-.view-registration .view-registration.login.em-formRegistrationCenter p.em-h3 {
+.view-registration .view-registration.login.em-formRegistrationCenter h1.em-h1 {
    font-family:  var(--applicant-title-font);
 }
 

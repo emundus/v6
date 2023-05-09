@@ -34,7 +34,6 @@
                     <option value="1">JYes</option>
                 </field>
 
-                <field name="widgets" type="multilist" default="" label="Widgets"/>
                 <field name="colors" type="textarea" default="#16AFE1, #78dc6e" label="Palette de couleurs" description="Palette de couleurs permettant de personnaliser les graphiques en fonction du client" hint="#de6339,#1b1f3c" rows="10" cols="5"/>
             </fieldset>
         </fields>
