@@ -749,16 +749,11 @@ $font:'Inter', sans-serif;
 
 
   /* DISPLAY */
-  &.plg-display {
-    .fabrikinput {
-      height: auto !important;
-      border: none !important;
-      padding: 0 !important;
-    }
-    .fabrikLabel * {
-      color: var(--neutral-800);
-    }
-}
+  &.plg-display .fabrikinput {
+    height: auto !important;
+    border: none !important;
+    padding: 0 !important;
+  }
 
   /* LABEL */
   .fabrikLabel {
