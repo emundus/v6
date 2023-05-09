@@ -170,8 +170,8 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
         $value = $data['num_tel'];
         $is_valid_JS = $data['is_valid'];
 
-        $minimalNumberlength = 5; // without counting '+', minimal phone number length e.164 format
-        $maximalNumberlength = 15; // without counting '+', maximal phone number length e.164 format
+        $minimalNumberlength = 5; // without counting '+', self-consider it's the minimal length, CAN BE CHANGED
+        $maximalNumberlength = 15; // without counting '+', maximal phone number length e.164 format, NO CHANGE
 
         $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_INVALID'); // error as default value
 

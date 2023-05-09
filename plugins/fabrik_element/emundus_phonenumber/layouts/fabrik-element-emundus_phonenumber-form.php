@@ -7,6 +7,7 @@ $doc = JFactory::getDocument();
 $doc->addScript('https://unpkg.com/imask');
 $doc->addScript(JURI::root() . "plugins/fabrik_element/emundus_phonenumber/assets/js/emundus_phonenumber_libphone-min.js");
 $doc->addScript(JURI::root() . "plugins/fabrik_element/emundus_phonenumber/assets/js/emundus_phonenumber_ValidatorJS.js");
+$doc->addScript(JURI::root() . "plugins/fabrik_element/emundus_phonenumber/assets/js/emundus_imask-min.js");
 
 // able to use these errors in JS
 JText::script('PLG_ELEMENT_PHONE_NUMBER_INVALID');

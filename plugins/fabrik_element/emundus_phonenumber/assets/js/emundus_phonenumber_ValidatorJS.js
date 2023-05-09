@@ -111,23 +111,22 @@ class ValidatorJS {
             this.input.value = this.defaultValue;
             this.defaultValue = '';
         }
-        else if (this.countrySelected.country_code)
-        {
-            this.input.value = this.countrySelected.country_code;
+        else if (this.countrySelected.country_code) {
+
+            const countryCode = this.countrySelected.country_code;
+            this.input.value = countryCode
+
+            // prepare the mask for the input
             this.mask = IMask(
-                document.getElementById(this.input.id),
+                this.input,
                 {
-                    mask: 'country_code`'+'num',
+                    mask: countryCode + 'num',
                     blocks: {
-                        country_code:{
-                            mask: '{'+this.countrySelected.country_code+'}'
-                        },
                         num: {
-                            // nested masks are available!
                             mask: Number,
                         }
-                    }
-                   ,
+                    },
+                    lazy: false, // can't remove the countryCode
                 });
         }
     }
