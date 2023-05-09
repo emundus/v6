@@ -1,5 +1,22 @@
 var filtersInstances = [];
-var filterSampleContainer = null;
+const filterSampleContainerHTML = '<div class="filter-container em-w-100" id="sample-id" style="position: relative;">'+
+    '<section class="filter-recap-container em-pointer em-border-radius-8 em-border-neutral-400 em-flex-row em-flex-space-between em-box-shadow em-white-bg">' +
+    '   <div class="filter-recap em-p-8 em-flex-col-start">' +
+    '       <div class="operator em-mt-8 em-ml-8 em-p-8-0"></div>' +
+    '       <div class="options em-flex-row em-flex-wrap em-ml-8 em-p-8-0"></div>' +
+    '   </div>' +
+    '   <span class="material-icons-outlined expand">expand_more</span>' +
+    '</section>' +
+    '<section class="filter-options-modal hidden em-w-100 em-white-bg em-border-radius-8 em-box-shadow" style="position: absolute;z-index:1;">' +
+    '   <div class="filter-operators em-flex-col-start em-p-16"></div>' +
+    '   <div class="filter-andor-operators em-flex-col-start em-p-16"></div>' +
+    '   <hr>' +
+    '   <ul class="filter-options em-m-16"></ul>' +
+    '</section>' +
+    '</div>';
+let filterSampleContainer = document.createElement('div');
+filterSampleContainer.innerHTML = filterSampleContainerHTML;
+
 var basicOperators = [
     { value: '=', label: translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS')},
     { value: '!=', label:  translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_NOT')},
@@ -31,7 +48,7 @@ class MultiSelectFilter {
     constructor(filterContainer) {
         const select = filterContainer.querySelector('select');
         this.uid = filterContainer.dataset.filterUid;
-        this.filterId = select.id;
+        this.filterId = select.getAttribute('id');
 
         select.querySelectorAll('option').forEach((option) => {
             this.options.push({value: option.value, label: option.innerText});
@@ -166,13 +183,12 @@ class MultiSelectFilter {
             this.selectedAndOrOperator = e.target.dataset.operator;
 
             this.andOrOperators.forEach((operator) => {
+                const operatorSpan = document.querySelector('.filter-and-or-operator[data-operator="' + operator.value + '"]');
                 if (operator.value !== this.selectedAndOrOperator) {
-                    const operatorSpan = document.querySelector('.filter-and-or-operator[data-operator="' + operator.value + '"]');
                     operatorSpan.classList.remove('label-default');
                     operatorSpan.classList.add('label-darkblue');
                     operatorSpan.classList.add('em-pointer');
                 } else {
-                    const operatorSpan = document.querySelector('.filter-and-or-operator[data-operator="' + operator.value + '"]');
                     operatorSpan.classList.remove('em-pointer');
                     operatorSpan.classList.remove('label-darkblue');
                     operatorSpan.classList.add('label-default');
@@ -265,14 +281,14 @@ const filtersSelect = document.getElementById('filters-selection');
 
 function initFilters(){
     appliedFiltersSection.querySelectorAll('.filter-container').forEach(function (filterContainer) {
-        const filter = {
+        /*const filter = {
             type: filterContainer.dataset.type,
             id: filterContainer.dataset.id,
             uid: filterContainer.dataset.uid,
             label: filterContainer.dataset.name,
             values: filterContainer.dataset.values,
             value: ''
-        };
+        };*/
 
         const filterInstance = new MultiSelectFilter(filterContainer);
         filtersInstances.push(filterInstance);
@@ -385,8 +401,6 @@ function removeFilter(e) {
 }
 
 function applyFilters() {
-    console.log(filtersInstances);
-    return;
     let formData = new FormData();
     formData.append('filters', JSON.stringify(filtersInstances));
 
@@ -410,13 +424,7 @@ function applyFilters() {
     });
 }
 
-fetch('../../modules/mod_emundus_filters/tmpl/filter-sample.html')
-    .then(response => response.text())
-    .then(data => {
-        filterSampleContainer = document.createElement('div');
-        filterSampleContainer.innerHTML = data;
-        initFilters();
-    });
+initFilters();
 
 document.getElementById('mod_emundus_filters').addEventListener('click', function (e) {
     if (e.target.id === 'add-filter') {
