@@ -79,7 +79,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 
         if (is_array($value)) // validation error
         {
-            $bits['inputValue'] = $value['num_tel'];
+            $bits['inputValue'] = $value['country_code'].$value['num_tel'];
             $bits['selectValue'] = $value['country'];
         }
 
@@ -136,7 +136,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 	 */
 	public function storeDatabaseFormat($val, $data)
 	{
-		return $val['country'].$val['num_tel']; // ZZ concat with +XXYYYY to ZZ+XXYYYY format DB
+		return $val['country'].$val['country_code'].$val['num_tel']; // ZZ concat with +XXYYYY to ZZ+XXYYYY format DB
 	}
 
     /**
@@ -167,9 +167,10 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
     public function validate($data, $repeatCounter = 0)
     {
         $isValid = false;
-        $value = $data['num_tel'];
+        $value = $data['country_code'].$data['num_tel'];
         $is_valid_JS = $data['is_valid'];
 
+        //var_dump($value, preg_match('/^\+\d{5,15}$/', $value), $is_valid_JS); exit;
         $minimalNumberlength = 5; // without counting '+', self-consider it's the minimal length, CAN BE CHANGED
         $maximalNumberlength = 15; // without counting '+', maximal phone number length e.164 format, NO CHANGE
 

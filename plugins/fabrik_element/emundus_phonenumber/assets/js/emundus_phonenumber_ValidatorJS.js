@@ -6,6 +6,7 @@ class ValidatorJS {
     {
         this.select = initDiv.getElementById('countrySelect');
         this.input = initDiv.getElementById('inputValue');
+        this.renderCountryCode = initDiv.getElementById('renderCountryCode');
         this.divError = initDiv.parentNode.parentNode.getElementsByClassName('fabrikErrorMessage')[0]; // awfull but necessary
         this.isValid = initDiv.getElementById('validationValue');
 
@@ -13,13 +14,12 @@ class ValidatorJS {
         this.indiceCountry = initIndiceCountry;
         this.defaultValue = initDefaultValue;
         this.countrySelected = this.allCountry[this.indiceCountry];
-        this.hasAlreadyErrorMessage = this.divError.length !== 0;
 
         !this.isValid.checked ?  this.mustValidate = true : this.mustValidate = false;
 
         this.newCountry(this.indiceCountry);
         this.setOptionSelected(this.indiceCountry);
-        this.changeInputPrefix();
+        this.changeRenderCountryCode();
         this.initEventListener();
         this.setColors();
     }
@@ -39,16 +39,17 @@ class ValidatorJS {
 
     inputValidation(e)
     {
-        //console.log(e);
+        const countryCode = this.countrySelected.country_code;
         this.frontMessage('invalid');
-        if (this.countrySelected.country_code !== '+')
+
+        if (countryCode !== '+')
         {
-            const number = this.input.value;
+            const number = this.renderCountryCode.value + this.input.value;
             let format;
 
             try // test number.lengh > 1
             {
-                format = libphonenumber.parsePhoneNumber(number.substring(this.countrySelected.country_code.length, number.length), this.countrySelected.iso2).format('E.164')
+                format = libphonenumber.parsePhoneNumber(number.substring(countryCode.length, number.length), this.countrySelected.iso2).format('E.164')
             }
             catch (e)
             {
@@ -57,29 +58,13 @@ class ValidatorJS {
 
             if (format && libphonenumber.isValidNumber(format))
             {
-                this.input.value = format;
+                this.input.value = format.substring(this.renderCountryCode.value.length, format.length);
                 this.frontMessage('valid');
             }
         }
         else // unsupported country
         {
             this.frontMessage('unsupported');
-        }
-
-
-        if (e && e.inputType === 'deleteContentBackward') // when deleting
-        {
-            const currentValue = this.input.value.substring(this.countrySelected.country_code.length, this.input.value.length);
-            const currentPrefix = this.input.value.substring(0, this.countrySelected.country_code.length);
-            const countryCode = this.countrySelected.country_code;
-
-            if (currentPrefix !== countryCode)
-            {
-                this.mask.destroy(); // always here
-                this.input.value = countryCode + currentValue;
-                this.setMaskToInput(countryCode);
-            }
-            this.input.setSelectionRange(this.input.value.length, this.input.value.length);
         }
     }
 
@@ -95,7 +80,7 @@ class ValidatorJS {
     {
         this.mustValidate ? this.frontMessage('invalid') : this.frontMessage('default');
         this.newCountry(props.target.options.selectedIndex);
-        this.changeInputPrefix();
+        this.changeRenderCountryCode();
     }
 
     newCountry(id)
@@ -114,41 +99,39 @@ class ValidatorJS {
         }
     }
 
-    changeInputPrefix()
+    changeRenderCountryCode()
     {
-        if(typeof this.mask !== 'undefined') {
-            this.mask.destroy();
-        }
         // unsupported country
         this.input.value = '';
-        this.input.setAttribute('mask', this.countrySelected.country_code);
 
         if (this.defaultValue !== '')
         {
-            this.input.value = this.defaultValue;
+            this.input.value = this.defaultValue.substring(this.countrySelected.country_code.length, this.defaultValue.length);
+            this.renderCountryCode.value = this.defaultValue.substring(0, this.countrySelected.country_code.length);
             this.defaultValue = '';
         }
         else if (this.countrySelected.country_code) {
 
-            const countryCode = this.countrySelected.country_code;
-            this.input.value = countryCode;
-            this.setMaskToInput(countryCode);
+            this.renderCountryCode.value = this.countrySelected.country_code;
+            this.setMaskToInput();
         }
     }
 
-    setMaskToInput(prefix)
+    setMaskToInput()
     {
+        if(this.mask) {
+            this.mask.destroy();
+        }
 
         this.mask = IMask(
             this.input,
             {
-                mask: prefix + 'num',
+                mask: 'num',
                 blocks: {
                     num: {
                         mask: Number,
                     }
                 },
-                lazy: false, // can't remove the countryCode
             });
     }
 
@@ -186,6 +169,7 @@ class ValidatorJS {
     setInputBorderColor(color)
     {
         this.input.style.borderColor = color;
+        this.renderCountryCode.style.borderColor = color;
     }
 
     setOptionSelected(id)

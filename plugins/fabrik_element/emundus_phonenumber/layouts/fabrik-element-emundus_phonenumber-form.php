@@ -14,6 +14,29 @@ JText::script('PLG_ELEMENT_PHONE_NUMBER_INVALID');
 JText::script('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
 ?>
 
+<style>
+
+	#renderCountryCode
+	{
+		height: 46px;
+		width: 3em;
+		text-align: center;
+		padding: 0 6px 0 6px;
+		border-bottom-right-radius: 0;
+		border-top-right-radius: 0;
+		position: absolute;
+		background: var(--neutral-100) ;
+	}
+
+	#inputValue
+	{
+		height: 46px;
+		margin-left: 4em;
+		border-left: 0;
+	}
+
+</style>
+
 <div id="<?php echo $displayData->attributes['id']; ?>" class="em-flex-row fabrikSubElementContainer">
 
 	<select id="countrySelect" name="<?php echo $displayData->attributes['name'].'[country]'; ?>" class="input-small fabrikinput"
@@ -28,14 +51,19 @@ JText::script('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
 
 	</select>
 
-	<input id="inputValue" name="<?php echo $displayData->attributes['name'].'[num_tel]'; ?>" class="input-medium fabrikinput em-ml-8" style="height: 46px" maxlength="16"
-		   value="<?php echo $displayData->attributes['inputValue']; ?>" autocomplete="off"
-	>
-	<input id="validationValue" type="checkbox" style="opacity: 0; position: absolute;" name="<?php echo $displayData->attributes['name'].'[is_valid]'; ?>"
+	<div class="em-flex-row-end em-h-auto em-w-100">
 
-		   <?php if ($displayData->attributes['isValid'] == '1') :?>
-			checked
-		<?php endif ?>
-	>
+		<input id="renderCountryCode" name="<?php echo $displayData->attributes['name'].'[country_code]'; ?>" tabindex="-1" class="input-medium fabrikinput em-ml-8 input-readonly" readonly="readonly">
+
+		<input id="inputValue" name="<?php echo $displayData->attributes['name'].'[num_tel]'; ?>" class="input-medium fabrikinput" maxlength="16"
+			   value="<?php echo $displayData->attributes['inputValue']; ?>" autocomplete="off"
+		>
+		<input id="validationValue" type="checkbox" style="opacity: 0; position: absolute;" name="<?php echo $displayData->attributes['name'].'[is_valid]'; ?>"
+
+			<?php if ($displayData->attributes['isValid'] == '1') :?>
+				checked
+			<?php endif ?>
+		>
+	</div>
 
 </div>
