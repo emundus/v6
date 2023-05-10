@@ -3896,7 +3896,6 @@ class EmundusModelFiles extends JModelLegacy
                             }
 
                             $send = $mailer->Send();
-
                             if ($send !== true) {
                                 $msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT').' : '.$to.' '.$send.'</div>';
                                 JLog::add($send, JLog::ERROR, 'com_emundus.email');
@@ -3924,7 +3923,7 @@ class EmundusModelFiles extends JModelLegacy
                                     }
                                 }
 
-	                            $message = array(
+                                $message = array(
                                     'user_id_from' => $from_id,
                                     'user_id_to' => $file['applicant_id'],
                                     'subject' => $subject,

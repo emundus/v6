@@ -38,7 +38,7 @@ class EmundusViewProfile extends JViewLegacy
 			die(JText::_('ACCESS_DENIED'));
 		}
 		$app    = JFactory::getApplication();
-		$p 		= JRequest::getVar('rowid', $default=null, $hash= 'GET', $type= 'none', $mask=0);
+		$p 		= JFactory::getApplication()->input->get('rowid', $default=null, $hash= 'GET', $type= 'none', $mask=0);
 		$model 	= $this->getModel();
 		$profile = $model->getProfile($p);
 

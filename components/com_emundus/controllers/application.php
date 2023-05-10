@@ -19,9 +19,9 @@ class EmundusControllerApplication extends JControllerLegacy
 {
     public function display($cachable = false, $urlparams = false) {
         // Set a default view if none exists
-        if ( ! JRequest::getCmd( 'view' ) ) {
+        if ( ! JFactory::getApplication()->input->get( 'view' ) ) {
             $default = 'application_form';
-            JRequest::setVar('view', $default );
+            JFactory::getApplication()->input->set('view', $default );
         }
         parent::display();
     }
@@ -34,10 +34,10 @@ class EmundusControllerApplication extends JControllerLegacy
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
             die(JText::_("ACCESS_DENIED"));
 
-        $attachments = JRequest::getVar('attachments', null, 'POST', 'array', 0);
-        $user_id     = JRequest::getVar('sid', null, 'POST', 'none', 0);
-        $view        = JRequest::getVar('view', null, 'POST', 'none', 0);
-        $tmpl        = JRequest::getVar('tmpl', null, 'POST', 'none', 0);
+        $attachments = JFactory::getApplication()->input->get('attachments', null, 'POST', 'array', 0);
+        $user_id     = JFactory::getApplication()->input->get('sid', null, 'POST', 'none', 0);
+        $view        = JFactory::getApplication()->input->get('view', null, 'POST', 'none', 0);
+        $tmpl        = JFactory::getApplication()->input->get('tmpl', null, 'POST', 'none', 0);
 
         $url = !empty($tmpl)?'index.php?option=com_emundus&view='.$view.'&sid='.$user_id.'&tmpl='.$tmpl.'#attachments':'index.php?option=com_emundus&view='.$view.'&sid='.$user_id.'&tmpl=component#attachments';
         JArrayHelper::toInteger($attachments, 0);
@@ -86,7 +86,7 @@ class EmundusControllerApplication extends JControllerLegacy
 
         if(!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) die(JText::_("ACCESS_DENIED"));
 
-        $id = JRequest::getVar('id', null, 'GET', 'none',0);
+        $id = JFactory::getApplication()->input->get('id', null, 'GET', 'none',0);
 
         $m_application = new EmundusModelApplication();
 
@@ -125,12 +125,12 @@ class EmundusControllerApplication extends JControllerLegacy
 	        die(JText::_("ACCESS_DENIED"));
         }
 
-        $aid = JRequest::getVar('attachment_id', null, 'POST', 'none',0);
-        $uid = JRequest::getVar('uid', null, 'POST', 'none',0);
-        $filename = JRequest::getVar('filename', null, 'POST', 'none',0);
-        $campaign_id = JRequest::getVar('campaign_id', null, 'POST', 'none',0);
-        $can_be_viewed = JRequest::getVar('can_be_viewed', null, 'POST', 'none',0);
-        $can_be_deleted = JRequest::getVar('can_be_deleted', null, 'POST', 'none',0);
+        $aid = JFactory::getApplication()->input->get('attachment_id', null, 'POST', 'none',0);
+        $uid = JFactory::getApplication()->input->get('uid', null, 'POST', 'none',0);
+        $filename = JFactory::getApplication()->input->get('filename', null, 'POST', 'none',0);
+        $campaign_id = JFactory::getApplication()->input->get('campaign_id', null, 'POST', 'none',0);
+        $can_be_viewed = JFactory::getApplication()->input->get('can_be_viewed', null, 'POST', 'none',0);
+        $can_be_deleted = JFactory::getApplication()->input->get('can_be_deleted', null, 'POST', 'none',0);
 
         $targetFolder = EMUNDUS_PATH_ABS.$uid;
 
@@ -274,9 +274,9 @@ class EmundusControllerApplication extends JControllerLegacy
 
     public function deletecomment(){
         $user = JFactory::getUser();
-        $comment_id = JRequest::getVar('comment_id', null, 'GET', 'none',0);
-        $view = JRequest::getVar('view', null, 'GET', 'none',0);
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        $comment_id = JFactory::getApplication()->input->get('comment_id', null, 'GET', 'none',0);
+        $view = JFactory::getApplication()->input->get('view', null, 'GET', 'none',0);
+        $itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
 
         $m_application = new EmundusModelApplication();
 
@@ -305,8 +305,8 @@ class EmundusControllerApplication extends JControllerLegacy
 
     public function deletetag(){
         $user = JFactory::getUser();
-        $id_tag = JRequest::getVar('id_tag', null, 'GET', 'none',0);
-        $fnum = JRequest::getVar('fnum', null, 'GET', 'none',0);
+        $id_tag = JFactory::getApplication()->input->get('id_tag', null, 'GET', 'none',0);
+        $fnum = JFactory::getApplication()->input->get('fnum', null, 'GET', 'none',0);
 
         $m_application = new EmundusModelApplication();
         $m_files = $this->getModel('files');
@@ -342,12 +342,12 @@ class EmundusControllerApplication extends JControllerLegacy
 
         if(!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) die(JText::_("ACCESS_DENIED"));
 
-        $view = JRequest::getVar('view', null, 'GET', 'none',0);
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        $view = JFactory::getApplication()->input->get('view', null, 'GET', 'none',0);
+        $itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
 
-        $id = JRequest::getVar('id', null, 'GET', 'none',0);
-        $sid = JRequest::getVar('sid', null, 'GET', 'none',0);
-        $table = JRequest::getVar('t', null, 'GET', 'none',0);
+        $id = JFactory::getApplication()->input->get('id', null, 'GET', 'none',0);
+        $sid = JFactory::getApplication()->input->get('sid', null, 'GET', 'none',0);
+        $table = JFactory::getApplication()->input->get('t', null, 'GET', 'none',0);
 
         $m_application = new EmundusModelApplication();
         $result = $m_application->deleteData($id, $table);

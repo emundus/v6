@@ -212,7 +212,7 @@ class EmundusControllerStats extends JControllerLegacy {
             'status' => true,
             'nationality' => $natArray,
             'nb' => $nbArray
-
+            
 	    ]);
 	    exit;
     }
@@ -223,7 +223,7 @@ class EmundusControllerStats extends JControllerLegacy {
 
         $m_stats = new EmundusModelStats();
         $ages = $m_stats->getAge();
-
+        
         foreach ($ages as $age) {
             $nbArray[] = $age['age'];
             $natArray[] = $age['campaign'];
@@ -232,7 +232,7 @@ class EmundusControllerStats extends JControllerLegacy {
             'status' => true,
             'campaign' => $natArray,
             'age' => $nbArray
-
+            
         ]);
         exit;
     }
@@ -247,7 +247,7 @@ class EmundusControllerStats extends JControllerLegacy {
 
         echo json_encode((object) [
             'status' => true,
-            'val' => $array
+            'val' => $array            
 	    ]);
 	    exit;
     }
@@ -269,7 +269,7 @@ class EmundusControllerStats extends JControllerLegacy {
                 'status' => false
             ]);
         }
-
+	    
     }
 
     public function linkfabrik() {
@@ -284,5 +284,5 @@ class EmundusControllerStats extends JControllerLegacy {
         ]);
 
         exit;
-    }
+    } 
 }

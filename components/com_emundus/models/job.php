@@ -278,7 +278,7 @@ class EmundusModelJob extends JModelItem {
                     $db->setQuery($query);
                     $db->execute();
                     $insertid = $db->insertid();
-
+               
                 } catch(Exception $e) {
                     JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
                     return false;

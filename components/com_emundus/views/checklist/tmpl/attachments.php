@@ -10,7 +10,7 @@ $document = JFactory::getDocument();
 $document->addStyleSheet("media/com_emunuds/css/emundus_checklist.css" );
 $current_user = JFactory::getSession()->get('emundusUser');
 
-$student_id = JRequest::getVar('sid', null, 'GET', 'none',0);
+$student_id = JFactory::getApplication()->input->get('sid', null, 'GET', 'none',0);
 if ($student_id > 0 && JFactory::getUser()->usertype != 'Registered')
 	$user = JFactory::getUser($student_id);
 else

@@ -634,7 +634,6 @@ class EmundusModelCalendar extends JModelLegacy {
 		$res = new stdClass();
 
         $db = JFactory::getDbo();
-
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $profilesToNotify = $eMConfig->get('mailRecipients');
 

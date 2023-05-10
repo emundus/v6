@@ -138,7 +138,7 @@ class EmundusControllerThesisForm extends EmundusController {
     }
 
     function cancel() {
-
+        
         $app = JFactory::getApplication();
 
         // Get the current edit id.
@@ -151,7 +151,7 @@ class EmundusControllerThesisForm extends EmundusController {
         if ($editId) {
             $model->checkin($editId);
         }
-
+        
         $menu = JFactory::getApplication()->getMenu();
         $item = $menu->getActive();
         $url = (empty($item->link) ? 'index.php?option=com_emundus&view=thesiss' : $item->link);

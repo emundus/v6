@@ -556,10 +556,10 @@ class EmundusModelEvaluation extends JModelList {
     }
 
     public function setSubQuery($tab, $elem) {
-        $search = JRequest::getVar('elements', NULL, 'POST', 'array', 0);
-        $search_values = JRequest::getVar('elements_values', NULL, 'POST', 'array', 0);
-        $search_other = JRequest::getVar('elements_other', NULL, 'POST', 'array', 0);
-        $search_values_other = JRequest::getVar('elements_values_other', NULL, 'POST', 'array', 0);
+        $search = JFactory::getApplication()->input->get('elements', NULL, 'POST', 'array', 0);
+        $search_values = JFactory::getApplication()->input->get('elements_values', NULL, 'POST', 'array', 0);
+        $search_other = JFactory::getApplication()->input->get('elements_other', NULL, 'POST', 'array', 0);
+        $search_values_other = JFactory::getApplication()->input->get('elements_values_other', NULL, 'POST', 'array', 0);
 
         $db = JFactory::getDBO();
 
@@ -1794,6 +1794,7 @@ class EmundusModelEvaluation extends JModelList {
         $replace_document = $eMConfig->get('export_replace_doc', 0);
 	    $generated_doc_name = $eMConfig->get('generated_doc_name', "");
 	    $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
+	    $whitespace_textarea = $eMConfig->get('generate_letter_whitespace_textarea', 0);
 
         $tmp_path = JPATH_SITE.DS.'tmp'.DS;
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
@@ -2056,6 +2057,22 @@ class EmundusModelEvaluation extends JModelList {
 					                    }
 
 				                    }
+				                    elseif($elt['plugin'] == 'textarea' && $whitespace_textarea == 1){
+					                    $formatted_text = explode('<br />',nl2br($fabrikValues[$elt['id']][$fnum]['val']));
+					                    $inline = new \PhpOffice\PhpWord\Element\TextRun();
+					                    foreach ($formatted_text as $key => $text){
+						                    if(!empty($text))
+						                    {
+							                    if($key > 0)
+							                    {
+								                    $inline->addTextBreak();
+							                    }
+							                    $inline->addText(trim($text),array('name' => 'Arial'));
+						                    }
+					                    }
+					                    $fabrikValues[$elt['id']][$fnum]['val'] = $inline;
+					                    $fabrikValues[$elt['id']][$fnum]['complex_data'] = true;
+				                    }
 				                    else {
 					                    if (@$groupParams->repeat_group_button == 1 || $elt['plugin'] === 'databasejoin') {
 						                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
@@ -2063,6 +2080,10 @@ class EmundusModelEvaluation extends JModelList {
 					                    else {
 						                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
 					                    }
+				                    }
+
+				                    if(!isset($fabrikValues[$elt['id']][$fnum]['complex_data'])){
+					                    $fabrikValues[$elt['id']][$fnum]['complex_data'] = false;
 				                    }
 			                    }
 
@@ -2115,8 +2136,12 @@ class EmundusModelEvaluation extends JModelList {
 
 				                    foreach ($idFabrik as $id) {
 					                    if (isset($fabrikValues[$id][$fnum])) {
-						                    $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
-						                    $preprocess->setValue($id, $value);
+						                    if($fabrikValues[$id][$fnum]['complex_data']){
+							                    $preprocess->setComplexValue($id, $fabrikValues[$id][$fnum]['val']);
+						                    } else {
+							                    $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
+							                    $preprocess->setValue($id, $value);
+						                    }
 					                    }
 					                    else {
 						                    $preprocess->setValue($id, '');
@@ -3169,7 +3194,7 @@ class EmundusModelEvaluation extends JModelList {
                     $url = $details_url;
                 }
                 // If evaluation period started and not passed and we have update rights
-                elseif ($update_access || ($create_access && $evaluation->user == $user->id)) {
+                elseif ($update_access || $create_access) {
                     $url = $view == 'form' ? $form_url : $details_url;
                 }
                 // If evaluation period started and not passed and we have read rights
@@ -3213,21 +3238,5 @@ class EmundusModelEvaluation extends JModelList {
         }
 
         return ['url' => $url, 'message' => $message];
-    }
-
-    public function getRowByFnum($fnum,$table_name){
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        try {
-            $query->select('id')
-                ->from($db->quoteName($table_name))
-                ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
-            $db->setQuery($query);
-            return $db->loadResult();
-        } catch (Exception $e) {
-            JLog::add('Problem to get row by fnum '.$fnum.' in table '.$table_name.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-            return 0;
-        }
     }
 }

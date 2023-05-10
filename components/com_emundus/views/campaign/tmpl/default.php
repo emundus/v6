@@ -4,13 +4,13 @@ defined('_JEXEC') or die('Restricted access');
 JHTML::_('behavior.modal');
 JHTML::stylesheet( 'emundus.css', 'media/com_emundus/css/' );
 
-$tmpl = JRequest::getVar('tmpl', null, 'GET', 'none',0);
-$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-$limitstart = JRequest::getVar('limitstart', null, 'GET', 'none',0);
-$ls = JRequest::getVar('limitstart', null, 'GET', 'none',0);
-$filter_order = JRequest::getVar('filter_order', null, 'GET', 'none',0);
-$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', 'none',0);
-$v = JRequest::getVar('view', null, 'GET', 'none',0);
+$tmpl = JFactory::getApplication()->input->get('tmpl', null, 'GET', 'none',0);
+$itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
+$limitstart = JFactory::getApplication()->input->get('limitstart', null, 'GET', 'none',0);
+$ls = JFactory::getApplication()->input->get('limitstart', null, 'GET', 'none',0);
+$filter_order = JFactory::getApplication()->input->get('filter_order', null, 'GET', 'none',0);
+$filter_order_Dir = JFactory::getApplication()->input->get('filter_order_Dir', null, 'GET', 'none',0);
+$v = JFactory::getApplication()->input->get('view', null, 'GET', 'none',0);
 
 $user = JFactory::getUser();
 

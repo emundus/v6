@@ -2168,6 +2168,7 @@ class EmundusModelForm extends JModelList {
             $nb_uploads = $db->loadResult();
         } catch (Exception $e) {
             JLog::add('Error trying to know if i can remove document from profile ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            $data['reason'] = 'SQL error ' . $e->getMessage();
         }
 
         if ($nb_uploads < 1) {

@@ -2,7 +2,7 @@
 JHTML::_('behavior.modal');
 JHTML::stylesheet( 'media/com_emundus/css/emundus.css' );
 defined('_JEXEC') or die('Restricted access');
-$Itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+$Itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
 ?>
 
 <div id="profilebasics" class="em-container-profiles">
@@ -17,7 +17,7 @@ $Itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
             <td> <?php echo $this->profile->description; ?> </td>
         </tr>
     </table>
-    <form action="<?= JUri::base(); ?>/index.php?option=com_emundus&task=updateprofile&rowid=<?php echo JRequest::getVar('rowid', $default=null, $hash= 'GET', $type= 'none', $mask=0); ?>&Itemid=<?php echo $Itemid; ?>" method="POST" class="em-form-documents">
+    <form action="<?= JUri::base(); ?>/index.php?option=com_emundus&task=updateprofile&rowid=<?php echo JFactory::getApplication()->input->get('rowid', $default=null, $hash= 'GET', $type= 'none', $mask=0); ?>&Itemid=<?php echo $Itemid; ?>" method="POST" class="em-form-documents">
         <input type="hidden" name="pid" value="<?php echo $this->profile->id; ?>" />
         <input type="hidden" name="Itemid" value="<?php echo $Itemid; ?>" />
 

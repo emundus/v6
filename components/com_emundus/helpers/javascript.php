@@ -26,8 +26,8 @@ jimport('joomla.application.component.helper');
 abstract class EmundusHelperJavascript{
 
 	public static function onSubmitForm(){
-		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-		$view = JRequest::getVar('view', null, 'GET', 'none',0);
+		$itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
+		$view = JFactory::getApplication()->input->get('view', null, 'GET', 'none',0);
 
 		$script = '
 function OnSubmitForm() {
@@ -271,10 +271,10 @@ function OnSubmitForm() {
 	}
 
 	public static function delayAct(){
-		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		$itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
 		$script =
 		'function delayAct(user_id, campaign_id){
-			document.adminForm.action = "index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&Itemid='.$itemid.'#em_user_id_"+user_id+"_"+campaign_id;
+			document.adminForm.action = "index.php?option=com_emundus&view='.JFactory::getApplication()->input->get( 'view' ).'&Itemid='.$itemid.'#em_user_id_"+user_id+"_"+campaign_id;
 			setTimeout("document.adminForm.submit()",10) }';
 		return $script;
 	}
@@ -497,7 +497,7 @@ function OnSubmitForm() {
 			}
 
 
-			var view="'.JRequest::getVar('view', null, 'GET', 'none', 0).'";
+			var view="'.JFactory::getApplication()->input->get('view', null, 'GET', 'none', 0).'";
 			var xhr2 = getXMLHttpRequest();
 			xhr2.onreadystatechange = function()
 			{
@@ -619,7 +619,7 @@ function OnSubmitForm() {
 	}
 
 	public static function clearAdvanceFilter(){
-		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		$itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
 		$script = '
 		function clearAdvanceFilter(filter){
 
@@ -705,7 +705,7 @@ function OnSubmitForm() {
 	}
 
 	public static function getTemplate(){
-		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		$itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
 		$editor = JFactory::getEditor();
 		$script = '
 		function getXMLHttpRequest() {

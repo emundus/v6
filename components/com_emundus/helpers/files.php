@@ -209,6 +209,7 @@ class EmundusHelperFiles
             }*/
         }
 
+
         // Used for adding default columns when no programme is loaded.
         if (empty($params['programme'])) {
             $params['programme'] = ["%"];
@@ -218,6 +219,7 @@ class EmundusHelperFiles
         if ((is_array($params['campaign']) && count($params['campaign']) == 1 && $params['campaign'][0] == '') || (is_string($params['campaign']) && empty($params['campaign']))) {
             $params['campaign'] = [];
         }
+
 
         $session->set('filt_params', $params);
         $session->set('filt_menu', $filts_details);

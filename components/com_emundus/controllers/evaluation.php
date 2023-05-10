@@ -46,9 +46,9 @@ class EmundusControllerEvaluation extends JControllerLegacy
     public function display($cachable = false, $urlparams = false)
     {
         // Set a default view if none exists
-        if (!JRequest::getCmd( 'view' )){
+        if (!JFactory::getApplication()->input->get( 'view' )){
             $default = 'files';
-            JRequest::setVar('view', $default );
+            JFactory::getApplication()->input->set('view', $default );
         }
         parent::display();
     }
@@ -185,10 +185,10 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
     public function savefilters()
     {
-        $name = JRequest::getVar('name', null, 'POST', 'none',0);
+        $name = JFactory::getApplication()->input->get('name', null, 'POST', 'none',0);
         $current_user = JFactory::getUser();
         $user_id = $current_user->id;
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        $itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
 
         $filt_params = JFactory::getSession()->get('filt_params');
         $adv_params = JFactory::getSession()->get('adv_cols');
@@ -198,7 +198,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
         if(empty($itemid))
         {
-            $itemid = JRequest::getVar('Itemid', null, 'POST', 'none',0);
+            $itemid = JFactory::getApplication()->input->get('Itemid', null, 'POST', 'none',0);
         }
 
         $time_date = (date('Y-m-d H:i:s'));
@@ -1811,7 +1811,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
     */
     function export_zip($fnums)
     {
-        $view           = JRequest::getCmd( 'view' );
+        $view           = JFactory::getApplication()->input->get( 'view' );
         $current_user   = JFactory::getUser();
         if ((!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) &&
             $view != 'renew_application'
