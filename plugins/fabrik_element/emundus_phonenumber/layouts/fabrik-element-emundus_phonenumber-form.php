@@ -35,6 +35,12 @@ JText::script('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
 		border-left: 0;
 	}
 
+	#validationValue
+	{
+		opacity: 0;
+		position: absolute;
+	}
+
 </style>
 
 <div id="<?php echo $displayData->attributes['id']; ?>" class="em-flex-row fabrikSubElementContainer">
@@ -58,9 +64,9 @@ JText::script('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
 		<input id="inputValue" name="<?php echo $displayData->attributes['name'].'[num_tel]'; ?>" class="input-medium fabrikinput" maxlength="16"
 			   value="<?php echo $displayData->attributes['inputValue']; ?>" autocomplete="off"
 		>
-		<input id="validationValue" type="checkbox" style="opacity: 0; position: absolute;" name="<?php echo $displayData->attributes['name'].'[is_valid]'; ?>"
 
-			<?php if ($displayData->attributes['isValid'] == '1') :?>
+		<input id="validationValue" name="<?php echo $displayData->attributes['name'].'[is_valid]'; ?>" class="fabrikinput" type="checkbox"
+			<?php if ($displayData->attributes['mustValidate'] == '1') :?>
 				checked
 			<?php endif ?>
 		>

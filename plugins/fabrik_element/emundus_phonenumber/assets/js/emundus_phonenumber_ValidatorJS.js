@@ -1,8 +1,13 @@
 
+const allColor =  getComputedStyle(document.querySelector(':root'));
+const errorColor = allColor.getPropertyValue("--red-600");
+const validColor = allColor.getPropertyValue("--secondary-main-400");
+const defaultColor = allColor.getPropertyValue("--neutral-400");
+const unsupportedColor = allColor.getPropertyValue("--orange-400")
 
 class ValidatorJS {
 
-    constructor(initDiv, initAllCountry, initIndiceCountry = 0, initDefaultValue = '')
+    constructor(initDiv, initAllCountry, initIndiceCountry = 0, initDefaultValue = '', cloned = false)
     {
         this.select = initDiv.getElementById('countrySelect');
         this.input = initDiv.getElementById('inputValue');
@@ -10,18 +15,28 @@ class ValidatorJS {
         this.divError = initDiv.parentNode.parentNode.getElementsByClassName('fabrikErrorMessage')[0]; // awfull but necessary
         this.isValid = initDiv.getElementById('validationValue');
 
+        this.validColor = validColor;
+        this.errorColor = errorColor;
+        this.unsupportedColor = unsupportedColor;
+        this.defaultColor = defaultColor;
+        this.cloned = cloned;
+
         this.allCountry = initAllCountry;
         this.indiceCountry = initIndiceCountry;
         this.defaultValue = initDefaultValue;
         this.countrySelected = this.allCountry[this.indiceCountry];
 
-        !this.isValid.checked ?  this.mustValidate = true : this.mustValidate = false;
+        this.mustValidate = this.isValid.checked; // does he have validation ?
+        this.isValid.checked = !this.mustValidate; // if yes, set false, if no, set true
 
+        if (this.cloned) // awfull
+        {
+            this.frontMessage('default');
+        }
         this.newCountry(this.indiceCountry);
         this.setOptionSelected(this.indiceCountry);
         this.changeRenderCountryCode();
         this.initEventListener();
-        this.setColors();
     }
 
     initEventListener()
@@ -157,7 +172,6 @@ class ValidatorJS {
                 this.setInputBorderColor(this.unsupportedColor);
                 break;
 
-
             case 'valid':
                 this.divError.innerHTML = '';
                 this.isValid.checked = true; // valid
@@ -177,12 +191,4 @@ class ValidatorJS {
         this.select.options[id].selected = true;
     }
 
-    setColors(initValidColor = 'palegreen', initErrorColor = 'lightpink', initUnsupportedColor = 'lightsalmon', initDefaultColor = 'black')
-    {
-        this.validColor = initValidColor;
-        this.errorColor = initErrorColor;
-        this.unsupportedColor = initUnsupportedColor;
-        this.defaultColor = initDefaultColor;
-
-    }
 }

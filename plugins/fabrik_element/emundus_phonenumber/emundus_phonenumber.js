@@ -1,11 +1,5 @@
 
 
-const allColor =  getComputedStyle(document.querySelector(':root'));
-const errorColor = allColor.getPropertyValue("--red-600");
-const validColor = allColor.getPropertyValue("--secondary-main-400");
-const defaultColor = allColor.getPropertyValue("--neutral-400");
-const unsupportedColor = allColor.getPropertyValue("--orange-400")
-
 define(['jquery', 'fab/element'], function (jQuery, FbElement) {
     window.FbPhoneNumber = new Class({
         Extends: FbElement,
@@ -32,14 +26,15 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
         {
             this.element.getElementById('inputValue').value = '';
             this.element.getElementById('countrySelect').setAttribute('selectedValue', this.options.allCountries[0].iso2); // reset with the first one
-            this.initValidatorJS();
+            this.element.getElementById('validationValue').checked = !$; // joomla / 20
+            this.initValidatorJS(true);
             this.parent(c);
         },
 
         /**
          * Initialise the ValidatorJS object depending on data.
          */
-        initValidatorJS: function ()
+        initValidatorJS: function (cloned = false)
         {
             const select = this.element.getElementById('countrySelect');
             const input = this.element.getElementById('inputValue');
@@ -50,7 +45,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 let defaultValue;
                 let selectedCountryIndex = this.getSelectedCountryIndex(allCountries, this.options.default_country); // get default country
 
-                if (select.getAttribute('selectedValue') !== "") // already have value
+                if (select.getAttribute('selectedValue') !== '') // already have value
                 {
                     defaultValue = input.value;
 
@@ -58,8 +53,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     selectedCountryIndex = this.getSelectedCountryIndex(allCountries, countryIso2); // get index array from iso2
                 }
 
-                this.ValidatorJS = new ValidatorJS(this.element, allCountries, selectedCountryIndex, defaultValue);
-                this.ValidatorJS.setColors(validColor, errorColor, unsupportedColor, defaultColor);
+                this.ValidatorJS = new ValidatorJS(this.element, allCountries, selectedCountryIndex, defaultValue, cloned);
             }
         },
 

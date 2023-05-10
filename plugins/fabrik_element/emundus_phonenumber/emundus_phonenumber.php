@@ -83,7 +83,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
             $bits['selectValue'] = $value['country'];
         }
 
-        $this->validator->hasValidations() ? $bits['isValid'] = false : $bits['isValid'] = true; // is the element mandatory ?
+        $bits['mustValidate'] = $this->validator->hasValidations(); // is the element mandatory ?
 
 		$layout = $this->getLayout('form');
 		$layoutData = new stdClass;
@@ -202,6 +202,8 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
         {
             $isValid = true;
         }
+
+        var_dump($value, $is_valid_JS, $isValid);
         return $isValid;
     }
 
