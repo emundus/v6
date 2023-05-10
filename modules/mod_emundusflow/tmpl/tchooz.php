@@ -54,7 +54,8 @@ $now = $dateTime->format('Y-m-d H:i:s');
            flex-direction: column;
             justify-content: flex-start;
             align-items: flex-start;
-            row-gap: 8px;
+            row-gap: 8px !important;
+            display: flex !important;
         }
         .mod_emundus_flow___infos div:first-child{
             margin-bottom: 6px;
