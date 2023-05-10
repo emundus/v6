@@ -1,27 +1,31 @@
 <?php
+
 namespace classes\api;
 
 /**
  * @package     com_emundus
  * @subpackage  api
- * @author	eMundus.fr - Merveille Gbetegan
+ * @author    eMundus.fr - Merveille Gbetegan
  * @copyright (C) 2023 eMundus SOFTWARE. All rights reserved.
- * @license	GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
+ * @license    GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
  */
 
 use EmundusModelEmails;
+use Exception;
 use GuzzleHttp\Client as GuzzleClient;
 use JComponentHelper;
 use JFactory;
 use JLog;
 
 defined('_JEXEC') or die('Restricted access');
+
 class FileMaker
 {
     /**
      * @var array $auth
      */
     private $auth = array();
+
 
     /**
      * @var array $headers
@@ -38,22 +42,34 @@ class FileMaker
      */
     private $client = null;
 
+    private static $availaibleZwForms = array('zWEB_FORMULAIRES_RECETTES', 'zWEB_FORMULAIRES_PLANNING',
+        'zWEB_FORMULAIRES_PARTICIPANTS', 'zWEB_FORMULAIRES_PARTENAIRES', 'zWEB_FORMULAIRES_DEPENSES', 'zWEB_FORMULAIRES_AUDIENCE', 'zWEB_FORMULAIRES_AIDES');
+
+    /**
+     * @return string[]
+     */
+    public static function getAvailaibleZwForms(): array
+    {
+        return self::$availaibleZwForms;
+    }
+
 
     public function __construct()
     {
         JLog::addLogger(['text_file' => 'com_emundus.file_maker.php'], JLog::ALL, 'com_emundus.file_maker');
 
         $this->setAuth();
+        $this->setHeaders();
+        $this->setBaseUrl();
+
+        $this->client = new GuzzleClient([
+            'base_uri' => $this->getBaseUrl(),
+            'verify' => false
+        ]);
+
 
         if (empty($this->auth['bear_token'])) {
             $this->loginApi();
-        } else {
-            $this->setHeaders();
-            $this->setBaseUrl();
-            $this->client = new GuzzleClient([
-                'base_uri' => $this->getBaseUrl(),
-                'headers' => $this->getHeaders()
-            ]);
         }
     }
 
@@ -99,15 +115,15 @@ class FileMaker
     /**
      * @param array $headers
      */
-    public function setHeaders(): void
+    public function setHeaders($isForLogin = false): void
     {
         $auth = $this->getAuth();
 
         $this->headers = array(
-            'Authorization' => 'Bearer ' . $auth['bear_token'],
-            'Accept' => 'application/json',
+            'Authorization' => $isForLogin === false ? 'Bearer ' . $auth['bear_token'] : 'Basic ' . $auth['basic_token'],
             'Content-Type' => 'application/json'
         );
+
     }
 
     /**
@@ -126,23 +142,19 @@ class FileMaker
 
         $this->auth['bear_token'] = $session->get('file_maker_bear_token', '');
         $this->auth['basic_token'] = $config->get('file_maker_api_basic_auth_token', '');
+
     }
 
-    private function loginApi():void{
-        $auth = $this->getAuth();
+    private function loginApi(): void
+    {
 
-        $this->headers = array(
-            'Authorization' => 'Basic ' . $auth['basic_token'],
-            'Content-Type' => 'application/json'
-        );
 
-        $login_response  = $this->post("/sessions");
-        var_dump($login_response);
-        die;
+        $this->setHeaders(true);
+        $login_response = $this->post("sessions");
 
-        if($login_response->messages[0]->code == "0"){
+        if ($login_response->messages[0]->code == "0") {
             $session = JFactory::getSession();
-            $session->set('file_maker_bear_token',$login_response->response->token);
+            $session->set('file_maker_bear_token', $login_response->response->token);
             $this->setAuth();
             $this->setHeaders();
 
@@ -160,7 +172,7 @@ class FileMaker
         try {
             $url_params = http_build_query($params);
             $url = !empty($url_params) ? $url . '?' . $url_params : $url;
-            $response = $this->client->get($url);
+            $response = $this->client->get($url, ['headers' => $this->getHeaders()]);
 
             return json_decode($response->getBody());
         } catch (\Exception $e) {
@@ -174,7 +186,8 @@ class FileMaker
         $response = '';
 
         try {
-            $response = $query_body_in_json !== null ? $this->client->post($url, ['body' => $query_body_in_json]) : $this->client->post($url);
+
+            $response = $query_body_in_json !== null ? $this->client->post($url, ['body' => $query_body_in_json, 'headers' => $this->getHeaders()]) : $this->client->post($url, ['headers' => $this->getHeaders()]);
             $response = json_decode($response->getBody());
         } catch (\Exception $e) {
             JLog::add('[POST] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.file_maker');
@@ -189,7 +202,7 @@ class FileMaker
         $response = '';
 
         try {
-            $response = $this->client->patch($url, ['body' => $query_body_in_json]);
+            $response = $this->client->patch($url, ['body' => $query_body_in_json, 'headers' => $this->getHeaders()]);
             $response = json_decode($response->getBody());
         } catch (\Exception $e) {
             JLog::add('[PATCH] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.file_maker');
@@ -197,6 +210,69 @@ class FileMaker
         }
 
         return $response;
+    }
+
+    public function getRecords($recordId = null, $portal = array())
+    {
+        $url = 'layouts/zWEB_FORMULAIRES/records';
+        if ($recordId !== null && !empty($portal)) {
+            $url = $url . '/' . $recordId . $portal;
+        }
+        if ($recordId !== null) {
+            $url = $url . '/' . $recordId;
+        }
+        $records_response = $this->get($url);
+
+        $records = $records_response->response->data;
+
+        return $records;
+    }
+
+    public function findRecord($uuidConnect, $zWebFormType = null, $sort = array())
+    {
+
+        if (in_array($zWebFormType, $this->getAvailaibleZwForms())) {
+            if (!empty($uuidConnect)) {
+
+                $url = empty($zWebFormType) ? "layouts/zWEB_FORMULAIRES" : "layouts/" . $zWebFormType . "/_find";
+
+                $queryBody = ["query" => array([
+                    empty($zWebFormType) ? "uuidConnect" : "zWEB_FORMULAIRES::uuidConnect" => $uuidConnect,
+
+                ])];
+
+                $record_response = $this->post($url, json_encode($queryBody));
+
+                var_dump($record_response);
+                return $record_response->response->data;
+
+
+            } else {
+
+                JLog::add('[FILE_MAKER]  Empty uuidConnect passed to findRecord method  ', JLog::ERROR, 'com_emundus.file_maker');
+
+                return 0;
+
+            }
+        } else {
+            throw new Exception('Invalid zFORM_TYPE. It shoulbe one of ' . json_encode($this->getAvailaibleZwForms()));
+        }
+
+    }
+
+    public function updateRecord($recordId, $queryBody)
+    {
+
+        if (!empty($recordId)) {
+
+            $url = "layouts/zWEB_FORMULAIRES/records/" . $recordId;
+            $update_record_response = $this->patch($url, json_encode($queryBody));
+            return $update_record_response->response->data;
+
+        } else {
+
+            throw new Exception('Record Id could not be empty');
+        }
     }
 
 
