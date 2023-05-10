@@ -27,13 +27,25 @@ $now = $dateTime->format('Y-m-d H:i:s');
         flex-wrap: wrap;
         grid-gap: 24px;
     }
+
     .mod_emundus_flow___intro .em-h2{
-        max-width: 73%;
         display: -webkit-box;
         overflow: hidden;
         -webkit-line-clamp: 1;
         -webkit-box-orient: vertical;
     }
+
+    .mod_emundus_flow___intro {
+        display: grid;
+        align-items: flex-start;
+        gap: 32px;
+        grid-template-columns: 67% 30%;
+    }
+
+    .em-programme-tag {
+        overflow: visible;
+    }
+
     @media all and (max-width: 767px) {
         .mod_emundus_flow___infos{
             grid-gap: 0;
@@ -78,7 +90,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
             </p>
             <?php endif; ?>
         </div>
-        <div class="em-flex-row">
+        <div class="em-flex-row em-flex-row-justify-end">
             <?php if ($show_back_button == 1) : ?>
             <a href="<?php echo $home_link ?>" title="<?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?>">
                 <button class="btn btn-primary em-mr-16" style="height: 41px"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
