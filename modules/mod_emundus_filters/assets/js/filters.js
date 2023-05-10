@@ -469,6 +469,11 @@ document.getElementById('mod_emundus_filters').addEventListener('click', functio
     }
 });
 
+document.querySelector('#reset-all-filters').addEventListener('click', function (e) {
+    filtersInstances = [];
+    applyFilters();
+});
+
 if (filtersSelect) {
     filtersSelect.addEventListener('change', function (e) {
         if (e.target.value !== '0') {

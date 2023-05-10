@@ -16,6 +16,7 @@ JText::script('MOD_EMUNDUS_FILTERS_PLEASE_SELECT');
 ?>
 
 <section id="mod_emundus_filters">
+    <span id="reset-all-filters" class="material-icons-outlined" title="reset-all-filters">filter_alt_off</span>
     <input type="text" id="search" placeholder="<?= JText::_('SEARCH') ?>"/>
 
     <?php
