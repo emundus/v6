@@ -1220,7 +1220,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 	 *
 	 * @return bool
 	 */
-	function sendEmailNoFnum($email_address, $email, $post = null, $user_id = null, $attachments = [], $fnum = null) {
+	function sendEmailNoFnum($email_address, $email, $post = null, $user_id = null, $attachments = [], $fnum = null, $log_email = true) {
 
         include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
         include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
@@ -1361,7 +1361,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                 }
             }
 
-            if (!empty($user_id_to)) {
+            if (!empty($user_id_to) && $log_email) {
                 // Logs send email
                 $log = [
                     'user_id_from'  => !empty(JFactory::getUser()->id) ? JFactory::getUser()->id : 62,
