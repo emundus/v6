@@ -5326,23 +5326,29 @@ class EmundusModelApplication extends JModelList
 		$tab_id = 0;
 
 		if (!empty($user_id) && !empty($name) && strlen($name) <= 255 && strlen($name) >= 3) {
-			$name = preg_replace('/[^A-Za-z0-9 ]/', '', $name);
+			/*
+			 * a-zA-Z0-9: Alphanumeric characters (both uppercase and lowercase).
+			 * \s: Space character.
+			 * \p{L}: Unicode letters.
+			 */
+			$regex = '/^[a-zA-Z0-9\s\p{L}\'"\-]+$/u';
 
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			if (preg_match($regex, $name)) {
+				$db = JFactory::getDbo();
+				$query = $db->getQuery(true);
 
-			$query->insert($db->quoteName('#__emundus_campaign_candidature_tabs'))
-				->set($db->quoteName('name') . ' = ' . $db->quote($name))
-				->set($db->quoteName('ordering') . ' = 1')
-				->set($db->quoteName('applicant_id') . ' = ' . $user_id);
-			try {
-				$db->setQuery($query);
-				$db->execute();
+				$query->insert($db->quoteName('#__emundus_campaign_candidature_tabs'))
+					->set($db->quoteName('name') . ' = ' . $db->quote($name))
+					->set($db->quoteName('ordering') . ' = 1')
+					->set($db->quoteName('applicant_id') . ' = ' . $user_id);
+				try {
+					$db->setQuery($query);
+					$db->execute();
 
-				$tab_id = $db->insertid();
-			} catch (Exception $e) {
-				JLog::add('Failed to create for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-			}
+					$tab_id = $db->insertid();
+				} catch (Exception $e) {
+					JLog::add('Failed to create for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				}			}
 		}
 
 		return $tab_id;
@@ -5494,20 +5500,22 @@ class EmundusModelApplication extends JModelList
 		$result = false;
 
 		if (!empty($fnum) && !empty($new_name) && strlen($new_name) <= 255 && strlen($new_name) >= 3) {
-			$new_name = preg_replace('/[^A-Za-z0-9 ]/', '', $new_name);
+			$regex = '/^[a-zA-Z0-9\s\p{L}\'"\-]+$/';
 
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			if (preg_match($regex, $new_name)) {
+				$db = JFactory::getDbo();
+				$query = $db->getQuery(true);
 
-			$query->update($db->quoteName('#__emundus_campaign_candidature'))
-				->set($db->quoteName('name') . ' = ' . $db->quote($new_name))
-				->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+				$query->update($db->quoteName('#__emundus_campaign_candidature'))
+					->set($db->quoteName('name') . ' = ' . $db->quote($new_name))
+					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
 
-			try {
-				$db->setQuery($query);
-				$result = $db->execute();
-			} catch (Exception $e) {
-				JLog::add('Failed to rename file ' . $fnum . ' with name ' . $new_name . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				try {
+					$db->setQuery($query);
+					$result = $db->execute();
+				} catch (Exception $e) {
+					JLog::add('Failed to rename file ' . $fnum . ' with name ' . $new_name . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				}
 			}
 		}
 
@@ -5561,7 +5569,7 @@ class EmundusModelApplication extends JModelList
 
 		$tab_id = (int)$tab_id;
 		$user_id = (int)$user_id;
-		$fnum = preg_replace('/[^0-9]/', '', $fnum);
+		$fnum = preg_replace('/^[^0-9]+$/', '', $fnum);
 
 		if (!empty($tab_id)) {
 			$db = JFactory::getDbo();
