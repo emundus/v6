@@ -650,7 +650,7 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
     JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
     JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
     //TODO : Stop use chosen replace by an other js native library
-    JHtml::script('media/com_fabrik/js/chosen.jquery.min.js' );
+    JHtml::script('media/com_emundus/js/chosen.jquery.min.js' );
     JFactory::getDocument()->addScript('media/com_emundus/js/em_files.js?' . $release_version);
     JFactory::getDocument()->addScript('media/com_emundus/js/mixins/exports.js?' . $release_version);
     JFactory::getDocument()->addScript('media/com_emundus/js/mixins/utilities.js?' . $release_version);
