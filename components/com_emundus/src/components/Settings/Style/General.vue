@@ -6,7 +6,7 @@
 
     <!-- LOGO -->
     <div class="em-grid-2" v-show="!loading">
-      <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
+      <div class="em-style-options em-mb-32 ">
         <div class="em-flex-row">
           <div>
             <h4 class="em-text-neutral-800 em-h4 em-flex-row em-mb-8">
@@ -523,5 +523,11 @@ export default {
   height: 50px;
   border-radius: 50%;
   width: 50px;
+}
+
+.em-style-options {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 </style>
