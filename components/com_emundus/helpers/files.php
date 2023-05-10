@@ -3129,14 +3129,64 @@ class EmundusHelperFiles
 		$session = JFactory::getSession();
 	    $session_filters = $session->get('em-applied-filters');
 		if (!empty($session_filters)) {
+			$already_joined = array();
 			$db = JFactory::getDbo();
 
 			foreach ($session_filters as $filter) {
-				$filter_id = str_replace('filter+', '', $filter['id']);
-				$filter_id = str_replace('filter-', '', $filter_id);
+				$filter_id = str_replace('filter-', '', $filter['id']);
 
 				if (is_numeric($filter_id)) {
-					// todo: get column name from fabrik element_id and create join based on its table
+					$filter_id = (int)$filter_id;
+					$fabrik_element_data = $this->getFabrikElementData($filter_id);
+
+					if (!empty($fabrik_element_data['name']) && !empty($fabrik_element_data['db_table_name'])) {
+						$group_params = json_decode($fabrik_element_data['group_params'], true);
+
+						if ($group_params['repeat_group_button'] === '1') {
+							$join_informations = $this->getJoinInformations($filter_id, $fabrik_element_data['group_id'], $fabrik_element_data['list_id']);
+
+							if (!empty($join_informations)) {
+								$parent_table = $join_informations['join_from_table'];
+								if (!in_array($parent_table, $already_joined)) {
+									$parent_alias = 'jejoin_' . sizeof($already_joined);
+									$already_joined[$parent_alias] = $parent_table;
+
+									$where['join'] .= ' LEFT JOIN ' . $db->quoteName($parent_table, $parent_alias) . ' ON ' . $parent_alias . '.fnum = jecc.fnum ';
+								} else {
+									$parent_alias = array_search($parent_table, $already_joined);
+								}
+
+								if (!empty($parent_alias)) {
+									$child_table = $join_informations['table_join'];
+									if (!in_array($child_table, $already_joined)) {
+										$child_alias = 'jejoin_' . sizeof($already_joined);
+										$already_joined[$child_alias] = $child_table;
+
+										$where['join'] .= ' LEFT JOIN ' . $db->quoteName($child_table, $child_alias) . ' ON ' . $child_alias . '.' . $join_informations['table_join_key'] . ' = ' . $parent_alias . '.' . $join_informations['table_key'];
+									} else {
+										$child_alias = array_search($child_table, $already_joined);
+									}
+
+									$where['q'] .= ' AND ' . $this->writeQueryWithOperator($child_alias . '.' . $fabrik_element_data['name'], $filter['value'], $filter['operator']);
+								} else {
+									JLog::add('Could not handle repeat group for element ' . $filter_id . ' parent table not found', JLog::WARNING, 'com_emundus.error');
+								}
+							} else {
+								JLog::add('Could not handle repeat group for element ' . $filter_id . ' in ' . $caller . ' with params ' . json_encode($caller_params), JLog::WARNING, 'com_emundus.error');
+							}
+						} else {
+							if (!in_array($fabrik_element_data['db_table_name'], $already_joined)) {
+								$alias = 'jejoin_' . sizeof($already_joined);
+								$already_joined[$alias] = $fabrik_element_data['db_table_name'];
+
+								$where['join'] .= ' LEFT JOIN ' . $db->quoteName($fabrik_element_data['db_table_name'], $alias) . ' ON ' . $alias . '.fnum = jecc.fnum ';
+							} else {
+								$alias = array_search($fabrik_element_data['db_table_name'], $already_joined);
+							}
+
+							$where['q'] .= ' AND ' . $this->writeQueryWithOperator($alias . '.' . $fabrik_element_data['name'], $filter['value'], $filter['operator']);
+						}
+					}
 				} else {
 					if (!in_array('all', $filter['value']) && !empty($filter['value'])) {
 						if (sizeof($filter['value']) == 1) {
@@ -3176,6 +3226,75 @@ class EmundusHelperFiles
 
 		return $where;
     }
+
+	private function getFabrikElementData(int $element_id): array
+	{
+		$data = [];
+
+		if (!empty($element_id)) {
+			/**
+			 * I need, list id, form id, groupd id and group params, table name and element name
+			 */
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('jfe.name, jfe.plugin, jfg.id as group_id, jfg.params as group_params, jffg.form_id, jfl.id as list_id, jfl.db_table_name')
+				->from('#__fabrik_elements AS jfe')
+				->leftJoin('#__fabrik_groups AS jfg ON jfg.id = jfe.group_id')
+				->leftJoin('#__fabrik_formgroup AS jffg ON jffg.group_id = jfg.id')
+				->leftJoin('#__fabrik_lists AS jfl ON jfl.form_id = jffg.form_id')
+				->where('jfe.id = ' . $element_id);
+
+			try {
+				$db->setQuery($query);
+				$data = $db->loadAssoc();
+			} catch(Exception $e) {
+				JLog::add('Failed to retreive fabrik element data in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $data;
+	}
+
+	private function getJoinInformations($element_id, $group_id, $list_id): array
+	{
+		$data = [];
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		if (!empty($element_id)) {
+			$query->select('*')
+				->from('#__fabrik_joins')
+				->where('element_id = ' . $element_id);
+
+			try {
+				$db->setQuery($query);
+				$data = $db->loadAssoc();
+			} catch(Exception $e) {
+				JLog::add('Failed to retreive join informations in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		if (empty($data) && !empty($group_id)) {
+			$query->clear()
+				->select('*')
+				->from('#__fabrik_joins')
+				->where('group_id = ' . $group_id);
+
+			if (!empty($list_id)) {
+				$query->where('list_id = ' . $list_id);
+			}
+
+			try {
+				$db->setQuery($query);
+				$data = $db->loadAssoc();
+			} catch(Exception $e) {
+				JLog::add('Failed to retreive join informations in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $data;
+	}
 
 	private function writeQueryWithOperator($element, $values, $operator) {
 		$query = '1=1';

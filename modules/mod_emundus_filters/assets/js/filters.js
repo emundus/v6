@@ -325,7 +325,7 @@ function createFilter(filter) {
     filterContainer.classList.add('filter-container');
     filterContainer.classList.add('em-w-100');
     filterContainer.classList.add('em-mb-16');
-    filterContainer.dataset.filterUid = filter.uid;
+    filterContainer.dataset.filteruid = filter.uid;
 
     const filterHeader = document.createElement('div');
     filterHeader.classList.add('filter-header');
@@ -347,7 +347,7 @@ function createFilter(filter) {
     filterRm.classList.add('remove-filter');
     filterRm.classList.add('em-pointer');
     filterRm.innerHTML = 'delete';
-    filterRm.dataset.filterUid = filter.uid;
+    filterRm.dataset.filteruid = filter.uid;
 
     filterHeader.appendChild(filterRm);
     filterContainer.appendChild(filterHeader);
@@ -359,7 +359,7 @@ function createFilter(filter) {
             filterSelect.classList.add('em-w-100');
             filterSelect.name = 'filter[' + filter.id + ']';
             filterSelect.id = 'filter-' + filter.id;
-            filterSelect.dataset.filterUid = filter.uid;
+            filterSelect.dataset.filteruid = filter.uid;
 
             filter.values.forEach(function (value) {
                 const option = document.createElement('option');
@@ -380,7 +380,7 @@ function createFilter(filter) {
             filterDate.type = 'date';
             filterDate.name = 'filter[' + filter.id + ']';
             filterDate.id = 'filter-' + filter.id;
-            filterDate.dataset.filterUid = filter.uid;
+            filterDate.dataset.filteruid = filter.uid;
             filterContainer.appendChild(filterDate);
             filtersInstances.push(filter);
             break;
@@ -392,7 +392,7 @@ function createFilter(filter) {
             filterInput.type = 'text';
             filterInput.name = 'filter[' + filter.id + ']';
             filterInput.id = 'filter-' + filter.id;
-            filterInput.dataset.filterUid = filter.uid;
+            filterInput.dataset.filteruid = filter.uid;
             filterContainer.appendChild(filterInput);
             filtersInstances.push(filter);
             break;
@@ -402,9 +402,9 @@ function createFilter(filter) {
 }
 
 function removeFilter(e) {
-    const filterUid = Number(e.target.dataset.filterUid);
+    const filteruid = Number(e.target.dataset.filteruid);
     filtersInstances = filtersInstances.filter((filter) => {
-        return filter.uid !== filterUid;
+        return filter.uid !== filteruid;
     });
 
     const filterContainer = e.target.closest('.filter-container');
