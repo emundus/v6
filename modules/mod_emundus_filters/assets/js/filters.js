@@ -315,8 +315,20 @@ const filtersSelect = document.getElementById('filters-selection');
 
 function initFilters(){
     appliedFiltersSection.querySelectorAll('.filter-container').forEach(function (filterContainer) {
-        const filterInstance = new MultiSelectFilter(filterContainer);
-        filtersInstances.push(filterInstance);
+        // check type of filter
+        let select = filterContainer.querySelector('select');
+        if (select) {
+            const filterInstance = new MultiSelectFilter(filterContainer);
+            filtersInstances.push(filterInstance);
+        } else {
+            // can be an input text or an input date
+            let input = filterContainer.querySelector('input[type="text"]');
+            if (input) {
+
+            } else {
+
+            }
+        }
     });
 }
 
