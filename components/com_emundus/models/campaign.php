@@ -931,16 +931,18 @@ class EmundusModelCampaign extends JModelList {
 		$deleted = false;
 
         if (!empty($data)) {
-	        if (!is_array($data)) {
-				$data = [$data];
-	        }
-			$query = $this->_db->getQuery(true);
-	        $falang = new EmundusModelFalang();
+			$data = !is_array($data) ? [$data] : $data;
 
-            try {
-                $dispatcher = JEventDispatcher::getInstance();
-                $dispatcher->trigger('onBeforeCampaignDelete', $data);
-                $dispatcher->trigger('callEventHandler', ['onBeforeCampaignDelete', ['campaign' => $data]]);
+	        require_once (JPATH_ROOT . '/components/com_emundus/models/falang.php');
+			$falang = new EmundusModelFalang();
+
+			$dispatcher = JEventDispatcher::getInstance();
+	        $dispatcher->trigger('onBeforeCampaignDelete', $data);
+	        $dispatcher->trigger('callEventHandler', ['onBeforeCampaignDelete', ['campaign' => $data]]);
+
+	        $query = $this->_db->getQuery(true);
+
+	        try {
 
                 foreach (array_values($data) as $id) {
                     $falang->deleteFalang($id, 'emundus_setup_campaigns','label');
@@ -1174,7 +1176,7 @@ class EmundusModelCampaign extends JModelList {
         $campaign_id = 0;
 
         if (!empty($data) && !empty($data['label'])) {
-            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
+	        require_once (JPATH_ROOT . '/components/com_emundus/models/falang.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'settings.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
             $m_falang = new EmundusModelFalang;
@@ -1326,7 +1328,7 @@ class EmundusModelCampaign extends JModelList {
 
             $query = $this->_db->getQuery(true);
 
-            require_once (JPATH_SITE . '/components/com_emundus/models/falang.php');
+	        require_once (JPATH_ROOT . '/components/com_emundus/models/falang.php');
             require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
             $m_falang = new EmundusModelFalang;
@@ -1477,8 +1479,7 @@ class EmundusModelCampaign extends JModelList {
             return false;
         }
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
-
+	    require_once (JPATH_ROOT . '/components/com_emundus/models/falang.php');
         $m_falang = new EmundusModelFalang;
 
         $query = $this->_db->getQuery(true);
@@ -1738,7 +1739,7 @@ class EmundusModelCampaign extends JModelList {
                 }
 
                 try{
-                    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
+	                require_once (JPATH_ROOT . '/components/com_emundus/models/falang.php');
                     $m_falang = new EmundusModelFalang;
                     $this->_db->setQuery($query);
                     $this->_db->execute();
@@ -1796,7 +1797,7 @@ class EmundusModelCampaign extends JModelList {
         $lang = JFactory::getLanguage();
         $actualLanguage = substr($lang->getTag(), 0 , 2);
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
+	    require_once (JPATH_ROOT . '/components/com_emundus/models/falang.php');
         $m_falang = new EmundusModelFalang;
 
         $types = implode(";", array_values($types));
