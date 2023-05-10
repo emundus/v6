@@ -2095,6 +2095,9 @@ class EmundusModelApplication extends JModelList
                                                     $elt = '';
                                                 }
                                             }
+                                            elseif ($element->plugin == 'textarea'){
+	                                            $elt = nl2br($element->content);
+                                            }
 											else
 											{
                                                 $elt = $element->content;
@@ -2102,9 +2105,9 @@ class EmundusModelApplication extends JModelList
 
                                             // modulo for strips css //
                                             if ($modulo % 2) {
-                                                $forms .= '<tr class="table-strip-1">' . (!empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>' . JText::_($element->label) . '</b></td>' : '') . '<td> ' . (($element->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
+                                                $forms .= '<tr class="table-strip-1">' . (!empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>' . JText::_($element->label) . '</b></td>' : '') . '<td> ' . ((!in_array($element->plugin,['field','textarea'])) ? JText::_($elt) : $elt) . '</td></tr>';
                                             } else {
-                                                $forms .= '<tr class="table-strip-2">' . (!empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>' . JText::_($element->label) . '</b></td>' : '') . '<td> ' . (($element->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
+                                                $forms .= '<tr class="table-strip-2">' . (!empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>' . JText::_($element->label) . '</b></td>' : '') . '<td> ' . ((!in_array($element->plugin,['field','textarea'])) ? JText::_($elt) : $elt) . '</td></tr>';
                                             }
                                             $modulo++;
                                             unset($params);
@@ -2691,7 +2694,11 @@ class EmundusModelApplication extends JModelList
                                                 } else {
                                                     $elt = '';
                                                 }
-                                            } elseif (($element->plugin == 'birthday' || $element->plugin == 'birthday_remove_slashes') && $element->content > 0) {
+                                            }
+                                            elseif ($element->plugin == 'textarea'){
+	                                            $elt = nl2br($element->content);
+                                            }
+											elseif (($element->plugin == 'birthday' || $element->plugin == 'birthday_remove_slashes') && $element->content > 0) {
                                                 $elt = EmundusHelperDate::displayDate($element->content, $params->list_date_format);
                                             } elseif ($element->plugin == 'databasejoin') {
                                                 $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
