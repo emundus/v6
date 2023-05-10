@@ -63,31 +63,7 @@ class EmundusControllerExport extends JControllerLegacy
         {
             require JPATH_LIBRARIES . '/emundus/vendor/autoload.php';
 
-            # create the client.
-            //$client = new Client($gotenberg_url, new \Http\Adapter\Guzzle6\Client());
-            # ... or the following if you want the client to discover automatically an installed implementation of the PSR7 `HttpClient`.
-            //$client = new Client($gotenberg_url);
-
-            # prepare the files required for your conversion.
-
-            # from a path.
-            //$index = DocumentFactory::makeFromPath('index.html', '/home/deploy/dev/images/emundus/files');
-            # ... or from your own stream.
-            //$stream = new LazyOpenStream('/home/deploy/dev/images/emundus/files', 'r');
-            //$index = DocumentFactory::makeFromStream('Template.doc', $stream);
-            // ... or from a string.
-            //$index = DocumentFactory::makeFromString('test.html', '<html>Foo</html>');
-
-            /*$header = DocumentFactory::makeFromPath('header.html', '/path/to/file');
-            $footer = DocumentFactory::makeFromPath('footer.html', '/path/to/file');
-            $assets = [
-                DocumentFactory::makeFromPath('style.css', '/path/to/file'),
-                DocumentFactory::makeFromPath('img.png', '/path/to/file'),
-            ];
-*/
-            ///
             $src = JPATH_ROOT.DS.'tmp'.DS.$file_src;
-            //$dest = JPATH_ROOT.DS.'images'.DS.'emundus'.DS.'test.pdf';
             if (!empty($file_dest) && !empty($user_id)) {
                 $dest = EMUNDUS_PATH_ABS . $user_id . DS . $file_dest;
             } else {
