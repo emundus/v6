@@ -473,6 +473,9 @@
 
 		<field name="zoom_jwt_title" type="note" label="COM_EMUNDUS_API_ZOOM_TITLE"/>
 		<field name="zoom_jwt" type="text" label="COM_EMUNDUS_API_ZOOM_JWT" description="COM_EMUNDUS_API_ZOOM_JWT_DESC" />
+		<field name="file_maker_api_title" type="note" label="COM_EMUNDUS_API_FILE_MAKER_TITLE"/>
+		<field name="file_maker_api_base_url" type="text" label="COM_EMUNDUS_API_FILE_MAKER_BASE_URL" description="COM_EMUNDUS_API_FILE_MAKER_BASE_URL_DESC" />
+		<field name="file_maker_api_basic_auth_token" type="text" label="COM_EMUNDUS_API_FILE_MAKER_BASIC_AUTH_TOKEN" description="COM_EMUNDUS_API_FILE_MAKER_BASIC_AUTH_TOKEN_DESC" />
 
 		<field name="spacer8" type="spacer" hr="true"/>
 
