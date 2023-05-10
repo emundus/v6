@@ -4,6 +4,7 @@ const filterSampleContainerHTML = '<div class="filter-container em-w-100" id="sa
     '   <div class="filter-recap em-p-8 em-flex-col-start">' +
     '       <div class="operator em-mt-8 em-ml-8 em-p-8-0"></div>' +
     '       <div class="options em-flex-row em-flex-wrap em-ml-8 em-p-8-0"></div>' +
+    '       <p class="filter-empty-selection hidden"></p>' +
     '   </div>' +
     '   <span class="material-icons-outlined expand">expand_more</span>' +
     '</section>' +
@@ -183,13 +184,12 @@ class MultiSelectFilter {
             this.selectedOperator = e.target.dataset.operator;
 
             this.operators.forEach((operator) => {
+                const operatorSpan = document.querySelector('select#'+ this.id +' +div .filter-operator[data-operator="' + operator.value + '"]');
                 if (operator.value !== this.selectedOperator) {
-                    const operatorSpan = document.querySelector('.filter-operator[data-operator="' + operator.value + '"]');
                     operatorSpan.classList.remove('label-default');
                     operatorSpan.classList.add('label-darkblue');
                     operatorSpan.classList.add('em-pointer');
                 } else {
-                    const operatorSpan = document.querySelector('.filter-operator[data-operator="' + operator.value + '"]');
                     operatorSpan.classList.remove('em-pointer');
                     operatorSpan.classList.remove('label-darkblue');
                     operatorSpan.classList.add('label-default');
@@ -205,7 +205,7 @@ class MultiSelectFilter {
             this.selectedAndOrOperator = e.target.dataset.operator;
 
             this.andOrOperators.forEach((operator) => {
-                const operatorSpan = document.querySelector('.filter-and-or-operator[data-operator="' + operator.value + '"]');
+                const operatorSpan =  document.querySelector('select#' + this.id + ' +div .filter-and-or-operator[data-operator="' + operator.value + '"]');
                 if (operator.value !== this.selectedAndOrOperator) {
                     operatorSpan.classList.remove('label-default');
                     operatorSpan.classList.add('label-darkblue');
@@ -235,6 +235,11 @@ class MultiSelectFilter {
 
     updateRecap() {
         const recap = this.recap.querySelector('.filter-recap');
+        const recapOperators = recap.querySelector('.operator');
+        const emptyWrapper = recap.querySelector('p.filter-empty-selection');
+        const recapOptions = recap.querySelector('.options');
+        emptyWrapper.classList.add('hidden');
+
         const oldElements = recap.querySelectorAll('.filter-recap-element');
         if (oldElements.length > 0) {
             oldElements.forEach((element) => {
@@ -242,45 +247,52 @@ class MultiSelectFilter {
             });
         }
 
-        // first element is the operator
-        let recapElement = document.createElement('span');
-        recapElement.classList.add('filter-recap-element');
-        recapElement.classList.add('label');
-        recapElement.classList.add('label-darkblue');
-        recapElement.classList.add('em-mr-8');
-        recapElement.innerText = this.operators.find((operator) => {
-            return operator.value === this.selectedOperator;
-        }).label;
-
-        recap.querySelector('.operator').appendChild(recapElement);
-
-        const recapOptions = recap.querySelector('.options');
         let valuesCount = this.selectedValues.length;
-        this.selectedValues.forEach((value, index) => {
-            recapElement = document.createElement('span');
+        if (valuesCount > 0) {
+            // first element is the operator
+            let recapElement = document.createElement('span');
             recapElement.classList.add('filter-recap-element');
             recapElement.classList.add('label');
-            recapElement.classList.add('label-default');
+            recapElement.classList.add('label-darkblue');
             recapElement.classList.add('em-mr-8');
-
-            const valueLabel = this.options.find((option) => {
-                return option.value === value;
+            recapElement.innerText = this.operators.find((operator) => {
+                return operator.value === this.selectedOperator;
             }).label;
-            recapElement.innerText = valueLabel ? valueLabel : value;
-            recapOptions.appendChild(recapElement);
+            recapOperators.appendChild(recapElement);
+            recapOperators.classList.remove('hidden');
 
-            if (index < valuesCount - 1) {
+            this.selectedValues.forEach((value, index) => {
                 recapElement = document.createElement('span');
                 recapElement.classList.add('filter-recap-element');
                 recapElement.classList.add('label');
-                recapElement.classList.add('label-darkblue');
+                recapElement.classList.add('label-default');
                 recapElement.classList.add('em-mr-8');
-                recapElement.innerText = this.andOrOperators.find((operator) => {
-                    return operator.value === this.selectedAndOrOperator;
+
+                const valueLabel = this.options.find((option) => {
+                    return option.value === value;
                 }).label;
+                recapElement.innerText = valueLabel ? valueLabel : value;
                 recapOptions.appendChild(recapElement);
-            }
-        });
+
+                if (index < valuesCount - 1) {
+                    recapElement = document.createElement('span');
+                    recapElement.classList.add('filter-recap-element');
+                    recapElement.classList.add('label');
+                    recapElement.classList.add('label-darkblue');
+                    recapElement.classList.add('em-mr-8');
+                    recapElement.innerText = this.andOrOperators.find((operator) => {
+                        return operator.value === this.selectedAndOrOperator;
+                    }).label;
+                    recapOptions.appendChild(recapElement);
+                }
+            });
+            recapOptions.classList.remove('hidden');
+        } else {
+            emptyWrapper.innerText = translate('MOD_EMUNDUS_FILTERS_PLEASE_SELECT');
+            recapOptions.classList.add('hidden');
+            recapOperators.classList.add('hidden');
+            emptyWrapper.classList.remove('hidden');
+        }
     }
 
     openModal() {
@@ -401,15 +413,13 @@ function createFilter(filter) {
     appliedFiltersSection.appendChild(filterContainer);
 }
 
-function removeFilter(e) {
-    const filteruid = Number(e.target.dataset.filteruid);
-    filtersInstances = filtersInstances.filter((filter) => {
-        return filter.uid !== filteruid;
-    });
+function removeFilter(filteruid) {
+    if (filteruid !== undefined && filteruid !== null) {
+        filtersInstances = filtersInstances.filter((filter) => {
+            return filter.uid !== filteruid;
+        });
 
-    const filterContainer = e.target.closest('.filter-container');
-    if (filterContainer) {
-        filterContainer.remove();
+        document.querySelector('.filter-container[data-filteruid="' + filteruid + '"]').remove();
     }
 }
 
@@ -455,7 +465,7 @@ document.getElementById('mod_emundus_filters').addEventListener('click', functio
     } else if (e.target.id === 'apply-filters') {
         applyFilters();
     } else if (e.target.matches('.remove-filter')) {
-        removeFilter(e);
+        removeFilter(e.target.dataset.filteruid);
     }
 });
 
@@ -463,12 +473,11 @@ if (filtersSelect) {
     filtersSelect.addEventListener('change', function (e) {
         if (e.target.value !== '0') {
             toggleFilterSelect(e);
-            const uid = Date.now();
             const selectedOption = e.target.options[e.target.selectedIndex];
             const filter = {
                 type: selectedOption.dataset.type,
                 id: e.target.value,
-                uid: uid,
+                uid: Date.now(),
                 label: selectedOption.text,
                 values: JSON.parse(atob(selectedOption.dataset.values)),
                 value: ''

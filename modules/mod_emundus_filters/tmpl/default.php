@@ -12,7 +12,7 @@ JText::script('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_ONE_OF');
 JText::script('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_NOT_ONE_OF');
 JText::script('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_AND');
 JText::script('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_OR');
-
+JText::script('MOD_EMUNDUS_FILTERS_PLEASE_SELECT');
 ?>
 
 <section id="mod_emundus_filters">
@@ -30,7 +30,7 @@ JText::script('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_OR');
                         <div class="filter-header em-w-100 em-flex-row em-flex-space-between em-mb-8">
                             <label for="filter<?= $filter['id'] ?>" class="em-w-100"><?= $filter['label'] ?></label>
                             <?php if (!$filter['default']) : ?>
-                                <span class="material-icons-outlined em-pointer" data-filteruid="<?= $filter['uid'] ?>">delete</span>
+                                <span class="material-icons-outlined em-pointer remove-filter" data-filteruid="<?= $filter['uid'] ?>">delete</span>
                             <?php endif; ?>
                         </div>
                         <?php
