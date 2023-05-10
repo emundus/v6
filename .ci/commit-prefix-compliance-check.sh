@@ -39,12 +39,17 @@ MERGE_REQUEST_IID=$4
 COMMIT_PREFIXES_TRIGGERING_RELEASE=("BREAKING: " "BREAKING CHANGE: " "BREAKING CHANGES: " "minor: " "feat: " "feature: " "patch: " "hotfix: " "security: " "fix: " "style: " "refactor: " "perf: ")
 
 # Get commit names in merge request
-git_query=$(curl --silent --location --request GET "${GITLAB_URL}/api/v4/projects/${PROJECT_ID}/merge_requests/${MERGE_REQUEST_IID}/commits?per_page=100&page=1" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}")
+git_query=""
 page=1
-while [ "$(echo "${git_query}" | jq -r '. | length')" -eq 100 ]
+while true
 do
+  result=$(curl --silent --location --request GET "${GITLAB_URL}/api/v4/projects/${PROJECT_ID}/merge_requests/${MERGE_REQUEST_IID}/commits?per_page=100&page=${page}" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}")
+  count=$(echo "${result}" | jq -r '. | length')
+  if [ "$count" -eq 0 ]; then
+    break
+  fi
+  git_query="${git_query}${result}"
   page=$((page+1))
-  git_query=$(curl --silent --location --request GET "${GITLAB_URL}/api/v4/projects/${PROJECT_ID}/merge_requests/${MERGE_REQUEST_IID}/commits?per_page=100&page=${page}" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}")
 done
 
 # Checks if at least one commit of the current merge request respects the naming of the commits
