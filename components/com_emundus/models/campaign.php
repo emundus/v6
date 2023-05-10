@@ -1104,6 +1104,8 @@ class EmundusModelCampaign extends JModelList {
         $query = $this->_db->getQuery(true);
 
         if (!empty($data)) {
+			$data = !is_array($data) ? [$data] : $data;
+
             try {
                 $columns = array_keys(
                     $this->_db->getTableColumns('#__emundus_setup_campaigns')
