@@ -3138,7 +3138,10 @@ class EmundusHelperFiles
 				if (is_numeric($filter_id)) {
 					// todo: get column name from fabrik element_id and create join based on its table
 				} else {
-					if (!in_array('all', $filter['value'])) {
+					if (!in_array('all', $filter['value']) && !empty($filter['value'])) {
+						if (sizeof($filter['value']) == 1) {
+							$filter['value'] = $filter['value'][0];
+						}
 
 						switch($filter_id) {
 							case 'status':
@@ -3147,7 +3150,13 @@ class EmundusHelperFiles
 							case 'campaigns':
 								$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.campaign_id', $filter['value'], $filter['operator']);
 								break;
+							case 'years':
+								$where['join'] .= ' LEFT JOIN #__emundus_setup_teaching_unity AS estu ON estu.code = sp.code ';
+								$where['q'] .= ' AND ' . $this->writeQueryWithOperator('estu.schoolyear', $filter['value'], $filter['operator']);
+
+								break;
 							case 'programs':
+								$where['q'] .= ' AND ' . $this->writeQueryWithOperator('sp.id', $filter['value'], $filter['operator']);
 								break;
 							case 'published':
 								$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.published', $filter['value'], $filter['operator']);
@@ -3179,7 +3188,7 @@ class EmundusHelperFiles
 						$_values = implode(',', $db->quote($values));
 						$query = $element . ' IN (' . $_values . ')';
 					} else {
-						$query = $element . ' = ' . $values;
+						$query = $element . ' = ' . $db->quote($values);
 					}
 					break;
 				case '!=':
@@ -3187,7 +3196,7 @@ class EmundusHelperFiles
 						$_values = implode(',', $db->quote($values));
 						$query = $element . ' NOT IN (' . $_values . ')';
 					} else {
-						$query = $element . ' != ' . $values;
+						$query = $element . ' != ' . $db->quote($values);
 					}
 					break;
 				case 'LIKE':
@@ -3208,13 +3217,17 @@ class EmundusHelperFiles
 					break;
 				case 'IN':
 					if (is_array($values)) {
-						$_values = implode(',', $db->quote($values));
+						$values = implode(',', $db->quote($values));
+					} else {
+						$values = $db->quote($values);
 					}
 					$query = $element . ' IN (' . $values . ')';
 					break;
 				case 'NOT IN':
 					if (is_array($values)) {
-						$_values = implode(',', $db->quote($values));
+						$values = implode(',', $db->quote($values));
+					} else {
+						$values = $db->quote($values);
 					}
 					$query = $element .  ' NOT IN (' . $values . ')';
 					break;

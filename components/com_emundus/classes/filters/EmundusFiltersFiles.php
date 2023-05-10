@@ -140,10 +140,7 @@ class EmundusFiltersFiles extends EmundusFilters
 
 			$values = [];
 			foreach($statuses as $status) {
-				$values[] = [
-					'value' => $status->step,
-					'label' => $status->value
-				];
+				$values[] = ['value' => $status->step, 'label' => $status->value];
 			}
 
 			$this->applied_filters[] = [
@@ -152,7 +149,7 @@ class EmundusFiltersFiles extends EmundusFilters
 				'label' => JText::_('MOD_EMUNDUS_FILTERS_STATUS'),
 				'type' => 'select',
 				'values' => $values,
-				'value' => '',
+				'value' => ['all'],
 				'default' => true
 			];
 		}
@@ -172,7 +169,47 @@ class EmundusFiltersFiles extends EmundusFilters
 				'label' => JText::_('MOD_EMUNDUS_FILTERS_CAMPAIGNS'),
 				'type' => 'select',
 				'values' => $campaigns,
-				'value' => '',
+				'value' => ['all'],
+				'default' => true
+			];
+		}
+
+		if ($config['filter_programs']) {
+			$query->clear()
+				->select('id as value, label')
+				->from('#__emundus_setup_programmes')
+				->where('published = 1');
+
+			$db->setQuery($query);
+			$programs = $db->loadAssocList();
+
+			$this->applied_filters[] = [
+				'uid' => 'programs',
+				'id' => 'programs',
+				'label' => JText::_('MOD_EMUNDUS_FILTERS_PROGRAMS'),
+				'type' => 'select',
+				'values' => $programs,
+				'value' => ['all'],
+				'default' => true
+			];
+		}
+
+		if ($config['filter_years']) {
+			$query->clear()
+				->select('DISTINCT schoolyear as value, schoolyear as label')
+				->from('#__emundus_setup_teaching_unity')
+				->where('published = 1');
+
+			$db->setQuery($query);
+			$years = $db->loadAssocList();
+
+			$this->applied_filters[] = [
+				'uid' => 'years',
+				'id' => 'years',
+				'label' => JText::_('MOD_EMUNDUS_FILTERS_YEARS'),
+				'type' => 'select',
+				'values' => $years,
+				'value' => ['all'],
 				'default' => true
 			];
 		}
@@ -191,7 +228,23 @@ class EmundusFiltersFiles extends EmundusFilters
 				'label' => JText::_('MOD_EMUNDUS_FILTERS_TAGS'),
 				'type' => 'select',
 				'values' => $tags,
-				'value' => '',
+				'value' => ['all'],
+				'default' => true
+			];
+		}
+
+		if ($config['filter_published']) {
+			$this->applied_filters[] = [
+				'uid' => 'published',
+				'id' => 'published',
+				'label' => JText::_('MOD_EMUNDUS_FILTERS_PUBLISHED_STATE'),
+				'type' => 'select',
+				'values' => [
+					['value' => 1, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_PUBLISHED')],
+					['value' => 0, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_ARCHIVED')],
+					['value' => -1, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_DELETED')]
+				],
+				'value' => [1],
 				'default' => true
 			];
 		}

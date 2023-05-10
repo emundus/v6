@@ -101,7 +101,7 @@ class MultiSelectFilter {
 
             let optionLabel = document.createElement('label');
             optionLabel.innerText = option.label;
-            optionLabel.setAttribute('for', 'filter-' + this.filterId + '-' + option.value);
+            optionLabel.setAttribute('for', 'filter-' + this.id + '-' + option.value);
 
             let optionContainer = document.createElement('li');
             optionContainer.classList.add('filter-option');

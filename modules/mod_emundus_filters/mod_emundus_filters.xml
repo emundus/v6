@@ -52,15 +52,19 @@
                         <option value="0">JNO</option>
                         <option value="1">JYES</option>
                     </field>
-                    <field type="list" name="filter_program" label="FILTER_ON_PROGRAM">
+                    <field type="list" name="filter_programs" label="FILTER_ON_PROGRAM">
                         <option value="0">JNO</option>
                         <option value="1">JYES</option>
                     </field>
-                    <field type="list" name="filter_year" label="FILTER_ON_YEAR">
+                    <field type="list" name="filter_years" label="FILTER_ON_YEAR">
                         <option value="0">JNO</option>
                         <option value="1">JYES</option>
                     </field>
                     <field type="list" name="filter_tags" label="FILTER_ON_TAGS">
+                        <option value="0">JNO</option>
+                        <option value="1">JYES</option>
+                    </field>
+                    <field type="list" name="filter_published" label="FILTER_ON_PUBLISHED_STATE">
                         <option value="0">JNO</option>
                         <option value="1">JYES</option>
                     </field>
