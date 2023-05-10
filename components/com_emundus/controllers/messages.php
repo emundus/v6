@@ -846,7 +846,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 		$mail_from_sys = $config->get('mailfrom');
 		$mail_from_sys_name = $config->get('fromname');
 
-		$uids  = explode(',',$jinput->post->get('recipients', null, null));
+		$uids  = explode(',', $jinput->post->get('recipients', null, null));
 		$bcc = $jinput->post->getString('Bcc', false);
 
 		// If no mail sender info is provided, we use the system global config.
@@ -860,7 +860,6 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 		// Get additional info for the fnums such as the user email.
 		$users = $m_users->getUsersByIds($uids);
-
 		// This will be filled with the email adresses of successfully sent emails, used to give feedback to front end.
 		$sent = [];
 		$failed = [];
@@ -873,6 +872,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 		foreach ($users as $user) {
             $can_send_mail = $h_emails->assertCanSendMailToUser($user->id);
             if (!$can_send_mail) {
+	            $failed[] = $user->email;
                 continue;
             }
 

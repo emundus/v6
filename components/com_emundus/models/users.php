@@ -2220,11 +2220,26 @@ class EmundusModelUsers extends JModelList {
         return $db->loadObjectList();
     }
 
-	public function getUsersByIds($ids) { //users of application
-		$db = JFactory::getDBO();
-		$query = 'SELECT * FROM #__users WHERE id IN ('.implode(',', $ids).')';
-		$db->setQuery($query);
-		return $db->loadObjectList();
+	public function getUsersByIds($ids) {
+		$users = [];
+
+		if (!empty($ids)) {
+			$db = JFactory::getDBO();
+
+			$query = $db->getQuery(true);
+			$query->select('*')
+				->from('#__users')
+				->where('id IN ('.implode(',', $ids).')');
+
+			try {
+				$db->setQuery($query);
+				$users = $db->loadObjectList();
+			} catch (Exception $e) {
+				JLog::add('Failed to get users by ids ' . implode(',', $ids) . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $users;
 	}
 
 
