@@ -276,43 +276,42 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    /**
-     *
-     */
     public function savefilters() {
-        $name = JRequest::getVar('name', null, 'POST', 'none',0);
-        $current_user = JFactory::getUser();
-        $user_id = $current_user->id;
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+	    $current_user = JFactory::getUser();
+	    $user_id = $current_user->id;
 
-        $session = JFactory::getSession();
-        $filt_params = $session->get('filt_params');
-        $adv_params = $session->get('adv_cols');
-        $constraints = array('filter'=>$filt_params, 'col'=>$adv_params);
+		if (EmundusHelperAccess::asPartnerAccessLevel($user_id)) {
+			$jinput = JFactory::getApplication()->input;
+			$name = $jinput->getString('name', null);
+			$itemid = $jinput->getInt('Itemid', 0);
 
-        $constraints = json_encode($constraints);
+			if (!empty($name) && !empty($itemid)) {
+				$session = JFactory::getSession();
+				$filt_params = $session->get('filt_params');
+				$adv_params = $session->get('adv_cols');
+				$constraints = array('filter'=>$filt_params, 'col'=>$adv_params);
+				$constraints = json_encode($constraints);
+				$time_date = (date('Y-m-d H:i:s'));
 
-        if (empty($itemid)) {
-            $itemid = JRequest::getVar('Itemid', null, 'POST', 'none', 0);
-        }
+				$query = "INSERT INTO #__emundus_filters (time_date,user,name,constraints,item_id) values('".$time_date."',".$user_id.",'".$name."',".$this->_db->quote($constraints).",".$itemid.")";
+				$this->_db->setQuery( $query );
+				try {
+					$this->_db->Query();
+					$query = 'select f.id, f.name from #__emundus_filters as f where f.time_date = "'.$time_date.'" and user = '.$user_id.' and name="'.$name.'" and item_id="'.$itemid.'"';
+					$this->_db->setQuery($query);
+					$result = $this->_db->loadObject();
 
-        $time_date = (date('Y-m-d H:i:s'));
+					echo json_encode((object)(array('status' => true, 'filter' => $result)));
+					exit;
 
-        $query = "INSERT INTO #__emundus_filters (time_date,user,name,constraints,item_id) values('".$time_date."',".$user_id.",'".$name."',".$this->_db->quote($constraints).",".$itemid.")";
-        $this->_db->setQuery( $query );
+				} catch (Exception $e) {
+					JLog::add('Error saving filter: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+				}
+			}
+		}
 
-        try {
-            $this->_db->Query();
-            $query = 'select f.id, f.name from #__emundus_filters as f where f.time_date = "'.$time_date.'" and user = '.$user_id.' and name="'.$name.'" and item_id="'.$itemid.'"';
-            $this->_db->setQuery($query);
-            $result = $this->_db->loadObject();
-            echo json_encode((object)(array('status' => true, 'filter' => $result)));
-            exit;
-
-        } catch (Exception $e) {
-            echo json_encode((object)(array('status' => false)));
-            exit;
-        }
+	    echo json_encode((object)(array('status' => false)));
+	    exit;
     }
 
     /**
