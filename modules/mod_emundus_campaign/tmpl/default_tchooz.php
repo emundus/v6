@@ -86,8 +86,8 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 <form action="<?php echo $CurPageURL ?>" method="post" id="search_program">
     <?php if (sizeof($campaigns) == 0 && empty($codes_filters) && empty($categories_filters) && empty($searchword)) : ?>
         <hr>
-        <div class="mod_emundus_campaign__list_content--default em-mb-24">
-            <h2 class="em-text-neutral-900 em-h2 em-applicant-title-font"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN') ?></h2>
+        <div class="mod_emundus_campaign__list_content--default">
+            <h2 class="em-text-neutral-900 em-h2 em-applicant-title-font em-mb-24"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN') ?></h2>
             <?php if(JFactory::getUser()->guest) : ?>
                 <?php if($show_registration) : ?>
                 <h3 class="em-text-neutral-900 em-font-weight-500 em-h3 em-mb-4"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT') ?></h3>
