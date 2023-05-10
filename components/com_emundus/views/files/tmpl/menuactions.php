@@ -22,7 +22,7 @@ if (!empty($this->items)) :
             <ul class="nav navbar-nav em-container-menuaction-nav" style="display:<?php echo $this->display; ?>">
                 <?php
 
-                $multiple = JFactory::getApplication()->input->get('multi', '0', 'get','INT', JREQUEST_NOTRIM); //nb of ckecked ckeckbox
+                $multiple = JFactory::getApplication()->input->get('multi', '0', 'get','INT'); //nb of ckecked ckeckbox
 
                 foreach ($this->items as $i => $item) :
 
