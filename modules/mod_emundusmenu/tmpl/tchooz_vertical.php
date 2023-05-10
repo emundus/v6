@@ -234,12 +234,12 @@ defined('_JEXEC') or die;
         $filename = 'favicon';
         $favicon = glob("{$target_dir}{$filename}.*");
 
-        if(!empty($favicon[0]) && file_exists(JPATH_SITE . '/' . $favicon[0])){
+        if(file_exists(JPATH_SITE . '/' . $favicon[0])){
             $favicon = JURI::base().'/' . $favicon[0];
         } else {
             $favicon = JURI::base().'/images/emundus/tchooz_favicon.png';
         }
-        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo" style="height: auto"><a class="item" href="/"><img src="'.$favicon.'" alt="Accueil"></a>
+        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo" style="height: auto"><a class="item" href="'.$favicon_link.'"><img src="'.$favicon.'" alt="Accueil"></a>
         </li>';
 
         if ($display_tchooz) :
@@ -532,7 +532,9 @@ defined('_JEXEC') or die;
             if (window.innerWidth >= 1280) {
                 if(document.querySelector("#g-footer")) {
                     document.querySelector("#g-footer").style.paddingLeft = "300px";
-                    document.querySelector("#footer-rgpd").style.paddingLeft = "300px";
+                    if(document.querySelector("#footer-rgpd")) {
+                        document.querySelector("#footer-rgpd").style.paddingLeft = "300px";
+                    }
                 }
                 document.querySelector("#g-container-main").style.paddingLeft = "180px";
                 document.querySelector("#header-a").style.opacity = "1";
@@ -563,7 +565,9 @@ defined('_JEXEC') or die;
             if (window.innerWidth >= 1280) {
                 if(document.querySelector("#g-footer")) {
                     document.querySelector("#g-footer").style.paddingLeft = "300px";
-                    document.querySelector("#footer-rgpd").style.paddingLeft = "300px";
+                    if(document.querySelector("#footer-rgpd")) {
+                        document.querySelector("#footer-rgpd").style.paddingLeft = "300px";
+                    }
                 }
                 document.querySelector("#g-container-main").style.paddingLeft = "180px";
                 document.querySelector("#header-a").style.opacity = "1";
@@ -573,7 +577,9 @@ defined('_JEXEC') or die;
                     elem.style.display = "block";
                     elem.style.opacity = "1";
                 });
-                document.querySelector(".sidebar-formbuilder").style.display = "none";
+                if(document.querySelector(".sidebar-formbuilder")) {
+                    document.querySelector(".sidebar-formbuilder").style.display = "none";
+                }
                 setTimeout(() => {
                     if(document.querySelector(".g-menu-parent-indicator")) {
                         document.querySelector(".g-menu-parent-indicator").style.display = "block";
@@ -601,7 +607,9 @@ defined('_JEXEC') or die;
                 document.querySelector("#g-container-main").style.paddingLeft = "0";
                 if(document.querySelector("#g-footer")) {
                     document.querySelector("#g-footer").style.paddingLeft = "80px";
-                    document.querySelector("#footer-rgpd").style.paddingLeft = "80px";
+                    if(document.querySelector("#footer-rgpd")) {
+                        document.querySelector("#footer-rgpd").style.paddingLeft = "80px";
+                    }
                 }
                 document.querySelector("#header-a").style.opacity = "0";
             }

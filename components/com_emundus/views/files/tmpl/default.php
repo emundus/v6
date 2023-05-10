@@ -12,7 +12,6 @@
  * details.
  */
 defined( '_JEXEC' ) or die( 'Restricted access' );
-JHTML::_('behavior.tooltip');
 JHTML::stylesheet('media/com_emundus/css/emundus_panel.css');
 JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.4.1/css/all.css');
 
@@ -115,7 +114,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 	var loadingLine = '<?php echo JURI::base().'media/com_emundus/images/icones/loader-line.gif'; ?>';
 	$(document).ready(function()
 	{
-		$('.chzn-select').chosen({width:'75%'});
+		//$('.chzn-select').chosen({width:'75%'});
        // reloadData();
 		refreshFilter();
        // search();

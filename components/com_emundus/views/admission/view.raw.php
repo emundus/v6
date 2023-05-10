@@ -11,7 +11,6 @@
 // no direct access
 
 defined( '_JEXEC' ) or die( 'Restricted access' );
-//error_reporting(E_ALL);
 jimport( 'joomla.application.component.view');
 /**
  * HTML View class for the Emundus Component
@@ -25,6 +24,8 @@ class EmundusViewAdmission extends JViewLegacy
 	var $_db = null;
 	protected $itemId;
 	protected $actions;
+
+    public $items = array();
 
 	public function __construct($config = array())
 	{
@@ -47,8 +48,9 @@ class EmundusViewAdmission extends JViewLegacy
 
     public function display($tpl = null) {
 
-        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             die (JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+        }
 
 	    $this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
 
@@ -67,7 +69,6 @@ class EmundusViewAdmission extends JViewLegacy
 				$display = JFactory::getApplication()->input->getString('display', 'none');
 
 				$items = @EmundusHelperFiles::getMenuList($menu_params);
-                //$actions = @EmundusHelperFiles::getActionsACL();
                 $actions = $m_files->getAllActions();
 
 				$menuActions = array();

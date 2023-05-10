@@ -10,14 +10,14 @@
 defined('_JEXEC') or die;
 
 // Include the login functions only once
-JLoader::register('ModLoginHelper', __DIR__ . '/helper.php');
-
 $document 	= JFactory::getDocument();
 $document->addStyleSheet("modules/mod_emundus_footer/css/mod_emundus_footer.css" );
 
 include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
+require_once dirname(__FILE__).'/helper.php';
 
 $params->def('greeting', 1);
+$layout           = $params->get('layout', 'default');
 
 //Footer
 $mod_emundus_footer_merge_two_columns=$params->get('mod_emundus_footer_merge_two_columns',0);
@@ -33,12 +33,10 @@ $mod_emundus_footer_data_privacy=$params->get('mod_emundus_footer_data_privacy',
 $mod_emundus_footer_rights=$params->get('mod_emundus_footer_rights', '1');
 $mod_emundus_footer_cookies=$params->get('mod_emundus_footer_cookies', '1');
 
-$type             = ModLoginHelper::getType();
-$return           = ModLoginHelper::getReturnUrl($params, $type);
+$user = JFactory::getUser();
+$type = (!$user->get('guest')) ? 'logout' : 'login';
+$return           = ModEmundusFooterHelper::getReturnUrl($params, $type);
 $twofactormethods = JAuthenticationHelper::getTwoFactorMethods();
-$user             = JFactory::getUser();
-$layout           = $params->get('layout', 'default');
-
 
 // Get release version
 $xmlDoc = new DOMDocument();
