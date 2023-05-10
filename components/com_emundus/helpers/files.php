@@ -2255,8 +2255,8 @@ class EmundusHelperFiles
                             break;
 
                         default:
-                            $router = @JSite::getRouter();
-                            if ($router->getMode() == JROUTER_MODE_SEF) {
+                            $is_sef = (bool)JFactory::getApplication()->getConfig()->get('sef');
+                            if ($is_sef) {
                                 $item->flink = 'index.php?Itemid='.$item->id;
                             } else {
                                 $item->flink .= '&Itemid='.$item->id;
@@ -2265,15 +2265,15 @@ class EmundusHelperFiles
                     }
 
                     if (strcasecmp(substr($item->flink, 0, 4), 'http') && (strpos($item->flink, 'index.php?') !== false)) {
-                        $item->flink = JRoute::_($item->flink, true, $item->params->get('secure'));
+                        $item->flink = JRoute::_($item->flink, true, $item->getParams()->get('secure'));
                     } else {
                         $item->flink = JRoute::_($item->flink);
                     }
 
                     $item->title = htmlspecialchars($item->title, ENT_COMPAT, 'UTF-8', false);
-                    $item->anchor_css = htmlspecialchars($item->params->get('menu-anchor_css', ''), ENT_COMPAT, 'UTF-8', false);
-                    $item->anchor_title = htmlspecialchars($item->params->get('menu-anchor_title', ''), ENT_COMPAT, 'UTF-8', false);
-                    $item->menu_image = $item->params->get('menu_image', '') ? htmlspecialchars($item->params->get('menu_image', ''), ENT_COMPAT, 'UTF-8', false) : '';
+                    $item->anchor_css = htmlspecialchars($item->getParams()->get('menu-anchor_css', ''), ENT_COMPAT, 'UTF-8', false);
+                    $item->anchor_title = htmlspecialchars($item->getParams()->get('menu-anchor_title', ''), ENT_COMPAT, 'UTF-8', false);
+                    $item->menu_image = $item->getParams()->get('menu_image', '') ? htmlspecialchars($item->getParams()->get('menu_image', ''), ENT_COMPAT, 'UTF-8', false) : '';
                 }
 
                 if (isset($items[$lastitem])) {

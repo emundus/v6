@@ -650,13 +650,12 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
     JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
     JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
     //TODO : Stop use chosen replace by an other js native library
-    //JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
-    JHtml::script('media/jui/js/chosen.jquery.min.js');
+    JHtml::script('media/com_fabrik/js/chosen.jquery.min.js' );
     JFactory::getDocument()->addScript('media/com_emundus/js/em_files.js?' . $release_version);
     JFactory::getDocument()->addScript('media/com_emundus/js/mixins/exports.js?' . $release_version);
     JFactory::getDocument()->addScript('media/com_emundus/js/mixins/utilities.js?' . $release_version);
-    JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
-    JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
+    JHTML::script('media/com_emundus/js/selectize/dist/js/standalone/selectize.js' );
+    JHTML::script('media/com_emundus/js/sumoselect/jquery.sumoselect.min.js');
 
     JHtml::styleSheet('media/com_emundus/css/reset.css');
     JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
@@ -664,9 +663,9 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
     JHtml::styleSheet('media/jui/css/chosen.css');
     JHtml::styleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
     JHtml::styleSheet('media/com_emundus/css/emundus_files.css');
-    JHTML::stylesheet('libraries/emundus/selectize/dist/css/normalize.css' );
-    JHTML::stylesheet('libraries/emundus/selectize/dist/css/selectize.default.css' );
-    JHTML::stylesheet('libraries/emundus/sumoselect/sumoselect.css');
+    JHTML::stylesheet('media/com_emundus/js/selectize/dist/css/normalize.css' );
+    JHTML::stylesheet('media/com_emundus/js/selectize/dist/css/selectize.default.css' );
+    JHTML::stylesheet('media/com_emundus/js/sumoselect/sumoselect.css');
 }
 JHTML::script('media/com_emundus_vue/chunk-vendors_emundus.js');
 

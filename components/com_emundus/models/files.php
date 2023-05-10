@@ -569,7 +569,7 @@ class EmundusModelFiles extends JModelLegacy
         $app = JFactory::getApplication();
         $current_menu = $app->getMenu()->getActive();
         if (!empty($current_menu)) {
-            $menu_params = $current_menu->params;
+            $menu_params = $current_menu->getParams();
             $em_other_columns = explode(',', $menu_params->get('em_other_columns'));
         } else {
             $em_other_columns = array();
