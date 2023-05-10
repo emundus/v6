@@ -796,8 +796,7 @@ class EmundusControllerUsers extends JControllerLegacy {
         $users = $user->getUsersById($id); // get user from uid
         foreach ($users as $selectUser) {
 
-            //$passwd = JUserHelper::genRandomPassword(8); //generate a random password
-            $passwd = $user->randomPassword(8); //generate a random password
+			$passwd = $user->randomPassword(8); //generate a random password
             $passwd_md5 = JUserHelper::hashPassword($passwd); // hash the random password
 
             $m_users = new EmundusModelUsers();
@@ -812,9 +811,7 @@ class EmundusControllerUsers extends JControllerLegacy {
                 exit;
             } else {
                 $c_messages = new EmundusControllerMessages();
-                $lbl = 'regenerate_password';
-
-                $c_messages->sendEmailNoFnum($selectUser->email, $lbl, $post, $id);
+                $c_messages->sendEmailNoFnum($selectUser->email, 'regenerate_password', $post, $id, [], null, false);
 
                 if ($c_messages != true) {
                     $msg = JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT');

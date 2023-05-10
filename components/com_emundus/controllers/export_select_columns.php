@@ -26,31 +26,6 @@ class EmundusControllerExport_select_columns extends JControllerLegacy {
 
         parent::__construct($config);
     }
-	/**
-	 * Get application form elements to display in XLS file
-	*/
-	/*
-	function send_elements() {
-		error_reporting(0);
-
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-		$current_user = JFactory::getUser();
-		if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isEvaluator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id))
-			die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
-
-		$view = JFactory::getApplication()->input->get('v', null, 'GET');
-		$session = JFactory::getSession();
-		$cid = $session->get( 'uid' );
-		$quick_search = $session->get( 'quick_search' );
-
-		//require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'export_xls'.DS.'xls_'.$view.'.php');
-		$elements = JFactory::getApplication()->input->get('ud', null, 'POST', 'array', 0);
-		//export_xls($cid, $elements);
-		$xls = $this->getModel('xls_'.$view);
-		$xls->export_xls($cid, $elements);
-		exit();
-		}
-*/
 
     public function getformtags(){
         $user = JFactory::getUser();
