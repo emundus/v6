@@ -6,7 +6,7 @@
 
     <!-- LOGO -->
     <div class="em-grid-2" v-show="!loading">
-      <div class="em-style-options em-mb-32 ">
+      <div class="em-style-options em-mb-32">
         <div class="em-flex-row">
           <div>
             <h4 class="em-text-neutral-800 em-h4 em-flex-row em-mb-8">
@@ -47,7 +47,7 @@
       </div>
 
       <!-- FAVICON -->
-      <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
+      <div class="em-style-options em-mb-32">
         <div class="em-flex-row">
           <div>
             <h4 class="em-text-neutral-800 em-h4 em-flex-row em-mb-8">
@@ -88,7 +88,7 @@
       </div>
 
       <!-- COLORS -->
-      <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
+      <div class="em-style-options em-mb-32">
         <div>
           <h4 class="em-text-neutral-800 em-h4 em-flex-row em-mb-8">
             {{ translate("COM_EMUNDUS_ONBOARD_COLORS") }}
