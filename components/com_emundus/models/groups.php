@@ -101,7 +101,7 @@ class EmundusModelGroups extends JModelList
 		$search_values = JFactory::getApplication()->input->get('elements_values', null, 'POST', 'array', 0);
 		$schoolyears = JFactory::getApplication()->input->get('schoolyears', null, 'POST', 'none', 0);
 
-		$db = JFactory::getDatabase();
+		$db = JFactory::getDbo();
 
 		// Starting a session.
 		$session = JFactory::getSession();

@@ -44,7 +44,7 @@ class JFormFieldOrganisation extends JFormField
 	// code that returns HTML that will be shown as the form field
      	$class = '';
 		$options = array ();
-		$db	= & JFactory::getDBO();
+		$db	= JFactory::getDBO();
 
 		$query = 'SELECT c.id, c.title 
 					FROM #__categories c 

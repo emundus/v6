@@ -37,6 +37,7 @@ class EmundusControllerUpdate extends JControllerLegacy {
         $ignoreVersion = $jinput->post->get('ignoreversion', null);
         $m_update = new EmundusModelUpdate();
 
+        $user = JFactory::getUser();
         // verify if version is not already set
         if($version != $oldVersion && $version != $ignoreVersion && EmundusHelperAccess::asCoordinatorAccessLevel(JFactory::getUser()->id)) {
             $config = JFactory::getConfig();

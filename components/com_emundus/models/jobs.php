@@ -122,7 +122,6 @@ class EmundusModelJobs extends JModelList
 
 					// Just to keep the default case
 					default:
-						$value = $value;
 						break;
 				}
 

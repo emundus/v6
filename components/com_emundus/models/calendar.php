@@ -358,11 +358,10 @@ class EmundusModelCalendar extends JModelLegacy {
         $db     = JFactory::getDbo();
 
         require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
-        $h_emails = new EmundusModelEmails;
+        $h_emails = new EmundusHelperEmails;
         if (!$h_emails->assertCanSendMailToUser($user->id)) {
             return false;
         }
-
         $m_emails = new EmundusModelEmails;
 
         try {
@@ -376,14 +375,14 @@ class EmundusModelCalendar extends JModelLegacy {
 
         try {
 
-            $db->setQuery('SELECT params FROM #__categories WHERE id = '.$event->catid);
-            $params = $db->loadResult();
+            $db->setQuery('SELECT params, description, title FROM #__categories WHERE id = '.$event->catid);
+            $category_dp = $db->loadObject();
 
         } catch (Exception $e) {
             JLog::add("SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
         }
 
-        $params = json_decode($params);
+        $params = json_decode($category_dp->params);
 
         // Set event time to the correct timezone.
         $offset     = $config->get('offset');
@@ -407,15 +406,22 @@ class EmundusModelCalendar extends JModelLegacy {
 
         // The post variable allows us to insert data that will be transformed by the tags.
         // In this case we want the dates and times as well as programmes, the fnum is there possibly temporarly as we do not know whether is it used yet.
+
+        $db->setQuery('SELECT title FROM #__categories WHERE id = '.$event->catid);
+        $event_category_title = $db->loadResult();
+
         $post = array(
             'FNUM'          => $user->fnum,
             'EVENT_DATE'    => $event_date,
             'EVENT_TIME'    => $event_time,
             'USER_NAME'     => $user->name,
-            'PROGRAM'       => $label
+            'PROGRAM'       => $label,
+            'JURY'          => $category_dp->title,
+            'LINK'          => $category_dp->description
         );
 
-        $from_id = 62;
+        $from_id = JFactory::getUser()->id;
+		$from_id = empty($from_id) ? 62 : JFactory::getUser()->id;
 
         if ($booked) {
             $email = $m_emails->getEmail('booking_created_user');
@@ -474,9 +480,10 @@ class EmundusModelCalendar extends JModelLegacy {
                 'user_id_from' => $from_id,
                 'user_id_to' => $user->id,
                 'subject' => $subject,
-                'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$user->email.'</i><br>'.$body
+                'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$user->email.'</i><br>'.$body,
+	            'email_id' => $email->id
             );
-            $m_emails->logEmail($message);
+            $m_emails->logEmail($message, $user->fnum);
         }
 
         // Part two is sending the email to the coordinators.
@@ -553,9 +560,10 @@ class EmundusModelCalendar extends JModelLegacy {
                         'user_id_from' => $from_id,
                         'user_id_to' => $recipient->id,
                         'subject' => $subject,
-                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$recipient->email.'</i><br>'.$body
+                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$recipient->email.'</i><br>'.$body,
+	                    'email_id' => $email->id
                     );
-                    $m_emails->logEmail($message);
+                    $m_emails->logEmail($message, $user->fnum);
                 }
 
             }
@@ -623,6 +631,7 @@ class EmundusModelCalendar extends JModelLegacy {
 
     // Helper function, gets all users that are coordinators to a program.
     function getProgramRecipients($program_name) {
+		$res = new stdClass();
 
         $db = JFactory::getDbo();
         $eMConfig = JComponentHelper::getParams('com_emundus');
@@ -633,7 +642,6 @@ class EmundusModelCalendar extends JModelLegacy {
         }
 
         try {
-
             $query = "SELECT eu.user_id, u.name, u.email FROM #__emundus_groups AS eg
                         LEFT JOIN #__emundus_users AS eu ON eu.user_id = eg.user_id
                         LEFT JOIN #__users AS u ON eu.user_id = u.id
@@ -644,11 +652,12 @@ class EmundusModelCalendar extends JModelLegacy {
                         )";
 
             $db->setQuery($query);
-            return $db->loadObjectList();
-
+	        $res = $db->loadObjectList();
         } catch (Exception $e) {
             JLog::add("SQL Query: ".$query." SQL Error: ".$e->getMessage(), JLog::ERROR, "com_emundus");
         }
+
+		return $res;
 
     }
 
@@ -657,7 +666,6 @@ class EmundusModelCalendar extends JModelLegacy {
         $table = JTable::getInstance('Category');
 
         $data['rules'] = array(
-            'core.edit.state' => array(),
             'core.edit.delete' => array(),
             'core.edit.edit' => array(),
             'core.edit.state' => array(),

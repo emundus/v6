@@ -114,7 +114,7 @@ class EmundusModelInterview extends JModelList
      * @return array list of Fabrik element ID used in evaluation form
      * @throws Exception
      */
-    public function getAllInterviewElements($show_in_list_summary=1, $programme_code) {
+    public function getAllInterviewElements($show_in_list_summary, $programme_code) {
         $session = JFactory::getSession();
 
         $jinput = JFactory::getApplication()->input;

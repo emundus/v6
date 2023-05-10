@@ -91,7 +91,7 @@ class EmundusModelControlfiles extends JModelList
 	 * @param bool $recursive Whether to list subfolders as well.
 	 * @param string $baseDir String to append at the beginning of every filepath that the callback will receive.
 	 */
-	function dir_walk($dir, $recursive = true, $baseDir = '', $tabfile, $firstuserid) {
+	function dir_walk($dir, $recursive, $baseDir, $tabfile, $firstuserid) {
 		if ($dh = @opendir($baseDir.$dir)) {
 			while (($file = readdir($dh)) !== false) { 
 				if ($file === '' || $file === '.' || $file === '..' || 

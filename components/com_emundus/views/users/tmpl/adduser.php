@@ -69,7 +69,7 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
 	</fieldset>
     <?php
     $other_profiles_applicant = false;
-    if(sizeof(array_intersect(array_keys($this->uOprofiles),$this->app_prof)) > 0){
+    if(!empty($this->uOprofiles) && sizeof(array_intersect(array_keys($this->uOprofiles),$this->app_prof)) > 0){
         $other_profiles_applicant = true;
     }
     ?>

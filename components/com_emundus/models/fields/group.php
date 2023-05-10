@@ -45,7 +45,7 @@ class JFormFieldGroup extends JFormField
 	// code that returns HTML that will be shown as the form field
      	$class = '';
 		$options = '';
-		$db	= & JFactory::getDBO();
+		$db	= JFactory::getDBO();
 
 		$query = 'SELECT esg.id, esg.label  
 		FROM #__emundus_setup_groups esg

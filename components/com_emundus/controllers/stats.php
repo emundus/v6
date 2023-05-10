@@ -25,7 +25,7 @@ class EmundusControllerStats extends JControllerLegacy {
         parent::__construct($config);
     }
 
-    
+
 
     public function getprofiletype() {
     	$dateArray = [];
@@ -68,7 +68,7 @@ class EmundusControllerStats extends JControllerLegacy {
 
 	    $m_stats = new EmundusModelStats();
         $getConsultations = $m_stats->consultationOffres($val, $periode);
-        
+
         foreach ($getConsultations as $bars) {
             if ($bars['num_offre'] == $val) {
                 $dateArray[] = $bars['_day'];
@@ -76,7 +76,7 @@ class EmundusControllerStats extends JControllerLegacy {
                 $count += $bars['nombre'];
             }
         }
-     
+
         echo json_encode((object)[
         	'status' => true,
 	        'datearray' => $dateArray,
@@ -92,16 +92,16 @@ class EmundusControllerStats extends JControllerLegacy {
         $jinput = JFactory::getApplication()->input;
         $periode = $jinput->post->get('periode', null);
 
-        $m_stats = new EmundusModelStats();   
- 
+        $m_stats = new EmundusModelStats();
+
 	    echo json_encode((object)[
 	        'status' => true,
 	        'countOffre' => $m_stats->getOffres($periode)
 	    ]);
 	    exit;
     }
-    
-    
+
+
     public function getcandidatures() {
         $candArray = [];
         $nbArray = [];
@@ -238,7 +238,7 @@ class EmundusControllerStats extends JControllerLegacy {
     }
 
     public function getfiles() {
-
+        $array = [];
         $m_stats = new EmundusModelStats();
         $files = $m_stats->getFiles();
         foreach ($files as $file) {

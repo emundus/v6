@@ -41,4 +41,9 @@ class EmundusModelThesisTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_thesis = new EmundusModelThesis;
     }
+
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
 }

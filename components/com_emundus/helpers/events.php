@@ -142,9 +142,11 @@ class EmundusHelperEvents {
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'date.php');
 
             $m_campaign = new EmundusModelCampaign;
+            $m_users = new EmundusModelUsers;
 
             $formModel = $params['formModel'];
             $listModel =  $params['formModel']->getListModel();
@@ -348,12 +350,13 @@ class EmundusHelperEvents {
 			$db->setQuery($query);
 			$fnum_linked = $db->loadResult();
 
+			$profile_details = $m_users->getUserById(JFactory::getUser()->id)[0];
+
             if ($copy_application_form == 1 && isset($user->fnum) && !in_array($formModel->getId(), $copy_exclude_forms) || !empty($fnum_linked)) {
 
                 if (empty($formModel->getRowId())) {
                     $table = $listModel->getTable();
                     $table_elements = $formModel->getElementOptions(false, 'name', false, false, array(), '', true);
-                    $rowid = $formModel->data["rowid"];
 
                     $elements = array();
                     foreach ($table_elements as $element) {
@@ -371,6 +374,20 @@ class EmundusHelperEvents {
 	                    $already_cloned = $db->loadResult();
 
 						if($already_cloned == 0) {
+
+							// Check if we can fill a value with our profile
+							$profile_elements = array_keys(get_object_vars($profile_details));
+							foreach ($elements as $element){
+								$elt_name = explode('.',$element)[1];
+								if(in_array($elt_name,$profile_elements)) {
+									if(!empty($profile_details->{$elt_name})) {
+										$formModel->data[$table->db_table_name . '___' . $elt_name]          = $profile_details->{$elt_name};
+										$formModel->data[$table->db_table_name . '___' . $elt_name . '_raw'] = $profile_details->{$elt_name};
+									}
+								}
+							}
+
+							// Next we check if we find a form by applicant or via linked fnum
 							$query->clear()
 								->select(implode(',', $db->quoteName($elements)))
 								->from($db->quoteName($table->db_table_name))
@@ -388,28 +405,30 @@ class EmundusHelperEvents {
 								unset($stored['fnum']);
 
 								foreach ($stored as $key => $store) {
-									// get the element plugin, and params
-									$query->clear()
-										->select('fe.plugin,fe.params')
-										->from($db->quoteName('#__fabrik_elements', 'fe'))
-										->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
-										->where($db->quoteName('ffg.form_id') . ' = ' . $form_id)
-										->where($db->quoteName('fe.name') . ' = ' . $db->quote($key))
-										->where($db->quoteName('fe.published') . ' = 1');
-									$db->setQuery($query);
-									$elt = $db->loadObject();
+									if(empty($formModel->data[$table->db_table_name . '___' . $key]) || empty($formModel->data[$table->db_table_name . '___' . $key . '_raw'])) {
+										// get the element plugin, and params
+										$query->clear()
+											->select('fe.plugin,fe.params')
+											->from($db->quoteName('#__fabrik_elements', 'fe'))
+											->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
+											->where($db->quoteName('ffg.form_id') . ' = ' . $form_id)
+											->where($db->quoteName('fe.name') . ' = ' . $db->quote($key))
+											->where($db->quoteName('fe.published') . ' = 1');
+										$db->setQuery($query);
+										$elt = $db->loadObject();
 
-									// if this element is date plugin, we need to check the time storage format (UTC of Local time)
-									if ($elt->plugin === 'date') {
-										// storage format (UTC [0], Local [1])
-										$timeStorageFormat = json_decode($elt->params)->date_store_as_local;
+										// if this element is date plugin, we need to check the time storage format (UTC of Local time)
+										if ($elt->plugin === 'date') {
+											// storage format (UTC [0], Local [1])
+											$timeStorageFormat = json_decode($elt->params)->date_store_as_local;
 
-										$store = EmundusHelperDate::displayDate($store, 'Y-m-d H:i:s', $timeStorageFormat);
+											$store = EmundusHelperDate::displayDate($store, 'Y-m-d H:i:s', $timeStorageFormat);
+										}
+
+
+										$formModel->data[$table->db_table_name . '___' . $key]          = $store;
+										$formModel->data[$table->db_table_name . '___' . $key . '_raw'] = $store;
 									}
-
-
-									$formModel->data[$table->db_table_name . '___' . $key]          = $store;
-									$formModel->data[$table->db_table_name . '___' . $key . '_raw'] = $store;
 								}
 
 								$groups = $formModel->getFormGroups(true);
@@ -656,7 +675,7 @@ class EmundusHelperEvents {
                         if (!empty($scholarship_product)) {
                             $return_url = $mApplication->getHikashopCheckoutUrl($user->profile);
                             $return_url = preg_replace('/&product_id=[0-9]+/', "&product_id=$scholarship_product", $return_url);
-                            $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($return_url));
+	                        $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($return_url));
                             $mainframe->redirect($checkout_url);
                         }
                     }
@@ -668,6 +687,8 @@ class EmundusHelperEvents {
                 if (count($fnumInfos) > 0) {
                     $checkout_cart_url = $mApplication->getHikashopCartUrl($user->profile);
                     if (!empty($checkout_cart_url)) {
+                        JPluginHelper::importPlugin('emundus','custom_event_handler');
+                        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeEmundusRedirectToHikashopCart', ['url' => $checkout_cart_url, 'fnum' => $user->fnum, 'user' => $user]]);
                         $mainframe->redirect($checkout_cart_url);
                     } else {
                         $checkout_url = $mApplication->getHikashopCheckoutUrl($user->profile . $scholarship_document_id);
@@ -678,7 +699,7 @@ class EmundusHelperEvents {
                         // If $accept_other_payments is 2 : that means we do not redirect to the payment page.
                         if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments >= 100 && $forms >= 100) {
                             // Profile number and document ID are concatenated, this is equal to the menu corresponding to the free option (or the paid option in the case of document_id = NULL)
-                            $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($checkout_url));
+	                        $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($checkout_url));
                             $mainframe->redirect($checkout_url);
                         }
                     }

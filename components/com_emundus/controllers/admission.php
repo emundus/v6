@@ -270,7 +270,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
         $fnums      = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
-        $m_application = $this->getModel('Application');
+        $m_application = new EmundusModelApplication();
 
         if (is_array($fnums)) {
 
@@ -299,13 +299,14 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
         } elseif($fnums == 'all') {
             //all result find by the request
-            $m_files = $this->getmodel('Files');
+            $m_files = new EmundusModelFiles();
+            $m_application = new EmundusModelApplication();
 
             $fnums = $m_files->getAllFnums();
             foreach ($fnums as $fnum) {
                 if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum)) {
                     $aid = intval(substr($fnum, 14, count($fnum)));
-                    $appModel->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum)));
+                    $m_application->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum)));
                 }
             }
         }
@@ -413,8 +414,8 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
          $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
-         $m_files = $this->getModel('Files');
-         $m_application = $this->getModel('application');
+         $m_files = new EmundusModelFiles();
+         $m_application = new EmundusModelApplication();
 
          if ($fnums == "all")
              $fnums = $m_files->getAllFnums();
@@ -626,7 +627,8 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $code = $jinput->getVar('code', null);
         $code = explode(',', $code);
 
-        $m_admission = $this->getModel('Admission');
+	require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
+        $m_admission = new EmundusModelAdmission();
         $h_files = new EmundusHelperFiles;
 
         $defaultElements = $m_admission->getAdmissionElementsName(0, 1, $code);
@@ -715,8 +717,8 @@ class EmundusControllerAdmission extends JControllerLegacy {
             }
         }
 
-        $m_profile  = $this->getModel('profile');
-        $m_campaign = $this->getModel('campaign');
+        $m_profile  = new EmundusModelProfile();
+        $m_campaign = new EmundusModelCampaign();
 
         if (!empty($fnum)) {
             $candidature    = $m_profile->getFnumDetails($fnum);
@@ -770,7 +772,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
     public function sortObjectByArray($object, $orderArray) {
         $ordered = array();
         $properties=get_object_vars($object);
-        return sortArrayByArray($properties,$orderArray);
+        return $this->sortArrayByArray($properties,$orderArray);
     }
 
     public function create_file_csv() {
@@ -840,8 +842,8 @@ class EmundusControllerAdmission extends JControllerLegacy {
         if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
             die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 
-        $m_files        = $this->getModel('Files');
-        $m_application  = $this->getModel('Application');
+        $m_files        = new EmundusModelFiles();
+        $m_application  = new EmundusModelApplication();
 
         $session = JFactory::getSession();
         $fnums = $session->get('fnums_export');
@@ -980,7 +982,8 @@ class EmundusControllerAdmission extends JControllerLegacy {
                         if (array_key_exists($fnum['fnum'],$vOpt)) {
                             $val = $vOpt[$fnum['fnum']];
                             // Img comes in form of html tag
-                            $xpath = new DOMXPath(@DOMDocument::loadHTML($val));
+                            $dom_document = new DOMDocument();
+                            $xpath = new DOMXPath($dom_document->loadHTML($val));
                             $src = $xpath->evaluate("string(//img/@src)");
                             $line .= $src . "\t";
                             // This only prints the link to the image, in order to add an img to the csv you have to superpose it over a cell
@@ -1562,8 +1565,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $fid    = $jinput->getString('fabrik_id', null);
         $value  = $jinput->getString('value', null);
 
-        $h_files = new EmundusHelperFiles;
-        $m_admission = $this->getModel("Admission");
+        $m_admission = new EmundusModelAdmission();
 
         // Check if fnum is found in DB table in order to determine if we do a create or update
         $exists = $m_admission->getAdmissionFnum($fnum);

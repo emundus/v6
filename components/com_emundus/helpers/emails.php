@@ -305,7 +305,7 @@ class EmundusHelperEmails {
 									\'</div>\';
 								}
 					        },
-					        onDelete: function(val) {
+					        onDelete: function() {
 					            return true;
 					        },
 					        create: function(input) {
@@ -407,7 +407,7 @@ class EmundusHelperEmails {
         return $db->loadObjectList();
     }
 
-    function getTemplate(){
+    public static function getTemplate(){
         $db = JFactory::getDBO();
         $select = JFactory::getApplication()->input->get('select', null, 'POST', 'none', 0);
         $query = 'SELECT * FROM #__emundus_setup_emails WHERE id='.$select;
@@ -592,7 +592,7 @@ class EmundusHelperEmails {
 
     }
 
-    function sendApplicantEmail() {
+    public static function sendApplicantEmail() {
 
         $current_user = JFactory::getUser();
         $config = JFactory::getConfig();

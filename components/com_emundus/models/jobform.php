@@ -176,7 +176,7 @@ class EmundusModelJobForm extends JModelForm
      * 
 	 * @param	array	$data		An optional array of data for the form to interogate.
 	 * @param	boolean	$loadData	True if the form is to load its own data (default case), false if not.
-	 * @return	JForm	A JForm object on success, false on failure
+	 * @return	JForm|false	A JForm object on success, false on failure
 	 * @since	1.6
 	 */
 	public function getForm($data = array(), $loadData = true)
@@ -251,9 +251,7 @@ class EmundusModelJobForm extends JModelForm
         $table = $this->getTable();
         if ($table->delete($data['id']) === true)
             return $id;
-        else return false;        
-        
-		return true;
+        else return false;
     }
     
 }

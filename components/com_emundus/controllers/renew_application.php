@@ -53,8 +53,8 @@ class EmundusControllerRenew_application extends JControllerLegacy
 		$session = JFactory::getSession();
 		$current_user = $session->get('emundusUser');
 		$user = JFactory::getUser();
-		$profile = $this->getModel('profile');
-		$campaign = $this->getModel('campaign');
+		$profile = new EmundusModelProfile();
+		$campaign = new EmundusModelCampaign();
 
 		$previous_profiles = $campaign->getCampaignByApplicant($user->id);
 
@@ -86,8 +86,8 @@ class EmundusControllerRenew_application extends JControllerLegacy
 	 */
 	function new_application() {
 		$current_user 	= JFactory::getSession()->get('emundusUser');
-		$model 			= $this->getModel('renew_application');
-		$application 	= $this->getModel('application');
+		$model 			= new EmundusModelRenew_application();
+		$application 	= new EmundusModelApplication();
 		$user 			= JFactory::getApplication()->input->get('uid', null, 'GET', 'none',0);
 		$profile 		= JFactory::getApplication()->input->get('up', null, 'GET', 'none',0);
 
@@ -126,8 +126,8 @@ class EmundusControllerRenew_application extends JControllerLegacy
 	function edit_user(){
 		$session 		= JFactory::getSession();
 		$current_user 	= $session->get('emundusUser');
-		$model 			= $this->getModel('renew_application');
-		$application 	= $this->getModel('application');
+		$model 			= new EmundusModelRenew_application();
+		$application 	= new EmundusModelApplication();
 		$user 			= JFactory::getApplication()->input->get('uid', null, 'GET', 'none',0);
 		$profile 		= JFactory::getApplication()->input->get('up', null, 'GET', 'none',0);
 
@@ -181,7 +181,7 @@ class EmundusControllerRenew_application extends JControllerLegacy
 	//Supprimer ce qui correspond aux r�f�rents (+learning agreement) ==> OKOKOKOKOKOK
 	function deleteReferents(){
 		$user = JFactory::getApplication()->input->get('uid', null, 'GET', 'none',0);
-		$model = $this->getModel('renew_application');
+		$model = new EmundusModelRenew_application();
 		$files_name = '';
 
 		//first reference letter
@@ -228,7 +228,7 @@ class EmundusControllerRenew_application extends JControllerLegacy
 	//supprimer ce qui correspond aux applications forms ==> OKOKOKOKOKOKOKOKOKOK
 	function deleteApplication(){
 		$user = JFactory::getApplication()->input->get('uid', null, 'GET', 'none',0);
-		$model = $this->getModel('renew_application');
+		$model = new EmundusModelRenew_application();
 		$files_name = $model->getLinkAttachments(26, $user);
 
 		foreach($files_name as $filename){
@@ -243,7 +243,7 @@ class EmundusControllerRenew_application extends JControllerLegacy
 
 	function deleteInformations(){
 		$user = JFactory::getApplication()->input->get('uid', null, 'GET', 'none',0);
-		$model = $this->getModel('renew_application');
+		$model = new EmundusModelRenew_application();
 		//$model->deleteEvaluations($user);
 		//$model->deleteFinal_grade($user);
 		$model->deleteDeclaration($user);

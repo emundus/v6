@@ -30,7 +30,7 @@ class EmundusHelperFilters {
 	* @param 			query results
 	* @param 	array 	values to extract and insert
 	*/
-	public function insertValuesInQueryResult($results, $options) {
+	public static function insertValuesInQueryResult($results, $options) {
 		foreach ($results as $key => $result) {
 			if (array_key_exists('params', $result)) {
 				if (is_array($result)) {
@@ -67,7 +67,7 @@ class EmundusHelperFilters {
 		return $results;
 	}
 
-	public function getCurrentCampaign() {
+	public static function getCurrentCampaign() {
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$nb_months_registration_period_access = $eMConfig->get('nb_months_registration_period_access', '11');
 		$config = JFactory::getConfig();
@@ -83,7 +83,7 @@ class EmundusHelperFilters {
 		return $db->loadResultArray();
 	}
 
-	public function getCurrentCampaignsID() {
+	public static function getCurrentCampaignsID() {
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$nb_months_registration_period_access = $eMConfig->get('nb_months_registration_period_access', '11');
 		$config     = JFactory::getConfig();
@@ -124,7 +124,7 @@ class EmundusHelperFilters {
 		return $syear[0];
 	}
 
-	public function getCampaignByID($id) {
+	public static function getCampaignByID($id) {
 		$db = JFactory::getDBO();
 		$query = 'SELECT * FROM #__emundus_setup_campaigns WHERE id='.$id;
 		$db->setQuery( $query );
@@ -174,7 +174,7 @@ class EmundusHelperFilters {
 		return $db->loadObjectList();
 	}
 
-	function getGroups() {
+	public static function getGroups() {
 		$db = JFactory::getDBO();
 		$query = 'SELECT esg.id, esg.label
 		FROM #__emundus_setup_groups esg
@@ -194,7 +194,7 @@ class EmundusHelperFilters {
 		return $db->loadResultArray();
 	}
 
-	function getFinal_grade() {
+	public static function getFinal_grade() {
 		$db = JFactory::getDBO();
 		$query = 'SELECT name, params FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
 		$db->setQuery( $query );
@@ -210,7 +210,7 @@ class EmundusHelperFilters {
 			return $db->loadObjectList();
 	}
 
-	function getEvaluation_doc($status) {
+	public static function getEvaluation_doc($status) {
 		$db = JFactory::getDBO();
 		$query = 'SELECT *
 				FROM #__emundus_setup_attachments esa
@@ -238,7 +238,7 @@ class EmundusHelperFilters {
 		return $current_filter;
 	}
 
-	function getElements() {
+	public static function getElements() {
 		require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
 		require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
 		require_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
@@ -302,7 +302,7 @@ class EmundusHelperFilters {
 	* @param 	int 	Does the element are hidden in Fabrik list ; if 0, show only displayed Fabrik Items ?
 	* @return   array 	list of Fabrik element ID used in evaluation form
 	**/
-	function getElementsByGroups($groups, $show_in_list_summary=1, $hidden=0) {
+	static function getElementsByGroups($groups, $show_in_list_summary=1, $hidden=0) {
 		$db = JFactory::getDBO();
 
 		$query = 'SELECT element.name, element.label, element.plugin, element.id as element_id, groupe.id, groupe.label AS group_label, element.params,
@@ -374,7 +374,7 @@ class EmundusHelperFilters {
 		return $elements;
 	}
 
-	function getElementsOther($tables) {
+	public static function getElementsOther($tables) {
 		$db = JFactory::getDBO();
 		$query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id as group_id, groupe.label AS group_label, element.params AS element_attribs,
 			INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label

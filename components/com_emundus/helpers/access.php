@@ -119,7 +119,7 @@ class EmundusHelperAccess {
 	 * @return	array	The array of groups for user.
 	 * @since	4.0
 	*/
-	function getProfileAccess($user) {
+	static function getProfileAccess($user) {
 		$db = JFactory::getDBO();
 		$query = 'SELECT esg.profile_id FROM #__emundus_setup_groups as esg
 					LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
