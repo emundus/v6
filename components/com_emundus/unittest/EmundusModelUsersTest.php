@@ -81,8 +81,8 @@ class EmundusModelUsersTest extends TestCase
 	}
 
 	public function testaffectToGroups() {
-		$this->assertFalse($this->m_users->affectToGroups([], []), 'Passing an incorrect user id should return false');
-		$this->assertFalse($this->m_users->affectToGroups([['user_id' => 99999]], []), 'Passing an incorrect array of group ids should return false');
+		$this->assertEmpty($this->m_users->affectToGroups([], []), 'Passing an incorrect user id should return false');
+		$this->assertEmpty($this->m_users->affectToGroups([['user_id' => 99999]], []), 'Passing an incorrect array of group ids should return false');
 
 		$user_id = $this->h_sample->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
 		$nonApplicantIds = $this->m_users->getNonApplicantId($user_id);
