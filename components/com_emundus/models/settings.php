@@ -1202,6 +1202,9 @@ class EmundusModelsettings extends JModelList {
 
 							foreach($tab['actions'] as $ak => $action) {
 								$action['label'] = JText::_($action['label']);
+								if(!empty($action['confirm'])) {
+									$action['confirm'] = JText::_($action['confirm']);
+								}
 								$tab['actions'][$ak] = $action;
 							}
 

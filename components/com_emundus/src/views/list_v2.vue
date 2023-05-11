@@ -455,33 +455,58 @@ export default {
 					}
 				}
 
-				client().get(url)
-						.then(response => {
-							if (response.data.status === true || response.data.status === 1) {
-								if (response.data.redirect) {
-									window.location.href = response.data.redirect;
-								}
-
-								this.getListItems();
-							} else {
-								if (response.data.msg) {
-									Swal.fire({
-										type: 'error',
-										title: this.translate(response.data.msg),
-										reverseButtons: true,
-										customClass: {
-											title: 'em-swal-title',
-											confirmButton: 'em-swal-confirm-button',
-											actions: 'em-swal-single-action'
-										}
-									});
-								}
-							}
-						})
-						.catch(error => {
-							console.error(error);
-						});
+				if (action.hasOwnProperty('confirm')) {
+					Swal.fire({
+						type: 'warning',
+						title: action.label,
+						text: action.confirm,
+						showCancelButton: true,
+						confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
+						cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
+						reverseButtons: true,
+						customClass: {
+							title: 'em-swal-title',
+							confirmButton: 'em-swal-confirm-button',
+							cancelButton: 'em-swal-cancel-button',
+							actions: 'em-swal-double-action'
+						}
+					}).then((result) => {
+						if (result.value) {
+							this.executeAction(url);
+						}
+					});
+				} else {
+					this.executeAction(url);
+				}
 			}
+		},
+		executeAction (url) {
+			client().get(url)
+					.then(response => {
+						if (response.data.status === true || response.data.status === 1) {
+							if (response.data.redirect) {
+								window.location.href = response.data.redirect;
+							}
+
+							this.getListItems();
+						} else {
+							if (response.data.msg) {
+								Swal.fire({
+									type: 'error',
+									title: this.translate(response.data.msg),
+									reverseButtons: true,
+									customClass: {
+										title: 'em-swal-title',
+										confirmButton: 'em-swal-confirm-button',
+										actions: 'em-swal-single-action'
+									}
+								});
+							}
+						}
+					})
+					.catch(error => {
+						console.error(error);
+					});
 		},
 		onClickPreview(item) {
 			if (this.previewAction && (this.previewAction.title || this.previewAction.content)) {
