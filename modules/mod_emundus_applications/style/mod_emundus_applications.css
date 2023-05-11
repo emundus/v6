@@ -168,6 +168,10 @@ a.btn.btn-success:not(.btn-xs) {
 .main-page-file-progress .svg-container{
     width: 100px;
 }
+
+.view-featured .candidacy-files-list .row {
+   position: relative;
+}
 @media all and (max-width: 479px) {
     .main-page-file-info a {
         margin-bottom: 4px;
@@ -375,6 +379,7 @@ margin-top: 16px;
     position: absolute;
     background: white;
     z-index: 9999;
+    right: 30px;
 }
 .mod_emundus_applications__actions a:not(:last-child){
     margin-bottom: 8px;
