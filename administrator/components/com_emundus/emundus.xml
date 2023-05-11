@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<extension xmlns="http://www.joomla.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" client="site" method="upgrade" type="component" version="2.5" xsi:schemaLocation="http://www.joomla.org extension.xsd ">
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="4" method="upgrade">
 	<name>com_emundus</name>
 	<creationDate>August 2018</creationDate>
-	<author>Benjamin Rivalland</author>
-	<copyright>Copyright (C) 2018 emundus.fr - All rights reserved.</copyright>
-	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<author>eMundus</author>
+	<authorUrl>https://emundus.fr</authorUrl>
 	<authorEmail>dev@emundus.fr</authorEmail>
-	<authorUrl>www.emundus.fr</authorUrl>
+	<copyright>Copyright (C) 2018-2023 eMundus - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
 	<version>1.36.0</version>
 	<description>Online application component for Joomla!</description>
 	<scriptfile>script.com_emundus.php</scriptfile>
@@ -18,70 +18,85 @@
 
 	<files folder="site">
 		<folder>assets</folder>
+		<folder>classes</folder>
+		<folder>contentelements</folder>
 		<folder>controllers</folder>
+		<folder>data</folder>
 		<folder>helpers</folder>
 		<folder>language</folder>
 		<folder>models</folder>
+		<folder>public</folder>
+		<folder>src</folder>
+		<folder>tests</folder>
+		<folder>unittest</folder>
 		<folder>views</folder>
+		<file>babel.config.js</file>
 		<file>controller.php</file>
 		<file>emundus.php</file>
 		<file>index.html</file>
+		<file>package.json</file>
+		<file>README.md</file>
+		<file>router.php</file>
+		<file>vue.config.js</file>
 	</files>
 
-	<media folder="media">
-		<folder>com_emundus/images</folder>
+	<media folder="media" destination="com_emundus">
 		<folder>com_emundus/css</folder>
+		<folder>com_emundus/images</folder>
 		<folder>com_emundus/js</folder>
 		<folder>com_emundus/lib</folder>
+		<folder>com_emundus/tinymce</folder>
+		<file>com_emundus/fullcalendar.min.js</file>
 		<file>com_emundus/index.html</file>
 	</media>
 
-	<languages folder="language">
-		<language tag="fr-FR">fr-FR.com_emundus.ini</language>
-		<language tag="en-GB">en-GB.com_emundus.ini</language>
-	</languages>
-
-	<install>
-		<sql>
-			<file charset="utf8" driver="mysql">install.sql</file>
-		</sql>
-	</install>
-
-	<uninstall>
-		<sql>
-			<file charset="utf8" driver="mysql">uninstall.sql</file>
-		</sql>
-	</uninstall>
-
 	<administration>
-		<menu img="../administrator/components/com_emundus/puce.gif">eMundus</menu>
+		<menu view="panel">Tchooz</menu>
+		<submenu>
+			<menu alt="Home" link="option=com_emundus&amp;view=panel" view="panel">Home</menu>
+			<menu alt="Webhook" link="option=com_emundus&amp;view=webhook" view="webhook">Webhook</menu>
+			<menu alt="Modules" link="option=com_emundus&amp;view=modules" view="webhook">Modules</menu>
+			<menu alt="Samples" link="option=com_emundus&amp;view=samples" view="samples">Samples</menu>
+		</submenu>
+
+		<languages folder="admin">
+			<language tag="fr-FR">language/fr-FR/fr-FR.com_emundus.ini</language>
+			<language tag="fr-FR">language/fr-FR/fr-FR.com_emundus.sys.ini</language>
+			<language tag="en-GB">language/en-GB/en-GB.com_emundus.ini</language>
+			<language tag="en-GB">language/en-GB/en-GB.com_emundus.sys.ini</language>
+		</languages>
+
 		<files folder="admin">
 			<folder>assets</folder>
 			<folder>controllers</folder>
+			<folder>elements</folder>
+			<folder>help</folder>
 			<folder>helpers</folder>
 			<folder>language</folder>
 			<folder>models</folder>
+			<folder>sql</folder>
 			<folder>tables</folder>
 			<folder>views</folder>
 			<file>access.xml</file>
 			<file>config.xml</file>
 			<file>controller.php</file>
 			<file>emundus.php</file>
-			<file>emundus.xml</file>
 			<file>index.html</file>
-			<file>router.php</file>
+			<file>logo.png</file>
+			<file>script.com_emundus.php</file>
+			<file>toolbar.emundus.php</file>
 		</files>
-
-		<languages folder="language">
-			<language tag="fr-FR">fr-FR.com_emundus.ini</language>
-			<language tag="en-GB">en-GB.com_emundus.ini</language>
-		</languages>
 	</administration>
 
-	<!-- START UPDATESERVERS
-	<updateservers>
-		<server type="collection" name="eMundus61">http://emundus.fr/update/emundus61/package_list.xml</server>
-	</updateservers>
-	-->
+	<install>
+		<sql>
+			<file charset="utf8" driver="mysqli">sql/install.mysqli.uft8.sql</file>
+		</sql>
+	</install>
 
+	<uninstall>
+		<sql>
+			<file charset="utf8" driver="mysqli">sql/uninstall.mysqli.uft8.sql</file>
+		</sql>
+	</uninstall>
 </extension>

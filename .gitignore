@@ -89,6 +89,8 @@ components/com_fabrik/views/details/tmpl/celsa/*
 ## media/com_emundus_onboard/
 ## media/mod_emundus_dashboard_vue/
 /modules/mod_emundus_dashboard_vue/node_modules/
+/build
+/node_modules
 
 
 /components/node_modules/

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension type="package" version="4" method="upgrade">
+    <name>Tchooz Package</name>
+    <packagename>emundus</packagename>
+    <version>1.36.0</version>
+    <url>https://emundus.fr</url>
+    <creationDate>April 2023</creationDate>
+    <copyright>Copyright (C) 2018-2023 eMundus - All rights reserved.</copyright>
+    <license>GNU, GPLv3</license>
+    <author>eMundus</author>
+    <packager>eMundus</packager>
+    <packagerurl>https://emundus.fr</packagerurl>
+    <description>Tchooz Package</description>
+    <!--<updateservers>
+        <server type="package" name="Fabrik">http://skurvishenterprises.com/fabrik/update/fabrik4/pkg_fabrik.xml</server>
+    </updateservers>-->
+    <files>
+        <file id="com_emundus" type="component">com_emundus_2.0.0.zip</file>
+        <file id="emundus" type="library">lib_emundus_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_announcements" type="module">mod_emundus_announcements_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_applications" type="module">mod_emundus_applications_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_banner" type="module">mod_emundus_banner_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_book_interview" type="module">mod_emundus_book_interview_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_calendar_add" type="module">mod_emundus_calendar_add_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_calendar_create_timeslots" type="module">mod_emundus_calendar_create_timeslots_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_campaign" type="module">mod_emundus_campaign_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_campaign_dropfiles" type="module">mod_emundus_campaign_dropfiles_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_cas" type="module">mod_emundus_cas_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_category_search" type="module">mod_emundus_category_search_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_checklist" type="module">mod_emundus_checklist_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_cifre_offers" type="module">mod_emundus_cifre_offers_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_cifre_suggestions" type="module">mod_emundus_cifre_suggestions_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_custom" type="module">mod_emundus_custom_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_dashboard_vue" type="module">mod_emundus_dashboard_vue_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_eb_googlemap" type="module">mod_emundus_eb_googlemap_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_favorites" type="module">mod_emundus_favorites_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_footer" type="module">mod_emundus_footer_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_graphs" type="module">mod_emundus_graphs_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_help" type="module">mod_emundus_help_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_internet_explorer" type="module">mod_emundus_internet_explorer_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_message_notification" type="module">mod_emundus_message_notification_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_messenger_notifications" type="module">mod_emundus_messenger_notifications_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_payment" type="module">mod_emundus_payment_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_qcm" type="module">mod_emundus_qcm_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_query_builder" type="module">mod_emundus_query_builder_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_register" type="module">mod_emundus_register_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_rsst_signalement_list" type="module">mod_emundus_rsst_signalement_list_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_send_application" type="module">mod_emundus_send_application_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_stat" type="module">mod_emundus_stat_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_stat_filter" type="module">mod_emundus_stat_filter_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_switch_profile" type="module">mod_emundus_switch_profile_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_tutorial" type="module">mod_emundus_tutorial_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_update" type="module">mod_emundus_update_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_user_dropdown" type="module">mod_emundus_user_dropdown_2.0.0.zip</file>
+        <file client="site" id="mod_emundus_yousign_embed" type="module">mod_emundus_yousign_embed_2.0.0.zip</file>
+        <file client="site" id="mod_emundusflow" type="module">mod_emundusflow_2.0.0.zip</file>
+        <file client="site" id="mod_emundusmenu" type="module">mod_emundusmenu_2.0.0.zip</file>
+        <file client="site" id="mod_emunduspanel" type="module">mod_emunduspanel_2.0.0.zip</file>
+        <file client="site" id="mod_emunduswhosonline" type="module">mod_emunduswhosonline_2.0.0.zip</file>
+
+        <file group="authentication" id="emundus" type="plugin">plg_emundus_authentication_emundus_2.0.0.zip</file>
+        <file group="authentication" id="emundus_oauth2" type="plugin">plg_emundus_authentication_emundus_oauth2_2.0.0.zip</file>
+        <file group="authentication" id="emundus_oauth2_cci" type="plugin">plg_emundus_authentication_emundus_oauth2_cci_2.0.0.zip</file>
+
+        <file group="emundus" id="add_tag" type="plugin">plg_emundus_add_tag_2.0.0.zip</file>
+        <file group="emundus" id="aurion_sync_setup_campaigns_excelia" type="plugin">plg_emundus_aurion_sync_setup_campaigns_excelia_2.0.0.zip</file>
+        <file group="emundus" id="aurion_sync_setup_programs" type="plugin">plg_emundus_aurion_sync_setup_programs_2.0.0.zip</file>
+        <file group="emundus" id="aurion_sync_setup_teaching_unity" type="plugin">plg_emundus_aurion_sync_setup_teaching_unity_2.0.0.zip</file>
+        <file group="emundus" id="custom_event_handler" type="plugin">plg_emundus_custom_event_handler_2.0.0.zip</file>
+        <file group="emundus" id="excelia_aurion_export" type="plugin">plg_emundus_excelia_aurion_export_2.0.0.zip</file>
+        <file group="emundus" id="generate_opi_by_status" type="plugin">plg_emundus_generate_opi_by_status_2.0.0.zip</file>
+        <file group="emundus" id="hesam_tutorial_events" type="plugin">plg_emundus_hesam_tutorial_events_2.0.0.zip</file>
+        <file group="emundus" id="hopitaux_paris_auto_final_grade" type="plugin">plg_emundus_hopitaux_paris_auto_final_grade_2.0.0.zip</file>
+        <file group="emundus" id="hopitaux_paris_create_reference" type="plugin">plg_emundus_hopitaux_paris_create_reference_2.0.0.zip</file>
+        <file group="emundus" id="limit_obtained_alert" type="plugin">plg_emundus_limit_obtained_alert_2.0.0.zip</file>
+        <file group="emundus" id="referent_status" type="plugin">plg_emundus_referent_status_2.0.0.zip</file>
+        <file group="emundus" id="send_file_archive" type="plugin">plg_emundus_send_file_archive_2.0.0.zip</file>
+        <file group="emundus" id="setup_category" type="plugin">plg_emundus_setup_category_2.0.0.zip</file>
+        <file group="emundus" id="sync_file" type="plugin">plg_emundus_sync_file_2.0.0.zip</file>
+
+        <file group="fabrik_cron" id="emundusapogee" type="plugin">plg_emundus_fabrik_cron_emundusapogee_2.0.0.zip</file>
+        <file group="fabrik_cron" id="emunduscampaignstartcall" type="plugin">plg_emundus_fabrik_cron_emunduscampaignstartcall_2.0.0.zip</file>
+        <file group="fabrik_cron" id="emunduscriteriaeval" type="plugin">plg_emundus_fabrik_cron_emunduscriteriaeval_2.0.0.zip</file>
+        <file group="fabrik_cron" id="emundusehespsiscole" type="plugin">plg_emundus_fabrik_cron_emundusehespsiscole_2.0.0.zip</file>
+        <file group="fabrik_cron" id="emundusevaluatorrecall" type="plugin">plg_emundus_fabrik_cron_emundusevaluatorrecall_2.0.0.zip</file>
+        <file group="fabrik_cron" id="emundusexportpdf" type="plugin">plg_emundus_fabrik_cron_emundusexportpdf_2.0.0.zip</file>
+        <file group="fabrik_cron" id="emundusglobalrecall" type="plugin">plg_emundus_fabrik_cron_emundusglobalrecall_2.0.0.zip</file>
+        <file group="fabrik_cron" id="emundushesamautounpublish" type="plugin">plg_emundus_fabrik_cron_emundushesamautounpublish_2.0.0.zip</file>
+        <file group="fabrik_cron" id="emundushesamrecap" type="plugin">plg_emundus_fabrik_cron_emundushesamrecap_2.0.0.zip</file>
+        <file group="fabrik_cron" id="emundusmessengernotify" type="plugin">plg_emundus_fabrik_cron_emundusmessengernotify_2.0.0.zip</file>
+        <file group="fabrik_cron" id="emundusnantesscholargpush" type="plugin">plg_emundus_fabrik_cron_emundusnantesscholargpush_2.0.0.zip</file>
+        <file group="fabrik_cron" id="emundusrecall" type="plugin">plg_emundus_fabrik_cron_emundusrecall_2.0.0.zip</file>
+        <file group="fabrik_cron" id="emundusrecallmissingdoc" type="plugin">plg_emundus_fabrik_cron_emundusrecallmissingdoc_2.0.0.zip</file>
+        <file group="fabrik_cron" id="emundusreferentrecall" type="plugin">plg_emundus_fabrik_cron_emundusreferentrecall_2.0.0.zip</file>
+        <file group="fabrik_cron" id="evaluatorwithtagsrecall" type="plugin">plg_emundus_fabrik_cron_evaluatorwithtagsrecall_2.0.0.zip</file>
+
+        <file group="fabrik_element" id="emundus_fileupload" type="plugin">plg_emundus_fabrik_element_emundus_fileupload_2.0.0.zip</file>
+        <file group="fabrik_element" id="emundusreferent" type="plugin">plg_emundus_fabrik_element_emundusreferent_2.0.0.zip</file>
+
+        <file group="fabrik_form" id="emundusassigntoevaluator" type="plugin">plg_emundus_fabrik_form_emundusassigntoevaluator_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusassigntogroup" type="plugin">plg_emundus_fabrik_form_emundusassigntogroup_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusassigntoinstitution" type="plugin">plg_emundus_fabrik_form_emundusassigntoinstitution_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusassigntousers" type="plugin">plg_emundus_fabrik_form_emundusassigntousers_2.0.0.zip</file>
+        <file group="fabrik_form" id="emunduscampaign" type="plugin">plg_emundus_fabrik_form_emunduscampaign_2.0.0.zip</file>
+        <file group="fabrik_form" id="emunduscampaigncheck" type="plugin">plg_emundus_fabrik_form_emunduscampaigncheck_2.0.0.zip</file>
+        <file group="fabrik_form" id="emunduscompletefilestatuschange" type="plugin">plg_emundus_fabrik_form_emunduscompletefilestatuschange_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusconfirmpost" type="plugin">plg_emundus_fabrik_form_emundusconfirmpost_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusconfirmpostbyelement" type="plugin">plg_emundus_fabrik_form_emundusconfirmpostbyelement_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusconfirmpostehesp" type="plugin">plg_emundus_fabrik_form_emundusconfirmpostehesp_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusconfirmpostgkqcm" type="plugin">plg_emundus_fabrik_form_emundusconfirmpostgkqcm_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusconfirmrgpd" type="plugin">plg_emundus_fabrik_form_emundusconfirmrgpd_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusdocusign" type="plugin">plg_emundus_fabrik_form_emundusdocusign_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusduplicatedata" type="plugin">plg_emundus_fabrik_form_emundusduplicatedata_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusencryptdatas" type="plugin">plg_emundus_fabrik_form_emundusencryptdatas_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusexpertagreement" type="plugin">plg_emundus_fabrik_form_emundusexpertagreement_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusfinalgrade" type="plugin">plg_emundus_fabrik_form_emundusfinalgrade_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundushikashopaddtocart" type="plugin">plg_emundus_fabrik_form_emundushikashopaddtocart_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusimportcsv" type="plugin">plg_emundus_fabrik_form_emundusimportcsv_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusisapplicationsent" type="plugin">plg_emundus_fabrik_form_emundusisapplicationsent_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusisevaluatedbyme" type="plugin">plg_emundus_fabrik_form_emundusisevaluatedbyme_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusisevaluationconfirmed" type="plugin">plg_emundus_fabrik_form_emundusisevaluationconfirmed_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusisqcmcomplete" type="plugin">plg_emundus_fabrik_form_emundusisqcmcomplete_2.0.0.zip</file>
+        <file group="fabrik_form" id="emunduspushfiletoapi" type="plugin">plg_emundus_fabrik_form_emunduspushfiletoapi_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusredirect" type="plugin">plg_emundus_fabrik_form_emundusredirect_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusreferentletter" type="plugin">plg_emundus_fabrik_form_emundusreferentletter_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusreferentletterhopitauxparis" type="plugin">plg_emundus_fabrik_form_emundusreferentletterhopitauxparis_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusrequestrgpd" type="plugin">plg_emundus_fabrik_form_emundusrequestrgpd_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusrgpd" type="plugin">plg_emundus_fabrik_form_emundusrgpd_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundussendemail" type="plugin">plg_emundus_fabrik_form_emundussendemail_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundussetprofile" type="plugin">plg_emundus_fabrik_form_emundussetprofile_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundussetprofilebyelement" type="plugin">plg_emundus_fabrik_form_emundussetprofilebyelement_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundussetstatus" type="plugin">plg_emundus_fabrik_form_emundussetstatus_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundustriggers" type="plugin">plg_emundus_fabrik_form_emundustriggers_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusupdatepdf" type="plugin">plg_emundus_fabrik_form_emundusupdatepdf_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusupdatestatusonbeforeload" type="plugin">plg_emundus_fabrik_form_emundusupdatestatusonbeforeload_2.0.0.zip</file>
+        <file group="fabrik_form" id="emundusyousign" type="plugin">plg_emundus_fabrik_form_emundusyousign_2.0.0.zip</file>
+        <file group="fabrik_form" id="emunduszoommeeting" type="plugin">plg_emundus_fabrik_form_emunduszoommeeting_2.0.0.zip</file>
+
+        <file group="hikashop" id="emundus_hikashop" type="plugin">plg_emundus_hikashop_emundus_hikashop_2.0.0.zip</file>
+        <file group="hikashop" id="emundusprice" type="plugin">plg_emundus_hikashop_emundusprice_2.0.0.zip</file>
+
+        <file group="search" id="emundus" type="plugin">plg_emundus_search_emundus_2.0.0.zip</file>
+
+        <file group="system" id="emundus_ametys" type="plugin">plg_emundus_system_emundus_ametys_2.0.0.zip</file>
+        <file group="system" id="emundus_block_user" type="plugin">plg_emundus_system_emundus_block_user_2.0.0.zip</file>
+        <file group="system" id="emundus_caslogin" type="plugin">plg_emundus_system_emundus_caslogin_2.0.0.zip</file>
+        <file group="system" id="emundus_conditional_redirect" type="plugin">plg_emundus_system_emundus_conditional_redirect_2.0.0.zip</file>
+        <file group="system" id="emundus_period" type="plugin">plg_emundus_system_emundus_period_2.0.0.zip</file>
+        <file group="system" id="emundusregistrationredirect" type="plugin">plg_emundus_system_emundusregistrationredirect_2.0.0.zip</file>
+        <file group="system" id="emunduswaitingroom" type="plugin">plg_emundus_system_emunduswaitingroom_2.0.0.zip</file>
+
+        <file group="user" id="emundus" type="plugin">plg_emundus_user_emundus_2.0.0.zip</file>
+        <file group="user" id="emundus_ambassade_baudin" type="plugin">plg_emundus_user_emundus_ambassade_baudin_2.0.0.zip</file>
+        <file group="user" id="emundus_ametys" type="plugin">plg_emundus_user_emundus_ametys_2.0.0.zip</file>
+        <file group="user" id="emundus_assign_to_files" type="plugin">plg_emundus_user_emundus_assign_to_files_2.0.0.zip</file>
+        <file group="user" id="emundus_claroline" type="plugin">plg_emundus_user_emundus_claroline_2.0.0.zip</file>
+        <file group="user" id="emundus_password_update_email" type="plugin">plg_emundus_user_emundus_password_update_email_2.0.0.zip</file>
+        <file group="user" id="emundus_profile" type="plugin">plg_emundus_user_emundus_profile_2.0.0.zip</file>
+        <file group="user" id="emundus_registration_email" type="plugin">plg_emundus_user_emundus_registration_email_2.0.0.zip</file>
+        <file group="user" id="emundus_su" type="plugin">plg_emundus_user_emundus_su_2.0.0.zip</file>
+        <file group="user" id="emundus_su_csc" type="plugin">plg_emundus_user_emundus_su_csc_2.0.0.zip</file>
+        <file group="user" id="emundus_su_emplois" type="plugin">plg_emundus_user_emundus_su_emplois_2.0.0.zip</file>
+        <file group="user" id="emundus_su_forminnov" type="plugin">plg_emundus_user_emundus_su_forminnov_2.0.0.zip</file>
+        <file group="user" id="emundus_su_pepite" type="plugin">plg_emundus_user_emundus_su_pepite_2.0.0.zip</file>
+        <file group="user" id="emundus_su_tt_associate_user" type="plugin">plg_emundus_user_emundus_su_tt_associate_user_2.0.0.zip</file>
+        <file group="user" id="emundus_univ_poitiers" type="plugin">plg_emundus_user_emundus_univ_poitiers_2.0.0.zip</file>
+        <file group="user" id="emundus_user_recap" type="plugin">plg_emundus_user_emundus_user_recap_2.0.0.zip</file>
+        <file group="user" id="emundus_welcome_message" type="plugin">plg_emundus_user_emundus_welcome_message_2.0.0.zip</file>
+    </files>
+    <scriptfile>pkg_tchooz.manifest.class.php</scriptfile>
+</extension>
