@@ -2073,6 +2073,9 @@ class EmundusModelEvaluation extends JModelList {
 					                    $fabrikValues[$elt['id']][$fnum]['val'] = $inline;
 					                    $fabrikValues[$elt['id']][$fnum]['complex_data'] = true;
 				                    }
+				                    elseif($elt['plugin'] == 'emundus_phonenumber'){
+					                    $fabrikValues[$elt['id']][$fnum]['val'] = substr($fabrikValues[$elt['id']][$fnum]['val'], 2, strlen($fabrikValues[$elt['id']][$fnum]['val']));
+				                    }
 				                    else {
 					                    if (@$groupParams->repeat_group_button == 1 || $elt['plugin'] === 'databasejoin') {
 						                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);

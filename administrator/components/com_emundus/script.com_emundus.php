@@ -1310,7 +1310,7 @@ try {
                 EmundusHelperUpdate::addCustomEvents([['label' => 'onAfterMoveApplication', 'category' => 'Campaign']]);
             }
 
-			if (version_compare($cache_version, '1.36.0', '<') || $firstrun) {
+			if (version_compare($cache_version, '1.36.0', '<=') || $firstrun) {
 				EmundusHelperUpdate::addCustomEvents([
 					['label' => 'onBeforeEmundusRedirectToHikashopCart', 'category' => 'Hikashop'],
 					['label' => 'onBeforeApplicantEnterApplication', 'category' => 'Files'],
@@ -1576,8 +1576,12 @@ try {
 					$db->execute();
 				}
 
-                EmundusHelperUpdate::addColumn('jos_emundus_users','token','VARCHAR',50);
-                EmundusHelperUpdate::addColumn('jos_emundus_users','anonym_user','TINYINT',1);
+                EmundusHelperUpdate::installExtension('plg_fabrik_element_emundusphonenumber', 'emundus_phonenumber', '{"name":"plg_fabrik_element_emundusphonenumber","type":"plugin","creationDate":"April 2023","author":"eMundus - Thibaud Grignon","copyright":"Copyright (C) 2005-2021 Media A-Team, Inc. - All rights reserved.","authorEmail":"rob@pollen-8.co.uk","authorUrl":"www.fabrikar.com","version":"3.10","description":"PLG_ELEMENT_FIELD_DESCRIPTION","group":"","filename":"emundus_phonenumber"}', 'plugin', 1, 'fabrik_element');
+
+				EmundusHelperUpdate::addColumn('jos_emundus_users','token','VARCHAR',50);
+				EmundusHelperUpdate::addColumn('jos_emundus_users','anonym_user','TINYINT',1);
+				EmundusHelperUpdate::addColumn('data_country','flag','VARCHAR',30);
+				EmundusHelperUpdate::updateFlags();
             }
 
 			// Insert new translations in overrides files

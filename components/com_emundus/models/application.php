@@ -1826,9 +1826,9 @@ class EmundusModelApplication extends JModelList
 													{
                                                         $elements[$j]->content = empty($elements[$j]->eval) ? $elements[$j]->default : $r_elt;
                                                         $elt = JText::_($elements[$j]->content);
-                                                    }
-													else
-													{
+                                                    } elseif ($elements[$j]->plugin == 'emundus_phonenumber') {
+                                                        $elt = substr($r_elt, 2, strlen($r_elt));
+                                                    } else {
                                                         $elt = $r_elt;
                                                     }
 
@@ -2094,8 +2094,11 @@ class EmundusModelApplication extends JModelList
                                                     JLog::add('component/com_emundus/models/application | Error at getting emundus_fileupload for applicant ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
                                                     $elt = '';
                                                 }
+                                            } 
+											elseif ($element->plugin == 'emundus_phonenumber') {
+                                                $elt = substr($element->content, 2, strlen($element->content));
                                             }
-                                            elseif ($element->plugin == 'textarea'){
+                                            elseif ($element->plugin == 'textarea') {
 	                                            $elt = nl2br($element->content);
                                             }
 											else
@@ -2418,6 +2421,8 @@ class EmundusModelApplication extends JModelList
                                                     }
                                                 } elseif ($elements[$j]->plugin == 'yesno') {
                                                     $elt = ($r_elt == 1) ? JText::_("JYES") : JText::_("JNO");
+                                                } elseif($elements[$j]->plugin == 'emundus_phonenumber'){
+                                                    $elt = substr($r_elt, 2, strlen($r_elt));
                                                 } else {
                                                     $elt = JText::_($r_elt);
                                                 }
@@ -2598,6 +2603,8 @@ class EmundusModelApplication extends JModelList
                                                     $elt = ($r_elt == 1) ? JText::_("JYES") : JText::_("JNO");
                                                 } elseif ($elements[$j]->plugin == 'display') {
                                                     $elt = empty($elements[$j]->eval) ? $elements[$j]->default : $r_elt;
+                                                } elseif ($elements[$j]->plugin == 'emundus_phonenumber'){
+                                                    $elt = substr($r_elt, 2, strlen($r_elt));
                                                 } else {
                                                     $elt = JText::_($r_elt);
                                                 }
@@ -2799,6 +2806,8 @@ class EmundusModelApplication extends JModelList
                                                 } else {
                                                     $elt = $element->content;
                                                 }
+                                            } elseif ($element->plugin == 'emundus_phonenumber'){
+                                                $elt = substr($element->content, 2, strlen($element->content));
                                             } else {
                                                 $elt = JText::_($element->content);
                                             }
@@ -5249,6 +5258,11 @@ class EmundusModelApplication extends JModelList
                     break;
                 case 'internalid':
                     break;
+
+                case 'emundus_phonenumber':
+                    $elt = substr($value, 2, strlen($value));
+                    break;
+
                 default:
                     $elt = $value;
             }
