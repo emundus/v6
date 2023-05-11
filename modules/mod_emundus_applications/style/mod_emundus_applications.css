@@ -555,10 +555,6 @@ margin-top: 16px;
         justify-content: flex-start;
     }
 
-    .mod_emundus_applications__actions {
-        right: 54px;
-    }
-
     .mod_emundus_application_swal_manage_tabs_popup{
         min-width: fit-content;
     }
