@@ -42,8 +42,29 @@ class FileMaker
      */
     private $client = null;
 
+    /**
+     * @var string[]
+     */
     private static $availaibleZwForms = array('zWEB_FORMULAIRES_RECETTES', 'zWEB_FORMULAIRES_PLANNING',
         'zWEB_FORMULAIRES_PARTICIPANTS', 'zWEB_FORMULAIRES_PARTENAIRES', 'zWEB_FORMULAIRES_DEPENSES', 'zWEB_FORMULAIRES_AUDIENCE', 'zWEB_FORMULAIRES_AIDES');
+
+    private $maxAttempt = 0;
+
+    /**
+     * @return int
+     */
+    public function getMaxAttempt(): int
+    {
+        return $this->maxAttempt;
+    }
+
+    /**
+     * @param int $maxAttempt
+     */
+    public function setMaxAttempt(): void
+    {
+        ++$this->maxAttempt;
+    }
 
     /**
      * @return string[]
@@ -176,6 +197,11 @@ class FileMaker
 
             return json_decode($response->getBody());
         } catch (\Exception $e) {
+            if($e->getCode() == 401 && $this->getMaxAttempt() < 3){
+                $this->loginApi();
+                $this->get($url, $params);
+                $this->setMaxAttempt();
+            }
             JLog::add('[GET] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.file_maker');
             return $e->getMessage();
         }
@@ -185,11 +211,21 @@ class FileMaker
     {
         $response = '';
 
+
         try {
 
             $response = $query_body_in_json !== null ? $this->client->post($url, ['body' => $query_body_in_json, 'headers' => $this->getHeaders()]) : $this->client->post($url, ['headers' => $this->getHeaders()]);
+
+
             $response = json_decode($response->getBody());
+            $this->maxAttempt = 0;
         } catch (\Exception $e) {
+
+            if($e->getCode() == 401 && $this->getMaxAttempt() < 3){
+                $this->loginApi();
+                $this->post($url, $query_body_in_json);
+                $this->setMaxAttempt();
+            }
             JLog::add('[POST] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.file_maker');
             $response = $e->getMessage();
         }
@@ -205,6 +241,13 @@ class FileMaker
             $response = $this->client->patch($url, ['body' => $query_body_in_json, 'headers' => $this->getHeaders()]);
             $response = json_decode($response->getBody());
         } catch (\Exception $e) {
+
+            if($e->getCode() == 401 && $this->getMaxAttempt() < 3){
+                $this->loginApi();
+                $this->patch($url, $query_body_in_json);
+                $this->setMaxAttempt();
+            }
+
             JLog::add('[PATCH] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.file_maker');
             $response = $e->getMessage();
         }
@@ -243,7 +286,7 @@ class FileMaker
 
                 $record_response = $this->post($url, json_encode($queryBody));
 
-                var_dump($record_response);
+
                 return $record_response->response->data;
 
 
