@@ -1437,9 +1437,9 @@ class EmundusModelUsers extends JModelList {
     }
 
     public function affectToGroups($users, $groups) {
-		$affected = false;
+		$affected = 0;
 
-	    if (count($users) > 0) {
+	    if (!empty($users) && !empty($groups)) {
 		    $db = $this->getDbo();
 		    $query = $db->getQuery(true);
 
@@ -1460,6 +1460,7 @@ class EmundusModelUsers extends JModelList {
 					$affected = $db->execute();
 				} catch(Exception $e) {
 					JLog::add('Error on affecting users to groups: '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					$affected = false;
 				}
 			}
 	    }
