@@ -1113,7 +1113,7 @@ class EmundusModelCampaign extends JModelList {
                 );
 
                 $columns = array_filter($columns, function ($k) {
-                    return $k != 'id' && $k != 'date_time';
+                    return $k != 'id' && $k != 'date_time' && $k != 'pinned';
                 });
 
                 foreach ($data as $id) {
