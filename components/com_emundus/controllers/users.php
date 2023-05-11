@@ -712,6 +712,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 			if ($e_user->id == $newuser['id']) {
 				$e_user->firstname = $newuser['firstname'];
 				$e_user->lastname = $newuser['lastname'];
+				$e_user->email = $newuser['email'];
 				JFactory::getSession()->set('emundusUser', $e_user);
 			}
 		} else {
