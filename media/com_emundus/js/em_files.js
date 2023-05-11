@@ -1656,9 +1656,7 @@ $(document).ready(function() {
              * 28 : Update publication of file (publish, archive or trash)
              * 31 : Trombinoscope (Letter for a group of files)
              * 35 : Fast PDF export
-             * [FAST EMAILS]
-             * 15 : Send email to group
-             * 16 : Send email to evaluators
+             * 18 : Send email to experts
              */
 
             // IFRAME
@@ -4689,6 +4687,30 @@ $(document).ready(function() {
                     }
                 })
 
+                break;
+            case 18:
+                fnums = getUserCheckArray();
+
+                swal_popup_class = 'em-w-auto';
+                title = 'COM_EMUNDUS_ACCESS_MAIL_EXPERT';
+                html = '<div id="data" class="em-mt-32 em-w-100"><div id="email-loader" class="em-loader" style="margin: auto;"></div></div>';
+
+                $.ajax({
+                    type:'POST',
+                    url:url,
+                    data: {
+                        fnums: fnums
+                    },
+                    success: function(result) {
+                        $('#data').append(result);
+                        document.querySelector('.em-swal-confirm-button').style.opacity = '0';
+                        $('#email-loader').remove();
+                        $('#data').removeClass('em-loader');
+                    },
+                    error: function (jqXHR) {
+                        console.log(jqXHR.responseText);
+                    }
+                });
                 break;
 
             default:
