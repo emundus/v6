@@ -550,6 +550,10 @@ margin-top: 16px;
     .mod_emundus_applications___content_text {
         justify-content: flex-start;
     }
+
+    .mod_emundus_applications__actions {
+        right: 54px;
+    }
 }
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
