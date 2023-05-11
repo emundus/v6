@@ -108,4 +108,8 @@ export default {
   margin-right: auto;
 }
 
+.em-back-button em-pointer {
+  padding: 0;
+}
+
 </style>
