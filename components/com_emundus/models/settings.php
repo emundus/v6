@@ -1176,6 +1176,25 @@ class EmundusModelsettings extends JModelList {
 					}
 
 					foreach($lists as $lk => $list) {
+						if ($lk === 'campaigns') {
+							$eMConfig = JComponentHelper::getParams('com_emundus');
+							$allow_pinned_campaign = $eMConfig->get('allow_pinned_campaign', 0);
+
+							if (!$allow_pinned_campaign) {
+								foreach($list['tabs'] as $tk => $tab) {
+									if ($tab['key'] === 'campaign') {
+										foreach ($tab['actions'] as $ak => $action) {
+											if ($action['name'] === 'pin' || $action['name'] === 'unpin') {
+												unset($tab['actions'][$ak]);
+											}
+										}
+										$list['tabs'][$tk] = $tab;
+										break;
+									}
+								}
+							}
+						}
+
 						$list['title'] = JText::_($list['title']);
 
 						foreach($list['tabs'] as $tk => $tab) {

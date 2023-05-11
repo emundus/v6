@@ -906,7 +906,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
             $tab = array('status' => $result, 'msg' => JText::_('ACCESS_DENIED'));
         } else {
             $jinput = JFactory::getApplication()->input;
-            $cid = $jinput->getInt('cid');
+            $cid = $jinput->getInt('id', 0);
 
             $result = $this->m_campaign->pinCampaign($cid);
 

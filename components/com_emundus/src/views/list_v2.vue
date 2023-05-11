@@ -133,12 +133,22 @@
 										</a>
 										<div class="em-flex-row">
 											<span v-if="previewAction" class="material-icons-outlined em-pointer" @click="onClickPreview(item)">visibility</span>
+											<span v-for="action in iconActions" :key="action.name" class="em-pointer"
+											      :class="{
+															'material-icons-outlined': action.iconOutlined,
+															'material-icons': !action.iconOutlined,
+															'hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))
+														}"
+											      @click="onClickAction(action, item.id)"
+											>
+												{{ action.icon }}
+											</span>
 											<v-popover v-if="tabActionsPopover && tabActionsPopover.length > 0 && filterShowOnActions(tabActionsPopover, item).length" :popoverArrowClass="'custom-popover-arrow'">
 												<span class="tooltip-target b3 material-icons">more_vert</span>
 												<template slot="popover">
 													<ul style="list-style-type: none; margin: 0;">
 														<li v-for="action in tabActionsPopover"
-														    :key="action.action"
+														    :key="action.name"
 														    :class="{'hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))}"
 														    @click="onClickAction(action, item.id)"
 														    class="em-pointer em-p-8 em-font-weight-600"
@@ -541,7 +551,7 @@ export default {
 		},
 		tabActionsPopover() {
 			return typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.filter((action) => {
-				return !(['add', 'edit', 'preview'].includes(action.name));
+				return !(['add', 'edit', 'preview'].includes(action.name)) && !action.hasOwnProperty('icon');
 			}): [];
 		},
 		editAction() {
@@ -558,6 +568,11 @@ export default {
 			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.find((action) => {
 				return action.name === 'preview';
 			}): false;
+		},
+		iconActions() {
+			return typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.filter((action) => {
+				return !(['add', 'edit', 'preview'].includes(action.name)) && action.hasOwnProperty('icon');
+			}): [];
 		},
 		displayedItems() {
 			let items = typeof this.items[this.selectedListTab] !== 'undefined' ? this.items[this.selectedListTab] : [];
@@ -580,6 +595,9 @@ export default {
 			return columns;
 		},
     noneDiscoverTranslation() {
+			// todo: translation should be in the lists data. That way, adding a new list type would be easier,
+	    // we should just update the database data and not the code
+
       if (this.type === "campaigns") {
         if(this.currentTab.key === 'programs'){
           return this.translate('COM_EMUNDUS_ONBOARD_NOPROGRAM');
