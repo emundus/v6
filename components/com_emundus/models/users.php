@@ -1408,17 +1408,32 @@ class EmundusModelUsers extends JModelList {
 		return true;
 	}
 
-    public function getNonApplicantId($users) {
-        try {
-            $db = $this->getDbo();
-            $db->setQuery("select eu.user_id from #__emundus_users as eu left join #__emundus_setup_profiles as esp on esp.id = eu.profile WHERE esp.published != 1 and eu.user_id in (".implode(',',$users).")");
-            $res = $db->loadAssocList();
-            return $res;
+	/**
+	 * @param $users
+	 * @return array
+	 */
+    public function getNonApplicantId($users): array {
+		$ids = [];
 
-        } catch(Exception $e) {
-            error_log($e->getMessage(), 0);
-            return false;
-        }
+		if (!empty($users)) {
+			$users = !is_array($users) ? [$users] : $users;
+
+			$db = $this->getDbo();
+			$query = $db->getQuery(true);
+			$query->select('DISTINCT user_id')
+				->from('#__emundus_users_profiles')
+				->where('user_id IN ('.implode(',', $users).')')
+				->where('profile_id IN (SELECT id FROM #__emundus_setup_profiles WHERE published != 1)');
+
+			try {
+				$db->setQuery($query);
+				$ids = $db->loadAssocList();
+			} catch(Exception $e) {
+				error_log($e->getMessage(), 0);
+			}
+		}
+
+		return $ids;
     }
 
     public function affectToGroups($users, $groups) {
