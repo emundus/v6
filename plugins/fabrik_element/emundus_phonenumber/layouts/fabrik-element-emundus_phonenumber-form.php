@@ -35,7 +35,7 @@ JText::script('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
 		border-left: 0;
 	}
 
-	#validationValue
+	.check
 	{
 		opacity: 0;
 		position: absolute;
@@ -65,10 +65,13 @@ JText::script('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
 			   value="<?php echo $displayData->attributes['inputValue']; ?>" autocomplete="off"
 		>
 
-		<input id="validationValue" name="<?php echo $displayData->attributes['name'].'[is_valid]'; ?>" class="fabrikinput" type="checkbox"
-			<?php if ($displayData->attributes['mustValidate'] == '1') :?>
+		<input id="hasValidation" type="checkbox" class="check"
+			<?php if ($displayData->attributes['mustValidate']) :?>
 				checked
 			<?php endif ?>
+		>
+
+		<input id="validationValue" name="<?php echo $displayData->attributes['name'].'[is_valid]'; ?>" class="fabrikinput check" type="checkbox"
 		>
 	</div>
 

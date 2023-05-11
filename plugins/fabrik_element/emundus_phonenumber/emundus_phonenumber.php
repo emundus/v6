@@ -168,9 +168,8 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
     {
         $isValid = false;
         $value = $data['country_code'].$data['num_tel'];
-        $is_valid_JS = $data['is_valid'];
+        $is_valid_JS = $data['is_valid'] == 'on';
 
-        //var_dump($value, preg_match('/^\+\d{5,15}$/', $value), $is_valid_JS); exit;
         $minimalNumberlength = 5; // without counting '+', self-consider it's the minimal length, CAN BE CHANGED
         $maximalNumberlength = 15; // without counting '+', maximal phone number length e.164 format, NO CHANGE
 
@@ -198,12 +197,10 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
                 }
             }
         }
-        else if ($is_valid_JS && preg_match('/^\+\d+$/', $value)) // phone not mandatory but still a little validation
+        else if ($is_valid_JS && preg_match('/^\+\d*$/', $value)) // phone not mandatory but still a little validation
         {
             $isValid = true;
         }
-
-        var_dump($value, $is_valid_JS, $isValid);
         return $isValid;
     }
 

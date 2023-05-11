@@ -26,7 +26,7 @@ class ValidatorJS {
         this.defaultValue = initDefaultValue;
         this.countrySelected = this.allCountry[this.indiceCountry];
 
-        this.mustValidate = this.isValid.checked; // does he have validation ?
+        this.mustValidate = initDiv.getElementById('hasValidation').checked; // does he have validation ?
         this.isValid.checked = !this.mustValidate; // if yes, set false, if no, set true
 
         if (this.cloned) // awfull
