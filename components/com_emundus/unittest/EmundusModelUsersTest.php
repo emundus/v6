@@ -35,11 +35,13 @@ session_start();
 class EmundusModelUsersTest extends TestCase
 {
     private $m_users;
+	private $h_sample;
 
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
         $this->m_users = new EmundusModelUsers;
+	    $this->h_sample = new EmundusUnittestHelperSamples;
     }
 
 	public function testFoo()
@@ -56,28 +58,17 @@ class EmundusModelUsersTest extends TestCase
 	public function testgetNonApplicantId() {
 		$this->assertSame([], $this->m_users->getNonApplicantId(0));
 
-		$nonApplicantIds = $this->m_users->getNonApplicantId(95);
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$this->assertSame([], $this->m_users->getNonApplicantId($user_id), 'User with only applicant profile should not appear in the list of non applicant users');
+
+		$user_id = $this->h_sample->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$nonApplicantIds = $this->m_users->getNonApplicantId($user_id);
 		$user_is_not_applicant = false;
 		foreach ($nonApplicantIds as $nonApplicantId) {
-			if ($nonApplicantId['user_id'] == 95) {
+			if ($nonApplicantId['user_id'] == $user_id) {
 				$user_is_not_applicant = true;
 			}
 		}
-
-		$this->assertTrue($user_is_not_applicant);
-
-		$nonApplicantIds = $this->m_users->getNonApplicantId([95, 9999]);
-		$user95_is_not_applicant = false;
-		$user9999_is_not_applicant = false;
-		foreach ($nonApplicantIds as $nonApplicantId) {
-			if ($nonApplicantId['user_id'] == 95) {
-				$user95_is_not_applicant = true;
-			} else if ($nonApplicantId['user_id'] == 9999) {
-				$user9999_is_not_applicant = true;
-			}
-		}
-
-		$this->assertTrue($user95_is_not_applicant);
-		$this->assertFalse($user9999_is_not_applicant);
+		$this->assertTrue($user_is_not_applicant, 'Non applicant user appears in the list of non applicant users');
 	}
 }
