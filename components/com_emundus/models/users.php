@@ -1429,7 +1429,7 @@ class EmundusModelUsers extends JModelList {
 				$db->setQuery($query);
 				$ids = $db->loadAssocList();
 			} catch(Exception $e) {
-				error_log($e->getMessage(), 0);
+				JLog::add('Error on getting non-applicant users: '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -1437,30 +1437,34 @@ class EmundusModelUsers extends JModelList {
     }
 
     public function affectToGroups($users, $groups) {
-        try {
-            if (count($users) > 0) {
-                $db = $this->getDbo();
-                $str = "";
+		$affected = false;
 
-                foreach ($users as $user) {
-                    foreach ($groups as $gid) {
-                        $str .= "(".$user['user_id'].", $gid),";
-                    }
-                }
-                $str = rtrim($str, ",");
+	    if (count($users) > 0) {
+		    $db = $this->getDbo();
+		    $query = $db->getQuery(true);
 
-                $query = "insert into #__emundus_groups (`user_id`, `group_id`) values $str";
+		    $values = [];
+		    foreach ($users as $user) {
+			    foreach ($groups as $gid) {
+				    $values[] = $user['user_id'] . ", $gid";
+			    }
+		    }
 
-                $db->setQuery($query);
-                $res = $db->execute();
-                return $res;
-            } else
-                return 0;
+			if (!empty($values)) {
+				$query->insert('#__emundus_groups')
+					->columns([$db->quoteName('user_id'), $db->quoteName('group_id')])
+					->values($values);
 
-        } catch(Exception $e) {
-            error_log($e->getMessage(), 0);
-            return false;
-        }
+				try {
+					$db->setQuery($query);
+					$affected = $db->execute();
+				} catch(Exception $e) {
+					JLog::add('Error on affecting users to groups: '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				}
+			}
+	    }
+
+		return $affected;
     }
 
     public function affectToJoomlaGroups($users, $groups) {
