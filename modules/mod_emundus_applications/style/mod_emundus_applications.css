@@ -554,6 +554,10 @@ margin-top: 16px;
     .mod_emundus_applications__actions {
         right: 54px;
     }
+
+    .mod_emundus_application_swal_manage_tabs_popup{
+        min-width: fit-content;
+    }
 }
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
