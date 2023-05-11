@@ -651,7 +651,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		}
 
 		$users = array_filter($users, function ($user) {
-		    return $user !== 'em-check-all';
+		    return $user !== 'em-check-all' && is_numeric($user);
 		});
 
         $users = $m_users->getNonApplicantId($users);

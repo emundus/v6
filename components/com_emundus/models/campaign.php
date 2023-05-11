@@ -948,7 +948,7 @@ class EmundusModelCampaign extends JModelList {
                     $falang->deleteFalang($id, 'emundus_setup_campaigns','label');
                 }
 
-				if ($force_delete === true && EmundusHelperAccess::asAdministratorAccessLevel(JFactory::getUser()->id)) {
+				if ($force_delete === true) {
 					$query->delete($this->_db->quoteName('#__emundus_campaign_candidature'))
 						->where($this->_db->quoteName('campaign_id').' IN ('.implode(", ", array_values($data)).')');
 
@@ -961,6 +961,7 @@ class EmundusModelCampaign extends JModelList {
 
 					$this->_db->setQuery($query);
 					$deleted = $this->_db->execute();
+					JLog::add('User ' . JFactory::getUser()->id . ' deleted campaign(s) ' . implode(", ", array_values($data)) . ' ' . date('d/m/Y H:i:s'), JLog::INFO, 'com_emundus');
 				} else {
 					// delete only if there are no files attached to the campaign
 					$query->clear()
@@ -1112,7 +1113,7 @@ class EmundusModelCampaign extends JModelList {
                 );
 
                 $columns = array_filter($columns, function ($k) {
-                    return $k != 'id' && $k != 'date_time';
+                    return $k != 'id' && $k != 'date_time' && $k != 'pinned';
                 });
 
                 foreach ($data as $id) {

@@ -264,7 +264,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
         if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getInt('id');
-            $result = $this->m_campaign->deleteCampaign($data);
+            $result = $this->m_campaign->deleteCampaign($data, true);
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_DELETED'), 'data' => $result);
@@ -906,7 +906,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
             $tab = array('status' => $result, 'msg' => JText::_('ACCESS_DENIED'));
         } else {
             $jinput = JFactory::getApplication()->input;
-            $cid = $jinput->getInt('cid');
+            $cid = $jinput->getInt('id', 0);
 
             $result = $this->m_campaign->pinCampaign($cid);
 

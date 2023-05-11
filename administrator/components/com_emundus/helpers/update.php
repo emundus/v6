@@ -2531,4 +2531,30 @@ class EmundusHelperUpdate
 
 		return $result;
 	}
+
+	public static function updateFlags(){
+		$result = ['status' => false, 'message' => ''];
+		$db = JFactory::getDbo();
+
+		try
+		{
+			$queries = $db->splitSql(file_get_contents(JPATH_ROOT . '/administrator/components/com_emundus/sql/updates/mysql/update_flags.sql'));
+
+			foreach ($queries as $query){
+				if(!empty($query)){
+					$db->setQuery($query);
+					$db->execute();
+				}
+			}
+
+			$result['status'] = true;
+		}
+		catch (Exception $e)
+		{
+			$result['message'] = 'UPDATE FLAGS : Error : ' . $e->getMessage();
+
+		}
+
+		return $result;
+	}
 }
