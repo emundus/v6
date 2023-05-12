@@ -19,7 +19,7 @@
         </div>
 
         <div class="em-logo-box pointer em-mt-16" v-if="!logo_updating">
-          <img class="logo-settings" :src="imageLink" :srcset="'/'+imageLink"  @error="hideLogo = true">
+          <img class="logo-settings" v-if="!hideLogo" :src="imageLink" :srcset="'/'+imageLink"  @error="hideLogo = true">
           <p v-if="hideLogo">{{ translate('COM_EMUNDUS_ONBOARD_INSERT_LOGO') }}</p>
         </div>
         <div class="em-mt-16" v-if="logo_updating">

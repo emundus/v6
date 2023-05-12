@@ -1582,7 +1582,10 @@ try {
 				EmundusHelperUpdate::addColumn('jos_emundus_users','anonym_user','TINYINT',1);
 				EmundusHelperUpdate::addColumn('data_country','flag','VARCHAR',30);
 				EmundusHelperUpdate::updateFlags();
-            }
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO', 'Email envoyé à');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO', 'Email sent to', 'override', null, null, null, 'en-GB');
+			}
 
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
