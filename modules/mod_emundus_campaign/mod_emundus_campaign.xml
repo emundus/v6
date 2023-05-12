@@ -128,6 +128,7 @@
 					<field showon="mod_em_campaign_show_sort:1" type="checkboxes" name="mod_em_campaign_sort_list" label="MOD_EM_CAMPAIGN_SORT_LIST">
 						<option checked="true" value="programme">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_PROGRAMME</option>
 						<option checked="false" value="category">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_CATEGORY</option>
+						<option checked="false" value="month">MOD_EM_CAMPAIGN_GROUP_MONTH</option>
 					</field>
 
 					<field

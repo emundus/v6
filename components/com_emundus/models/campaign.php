@@ -2504,15 +2504,10 @@ class EmundusModelCampaign extends JModelList {
                         ->from($db->quoteName('#__emundus_setup_campaigns'))
                         ->where($db->quoteName('pinned') . ' = 1');
                     $db->setQuery($query);
-                    $campaign_already_pinned = $db->loadResult();
+                    $campaigns_already_pinned = $db->loadColumn();
 
-                    if (!empty($campaign_already_pinned)) {
-                        $query->clear()
-                            ->update($db->quoteName('#__emundus_setup_campaigns'))
-                            ->set($db->quoteName('pinned') . ' = 0')
-                            ->where($db->quoteName('id') . ' = ' . $db->quote($campaign_already_pinned));
-                        $db->setQuery($query);
-                        $db->execute();
+                    if (!empty($campaigns_already_pinned)) {
+	                    $this->unpinCampaign($campaigns_already_pinned);
                     }
 
                     $query->clear()
@@ -2530,6 +2525,36 @@ class EmundusModelCampaign extends JModelList {
 
         return $pinned;
     }
+
+	/**
+	 * @param $campaign_id
+	 * @return bool
+	 */
+	public function unpinCampaign($campaign_id): bool {
+		$unpinned = false;
+
+		$campaign_id = is_array($campaign_id) ? $campaign_id : array($campaign_id);
+		$campaign_id = array_filter($campaign_id, 'is_numeric');
+		$campaign_id = array_filter($campaign_id);
+
+		if (!empty($campaign_id)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->update($db->quoteName('#__emundus_setup_campaigns'))
+				->set($db->quoteName('pinned') . ' = 0')
+				->where($db->quoteName('id') . ' IN (' . implode(',', $campaign_id) . ')');
+
+			try {
+				$db->setQuery($query);
+				$unpinned = $db->execute();
+			} catch (Exception $e) {
+				JLog::add('Error setting pinned = 0 for $cid ' .  $campaign_id . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $unpinned;
+	}
 
     /**
      * Create a workflow
