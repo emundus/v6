@@ -50,6 +50,15 @@ if(sizeof($tmp_campaigns) > 0) {
             $campaigns[$campaign->prog_type][] = $campaign;
             $campaigns[$campaign->prog_type]['label'] = JText::_($campaign->prog_type);
         }
+    } elseif ($group_by == 'month') {
+        usort($tmp_campaigns, function ($a, $b) {
+            return strcmp($a->start_date, $b->start_date);
+        });
+
+        foreach ($tmp_campaigns as $campaign) {
+            $campaigns[$campaign->month][] = $campaign;
+            $campaigns[$campaign->month]['label'] = JText::_(strtoupper($campaign->month_name));
+        }
     } else {
         $campaigns ['campaigns'] = $tmp_campaigns;
     }
@@ -343,6 +352,14 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                 </a>
                             </div>
                         <?php endif; ?>
+                        <?php if ($mod_em_campaign_show_sort == 1 && $group_by == 'month') : ?>
+                            <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
+                                <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_MONTH') ?></span>
+                                <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer" onclick="deleteSort(['month'])">
+                                    <span class="material-icons-outlined">close</span>
+                                </a>
+                            </div>
+                        <?php endif; ?>
                     </div>
 
                     <!-- SORT BLOCK -->
@@ -365,6 +382,11 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                         <?php if(in_array('category',$mod_em_campaign_sort_list) && $group_by != 'category') : ?>
                             <a onclick="filterCampaigns('group_by','category')" class="em-text-neutral-900 em-pointer">
                                 <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_CATEGORY') ?>
+                            </a>
+                        <?php endif; ?>
+                        <?php if(in_array('month',$mod_em_campaign_sort_list) && $group_by != 'month') : ?>
+                            <a onclick="filterCampaigns('group_by','month')" class="em-text-neutral-900 em-pointer">
+                                <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_MONTH') ?>
                             </a>
                         <?php endif; ?>
                     </div>
