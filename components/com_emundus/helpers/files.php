@@ -2678,7 +2678,7 @@ class EmundusHelperFiles
 							break;
 
 						default:
-							$is_sef = (bool) JFactory::getApplication()->getConfig()->get('sef');
+							$is_sef = (bool) JFactory::getConfig()->get('sef');
 							if ($is_sef)
 							{
 								$item->flink = 'index.php?Itemid=' . $item->id;
