@@ -391,4 +391,28 @@ class EmundusModelCampaignTest extends TestCase
 
 		$this->assertFalse($this->m_campaign->unpinCampaign(['svsfg', 'dsgdfg', 'dsg']), 'Un tableau mal formé ne peut pas être passé en paramètre');
 	}
+
+	function testeditDocumentDropfile() {
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->insert($db->quoteName('#__dropfiles_files'))
+			->columns($db->quoteName(['title', 'ext', 'file', 'state']))
+			->values(" 'test', 'pdf', 'test.pdf', 1");
+
+		$db->setQuery($query);
+		$db->execute();
+		$document_id = $db->insertid();
+
+		$updated = $this->m_campaign->editDocumentDropfile($document_id, '');
+		$this->assertFalse($updated, 'Le nom du document ne peut pas être vide');
+
+		$too_long_name = 'testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest';
+		$updated = $this->m_campaign->editDocumentDropfile($document_id, $too_long_name);
+
+		$this->assertTrue($updated, 'Le nom du document a été mis à jour');
+
+		$updated_document = $this->m_campaign->getDropfileDocument($document_id);
+		$this->assertSame(200, strlen($updated_document->title), 'Le nom du document a été tronqué à 200 caractères');
+	}
 }

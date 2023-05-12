@@ -2077,19 +2077,28 @@ class EmundusModelCampaign extends JModelList {
      *
      * @since version 1.0
      */
-    public function editDocumentDropfile($did,$name){
-        $query = $this->_db->getQuery(true);
+    public function editDocumentDropfile($did, $name){
+		$updated = false;
 
-        try{
-            $query->update($this->_db->quoteName('#__dropfiles_files'))
-                ->set($this->_db->quoteName('title') . ' = ' . $this->_db->quote($name))
-                ->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote(($did)));
-            $this->_db->setQuery($query);
-            return $this->_db->execute();
-        }  catch (Exception $e) {
-            JLog::add('component/com_emundus/models/campaign | Cannot update the dropfile document ' . $did . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
-            return false;
-        }
+		if (!empty($did) && !empty($name)) {
+			if (strlen($name) > 200) {
+				$name = substr($name, 0, 200);
+			}
+
+			$query = $this->_db->getQuery(true);
+
+			try {
+				$query->update($this->_db->quoteName('#__dropfiles_files'))
+					->set($this->_db->quoteName('title') . ' = ' . $this->_db->quote($name))
+					->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote(($did)));
+				$this->_db->setQuery($query);
+				$updated = $this->_db->execute();
+			}  catch (Exception $e) {
+				JLog::add('component/com_emundus/models/campaign | Cannot update the dropfile document ' . $did . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $updated;
     }
 
     /**
