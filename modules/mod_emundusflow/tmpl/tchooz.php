@@ -31,7 +31,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
     .mod_emundus_flow___intro .em-h2{
         display: -webkit-box;
         overflow: hidden;
-        -webkit-line-clamp: 1;
+        -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
     }
 
@@ -85,11 +85,6 @@ $now = $dateTime->format('Y-m-d H:i:s');
                 }
             }
             ?>
-            <?php if ($show_programme==1) : ?>
-            <p class="em-programme-tag em-ml-16" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
-                <?php  echo $current_application->prog_label; ?>
-            </p>
-            <?php endif; ?>
         </div>
         <div class="em-flex-row em-flex-row-justify-end">
             <?php if ($show_back_button == 1) : ?>
@@ -111,6 +106,12 @@ $now = $dateTime->format('Y-m-d H:i:s');
             <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EMUNDUS_FLOW_END_DATE'); ?></p>
             <span class="em-ml-6" style="white-space: nowrap"><?php echo JFactory::getDate(new JDate($deadline, $site_offset))->format('d/m/Y H:i'); ?></span>
         </div>
+        <?php endif; ?>
+
+        <?php if ($show_programme==1) : ?>
+            <p class="em-programme-tag em-ml-16" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>;margin: unset">
+                <?php  echo $current_application->prog_label; ?>
+            </p>
         <?php endif; ?>
 
         <?php if($show_status == 1) : ?>
