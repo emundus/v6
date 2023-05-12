@@ -185,7 +185,12 @@ if($user->guest || in_array($e_user->profile,$app_prof))
 
     $condition = '';
     if (!empty($searchword)) {
-        $condition .= ' AND (pr.code LIKE "%"' . $db->quote($searchword) . '"%" OR ca.label LIKE "%"' . $db->quote($searchword) . '"%" OR ca.description LIKE "%"' . $db->quote($searchword) . '"%" OR ca.short_description LIKE "%"' . $db->quote($searchword) . '"%") ';
+        $condition .= ' AND (ca.label LIKE "%"' . $db->quote($searchword) . '"%" OR ca.description LIKE "%"' . $db->quote($searchword) . '"%" OR ca.short_description LIKE "%"' . $db->quote($searchword) . '"%"';
+        if($mod_em_campaign_list_show_programme == 1) {
+            $condition .= ' OR pr.code LIKE "%"' . $db->quote($searchword) . '"%"';
+        }
+        $condition .= ') ';
+
     }
 
     if (!empty($program_code))
