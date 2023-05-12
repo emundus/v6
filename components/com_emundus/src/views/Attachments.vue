@@ -676,6 +676,10 @@ export default {
 		  const currentSearch = this.search.toLowerCase();
 
 		  return typeof this.attachments !== 'undefined' && this.attachments !== null ? this.attachments.filter((attachment) => {
+			  if (attachment.upload_description === null) {
+				  attachment.upload_description = '';
+			  }
+
 			  return (attachment.upload_description.toLowerCase().includes(currentSearch) || attachment.value.toLowerCase().includes(currentSearch)) && (this.category === 'all' || attachment.category === this.category);
 		  }) : [];
 	  },

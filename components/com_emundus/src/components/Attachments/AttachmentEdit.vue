@@ -148,7 +148,7 @@ export default {
 
     this.attachmentCanBeViewed = this.attachment.can_be_viewed == "1";
     this.attachmentCanBeDeleted = this.attachment.can_be_deleted == "1";
-    this.attachmentDescription = this.attachment.upload_description;
+    this.attachmentDescription = this.attachment.upload_description != null ? this.attachment.upload_description : '';
     this.attachmentIsValidated = this.attachment.is_validated;
   },
   methods: {
@@ -174,7 +174,7 @@ export default {
 
       if (response.status.update) {
         this.attachment.modified_by = this.$store.state.user.currentUser;
-        this.attachment.upload_description = this.attachmentDescription;
+        this.attachment.upload_description = this.attachmentDescription != null ? this.attachmentDescription : '';
         this.attachment.is_validated = this.attachmentIsValidated;
         this.attachment.can_be_viewed = this.attachmentCanBeViewed;
         this.attachment.can_be_deleted = this.attachmentCanBeDeleted;
