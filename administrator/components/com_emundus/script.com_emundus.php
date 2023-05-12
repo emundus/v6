@@ -1586,6 +1586,45 @@ try {
 
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO', 'Email envoyé à');
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO', 'Email sent to', 'override', null, null, null, 'en-GB');
+
+				$query->clear()
+					->select('id,path')
+					->from($db->quoteName('#__menu'))
+					->where($db->quoteName('path') . ' IN ("toutes-les-campagnes","mes-candidatures")')
+					->andWhere($db->quoteName('menutype') . ' LIKE ' . $db->quote('applicantmenu'));
+				$db->setQuery($query);
+				$applicant_menus = $db->loadObjectList();
+
+				foreach ($applicant_menus as $menu)
+				{
+					$text  = 'All campaigns';
+					if($menu->path == 'mes-candidatures'){
+						$text = 'My applications';
+					}
+					$query->clear()
+						->select('id,value')
+						->from($db->quoteName('#__falang_content'))
+						->where($db->quoteName('reference_table') . ' LIKE ' . $db->quote('menu'))
+						->andWhere($db->quoteName('reference_field') . ' LIKE ' . $db->quote('title'))
+						->andWhere($db->quoteName('reference_id') . ' = ' . $menu->id);
+					$db->setQuery($query);
+					$translation = $db->loadObject();
+
+					if(empty($translation)){
+						$query->clear()
+							->insert($db->quoteName('#__falang_content'))
+							->columns($db->quoteName('reference_table') . ',' . $db->quoteName('reference_field') . ',' . $db->quoteName('reference_id') . ',' . $db->quoteName('value') . ',' . $db->quoteName('language_id') . ',' . $db->quoteName('published'))
+							->values($db->quote('menu') . ',' . $db->quote('title') . ',' . $menu->id . ',' . $db->quote($text) . ',' . $db->quote(1) . ',' . $db->quote(1));
+					} else {
+						$query->clear()
+							->update($db->quoteName('#__falang_content'))
+							->set($db->quoteName('value') . ' = ' . $db->quote($text))
+							->set($db->quoteName('published') . ' = ' . $db->quote(1))
+							->where($db->quoteName('id') . ' = ' . $translation->id);
+					}
+					$db->setQuery($query);
+					$db->execute();
+				}
 			}
 
 			// Insert new translations in overrides files
