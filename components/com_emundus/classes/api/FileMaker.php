@@ -166,27 +166,7 @@ class FileMaker
 
     }
 
-    private function loginApi(): void
-    {
 
-
-        $this->setHeaders(true);
-        $login_response = $this->post("sessions");
-
-        if ($login_response->messages[0]->code == "0") {
-            $session = JFactory::getSession();
-            $session->set('file_maker_bear_token', $login_response->response->token);
-            $this->setAuth();
-            $this->setHeaders();
-
-        } else {
-
-            JLog::add('[FILE_MAKER_API_LOGIN] Failed to login due do  ' . json_encode($login_response->messages), JLog::ERROR, 'com_emundus.file_maker');
-
-        }
-
-
-    }
 
     private function get($url, $params = array())
     {
@@ -194,10 +174,11 @@ class FileMaker
             $url_params = http_build_query($params);
             $url = !empty($url_params) ? $url . '?' . $url_params : $url;
             $response = $this->client->get($url, ['headers' => $this->getHeaders()]);
-
+            $this->maxAttempt = 0;
             return json_decode($response->getBody());
         } catch (\Exception $e) {
-            if($e->getCode() == 401 && $this->getMaxAttempt() < 3){
+
+            if ($e->getCode() == 401 && $this->getMaxAttempt() < 3) {
                 $this->loginApi();
                 $this->get($url, $params);
                 $this->setMaxAttempt();
@@ -221,7 +202,7 @@ class FileMaker
             $this->maxAttempt = 0;
         } catch (\Exception $e) {
 
-            if($e->getCode() == 401 && $this->getMaxAttempt() < 3){
+            if ($e->getCode() == 401 && $this->getMaxAttempt() < 3) {
                 $this->loginApi();
                 $this->post($url, $query_body_in_json);
                 $this->setMaxAttempt();
@@ -233,22 +214,50 @@ class FileMaker
         return $response;
     }
 
+
+
+
+
     private function patch($url, $query_body_in_json)
     {
         $response = '';
 
         try {
             $response = $this->client->patch($url, ['body' => $query_body_in_json, 'headers' => $this->getHeaders()]);
+            $this->maxAttempt = 0;
             $response = json_decode($response->getBody());
         } catch (\Exception $e) {
 
-            if($e->getCode() == 401 && $this->getMaxAttempt() < 3){
+            if ($e->getCode() == 401 && $this->getMaxAttempt() < 3) {
                 $this->loginApi();
                 $this->patch($url, $query_body_in_json);
                 $this->setMaxAttempt();
             }
 
             JLog::add('[PATCH] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.file_maker');
+            $response = $e->getMessage();
+        }
+
+        return $response;
+    }
+
+    private function delete($url)
+    {
+        $response = '';
+
+        try {
+
+            $response = $this->client->delete($url);
+            $response = json_decode($response->getBody());
+            $this->maxAttempt = 0;
+        } catch (\Exception $e) {
+
+            if ($e->getCode() == 401 && $this->getMaxAttempt() < 3) {
+                $this->loginApi();
+                $this->delete($url);
+                $this->setMaxAttempt();
+            }
+            JLog::add('[DELETE] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.file_maker');
             $response = $e->getMessage();
         }
 
@@ -266,9 +275,42 @@ class FileMaker
         }
         $records_response = $this->get($url);
 
-        $records = $records_response->response->data;
+        $records = $records_response->response;
 
         return $records;
+    }
+
+    private function loginApi(): void
+    {
+
+
+        $this->setHeaders(true);
+        $login_response = $this->post("sessions");
+
+        if ($login_response->messages[0]->code == "0") {
+            $session = JFactory::getSession();
+            $session->set('file_maker_bear_token', $login_response->response->token);
+            $this->setAuth();
+            $this->setHeaders();
+
+        } else {
+
+            JLog::add('[FILE_MAKER_API_LOGIN] Failed to login due do  ' . json_encode($login_response->messages), JLog::ERROR, 'com_emundus.file_maker');
+
+        }
+
+
+    }
+
+    private function logoutApi()
+    {
+
+        $session = JFactory::getSession();
+
+        $logout_response = $this->delete("sessions/".$session->get('file_maker_bear_token'));
+        $session->set('file_maker_bear_token','');
+
+        return $logout_response;
     }
 
     public function findRecord($uuidConnect, $zWebFormType = null, $sort = array())
@@ -287,7 +329,7 @@ class FileMaker
                 $record_response = $this->post($url, json_encode($queryBody));
 
 
-                return $record_response->response->data;
+                return $record_response->response;
 
 
             } else {
@@ -303,6 +345,13 @@ class FileMaker
 
     }
 
+    public function createRecord($queryBody)
+    {
+        $url = "layouts/zWEB_FORMULAIRES/records";
+        $update_record_response = $this->patch($url, json_encode($queryBody));
+        return $update_record_response->response;
+    }
+
     public function updateRecord($recordId, $queryBody)
     {
 
@@ -310,13 +359,40 @@ class FileMaker
 
             $url = "layouts/zWEB_FORMULAIRES/records/" . $recordId;
             $update_record_response = $this->patch($url, json_encode($queryBody));
-            return $update_record_response->response->data;
+            return $update_record_response->response;
 
         } else {
 
             throw new Exception('Record Id could not be empty');
         }
     }
+
+    public function getMetaDatazWebFroms($zWebFormType)
+    {
+        if (in_array($zWebFormType, $this->getAvailaibleZwForms())) {
+            if (!empty($zWebFormType)) {
+
+                $url = "layouts/" . $zWebFormType;
+
+                $meta_data_response = $this->get($url);
+
+                return $meta_data_response->response;
+
+
+            } else {
+
+                JLog::add('[FILE_MAKER]  Unable to load metadata for ' . $zWebFormType, JLog::ERROR, 'com_emundus.file_maker');
+
+                return 0;
+
+            }
+        } else {
+            throw new Exception('Invalid zFORM_TYPE. It shoulbe one of ' . json_encode($this->getAvailaibleZwForms()));
+        }
+
+    }
+
+
 
 
 }
