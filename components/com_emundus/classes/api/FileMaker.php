@@ -13,6 +13,7 @@ namespace classes\api;
 use EmundusModelEmails;
 use Exception;
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Psr7\Stream;
 use JComponentHelper;
 use JFactory;
 use JLog;
@@ -167,7 +168,6 @@ class FileMaker
     }
 
 
-
     private function get($url, $params = array())
     {
         try {
@@ -197,7 +197,6 @@ class FileMaker
 
             $response = $query_body_in_json !== null ? $this->client->post($url, ['body' => $query_body_in_json, 'headers' => $this->getHeaders()]) : $this->client->post($url, ['headers' => $this->getHeaders()]);
 
-
             $response = json_decode($response->getBody());
             $this->maxAttempt = 0;
         } catch (\Exception $e) {
@@ -214,8 +213,42 @@ class FileMaker
         return $response;
     }
 
+    private function upload($url, $filePath, $fileName)
+    {
+        $response = '';
+        $auth = $this->getAuth();
+
+        try {
+
+            $file = fopen($filePath, 'r');
+
+            $body = new Stream($file);
+
+            $response = $this->client->post($url,
+                ['headers' => ['Authorization' => 'Bearer ' . $auth['bear_token'],
+                    'Content-Type' => 'multipart/form-data'],
+                    'upload' => $body,
+                    'filename' => $fileName
+                ]);
 
 
+            $response = json_decode($response->getBody());
+
+            $this->maxAttempt = 0;
+        } catch (\Exception $e) {
+
+            if ($e->getCode() == 401 && $this->getMaxAttempt() < 3) {
+                $this->loginApi();
+                $this->post($url, $filePath, $fileName);
+                $this->setMaxAttempt();
+            }
+            JLog::add('[UPLOAD] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.file_maker');
+            $response = $e->getMessage();
+        }
+        fclose($file);
+
+        return $response;
+    }
 
 
     private function patch($url, $query_body_in_json)
@@ -307,8 +340,8 @@ class FileMaker
 
         $session = JFactory::getSession();
 
-        $logout_response = $this->delete("sessions/".$session->get('file_maker_bear_token'));
-        $session->set('file_maker_bear_token','');
+        $logout_response = $this->delete("sessions/" . $session->get('file_maker_bear_token'));
+        $session->set('file_maker_bear_token', '');
 
         return $logout_response;
     }
@@ -392,7 +425,17 @@ class FileMaker
 
     }
 
+    public function uploadFile($recordId,$filePath, $fileName){
+        if(!empty($fileName) && !empty($filePath)){
 
+            $url = "layouts/zWEB_FORMULAIRES/records/" . $recordId."/containers/Participants_Fichier/1";
+            $upload_response = $this->upload($url,$filePath, $fileName);
+
+            return $upload_response->response;
+        } else {
+            throw new Exception('Filename and Filed Path can\'t be empty' );
+        }
+    }
 
 
 }
