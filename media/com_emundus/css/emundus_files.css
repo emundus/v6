@@ -859,7 +859,6 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 .g-back-office-emundus-tableau .col-md-3.side-panel {
     padding: 0;
     position: sticky;
-    height: 100vh;
     overflow: auto;
 }
 
@@ -2289,7 +2288,6 @@ label[for="em-file_to_upload"]:hover {
     padding: 11px;
 }
 
-
 @media screen and (max-width: 991px){
     .download{
         display: inline !important;
@@ -2654,6 +2652,12 @@ a.copy-0:focus {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+@media all and  (max-height: 959px) {
+    .g-back-office-emundus-tableau .col-md-3.side-panel{
+        height: 80vh;
+    }
 }
 
 @media all and (min-width: 768px) and (max-width: 959px) {
