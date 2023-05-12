@@ -1581,7 +1581,8 @@ try {
 				EmundusHelperUpdate::addColumn('jos_emundus_users','token','VARCHAR',50);
 				EmundusHelperUpdate::addColumn('jos_emundus_users','anonym_user','TINYINT',1);
 				EmundusHelperUpdate::addColumn('data_country','flag','VARCHAR',30);
-				EmundusHelperUpdate::updateFlags();
+				EmundusHelperUpdate::executeSQlFile('update_flags');
+				EmundusHelperUpdate::executeSQlFile('update_acl_ordering');
 
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO', 'Email envoyé à');
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO', 'Email sent to', 'override', null, null, null, 'en-GB');

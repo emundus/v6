@@ -2532,13 +2532,13 @@ class EmundusHelperUpdate
 		return $result;
 	}
 
-	public static function updateFlags(){
+	public static function executeSQlFile($file){
 		$result = ['status' => false, 'message' => ''];
 		$db = JFactory::getDbo();
 
 		try
 		{
-			$queries = $db->splitSql(file_get_contents(JPATH_ROOT . '/administrator/components/com_emundus/sql/updates/mysql/update_flags.sql'));
+			$queries = $db->splitSql(file_get_contents(JPATH_ROOT . '/administrator/components/com_emundus/sql/updates/mysql/'.$file.'.sql'));
 
 			foreach ($queries as $query){
 				if(!empty($query)){

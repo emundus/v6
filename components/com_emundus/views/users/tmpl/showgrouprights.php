@@ -9,6 +9,21 @@
 span:hover {
     cursor: pointer;
 }
+#em-modal-action-table thead tr th{
+	text-align: center;
+}
+#em-modal-action-table thead tr th:first-child {
+    border-top-left-radius: 8px;
+}
+#em-modal-action-table thead tr th:last-child {
+    border-top-right-radius: 8px;
+}
+#em-modal-action-table .em-actions-table-line td {
+	padding: 12px;
+}
+#em-modal-action-table .em-actions-table-line td.action{
+	text-align: center;
+}
 </style>
 
 <h3><?= JText::_('COM_EMUNDUS_GROUPS_SHOW_RIGHTS'); ?></h3>
