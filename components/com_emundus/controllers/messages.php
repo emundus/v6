@@ -801,6 +801,9 @@ class EmundusControllerMessages extends JControllerLegacy {
                     $log['email_cc'] = implode(', ',$cc_final);
                 }
                 $m_emails->logEmail($log, $fnum->fnum);
+                // Log the email in the eMundus logging system.
+                $logsParams = array('created' => [$subject]);
+                EmundusModelLogs::log($user->id, $fnum->applicant_id, $fnum->fnum, 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
             }
 
             // Due to mailtrap now limiting emails sent to fast, we add a long sleep.
@@ -843,7 +846,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 		$mail_from_sys = $config->get('mailfrom');
 		$mail_from_sys_name = $config->get('fromname');
 
-		$uids  = explode(',',$jinput->post->get('recipients', null, null));
+		$uids  = explode(',', $jinput->post->get('recipients', null, null));
 		$bcc = $jinput->post->getString('Bcc', false);
 
 		// If no mail sender info is provided, we use the system global config.
@@ -857,7 +860,6 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 		// Get additional info for the fnums such as the user email.
 		$users = $m_users->getUsersByIds($uids);
-
 		// This will be filled with the email adresses of successfully sent emails, used to give feedback to front end.
 		$sent = [];
 		$failed = [];
@@ -870,6 +872,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 		foreach ($users as $user) {
             $can_send_mail = $h_emails->assertCanSendMailToUser($user->id);
             if (!$can_send_mail) {
+	            $failed[] = $user->email;
                 continue;
             }
 
@@ -1217,7 +1220,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 	 *
 	 * @return bool
 	 */
-	function sendEmailNoFnum($email_address, $email, $post = null, $user_id = null, $attachments = [], $fnum = null) {
+	function sendEmailNoFnum($email_address, $email, $post = null, $user_id = null, $attachments = [], $fnum = null, $log_email = true) {
 
         include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
         include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
@@ -1358,7 +1361,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                 }
             }
 
-            if (!empty($user_id_to)) {
+            if (!empty($user_id_to) && $log_email) {
                 // Logs send email
                 $log = [
                     'user_id_from'  => !empty(JFactory::getUser()->id) ? JFactory::getUser()->id : 62,

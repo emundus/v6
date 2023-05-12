@@ -830,7 +830,7 @@ class EmundusModelCampaign extends JModelList {
 
             $query->select([
                 'sc.*',
-                'COUNT(cc.id) AS nb_files',
+                'COUNT(CASE cc.published WHEN 1 THEN 1 ELSE NULL END) as nb_files',
                 'sp.label AS program_label',
                 'sp.id AS program_id',
                 'sp.published AS published_prog'
@@ -931,22 +931,24 @@ class EmundusModelCampaign extends JModelList {
 		$deleted = false;
 
         if (!empty($data)) {
-	        if (!is_array($data)) {
-				$data = [$data];
-	        }
-			$query = $this->_db->getQuery(true);
-	        $falang = new EmundusModelFalang();
+			$data = !is_array($data) ? [$data] : $data;
 
-            try {
-                $dispatcher = JEventDispatcher::getInstance();
-                $dispatcher->trigger('onBeforeCampaignDelete', $data);
-                $dispatcher->trigger('callEventHandler', ['onBeforeCampaignDelete', ['campaign' => $data]]);
+	        require_once (JPATH_ROOT . '/components/com_emundus/models/falang.php');
+			$falang = new EmundusModelFalang();
+
+			$dispatcher = JEventDispatcher::getInstance();
+	        $dispatcher->trigger('onBeforeCampaignDelete', $data);
+	        $dispatcher->trigger('callEventHandler', ['onBeforeCampaignDelete', ['campaign' => $data]]);
+
+	        $query = $this->_db->getQuery(true);
+
+	        try {
 
                 foreach (array_values($data) as $id) {
                     $falang->deleteFalang($id, 'emundus_setup_campaigns','label');
                 }
 
-				if ($force_delete === true && EmundusHelperAccess::asAdministratorAccessLevel(JFactory::getUser()->id)) {
+				if ($force_delete === true) {
 					$query->delete($this->_db->quoteName('#__emundus_campaign_candidature'))
 						->where($this->_db->quoteName('campaign_id').' IN ('.implode(", ", array_values($data)).')');
 
@@ -959,6 +961,7 @@ class EmundusModelCampaign extends JModelList {
 
 					$this->_db->setQuery($query);
 					$deleted = $this->_db->execute();
+					JLog::add('User ' . JFactory::getUser()->id . ' deleted campaign(s) ' . implode(", ", array_values($data)) . ' ' . date('d/m/Y H:i:s'), JLog::INFO, 'com_emundus');
 				} else {
 					// delete only if there are no files attached to the campaign
 					$query->clear()
@@ -1102,13 +1105,15 @@ class EmundusModelCampaign extends JModelList {
         $query = $this->_db->getQuery(true);
 
         if (!empty($data)) {
+			$data = !is_array($data) ? [$data] : $data;
+
             try {
                 $columns = array_keys(
                     $this->_db->getTableColumns('#__emundus_setup_campaigns')
                 );
 
                 $columns = array_filter($columns, function ($k) {
-                    return $k != 'id' && $k != 'date_time';
+                    return $k != 'id' && $k != 'date_time' && $k != 'pinned';
                 });
 
                 foreach ($data as $id) {
@@ -1174,7 +1179,7 @@ class EmundusModelCampaign extends JModelList {
         $campaign_id = 0;
 
         if (!empty($data) && !empty($data['label'])) {
-            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
+	        require_once (JPATH_ROOT . '/components/com_emundus/models/falang.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'settings.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
             $m_falang = new EmundusModelFalang;
@@ -1326,7 +1331,7 @@ class EmundusModelCampaign extends JModelList {
 
             $query = $this->_db->getQuery(true);
 
-            require_once (JPATH_SITE . '/components/com_emundus/models/falang.php');
+	        require_once (JPATH_ROOT . '/components/com_emundus/models/falang.php');
             require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
             $m_falang = new EmundusModelFalang;
@@ -1477,8 +1482,7 @@ class EmundusModelCampaign extends JModelList {
             return false;
         }
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
-
+	    require_once (JPATH_ROOT . '/components/com_emundus/models/falang.php');
         $m_falang = new EmundusModelFalang;
 
         $query = $this->_db->getQuery(true);
@@ -1738,7 +1742,7 @@ class EmundusModelCampaign extends JModelList {
                 }
 
                 try{
-                    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
+	                require_once (JPATH_ROOT . '/components/com_emundus/models/falang.php');
                     $m_falang = new EmundusModelFalang;
                     $this->_db->setQuery($query);
                     $this->_db->execute();
@@ -1796,7 +1800,7 @@ class EmundusModelCampaign extends JModelList {
         $lang = JFactory::getLanguage();
         $actualLanguage = substr($lang->getTag(), 0 , 2);
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
+	    require_once (JPATH_ROOT . '/components/com_emundus/models/falang.php');
         $m_falang = new EmundusModelFalang;
 
         $types = implode(";", array_values($types));
@@ -2500,15 +2504,10 @@ class EmundusModelCampaign extends JModelList {
                         ->from($db->quoteName('#__emundus_setup_campaigns'))
                         ->where($db->quoteName('pinned') . ' = 1');
                     $db->setQuery($query);
-                    $campaign_already_pinned = $db->loadResult();
+                    $campaigns_already_pinned = $db->loadColumn();
 
-                    if (!empty($campaign_already_pinned)) {
-                        $query->clear()
-                            ->update($db->quoteName('#__emundus_setup_campaigns'))
-                            ->set($db->quoteName('pinned') . ' = 0')
-                            ->where($db->quoteName('id') . ' = ' . $db->quote($campaign_already_pinned));
-                        $db->setQuery($query);
-                        $db->execute();
+                    if (!empty($campaigns_already_pinned)) {
+	                    $this->unpinCampaign($campaigns_already_pinned);
                     }
 
                     $query->clear()
@@ -2526,6 +2525,36 @@ class EmundusModelCampaign extends JModelList {
 
         return $pinned;
     }
+
+	/**
+	 * @param $campaign_id
+	 * @return bool
+	 */
+	public function unpinCampaign($campaign_id): bool {
+		$unpinned = false;
+
+		$campaign_id = is_array($campaign_id) ? $campaign_id : array($campaign_id);
+		$campaign_id = array_filter($campaign_id, 'is_numeric');
+		$campaign_id = array_filter($campaign_id);
+
+		if (!empty($campaign_id)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->update($db->quoteName('#__emundus_setup_campaigns'))
+				->set($db->quoteName('pinned') . ' = 0')
+				->where($db->quoteName('id') . ' IN (' . implode(',', $campaign_id) . ')');
+
+			try {
+				$db->setQuery($query);
+				$unpinned = $db->execute();
+			} catch (Exception $e) {
+				JLog::add('Error setting pinned = 0 for $cid ' .  $campaign_id . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $unpinned;
+	}
 
     /**
      * Create a workflow

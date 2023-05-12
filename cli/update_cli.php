@@ -174,8 +174,13 @@ class UpdateCli extends JApplicationCli
 
         $this->out("*--------------------*\n");
         $this->out("UPDATE Joomla " . $version . " to " . preg_split("/.sql/", end($files))[0]);
-        $this->purgeAndFetchUpdates("joomla");
-        $this->out("-> Finalise...");
+        
+        # Check if update is needed
+        if ($this->purgeAndFetchUpdates("joomla") == 1) {
+            $this->out($this->colorLog("\nJoomla purge and fetch updates failed !",'e'));
+            $this->count_fails++;
+            return;
+        }
 
         # Execute update
         $this->global_logs = $this->db->getLog();
@@ -706,13 +711,20 @@ class UpdateCli extends JApplicationCli
         // Purge all updates
         $this->out('-> Purge updates...');
         $model->purge();
+
         // Find all updates
         $this->out('-> Fetching updates...');
-        if ($comp == "joomla") {
-            $model->applyUpdateSite();
-            $model->refreshUpdates();
-        } else {
-            $updater->findUpdates(0, $cache_timeout);
+        try {
+            if ($comp == "joomla") {
+                $model->applyUpdateSite();
+                $model->refreshUpdates();
+            } else {
+                $updater->findUpdates(0, $cache_timeout);
+            }
+            return 0;
+        } catch  (Exception $e) {
+            $this->out('-> Error: ' . $e->getMessage());
+            return 1;
         }
     }
 

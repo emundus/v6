@@ -603,21 +603,11 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files = new EmundusModelFiles();
 
         $fnums_post = $jinput->getString('fnums', null);
-        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
-
-        if ($fnums_array == 'all') {
-            $fnums = $m_files->getAllFnums();
-        } else {
-            $fnums = array();
-            foreach ($fnums_array as $key => $value) {
-                $fnums[] = $value;
-            }
-        }
+	    $fnums = ($fnums_post) == 'all' ? $m_files->getAllFnums() : (array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
         $validFnums = array();
-
         foreach ($fnums as $fnum) {
-            if (EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum) && $fnum != 'em-check-all') {
+            if ($fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum)) {
                 $validFnums[] = $fnum;
             }
         }
@@ -1031,6 +1021,11 @@ class EmundusControllerFiles extends JControllerLegacy
         $profile = $jinput->getVar('profile', null);
 
         $defaultElements    = $m_files->getDefaultElements();
+        $defaultElements  =  array_map(function($value) {
+            $value->element_label = JText::_($value->element_label);
+            return $value;
+        }, $defaultElements);
+
         $elements           = $h_files->getElements($code, $camp, [], $profile);
 
         $res = array('status' => true, 'elts' => $elements, 'defaults' => $defaultElements);

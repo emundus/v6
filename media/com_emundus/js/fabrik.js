@@ -17,10 +17,12 @@
 function hideFabrikElt(elements, clearElements = false) {
     if (!Array.isArray(elements)) elements = [elements];
 
-    elements.forEach((element) => {
+    elements.forEach((element,index) => {
         if (element) {
             if (clearElements) element.clear();
             element.hide();
+        } else {
+            console.log(`hideFabrikElt: Element at index ${index} is undefined`);
         }
     });
 
@@ -38,8 +40,12 @@ function hideFabrikElt(elements, clearElements = false) {
 function showFabrikElt(elements) {
     if (!Array.isArray(elements)) elements = [elements];
 
-    elements.forEach((element) => {
-        if (element) element.show();
+    elements.forEach((element,index) => {
+        if (element) {
+            element.show();
+        } else {
+            console.log(`showFabrikElt: Element at index ${index} is undefined`);
+        }
     });
 
 }
@@ -60,7 +66,7 @@ function hideFabrikGroupByElt(elements, clearElements = false) {
 
     let form = null;
 
-    elements.forEach((element) => {
+    elements.forEach((element,index) => {
         if (element) {
             document.getElementById(`group${element.groupid}`).classList.add('fabrikHide');
 
@@ -77,7 +83,7 @@ function hideFabrikGroupByElt(elements, clearElements = false) {
                 }
             }
         } else {
-            console.log('hideFabrikGroupByElt: An element is undefined');
+            console.log(`hideFabrikGroupByElt: Element at index ${index} is undefined`);
         }
     });
 
@@ -95,11 +101,11 @@ function hideFabrikGroupByElt(elements, clearElements = false) {
 function showFabrikGroupByElt(elements) {
     if (!Array.isArray(elements)) elements = [elements];
 
-    elements.forEach((element) => {
+    elements.forEach((element,index) => {
         if (element) {
             document.getElementById(`group${element.groupid}`).classList.remove('fabrikHide');
         } else {
-            console.log('showFabrikGroupByElt: An element is undefined');
+            console.log(`showFabrikGroupByElt: Element at index ${index} is undefined`);
         }
     });
 }
@@ -117,21 +123,23 @@ function showFabrikGroupByElt(elements) {
 function hideFabrikGroup(groups, clearElements = false) {
     if (!Array.isArray(groups)) groups = [groups];
 
-    groups.forEach((group) => {
-        let selector = document.getElementById(`group${group}`);
-        if (selector) selector.classList.add('fabrikHide');
+    groups.forEach((group,index) => {
+        if (group) {
+            let selector = document.getElementById(`group${group}`);
+            if (selector) selector.classList.add('fabrikHide');
 
-        if (clearElements) {
-            let formDiv = document.querySelector(`.fabrikForm`).getAttribute('name');
-            let form = Fabrik.getBlock(formDiv);
+            if (clearElements) {
+                let formDiv = document.querySelector(`.fabrikForm`).getAttribute('name');
+                let form = Fabrik.getBlock(formDiv);
 
-            Object.values(form.elements).map((element) => {
-                if (element.groupid == group) element.clear();
-            });
+                Object.values(form.elements).map((element) => {
+                    if (element.groupid == group) element.clear();
+                });
+            }
+        } else {
+            console.log(`hideFabrikGroup: Group at index ${index} is undefined`);
         }
-
     });
-
 }
 
 /**
@@ -146,8 +154,12 @@ function hideFabrikGroup(groups, clearElements = false) {
 function showFabrikGroup(groups) {
     if (!Array.isArray(groups)) groups = [groups];
 
-    groups.forEach((group) => {
-        if (group) document.getElementById(`group${group}`).classList.remove('fabrikHide');
+    groups.forEach((group,index) => {
+        if (group) {
+            document.getElementById(`group${group}`).classList.remove('fabrikHide');
+        }  else {
+            console.log(`showFabrikGroup: Group at index ${index} is undefined`);
+        }
     });
 
 }
@@ -169,12 +181,12 @@ function defineCheckboxLimit(element, max) {
             if(!element.get('value').includes(option.value)){
                 option.disabled = true;
             }
-        })
+        });
     }
     else {
         Object.values(allCheck).forEach((option) =>{
             option.disabled = false;
-        })
+        });
     }
 }
 

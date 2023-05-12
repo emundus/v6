@@ -56,7 +56,6 @@ class EmundusViewMessage extends JViewLegacy {
 
 		    	$users = $jinput->getString('users', null);
 			    if ($users === 'all') {
-
 				    $us = $m_users->getUsers(0,0);
 				    $users = array();
 				    foreach ($us as $u) {
@@ -65,6 +64,12 @@ class EmundusViewMessage extends JViewLegacy {
 
 			    } else {
 			    	$users = (array) json_decode(stripslashes($users));
+
+					foreach ($users as $key => $value) {
+						if (!is_numeric($value)) {
+							unset($users[$key]);
+						}
+					}
 			    }
 
 			    $users = $m_users->getUsersByIds($users);

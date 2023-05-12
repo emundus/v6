@@ -1930,7 +1930,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addColumn($table,$name,$type = 'VARCHAR',$length = null,$null = 1){
+    public static function addColumn($table,$name,$type = 'VARCHAR',$length = null, $null = 1, $default = null){
         $result = ['status' => false, 'message' => ''];
 
         if (empty($table)) {
@@ -1954,6 +1954,11 @@ class EmundusHelperUpdate
                 if(!empty($length)) {
                     $query .= ' (' . $length . ')';
                 }
+
+				if ($default !== null) {
+					$query .= ' DEFAULT ' . $db->quote($default);
+				}
+
                 $query .= ' ' . $null_query;
                 $db->setQuery($query);
                 $result['status'] = $db->execute();
@@ -2527,28 +2532,29 @@ class EmundusHelperUpdate
 		return $result;
 	}
 
+	public static function executeSQlFile($file){
+		$result = ['status' => false, 'message' => ''];
+		$db = JFactory::getDbo();
 
-    public static function columnExists($column, $table) {
-        $exists = false;
+		try
+		{
+			$queries = $db->splitSql(file_get_contents(JPATH_ROOT . '/administrator/components/com_emundus/sql/updates/mysql/'.$file.'.sql'));
 
-        if (!empty($column) && !empty($table)) {
-            $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
+			foreach ($queries as $query){
+				if(!empty($query)){
+					$db->setQuery($query);
+					$db->execute();
+				}
+			}
 
-            $query->clear()
-                ->select('COLUMN_NAME')
-                ->from('INFORMATION_SCHEMA.COLUMNS')
-                ->where('TABLE_NAME = ' . $db->quote($table))
-                ->andWhere('COLUMN_NAME = ' . $db->quote($column));
+			$result['status'] = true;
+		}
+		catch (Exception $e)
+		{
+			$result['message'] = 'UPDATE FLAGS : Error : ' . $e->getMessage();
 
-            $db->setQuery($query);
-            $column = $db->loadResult();
+		}
 
-            if (!empty($column)) {
-                $exists = true;
-            }
-        }
-
-        return $exists;
-    }
+		return $result;
+	}
 }

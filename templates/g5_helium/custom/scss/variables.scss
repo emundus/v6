@@ -748,13 +748,6 @@ $font:'Inter', sans-serif;
   }
 
 
-  /* DISPLAY */
-  &.plg-display .fabrikinput {
-    height: auto !important;
-    border: none !important;
-    padding: 0 !important;
-  }
-
   /* LABEL */
   .fabrikLabel {
     @include body-14-medium;
@@ -769,7 +762,7 @@ $font:'Inter', sans-serif;
   }
 
   /* TEXTE D AIDE */
-  span:not(.badge):not([class^="material-icons"]):not(.icon-handle):not([class^="tox"]):not(.mceIcon):not(.mceText):not(.mcePathLabel):not(.mce-txt) {
+  span.fabrikElementTip{
     @include body-14;
     color: var(--neutral-600);
     display: flex;

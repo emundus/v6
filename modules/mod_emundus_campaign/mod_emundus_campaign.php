@@ -58,7 +58,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     $mod_em_campaign_list_show_programme     = $params->get('mod_em_campaign_show_programme', 1);
     $mod_em_campaign_show_programme_logo     = $params->get('mod_em_campaign_show_programme_logo', 0);
     $mod_em_campaign_show_apply_button       = $params->get('mod_em_campaign_show_apply_button', 0);
-    $mod_em_campaign_show_pinned_campaign    = $params->get('mod_em_campaign_show_pinned_campaign');
+    $mod_em_campaign_show_pinned_campaign    = $params->get('mod_em_campaign_show_pinned_campaign',1);
     $mod_em_campaign_order                   = $params->get('mod_em_campaign_orderby');
     $mod_em_campaign_order_type              = $params->get('mod_em_campaign_order_type');
     $ignored_program_code                    = $params->get('mod_em_ignored_program_code');
@@ -185,7 +185,12 @@ if($user->guest || in_array($e_user->profile,$app_prof))
 
     $condition = '';
     if (!empty($searchword)) {
-        $condition .= ' AND (pr.code LIKE "%"' . $db->quote($searchword) . '"%" OR ca.label LIKE "%"' . $db->quote($searchword) . '"%" OR ca.description LIKE "%"' . $db->quote($searchword) . '"%" OR ca.short_description LIKE "%"' . $db->quote($searchword) . '"%") ';
+        $condition .= ' AND (ca.label LIKE "%"' . $db->quote($searchword) . '"%" OR ca.short_description LIKE "%"' . $db->quote($searchword) . '"%"';
+        if($mod_em_campaign_list_show_programme == 1) {
+            $condition .= ' OR pr.code LIKE "%"' . $db->quote($searchword) . '"%"';
+        }
+        $condition .= ') ';
+
     }
 
     if (!empty($program_code))

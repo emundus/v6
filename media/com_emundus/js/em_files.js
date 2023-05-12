@@ -1656,9 +1656,7 @@ $(document).ready(function() {
              * 28 : Update publication of file (publish, archive or trash)
              * 31 : Trombinoscope (Letter for a group of files)
              * 35 : Fast PDF export
-             * [FAST EMAILS]
-             * 15 : Send email to group
-             * 16 : Send email to evaluators
+             * 18 : Send email to experts
              */
 
             // IFRAME
@@ -1926,7 +1924,7 @@ $(document).ready(function() {
                                                                                 }
 
                                                                                 if ($("#em-export").find('#'+result.defaults[d].id).length == 0) {
-                                                                                    item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + Joomla.JText._(result.defaults[d].element_label) + '</p></span></li>';
+                                                                                    item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + result.defaults[d].element_label + '</p></span></li>';
                                                                                 }
                                                                             }
                                                                             $('#em-export').append(item);
@@ -1953,7 +1951,7 @@ $(document).ready(function() {
                                                                                             for (var d in result.defaults) {
                                                                                                 if (isNaN(parseInt(d)))
                                                                                                     break;
-                                                                                                item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].element_id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + Joomla.JText._(result.defaults[d].element_label) + '</p></span></li>';
+                                                                                                item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].element_id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + result.defaults[d].element_label + '</p></span></li>';
                                                                                                 $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
                                                                                             }
                                                                                             $('#em-export').append(item);
@@ -2002,7 +2000,7 @@ $(document).ready(function() {
                                                                                                                                 for (var d in result.defaults) {
                                                                                                                                     if (isNaN(parseInt(d)))
                                                                                                                                         break;
-                                                                                                                                    item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].element_id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + Joomla.JText._(result.defaults[d].element_label) + '</p></span></li>';
+                                                                                                                                    item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].element_id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + result.defaults[d].element_label + '</p></span></li>';
                                                                                                                                     $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
                                                                                                                                 }
                                                                                                                                 $('#em-export').append(item);
@@ -2187,7 +2185,7 @@ $(document).ready(function() {
                                                                                     break;
 
                                                                                 if ($('#em-export #'+result.defaults[d].id+'-item').length == 0)
-                                                                                    item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + Joomla.JText._(result.defaults[d].element_label) + '</p></span></li>';
+                                                                                    item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + result.defaults[d].element_label + '</p></span></li>';
                                                                             }
                                                                             $('#em-export').append(item);
                                                                         }
@@ -2217,7 +2215,7 @@ $(document).ready(function() {
                                                                                             for (var d in result.defaults) {
                                                                                                 if (isNaN(parseInt(d)))
                                                                                                     break;
-                                                                                                item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].element_id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + Joomla.JText._(result.defaults[d].element_label) + '</p></span></li>';
+                                                                                                item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].element_id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + result.defaults[d].element_label + '</p></span></li>';
                                                                                                 $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
                                                                                             }
                                                                                             $('#em-export').append(item);
@@ -2264,7 +2262,7 @@ $(document).ready(function() {
                                                                                                                             for (var d in result.defaults) {
                                                                                                                                 if (isNaN(parseInt(d)))
                                                                                                                                     break;
-                                                                                                                                item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].element_id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + Joomla.JText._(result.defaults[d].element_label) + '</p></span></li>';
+                                                                                                                                item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].element_id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + result.defaults[d].element_label + '</p></span></li>';
                                                                                                                                 $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
                                                                                                                             }
                                                                                                                             $('#em-export').append(item);
@@ -2422,7 +2420,7 @@ $(document).ready(function() {
                                                                             break;
 
                                                                         if ($('#em-export #'+result.defaults[d].id+'-item').length == 0)
-                                                                            item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + Joomla.JText._(result.defaults[d].element_label) + '</p></span></li>';
+                                                                            item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + result.defaults[d].element_label + '</p></span></li>';
                                                                     }
                                                                     $('#em-export').append(item);
                                                                 }
@@ -2450,7 +2448,7 @@ $(document).ready(function() {
                                                                                     for (var d in result.defaults) {
                                                                                         if (isNaN(parseInt(d)))
                                                                                             break;
-                                                                                        item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].element_id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + Joomla.JText._(result.defaults[d].element_label) + '</p></span></li>';
+                                                                                        item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].element_id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + result.defaults[d].element_label + '</p></span></li>';
                                                                                         $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
                                                                                     }
                                                                                     $('#em-export').append(item);
@@ -2497,7 +2495,7 @@ $(document).ready(function() {
                                                                                                                     for (var d in result.defaults) {
                                                                                                                         if (isNaN(parseInt(d)))
                                                                                                                             break;
-                                                                                                                        item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].element_id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + Joomla.JText._(result.defaults[d].element_label) + '</p></span></li>';
+                                                                                                                        item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].element_id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + result.defaults[d].element_label + '</p></span></li>';
                                                                                                                         $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
                                                                                                                     }
                                                                                                                     $('#em-export').append(item);
@@ -4689,6 +4687,30 @@ $(document).ready(function() {
                     }
                 })
 
+                break;
+            case 18:
+                fnums = getUserCheckArray();
+
+                swal_popup_class = 'em-w-auto';
+                title = 'COM_EMUNDUS_ACCESS_MAIL_EXPERT';
+                html = '<div id="data" class="em-mt-32 em-w-100"><div id="email-loader" class="em-loader" style="margin: auto;"></div></div>';
+
+                $.ajax({
+                    type:'POST',
+                    url:url,
+                    data: {
+                        fnums: fnums
+                    },
+                    success: function(result) {
+                        $('#data').append(result);
+                        document.querySelector('.em-swal-confirm-button').style.opacity = '0';
+                        $('#email-loader').remove();
+                        $('#data').removeClass('em-loader');
+                    },
+                    error: function (jqXHR) {
+                        console.log(jqXHR.responseText);
+                    }
+                });
                 break;
 
             default:
