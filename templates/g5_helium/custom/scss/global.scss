@@ -6439,7 +6439,24 @@ screen and (max-height: 769px) {
     display: flex;
     flex-direction: inherit;
   }
-}
+
+  /* FORMULAIRES */
+
+  .view-form.com_fabrik.applicant-form,
+  .view-checklist.com_emundus.applicant-form,
+  .view-details.com_fabrik.applicant-form{
+
+     #g-container-main .g-container .g-grid {
+
+       .g-block:nth-child(1) {
+         order: 2;
+       }
+       .g-block:nth-child(2) {
+         order: 1;
+       }
+     }
+   }
+ }
 
 @media screen and (min-width: 480px) and (max-width: 959px) {
 
