@@ -1625,6 +1625,36 @@ try {
 					$db->setQuery($query);
 					$db->execute();
 				}
+
+				$query->clear()
+					->select($db->quoteName('params'))
+					->from($db->quoteName('#__fabrik_forms'))
+					->where($db->quoteName('id') . ' = ' . $db->quote(108));
+				$db->setQuery($query);
+				$program_form_params = $db->loadResult();
+
+				if(!empty($program_form_params)){
+					$program_form_params = json_decode($program_form_params);
+					if(!in_array('onAfterProgramCreate',$program_form_params->plugin_description))
+					{
+						$program_form_params->plugin_state[]       = "1";
+						$program_form_params->only_process_curl[]  = "onAfterProcess";
+						$program_form_params->form_php_file[]      = "-1";
+						$program_form_params->curl_code[]          = 'JPluginHelper::importPlugin(\'emundus\', \'custom_event_handler\');
+\Joomla\CMS\Factory::getApplication()->triggerEvent(\'callEventHandler\', [\'onAfterProgramCreate\', [\'formModel\' => $this->getModel(), \'data\' => $this->getProcessData()]]);';
+						$program_form_params->plugins[]            = "php";
+						$program_form_params->plugin_locations[]   = "both";
+						$program_form_params->plugin_events[]      = "new";
+						$program_form_params->plugin_description[] = "onAfterProgramCreate";
+
+						$query->clear()
+							->update($db->quoteName('#__fabrik_forms'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($program_form_params)))
+							->where($db->quoteName('id') . ' = ' . $db->quote(108));
+						$db->setQuery($query);
+						$db->execute();
+					}
+				}
 			}
 
 			// Insert new translations in overrides files
