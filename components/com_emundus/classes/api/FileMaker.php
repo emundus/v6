@@ -239,7 +239,7 @@ class FileMaker
 
             if ($e->getCode() == 401 && $this->getMaxAttempt() < 3) {
                 $this->loginApi();
-                $this->post($url, $filePath, $fileName);
+                $this->upload($url, $filePath, $fileName);
                 $this->setMaxAttempt();
             }
             JLog::add('[UPLOAD] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.file_maker');
