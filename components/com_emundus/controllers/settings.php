@@ -367,6 +367,10 @@ class EmundusControllersettings extends JControllerLegacy {
                 $target_file = $target_dir . basename('favicon.' . $ext);
 
                 if (move_uploaded_file($image["tmp_name"], $target_file)) {
+	                require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'update.php');
+
+	                EmundusHelperUpdate::updateYamlVariable('favicon', 'gantry-media://custom/favicon.' . $ext, JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
+
 	                $cache = JCache::getInstance('callback');
 	                $cache->clean(null, 'notgroup');
 

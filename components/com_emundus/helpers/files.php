@@ -3509,9 +3509,11 @@ class EmundusHelperFiles
         if (!empty($sql_code) || !empty($sql_fnum) ) {
             $query['q'] .= ' AND (' . $sql_code . ' ' . $sql_fnum . ') ';
             $query['q'] .= ' AND esc.published > 0';
-        } else if (!empty($params['programme']) && ($params['programme'][0] == "%" || empty($params['programme'][0])) || empty(array_intersect($params['programme'], array_filter($caller_params['code'])))) {
-            $query['q'] .= ' AND 1=2 ';
         }
+		// WARNING!
+		/*else if (!empty($params['programme']) && ($params['programme'][0] == "%" || empty($params['programme'][0])) || empty(array_intersect($params['programme'], array_filter($caller_params['code'])))) {
+            $query['q'] .= ' AND 1=2 ';
+        }*/
         return $query;
     }
 

@@ -117,7 +117,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     <div class="mod_emundus_campaign__content">
 
         <!-- PINNED CAMPAIGN -->
-        <?php if ($campaign_pinned) : ?>
+        <?php if ($campaign_pinned && $mod_em_campaign_show_pinned_campaign == 1) : ?>
         <h3 class="em-h3"><?php echo JText::_('MOD_EM_CAMPAIGN_PINNED_CAMPAIGN') ?></h3>
         <div class="mod_emundus_campaign__pinned_campaign em-mt-32 em-mb-24">
             <?php if(strtotime($now) > strtotime($campaign_pinned->end_date)) :  ?>
@@ -225,13 +225,13 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                         <span class="em-formation-end em-applicant-text-color"><?php echo JFactory::getDate(new JDate($campaign_pinned->formation_end, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                     </div>
                                 <?php endif; ?>
-                                <?php if ($mod_em_campaign_show_admission_start_date && $campaign_pinned->admission_start_date !== '0000-00-00 00:00:00') : ?>
+                                <?php if ($mod_em_campaign_show_admission_start_date && !empty($campaign_pinned->admission_start_date) && $campaign_pinned->admission_start_date !== '0000-00-00 00:00:00') : ?>
                                     <div class="mod_emundus_campaign__date em-flex-row">
                                         <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_START_DATE'); ?>:</p>
                                         <span class="em-formation-start em-applicant-text-color"><?php echo JFactory::getDate(new JDate($campaign_pinned->admission_start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span></div>
                                 <?php endif; ?>
 
-                                <?php if ($mod_em_campaign_show_admission_end_date && $campaign_pinned->admission_end_date !== '0000-00-00 00:00:00') : ?>
+                                <?php if ($mod_em_campaign_show_admission_end_date && !empty($campaign_pinned->admission_end_date) && $campaign_pinned->admission_end_date !== '0000-00-00 00:00:00') : ?>
                                     <div class="mod_emundus_campaign__date em-flex-row">
                                         <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_END_DATE'); ?>:</p>
                                         <span class="em-formation-end em-applicant-text-color"><?php echo JFactory::getDate(new JDate($campaign_pinned->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
@@ -444,9 +444,11 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                     <div class="em-searchbar">
                         <label for="searchword" style="display: inline-block">
                             <input name="searchword" type="text" class="form-control"
-                                   placeholder="<?php echo JText::_('MOD_EM_CAMPAIGN_SEARCH') ?>" <?php if (isset($searchword) && !empty($searchword)) {
-                                echo "value=" . htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8');
-                            }; ?>>
+                                   placeholder="<?php echo JText::_('MOD_EM_CAMPAIGN_SEARCH') ?>"
+                                    <?php if (isset($searchword) && !empty($searchword)) : ?>
+                                        value="<?= htmlspecialchars($searchword); ?>"
+                                    <?php endif; ?>
+                            >
                         </label>
                     </div>
                 <?php endif; ?>
@@ -607,13 +609,13 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                                 <span class="em-formation-end em-applicant-text-color"><?php echo JFactory::getDate(new JDate($result->formation_end, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                             </div>
                                         <?php endif; ?>
-                                        <?php if ($mod_em_campaign_show_admission_start_date && $result->admission_start_date !== '0000-00-00 00:00:00') : ?>
+                                        <?php if ($mod_em_campaign_show_admission_start_date && !empty($result->admission_start_date) && $result->admission_start_date !== '0000-00-00 00:00:00') : ?>
                                             <div class="mod_emundus_campaign__date em-flex-row">
                                                 <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_START_DATE'); ?>:</p>
                                                 <span class="em-formation-start em-applicant-text-color"><?php echo JFactory::getDate(new JDate($result->admission_start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span></div>
                                         <?php endif; ?>
 
-                                        <?php if ($mod_em_campaign_show_admission_end_date && $result->admission_end_date !== '0000-00-00 00:00:00') : ?>
+                                        <?php if ($mod_em_campaign_show_admission_end_date && !empty($result->admission_end_date) && $result->admission_end_date !== '0000-00-00 00:00:00') : ?>
                                             <div class="mod_emundus_campaign__date em-flex-row">
                                                 <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_END_DATE'); ?>:</p>
                                                 <span class="em-formation-end em-applicant-text-color"><?php echo JFactory::getDate(new JDate($result->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>

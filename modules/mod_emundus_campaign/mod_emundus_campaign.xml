@@ -66,12 +66,12 @@
 						<option value="1">JYES</option>
 					</field>
 
-					<field showon="mod_em_campaign_layout!:default_tchooz" type="list" name="mod_em_campaign_show_admission_start_date" label="MOD_EM_CAMPAIGN_SHOW_ADMISSION_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_ADMISSION_START_DATE_DESC" default="0">
+					<field type="list" name="mod_em_campaign_show_admission_start_date" label="MOD_EM_CAMPAIGN_SHOW_ADMISSION_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_ADMISSION_START_DATE_DESC" default="0">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
 
-					<field showon="mod_em_campaign_layout!:default_tchooz" type="list" name="mod_em_campaign_show_admission_end_date" label="MOD_EM_CAMPAIGN_SHOW_ADMISSION_END_DATE" description="MOD_EM_CAMPAIGN_SHOW_ADMISSION_END_DATE_DESC" default="0">
+					<field type="list" name="mod_em_campaign_show_admission_end_date" label="MOD_EM_CAMPAIGN_SHOW_ADMISSION_END_DATE" description="MOD_EM_CAMPAIGN_SHOW_ADMISSION_END_DATE_DESC" default="0">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
@@ -84,7 +84,7 @@
 
 				<fieldset name="list" label="Paramètres de la liste">
 					<field showon="mod_em_campaign_layout:default_tchooz" type="checkboxes" name="mod_em_campaign_list_sections" label="MOD_EM_CAMPAIGN_LIST_SECTIONS" description="MOD_EM_CAMPAIGN_LIST_SECTIONS_DESC">
-						<option checked="true" value="intro">MOD_EM_CAMPAIGN_LIST_SECTIONS_INTROTEXT</option>
+						<option value="intro">MOD_EM_CAMPAIGN_LIST_SECTIONS_INTROTEXT</option>
 					</field>
 
 					<field
