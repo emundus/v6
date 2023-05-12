@@ -171,7 +171,6 @@
                         <option value="">MOD_EM_CAMPAIGN_GROUP_NONE</option>
                         <option value="month">MOD_EM_CAMPAIGN_GROUP_MONTH</option>
                         <option value="program">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_PROGRAMME</option>
-						<option value="ordering">MOD_EM_CAMPAIGN_GROUP_MONTH_ORDERING</option>
 						<option value="category">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_CATEGORY</option>
                     </field>
 					<field type="list" name="mod_em_campaign_orderby" default="start_date" label="MOD_EM_CAMPAIGN_ORDER" description="MOD_EM_CAMPAIGN_ORDER_DESC">
