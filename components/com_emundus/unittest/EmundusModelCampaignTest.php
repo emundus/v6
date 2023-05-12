@@ -372,6 +372,23 @@ class EmundusModelCampaignTest extends TestCase
 		// assert new campaign is pinned
 		$campaign = $this->m_campaign->getCampaignByID($new_campaign_id);
 		$this->assertSame('1', $campaign['pinned'], 'La nouvelle campagne est mise en avant');
+
+		// on duplicate campaign, pinned is not duplicated
+		$duplicated = $this->m_campaign->duplicateCampaign($new_campaign_id);
+		$this->assertTrue($duplicated, 'La campagne a bien été dupliquée');
+
+		// get the last campaign
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select('id')
+			->from('#__emundus_setup_campaigns')
+			->order('id DESC')
+			->setLimit(1);
+		$db->setQuery($query);
+		$last_campaign_id = $db->loadResult();
+
+		$campaign = $this->m_campaign->getCampaignByID($last_campaign_id);
+		$this->assertEmpty($campaign['pinned'], 'La nouvelle campagne dupliquée n\'est pas mise en avant');
 	}
 
 	function testunpinCampaign() {
@@ -414,5 +431,17 @@ class EmundusModelCampaignTest extends TestCase
 
 		$updated_document = $this->m_campaign->getDropfileDocument($document_id);
 		$this->assertSame(200, strlen($updated_document->title), 'Le nom du document a été tronqué à 200 caractères');
+	}
+
+	function testduplicateCampaign()
+	{
+		$program = $this->m_programme->addProgram(['label' => 'Programme DUPLICATE CAMPAIGN']);
+		$campaign_id = $this->createUnitTestCampaign($program);
+
+		$duplicated = $this->m_campaign->duplicateCampaign($campaign_id);
+		$this->assertTrue($duplicated, 'La campagne a bien été dupliquée');
+
+		$duplicated = $this->m_campaign->duplicateCampaign(0);
+		$this->assertFalse($duplicated, 'La campagne 0 n\'existe pas, donc on ne peut pas la dupliquer');
 	}
 }
