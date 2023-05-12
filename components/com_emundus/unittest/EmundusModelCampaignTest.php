@@ -349,4 +349,46 @@ class EmundusModelCampaignTest extends TestCase
         $this->m_campaign->createWorkflow(9, [1], 1, null, ['programs' => [$program['programme_code']]]);
         $this->assertSame(2,  sizeof($this->m_campaign->getAllCampaignWorkflows($new_campaign_id)));
     }
+
+	function testpinCampaign() {
+		$pinned = $this->m_campaign->pinCampaign(9999);
+		$this->assertFalse($pinned, 'La campagne 9999 n\'existe pas, donc on ne peut pas la mettre en avant');
+
+		$program = $this->m_programme->addProgram(['label' => 'Programme PIN CAMPAIGN']);
+		$campaign_id = $this->createUnitTestCampaign($program);
+		$pinned = $this->m_campaign->pinCampaign($campaign_id);
+		$this->assertTrue($pinned, 'La campagne existe, on peut la mettre en avant');
+
+		$campaign = $this->m_campaign->getCampaignByID($campaign_id);
+		$this->assertSame('1', $campaign['pinned'], 'La campagne est bien mise en avant');
+
+		$new_campaign_id = $this->createUnitTestCampaign($program);
+		$pinned = $this->m_campaign->pinCampaign($new_campaign_id);
+
+		// assert old campaign is not pinned anymore
+		$campaign = $this->m_campaign->getCampaignByID($campaign_id);
+		$this->assertSame('0', $campaign['pinned'], 'La campagne n\'est plus mise en avant');
+
+		// assert new campaign is pinned
+		$campaign = $this->m_campaign->getCampaignByID($new_campaign_id);
+		$this->assertSame('1', $campaign['pinned'], 'La nouvelle campagne est mise en avant');
+	}
+
+	function testunpinCampaign() {
+		$unpinned = $this->m_campaign->unpinCampaign(0);
+		$this->assertFalse($unpinned, 'La campagne 0 n\'existe pas, donc on ne peut pas la retirer de la mise en avant');
+
+		$program = $this->m_programme->addProgram(['label' => 'Programme UNPIN CAMPAIGN']);
+		$campaign_id = $this->createUnitTestCampaign($program);
+
+		$pinned = $this->m_campaign->pinCampaign($campaign_id);
+		$unpinned = $this->m_campaign->unpinCampaign($campaign_id);
+
+		$this->assertTrue($unpinned, 'La campagne existe, on peut la retirer de la mise en avant');
+
+		$campaign = $this->m_campaign->getCampaignByID($campaign_id);
+		$this->assertSame('0', $campaign['pinned'], 'La campagne n\'est plus mise en avant');
+
+		$this->assertFalse($this->m_campaign->unpinCampaign(['svsfg', 'dsgdfg', 'dsg']), 'Un tableau mal formé ne peut pas être passé en paramètre');
+	}
 }
