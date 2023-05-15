@@ -987,6 +987,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                     $htmldata .= '</td></tr></table>';
                 }
                 $htmldata .= '<hr>';
+            } else {
+	            $htmldata .= '</td></table><hr/></header>';
             }
         } catch (Exception $e) {
             JLog::add('SQL error in emundus pdf library at query : ' . $query, JLog::ERROR, 'com_emundus');
