@@ -45,7 +45,6 @@ class EmundusModelFormbuilderTest extends TestCase
         $this->m_formbuilder = new EmundusModelFormbuilder;
         $this->m_translations = new EmundusModelTranslations;
         $this->h_sample = new EmundusUnittestHelperSamples;
-
     }
 
     public function testFoo()
@@ -329,5 +328,14 @@ class EmundusModelFormbuilderTest extends TestCase
 
 		$document = $this->m_formbuilder->getDocumentSample(1, 1);
 		$this->assertNotEmpty($document, 'Le document de test est bien renvoyé');
+	}
+
+	public function testaddFormModel()
+	{
+		$created = $this->m_formbuilder->addFormModel(0, 'Test Unitaire - ');
+		$this->assertFalse($created, 'addFormModel returns false if no form id given');
+
+		$created = $this->m_formbuilder->addFormModel(9999999, 'Test Unitaire - ');
+		$this->assertFalse($created, 'addFormModel returns false if no form does not exists');
 	}
 }

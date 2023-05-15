@@ -3592,7 +3592,9 @@ class EmundusModelFormbuilder extends JModelList {
                         $copied = $this->copyGroups($form_id_to_copy, $new_form_id, $new_list_id, $list_to_copy->db_table_name, 'Model - ');
 
                         if ($copied) {
-                            // insert form into models list
+	                        $label = !empty($label) ? $label : 'Model - ' . $form_id_to_copy . ' - ' . $new_form_id;
+
+	                        // insert form into models list
                             $db = JFactory::getDbo();
                             $query = $db->getQuery(true);
 
@@ -3946,7 +3948,7 @@ class EmundusModelFormbuilder extends JModelList {
                                 $this->translate('ELEMENT_MODEL_' . $new_group_id. '_' . $new_element_id, $labels_to_duplicate,'fabrik_elements', $new_element_id,'label');
 
                                 $query->set('label = ' . $db->quote('ELEMENT_MODEL_' . $new_group_id . '_' . $new_element_id));
-                                $query->set('published = 1');
+                                $query->set('published = ' . $element->element->published);
                                 $query->set('params = ' . $db->quote(json_encode($el_params)));
                                 $query->where('id =' . $new_element_id);
                                 $db->setQuery($query);
