@@ -3590,7 +3590,7 @@ class EmundusModelFormbuilder extends JModelList {
                     $new_list_id = $this->copyList($list_to_copy, $new_form_id);
 
                     if (!empty($new_list_id)) {
-                        $copied = $this->copyGroups($form_id_to_copy, $new_form_id, $new_list_id, $list_to_copy->db_table_name, 'Model - ');
+                        $copied = $this->copyGroups($form_id_to_copy, $new_form_id, $new_list_id, $list_to_copy->db_table_name);
 
                         if ($copied) {
 	                        $label = !empty($label) ? $label : 'Model - ' . $form_id_to_copy . ' - ' . $new_form_id;
