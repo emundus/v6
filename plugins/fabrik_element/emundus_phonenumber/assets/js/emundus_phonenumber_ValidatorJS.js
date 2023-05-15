@@ -96,11 +96,7 @@ class ValidatorJS {
 
         this.frontMessage('default'); // we consider its good everytime
 
-        if(this.mustValidate) // mandatory so we validate everytime
-        {
-            this.inputValidation(props);
-        }
-        else if(this.input.value.length !== 0) // not mandatory but valid only if numbers in it
+        if (this.mustValidate || this.input.value.length !== 0) // mandatory or not empty so we validate everytime
         {
             this.inputValidation(props);
         }
