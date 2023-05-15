@@ -724,7 +724,6 @@ export default {
 <style lang='scss'>
 #em-attachments {
   font-size: 14px;
-  width: 100%;
 
 	#em-attachment-preview {
 		width: 75%;

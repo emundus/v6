@@ -46,7 +46,7 @@
               :accept="allowedType"
           />
         </div>
-        <div class="input-group">
+        <div class="input-group" v-if="attachment.profiles && attachment.profiles.length > 0">
           <label for="can_be_viewed">{{translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED") }}</label>
           <input
               type="checkbox"
@@ -56,7 +56,7 @@
               @click="saveChanges"
           />
         </div>
-        <div class="input-group">
+        <div class="input-group" v-if="attachment.profiles && attachment.profiles.length > 0">
           <label for="can_be_deleted">{{translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED") }}</label>
           <input
               type="checkbox"
