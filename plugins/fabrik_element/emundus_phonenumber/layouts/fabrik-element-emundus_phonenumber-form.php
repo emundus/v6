@@ -24,15 +24,15 @@ JText::script('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
 		padding: 0 6px 0 6px;
 		border-bottom-right-radius: 0;
 		border-top-right-radius: 0;
-		position: absolute;
 		background: var(--neutral-100) ;
 	}
 
 	#inputValue
 	{
 		height: 46px;
-		margin-left: 4em;
 		border-left: 0;
+		border-bottom-left-radius: 0;
+		border-top-left-radius: 0;
 	}
 
 	.check
