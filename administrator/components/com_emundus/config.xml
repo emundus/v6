@@ -542,6 +542,13 @@
 			<field name="smart_agenda_ws_base_url" type="text" label="COM_EMUNDUS_SMART_AGENDA_BASE_URL_WS"/>
 		</fieldset>
 
+		<field name="spacer12" type="spacer" hr="true"/>
+		<field name="postgrest" type="note" label="COM_EMUNDUS_POSTGREST_API"/>
+		<fieldset label="COM_EMUNDUS_POSTGREST_API">
+			<field name="postgrest_api_base_url" type="text" label="COM_EMUNDUS_POSTGREST_BASE_URL"/>
+			<field name="postgrest_api_bearer_token" type="text" label="COM_EMUNDUS_POSTGREST_BEARER_TOKEN"/>
+		</fieldset>
+
 	</fieldset>
 	<fieldset
 			name="permissions"
