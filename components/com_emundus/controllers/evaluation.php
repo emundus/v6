@@ -833,7 +833,9 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
     // Function called by an Ajax script, copies a row in the evaluations table
     public function copyeval() {
-        $user = JFactory::getUser();
+	    require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
+
+	    $user = JFactory::getUser();
 
         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id))
             die (JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
@@ -930,7 +932,9 @@ class EmundusControllerEvaluation extends JControllerLegacy
     }
 
     function delevaluation(){
-        $jinput = JFactory::getApplication()->input;
+	    require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
+
+	    $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getString('fnum', null);
         $ids = $jinput->getString('ids', null);
         $ids = json_decode(stripslashes($ids));
@@ -1456,7 +1460,9 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
     // controller of get all letters
     public function getattachmentletters() {
-        /// first, get list of fnums
+	    require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
+
+	    /// first, get list of fnums
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->getRaw('fnums', null);
 
@@ -1473,7 +1479,9 @@ class EmundusControllerEvaluation extends JControllerLegacy
     }
 
     public function getmyevaluations() {
-        $current_user = JFactory::getUser();
+	    require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
+
+	    $current_user = JFactory::getUser();
         $jinput = JFactory::getApplication()->input;
         $campaign = $jinput->getInt('campaign');
         $module = $jinput->getInt('module');
@@ -1491,7 +1499,9 @@ class EmundusControllerEvaluation extends JControllerLegacy
     }
 
     public function getcampaignstoevaluate() {
-        $current_user = JFactory::getUser();
+	    require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
+
+	    $current_user = JFactory::getUser();
         $jinput = JFactory::getApplication()->input;
         $module = $jinput->getInt('module');
 
