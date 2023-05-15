@@ -53,7 +53,7 @@
 								'em-border-bottom-main-500 em-neutral-900-color ': selectedListTab === tab.key,
 							  'em-neutral-700-color em-border-bottom-neutral-300': selectedListTab !== tab.key
 							}"
-					    @click="selectedListTab = tab.key"
+					    @click="onSelectTab(tab.key)"
 					>
 						{{ translate(tab.title) }}
 					</li>
@@ -257,9 +257,14 @@ export default {
 
 				this.currentList = this.lists[this.type];
 				if (this.params.hasOwnProperty('tab')) {
-					this.selectedListTab = this.params.tab;
+					this.onSelectTab(this.params.tab);
 				} else {
-					this.selectedListTab = this.currentList.tabs[0].key;
+					const sessionTab = sessionStorage.getItem('tchooz_selected_tab/' + document.location.hostname);
+					if (sessionTab !== null && typeof this.currentList.tabs.find(tab => tab.key === sessionTab) !== 'undefined') {
+						this.onSelectTab(sessionTab)
+					} else {
+						this.onSelectTab(this.currentList.tabs[0].key)
+					}
 				}
 
 				this.loading.lists = false;
@@ -280,9 +285,14 @@ export default {
 
 					this.currentList = this.lists[this.type];
 					if (this.params.hasOwnProperty('tab')) {
-						this.selectedListTab = this.params.tab;
+						this.onSelectTab(this.params.tab);
 					} else {
-						this.selectedListTab = this.currentList.tabs[0].key;
+						const sessionTab = sessionStorage.getItem('tchooz_selected_tab/' + document.location.hostname);
+						if (sessionTab !== null && typeof this.currentList.tabs.find(tab => tab.key === sessionTab) !== 'undefined') {
+							this.onSelectTab(sessionTab)
+						} else {
+							this.onSelectTab(this.currentList.tabs[0].key)
+						}
 					}
 
 					this.loading.lists = false;
@@ -290,7 +300,6 @@ export default {
 					this.getListItems();
 				} else {
 					console.error('Error while getting onboarding lists');
-					//window.location.href = '/';
 					this.loading.lists = false;
 				}
 			});
@@ -525,6 +534,20 @@ export default {
 		onChangeFilter() {
 			// when we change a filter, we reset the pagination
 			this.getListItems(1, this.selectedListTab);
+		},
+		onSelectTab(tabKey) {
+			let selected = false;
+
+			if (this.selectedListTab !== tabKey) {
+				// check if the tab exists
+				if (typeof this.currentList.tabs.find(tab => tab.key === tabKey) !== 'undefined') {
+					this.selectedListTab = tabKey;
+					sessionStorage.setItem('tchooz_selected_tab/' + document.location.hostname, tabKey);
+					selected = true;
+				}
+			}
+
+			return selected;
 		},
 		changeViewType(viewType) {
 			this.viewType = viewType.value;
