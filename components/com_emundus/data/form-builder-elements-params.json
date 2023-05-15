@@ -446,5 +446,19 @@
       "published": true,
       "sysadmin_only": false
     }
+  ],
+  "emundus_phonenumber": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_PHONE_COUNTRY_DEFAULT_VALUE",
+      "name": "default_country",
+      "type": "databasejoin",
+      "table" : "data_country",
+      "joinKey" : "iso2",
+      "joinLabel": "label_fr",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    }
   ]
 }
