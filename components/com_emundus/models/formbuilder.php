@@ -692,19 +692,20 @@ class EmundusModelFormbuilder extends JModelList {
             $params = $this->h_fabrik->prepareFormParams();
             $params = $this->h_fabrik->prepareSubmittionPlugin($params);
 
+			$now = gmdate('Y-m-d H:i:s');
             $data = array(
                 'label' => 'FORM_' . $prid,
                 'record_in_database' => 1,
                 'error' => 'FORM_ERROR',
                 'intro' => '<p>' . 'FORM_' . $prid . '_INTRO</p>',
-                'created' => date('Y-m-d h:i:s'),
+                'created' => $now,
                 'created_by' => JFactory::getUser()->id,
                 'created_by_alias' => JFactory::getUser()->username,
-                'modified' => date('Y-m-d h:i:s'),
+                'modified' => $now,
                 'modified_by' => JFactory::getUser()->id,
                 'checked_out' => JFactory::getUser()->id,
-                'checked_out_time' => date('Y-m-d h:i:s'),
-                'publish_up' => date('Y-m-d h:i:s'),
+                'checked_out_time' => $now,
+                'publish_up' => $now,
                 'reset_button_label' => 'RESET',
                 'submit_button_label' => 'SUBMIT',
                 'form_template' => '_emundus',
