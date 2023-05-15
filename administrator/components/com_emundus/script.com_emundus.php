@@ -1655,6 +1655,28 @@ try {
 						$db->execute();
 					}
 				}
+
+				// update setup_program logo element code
+				$query->clear()
+					->select($db->quoteName('jfe.id'))
+					->from($db->quoteName('#__fabrik_elements', 'jfe'))
+					->innerJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $db->quoteName('jfe.group_id') . ' = ' . $db->quoteName('jffg.group_id'))
+					->innerJoin($db->quoteName('#__fabrik_lists', 'jfl') . ' ON ' . $db->quoteName('jfl.form_id') . ' = ' . $db->quoteName('jffg.form_id'))
+					->where('jfe.plugin = ' . $db->quote('fileupload'))
+					->andWhere('jfe.name = ' . $db->quote('logo'))
+					->andWhere('jfl.db_table_name = ' . $db->quote('jos_emundus_setup_programmes'))
+					->andWhere('jfl.label = ' . $db->quote('TABLE_SETUP_PROGRAMS'));
+
+				$db->setQuery($query);
+				$program_logo_element = $db->loadResult();
+
+				if (!empty($program_logo_element)) {
+					EmundusHelperUpdate::genericUpdateParams('#__fabrik_elements', 'id', $program_logo_element, ['fu_rename_file_code'], ['error_clear_last();
+					$new_name = $formModel->formData[\'jos_emundus_setup_programmes___code_raw\'];
+					$new_name = preg_replace(\'/[^A-Za-z0-9_\\-]/\', \'\', $new_name);
+					$new_name .= \'.\' . pathinfo($filename, PATHINFO_EXTENSION);
+					return $new_name;'], null, true);
+				}
 			}
 
 			// Insert new translations in overrides files
