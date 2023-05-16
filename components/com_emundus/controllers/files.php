@@ -1484,8 +1484,24 @@ class EmundusControllerFiles extends JControllerLegacy
                 if ($vOpt == "forms" || $vOpt == "attachment") {
                     $line .= $vOpt."(%)\t";
                 } else {
-                    $line .= '"'.preg_replace("/\r|\n|\t/", "", $vOpt).'"'."\t";
-                }
+					switch($vOpt) {
+						case 'comment':
+							$line .= JText::_('COM_EMUNDUS_COMMENT')."\t";
+							break;
+						case 'tags':
+							$line .= JText::_('COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TAGS')."\t";
+							break;
+						case 'group-assoc':
+							$line .= JText::_('COM_EMUNDUS_ASSOCIATED_GROUPS')."\t";
+							break;
+						case 'user-assoc':
+							$line .= JText::_('COM_EMUNDUS_ASSOCIATED_USERS')."\t";
+							break;
+						default:
+							$line .= '"'.preg_replace("/\r|\n|\t/", "", $vOpt).'"'."\t";
+							break;
+					}
+				}
                 $nbcol++;
             }
 
