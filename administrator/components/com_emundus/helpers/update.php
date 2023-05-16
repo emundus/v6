@@ -451,20 +451,32 @@ class EmundusHelperUpdate
      *
      * @since version 1.33.0
      */
-    public static function updateYamlVariable($key1,$value,$file,$key2 = null) {
+    public static function updateYamlVariable($key1,$value,$file,$key2 = null,$full_content = null) {
         $yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($file));
 
-        if(!empty($key2) && isset($yaml[$key1])){
-            if(isset($yaml[$key1][$key2])) {
-                $yaml[$key1][$key2] = $value;
-            }
-        } elseif (isset($yaml[$key1])){
-            $yaml[$key1] = $value;
-        } else {
-            echo ("Key " . $key1 . ' not found in file ' . $file);
-        }
+		if(!empty($full_content)){
+			$content_yaml = \Symfony\Component\Yaml\Yaml::parse($full_content);
+			$yaml = $content_yaml;
+		} else
+		{
+			if (!empty($key2) && isset($yaml[$key1]))
+			{
+				if(isset($yaml[$key1][$key2]))
+				{
+					$yaml[$key1][$key2] = $value;
+				}
+			}
+			elseif (isset($yaml[$key1]))
+			{
+				$yaml[$key1] = $value;
+			}
+			else
+			{
+				echo("Key " . $key1 . ' not found in file ' . $file);
+			}
+		}
 
-        $new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml);
+        $new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml,4,2);
 
         file_put_contents($file, $new_yaml);
     }
