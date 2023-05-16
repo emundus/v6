@@ -2171,10 +2171,8 @@ class EmundusModelApplication extends JModelList
                 $query .= ' AND ff.form_id = "' . $itemt->form_id . '"
                             ORDER BY ff.ordering';
                 try {
-
                     $this->_db->setQuery($query);
                     $groupes = $this->_db->loadObjectList();
-
                 } catch (Exception $e) {
                     JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
                     throw $e;
@@ -2197,7 +2195,8 @@ class EmundusModelApplication extends JModelList
                 }
 
                 $forms .= '</h2>';
-                /*-- Liste des groupes -- */
+
+				/*-- Liste des groupes -- */
                 foreach ($groupes as $itemg) {
 
                     $g_params = json_decode($itemg->params);
@@ -2220,7 +2219,7 @@ class EmundusModelApplication extends JModelList
                                 WHERE fe.published=1 AND
                                     fe.hidden=0 AND
                             fe.group_id = "' . $itemg->group_id . '"';
-                    if (!empty($eids) && $eids != 0) {
+                    if (!empty($eids)) {
                         $query .= ' AND  fe.id IN (' . implode(',', $eids) . ')';
                     }
 
@@ -2835,7 +2834,7 @@ class EmundusModelApplication extends JModelList
                 $forms .= '<p></p>';
             }
         }
-        $forms .= '</p></p>';
+        $forms .= '<p></p>';
 
         if($attachments) {
 			$forms .= '<div class="page-break pdf-attachments">';

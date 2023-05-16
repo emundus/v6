@@ -77,10 +77,10 @@ class EmundusHelperMenu {
 			// remove duplicates
 			$ids = [];
 			foreach ($list as $key => $item) {
-				if (in_array($item->table_id, $ids)) {
+				if (in_array($item->form_id, $ids)) {
 					unset($list[$key]);
 				} else {
-					$ids[] = $item->table_id;
+					$ids[] = $item->form_id;
 				}
 			}
 		} catch(Exception $e) {

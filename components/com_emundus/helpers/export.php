@@ -66,8 +66,8 @@ class EmundusHelperExport {
 		}
         $result = application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $options, $application_form_order, null, null, $elements);
 
-		if($result) {
-			return EMUNDUS_PATH_ABS . $sid . DS . $fnum . '_application.pdf';
+		if ($result) {
+			$result = EMUNDUS_PATH_ABS . $sid . DS . $fnum . '_application.pdf';
 		}
 
 		return $result;

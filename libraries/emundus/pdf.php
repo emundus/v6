@@ -1009,7 +1009,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             JLog::add('SQL error in emundus pdf library at query : ' . $query, JLog::ERROR, 'com_emundus');
         }
 
-        if ($form_post == 1 && (empty($form_ids) || is_null($form_ids)) && !empty($elements) && !is_null($elements)) {
+		if ($form_post == 1 && (empty($form_ids) || is_null($form_ids)) && !empty($elements) && !is_null($elements)) {
             $profile_menu = array_keys($elements);
 
             // Get form HTML
@@ -1034,7 +1034,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	        $forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order, $profile_id, null, $attachments);
         }
 
-        /*** Applicant   ***/
+		/*** Applicant   ***/
 	    $htmldata .= "
 			<style>
 					@page { margin: 130px 25px; }

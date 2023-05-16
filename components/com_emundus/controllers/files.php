@@ -1038,50 +1038,54 @@ class EmundusControllerFiles extends JControllerLegacy
      *
      */
     public function zip() {
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+		$response = ['status' => false, 'msg' => JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS')];
 
+        require_once (JPATH_SITE . '/components/com_emundus/helpers/access.php');
         $current_user = JFactory::getUser();
 
-        if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
-            die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
+        if (EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+	        $jinput = JFactory::getApplication()->input;
+	        $forms      = $jinput->getInt('forms', 0);
+	        $attachment = $jinput->getInt('attachment', 0);
+	        $assessment = $jinput->getInt('assessment', 0);
+	        $decision   = $jinput->getInt('decision', 0);
+	        $admission  = $jinput->getInt('admission', 0);
+	        $formids    = $jinput->getVar('formids', null);
+	        $attachids  = $jinput->getVar('attachids', null);
+	        $options    = $jinput->getVar('options', null);
 
-        $jinput = JFactory::getApplication()->input;
-        $forms      = $jinput->getInt('forms', 0);
-        $attachment = $jinput->getInt('attachment', 0);
-        $assessment = $jinput->getInt('assessment', 0);
-        $decision   = $jinput->getInt('decision', 0);
-        $admission  = $jinput->getInt('admission', 0);
-        $formids    = $jinput->getVar('formids', null);
-        $attachids  = $jinput->getVar('attachids', null);
-        $options    = $jinput->getVar('options', null);
+	        $m_files  = new EmundusModelFiles();
 
-        $m_files  = new EmundusModelFiles();
+	        $fnums_post = $jinput->getVar('fnums', null);
+	        $fnums_array = ($fnums_post == 'all')? 'all' :(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
-        $fnums_post = $jinput->getVar('fnums', null);
-        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
+	        if ($fnums_array == 'all') {
+		        $fnums = $m_files->getAllFnums();
+	        } else {
+		        $fnums = array();
+		        foreach ($fnums_array as $key => $value) {
+			        $fnums[] = $value;
+		        }
+	        }
 
-        if ($fnums_array == 'all') {
-            $fnums = $m_files->getAllFnums();
-        } else {
-            $fnums = array();
-            foreach ($fnums_array as $key => $value) {
-                $fnums[] = $value;
-            }
-        }
-
-        $validFnums = array();
-        foreach ($fnums as $fnum) {
-            if (EmundusHelperAccess::asAccessAction(6, 'c', $this->_user->id, $fnum))
-                $validFnums[] = $fnum;
-        }
+	        $validFnums = array();
+	        foreach ($fnums as $fnum) {
+		        if (EmundusHelperAccess::asAccessAction(6, 'c', $this->_user->id, $fnum)) {
+			        $validFnums[] = $fnum;
+		        }
+	        }
 
 
-        if (extension_loaded('zip'))
-            $name = $this->export_zip($validFnums, $forms, $attachment, $assessment, $decision, $admission, $formids, $attachids, $options);
-        else
-            $name = $this->export_zip_pcl($validFnums);
+	        if (extension_loaded('zip')) {
+		        $name = $this->export_zip($validFnums, $forms, $attachment, $assessment, $decision, $admission, $formids, $attachids, $options);
+	        } else {
+		        $name = $this->export_zip_pcl($validFnums);
+	        }
 
-        echo json_encode((object) array('status' => true, 'name' => $name));
+			$response = ['status' => true, 'name' => $name, 'msg' => ''];
+		}
+
+        echo json_encode((object) $response);
         exit();
     }
 
@@ -1951,6 +1955,7 @@ class EmundusControllerFiles extends JControllerLegacy
         }
         $start = $i;
 
+
         if (count($files_list) === 1 && !empty($files_list[0]))
 		{
 	        copy($files_list[0], JPATH_SITE . DS . 'tmp' . DS . $file);
@@ -1958,7 +1963,7 @@ class EmundusControllerFiles extends JControllerLegacy
 	        $start = $i;
 
 	        $dataresult = [
-		        'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
+		        'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachids,
 		        'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
 		        'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
 	        ];
@@ -2022,7 +2027,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $start = $i;
 
             $dataresult = [
-                'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
+	            'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachids,
                 'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
                 'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
             ];
@@ -2032,7 +2037,7 @@ class EmundusControllerFiles extends JControllerLegacy
 		{
 	        $response_status = false;
             $dataresult = [
-                'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
+	            'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachids,
                 'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
                 'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND')
             ];
@@ -2915,6 +2920,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 die("ERROR");
             }
         }
+
         return $nom;
     }
 
