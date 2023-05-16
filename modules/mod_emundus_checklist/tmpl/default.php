@@ -51,6 +51,7 @@ if (!empty($checkout_url)){
                     $cpt = $db->loadResult();
                     $class = $cpt==0?'need_missing':'need_ok';
                     $step = $index+1;
+                    $form_title = explode(' - ',$form->title)[1] ? explode(' - ',$form->title)[1] : $form->title;
                     ?>
                     <div id="mlf<?php echo $form->id; ?>"
                          class="<?php if($form->id == $menuid) echo 'active'?> mod_emundus_checklist_<?php echo $class; ?> mod_emundus_checklist___form_item">
@@ -64,7 +65,7 @@ if (!empty($checkout_url)){
                                     <span class="material-icons-outlined">done</span>
                                 <?php endif; ?>
                             </div>
-                            <a href="<?php echo $form->link ?>"><?php echo JText::_($form->title); ?></a>
+                            <a href="<?php echo $form->link ?>"><?php echo JText::_($form_title); ?></a>
                         </div>
                         <?php if ($index != (sizeof($forms) - 1) || ($show_mandatory_documents == 1 && !empty($mandatory_documents)) || ($show_optional_documents == 1 && !empty($optional_documents)) || !empty($checkout_url)) : ?>
                             <div class="mod_emundus_checklist___border_item"></div>
