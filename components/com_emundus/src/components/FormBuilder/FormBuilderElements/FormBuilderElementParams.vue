@@ -15,6 +15,11 @@
 
       <!-- DATABASEJOIN -->
       <div v-else-if="param.type === 'databasejoin'">
+          <!--
+          <select v-model="element.params[param.name]" :key="reloadOptions" :id="param.name" @change="updateDatabasejoinParams" class="em-w-100" :class="databasejoin_description ? 'em-mb-4' : ''">
+              <option v-for="option in param.options" :value="option.value">{{ option.label }}</option>
+          </select>
+          -->
         <select v-model="element.params[param.name]" :key="reloadOptions" :id="param.name" @change="updateDatabasejoinParams" class="em-w-100" :class="databasejoin_description ? 'em-mb-4' : ''">
           <option v-for="option in param.options" :value="option.database_name">{{ option.label }}</option>
         </select>
@@ -60,6 +65,8 @@ export default {
       required: false
     }
   },
+  // db_name: "",
+
   data: () => ({
     databasejoin_description: null,
     reloadOptions: 0,
@@ -68,26 +75,40 @@ export default {
     loading: false,
   }),
   created() {
-    this.params.forEach((param) => {
-      if(param.type === 'databasejoin'){
-        if(this.sysadmin){
-          this.loading = true;
-          formBuilderService.getAllDatabases().then((response) => {
-            param.options = response.data.data;
-            this.reloadOptions += 1;
-            if(this.element.params['join_db_name'] != ""){
-              this.updateDatabasejoinParams();
-            }
-            this.loading = false;
-          });
-        } else {
-          param.options = this.databases;
-          if(this.element.params['join_db_name'] != ""){
-            this.updateDatabasejoinParams();
-          }
+    if (this.element.plugin === 'emundus_phonenumber') {
+
+        // get all params from form.xml
+        let table_name = this.params[0].options['table'];
+        const key = this.params[0].options['joinKey'];
+        const label = this.params[0].options['joinLabel'];
+
+        if (table_name && key && label) {
+            formBuilderService.getDatabase(table_name, key, label, true).then((response) => {
+                this.setDataFormatSelectView(response.data.data, key, label, 0);
+            });
         }
-      }
-    })
+    } else {
+        this.params.forEach((param) => {
+            if (param.type === 'databasejoin') {
+                if (this.sysadmin) {
+                    this.loading = true;
+                    formBuilderService.getAllDatabases().then((response) => {
+                        param.options = response.data.data;
+                        this.reloadOptions += 1;
+                        if (this.element.params['join_db_name'] != "") {
+                            this.updateDatabasejoinParams();
+                        }
+                        this.loading = false;
+                    });
+                } else {
+                    param.options = this.databases;
+                    if (this.element.params['join_db_name'] != "") {
+                        this.updateDatabasejoinParams();
+                    }
+                }
+            }
+        })
+    }
   },
   methods: {
     updateDatabasejoinParams(){
@@ -134,6 +155,17 @@ export default {
           this.reloadOptionsCascade += 1;
         });
       }
+    },
+    setDataFormatSelectView(data, valueColum, labelColum, paramsIndex = 0) {
+        console.log("je rentre aussi ici, hehehe");
+        this.params[paramsIndex].options = [];
+        data.forEach((row) => {
+            let new_option = {
+                value: row[valueColum],
+                label: row[labelColum],
+            }
+            this.params[paramsIndex].options.push(new_option);
+        })
     }
   },
   computed: {

@@ -742,6 +742,34 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         exit;
     }
 
+    public function getDatabaseJoin()
+    {
+        $user = JFactory::getUser();
+        $allowedTable = ['data_country']; // table allowed to be get
+
+        $jinput = JFactory::getApplication()->input;
+
+        $table_name = $jinput->getString('table_name');
+        $key = $jinput->getString('key');
+        $label = $jinput->getString('label');
+
+        $distinct = $jinput->getString('distinct') == 'true' ? true : false; // no touchy
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) && in_array($table_name, $allowedTable) && $key !== null && $label !== null)
+        {
+            $databases = $this->m_formbuilder->getDatabaseJoin($table_name, $key, $label, $distinct);
+
+            $tab = array('status' => 1, 'msg' => 'worked', 'data' => $databases);
+        }
+        else
+        {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
     public function getDatabaseJoinOrderColumns() {
         $user = JFactory::getUser();
 

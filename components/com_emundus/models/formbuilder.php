@@ -2880,6 +2880,24 @@ class EmundusModelFormbuilder extends JModelList {
             return false;
         }
     }
+
+    function getDatabaseJoin($table_name, $key, $label, $isDistinct = false)
+    {
+        $distinctChar = $isDistinct ? 'DISTINCT' : '';
+
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select($distinctChar.' '.$key.','.$label)
+            ->from($db->quoteName($table_name));
+        $db->setQuery($query);
+        try {
+            return $db->loadObjectList();
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus/models/formbuilder | Error at getting databases references : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
     function getDatabaseJoinOrderColumns($database_name) {
 
         $db = $this->getDbo();

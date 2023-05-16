@@ -192,6 +192,29 @@ export default {
             };
         }
     },
+
+    async getDatabase(table_name, key, label, distinct  = false)
+    {
+        try {
+            const response = await client().get(
+                'index.php?option=com_emundus&controller=formbuilder&task=getDatabaseJoin',
+                {
+                    params: {
+                        table_name: table_name,
+                        key : key,
+                        label : label,
+                        distinct : distinct ? 'true' : 'false',
+                    }
+                }
+            );
+            return response;
+        } catch (e) {
+            return {
+                status: false,
+                message: e.message
+            };
+        }
+    },
     getDatabaseJoinOrderColumns(databaseName) {
         try {
             const response = client().get(
