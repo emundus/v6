@@ -28,16 +28,12 @@ class PostgREST extends Api
 		$this->setClient();
 	}
 
-
 	public function setBaseUrl(): void
 	{
 		$config = JComponentHelper::getParams('com_emundus');
 		$this->baseUrl = $config->get('postgrest_api_base_url', '');
 	}
 
-	/**
-	 * @param array $headers
-	 */
 	public function setHeaders(): void
 	{
 		$auth = $this->getAuth();
@@ -45,7 +41,6 @@ class PostgREST extends Api
 		$this->headers = array(
 			'Authorization' => 'Bearer ' . $auth['bearer_token'],
 		);
-
 	}
 
 	public function setAuth(): void
@@ -77,6 +72,76 @@ class PostgREST extends Api
 		}
 		catch (Exception $e)
 		{
+			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+		}
+
+		return $result;
+	}
+
+	public function mapDatas($datas,$uid = 0): bool{
+		$result = true;
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$mapping = $this->getAttributeMapping();
+
+		if(empty($uid)){
+			$uid = JFactory::getUser()->id;
+		}
+
+		try
+		{
+			if(!empty($datas) && !empty($mapping['mapping'])){
+
+				foreach($mapping['mapping'] as $map){
+					$table = $map['table'];
+					$user_key = $map['user_key'];
+
+					$query->clear()
+						->select('id')
+						->from($db->quoteName($table))
+						->where($db->quoteName($user_key) . ' = ' . $db->quote($uid));
+					$db->setQuery($query);
+					$exists = $db->loadResult();
+
+					if($exists)
+					{
+						$query->clear()
+							->update($db->quoteName($table))
+							->where($db->quoteName($user_key) . ' = ' . $db->quote($uid));
+					} else {
+						$query->clear()
+							->insert($db->quoteName($table))
+							->set($db->quoteName($user_key) . ' = ' . $db->quote($uid));
+					}
+
+					foreach($map['attributes'] as $api_key => $attribute){
+						if(!empty($datas->{$api_key})){
+							$value =  $datas->{$api_key};
+
+							if(isset($attribute['mapping_options'])){
+								if(!empty($attribute['mapping_options'][$datas->{$api_key}])){
+									$value = $attribute['mapping_options'][$datas->{$api_key}];
+								}
+							}
+
+							if(!empty($value)){
+								$query->set($db->quoteName($attribute['key']) . ' = ' . $db->quote($value));
+							}
+						}
+					}
+
+					$db->setQuery($query);
+					if(!$db->execute()){
+						JLog::add('Error when map Postgrest api datas with query : '.$query->__toString().' with error : '.$db->getErrorMsg(), JLog::ERROR, 'com_emundus');
+						return false;
+					}
+				}
+			}
+		}
+		catch (\Exception $e)
+		{
+			$result = false;
 			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
 
