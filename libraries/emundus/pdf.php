@@ -785,6 +785,21 @@ function data_to_img($match) {
     return "$img$fn$end";  // new <img> tag
 }
 
+/**
+ * @param $user_id
+ * @param $fnum
+ * @param $output
+ * @param $form_post
+ * @param $form_ids
+ * @param $options
+ * @param $application_form_order
+ * @param $profile_id
+ * @param $file_lbl
+ * @param $elements
+ * @param $attachments
+ * @return false|string|void
+ * @throws Exception
+ */
 function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null, $attachments = true) {
 	jimport('joomla.html.parameter');
     set_time_limit(0);

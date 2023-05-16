@@ -2147,13 +2147,10 @@ class EmundusModelApplication extends JModelList
         $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
         $em_breaker = $eMConfig->get('export_application_pdf_breaker', '0');
 
-        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
+        require_once(JPATH_SITE . '/components/com_emundus/helpers/list.php');
         $h_list = new EmundusHelperList();
-
         $tableuser = $h_list->getFormsList($aid, $fnum, $fids, $profile_id);
-
-        $forms = "";
-
+        $forms = '';
 
         if (isset($tableuser)) {
 

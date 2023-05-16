@@ -64,8 +64,8 @@ class EmundusHelperExport {
 		if (!function_exists('application_form_pdf')) {
 			require_once($file);
 		}
-        $result = application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $options, $application_form_order,null,null,$elements);
-        /// application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $options, $application_form_order, null, null, null);           /// review this function
+        $result = application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $options, $application_form_order, null, null, $elements);
+
 		if($result) {
 			return EMUNDUS_PATH_ABS . $sid . DS . $fnum . '_application.pdf';
 		}
