@@ -897,7 +897,10 @@ class EmundusControllerEvaluation extends JControllerLegacy
     }
 */
     function pdf(){
-        $jinput = JFactory::getApplication()->input;
+	    require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+	    require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
+
+	    $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getString('fnum', null);
         $student_id = $jinput->getInt('student_id', $jinput->getInt('user', $this->_user->id));
 
