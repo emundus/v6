@@ -3775,11 +3775,28 @@ $(document).ready(function() {
                                                             $('#' + selector.id).show();
 
                                                             /// check to selected elements
-                                                            attachments.forEach((doc) => {
-                                                                $('[id="' + doc + '"]').prop('checked', true);
+                                                            attachments.forEach((attachmentToCheck) => {
+                                                                $('[id="' + attachmentToCheck + '"]').prop('checked', true);
                                                             });
                                                         });
 
+                                                        if (json.pdffilter.assessment === '1') {
+                                                            document.getElementById('em-ex-assessment').checked = true;
+                                                        } else {
+                                                            document.getElementById('em-ex-assessment').checked = false;
+                                                        }
+
+                                                        if (json.pdffilter.decision === '1') {
+                                                            document.getElementById('em-ex-decision').checked = true;
+                                                        } else {
+                                                            document.getElementById('em-ex-assessment').checked = false;
+                                                        }
+
+                                                        if (json.pdffilter.admission === '1') {
+                                                            document.getElementById('em-ex-admission').checked = true;
+                                                        } else {
+                                                            document.getElementById('em-ex-assessment').checked = false;
+                                                        }
                                                     } else {
                                                         $('#loadingimg-campaign').remove();
                                                         $('#filt_save_pdf_chosen').append('<div id="model-err-pdf" style="color: red">' + Joomla.JText._('COM_EMUNDUS_MODEL_ERR') + '</div>');
