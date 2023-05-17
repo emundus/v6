@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="em-flex-column em-flex-center em-mt-24">
-      <div v-for="comment in comments" class="em-input-card em-w-50 em-mb-16">
+      <div v-for="comment in comments" class="em-input-card em-w-50 em-mb-16" :key="comment.id">
         <div class="em-flex-row em-flex-space-between">
           <div>
             <p>{{comment.user}}</p>
@@ -96,7 +96,7 @@ export default {
       filesService.getComments(this.$props.fnum).then((response) => {
         if(response.status == 1){
           this.comments = response.data;
-          this.loading = false;
+	        this.loading = false;
         } else {
           this.displayError(
               'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS',
@@ -108,9 +108,13 @@ export default {
 
     saveComment(){
       this.loading = true;
-      filesService.saveComment(this.$props.fnum,this.comment).then((response) => {
+      filesService.saveComment(this.$props.fnum, this.comment).then((response) => {
         if(response.status == 1){
           this.comments.push(response.data);
+	        this.comment = {
+		        reason: '',
+		        comment_body: '',
+	        };
           this.adding_comment = false;
           this.loading = false;
         } else {
