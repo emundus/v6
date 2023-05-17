@@ -1483,7 +1483,12 @@ class EmundusControllerFiles extends JControllerLegacy
             foreach ($colsup as $kOpt => $vOpt) {
                 if ($vOpt == "forms" || $vOpt == "attachment") {
                     $line .= $vOpt."(%)\t";
-                } else {
+                }
+				elseif ($vOpt == "overall")
+				{
+	                $line .= JText::_('COM_EMUNDUS_EVALUATIONS_OVERALL')."\t";
+                }
+				else {
 					switch($vOpt) {
 						case 'comment':
 							$line .= JText::_('COM_EMUNDUS_COMMENT')."\t";
@@ -2019,26 +2024,19 @@ class EmundusControllerFiles extends JControllerLegacy
 					$request  = Gotenberg::pdfEngines($gotenberg_url)
 						->merge(...$got_files);
 					$response = Gotenberg::send($request);
-					file_put_contents(JPATH_SITE . DS . 'tmp' . DS . $file, $response->getBody()->getContents());
+					$content = $response->getBody()->getContents();
+
+					$filename = JPATH_SITE . DS . 'tmp' . DS . $file;
+					$fp       = fopen($filename, 'w');
+					$pieces   = str_split($content, 1024 * 16);
+					if ($fp)
+					{
+						foreach ($pieces as $piece) {
+							fwrite($fp, $piece, strlen($piece));
+						}
+					}
 				}
 			}
-
-	        /*
-	        $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
-            $gotenberg_url = $eMConfig->get('gotenberg_url', 'http://localhost:3000');
-
-	        if($gotenberg_activation && !empty($gotenberg_url))
-	        {
-		        $got_files = [];
-		        foreach ($files_list as $item){
-			        $got_files[] = Stream::path($item);
-		        }
-		        $request = Gotenberg::pdfEngines($gotenberg_url)
-			        ->merge(...$got_files);
-		        $response = Gotenberg::send($request);
-				file_put_contents(JPATH_SITE . DS . 'tmp' . DS . $file,$response->getBody()->getContents());
-	        }
-	        */
 
             $start = $i;
 
@@ -2659,7 +2657,8 @@ class EmundusControllerFiles extends JControllerLegacy
                         $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('COM_EMUNDUS_ASSOCIATED_USERS'));
                         break;
                     case 'overall':
-                        $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('COM_EMUNDUS_EVALUATIONS_OVERALL'));
+						echo '<pre>'; var_dump('here'); echo '</pre>'; die;
+                        $objPHPSpreadsheet->getActiveSheet()->setCellValue([$col, $line], JText::_('COM_EMUNDUS_EVALUATIONS_OVERALL'));
                         break;
                 }
                 $col++;

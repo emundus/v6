@@ -1939,6 +1939,10 @@ label[for="em-file_to_upload"]:hover {
 #em-mails-sent, #em-mails-failed, #em-recipitents {
     overflow-y: scroll;
     max-height: 80px;
+    display: flex;
+    column-gap: 4px;
+    flex-wrap: wrap;
+    row-gap: 4px;
 }
 
 /* Sending email modal */
