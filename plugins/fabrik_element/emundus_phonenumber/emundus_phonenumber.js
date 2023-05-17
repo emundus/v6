@@ -54,7 +54,6 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 disable_search_threshold: 10,
                 allow_single_deselect: true,
                 search_contains: true,
-                case_sensitive_search: true,
             });
 
             setTimeout(() => {
