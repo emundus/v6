@@ -33,62 +33,66 @@ $.ajaxQ = (function(){
 })();
 
 function search() {
-    addLoader();
-    var quick = [];
+    const controller = $('#view').val();
 
-    $('#quick div[data-value]').each(function () {
-        quick.push($(this).attr('data-value')) ;
-    });
+    if (controller !== null && typeof controller !== 'undefined') {
+        addLoader();
+        var quick = [];
 
-    var inputs = [{
-        name: 's',
-        value: quick,
-        adv_fil: false
-    }];
-
-    $('[id^=em-adv-fil-]').each(function(){
-        inputs.push({
-            name: $(this).attr('name'),
-            value: $(this).val(),
-            adv_fil: true,
-            select: this.nodeName.toLowerCase() === 'select'
+        $('#quick div[data-value]').each(function () {
+            quick.push($(this).attr('data-value')) ;
         });
-    });
 
-    $('.em_filters_filedset .testSelAll').each(function () {
-        inputs.push({
-            name: $(this).attr('name'),
-            value: $(this).val(),
+        var inputs = [{
+            name: 's',
+            value: quick,
             adv_fil: false
-        });
-    });
+        }];
 
-    $('.em_filters_filedset .search_test').each(function () {
-        inputs.push({
-            name: $(this).attr('name'),
-            value: $(this).val(),
-            adv_fil: false
+        $('[id^=em-adv-fil-]').each(function(){
+            inputs.push({
+                name: $(this).attr('name'),
+                value: $(this).val(),
+                adv_fil: true,
+                select: this.nodeName.toLowerCase() === 'select'
+            });
         });
-    });
 
-    $.ajax({
-        type: 'POST',
-        dataType: 'json',
-        url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=setfilters',
-        data: ({
-            val: JSON.stringify(($.extend({}, inputs))),
-            multi: false,
-            elements: true
-        }),
-        success: function(result) {
-            if (result.status) {
-                refreshFilter($('#view').val());
+        $('.em_filters_filedset .testSelAll').each(function () {
+            inputs.push({
+                name: $(this).attr('name'),
+                value: $(this).val(),
+                adv_fil: false
+            });
+        });
+
+        $('.em_filters_filedset .search_test').each(function () {
+            inputs.push({
+                name: $(this).attr('name'),
+                value: $(this).val(),
+                adv_fil: false
+            });
+        });
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: 'index.php?option=com_emundus&controller='+controller+'&task=setfilters',
+            data: ({
+                val: JSON.stringify(($.extend({}, inputs))),
+                multi: false,
+                elements: true
+            }),
+            success: function(result) {
+                if (result.status) {
+                    refreshFilter(controller);
+                }
+            },
+            error: function(jqXHR) {
+                console.log(jqXHR.responseText);
             }
-        },
-        error: function(jqXHR) {
-            console.log(jqXHR.responseText);
-        }
-    });
+        });
+    }
 }
 
 function clearchosen(target){
