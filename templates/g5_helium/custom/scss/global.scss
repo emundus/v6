@@ -3393,7 +3393,8 @@ label[for='clear-search'] img:hover:focus {
 
 /* ALERT */
 
-#system-message-container #system-message {
+#system-message-container #system-message,
+.com_users #system-message-container .alert.alert-error.alert-danger {
   margin: 20px;
 }
 
