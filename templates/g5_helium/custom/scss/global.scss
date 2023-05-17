@@ -5951,6 +5951,13 @@ screen and (max-height: 769px) {
 
 @media all and (min-width: 480px) and (max-width: 767px) {
 
+  .gantry.view-registration main#g-main-mainbody .login.em-formRegistrationCenter,
+  .gantry.view-registration main#g-main-mainbody .em-formRegistrationCenter:not(.componentheading),
+  .gantry.view-form.em-formRegistrationCenter main#g-main-mainbody .login.em-formRegistrationCenter,
+  .gantry.view-form.em-formRegistrationCenter main#g-main-mainbody .em-formRegistrationCenter:not(.componentheading) {
+    width: 100%;
+  }
+
   /* BIRTHDAY */
   .view-form:not(.com_emundus) .span12 form .fabrikGroup .row-fluid .fabrikElementContainer.control-group:not(.plg-display) .fabrikElement .fabrikSubElementContainer {
      .fabrikinput.inputbox {
