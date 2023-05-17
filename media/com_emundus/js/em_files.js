@@ -1505,12 +1505,16 @@ async function setDocuments(json) {
 }
 
 const checkElement = async selector => {
-    while ( document.querySelector(selector) === null) {
+    while (document.querySelector(selector) === null && document.querySelector('.em-export')) {
         await new Promise( resolve =>  requestAnimationFrame(resolve) )
     }
+
+    if (!document.querySelector('.em-export')) {
+        return false;
+    }
+
     return document.querySelector(selector);
 };
-
 
 $(document).ready(function() {
     $('#check').removeClass('em-check-all-all');
@@ -3428,13 +3432,13 @@ $(document).ready(function() {
             // Export PDF;
             case 8 :
                 title = 'COM_EMUNDUS_EXPORTS_CREATE_PDF';
-                html = '<div id="data" class="em-mt-32"></div>';
                 swal_container_class = 'em-export'
                 swal_popup_class = 'em-w-100 em-h-100'
                 swal_actions_class = 'em-actions-fixed'
                 swal_confirm_button = 'COM_EMUNDUS_EXPORTS_EXPORT';
 
-                html += '<div>' +
+                html = '<div id="data" class="em-mt-32"></div>' +
+                    '<div>' +
                     '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8"> ' +
                     '<select class="modal-chzn-select" id="filt_save_pdf" name="filt_save_pdf" >'+
                     '<option value="0">'+Joomla.JText._('COM_EMUNDUS_FILTERS_PLEASE_SELECT_FILTER')+'</option>' +
@@ -3773,8 +3777,8 @@ $(document).ready(function() {
                                                             /// check to selected elements
                                                             attachments.forEach((doc) => {
                                                                 $('[id="' + doc + '"]').prop('checked', true);
-                                                            })
-                                                        })
+                                                            });
+                                                        });
 
                                                     } else {
                                                         $('#loadingimg-campaign').remove();
