@@ -10,6 +10,8 @@ class ValidatorJS {
     constructor(initDiv, initAllCountry, initIndiceCountry = 0, initDefaultValue = '', cloned = false)
     {
         this.select = initDiv.getElementById('countrySelect');
+        this.select_chosen = '#'+initDiv.id+' #countrySelect';
+        this.select_chosen_block = '#'+initDiv.id+' #countrySelect_chzn .chzn-single';
         this.input = initDiv.getElementById('inputValue');
         this.renderCountryCode = initDiv.getElementById('renderCountryCode');
         this.divError = initDiv.parentNode.parentNode.getElementsByClassName('fabrikErrorMessage')[0]; // awfull but necessary
@@ -41,7 +43,10 @@ class ValidatorJS {
 
     initEventListener()
     {
-        this.select.addEventListener('change', this.handlerSelectChange.bind(this));
+        //this.select.addEventListener('change', this.handlerSelectChange.bind(this));
+        jQuery(this.select_chosen).on('change', () => {
+            this.handlerSelectChange();
+        });
         this.input.addEventListener('input', this.inputValidation.bind(this));
         this.input.addEventListener('focusout', this.handlerFocusOut.bind(this));
         this.input.addEventListener('focusin', this.handlerInputFocusIn.bind(this));
@@ -106,10 +111,10 @@ class ValidatorJS {
         }
     }
 
-    handlerSelectChange(props)
+    handlerSelectChange()
     {
         this.mustValidate ? this.frontMessage('invalid') : this.frontMessage('default');
-        this.newCountry(props.target.options.selectedIndex);
+        this.newCountry(document.querySelector(this.select_chosen).selectedIndex);
         this.changeRenderCountryCode();
     }
 
@@ -199,6 +204,7 @@ class ValidatorJS {
     {
         this.input.style.borderColor = color;
         this.renderCountryCode.style.borderColor = color;
+        document.querySelector(this.select_chosen_block).style.borderColor = color;
     }
 
     setOptionSelected(id)

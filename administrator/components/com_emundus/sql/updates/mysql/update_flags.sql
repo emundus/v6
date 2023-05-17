@@ -252,3 +252,5 @@ UPDATE data_country SET flag = null WHERE iso2 = 'BQ';
 UPDATE data_country SET flag = null WHERE iso2 = 'XX';
 UPDATE data_country SET flag = null WHERE iso2 = 'XE';
 UPDATE data_country SET flag = null WHERE  iso2 = 'XS';
+
+UPDATE data_country SET flag_img = concat(lower(iso2),'.png')

@@ -1265,7 +1265,7 @@ class EmundusModelEmails extends JModelList {
             } catch (Exception $e) {
                 $failed[] = $m_to;
                 $print_message .= '<hr>Error inviting expert '.$m_to;
-                JLog::add('Error inserting file requests for expert invitations : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                JLog::add('Error inserting file requests for expert invitations : '.$e->getMessage() . ' with query : ' . $query->__toString(), JLog::ERROR, 'com_emundus');
                 continue;
             }
 
