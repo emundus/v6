@@ -1,5 +1,3 @@
-
-
 define(['jquery', 'fab/element'], function (jQuery, FbElement) {
     window.FbPhoneNumber = new Class({
         Extends: FbElement,
@@ -10,10 +8,14 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
          * @param element       string      name of the element
          * @param options       array       all options for the element
          */
-        initialize: function (element, options)
-        {
+        initialize: function (element, options) {
             this.setPlugin('emundus_phonenumber');
             this.parent(element, options);
+
+            this.prepareCountryCode();
+
+            this.initChosen();
+
             this.initValidatorJS();
         },
 
@@ -22,19 +24,55 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
          *
          * @param   c       int         index of the new element
          */
-        cloned: function (c)
-        {
+        cloned: function (c) {
             this.element.getElementById('inputValue').value = '';
             this.element.getElementById('countrySelect').setAttribute('selectedValue', this.options.allCountries[0].iso2); // reset with the first one
+
+            this.element.getElementById('countrySelect_chzn').remove();
+
+            this.initChosen();
+
             this.initValidatorJS(true);
+
             this.parent(c);
+        },
+
+        prepareCountryCode: function () {
+            var select = '#'+this.element.id+' #countrySelect';
+            var options = jQuery(select+' option');
+            for(const option of options) {
+                try {
+                    var country_code = libphonenumber.getCountryCallingCode(option.value);
+                    option.setAttribute('data-countrycode',country_code);
+                    option.textContent = option.textContent + ' (+'+country_code+')';
+                } catch(e){}
+            }
+        },
+
+        initChosen: function () {
+            Fabrik.buildChosen('#'+this.element.id+' #countrySelect', {
+                disable_search_threshold: 10,
+                allow_single_deselect: true,
+                search_contains: true,
+            });
+
+            setTimeout(() => {
+                jQuery('#' + this.element.id+' #countrySelect').trigger('liszt:updated');
+
+                this.watchChange();
+
+                document.querySelector('#'+this.element.id+' .chzn-container .chzn-drop').style.minWidth = document.getElementById(this.element.id).offsetWidth+'px';
+
+                jQuery('#'+this.element.id+' #countrySelect').on('change', () => {
+                    this.watchChange();
+                });
+            },100);
         },
 
         /**
          * Initialise the ValidatorJS object depending on data.
          */
-        initValidatorJS: function (cloned = false)
-        {
+        initValidatorJS: function (cloned = false) {
             const select = this.element.getElementById('countrySelect');
             const input = this.element.getElementById('inputValue');
 
@@ -54,6 +92,19 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 
                 this.ValidatorJS = new ValidatorJS(this.element, allCountries, selectedCountryIndex, defaultValue, cloned);
             }
+        },
+
+        watchChange: function () {
+            var select = '#'+this.element.id+' #countrySelect';
+            var val = jQuery(select).val();
+            var flag = jQuery(select+" option:selected").attr('data-flag');
+
+            jQuery(select+" option[data-value='selected']").attr('value', val);
+            jQuery(select+" option[data-value='selected']").html('<img src"images/emundus/'+flag+'" alt="'+val+'"/>');
+
+            jQuery(select).val(val);
+
+            jQuery('#'+this.element.id+' #countrySelect_chzn .chzn-single span').html("<img src='/images/emundus/flags/"+flag+"' alt='"+val+"'/>");
         },
 
         /**

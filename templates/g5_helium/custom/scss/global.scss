@@ -6495,6 +6495,13 @@ screen and (max-height: 769px) {
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
 
+  .gantry.view-registration main#g-main-mainbody .login.em-formRegistrationCenter,
+  .gantry.view-registration main#g-main-mainbody .em-formRegistrationCenter:not(.componentheading),
+  .gantry.view-form.em-formRegistrationCenter main#g-main-mainbody .login.em-formRegistrationCenter,
+  .gantry.view-form.em-formRegistrationCenter main#g-main-mainbody .em-formRegistrationCenter:not(.componentheading) {
+    width: 90% !important;
+  }
+
   .gantry #g-navigation, .gantry #g-navigation .g-container {
     height: auto !important;
     max-height: 100%;

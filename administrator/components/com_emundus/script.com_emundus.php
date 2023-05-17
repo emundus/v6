@@ -1644,6 +1644,7 @@ try {
 				EmundusHelperUpdate::addColumn('jos_emundus_users', 'token', 'VARCHAR', 50);
 				EmundusHelperUpdate::addColumn('jos_emundus_users', 'anonym_user', 'TINYINT', 1);
 				EmundusHelperUpdate::addColumn('data_country', 'flag', 'VARCHAR', 30);
+				EmundusHelperUpdate::addColumn('data_country', 'flag_img', 'VARCHAR', 30);
 				EmundusHelperUpdate::executeSQlFile('update_flags');
 				EmundusHelperUpdate::executeSQlFile('update_acl_ordering');
 
