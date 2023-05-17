@@ -552,7 +552,9 @@ function getUserCheck() {
     } else {
         var i = 0;
 
-        if($('.em-check:checked').length == 0) {
+        let checkedEm = $('.em-check:checked');
+
+        if(checkedEm.length == 0) {
             var hash = $(location).attr('hash');
             var fnum = hash.replace('#', '');
             fnum = fnum.replace('|open', '');
@@ -565,7 +567,7 @@ function getUserCheck() {
         }
 
         var myJSONObject = '{';
-        $('.em-check:checked').each(function(){
+        checkedEm.each(function(){
             i = i + 1;
             myJSONObject += '"'+i+'"'+':"'+$(this).attr('id').split('_')[0]+'",';
         });
@@ -1454,8 +1456,6 @@ async function setProfiles(json) {
                     checkElement('#felts'+prf.id).then((selector) => {
                         $('#' + selector.id).show();        // show felts
                         $('#loadingimg-campaign').remove();
-                        $('#showelements_' + prf.id).attr('class', 'btn-xs btn btn-elements-success');
-                        $('#showelements_' + prf.id + '> span').attr('class', 'glyphicon glyphicon-minus');
 
                         // uncheck all checkbox of each felts
                         if($('#form-exists input:checked').length > 0) {
@@ -1496,13 +1496,6 @@ async function setDocuments(json) {
     checkElement('#aelts-' + progCode + campCode).then((selector) => {
         /// show #aelts
         $('#' + selector.id).show();
-
-        /// set button css (+ vs -)
-
-        $('#aelts').find('.btn-info').attr('class', 'btn-xs btn btn-elements-success');
-
-        ///btn-xs btn btn-elements-success
-        $('#aelts').find('.glyphicon-plus').attr('class', 'glyphicon glyphicon-minus');
 
         /// check to selected elements
         attachments.forEach((doc) => {
@@ -3579,23 +3572,27 @@ $(document).ready(function() {
                                 url: 'index.php?option=com_emundus&controller=files&task=getAllExportPdfFilter',
                                 dataType: 'json',
                                 success: function(result) {
-                                    removeLoader();
                                     if(result.status) {
-                                        if(result.filter !== null || result.filter !== undefined) {
+                                        if(result.filter !== null && typeof result.filter !== 'undefined') {
                                             var models = result.filter;
+                                            const filterSavePdf = $('#filt_save_pdf');
+
                                             models.forEach(model => {
-                                                //add some logical conditions here
-                                                $('#filt_save_pdf').append('<option value="' + model.id + '">' + model.name + '</option>');
-                                                $('#filt_save_pdf').trigger("chosen:updated");
+                                                filterSavePdf.append('<option value="' + model.id + '">' + model.name + '</option>');
                                             });
+
+                                            filterSavePdf.chosen('destroy').chosen({width: "100%"});
+                                            filterSavePdf.trigger('chosen:updated');
+                                            filterSavePdf.trigger('change');
                                         }
                                     }
+
+                                    removeLoader();
                                 }, error: function(jqXHR) {
                                     console.log(jqXHR.responseText);
+                                    removeLoader();
                                 }
-                            })
-
-
+                            });
 
                             $('#em-export-prg').append(result.html);
                             $('#em-export-prg').chosen('destroy').chosen({width: "100%"});
@@ -3734,13 +3731,10 @@ $(document).ready(function() {
                                                                 success: function (returnData) {
                                                                     // build profile(s)
                                                                     var profiles = returnData.fabrik_data.profiles;
-
-                                                                    profiles.forEach(prf => {
-                                                                        checkElement('#felts'+prf.id).then((selector) => {
+                                                                    profiles.forEach((profile) => {
+                                                                        checkElement('#felts'+profile.id).then((selector) => {
                                                                             $('#' + selector.id).show();        // show felts
-                                                                            $('#loadingimg-campaign').remove();
-                                                                            $('#showelements_' + prf.id).attr('class', 'btn-xs btn btn-elements-success');
-                                                                            $('#showelements_' + prf.id + '> span').attr('class', 'glyphicon glyphicon-minus');
+                                                                           removeLoader();
 
                                                                             // uncheck all checkbox of each felts
                                                                             if($('#form-exists input:checked').length > 0) {
@@ -3776,13 +3770,6 @@ $(document).ready(function() {
                                                             /// show #aelts
                                                             $('#' + selector.id).show();
 
-                                                            let aelts = $('#aelts');
-                                                            /// set button css (+ vs -)
-                                                            aelts.find('.btn-info').attr('class', 'btn-xs btn btn-elements-success');
-
-                                                            ///btn-xs btn btn-elements-success
-                                                            aelts.find('.glyphicon-plus').attr('class', 'glyphicon glyphicon-minus');
-
                                                             /// check to selected elements
                                                             attachments.forEach((doc) => {
                                                                 $('[id="' + doc + '"]').prop('checked', true);
@@ -3794,9 +3781,9 @@ $(document).ready(function() {
                                                         $('#filt_save_pdf_chosen').append('<div id="model-err-pdf" style="color: red">' + Joomla.JText._('COM_EMUNDUS_MODEL_ERR') + '</div>');
                                                     }
                                                 }
-
                                                 /// case 2 :: many programs
-                                                if($("#em-export-prg option").length > 2) {
+                                                else if($("#em-export-prg option").length > 2)
+                                                {
                                                     if ($("#em-export-prg option[value='" + progCode + "']").length > 0 === true) {
                                                         setModel(json);      /// if prog is found --> keep going
                                                     } else {
