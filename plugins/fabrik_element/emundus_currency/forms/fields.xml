@@ -28,29 +28,31 @@
 			<field name="default_currency"
 				   type="sql"
 				   label="PLG_ELEMENT_CURRENCY_DEFAULT_CURRENCY"
-				   query="SELECT *, CONCAT(name, ' (', symbol, ' ', iso3 ,')') as renderBack from currency"
-				   key_field="iso3"
-				   field_value="renderBack"
-				   default="EUR"
+				   query="SELECT *,
+				   CONCAT(name, ' (', symbol, ' ', iso3,')') as renderBack
+				   from currency"
+				   key_field="renderBack"
+				   field_value="iso3"
+				   default="Euro (€ EUR)"
 				/>
 
 			<field name="minimal_value"
 				   type="number"
-				   label="PLG_ELEMENT_CURRENCY_MINIMAL"
+				   label="PLG_ELEMENT_CURRENCY_MINIMAL_NUMBER"
 				   min="0.00"
-				   max="params_maximal_value"
+				   max="999999999999.99"
 				   default="0.00"
 				   step="0.01"
-			   	/>
+			/>
 
 			<field name="maximal_value"
 				   type="number"
-				   label="PLG_ELEMENT_CURRENCY_MAXIMAL"
-				   min="params_minimal_value"
-				   max="999 999 999 999.99"
-				   default="99 999 999.99"
+				   label="PLG_ELEMENT_CURRENCY_MAXIMAL_NUMBER"
+				   min="0.00"
+				   max="999999999999.99"
+				   default="99999999.99"
 				   step="0.01"
-				/>
+			/>
 
 		</fieldset>
 	</fields>

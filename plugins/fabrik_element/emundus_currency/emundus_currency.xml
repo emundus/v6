@@ -17,16 +17,8 @@
 		<folder>forms</folder>
 		<folder>language</folder>
 		<folder>layouts</folder>
+		<folder>assets</folder>
 	</files>
-
-	<languages>
-		<language tag="en-GB">en-GB.plg_fabrik_element_emundus_currency.ini</language>
-		<language tag="en-GB">en-GB.plg_fabrik_element_emundus_currency.sys.ini</language>
-		<language tag="fr-FR">fr-FR.plg_fabrik_element_emundus_currency.ini</language>
-		<language tag="fr-FR">fr-FR.plg_fabrik_element_emundus_currency.sys.ini</language>
-	</languages>
-
-
 
 
 </extension>

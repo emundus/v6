@@ -23,7 +23,7 @@ jimport('joomla.application.component.model');
  * @subpackage  Fabrik.element.field
  * @since       3.0
  */
-class PlgFabrik_Element_Emundus_Currency extends PlgFabrik_Element
+class PlgFabrik_ElementEmundus_Currency extends PlgFabrik_Element
 {
 
 	/**
