@@ -208,11 +208,11 @@ export default {
     },
 
     translations: {
-      DATE_FORMAT: "DATE_FORMAT_JS_LC2",
-      From: "COM_EMUNDUS_ONBOARD_FROM",
-      To: "COM_EMUNDUS_ONBOARD_TO",
-      chooseProfileWarning: "COM_EMUNDUS_ONBOARD_CHOOSE_PROFILE_WARNING",
-      ProgramWarning: "COM_EMUNDUS_ONBOARD_PROGRAM_WARNING",
+      DATE_FORMAT: 'DATE_FORMAT_JS_LC2',
+      From: 'COM_EMUNDUS_ONBOARD_FROM',
+      To: 'COM_EMUNDUS_ONBOARD_TO',
+      chooseProfileWarning: 'COM_EMUNDUS_ONBOARD_CHOOSE_PROFILE_WARNING',
+      ProgramWarning: 'COM_EMUNDUS_ONBOARD_PROGRAM_WARNING',
     },
   }),
 
@@ -268,11 +268,20 @@ export default {
     initDates(campaign){
       this.form.start_date = campaign.start_date;
       this.form.end_date = campaign.end_date;
-      this.form.start_date = this.formattedDate(this.form.start_date, 'LLL');
-      if (this.form.end_date === "0000-00-00 00:00:00") {
+
+	    let currentLanguage = this.$store.getters['global/currentLanguage'];
+			if (currentLanguage === '' || currentLanguage === undefined) {
+				currentLanguage = 'fr-FR';
+			}
+
+	    const startDate = new Date(campaign.start_date);
+	    this.form.start_date = new Intl.DateTimeFormat(currentLanguage, { dateStyle: 'long', timeStyle: 'short' }).format(startDate);
+
+      if (this.form.end_date === '0000-00-00 00:00:00') {
         this.form.end_date = null;
       } else {
-        this.form.end_date = this.formattedDate(this.form.end_date, 'LLL');
+        const endDate = new Date(campaign.end_date);
+				this.form.end_date = new Intl.DateTimeFormat(currentLanguage, { dateStyle: 'long', timeStyle: 'short' }).format(endDate);
       }
     },
 

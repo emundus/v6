@@ -6,14 +6,22 @@ import mimeTypes from '../data/mimeTypes';
 
 var mixin = {
 	methods: {
-		formattedDate: function (date = '',format = 'LLLL',utc = null) {
+		/**
+		 * Format date
+		 * @param date
+		 * @param format
+		 * @param utc
+		 * @param local, if true, the date will not be converted using utc offset
+		 * @returns {string}
+		 */
+		formattedDate: function (date = '',format = 'LLLL', utc = null) {
 			let formattedDate = '';
 
-			if (utc === null) {
-				utc = this.$store.state.global.offset;
-			}
-
 			if (date !== null) {
+				if (utc === null) {
+					utc = this.$store.state.global.offset;
+				}
+
 				if (date !== '') {
 					let year = date.substring(0, 4);
 					let month = date.substring(5, 7);
