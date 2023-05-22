@@ -519,14 +519,13 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
         if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $jinput = JFactory::getApplication()->input;
+	        $response['msg'] = JText::_('MISSING_PLUGIN_OR_GROUP');
+			$jinput = JFactory::getApplication()->input;
 
             $gid = $jinput->getInt('gid');
             $plugin = $jinput->getString('plugin');
 
-            if (empty($plugin) || empty($gid)){
-                $response['msg'] = JText::_("MISSING_PLUGIN_OR_GROUP");
-            } else {
+            if (!empty($plugin) && !empty($gid)) {
 	            $mode = $jinput->getString('mode');
 				$evaluation = $mode == 'eval';
 	            if ($jinput->getString('attachmentId')){
@@ -534,10 +533,17 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
                 }
 
                 if (isset($attachmentId)) {
-                    $response = $this->m_formbuilder->createSimpleElement($gid, $plugin, $attachmentId, $evaluation);
+                    $response['data'] = $this->m_formbuilder->createSimpleElement($gid, $plugin, $attachmentId, $evaluation);
                 } else {
-                    $response = $this->m_formbuilder->createSimpleElement($gid, $plugin, 0, $evaluation);
+	                $response['data'] = $this->m_formbuilder->createSimpleElement($gid, $plugin, 0, $evaluation);
                 }
+
+				if (!empty($response['data'])) {
+					$response['status'] = true;
+					$response['msg'] = JText::_('COM_EMUNDUS_FORMBUILDER_ELEMENT_CREATED');
+				} else {
+					$response['msg'] = JText::_('COM_EMUNDUS_FORMBUILDER_ELEMENT_NOT_CREATED');
+				}
             }
         }
 
