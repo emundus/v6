@@ -43,10 +43,6 @@ try {
         // Create our new application
         $new_fnum = $h_files->createFnum($session, $user->id);
 
-        // Copy current application to new application
-        $result = $m_application->copyApplication($fnum, $new_fnum, $situation->dynamic_profile, 1, $fnumsDetails['campaign_id'], 1, 1);
-        //
-
         $query->clear()
             ->insert($db->quoteName('#__emundus_campaign_candidature'));
         $query->set($db->quoteName('campaign_id') . ' = ' . $db->quote($session))
@@ -58,8 +54,11 @@ try {
         $db->setQuery($query);
         $db->execute();
         $new_file = $db->insertid();
-        //
 
+        // Copy current application to new application
+        $result = $m_application->copyApplication($fnum, $new_fnum, $situation->dynamic_profile, 1, $fnumsDetails['campaign_id'], 1, 1);
+        //
+        
         // Delete courses choices and update referees
         if(in_array($session,[5,6,7])){
             $query->clear()
