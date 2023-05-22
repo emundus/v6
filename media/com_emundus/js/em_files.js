@@ -2927,19 +2927,25 @@ $(document).ready(function() {
                                 dataType:'json',
                                 success: function (result) {
                                     if (result.status) {
+                                        result.filter.forEach(filter => {
+                                            if (!isNaN(parseInt(filter.id))) {
+                                                $('#filt_save').append('<option value="' + filter.id + '">' + filter.name + '</option>');
+                                            }
+                                        });
 
-                                        for (var d in result.filter) {
-                                            if (isNaN(parseInt(d)))
-                                                break;
-                                            $('#filt_save').append('<option value="' + result.filter[d].id + '">' + result.filter[d].name + '</option>');
-                                            $('#filt_save').chosen({width: "100%"});
+                                        $('#filt_save').chosen({width: "100%"});
+                                    } else {
+                                        const errorFilterElement = document.getElementById('err-filter');
+
+                                        if (errorFilterElement) {
+                                            errorFilterElement.style.display = 'block';
+
+                                            setTimeout(function() {
+                                                errorFilterElement.style.display = 'none';
+                                            }, 2000);
                                         }
 
-                                    } else {
-                                        $('#err-filter').show();
-                                        setTimeout(function() {
-                                            $('#err-filter').hide();
-                                        }, 600);
+                                        console.warn('Error: failed to get export excel filters of current user');
                                     }
                                 },
                                 error: function(jqXHR) {

@@ -3296,12 +3296,19 @@ class EmundusControllerFiles extends JControllerLegacy
     }
 
     public function getExportExcelFilter() {
+		$response = array('status' => false, 'filter' => []);
         $user_id  = JFactory::getUser()->id;
 
-        $h_files = new EmundusHelperFiles;
-        $filters = $h_files->getExportExcelFilter($user_id);
+		if (!empty($user_id)) {
+			$h_files = new EmundusHelperFiles;
+			$filters = $h_files->getExportExcelFilter($user_id);
 
-        echo json_encode((object)(array('status' => true, 'filter' => $filters)));
+			if ($filters !== false) {
+				$response = array('status' => true, 'filter' => $filters);
+			}
+		}
+
+        echo json_encode((object)$response);
         exit;
     }
 

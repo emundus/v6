@@ -2864,22 +2864,34 @@ class EmundusHelperFiles
         }
     }
 
+	/**
+	 * if empty $user_id, then it will return false
+	 * if not empty $user_id, then it will return all the filters of the user, empty array if no filters
+	 * @param $user_id
+	 * @return array|false|mixed
+	 */
     public function getExportExcelFilter($user_id) {
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
+	    $filters = false;
 
-        try {
-        	$query->select('*')
-		        ->from($db->quoteName('#__emundus_filters'))
-		        ->where($db->quoteName('user').' = '.$user_id.' AND constraints LIKE '.$db->quote('%excelfilter%'));
-            $db->setQuery($query);
-            return $db->loadObjectList();
+		if (!empty($user_id)) {
+			$db = JFactory::getDBO();
+			$query = $db->getQuery(true);
 
-        } catch (Exception $e) {
-            echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-            return false;
-        }
+			try {
+				$query->select('*')
+					->from($db->quoteName('#__emundus_filters'))
+					->where($db->quoteName('user').' = '.$user_id.' AND constraints LIKE '.$db->quote('%excelfilter%'));
+				$db->setQuery($query);
+
+				$filters = $db->loadObjectList();
+			} catch (Exception $e) {
+				echo $e->getMessage();
+				JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+				$filters = false;
+			}
+		}
+
+	    return $filters;
     }
 
     //// get profile from elements IDs
