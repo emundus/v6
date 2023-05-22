@@ -835,7 +835,8 @@ class EmundusModelUsers extends JModelList {
 
         $db = JFactory::getDBO();
         $config = JFactory::getConfig();
-        $offset = !empty($config->get('offset')) ? $config->get('offset') : 'Europe/Paris';
+		$config_offset = $config->get('offset');
+        $offset = $config_offset ?: 'Europe/Paris';
         $timezone = new DateTimeZone($offset);
         $now = JFactory::getDate()->setTimezone($timezone);
 
