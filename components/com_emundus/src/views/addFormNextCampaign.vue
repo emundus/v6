@@ -116,7 +116,6 @@
 
 <script>
 import mixin from '../mixins/mixin';
-import moment from "moment";
 import axios from "axios";
 
 import addCampaign from "@/views/addCampaign";
@@ -125,7 +124,6 @@ import AddDocumentsDropfiles from "@/components/FunnelFormulaire/addDocumentsDro
 import addEmail from "@/components/FunnelFormulaire/addEmail";
 import addFormulaire from "@/components/FunnelFormulaire/addFormulaire";
 import AddEvaluationGrid from "@/components/FunnelFormulaire/addEvaluationGrid";
-import {global} from "../store/global";
 import Swal from "sweetalert2";
 
 const qs = require("qs");
@@ -274,14 +272,15 @@ export default {
 				currentLanguage = 'fr-FR';
 			}
 
+			const dateOptions = { dateStyle: 'long', timeStyle: 'short' };
 	    const startDate = new Date(campaign.start_date);
-	    this.form.start_date = new Intl.DateTimeFormat(currentLanguage, { dateStyle: 'long', timeStyle: 'short' }).format(startDate);
+	    this.form.start_date = new Intl.DateTimeFormat(currentLanguage, dateOptions).format(startDate);
 
       if (this.form.end_date === '0000-00-00 00:00:00') {
         this.form.end_date = null;
       } else {
         const endDate = new Date(campaign.end_date);
-				this.form.end_date = new Intl.DateTimeFormat(currentLanguage, { dateStyle: 'long', timeStyle: 'short' }).format(endDate);
+				this.form.end_date = new Intl.DateTimeFormat(currentLanguage, dateOptions).format(endDate);
       }
     },
 
@@ -359,15 +358,9 @@ export default {
     setProfileId(prid) {
       this.profileId = prid;
     },
-
-    moment(date) {
-      return moment(date);
-    },
-
     next() {
       if (this.menuHighlight < 2) {
         let index = this.menuHighlight + 1;
-        console.log(index);
         this.changeToCampMenu(index)
       } else if(this.menuHighlightProg < 1) {
         this.changeToProgMenu(0)
