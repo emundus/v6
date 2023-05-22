@@ -26,6 +26,12 @@ jimport('joomla.application.component.model');
 class PlgFabrik_ElementEmundus_Currency extends PlgFabrik_Element
 {
 
+    protected string $inputValue;
+    protected string $symbol;
+    protected array $allCurrency;
+    protected string $iso3;
+
+
 	/**
 	 * Shows the data formatted for the list view
 	 *
@@ -39,6 +45,19 @@ class PlgFabrik_ElementEmundus_Currency extends PlgFabrik_Element
 	{
 		return parent::renderListData($data, $thisRow, $opts);
 	}
+
+    public function preRenderElement($data, $repeatCounter = 0)
+    {
+        $this->allCurrency = $this->getDataCurrency();
+        $this->inputValue = $this->getValue($data, $repeatCounter);
+        $this->iso3 = $this->getIso3($this->inputValue);
+        $currencyObject = $this->getCurrencyObject($this->iso3);
+        $this->symbol = $currencyObject->symbol;
+
+
+
+
+    }
 
 	/**
 	 * Draws the html form element
@@ -72,14 +91,7 @@ class PlgFabrik_ElementEmundus_Currency extends PlgFabrik_Element
 	 */
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
-		$value = parent::getValue($data, $repeatCounter, $opts);
-
-		if (is_array($value))
-		{
-			return array_pop($value);
-		}
-
-		return $value;
+        return parent::getValue($data, $repeatCounter, $opts);
 	}
 
 	/**
@@ -91,9 +103,13 @@ class PlgFabrik_ElementEmundus_Currency extends PlgFabrik_Element
 	 */
 	public function elementJavascript($repeatCounter)
 	{
-		$params = $this->getParams();
 		$id = $this->getHTMLId($repeatCounter);
 		$opts = $this->getElementJSOptions($repeatCounter);
+
+        $opts->allCurrency = $this->allCurrency;
+        $opts->value = $this->inputValue;
+        $opts->symbol = $this->symbol;
+        $opts->iso3 = $this->iso3;
 
 		return array('FbCurrency', $id, $opts);
 	}
@@ -110,6 +126,38 @@ class PlgFabrik_ElementEmundus_Currency extends PlgFabrik_Element
 	{
 		return $val;
 	}
+
+    public function getDataCurrency()
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('name, iso3, symbol')
+            ->from($db->quoteName('data_currency'));
+        $db->setQuery($query);
+
+        $db->execute();
+        return $db->loadObjectList();
+    }
+
+    public function getIso3($input = null)
+    {
+        return $input !== ''
+            ? substr($input,-4 , -1)
+            : $this->getParams()->get('default_currency');
+    }
+
+    private function getCurrencyObject($iso3)
+    {
+        $currencyObject = null;
+
+        foreach ($this->allCurrency as $key => $value) {
+            if ($value->iso3 === $iso3)
+            {
+                $currencyObject = $value;
+            }
+        }
+        return $currencyObject;
+    }
 
     /**
      * Internal element validation

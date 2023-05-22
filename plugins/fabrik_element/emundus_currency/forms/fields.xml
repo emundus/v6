@@ -30,9 +30,9 @@
 				   label="PLG_ELEMENT_CURRENCY_DEFAULT_CURRENCY"
 				   query="SELECT *,
 				   CONCAT(name, ' (', symbol, ' ', iso3,')') as renderBack
-				   from currency"
-				   key_field="renderBack"
-				   field_value="iso3"
+				   from data_currency"
+				   value_field="renderBack"
+				   key_field="iso3"
 				   default="Euro (€ EUR)"
 				/>
 
