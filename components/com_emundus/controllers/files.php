@@ -1324,6 +1324,10 @@ class EmundusControllerFiles extends JControllerLegacy
         $excel_file_name = $jinput->get('excelfilename', null);
 
         $opts = $this->getcolumn($opts);
+
+		// TODO: upper-case is mishandled, remove temporarily until fixed
+	    $opts = array_diff($opts, ['upper-case']);
+
         $col = $this->getcolumn($elts);
         $colsup = $this->getcolumn($objs);
         $colOpt = array();

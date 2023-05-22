@@ -2591,6 +2591,9 @@ $(document).ready(function() {
                                 '<label for="em-ex-overall" class="em-mb-0-important">'+Joomla.JText._('COM_EMUNDUS_EVALUATIONS_OVERALL')+'</label></div>' +
                                 '</div></div></div>')
 
+                            // TODO: fix upper-case options
+                            // '<div class="em-flex-row em-mb-4"><input class="em-ex-check0" type="checkbox" value="upper-case" name="upper-case" id="upper-case" style="max-height: 20px;"/>' +
+                            // '<label for="upper-case" class="em-mb-0-important">'+Joomla.JText._('COM_EMUNDUS_TO_UPPER_CASE')+'</label></div>' +
                             $('#data').append( '<div id="methode" class="em-grid-2 em-mt-16">'+
                                 '<div><p>' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_OPTION')+ '</p>' +
                                 '<div id="exp" class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16">'+
@@ -2606,8 +2609,6 @@ $(document).ready(function() {
                                 '<label for="form-title" class="em-mb-0-important">'+Joomla.JText._('COM_EMUNDUS_FORM_TITLE')+'</label></div>' +
                                 '<div class="em-flex-row em-mb-4"><input class="em-ex-check0" type="checkbox" value="form-group" name="form-group" id="form-group" style="max-height: 20px;"/>' +
                                 '<label for="form-group" class="em-mb-0-important">'+Joomla.JText._('COM_EMUNDUS_FORM_GROUP')+'</label></div>' +
-                                '<div class="em-flex-row em-mb-4"><input class="em-ex-check0" type="checkbox" value="upper-case" name="upper-case" id="upper-case" style="max-height: 20px;"/>' +
-                                '<label for="upper-case" class="em-mb-0-important">'+Joomla.JText._('COM_EMUNDUS_TO_UPPER_CASE')+'</label></div>' +
                                 '</div>'+
                                 '</div>'+
                                 '</div></div>' );
