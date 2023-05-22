@@ -422,10 +422,7 @@ export default {
         });
 
         try {
-            return await client().post(
-                'index.php?option=com_emundus&controller=formbuilder&task=createmenu',
-                formData
-            );
+            return await client().post('index.php?option=com_emundus&controller=formbuilder&task=createMenu', formData);
         } catch (e) {
             return {
                 status: false,
