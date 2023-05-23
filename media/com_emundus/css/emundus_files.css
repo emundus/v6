@@ -859,7 +859,6 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 .g-back-office-emundus-tableau .col-md-3.side-panel {
     padding: 0;
     position: sticky;
-    height: 100vh;
     overflow: auto;
 }
 
@@ -1891,8 +1890,8 @@ thead th:hover {
 
 /* Email labels in the email dialog */
 .em-email-label {
-    margin: 1px;
-    padding: 2px 1px !important;
+    padding: 6px 8px !important;
+    font-weight: 400 !important;
 }
 .em-email-label:hover {
     background-color: #ccc;
@@ -1940,6 +1939,10 @@ label[for="em-file_to_upload"]:hover {
 #em-mails-sent, #em-mails-failed, #em-recipitents {
     overflow-y: scroll;
     max-height: 80px;
+    display: flex;
+    column-gap: 4px;
+    flex-wrap: wrap;
+    row-gap: 4px;
 }
 
 /* Sending email modal */
@@ -2288,7 +2291,6 @@ label[for="em-file_to_upload"]:hover {
     border-top-left-radius: 0px !important;
     padding: 11px;
 }
-
 
 @media screen and (max-width: 991px){
     .download{
@@ -2656,6 +2658,12 @@ a.copy-0:focus {
     align-items: center;
 }
 
+@media all and  (max-height: 959px) {
+    .g-back-office-emundus-tableau .col-md-3.side-panel{
+        height: 83vh;
+    }
+}
+
 @media all and (min-width: 768px) and (max-width: 959px) {
     .g-back-office-emundus-tableau.files-board .panel-body,
     .g-back-office-emundus-tableau .col-md-3.side-panel{
@@ -2801,7 +2809,7 @@ a.copy-0:focus {
 
 @media all and (max-width: 1239px) {
 
-    .g-back-office-emundus-tableau #g-main-mainbody .platform-content {
+    .g-back-office-emundus-tableau:not(.files-board) #g-main-mainbody .platform-content {
         width: 100% !important;
         margin: auto !important;
         padding: 0 20px !important;

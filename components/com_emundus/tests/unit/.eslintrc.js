@@ -1,5 +1,6 @@
 module.exports = {
   env: {
-    mocha: true,
-  },
+    'jest': true,
+    'jest/globals': true
+  }
 };

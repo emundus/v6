@@ -34,6 +34,7 @@ if($params->get('menu_style') == 'tchooz_vertical') {
 $display_applicant_menu = $params->get('display_applicant_menu', 1);
 $applicant_menu = $params->get('applicant_menu', '');
 $display_tchooz = $params->get('displayTchooz', 1);
+$favicon_link = $params->get('favicon_link', 'index.php');
 
 $user = JFactory::getSession()->get('emundusUser');
 $m_profile = new EmundusModelProfile();

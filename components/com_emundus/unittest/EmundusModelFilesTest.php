@@ -53,6 +53,11 @@ class EmundusModelFilesTest extends TestCase{
         //$coordinator = @EmundusUnittestHelperSamples::createSampleUser(2,'gestionnaire@emundus.fr');
     }
 
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
+
     // Brice
     /*public function testTagFile() {
         $user = @EmundusUnittestHelperSamples::createSampleUser();

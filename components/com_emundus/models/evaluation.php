@@ -1794,6 +1794,7 @@ class EmundusModelEvaluation extends JModelList {
         $replace_document = $eMConfig->get('export_replace_doc', 0);
 	    $generated_doc_name = $eMConfig->get('generated_doc_name', "");
 	    $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
+	    $whitespace_textarea = $eMConfig->get('generate_letter_whitespace_textarea', 0);
 
         $tmp_path = JPATH_SITE.DS.'tmp'.DS;
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
@@ -2056,6 +2057,25 @@ class EmundusModelEvaluation extends JModelList {
 					                    }
 
 				                    }
+				                    elseif($elt['plugin'] == 'textarea' && $whitespace_textarea == 1){
+					                    $formatted_text = explode('<br />',nl2br($fabrikValues[$elt['id']][$fnum]['val']));
+					                    $inline = new \PhpOffice\PhpWord\Element\TextRun();
+					                    foreach ($formatted_text as $key => $text){
+						                    if(!empty($text))
+						                    {
+							                    if($key > 0)
+							                    {
+								                    $inline->addTextBreak();
+							                    }
+							                    $inline->addText(trim($text),array('name' => 'Arial'));
+						                    }
+					                    }
+					                    $fabrikValues[$elt['id']][$fnum]['val'] = $inline;
+					                    $fabrikValues[$elt['id']][$fnum]['complex_data'] = true;
+				                    }
+				                    elseif($elt['plugin'] == 'emundus_phonenumber'){
+					                    $fabrikValues[$elt['id']][$fnum]['val'] = substr($fabrikValues[$elt['id']][$fnum]['val'], 2, strlen($fabrikValues[$elt['id']][$fnum]['val']));
+				                    }
 				                    else {
 					                    if (@$groupParams->repeat_group_button == 1 || $elt['plugin'] === 'databasejoin') {
 						                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
@@ -2063,6 +2083,10 @@ class EmundusModelEvaluation extends JModelList {
 					                    else {
 						                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
 					                    }
+				                    }
+
+				                    if(!isset($fabrikValues[$elt['id']][$fnum]['complex_data'])){
+					                    $fabrikValues[$elt['id']][$fnum]['complex_data'] = false;
 				                    }
 			                    }
 
@@ -2115,8 +2139,12 @@ class EmundusModelEvaluation extends JModelList {
 
 				                    foreach ($idFabrik as $id) {
 					                    if (isset($fabrikValues[$id][$fnum])) {
-						                    $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
-						                    $preprocess->setValue($id, $value);
+						                    if($fabrikValues[$id][$fnum]['complex_data']){
+							                    $preprocess->setComplexValue($id, $fabrikValues[$id][$fnum]['val']);
+						                    } else {
+							                    $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
+							                    $preprocess->setValue($id, $value);
+						                    }
 					                    }
 					                    else {
 						                    $preprocess->setValue($id, '');

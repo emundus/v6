@@ -51,6 +51,57 @@ class EmundusModelCampaignTest extends TestCase
         $this->h_sample = new EmundusUnittestHelperSamples;
     }
 
+	public function testCampaignWorkflowDatabase() {
+		/**
+		 * Table emundus_campaign_workflow should exists
+		 */
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select('*')
+			->from($db->quoteName('#__emundus_campaign_workflow'));
+
+		try {
+			$db->setQuery($query);
+			$db->loadObjectList();
+			$table_exists = true;
+		} catch(Exception $e) {
+			$table_exists = false;
+		}
+
+		$this->assertTrue($table_exists, 'Table #__emundus_campaign_workflow should exists');
+
+		$query->clear()
+			->select('*')
+			->from($db->quoteName('#__emundus_campaign_workflow'))
+			->where($db->quoteName('display_preliminary_documents') . ' IS NULL')
+			->orWhere($db->quoteName('specific_documents') . ' IS NULL');
+
+		try {
+			$db->setQuery($query);
+			$db->loadObjectList();
+			$columns_exists = true;
+		} catch(Exception $e) {
+			$columns_exists = false;
+		}
+
+		$this->assertTrue($columns_exists, 'Table #__emundus_campaign_workflow should have 2 new columns display_preliminary_documents and specific_documents');
+
+		$query->clear()
+			->select('*')
+			->from($db->quoteName('#__emundus_campaign_workflow_repeat_documents'));
+
+		try {
+			$db->setQuery($query);
+			$db->loadObjectList();
+			$table_exists = true;
+		} catch(Exception $e) {
+			$table_exists = false;
+		}
+
+		$this->assertTrue($table_exists, 'Table #__emundus_campaign_workflow_repeat_documents should exists');
+	}
+
     public function createUnitTestCampaign($program)
     {
         $campaign_id = 0;
@@ -235,6 +286,7 @@ class EmundusModelCampaignTest extends TestCase
 
                 $workflow_on_all = $this->m_campaign->createWorkflow(9, [0], 1, null, []);
                 $current_file_workflow = $this->m_campaign->getCurrentCampaignWorkflow($fnum);
+				$this->assertNotNull($current_file_workflow, 'La phase courante doit être non nulle.');
                 $this->assertSame(intval($workflow_on_all), intval($current_file_workflow->id), 'Le dossier est impacté par le workflow qui n\'a ni campagne ni programme par défaut, mais est sur le même statut.');
 
                 $workflow_on_program = $this->m_campaign->createWorkflow(9, [0], 1, null, ['programs' => [$program['programme_code']]]);
@@ -266,7 +318,16 @@ class EmundusModelCampaignTest extends TestCase
                 $this->assertSame(intval($new_workflow_id), intval($current_file_workflow->id));
 
                 $this->assertTrue($this->m_campaign->deleteWorkflows(), 'La suppression de workflow fonctionne');
-            }
+
+				$this->assertObjectHasAttribute('display_preliminary_documents', $current_file_workflow, 'Le workflow contient un attribut "Afficher les Documents à télécharger"');
+				$this->assertSame('0', $current_file_workflow->display_preliminary_documents, 'Le workflow contient un attribut "Afficher les Documents à télécharger" à 0 par défaut');
+
+				$this->assertObjectHasAttribute('specific_documents', $current_file_workflow, 'Le workflow contient un attribut "Documents spécifique"');
+				$this->assertSame('0', $current_file_workflow->specific_documents, 'Le workflow contient un attribut "Documents spécifique" à 0 par défaut');
+
+				$this->assertObjectHasAttribute('documents', $current_file_workflow, 'Le workflow contient des documents');
+				$this->assertSame([], $current_file_workflow->documents, 'Le workflow contient un tableau vide par défaut');
+			}
         }
     }
 
@@ -288,4 +349,99 @@ class EmundusModelCampaignTest extends TestCase
         $this->m_campaign->createWorkflow(9, [1], 1, null, ['programs' => [$program['programme_code']]]);
         $this->assertSame(2,  sizeof($this->m_campaign->getAllCampaignWorkflows($new_campaign_id)));
     }
+
+	function testpinCampaign() {
+		$pinned = $this->m_campaign->pinCampaign(9999);
+		$this->assertFalse($pinned, 'La campagne 9999 n\'existe pas, donc on ne peut pas la mettre en avant');
+
+		$program = $this->m_programme->addProgram(['label' => 'Programme PIN CAMPAIGN']);
+		$campaign_id = $this->createUnitTestCampaign($program);
+		$pinned = $this->m_campaign->pinCampaign($campaign_id);
+		$this->assertTrue($pinned, 'La campagne existe, on peut la mettre en avant');
+
+		$campaign = $this->m_campaign->getCampaignByID($campaign_id);
+		$this->assertSame('1', $campaign['pinned'], 'La campagne est bien mise en avant');
+
+		$new_campaign_id = $this->createUnitTestCampaign($program);
+		$pinned = $this->m_campaign->pinCampaign($new_campaign_id);
+
+		// assert old campaign is not pinned anymore
+		$campaign = $this->m_campaign->getCampaignByID($campaign_id);
+		$this->assertSame('0', $campaign['pinned'], 'La campagne n\'est plus mise en avant');
+
+		// assert new campaign is pinned
+		$campaign = $this->m_campaign->getCampaignByID($new_campaign_id);
+		$this->assertSame('1', $campaign['pinned'], 'La nouvelle campagne est mise en avant');
+
+		// on duplicate campaign, pinned is not duplicated
+		$duplicated = $this->m_campaign->duplicateCampaign($new_campaign_id);
+		$this->assertTrue($duplicated, 'La campagne a bien été dupliquée');
+
+		// get the last campaign
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select('id')
+			->from('#__emundus_setup_campaigns')
+			->order('id DESC')
+			->setLimit(1);
+		$db->setQuery($query);
+		$last_campaign_id = $db->loadResult();
+
+		$campaign = $this->m_campaign->getCampaignByID($last_campaign_id);
+		$this->assertEmpty($campaign['pinned'], 'La nouvelle campagne dupliquée n\'est pas mise en avant');
+	}
+
+	function testunpinCampaign() {
+		$unpinned = $this->m_campaign->unpinCampaign(0);
+		$this->assertFalse($unpinned, 'La campagne 0 n\'existe pas, donc on ne peut pas la retirer de la mise en avant');
+
+		$program = $this->m_programme->addProgram(['label' => 'Programme UNPIN CAMPAIGN']);
+		$campaign_id = $this->createUnitTestCampaign($program);
+
+		$pinned = $this->m_campaign->pinCampaign($campaign_id);
+		$unpinned = $this->m_campaign->unpinCampaign($campaign_id);
+
+		$this->assertTrue($unpinned, 'La campagne existe, on peut la retirer de la mise en avant');
+
+		$campaign = $this->m_campaign->getCampaignByID($campaign_id);
+		$this->assertSame('0', $campaign['pinned'], 'La campagne n\'est plus mise en avant');
+
+		$this->assertFalse($this->m_campaign->unpinCampaign(['svsfg', 'dsgdfg', 'dsg']), 'Un tableau mal formé ne peut pas être passé en paramètre');
+	}
+
+	function testeditDocumentDropfile() {
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->insert($db->quoteName('#__dropfiles_files'))
+			->columns($db->quoteName(['title', 'ext', 'file', 'state']))
+			->values(" 'test', 'pdf', 'test.pdf', 1");
+
+		$db->setQuery($query);
+		$db->execute();
+		$document_id = $db->insertid();
+
+		$updated = $this->m_campaign->editDocumentDropfile($document_id, '');
+		$this->assertFalse($updated, 'Le nom du document ne peut pas être vide');
+
+		$too_long_name = 'testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest';
+		$updated = $this->m_campaign->editDocumentDropfile($document_id, $too_long_name);
+
+		$this->assertTrue($updated, 'Le nom du document a été mis à jour');
+
+		$updated_document = $this->m_campaign->getDropfileDocument($document_id);
+		$this->assertSame(200, strlen($updated_document->title), 'Le nom du document a été tronqué à 200 caractères');
+	}
+
+	function testduplicateCampaign()
+	{
+		$program = $this->m_programme->addProgram(['label' => 'Programme DUPLICATE CAMPAIGN']);
+		$campaign_id = $this->createUnitTestCampaign($program);
+
+		$duplicated = $this->m_campaign->duplicateCampaign($campaign_id);
+		$this->assertTrue($duplicated, 'La campagne a bien été dupliquée');
+
+		$duplicated = $this->m_campaign->duplicateCampaign(0);
+		$this->assertFalse($duplicated, 'La campagne 0 n\'existe pas, donc on ne peut pas la dupliquer');
+	}
 }

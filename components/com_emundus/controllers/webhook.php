@@ -105,7 +105,8 @@ class EmundusControllerWebhook extends JControllerLegacy {
         $doSignaturesMatch = true;
 
         if ($doSignaturesMatch) {
-            $body = json_decode($payload);
+	        $body = json_decode($payload);
+	        JLog::add('YouSign Webhook body: ' . json_encode($body), JLog::INFO, 'com_emundus.webhook');
 
             if ($body->event_name == 'signature_request.done' && !empty($body->data)) {
                 $signatureRequest = $body->data->signature_request;
@@ -127,8 +128,8 @@ class EmundusControllerWebhook extends JControllerLegacy {
                                     ->select('jefr.filename, jefr.fnum, ecc.campaign_id, jefr.attachment_id')
                                     ->from($db->quoteName('#__emundus_files_request', 'jefr'))
                                     ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.fnum = jefr.fnum')
-                                    ->where('keyid = ' .$db->quote($signatureRequest->id))
-                                    ->andWhere('yousign_document_id = ' .$db->quote($document->id));
+                                    ->where('jefr.keyid = ' .$db->quote($signatureRequest->id))
+                                    ->andWhere('jefr.yousign_document_id = ' .$db->quote($document->id));
                                 $db->setQuery($query);
 
                                 $file_request = $db->loadObject();
@@ -159,7 +160,13 @@ class EmundusControllerWebhook extends JControllerLegacy {
                                             ->columns(['fnum', 'timedate', 'user_id', 'campaign_id', 'attachment_id', 'filename', 'can_be_deleted', 'can_be_viewed'])
                                             ->values($db->quote($file_request->fnum) . ', NOW(), 62, ' . $file_request->campaign_id . ', ' . $file_request->attachment_id . ',' . $db->quote(basename($file_path)) . ', 0, 0');
                                         $db->setQuery($query);
-                                        $db->execute();
+                                        $inserted = $db->execute();
+
+										if ($inserted) {
+											JLog::add('Successfully inserted emundus upload for ' . $signatureRequest->id, JLog::INFO, 'com_emundus.webhook');
+										} else {
+											JLog::add('Error inserting emundus upload for ' . $signatureRequest->id, JLog::WARNING, 'com_emundus.webhook');
+										}
 
                                         if ($updated) {
                                             // Mettre a jour les données utilisateurs (retirer les données yousign dans les params)
@@ -189,9 +196,15 @@ class EmundusControllerWebhook extends JControllerLegacy {
                                             }
 
                                             if (file_exists($file_path)) {
+												JLog::add('File downloaded from yousign : signature request id  '. $signatureRequest->id, JLog::INFO, 'com_emundus.webhook');
                                                 header('HTTP/1.1 200');
                                                 echo 'Document donwloaded by eMundus successfully.';
                                                 exit;
+                                            } else {
+												JLog::add('Failed to download file from yousign : signature request id  '. $signatureRequest->id, JLog::ERROR, 'com_emundus.webhook');
+												header('HTTP/1.1 500 Error');
+												echo 'Error 500 - Failed to download signed document';
+												exit;
                                             }
                                         }
                                     } else {
@@ -213,6 +226,12 @@ class EmundusControllerWebhook extends JControllerLegacy {
                         echo 'Error 500 - API configuration missing';
                         exit;
                     }
+                } else {
+					JLog::add('YouSign bad JSON : '. file_get_contents('php://input'), JLog::ERROR, 'com_emundus.webhook');
+
+					header('HTTP/1.1 400 Error');
+					echo 'Error 400 - Bad Request';
+					exit;
                 }
             } else {
                 JLog::add('YouSign bad JSON : '. file_get_contents('php://input'), JLog::ERROR, 'com_emundus.webhook');
@@ -467,6 +486,14 @@ class EmundusControllerWebhook extends JControllerLegacy {
 		}
 		return true;
 	}
+
+    /**
+     *
+     * @return false|void
+     *
+     * @throws Exception
+     * @since version
+     */
     public function export_siscole(){
 
         $eMConfig 	= JComponentHelper::getParams('com_emundus');

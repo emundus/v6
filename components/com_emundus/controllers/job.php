@@ -37,7 +37,7 @@ class EmundusControllerJob extends EmundusController {
         $app->setUserState('com_emundus.apply.job.id', $jobId);
 
         // Get the model.
-        $model = $this->getModel('Job', 'EmundusModel');
+        $model = new EmundusModelJob();
         $fnum = $model->apply($user->id, $jobId);
         if ($fnum) {
             // Redirect to the edit screen.
@@ -89,7 +89,7 @@ class EmundusControllerJob extends EmundusController {
         $app->setUserState('com_emundus.cancel.job.id', $jobId);
 
         // Get the model.
-        $model = $this->getModel('Job', 'EmundusModel');
+        $model = new EmundusModelJob();
 
         if ($model->cancel($user->id, $fnum))
             $this->setMessage(JText::_('COM_EMUNDUS_JOBS_DELETED'));
@@ -114,7 +114,7 @@ class EmundusControllerJob extends EmundusController {
         $app->setUserState('com_emundus.edit.job.id', $editId);
 
         // Get the model.
-        $model = $this->getModel('Job', 'EmundusModel');
+        $model = new EmundusModelJob();
 
         // Check out the item
         if ($editId)
@@ -162,7 +162,7 @@ class EmundusControllerJob extends EmundusController {
 
             // Redirect to the list screen.
             $this->setMessage(JText::_('COM_EMUNDUS_ITEM_SAVED_SUCCESSFULLY'));
-            $menu = & JFactory::getApplication()->getMenu();
+            $menu = JFactory::getApplication()->getMenu();
             $item = $menu->getActive();
             $this->setRedirect(JRoute::_($item->link, false));
         } else throw new Exception(500);
@@ -176,7 +176,7 @@ class EmundusControllerJob extends EmundusController {
         //Checking if the user can remove object
         $user = JFactory::getUser();
         if ($user->authorise($user->authorise('core.delete', 'com_emundus'))) {
-            $model = $this->getModel('Job', 'EmundusModel');
+            $model = new EmundusModelJob();
 
             // Get the user data.
             $id = $app->input->getInt('id', 0);
@@ -203,7 +203,7 @@ class EmundusControllerJob extends EmundusController {
             }
 
             // Redirect to the list screen.
-            $menu = & JFactory::getApplication()->getMenu();
+            $menu = JFactory::getApplication()->getMenu();
             $item = $menu->getActive();
             $this->setRedirect(JRoute::_($item->link, false));
         } else throw new Exception(500);

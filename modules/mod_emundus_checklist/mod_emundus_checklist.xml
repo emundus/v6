@@ -73,6 +73,16 @@
 					<option
 						value="0">JHIDE</option>
 				</field>
+				<field type="text" size="60" name="preliminary_documents_title" label="MOD_EMUNDUS_CHECKLIST_preliminary_DOCUMENTS_TITLE" description="MOD_EMUNDUS_CHECKLIST_preliminary_DOCUMENTS_TITLE_DESC" default="PRELIMINARY_DOCUMENTS"/>
+				<field
+						name="show_preliminary_documents"
+						type="radio"
+						default="0"
+						label="MOD_EMUNDUS_CHECKLIST_SHOW_PRELIMINARY_DOCUMENTS"
+						description="MOD_EMUNDUS_CHECKLIST_SHOW_PRELIMINARY_DOCUMENTS_DESC">
+					<option value="1">JYES</option>
+					<option value="0">JNO</option>
+				</field>
 				<field name="showsend" type="list" default="1" label="MOD_EMUNDUS_CHECKLIST_SHOW_SEND" description="MOD_EMUNDUS_CHECKLIST_SHOW_SEND_DESC">
 					<option value="1">JYES</option>
 					<option value="0">JNO</option>

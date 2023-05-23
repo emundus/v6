@@ -36,6 +36,7 @@ class EmundusModelFormbuilder extends JModelList {
         $this->model_language = JModelLegacy::getInstance('Override', 'LanguagesModel');
         $this->model_language_overrides = JModelLegacy::getInstance('Overrides', 'LanguagesModel');
         $this->model_menus = JModelLegacy::getInstance('Item', 'MenusModel');
+	    JLog::addLogger(['text_file' => 'com_emundus.formbuilder.php'], JLog::ALL, array('com_emundus.formbuilder'));
     }
 
     public function replaceAccents($value){
@@ -449,18 +450,18 @@ class EmundusModelFormbuilder extends JModelList {
      * @param $prid int profile id
      * @param $label array labels by language
      * @param $intro array intros by language
+     * @param $type string (form || eval)
      * @return false|int|mixed
      */
-    function createFabrikForm($prid, $label, $intro) {
-        $formid = 0;
+    function createFabrikForm($prid, $label, $intro, $type = '') {
+	    $form_id = 0;
 
         if (!empty($prid) && !empty($label) && is_array($label)) {
             $db = $this->getDbo();
             $query = $db->getQuery(true);
 
             try {
-                $params = $this->h_fabrik->prepareFormParams();
-
+                $params = $this->h_fabrik->prepareFormParams(true, $type);
                 $data = array(
                     'label' => 'FORM_' . $prid,
                     'record_in_database' => 1,
@@ -484,25 +485,25 @@ class EmundusModelFormbuilder extends JModelList {
 
                 $query->insert($db->quoteName('#__fabrik_forms'))
                     ->columns($db->quoteName(array_keys($data)))
-                    ->values(implode(',',$db->quote(array_values($data))));
+                    ->values(implode(',', $db->quote(array_values($data))));
                 $db->setQuery($query);
                 $db->execute();
-                $formid = $db->insertid();
+                $form_id = $db->insertid();
 
-                if (!empty($formid)) {
+                if (!empty($form_id)) {
                     $query->clear()
                         ->update($db->quoteName('#__fabrik_forms'))
-                        ->set($db->quoteName('label') . ' = ' . $db->quote('FORM_' . $prid . '_' . $formid))
-                        ->set($db->quoteName('intro') . ' = ' . $db->quote('<p>' . 'FORM_' . $prid . '_INTRO_' . $formid . '</p>'));
-                    $query->where($db->quoteName('id') . ' = ' . $db->quote($formid));
+                        ->set($db->quoteName('label') . ' = ' . $db->quote('FORM_' . $prid . '_' . $form_id))
+                        ->set($db->quoteName('intro') . ' = ' . $db->quote('<p>' . 'FORM_' . $prid . '_INTRO_' . $form_id . '</p>'));
+                    $query->where($db->quoteName('id') . ' = ' . $db->quote($form_id));
                     $db->setQuery($query);
                     $db->execute();
 
                     // Add translation to translation files
-                    $this->translate('FORM_' . $prid . '_' . $formid, $label,'fabrik_forms', $formid,'label');
+                    $this->translate('FORM_' . $prid . '_' . $form_id, $label,'fabrik_forms', $form_id,'label');
 
                     if (!empty($intro) && is_array($intro)) {
-                        $this->translate('FORM_' . $prid . '_INTRO_' . $formid, $intro,'fabrik_forms', $formid,'intro');
+                        $this->translate('FORM_' . $prid . '_INTRO_' . $form_id, $intro,'fabrik_forms', $form_id,'intro');
                     }
                 }
             } catch (Exception $e) {
@@ -510,7 +511,7 @@ class EmundusModelFormbuilder extends JModelList {
             }
         }
 
-        return $formid;
+        return $form_id;
     }
 
     function createFabrikList($prid,$formid){
@@ -692,19 +693,20 @@ class EmundusModelFormbuilder extends JModelList {
             $params = $this->h_fabrik->prepareFormParams();
             $params = $this->h_fabrik->prepareSubmittionPlugin($params);
 
+			$now = gmdate('Y-m-d H:i:s');
             $data = array(
                 'label' => 'FORM_' . $prid,
                 'record_in_database' => 1,
                 'error' => 'FORM_ERROR',
                 'intro' => '<p>' . 'FORM_' . $prid . '_INTRO</p>',
-                'created' => date('Y-m-d h:i:s'),
+                'created' => $now,
                 'created_by' => JFactory::getUser()->id,
                 'created_by_alias' => JFactory::getUser()->username,
-                'modified' => date('Y-m-d h:i:s'),
+                'modified' => $now,
                 'modified_by' => JFactory::getUser()->id,
                 'checked_out' => JFactory::getUser()->id,
-                'checked_out_time' => date('Y-m-d h:i:s'),
-                'publish_up' => date('Y-m-d h:i:s'),
+                'checked_out_time' => $now,
+                'publish_up' => $now,
                 'reset_button_label' => 'RESET',
                 'submit_button_label' => 'SUBMIT',
                 'form_template' => '_emundus',
@@ -1098,17 +1100,15 @@ class EmundusModelFormbuilder extends JModelList {
         }
     }
 
-    function createSectionSimpleElements($gid, $plugins)
+    function createSectionSimpleElements($gid, $plugins, $mode = 'forms')
     {
         $created_elements = [];
         $user = JFactory::getUser()->id;
 
+		$evaluation = $mode === 'eval' ? 1 : 0;
+
         foreach ($plugins as $plugin) {
-
-
             switch ($plugin) {
-
-
                 case 'birthday':
 
                     $label = array(
@@ -1116,7 +1116,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Birthday',
                     );
 
-                    $created_elements[] = $this->createSimpleElement($gid, $plugin, null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, $plugin, null, $evaluation, $label);
                     break;
                 case 'date_debut':
                     $label = array(
@@ -1124,7 +1124,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Contract start date',
                     );
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'birthday', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'birthday', null, $evaluation, $label);
                     break;
                 case 'date_fin':
                     $label = array(
@@ -1132,7 +1132,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Contract end date',
                     );
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'birthday', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'birthday', null, $evaluation, $label);
                     break;
 
                 case 'telephone':
@@ -1142,7 +1142,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Phone',
                     );
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
                 case 'fonction':
 
@@ -1152,7 +1152,7 @@ class EmundusModelFormbuilder extends JModelList {
                     );
 
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
 
                 case 'employeur':
@@ -1161,7 +1161,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Employer',
                     );
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
 
                 case 'ville_employeur':
@@ -1172,7 +1172,7 @@ class EmundusModelFormbuilder extends JModelList {
                     );
 
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
                 case 'missions':
 
@@ -1182,7 +1182,7 @@ class EmundusModelFormbuilder extends JModelList {
                     );
 
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'textarea', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'textarea', null, $evaluation, $label);
                     break;
                 case 'adresse':
                     $label = array(
@@ -1191,21 +1191,21 @@ class EmundusModelFormbuilder extends JModelList {
                     );
 
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
                 case 'code postal':
                     $label = array(
                         'fr' => 'Code postal',
                         'en' => 'postal code',
                     );
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
                 case 'ville':
                     $label = array(
                         'fr' => 'Ville',
                         'en' => 'City',
                     );
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
                 case 'adresseComplementaire':
                     $label = array(
@@ -1214,7 +1214,7 @@ class EmundusModelFormbuilder extends JModelList {
                     );
 
 
-                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, $evaluation, $label);
                     break;
 
                 case 'email':
@@ -1224,7 +1224,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Email',
                     );
 
-                    $created_elements[] = $this->createSimpleElement($gid, $plugin, null, 0, $label);
+                    $created_elements[] = $this->createSimpleElement($gid, $plugin, null, $evaluation, $label);
 
                     break;
                 case 'nationalite':
@@ -1234,7 +1234,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Nationality',
                     );
 
-                    $el_id = $this->createSimpleElement($gid, 'databasejoin', null, 0, $label);
+                    $el_id = $this->createSimpleElement($gid, 'databasejoin', null, $evaluation, $label);
 
                     $created_elements[] = $el_id;
                     $element = json_decode(json_encode($this->getElement($el_id, $gid)), true);
@@ -1252,7 +1252,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'en' => 'Country',
                     );
 
-                    $el_id = $this->createSimpleElement($gid, 'databasejoin', null, 0, $label);
+                    $el_id = $this->createSimpleElement($gid, 'databasejoin', null, $evaluation, $label);
 
                     $created_elements[] = $el_id;
                     $element = json_decode(json_encode($this->getElement($el_id, $gid)), true);
@@ -1266,18 +1266,14 @@ class EmundusModelFormbuilder extends JModelList {
                     break;
 
                 default:
-
-                    $created_elements[] = $this->createSimpleElement($gid, $plugin);
+                    $created_elements[] = $this->createSimpleElement($gid, $plugin, null, $evaluation);
                     break;
-
-
             }
 
         }
 
 
-        return ["data" => $created_elements];
-
+        return $created_elements;
     }
 
     function createElement($name,$group_id,$plugin,$label,$default = '',$hidden = 0,$create_column = 1,$show_in_list_summary = 1,$published = 1,$parent_id = 0,$width = 20) {
@@ -1364,183 +1360,217 @@ class EmundusModelFormbuilder extends JModelList {
         }
     }
 
+	/**
+	 * Returns the element id of the created element
+	 * false if error
+	 * @param $gid
+	 * @param $plugin
+	 * @param $attachementId
+	 * @param $evaluation
+	 * @param $labels
+	 * @return false|mixed
+	 */
     function createSimpleElement($gid, $plugin, $attachementId = null, $evaluation = 0, $labels = null) {
-        $user = JFactory::getUser();
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
+	    $elementId = false;
 
-        try {
-            $dbtype = $this->h_fabrik->getDBType($plugin);
-            $dbnull = 'NULL';
-            $default = '';
+		if (!empty($gid) && !empty($plugin)) {
+			$user = JFactory::getUser();
+			$db = $this->getDbo();
+			$query = $db->getQuery(true);
 
-            if ($plugin === 'display') {
-                $default = 'Ajoutez du texte personnalisé pour vos candidats';
-            }
+			try {
+				$dbtype = $this->h_fabrik->getDBType($plugin);
+				$dbnull = 'NULL';
+				$default = '';
 
-            // Prepare parameters
-            $params = $this->h_fabrik->prepareElementParameters($plugin);
-            //
+				if ($plugin === 'display') {
+					$default = 'Ajoutez du texte personnalisé pour vos candidats';
+				}
 
-            // Prepare ordering
-            $query->clear()
-                ->select('ordering')
-                ->from($db->quoteName('#__fabrik_elements'))
-                ->where($db->quoteName('group_id') . ' = ' . $db->quote($gid))
-                ->order('ordering');
+				// Prepare parameters
+				$params = $this->h_fabrik->prepareElementParameters($plugin);
+				//
 
-            $db->setQuery($query);
-            $results = $db->loadColumn();
-            $orderings = [];
-            foreach ($results as $result) {
-                if (!in_array($result, $orderings)) {
-                    $orderings[] = intval($result);
-                }
-            }
-            //
+				// Prepare ordering
+				$query->clear()
+					->select('ordering')
+					->from($db->quoteName('#__fabrik_elements'))
+					->where($db->quoteName('group_id') . ' = ' . $db->quote($gid))
+					->order('ordering');
 
-            // Create our element
-            $query->clear()
-                ->insert($db->quoteName('#__fabrik_elements'))
-                ->set($db->quoteName('name') . ' = ' . $db->quote('element'))
-                ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
-                ->set($db->quoteName('plugin') . ' = ' . $db->quote($plugin == 'nom' || $plugin == 'prenom' || $plugin == 'email' ? 'field' : $plugin))
-                ->set($db->quoteName('label') . ' = ' . $db->quote(strtoupper('element_' . $gid)))
-                ->set($db->quoteName('checked_out') . ' = 0')
-                ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('created_by') . ' = ' . $user->id)
-                ->set($db->quoteName('created_by_alias') . ' = ' . $db->quote($user->username))
-                ->set($db->quoteName('modified') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('modified_by') . ' = ' . $user->id)
-                ->set($db->quoteName('width') . ' = 0')
-                ->set($db->quoteName('default') . ' = ' . $db->quote($default))
-                ->set($db->quoteName('hidden') . ' = 0')
-                ->set($db->quoteName('eval') . ' = 1')
-                ->set($db->quoteName('ordering') . ' = ' . $db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
-                ->set($db->quoteName('parent_id') . ' = 0')
-                ->set($db->quoteName('published') . ' = 1')
-                ->set($db->quoteName('access') . ' = 1')
-                ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
-            $db->setQuery($query);
-            $db->execute();
-            $elementId = $db->insertid();
-            //
+				$db->setQuery($query);
+				$results = $db->loadColumn();
+				$orderings = [];
+				foreach ($results as $result) {
+					if (!in_array($result, $orderings)) {
+						$orderings[] = intval($result);
+					}
+				}
+				//
 
-            $query->clear()
-                ->select(['fg.is_join, fg.params, fl.db_table_name AS dbtable'])
-                ->from($db->quoteName('#__fabrik_formgroup', 'ffg'))
-                ->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('ffg.form_id'))
-                ->leftJoin($db->quoteName('#__fabrik_groups', 'fg') . ' ON ' . $db->quoteName('fg.id') . ' = ' . $db->quoteName('ffg.group_id'))
-                ->where($db->quoteName('fg.id') . ' = ' . $db->quote($gid));
-            $db->setQuery($query);
-            $formlist = $db->loadObject();
-            $group_params = json_decode($formlist->params);
+				// Create our element
+				$query->clear()
+					->insert($db->quoteName('#__fabrik_elements'))
+					->set($db->quoteName('name') . ' = ' . $db->quote('element'))
+					->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
+					->set($db->quoteName('plugin') . ' = ' . $db->quote($plugin == 'nom' || $plugin == 'prenom' || $plugin == 'email' ? 'field' : $plugin))
+					->set($db->quoteName('label') . ' = ' . $db->quote(strtoupper('element_' . $gid)))
+					->set($db->quoteName('checked_out') . ' = 0')
+					->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+					->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+					->set($db->quoteName('created_by') . ' = ' . $user->id)
+					->set($db->quoteName('created_by_alias') . ' = ' . $db->quote($user->username))
+					->set($db->quoteName('modified') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+					->set($db->quoteName('modified_by') . ' = ' . $user->id)
+					->set($db->quoteName('width') . ' = 0')
+					->set($db->quoteName('default') . ' = ' . $db->quote($default))
+					->set($db->quoteName('hidden') . ' = 0')
+					->set($db->quoteName('eval') . ' = 1')
+					->set($db->quoteName('ordering') . ' = ' . $db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
+					->set($db->quoteName('parent_id') . ' = 0')
+					->set($db->quoteName('published') . ' = 1')
+					->set($db->quoteName('access') . ' = 1')
+					->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
+				$db->setQuery($query);
+				$element_inserted = $db->execute();
 
-            // Prepare label
-            if($labels != null) {
-                $label = $labels;
-            } else {
-                $label = $this->h_fabrik->initLabel($plugin);
-            }
-            $this->translate('ELEMENT_' . $gid . '_' . $elementId, $label,'fabrik_elements',$elementId,'label');
-            if($evaluation){
-                $name = 'criteria_' . $gid . '_' . $elementId;
-            } else {
-                $name = 'e_' . $gid . '_' . $elementId;
-            }
-            //
+				if ($element_inserted) {
+					$elementId = $db->insertid();
 
-            // Init a default subvalue for checkboxes
-            if ($plugin === 'checkbox' || $plugin === 'radiobutton' || $plugin === 'dropdown') {
-                $sub_values = [];
-                $sub_labels = [];
+					if (!empty($elementId)) {
+						$query->clear()
+							->select(['fg.is_join, fg.params, fl.db_table_name AS dbtable'])
+							->from($db->quoteName('#__fabrik_formgroup', 'ffg'))
+							->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('ffg.form_id'))
+							->leftJoin($db->quoteName('#__fabrik_groups', 'fg') . ' ON ' . $db->quoteName('fg.id') . ' = ' . $db->quoteName('ffg.group_id'))
+							->where($db->quoteName('fg.id') . ' = ' . $db->quote($gid));
+						$db->setQuery($query);
+						$formlist = $db->loadObject();
+						$group_params = json_decode($formlist->params);
 
-                $sub_labels[] = strtoupper('sublabel_' . $gid . '_' . $elementId . '_0');
-                $sub_values[] = 1;
-                $labels = array(
-                    'fr' => 'Option 1',
-                    'en' => 'Option 1'
-                );
-                $this->translate(strtoupper('sublabel_' . $gid . '_' . $elementId . '_0'),$labels,'fabrik_elements',$elementId,'sub_labels');
+						// Prepare label
+						if($labels != null) {
+							$label = $labels;
+						} else {
+							$label = $this->h_fabrik->initLabel($plugin);
+						}
+						$this->translate('ELEMENT_' . $gid . '_' . $elementId, $label,'fabrik_elements',$elementId,'label');
+						if($evaluation){
+							$name = 'criteria_' . $gid . '_' . $elementId;
+						} else {
+							$name = 'e_' . $gid . '_' . $elementId;
+						}
+						//
 
-                $params['sub_options'] = array(
-                    'sub_values' => $sub_values,
-                    'sub_labels' => $sub_labels
-                );
-            }
-            //
+						// Init a default subvalue for checkboxes
+						if ($plugin === 'checkbox' || $plugin === 'radiobutton' || $plugin === 'dropdown') {
+							$sub_values = [];
+							$sub_labels = [];
 
-            $query->clear()
-                ->update($db->quoteName('#__fabrik_elements'))
-                ->set($db->quoteName('label') . ' = ' . $db->quote(strtoupper('element_' . $gid . '_' . $elementId)))
-                ->set($db->quoteName('name') . ' = ' . $db->quote($name))
-                ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-                ->where($db->quoteName('id') . '= ' . $db->quote($elementId));
-            $db->setQuery($query);
-            $db->execute();
+							$sub_labels[] = strtoupper('sublabel_' . $gid . '_' . $elementId . '_0');
+							$sub_values[] = 1;
+							$labels = array(
+								'fr' => 'Option 1',
+								'en' => 'Option 1'
+							);
+							$this->translate(strtoupper('sublabel_' . $gid . '_' . $elementId . '_0'),$labels,'fabrik_elements',$elementId,'sub_labels');
 
-            // Add element to table
-            if ($evaluation) {
-                $query = "ALTER TABLE jos_emundus_evaluations" . " ADD criteria_" . $gid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
-                $db->setQuery($query);
-                $db->execute();
+							$params['sub_options'] = array(
+								'sub_values' => $sub_values,
+								'sub_labels' => $sub_labels
+							);
+						}
+						//
 
-                if ($group_params->repeat_group_button == 1 || $formlist->is_join == 1) {
-                    $query = $db->getQuery(true);
-                    $query->select('table_join')
-                        ->from($db->quoteName('#__fabrik_joins'))
-                        ->where($db->quoteName('group_id') . ' = ' . $db->quote($gid))
-                        ->and($db->quoteName('table_join_key') . '=' . $db->quote('parent_id'));
-                    $db->setQuery($query);
-                    $table_join_name = $db->loadObject();
+						$query->clear()
+							->update($db->quoteName('#__fabrik_elements'))
+							->set($db->quoteName('label') . ' = ' . $db->quote(strtoupper('element_' . $gid . '_' . $elementId)))
+							->set($db->quoteName('name') . ' = ' . $db->quote($name))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+							->where($db->quoteName('id') . '= ' . $db->quote($elementId));
+						$db->setQuery($query);
+						$db->execute();
 
-                    $query = "ALTER TABLE " . $table_join_name->table_join . " ADD criteria_" . $gid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
-                    $db->setQuery($query);
-                    try {
-                        $db->execute();
-                    } catch (Exception $e) {
-                        JLog::add('component/com_emundus/models/formbuilder | Cannot not create new colum in the repeat table case: new element form group to an target group witc at group   because column already exist ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-                    }
-                }
+						// Add element to table
+						if ($evaluation) {
+							$query = "ALTER TABLE jos_emundus_evaluations" . " ADD criteria_" . $gid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
+							$db->setQuery($query);
+							$db->execute();
 
-            } else {
-                $query = "ALTER TABLE " . $formlist->dbtable . " ADD e_" . $gid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
-                $db->setQuery($query);
-                $db->execute();
+							if ($group_params->repeat_group_button == 1 || $formlist->is_join == 1) {
+								$query = $db->getQuery(true);
+								$query->select('table_join')
+									->from($db->quoteName('#__fabrik_joins'))
+									->where($db->quoteName('group_id') . ' = ' . $db->quote($gid))
+									->and($db->quoteName('table_join_key') . '=' . $db->quote('parent_id'));
+								$db->setQuery($query);
+								$table_join_name = $db->loadObject();
 
-                if ($group_params->repeat_group_button == 1 || $formlist->is_join == 1) {
-                    $query = $db->getQuery(true);
-                    $query->select('table_join')
-                        ->from('#__fabrik_joins')
-                        ->where('join_from_table = ' .$db->quote($formlist->dbtable))
-                        ->andWhere('group_id = ' . $gid);
-                    $db->setQuery($query);
+								$query = "ALTER TABLE " . $table_join_name->table_join . " ADD criteria_" . $gid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
+								$db->setQuery($query);
+								try {
+									$db->execute();
+								} catch (Exception $e) {
+									JLog::add('component/com_emundus/models/formbuilder | Cannot not create new colum in the repeat table case: new element form group to an target group witc at group   because column already exist ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+								}
+							}
 
-                    $repeat_table_name = $db->loadResult();
+						} else {
+							$query = "ALTER TABLE " . $formlist->dbtable . " ADD e_" . $gid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
 
-                    if (empty($repeat_table_name)) {
-                        $repeat_table_name = $formlist->dbtable . "_" . $gid . "_repeat";
-                    }
+							try {
+								$db->setQuery($query);
+								$column_added = $db->execute();
+							} catch (Exception $e) {
+								JLog::add('Failed to add column for element ' . $elementId . ' in group ' . $gid . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+								$column_added = false;
+							}
 
-                    $query = "ALTER TABLE " . $repeat_table_name . " ADD e_" . $gid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
-                    try {
-                        $db->setQuery($query);
-                        $db->execute();
-                    } catch (Exception $e) {
-                        JLog::add('component/com_emundus/models/formbuilder | Failed to alter table for ' . $repeat_table_name . $gid . '_' . $elementId . ' ' . $dbtype . ' ' . $dbnull . ' : ' .$e->getMessage(), JLog::ERROR, 'com_emundus');
-                    }
-                }
-            }
-            //
+							if (!$column_added) {
+								$elementId = false;
+							} else {
+								if ($group_params->repeat_group_button == 1 || $formlist->is_join == 1) {
+									$query = $db->getQuery(true);
+									$query->select('table_join')
+										->from('#__fabrik_joins')
+										->where('join_from_table = ' .$db->quote($formlist->dbtable))
+										->andWhere('group_id = ' . $gid);
+									$db->setQuery($query);
 
-            $this->h_fabrik->addJsAction($elementId,$plugin);
+									$repeat_table_name = $db->loadResult();
 
-            return $elementId;
-        } catch (Exception $e) {
-            JLog::add('component/com_emundus/models/formbuilder | Problem when create a simple element in the group ' . $gid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
-        }
+									if (empty($repeat_table_name)) {
+										$repeat_table_name = $formlist->dbtable . "_" . $gid . "_repeat";
+									}
+
+									$query = "ALTER TABLE " . $repeat_table_name . " ADD e_" . $gid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
+									try {
+										$db->setQuery($query);
+										$db->execute();
+									} catch (Exception $e) {
+										JLog::add('component/com_emundus/models/formbuilder | Failed to alter table for ' . $repeat_table_name . $gid . '_' . $elementId . ' ' . $dbtype . ' ' . $dbnull . ' : ' .$e->getMessage(), JLog::ERROR, 'com_emundus');
+									}
+								}
+
+								$this->h_fabrik->addJsAction($elementId,$plugin);
+
+								JLog::add($user->id . ' Element ' . $elementId . ' created in group ' . $gid, JLog::INFO, 'com_emundus.formbuilder');
+							}
+						}
+					} else {
+						JLog::add($user->id .  ' could not find new element id, for type ' . $plugin . ' group ' . $gid, JLog::WARNING, 'com_emundus.formbuilder');
+					}
+				} else {
+					JLog::add($user->id .  ' element insertion failed, type ' . $plugin . ' group ' . $gid, JLog::WARNING, 'com_emundus.formbuilder');
+				}
+			} catch (Exception $e) {
+				$query_str = is_string($query) ? $query : $query->__toString();
+				JLog::add('Problem when create a simple element in the group ' . $gid . ' : ' . preg_replace("/[\r\n]/"," ",$query_str.' -> '. $e->getMessage()), JLog::ERROR, 'com_emundus.formbuilder');
+				$elementId = false;
+			}
+		}
+
+		return $elementId;
     }
 
     function updateGroupElementsOrder($elements, $group_id) {
@@ -3595,10 +3625,12 @@ class EmundusModelFormbuilder extends JModelList {
                     $new_list_id = $this->copyList($list_to_copy, $new_form_id);
 
                     if (!empty($new_list_id)) {
-                        $copied = $this->copyGroups($form_id_to_copy, $new_form_id, $new_list_id, $list_to_copy->db_table_name, 'Model - ');
+                        $copied = $this->copyGroups($form_id_to_copy, $new_form_id, $new_list_id, $list_to_copy->db_table_name);
 
                         if ($copied) {
-                            // insert form into models list
+	                        $label = !empty($label) ? $label : 'Model - ' . $form_id_to_copy . ' - ' . $new_form_id;
+
+	                        // insert form into models list
                             $db = JFactory::getDbo();
                             $query = $db->getQuery(true);
 
@@ -3952,7 +3984,7 @@ class EmundusModelFormbuilder extends JModelList {
                                 $this->translate('ELEMENT_MODEL_' . $new_group_id. '_' . $new_element_id, $labels_to_duplicate,'fabrik_elements', $new_element_id,'label');
 
                                 $query->set('label = ' . $db->quote('ELEMENT_MODEL_' . $new_group_id . '_' . $new_element_id));
-                                $query->set('published = 1');
+                                $query->set('published = ' . $element->element->published);
                                 $query->set('params = ' . $db->quote(json_encode($el_params)));
                                 $query->where('id =' . $new_element_id);
                                 $db->setQuery($query);
@@ -3972,4 +4004,30 @@ class EmundusModelFormbuilder extends JModelList {
 
         return $copied;
     }
+
+	public function getDocumentSample($attachment_id, $profile_id)
+	{
+		$document = [];
+
+		if (!empty($attachment_id) && !empty($profile_id)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('has_sample, sample_filepath')
+				->from('#__emundus_setup_attachment_profiles')
+				->where($db->quoteName('attachment_id') . ' = ' . $attachment_id)
+				->andWhere($db->quoteName('profile_id') . ' = ' . $profile_id);
+
+			try {
+				$db->setQuery($query);
+				$document = $db->loadAssoc();
+			} catch (Exception $e) {
+				JLog::add('component/com_emundus/models/formbuilder | Error at getting document sample : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		if (!is_array($document)) $document = array();
+
+		return $document;
+	}
 }

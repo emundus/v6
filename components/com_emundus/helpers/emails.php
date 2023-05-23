@@ -42,8 +42,8 @@ class EmundusHelperEmails {
 
         $current_user = JFactory::getUser();
         $email = '<div class="em_email_block" id="em_email_block">
-					<input placeholder="'.JText::_('NAME_FROM').'" name="mail_from_name" type="text" class="inputbox input-xlarge" id="mail_from_name" value="'.$current_user->name.'" />
-					<input placeholder="'.JText::_('COM_EMUNDUS_MAILS_EMAIL_FROM').'" name="mail_from" type="text" class="inputbox input-xlarge" id="mail_from" value="'.$current_user->email.'" />
+					<input placeholder="'.JText::_('NAME_FROM').'" name="mail_from_name" type="text" class="inputbox input-xlarge" id="mail_from_name" style="margin-bottom: 16px" value="'.$current_user->name.'" />
+					<input placeholder="'.JText::_('COM_EMUNDUS_MAILS_EMAIL_FROM').'" name="mail_from" type="text" class="inputbox input-xlarge" style="margin-bottom: 16px" id="mail_from" value="'.$current_user->email.'" />
 					<input name="mail_from_id" type="hidden" class="inputbox" id="mail_from_id" value="'.$current_user->id.'" /><br>';
 
         if (in_array('default',$params)) {
@@ -253,14 +253,14 @@ class EmundusHelperEmails {
             $email .= '<div>';
 
             $AllEmail_template = EmundusHelperEmails::getAllEmail(2);
-            $email .= '<select name="select_template" onChange="getTemplate(this);">
+            $email .= '<select name="select_template" onChange="getTemplate(this);" style="margin-bottom: 16px">
 						<option value="%">-- '.JText::_('COM_EMUNDUS_EMAILS_SELECT_TEMPLATE').' --</option>';
             foreach ($AllEmail_template as $email_template) {
                 $email .= '<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
             }
             $email .= '</select>
-						<input placeholder="'.JText::_( 'COM_EMUNDUS_EMAILS_SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />
-						<select name="mail_to[]" type="text" class="inputbox" id="mail_to" size="100" style="width: 100% !important;" multiple="multiple">
+						<input placeholder="'.JText::_( 'COM_EMUNDUS_EMAILS_SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;margin-bottom: 16px" />
+						<select name="mail_to[]" type="text" class="inputbox" id="mail_to" size="100" style="width: 100% !important;margin-bottom: 16px" multiple="multiple">
 							<option value="">'.JText::_('COM_EMUNDUS_EMAILS_EMAIL_TO').'</option>';
             foreach ($users as $expert) {
                 $email .= '<option value="'.$expert['email'].'">'.$expert['first_name'].' '.$expert['last_name'].((!empty($expert['group']))?' ('.JText::_($expert['group']).')':'').'</option>';
@@ -272,7 +272,7 @@ class EmundusHelperEmails {
 						<input name="mail_type" type="hidden" class="inputbox" id="mail_type" value="expert" />
 						<p>
 							<div>
-								<input class="btn btn-large btn-success" type="submit" name="expert" value="'.JText::_( 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL' ).'" >
+								<input class="btn btn-large btn-success" style="margin-top: 16px" type="submit" name="expert" value="'.JText::_( 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL' ).'" >
 							</div>
 						</p>
 						
@@ -305,7 +305,7 @@ class EmundusHelperEmails {
 									\'</div>\';
 								}
 					        },
-					        onDelete: function(val) {
+					        onDelete: function() {
 					            return true;
 					        },
 					        create: function(input) {
@@ -407,7 +407,7 @@ class EmundusHelperEmails {
         return $db->loadObjectList();
     }
 
-    function getTemplate(){
+    public static function getTemplate(){
         $db = JFactory::getDBO();
         $select = JRequest::getVar('select', null, 'POST', 'none', 0);
         $query = 'SELECT * FROM #__emundus_setup_emails WHERE id='.$select;
@@ -592,7 +592,7 @@ class EmundusHelperEmails {
 
     }
 
-    function sendApplicantEmail() {
+    public static function sendApplicantEmail() {
 
         $current_user = JFactory::getUser();
         $config = JFactory::getConfig();
@@ -632,22 +632,22 @@ class EmundusHelperEmails {
 
         if ($captcha !== 1) {
             JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_NOT_A_VALID_POST' ) );
-            $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
+            $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&Itemid='.JRequest::getCmd( 'Itemid' ));
             return;
         }
         if (count( $users_id ) == 0) {
             JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_NO_ITEMS_SELECTED' ) );
-            $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
+            $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&Itemid='.JRequest::getCmd( 'Itemid' ));
             return;
         }
         if ($subject == '') {
             JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_YOU_MUST_PROVIDE_SUBJECT' ) );
-            $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
+            $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&Itemid='.JRequest::getCmd( 'Itemid' ));
             return;
         }
         if ($message == '') {
             JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_YOU_MUST_PROVIDE_A_MESSAGE' ) );
-            $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
+            $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&Itemid='.JRequest::getCmd( 'Itemid' ));
             return;
         }
 

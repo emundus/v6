@@ -270,6 +270,11 @@
 			<option value="1">JYES</option>
 		</field>
 
+		<field name="generate_letter_whitespace_textarea" type="radio" default="0" label="COM_EMUNDUS_EXPORT_GENERATE_LETTER_WHITESPACE_TEXTAREA" description="COM_EMUNDUS_EXPORT_GENERATE_LETTER_WHITESPACE_TEXTAREA_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
 		<field
 				name="spacer1"
 				type="spacer"
@@ -539,6 +544,7 @@
 			<field name="smart_agenda_api_id" type="text" label="COM_EMUNDUS_SMART_AGENDA_API_ID"/>
 			<field name="smart_agenda_api_key" type="password" label="COM_EMUNDUS_SMART_AGENDA_API_KEY"/>
 			<field name="smart_agenda_base_url" type="text" label="COM_EMUNDUS_SMART_AGENDA_BASE_URL"/>
+			<field name="smart_agenda_ws_base_url" type="text" label="COM_EMUNDUS_SMART_AGENDA_BASE_URL_WS"/>
 		</fieldset>
 
 	</fieldset>

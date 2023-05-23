@@ -8,9 +8,6 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 JHTML::_('behavior.tooltip');
 JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.4.1/css/all.css');
-
-
-//var_dump($this->users);
 ?>
 
 <div class="container-fluid">
@@ -80,25 +77,6 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 			</button>
 			<span class="navbar-brand" href="#"><?php echo JText::_('COM_EMUNDUS_ACTIONS')?></span>
 		</div>
-		<!--
-		<div class="navbar-collapse collapse navbar-inverse-collapse">
-			<ul class="nav navbar-nav">
-				<?php foreach ($this->actions as $key => $action): ?>
-					<li class="dropdown">
-						<a href="#" class="em-dropdown" id="em-menu-<?php echo $key?>" nba="<?php echo count($action) ?>">
-							<?php echo JTEXT::_(strtoupper($key)) ?><b class="caret"></b>
-						</a>
-						<ul class="dropdown-menu" id="em-dp-<?php echo $key?>" role="menu" aria-labelledby="em-menu-<?php echo $key ?>">
-							<?php foreach ($action as $k => $a):?>
-								<li class="em-actions" id="<?php echo $a['id'] ?>" multi="<?php echo $a['multi'] ?>" <?php if($a['multi'] != -1){echo 'style="display:none;"';}?>>
-									<a href="#"><?php echo JText::_(strtoupper($a['label'])) ?></a>
-								</li>
-							<?php endforeach; ?>
-						</ul>
-					</li>
-				<?php endforeach;?>
-			</ul>
-		</div> -->
 	</div>
 	<div class="panel panel-default">
 	</div>

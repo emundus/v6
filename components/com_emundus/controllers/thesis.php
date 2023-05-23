@@ -38,7 +38,7 @@ class EmundusControllerThesis extends EmundusController {
         $app->setUserState('com_emundus.apply.thesis.id', $thesisId);
 
         // Get the model.
-        $model = $this->getModel('Thesis', 'EmundusModel');
+        $model = new EmundusModelThesis();
         $fnum = $model->apply($user->id, $thesisId);
         if ($fnum) {
             if(is_null($tmpl))
@@ -95,7 +95,7 @@ class EmundusControllerThesis extends EmundusController {
         $app->setUserState('com_emundus.cancel.thesis.id', $thesisId);
 
         // Get the model.
-        $model = $this->getModel('Thesis', 'EmundusModel');
+        $model = new EmundusModelThesis();
 
         if ($model->cancel($user->id, $fnum))
             $this->setMessage(JText::_('COM_EMUNDUS_THESIS_DELETED'));
@@ -120,7 +120,7 @@ class EmundusControllerThesis extends EmundusController {
         $app->setUserState('com_emundus.edit.thesis.id', $editId);
 
         // Get the model.
-        $model = $this->getModel('Thesis', 'EmundusModel');
+        $model = new EmundusModelThesis();
 
         // Check out the item
         if ($editId)
@@ -147,7 +147,7 @@ class EmundusControllerThesis extends EmundusController {
         //Checking if the user can remove object
         $user = JFactory::getSession()->get('emundusUser');
         if ($user->authorise('core.edit', 'com_emundus') || $user->authorise('core.edit.state', 'com_emundus')) {
-            $model = $this->getModel('Thesis', 'EmundusModel');
+            $model = new EmundusModelThesis();
 
             // Get the user data.
             $id = $app->input->getInt('id', 0);
@@ -168,7 +168,7 @@ class EmundusControllerThesis extends EmundusController {
 
             // Redirect to the list screen.
             $this->setMessage(JText::_('COM_EMUNDUS_ITEM_SAVED_SUCCESSFULLY'));
-            $menu = & JFactory::getApplication()->getMenu();
+            $menu = JFactory::getApplication()->getMenu();
             $item = $menu->getActive();
             $this->setRedirect(JRoute::_($item->link, false));
         } else throw new Exception(500);
@@ -182,7 +182,7 @@ class EmundusControllerThesis extends EmundusController {
         //Checking if the user can remove object
         $user = JFactory::getSession()->get('emundusUser');
         if ($user->authorise($user->authorise('core.delete', 'com_emundus'))) {
-            $model = $this->getModel('Thesis', 'EmundusModel');
+            $model = new EmundusModelThesis();
 
             // Get the user data.
             $id = $app->input->getInt('id', 0);
@@ -209,7 +209,7 @@ class EmundusControllerThesis extends EmundusController {
             }
 
             // Redirect to the list screen.
-            $menu = & JFactory::getApplication()->getMenu();
+            $menu = JFactory::getApplication()->getMenu();
             $item = $menu->getActive();
             $this->setRedirect(JRoute::_($item->link, false));
         } else throw new Exception(500);

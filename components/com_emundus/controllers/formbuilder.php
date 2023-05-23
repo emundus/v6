@@ -212,12 +212,10 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
      * @throws Exception
      */
     public function formsTrad() {
-        $user = JFactory::getUser();
+	    $response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+	    $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
 
             $element = $jinput->getInt('element', null);
@@ -228,11 +226,18 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 
             if (!empty($labelTofind) && !empty($newLabel)) {
                 $results = $this->m_formbuilder->formsTrad($labelTofind, $newLabel, $element, $group, $page);
+
+				if (!empty($results)) {
+		            $response = ['status' => true, 'msg' => 'Traductions effectués avec succès', 'data' => $results];
+	            } else {
+		            $response['msg'] = JText::_('NO_TRANSLATION_FOUND');
+	            }
+			} else {
+				$response['msg'] = JText::_('MISSING_PARAMS');
             }
-            $changeresponse = array('status' => !empty($results), 'msg' => 'Traductions effectués avec succès', 'data' => $results);
         }
 
-        echo json_encode((object)$changeresponse);
+        echo json_encode((object)$response);
         exit;
     }
 
@@ -511,29 +516,34 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 
     public function createsimpleelement() {
         $user = JFactory::getUser();
-        $response = array(
-            'status' => false,
-            'msg' => JText::_("ACCESS_DENIED")
-        );
+        $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
         if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $jinput = JFactory::getApplication()->input;
+	        $response['msg'] = JText::_('MISSING_PLUGIN_OR_GROUP');
+			$jinput = JFactory::getApplication()->input;
 
             $gid = $jinput->getInt('gid');
             $plugin = $jinput->getString('plugin');
 
-            if (empty($plugin) || empty($gid)){
-                $response['msg'] = JText::_("MISSING_PLUGIN_OR_GROUP");
-            } else {
-                if ($jinput->getString('attachmentId')){
+            if (!empty($plugin) && !empty($gid)) {
+	            $mode = $jinput->getString('mode');
+				$evaluation = $mode == 'eval';
+	            if ($jinput->getString('attachmentId')){
                     $attachmentId = $jinput->getString('attachmentId');
                 }
 
                 if (isset($attachmentId)) {
-                    $response = $this->m_formbuilder->createSimpleElement($gid, $plugin, $attachmentId);
+                    $response['data'] = $this->m_formbuilder->createSimpleElement($gid, $plugin, $attachmentId, $evaluation);
                 } else {
-                    $response = $this->m_formbuilder->createSimpleElement($gid, $plugin, 0);
+	                $response['data'] = $this->m_formbuilder->createSimpleElement($gid, $plugin, 0, $evaluation);
                 }
+
+				if (!empty($response['data'])) {
+					$response['status'] = true;
+					$response['msg'] = JText::_('COM_EMUNDUS_FORMBUILDER_ELEMENT_CREATED');
+				} else {
+					$response['msg'] = JText::_('COM_EMUNDUS_FORMBUILDER_ELEMENT_NOT_CREATED');
+				}
             }
         }
 
@@ -543,19 +553,29 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 
     public function createsectionsimpleelements() {
         $user = JFactory::getUser();
+		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
-
-            $gid = $jinput->getInt('gid');
+            $gid = $jinput->getInt('gid', 0);
             $plugin = $jinput->getString('plugins');
+	        $mode = $jinput->getString('mode', 'form');
 
-            $changeresponse = $this->m_formbuilder->createSectionSimpleElements($gid,$plugin);
+			if (!empty($gid)) {
+				$response['data'] = $this->m_formbuilder->createSectionSimpleElements($gid, $plugin, $mode);
+
+				if (!empty($response['data'])) {
+					$response['status'] = true;
+					$response['msg'] = JText::_('ELEMENTS_CREATED');
+				} else {
+					$response['msg'] = JText::_('ELEMENTS_NOT_CREATED');
+				}
+			} else {
+				$response['msg'] = JText::_('MISSING_PARAMS');
+			}
         }
-        echo json_encode((object)$changeresponse);
+
+        echo json_encode((object)$response);
         exit;
     }
 
@@ -886,12 +906,10 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 
     public function updatedocument()
     {
-        $tab = array('status' => false, 'msg' => JText::_("ERROR"));
-        $user = JFactory::getUser();
+        $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+	    $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $tab['msg'] = JText::_("ACCESS_DENIED");
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
             $document_id = $jinput->getInt('document_id');
             $profile_id = $jinput->getInt('profile_id');
@@ -899,21 +917,26 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
             $document = json_decode($document, true);
             $types = $jinput->getString('types');
             $types = json_decode($types, true);
+	        $params = ['has_sample' => $jinput->getBool('has_sample', false)];
+
+			if ($params['has_sample'] && !empty($_FILES['file'])) {
+				$params['file'] = $_FILES['file'];
+			}
 
             if (!empty($document_id) && !empty($document) && !empty($profile_id)) {
                 require_once JPATH_SITE . '/components/com_emundus/models/campaign.php';
                 $m_campaign = new EmundusModelCampaign();
 
-                $result = $m_campaign->updateDocument($document, $types, $document_id, $profile_id);
+                $result = $m_campaign->updateDocument($document, $types, $document_id, $profile_id, $params);
 
                 if ($result) {
-                    $tab['status'] = true;
-                    $tab['msg'] = 'SUCCESS';
+	                $response['status'] = true;
+	                $response['msg'] = 'SUCCESS';
                 }
             }
         }
 
-        echo json_encode((object)$tab);
+        echo json_encode((object)$response);
         exit;
     }
 
@@ -1109,6 +1132,21 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
          exit;
      }
 
+	 public function getallmodels() {
+		 $user = JFactory::getUser();
+		 $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+		 if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+			 $models = $this->m_formbuilder->getPagesModel();
+			 $response['status'] = true;
+			 $response['data'] = ['datas' => $models, 'count' => count($models)];
+			 $response['msg'] = 'Succès';
+		 }
+
+		 echo json_encode((object)$response);
+		 exit;
+	 }
+
     public function addformmodel()
     {
         $user = JFactory::getUser();
@@ -1162,7 +1200,8 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
             $model_ids = $jinput->getString('model_ids');
             $model_ids = json_decode($model_ids, true);
 
-            if (!empty($model_ids) && is_array($model_ids)) {
+            if (!empty($model_ids)) {
+				$model_ids = is_array($model_ids) ? $model_ids : array($model_ids);
                 $response['status'] = $this->m_formbuilder->deleteFormModelFromIds($model_ids);
                 $response['msg'] = $response['status'] ? JText::_('SUCCESS') :  JText::_('FAILED');
             } else {
@@ -1173,6 +1212,29 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         echo json_encode((object)$response);
         exit;
     }
+
+	public function getdocumentsample()
+	{
+		$user = JFactory::getUser();
+		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'), 'code' => 403);
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$response = array('status' => false, 'msg' => JText::_('MISSING_PARAMS'));
+
+			$jinput = JFactory::getApplication()->input;
+			$document_id = $jinput->getInt('document_id');
+			$profile_id = $jinput->getInt('profile_id');
+
+			if (!empty($document_id) && !empty($profile_id)) {
+				$document = $this->m_formbuilder->getDocumentSample($document_id, $profile_id);
+				$document = empty($document) ? array('has_sample' => 0, 'sample_filepath' => '') : $document;
+				$response = array('status' => true, 'msg' => JText::_('SUCCESS'), 'code' => 200, 'data' => $document);
+			}
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
 }
 
 

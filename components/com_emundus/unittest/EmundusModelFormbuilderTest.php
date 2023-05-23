@@ -45,7 +45,6 @@ class EmundusModelFormbuilderTest extends TestCase
         $this->m_formbuilder = new EmundusModelFormbuilder;
         $this->m_translations = new EmundusModelTranslations;
         $this->h_sample = new EmundusUnittestHelperSamples;
-
     }
 
     public function testFoo()
@@ -306,4 +305,73 @@ class EmundusModelFormbuilderTest extends TestCase
             JLog::add('Failed to insert model for unit tests ' . $e->getMessage(), JLog::ERROR, 'com_emundus.tests');
         }
     }
+
+	public function testgetDocumentSample() {
+		$document = $this->m_formbuilder->getDocumentSample(0, 0);
+		$this->assertEmpty($document, 'Le document de test est vide si aucun identifiant de document et/ou profile n\'est donné');
+
+		$document = $this->m_formbuilder->getDocumentSample(9999999, 0);
+		$this->assertEmpty($document, 'Le document de test est vide si aucun identifiant de profile n\'est donné');
+
+		$document = $this->m_formbuilder->getDocumentSample(0, 9999999);
+		$this->assertEmpty($document, 'Le document de test est vide si aucun identifiant de document n\'est donné');
+
+		// Création d'un document de test
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->insert('#__emundus_setup_attachment_profiles')
+			->columns(['profile_id', 'campaign_id', 'attachment_id', 'displayed', 'mandatory', 'ordering', 'published', 'bank_needed', 'duplicate', 'sample_filepath', 'has_sample'])
+			->values('1, null, 1, 1, 1, 1, 1, null, 0, null, 0');
+		$db->setQuery($query);
+		$db->execute();
+
+		$document = $this->m_formbuilder->getDocumentSample(1, 1);
+		$this->assertNotEmpty($document, 'Le document de test est bien renvoyé');
+	}
+
+	public function testaddFormModel()
+	{
+		$created = $this->m_formbuilder->addFormModel(0, 'Test Unitaire - ');
+		$this->assertFalse($created, 'addFormModel returns false if no form id given');
+
+		$created = $this->m_formbuilder->addFormModel(9999999, 'Test Unitaire - ');
+		$this->assertFalse($created, 'addFormModel returns false if no form does not exists');
+	}
+
+	/*
+	 * @covers EmundusModelFormbuilder::createSimpleElement
+	 */
+	public function testcreateSimpleElement() {
+		$this->assertFalse($this->m_formbuilder->createSimpleElement(0, ''), 'createSimpleElement returns false if no group id nor plugin given');
+		$this->assertFalse($this->m_formbuilder->createSimpleElement(1, ''), 'createSimpleElement returns false if no plugin given');
+		$this->assertFalse($this->m_formbuilder->createSimpleElement(0, 'field'), 'createSimpleElement returns false if no group id given');
+
+		$group_eval_id = 551;
+		$new_element_id = $this->m_formbuilder->createSimpleElement($group_eval_id, 'field');
+		$this->assertGreaterThan(0, $new_element_id, 'createSimpleElement returns the id of the created element');
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('plugin')
+			->from('#__fabrik_elements')
+			->where('id = ' . $new_element_id);
+
+		$db->setQuery($query);
+		$plugin = $db->loadResult();
+		$this->assertSame('field', $plugin, 'createSimpleElement creates the element with the correct plugin');
+
+		$new_email_element = $this->m_formbuilder->createSimpleElement($group_eval_id, 'email', 0, 1);
+		$query->clear()
+			->select('name, plugin')
+			->from('#__fabrik_elements')
+			->where('id = ' . $new_email_element);
+		$db->setQuery($query);
+		$element_data = $db->loadAssoc();
+		$this->assertSame('field', $element_data['plugin'], 'createSimpleElement creates the element with the field plugin for email');
+
+		// if evaluation $element_data['name'] should start with 'criteria'
+		$this->assertStringStartsWith('criteria', $element_data['name'], 'createSimpleElement creates the element with the correct name for evaluation');
+	}
 }
