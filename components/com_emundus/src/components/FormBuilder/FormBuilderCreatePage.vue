@@ -206,23 +206,27 @@ export default {
 
 			if (this.selected !== -1) {
 				const found_model = this.models.find((model) => {
-					return model.id === this.selected
+					return model.id === this.selected;
 				});
 
-				formBuilderService.checkIfModelTableIsUsedInForm(found_model.form_id, this.profile_id).then((response) => {
-					if (response.status) {
-						used = response.data;
-					}
+				if (found_model) {
+					formBuilderService.checkIfModelTableIsUsedInForm(found_model.form_id, this.profile_id).then((response) => {
+						if (response.status) {
+							used = response.data;
+						}
 
-					if (used) {
-						this.structure = 'new';
-						this.canUseInitialStructure = false;
-					} else {
-						this.canUseInitialStructure = true;
-					}
+						if (used) {
+							this.structure = 'new';
+							this.canUseInitialStructure = false;
+						} else {
+							this.canUseInitialStructure = true;
+						}
 
+						return used;
+					});
+				} else {
 					return used;
-				});
+				}
 			} else {
 				return used;
 			}
