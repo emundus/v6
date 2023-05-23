@@ -29,6 +29,16 @@
 						<input id="search-model" class="em-mt-16" type="text" v-model="search" placeholder="Rechercher"/>
 						<span class="reset-search material-icons-outlined em-pointer" @click="search = ''">close</span>
 					</div>
+					<section id="structure-options">
+						<div class="em-flex-row">
+							<input type="radio" id="new-structure" name="structure" value="new" v-model="structure"/>
+							<label for="new-structure">{{ translate('COM_EMUNDUS_FORM_BUILDER_NEW_STRUCTURE') }}</label>
+						</div>
+						<div class="em-flex-row">
+							<input type="radio" id="initial-structure" name="structure" value="initial" v-model="structure"/>
+							<label for="initial-structure">{{ translate('COM_EMUNDUS_FORM_BUILDER_INITIAL_STRUCTURE') }}</label>
+						</div>
+					</section>
 					<div class="models-card em-flex-row">
 						<div
 							v-for="model in models" :key="model.id"
@@ -114,7 +124,8 @@ export default {
 				prid: this.profile_id,
 				template: 0,
 			},
-			search: ''
+			search: '',
+			structure: 'new' // new | initial, structure means data structure, to know if we keep same database tables or not
 		};
 	},
 	created() {
@@ -159,7 +170,7 @@ export default {
 				}
 			}
 
-			const data = {...this.page, modelid: model_form_id};
+			const data = {...this.page, modelid: model_form_id, keep_structure: this.structure === 'initial'};
 			formBuilderService.addPage(data).then(response => {
 				if (!response.status) {
 					Swal.fire({
@@ -304,6 +315,17 @@ export default {
 		right: 0;
 		padding: 16px 32px;
 		background: linear-gradient(to top, white, transparent);
+	}
+}
+
+#structure-options {
+	input {
+		margin: 0;
+		height: auto;
+	}
+
+	label {
+		margin: 0 0 0 8px;
 	}
 }
 </style>
