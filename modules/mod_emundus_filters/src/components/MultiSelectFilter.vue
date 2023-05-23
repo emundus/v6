@@ -15,12 +15,24 @@
 			<p v-else> {{ translate('ALL') }}</p>
 		</section>
 		<section v-else class="multi-select-filter-options">
-			<div class="operators-selection"></div>
-			<div class="andor-selection"></div>
+			<div class="operators-selection">
+				<div v-for="operator in operators" :key="operator.value" class="em-flex-row">
+					<input type="radio" :id="'operator-' + operator.value" :value="operator.value" v-model="selectedOperator">
+					<label :for="'operator-' + operator.value" style="margin: 0">{{ operator.label }}</label>
+				</div>
+			</div>
+			<hr/>
+			<div class="andor-selection">
+				<div v-for="andor in andorOperators" :key="andor.value" class="em-flex-row">
+					<input type="radio" :id="'andor-' + andor.value" :value="andor.value" v-model="selectedAndorOperator">
+					<label :for="'andor-' + andor.value" style="margin: 0">{{ andor.label }}</label>
+				</div>
+			</div>
+			<hr/>
 			<div class="values-selection">
 				<div v-for="value in filter.values" :key="value.value" class="em-flex-row">
-					<input type="checkbox" :value="value.value" v-model="selectedValues">
-					<label style="margin: 0">{{ value.label }}</label>
+					<input :id="'filter-value-'+ value.value" type="checkbox" :value="value.value" v-model="selectedValues">
+					<label :for="'filter-value-'+ value.value" style="margin: 0">{{ value.label }}</label>
 				</div>
 			</div>
 		</section>
@@ -52,7 +64,7 @@ export default {
 				{ value: 'NOT IN', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_NOT_ONE_OF')}
 			],
 			selectedOperator: '=',
-			andorOperator: [
+			andorOperators: [
 				{ value: 'AND', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_AND')},
 				{ value: 'OR', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_OR')}
 			],
