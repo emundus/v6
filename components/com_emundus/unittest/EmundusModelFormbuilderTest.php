@@ -374,4 +374,30 @@ class EmundusModelFormbuilderTest extends TestCase
 		// if evaluation $element_data['name'] should start with 'criteria'
 		$this->assertStringStartsWith('criteria', $element_data['name'], 'createSimpleElement creates the element with the correct name for evaluation');
 	}
+
+	public function testcheckIfModelTableIsUsedInForm() {
+		$used = $this->m_formbuilder->checkIfModelTableIsUsedInForm(0, 0);
+		$this->assertFalse($used, 'checkIfModelTableIsUsedInForm returns false if no model id nor profile id given');
+
+		$used = $this->m_formbuilder->checkIfModelTableIsUsedInForm(1, 0);
+		$this->assertFalse($used, 'checkIfModelTableIsUsedInForm returns false if no profile id given');
+
+		$used = $this->m_formbuilder->checkIfModelTableIsUsedInForm(0, 1);
+		$this->assertFalse($used, 'checkIfModelTableIsUsedInForm returns false if no model id given');
+
+		$profile_id = 9;
+		$used = $this->m_formbuilder->checkIfModelTableIsUsedInForm(9999999, $profile_id);
+		$this->assertFalse($used, 'checkIfModelTableIsUsedInForm returns false if no model does not exists');
+
+		require_once JPATH_ROOT . '/components/com_emundus/models/form.php';
+		$m_form = new EmundusModelForm();
+		$forms = $m_form->getFormsByProfileId($profile_id);
+		$model_id = $forms[0]->id;
+
+		$used = $this->m_formbuilder->checkIfModelTableIsUsedInForm($model_id, 9999999);
+		$this->assertFalse($used, 'checkIfModelTableIsUsedInForm returns false if no profile does not exists');
+
+		$used = $this->m_formbuilder->checkIfModelTableIsUsedInForm($model_id, $profile_id);
+		$this->assertTrue($used, 'checkIfModelTableIsUsedInForm returns true if model is used in form');
+	}
 }
