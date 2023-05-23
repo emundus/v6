@@ -157,7 +157,6 @@ export default {
       }
     },
     setDataFormatSelectView(data, valueColum, labelColum, paramsIndex = 0) {
-        console.log("je rentre aussi ici, hehehe");
         this.params[paramsIndex].options = [];
         data.forEach((row) => {
             let new_option = {
