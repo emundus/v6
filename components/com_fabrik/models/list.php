@@ -11908,9 +11908,9 @@ class FabrikFEModelList extends JModelForm
 		{
 			$scripts[$scriptKey] = 'components/com_fabrik/js/list_' . $this->getId() . '.js';
 		}
-		elseif (JFile::exists(COM_FABRIK_FRONTEND . '/js/custom_list.js'))
+		elseif (JFile::exists(COM_FABRIK_FRONTEND . '/js/custom_list_'.$this->getTmpl().'.js'))
 		{
-			$scripts[$scriptKey] = 'components/com_fabrik/js/custom_list.js';
+			$scripts[$scriptKey] = 'components/com_fabrik/js/custom_list_'.$this->getTmpl().'.js';
 		}
 	}
 
