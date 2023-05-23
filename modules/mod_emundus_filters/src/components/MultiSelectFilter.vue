@@ -1,9 +1,29 @@
 <template>
-	<div class="multi-select-filter em-w-100 em-mb-8">
-		<label class="em-w-100"> {{ filter.label }}</label>
-		<select v-model="filter.value" class="em-w-100">
-			<option v-for="value in filter.values" :value="value.value"> {{ value.label }}</option>
-		</select>
+	<div class="multi-select-filter em-w-100 em-mb-8 em-border-radius-8 em-border-neutral-400 em-box-shadow em-white-bg em-p-8">
+		<div class="em-flex-row em-flex-space-between">
+			<p class="recap-label">{{ filter.label }}</p>
+			<span v-if="opened === false" class="material-icons-outlined em-pointer" @click="opened = !opened">keyboard_arrow_down</span>
+			<span v-else class="material-icons-outlined em-pointer" @click="opened = !opened">keyboard_arrow_up</span>
+		</div>
+		<section v-if="!opened" class="recap">
+			<div v-if="selectedValues.length > 0 && !selectedValues.includes('all')">
+				<p class="recap-operator"> {{ selectedOperator }}</p>
+				<p class="recap-value">
+					<span v-for="(value, index) in selectedValues" :key="index">{{ value }}{{ index < selectedValues.length - 1 ? ', ' : '' }}</span>
+				</p>
+			</div>
+			<p v-else> {{ translate('ALL') }}</p>
+		</section>
+		<section v-else class="multi-select-filter-options">
+			<div class="operators-selection"></div>
+			<div class="andor-selection"></div>
+			<div class="values-selection">
+				<div v-for="value in filter.values" :key="value.value" class="em-flex-row">
+					<input type="checkbox" :value="value.value" v-model="selectedValues">
+					<label style="margin: 0">{{ value.label }}</label>
+				</div>
+			</div>
+		</section>
 	</div>
 </template>
 
@@ -19,6 +39,26 @@ export default {
 			type: Object,
 			required: true
 		},
+	},
+	data() {
+		return {
+			opened: false,
+			operators: [
+				{ value: '=', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS')},
+				{ value: '!=', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_NOT')},
+				{ value: 'LIKE', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_CONTAINS')},
+				{ value: 'NOT LIKE', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_DOES_NOT_CONTAIN')},
+				{ value: 'IN', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_ONE_OF')},
+				{ value: 'NOT IN', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_NOT_ONE_OF')}
+			],
+			selectedOperator: '=',
+			andorOperator: [
+				{ value: 'AND', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_AND')},
+				{ value: 'OR', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_OR')}
+			],
+			selectedAndorOperator: 'AND',
+			selectedValues: []
+		}
 	},
 }
 </script>
