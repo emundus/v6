@@ -36,6 +36,11 @@ if (!empty($user) && EmundusHelperAccess::asAccessAction(1, 'r', $user->id)) {
 		}
 
 		if (!empty($m_filters)) {
+			$document 	= JFactory::getDocument();
+			$document->addScript('media/mod_emundus_filters/chunk-vendors.js');
+			$document->addStyleSheet('media/mod_emundus_filters/app.css');
+			$document->addStyleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined');
+
 			$filters = $m_filters->getFilters();
 			$applied_filters = $m_filters->getAppliedFilters();
 
