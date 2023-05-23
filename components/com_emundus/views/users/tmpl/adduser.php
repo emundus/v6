@@ -45,13 +45,13 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
 			</div>
 		<?php endif; ?>
 		<div id="user-information" class="em-addUser-detail-info">
-			<div class="form-group em-addUser-detail-info-firstname">
-				<label class="control-label" for="fname"><?= JText::_('COM_EMUNDUS_FORM_FIRST_NAME'); ?></label>
-				<input type="text" class="em-w-100" id="fname" name="firstname" <?= ($this->edit == 1)?'value="'.$this->user['firstname'].'"':''; ?>/>
-			</div>
 			<div class="form-group em-addUser-detail-info-lastname">
 				<label class="control-label" for="lname"><?= JText::_('COM_EMUNDUS_FORM_LAST_NAME'); ?></label>
 				<input type="text" class="em-w-100" id="lname" name = "lastname" <?= ($this->edit == 1)?'value="'.$this->user['lastname'].'"':''; ?>/>
+			</div>
+			<div class="form-group em-addUser-detail-info-firstname">
+				<label class="control-label" for="fname"><?= JText::_('COM_EMUNDUS_FORM_FIRST_NAME'); ?></label>
+				<input type="text" class="em-w-100" id="fname" name="firstname" <?= ($this->edit == 1)?'value="'.$this->user['firstname'].'"':''; ?>/>
 			</div>
 			<div class="form-group em-addUser-detail-info-mail">
 				<label class="control-label" for="mail"><?= JText::_('COM_EMUNDUS_EMAIL'); ?></label>
@@ -69,7 +69,7 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
 	</fieldset>
     <?php
     $other_profiles_applicant = false;
-    if(sizeof(array_intersect(array_keys($this->uOprofiles),$this->app_prof)) > 0){
+    if(!empty($this->uOprofiles) && sizeof(array_intersect(array_keys($this->uOprofiles),$this->app_prof)) > 0){
         $other_profiles_applicant = true;
     }
     ?>

@@ -26,12 +26,32 @@ if($show_optional_documents == 1 && count($optional_documents) > 0) {
 if (!empty($checkout_url)){
 	$pages_no++;
 }
-?>
 
-<div class="mod_emundus_checklist">
-    <div class="em-flex-row em-flex-space-between em-pointer" onclick="expandForms()">
+
+if($show_preliminary_documents && !empty($preliminary_documents)): ?>
+<div class="mod_emundus_checklist em-mb-24">
+    <div class="em-flex-row em-flex-space-between em-pointer mod_emundus_checklist_expand" >
         <div class="em-flex-row">
-            <p class="em-h6"><?php echo JText::_($forms_title) ?></p>
+            <h4 class="em-h4"><?php echo JText::_($preliminary_documents_title) ?></h4>
+        </div>
+        <span id="mod_emundus_checklist___expand_icon" class="material-icons-outlined" style="transform: rotate(-90deg);">expand_more</span>
+    </div>
+    <div id="mod_emundus_checklist___content" class="em-mt-24 mod_emundus_checklist___content_closed">
+        <?php foreach($preliminary_documents as $document): ?>
+            <div class="em-flex-row em-mb-16 mod_emundus_campaign__details_file">
+                <span class="material-icons-outlined mod_emundus_campaign__details_file_icon">insert_drive_file</span>
+                <a href="<?php echo $document->href ?>" target="_blank" rel="noopener noreferrer" >
+			        <?php echo $document->title_file.".".$document->ext; ?>
+                </a>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</div>
+<?php endif; ?>
+<div class="mod_emundus_checklist">
+    <div class="em-flex-row em-flex-space-between em-pointer mod_emundus_checklist_expand">
+        <div class="em-flex-row">
+            <h4 class="em-h4"><?php echo JText::_($forms_title) ?></h4>
         </div>
         <span id="mod_emundus_checklist___expand_icon" class="material-icons-outlined">expand_more</span>
     </div>
@@ -51,6 +71,7 @@ if (!empty($checkout_url)){
                     $cpt = $db->loadResult();
                     $class = $cpt==0?'need_missing':'need_ok';
                     $step = $index+1;
+                    $form_title = explode(' - ',$form->title)[1] ?: $form->title;
                     ?>
                     <div id="mlf<?php echo $form->id; ?>"
                          class="<?php if($form->id == $menuid) echo 'active'?> mod_emundus_checklist_<?php echo $class; ?> mod_emundus_checklist___form_item">
@@ -64,7 +85,7 @@ if (!empty($checkout_url)){
                                     <span class="material-icons-outlined">done</span>
                                 <?php endif; ?>
                             </div>
-                            <a href="<?php echo $form->link ?>"><?php echo JText::_($form->title); ?></a>
+                            <a href="<?php echo $form->link ?>"><?php echo JText::_($form_title); ?></a>
                         </div>
                         <?php if ($index != (sizeof($forms) - 1) || ($show_mandatory_documents == 1 && !empty($mandatory_documents)) || ($show_optional_documents == 1 && !empty($optional_documents)) || !empty($checkout_url)) : ?>
                             <div class="mod_emundus_checklist___border_item"></div>
@@ -196,9 +217,15 @@ $details_view = array_search('view=details',$url);
         }
     });
 
-    function expandForms(){
-        let content = document.getElementById('mod_emundus_checklist___content');
-        let icon = document.getElementById('mod_emundus_checklist___expand_icon');
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.mod_emundus_checklist_expand')) {
+            expandForms(e);
+        }
+    });
+
+    function expandForms(e){
+        let content = e.target.closest('.mod_emundus_checklist').querySelector('#mod_emundus_checklist___content');
+        let icon = e.target.closest('.mod_emundus_checklist').querySelector('#mod_emundus_checklist___expand_icon');
 
         if(typeof content !== 'undefined'){
             if(!content.classList.contains('mod_emundus_checklist___content_closed')){

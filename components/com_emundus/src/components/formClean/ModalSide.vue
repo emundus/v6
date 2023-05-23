@@ -13,7 +13,7 @@
       @closed="beforeClose"
       @before-open="beforeOpen">
 
-            <div class="em-flex-row em-flex-space-between em-mb-16">
+	    <div class="em-flex-row em-flex-space-between em-mb-16">
         <span class="em-h4">
           {{translations.editMenu}}
         </span>
@@ -78,7 +78,6 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import Translation from "@/components/translation"
 import Editor from "../editor";
-import List from "../../views/list";
 
 const qs = require("qs");
 

@@ -27,21 +27,21 @@
 
 <script>
 // external libraries
-import draggable from "vuedraggable";
+import draggable from 'vuedraggable';
 
-import formBuilderService from "../../services/formbuilder";
-import formBuilderMixin from "../../mixins/formbuilder";
+import formBuilderService from '../../services/formbuilder';
+import formBuilderMixin from '../../mixins/formbuilder';
+import errorsMixin from '../../mixins/errors';
 
 export default {
   components: {
     draggable
   },
-  mixins: [formBuilderMixin],
+  mixins: [formBuilderMixin, errorsMixin],
   data() {
     return {
       elements: [],
       cloneElement: {},
-
       loading: false,
     }
   },
@@ -69,16 +69,26 @@ export default {
         return;
       }
 
-      formBuilderService.createSimpleElement({
+	    const data = this.$store.getters['global/datas'];
+			const mode = typeof data.mode !== 'undefined' ? data.mode.value : 'forms';
+
+	    formBuilderService.createSimpleElement({
         gid: group_id,
         plugin: this.cloneElement.value,
+	      mode: mode
       }).then(response => {
-        formBuilderService.updateElementOrder(group_id, response.data.scalar, event.newDraggableIndex).then((response) => {
-          this.$emit('element-created');
-          this.updateLastSave();
-          this.loading = false;
-        });
+		    if (response.status && response.data > 0) {
+	        formBuilderService.updateElementOrder(group_id, response.data, event.newDraggableIndex).then((response) => {
+	          this.$emit('element-created');
+	          this.updateLastSave();
+	          this.loading = false;
+	        });
+				} else {
+					this.displayError(response.msg);
+					this.loading = false;
+				}
       }).catch((error) => {
+				console.warn(error);
         this.loading = false;
       });
     },

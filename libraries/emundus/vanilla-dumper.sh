@@ -42,7 +42,7 @@ done
 
 # If gitlab_token is *empty*
 if [[ -z $gitlab_token ]]; then
-    echo "Option -t is missing with a validate personal token. Check Buttercup > eMundusSaaS to get it" >&2
+    echo "Option -t requires an argument." >&2
     exit 1
 fi
 
@@ -118,7 +118,14 @@ mysqldump -u "${db_config[user]}" -p"${db_config[password]}" -P "${db_config[por
 
 
 
-echo -e "[TASK No.5] : Remove every lines which contain DEFINER \n"
+echo -e "[TASK No.5] : Switch ROW_FORMAT from COMPACT to DYNAMIC \n"
+cat /tmp/vanilla_dump_$(date +"%Y-%m-%d")_${random_hash}/vanilla_emjmd.sql | sed -e 's/ROW_FORMAT=COMPACT/ROW_FORMAT=DYNAMIC/'  | sed -e '/ROW_FORMAT/!s/^) ENGINE=InnoDB/) ENGINE=InnoDB ROW_FORMAT=DYNAMIC/' > /tmp/vanilla_dump_$(date +"%Y-%m-%d")_${random_hash}/vanilla_emjmd_tmp.sql
+mv -f /tmp/vanilla_dump_$(date +"%Y-%m-%d")_${random_hash}/vanilla_emjmd_tmp.sql /tmp/vanilla_dump_$(date +"%Y-%m-%d")_${random_hash}/vanilla_emjmd.sql
+
+
+
+
+echo -e "[TASK No.6] : Remove every lines which contain DEFINER \n"
 sed -i '/DEFINER/d' /tmp/vanilla_dump_$(date +"%Y-%m-%d")_${random_hash}/vanilla_emjmd.sql
 
 
@@ -126,7 +133,7 @@ sed -i '/DEFINER/d' /tmp/vanilla_dump_$(date +"%Y-%m-%d")_${random_hash}/vanilla
 
 # -- Pushing the code (new vanilla database)
 
-echo -e "[TASK No.6] : Create new commit for emundus/cms/vanilla_emjmd Gitlab repository \n"
+echo -e "[TASK No.7] : Create new commit for emundus/cms/vanilla_emjmd Gitlab repository \n"
 git -C /tmp/vanilla_dump_$(date +"%Y-%m-%d")_${random_hash} add .
 git -C /tmp/vanilla_dump_$(date +"%Y-%m-%d")_${random_hash} commit -m "[UPDATE] new database 🔥 | associated_release: ${git_platform[recent_tag]} | associated_commit_hash: ${git_platform[current_commit_hash]}"
 git -C /tmp/vanilla_dump_$(date +"%Y-%m-%d")_${random_hash} push
@@ -136,5 +143,5 @@ git -C /tmp/vanilla_dump_$(date +"%Y-%m-%d")_${random_hash} push
 
 # -- Clean
 
-echo -e "[TASK No.7] : Clean /tmp \n"
+echo -e "[TASK No.8] : Clean /tmp \n"
 rm -rf /tmp/vanilla_dump_$(date +"%Y-%m-%d")_${random_hash}/

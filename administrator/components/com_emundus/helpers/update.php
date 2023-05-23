@@ -451,20 +451,32 @@ class EmundusHelperUpdate
      *
      * @since version 1.33.0
      */
-    public static function updateYamlVariable($key1,$value,$file,$key2 = null) {
+    public static function updateYamlVariable($key1,$value,$file,$key2 = null,$full_content = null) {
         $yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($file));
 
-        if(!empty($key2) && isset($yaml[$key1])){
-            if(isset($yaml[$key1][$key2])) {
-                $yaml[$key1][$key2] = $value;
-            }
-        } elseif (isset($yaml[$key1])){
-            $yaml[$key1] = $value;
-        } else {
-            echo ("Key " . $key1 . ' not found in file ' . $file);
-        }
+		if(!empty($full_content)){
+			$content_yaml = \Symfony\Component\Yaml\Yaml::parse($full_content);
+			$yaml = $content_yaml;
+		} else
+		{
+			if (!empty($key2) && isset($yaml[$key1]))
+			{
+				if(isset($yaml[$key1][$key2]))
+				{
+					$yaml[$key1][$key2] = $value;
+				}
+			}
+			elseif (isset($yaml[$key1]))
+			{
+				$yaml[$key1] = $value;
+			}
+			else
+			{
+				echo("Key " . $key1 . ' not found in file ' . $file);
+			}
+		}
 
-        $new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml);
+        $new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml,4,2);
 
         file_put_contents($file, $new_yaml);
     }
@@ -940,36 +952,39 @@ class EmundusHelperUpdate
                 $params = json_decode($result->params);
                 $old_events = json_decode($params->event_handlers);
 
-                $events = array_values($old_events->event);
+				if(!empty($old_events->event)) {
+					$events = array_values($old_events->event);
 
-                if(!empty($events)) {
-                    $codes = array_values($old_events->code);
+					if (!empty($events) && !empty($old_events->code)) {
+						$codes = array_values($old_events->code);
 
-                    $new_events = new stdClass;
-                    $new_events->event_handlers = new stdClass;
+						$new_events                 = new stdClass;
+						$new_events->event_handlers = new stdClass;
 
-                    foreach ($events as $key => $event) {
-                        $new_events->event_handlers->{'event_handlers' . $key} = new stdClass;
-                        $new_events->event_handlers->{'event_handlers' . $key}->event = $event;
+						foreach ($events as $key => $event) {
+							$new_events->event_handlers->{'event_handlers' . $key}        = new stdClass;
+							$new_events->event_handlers->{'event_handlers' . $key}->event = $event;
 
-                        $backed_file = fopen('libraries/emundus/custom/'.strtolower($event) . '_' . $key . '.php', 'w');
-                        if ($backed_file) {
-                            fwrite($backed_file, '<?php ' . $codes[$key]);
-                            fclose($backed_file);
-                        } else {
-                            JLog::add('Failed to backup events', JLog::WARNING, 'com_emundus.cli');
-                        }
+							$backed_file = fopen('libraries/emundus/custom/' . strtolower($event) . '_' . $key . '.php', 'w');
+							if ($backed_file) {
+								fwrite($backed_file, '<?php ' . $codes[$key]);
+								fclose($backed_file);
+							}
+							else {
+								JLog::add('Failed to backup events', JLog::WARNING, 'com_emundus.cli');
+							}
 
-                        $new_events->event_handlers->{'event_handlers' . $key}->code = $codes[$key];
-                    }
+							$new_events->event_handlers->{'event_handlers' . $key}->code = $codes[$key];
+						}
 
-                    $query->clear()
-                        ->update($db->quoteName('#__extensions'))
-                        ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($new_events)))
-                        ->where($db->quoteName('extension_id') . ' = ' . $db->quote($result->extension_id));
-                    $db->setQuery($query);
-                    $db->execute();
-                }
+						$query->clear()
+							->update($db->quoteName('#__extensions'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($new_events)))
+							->where($db->quoteName('extension_id') . ' = ' . $db->quote($result->extension_id));
+						$db->setQuery($query);
+						$db->execute();
+					}
+				}
             }
         } catch (Exception $e) {
             $updated = ['status' => false, 'message' => "Error when convert event handlers : " . $e->getMessage()];
@@ -1927,7 +1942,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addColumn($table,$name,$type = 'VARCHAR',$length = null,$null = 1){
+    public static function addColumn($table,$name,$type = 'VARCHAR',$length = null, $null = 1, $default = null){
         $result = ['status' => false, 'message' => ''];
 
         if (empty($table)) {
@@ -1951,6 +1966,11 @@ class EmundusHelperUpdate
                 if(!empty($length)) {
                     $query .= ' (' . $length . ')';
                 }
+
+				if ($default !== null) {
+					$query .= ' DEFAULT ' . $db->quote($default);
+				}
+
                 $query .= ' ' . $null_query;
                 $db->setQuery($query);
                 $result['status'] = $db->execute();
@@ -2209,7 +2229,7 @@ class EmundusHelperUpdate
                         if (isset($event['published'])) {
                             $row .= ', ' . $event['published'];
                         } else {
-                            $row .= ', 0';
+                            $row .= ', 1';
                         }
 
                         if (isset($event['category'])) {
@@ -2447,4 +2467,106 @@ class EmundusHelperUpdate
 
         return $result;
     }
+
+	/**
+	 * @param $table
+	 * @param $columns (need to be formatted as object (name,type = 'VARCHAR',length,null)
+	 * @param $foreigns_key (need to be formatted as object (name,from_column,ref_table,ref_column,update_cascade,delete_cascade)
+	 *
+	 * @return array
+	 *
+	 * @since version 1.35.0
+	 */
+	public static function createTable($table,$columns = [],$foreigns_key = [], $comment = ''){
+		$result = ['status' => false, 'message' => ''];
+
+		if (empty($table)) {
+			$result['message'] = 'CREATE TABLE : Please refer a database name.';
+			return $result;
+		}
+
+		try {
+			$db = JFactory::getDbo();
+			$table_existing = $db->setQuery('SHOW TABLE STATUS WHERE Name LIKE ' . $db->quote($table))->loadResult();
+
+			if (empty($table_existing)) {
+				$query = 'CREATE TABLE ' . $table . '(';
+				$query .= 'id INT AUTO_INCREMENT PRIMARY KEY';
+				if(!empty($columns)) {
+					foreach ($columns as $column) {
+						$query_column = ',' . $column['name'];
+						if (!empty($column['type'])) {
+							$query_column .= ' ' . $column['type'];
+						}
+						else {
+							$query_column .= ' VARCHAR';
+						}
+						if (!empty($column['length'])) {
+							$query_column .= '(' . $column['length'] . ')';
+						}
+						if (!empty($column['default'])) {
+							$query_column .= ' DEFAULT ' . $column['default'];
+						}
+						if ($column['null'] == 1) {
+							$query_column .= ' NULL';
+						}
+						else {
+							$query_column .= ' NOT NULL';
+						}
+
+						$query .= $query_column;
+					}
+				}
+				if(!empty($foreigns_key)) {
+					foreach ($foreigns_key as $fk) {
+						if(!empty($fk['name']) && !empty($fk['from_column']) && !empty($fk['ref_table']) && !empty($fk['ref_column'])) {
+							$query .= ',CONSTRAINT ' . $fk['name'] . ' FOREIGN KEY (' . $fk['from_column'] . ') REFERENCES ' . $fk['ref_table'] . '(' . $fk['ref_column'] . ')';
+						}
+						if(!empty($fk['update_cascade'])){
+							$query .= ' ON UPDATE CASCADE';
+						}
+						if(!empty($fk['delete_cascade'])){
+							$query .= ' ON DELETE CASCADE';
+						}
+					}
+				}
+				$query .= ')';
+				if(!empty($comment)){
+					$query .= ' COMMENT ' . $db->quote($comment);
+				}
+				$db->setQuery($query);
+				$result['status'] = $db->execute();
+			}
+		} catch (Exception $e) {
+			$result['message'] = 'ADDING TABLE : Error : ' . $e->getMessage();
+		}
+
+		return $result;
+	}
+
+	public static function executeSQlFile($file){
+		$result = ['status' => false, 'message' => ''];
+		$db = JFactory::getDbo();
+
+		try
+		{
+			$queries = $db->splitSql(file_get_contents(JPATH_ROOT . '/administrator/components/com_emundus/sql/updates/mysql/'.$file.'.sql'));
+
+			foreach ($queries as $query){
+				if(!empty($query)){
+					$db->setQuery($query);
+					$db->execute();
+				}
+			}
+
+			$result['status'] = true;
+		}
+		catch (Exception $e)
+		{
+			$result['message'] = 'UPDATE FLAGS : Error : ' . $e->getMessage();
+
+		}
+
+		return $result;
+	}
 }

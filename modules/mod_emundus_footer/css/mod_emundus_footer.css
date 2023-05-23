@@ -56,6 +56,26 @@ hr.footer-separation {
 .footer-rgpd-links {
     display: flex;
     flex-direction: row;
+    align-items: center;
+}
+
+.em-footer-container-row {
+    column-gap: 8px;
+}
+
+.footer-emundus {
+    text-align: end;
+    width: auto;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.footer-rgpd  {
+    flex: 6;
+}
+
+.footer-client  {
+    flex: 1;
 }
 
 .footer-rgpd-links a, .em-col-3-footer a  {
@@ -69,6 +89,7 @@ hr.footer-separation {
 
 .footer-rgpd p {
     padding: 0px 10px;
+    text-align: center;
 }
 
 /* GESTIONNAIRE */
@@ -137,29 +158,34 @@ hr.footer-separation {
         flex-direction: column;
     }
 
-    .em-container-footer-cand .em-flex-row {
-        flex-direction: column;
-        row-gap: 8px;
+    .em-footer-container-row {
+        flex-direction: column !important;
+    }
+
+    .footer-client {
+        text-align: center;
     }
 }
 
 @media all and (min-width: 480px) and (max-width: 767px) {
     .footer-rgpd-links {
         flex-direction: row;
+        align-items: center;
     }
 
-    .em-container-footer-cand .em-flex-row {
+    .em-flex-row.em-footer-container-row {
         flex-direction: column !important;
-        row-gap: 8px;
+        row-gap: 16px;
+    }
+
+    .footer-client {
+        text-align: center;
     }
 }
+
 @media all and (min-width: 768px) and (max-width: 959px) {
-    .footer-rgpd-links {
-        flex-direction: row;
-    }
-
-    .em-container-footer-cand .em-flex-row {
-        flex-direction: column !important;
-        row-gap: 8px;
+    .footer-emundus {
+        white-space: break-spaces;
     }
 }
+

@@ -30,17 +30,21 @@ if (!empty($this->htmlLetters)) {
                 <div>
                     <label for="trombi_grid_width"><?= JText::_('COM_EMUNDUS_TROMBI_COLUMN'); ?></label>
                     <select id="trombi_grid_width" name="trombi_grid_width" class="inputbox">
-                        <?php for ($i = 1; $i <= 10; $i++) :?>
-                            <option value="<?= $i; ?>"><?= $i; ?></option>
-                        <?php endfor; ?>
+                        <option value="1">1</option>
+                        <option value="2" selected="selected">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
                     </select>
                 </div>
                 <div>
                     <label for="trombi_grid_height"><?= JText::_('COM_EMUNDUS_TROMBI_LINE'); ?></label>
                     <select id="trombi_grid_height" name="trombi_grid_height" class="inputbox">
-                        <?php for ($i = 1; $i <= 10; $i++) :?>
-                            <option value="<?= $i; ?>"><?= $i; ?></option>
-                        <?php endfor; ?>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4" selected="selected">4</option>
+                        <option value="5">5</option>
                     </select>
                 </div>
             </div>

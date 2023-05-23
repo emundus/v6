@@ -41,4 +41,9 @@ class EmundusModelAcademictranscriptTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_academictranscript = new EmundusModelAcademicTranscript;
     }
+
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
 }

@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 import client from './axiosClient';
 
 export default {
@@ -13,11 +14,11 @@ export default {
                 formData
             );
 
-            return response;
+            return response.data;
         } catch (e) {
             return {
                 status: false,
-                message: e.message
+                msg: e.message
             };
         }
     },
@@ -300,11 +301,20 @@ export default {
       }
     },
     async updateDocument(data) {
+        if (data.document_id == undefined || data.profile_id == undefined || data.document == undefined) {
+            return {
+                status: false,
+                msg: 'Missing data'
+            };
+        }
+
         const formData = new FormData();
         formData.append('document_id', data.document_id);
         formData.append('profile_id', data.profile_id);
         formData.append('document', data.document);
         formData.append('types', data.types);
+        formData.append('file', data.sample);
+        formData.append('has_sample', data.has_sample);
 
         try {
             const response = await client().post(
@@ -728,5 +738,27 @@ export default {
         } else {
             return {status: false, message: 'MISSING_PARAMS'};
         }
+    },
+    async getDocumentSample(documentId, profileId) {
+        if (documentId > 0 && profileId > 0) {
+            try {
+                const response = await client().get(
+                    'index.php?option=com_emundus&controller=formbuilder&task=getdocumentsample',
+                    {
+                        params: {
+                            document_id: documentId,
+                            profile_id: profileId
+                        }
+                    }
+                );
+
+                return response.data;
+            } catch (e) {
+                return {status: false, message: e.message};
+            }
+        } else {
+            return {status: false, message: 'MISSING_PARAMS'};
+        }
+
     }
 };

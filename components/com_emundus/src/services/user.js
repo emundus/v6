@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 import client from './axiosClient';
 
 export default {
@@ -35,12 +36,15 @@ export default {
     },
     async getAccessRights(id, fnum) {
         try {
-            const response = await client().get('index.php?option=com_emundus&controller=users&task=getattachmentaccessrights', {
-                params: {
-                    id: id,
-                    fnum: fnum
+            const response = await client().get(
+                'index.php?option=com_emundus&controller=users&task=getattachmentaccessrights',
+                {
+                    params: {
+                        id: id,
+                        fnum: fnum
+                    }
                 }
-            });
+            );
 
             return response.data;
         } catch (e) {
@@ -80,11 +84,10 @@ export default {
     },
     async getProfileElements(groupid) {
         try {
-            const response = await client().get('index.php?option=com_emundus&controller=users&task=getprofileelements', {
-                params: {
-                    groupid: groupid,
-                }
-            });
+            const response = await client().get(
+                'index.php?option=com_emundus&controller=users&task=getprofileelements',
+                {params: {groupid: groupid}}
+            );
 
             return response.data;
         } catch (e) {
@@ -115,7 +118,7 @@ export default {
     async updateProfilePicture(file) {
         try {
             const formData = new FormData();
-            formData.append("file", file);
+            formData.append('file', file);
 
             return await client().post(`index.php?option=com_emundus&controller=users&task=updateprofilepicture`,
                 formData,

@@ -921,21 +921,24 @@ class Files
 
 	public function getComment($cid): object
 	{
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
 		$comment = new \stdClass();
 
-		try {
-			$query->select('ec.reason,ec.comment_body,ec.date,concat(eu.lastname," ",eu.firstname) as user')
+		if (!empty($cid)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('ec.id, ec.reason, ec.comment_body,ec.date,concat(eu.lastname," ",eu.firstname) as user')
 				->from($db->quoteName('#__emundus_comments','ec'))
 				->leftJoin($db->quoteName('#__emundus_users','eu').' ON '.$db->quoteName('eu.user_id').' = '.$db->quoteName('ec.user_id'))
 				->where($db->quoteName('ec.id') . ' = ' . $db->quote($cid));
-			$db->setQuery($query);
-			$comment = $db->loadObject();
-		}
-		catch (Exception $e) {
-			JLog::add('Problem when get comment : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
+
+			try {
+				$db->setQuery($query);
+				$comment = $db->loadObject();
+			}
+			catch (Exception $e) {
+				JLog::add('Problem when get comment : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
+			}
 		}
 
 		return $comment;
