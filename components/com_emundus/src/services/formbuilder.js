@@ -14,11 +14,11 @@ export default {
                 formData
             );
 
-            return response;
+            return response.data;
         } catch (e) {
             return {
                 status: false,
-                message: e.message
+                msg: e.message
             };
         }
     },

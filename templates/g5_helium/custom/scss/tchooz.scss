@@ -486,6 +486,13 @@ input:focus + .em-slider {
 }
 
 /* UTILITIES */
+.unselectable{
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 .em-flex-column{
   display: flex;
   flex-direction: column;
@@ -571,7 +578,7 @@ input:focus + .em-slider {
 
 .em-grid-2{
   display: grid;
-  grid-gap: 24px;
+  grid-gap: 16px;
   grid-template-columns: repeat(2, 1fr);
 }
 

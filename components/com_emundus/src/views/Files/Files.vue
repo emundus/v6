@@ -261,6 +261,8 @@ export default {
     rows_selected: [],
   }),
   created(){
+		this.addKeyupEnterEventlistener();
+
     this.getLimit();
     this.getPage();
     if(this.$props.type === 'evaluation') {
@@ -278,6 +280,14 @@ export default {
 
   },
   methods: {
+	  addKeyupEnterEventlistener(){
+		  window.document.addEventListener('keyup', (e) => {
+			  if (e.key === 'Enter'){
+				  e.preventDefault();
+					e.stopPropagation();
+			  }
+		  });
+	  },
     getLimit(){
       filesService.getLimit(this.$props.type).then((limit) => {
         if(limit.status == 1) {

@@ -748,13 +748,6 @@ $font:'Inter', sans-serif;
   }
 
 
-  /* DISPLAY */
-  &.plg-display .fabrikinput {
-    height: auto !important;
-    border: none !important;
-    padding: 0 !important;
-  }
-
   /* LABEL */
   .fabrikLabel {
     @include body-14-medium;

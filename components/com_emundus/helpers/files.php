@@ -2338,8 +2338,8 @@ class EmundusHelperFiles
 
             if ($eval['jos_emundus_evaluations___user'] > 0 && ($eval['jos_emundus_evaluations___user'] == JFactory::getUser()->id || EmundusHelperAccess::asAccessAction(5,'r'))) {
                 $str = '<br><hr>';
-                $str .= '<em>'.JText::_('COM_EMUNDUS_EVALUATION_EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.$fnumInfo['name'].'</em>';
-                $str .= '<h1>'.JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR').': '.JFactory::getUser($eval['jos_emundus_evaluations___user'])->name.'</h1>';
+                $str .= '<p><em style="font-size: 14px">'.JText::_('COM_EMUNDUS_EVALUATION_EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.$fnumInfo['name'].'</em></p>';
+                $str .= '<h2>'.JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR').': '.JFactory::getUser($eval['jos_emundus_evaluations___user'])->name.'</h2>';
                 $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 
                 foreach ($elements as $element) {
@@ -2864,22 +2864,34 @@ class EmundusHelperFiles
         }
     }
 
+	/**
+	 * if empty $user_id, then it will return false
+	 * if not empty $user_id, then it will return all the filters of the user, empty array if no filters
+	 * @param $user_id
+	 * @return array|false|mixed
+	 */
     public function getExportExcelFilter($user_id) {
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
+	    $filters = false;
 
-        try {
-        	$query->select('*')
-		        ->from($db->quoteName('#__emundus_filters'))
-		        ->where($db->quoteName('user').' = '.$user_id.' AND constraints LIKE '.$db->quote('%excelfilter%'));
-            $db->setQuery($query);
-            return $db->loadObjectList();
+		if (!empty($user_id)) {
+			$db = JFactory::getDBO();
+			$query = $db->getQuery(true);
 
-        } catch (Exception $e) {
-            echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-            return false;
-        }
+			try {
+				$query->select('*')
+					->from($db->quoteName('#__emundus_filters'))
+					->where($db->quoteName('user').' = '.$user_id.' AND constraints LIKE '.$db->quote('%excelfilter%'));
+				$db->setQuery($query);
+
+				$filters = $db->loadObjectList();
+			} catch (Exception $e) {
+				echo $e->getMessage();
+				JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+				$filters = false;
+			}
+		}
+
+	    return $filters;
     }
 
     //// get profile from elements IDs
