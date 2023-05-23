@@ -2826,6 +2826,50 @@ class EmundusModelFormbuilder extends JModelList {
         return $response;
     }
 
+
+	function checkIfModelTableIsUsedInForm($model_id, $profile_id) {
+		$used = false;
+
+		if (!empty($model_id) && !empty($profile_id)) {
+			$db = $this->getDbo();
+			$query = $db->getQuery(true);
+
+			require_once (JPATH_SITE . '/components/com_emundus/models/form.php');
+			$m_form = new EmundusModelForm();
+			$forms = $m_form->getFormsByProfileId($profile_id);
+
+			if (!empty($forms)) {
+				$query->select('db_table_name')
+					->from($db->quoteName('#__fabrik_lists'))
+					->where($db->quoteName('form_id') . ' = ' . $db->quote($model_id));
+
+				$db->setQuery($query);
+				$model_table = $db->loadResult();
+
+				$form_ids = array();
+				foreach ($forms as $form) {
+					$form_ids[] = $form->id;
+				}
+
+				$query->clear()
+					->select('db_table_name')
+					->from($db->quoteName('#__fabrik_lists'))
+					->where($db->quoteName('form_id') . ' IN (' . implode(',', $form_ids) . ')');
+
+				$db->setQuery($query);
+				$form_tables = $db->loadColumn();
+
+				if (!empty($form_tables)) {
+					if (in_array($model_table, $form_tables)) {
+						$used = true;
+					}
+				}
+			}
+		}
+
+		return $used;
+	}
+
 	/**
 	 * @param string $template_table_name
 	 * @param int $profile_id

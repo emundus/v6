@@ -34,7 +34,7 @@
 							<input type="radio" id="new-structure" name="structure" value="new" v-model="structure"/>
 							<label for="new-structure">{{ translate('COM_EMUNDUS_FORM_BUILDER_NEW_STRUCTURE') }}</label>
 						</div>
-						<div class="em-flex-row">
+						<div class="em-flex-row" :class="{'disabled': !canUseInitialStructure }">
 							<input type="radio" id="initial-structure" name="structure" value="initial" v-model="structure"/>
 							<label for="initial-structure">{{ translate('COM_EMUNDUS_FORM_BUILDER_INITIAL_STRUCTURE') }}</label>
 						</div>
@@ -125,7 +125,8 @@ export default {
 				template: 0,
 			},
 			search: '',
-			structure: 'new' // new | initial, structure means data structure, to know if we keep same database tables or not
+			structure: 'new', // new | initial, structure means data structure, to know if we keep same database tables or not
+			canUseInitialStructure: true
 		};
 	},
 	created() {
@@ -168,6 +169,10 @@ export default {
 					this.page.label = found_model.label;
 					this.page.intro = found_model.intro;
 				}
+
+				if (this.structure !== 'new' && !this.canUseInitialStructure) {
+					this.structure = 'new';
+				}
 			}
 
 			const data = {...this.page, modelid: model_form_id, keep_structure: this.structure === 'initial'};
@@ -195,6 +200,32 @@ export default {
 				'reload': reload,
 				'newSelected': newSelected
 			});
+		},
+		isInitialStructureAlreadyUsed() {
+			let used = false;
+
+			if (this.selected !== -1) {
+				const found_model = this.models.find((model) => {
+					return model.id === this.selected
+				});
+
+				formBuilderService.checkIfModelTableIsUsedInForm(found_model.form_id, this.profile_id).then((response) => {
+					if (response.status) {
+						used = response.data;
+					}
+
+					if (used) {
+						this.structure = 'new';
+						this.canUseInitialStructure = false;
+					} else {
+						this.canUseInitialStructure = true;
+					}
+
+					return used;
+				});
+			} else {
+				return used;
+			}
 		}
 	},
 	computed: {
@@ -209,6 +240,11 @@ export default {
 			this.models.forEach((model) => {
 				model.displayed = model.label[this.shortDefaultLang].toLowerCase().includes(this.search.toLowerCase().trim());
 			});
+		},
+		selected: function() {
+			if (this.selected !== -1) {
+				this.isInitialStructureAlreadyUsed();
+			}
 		}
 	}
 }
@@ -319,6 +355,8 @@ export default {
 }
 
 #structure-options {
+	transition: all .3s;
+
 	input {
 		margin: 0;
 		height: auto;
@@ -326,6 +364,15 @@ export default {
 
 	label {
 		margin: 0 0 0 8px;
+	}
+
+	.disabled {
+		opacity: .5;
+		cursor: not-allowed;
+
+		input, label {
+			pointer-events: none;
+		}
 	}
 }
 </style>

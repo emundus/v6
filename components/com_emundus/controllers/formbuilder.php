@@ -402,6 +402,28 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         exit;
     }
 
+	public function checkifmodeltableisusedinform()
+	{
+		$user = JFactory::getUser();
+		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$jinput = JFactory::getApplication()->input;
+			$model_id = $jinput->getInt('model_id', 0);
+			$profile_id = $jinput->getInt('profile_id', 0);
+
+			if (!empty($model_id) && !empty($profile_id)) {
+				$response['data'] = $this->m_formbuilder->checkIfModelTableIsUsedInForm($model_id, $profile_id);
+				$response['status'] = true;
+				$response['msg'] = '';
+			} else {
+				$response['msg'] = JText::_('MISSING_PARAMS');
+			}
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
 
     public function deletemenu() {
         $user = JFactory::getUser();

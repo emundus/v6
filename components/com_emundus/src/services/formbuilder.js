@@ -757,5 +757,33 @@ export default {
             return {status: false, message: 'MISSING_PARAMS'};
         }
 
+    },
+
+    async checkIfModelTableIsUsedInForm(modelId, profileId) {
+        let response = {
+            status: false,
+            msg: 'MISSING_PARAMS'
+        };
+
+        if (modelId > 0 && profileId > 0) {
+
+            try {
+                const result = await client().get(
+                    'index.php?option=com_emundus&controller=formbuilder&task=checkifmodeltableisusedinform',
+                    {
+                        params: {
+                            model_id: modelId,
+                            profile_id: profileId
+                        }
+                    }
+                );
+
+                response = result.data;
+            } catch (e) {
+                response.msg = e.message;
+            }
+        }
+
+        return response;
     }
 };
