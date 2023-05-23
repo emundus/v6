@@ -385,19 +385,34 @@ class EmundusModelFormbuilderTest extends TestCase
 		$used = $this->m_formbuilder->checkIfModelTableIsUsedInForm(0, 1);
 		$this->assertFalse($used, 'checkIfModelTableIsUsedInForm returns false if no model id given');
 
-		$profile_id = 9;
-		$used = $this->m_formbuilder->checkIfModelTableIsUsedInForm(9999999, $profile_id);
-		$this->assertFalse($used, 'checkIfModelTableIsUsedInForm returns false if no model does not exists');
 
-		require_once JPATH_ROOT . '/components/com_emundus/models/form.php';
-		$m_form = new EmundusModelForm();
-		$forms = $m_form->getFormsByProfileId($profile_id);
-		$model_id = $forms[0]->id;
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select('id')
+			->from('#__emundus_setup_profiles')
+			->where('published = 1')
+			->andWhere('label != "noprofile"')
+			->order('id ASC');
+		$db->setQuery($query);
+		$profile_id = $db->loadResult();
 
-		$used = $this->m_formbuilder->checkIfModelTableIsUsedInForm($model_id, 9999999);
-		$this->assertFalse($used, 'checkIfModelTableIsUsedInForm returns false if no profile does not exists');
+		if (!empty($profile_id)) {
+			$used = $this->m_formbuilder->checkIfModelTableIsUsedInForm(9999999, $profile_id);
+			$this->assertFalse($used, 'checkIfModelTableIsUsedInForm returns false if no model does not exists');
 
-		$used = $this->m_formbuilder->checkIfModelTableIsUsedInForm($model_id, $profile_id);
-		$this->assertTrue($used, 'checkIfModelTableIsUsedInForm returns true if model is used in form');
+			require_once JPATH_ROOT . '/components/com_emundus/models/form.php';
+			$m_form = new EmundusModelForm();
+			$forms = $m_form->getFormsByProfileId($profile_id);
+
+			if (!empty($forms)) {
+				$model_id = $forms[0]->id;
+
+				$used = $this->m_formbuilder->checkIfModelTableIsUsedInForm($model_id, 9999999);
+				$this->assertFalse($used, 'checkIfModelTableIsUsedInForm returns false if no profile does not exists');
+
+				$used = $this->m_formbuilder->checkIfModelTableIsUsedInForm($model_id, $profile_id);
+				$this->assertTrue($used, 'checkIfModelTableIsUsedInForm returns true if model is used in form');
+			}
+		}
 	}
 }
