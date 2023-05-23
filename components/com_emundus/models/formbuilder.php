@@ -2463,6 +2463,7 @@ class EmundusModelFormbuilder extends JModelList {
 			$form = JModelLegacy::getInstance('Form', 'FabrikFEModel');
 			$form->setId(intval($formid));
 			$groups	= $form->getGroups();
+			$user = JFactory::getUser();
 
 			// Prepare languages
 			$model_prefix = 'Model - ';
@@ -2603,7 +2604,11 @@ class EmundusModelFormbuilder extends JModelList {
 										$query->clear();
 										$query->insert($db->quoteName('#__fabrik_groups'));
 										foreach ($group_model as $key => $val) {
-											if ($key != 'id') {
+											if ($key === 'created_by') {
+												$query->set($key . ' = ' . $db->quote($user->id));
+											} elseif ($key === 'created') {
+												$query->set($key . ' = ' . $db->quote(date('Y-m-d H:i:s')));
+											} else if ($key !== 'id') {
 												$query->set($key . ' = ' . $db->quote($val));
 											}
 										}
@@ -2621,7 +2626,7 @@ class EmundusModelFormbuilder extends JModelList {
 											$repeat_table_to_copy = $db->loadResult();
 
 											if (!$keep_structure) {
-												$repeat_table_to_copy = $this->createDatabaseTableFromTemplate($repeat_table_to_copy, $prid, $db_table_name);
+												$repeat_table_to_copy = $this->createDatabaseTableFromTemplate($repeat_table_to_copy, $prid, $db_table_name, $newgroupid);
 											}
 
 											$joins_params = '{"type":"group","pk":"`' . $repeat_table_to_copy . '`.`id`"}';
@@ -2826,7 +2831,7 @@ class EmundusModelFormbuilder extends JModelList {
 	 * @param int $profile_id
 	 * @return string
 	 */
-	private function createDatabaseTableFromTemplate(string $template_table_name, int $profile_id, string $parent_table_name = '') {
+	private function createDatabaseTableFromTemplate(string $template_table_name, int $profile_id, string $parent_table_name = '', $group_id = 0) {
 		$new_table = '';
 
 		if (!empty($template_table_name)) {
@@ -2851,14 +2856,6 @@ class EmundusModelFormbuilder extends JModelList {
 						$new_table_name = 'jos_emundus_' . $profile_id . '_' . str_pad($increment, 2, '0', STR_PAD_LEFT);
 					}
 				} else {
-					$group_id = 0;
-					$query = 'SELECT MAX(id) AS max_group_id FROM jos_fabrik_groups';
-					$db->setQuery($query);
-					$result = $db->loadResult();
-					if (!empty($result)) {
-						$group_id = $result + 1;
-					}
-
 					$new_table_name = $parent_table_name . '_' . $group_id . '_repeat';
 				}
 
