@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metafile version="3.9" client="administrator">
+	<tag>lt-LT</tag>
+	<name>Lithuanian (Lithuania)</name>
+	<version>3.9.16</version>
+	<creationDate>2020-04-05</creationDate>
+	<author>Mindaugas Baranauskas</author>
+	<authorEmail>opensuse.lietuviu.kalba@gmail.com</authorEmail>
+	<authorUrl></authorUrl>
+	<copyright>Copyright (C) 2005 - 2020 Open Source Matters. All rights reserved.</copyright>
+	<copyright>2019 Rimvydas Žilinskas rimvydas@rimvydas.info; </copyright>
+	<copyright>2020 Mindaugas Baranauskas opensuse.lietuviu.kalba@gmail.com</copyright>
+	<license>GNU General Public License versija 2 arba naujesnė; žr. LICENSE.txt</license>
+	<description>Joomla! 3.9 administratoriaus lietuvių kalbos paketas</description>
+	<metadata>
+		<name>Lithuanian (Lithuania)</name>
+		<nativeName>Lietuvių (Lietuva)</nativeName>
+		<tag>lt-LT</tag>
+		<rtl>0</rtl>
+		<locale>lt_LT.utf8, lt_LT.UTF-8, lt_LT, lit_LT, lt, lithuanian, lit, lietuva, lietuvių</locale>
+		<firstDay>1</firstDay>
+		<weekEnd>0,6</weekEnd>
+		<calendar>gregorian</calendar>
+	</metadata>
+	<params />
+</metafile>

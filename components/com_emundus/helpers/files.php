@@ -2758,19 +2758,19 @@ class EmundusHelperFiles
      * @return Bool True if table found, else false.
      */
     public function tableExists($table_name) {
+		$exists = false;
 
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+		if (!empty($table_name)) {
+			$db = JFactory::getDbo();
 
-        // The strategy is simple: if there's an error, the table probably doesn't exist.
-        $query->select($db->quoteName('id'))->from($db->quoteName($table_name))->setLimit('1');
+			try {
+				$exists = $db->setQuery('SHOW TABLE STATUS WHERE Name LIKE ' . $db->quote($table_name))->loadResult();
+			} catch (Exception $e) {
+				$exists = false;
+			}
+		}
 
-        try {
-            $db->setQuery($query);
-            return !empty($db->loadResult());
-        } catch (Exception $e) {
-            return false;
-        }
+		return $exists;
     }
 
     public function saveExcelFilter($user_id, $name, $constraints, $time_date, $itemid) {
@@ -3009,7 +3009,7 @@ class EmundusHelperFiles
                 /// four one --> get menutype (distinct) menutype
                 $query = "SELECT DISTINCT #__menu.menutype 
                             FROM #__menu 
-                            WHERE SUBSTRING_INDEX(SUBSTRING(#__menu.link, LOCATE('formid=',jos_menu.link)+7, 3), '&', 1) IN ($_formList)";
+                            WHERE SUBSTRING_INDEX(SUBSTRING(#__menu.link, LOCATE('formid=',jos_menu.link)+7, 4), '&', 1) IN ($_formList)";
                 $db->setQuery($query);
                 $_menus = $db->loadObjectList();
 
