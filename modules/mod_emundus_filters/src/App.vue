@@ -7,10 +7,7 @@
 	  </section>
 	  <div id="filters-selection-wrapper" class="em-w-100 em-mt-16 em-mb-16" :class="{'hidden': !openFilterOptions}">
 		  <label for="filters-selection"> {{ translate('MOD_EMUNDUS_FILTERS_SELECT_FILTER_LABEL') }} </label>
-		  <select id="filters-selection" name="filters-selection" class="em-w-100">
-			  <option value="0">{{ translate('MOD_EMUNDUS_FILTERS_SELECT_FILTER') }} </option>
-			  <option v-for="filter in filters" :key="filter.id" :v-model="filter.id" >{{ filter.label }}</option>
-		  </select>
+			<AdvancedSelect :module-id="moduleId" :filters="filters" @filter-selected="onSelectNewFilter"></AdvancedSelect>
 	  </div>
 	  <section id="filters-actions">
 		  <button id="add-filter" class="em-secondary-button em-mt-16" @click="openFilterOptions = !openFilterOptions">{{ translate('MOD_EMUNDUS_FILTERS_ADD_FILTER') }}</button>
@@ -20,17 +17,17 @@
 
 <script>
 import MultiSelect from './components/MultiSelectFilter.vue';
-
+import AdvancedSelect from './components/AdvancedSelect.vue';
 
 export default {
   name: 'App',
-	components: {MultiSelect},
+	components: {AdvancedSelect, MultiSelect},
 	props: {
 		moduleId: {
 			type: Number,
 			required: true
 		},
-		appliedFilters: {
+		defaultAppliedFilters: {
 			type: Array,
 			default: () => []
 		},
@@ -41,15 +38,24 @@ export default {
 	},
 	data() {
 		return {
+			appliedFilters: [],
 			openFilterOptions: false,
 		}
 	},
 	mounted() {
+		this.appliedFilters = this.defaultAppliedFilters;
 	},
 	methods: {
 		addFilter() {
-			console.log('add filter');
-		}
+		},
+		onSelectNewFilter(filterId) {
+			const newFilter = this.filters.find((filter) => filter.id === filterId);
+			newFilter.uid = new Date().getTime();
+			newFilter.value = [];
+
+			this.appliedFilters.push(newFilter);
+			this.openFilterOptions = false;
+		},
 	}
 }
 </script>

@@ -11,7 +11,7 @@ if (modFilters) {
 
     const app = createApp(App, {
         moduleId: parseInt(modFilters.getAttribute('data-module-id')),
-        appliedFilters: appliedFilters,
+        defaultAppliedFilters: appliedFilters,
         filters: filters,
     }).use(Vuex).mixin(translate);
 

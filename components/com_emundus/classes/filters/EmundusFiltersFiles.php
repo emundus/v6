@@ -104,19 +104,21 @@ class EmundusFiltersFiles extends EmundusFilters
 				$form_ids = array_unique($form_ids);
 
 				$query->clear()
-					->select('jfe.id, jfe.plugin, jfe.label, jfe.params, jffg.form_id')
+					->select('jfe.id, jfe.plugin, jfe.label, jfe.params, jffg.form_id as element_form_id, jff.label as element_form_label')
 					->from('jos_fabrik_elements as jfe')
 					->join('inner', 'jos_fabrik_formgroup as jffg ON jfe.group_id = jffg.group_id')
+					->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
 					->where('jffg.form_id IN (' . implode(',', $form_ids) . ')')
-					->andWhere('published = 1')
-					->andWhere('hidden = 0');
+					->andWhere('jfe.published = 1')
+					->andWhere('jfe.hidden = 0');
 
 				try {
 					$db->setQuery($query);
 					$elements = $db->loadAssocList();
 
 					foreach ($elements as $key => $element) {
-						$elements[$key]['label'] = JText::_($element['label']) . ' (' . $element['form_id'] . ')';
+						$elements[$key]['label'] = JText::_($element['label']);
+						$elements[$key]['element_form_label'] = JText::_($element['element_form_label']);
 					}
 				} catch (Exception $e) {
 					JLog::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');

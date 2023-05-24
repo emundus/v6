@@ -52,7 +52,9 @@ class EmundusFilters
 					'id' => $element['id'],
 					'label' => JText::_($element['label']),
 					'type' => 'text',
-					'values' => []
+					'values' => [],
+					'group_label' => $element['element_form_label'],
+					'group_id' => $element['element_form_id']
 				];
 
 				switch ($element['plugin']) {
@@ -67,6 +69,9 @@ class EmundusFilters
 					case 'jdate':
 					case 'birthday':
 						$filter['type'] = 'date';
+						break;
+					case 'time':
+						$filter['type'] = 'time';
 						break;
 				}
 

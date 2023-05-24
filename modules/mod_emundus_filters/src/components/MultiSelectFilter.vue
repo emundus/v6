@@ -8,7 +8,7 @@
 		<section v-if="!opened" class="recap">
 			<div v-if="selectedValues.length > 0 && !selectedValues.includes('all')">
 				<p class="recap-operator"> {{ selectedOperatorLabel }}</p>
-				<div class="recap-value em-flex-row">
+				<div class="recap-value em-flex-row em-flex-wrap">
 					<div v-for="(value, index) in selectedValues" :key="value">
 						<span>{{ selectedValuesLabels[index] }}</span>
 						<span v-if="selectedValues.length > 1 && index < selectedValues.length - 1" class="em-ml-4 em-mr-4"> {{ selectedAndorOperatorLabel }} </span>
