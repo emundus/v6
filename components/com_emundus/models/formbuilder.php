@@ -2872,15 +2872,20 @@ class EmundusModelFormbuilder extends JModelList {
 	 * @param int $profile_id
 	 * @return string
 	 */
-	private function createDatabaseTableFromTemplate(string $template_table_name, int $profile_id, string $parent_table_name = '', $group_id = 0) {
+	public function createDatabaseTableFromTemplate(string $template_table_name, int $profile_id, string $parent_table_name = '', $group_id = 0) {
 		$new_table = '';
 
 		if (!empty($template_table_name)) {
 			$db = $this->getDbo();
 			$query = 'SHOW CREATE TABLE ' . $db->quoteName($template_table_name);
 
-			$db->setQuery($query);
-			$result = $db->loadAssoc();
+			try {
+				$db->setQuery($query);
+				$result = $db->loadAssoc();
+			} catch (Exception $e) {
+				// table doesn't exist
+				$result = array();
+			}
 
 			if (!empty($result['Create Table'])) {
 				$new_create_table = $result['Create Table'];
@@ -2891,6 +2896,7 @@ class EmundusModelFormbuilder extends JModelList {
 					$new_table_name = 'jos_emundus_' . $profile_id . '_' . str_pad($increment, 2, '0', STR_PAD_LEFT);
 					// while table exists increment
 
+					require_once (JPATH_SITE . '/components/com_emundus/helpers/files.php');
 					$h_files = new EmundusHelperFiles();
 					while ($h_files->tableExists($new_table_name)) {
 						$increment++;
