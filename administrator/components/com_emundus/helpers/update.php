@@ -1534,7 +1534,7 @@ class EmundusHelperUpdate
                     'img' => $params['img'] ?: ''
                 );
 
-                if ($parent_id <= 0) {
+                if ($parent_id <= 0 || empty($parent_id)) {
                     $parent_id = 1;
                 }
 
