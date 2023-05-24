@@ -190,47 +190,54 @@ class EmundusModelProfile extends JModelList {
     function getProfileByFnum($fnum): int
     {
         $profile = 0;
-        $query = $this->_db->getQuery(true);
 
-        // check if a default workflow exists
-        require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
-        $m_campaign = new EmundusModelCampaign();
-        $campaign_workflow = $m_campaign->getCurrentCampaignWorkflow($fnum);
+		if (!empty($fnum)) {
+			$query = $this->_db->getQuery(true);
 
-        if (!empty($campaign_workflow)) {
-            $profile = $campaign_workflow->profile;
-        }
+			// check if a default workflow exists
+			require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
+			$m_campaign = new EmundusModelCampaign();
+			$campaign_workflow = $m_campaign->getCurrentCampaignWorkflow($fnum);
 
-        if (empty($profile)) {
+			if (!empty($campaign_workflow)) {
+				$profile = $campaign_workflow->profile;
+			}
 
-            if (!empty($default_workflow)) {
-                $profile = $default_workflow->profile;
-            } else {
-                $query = 'SELECT ss.profile from jos_emundus_setup_status ss
+			if (empty($profile)) {
+
+				if (!empty($default_workflow)) {
+					$profile = $default_workflow->profile;
+				} else {
+					$query = 'SELECT ss.profile from jos_emundus_setup_status ss
                   LEFT JOIN jos_emundus_campaign_candidature cc ON cc.status = ss.step
 						WHERE cc.fnum LIKE "'.$fnum.'"';
-                $this->_db->setQuery($query);
+					$this->_db->setQuery($query);
 
-                try {
-                    $profile = $this->_db->loadResult();
-                } catch(Exception $e) {
-                    JLog::add('Error on query profile Model function getProfileByFnum => '.$query, JLog::ERROR, 'com_emundus.error');
-                }
+					try {
+						$profile = $this->_db->loadResult();
+					} catch(Exception $e) {
+						JLog::add('Error on query profile Model function getProfileByFnum => '.$query, JLog::ERROR, 'com_emundus.error');
+					}
 
-                if (empty($profile)) {
-                    $query = 'SELECT esc.profile_id from jos_emundus_setup_campaigns esc
+					if (empty($profile)) {
+						$query = 'SELECT esc.profile_id from jos_emundus_setup_campaigns esc
                   LEFT JOIN jos_emundus_campaign_candidature cc ON cc.campaign_id = esc.id
 						WHERE cc.fnum LIKE "'.$fnum.'"';
-                    $this->_db->setQuery($query);
+						$this->_db->setQuery($query);
 
-                    try {
-                        $profile = $this->_db->loadResult();
-                    } catch(Exception $e) {
-                        JLog::add('Error on query profile Model function getProfileByFnum => '.$query, JLog::ERROR, 'com_emundus.error');
-                    }
-                }
-            }
-        }
+						try {
+							$profile = $this->_db->loadResult();
+						} catch(Exception $e) {
+							JLog::add('Error on query profile Model function getProfileByFnum => '.$query, JLog::ERROR, 'com_emundus.error');
+						}
+					}
+				}
+			}
+		}
+
+		if (empty($profile)) {
+			$profile = 0;
+		}
 
         return $profile;
     }
