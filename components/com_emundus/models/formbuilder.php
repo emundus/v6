@@ -2449,21 +2449,34 @@ class EmundusModelFormbuilder extends JModelList {
     /**
      * Create a menu from a choosen template
      *
+     * @param $label
+     * @param $intro
      * @param $formid
      * @param $prid
-     * @param bool $keep_structure
+     * @param bool $keep_structure keep structure true means that the new form id will store data in same table as the template
      * @return array
      */
     function createMenuFromTemplate($label, $intro, $formid, $prid, bool $keep_structure = false) {
         $response = array('status' => false, 'msg' => 'Failed to create menu from form template');
 
 		if (!empty($formid) && !empty($prid)) {
+			$user = JFactory::getUser();
+
+			if ($keep_structure) {
+				$used = $this->checkIfModelTableIsUsedInForm($formid, $prid);
+
+				if ($used) {
+					$keep_structure = false;
+					$response['msg'] = 'The table is already used in another form of same workflow, the structure will be changed';
+					JLog::add($user->id . ' The table of form ' . $formid .' is already used in another form of same profile ' . $prid .  ', the data structure will be duplicated in new table', JLog::INFO, 'com_emundus.formbuilder');
+				}
+			}
+
 			// Prepare Fabrik API
 			JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
 			$form = JModelLegacy::getInstance('Form', 'FabrikFEModel');
 			$form->setId(intval($formid));
 			$groups	= $form->getGroups();
-			$user = JFactory::getUser();
 
 			// Prepare languages
 			$model_prefix = 'Model - ';
@@ -2775,37 +2788,24 @@ class EmundusModelFormbuilder extends JModelList {
 										$falang = new EmundusModelFalang;
 										$falang->insertFalang($label, $newmenuid,'menu','title');
 
-										$response = array(
-											'id' => $newformid,
-											'link' => 'index.php?option=com_fabrik&view=form&formid=' . $newformid,
-											'rgt' => array_values($rgts)[strval(sizeof($rgts)-1)] + 2
-										);
+										$response['id'] = $newformid;
+										$response['link'] = 'index.php?option=com_fabrik&view=form&formid=' . $newformid;
+										$response['rgt'] = array_values($rgts)[strval(sizeof($rgts)-1)] + 2;
+										$response['status'] = true;
 									} else {
-										$response = array(
-											'status' => false,
-											'msg' => 'Failed to insert new menu'
-										);
+										$response['msg'] = 'Failed to insert new menu';
 									}
 								} else {
-									$response =  array(
-										'status' => false,
-										'msg' => 'Failed to insert new list'
-									);
+									$response['msg'] = 'Failed to insert new list';
 								}
 							} else {
-								$response = array('status' => false, 'msg' => 'Empty db table name');
+								$response['msg'] = 'Empty db table name';
 							}
 						} else {
-							$response = array(
-								'status' => false,
-								'msg' => 'Failed to retrieve list from model form_id ' . $formid
-							);
+							$response['msg'] = 'Failed to retrieve list from model form_id ' . $formid;
 						}
 					} else {
-						$response = array(
-							'status' => false,
-							'msg' => 'Failed to create new form'
-						);
+						$response['msg'] = 'Failed to create new form';
 					}
 				} catch(Exception $e) {
 					JLog::add('component/com_emundus/models/formbuilder | Error at create a page from the model ' . $formid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
@@ -2816,10 +2816,7 @@ class EmundusModelFormbuilder extends JModelList {
 					);
 				}
 			} else {
-				$response = array(
-					'status' => false,
-					'msg' => 'Failed to get profile infos from ' . $prid
-				);
+				$response['msg'] = 'Failed to get profile infos from ' . $prid;
 			}
 		}
 
