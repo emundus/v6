@@ -1773,6 +1773,7 @@ class EmundusModelForm extends JModelList {
             ->where($db->quoteName('sp.id') . ' = '.$profile_id)
             ->where($db->quoteName('menu.parent_id') . ' != 1')
             ->where($db->quoteName('menu.published') . ' = 1')
+	        ->where($db->quoteName('menu.link') . ' LIKE ' . $db->quote('%option=com_fabrik%'))
             ->group('menu.rgt')
             ->order('menu.rgt ASC');
 
@@ -1792,15 +1793,6 @@ class EmundusModelForm extends JModelList {
                 $db->setQuery($query);
                 $form->label = $formbuilder->getJTEXT($db->loadResult());
                 print_r($forms->label);
-
-
-                $query->clear()
-                    ->select('id')
-                    ->from('#__emundus_template_form')
-                    ->where('form_id = ' . $form->id);
-
-                $db->setQuery($query);
-                $modelId = $db->loadResult();
             }
 
             return $forms;
