@@ -726,7 +726,7 @@ class EmundusModelForm extends JModelList {
 											}
 										}
 
-										$formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile);
+										$formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile, true);
 									}
 
 									// Copy attachments
@@ -1856,7 +1856,8 @@ class EmundusModelForm extends JModelList {
             $db->setQuery($query);
             $menus = $db->loadObjectList();
             $sub_page = new stdClass();
-            foreach($menus as $menu){
+
+			foreach($menus as $menu){
                 $formid = explode('=',$menu->link)[3];
                 if($formid != null){
                     $query->clear()
@@ -1870,9 +1871,12 @@ class EmundusModelForm extends JModelList {
                         $sub_page->link = $menu->link;
                         $sub_page->rgt = $menu->rgt;
                         $sub_page->id = $menu->id;
+
+						break;
                     }
                 }
             }
+
             return $sub_page;
         } catch(Exception $e) {
             JLog::add('component/com_emundus/models/form | Error at getting the submittion page of the form ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
