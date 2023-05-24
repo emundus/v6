@@ -1643,6 +1643,22 @@ try {
 
 				EmundusHelperUpdate::addColumn('jos_emundus_users', 'token', 'VARCHAR', 50);
 				EmundusHelperUpdate::addColumn('jos_emundus_users', 'anonym_user', 'TINYINT', 1);
+
+				$country_table = EmundusHelperUpdate::createTable('data_country', [
+					['name' => 'label_fr', 'type' => 'varchar', 'length' => 255],
+					['name' => 'label_en', 'type' => 'varchar', 'length' => 255],
+					['name' => 'iso2', 'type' => 'varchar', 'length' => 2],
+					['name' => 'iso3', 'type' => 'varchar', 'length' => 4],
+					['name' => 'country_nb', 'type' => 'varchar', 'length' => 4],
+					['name' => 'continent', 'type' => 'varchar', 'length' => 2],
+					['name' => 'continent_en', 'type' => 'varchar', 'length' => 255],
+					['name' => 'member', 'type' => 'tinyint', 'length' => 1]
+				]);
+
+				if($country_table['status']){
+					EmundusHelperUpdate::executeSQlFile('insert_data_country');
+				}
+
 				EmundusHelperUpdate::addColumn('data_country', 'flag', 'VARCHAR', 30);
 				EmundusHelperUpdate::addColumn('data_country', 'flag_img', 'VARCHAR', 30);
 				EmundusHelperUpdate::executeSQlFile('update_flags');
