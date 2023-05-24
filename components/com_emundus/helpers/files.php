@@ -3009,7 +3009,7 @@ class EmundusHelperFiles
                 /// four one --> get menutype (distinct) menutype
                 $query = "SELECT DISTINCT #__menu.menutype 
                             FROM #__menu 
-                            WHERE SUBSTRING_INDEX(SUBSTRING(#__menu.link, LOCATE('formid=',jos_menu.link)+7, 3), '&', 1) IN ($_formList)";
+                            WHERE SUBSTRING_INDEX(SUBSTRING(#__menu.link, LOCATE('formid=',jos_menu.link)+7, 4), '&', 1) IN ($_formList)";
                 $db->setQuery($query);
                 $_menus = $db->loadObjectList();
 
