@@ -18,9 +18,9 @@ jimport('joomla.event.dispatcher');
  */
 class EmundusModelJobForm extends JModelForm
 {
-    
+
     var $_item = null;
-    
+
 	/**
 	 * Method to auto-populate the model state.
 	 *
@@ -50,7 +50,7 @@ class EmundusModelJobForm extends JModelForm
 		$this->setState('params', $params);
 
 	}
-        
+
 
 	/**
 	 * Method to get an ojbect.
@@ -78,12 +78,12 @@ class EmundusModelJobForm extends JModelForm
 					$canEdit = $user->authorise('core.edit', 'com_emundus.job.'.$id) || $user->authorise('core.create', 'com_emundus.job.'.$id);
 				else
 					$canEdit = $user->authorise('core.edit', 'com_emundus') || $user->authorise('core.create', 'com_emundus');
-                
+
 				if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus.job.'.$id))
                     $canEdit = $user->id == $table->created_by;
                 if (!$canEdit)
                     JError::raiseError('500', JText::_('JERROR_ALERTNOAUTHOR'));
-                
+
 				// Check published state.
 				if ($published = $this->getState('filter.published')) {
 					if ($table->state != $published)
@@ -100,14 +100,14 @@ class EmundusModelJobForm extends JModelForm
 
 		return $this->_item;
 	}
-    
+
 	public function getTable($type = 'Job', $prefix = 'EmundusTable', $config = array())
-	{   
+	{
         $this->addTablePath(JPATH_COMPONENT_ADMINISTRATOR.'/tables');
         return JTable::getInstance($type, $prefix, $config);
-	}     
+	}
 
-    
+
 	/**
 	 * Method to check in an item.
 	 *
@@ -121,7 +121,7 @@ class EmundusModelJobForm extends JModelForm
 		$id = (!empty($id)) ? $id : (int)$this->getState('job.id');
 
 		if ($id) {
-            
+
 			// Initialise the table
 			$table = $this->getTable();
 
@@ -150,7 +150,7 @@ class EmundusModelJobForm extends JModelForm
 		$id = (!empty($id)) ? $id : (int)$this->getState('job.id');
 
 		if ($id) {
-            
+
 			// Initialise the table
 			$table = $this->getTable();
 
@@ -167,16 +167,16 @@ class EmundusModelJobForm extends JModelForm
 		}
 
 		return true;
-	}    
-    
+	}
+
 	/**
 	 * Method to get the profile form.
 	 *
-	 * The base form is loaded from XML 
-     * 
+	 * The base form is loaded from XML
+     *
 	 * @param	array	$data		An optional array of data for the form to interogate.
 	 * @param	boolean	$loadData	True if the form is to load its own data (default case), false if not.
-	 * @return	JForm	A JForm object on success, false on failure
+	 * @return	JForm|false	A JForm object on success, false on failure
 	 * @since	1.6
 	 */
 	public function getForm($data = array(), $loadData = true)
@@ -202,7 +202,7 @@ class EmundusModelJobForm extends JModelForm
         if (empty($data)) {
             $data = $this->getData();
         }
-        
+
         return $data;
 	}
 
@@ -235,13 +235,13 @@ class EmundusModelJobForm extends JModelForm
             JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return false;
         }
-        
+
         $table = $this->getTable();
         if ($table->save($data) === true)
             return $table->id;
-        else return false;        
+        else return false;
 	}
-    
+
     function delete($data) {
         $id = (!empty($data['id'])) ? $data['id'] : (int)$this->getState('job.id');
         if(JFactory::getUser()->authorise('core.delete', 'com_emundus.job.'.$id) !== true) {
@@ -251,9 +251,7 @@ class EmundusModelJobForm extends JModelForm
         $table = $this->getTable();
         if ($table->delete($data['id']) === true)
             return $id;
-        else return false;        
-        
-		return true;
+        else return false;
     }
-    
+
 }

@@ -27,6 +27,7 @@ class EmundusController extends JControllerLegacy {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         include_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+        include_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
         include_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
         include_once (JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
 
@@ -76,8 +77,8 @@ class EmundusController extends JControllerLegacy {
         $profile = $jinput->get('profile', null, 'string');
 
         $fnum = !empty($fnum)?$fnum:$user->fnum;
-        $m_profile = $this->getModel('profile');
-        $m_campaign = $this->getModel('campaign');
+        $m_profile = new EmundusModelProfile();
+        $m_campaign = new EmundusModelCampaign();
 
         $options = array(
           'aemail',
@@ -100,6 +101,7 @@ class EmundusController extends JControllerLegacy {
         $h_menu = new EmundusHelperMenu;
         $getformids = $h_menu->getUserApplicationMenu($profile);
 
+	    $formid = [];
         foreach ($getformids as $getformid) {
             $formid[] = $getformid->form_id;
         }
@@ -126,7 +128,6 @@ class EmundusController extends JControllerLegacy {
         }
 
         require_once($file);
-
 
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, $options, null, $profile,null,null);
@@ -674,6 +675,10 @@ class EmundusController extends JControllerLegacy {
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
         EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 1, 'r', 'COM_EMUNDUS_ACCESS_FILE_READ');
 
+        $dispatcher = JEventDispatcher::getInstance();
+	    $dispatcher->trigger('onBeforeApplicantEnterApplication', ['fnum' => $fnum, 'aid' => $applicant_id, 'redirect' => $redirect]);
+	    $dispatcher->trigger('callEventHandler', ['onBeforeApplicantEnterApplication', ['fnum' => $fnum, 'aid' => $applicant_id, 'redirect' => $redirect]]);
+
         $app->redirect($redirect);
     }
 
@@ -789,6 +794,7 @@ class EmundusController extends JControllerLegacy {
         $m_application = new EmundusModelApplication;
 
         $db = JFactory::getDBO();
+	    $query_updating_file = null;
         $jinput = JFactory::getApplication()->input;
 
         $student_id = $jinput->get->get('sid', null);
@@ -811,6 +817,13 @@ class EmundusController extends JControllerLegacy {
             } else {
 	            $fnums[] = $fnum;
             }
+
+	        $query_updating_file = $db->getQuery(true);
+
+	        $query_updating_file->update($db->quoteName('#__emundus_campaign_candidature'))
+		        ->set($db->quoteName('updated') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+		        ->set($db->quoteName('updated_by') . ' = ' . JFactory::getUser()->id)
+		        ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
 
         } elseif (EmundusHelperAccess::asAccessAction(4, 'c', $current_user->id, $fnum) || EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
             $user = $m_profile->getEmundusUser($student_id);
@@ -1281,6 +1294,11 @@ class EmundusController extends JControllerLegacy {
                 $db->execute();
                 $id = $db->insertid();
 
+				if(!empty($query_updating_file)){
+					$db->setQuery($query_updating_file);
+					$db->execute();
+				}
+
                 // TODO: onAfterAttachmentUpload event appeared after onAfterUploadFile creation on this branch. move treatment to use onAfterAttachmentUpload
                 $dispatcher = JEventDispatcher::getInstance();
                 JPluginHelper::importPlugin('emundus', 'sync_file');
@@ -1557,7 +1575,10 @@ class EmundusController extends JControllerLegacy {
         if($current_user->id == $uid){
             $fnum = $current_user->fnum;
         }
-        $fnums = array_keys($current_user->fnums);
+	    $fnums = [];
+		if(!empty($current_user->fnums)) {
+			$fnums = array_keys($current_user->fnums);
+		}
 
 
         // This query checks if the file can actually be viewed by the user, in the case a file uploaded to his file by a coordniator is opened.

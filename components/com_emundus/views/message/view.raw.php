@@ -56,7 +56,6 @@ class EmundusViewMessage extends JViewLegacy {
 
 		    	$users = $jinput->getString('users', null);
 			    if ($users === 'all') {
-
 				    $us = $m_users->getUsers(0,0);
 				    $users = array();
 				    foreach ($us as $u) {
@@ -65,6 +64,12 @@ class EmundusViewMessage extends JViewLegacy {
 
 			    } else {
 			    	$users = (array) json_decode(stripslashes($users));
+
+					foreach ($users as $key => $value) {
+						if (!is_numeric($value)) {
+							unset($users[$key]);
+						}
+					}
 			    }
 
 			    $users = $m_users->getUsersByIds($users);
@@ -75,7 +80,7 @@ class EmundusViewMessage extends JViewLegacy {
 	        // Default = sending an email to an FNUM.
 		    default:
 			    $fnums = $jinput->getString('fnums', null);
-                $body = $jinput->getRaw('body', null);
+			    $body = $jinput->getRaw('body', null);
                 if(empty($body)){
                     $body = JText::_('COM_EMUNDUS_EMAILS_DEAR') . ' [NAME], ';
                 }
@@ -112,7 +117,7 @@ class EmundusViewMessage extends JViewLegacy {
 
 			    $this->assignRef('users', $users);
 			    $this->assignRef('fnums', $fnum_array);
-                $this->assignRef('body', $body);
+			    $this->assignRef('body', $body);
 	        break;
 
 	    }

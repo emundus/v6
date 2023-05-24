@@ -58,6 +58,7 @@
 				</field>
 				<field name="@spacer" type="spacer" default="" label="" description="" />
 				<field name="window_open" type="text" default="" label="Target Position" 		description="PARAMTARGETPOSITION" />
+				<field name="favicon_link" type="text" default="index.php" size="5" label="MOD_EMUNDUSMENU_FAVICON_LINK" description="MOD_EMUNDUSMENU_FAVICON_LINK" />
 			</fieldset>
 			<fieldset name="advanced" group="advanced">
 				<field name="show_whitespace" type="list" default="0" label="Show Whitespace"		 description="Show Whitespace Desc">

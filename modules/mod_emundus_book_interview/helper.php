@@ -126,5 +126,4 @@ class modEmundusBookInterviewHelper {
             return false;
         }
     }
-
 }

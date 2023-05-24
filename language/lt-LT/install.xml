@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension version="3.9" client="site" type="language" method="upgrade">
+	<name>Lithuanian (Lithuania)</name>
+	<tag>lt-LT</tag>
+	<version>3.9.16.1</version>
+	<creationDate>05/04/2020</creationDate>
+	<author>Mindaugas Baranauskas</author>
+	<authorEmail>opensuse.lietuviu.kalba@gmail.com</authorEmail>
+	<authorUrl></authorUrl>
+	<copyright>Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.; </copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<description>lt-LT - Site language</description>
+	<files>
+		<filename>lt-LT.ini</filename>
+		<filename>lt-LT.com_ajax.ini</filename>
+		<filename>lt-LT.com_config.ini</filename>
+		<filename>lt-LT.com_contact.ini</filename>
+		<filename>lt-LT.com_content.ini</filename>
+		<filename>lt-LT.com_finder.ini</filename>
+		<filename>lt-LT.com_mailto.ini</filename>
+		<filename>lt-LT.com_media.ini</filename>
+		<filename>lt-LT.com_messages.ini</filename>
+		<filename>lt-LT.com_newsfeeds.ini</filename>
+		<filename>lt-LT.com_privacy.ini</filename>
+		<filename>lt-LT.com_search.ini</filename>
+		<filename>lt-LT.com_tags.ini</filename>
+		<filename>lt-LT.com_users.ini</filename>
+		<filename>lt-LT.com_weblinks.ini</filename>
+		<filename>lt-LT.com_wrapper.ini</filename>
+		<filename>lt-LT.files_joomla.sys.ini</filename>
+		<filename>lt-LT.finder_cli.ini</filename>
+		<filename>lt-LT.lib_fof.ini</filename>
+		<filename>lt-LT.lib_fof.sys.ini</filename>
+		<filename>lt-LT.lib_idna_convert.sys.ini</filename>
+		<filename>lt-LT.lib_joomla.ini</filename>
+		<filename>lt-LT.lib_joomla.sys.ini</filename>
+		<filename>lt-LT.lib_phpass.sys.ini</filename>
+		<filename>lt-LT.lib_phputf8.sys.ini</filename>
+		<filename>lt-LT.lib_simplepie.sys.ini</filename>
+		<filename>lt-LT.mod_articles_archive.ini</filename>
+		<filename>lt-LT.mod_articles_archive.sys.ini</filename>
+		<filename>lt-LT.mod_articles_categories.ini</filename>
+		<filename>lt-LT.mod_articles_categories.sys.ini</filename>
+		<filename>lt-LT.mod_articles_category.ini</filename>
+		<filename>lt-LT.mod_articles_category.sys.ini</filename>
+		<filename>lt-LT.mod_articles_latest.ini</filename>
+		<filename>lt-LT.mod_articles_latest.sys.ini</filename>
+		<filename>lt-LT.mod_articles_news.ini</filename>
+		<filename>lt-LT.mod_articles_news.sys.ini</filename>
+		<filename>lt-LT.mod_articles_popular.ini</filename>
+		<filename>lt-LT.mod_articles_popular.sys.ini</filename>
+		<filename>lt-LT.mod_banners.ini</filename>
+		<filename>lt-LT.mod_banners.sys.ini</filename>
+		<filename>lt-LT.mod_breadcrumbs.ini</filename>
+		<filename>lt-LT.mod_breadcrumbs.sys.ini</filename>
+		<filename>lt-LT.mod_custom.ini</filename>
+		<filename>lt-LT.mod_custom.sys.ini</filename>
+		<filename>lt-LT.mod_feed.ini</filename>
+		<filename>lt-LT.mod_feed.sys.ini</filename>
+		<filename>lt-LT.mod_finder.ini</filename>
+		<filename>lt-LT.mod_finder.sys.ini</filename>
+		<filename>lt-LT.mod_footer.ini</filename>
+		<filename>lt-LT.mod_footer.sys.ini</filename>
+		<filename>lt-LT.mod_languages.ini</filename>
+		<filename>lt-LT.mod_languages.sys.ini</filename>
+		<filename>lt-LT.mod_login.ini</filename>
+		<filename>lt-LT.mod_login.sys.ini</filename>
+		<filename>lt-LT.mod_menu.ini</filename>
+		<filename>lt-LT.mod_menu.sys.ini</filename>
+		<filename>lt-LT.mod_random_image.ini</filename>
+		<filename>lt-LT.mod_random_image.sys.ini</filename>
+		<filename>lt-LT.mod_related_items.ini</filename>
+		<filename>lt-LT.mod_related_items.sys.ini</filename>
+		<filename>lt-LT.mod_search.ini</filename>
+		<filename>lt-LT.mod_search.sys.ini</filename>
+		<filename>lt-LT.mod_stats.ini</filename>
+		<filename>lt-LT.mod_stats.sys.ini</filename>
+		<filename>lt-LT.mod_syndicate.ini</filename>
+		<filename>lt-LT.mod_syndicate.sys.ini</filename>
+		<filename>lt-LT.mod_tags_popular.ini</filename>
+		<filename>lt-LT.mod_tags_popular.sys.ini</filename>
+		<filename>lt-LT.mod_tags_similar.ini</filename>
+		<filename>lt-LT.mod_tags_similar.sys.ini</filename>
+		<filename>lt-LT.mod_users_latest.ini</filename>
+		<filename>lt-LT.mod_users_latest.sys.ini</filename>
+		<filename>lt-LT.mod_weblinks.ini</filename>
+		<filename>lt-LT.mod_weblinks.sys.ini</filename>
+		<filename>lt-LT.mod_whosonline.ini</filename>
+		<filename>lt-LT.mod_whosonline.sys.ini</filename>
+		<filename>lt-LT.mod_wrapper.ini</filename>
+		<filename>lt-LT.mod_wrapper.sys.ini</filename>
+		<filename>lt-LT.tpl_beez3.ini</filename>
+		<filename>lt-LT.tpl_beez3.sys.ini</filename>
+		<filename>lt-LT.tpl_protostar.ini</filename>
+		<filename>lt-LT.tpl_protostar.sys.ini</filename>
+		<filename>lt-LT.localise.php</filename>
+		<filename file="meta">install.xml</filename>
+		<filename file="meta">lt-LT.xml</filename>
+		<filename>index.html</filename>
+	</files>
+	<params />
+</extension>

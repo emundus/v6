@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 import client from './axiosClient';
 
 export default {
@@ -42,6 +43,13 @@ export default {
     async getEmundusParams() {
         try {
             return await client().get('index.php?option=com_emundus&controller=settings&task=getemundusparams');
+        } catch (e) {
+            return false;
+        }
+    },
+    async getOnboardingLists() {
+        try {
+            return await client().get('index.php?option=com_emundus&controller=settings&task=getonboardinglists');
         } catch (e) {
             return false;
         }

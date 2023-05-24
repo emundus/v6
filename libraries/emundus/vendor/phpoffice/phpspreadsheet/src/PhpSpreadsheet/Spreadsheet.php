@@ -643,7 +643,7 @@ class Spreadsheet implements JsonSerializable
             }
         }
 
-        if ($worksheet->getParent() === null) {
+        if ($worksheet->getParent() === null) { // @phpstan-ignore-line
             $worksheet->rebindParent($this);
         }
 

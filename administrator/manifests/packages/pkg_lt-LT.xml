@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="package" version="3.9" method="upgrade">
+	<name>Lithuanian (Lithuania)</name>
+	<packagename>lt-LT</packagename>
+	<version>3.9.16.1</version>
+	<creationDate>05/04/2020</creationDate>
+	<author>Mindaugas Baranauskas</author>
+	<authorEmail>opensuse.lietuviu.kalba@gmail.com</authorEmail>
+	<authorUrl></authorUrl>
+	<copyright>Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.; </copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<url></url>
+	<packager>Mindaugas Baranauskas</packager>
+	<packagerurl></packagerurl>
+	<description><![CDATA[Joomla! lietuvių kalbos paketas]]></description>
+	<blockChildUninstall>true</blockChildUninstall>
+	<files>
+		<file type="language" client="site" id="lt-LT">site_lt-LT.zip</file>
+		<file type="language" client="administrator" id="lt-LT">admin_lt-LT.zip</file>
+	</files>
+	<updateservers>
+		<server type="collection" priority="1" name="Accredited Joomla! Translations">https://update.joomla.org/language/translationlist_3.xml</server>
+	</updateservers>
+</extension>

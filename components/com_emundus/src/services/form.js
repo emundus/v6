@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 import client from './axiosClient';
 const baseUrl = 'index.php?option=com_emundus&controller=form';
 
@@ -60,6 +61,17 @@ export default {
                 }
              );
 
+            return response;
+        } catch (error) {
+            return {
+                status: false,
+                error: error
+            };
+        }
+    },
+    async getFormByFabrikId(id) {
+        try {
+            const response = await client().get(baseUrl + '&task=getFormByFabrikId', {params: {form_id: id}});
             return response;
         } catch (error) {
             return {

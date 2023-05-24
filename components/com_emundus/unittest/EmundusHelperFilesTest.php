@@ -52,4 +52,16 @@ class EmundusHelperFilesTest extends TestCase {
 		$this->assertNotEmpty($this->h_files->createFnum(1, 95, false), 'Create fnum with correct campaign_id and user_id returns not empty');
 		$this->assertNotEmpty($this->h_files->createFnum(1, 95), 'Create fnum with correct campaign_id and user_id and redirect to true returns not empty');
 	}
+
+	/**
+	 * @test
+	 * @covers EmundusHelperFiles::getExportExcelFilter
+	 */
+	public function testGetExportExcelFilter() {
+		$this->assertFalse($this->h_files->getExportExcelFilter(0), 'Get export excel filter with wrong user id returns false');
+
+		$coord_filters = $this->h_files->getExportExcelFilter(95);
+		$this->assertNotFalse($coord_filters, 'Get export excel filter with correct user id returns not false');
+		$this->assertSame('array', gettype($coord_filters), 'Get export excel filter with correct user id returns an array even if empty');
+	}
 }

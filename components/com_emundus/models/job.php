@@ -203,8 +203,8 @@ class EmundusModelJob extends JModelItem {
     /**
      * Method to cancel application to a job
      *
-     * @param   integer     The id of the user.
-     * @param   varchar     The fnum of an application.
+     * @param   integer $user_id     The id of the user.
+     * @param   string $fnum     The fnum of an application.
      * @return  boolean     True on success, false on failure.
      * @since   1.6
      */
@@ -278,7 +278,7 @@ class EmundusModelJob extends JModelItem {
                     $db->setQuery($query);
                     $db->execute();
                     $insertid = $db->insertid();
-               
+
                 } catch(Exception $e) {
                     JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
                     return false;

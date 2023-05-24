@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 import client from './axiosClient';
 
 export default {
@@ -58,6 +59,10 @@ export default {
         response.data.attachments.forEach(attachment => {
           if (attachment.is_validated === null) {
             attachment.is_validated = -2;
+          }
+
+          if (attachment.upload_description === null || typeof attachment.upload_description !== 'string') {
+            attachment.upload_description = '';
           }
 
           attachment.show = true;

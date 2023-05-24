@@ -687,7 +687,7 @@ class PlgFabrik_FormEmundusimportcsv extends plgFabrik_Form {
 
                             if (JComponentHelper::getParams('com_emundus')->get('logUserEmail', '0') == '1') {
                                 $message = array(
-                                    'user_id_to' => $uid,
+                                    'user_id_to' => $user_id,
                                     'subject' => $email->subject,
                                     'message' => $body
                                 );
