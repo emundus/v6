@@ -127,7 +127,7 @@ class EmundusModelFiles extends JModelLegacy
         $col_other = $this->getState('elements_other');
 
         $this->elements_id = $menu_params->get('em_elements_id');
-        if ($session->has('adv_cols')) {
+		if ($session->has('adv_cols')) {
             $adv = $session->get('adv_cols');
             if (!empty($adv) && !is_null($adv)) {
                 $this->elements_id .= ','.implode(',', $adv);

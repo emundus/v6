@@ -2,8 +2,11 @@
 	<div class="multi-select-filter em-w-100 em-mb-8 em-border-radius-8 em-border-neutral-400 em-box-shadow em-white-bg em-p-8">
 		<div class="em-flex-row em-flex-space-between">
 			<p class="recap-label">{{ filter.label }}</p>
-			<span v-if="opened === false" class="material-icons-outlined em-pointer" @click="opened = !opened">keyboard_arrow_down</span>
-			<span v-else class="material-icons-outlined em-pointer" @click="opened = !opened">keyboard_arrow_up</span>
+			<div>
+				<span v-if="!filter.default" class="material-icons-outlined em-red-500-color em-pointer" @click="$.emit('remove-filter')">close</span>
+				<span v-if="opened === false" class="material-icons-outlined em-pointer" @click="opened = !opened">keyboard_arrow_down</span>
+				<span v-else class="material-icons-outlined em-pointer" @click="opened = !opened">keyboard_arrow_up</span>
+			</div>
 		</div>
 		<section v-if="!opened" class="recap">
 			<div v-if="filter.value.length > 0 && !filter.value.includes('all')">

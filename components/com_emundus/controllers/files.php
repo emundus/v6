@@ -133,6 +133,16 @@ class EmundusControllerFiles extends JControllerLegacy
 				$filters = json_decode($filters, true);
 				$session = JFactory::getSession();
 				$session->set('em-applied-filters', $filters);
+
+
+				$filter_fabrik_element_ids = [];
+				foreach ($filters as $filter) {
+					if (is_numeric($filter['id']) && !in_array($filter['id'], $filter_fabrik_element_ids)) {
+						$filter_fabrik_element_ids[] = $filter['id'];
+					}
+				}
+				$session->set('adv_cols', $filter_fabrik_element_ids);
+
 				$response = ['status' => true, 'msg' => JText::_('FILTERS_APPLIED')];
 			} else {
 				$response['msg'] = JText::_('MISSING_PARAMS');
