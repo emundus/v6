@@ -58,7 +58,7 @@ $group = $this->group;
 <?php
     if ($group->editable) : ?>
     <td class="fabrikGroupRepeater">
-        <div class="pull-right">
+        <div class="pull-left">
             <?php
             if ($group->canAddRepeat) :
                 echo $this->addRepeatGroupButtonRow;
