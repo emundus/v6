@@ -55,3 +55,15 @@ $group = $this->group;
 		?>
 	</tbody>
 </table>
+<?php
+    if ($group->editable) : ?>
+    <td class="fabrikGroupRepeater">
+        <div class="pull-right">
+            <?php
+            if ($group->canAddRepeat) :
+                echo $this->addRepeatGroupButtonRow;
+            endif;
+            ?>
+        </div>
+    </td>
+<?php endif;
