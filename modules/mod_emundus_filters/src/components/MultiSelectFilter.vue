@@ -8,10 +8,10 @@
 				<span v-else class="material-icons-outlined em-pointer" @click="opened = !opened">keyboard_arrow_up</span>
 			</div>
 		</div>
-		<section v-if="!opened" class="recap">
-			<div v-if="filter.value.length > 0 && !filter.value.includes('all')">
-				<p class="recap-operator"> {{ selectedOperatorLabel }}</p>
-				<div class="recap-value em-flex-row em-flex-wrap">
+		<section v-if="!opened" class="recap em-mt-8">
+			<div v-if="filter.value.length > 0 && !filter.value.includes('all')" class="em-flex-column-start">
+				<span class="recap-operator label label-darkblue"> {{ selectedOperatorLabel }}</span>
+				<div class="recap-value em-flex-row em-flex-wrap em-mt-8">
 					<div v-for="(value, index) in filter.value" :key="value">
 						<span>{{ selectedValuesLabels[index] }}</span>
 						<span v-if="filter.value.length > 1 && index < filter.value.length - 1" class="em-ml-4 em-mr-4"> {{ selectedAndorOperatorLabel }} </span>

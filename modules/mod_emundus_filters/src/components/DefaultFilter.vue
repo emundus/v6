@@ -8,7 +8,7 @@
 				<span v-else class="material-icons-outlined em-pointer" @click="opened = !opened">keyboard_arrow_up</span>
 			</div>
 		</div>
-		<section v-if="!opened" class="recap em-flex-row">
+		<section v-if="!opened" class="recap em-flex-row em-mt-8">
 			<span class="recap-operator label label-darkblue em-mr-4"> {{ selectedOperatorLabel }}</span>
 			<span class="recap-value"> {{ filter.value }}</span>
 		</section>
