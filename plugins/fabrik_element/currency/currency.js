@@ -8,6 +8,7 @@ define(['jquery', 'fab/element'],
 
         initialize: function (element, options) {
 
+            this.setPlugin('currency');
             this.parent(element, options);
         },
 

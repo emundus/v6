@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <form>
 	<fields addfieldpath="/administrator/components/com_fabrik/models/fields">
-		<fieldset label="COM_FABRIK_OPTIONS" name="plg-element-emundus_currency">
+		<fieldset label="COM_FABRIK_OPTIONS" name="plg-element-currency">
 
 			<field type="helplink"
 				url="PLG_ELEMENT_FIELD_HELP_SERVER" />
@@ -20,7 +20,7 @@
 	</fields>
 
 	<fields name="params">
-		<fieldset name="plg-element-emundus_currency-params" label="COM_FABRIK_ADVANCED">
+		<fieldset name="plg-element-currency-params" label="COM_FABRIK_ADVANCED">
 
 			<field type="helplink"
 				url="PLG_ELEMENT_FIELD_HELP_SERVER" />

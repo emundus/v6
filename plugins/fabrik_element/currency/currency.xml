@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <extension group="fabrik_element" method="upgrade" type="plugin" version="3">
-	<name>plg_fabrik_element_emunduscurrency</name>
+	<name>plg_fabrik_element_currency</name>
 	<author>eMundus - Thibaud Grignon</author>
 	<creationDate>Mai 2023</creationDate>
 	<copyright>Copyright (C) 2005-2021 Media A-Team, Inc. - All rights reserved.</copyright>
@@ -12,8 +12,8 @@
 	<description>PLG_ELEMENT_FIELD_DESCRIPTION</description>
 
 	<files>
-		<filename plugin="emundus_currency">emundus_currency.php</filename>
-		<filename>emundus_currency.js</filename>
+		<filename plugin="currency">currency.php</filename>
+		<filename>currency.js</filename>
 		<folder>forms</folder>
 		<folder>language</folder>
 		<folder>layouts</folder>

@@ -17,19 +17,18 @@ use Joomla\Utilities\ArrayHelper;
 jimport('joomla.application.component.model');
 
 /**
- * Plugin element to render emundus_currency
+ * Plugin element to render currency
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.field
  * @since       3.0
  */
-class PlgFabrik_ElementEmundus_Currency extends PlgFabrik_Element
+class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 {
 
-    protected string $inputValue;
-    protected string $symbol;
     protected array $allCurrency;
-    protected string $iso3;
+    protected string $inputValue;
+    protected string $selectedIso3;
 
 
 	/**
@@ -48,15 +47,29 @@ class PlgFabrik_ElementEmundus_Currency extends PlgFabrik_Element
 
     public function preRenderElement($data, $repeatCounter = 0)
     {
-        $this->allCurrency = $this->getDataCurrency();
-        $this->inputValue = $this->getValue($data, $repeatCounter);
-        $this->iso3 = $this->getIso3($this->inputValue);
-        $currencyObject = $this->getCurrencyObject($this->iso3);
-        $this->symbol = $currencyObject->symbol;
+        $groupModel = $this->getGroupModel();
+
+        if (!$this->canView() && !$this->canUse())
+        {
+            return '';
+        }
+        // Used for working out if the element should behave as if it was in a new form (joined grouped) even when editing a record
+        $this->inRepeatGroup = $groupModel->canRepeat();
+        $this->_inJoin       = $groupModel->isJoin();
+        $this->allCurrency   = $this->getDataCurrency();
+        $this->inputValue    = $this->getValue($data, $repeatCounter);
+        $this->selectedIso3  = $this->getIso3($this->inputValue);
 
 
-
-
+        if ($this->isEditable())
+        {
+            return $this->render($data, $repeatCounter);
+        }
+        else
+        {
+            $htmlId = $this->getHTMLId($repeatCounter);
+            return '<div class="fabrikElementReadOnly" id="' . $htmlId . '">' . $this->inputValue . '</div>';
+        }
     }
 
 	/**
@@ -108,8 +121,7 @@ class PlgFabrik_ElementEmundus_Currency extends PlgFabrik_Element
 
         $opts->allCurrency = $this->allCurrency;
         $opts->value = $this->inputValue;
-        $opts->symbol = $this->symbol;
-        $opts->iso3 = $this->iso3;
+        $opts->selectedIso3 = $this->selectedIso3;
 
 		return array('FbCurrency', $id, $opts);
 	}
