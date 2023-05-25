@@ -19,25 +19,25 @@
 		</section>
 		<section v-else class="multi-select-filter-options em-mt-8">
 			<div class="operators-selection em-flex-row">
-				<div v-for="operator in operators" :key="operator.value" class="em-mr-8 em-p-8 em-border-radius-8" :class="{'label-default': operator.value !== selectedOperator, 'label-darkblue': operator.value === selectedOperator}">
+				<div v-for="operator in operators" :key="filter.uid + '-' +operator.value" class="em-mr-8 em-p-8 em-border-radius-8" :class="{'label-default': operator.value !== selectedOperator, 'label-darkblue': operator.value === selectedOperator}">
 					<input class="hidden label"
 					       type="radio"
-					       :id="'operator-' + operator.value" :value="operator.value"
+					       :id="filter.uid + '-operator-' + operator.value" :value="operator.value"
 					       v-model="selectedOperator"
 					>
-					<label :for="'operator-' + operator.value" style="margin: 0">{{ operator.label }}</label>
+					<label :for="filter.uid + '-operator-' + operator.value" style="margin: 0">{{ operator.label }}</label>
 				</div>
 			</div>
 			<hr/>
 			<div class="andor-selection em-flex-row">
-				<div v-for="andor in andorOperators" :key="andor.value" class="em-mr-8 em-p-8 em-border-radius-8" :class="{'label-default': andor.value !== selectedAndorOperator, 'label-darkblue': andor.value === selectedAndorOperator}">
+				<div v-for="andor in andorOperators" :key="filter.uid + '-' + andor.value" class="em-mr-8 em-p-8 em-border-radius-8" :class="{'label-default': andor.value !== selectedAndorOperator, 'label-darkblue': andor.value === selectedAndorOperator}">
 						<input class="hidden label"
 						       type="radio"
-						       :id="'andor-' + andor.value"
+						       :id="filter.uid + '-andor-' + andor.value"
 						       :value="andor.value"
 						       v-model="selectedAndorOperator"
 						>
-						<label :for="'andor-' + andor.value" style="margin: 0">{{ andor.label }}</label>
+						<label :for="filter.uid + '-andor-' + andor.value" style="margin: 0">{{ andor.label }}</label>
 				</div>
 			</div>
 			<hr/>
@@ -48,8 +48,8 @@
 			>
 			<div class="values-selection em-mt-8">
 				<div v-for="value in searchedValues" :key="value.value" class="em-flex-row">
-					<input :id="'filter-value-'+ value.value" type="checkbox" :value="value.value" v-model="selectedValues">
-					<label :for="'filter-value-'+ value.value" style="margin: 0">{{ value.label }}</label>
+					<input :id="filter.uid + '-filter-value-'+ value.value" type="checkbox" :value="value.value" v-model="selectedValues">
+					<label :for="filter.uid + '-filter-value-'+ value.value" style="margin: 0">{{ value.label }}</label>
 				</div>
 			</div>
 		</section>
@@ -75,14 +75,11 @@ export default {
 			operators: [
 				{ value: '=', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS')},
 				{ value: '!=', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_NOT')},
-				/*{ value: 'LIKE', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_CONTAINS')},
-				{ value: 'NOT LIKE', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_DOES_NOT_CONTAIN')},*/
 				{ value: 'IN', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_ONE_OF')},
 				{ value: 'NOT IN', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_NOT_ONE_OF')}
 			],
 			selectedOperator: '=',
 			andorOperators: [
-				/*{ value: 'AND', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_AND')},*/
 				{ value: 'OR', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_OR')}
 			],
 			selectedAndorOperator: 'OR',
@@ -95,9 +92,8 @@ export default {
 	},
 	computed: {
 		selectedOperatorLabel() {
-			const selectedOperator =  this.operators.find((operator) => { return operator.value === this.selectedOperator }).label;
+			const selectedOperator =  this.operators.find((operator) => { return operator.value === this.selectedOperator });
 			return selectedOperator ? selectedOperator.label : '';
-
 		},
 		selectedAndorOperatorLabel() {
 			const selectedAndorOperator = this.andorOperators.find((andor) => { return andor.value === this.selectedAndorOperator });

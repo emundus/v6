@@ -3,6 +3,9 @@
 	  <section id="applied-filters">
 			<div v-for="appliedFilter in appliedFilters" :key="appliedFilter.uid">
 				<MultiSelect v-if="appliedFilter.type === 'select'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100"></MultiSelect>
+				<DateFilter v-else-if="appliedFilter.type === 'date'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100"></DateFilter>
+				<TimeFilter v-else-if="appliedFilter.type === 'time'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100"></TimeFilter>
+				<DefaultFilter v-else :filter="appliedFilter" :module-id="moduleId" class="em-w-100"></DefaultFilter>
 			</div>
 	  </section>
 	  <div id="filters-selection-wrapper" class="em-w-100 em-mt-16 em-mb-16" :class="{'hidden': !openFilterOptions}">
@@ -18,10 +21,13 @@
 <script>
 import MultiSelect from './components/MultiSelectFilter.vue';
 import AdvancedSelect from './components/AdvancedSelect.vue';
+import DateFilter from './components/DateFilter.vue';
+import TimeFilter from './components/TimeFilter.vue';
+import DefaultFilter from './components/DefaultFilter.vue';
 
 export default {
   name: 'App',
-	components: {AdvancedSelect, MultiSelect},
+	components: {DateFilter, AdvancedSelect, MultiSelect, TimeFilter, DefaultFilter},
 	props: {
 		moduleId: {
 			type: Number,
@@ -51,7 +57,7 @@ export default {
 		onSelectNewFilter(filterId) {
 			const newFilter = this.filters.find((filter) => filter.id === filterId);
 			newFilter.uid = new Date().getTime();
-			newFilter.value = [];
+			newFilter.value = newFilter.type === 'select' ? [] : '';
 
 			this.appliedFilters.push(newFilter);
 			this.openFilterOptions = false;
