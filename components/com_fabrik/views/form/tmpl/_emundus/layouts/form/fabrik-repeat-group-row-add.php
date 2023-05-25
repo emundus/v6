@@ -7,6 +7,8 @@ defined('JPATH_BASE') or die;
 
 $d = $displayData;
 ?>
-<a class="addGroup" href="#">
-	<?php echo  FabrikHelperHTML::icon('icon-plus fabrikTip tip-small', '', 'data-role="fabrik_duplicate_group" opts=\'{"trigger": "hover"}\' title="' . FText::_('COM_FABRIK_ADD_GROUP'). '"');?>
+
+<a class="addGroup em-flex-row em-pointer"  href="#">
+    <span class="material-icons-outlined em-blue-500-color em-mr-8">add</span>
+	<p class="em-blue-500-color"><?php echo FText::_('COM_FABRIK_ADD_GROUP');?></p>
 </a>
