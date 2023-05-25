@@ -1,5 +1,8 @@
 <template>
   <div id="emundus-filters" class="em-w-100">
+	  <section id="filters-top-actions" class="em-mb-16">
+		  <button id="clear-filters" class="em-secondary-button" @click="clearFilters">{{ translate('MOD_EMUNDUS_FILTERS_CLEAR_FILTERS') }}</button>
+	  </section>
 	  <section id="applied-filters">
 			<div v-for="appliedFilter in appliedFilters" :key="appliedFilter.uid">
 				<MultiSelect v-if="appliedFilter.type === 'select'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100"></MultiSelect>
@@ -12,7 +15,7 @@
 		  <label for="filters-selection"> {{ translate('MOD_EMUNDUS_FILTERS_SELECT_FILTER_LABEL') }} </label>
 			<AdvancedSelect :module-id="moduleId" :filters="filters" @filter-selected="onSelectNewFilter"></AdvancedSelect>
 	  </div>
-	  <section id="filters-actions">
+	  <section id="filters-bottom-actions">
 		  <button id="add-filter" class="em-secondary-button em-mt-16" @click="openFilterOptions = !openFilterOptions">{{ translate('MOD_EMUNDUS_FILTERS_ADD_FILTER') }}</button>
 		  <button id="apply-filters" class="em-primary-button em-mt-16" @click="applyFilters">{{ translate('MOD_EMUNDUS_FILTERS_APPLY_FILTERS') }}</button>
 	  </section>
@@ -67,12 +70,16 @@ export default {
 			const newFilter = this.filters.find((filter) => filter.id === filterId);
 			newFilter.uid = new Date().getTime();
 			newFilter.value = newFilter.type === 'select' ? [] : '';
+			newFilter.default = false;
 
 			this.appliedFilters.push(newFilter);
 			this.openFilterOptions = false;
 		},
 		applyFilters() {
 			filtersService.applyFilters(this.appliedFilters);
+		},
+		clearFilters() {
+			filtersService.applyFilters([]);
 		}
 	}
 }

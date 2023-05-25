@@ -128,9 +128,9 @@ class EmundusControllerFiles extends JControllerLegacy
 		if (EmundusHelperAccess::asAccessAction(1, 'r', JFactory::getUser()->id)) {
 			$jinput = JFactory::getApplication()->input;
 			$filters = $jinput->getString('filters', '');
-			$filters = json_decode($filters, true);
 
-			if(!empty($filters)) {
+			if (!empty($filters)) {
+				$filters = json_decode($filters, true);
 				$session = JFactory::getSession();
 				$session->set('em-applied-filters', $filters);
 				$response = ['status' => true, 'msg' => JText::_('FILTERS_APPLIED')];
