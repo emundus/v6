@@ -78,6 +78,10 @@ class EmundusFilters
 					case 'jdate':
 					case 'birthday':
 						$filter['type'] = 'date';
+						$filter['value'] = [
+							'',
+							''
+						];
 						break;
 					case 'time':
 						$filter['type'] = 'time';

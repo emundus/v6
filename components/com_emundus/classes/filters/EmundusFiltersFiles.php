@@ -263,7 +263,9 @@ class EmundusFiltersFiles extends EmundusFilters
 						$new_default_filter = $filter;
 						$new_default_filter['default'] = true;
 						$new_default_filter['uid'] = rand(1000, 9999);
-						$new_default_filter['value'] = $filter['type'] === 'select' ? ['all'] : '';
+						if (empty($new_default_filter['value'])) {
+							$new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
+						}
 						$new_default_filter['andorOperator'] = 'OR';
 						$new_default_filter['operator'] = $filter['type'] === 'select' ? 'LIKE' : '=';
 
@@ -293,7 +295,9 @@ class EmundusFiltersFiles extends EmundusFilters
 							$new_default_filter = $formatted_elements[0];
 							$new_default_filter['default'] = true;
 							$new_default_filter['uid'] = rand(1000, 9999);
-							$new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
+							if (empty($new_default_filter['value'])) {
+								$new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
+							}
 							$new_default_filter['andorOperator'] = 'OR';
 							$new_default_filter['operator'] = $new_default_filter['type'] === 'select' ? 'LIKE' : '=';
 						}

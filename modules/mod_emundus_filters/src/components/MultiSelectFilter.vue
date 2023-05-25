@@ -21,8 +21,8 @@
 			<p v-else> {{ translate('ALL') }}</p>
 		</section>
 		<section v-else class="multi-select-filter-options em-mt-8">
-			<div class="operators-selection em-flex-row em-flex-wrap">
-				<div v-for="operator in operators" :key="filter.uid + '-' +operator.value" class="em-mr-8 em-p-8 em-border-radius-8" :class="{'label-default': operator.value !== filter.operator, 'label-darkblue': operator.value === filter.operator}">
+			<div class="operators-selection em-flex-row em-flex-wrap em-flex-gap-8">
+				<div v-for="operator in operators" :key="filter.uid + '-' +operator.value" class="em-p-8 em-border-radius-8" :class="{'label-default': operator.value !== filter.operator, 'label-darkblue': operator.value === filter.operator}">
 					<input class="hidden label"
 					       type="radio"
 					       :id="filter.uid + '-operator-' + operator.value" :value="operator.value"
@@ -32,8 +32,8 @@
 				</div>
 			</div>
 			<hr/>
-			<div class="andor-selection em-flex-row">
-				<div v-for="andor in andorOperators" :key="filter.uid + '-' + andor.value" class="em-mr-8 em-p-8 em-border-radius-8" :class="{'label-default': andor.value !== filter.andorOperator, 'label-darkblue': andor.value === filter.andorOperator}">
+			<div class="andor-selection em-flex-row em-flex-gap-8">
+				<div v-for="andor in andorOperators" :key="filter.uid + '-' + andor.value" class="em-p-8 em-border-radius-8" :class="{'label-default': andor.value !== filter.andorOperator, 'label-darkblue': andor.value === filter.andorOperator}">
 						<input class="hidden label"
 						       type="radio"
 						       :id="filter.uid + '-andor-' + andor.value"
