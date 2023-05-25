@@ -7,14 +7,14 @@
 			  <input id="new-filter-name" type="text" class="em-flex-row" v-model="newFilterName" :placeholder="translate('MOD_EMUNDUS_FILTERS_SAVE_FILTER_NAME')">
 			  <span class="material-icons-outlined" :class="{'em-pointer em-dark-blue-500-color': newFilterName.length > 0}" @click="saveFilters">save</span>
 		  </div>
-		  <div>
+		  <div id="registered-filters-wrapper" class="em-mt-8">
 			  <label for="registered-filters">{{ translate('MOD_EMUNDUS_FILTERS_SAVED_FILTERS') }}</label>
 			  <div class="em-flex-row em-flex-space-between">
 				  <select id="registered-filters" class="em-w-100" v-model="selectedRegisteredFilter" @change="onSelectRegisteredFilter">
 						<option value="0">{{ translate('MOD_EMUNDUS_FILTERS_PLEASE_SELECT') }}</option>
 					  <option v-for="registeredFilter in registeredFilters" :key="registeredFilter.id" :value="registeredFilter.id">{{ registeredFilter.name }}</option>
 				  </select>
-				  <span class="material-icons-outlined em-red-500-color em-pointer" @click="selectedRegisteredFilter = 0">delete</span>
+				  <span v-if="selectedRegisteredFilter > 0" class="material-icons-outlined em-red-500-color em-pointer" @click="onUnselectRegisteredFilter">delete</span>
 			  </div>
 		  </div>
 	  </section>
@@ -23,7 +23,7 @@
 				<MultiSelect v-if="appliedFilter.type === 'select'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100"></MultiSelect>
 				<DateFilter v-else-if="appliedFilter.type === 'date'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100"></DateFilter>
 				<TimeFilter v-else-if="appliedFilter.type === 'time'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100"></TimeFilter>
-				<DefaultFilter v-else :filter="appliedFilter" :module-id="moduleId" class="em-w-100"></DefaultFilter>
+				<DefaultFilter v-else :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)"></DefaultFilter>
 			</div>
 	  </section>
 	  <div id="filters-selection-wrapper" class="em-w-100 em-mt-16 em-mb-16" :class="{'hidden': !openFilterOptions}">
@@ -74,6 +74,7 @@ export default {
 	},
 	mounted() {
 		this.getRegisteredFilters();
+		this.selectedRegisteredFilter = sessionStorage.getItem('emundus-current-filter') || 0;
 		this.appliedFilters = this.defaultAppliedFilters.map((filter) => {
 			if (!filter.hasOwnProperty('operator')) {
 				filter.operator = '=';
@@ -151,10 +152,17 @@ export default {
 				const foundFilter = this.registeredFilters.find((filter) => filter.id === this.selectedRegisteredFilter);
 
 				if (foundFilter) {
+					sessionStorage.setItem('emundus-current-filter', foundFilter.id);
 					this.appliedFilters = JSON.parse(foundFilter.constraints);
 					this.applyFilters();
 				}
+			} else {
+				sessionStorage.removeItem('emundus-current-filter');
 			}
+		},
+		onUnselectRegisteredFilter() {
+			this.selectedRegisteredFilter = 0;
+			this.onSelectRegisteredFilter();
 		},
 		onClickSaveFilter() {
 			if (this.selectedRegisteredFilter > 0) {
@@ -166,6 +174,9 @@ export default {
 			} else {
 				this.openSaveFilter = true;
 			}
+		},
+		onRemoveFilter(filter) {
+			this.appliedFilters = this.appliedFilters.filter((appliedFilter) => appliedFilter.uid !== filter.uid);
 		}
 	}
 }
