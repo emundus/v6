@@ -1828,9 +1828,9 @@ structure:
 	 */
 	public function preflight($type, $parent)
 	{
-		if (version_compare(PHP_VERSION, '7.2.0', '<'))
+		if (version_compare(PHP_VERSION, '7.4.0', '<'))
 		{
-			echo "\033[31mThis extension works with PHP 7.2.0 or newer.Please contact your web hosting provider to update your PHP version. \033[0m\n";
+			echo "\033[31mThis extension works with PHP 7.4.0 or newer. Please contact your web hosting provider to update your PHP version. \033[0m\n";
 			exit;
 		}
 
