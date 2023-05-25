@@ -88,7 +88,7 @@ export default {
 		}
 	},
 	mounted () {
-		this.filter.operator = 'IN';
+		this.filter.operator = this.filter.operator === '=' ? 'IN' : this.filter.operator;
 	},
 	methods: {
 		onClickSpecificValue(newValue) {
