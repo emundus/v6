@@ -61,7 +61,7 @@ export default {
 		},
 		displayedFilters() {
 			return this.filters.filter((filter) => {
-				return filter.label.toLowerCase().includes(this.search.toLowerCase());
+				return filter.label.toLowerCase().includes(this.search.toLowerCase()) || filter.group_label.toLowerCase().includes(this.search.toLowerCase());
 			});
 		}
 	}

@@ -2,6 +2,8 @@
   <div id="emundus-filters" class="em-w-100">
 	  <section id="filters-top-actions" class="em-mb-16">
 		  <button id="clear-filters" class="em-secondary-button" @click="clearFilters">{{ translate('MOD_EMUNDUS_FILTERS_CLEAR_FILTERS') }}</button>
+		  <button id="save-filters" class="em-secondary-button label label-darkblue em-mt-8 em-mb-8" @click="saveFilters">{{ translate('MOD_EMUNDUS_FILTERS_SAVE_FILTERS') }}</button>
+		  <input id="new-filter-name" type="text" class="em-flex-row" v-model="newFilterName" :placeholder="translate('MOD_EMUNDUS_FILTERS_SAVE_FILTER_NAME')">
 	  </section>
 	  <section id="applied-filters">
 			<div v-for="appliedFilter in appliedFilters" :key="appliedFilter.uid">
@@ -51,6 +53,7 @@ export default {
 		return {
 			appliedFilters: [],
 			openFilterOptions: false,
+			newFilterName: ''
 		}
 	},
 	mounted() {
@@ -67,20 +70,45 @@ export default {
 	},
 	methods: {
 		onSelectNewFilter(filterId) {
-			const newFilter = this.filters.find((filter) => filter.id === filterId);
-			newFilter.uid = new Date().getTime();
-			newFilter.value = newFilter.type === 'select' ? [] : '';
-			newFilter.default = false;
+			let added = false;
 
-			this.appliedFilters.push(newFilter);
-			this.openFilterOptions = false;
+			const foundFilter = this.filters.find((filter) => filter.id === filterId);
+			if (foundFilter) {
+				// JSON stringify and parse to remove binding to the original filter
+				let newFilter = JSON.parse(JSON.stringify(foundFilter));
+
+				newFilter.uid = new Date().getTime();
+				newFilter.value = newFilter.type === 'select' ? [] : '';
+				newFilter.default = false;
+				newFilter.operator = newFilter.type === 'select' ? 'IN' : '=';
+				newFilter.andorOperator = 'OR';
+
+				this.appliedFilters.push(newFilter);
+				this.openFilterOptions = false;
+				added = true;
+			}
+
+			return added;
 		},
 		applyFilters() {
 			filtersService.applyFilters(this.appliedFilters);
 		},
 		clearFilters() {
 			filtersService.applyFilters([]);
-		}
+		},
+		saveFilters() {
+			const saved = filtersService.saveFilters(this.appliedFilters, this.newFilterName, this.moduleId);
+			this.newFilterName = '';
+
+			if (saved) {
+				this.getRegisteredFilters();
+			}
+		},
+		getRegisteredFilters() {
+			filtersService.getRegisteredFilters().then((response) => {
+				this.filters = response.data;
+			});
+		},
 	}
 }
 </script>

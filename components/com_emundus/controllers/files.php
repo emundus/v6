@@ -143,6 +143,8 @@ class EmundusControllerFiles extends JControllerLegacy
 		exit;
 	}
 
+
+
     /**
      *
      */
@@ -317,6 +319,46 @@ class EmundusControllerFiles extends JControllerLegacy
 	    echo json_encode((object)(array('status' => false)));
 	    exit;
     }
+
+
+	/**
+	 *
+	 */
+	public function newsavefilters() {
+		$response = ['status' => false, 'msg' => 'MISSING_PARAMS'];
+
+		$jinput = JFactory::getApplication()->input;
+		$name = $jinput->getString('name', null);
+		$filters = $jinput->getString('filters', null);
+		$item_id = $jinput->getInt('item_id', 0);
+
+		if (!empty($name) && !empty($filters)) {
+			$user = JFactory::getUser();
+
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query->insert($db->quoteName('#__emundus_filters'))
+				->columns(['user', 'name', 'constraints', 'mode', 'item_id'])
+				->values($user->id . ', ' . $db->quote($name) . ', ' . $db->quote($filters) . ', ' . $db->quote('search') . ', ' . $item_id);
+
+			try {
+				$db->setQuery($query);
+
+				$saved = $db->execute();
+				if ($saved) {
+					$response = ['status' => true, 'msg' => 'FILTER_SAVED'];
+				} else {
+					$response = ['status' => false, 'msg' => 'FILTER_NOT_SAVED'];
+				}
+			} catch (Exception $e) {
+				JLog::add('Error saving filter: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+				$response['msg'] = $e->getMessage();
+			}
+		}
+
+		echo json_encode($response);
+		exit;
+	}
 
     /**
      *
