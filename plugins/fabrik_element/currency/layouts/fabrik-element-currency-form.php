@@ -29,10 +29,10 @@ defined('JPATH_BASE') or die;
 
 <div id="<?php echo $displayData->attributes['id']; ?>" class="em-flex-row fabrikSubElementContainer">
 
-    <input id="currency_inputValue" name="<?php echo $displayData->attributes['name']['inputValue'] ?>" class="form-control fabrikinput input-medium"
+    <input id="currency_inputValue" name="<?php echo $displayData->attributes['name']['inputValueFront'] ?>" class="form-control fabrikinput input-medium"
     />
 
-    <select id="currency_selectedValue" name="<?php echo $displayData->attributes['name']['selectValue']?>" class="fabrikinput">
+    <select id="currency_selectedValue" name="<?php echo $displayData->attributes['name']['selectValueFront']?>" class="fabrikinput">
 
     </select>
 

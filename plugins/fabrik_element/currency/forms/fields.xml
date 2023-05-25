@@ -33,14 +33,14 @@
 				   from data_currency"
 				   value_field="renderBack"
 				   key_field="iso3"
-				   default="Euro (€ EUR)"
+				   default="EUR"
 				/>
 
 			<field name="minimal_value"
 				   type="number"
 				   label="PLG_ELEMENT_CURRENCY_MINIMAL_NUMBER"
 				   min="0.00"
-				   max="999999999999.99"
+				   max="99999999.98"
 				   default="0.00"
 				   step="0.01"
 			/>
@@ -49,9 +49,24 @@
 				   type="number"
 				   label="PLG_ELEMENT_CURRENCY_MAXIMAL_NUMBER"
 				   min="0.00"
-				   max="999999999999.99"
-				   default="99999999.99"
+				   max="99999999.99"
 				   step="0.01"
+			/>
+
+			<field name="decimal_separator"
+				   type="text"
+				   label="PLG_ELEMENT_CURRENCY_DECIMAL_SEPARATOR"
+				   maxlength="1"
+				   size="1"
+				   default=","
+			/>
+
+			<field name="thousand_separator"
+				   type="text"
+				   label="PLG_ELEMENT_CURRENCY_THOUSAND_SEPARATOR"
+				   maxlength="1"
+				   size="1"
+				   default=" "
 			/>
 
 		</fieldset>
