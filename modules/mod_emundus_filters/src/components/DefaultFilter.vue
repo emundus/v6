@@ -5,12 +5,12 @@
 			<span v-if="opened === false" class="material-icons-outlined em-pointer" @click="opened = !opened">keyboard_arrow_down</span>
 			<span v-else class="material-icons-outlined em-pointer" @click="opened = !opened">keyboard_arrow_up</span>
 		</div>
-		<section v-if="!opened" class="recap">
-			<p class="recap-operator"> {{ selectedOperatorLabel }}</p>
-			<p class="recap-value"> {{ filter.value }}</p>
+		<section v-if="!opened" class="recap em-flex-row">
+			<span class="recap-operator label label-darkblue em-mr-4"> {{ selectedOperatorLabel }}</span>
+			<span class="recap-value"> {{ filter.value }}</span>
 		</section>
 		<section v-else class="default-filter-options em-mt-8">
-			<div class="operators-selection em-flex-row">
+			<div class="operators-selection em-flex-row em-flex-wrap">
 				<div v-for="operator in operators" :key="filter.uid + '-' + operator.value" class="em-mr-8 em-p-8 em-border-radius-8" :class="{'label-default': operator.value !== selectedOperator, 'label-darkblue': operator.value === selectedOperator}">
 					<input class="hidden label"
 					       type="radio"

@@ -18,7 +18,7 @@
 			<p v-else> {{ translate('ALL') }}</p>
 		</section>
 		<section v-else class="multi-select-filter-options em-mt-8">
-			<div class="operators-selection em-flex-row">
+			<div class="operators-selection em-flex-row em-flex-wrap">
 				<div v-for="operator in operators" :key="filter.uid + '-' +operator.value" class="em-mr-8 em-p-8 em-border-radius-8" :class="{'label-default': operator.value !== selectedOperator, 'label-darkblue': operator.value === selectedOperator}">
 					<input class="hidden label"
 					       type="radio"
@@ -47,8 +47,12 @@
 			       v-model="search"
 			>
 			<div class="values-selection em-mt-8">
-				<div v-for="value in searchedValues" :key="value.value" class="em-flex-row">
-					<input :id="filter.uid + '-filter-value-'+ value.value" type="checkbox" :value="value.value" v-model="selectedValues">
+				<div class="em-flex-row">
+					<input :name="filter.uid + '-filter-value'" :id="filter.uid + '-filter-value-all'" type="checkbox" value="all" v-model="selectedValues" @click="onClickAll">
+					<label :for="filter.uid + '-filter-value-all'" style="margin: 0">{{ translate('ALL') }}</label>
+				</div>
+				<div v-for="value in searchedValues" :key="value.value" class="em-flex-row" @click="onClickSpecificValue(value.value)">
+					<input :name="filter.uid + '-filter-value'" :id="filter.uid + '-filter-value-'+ value.value" type="checkbox" :value="value.value" v-model="selectedValues">
 					<label :for="filter.uid + '-filter-value-'+ value.value" style="margin: 0">{{ value.label }}</label>
 				</div>
 			</div>
@@ -73,12 +77,10 @@ export default {
 		return {
 			opened: false,
 			operators: [
-				{ value: '=', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS')},
-				{ value: '!=', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_NOT')},
-				{ value: 'IN', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_ONE_OF')},
-				{ value: 'NOT IN', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_NOT_ONE_OF')}
+				{ value: 'IN', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS')},
+				{ value: 'NOT IN', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_NOT')}
 			],
-			selectedOperator: '=',
+			selectedOperator: 'IN',
 			andorOperators: [
 				{ value: 'OR', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_OR')}
 			],
@@ -89,6 +91,27 @@ export default {
 	},
 	mounted () {
 		this.selectedValues = this.filter.value;
+	},
+	methods: {
+		onClickSpecificValue(newValue) {
+			// If all is selected, remove 'all' from selected values
+			if (this.selectedValues.includes('all')) {
+				this.selectedValues = this.selectedValues.filter((value) => { return value !== 'all' });
+
+				if (!this.selectedValues.includes(newValue)) {
+					this.selectedValues.push(newValue);
+				}
+			}
+		},
+		onClickAll() {
+			if (this.selectedValues.includes('all')) {
+				this.selectedValues = [];
+			} else {
+				let allValues = this.searchedValues.map((value) => { return value.value });
+				allValues.push('all');
+				this.selectedValues = allValues;
+			}
+		},
 	},
 	computed: {
 		selectedOperatorLabel() {
@@ -103,7 +126,11 @@ export default {
 			let labels = [];
 
 			this.selectedValues.forEach((value) => {
-				labels.push(this.filter.values.find((filterValue) => { return filterValue.value === value }).label);
+				const selectedValue = this.filter.values.find((filterValue) => { return filterValue.value === value })
+
+				if (selectedValue) {
+					labels.push(selectedValue.label);
+				}
 			});
 
 			return labels;
