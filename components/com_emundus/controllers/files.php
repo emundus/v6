@@ -335,24 +335,56 @@ class EmundusControllerFiles extends JControllerLegacy
 		if (!empty($name) && !empty($filters)) {
 			$user = JFactory::getUser();
 
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
-			$query->insert($db->quoteName('#__emundus_filters'))
-				->columns(['user', 'name', 'constraints', 'mode', 'item_id'])
-				->values($user->id . ', ' . $db->quote($name) . ', ' . $db->quote($filters) . ', ' . $db->quote('search') . ', ' . $item_id);
+			$m_files = new EmundusModelFiles();
+			$saved = $m_files->saveFilters($user->id, $name, $filters, $item_id);
 
-			try {
-				$db->setQuery($query);
+			if ($saved) {
+				$response = ['status' => true, 'msg' => 'FILTER_SAVED'];
+			} else {
+				$response = ['status' => false, 'msg' => 'FILTER_NOT_SAVED'];
+			}
+		}
 
-				$saved = $db->execute();
-				if ($saved) {
-					$response = ['status' => true, 'msg' => 'FILTER_SAVED'];
-				} else {
-					$response = ['status' => false, 'msg' => 'FILTER_NOT_SAVED'];
-				}
-			} catch (Exception $e) {
-				JLog::add('Error saving filter: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-				$response['msg'] = $e->getMessage();
+		echo json_encode($response);
+		exit;
+	}
+
+	public function getsavedfilters() {
+		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+		$user = JFactory::getUser();
+
+		if (!empty($user->id)) {
+			$jinput = JFactory::getApplication()->input;
+			$item_id = $jinput->getInt('item_id', 0);
+
+			$m_files = new EmundusModelFiles();
+			$filters = $m_files->getSavedFilters($user->id, $item_id);
+
+			$response = ['status' => true, 'msg' => 'FILTERS_LOADED', 'data' => $filters];
+		}
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function updatefilter()
+	{
+		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+		$user = JFactory::getUser();
+
+		if (!empty($user->id)) {
+			$jinput = JFactory::getApplication()->input;
+			$item_id = $jinput->getInt('item_id', 0);
+			$filter_id = $jinput->getInt('id', 0);
+			$filters = $jinput->getString('filters', null);
+
+			if (!empty($filters) && !empty($filter_id)) {
+				$m_files = new EmundusModelFiles();
+				$updated = $m_files->updateFilter($user->id, $filter_id, $filters, $item_id);
+
+				$response = ['status' => $updated, 'msg' => 'FILTER_UPDATED'];
+			} else {
+				$response['msg'] = JText::_('MISSING_PARAMS');
 			}
 		}
 

@@ -7,9 +7,9 @@ export class FetchClient {
     let url = this.baseUrl + '&task=' + task;
 
     if (params) {
-      params.forEach(param => {
-        url += '&' + param.name + '=' + param.value;
-      });
+        for (let key in params) {
+            url += '&' + key + '=' + params[key];
+        }
     }
 
     return fetch(url).then(response => {

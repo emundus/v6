@@ -853,6 +853,10 @@ input:focus + .em-slider {
   color: $red-500;
 }
 
+.em-dark-blue-500-color{
+  color: var(--dark-blue-500);
+}
+
 .em-applicant-text-color {
   color: var(--em-applicant-text-color);
 }

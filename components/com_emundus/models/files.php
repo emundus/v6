@@ -4027,4 +4027,72 @@ class EmundusModelFiles extends JModelLegacy
 
         return $msg;
     }
+
+	public function saveFilters($user_id, $name, $filters, $item_id) {
+		$saved = false;
+
+		if (!empty($user_id) && !empty($name) && !empty($filters)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query->insert($db->quoteName('#__emundus_filters'))
+				->columns(['user', 'name', 'constraints', 'mode', 'item_id'])
+				->values($user_id . ', ' . $db->quote($name) . ', ' . $db->quote($filters) . ', ' . $db->quote('search') . ', ' . $item_id);
+
+			try {
+				$db->setQuery($query);
+				$saved = $db->execute();
+			} catch (Exception $e) {
+				JLog::add('Error saving filter: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $saved;
+	}
+
+	public function getSavedFilters($user_id, $item_id) {
+		$filters = array();
+
+		if (!empty($user_id)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query->select('id, name, constraints')
+				->from($db->quoteName('#__emundus_filters'))
+				->where('user = ' . $user_id)
+				->where('item_id = ' . $item_id)
+				->where('mode = ' . $db->quote('search'));
+
+			try {
+				$db->setQuery($query);
+				$filters = $db->loadAssocList();
+			} catch (Exception $e) {
+				JLog::add('Error getting saved filters: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $filters;
+	}
+
+	public function updateFilter($user_id, $filter_id, $filters, $item_id) {
+		$updated = false;
+
+		if (!empty($user_id) && !empty($filter_id) && !empty($filters)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query->update($db->quoteName('#__emundus_filters'))
+				->set('constraints = ' . $db->quote($filters))
+				->where('user = ' . $user_id)
+				->where('id = ' . $filter_id)
+				->where('item_id = ' . $item_id)
+				->where('mode = ' . $db->quote('search'));
+
+			try {
+				$db->setQuery($query);
+				$updated = $db->execute();
+			} catch (Exception $e) {
+				JLog::add('Error updating filter: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $updated;
+	}
 }
