@@ -65,6 +65,13 @@ class EmundusFilters
 						$filter['type'] = 'select';
 						$filter['values'] = $this->getFabrikElementValues($element);
 						break;
+					case 'yesno':
+						$filter['type'] = 'select';
+						$filter['values'] = [
+							['value' => 1, 'label' => JText::_('JYES')],
+							['value' => 0, 'label' => JText::_('JNO')]
+						];
+						break;
 					case 'date':
 					case 'jdate':
 					case 'birthday':

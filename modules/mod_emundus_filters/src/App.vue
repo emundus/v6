@@ -20,9 +20,9 @@
 	  </section>
 	  <section id="applied-filters">
 			<div v-for="appliedFilter in appliedFilters" :key="appliedFilter.uid">
-				<MultiSelect v-if="appliedFilter.type === 'select'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100"></MultiSelect>
-				<DateFilter v-else-if="appliedFilter.type === 'date'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100"></DateFilter>
-				<TimeFilter v-else-if="appliedFilter.type === 'time'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100"></TimeFilter>
+				<MultiSelect v-if="appliedFilter.type === 'select'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)"></MultiSelect>
+				<DateFilter v-else-if="appliedFilter.type === 'date'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)"></DateFilter>
+				<TimeFilter v-else-if="appliedFilter.type === 'time'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)"></TimeFilter>
 				<DefaultFilter v-else :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)"></DefaultFilter>
 			</div>
 	  </section>
@@ -31,8 +31,8 @@
 			<AdvancedSelect :module-id="moduleId" :filters="filters" @filter-selected="onSelectNewFilter"></AdvancedSelect>
 	  </div>
 	  <section id="filters-bottom-actions">
-		  <button id="add-filter" class="em-secondary-button em-mt-16" @click="openFilterOptions = !openFilterOptions">{{ translate('MOD_EMUNDUS_FILTERS_ADD_FILTER') }}</button>
-		  <button id="apply-filters" class="em-primary-button em-mt-16" @click="applyFilters">{{ translate('MOD_EMUNDUS_FILTERS_APPLY_FILTERS') }}</button>
+		  <button id="em-add-filter" class="em-secondary-button em-white-bg em-mt-16" @click="openFilterOptions = !openFilterOptions">{{ translate('MOD_EMUNDUS_FILTERS_ADD_FILTER') }}</button>
+		  <button id="em-apply-filters" class="em-primary-button em-mt-16" @click="applyFilters">{{ translate('MOD_EMUNDUS_FILTERS_APPLY_FILTERS') }}</button>
 	  </section>
   </div>
 </template>
