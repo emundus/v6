@@ -112,6 +112,7 @@ export default {
 			filtersService.applyFilters(this.appliedFilters);
 		},
 		clearFilters() {
+			sessionStorage.removeItem('emundus-current-filter');
 			filtersService.applyFilters([]);
 		},
 		saveFilters() {
@@ -132,14 +133,13 @@ export default {
 		updateFilter(filterId) {
 			let updated = false;
 
-			if (filter.name.length > 0) {
+			if (filterId > 0) {
 				updated = filtersService.updateFilter(this.appliedFilters, this.moduleId, filterId);
 
 				if (updated) {
 					this.getRegisteredFilters();
 				}
 			}
-
 			return updated;
 		},
 		getRegisteredFilters() {
@@ -169,7 +169,7 @@ export default {
 				const foundFilter = this.registeredFilters.find((filter) => filter.id === this.selectedRegisteredFilter);
 
 				if (foundFilter) {
-					this.updateFilter(foundFilter);
+					this.updateFilter(foundFilter.id);
 				}
 			} else {
 				this.openSaveFilter = true;
