@@ -129,10 +129,14 @@ class EmundusControllerFiles extends JControllerLegacy
 			$jinput = JFactory::getApplication()->input;
 			$filters = $jinput->getString('filters', '');
 			$filters = json_decode($filters, true);
-			$session = JFactory::getSession();
-			$session->set('em-applied-filters', $filters);
 
-			$response = ['status' => true, 'msg' => JText::_('FILTERS_APPLIED')];
+			if(!empty($filters)) {
+				$session = JFactory::getSession();
+				$session->set('em-applied-filters', $filters);
+				$response = ['status' => true, 'msg' => JText::_('FILTERS_APPLIED')];
+			} else {
+				$response['msg'] = JText::_('MISSING_PARAMS');
+			}
 		}
 
 		echo json_encode((object)$response);

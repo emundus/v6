@@ -14,6 +14,7 @@
 	  </div>
 	  <section id="filters-actions">
 		  <button id="add-filter" class="em-secondary-button em-mt-16" @click="openFilterOptions = !openFilterOptions">{{ translate('MOD_EMUNDUS_FILTERS_ADD_FILTER') }}</button>
+		  <button id="apply-filters" class="em-primary-button em-mt-16" @click="applyFilters">{{ translate('MOD_EMUNDUS_FILTERS_APPLY_FILTERS') }}</button>
 	  </section>
   </div>
 </template>
@@ -24,6 +25,7 @@ import AdvancedSelect from './components/AdvancedSelect.vue';
 import DateFilter from './components/DateFilter.vue';
 import TimeFilter from './components/TimeFilter.vue';
 import DefaultFilter from './components/DefaultFilter.vue';
+import filtersService from './services/filters.js';
 
 export default {
   name: 'App',
@@ -49,11 +51,18 @@ export default {
 		}
 	},
 	mounted() {
-		this.appliedFilters = this.defaultAppliedFilters;
+		this.appliedFilters = this.defaultAppliedFilters.map((filter) => {
+			if (!filter.hasOwnProperty('operator')) {
+				filter.operator = '=';
+			}
+			if (!filter.hasOwnProperty('andorOperator')) {
+				filter.andorOperator = 'OR';
+			}
+
+			return filter;
+		});
 	},
 	methods: {
-		addFilter() {
-		},
 		onSelectNewFilter(filterId) {
 			const newFilter = this.filters.find((filter) => filter.id === filterId);
 			newFilter.uid = new Date().getTime();
@@ -62,6 +71,9 @@ export default {
 			this.appliedFilters.push(newFilter);
 			this.openFilterOptions = false;
 		},
+		applyFilters() {
+			filtersService.applyFilters(this.appliedFilters);
+		}
 	}
 }
 </script>

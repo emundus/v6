@@ -11,11 +11,11 @@
 		</section>
 		<section v-else class="default-filter-options em-mt-8">
 			<div class="operators-selection em-flex-row em-flex-wrap">
-				<div v-for="operator in operators" :key="filter.uid + '-' + operator.value" class="em-mr-8 em-p-8 em-border-radius-8" :class="{'label-default': operator.value !== selectedOperator, 'label-darkblue': operator.value === selectedOperator}">
+				<div v-for="operator in operators" :key="filter.uid + '-' + operator.value" class="em-mr-8 em-p-8 em-border-radius-8" :class="{'label-default': operator.value !== filter.operator, 'label-darkblue': operator.value === filter.operator}">
 					<input class="hidden label"
 					       type="radio"
 					       :id="filter.uid + '-operator-' + operator.value" :value="operator.value"
-					       v-model="selectedOperator"
+					       v-model="filter.operator"
 					>
 					<label :for="filter.uid + '-operator-' + operator.value" style="margin: 0">{{ operator.label }}</label>
 				</div>
@@ -47,15 +47,13 @@ export default {
 				{ value: '!=', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_NOT')},
 				{ value: 'LIKE', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_CONTAINS')},
 				{ value: 'NOT LIKE', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_DOES_NOT_CONTAIN')}
-			],
-			selectedOperator: '=',
-			inputValue: ''
+			]
 		}
 	},
 
 	computed: {
 		selectedOperatorLabel() {
-			const selectedOperator =  this.operators.find((operator) => { return operator.value === this.selectedOperator });
+			const selectedOperator =  this.operators.find((operator) => { return operator.value === this.filter.operator });
 			return selectedOperator ? selectedOperator.label : '';
 		}
 	}
