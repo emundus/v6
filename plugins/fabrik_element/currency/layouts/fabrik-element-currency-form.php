@@ -2,6 +2,8 @@
 
 defined('JPATH_BASE') or die;
 
+$doc = JFactory::getDocument();
+$doc->addScript(JURI::root() . "plugins/fabrik_element/currency/assets/js/emundus_imask-min.js");
 
 ?>
 
@@ -15,24 +17,23 @@ defined('JPATH_BASE') or die;
         border-bottom-right-radius: 0;
     }
 
-    #currency_selectedValue
+    #currency_selectValue
     {
-        width: 5em;
+        width: 7em;
         height: 46px;
         border-left: 0;
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
-        padding-left: 4px;
     }
 
 </style>
 
 <div id="<?php echo $displayData->attributes['id']; ?>" class="em-flex-row fabrikSubElementContainer">
 
-    <input id="currency_inputValue" name="<?php echo $displayData->attributes['name']['inputValueFront'] ?>" class="form-control fabrikinput input-medium"
+    <input id="currency_inputValue" name="<?php echo $displayData->attributes['name'].'[inputValueFront]'; ?>" class="fabrikinput input-medium"
     />
 
-    <select id="currency_selectedValue" name="<?php echo $displayData->attributes['name']['selectValueFront']?>" class="fabrikinput">
+    <select id="currency_selectValue" name="<?php echo $displayData->attributes['name'].'[selectValueFront]'; ?>" class="fabrikinput">
 
     </select>
 
