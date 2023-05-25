@@ -71,7 +71,7 @@ foreach ($this->groups as $group) :
 	$this->group = $group;
 	?>
 
-	<fieldset class="<?php echo $group->class; ?>" id="group<?php echo $group->id;?>" style="<?php echo $group->css;?>">
+	<fieldset class="<?php echo $group->class; ?> <?php if($group->columns > 1) { echo 'fabrikGroupColumns-'. $group->columns.' fabrikGroupColumns'; } ?>" id="group<?php echo $group->id;?>" style="<?php echo $group->css;?>">
 		<?php
 		if ($group->showLegend) :?>
 			<span class="legend"><?php echo $group->title;?></span>
