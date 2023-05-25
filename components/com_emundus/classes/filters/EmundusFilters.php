@@ -39,13 +39,15 @@ class EmundusFilters
 
 		if (!empty($element)) {
 			$elements = $this->getAllAssociatedElements($element);
-			$this->createFiltersFromFabrikElements($elements);
+			$this->filters = $this->createFiltersFromFabrikElements($elements);
 		}
 	}
 
 
 	protected function createFiltersFromFabrikElements($elements)
 	{
+		$created_filters = [];
+
 		if (!empty($elements)) {
 			foreach($elements as $element) {
 				$filter = [
@@ -82,9 +84,11 @@ class EmundusFilters
 						break;
 				}
 
-				$this->filters[] = $filter;
+				$created_filters[] = $filter;
 			}
 		}
+
+		return $created_filters;
 	}
 
 	protected function getAllAssociatedElements($element_id)

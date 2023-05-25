@@ -68,13 +68,26 @@
                         <option value="0">JNO</option>
                         <option value="1">JYES</option>
                     </field>
+                    <!-- repeatable field -->
+                    <field name="more_filter_elements"
+                           type="repeatable"
+                           icon="list"
+                           description=""
+                           label="Filtres supplémentaires"
+                    >
+                        <field name="fabrik_element_id"
+                               type="text"
+                               label="MOD_EM_FILTER_FABRIK_ELEMENT_ID"
+                               description="MOD_EM_FILTER_FABRIK_ELEMENT_ID_DESC"
+                        ></field>
+                    </field>
                 </fieldset>
             </fieldset>
             <fieldset name="advanced">
-            <field name="layout"
-                   type="modulelayout"
-                   label="JFIELD_ALT_LAYOUT_LABEL"
-                   description="JFIELD_ALT_MODULE_LAYOUT_DESC" />
+                <field name="layout"
+                       type="modulelayout"
+                       label="JFIELD_ALT_LAYOUT_LABEL"
+                       description="JFIELD_ALT_MODULE_LAYOUT_DESC" />
             </fieldset>
         </fields>
     </config>
