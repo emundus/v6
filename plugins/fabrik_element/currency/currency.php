@@ -122,6 +122,8 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         $opts->allCurrency = $this->allCurrency;
         $opts->value = $this->inputValueBack;
         $opts->selectedIso3 = $this->selectedIso3Back;
+        $opts->min_value = $this->getParams()->get('minimal_value');
+        $opts->max_value = $this->getParams()->get('maximal_value');
 
         $opts->thousand_separator = $this->getParams()->get('thousand_separator');
         $opts->decimal_separator = $this->getParams()->get('decimal_separator');
@@ -229,14 +231,10 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 
         $selectedSymbolBack = $this->getCurrencyObject($this->selectedIso3Back)->symbol;
 
-        if (!preg_match('/\p{Sc} \([A-Z]{3}\)/', $selectValueFront))
+        if (!preg_match('/\p{Sc} \([A-Z]{3}\)/', $selectValueFront) || // not good currency format
+            !($selectedIso3Front === $this->selectedIso3Back && $selectedSymbolFront === $selectedSymbolBack)) // not the same currency
         {
-            // error cause not good select format
-            $valid = false;
-        }
-        else if (!($selectedIso3Front === $this->selectedIso3Back && $selectedSymbolFront === $selectedSymbolBack))
-        {
-            // error cause unknown currency
+            $this->validationError = JText::_('PLG_ELEMENT_CURRENCY_CURRENCY_ERROR');
             $valid = false;
         }
 
