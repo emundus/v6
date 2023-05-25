@@ -121,6 +121,21 @@ class Zoom
 		return $response;
 	}
 
+	private function patch($url, $json)
+	{
+		$response = '';
+
+		try {
+			$response = $this->client->patch($url, ['body' => $json]);
+			$response = json_decode($response->getBody());
+		} catch (\Exception $e) {
+			JLog::add('[PATCH] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.zoom');
+			$response = $e->getMessage();
+		}
+
+		return $response;
+	}
+
 	public function getMeeting($meeting_id)
 	{
 		$meeting = null;
@@ -177,5 +192,17 @@ class Zoom
 		}
 
 		return $user;
+	}
+
+	public function updateMeetingDuration($meeting_id, $duration = 60) {
+		$response = null;
+
+		if (!empty($meeting_id) && $duration >= 60) {
+			$response = $this->patch('meetings/' . $meeting_id, [
+				'duration' => $duration
+			]);
+		}
+
+		return $response;
 	}
 }

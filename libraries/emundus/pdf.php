@@ -785,6 +785,21 @@ function data_to_img($match) {
     return "$img$fn$end";  // new <img> tag
 }
 
+/**
+ * @param $user_id
+ * @param $fnum
+ * @param $output
+ * @param $form_post
+ * @param $form_ids
+ * @param $options
+ * @param $application_form_order
+ * @param $profile_id
+ * @param $file_lbl
+ * @param $elements
+ * @param $attachments
+ * @return false|string|void
+ * @throws Exception
+ */
 function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null, $attachments = true) {
 	jimport('joomla.html.parameter');
     set_time_limit(0);
@@ -906,7 +921,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
             $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
 
-            if ($options[0] !== "0" && !$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
+            if ($options[0] != "0" && !$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
                 $date_submitted = (!empty($item->date_submitted) && strpos($item->date_submitted, '0000') === false) ? EmundusHelperDate::displayDate($item->date_submitted) : JText::_('NOT_SENT');
 
                 // Create an date object
@@ -987,12 +1002,14 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                     $htmldata .= '</td></tr></table>';
                 }
                 $htmldata .= '<hr>';
+            } else {
+	            $htmldata .= '</td></table><hr/></header>';
             }
         } catch (Exception $e) {
             JLog::add('SQL error in emundus pdf library at query : ' . $query, JLog::ERROR, 'com_emundus');
         }
 
-        if ($form_post == 1 && (empty($form_ids) || is_null($form_ids)) && !empty($elements) && !is_null($elements)) {
+		if ($form_post == 1 && (empty($form_ids) || is_null($form_ids)) && !empty($elements) && !is_null($elements)) {
             $profile_menu = array_keys($elements);
 
             // Get form HTML
@@ -1017,7 +1034,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	        $forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order, $profile_id, null, $attachments);
         }
 
-        /*** Applicant   ***/
+		/*** Applicant   ***/
 	    $htmldata .= "
 			<style>
 					@page { margin: 130px 25px; }

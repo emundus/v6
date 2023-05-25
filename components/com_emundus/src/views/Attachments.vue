@@ -11,6 +11,7 @@
 					      :placeholder="translate('COM_EMUNDUS_ACTIONS_SEARCH')"
 					      v-model="search"
 					      @input="onSearch"
+					      @keyup.enter="onSearchKeyup"
 			      />
 			      <span class="material-icons-outlined search">search</span>
 			      <span class="material-icons-outlined clear em-pointer" @click="search = ''">clear</span>
@@ -614,6 +615,11 @@ export default {
 		  this.filterCheckedAttachments();
 	  },
 
+	  onSearchKeyup(e) {
+		  e.stopPropagation();
+			e.preventDefault();
+			this.onSearch();
+	  },
     openModal(attachment) {
       if (this.displayedUser.user_id && this.displayedFnum) {
         this.$modal.show('edit');
@@ -676,6 +682,10 @@ export default {
 		  const currentSearch = this.search.toLowerCase();
 
 		  return typeof this.attachments !== 'undefined' && this.attachments !== null ? this.attachments.filter((attachment) => {
+			  if (attachment.upload_description === null) {
+				  attachment.upload_description = '';
+			  }
+
 			  return (attachment.upload_description.toLowerCase().includes(currentSearch) || attachment.value.toLowerCase().includes(currentSearch)) && (this.category === 'all' || attachment.category === this.category);
 		  }) : [];
 	  },
@@ -714,7 +724,6 @@ export default {
 <style lang='scss'>
 #em-attachments {
   font-size: 14px;
-  width: 100%;
 
 	#em-attachment-preview {
 		width: 75%;

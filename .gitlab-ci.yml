@@ -245,11 +245,6 @@ deployer-auto-release:
   rules:
     - if: $CI_COMMIT_BRANCH =~ "/^release\/.*/"
 
-deployer-auto-production:
-  environment: 
-    name: production/auto
-    deployment_tier: production
-
 deployer-manual-eG5NEnlFOzhoskWHOJAdBE9rVfQy9ui1:
   environment: 
     name: production/manual

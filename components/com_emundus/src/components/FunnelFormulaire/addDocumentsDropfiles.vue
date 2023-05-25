@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="documents-dropfiles">
       <div class="w-form">
         <vue-dropzone
             ref="dropzone"
@@ -118,6 +118,7 @@ export default {
         dictInvalidFileType: this.translate("COM_EMUNDUS_ONBOARD_INVALID_FILE_TYPE"),
         dictFileTooBig: this.translate("COM_EMUNDUS_ONBOARD_FILE_TOO_BIG"),
         dictMaxFilesExceeded: this.translate("COM_EMUNDUS_ONBOARD_MAX_FILES_EXCEEDED"),
+	      uploadMultiple: false
       },
       documents: [],
       Retour: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
@@ -166,7 +167,7 @@ export default {
       Swal.fire({
         title: '',
         html: '<div class="form-group campaign-label">' +
-            '<label for="campLabel">' + this.DocumentName + '</label><input type="text" max="100" id="label_' + doc.id + '" value="' + doc.title + '"/>' +
+            '<label for="campLabel">' + this.DocumentName + '</label><input type="text" maxlength="200" id="label_' + doc.id + '" value="' + doc.title + '"/>' +
             '</div>',
         showCloseButton: true,
         allowOutsideClick: false,
@@ -177,7 +178,11 @@ export default {
         }
       }).then((value) => {
         if(value){
-          let newname = document.getElementById('label_' + doc.id).value
+          let newname = document.getElementById('label_' + doc.id).value;
+					if (newname.length > 200) {
+						newname = newname.substring(0, 200);
+					}
+
           axios({
             method: "post",
             url: "index.php?option=com_emundus&controller=campaign&task=editdocumentdropfile",
