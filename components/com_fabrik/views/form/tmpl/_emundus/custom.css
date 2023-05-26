@@ -160,7 +160,15 @@
 
 .view-form.applicant-form .span12 form .fabrikGroup table .fabrikSubGroup .fabrikGroupRepeater .pull-right {
     display: flex;
+    align-items: center;
+    height: 48px;
+    margin-top: 6px;
 }
+
+.view-form.applicant-form .span12 form .fabrikGroup table .fabrikSubGroup .fabrikGroupRepeater .pull-right .deleteGroup {
+    display: flex;
+}
+
 
 .view-form.applicant-form .span12 form .fabrikGroup table .fabrikSubGroup .fabrikGroupRepeater .pull-right .addGroup {
     margin-right: 0;
