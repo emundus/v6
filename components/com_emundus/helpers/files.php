@@ -3320,11 +3320,11 @@ class EmundusHelperFiles
 		if (!empty($element) && isset($values) && !empty($operator)) {
 			$db = JFactory::getDbo();
 
-			if ($type === 'date') {
+			if ($type === 'date' || $type === 'time') {
 				$from = $values[0];
-				$to = $values[1];
-
 				if (!empty($from)) {
+					$to = !empty($values[1]) ? $values[1] : null;
+
 					switch ($operator) {
 						case '=':
 							$query = $element . ' = ' . $db->quote($from);

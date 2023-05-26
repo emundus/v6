@@ -1,5 +1,5 @@
 <template>
-	<div class="default-filter em-w-100 em-mb-8 em-border-radius-8 em-border-neutral-400 em-box-shadow em-white-bg em-p-8">
+	<div class="date-filter em-w-100 em-mb-8 em-border-radius-8 em-border-neutral-400 em-box-shadow em-white-bg em-p-8">
 		<div class="em-flex-row em-flex-space-between">
 			<p class="recap-label">{{ filter.label }}</p>
 			<div>

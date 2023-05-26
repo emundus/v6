@@ -96,7 +96,6 @@ export default {
 				let newFilter = JSON.parse(JSON.stringify(foundFilter));
 
 				newFilter.uid = new Date().getTime();
-				newFilter.value = newFilter.type === 'select' ? [] : '';
 				newFilter.default = false;
 				newFilter.operator = newFilter.type === 'select' ? 'IN' : '=';
 				newFilter.andorOperator = 'OR';
