@@ -1936,7 +1936,7 @@ form .fabrikGroupColumns.fabrikGroup .row-fluid {
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
 
-    .fabrikGroup .repeatGroupTable .fabrikSubGroupElements  .fabrikGroupRepeater  {
+    .fabrikGroup .repeatGroupTable .fabrikSubGroupElements .fabrikGroupRepeater  {
         display: flex;
         justify-content: flex-end;
     }
