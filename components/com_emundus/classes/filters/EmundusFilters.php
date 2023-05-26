@@ -56,7 +56,8 @@ class EmundusFilters
 					'type' => 'text',
 					'values' => [],
 					'group_label' => $element['element_form_label'],
-					'group_id' => $element['element_form_id']
+					'group_id' => $element['element_form_id'],
+					'available' => true,
 				];
 
 				switch ($element['plugin']) {

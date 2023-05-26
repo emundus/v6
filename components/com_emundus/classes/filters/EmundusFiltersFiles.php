@@ -15,13 +15,15 @@ class EmundusFiltersFiles extends EmundusFilters
 			throw new Exception('Access denied', 403);
 		}
 
+		$this->setDefaultFilters($config);
 		$this->setProfiles();
 		$this->setFilters();
-		$this->setDefaultFilters($config);
 
 		$session_filters = JFactory::getSession()->get('em-applied-filters', null);
 		if (!empty($session_filters)) {
 			$this->addSessionFilters($session_filters);
+			$this->checkFiltersAvailability();
+			$this->checkFiltersValuesAvailability();
 		}
 	}
 
@@ -29,8 +31,14 @@ class EmundusFiltersFiles extends EmundusFilters
 	{
 		$campaign_ids = EmundusHelperAccess::getAllCampaignsAssociatedToUser($this->user->id);
 		if (!empty($campaign_ids)) {
-			$profile_ids = [];
+			$this->profiles = $this->getProfilesFromCampaignId($campaign_ids);
+		}
+	}
 
+	private function getProfilesFromCampaignId($campaign_ids) {
+		$profile_ids = [];
+
+		if (!empty($campaign_ids)) {
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
@@ -57,9 +65,9 @@ class EmundusFiltersFiles extends EmundusFilters
 					$profile_ids[] = $workflow->profile_id;
 				}
 			}
-
-			$this->profiles = $profile_ids;
 		}
+
+		return $profile_ids;
 	}
 
 	private function getProfiles()
@@ -152,7 +160,8 @@ class EmundusFiltersFiles extends EmundusFilters
 				'type' => 'select',
 				'values' => $values,
 				'value' => ['all'],
-				'default' => true
+				'default' => true,
+				'available' => true
 			];
 		}
 
@@ -172,7 +181,8 @@ class EmundusFiltersFiles extends EmundusFilters
 				'type' => 'select',
 				'values' => $campaigns,
 				'value' => ['all'],
-				'default' => true
+				'default' => true,
+				'available' => true
 			];
 		}
 
@@ -192,7 +202,8 @@ class EmundusFiltersFiles extends EmundusFilters
 				'type' => 'select',
 				'values' => $programs,
 				'value' => ['all'],
-				'default' => true
+				'default' => true,
+				'available' => true
 			];
 		}
 
@@ -212,7 +223,8 @@ class EmundusFiltersFiles extends EmundusFilters
 				'type' => 'select',
 				'values' => $years,
 				'value' => ['all'],
-				'default' => true
+				'default' => true,
+				'available' => true
 			];
 		}
 
@@ -231,7 +243,8 @@ class EmundusFiltersFiles extends EmundusFilters
 				'type' => 'select',
 				'values' => $tags,
 				'value' => ['all'],
-				'default' => true
+				'default' => true,
+				'available' => true
 			];
 		}
 
@@ -247,7 +260,8 @@ class EmundusFiltersFiles extends EmundusFilters
 					['value' => -1, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_DELETED')]
 				],
 				'value' => [1],
-				'default' => true
+				'default' => true,
+				'available' => true
 			];
 		}
 
@@ -341,5 +355,104 @@ class EmundusFiltersFiles extends EmundusFilters
 				}
 			}
 		}
+	}
+
+	private function checkFiltersAvailability() {
+		// get campaign filter by uid
+		$campaign_filter = null;
+
+		foreach($this->applied_filters as $filter) {
+			if($filter['uid'] == 'campaigns') {
+				$campaign_filter = $filter;
+				break;
+			}
+		}
+
+		if (!empty($campaign_filter) && !empty($campaign_filter['value'])) {
+			$campaign_ids = EmundusHelperAccess::getAllCampaignsAssociatedToUser($this->user->id);
+
+			// if the operator is NOT IN or !=, we need to get fabrik elements associated to campaigns that are not in the filter
+			switch($campaign_filter['operator']) {
+				case 'NOT IN':
+				case '!=':
+					$campaign_availables = array_diff($campaign_ids, $campaign_filter['value']);
+					break;
+				default:
+					$campaign_availables = array_intersect($campaign_ids, $campaign_filter['value']);
+					break;
+			}
+
+			if (!empty($campaign_availables)) {
+				$filtered_profiles = $this->getProfilesFromCampaignId($campaign_availables);
+
+				if (!empty($filtered_profiles)) {
+					$element_ids_available = $this->getElementIdsAssociatedToProfile($filtered_profiles);
+
+					foreach($this->filters as $key => $filter) {
+						if (!in_array($filter['id'], $element_ids_available)) {
+							$this->filters[$key]['available'] = false;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private function getElementIdsAssociatedToProfile($profile_ids)
+	{
+		$element_ids = [];
+
+		if (!empty($profile_ids)) {
+			$menus = [];
+			foreach ($profile_ids as $profile) {
+				$menus[] = 'menu-profile'. $profile;
+			}
+
+			// get all forms associated to the user's profiles
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('link')
+				->from('#__menu')
+				->where('menutype IN ('. implode(',', $db->quote($menus)) .')')
+				->andWhere('link LIKE "index.php?option=com_fabrik&view=form&formid=%"')
+				->andWhere('published = 1');
+
+			$db->setQuery($query);
+			$form_links = $db->loadColumn();
+
+			if (!empty($form_links)) {
+				$form_ids = [];
+				foreach ($form_links as $link) {
+					$form_ids[] = (int) str_replace('index.php?option=com_fabrik&view=form&formid=', '', $link);
+				}
+				$form_ids = array_unique($form_ids);
+
+				$query->clear()
+					->select('jfe.id')
+					->from('jos_fabrik_elements as jfe')
+					->join('inner', 'jos_fabrik_formgroup as jffg ON jfe.group_id = jffg.group_id')
+					->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
+					->where('jffg.form_id IN (' . implode(',', $form_ids) . ')')
+					->andWhere('jfe.published = 1')
+					->andWhere('jfe.hidden = 0');
+
+				try {
+					$db->setQuery($query);
+					$element_ids = $db->loadColumn();
+				} catch (Exception $e) {
+					JLog::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+				}
+			}
+		}
+
+		return $element_ids;
+	}
+
+	private function checkFiltersValuesAvailability() {
+		// between applied filters, keep only the values that are available between them
+		//  for example, if i chose campaign 1, and all files on campaign 1 are on status 1, 2 and 3, i can't choose status 4
+		//  so i have to remove it from the available values
+		$available_values = [];
 	}
 }

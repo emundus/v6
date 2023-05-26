@@ -28,7 +28,7 @@
 	  </section>
 	  <div id="filters-selection-wrapper" class="em-w-100 em-mt-16 em-mb-16" :class="{'hidden': !openFilterOptions}">
 		  <label for="filters-selection"> {{ translate('MOD_EMUNDUS_FILTERS_SELECT_FILTER_LABEL') }} </label>
-			<AdvancedSelect :module-id="moduleId" :filters="filters" @filter-selected="onSelectNewFilter"></AdvancedSelect>
+			<AdvancedSelect :module-id="moduleId" :filters="availableFilters" @filter-selected="onSelectNewFilter"></AdvancedSelect>
 	  </div>
 	  <section id="filters-bottom-actions">
 		  <button id="em-add-filter" class="em-secondary-button em-white-bg em-mt-16" @click="openFilterOptions = !openFilterOptions">{{ translate('MOD_EMUNDUS_FILTERS_ADD_FILTER') }}</button>
@@ -183,6 +183,13 @@ export default {
 		onRemoveFilter(filter) {
 			this.appliedFilters = this.appliedFilters.filter((appliedFilter) => appliedFilter.uid !== filter.uid);
 		}
+	},
+	computed: {
+		availableFilters() {
+			return this.filters.filter((filter) => {
+				return filter.available;
+			});
+		},
 	}
 }
 </script>
