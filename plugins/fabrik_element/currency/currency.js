@@ -17,8 +17,7 @@ define(['jquery', 'fab/element'],
             this.select = this.element.getElementById('currency_selectValue');
 
             this.initSelect(this.select);
-            this.initMask(this.input);
-
+            this.initInput(this.input);
         },
 
         cloned: function (c)
@@ -56,9 +55,14 @@ define(['jquery', 'fab/element'],
             }
         },
 
+        initInput: function(inputElement)
+        {
+            inputElement.value = this.options.value;
+            this.initMask(inputElement);
+        },
+
         initMask: function (inputElement)
         {
-
             if(this.mask) {
                 this.mask.destroy();
             }
@@ -68,7 +72,7 @@ define(['jquery', 'fab/element'],
                 {
                     mask: Number,
                     // other options are optional with defaults below
-                    scale: 2,  // digits after point, 0 for integers
+                    scale: this.options.decimal_numbers,  // digits after point, 0 for integers
                     signed: false,  // disallow negative
                     thousandsSeparator: this.options.thousand_separator,  // any single char
                     padFractionalZeros: false,  // if true, then pads zeros at end to the length of scale
