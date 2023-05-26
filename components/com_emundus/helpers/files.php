@@ -3160,51 +3160,74 @@ class EmundusHelperFiles
 					$fabrik_element_data = $this->getFabrikElementData($filter_id);
 
 					if (!empty($fabrik_element_data['name']) && !empty($fabrik_element_data['db_table_name'])) {
-						$group_params = json_decode($fabrik_element_data['group_params'], true);
+						$mapped_to_fnum = $this->isTableLinkedToCampaignCandidature($fabrik_element_data['db_table_name']);
 
-						if ($group_params['repeat_group_button'] === '1') {
-							$join_informations = $this->getJoinInformations($filter_id, $fabrik_element_data['group_id'], $fabrik_element_data['list_id']);
+						if ($mapped_to_fnum) {
+							$group_params = json_decode($fabrik_element_data['group_params'], true);
 
-							if (!empty($join_informations)) {
-								$parent_table = $join_informations['join_from_table'];
-								if (!in_array($parent_table, $already_joined)) {
-									$parent_alias = 'jejoin_' . sizeof($already_joined);
-									$already_joined[$parent_alias] = $parent_table;
+							if ($group_params['repeat_group_button'] === '1') {
+								$join_informations = $this->getJoinInformations($filter_id, $fabrik_element_data['group_id'], $fabrik_element_data['list_id']);
 
-									$where['join'] .= ' LEFT JOIN ' . $db->quoteName($parent_table, $parent_alias) . ' ON ' . $parent_alias . '.fnum = jecc.fnum ';
-								} else {
-									$parent_alias = array_search($parent_table, $already_joined);
-								}
+								if (!empty($join_informations)) {
+									$parent_table = $join_informations['join_from_table'];
+									if (!in_array($parent_table, $already_joined)) {
+										$parent_alias = 'jejoin_' . sizeof($already_joined);
+										$already_joined[$parent_alias] = $parent_table;
 
-								if (!empty($parent_alias)) {
-									$child_table = $join_informations['table_join'];
-									if (!in_array($child_table, $already_joined)) {
-										$child_alias = 'jejoin_' . sizeof($already_joined);
-										$already_joined[$child_alias] = $child_table;
-
-										$where['join'] .= ' LEFT JOIN ' . $db->quoteName($child_table, $child_alias) . ' ON ' . $child_alias . '.' . $join_informations['table_join_key'] . ' = ' . $parent_alias . '.' . $join_informations['table_key'];
+										$where['join'] .= ' LEFT JOIN ' . $db->quoteName($parent_table, $parent_alias) . ' ON ' . $parent_alias . '.fnum = jecc.fnum ';
 									} else {
-										$child_alias = array_search($child_table, $already_joined);
+										$parent_alias = array_search($parent_table, $already_joined);
 									}
 
-									$where['q'] .= ' AND ' . $this->writeQueryWithOperator($child_alias . '.' . $fabrik_element_data['name'], $filter['value'], $filter['operator']);
+									if (!empty($parent_alias)) {
+										$child_table = $join_informations['table_join'];
+										if (!in_array($child_table, $already_joined)) {
+											$child_alias = 'jejoin_' . sizeof($already_joined);
+											$already_joined[$child_alias] = $child_table;
+
+											$where['join'] .= ' LEFT JOIN ' . $db->quoteName($child_table, $child_alias) . ' ON ' . $child_alias . '.' . $join_informations['table_join_key'] . ' = ' . $parent_alias . '.' . $join_informations['table_key'];
+										} else {
+											$child_alias = array_search($child_table, $already_joined);
+										}
+
+										$where['q'] .= ' AND ' . $this->writeQueryWithOperator($child_alias . '.' . $fabrik_element_data['name'], $filter['value'], $filter['operator']);
+									} else {
+										JLog::add('Could not handle repeat group for element ' . $filter_id . ' parent table not found', JLog::WARNING, 'com_emundus.error');
+									}
 								} else {
-									JLog::add('Could not handle repeat group for element ' . $filter_id . ' parent table not found', JLog::WARNING, 'com_emundus.error');
+									JLog::add('Could not handle repeat group for element ' . $filter_id . ' in ' . $caller . ' with params ' . json_encode($caller_params), JLog::WARNING, 'com_emundus.error');
 								}
-							} else {
-								JLog::add('Could not handle repeat group for element ' . $filter_id . ' in ' . $caller . ' with params ' . json_encode($caller_params), JLog::WARNING, 'com_emundus.error');
+							}
+							else {
+								if (!in_array($fabrik_element_data['db_table_name'], $already_joined)) {
+									$alias = 'jejoin_' . sizeof($already_joined);
+									$already_joined[$alias] = $fabrik_element_data['db_table_name'];
+
+									$where['join'] .= ' LEFT JOIN ' . $db->quoteName($fabrik_element_data['db_table_name'], $alias) . ' ON ' . $alias . '.fnum = jecc.fnum ';
+								} else {
+									$alias = array_search($fabrik_element_data['db_table_name'], $already_joined);
+								}
+
+								$where['q'] .= ' AND ' . $this->writeQueryWithOperator($alias . '.' . $fabrik_element_data['name'], $filter['value'], $filter['operator'], $filter['type']);
 							}
 						} else {
-							if (!in_array($fabrik_element_data['db_table_name'], $already_joined)) {
-								$alias = 'jejoin_' . sizeof($already_joined);
-								$already_joined[$alias] = $fabrik_element_data['db_table_name'];
+							$query = $db->getQuery(true);
 
-								$where['join'] .= ' LEFT JOIN ' . $db->quoteName($fabrik_element_data['db_table_name'], $alias) . ' ON ' . $alias . '.fnum = jecc.fnum ';
-							} else {
-								$alias = array_search($fabrik_element_data['db_table_name'], $already_joined);
+							foreach ($already_joined as $already_joined_table_name) {
+								$query->clear()
+									->select('*')
+									->from('#__fabrik_joins')
+									->where('table_join = ' . $db->quote($already_joined_table_name))
+									->andWhere('join_from_table = ' . $db->quote($fabrik_element_data['db_table_name']))
+									->andWhere('table_key = ' . $db->quote('id'));
+
+								$db->setQuery($query);
+								$join_informations = $db->loadAssoc();
+
+								if (!empty($join_informations)) {
+									// TODO add join and add query where clause
+								}
 							}
-
-							$where['q'] .= ' AND ' . $this->writeQueryWithOperator($alias . '.' . $fabrik_element_data['name'], $filter['value'], $filter['operator'], $filter['type']);
 						}
 					}
 				} else {
@@ -3707,6 +3730,34 @@ class EmundusHelperFiles
 		}
 
 		return $fnums;
+	}
+
+	private function isTableLinkedToCampaignCandidature($table_name) {
+		$linked = false;
+
+		if (!empty($table_name)) {
+			// check if table has a column named 'fnum'
+			$db = JFactory::getDBO();
+			$query = $db->getQuery(true);
+
+			$query->select('column_name')
+				->from($db->quoteName('#__information_schema.columns'))
+				->where('table_name = ' . $db->quote($table_name))
+				->where('column_name = ' . $db->quote('fnum'));
+
+			try {
+				$db->setQuery($query);
+				$column_name = $db->loadResult();
+
+				if (!empty($column_name)) {
+					$linked = true;
+				}
+			} catch(Exception $e) {
+				JLog::add(JUri::getInstance().' :: fct : isTableLinkedToCampaignCandidature :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $linked;
 	}
 }
 
