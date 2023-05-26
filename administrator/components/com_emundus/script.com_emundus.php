@@ -1804,6 +1804,22 @@ structure:
 				EmundusHelperUpdate::updateYamlVariable('', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_offline/layout.yaml', '', $content_layout_offline);
 			}
 
+			if (version_compare($cache_version, '1.36.2', '<=') || $firstrun){
+				$tags_to_publish = [
+					'APPLICANT_ID','USER_ID','APPLICANT_NAME','CURRENT_DATE','ID','NAME','EMAIL','USERNAME','SITE_URL','USER_NAME','USER_EMAIL','CAMPAIGN_LABEL','CAMPAIGN_YEAR','CAMPAIGN_START','CAMPAIGN_END','FNUM','PHOTO'
+				];
+				foreach ($tags_to_publish as $key => $tag)
+				{
+					$tags_to_publish[$key] = $db->quote($tag);
+				}
+				$query->clear()
+					->update($db->quoteName('#__emundus_setup_tags'))
+					->set($db->quoteName('published') . ' = ' . $db->quote(1))
+					->where($db->quoteName('tag') . ' IN (' . implode(',',$tags_to_publish) . ')');
+				$db->setQuery($query);
+				$db->execute();
+			}
+
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
 
