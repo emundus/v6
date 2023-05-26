@@ -835,11 +835,7 @@ class EmundusModelEvaluation extends JModelList {
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
 					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
 					LEFT JOIN #__users as u on u.id = jecc.applicant_id
-                    LEFT JOIN (
-					  SELECT GROUP_CONCAT(id_tag SEPARATOR ", ") id_tag, fnum
-					  FROM jos_emundus_tag_assoc
-					  GROUP BY fnum
-					) eta ON jecc.fnum = eta.fnum ' ;
+					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum LIKE jecc.fnum ';
         $q = $this->_buildWhere($lastTab);
 
         if (EmundusHelperAccess::isCoordinator($current_user->id)
