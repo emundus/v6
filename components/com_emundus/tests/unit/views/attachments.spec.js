@@ -276,3 +276,23 @@ describe('Attachments.vue sync', () => {
 
 });
 
+describe('Attachments.vue attachments with wrong data', () => {
+  const wrapper = shallowMount(Attachments, {
+    propsData: {user: '123', fnum: '2021061714501700000010000123'},
+    store: store,
+    localVue
+  });
+
+  mockAttachment.attachments[0].upload_description = null;
+
+  // set attachments data
+  wrapper.vm.users = mockAttachment.users;
+  wrapper.vm.displayedUser = mockAttachment.users.find(user => user.id === '123');
+  wrapper.vm.attachments = mockAttachment.attachments;
+  wrapper.vm.fnums = mockAttachment.fnums;
+
+  it('No error should occur even if upload_description is null', () => {
+    const table = wrapper.find('.table-wrapper');
+    expect(table.exists()).toBe(true);
+  });
+});

@@ -829,11 +829,17 @@ class EmundusModelEmails extends JModelList {
                         $fabrikValues[$elt['id']][$fnum]['val'] = htmlentities($val['val'],ENT_QUOTES);
                     }
                 }
+                if ($elt['plugin'] == 'emundus_phonenumber'){
+                    foreach ($fabrikValues[$elt['id']] as $fnum => $val)
+                    {
+	                    $fabrikValues[$elt['id']][$fnum]['val'] = substr($val['val'], 2, strlen($val['val']));
+                    }
+                }
             }
             $preg = array('patterns' => array(), 'replacements' => array());
             foreach ($fnumsArray as $fnum) {
                 foreach ($idFabrik as $id) {
-                    $preg['patterns'][] = '/\${' . $id . '\}/';
+                    $preg['patterns'][] = '/\$\{(.*?)'.$id.'(.*?)}/i';
                     if (isset($fabrikValues[$id][$fnum])) {
                         $preg['replacements'][] = JText::_($fabrikValues[$id][$fnum]['val']);
                     } else {
@@ -1259,7 +1265,7 @@ class EmundusModelEmails extends JModelList {
             } catch (Exception $e) {
                 $failed[] = $m_to;
                 $print_message .= '<hr>Error inviting expert '.$m_to;
-                JLog::add('Error inserting file requests for expert invitations : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                JLog::add('Error inserting file requests for expert invitations : '.$e->getMessage() . ' with query : ' . $query->__toString(), JLog::ERROR, 'com_emundus');
                 continue;
             }
 

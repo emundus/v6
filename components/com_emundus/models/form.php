@@ -726,7 +726,7 @@ class EmundusModelForm extends JModelList {
 											}
 										}
 
-										$formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile);
+										$formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile, true);
 									}
 
 									// Copy attachments
@@ -1773,6 +1773,7 @@ class EmundusModelForm extends JModelList {
             ->where($db->quoteName('sp.id') . ' = '.$profile_id)
             ->where($db->quoteName('menu.parent_id') . ' != 1')
             ->where($db->quoteName('menu.published') . ' = 1')
+	        ->where($db->quoteName('menu.link') . ' LIKE ' . $db->quote('%option=com_fabrik%'))
             ->group('menu.rgt')
             ->order('menu.rgt ASC');
 
@@ -1792,15 +1793,6 @@ class EmundusModelForm extends JModelList {
                 $db->setQuery($query);
                 $form->label = $formbuilder->getJTEXT($db->loadResult());
                 print_r($forms->label);
-
-
-                $query->clear()
-                    ->select('id')
-                    ->from('#__emundus_template_form')
-                    ->where('form_id = ' . $form->id);
-
-                $db->setQuery($query);
-                $modelId = $db->loadResult();
             }
 
             return $forms;
@@ -1864,7 +1856,8 @@ class EmundusModelForm extends JModelList {
             $db->setQuery($query);
             $menus = $db->loadObjectList();
             $sub_page = new stdClass();
-            foreach($menus as $menu){
+
+			foreach($menus as $menu){
                 $formid = explode('=',$menu->link)[3];
                 if($formid != null){
                     $query->clear()
@@ -1878,9 +1871,12 @@ class EmundusModelForm extends JModelList {
                         $sub_page->link = $menu->link;
                         $sub_page->rgt = $menu->rgt;
                         $sub_page->id = $menu->id;
+
+						break;
                     }
                 }
             }
+
             return $sub_page;
         } catch(Exception $e) {
             JLog::add('component/com_emundus/models/form | Error at getting the submittion page of the form ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');

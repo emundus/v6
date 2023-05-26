@@ -201,9 +201,37 @@ export default {
                 }
             });
 
-            return response.data;
+            // make sure that response.data.data is an array and that every element has id property
+            if (Array.isArray(response.data.data)) {
+                const correctResponse = response.data.data.every((comment) => {
+                    if (!comment.hasOwnProperty('id')) {
+                        return false;
+                    }
+
+                    return true;
+                });
+
+                if (correctResponse) {
+                    return response.data;
+                } else {
+                    return {
+                        data: [],
+                        status: false,
+                        msg: 'Invalid response'
+                    };
+                }
+            } else {
+                return {
+                    data: [],
+                    status: false,
+                    msg: 'Invalid response'
+                };
+            }
         } catch (e) {
-            return false;
+            return {
+                status: false,
+                msg: e.message
+            };
         }
     },
 

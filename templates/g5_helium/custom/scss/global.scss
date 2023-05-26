@@ -79,10 +79,6 @@ body {
   }
 }
 
-h1,h2,h3,h4,h5{
-  margin: 0;
-}
-
 h1 {
   font-family: get-font-family($font-family-title);
   font-style: normal;
@@ -1270,7 +1266,7 @@ body > .g-container {
   border: 1px solid $base-secondary-color;
 }
 #tab_adding_link a span.material-icons-outlined{
-  color: $base-primary-color;
+  color: $base-secondary-color;
 }
 
 .mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-cancel {
@@ -3414,7 +3410,8 @@ label[for='clear-search'] img:hover:focus {
 
 /* ALERT */
 
-#system-message-container #system-message {
+#system-message-container #system-message,
+.com_users #system-message-container .alert.alert-error.alert-danger {
   margin: 20px;
 }
 
@@ -3882,7 +3879,7 @@ ul.unstyled.em-linkForgot li a {
 
     li.search-field {
       input[type="text"] {
-        width: auto;
+        width: auto !important;
       }
     }
   }
@@ -5283,12 +5280,29 @@ button.swal2-cancel.goback-btn {
         }
 
         /* BLOC ELEMENT */
-        .row-fluid .fabrikElementContainer.control-group:not(.plg-display) {
-          margin: 24px 0 0 0;
-          flex-direction: column;
+        .row-fluid .fabrikElementContainer.control-group {
+          &:not(.plg-display) {
+            margin: 24px 0 0 0;
+            flex-direction: column;
 
-          @include fabrik-elements;
+            @include fabrik-elements;
+
+          }
+
+            &.plg-display {
+            .fabrikinput {
+              height: auto !important;
+              border: none !important;
+              padding: 0 !important;
+            }
+
+            .fabrikLabel.control-label {
+              color: var(--neutral-800);
+            }
+          }
         }
+
+
 
         /* PROFIL */
         .em-profile-element .fabrikElement .multiselect__tags {
@@ -5685,8 +5699,8 @@ screen and (max-height: 769px) {
   }
 
   .login.em-formRegistrationCenter {
-    .page-header {
-      text-align: center;
+    .page-header h1 {
+      text-align: center !important;
     }
   }
 
@@ -5960,6 +5974,13 @@ screen and (max-height: 769px) {
 }
 
 @media all and (min-width: 480px) and (max-width: 767px) {
+
+  .gantry.view-registration main#g-main-mainbody .login.em-formRegistrationCenter,
+  .gantry.view-registration main#g-main-mainbody .em-formRegistrationCenter:not(.componentheading),
+  .gantry.view-form.em-formRegistrationCenter main#g-main-mainbody .login.em-formRegistrationCenter,
+  .gantry.view-form.em-formRegistrationCenter main#g-main-mainbody .em-formRegistrationCenter:not(.componentheading) {
+    width: 100%;
+  }
 
   /* BIRTHDAY */
   .view-form:not(.com_emundus) .span12 form .fabrikGroup .row-fluid .fabrikElementContainer.control-group:not(.plg-display) .fabrikElement .fabrikSubElementContainer {
@@ -6449,7 +6470,24 @@ screen and (max-height: 769px) {
     display: flex;
     flex-direction: inherit;
   }
-}
+
+  /* FORMULAIRES */
+
+  .view-form.com_fabrik.applicant-form,
+  .view-checklist.com_emundus.applicant-form,
+  .view-details.com_fabrik.applicant-form{
+
+     #g-container-main .g-container .g-grid {
+
+       .g-block:nth-child(1) {
+         order: 2;
+       }
+       .g-block:nth-child(2) {
+         order: 1;
+       }
+     }
+   }
+ }
 
 @media screen and (min-width: 480px) and (max-width: 959px) {
 
@@ -6479,6 +6517,13 @@ screen and (max-height: 769px) {
 
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
+
+  .gantry.view-registration main#g-main-mainbody .login.em-formRegistrationCenter,
+  .gantry.view-registration main#g-main-mainbody .em-formRegistrationCenter:not(.componentheading),
+  .gantry.view-form.em-formRegistrationCenter main#g-main-mainbody .login.em-formRegistrationCenter,
+  .gantry.view-form.em-formRegistrationCenter main#g-main-mainbody .em-formRegistrationCenter:not(.componentheading) {
+    width: 90% !important;
+  }
 
   .gantry #g-navigation, .gantry #g-navigation .g-container {
     height: auto !important;
@@ -6856,6 +6901,10 @@ fieldset[disabled] .multiselect {
   white-space: nowrap;
   width: 95%;
   font-size: 14px !important;
+}
+
+.fabrikElement .multiselect .multiselect__tags input.multiselect__input {
+  outline: none;
 }
 
 .multiselect__single {
@@ -7481,7 +7530,7 @@ fieldset[disabled] .multiselect {
     color: var(--neutral-900);
     padding: 8px 0;
     border-radius: 5px;
-    box-shadow: 0 5px 30px var(--neutral-500);
+    box-shadow: 0 5px 30px var(--neutral-100);
   }
 
   .popover-arrow {

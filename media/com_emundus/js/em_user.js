@@ -1340,15 +1340,24 @@ $(document).ready(function () {
 							}
 
 							if (result.failed.length > 0) {
-								/*Block containing the email adresses of the failed emails.*/
-								$("#em-email-messages").append('<div class="alert alert-danger">'+Joomla.JText._('EMAILS_FAILED')+'<span class="badge">'+result.failed.length+'</span>'+
-									'<ul class="list-group" id="em-mails-failed"></ul>');
 
+								// add sibling to #em-mails-sent
+								const emailNotSentMessage = document.createElement('p');
+								emailNotSentMessage.classList.add('em-mt-16');
+								emailNotSentMessage.innerText = "Certains utilisateurs n'ont pas reçu l'email";
+
+								const emailNotSent = document.createElement('div');
+								emailNotSent.classList.add('alert', 'alert-danger', 'em-mt-16');
+								emailNotSent.innerHTML = '<span class="badge">'+result.failed.length+'</span>';
+								emailNotSent.appendChild(document.createElement('ul'));
 								result.failed.forEach(element => {
-									$('#em-mails-sent').append('<li class="list-group-item alert-danger">'+element+'</li>');
+									const emailNotSentItem = document.createElement('li');
+									emailNotSentItem.innerHTML = element;
+									emailNotSent.querySelector('ul').appendChild(emailNotSentItem);
 								});
 
-								$('#em-email-messages').append('</div>');
+								$('#em-mails-sent').after(emailNotSent);
+								$('#em-mails-sent').after(emailNotSentMessage);
 							}
 
 						} else {

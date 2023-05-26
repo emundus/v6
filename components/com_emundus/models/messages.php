@@ -577,9 +577,9 @@ class EmundusModelMessages extends JModelList {
                 if($gotenberg_activation == 1 && $letter->pdf == 1){
                     //convert to PDF
                     $src = EMUNDUS_PATH_ABS.$fnumsInfos['applicant_id'].DS.$filename;
-                    $dest = str_replace('.docx', '.pdf', $src);
+                    $dest = str_replace('.docx', '', $src);
                     $filename = str_replace('.docx', '.pdf', $filename);
-                    $res = $m_export->toPdf($src, $dest, $fnum);
+                    $res = $m_export->toPdf($src, $dest, null, $fnum);
                 }
 
                 $m_files->addAttachment($fnum, $filename, $fnumsInfos['applicant_id'], $fnumsInfos['campaign_id'], $letter->attachment_id, $attachInfos['description']);

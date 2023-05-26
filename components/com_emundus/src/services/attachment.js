@@ -61,6 +61,10 @@ export default {
             attachment.is_validated = -2;
           }
 
+          if (attachment.upload_description === null || typeof attachment.upload_description !== 'string') {
+            attachment.upload_description = '';
+          }
+
           attachment.show = true;
         });
       }
