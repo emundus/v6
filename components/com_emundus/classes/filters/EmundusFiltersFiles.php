@@ -4,6 +4,7 @@ require_once(JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFilter
 class EmundusFiltersFiles extends EmundusFilters
 {
 	private $profiles = [];
+	private $user_campaigns = [];
 
 	public function __construct($config = array())
 	{
@@ -29,9 +30,9 @@ class EmundusFiltersFiles extends EmundusFilters
 
 	private function setProfiles()
 	{
-		$campaign_ids = EmundusHelperAccess::getAllCampaignsAssociatedToUser($this->user->id);
-		if (!empty($campaign_ids)) {
-			$this->profiles = $this->getProfilesFromCampaignId($campaign_ids);
+		$this->user_campaigns = EmundusHelperAccess::getAllCampaignsAssociatedToUser($this->user->id);
+		if (!empty($this->user_campaigns)) {
+			$this->profiles = $this->getProfilesFromCampaignId($this->user_campaigns);
 		}
 	}
 
@@ -369,16 +370,14 @@ class EmundusFiltersFiles extends EmundusFilters
 		}
 
 		if (!empty($campaign_filter) && !empty($campaign_filter['value'])) {
-			$campaign_ids = EmundusHelperAccess::getAllCampaignsAssociatedToUser($this->user->id);
-
 			// if the operator is NOT IN or !=, we need to get fabrik elements associated to campaigns that are not in the filter
 			switch($campaign_filter['operator']) {
 				case 'NOT IN':
 				case '!=':
-					$campaign_availables = array_diff($campaign_ids, $campaign_filter['value']);
+					$campaign_availables = array_diff($this->user_campaigns, $campaign_filter['value']);
 					break;
 				default:
-					$campaign_availables = array_intersect($campaign_ids, $campaign_filter['value']);
+					$campaign_availables = array_intersect($this->user_campaigns, $campaign_filter['value']);
 					break;
 			}
 
