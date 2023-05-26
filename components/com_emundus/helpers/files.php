@@ -3375,9 +3375,9 @@ class EmundusHelperFiles
 					case '!=':
 						if (is_array($values)) {
 							$_values = implode(',', $db->quote($values));
-							$query = $element . ' NOT IN (' . $_values . ')';
+							$query = $element . ' NOT IN (' . $_values . ')' . ' OR ' . $element . ' IS NULL ) ';
 						} else {
-							$query = $element . ' != ' . $db->quote($values);
+							$query = '(' . $element . ' != ' . $db->quote($values) . ' OR ' . $element . ' IS NULL ) ';
 						}
 						break;
 					case 'LIKE':
@@ -3393,7 +3393,7 @@ class EmundusHelperFiles
 							$_values = implode(',', $db->quote($values));
 							$query = $element . ' NOT IN (' . $_values . ')';
 						} else {
-							$query = $element . ' NOT LIKE ' . $db->quote('%'.$values.'%');
+							$query = $element . ' NOT LIKE ' . $db->quote('%'.$values.'%') . ' OR ' . $element . ' IS NULL ) ';
 						}
 						break;
 					case 'IN':
@@ -3410,7 +3410,7 @@ class EmundusHelperFiles
 						} else {
 							$values = $db->quote($values);
 						}
-						$query = $element .  ' NOT IN (' . $values . ')';
+						$query = $element .  ' NOT IN (' . $values . ')' . ' OR ' . $element . ' IS NULL) ';
 						break;
 				}
 			}
