@@ -262,7 +262,6 @@ class EmundusFiltersFiles extends EmundusFilters
 					if($filter['id'] == $fabrik_element_id) {
 						$new_default_filter = $filter;
 						$new_default_filter['default'] = true;
-						$new_default_filter['uid'] = rand(1000, 9999);
 						if (empty($new_default_filter['value'])) {
 							$new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
 						}
@@ -294,7 +293,6 @@ class EmundusFiltersFiles extends EmundusFilters
 						if (!empty($formatted_elements)) {
 							$new_default_filter = $formatted_elements[0];
 							$new_default_filter['default'] = true;
-							$new_default_filter['uid'] = rand(1000, 9999);
 							if (empty($new_default_filter['value'])) {
 								$new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
 							}
@@ -305,6 +303,8 @@ class EmundusFiltersFiles extends EmundusFilters
 				}
 
 				if (!empty($new_default_filter)) {
+					$this->filters[] = $new_default_filter;
+					$new_default_filter['uid'] = 'default-filter-' . $new_default_filter['id'];
 					$this->applied_filters[] = $new_default_filter;
 				}
 			}
@@ -328,9 +328,8 @@ class EmundusFiltersFiles extends EmundusFilters
 
 			if (!$found) {
 				// find filter in filters
-				$id = str_replace('filter-', '', $session_filter['id']);
-				foreach ($this->filters as $f_key => $filter) {
-					if ($filter['id'] == $id) {
+				foreach ($this->filters as $filter) {
+					if ($filter['id'] == $session_filter['id']) {
 						$new_filter = $filter;
 						$new_filter['value'] = $session_filter['value'];
 						$new_filter['operator'] = $session_filter['operator'];
