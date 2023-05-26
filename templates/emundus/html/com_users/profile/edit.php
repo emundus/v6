@@ -158,7 +158,7 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/profile/style/com_u
 		<?php endif; ?>
 		<div class="control-group">
 			<div class="controls">
-				<a class="btn" href="index.php" title="<?php echo JText::_('JCANCEL'); ?>">
+				<a class="btn" href="/mon-profil" title="<?php echo JText::_('JCANCEL'); ?>">
 					<?php echo JText::_('JCANCEL'); ?>
 				</a>
                 <button type="submit" class="btn btn-primary validate">
