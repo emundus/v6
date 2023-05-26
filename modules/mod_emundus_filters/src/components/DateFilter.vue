@@ -10,7 +10,7 @@
 		</div>
 		<section v-if="!opened" class="recap em-flex-row em-mt-8">
 			<span class="recap-operator label label-darkblue em-mr-4"> {{ selectedOperatorLabel }}</span>
-			<p class="recap-value">
+			<p class="recap-value em-flex-row em-flex-wrap em-flex-gap-8">
 				<span v-if="filter.value[0]">{{ filter.value[0] }}</span>
 				<span v-if="['between', '!between'].includes(filter.operator) && filter.value[1]"> {{ translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_AND') }} {{ filter.value[1] }}</span>
 			</p>
@@ -30,7 +30,7 @@
 			<input type="date" :id="filter.uid + '-start_date'" v-model="filter.value[0]"/>
 			<div v-if="filter.operator === 'between' || filter.operator === '!between'" class="em-mt-8">
 				<p>{{ translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_AND') }}</p>
-				<input type="date" :id="filter.uid + '-end_date'" v-model="filter.value[1]"/>
+				<input class="em-mt-8" type="date" :id="filter.uid + '-end_date'" v-model="filter.value[1]"/>
 			</div>
 		</section>
 	</div>
