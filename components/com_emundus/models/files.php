@@ -3870,11 +3870,7 @@ class EmundusModelFiles extends JModelLegacy
                             $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
                             $body = $m_email->setTagsFabrik($body, array($file['fnum']));
 
-                            // If the email sender has the same domain as the system sender address.
-                            if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
-                                $mail_from_address = $from;
-                            else
-                                $mail_from_address = $email_from_sys;
+                            $mail_from_address = $email_from_sys;
 
                             // Set sender
                             $sender = [
@@ -3895,7 +3891,11 @@ class EmundusModelFiles extends JModelLegacy
                                 $mailer->addCc($cc);
                             }
 
-                            $send = $mailer->Send();
+                            try {
+                                $send = $mailer->Send();
+                            } catch (Exception $e) {
+                                JLog::add('eMundus Triggers - PHP Mailer send failed ' . $e->getMessage(), JLog::ERROR, 'com_emundus.email');
+                            }
 
                             if ($send !== true) {
                                 $msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT').' : '.$to.' '.$send.'</div>';

@@ -2725,5 +2725,45 @@ class EmundusModelEmails extends JModelList {
 
         return array_unique($result);
     }
+    
+    public function checkUnpublishedTags($content)
+    {
+        $tags = [];
+
+        require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'helpers'.DS.'tags.php');
+        $h_tags = new EmundusHelperTags();
+
+        $db = JFactory::getDBO();
+
+        if (!empty($content))
+        {
+            $query = $db->getQuery(true);
+            $query->select('tag')
+                ->from($db->quoteName('#__emundus_setup_tags', 't'))
+                ->where($db->quoteName('t.published') . ' = 0');
+
+            $tags_content = $h_tags->getVariables($content, 'SQUARE');
+
+            if( !empty($tags_content) )
+            {
+                $tags_content = array_unique($tags_content);
+                $query->andWhere('t.tag IN ("' . implode('","', $tags_content) . '")');
+
+                try
+                {
+                    $db->setQuery($query);
+                    $tags = $db->loadColumn();
+                }
+                catch (Exception $e)
+                {
+                    JLog::add('Error checking unpublished tags model/emails/setTags at query : ' . $query->__toString(), JLog::ERROR, 'com_emundus.email');
+
+                    return array('patterns' => array(), 'replacements' => array());
+                }
+            }
+        }
+
+        return $tags;
+    }
 }
 ?>
