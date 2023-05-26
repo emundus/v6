@@ -1671,6 +1671,10 @@ form .fabrikGroupColumns.fabrikGroup .row-fluid {
 }
 
 @media all and (max-width: 479px) {
+     .fabrikGroup .repeatGroupTable .fabrikSubGroupElements  .fabrikGroupRepeater  {
+         display: flex;
+         justify-content: flex-end;
+    }
 
     .em-submit-form-button{
         justify-self: center;
@@ -1706,6 +1710,11 @@ form .fabrikGroupColumns.fabrikGroup .row-fluid {
 }
 
 @media all and (min-width: 480px) and (max-width: 767px) {
+
+    .fabrikGroup .repeatGroupTable .fabrikSubGroupElements  .fabrikGroupRepeater  {
+        display: flex;
+        justify-content: flex-end;
+    }
 
     .fabrikActions.form-actions .row-fluid .span4 {
         width: 98% !important;
@@ -1926,6 +1935,12 @@ form .fabrikGroupColumns.fabrikGroup .row-fluid {
 }
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
+
+    .fabrikGroup .repeatGroupTable .fabrikSubGroupElements  .fabrikGroupRepeater  {
+        display: flex;
+        justify-content: flex-end;
+    }
+
     .view-form .fabrikActions.form-actions .span4 {
         width: 34%;
     }
