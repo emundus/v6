@@ -55,6 +55,21 @@ export default {
             return updated;
         }
     },
+    deleteFilter(filterId) {
+        let deleted = false;
+
+        if (filterId) {
+            client.delete('deletefilters', {id: filterId}).then(data => {
+               if (data.status) {
+                   deleted = true;
+               }
+
+                return deleted;
+            });
+        } else {
+            return deleted;
+        }
+    },
     async getRegisteredFilters(moduleId) {
         let filters = [];
 

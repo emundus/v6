@@ -14,7 +14,7 @@
 						<option value="0">{{ translate('MOD_EMUNDUS_FILTERS_PLEASE_SELECT') }}</option>
 					  <option v-for="registeredFilter in registeredFilters" :key="registeredFilter.id" :value="registeredFilter.id">{{ registeredFilter.name }}</option>
 				  </select>
-				  <span v-if="selectedRegisteredFilter > 0" class="material-icons-outlined em-red-500-color em-pointer" @click="onUnselectRegisteredFilter">delete</span>
+				  <span v-if="selectedRegisteredFilter > 0" class="material-icons-outlined em-red-500-color em-pointer" @click="deleteRegisteredFilter">delete</span>
 			  </div>
 		  </div>
 	  </section>
@@ -160,7 +160,12 @@ export default {
 				sessionStorage.removeItem('emundus-current-filter');
 			}
 		},
-		onUnselectRegisteredFilter() {
+		deleteRegisteredFilter() {
+			// delete  selectedRegisteredFilter from registeredFilters
+			const filterIdToDelete = this.selectedRegisteredFilter;
+			filtersService.deleteFilter(filterIdToDelete);
+
+			this.registeredFilters = this.registeredFilters.filter((filter) => filter.id !== filterIdToDelete);
 			this.selectedRegisteredFilter = 0;
 			this.onSelectRegisteredFilter();
 		},

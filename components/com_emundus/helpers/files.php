@@ -3242,7 +3242,7 @@ class EmundusHelperFiles
 			}
 		}
 
-		return $where;
+	    return $where;
     }
 
 	private function getFabrikElementData(int $element_id): array
@@ -3332,16 +3332,16 @@ class EmundusHelperFiles
 						case '!=':
 							$query = $element . ' != ' . $db->quote($from);
 							break;
-						case '>':
+						case 'superior':
 							$query = $element . ' > ' . $db->quote($from);
 							break;
-						case '>=':
+						case 'superior_or_equal':
 							$query = $element . ' >= ' . $db->quote($from);
 							break;
-						case '<':
+						case 'inferior':
 							$query = $element . ' < ' . $db->quote($from);
 							break;
-						case '<=':
+						case 'inferior_or_equal':
 							$query = $element . ' <= ' . $db->quote($from);
 							break;
 						case 'between':

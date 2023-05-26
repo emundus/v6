@@ -27,8 +27,11 @@
 				</div>
 			</div>
 			<hr/>
-			<input type="date" v-model="filter.value[0]"/>
-			<input v-if="filter.operator === 'between' || filter.operator === '!between'" type="date" v-model="filter.value[1]"/>
+			<input type="date" :id="filter.uid + '-start_date'" v-model="filter.value[0]"/>
+			<div v-if="filter.operator === 'between' || filter.operator === '!between'" class="em-mt-8">
+				<p>{{ translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_AND') }}</p>
+				<input type="date" :id="filter.uid + '-end_date'" v-model="filter.value[1]"/>
+			</div>
 		</section>
 	</div>
 </template>
@@ -52,10 +55,10 @@ export default {
 			operators: [
 				{ value: '=', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS')},
 				{ value: '!=', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_NOT')},
-				{ value: '<', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_SUPERIOR_TO')},
-				{ value: '>', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_INFERIOR_TO')},
-				{ value: '<=', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_SUPERIOR_OR_EQUAL_TO')},
-				{ value: '>=', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_INFERIOR_OR_EQUAL_TO')},
+				{ value: 'inferior', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_SUPERIOR_TO')},
+				{ value: 'superior', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_INFERIOR_TO')},
+				{ value: 'superior_or_equal', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_SUPERIOR_OR_EQUAL_TO')},
+				{ value: 'inferior_or_equal', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_INFERIOR_OR_EQUAL_TO')},
 				{ value: 'between', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_BETWEEN')},
 				{ value: '!between', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_NOT_BETWEEN')}
 			],

@@ -20,6 +20,8 @@ export class FetchClient {
         }
     }).then(data => {
         return data;
+    }).catch(error => {
+        throw new Error('An error occurred while fetching the data. ' + error.message + '.');
     });
   }
 
@@ -42,6 +44,32 @@ export class FetchClient {
         }
     }).then(data => {
         return data;
+    }).catch(error => {
+        throw new Error('An error occurred while fetching the data. ' + error.message + '.');
     });
   }
+
+    async delete(task, params) {
+        let url = this.baseUrl + '&task=' + task;
+
+        if (params) {
+            for (let key in params) {
+                url += '&' + key + '=' + params[key];
+            }
+        }
+
+        return fetch(url, {
+            method: 'DELETE'
+        }).then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('An error occurred while fetching the data. ' + response.status + ' ' + response.statusText + '.');
+            }
+        }).then(data => {
+            return data;
+        }).catch(error => {
+            throw new Error('An error occurred while fetching the data. ' + error.message + '.');
+        });
+    }
 }

@@ -406,20 +406,22 @@ class EmundusControllerFiles extends JControllerLegacy
      *
      */
     public function deletefilters() {
+	    $deleted = false;
         $jinput = JFactory::getApplication()->input;
         $filter_id = $jinput->getInt('id', null);
 
-        $query = "DELETE FROM #__emundus_filters WHERE id=".$filter_id;
-        $this->_db->setQuery($query);
-        $result = $this->_db->Query();
+		if (!empty($filter_id)) {
+			$query = $this->_db->getQuery(true);
+			$query->delete('#__emundus_filters')
+				->where('id = ' . $filter_id);
 
-        if ($result != 1) {
-            echo json_encode((object)(array('status' => false)));
-            exit;
-        } else {
-            echo json_encode((object)(array('status' => true)));
-            exit;
-        }
+			$this->_db->setQuery($query);
+			$result = $this->_db->execute();
+			$deleted = $result == 1;
+		}
+
+	    echo json_encode((object)(array('status' => $deleted)));
+	    exit;
     }
 
     /**
