@@ -30,10 +30,13 @@ $doc->addScript(JURI::root() . "plugins/fabrik_element/currency/assets/js/emundu
 
 <div id="<?php echo $displayData->attributes['id']; ?>" class="em-flex-row fabrikSubElementContainer">
 
-    <input id="currency_inputValue" name="<?php echo $displayData->attributes['name'].'[inputValueFront]'; ?>" class="fabrikinput input-medium"
-    />
+    <input id="currency_inputValue" class="fabrikinput input-medium"
+           autocomplete="off" />
 
-    <select id="currency_selectValue" name="<?php echo $displayData->attributes['name'].'[selectValueFront]'; ?>" class="fabrikinput">
+    <input id="currency_rowInputValue" name="<?php echo $displayData->attributes['name'].'[rowInputValueFront]' ?>" hidden="hidden">
+
+
+    <select id="currency_selectValue" name="<?php echo $displayData->attributes['name'].'[selectedIso3Front]'; ?>" class="fabrikinput">
 
     </select>
 

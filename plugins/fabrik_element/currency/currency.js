@@ -13,6 +13,7 @@ define(['jquery', 'fab/element'],
             this.parent(element, options);
 
             this.input = this.element.getElementById('currency_inputValue');
+            this.rowInput = this.element.getElementById('currency_rowInputValue');
             this.select = this.element.getElementById('currency_selectValue');
 
             this.initSelect(this.select);
@@ -23,6 +24,7 @@ define(['jquery', 'fab/element'],
         cloned: function (c)
         {
             this.input = this.element.getElementById('currency_inputValue');
+            this.rowInput = this.element.getElementById('currency_rowInputValue');
             this.select = this.element.getElementById('currency_selectValue');
 
             this.initSelect(this.select);
@@ -47,6 +49,11 @@ define(['jquery', 'fab/element'],
                     selectElement.add(option);
                 }
             });
+
+            if (selectElement.options.length === 1)
+            {
+                selectElement.setAttribute('tabindex', -1);
+            }
         },
 
         initMask: function (inputElement)
@@ -76,7 +83,7 @@ define(['jquery', 'fab/element'],
 
         onsubmit: function (c)
         {
-            this.input.value = this.mask.unmaskedValue;
+            this.rowInput.value = this.mask.unmaskedValue;
             this.parent(c);
         }
 

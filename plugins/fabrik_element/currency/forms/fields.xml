@@ -69,6 +69,15 @@
 				   default=" "
 			/>
 
+			<field name="decimal_numbers"
+				   type="number"
+				   label="PLG_ELEMENT_CURRENCY_DECIMAL_NUMBERS"
+				   filter="number"
+				   max="10"
+				   min="0"
+				   default="2"
+			/>
+
 		</fieldset>
 	</fields>
 </form>

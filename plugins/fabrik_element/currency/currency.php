@@ -142,21 +142,20 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 	 */
 	public function storeDatabaseFormat($val, $data)
 	{
-        /*
-        var_dump($val); exit;
 
+        $number = floatval($val['rowInputValueFront']);
+        $iso3 = $val['selectedIso3Front'];
+        $currencyObject = $this->getCurrencyObject($this->getDataCurrency(), $iso3);
 
-        $decimalSeparator = $this->getParams()->get('decimal_separator');
-        $thousands_separator = $this->getParams()->get('thousands_separator');
-        $decimalNumber = $this->getParams()->get('number_decimal');
+        $decimal_separator = $this->getParams()->get('decimal_separator');
+        $thousands_separator = $this->getParams()->get('thousand_separator');
+        $decimalNumber = $this->getParams()->get('decimal_numbers');
         // $regex = $this->getParams()->get('regex'); // pas sure de réussir
 
-        $numberFormated = number_format($val, $decimalNumber, $decimalSeparator, $thousands_separator);
-        */
+        $numberFormated = number_format($number, $decimalNumber, $decimal_separator, $thousands_separator);
+        $currencyFormated = $currencyObject->symbol . ' ('. $iso3. ')';
 
-        //!preg_match('/^(\d{1,3}\\'+$thousands_separator+'(\d{3}\\'+$thousands_separator+')*\d{3}|\d{1,3})(\\'+$decimalSeparator+'\d{0,'+$decimalNumber+'})?$/', $rowInputValueFront)
-
-		return $val;
+		return $numberFormated . ' ' . $currencyFormated;
 	}
 
     public function getDataCurrency()
@@ -178,11 +177,11 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
             : $this->getParams()->get('default_currency');
     }
 
-    private function getCurrencyObject($iso3)
+    private function getCurrencyObject($listCurrency, $iso3)
     {
         $currencyObject = null;
 
-        foreach ($this->allCurrency as $key => $value) {
+        foreach ($listCurrency as $key => $value) {
             if ($value->iso3 === $iso3)
             {
                 $currencyObject = $value;
@@ -203,36 +202,31 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
     {
         $valid = true;
 
-        $selectValueFront = $this->getIso3($data['selectValueFront']);
-        $rowInputValueFront = $data['row'];
+        $selectedIso3Front = $data['selectedIso3Front'];
+        $rowInputValueFront = $data['rowInputValueFront'];
 
-        $valid = $this->currencyFormatValidation($selectValueFront);
+        $valueBack = $this->getValue([], $repeatCounter);
+        $valid = $this->currencyFormatValidation($selectedIso3Front, $this->getIso3($valueBack));
 
         if ($valid)
         {
             if ($this->validator->hasValidations()) // element mandatory
             {
-                $valid = $this->isValueCorrect($rowInputValueFront);
+                $valid = $this->isValueCorrect(floatval($rowInputValueFront));
             }
             else // element not mandatory
             {
-                $valid = strlen($rowInputValueFront) !== 0 ? $this->isValueCorrect($rowInputValueFront) : $valid; // test if not empty
+                $valid = strlen($rowInputValueFront) !== 0 ? $this->isValueCorrect(intval($rowInputValueFront)) : $valid; // test if not empty
             }
         }
         return $valid;
     }
 
-    private function currencyFormatValidation($selectValueFront)
+    private function currencyFormatValidation($selectedIso3Front, $selectedIso3Back)
     {
         $valid = true;
 
-        $selectedIso3Front = $this->getIso3($selectValueFront);
-        $selectedSymbolFront = $this->getCurrencyObject($selectedIso3Front)->symbol;
-
-        $selectedSymbolBack = $this->getCurrencyObject($this->selectedIso3Back)->symbol;
-
-        if (!preg_match('/\p{Sc} \([A-Z]{3}\)/', $selectValueFront) || // not good currency format
-            !($selectedIso3Front === $this->selectedIso3Back && $selectedSymbolFront === $selectedSymbolBack)) // not the same currency
+        if (!($selectedIso3Front === $selectedIso3Back)) // not the same currency
         {
             $this->validationError = JText::_('PLG_ELEMENT_CURRENCY_CURRENCY_ERROR');
             $valid = false;
@@ -253,7 +247,8 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         else
         {
             if ($rowInputValueFront < $this->getParams()->get('minimal_value')
-                || $rowInputValueFront > $this->getParams()->get('maximal_value'))
+                ||
+                $rowInputValueFront > $this->getParams()->get('maximal_value'))
             {
                 // error cause not in intervals
                 $valid = false;
