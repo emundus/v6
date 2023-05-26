@@ -3141,7 +3141,15 @@ class EmundusHelperFiles
 		$session = JFactory::getSession();
 	    $session_filters = $session->get('em-applied-filters');
 		if (!empty($session_filters)) {
-			$already_joined = array();
+			$already_joined = [
+				'jecc' => 'jos_emundus_campaign_candidature',
+				'ss' => 'jos_emundus_setup_status',
+				'esc' => 'jos_emundus_setup_campaigns',
+				'sp' => 'jos_emundus_setup_programmes',
+				'u' => 'jos_users',
+				'eu' => 'jos_emundus_users',
+				'eta' => 'jos_emundus_tag_assoc'
+			];
 			$db = JFactory::getDbo();
 
 			foreach ($session_filters as $filter) {
@@ -3196,7 +3204,7 @@ class EmundusHelperFiles
 								$alias = array_search($fabrik_element_data['db_table_name'], $already_joined);
 							}
 
-							$where['q'] .= ' AND ' . $this->writeQueryWithOperator($alias . '.' . $fabrik_element_data['name'], $filter['value'], $filter['operator']);
+							$where['q'] .= ' AND ' . $this->writeQueryWithOperator($alias . '.' . $fabrik_element_data['name'], $filter['value'], $filter['operator'], $filter['type']);
 						}
 					}
 				} else {
@@ -3232,8 +3240,6 @@ class EmundusHelperFiles
 					}
 				}
 			}
-		} else {
-
 		}
 
 		return $where;
@@ -3308,60 +3314,105 @@ class EmundusHelperFiles
 		return $data;
 	}
 
-	private function writeQueryWithOperator($element, $values, $operator) {
+	private function writeQueryWithOperator($element, $values, $operator, $type = 'select') {
 		$query = '1=1';
 
 		if (!empty($element) && isset($values) && !empty($operator)) {
 			$db = JFactory::getDbo();
-			switch($operator) {
-				case '=':
-					if (is_array($values)) {
-						$_values = implode(',', $db->quote($values));
-						$query = $element . ' IN (' . $_values . ')';
-					} else {
-						$query = $element . ' = ' . $db->quote($values);
+
+			if ($type === 'date') {
+				$from = $values[0];
+				$to = $values[1];
+
+				if (!empty($from)) {
+					switch ($operator) {
+						case '=':
+							$query = $element . ' = ' . $db->quote($from);
+							break;
+						case '!=':
+							$query = $element . ' != ' . $db->quote($from);
+							break;
+						case '>':
+							$query = $element . ' > ' . $db->quote($from);
+							break;
+						case '>=':
+							$query = $element . ' >= ' . $db->quote($from);
+							break;
+						case '<':
+							$query = $element . ' < ' . $db->quote($from);
+							break;
+						case '<=':
+							$query = $element . ' <= ' . $db->quote($from);
+							break;
+						case 'between':
+							if (!empty($to)) {
+								$query = $element . ' BETWEEN ' . $db->quote($from) . ' AND ' . $db->quote($to);
+							} else {
+								$query = $element . ' >= ' . $db->quote($from);
+							}
+							break;
+						case '!between':
+							if (!empty($to)) {
+								$query = $element . ' NOT BETWEEN ' . $db->quote($from) . ' AND ' . $db->quote($to);
+							} else {
+								$query = $element . ' < ' . $db->quote($from);
+							}
+							break;
+						default:
+							break;
 					}
-					break;
-				case '!=':
-					if (is_array($values)) {
-						$_values = implode(',', $db->quote($values));
-						$query = $element . ' NOT IN (' . $_values . ')';
-					} else {
-						$query = $element . ' != ' . $db->quote($values);
-					}
-					break;
-				case 'LIKE':
-					if (is_array($values)) {
-						$_values = implode(',', $db->quote($values));
-						$query = $element . ' IN (' . $_values . ')';
-					} else {
-						$query = $element . ' LIKE ' . $db->quote('%'.$values.'%');
-					}
-					break;
-				case 'NOT LIKE':
-					if (is_array($values)) {
-						$_values = implode(',', $db->quote($values));
-						$query = $element . ' NOT IN (' . $_values . ')';
-					} else {
-						$query = $element . ' NOT LIKE ' . $db->quote('%'.$values.'%');
-					}
-					break;
-				case 'IN':
-					if (is_array($values)) {
-						$values = implode(',', $db->quote($values));
-					} else {
-						$values = $db->quote($values);
-					}
-					$query = $element . ' IN (' . $values . ')';
-					break;
-				case 'NOT IN':
-					if (is_array($values)) {
-						$values = implode(',', $db->quote($values));
-					} else {
-						$values = $db->quote($values);
-					}
-					$query = $element .  ' NOT IN (' . $values . ')';
-					break;
+				}
+			} else {
+				switch($operator) {
+					case '=':
+						if (is_array($values)) {
+							$_values = implode(',', $db->quote($values));
+							$query = $element . ' IN (' . $_values . ')';
+						} else {
+							$query = $element . ' = ' . $db->quote($values);
+						}
+						break;
+					case '!=':
+						if (is_array($values)) {
+							$_values = implode(',', $db->quote($values));
+							$query = $element . ' NOT IN (' . $_values . ')';
+						} else {
+							$query = $element . ' != ' . $db->quote($values);
+						}
+						break;
+					case 'LIKE':
+						if (is_array($values)) {
+							$_values = implode(',', $db->quote($values));
+							$query = $element . ' IN (' . $_values . ')';
+						} else {
+							$query = $element . ' LIKE ' . $db->quote('%'.$values.'%');
+						}
+						break;
+					case 'NOT LIKE':
+						if (is_array($values)) {
+							$_values = implode(',', $db->quote($values));
+							$query = $element . ' NOT IN (' . $_values . ')';
+						} else {
+							$query = $element . ' NOT LIKE ' . $db->quote('%'.$values.'%');
+						}
+						break;
+					case 'IN':
+						if (is_array($values)) {
+							$values = implode(',', $db->quote($values));
+						} else {
+							$values = $db->quote($values);
+						}
+						$query = $element . ' IN (' . $values . ')';
+						break;
+					case 'NOT IN':
+						if (is_array($values)) {
+							$values = implode(',', $db->quote($values));
+						} else {
+							$values = $db->quote($values);
+						}
+						$query = $element .  ' NOT IN (' . $values . ')';
+						break;
+				}
 			}
 		}
 
