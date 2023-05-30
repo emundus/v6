@@ -835,7 +835,8 @@ class EmundusModelUsers extends JModelList {
 
         $db = JFactory::getDBO();
         $config = JFactory::getConfig();
-        $offset = !empty($config->get('offset')) ? $config->get('offset') : 'Europe/Paris';
+		$config_offset = $config->get('offset');
+        $offset = $config_offset ?: 'Europe/Paris';
         $timezone = new DateTimeZone($offset);
         $now = JFactory::getDate()->setTimezone($timezone);
 
@@ -1408,44 +1409,64 @@ class EmundusModelUsers extends JModelList {
 		return true;
 	}
 
-    public function getNonApplicantId($users) {
-        try {
-            $db = $this->getDbo();
-            $db->setQuery("select eu.user_id from #__emundus_users as eu left join #__emundus_setup_profiles as esp on esp.id = eu.profile WHERE esp.published != 1 and eu.user_id in (".implode(',',$users).")");
-            $res = $db->loadAssocList();
-            return $res;
+	/**
+	 * @param $users
+	 * @return array
+	 */
+    public function getNonApplicantId($users): array {
+		$ids = [];
 
-        } catch(Exception $e) {
-            error_log($e->getMessage(), 0);
-            return false;
-        }
+		if (!empty($users)) {
+			$users = !is_array($users) ? [$users] : $users;
+
+			$db = $this->getDbo();
+			$query = $db->getQuery(true);
+			$query->select('DISTINCT user_id')
+				->from('#__emundus_users_profiles')
+				->where('user_id IN ('.implode(',', $users).')')
+				->where('profile_id IN (SELECT id FROM #__emundus_setup_profiles WHERE published != 1)');
+
+			try {
+				$db->setQuery($query);
+				$ids = $db->loadAssocList();
+			} catch(Exception $e) {
+				JLog::add('Error on getting non-applicant users: '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $ids;
     }
 
     public function affectToGroups($users, $groups) {
-        try {
-            if (count($users) > 0) {
-                $db = $this->getDbo();
-                $str = "";
+		$affected = 0;
 
-                foreach ($users as $user) {
-                    foreach ($groups as $gid) {
-                        $str .= "(".$user['user_id'].", $gid),";
-                    }
-                }
-                $str = rtrim($str, ",");
+	    if (!empty($users) && !empty($groups)) {
+		    $db = $this->getDbo();
+		    $query = $db->getQuery(true);
 
-                $query = "insert into #__emundus_groups (`user_id`, `group_id`) values $str";
+		    $values = [];
+		    foreach ($users as $user) {
+			    foreach ($groups as $gid) {
+				    $values[] = $user['user_id'] . ", $gid";
+			    }
+		    }
 
-                $db->setQuery($query);
-                $res = $db->execute();
-                return $res;
-            } else
-                return 0;
+			if (!empty($values)) {
+				$query->insert('#__emundus_groups')
+					->columns([$db->quoteName('user_id'), $db->quoteName('group_id')])
+					->values($values);
 
-        } catch(Exception $e) {
-            error_log($e->getMessage(), 0);
-            return false;
-        }
+				try {
+					$db->setQuery($query);
+					$affected = $db->execute();
+				} catch(Exception $e) {
+					JLog::add('Error on affecting users to groups: '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					$affected = false;
+				}
+			}
+	    }
+
+		return $affected;
     }
 
     public function affectToJoomlaGroups($users, $groups) {
@@ -1996,12 +2017,12 @@ class EmundusModelUsers extends JModelList {
 	                $query = "select esa.label, ea.*, esa.c as is_c, esa.r as is_r, esa.u as is_u, esa.d as is_d
 	                      from #__emundus_acl as ea
 	                      left join #__emundus_setup_actions as esa on esa.id = ea.action_id
-	                      where ea.group_id in (" .implode(',', $gid).")";
+	                      where ea.group_id in (" .implode(',', $gid).") order by esa.ordering asc,esa.name asc";
                 } else {
 	                $query = "select esa.label, ea.*, esa.c as is_c, esa.r as is_r, esa.u as is_u, esa.d as is_d
 	                      from #__emundus_acl as ea
 	                      left join #__emundus_setup_actions as esa on esa.id = ea.action_id
-	                      where ea.group_id = " .$gid ." order by esa.ordering asc";
+	                      where ea.group_id = " .$gid ." order by esa.ordering asc,esa.name asc";
                 }
 	            $db = $this->getDbo();
 	            $db->setQuery($query);
@@ -2220,11 +2241,26 @@ class EmundusModelUsers extends JModelList {
         return $db->loadObjectList();
     }
 
-	public function getUsersByIds($ids) { //users of application
-		$db = JFactory::getDBO();
-		$query = 'SELECT * FROM #__users WHERE id IN ('.implode(',', $ids).')';
-		$db->setQuery($query);
-		return $db->loadObjectList();
+	public function getUsersByIds($ids) {
+		$users = [];
+
+		if (!empty($ids)) {
+			$db = JFactory::getDBO();
+
+			$query = $db->getQuery(true);
+			$query->select('*')
+				->from('#__users')
+				->where('id IN ('.implode(',', $ids).')');
+
+			try {
+				$db->setQuery($query);
+				$users = $db->loadObjectList();
+			} catch (Exception $e) {
+				JLog::add('Failed to get users by ids ' . implode(',', $ids) . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $users;
 	}
 
 
