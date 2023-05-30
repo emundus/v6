@@ -46,7 +46,7 @@ class FileMaker
     /**
      * @var string[]
      */
-    private static $availaibleZwForms = array('zWEB_FORMULAIRES_RECETTES', 'zWEB_FORMULAIRES_PLANNING',
+    private static $availaibleZwForms = array('zWEB_FORMULAIRES','zWEB_FORMULAIRES_RECETTES', 'zWEB_FORMULAIRES_PLANNING',
         'zWEB_FORMULAIRES_PARTICIPANTS', 'zWEB_FORMULAIRES_PARTENAIRES', 'zWEB_FORMULAIRES_DEPENSES', 'zWEB_FORMULAIRES_AUDIENCE', 'zWEB_FORMULAIRES_AIDES');
 
     private $maxAttempt = 0;
