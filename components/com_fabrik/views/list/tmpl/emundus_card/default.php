@@ -78,7 +78,7 @@ endforeach;
 
 
         <div class="em-flex-row em-mb-12 em-pointer em-w-max-content" onclick="history.go(-1)">
-            <span class="material-icons-outlined">chevron_left</span>
+            <span style="border-radius: 8px !important;" class="material-icons-outlined em-repeat-card-no-padding">chevron_left</span>
         </div>
 
         <?php echo $this->nav;?>
