@@ -132,6 +132,19 @@
   cursor: unset;
 }
 
+.disabled {
+  border: 1px solid #e6e6e6;
+  color: #333333;
+  background-color: #e6e6e6;
+
+  &:hover, &:focus &:active {
+    border: 1px solid #333333;
+    background: #333333;
+    color: #e6e6e6;
+    cursor: not-allowed;
+  }
+}
+
 .em-back-button {
   display: flex;
   align-items: center;
