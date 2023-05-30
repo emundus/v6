@@ -76,10 +76,12 @@ endforeach;
     <?php endif; ?>
     <div class="em-mt-8">
 
-
+        <?php if ($showTitle == 1) : ?>
         <div class="em-flex-row em-mb-12 em-pointer em-w-max-content" onclick="history.go(-1)">
             <span style="border-radius: 8px !important;" class="material-icons-outlined em-repeat-card-no-padding">chevron_left</span>
         </div>
+        <?php endif; ?>
+
 
         <?php echo $this->nav;?>
     </div>
