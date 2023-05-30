@@ -26,9 +26,14 @@ $doc->addScript(JURI::root() . "plugins/fabrik_element/currency/assets/js/emundu
         border-bottom-left-radius: 0;
     }
 
+    .marginNone
+    {
+        margin: 0 !important;
+    }
+
 </style>
 
-<div id="<?php echo $displayData->attributes['id']; ?>" class="em-flex-row fabrikSubElementContainer">
+<div id="<?php echo $displayData->attributes['id']; ?>" class="em-flex-row fabrikSubElementContainer marginNone" >
 
     <input id="currency_inputValue" class="fabrikinput input-medium"
            autocomplete="off" />

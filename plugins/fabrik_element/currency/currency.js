@@ -1,4 +1,7 @@
 
+const currency_hoverColor = allColor.getPropertyValue('--neutral-600');
+const currency_defaultColor = allColor.getPropertyValue('--neutral-400');
+const currency_focusColor = allColor.getPropertyValue('--blue-500');
 
 define(['jquery', 'fab/element'],
     function (jQuery, FbElement) {
@@ -18,6 +21,7 @@ define(['jquery', 'fab/element'],
 
             this.initSelect(this.select);
             this.initInput(this.input);
+            this.initDivEvent(this.element);
         },
 
         cloned: function (c)
@@ -32,6 +36,37 @@ define(['jquery', 'fab/element'],
             this.parent(c);
         },
 
+        initDivEvent: function(div)
+        {
+            div.addEventListener('mouseenter', this.mouseenterDivHandler.bind(this));
+            div.addEventListener('mouseleave', this.mouseleaveDivHandler.bind(this));
+            div.addEventListener('focusin', this.focusInDivHandler.bind(this));
+            div.addEventListener('focusout', this.focusOutDivHandler.bind(this));
+        },
+
+        mouseenterDivHandler: function()
+        {
+            this.input.style.borderColor = currency_hoverColor;
+            this.select.style.borderColor = currency_hoverColor;
+        },
+
+        mouseleaveDivHandler: function()
+        {
+            this.input.style.borderColor = currency_defaultColor;
+            this.select.style.borderColor = currency_defaultColor;
+        },
+
+        focusInDivHandler: function()
+        {
+            this.input.style.borderColor = currency_focusColor;
+            this.select.style.borderColor = currency_focusColor;
+        },
+
+        focusOutDivHandler: function ()
+        {
+            this.input.style.borderColor = currency_defaultColor;
+            this.select.style.borderColor = currency_defaultColor;
+        },
 
         initSelect: function(selectElement)
         {
