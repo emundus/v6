@@ -75,21 +75,23 @@ endforeach;
     </div>
     <?php endif; ?>
 
-    <?php if ($showTitle == 1) : ?>
-         <div class="em-mt-8">
-     <?php endif; ?>
-
      <?php if ($showTitle == 0) : ?>
-     <div class="em-mt-8 em-flex-row em-flex-space-between">
+
+    <div class="em-flex-row em-flex-start">
+         <h2>Test</h2>
 
         <a class="em-flex-row em-mb-12 em-pointer em-w-max-content em-icon-back-button" href="/accueil-activites">
             <span class="material-icons-outlined em-repeat-card-no-padding">chevron_left</span>
         </a>
+    </div>
     <?php endif; ?>
 
+    <div class="em-mt-8">
 
         <?php echo $this->nav;?>
+
     </div>
+
     <div class="em-grid-3-2-1 <?php echo $this->list->class;?>" id="list_<?php echo $this->table->renderid;?>" >
         <?php if(empty($this->rows) || empty($this->rows[0])) : ?>
             <div class="emptyDataMessage" style="<?php echo $this->emptyStyle?>">
