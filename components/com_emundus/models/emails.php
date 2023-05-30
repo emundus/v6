@@ -105,7 +105,7 @@ class EmundusModelEmails extends JModelList {
      * @since version v6
      */
     public function getEmailTrigger($step, $code, $to_applicant = 0, $to_current_user = null, $student = null) {
-        if(empty($step) || empty($code)){
+        if(!isset($step) || empty($code)){
             return [];
         }
 
