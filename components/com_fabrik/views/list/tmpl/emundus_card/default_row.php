@@ -56,6 +56,11 @@ if(!empty($notes)){
             <?php foreach ($this->headings as $heading => $label) {
                 $style = empty($this->cellClass[$heading]['style']) ? '' : 'style="'.$this->cellClass[$heading]['style'].'"';
                 ?>
+
+                <p class="em-p-8-12 <?php echo $this->cellClass[$heading]['class']?>" <?php echo $style?>>
+                    🟢
+                </p>
+
                 <?php if (isset($this->_row->data) && strpos($this->cellClass[$heading]['class'],'summary')) : ?>
                     <p class="em-p-8-12 <?php echo $this->cellClass[$heading]['class']?>" <?php echo $style?>>
                         <?php echo isset($this->_row->data) ? $this->_row->data->$heading : '';?>
