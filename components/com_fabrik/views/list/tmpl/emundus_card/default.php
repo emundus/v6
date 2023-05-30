@@ -74,7 +74,7 @@ endforeach;
         </div>
     </div>
     <?php endif; ?>
-    <div class="em-mt-8">
+    <div class="em-mt-8 em-flex-row em-flex-space-between">
 
         <?php if ($showTitle == 0) : ?>
         <div class="em-flex-row em-mb-12 em-pointer em-w-max-content" onclick="history.go(-1)">
