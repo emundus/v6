@@ -82,8 +82,8 @@ endforeach;
      <?php if ($showTitle == 0) : ?>
      <div class="em-mt-8 em-flex-row em-flex-space-between">
 
-        <a class="em-flex-row em-mb-12 em-pointer em-w-max-content em-text-neutral-800" href="/accueil-activites">
-            <span style="border-radius: 8px !important;" class="material-icons-outlined em-repeat-card-no-padding">chevron_left</span>
+        <a class="em-flex-row em-mb-12 em-pointer em-w-max-content em-icon-back-button" href="/accueil-activites">
+            <span class="material-icons-outlined em-repeat-card-no-padding">chevron_left</span>
         </a>
     <?php endif; ?>
 
@@ -236,3 +236,19 @@ endif;
         });
     }
 </script>
+
+<style>
+    a.em-icon-back-button {
+           color: var(--neutral-800);
+    }
+
+    a.em-icon-back-button:hover,
+    a.em-icon-back-button:active,
+    a.em-icon-back-button:focus {
+        color: var(--neutral-800);
+    }
+    a.em-icon-back-button span {
+       border-radius: 8px !important;
+    }
+
+</style>
