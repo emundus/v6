@@ -82,7 +82,7 @@ endforeach;
      <?php if ($showTitle == 0) : ?>
      <div class="em-mt-8 em-flex-row em-flex-space-between">
 
-        <a class="em-flex-row em-mb-12 em-pointer em-w-max-content" href="/creneaux-activite">
+        <a class="em-flex-row em-mb-12 em-pointer em-w-max-content" href="/accueil-activites">
             <span style="border-radius: 8px !important;" class="material-icons-outlined em-repeat-card-no-padding">chevron_left</span>
         </a>
     <?php endif; ?>
