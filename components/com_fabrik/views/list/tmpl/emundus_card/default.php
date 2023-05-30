@@ -75,7 +75,13 @@ endforeach;
     </div>
     <?php endif; ?>
     <div class="em-mt-8">
-	    <?php echo $this->nav;?>
+
+
+        <div class="em-flex-row em-mb-12 em-pointer em-w-max-content" onclick="history.go(-1)">
+            <span class="material-symbols-outlined">chevron_left</span>
+        </div>
+
+        <?php echo $this->nav;?>
     </div>
     <div class="em-grid-3-2-1 <?php echo $this->list->class;?>" id="list_<?php echo $this->table->renderid;?>" >
         <?php if(empty($this->rows) || empty($this->rows[0])) : ?>
