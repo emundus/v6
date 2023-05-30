@@ -162,10 +162,25 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         // $regex = $this->getParams()->get('regex'); // pas sure de réussir
 
         $numberFormated = number_format($number, $decimalNumber, $decimal_separator, $thousands_separator);
-        $currencyFormated = utf8_encode($currencyObject->symbol) . ' ('. $iso3. ')';
+        $currencyFormated = $this->formatSymbol($currencyObject->symbol). ' ('. $iso3. ')';
 
 		return $numberFormated . ' ' . $currencyFormated;
 	}
+
+    private function formatSymbol($symbol)
+    {
+        $formatedSymbol = utf8_encode($symbol);
+
+        //TODO remake the formatSymbol to match every symbol
+        // currently not working for all symbols
+        /*if (substr($formatedSymbol, -2) === '')
+        {
+            $formatedSymbol = '\''.$formatedSymbol.'\'';
+        }
+        */
+
+        return $formatedSymbol;
+    }
 
     private function getSymbol($string) // will be use to show data to export + details + folders
     {
