@@ -15,117 +15,125 @@ define(['jquery', 'fab/element'],
             this.setPlugin('currency');
             this.parent(element, options);
 
-            this.input = this.element.getElementById('currency_inputValue');
-            this.rowInput = this.element.getElementById('currency_rowInputValue');
-            this.select = this.element.getElementById('currency_selectValue');
+            this.HTMLInputElement = this.element.getElementById('currency_inputValue');
+            this.HTMLRowInputElement = this.element.getElementById('currency_rowInputValue');
+            this.HTMLSelectElement = this.element.getElementById('currency_selectValue');
 
-            this.initSelect(this.select);
-            this.initInput(this.input);
-            this.initDivEvent(this.element);
+            this.idSelectedCurrency = 0; // selectedIndex in the select
+            this.allSelectedCurrencies = this.options.selectedCurrencies;
+
+            this.initSelect();
+            this.initInput();
+            this.initDivEvent();
         },
 
         cloned: function (c)
         {
-            this.input = this.element.getElementById('currency_inputValue');
-            this.rowInput = this.element.getElementById('currency_rowInputValue');
-            this.select = this.element.getElementById('currency_selectValue');
+            this.HTMLInputElement = this.element.getElementById('currency_inputValue');
+            this.HTMLRowInputElement = this.element.getElementById('currency_rowInputValue');
+            this.HTMLSelectElement = this.element.getElementById('currency_selectValue');
 
-            this.initSelect(this.select);
-            this.initMask(this.input);
+            this.initSelect(this.HTMLSelectElement);
+            this.addMask();
 
             this.parent(c);
         },
 
-        initDivEvent: function(div)
+        initDivEvent: function()
         {
-            div.addEventListener('mouseenter', this.mouseenterDivHandler.bind(this));
-            div.addEventListener('mouseleave', this.mouseleaveDivHandler.bind(this));
-            div.addEventListener('focusin', this.focusInDivHandler.bind(this));
-            div.addEventListener('focusout', this.focusOutDivHandler.bind(this));
+            this.element.addEventListener('mouseenter', this.mouseenterDivHandler.bind(this));
+            this.element.addEventListener('mouseleave', this.mouseleaveDivHandler.bind(this));
+            this.element.addEventListener('focusin', this.focusInDivHandler.bind(this));
+            this.element.addEventListener('focusout', this.focusOutDivHandler.bind(this));
         },
 
         mouseenterDivHandler: function()
         {
-            this.input.style.borderColor = currency_hoverColor;
-            this.select.style.borderColor = currency_hoverColor;
+            this.HTMLInputElement.style.borderColor = currency_hoverColor;
+            this.HTMLSelectElement.style.borderColor = currency_hoverColor;
         },
 
         mouseleaveDivHandler: function()
         {
-            this.input.style.borderColor = currency_defaultColor;
-            this.select.style.borderColor = currency_defaultColor;
+            this.HTMLInputElement.style.borderColor = currency_defaultColor;
+            this.HTMLSelectElement.style.borderColor = currency_defaultColor;
         },
 
         focusInDivHandler: function()
         {
-            this.input.style.borderColor = currency_focusColor;
-            this.select.style.borderColor = currency_focusColor;
+            this.HTMLInputElement.style.borderColor = currency_focusColor;
+            this.HTMLSelectElement.style.borderColor = currency_focusColor;
         },
 
         focusOutDivHandler: function ()
         {
-            this.input.style.borderColor = currency_defaultColor;
-            this.select.style.borderColor = currency_defaultColor;
+            this.HTMLInputElement.style.borderColor = currency_defaultColor;
+            this.HTMLSelectElement.style.borderColor = currency_defaultColor;
         },
 
-        initSelect: function(selectElement)
+        initSelect: function()
         {
-            const selectedIso3 = this.options.selectedIso3
-
-            this.options.allCurrency.forEach((currency) =>
+            for (let i = 0; i!== this.allSelectedCurrencies.iso3.length; i++)
             {
-                if (currency.iso3 === selectedIso3)
+                this.options.allCurrency.forEach((allCurrencyOne) =>
                 {
-                    const option = document.createElement('option');
-                    option.value = currency.iso3;
-                    option.text = currency.symbol + ' ('+currency.iso3+')';
-                    option.selected = true;
-                    selectElement.add(option);
-                }
-            });
-
-            if (selectElement.options.length === 1)
-            {
-                selectElement.setAttribute('tabindex', -1);
+                    // TODO take care of doublons in the allSelectedCurrencies
+                    if (allCurrencyOne.iso3 === this.allSelectedCurrencies.iso3[i])
+                    {
+                        const option = document.createElement('option');
+                        option.value = allCurrencyOne.iso3;
+                        option.text = allCurrencyOne.symbol + ' ('+allCurrencyOne.iso3+')';
+                        this.HTMLSelectElement.add(option);
+                    }
+                });
             }
+            this.HTMLSelectElement.firstChild.selected = true;
+            this.HTMLSelectElement.options.length === 1 ? this.HTMLSelectElement.setAttribute('tabindex', -1) : undefined;
+
+            //this.HTMLSelectElement.addEventListener('change', this.handlerSelectChange.bind(this));
         },
 
-        initInput: function(inputElement)
+        handlerSelectChange: function(e)
         {
-            inputElement.value = this.options.value;
-            this.initMask(inputElement);
+            this.idSelectedCurrency = e.target.selectedIndex;
+            this.addMask();
         },
 
-        initMask: function (inputElement)
+        initInput: function()
+        {
+            this.HTMLInputElement.value = this.options.value;
+            this.addMask();
+        },
+
+        addMask: function ()
         {
             if(this.mask) {
                 this.mask.destroy();
             }
 
             this.mask = IMask(
-                inputElement,
+                this.HTMLInputElement,
                 {
                     mask: Number,
                     // other options are optional with defaults below
-                    scale: this.options.decimal_numbers,  // digits after point, 0 for integers
+                    scale: this.allSelectedCurrencies.decimal_numbers[this.idSelectedCurrency],  // digits after point, 0 for integers
                     signed: false,  // disallow negative
-                    thousandsSeparator: this.options.thousand_separator,  // any single char
+                    thousandsSeparator: this.allSelectedCurrencies.thousand_separator[this.idSelectedCurrency],  // any single char
                     padFractionalZeros: false,  // if true, then pads zeros at end to the length of scale
                     normalizeZeros: true,  // appends or removes zeros at ends
-                    radix: this.options.decimal_separator,  // fractional delimiter
+                    radix: this.allSelectedCurrencies.decimal_separator[this.idSelectedCurrency],  // fractional delimiter
 
                     // additional number interval options (e.g.)
-                    min: this.options.min_value,
-                    max: this.options.max_value,
+                    min: this.allSelectedCurrencies.minimal_value[this.idSelectedCurrency],
+                    max: this.allSelectedCurrencies.maximal_value[this.idSelectedCurrency],
                 });
         },
 
         onsubmit: function (c)
         {
-            this.rowInput.value = this.mask.unmaskedValue;
+            this.HTMLRowInputElement.value = this.mask.unmaskedValue;
             this.parent(c);
         }
-
     });
 
     return window.FbCurrency;
