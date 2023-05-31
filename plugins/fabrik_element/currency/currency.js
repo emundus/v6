@@ -19,7 +19,7 @@ define(['jquery', 'fab/element'],
             this.HTMLRowInputElement = this.element.getElementById('currency_rowInputValue');
             this.HTMLSelectElement = this.element.getElementById('currency_selectValue');
 
-            this.idSelectedCurrency = 0; // selectedIndex in the select
+            this.idSelectedCurrency = this.options.idSelectedCurrency ? this.options.idSelectedCurrency : 0;
             this.allSelectedCurrencies = this.options.selectedCurrencies;
 
             this.initSelect();
@@ -87,14 +87,15 @@ define(['jquery', 'fab/element'],
                     }
                 });
             }
-            this.HTMLSelectElement.firstChild.selected = true;
-            this.HTMLSelectElement.options.length === 1 ? this.HTMLSelectElement.setAttribute('tabindex', -1) : undefined;
+            this.HTMLSelectElement.options[this.idSelectedCurrency].selected = true;
+            this.HTMLSelectElement.options.length === 1 ? this.HTMLSelectElement.setAttribute('tabindex', -1) : null;
 
-            //this.HTMLSelectElement.addEventListener('change', this.handlerSelectChange.bind(this));
+            this.HTMLSelectElement.addEventListener('change', this.handlerSelectChange.bind(this));
         },
 
         handlerSelectChange: function(e)
         {
+            this.HTMLInputElement.value = null;
             this.idSelectedCurrency = e.target.selectedIndex;
             this.addMask();
         },
@@ -118,7 +119,7 @@ define(['jquery', 'fab/element'],
                     // other options are optional with defaults below
                     scale: this.allSelectedCurrencies.decimal_numbers[this.idSelectedCurrency],  // digits after point, 0 for integers
                     signed: false,  // disallow negative
-                    thousandsSeparator: this.allSelectedCurrencies.thousand_separator[this.idSelectedCurrency],  // any single char
+                    thousandsSeparator: this.allSelectedCurrencies.thousand_separator[this.idSelectedCurrency],
                     padFractionalZeros: false,  // if true, then pads zeros at end to the length of scale
                     normalizeZeros: true,  // appends or removes zeros at ends
                     radix: this.allSelectedCurrencies.decimal_separator[this.idSelectedCurrency],  // fractional delimiter

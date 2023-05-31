@@ -25,6 +25,7 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
     protected array $allCurrency;
     protected string $rowInputValueBack;
     protected object $selectedCurrencies;
+    protected int $idSelectedCurrency;
 
 
 	/**
@@ -50,17 +51,9 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
             return '';
         }
         // Used for working out if the element should behave as if it was in a new form (joined grouped) even when editing a record
-        $this->inRepeatGroup = $groupModel->canRepeat();
-        $this->_inJoin       = $groupModel->isJoin();
-        $this->allCurrency   = $this->getDataCurrency();
-        $formatedInputValueBack    = $this->getValue($data, $repeatCounter);
-
-
-        $this->selectedCurrencies = $this->getSelectedCurrencies();
-
-        $this->rowInputValueBack = is_array($formatedInputValueBack)
-            ? $formatedInputValueBack['rowInputValueFront']
-            : $this->getNumbersInputValueBack($formatedInputValueBack);
+        $this->inRepeatGroup        = $groupModel->canRepeat();
+        $this->_inJoin              = $groupModel->isJoin();
+        $formatedInputValueBack     = $this->getValue($data, $repeatCounter);
 
         if ($this->isEditable())
         {
@@ -83,6 +76,23 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 	 */
 	public function render($data, $repeatCounter = 0)
 	{
+
+        $this->allCurrency   = $this->getDataCurrency();
+        $formatedInputValueBack    = $this->getValue($data, $repeatCounter);
+
+        $this->selectedCurrencies = $this->getSelectedCurrencies();
+
+        if (is_array($formatedInputValueBack))
+        {
+            $this->rowInputValueBack = $formatedInputValueBack['rowInputValueFront'];
+            $this->idSelectedCurrency = $this->getIdCurrencyFromIso3($formatedInputValueBack['selectedIso3Front']);
+        }
+        else
+        {
+            $this->rowInputValueBack = $this->getNumbersInputValueBack($formatedInputValueBack);
+            $this->idSelectedCurrency = $this->getIdCurrencyFromIso3($this->getIso3FromFormatedInput($formatedInputValueBack));
+        }
+
 		$params = $this->getParams();
 		$element = $this->getElement();
 		$bits = $this->inputProperties($repeatCounter);
@@ -93,6 +103,24 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 
 		return $layout->render($layoutData);
 	}
+
+    private function getIso3FromFormatedInput($input)
+    {
+        return substr($input,-4 , -1);
+    }
+
+    private function getIdCurrencyFromIso3($iso3)
+    {
+        $id = 0;
+        for ($i = 0; $i!= count($this->selectedCurrencies->iso3); $i++)
+        {
+            if ($this->selectedCurrencies->iso3[$i] === $iso3)
+            {
+                $id = $i;
+            }
+        }
+        return $id;
+    }
 
 	/**
 	 * Determines the value for the element in the form view
@@ -123,6 +151,7 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         $opts->allCurrency = $this->allCurrency;
         $opts->value = $this->rowInputValueBack;
         $opts->selectedCurrencies = $this->selectedCurrencies;
+        $opts->idSelectedCurrency = $this->idSelectedCurrency;
 
 		return array('FbCurrency', $id, $opts);
 	}
@@ -193,11 +222,6 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         return json_decode($this->getParams()->get('all_currencies_options'));
     }
 
-    public function getIso3($input = null)
-    {
-        return $this->getSelectedCurrencies()->iso3[0];
-    }
-
     private function getCurrencyObject($listCurrency, $iso3)
     {
         $currencyObject = null;
@@ -222,12 +246,12 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
     public function validate($data, $repeatCounter = 0)
     {
         $valid = true;
+        exit;
 
         $selectedIso3Front = $data['selectedIso3Front'];
         $rowInputValueFront = $data['rowInputValueFront'];
 
-        $valueBack = $this->getValue($data, $repeatCounter);
-        $valid = $this->currencyFormatValidation($selectedIso3Front, $this->getIso3($valueBack));
+        $valid = $this->currencyFormatValidation($selectedIso3Front, $this->getSelectedCurrencyIso3());
 
         if ($valid)
         {
@@ -281,8 +305,12 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 
     private function getNumbersInputValueBack($formatedInputValueBack)
     {
-        $to  = strpos($formatedInputValueBack, ' ');
-        return substr($formatedInputValueBack,0 , $to); // get only numbers from DB format
+        $toIso3  = strrpos($formatedInputValueBack, ' ');
+        $inputWithoutIso3 = substr($formatedInputValueBack, 0, $toIso3);
+        $toSymbol = strrpos($inputWithoutIso3,' ');
+        $inputWithoutIso3Symbol = substr($inputWithoutIso3, 0, $toSymbol);
+
+        return $inputWithoutIso3Symbol;
 
         /* for row value
         $decimal_separator = $this->getParams()->get('decimal_separator');
