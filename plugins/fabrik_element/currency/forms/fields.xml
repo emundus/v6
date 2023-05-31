@@ -25,59 +25,66 @@
 			<field type="helplink"
 				url="PLG_ELEMENT_FIELD_HELP_SERVER" />
 
-			<field name="default_currency"
-				   type="sql"
-				   label="PLG_ELEMENT_CURRENCY_DEFAULT_CURRENCY"
-				   query="SELECT *,
-				   CONCAT(name, ' (', symbol, ' ', iso3,')') as renderBack
-				   FROM data_currency
-					WHERE published = 1"
-				   value_field="renderBack"
-				   key_field="iso3"
-				   default="EUR"
+			<field name="all_currencies_options"
+				   type="repeatable"
+				   icon="list"
+				   label="PLG_ELEMENT_CURRENCY_ALL_OPTIONS"
+			>
+
+				<field name="iso3"
+					   type="sql"
+					   label="PLG_ELEMENT_CURRENCY_CURRENCY"
+					   query="SELECT *,
+			   CONCAT(name, ' (', symbol, ' ', iso3,')') as renderBack
+			   FROM data_currency
+				WHERE published = 1"
+					   value_field="renderBack"
+					   key_field="iso3"
 				/>
 
-			<field name="minimal_value"
-				   type="number"
-				   label="PLG_ELEMENT_CURRENCY_MINIMAL_NUMBER"
-				   min="0.00"
-				   max="99999999.98"
-				   default="0.00"
-				   step="0.01"
-			/>
+				<field name="minimal_value"
+					   type="number"
+					   label="PLG_ELEMENT_CURRENCY_MINIMAL_NUMBER"
+					   min="0.00"
+					   max="99999999.98"
+					   default="0.00"
+					   step="0.01"
+				/>
 
-			<field name="maximal_value"
-				   type="number"
-				   label="PLG_ELEMENT_CURRENCY_MAXIMAL_NUMBER"
-				   min="0.00"
-				   max="99999999.99"
-				   step="0.01"
-			/>
+				<field name="maximal_value"
+					   type="number"
+					   label="PLG_ELEMENT_CURRENCY_MAXIMAL_NUMBER"
+					   min="0.00"
+					   max="99999999.99"
+					   default="10000.00"
+					   step="0.01"
+				/>
 
-			<field name="decimal_separator"
-				   type="text"
-				   label="PLG_ELEMENT_CURRENCY_DECIMAL_SEPARATOR"
-				   maxlength="1"
-				   size="1"
-				   default=","
-			/>
+				<field name="thousand_separator"
+					   type="text"
+					   label="PLG_ELEMENT_CURRENCY_THOUSAND_SEPARATOR"
+					   maxlength="1"
+					   size="3"
+					   default=" "
+				/>
 
-			<field name="thousand_separator"
-				   type="text"
-				   label="PLG_ELEMENT_CURRENCY_THOUSAND_SEPARATOR"
-				   maxlength="1"
-				   size="1"
-				   default=" "
-			/>
+				<field name="decimal_separator"
+					   type="text"
+					   label="PLG_ELEMENT_CURRENCY_DECIMAL_SEPARATOR"
+					   maxlength="1"
+					   size="1"
+					   default=","
+				/>
 
-			<field name="decimal_numbers"
-				   type="number"
-				   label="PLG_ELEMENT_CURRENCY_DECIMAL_NUMBERS"
-				   filter="number"
-				   max="10"
-				   min="0"
-				   default="2"
-			/>
+				<field name="decimal_numbers"
+					   type="number"
+					   label="PLG_ELEMENT_CURRENCY_DECIMAL_NUMBERS"
+					   filter="number"
+					   max="10"
+					   min="0"
+					   default="2"
+				/>
+			</field>
 
 		</fieldset>
 	</fields>

@@ -11,11 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\CMS\Helper\MediaHelper;
-use Joomla\Utilities\ArrayHelper;
-
 jimport('joomla.application.component.model');
-mb_internal_encoding("UTF-8");
 /**
  * Plugin element to render currency
  *
@@ -28,7 +24,7 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 
     protected array $allCurrency;
     protected string $rowInputValueBack;
-    protected string $selectedIso3Back;
+    protected object $selectedCurrencies;
 
 
 	/**
@@ -59,16 +55,12 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         $this->allCurrency   = $this->getDataCurrency();
         $formatedInputValueBack    = $this->getValue($data, $repeatCounter);
 
-        if (is_array($formatedInputValueBack))
-        {
-            $this->rowInputValueBack = $formatedInputValueBack['rowInputValueFront'];
-            $this->selectedIso3Back  = $formatedInputValueBack['selectedIso3Front'];
-        }
-        else
-        {
-            $this->rowInputValueBack = $this->getNumbersInputValueBack($formatedInputValueBack);
-            $this->selectedIso3Back  = $this->getIso3($formatedInputValueBack);
-        }
+
+        $this->selectedCurrencies = $this->getSelectedCurrencies();
+
+        $this->rowInputValueBack = is_array($formatedInputValueBack)
+            ? $formatedInputValueBack['rowInputValueFront']
+            : $this->getNumbersInputValueBack($formatedInputValueBack);
 
         if ($this->isEditable())
         {
@@ -130,13 +122,7 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 
         $opts->allCurrency = $this->allCurrency;
         $opts->value = $this->rowInputValueBack;
-        $opts->selectedIso3 = $this->selectedIso3Back;
-        $opts->min_value = $this->getParams()->get('minimal_value');
-        $opts->max_value = $this->getParams()->get('maximal_value');
-
-        $opts->thousand_separator = $this->getParams()->get('thousand_separator');
-        $opts->decimal_separator = $this->getParams()->get('decimal_separator');
-        $opts->decimal_numbers = $this->getParams()->get('decimal_numbers');
+        $opts->selectedCurrencies = $this->selectedCurrencies;
 
 		return array('FbCurrency', $id, $opts);
 	}
@@ -159,7 +145,7 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         $decimal_separator = $this->getParams()->get('decimal_separator');
         $thousands_separator = $this->getParams()->get('thousand_separator');
         $decimalNumber = $this->getParams()->get('decimal_numbers');
-        // $regex = $this->getParams()->get('regex'); // pas sure de réussir
+        // $regex = $this->getParams()->get('regex'); // pas sur de réussir
 
         $numberFormated = number_format($number, $decimalNumber, $decimal_separator, $thousands_separator);
         $currencyFormated = $this->formatSymbol($currencyObject->symbol). ' ('. $iso3. ')';
@@ -202,9 +188,14 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         return $db->loadObjectList();
     }
 
+    private function getSelectedCurrencies()
+    {
+        return json_decode($this->getParams()->get('all_currencies_options'));
+    }
+
     public function getIso3($input = null)
     {
-        return $this->getParams()->get('default_currency');
+        return $this->getSelectedCurrencies()->iso3[0];
     }
 
     private function getCurrencyObject($listCurrency, $iso3)
@@ -290,7 +281,8 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 
     private function getNumbersInputValueBack($formatedInputValueBack)
     {
-        return substr($formatedInputValueBack,-strlen($formatedInputValueBack) , -8); // get only numbers from DB format
+        $to  = strpos($formatedInputValueBack, ' ');
+        return substr($formatedInputValueBack,0 , $to); // get only numbers from DB format
 
         /* for row value
         $decimal_separator = $this->getParams()->get('decimal_separator');
