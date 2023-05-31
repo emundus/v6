@@ -83,7 +83,7 @@ endforeach;
             <span class="material-icons-outlined em-repeat-card-no-padding">chevron_left</span>
         </a>
 
-         <h2><?php echo isset($this->_row->data) ? $this->_row->data->$heading : '';?></h2>
+         <h2><?php echo $this->table->label;?></h2>
 
 
     </div>
