@@ -59,7 +59,7 @@ endforeach;
 ?>
 
     <?php if ($showTitle == 1) : ?>
-    <div class="page-header">
+    <div class="page-header" style="margin-top:0px !important;">
         <div class="em-flex-row em-flex-space-between">
             <h2><?php echo $this->table->label;?></h2>
             <?php if(!in_array('list_only', $notes) && !in_array('grid_only', $notes)) : ?>
@@ -148,7 +148,10 @@ endif;
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        let view_mode = localStorage.getItem('view_mode');
+        const form = document.querySelector('form[name="fabrikList"]');
+        const view_mode_name = 'view_mode_' + form.id;
+
+        let view_mode = localStorage.getItem(view_mode_name);
 
         <?php if(in_array('list_only', $notes)) : ?>
         view_mode = 'list';
@@ -156,10 +159,9 @@ endif;
         view_mode = 'grid';
         <?php endif; ?>
 
-        console.log(view_mode);
         // Check view mode
         if(view_mode === null){
-            localStorage.setItem('view_mode', 'grid');
+            localStorage.setItem(view_mode_name, 'grid');
             view_mode = 'grid';
         }
 
@@ -206,7 +208,10 @@ endif;
     });
 
     function switchView(view){
-        localStorage.setItem('view_mode', view);
+        const form = document.querySelector('form[name="fabrikList"]');
+        const view_mode_name = 'view_mode_' + form.id;
+
+        localStorage.setItem(view_mode_name, view);
         let list = document.getElementById('list_<?php echo $this->table->renderid;?>');
 
         switch (view){
