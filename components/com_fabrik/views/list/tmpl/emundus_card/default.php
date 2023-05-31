@@ -78,11 +78,14 @@ endforeach;
      <?php if ($showTitle == 0) : ?>
 
     <div class="em-flex-row em-flex-start">
-         <h2>Test</h2>
 
-        <a class="em-flex-row em-mb-12 em-pointer em-w-max-content em-icon-back-button" href="/accueil-activites">
+        <a class="em-flex-row em-mr-16 em-pointer em-w-max-content em-icon-back-button" href="/accueil-activites">
             <span class="material-icons-outlined em-repeat-card-no-padding">chevron_left</span>
         </a>
+
+         <h2><?php echo $this->table->label;?></h2>
+
+
     </div>
     <?php endif; ?>
 
