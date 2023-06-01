@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -16,7 +16,7 @@ class CheckoutViewCheckoutLegacy extends hikashopView {
 	var $extraFields=array();
 	var $requiredFields = array();
 	var $validMessages = array();
-	var $triggerView = array('hikashop','hikashoppayment','hikashopshipping');
+	var $triggerView = array('hikashop','hikashopshipping','hikashoppayment');
 
 	function display($tpl = null, $params = array()) {
 		$this->paramBase = HIKASHOP_COMPONENT.'.'.$this->getName();
@@ -806,8 +806,8 @@ var ccHikaErrors = {
 			$order = $orderClass->loadFullOrder($order_id,false,false);
 		}
 
-		JPluginHelper::importPlugin('hikashoppayment');
 		JPluginHelper::importPlugin('hikashopshipping');
+		JPluginHelper::importPlugin('hikashoppayment');
 
 		$this->assignRef('order',$order);
 	}

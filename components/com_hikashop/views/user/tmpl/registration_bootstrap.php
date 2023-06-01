@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -20,7 +20,7 @@ if(!$this->simplified_registration){ ?>
 			<label id="namemsg" for="register_name" class="required" title=""><?php echo JText::_( 'HIKA_USER_NAME' ); ?></label>
 		</div>
 		<div class="controls">
-			<input type="text" name="data[register][name]" id="register_name" value="<?php echo $this->escape($this->mainUser->get( 'name' ));?>" class="required" size="30" maxlength="50" <?php if (!empty($this->registration_page)) echo ' aria-required="true" required="required"'; ?>> *
+			<input type="text" name="data[register][name]" id="register_name" value="<?php echo $this->escape($this->mainUser->get( 'name' ));?>" class="form-control required" size="30" maxlength="50" <?php if (!empty($this->registration_page)) echo ' aria-required="true" required="required"'; ?>> *
 		</div>
 	</div>
 	<div class="control-group hikashop_registration_username_line" id="hikashop_registration_username_line">
@@ -28,7 +28,7 @@ if(!$this->simplified_registration){ ?>
 			<label id="usernamemsg" for="register_username" class="required" title=""><?php echo JText::_( 'HIKA_USERNAME' ); ?></label>
 		</div>
 		<div class="controls">
-			<input type="text" name="data[register][username]" id="register_username" value="<?php echo $this->escape($this->mainUser->get( 'username' ));?>" class="required validate-username" maxlength="25" size="30" <?php if (!empty($this->registration_page)) echo ' aria-required="true" required="required"'; ?>> *
+			<input type="text" name="data[register][username]" id="register_username" value="<?php echo $this->escape($this->mainUser->get( 'username' ));?>" class="form-control required validate-username" maxlength="25" size="30" <?php if (!empty($this->registration_page)) echo ' aria-required="true" required="required"'; ?>> *
 		</div>
 	</div>
 <?php }?>
@@ -37,7 +37,7 @@ if(!$this->simplified_registration){ ?>
 			<label id="emailmsg" for="register_email" class="required" title=""><?php echo JText::_( 'HIKA_EMAIL' ); ?></label>
 		</div>
 		<div class="controls">
-			<input<?php if($this->config->get('show_email_confirmation_field',0)){echo ' autocomplete="off"';} ?> type="text" name="data[register][email]" id="register_email" value="<?php echo $this->escape($this->mainUser->get( 'email' ));?>" class="required validate-email" maxlength="100" size="30"<?php if (!empty($this->registration_page)) echo ' aria-required="true" required="required"'; ?>> *
+			<input <?php if($this->config->get('show_email_confirmation_field',0)){echo ' autocomplete="off"';} ?> type="text" name="data[register][email]" id="register_email" value="<?php echo $this->escape($this->mainUser->get( 'email' ));?>" class="form-control required validate-email" maxlength="100" size="30"<?php if (!empty($this->registration_page)) echo ' aria-required="true" required="required"'; ?>> *
 		</div>
 	</div>
 <?php if($this->config->get('show_email_confirmation_field',0)){ ?>
@@ -46,7 +46,7 @@ if(!$this->simplified_registration){ ?>
 			<label id="email_confirm_msg" for="register_email_confirm" class="required" title=""><?php echo JText::_( 'HIKA_EMAIL_CONFIRM' ); ?></label>
 		</div>
 		<div class="controls">
-			<input autocomplete="off" type="text" name="data[register][email_confirm]" id="register_email_confirm" value="<?php echo $this->escape($this->mainUser->get( 'email' ));?>" class="required validate-email" maxlength="100" size="30" <?php if (!empty($this->registration_page)) echo ' aria-required="true" required="required"'; ?> onchange="if(this.value!=document.getElementById('register_email').value){alert('<?php echo JText::_('THE_CONFIRMATION_EMAIL_DIFFERS_FROM_THE_EMAIL_YOUR_ENTERED',true); ?>'); this.value = '';}"> *
+			<input autocomplete="off" type="text" name="data[register][email_confirm]" id="register_email_confirm" value="<?php echo $this->escape($this->mainUser->get( 'email' ));?>" class="form-control required validate-email" maxlength="100" size="30" <?php if (!empty($this->registration_page)) echo ' aria-required="true" required="required"'; ?> onchange="if(this.value!=document.getElementById('register_email').value){alert('<?php echo JText::_('THE_CONFIRMATION_EMAIL_DIFFERS_FROM_THE_EMAIL_YOUR_ENTERED',true); ?>'); this.value = '';}"> *
 		</div>
 	</div>
 <?php
@@ -57,7 +57,43 @@ if(!$this->simplified_registration || $this->simplified_registration == 3){ ?>
 			<label id="pwmsg" for="register_password" class="required" title=""><?php echo JText::_( 'HIKA_PASSWORD' ); ?></label>
 		</div>
 		<div class="controls">
-			<input autocomplete="off" type="password" name="data[register][password]" id="register_password" value="" class="required validate-password" size="30" <?php if (!empty($this->registration_page)) echo ' aria-required="true" required="required"'; ?>> *
+<?php
+	if(HIKASHOP_J40) {
+		$com_usersParams = \Joomla\CMS\Component\ComponentHelper::getParams('com_users');
+		$minLength    = (int) $com_usersParams->get('minimum_length', 12);
+		$minIntegers  = (int) $com_usersParams->get('minimum_integers', 0);
+		$minSymbols   = (int) $com_usersParams->get('minimum_symbols', 0);
+		$minUppercase = (int) $com_usersParams->get('minimum_uppercase', 0);
+		$minLowercase = (int) $com_usersParams->get('minimum_lowercase', 0);
+		$rules = $minLowercase > 0 || $minUppercase > 0 || $minSymbols > 0 || $minIntegers > 0 || $minLength > 0;
+		$layout = new JLayoutFile('joomla.form.field.password');
+		echo $layout->render(array(
+			'meter' => true,
+			'class' => 'validate-password',
+			'forcePassword' => true,
+			'lock' => false,
+			'rules' => $rules,
+			'hint' => '',
+			'readonly' => false,
+			'disabled' => false,
+			'required' => true,
+			'autofocus' => false,
+			'dataAttribute' => 'autocomplete="new-password"',
+			'name' => 'data[register][password]',
+			'id' => 'register_password',
+			'minLength' => $minLength,
+			'minIntegers' => $minIntegers,
+			'minSymbols' => $minSymbols,
+			'minUppercase' => $minUppercase,
+			'minLowercase' => $minLowercase,
+			'value' => '',
+		));
+	} else {
+?>
+			<input autocomplete="off" type="password" name="data[register][password]" id="register_password" value="" class="form-control required validate-password" size="30" <?php if (!empty($this->registration_page)) echo ' aria-required="true" required="required"'; ?>> *
+<?php 
+	}
+?>
 		</div>
 	</div>
 	<div class="control-group hikashop_registration_password2_line" id="hikashop_registration_password2_line">
@@ -65,7 +101,31 @@ if(!$this->simplified_registration || $this->simplified_registration == 3){ ?>
 			<label id="pw2msg" for="register_password2" class="required" title=""><?php echo JText::_( 'HIKA_VERIFY_PASSWORD' ); ?></label>
 		</div>
 		<div class="controls">
-			<input autocomplete="off" type="password" name="data[register][password2]" id="register_password2" value="" class="required validate-password" size="30" <?php if (!empty($this->registration_page)) echo ' aria-required="true" required="required"'; ?>> *
+<?php
+	if(HIKASHOP_J40) {
+		$layout = new JLayoutFile('joomla.form.field.password');
+		echo $layout->render(array(
+			'meter' => false,
+			'class' => 'validate-password',
+			'forcePassword' => true,
+			'lock' => false,
+			'rules' => false,
+			'hint' => '',
+			'readonly' => false,
+			'disabled' => false,
+			'required' => true,
+			'autofocus' => false,
+			'dataAttribute' => 'autocomplete="new-password"',
+			'name' => 'data[register][password2]',
+			'id' => 'register_password2',
+			'value' => '',
+		));
+	} else {
+?>
+			<input autocomplete="off" type="password" name="data[register][password2]" id="register_password2" value="" class="form-control required validate-password" size="30" <?php if (!empty($this->registration_page)) echo ' aria-required="true" required="required"'; ?>> *
+<?php 
+	}
+?>
 		</div>
 	</div>
 <?php }

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -33,9 +33,6 @@ if(isset($_COOKIE[$cookie_ref])) {
 ?>
 <script type="text/javascript">
 if(!window.localPage) window.localPage = {};
-window.localPage.setCookie = function (name,value,delay) {
-	document.cookie = name + "=" + (value || "")  +  "; expires=" + delay + "; path=/";
-}
 
 function openExplorer() {
 	var element = document.getElementById('product_listing_otree');
@@ -59,7 +56,7 @@ function explorerWidth(delay) {
 		button.classList.remove("explorer_close");
 		button.classList.add("explorer_open");
 
-		window.localPage.setCookie('<?php echo $cookie_ref; ?>','explorer_open',delay);
+		window.hikashop.setCookie('<?php echo $cookie_ref; ?>','explorer_open',delay);
 		return;
 	}
 	if (desc.classList.contains("explorer_open")) {
@@ -68,7 +65,7 @@ function explorerWidth(delay) {
 		button.classList.remove("explorer_open");
 		button.classList.add("explorer_close");
 
-		window.localPage.setCookie('<?php echo $cookie_ref; ?>','explorer_close',delay);
+		window.hikashop.setCookie('<?php echo $cookie_ref; ?>','explorer_close',delay);
 		return;
 	}
 }

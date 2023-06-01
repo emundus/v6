@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -38,14 +38,67 @@ class plgHikashopShopclosehours extends hikashopPlugin {
 			'7' => 'SUNDAY'
 		)),
 		'store_close_time' => array('CLOSES_AT', 'time'),
+		'on_add_to_cart' => array('CHECK_ON_ADD_TO_CART', 'boolean', false),
 	);
 
 	public function pluginConfigDisplay($fieldType, $data, $type, $paramsType, $key, $element){
 		if($fieldType=='time'){
 			$map = 'data['.$type.']['.$paramsType.']['.$key.']';
 			$value = @$element->$paramsType->$key;
-			return '<input type="text" style="width:30px" name="'.$map.'[hour]" placeholder="'.JText::_('HIKA_HH').'" value="'.@$value['hour'].'"/>:<input type="text" style="width:30px" name="'.$map.'[minute]" placeholder="'.JText::_('HIKA_MM').'" value="'.@$value['minute'].'"/>';
+			return '<input type="text" style="width:50px" name="'.$map.'[hour]" placeholder="'.JText::_('HIKA_HH').'" value="'.@$value['hour'].'"/> : <input type="text" style="width:50px" name="'.$map.'[minute]" placeholder="'.JText::_('HIKA_MM').'" value="'.@$value['minute'].'"/>';
 		}
+	}
+
+	public function onBeforeProductQuantityCheck(&$products, &$cart, &$options) {
+		$this->loadRanges();
+		if(empty($this->ranges)){
+			return;
+		}
+		$add_to_cart_ranges = array();
+		foreach($this->ranges as $range) {
+			if(!empty($range->on_add_to_cart)) {
+				$add_to_cart_ranges[] = $range;
+			}
+		}
+		if(!count($add_to_cart_ranges))
+			return;
+
+		$productsForCheck = array();
+		$productClass = hikashop_get('class.product');
+		foreach($products as $k => &$product) {
+			if(empty($product['qty']))
+				continue;
+
+			if(!empty($product['pid'])) {
+				$id = (int)$cart->cart_products[ (int)$product['pid'] ]->product_id;
+			} else {
+				$id = $product['id'];
+			}
+
+			$data = $productClass->get($id);
+
+			$p = new stdClass();
+			$p->product_id = $id;
+			$p->product_name = $data->product_name;
+			$productsForCheck[] = $p;
+		}
+
+		$tmp = hikashop_copy($this->ranges);
+		$this->ranges = $add_to_cart_ranges;
+		$isClosed = $this->isShopClosed($productsForCheck);
+		if(!$isClosed)
+			return;
+
+		foreach($products as $k => $p) {
+			$products[$k]['qty'] = 0;
+			unset($products[$k]['data']);
+		}
+
+		$messages = $this->getMessages();
+		$this->ranges = $tmp;
+		$cartClass = hikashop_get('class.cart');
+		$cartClass->addMessage($cart, array('msg' => implode('<br/>', $messages), 'product_id' => $id, 'type' => 'error'));
+
 	}
 
 	public function onCheckoutWorkflowLoad(&$checkout_workflow, &$shop_closed, $cart_id) {
@@ -68,7 +121,15 @@ class plgHikashopShopclosehours extends hikashopPlugin {
 
 		$shop_closed = true;
 
+		$messages = $this->getMessages();
 		$checkoutHelper = hikashopCheckoutHelper::get();
+		$msg = JText::_('THE_CHECKOUT_IS_NOT_POSSIBLE').'<br/>';
+		$msg .= implode('<br/>', $messages);
+		$checkoutHelper->addMessage('shop_closed',$msg);
+	}
+
+	public function getMessages() {
+
 		$messages = array();
 		foreach($this->productsWithIssue as $issue){
 			$ranges = array();
@@ -89,10 +150,7 @@ class plgHikashopShopclosehours extends hikashopPlugin {
 					$messages []= JText::sprintf('FROM_X_ON_X_TO_X_ON_X',JText::_($this->pluginConfig['store_open_day'][2][$range->store_open_day]),$range->store_open_hour.':'.sprintf('%02d', $range->store_open_minute),JText::_($this->pluginConfig['store_open_day'][2][$range->store_close_day]),$range->store_close_hour.':'.sprintf('%02d', $range->store_close_minute));
 			}
 		}
-
-		$msg = JText::_('THE_CHECKOUT_IS_NOT_POSSIBLE').'<br/>';
-		$msg .= implode('<br/>', $messages);
-		$checkoutHelper->addMessage('shop_closed',$msg);
+		return $messages;
 	}
 
 	public function onBeforeOrderCreate(&$order, &$do) {

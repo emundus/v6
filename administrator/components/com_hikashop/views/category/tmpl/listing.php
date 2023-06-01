@@ -1,19 +1,21 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><div class="iframedoc" id="iframedoc"></div>
 <?php
-if ($this->type == 'manufacturer') 
+if ($this->type == 'manufacturer' || $this->type == 'tax') {
 	$cookie_ref = 'manufacturer_exploreWidth_cookie';
-else
+	$listing_id = 'hikashop_'.$this->type.'_listing';
+} else {
 	$cookie_ref = 'category_exploreWidth_cookie';
-
+	$listing_id = 'hikashop_category_listing';
+}
 	if(isset($_COOKIE[$cookie_ref])) 
 		$cookie_value = $_COOKIE[$cookie_ref];
 	else
@@ -83,7 +85,10 @@ else
 						<div style="clear:both"></div>
 					</div>
 				</div>
-				<table id="hikashop_category_listing" class="adminlist table table-striped table-hover" cellpadding="1">
+<?php 
+	echo $this->loadHkLayout('columns', array()); 
+?>
+				<table id="<?php echo $listing_id; ?>" class="adminlist table table-striped table-hover" cellpadding="1">
 					<thead>
 						<tr>
 							<th class="title titlenum">
