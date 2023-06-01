@@ -53,7 +53,8 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         // Used for working out if the element should behave as if it was in a new form (joined grouped) even when editing a record
         $this->inRepeatGroup        = $groupModel->canRepeat();
         $this->_inJoin              = $groupModel->isJoin();
-        $formatedInputValueBack     = $this->getValue($data, $repeatCounter);
+        $opts                       = array('runplugins' => 1);
+        $formatedInputValueBack     = $this->getValue($data, $repeatCounter, $opts);
 
         if ($this->isEditable())
         {
@@ -77,10 +78,21 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 	public function render($data, $repeatCounter = 0)
 	{
 
-        $this->allCurrency   = $this->getDataCurrency();
-        $formatedInputValueBack    = $this->getValue($data, $repeatCounter);
+        $this->allCurrency          = $this->getDataCurrency();
+        $formatedInputValueBack     = $this->getValue($data, $repeatCounter);
+        $this->selectedCurrencies   = $this->getSelectedCurrencies();
+        $valuesForSelect            = []; // formated value for the select to show
 
-        $this->selectedCurrencies = $this->getSelectedCurrencies();
+        for ($i = 0; $i != count($this->selectedCurrencies->iso3); $i++)
+        {
+            foreach ($this->allCurrency as $allCurrencyOne)
+            {
+                if ($allCurrencyOne->iso3 === $this->selectedCurrencies->iso3[$i])
+                {
+                    $valuesForSelect[$allCurrencyOne->iso3] = $allCurrencyOne->symbol . ' (' . $allCurrencyOne->iso3 . ')';
+                }
+            }
+        }
 
         if (is_array($formatedInputValueBack))
         {
@@ -93,9 +105,9 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
             $this->idSelectedCurrency = $this->getIdCurrencyFromIso3($this->getIso3FromFormatedInput($formatedInputValueBack));
         }
 
-		$params = $this->getParams();
-		$element = $this->getElement();
 		$bits = $this->inputProperties($repeatCounter);
+        $bits['valuesForSelect'] = $valuesForSelect;
+        $bits['iso3SelectedCurrency'] = $this->selectedCurrencies->iso3[$this->idSelectedCurrency]; // to set options selected
 
 		$layout = $this->getLayout('form');
 		$layoutData = new stdClass;
@@ -116,7 +128,7 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         {
             if ($this->selectedCurrencies->iso3[$i] === $iso3)
             {
-                $id = $i;
+                $id = $i; // if doublons, we get the last one
             }
         }
         return $id;
@@ -167,43 +179,22 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 	public function storeDatabaseFormat($val, $data)
 	{
 
-        $number = floatval($val['rowInputValueFront']);
-        $iso3 = $val['selectedIso3Front'];
+        $spacePos = strrpos($val, ' ');
+        $iso3 = substr($val, $spacePos+1, strlen($val));
+        $number = floatval(substr($val, 0, $spacePos));
+
         $currencyObject = $this->getCurrencyObject($this->getDataCurrency(), $iso3);
 
-        $decimal_separator = $this->getParams()->get('decimal_separator');
-        $thousands_separator = $this->getParams()->get('thousand_separator');
-        $decimalNumber = $this->getParams()->get('decimal_numbers');
+        $decimal_separator = $this->selectedCurrencies->decimal_separator[$this->idSelectedCurrency];
+        $thousands_separator = $this->selectedCurrencies->thousand_separator[$this->idSelectedCurrency] ;
+        $decimalNumber = $this->selectedCurrencies->decimal_numbers[$this->idSelectedCurrency];
         // $regex = $this->getParams()->get('regex'); // pas sur de réussir
 
         $numberFormated = number_format($number, $decimalNumber, $decimal_separator, $thousands_separator);
-        $currencyFormated = $this->formatSymbol($currencyObject->symbol). ' ('. $iso3. ')';
+        $currencyFormated = $currencyObject->symbol. ' ('. $iso3. ')';
 
 		return $numberFormated . ' ' . $currencyFormated;
 	}
-
-    private function formatSymbol($symbol)
-    {
-        $formatedSymbol = utf8_encode($symbol);
-
-        //TODO remake the formatSymbol to match every symbol
-        // currently not working for all symbols
-        /*if (substr($formatedSymbol, -2) === '')
-        {
-            $formatedSymbol = '\''.$formatedSymbol.'\'';
-        }
-        */
-
-        return $formatedSymbol;
-    }
-
-    private function getSymbol($string) // will be use to show data to export + details + folders
-    {
-        $from = strpos($string, ' ')+1;
-        $to = strrpos($string, ' ');
-
-        return substr($string,$from, $to-$from);
-    }
 
     public function getDataCurrency()
     {
@@ -246,15 +237,22 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
     public function validate($data, $repeatCounter = 0)
     {
         $valid = true;
-        exit;
-
+        $this->selectedCurrencies = $this->getSelectedCurrencies();
+        /*
         $selectedIso3Front = $data['selectedIso3Front'];
         $rowInputValueFront = $data['rowInputValueFront'];
+        */
 
-        $valid = $this->currencyFormatValidation($selectedIso3Front, $this->getSelectedCurrencyIso3());
+        // as now its a single result
+        $spacePos = strrpos($data, ' ');
+        $selectedIso3Front = substr($data, $spacePos+1, strlen($data));
+        $rowInputValueFront = substr($data, 0, $spacePos);
+
+        $valid = $this->currencyFormatValidation($selectedIso3Front);
 
         if ($valid)
         {
+            $this->idSelectedCurrency = $this->getIdCurrencyFromIso3($selectedIso3Front); // valid so we can get his id
             if ($this->validator->hasValidations()) // element mandatory
             {
                 $valid = $this->isValueCorrect(floatval($rowInputValueFront));
@@ -267,14 +265,17 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         return $valid;
     }
 
-    private function currencyFormatValidation($selectedIso3Front, $selectedIso3Back)
+    private function currencyFormatValidation($selectedIso3Front)
     {
-        $valid = true;
+        $this->validationError = JText::_('PLG_ELEMENT_CURRENCY_CURRENCY_ERROR');
+        $valid = false;
 
-        if (!($selectedIso3Front === $selectedIso3Back)) // not the same currency
+        for ($i = 0; $i != count($this->selectedCurrencies->iso3); $i++)
         {
-            $this->validationError = JText::_('PLG_ELEMENT_CURRENCY_CURRENCY_ERROR');
-            $valid = false;
+            if ($this->selectedCurrencies->iso3[$i] === $selectedIso3Front)
+            {
+                $valid = true;
+            }
         }
 
         return $valid;
@@ -291,9 +292,9 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         }
         else
         {
-            if ($rowInputValueFront < $this->getParams()->get('minimal_value')
+            if ($rowInputValueFront < $this->selectedCurrencies->minimal_value[$this->idSelectedCurrency]
                 ||
-                $rowInputValueFront > $this->getParams()->get('maximal_value'))
+                $rowInputValueFront > $this->selectedCurrencies->maximal_value[$this->idSelectedCurrency])
             {
                 $this->validationError = JText::_('PLG_ELEMENT_CURRENCY_NOT_IN_INTERVALS');
                 $valid = false;
@@ -305,12 +306,15 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 
     private function getNumbersInputValueBack($formatedInputValueBack)
     {
-        $toIso3  = strrpos($formatedInputValueBack, ' ');
-        $inputWithoutIso3 = substr($formatedInputValueBack, 0, $toIso3);
-        $toSymbol = strrpos($inputWithoutIso3,' ');
-        $inputWithoutIso3Symbol = substr($inputWithoutIso3, 0, $toSymbol);
+        $string = $formatedInputValueBack;
 
-        return $inputWithoutIso3Symbol;
+        for ($i = 0; $i!= 2; $i++)
+        {
+            $to = strrpos($formatedInputValueBack, ' ');
+            $string = substr($formatedInputValueBack, 0, $to);
+        }
+
+        return $string;
 
         /* for row value
         $decimal_separator = $this->getParams()->get('decimal_separator');

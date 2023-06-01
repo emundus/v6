@@ -73,23 +73,7 @@ define(['jquery', 'fab/element'],
 
         initSelect: function()
         {
-            for (let i = 0; i!== this.allSelectedCurrencies.iso3.length; i++)
-            {
-                this.options.allCurrency.forEach((allCurrencyOne) =>
-                {
-                    // TODO take care of doublons in the allSelectedCurrencies
-                    if (allCurrencyOne.iso3 === this.allSelectedCurrencies.iso3[i])
-                    {
-                        const option = document.createElement('option');
-                        option.value = allCurrencyOne.iso3;
-                        option.text = allCurrencyOne.symbol + ' ('+allCurrencyOne.iso3+')';
-                        this.HTMLSelectElement.add(option);
-                    }
-                });
-            }
-            this.HTMLSelectElement.options[this.idSelectedCurrency].selected = true;
             this.HTMLSelectElement.options.length === 1 ? this.HTMLSelectElement.setAttribute('tabindex', -1) : null;
-
             this.HTMLSelectElement.addEventListener('change', this.handlerSelectChange.bind(this));
         },
 
@@ -132,7 +116,7 @@ define(['jquery', 'fab/element'],
 
         onsubmit: function (c)
         {
-            this.HTMLRowInputElement.value = this.mask.unmaskedValue;
+            this.HTMLRowInputElement.value = this.mask.unmaskedValue + ' '+ this.HTMLSelectElement.value;
             this.parent(c);
         }
     });
