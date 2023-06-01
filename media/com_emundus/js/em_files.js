@@ -5289,7 +5289,7 @@ $(document).ready(function() {
         }
     });
 
-    $(document).on('keyup', 'input:text', function(e) {
+    $(document).on('keyup', '#em_filters input:text', function(e) {
         if ($(this).closest('.modal').length === 0 && $(this).closest('#em-message').length === 0 && e.keyCode == 13 ) {
             search();
         }
