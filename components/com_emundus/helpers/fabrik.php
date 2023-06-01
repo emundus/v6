@@ -231,12 +231,56 @@ class EmundusHelperFabrik {
         if($init_plugins){
 			if ($type == 'eval') {
 				$plugins = [
+					'curl_code' => [
+						1 => '$student_id=JRequest::getVar(\'student_id\', null,\'get\');
+$student = isset($student_id) ? JUser::getInstance($student_id) : JUser::getInstance(\'{jos_emundus_evaluations___student_id}\');
+echo \'<h2>\'.$student->name.\'</h2>\';
+JHtml::script(JURI::base() . \'media/com_emundus/lib/jquery-1.10.2.min.js\');
+JHtml::script(JURI::base() . \'media/jui/js/chosen.jquery.min.js\' );
+JHtml::styleSheet(JURI::base() . \'media/jui/css/chosen.css\');
+JHTML::stylesheet(JURI::Base().\'media/com_fabrik/css/fabrik.css\');',
+						2 => 'echo \'<script src=\"https://cdn.jsdelivr.net/npm/sweetalert2@8\"></script>\';
+echo \'<script src=\"https://code.jquery.com/jquery-3.3.1.slim.js\" integrity=\"sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=\" crossorigin=\"anonymous\"></script>\';
+echo \'<script>window.parent.ScrollToTop();</script>\';
+echo \'<style>\r\n.em-swal-title{
+  margin: 8px 8px 32px 8px !important;
+  font-family: \"Maven Pro\", sans-serif;
+}
+</style>\';
+die(\"<script>
+      $(document).ready(function () {
+          Swal.fire({
+  	         position: \'top\',
+             type: \'success\',
+             title: \'\".JText::_(\'COM_EMUNDUS_EVALUATION_SAVED\').\"\',
+          	 showConfirmButton: false,
+             timer: 2000,
+             customClass: {
+                   title: \'em-swal-title\'
+             },
+             onClose: () => { history.go(-1);}
+      	})
+	});
+</script>\");'
+					],
+					'only_process_curl' => [
+						1 => 'onLoad',
+						2 => 'onAfterProcess'
+					],
+					'form_php_file' => [
+						1 => '-1',
+						2 => '-1'
+					],
+					'form_php_require_once' => [
+						1 => '0',
+						2 => '0'
+					],
 					'process-jplugins' => '2',
-					'plugins' => array('emundusisevaluatedbyme'),
-					'plugin_state' => array('1'),
-					'plugin_locations' => array('both'),
-					'plugin_events' => array('both'),
-					'plugin_description' => array('Is evaluated by me'),
+					'plugins' => array('emundusisevaluatedbyme', 'php', 'php'),
+					'plugin_state' => array('1', '1', '1'),
+					'plugin_locations' => array('both', 'both', 'both'),
+					'plugin_events' => array('both', 'both', 'both'),
+					'plugin_description' => array('Is evaluated by me', 'css', 'sweet'),
 				];
 			} else {
 				$plugins = [
