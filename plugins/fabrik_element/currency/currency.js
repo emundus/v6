@@ -23,7 +23,7 @@ define(['jquery', 'fab/element'],
             this.allSelectedCurrencies = this.options.selectedCurrencies;
 
             this.initSelect();
-            this.initInput();
+            this.addMask();
             this.initDivEvent();
         },
 
@@ -33,7 +33,9 @@ define(['jquery', 'fab/element'],
             this.HTMLRowInputElement = this.element.getElementById('currency_rowInputValue');
             this.HTMLSelectElement = this.element.getElementById('currency_selectValue');
 
-            this.initSelect(this.HTMLSelectElement);
+            this.HTMLInputElement.value = null;
+            this.mask = null;
+            this.initSelect();
             this.addMask();
 
             this.parent(c);
@@ -81,12 +83,6 @@ define(['jquery', 'fab/element'],
         {
             this.HTMLInputElement.value = null;
             this.idSelectedCurrency = e.target.selectedIndex;
-            this.addMask();
-        },
-
-        initInput: function()
-        {
-            this.HTMLInputElement.value = this.options.value;
             this.addMask();
         },
 

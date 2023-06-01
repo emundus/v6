@@ -35,21 +35,24 @@ $doc->addScript(JURI::root() . "plugins/fabrik_element/currency/assets/js/emundu
 
 <div id="<?php echo $displayData->attributes['id']; ?>" class="em-flex-row fabrikSubElementContainer marginNone" >
 
-    <input id="currency_inputValue" class="fabrikinput input-medium"
-           autocomplete="off" >
+    <input id="currency_inputValue" name="<?php echo $displayData->attributes['name']; ?>" class="fabrikinput input-medium"
+           autocomplete="off" value="<?php echo $displayData->attributes['inputValue']; ?>">
+
+    <select id="currency_selectValue" name="<?php echo $displayData->attributes['name']; ?>" class="fabrikinput">
+
+        <?php foreach ($displayData->attributes['valuesForSelect'] as $key => $value) :?>
+
+            <option value="<?php echo $key ?>"
+
+                <?php if ($displayData->attributes['iso3SelectedCurrency'] === $key) : ?>
+                    selected="selected"
+                <?php endif ?>
+
+            ><?php echo $value ?></option>
+
+        <?php endforeach; ?>
+    </select>
 
     <input id="currency_rowInputValue" name="<?php echo $displayData->attributes['name']; ?>" hidden="hidden">
 
-    <select id="currency_selectValue" class="fabrikinput">
-
-        <?php foreach ($displayData->attributes['valuesForSelect'] as $key => $value) :?>
-            <option value="<?php echo $key ?>"
-                <?php
-
-                if ($displayData->attributes['iso3SelectedCurrency'] === $key) : ?>
-                    selected="selected"
-                <?php endif ?>
-            ><?php echo $value ?></option>
-        <?php endforeach; ?>
-    </select>
 </div>

@@ -23,7 +23,6 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 {
 
     protected array $allCurrency;
-    protected string $rowInputValueBack;
     protected object $selectedCurrencies;
     protected int $idSelectedCurrency;
 
@@ -82,6 +81,7 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         $formatedInputValueBack     = $this->getValue($data, $repeatCounter);
         $this->selectedCurrencies   = $this->getSelectedCurrencies();
         $valuesForSelect            = []; // formated value for the select to show
+        $inputValue                 = ''; // back value for the inputValue in front
 
         for ($i = 0; $i != count($this->selectedCurrencies->iso3); $i++)
         {
@@ -96,18 +96,19 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 
         if (is_array($formatedInputValueBack))
         {
-            $this->rowInputValueBack = $formatedInputValueBack['rowInputValueFront'];
+            $inputValue = $formatedInputValueBack['rowInputValueFront'];
             $this->idSelectedCurrency = $this->getIdCurrencyFromIso3($formatedInputValueBack['selectedIso3Front']);
         }
         else
         {
-            $this->rowInputValueBack = $this->getNumbersInputValueBack($formatedInputValueBack);
+            $inputValue = $this->getNumbersInputValueBack($formatedInputValueBack);
             $this->idSelectedCurrency = $this->getIdCurrencyFromIso3($this->getIso3FromFormatedInput($formatedInputValueBack));
         }
 
 		$bits = $this->inputProperties($repeatCounter);
         $bits['valuesForSelect'] = $valuesForSelect;
         $bits['iso3SelectedCurrency'] = $this->selectedCurrencies->iso3[$this->idSelectedCurrency]; // to set options selected
+        $bits['inputValue'] = $inputValue;
 
 		$layout = $this->getLayout('form');
 		$layoutData = new stdClass;
@@ -161,7 +162,6 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 		$opts = $this->getElementJSOptions($repeatCounter);
 
         $opts->allCurrency = $this->allCurrency;
-        $opts->value = $this->rowInputValueBack;
         $opts->selectedCurrencies = $this->selectedCurrencies;
         $opts->idSelectedCurrency = $this->idSelectedCurrency;
 
@@ -250,6 +250,7 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 
         if (strlen($data) === 0) // empty data so no value in DB
         {
+            $this->validationError = JText::_('PLG_ELEMENT_CURRENCY_NOT_IN_INTERVALS');
             $valid = !$this->validator->hasValidations(); // valid if no validation, not valid if validation
         }
         else
