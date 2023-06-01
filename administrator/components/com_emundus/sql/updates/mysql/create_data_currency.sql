@@ -14,3 +14,8 @@ ALTER TABLE data_currency RENAME COLUMN currency_code TO iso3;
 ALTER TABLE data_currency RENAME COLUMN currency_format TO format;
 ALTER TABLE data_currency RENAME COLUMN currency_displayed TO displayed;
 ALTER TABLE data_currency RENAME COLUMN currency_published TO published;
+
+UPDATE data_currency SET published = 1 WHERE iso3 = 'EUR';
+UPDATE data_currency SET published = 1 WHERE iso3 = 'USD';
+UPDATE data_currency SET published = 1 WHERE iso3 = 'GBP';
+UPDATE data_currency SET published = 1 WHERE iso3 = 'JPY';
