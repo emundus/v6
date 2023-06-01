@@ -116,7 +116,10 @@ define(['jquery', 'fab/element'],
 
         onsubmit: function (c)
         {
-            this.HTMLRowInputElement.value = this.mask.unmaskedValue + ' '+ this.HTMLSelectElement.value;
+            this.HTMLRowInputElement.value = this.mask.unmaskedValue === ''
+                ? this.mask.unmaskedValue
+                : this.mask.unmaskedValue + ' '+ this.HTMLSelectElement.value;
+
             this.parent(c);
         }
     });

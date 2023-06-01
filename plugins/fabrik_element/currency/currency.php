@@ -179,6 +179,11 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 	public function storeDatabaseFormat($val, $data)
 	{
 
+        if (strlen($val) === 0) // if not value then no value in DB
+        {
+            return $val;
+        }
+
         $spacePos = strrpos($val, ' ');
         $iso3 = substr($val, $spacePos+1, strlen($val));
         $number = floatval(substr($val, 0, $spacePos));
@@ -243,12 +248,19 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         $rowInputValueFront = $data['rowInputValueFront'];
         */
 
-        // as now its a single result
-        $spacePos = strrpos($data, ' ');
-        $selectedIso3Front = substr($data, $spacePos+1, strlen($data));
-        $rowInputValueFront = substr($data, 0, $spacePos);
+        if (strlen($data) === 0) // empty data so no value in DB
+        {
+            $valid = !$this->validator->hasValidations(); // valid if no validation, not valid if validation
+        }
+        else
+        {
+            // as now its a single result
+            $spacePos = strrpos($data, ' ');
+            $selectedIso3Front = substr($data, $spacePos+1, strlen($data));
+            $rowInputValueFront = substr($data, 0, $spacePos);
 
-        $valid = $this->currencyFormatValidation($selectedIso3Front);
+            $valid = $this->currencyFormatValidation($selectedIso3Front);
+        }
 
         if ($valid)
         {
