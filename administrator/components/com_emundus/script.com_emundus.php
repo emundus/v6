@@ -1821,45 +1821,55 @@ structure:
 			}
 
             if (version_compare($cache_version, '1.36.3', '<=') || $firstrun){
-                // Ajout de document espace gestionnaire
-                $datas_timedate1 = array(
-                    'name' => 'timedate',
-                    'group_id' => 117,
-                    'plugin' => 'date',
-                    'label' => 'Date d\'envoi du document',
-                    'hidden' => 1
-                );
-                // Ajout de document public
-                $datas_timedate2 = array(
-                    'name' => 'timedate',
-                    'group_id' => 118,
-                    'plugin' => 'date',
-                    'label' => 'Date d\'envoi du document',
-                    'hidden' => 1
-                );
-                $params = array(
-                    'bootstrap_class' => 'input-medium',
-                    'date_showtime' => 1,
-                    'date_which_time_picker' => 'wicked',
-                    'date_show_seconds' => 1,
-                    'date_24hour' => 1,
-                    'bootstrap_time_class' => 'input-medium',
-                    'placeholder' => '',
-                    'date_store_as_local' => 0,
-                    'date_table_format' => 'Y-m-d H:i:s',
-                    'date_form_format' => 'Y-m-d H:i:s',
-                    'date_defaulttotoday' => 1,
-                    'date_alwaystoday' => 0,
-                    'date_firstday' => 0,
-                    'date_allow_typing_in_field' => 0,
-                    'date_csv_offset_tz' => 0,
-                    'date_advanced' => 0,
-                    'date_allow_func' => '',
-                    'date_allow_php_func' => '',
-                    'date_observe' => ''
-                );
-                EmundusHelperUpdate::addFabrikElement($datas_timedate1, $params);
-                EmundusHelperUpdate::addFabrikElement($datas_timedate2, $params);
+                $query->clear()
+                    ->select('DISTINCT '.$db->quoteName('form_id'))
+                    ->from($db->quoteName('#__fabrik_lists'))
+                    ->where($db->quoteName('db_table_name').' = '.$db->quote('jos_emundus_uploads'));
+                $db->setQuery($query);
+                $forms = $db->loadColumn();
+
+                if (!empty($forms)) {
+                    $query->clear()
+                        ->select('DISTINCT '.$db->quoteName('group_id'))
+                        ->from($db->quoteName('#__fabrik_formgroup'))
+                        ->where($db->quoteName('form_id').' IN ('.implode(',',$forms).')');
+                    $db->setQuery($query);
+                    $groups = $db->loadColumn();
+
+                    if (!empty($groups)) {
+                        $params = array(
+                            'bootstrap_class' => 'input-medium',
+                            'date_showtime' => 1,
+                            'date_which_time_picker' => 'wicked',
+                            'date_show_seconds' => 1,
+                            'date_24hour' => 1,
+                            'bootstrap_time_class' => 'input-medium',
+                            'placeholder' => '',
+                            'date_store_as_local' => 0,
+                            'date_table_format' => 'Y-m-d H:i:s',
+                            'date_form_format' => 'Y-m-d H:i:s',
+                            'date_defaulttotoday' => 1,
+                            'date_alwaystoday' => 0,
+                            'date_firstday' => 0,
+                            'date_allow_typing_in_field' => 0,
+                            'date_csv_offset_tz' => 0,
+                            'date_advanced' => 0,
+                            'date_allow_func' => '',
+                            'date_allow_php_func' => '',
+                            'date_observe' => ''
+                        );
+                        foreach($groups as $group_id) {
+                            $datas = array(
+                                'name' => 'timedate',
+                                'group_id' => $group_id,
+                                'plugin' => 'date',
+                                'label' => 'Date d\'envoi du document',
+                                'hidden' => 1
+                            );
+                            EmundusHelperUpdate::addFabrikElement($datas, $params);
+                        }
+                    }
+                }
             }
 
 			// Insert new translations in overrides files
