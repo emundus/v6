@@ -346,16 +346,18 @@ class FileMaker
         return $logout_response;
     }
 
-    public function findRecord($uuidConnect, $zWebFormType = null, $sort = array())
+    public function findRecord($limit = 50,$offset = 1,$adminStep="",$uuidConnect="null",$zWebFormType = null, $sort = array())
     {
 
         if (in_array($zWebFormType, $this->getAvailaibleZwForms())) {
-            if (!empty($uuidConnect)) {
+            if (!empty($uuidConnect) || !empty($adminStep)) {
 
-                $url = empty($zWebFormType) ? "layouts/zWEB_FORMULAIRES" : "layouts/" . $zWebFormType . "/_find";
-
+                $url = empty($zWebFormType) ? "layouts/zWEB_FORMULAIRES" : "layouts/" . $zWebFormType . "/_find?_limit=".$limit."&_offset=".$offset;
+    @
                 $queryBody = ["query" => array([
                     empty($zWebFormType) ? "uuidConnect" : "zWEB_FORMULAIRES::uuidConnect" => $uuidConnect,
+                    empty($zWebFormType) ? "uuidConnect" : "zWEB_FORMULAIRES::uuidConnect" => $uuidConnect,
+                   "Admin_Step" => $adminStep
 
                 ])];
 
