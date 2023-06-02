@@ -38,7 +38,7 @@ $doc->addScript(JURI::root() . "plugins/fabrik_element/currency/assets/js/emundu
     <input id="currency_inputValue" name="<?php echo $displayData->attributes['name']; ?>" class="fabrikinput input-medium"
            autocomplete="off" value="<?php echo $displayData->attributes['inputValue']; ?>">
 
-    <select id="currency_selectValue" name="<?php echo $displayData->attributes['name']; ?>" class="fabrikinput">
+    <select id="currency_selectValue" name="<?php echo $displayData->attributes['name'].'[selectedIso3Front]'; ?>" class="fabrikinput">
 
         <?php foreach ($displayData->attributes['valuesForSelect'] as $key => $value) :?>
 
@@ -53,6 +53,6 @@ $doc->addScript(JURI::root() . "plugins/fabrik_element/currency/assets/js/emundu
         <?php endforeach; ?>
     </select>
 
-    <input id="currency_rowInputValue" name="<?php echo $displayData->attributes['name']; ?>" hidden="hidden">
+    <input id="currency_rowInputValue" name="<?php echo $displayData->attributes['name'].'[rowInputValueFront]'; ?>" hidden="hidden">
 
 </div>

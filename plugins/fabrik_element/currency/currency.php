@@ -23,7 +23,7 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 {
 
     protected array $allCurrency;
-    protected array $selectedCurrencies;
+    protected array $selectedCurrencies = [];
     protected int $idSelectedCurrency = 0;
 
 
@@ -178,16 +178,13 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 	 */
 	public function storeDatabaseFormat($val, $data)
 	{
-
-        if (strlen($val) === 0) // if not value then no value in DB
+        if (strlen($val['rowInputValueFront']) === 0) // if not value then no value in DB
         {
-            return $val;
+            return $val['rowInputValueFront'];
         }
 
-        $spacePos = strrpos($val, ' ');
-        $iso3 = substr($val, $spacePos+1, strlen($val));
-        $number = floatval(substr($val, 0, $spacePos));
-
+        $iso3 = $val['selectedIso3Front'];
+        $number = floatval($val['rowInputValueFront']);
         $currencyObject = $this->getCurrencyObject($this->getDataCurrency(), $iso3);
 
         $decimal_separator = $this->selectedCurrencies[$this->idSelectedCurrency]->decimal_separator;
@@ -252,23 +249,16 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
     {
         $valid = true;
         $this->selectedCurrencies = $this->getSelectedCurrencies();
-        /*
         $selectedIso3Front = $data['selectedIso3Front'];
         $rowInputValueFront = $data['rowInputValueFront'];
-        */
 
-        if (strlen($data) === 0) // empty data so no value in DB
+        if (strlen($rowInputValueFront) === 0) // empty data so no value in DB
         {
             $this->validationError = JText::_('PLG_ELEMENT_CURRENCY_NOT_IN_INTERVALS');
             $valid = !$this->validator->hasValidations(); // valid if no validation, not valid if validation
         }
         else
         {
-            // as now its a single result
-            $spacePos = strrpos($data, ' ');
-            $selectedIso3Front = substr($data, $spacePos+1, strlen($data));
-            $rowInputValueFront = substr($data, 0, $spacePos);
-
             $valid = $this->currencyFormatValidation($selectedIso3Front);
         }
 
