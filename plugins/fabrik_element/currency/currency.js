@@ -97,16 +97,16 @@ define(['jquery', 'fab/element'],
                 {
                     mask: Number,
                     // other options are optional with defaults below
-                    scale: this.allSelectedCurrencies.decimal_numbers[this.idSelectedCurrency],  // digits after point, 0 for integers
+                    scale: this.allSelectedCurrencies[this.idSelectedCurrency].decimal_numbers,  // digits after point, 0 for integers
                     signed: false,  // disallow negative
-                    thousandsSeparator: this.allSelectedCurrencies.thousand_separator[this.idSelectedCurrency],
+                    thousandsSeparator: this.allSelectedCurrencies[this.idSelectedCurrency].thousand_separator,
                     padFractionalZeros: false,  // if true, then pads zeros at end to the length of scale
                     normalizeZeros: true,  // appends or removes zeros at ends
-                    radix: this.allSelectedCurrencies.decimal_separator[this.idSelectedCurrency],  // fractional delimiter
+                    radix: this.allSelectedCurrencies[this.idSelectedCurrency].decimal_separator,  // fractional delimiter
 
                     // additional number interval options (e.g.)
-                    min: this.allSelectedCurrencies.minimal_value[this.idSelectedCurrency],
-                    max: this.allSelectedCurrencies.maximal_value[this.idSelectedCurrency],
+                    min: this.allSelectedCurrencies[this.idSelectedCurrency].minimal_value,
+                    max: this.allSelectedCurrencies[this.idSelectedCurrency].maximal_value,
                 });
         },
 

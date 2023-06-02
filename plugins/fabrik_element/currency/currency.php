@@ -23,7 +23,7 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 {
 
     protected array $allCurrency;
-    protected object $selectedCurrencies;
+    protected array $selectedCurrencies;
     protected int $idSelectedCurrency;
 
 
@@ -83,11 +83,11 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         $valuesForSelect            = []; // formated value for the select to show
         $inputValue                 = ''; // back value for the inputValue in front
 
-        for ($i = 0; $i != count($this->selectedCurrencies->iso3); $i++)
+        foreach ($this->selectedCurrencies as $selectedCurrencyOne)
         {
             foreach ($this->allCurrency as $allCurrencyOne)
             {
-                if ($allCurrencyOne->iso3 === $this->selectedCurrencies->iso3[$i])
+                if ($allCurrencyOne->iso3 === $selectedCurrencyOne->iso3)
                 {
                     $valuesForSelect[$allCurrencyOne->iso3] = $allCurrencyOne->symbol . ' (' . $allCurrencyOne->iso3 . ')';
                 }
@@ -107,7 +107,7 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 
 		$bits = $this->inputProperties($repeatCounter);
         $bits['valuesForSelect'] = $valuesForSelect;
-        $bits['iso3SelectedCurrency'] = $this->selectedCurrencies->iso3[$this->idSelectedCurrency]; // to set options selected
+        $bits['iso3SelectedCurrency'] = $this->selectedCurrencies[$this->idSelectedCurrency]->iso3; // to set options selected
         $bits['inputValue'] = $inputValue;
 
 		$layout = $this->getLayout('form');
@@ -125,11 +125,11 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
     private function getIdCurrencyFromIso3($iso3)
     {
         $id = 0;
-        for ($i = 0; $i!= count($this->selectedCurrencies->iso3); $i++)
+        foreach ($this->selectedCurrencies as $key => $currency)
         {
-            if ($this->selectedCurrencies->iso3[$i] === $iso3)
+            if ($currency->iso3 === $iso3)
             {
-                $id = $i; // if doublons, we get the last one
+                $id = $key;
             }
         }
         return $id;
@@ -190,9 +190,12 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 
         $currencyObject = $this->getCurrencyObject($this->getDataCurrency(), $iso3);
 
-        $decimal_separator = $this->selectedCurrencies->decimal_separator[$this->idSelectedCurrency];
-        $thousands_separator = $this->selectedCurrencies->thousand_separator[$this->idSelectedCurrency] ;
-        $decimalNumber = $this->selectedCurrencies->decimal_numbers[$this->idSelectedCurrency];
+        $decimal_separator = $this->selectedCurrencies[$this->idSelectedCurrency]->decimal_separator;
+
+        $thousands_separator = $this->selectedCurrencies[$this->idSelectedCurrency]->thousand_separator;
+
+        $decimalNumber = $this->selectedCurrencies[$this->idSelectedCurrency]->decimal_numbers;
+
         // $regex = $this->getParams()->get('regex'); // pas sur de réussir
 
         $numberFormated = number_format($number, $decimalNumber, $decimal_separator, $thousands_separator);
@@ -215,7 +218,13 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 
     private function getSelectedCurrencies()
     {
-        return json_decode($this->getParams()->get('all_currencies_options'));
+        $listCurrency = [];
+        foreach ($this->getParams()->get('all_currencies_options') as $element)
+        {
+            $listCurrency[] = $element;
+
+        }
+        return $listCurrency;
     }
 
     private function getCurrencyObject($listCurrency, $iso3)
@@ -283,9 +292,9 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         $this->validationError = JText::_('PLG_ELEMENT_CURRENCY_CURRENCY_ERROR');
         $valid = false;
 
-        for ($i = 0; $i != count($this->selectedCurrencies->iso3); $i++)
+        foreach ($this->selectedCurrencies as $currency)
         {
-            if ($this->selectedCurrencies->iso3[$i] === $selectedIso3Front)
+            if ($currency->iso3 === $selectedIso3Front)
             {
                 $valid = true;
             }
@@ -305,9 +314,9 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         }
         else
         {
-            if ($rowInputValueFront < $this->selectedCurrencies->minimal_value[$this->idSelectedCurrency]
+            if ($rowInputValueFront < $this->selectedCurrencies[$this->idSelectedCurrency]->minimal_value
                 ||
-                $rowInputValueFront > $this->selectedCurrencies->maximal_value[$this->idSelectedCurrency])
+                $rowInputValueFront > $this->selectedCurrencies[$this->idSelectedCurrency]->maximal_value)
             {
                 $this->validationError = JText::_('PLG_ELEMENT_CURRENCY_NOT_IN_INTERVALS');
                 $valid = false;
