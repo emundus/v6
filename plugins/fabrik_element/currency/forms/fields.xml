@@ -67,7 +67,6 @@
 					<field name="thousand_separator"
 						   type="text"
 						   label="PLG_ELEMENT_CURRENCY_THOUSAND_SEPARATOR"
-						   required="1"
 						   maxlength="1"
 						   size="3"
 						   default=" "

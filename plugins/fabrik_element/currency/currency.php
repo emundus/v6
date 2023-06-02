@@ -24,7 +24,7 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 
     protected array $allCurrency;
     protected array $selectedCurrencies;
-    protected int $idSelectedCurrency;
+    protected int $idSelectedCurrency = 0;
 
 
 	/**
@@ -337,12 +337,5 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         }
 
         return $string;
-
-        /* for row value
-        $decimal_separator = $this->getParams()->get('decimal_separator');
-        $thousands_separator = $this->getParams()->get('thousand_separator');
-
-        return str_replace([$thousands_separator, $decimal_separator], ['', '.'], $formatedValue); // DB format number to normal
-        */
     }
 }

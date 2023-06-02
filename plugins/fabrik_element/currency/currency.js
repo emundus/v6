@@ -75,15 +75,34 @@ define(['jquery', 'fab/element'],
 
         initSelect: function()
         {
-            this.HTMLSelectElement.options.length === 1 ? this.HTMLSelectElement.setAttribute('tabindex', -1) : null;
+            if (this.HTMLSelectElement.options.length === 1)
+            {
+                this.HTMLSelectElement.setAttribute('tabindex', -1)
+                this.HTMLSelectElement.style.pointerEvents = 'none';
+                this.HTMLSelectElement.style.backgroundImage = 'none';
+            }
             this.HTMLSelectElement.addEventListener('change', this.handlerSelectChange.bind(this));
         },
 
         handlerSelectChange: function(e)
         {
-            this.HTMLInputElement.value = null;
-            this.idSelectedCurrency = e.target.selectedIndex;
+            const oldIdSelectedCurrency = this.idSelectedCurrency;
+            const newIdSelectedCurrency = this.idSelectedCurrency = e.target.selectedIndex;
+
+            const newInputValue = this.getNewInputValue(this.HTMLInputElement.value, oldIdSelectedCurrency, newIdSelectedCurrency);
             this.addMask();
+            this.mask.value = newInputValue;
+        },
+
+        getNewInputValue: function(oldInput, oldIdSelectedCurrency, newIdSelectedCurrency)
+        {
+            const oldDecimalSep = this.allSelectedCurrencies[oldIdSelectedCurrency].decimal_separator;  // fractional delimiter
+            const oldThousandSep =this.allSelectedCurrencies[oldIdSelectedCurrency].thousand_separator;
+
+            const newDecimalSep = this.allSelectedCurrencies[newIdSelectedCurrency].decimal_separator;  // fractional delimiter
+            const newThousandSep = this.allSelectedCurrencies[newIdSelectedCurrency].thousand_separator;
+
+            return oldInput.replace(oldDecimalSep, newDecimalSep).replace(oldThousandSep, newThousandSep);
         },
 
         addMask: function ()
