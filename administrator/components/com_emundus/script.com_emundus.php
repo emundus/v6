@@ -1872,6 +1872,10 @@ structure:
                 }
 
 				EmundusHelperUpdate::updateExtensionParam('fbConf_alter_existing_db_cols','addonly', null, 'com_fabrik');
+
+				if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/24/page/assets.yaml')){
+					unlink(JPATH_ROOT . '/templates/g5_helium/custom/config/24/page/assets.yaml');
+				}
             }
 
 			// Insert new translations in overrides files
