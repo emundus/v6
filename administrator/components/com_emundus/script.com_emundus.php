@@ -711,7 +711,7 @@ if (password_value.match(regex) != null) {
 					['label' => 'onWebhookCallbackProcess', 'category' => 'Webhook', 'published' => 1]
 				]);
 
-				EmundusHelperUpdate::updateEmundusParam('gotenberg_url', 'https://gotenberg.microservices.tchooz.app', 'https://docs.emundus.app');
+				EmundusHelperUpdate::updateExtensionParam('gotenberg_url', 'https://gotenberg.microservices.tchooz.app', 'https://docs.emundus.app');
 
 				// Install new flow module on old default layouts
 				$db    = JFactory::getDbo();
@@ -815,7 +815,7 @@ if (password_value.match(regex) != null) {
 				$db->setQuery($query);
 				$db->execute();
 
-				EmundusHelperUpdate::updateEmundusParam('export_application_pdf_title_color', '#000000', '#ee1c25');
+				EmundusHelperUpdate::updateExtensionParam('export_application_pdf_title_color', '#000000', '#ee1c25');
 
 				$old_values = [
 					'fr-FR' => 'Table - Paramétrage des groupes',
@@ -1870,6 +1870,8 @@ structure:
                         }
                     }
                 }
+
+				EmundusHelperUpdate::updateExtensionParam('fbConf_alter_existing_db_cols','addonly', null, 'com_fabrik');
             }
 
 			// Insert new translations in overrides files

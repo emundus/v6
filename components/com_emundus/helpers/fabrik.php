@@ -891,4 +891,42 @@ die("<script>
             return false;
         }
     }
+
+	static function createFilterList(&$filters,$eid,$value,$condition = '=',$join = 'AND',$hidden = 0,$raw = 0)
+	{
+		if(!in_array($eid,$filters['elementid'])){
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('fl.db_table_name,fe.name')
+				->from($db->quoteName('#__fabrik_elements','fe'))
+				->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
+				->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ffg.form_id'))
+				->where($db->quoteName('id') . ' = ' . $db->quote($eid));
+			$db->setQuery($query);
+			$element_details = $db->loadObject();
+
+			$filters['elementid'][] = $eid;
+			$filters['value'][] = $value;
+			$filters['condition'][] = $condition;
+			$filters['join'][] = $join;
+			$filters['no-filter-setup'][] = 0;
+			$filters['hidden'][] = $hidden;
+			$filters['key'][] = '`'.$element_details->db_table_name.'`.`'.$element_details->name.'`';
+			$filters['key2'][] = '';
+			$filters['search_type'][] = 'querystring';
+			$filters['match'][] = '1';
+			$filters['eval'][] = 3;
+			$filters['required'][] = '0';
+			$filters['access'][] = '1';
+			$filters['grouped_to_previous'][] = 0;
+			$filters['raw'][] = 0;
+			$filters['orig_condition'][] = '=';
+			$filters['sqlCond'][] = ' `'.$element_details->db_table_name.'`.`'.$element_details->name.'` = '.$value.' ';
+			$filters['origvalue'][] = $value;
+			$filters['filter'][] = $value;
+		}
+
+		return $filters;
+	}
 }
