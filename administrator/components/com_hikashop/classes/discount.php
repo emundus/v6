@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -411,15 +411,15 @@ class hikashopDiscountClass extends hikashopClass {
 						$total_amount += @$product->prices[0]->$var;
 				}
 			}
-			if($coupon->discount_minimum_order > $total_amount)
+			if($coupon->discount_minimum_order > 0 && $coupon->discount_minimum_order > $total_amount)
 				return JText::sprintf('ORDER_NOT_EXPENSIVE_ENOUGH_FOR_COUPON',$currencyClass->format($coupon->discount_minimum_order,$coupon->discount_currency_id));
 			if($coupon->discount_maximum_order > 0 && $coupon->discount_maximum_order < $total_amount)
 				return JText::sprintf('ORDER_TOO_PRODUCTS_FOR_COUPON',$currencyClass->format($coupon->discount_maximum_order,$coupon->discount_currency_id));
 		}
-		$min_qty = (int)$coupon->discount_minimum_products > 0;
-		$max_qty = (int)$coupon->discount_maximum_products > 0;
+		$min_qty = (int)$coupon->discount_minimum_products;
+		$max_qty = (int)$coupon->discount_maximum_products;
 
-		if(empty($error_message) && ($min_qty || $max_qty)) {
+		if(empty($error_message) && ($min_qty > 0 || $max_qty > 0)) {
 			$qty = 0;
 			if(!empty($coupon->products)) {
 				foreach($coupon->products as $product) {
@@ -427,10 +427,10 @@ class hikashopDiscountClass extends hikashopClass {
 				}
 			}
 
-			if($coupon->discount_minimum_products > 0 && (int)$coupon->discount_minimum_products > $qty)
-				return JText::sprintf('NOT_ENOUGH_PRODUCTS_FOR_COUPON', (int)$coupon->discount_minimum_products);
-			if((int)$coupon->discount_maximum_products < $qty)
-				return JText::sprintf('TOO_MUCH_PRODUCTS_FOR_COUPON', (int)$coupon->discount_maximum_products);
+			if($min_qty > 0 && $min_qty > $qty)
+				return JText::sprintf('NOT_ENOUGH_PRODUCTS_FOR_COUPON', $min_qty);
+			if($max_qty > 0 && $max_qty < $qty)
+				return JText::sprintf('TOO_MUCH_PRODUCTS_FOR_COUPON', $max_qty);
 		}
 
 		return $error_message;
@@ -461,14 +461,13 @@ class hikashopDiscountClass extends hikashopClass {
 					continue;
 				if(empty($product->cart_product_quantity))
 					continue;
-				if(in_array($product->product_id,$coupon->discount_product_id)  || in_array($product->product_parent_id,$coupon->discount_product_id)) {
+				if(in_array($product->product_id,$coupon->discount_product_id)  || (!empty($product->product_parent_id) && in_array($product->product_parent_id,$coupon->discount_product_id))) {
 					switch($coupon->discount_coupon_nodoubling) {
 						case 2:
 							if(isset($product->prices[0]->$price_without_discount)) {
-								$coupon->discount_flat_amount += ($coupon->discount_percent_amount * $product->prices[0]->$price) / 100;
+								$coupon->discount_flat_amount += ($coupon->discount_percent_amount * $product->prices[0]->$price_without_discount) / 100;
 								$coupon->discount_flat_amount -= $product->prices[0]->$price_without_discount - $product->prices[0]->$price;
-								if($coupon->discount_flat_amount < 0)
-									$coupon->discount_flat_amount = 0;
+
 								break;
 							}
 						case 1:
@@ -494,14 +493,12 @@ class hikashopDiscountClass extends hikashopClass {
 					else
 						$productid = $prod->product_id;
 
-					if($product->product_id == $productid && empty($product->variants) || $product->product_parent_id == $productid) {
+					if($product->product_id == $productid && empty($product->variants) || (!empty($product->product_parent_id) && $product->product_parent_id == $productid)) {
 						switch($coupon->discount_coupon_nodoubling) {
 							case 2:
 								if(isset($product->prices[0]->$price_without_discount)) {
-									$coupon->discount_flat_amount += ($coupon->discount_percent_amount * $product->prices[0]->$price) / 100;
+									$coupon->discount_flat_amount += ($coupon->discount_percent_amount * $product->prices[0]->$price_without_discount) / 100;
 									$coupon->discount_flat_amount -= $product->prices[0]->$price_without_discount - $product->prices[0]->$price;
-									if($coupon->discount_flat_amount < 0)
-										$coupon->discount_flat_amount = 0;
 									break;
 								}
 							case 1:
@@ -519,6 +516,9 @@ class hikashopDiscountClass extends hikashopClass {
 
 			}
 		}
+
+		if($coupon->discount_flat_amount < 0)
+			$coupon->discount_flat_amount = 0;
 
 		if (bccomp(sprintf('%F',$coupon->discount_flat_amount), 0, 5)) {
 			$coupon->discount_percent_amount_orig = $coupon->discount_percent_amount;

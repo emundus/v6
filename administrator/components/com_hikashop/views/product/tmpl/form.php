@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -36,9 +36,12 @@ defined('_JEXEC') or die('Restricted access');
 		<div style="clear:both"></div>
 <?php
 	}
+	$customize_css = "hikashop_customize_area";
+	if($this->customize)
+		$customize_css .= " hikashop_customize_pointer";
 ?>
 	</div>
-<div id="hikashop_product_backend_page_edition" class="hikashop_customize_area">
+<div id="hikashop_product_backend_page_edition" class="<?php echo $customize_css; ?>">
 
 	<!-- Product edition : main tab -->
 	<div id="hikashop_product_edition_tab_1"><div class="hk-container-fluid">
@@ -242,26 +245,23 @@ function descWidth(delay) {
 		desc.classList.remove("desc_width_small");
 		desc.classList.add("desc_width_mid");
 
-		window.localPage.setCookie('hikashop_descWidth_cookie','desc_width_mid',delay);
+		window.hikashop.setCookie('hikashop_descWidth_cookie','desc_width_mid',delay);
 		return;
 	}
 	if (desc.classList.contains("desc_width_mid")) {
 		desc.classList.remove("desc_width_mid");
 		desc.classList.add("desc_width_max");
 
-		window.localPage.setCookie('hikashop_descWidth_cookie','desc_width_max',delay);
+		window.hikashop.setCookie('hikashop_descWidth_cookie','desc_width_max',delay);
 		return;
 	}
 	if (desc.classList.contains("desc_width_max")) {
 		desc.classList.remove("desc_width_max");
 		desc.classList.add("desc_width_small");
 
-		window.localPage.setCookie('hikashop_descWidth_cookie','desc_width_small',delay);
+		window.hikashop.setCookie('hikashop_descWidth_cookie','desc_width_small',delay);
 		return;
 	}
-}
-window.localPage.setCookie = function (name,value,delay) {
-	document.cookie = name + "=" + (value || "")  +  "; expires=" + delay + "; path=/";
 }
 </script>
 		<div style="clear:both"></div>
@@ -659,6 +659,10 @@ window.localPage.setCookie = function (name,value,delay) {
 		<div class="hikashop_product_part_title hikashop_product_edit_new_block_title"><?php
 			echo JText::_('FORM_CUSTOMIZATION');
 		?></div>
+
+<?php
+	if($this->config->get('form_custom', 1)) {
+?>
 		<dl class="hika_options">
 			<dt class="hikashop_product_new_view_name"><label for="data_product__product_new_view_name"><?php echo JText::_('NEW_BLOCK_NAME'); ?></label></dt>
 			<dd class="hikashop_product_new_view_name"><input id="product_new_view_name" type="text" style="width:100%" size="45" name="" value=""/></dd>
@@ -668,15 +672,35 @@ window.localPage.setCookie = function (name,value,delay) {
 					echo JText::_('ADD_NEW_BLOCK');
 				?></a>
 		</div>
+
+		<div class="new_activate_button">
+			<a href="#" class="btn btn-primary" onclick="window.productMgr.toggleCustom(0); return false;"><?php
+						echo JText::_('DEACTIVATE_FORM_CUSTOMIZATION');
+					?></a>
+		</div>
 		<div class="reset_block_button">
 			<a href="#" class="btn btn-danger" onclick="window.formCustom.reset(window.productDragOptionsKey); return false;"><i class="fa fa-trash"></i> <?php
 					echo JText::_('RESET_TO_DEFAULT_VIEW');
 				?></a>
 			<p><?php echo JText::_('BLOCK_HIDDEN_ACCESS_LEVEL'); ?></p>
 		</div>
-	</div></div>
-<?php } ?>
+<?php
+	} else {
+?>
+		<div class="new_activate_button">
+			<a href="#" class="btn btn-primary" onclick="window.productMgr.toggleCustom(1); return false;"><?php
+				echo JText::_('ACTIVATE_FORM_CUSTOMIZATION');
+			?></a>
+		</div>
+<?php
+	}
+?>
 
+	</div></div>
+<?php
+}
+?>
+	<input type="hidden" name="config_form_custom"  id="config_form_custom" value="<?php echo $this->config->get('form_custom', 1); ?>"/>
 	</div>
 
 	<div id="hikashop_product_edition_tab_2" style="display:none;">
@@ -714,8 +738,17 @@ window.productMgr.prepare = function() {
 	}
 	o.fireAjax("syncWysiwygEditors", null);
 };
+window.productMgr.toggleCustom = function(newStatus) {
+	var input = document.getElementById('config_form_custom');
+	input.value = newStatus;
+	input.form.task.value = 'apply';
+	input.form.submit();
+};
 </script>
-<?php hikashop_loadJslib('formCustom'); ?>
+<?php 
+if($this->config->get('form_custom', 1)) {
+	hikashop_loadJslib('formCustom');
+?>
 <script type="text/javascript">
 window.hikashop.ready( function() {
 	window.productDragOptionsKey = window.formCustom.initDragAndDrop({
@@ -724,3 +757,5 @@ window.hikashop.ready( function() {
 	});
 });
 </script>
+<?php
+}

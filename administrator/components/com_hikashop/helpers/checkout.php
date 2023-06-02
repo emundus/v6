@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -462,8 +462,12 @@ class hikashopCheckoutHelper {
 		$shipping_addreses = md5(serialize(@$cart->usable_addresses->shipping));
 
 		$shipping = $cart->cart_shipping_ids;
-		if(is_array($shippings))
-			$shipping = implode(',', $shipping);
+		if(is_array($cart->cart_shipping_ids)) {
+			$shipping = '';
+			foreach($cart->cart_shipping_ids as $selection) {
+				$shipping .=','.$selection;
+			}
+		}
 
 		$payment_price = 0.0;
 		if(isset($cart->payment->payment_price))

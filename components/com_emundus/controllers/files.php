@@ -629,7 +629,7 @@ class EmundusControllerFiles extends JControllerLegacy
             } else {
                 $msg = JText::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
             }
-        } else {
+        } elseif ($fnums_post == 'all') {
             $fnums = $m_files->getAllFnums();
             if ($groups !== null) {
                 $groups = (array) json_decode(stripslashes($groups));
@@ -646,6 +646,11 @@ class EmundusControllerFiles extends JControllerLegacy
             } else {
                 $msg = JText::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
             }
+        }
+        else {
+            $msg = JText::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
+            echo json_encode((object)(array('status' => '0', 'msg' => $msg)));
+            exit;
         }
 
         if ($notify !== 'false' && $res !== false && !empty($evals)) {

@@ -1,19 +1,14 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><div id="hikashop_affiliate_main">
 <?php
-global $Itemid;
-$url_itemid = '';
-if(!empty($Itemid)){
-	$url_itemid='&Itemid='.$Itemid;
-}
 if(!empty($this->user->user_id)){
 	$js ='
 	function changeCurrency() {
@@ -25,7 +20,7 @@ if(!empty($this->user->user_id)){
 	echo $this->toolbarHelper->process($this->toolbar, $this->title);
  } ?>
 <div class="iframedoc" id="iframedoc"></div>
-<form action="<?php echo hikashop_completeLink('affiliate'.$url_itemid); ?>" method="post"  name="adminForm" id="adminForm">
+<form action="<?php echo hikashop_completeLink('affiliate'.$this->url_itemid); ?>" method="post"  name="adminForm" id="adminForm">
 	<?php if(!empty($this->user->user_partner_activated)){?>
 <?php if(!HIKASHOP_RESPONSIVE) { ?>
 <div id="page-affiliate">
@@ -54,7 +49,7 @@ if(!empty($this->user->user_id)){
 								<?php echo JText::_( 'ID' ); ?>
 							</td>
 							<td>
-								<?php echo $this->escape(@$this->user->user_id); ?>
+								<?php echo $this->escape((string)@$this->user->user_id); ?>
 							</td>
 						</tr>
 						<tr>
@@ -64,7 +59,7 @@ if(!empty($this->user->user_id)){
 								</label>
 							</td>
 							<td>
-								<input type="text" name="data[user][user_partner_email]" class="inputbox" value="<?php echo $this->escape(@$this->user->user_partner_email); ?>" />
+								<input type="text" name="data[user][user_partner_email]" class="<?php echo HK_FORM_CONTROL_CLASS; ?>" value="<?php echo $this->escape((string)@$this->user->user_partner_email); ?>" />
 							</td>
 						</tr>
 						<?php if($this->allow_currency_selection){?>
@@ -75,7 +70,7 @@ if(!empty($this->user->user_id)){
 								</label>
 							</td>
 							<td>
-								<?php echo $this->currencyType->display("data[user][user_currency_id]",@$this->user->user_currency_id,'onChange="changeCurrency();"');?>
+								<?php echo $this->currencyType->display("data[user][user_currency_id]",@$this->user->user_currency_id,'onChange="changeCurrency();" class="'.HK_FORM_SELECT_CLASS.'"');?>
 							</td>
 						</tr>
 						<?php }?>
@@ -97,7 +92,7 @@ if(!empty($this->user->user_id)){
 								echo $this->popup->display(
 										JText::_('CLICKS_ALL').' <i class="fa fa-chevron-right"></i>',
 										'CLICKS_ALL',
-										hikashop_completeLink('affiliate&task=clicks&unpaid=0&user_id='.$this->user->user_id.'',true),
+										hikashop_completeLink('affiliate&task=clicks&unpaid=0&user_id='.$this->user->user_id.$this->url_itemid,true),
 										'hikashop_affiliate_clicks_popup',
 										760, 480, 'title="'.JText::_('CLICKS_ALL').'"', '', 'link'
 									);
@@ -125,7 +120,7 @@ if(!empty($this->user->user_id)){
 									echo $this->popup->display(
 										'<i class="fa fa-chevron-right"></i>',
 										'CLICKS',
-										hikashop_completeLink('affiliate&task=clicks&unpaid=1&user_id='.$this->user->user_id.'',true),
+										hikashop_completeLink('affiliate&task=clicks&unpaid=1&user_id='.$this->user->user_id.$this->url_itemid,true),
 										'hikashop_affiliate_clicks_popup',
 										760, 480, '', '', 'link'
 									);
@@ -149,7 +144,7 @@ if(!empty($this->user->user_id)){
 									echo $this->popup->display(
 										'<i class="fa fa-chevron-right"></i>',
 										'LEADS',
-										hikashop_completeLink('affiliate&task=leads&user_id='.$this->user->user_id.'',true),
+										hikashop_completeLink('affiliate&task=leads&user_id='.$this->user->user_id.$this->url_itemid,true),
 										'hikashop_affiliate_leads_popup',
 										760, 480, '', '', 'link'
 									);
@@ -171,7 +166,7 @@ if(!empty($this->user->user_id)){
 									echo $this->popup->display(
 										'<i class="fa fa-chevron-right"></i>',
 										'SALES',
-										hikashop_completeLink('affiliate&task=sales&user_id='.$this->user->user_id.'',true),
+										hikashop_completeLink('affiliate&task=sales&user_id='.$this->user->user_id.$this->url_itemid,true),
 										'hikashop_affiliate_sales_popup',
 										760, 480, '', '', 'link'
 									);
@@ -230,7 +225,7 @@ if(!empty($this->user->user_id)){
 					</label>
 				</td>
 				<td>
-					<input type="text" name="data[user][user_partner_email]" class="inputbox" value="<?php echo $this->escape(@$this->user->user_partner_email); ?>" />
+					<input type="text" name="data[user][user_partner_email]" class="<?php echo HK_FORM_CONTROL_CLASS; ?>" value="<?php echo $this->escape((string)@$this->user->user_partner_email); ?>" />
 				</td>
 			</tr>
 		</table>

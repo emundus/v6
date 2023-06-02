@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -68,6 +68,15 @@ class hikashopCheckoutPaymentHelper extends hikashopCheckoutHelperInterface {
 			JText::_('SELECT_PAYMENT'),
 			'error'
 		));
+		return false;
+	}
+
+	public function haveEmptyContent(&$controller, &$params) {
+		$checkoutHelper = hikashopCheckoutHelper::get();
+		$cart = $checkoutHelper->getCart();
+		if((empty($cart->full_total->prices[0]) || $cart->full_total->prices[0]->price_value_with_tax == 0.0)) {
+			return true;
+		}
 		return false;
 	}
 

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -21,6 +21,9 @@ class plgSystemHikashopproductInsert extends JPlugin {
 	var $border = 0;
 	var $badge = 0;
 	var $price = 0;
+	public $image = null;
+	public $classbadge = null;
+	public $menuid = null;
 
 	function __construct(&$subject, $config) {
 		parent::__construct($subject, $config);
@@ -184,6 +187,8 @@ class plgSystemHikashopproductInsert extends JPlugin {
 								break;
 							case 'mincart':
 							case 'maxcart':
+							case 'minproducts':
+							case 'maxproducts':
 								if(count($elements) <= 1)
 									break;
 								$amount = trim($elements[1], '" ');
@@ -194,12 +199,15 @@ class plgSystemHikashopproductInsert extends JPlugin {
 									$cart = $cartClass->getFullCart();
 								}
 								$total = 0;
-								if(!empty($cart->total->full_total->prices[0]->price_value_with_tax))
-									$total = $cart->total->full_total->prices[0]->price_value_with_tax;
-
+								$totalName = 'full_total';
+								if(strpos($key,'products'))
+									$totalName = 'total';
+								if(!empty($cart->$totalName->prices[0]->price_value_with_tax))
+									$total = $cart->$totalName->prices[0]->price_value_with_tax;
+								$key = substr($key, 0, 3);
 								if(
-									($key == 'maxcart' && $total > $amount) ||
-									($key == 'mincart' && $total < $amount)
+									($key == 'max' && $total > $amount) ||
+									($key == 'min' && $total < $amount)
 								) {
 									$show = !$show;
 									break 2;
