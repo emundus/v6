@@ -63,7 +63,7 @@ endforeach;
         <div class="em-flex-row em-flex-space-between">
             <h2><?php echo $this->table->label;?></h2>
             <?php if(!in_array('list_only', $notes) && !in_array('grid_only', $notes)) : ?>
-                <div class="em-flex-row em-gap-8">
+                <div class="em-flex-row em-gap-8 fabrik-switch-view-buttons">
                     <span onclick="switchView('grid')" class="em-pointer material-icons-outlined fabrik-switch-view-icon" id="fabrik_switch_view_grid_icon">grid_view</span>
                     <span onclick="switchView('list')" class="em-pointer material-icons-outlined fabrik-switch-view-icon" id="fabrik_switch_view_list_icon">menu</span>
                 </div>
@@ -79,7 +79,7 @@ endforeach;
 
     <div class="em-flex-row em-flex-start">
 
-        <a class="em-flex-row em-mr-16 em-pointer em-w-max-content em-icon-back-button" onclick="history.go(-1)"">
+        <a class="em-flex-row em-mr-16 em-pointer em-w-max-content em-icon-back-button" onclick="window.location.href = document.referrer">
             <span class="material-icons-outlined em-repeat-card-no-padding">chevron_left</span>
         </a>
 
@@ -175,6 +175,12 @@ endif;
             document.querySelector('.page-header h2').style.opacity = 0;
             document.querySelector('.page-header .em-list-intro').style.opacity = 0;
             header.classList.add('skeleton');
+        }
+
+        let switch_button_views = document.querySelector('.fabrik-switch-view-buttons');
+        if (switch_button_views) {
+            switch_button_views.style.opacity = 0;
+            switch_button_views.classList.add('skeleton');
         }
 
         let filters = document.querySelector('.filtertable');
