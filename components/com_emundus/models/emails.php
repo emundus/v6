@@ -920,11 +920,15 @@ class EmundusModelEmails extends JModelList {
         $mail_type = $jinput->get('mail_type', null, 'CMD');
 
         if ($fnum != null) {
-            $student_id = (int)substr($fnum, -7);
-            $campaign_id = (int)substr($fnum, 14, 7);
+            require_once (JPATH_ROOT . '/components/com_emundus/models/files.php');
+            $m_files = new EmundusModelFiles();
+            $fnum_infos = $m_files->getFnumInfos($fnum);
+
+            $student_id = $fnum_infos['applicant_id'];
+            $campaign_id = $fnum_infos['campaign_id'];
         } else {
-            $student_id = $jinput->get('student_id', null, 'INT');
-            $campaign_id = $jinput->get('campaign_id', null, 'INT');
+            $student_id = $jinput->getInt('student_id', null);
+            $campaign_id = $jinput->getInt('campaign_id', null);
         }
 
         $student = JFactory::getUser($student_id);
@@ -962,11 +966,10 @@ class EmundusModelEmails extends JModelList {
             ];
             $this->logEmail($message);
 
-        } elseif ($type == "expert") {
+        } elseif ($type == 'expert') {
 
             require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-            include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
-
+            include_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
             $eMConfig   = JComponentHelper::getParams('com_emundus');
             $formid     = json_decode($eMConfig->get('expert_fabrikformid', '{"accepted":169, "refused":328}'));
             $documentid = $eMConfig->get('expert_document_id', '36');
@@ -978,11 +981,7 @@ class EmundusModelEmails extends JModelList {
             $mail_from      = $jinput->get('mail_from', null, 'STRING');
 			$mail_to		= $jinput->get('mail_to', null, 'STRING');
 			$mail_body 		= $jinput->get('mail_body', null, 'RAW');
-
-            $campaign = @EmundusHelperfilters::getCampaignByID($campaign_id);
-
             $tags = $this->setTags($this->_em_user->id, null, null, '', $mail_from_name.$mail_from.$mail_to);
-
             $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
             $mail_from      = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
             $mail_to = explode(',', $mail_to);
@@ -991,6 +990,7 @@ class EmundusModelEmails extends JModelList {
             //
             // Replacement
             //
+            $campaign = @EmundusHelperfilters::getCampaignByID($campaign_id);
             $post = [
                 'TRAINING_PROGRAMME'    => $campaign['label'],
                 'CAMPAIGN_START'        => $campaign['start_date'],
@@ -1017,6 +1017,7 @@ class EmundusModelEmails extends JModelList {
             $failed = array();
             $print_message = '';
 
+            $query = $this->_db->getQuery(true);
             foreach ($mail_to as $m_to) {
 
                 $key1 = md5($this->rand_string(20).time());
@@ -1024,10 +1025,17 @@ class EmundusModelEmails extends JModelList {
 
                 // 2. MAJ de la table emundus_files_request
                 $attachment_id = $documentid; // document avec clause de confidentialité
-                $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, campaign_id, email, fnum)
-                            VALUES (NOW(), '.$student_id.', "'.$key1.'", "'.$attachment_id.'", '.$campaign_id.', '.$this->_db->quote($m_to).', '.$this->_db->quote($fnum).')';
-                $this->_db->setQuery($query);
-                $this->_db->query();
+                $query->clear();
+                $query->insert('#__emundus_files_request')
+                    ->columns('time_date, student_id, keyid, attachment_id, campaign_id, email, fnum')
+                    ->values( $this->_db->quote(gmdate('Y-m-d H:i:s')) . ', '.$student_id.', "'.$key1.'", "'.$attachment_id.'", '.$campaign_id.', '.$this->_db->quote($m_to).', '.$this->_db->quote($fnum));
+
+                try {
+                    $this->_db->setQuery($query);
+                    $this->_db->query();
+                } catch (Exception $e) {
+                   JLog::add('Error trying to insert emundus files request (fnum ' . $fnum . ') : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                }
 
                 // 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
                 $link_accept = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid->accepted.'&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id;
@@ -1126,9 +1134,6 @@ class EmundusModelEmails extends JModelList {
 
                 $m_application = new EmundusModelApplication;
                 $m_application->addComment($row);
-
-                $key1 = "";
-
             }
 
             // delete attached files
