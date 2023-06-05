@@ -1426,7 +1426,8 @@ class EmundusModelEmails extends JModelList {
 
                     }
                 } else {
-                    $message = JText::_('NO_MAIL_TO_SEND');
+                    JLog::add(JFactory::getUser()->id . ' Function sendExpertMail has been called but mail_to has been found empty. fnums => (' . json_encode($fnums) . ')', JLog::WARNING, 'com_emundus');
+                    $print_message = JText::_('NO_MAIL_TO_SEND');
                 }
             }
         }
