@@ -150,7 +150,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
 
     ?>
 
-    <div class="em-flex-row em-mt-8 mod_emundus_flow___infos">
+    <div class="em-mt-8">
         <?php if (!empty($file_tags_display)) :
             echo $file_tags_display;
          endif; ?>
