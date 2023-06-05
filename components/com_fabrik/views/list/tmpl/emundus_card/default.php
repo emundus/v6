@@ -75,6 +75,8 @@ endforeach;
     </div>
     <?php endif; ?>
 
+     <?php if ($showTitle == 0) : ?>
+
     <div class="em-flex-row em-flex-start">
 
         <a class="em-flex-row em-mr-16 em-pointer em-w-max-content em-icon-back-button" onclick="history.go(-1)"">
@@ -83,8 +85,8 @@ endforeach;
 
          <h2><?php echo $this->table->label;?></h2>
 
-
     </div>
+    <?php endif; ?>
 
     <div class="em-mt-8">
 
