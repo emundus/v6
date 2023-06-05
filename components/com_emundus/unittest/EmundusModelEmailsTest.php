@@ -153,6 +153,6 @@ class EmundusModelEmailsTest extends TestCase
 		$jinput->post->set('mail_body', $params['mail_body']);
 
 		$response = $this->m_emails->sendExpertMail([$fnum]);
-		$this->assertContains($params['mail_to'][0], $response['sent'], 'L\'envoi de l\'email expert a pas fonctionné.');
+		$this->assertContains($params['mail_to'][0], $response['sent'], 'L\'envoi de l\'email expert a fonctionné.');
 	}
 }
