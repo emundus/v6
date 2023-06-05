@@ -152,7 +152,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
 
     <div class="em-flex-row em-mt-8 mod_emundus_flow___infos">
         <?php if (!empty($file_tags_display)) : ?>
-                <span class="em-applicant-text-color">
+                <span>
                     <?= $file_tags_display; ?>
                 </span>
         <?php endif; ?>
