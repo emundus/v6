@@ -25,7 +25,9 @@ $now = $dateTime->format('Y-m-d H:i:s');
     }
     .mod_emundus_flow___infos{
         flex-wrap: wrap;
-        grid-gap: 24px;
+        row-gap: 8px;
+        column-gap: 24px;
+        max-width: 80%;
     }
 
     .mod_emundus_flow___intro .em-h2{
