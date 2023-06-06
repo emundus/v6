@@ -129,6 +129,36 @@ define(['jquery', 'fab/element'],
                 });
         },
 
+        update: function(e)
+        {
+            if (typeOf(this.element) === 'null') {
+                return;
+            }
+            this.setValue(e);
+        },
+
+        getValue: function ()
+        {
+            return this.mask.unmaskedValue;
+        },
+
+        setValue: function (val)
+        {
+            const decimalSep = this.allSelectedCurrencies[this.idSelectedCurrency].decimal_separator;
+            this.mask.value = val.toString().replace('.', decimalSep);
+        },
+
+
+        /**
+         * When a form/details view is updating its own data, then should we use the raw data or the html?
+         * Raw is used for cdd/db join elements
+         *
+         * @returns {boolean}
+         */
+        updateUsingRaw: function () {
+            return true;
+        },
+
         onsubmit: function (c)
         {
             this.HTMLRowInputElement.value = this.mask.unmaskedValue;

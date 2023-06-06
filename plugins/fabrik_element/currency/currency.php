@@ -318,14 +318,12 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 
     private function getNumbersInputValueBack($formatedInputValueBack)
     {
-        $string = $formatedInputValueBack;
-
         for ($i = 0; $i!= 2; $i++)
         {
             $to = strrpos($formatedInputValueBack, ' ');
-            $string = substr($formatedInputValueBack, 0, $to);
+            $formatedInputValueBack = substr($formatedInputValueBack, 0, $to);
         }
 
-        return $string;
+        return $formatedInputValueBack;
     }
 }
