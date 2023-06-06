@@ -26,12 +26,6 @@ jimport('joomla.plugin.helper');
 // set global config --> initialize Joomla Application with default param 'site'
 JFactory::getApplication('site');
 
-// set false ini_get('session.use_cookies') and set false headers_sent
-!ini_get('session.use_cookies') && !headers_sent($file, $line);
-
-// activate session
-session_start();
-
 class EmundusModelEmailsTest extends TestCase
 {
     private $m_emails;
@@ -43,6 +37,18 @@ class EmundusModelEmailsTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_emails = new EmundusModelEmails;
 		$this->h_sample = new EmundusUnittestHelperSamples;
+
+	    $app = JFactory::getApplication();
+	    $username = 'test-expert-email-' . rand(0, 1000) . '@emundus.fr';
+	    $this->h_sample->createSampleUser(9, $username);
+	    $logged_in = $app->login([
+		    'username' => $username,
+		    'password' => 'test1234'
+	    ]);
+
+	    include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
+	    $m_profile = new EmundusModelProfile();
+	    $m_profile->initEmundusSession();
     }
 
 	public function testFoo()
