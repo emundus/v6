@@ -3229,13 +3229,21 @@ class EmundusModelApplication extends JModelList
 
     public function getAttachmentsByFnum($fnum, $ids=null, $attachment_id=null) {
         try {
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'profile.php');
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+
+            $m_profiles = new EmundusModelProfile;
+            $m_files = new EmundusModelFiles;
+            $fnumInfos = $m_files->getFnumInfos($fnum);
+
+            $profiles_by_campaign = $m_profiles->getProfilesIDByCampaign([$fnumInfos['id']]);
 
             // TODO : Group attachments by profile and adding profile column in jos_emundus_uploads
             $query = "SELECT DISTINCT eu.*, sa.value 
                         FROM #__emundus_uploads as eu
                         LEFT JOIN #__emundus_setup_attachments as sa ON sa.id = eu.attachment_id
                         LEFT JOIN #__emundus_setup_attachment_profiles as sap ON sap.id  = (
-                        SELECT id FROM #__emundus_setup_attachment_profiles sap2 WHERE sap2.attachment_id = sa.id ORDER BY sap2.profile_id ASC LIMIT 1
+                        SELECT id FROM #__emundus_setup_attachment_profiles sap2 WHERE sap2.attachment_id = sa.id and sap2.profile_id IN (".implode(',',$profiles_by_campaign).")
                         )
                         WHERE fnum like ".$this->_db->quote($fnum);
 
@@ -3251,7 +3259,7 @@ class EmundusModelApplication extends JModelList
                 $query .= " AND eu.id in ($ids)";
             }
 
-            $query .= " ORDER BY sap.mandatory DESC,sap.ordering,sa.value ASC";
+            $query .= " ORDER BY sap.mandatory DESC,sap.ordering";
 
             $this->_db->setQuery($query);
             $docs = $this->_db->loadObjectList();
