@@ -1790,6 +1790,7 @@ class EmundusModelEvaluation extends JModelList {
         $replace_document = $eMConfig->get('export_replace_doc', 0);
 	    $generated_doc_name = $eMConfig->get('generated_doc_name', "");
 	    $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
+	    $escape_ampersand = $eMConfig->get('generate_letter_escape_ampersand', 0);
 	    $whitespace_textarea = $eMConfig->get('generate_letter_whitespace_textarea', 0);
 
         $tmp_path = JPATH_SITE.DS.'tmp'.DS;
@@ -1972,7 +1973,10 @@ class EmundusModelEvaluation extends JModelList {
 
 		                    try {
 			                    $phpWord = new \PhpOffice\PhpWord\PhpWord();
-			                    \PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(true);
+								if ($escape_ampersand)
+								{
+									\PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(true);
+								}
 			                    $preprocess = $phpWord->loadTemplate($letter_file);
 			                    $tags       = $preprocess->getVariables();
 
