@@ -46,7 +46,7 @@ class FileMaker
     /**
      * @var string[]
      */
-    private static $availaibleZwForms = array('zWEB_FORMULAIRES','zWEB_FORMULAIRES_RECETTES', 'zWEB_FORMULAIRES_PLANNING',
+    private static $availaibleZwForms = array('zWEB_FORMULAIRES', 'zWEB_FORMULAIRES_RECETTES', 'zWEB_FORMULAIRES_PLANNING',
         'zWEB_FORMULAIRES_PARTICIPANTS', 'zWEB_FORMULAIRES_PARTENAIRES', 'zWEB_FORMULAIRES_DEPENSES', 'zWEB_FORMULAIRES_AUDIENCE', 'zWEB_FORMULAIRES_AIDES');
 
     private $maxAttempt = 0;
@@ -346,21 +346,25 @@ class FileMaker
         return $logout_response;
     }
 
-    public function findRecord($limit = 50,$offset = 1,$adminStep="",$uuidConnect="null",$zWebFormType = "zWEB_FORMULAIRES", $sort = array())
+    public function findRecord($limit = 50, $offset = 1, $adminStep = "", $uuidConnect = "null", $zWebFormType = "zWEB_FORMULAIRES", $sort = array())
     {
 
         if (in_array($zWebFormType, $this->getAvailaibleZwForms())) {
             if (!empty($uuidConnect) || !empty($adminStep)) {
 
-                $url = "layouts/" . $zWebFormType . "/_find?_limit=".$limit."&_offset=".$offset;
+                $url = "layouts/" . $zWebFormType . "/_find";
                 $queryBody = ["query" => array([
                     //empty($zWebFormType) ? "uuidConnect" : "zWEB_FORMULAIRES::uuidConnect" => $uuidConnect,
                     //empty($zWebFormType) ? "uuidConnect" : "zWEB_FORMULAIRES::uuidConnect" => $uuidConnect,
-                   "Admin_Step" => $adminStep
+                    "Admin_Step" => $adminStep,
 
-                ])];
+                ]),
+                    "limit" => $limit,
+                    "offset" => $offset
+                ];
 
                 $record_response = $this->post($url, json_encode($queryBody));
+
 
 
                 return $record_response->response;
@@ -426,15 +430,16 @@ class FileMaker
 
     }
 
-    public function uploadFile($recordId,$filePath, $fileName){
-        if(!empty($fileName) && !empty($filePath)){
+    public function uploadFile($recordId, $filePath, $fileName)
+    {
+        if (!empty($fileName) && !empty($filePath)) {
 
-            $url = "layouts/zWEB_FORMULAIRES/records/" . $recordId."/containers/Participants_Fichier/1";
-            $upload_response = $this->upload($url,$filePath, $fileName);
+            $url = "layouts/zWEB_FORMULAIRES/records/" . $recordId . "/containers/Participants_Fichier/1";
+            $upload_response = $this->upload($url, $filePath, $fileName);
 
             return $upload_response->response;
         } else {
-            throw new Exception('Filename and Filed Path can\'t be empty' );
+            throw new Exception('Filename and Filed Path can\'t be empty');
         }
     }
 

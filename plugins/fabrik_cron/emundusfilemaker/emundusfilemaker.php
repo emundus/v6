@@ -353,13 +353,14 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                     $fieldData = (array) $singleFieldData->fieldData;
 
                     foreach($elements_columns_assoc_filemaker_attribute_names as $val){
-                        $all_values = null;
+
                         $elements_columns_value[] = !empty($fieldData[$val]) ? $db->quote($fieldData[$val]) : 'NULL';
                     }
 
 
                     if(!empty($elements_columns_name) && !empty($elements_columns_value && !empty($elements_columns_assoc_filemaker_attribute_names)) ){
                         $elements_value_occurences = array_count_values($elements_columns_value);
+
                         if(empty($this->checkIfFnumNotAlreadyExist($fnum,$row->db_table_name)) && $elements_value_occurences["NULL"] !== (sizeof($elements_columns_value)-3)){
                             $query->clear();
                             $query->insert($db->quoteName($row->db_table_name))
@@ -468,17 +469,26 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
      */
     public function process(&$data, &$listModel)
     {
-        $records_retrieved = [];
+
         $mapped_columns = $this->retrieveMappingColumnsData();
+        $offset = 1;
+        $limit = 20;
+        $returnedCount = -1;
+
+        while($returnedCount != 0) {
 
 
+            $find_records_response = $this->getRecords($limit, $offset, $this->getParams()->get('admin_step'));
+
+            if (!empty($find_records_response)) {
+                $dataInfo = $find_records_response->dataInfo;
+
+                $returnedCount = $dataInfo->returnedCount;
+                $offset += $limit;
 
 
-        $find_records_response = $this->getRecords(50, $this->offset, $this->getParams()->get('admin_step'));
-
-
-        if (!empty($find_records_response)) {
-            $this->createFiles($find_records_response->data,$mapped_columns);
+                $this->createFiles($find_records_response->data, $mapped_columns);
+            }
         }
 
 
