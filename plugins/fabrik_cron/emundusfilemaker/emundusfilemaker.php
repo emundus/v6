@@ -5,6 +5,7 @@
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'classes' . DS . 'api' . DS . 'FileMaker.php');
 
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
 
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'users.php');
@@ -273,6 +274,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
         $timezone = new DateTimeZone( $config->get('offset'));
         $now = JFactory::getDate()->setTimezone($timezone);
         $h_files = new EmundusHelperFiles();
+        $m_files = new EmundusModelFiles();
 
 
 
@@ -299,11 +301,9 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
             try {
 
-                $inserted = $db->execute();
-
-
-
+                $db->execute();
                 $this->insertFileDataToEmundusTables($fnum,$singleFieldData,$mapped_columns,$user_id);
+                $m_files->updateState($fnum,$this->getParams()->get('mail_trigger_state',0));
             } catch (Exception $e) {
                 $fnum = '';
                 $inserted = false;
@@ -311,9 +311,8 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                 JLog::add("[FILEMAKER CRON] Failed to create file $fnum - $user_id" . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
             }
 
-            if (!$inserted) {
-                $fnum = '';
-            }
+
+
         }
 
     }
@@ -358,7 +357,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                     }
 
 
-                    if(!empty($elements_columns_name) && !empty($elements_columns_value && !empty($elements_columns_assoc_filemaker_attribute_names)) ){
+                    if(!empty($elements_columns_name) && !empty($elements_columns_value) && !empty($elements_columns_assoc_filemaker_attribute_names) ){
                         $elements_value_occurences = array_count_values($elements_columns_value);
 
                         if(empty($this->checkIfFnumNotAlreadyExist($fnum,$row->db_table_name)) && $elements_value_occurences["NULL"] !== (sizeof($elements_columns_value)-3)){
