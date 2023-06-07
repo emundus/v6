@@ -22,6 +22,8 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
     public static $offset = 1;
 
 
+
+
     /**
      * Check if the user can use the plugin
      *
@@ -55,9 +57,8 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
         $mapping_data = array();
 
         $query->select('filemaker_label,emundus_form_id')
-              ->from($db->quoteName('data_filemaker_zforms_mapped_with_emundus_forms'));
+              ->from($db->quoteName($this->getParams()->get('forms_mapping_table_beetween_filemaker_emundus')));
         $db->setQuery($query);
-
 
 
         try{
@@ -118,7 +119,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
         $query->select('jfe.*,zfe.file_maker_attribute_name')
             ->from($db->quoteName('jos_fabrik_elements','jfe'))
-            ->leftJoin('zweb_formulaires_mapping_935_repeat AS zfe ON zfe.file_maker_assoc_emundus_element = jfe.id')
+            ->leftJoin($this->getParams()->get('attribute_mapping_table_beetween_filemaker_emundus').' AS zfe ON zfe.file_maker_assoc_emundus_element = jfe.id')
             ->where('jfe.group_id IN ('.implode(',',$groups_id).')')
             ->andWhere('jfe.published = 1');
         $db->setQuery($query);
@@ -191,7 +192,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
             return $user->id;
         } else {
 
-            $profile = 1000;
+            $profile = intval($this->getParams()->get('profile'));
 
             $m_users = new EmundusModelUsers;
             $h_users = new EmundusHelperUsers;
@@ -220,7 +221,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                 $db->setQuery($query);
                 $db->execute();
             } catch (Exception $e) {
-                JLog::add("Failed to insert jos_users" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                JLog::add("Failed to insert jos_users" . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
             }
             /*$password = $h_users->generateStrongPassword();
             $user                = clone(JFactory::getUser(0));
@@ -267,7 +268,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
     public function createSingleFile($singleFieldData, $user_id,$mapped_columns)
     {
         $fieldData = $singleFieldData->fieldData;
-        $campaign_id = 2;
+        $campaign_id = $this->getParams()->get('campaign_id');
         $config = JFactory::getConfig();
         $timezone = new DateTimeZone( $config->get('offset'));
         $now = JFactory::getDate()->setTimezone($timezone);
@@ -300,12 +301,14 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
                 $inserted = $db->execute();
 
+
+
                 $this->insertFileDataToEmundusTables($fnum,$singleFieldData,$mapped_columns,$user_id);
             } catch (Exception $e) {
                 $fnum = '';
                 $inserted = false;
 
-                JLog::add("[FILEMAKER CRON] Failed to create file $fnum - $user_id" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                JLog::add("[FILEMAKER CRON] Failed to create file $fnum - $user_id" . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
             }
 
             if (!$inserted) {
@@ -323,7 +326,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
 
         //Insertion of ZWEB_FORMULAIRE DATA;
-        $ZWEB_FORMULAIRE_MAPPED_ELEMENTS = $this->searchMappedElementsByFileMakerFormLabel($mapped_columns,'zWEB_FORMULAIRES');
+        $ZWEB_FORMULAIRE_MAPPED_ELEMENTS = $this->searchMappedElementsByFileMakerFormLabel($mapped_columns,$this->getParams()->get('filemaker_global_layout'));
 
 
         if(!empty($ZWEB_FORMULAIRE_MAPPED_ELEMENTS)){
@@ -372,7 +375,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                                $db->execute();
                             } catch (Exception $e) {
 
-                                JLog::add("[FILEMAKER CRON] Failed to insert row in to table $row->db_table_name for fnum $fnum - $user_id" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                                JLog::add("[FILEMAKER CRON] Failed to insert row in to table $row->db_table_name for fnum $fnum - $user_id" . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
                             }
 
                         }
@@ -421,7 +424,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
         } catch (Exception $e) {
 
-            JLog::add("[FILEMAKER CRON] Failed to check if file already exist for ". $uuid. " ". $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            JLog::add("[FILEMAKER CRON] Failed to check if file already exist for ". $uuid. " ". $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
         }
 
         return $file;
@@ -447,7 +450,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
         } catch (Exception $e) {
 
-            JLog::add("[FILEMAKER CRON] Failed to check if file already exist for fnum". $fnum. " ". $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            JLog::add("[FILEMAKER CRON] Failed to check if file already exist for fnum". $fnum. " ". $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
         }
 
         return $file;
@@ -471,7 +474,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
 
 
-        $find_records_response = $this->getRecords(50, $this->offset, "PRE");
+        $find_records_response = $this->getRecords(50, $this->offset, $this->getParams()->get('admin_step'));
 
 
         if (!empty($find_records_response)) {
