@@ -48,6 +48,13 @@
 				   size="100"
 				   required="true"
 			/>
+			<field name="mail_template"
+				   type="number"
+				   description="PLG_CRON_MAIL_TEMPLATE_DESC"
+				   label="PLG_CRON_MAIL_TEMPLATE_LABEL"
+				   size="100"
+				   required="true"
+			/>
 
 		</fieldset>
 	</fields>

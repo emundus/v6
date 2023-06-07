@@ -6,6 +6,7 @@ require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'classes
 
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
 
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'users.php');
@@ -73,9 +74,10 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                 foreach ($value as $sub_row){
 
                     $query->clear();
-                    $query->select('jfl.db_table_name,jfg.group_id')
+                    $query->select('jfl.db_table_name,jfg.group_id,jfj.join_from_table,jfj.table_join,jfj.table_join_key,jfj.join_key')
                         ->from($db->quoteName('jos_fabrik_lists','jfl'))
                         ->leftJoin('jos_fabrik_formgroup AS jfg ON jfl.form_id = jfg.form_id')
+                        ->leftJoin('jos_fabrik_joins AS jfj ON jfl.id = jfj.list_id')
                         ->where('jfl.form_id = '.$sub_row["emundus_form_id"]);
                     $db->setQuery($query);
 
@@ -90,6 +92,11 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
                         $mapping_data_row->db_table_name = $val->db_table_name;
                         $mapping_data_row->groups_id[] = intval($val->group_id);
+                        $mapping_data_row->join_from_table = $val->join_from_table;
+                        $mapping_data_row->table_join = $val->table_join;
+                        $mapping_data_row->table_join_key = $val->table_join_key;
+                        $mapping_data_row->join_key = $val->join_key;
+
 
                     }
 
@@ -275,6 +282,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
         $now = JFactory::getDate()->setTimezone($timezone);
         $h_files = new EmundusHelperFiles();
         $m_files = new EmundusModelFiles();
+        $m_message = new EmundusControllerMessages();
 
 
 
@@ -304,6 +312,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                 $db->execute();
                 $this->insertFileDataToEmundusTables($fnum,$singleFieldData,$mapped_columns,$user_id);
                 $m_files->updateState($fnum,$this->getParams()->get('mail_trigger_state',0));
+                $m_message->sendEmail($fnum,$this->getParams()->get('mail_template',83));
             } catch (Exception $e) {
                 $fnum = '';
                 $inserted = false;
