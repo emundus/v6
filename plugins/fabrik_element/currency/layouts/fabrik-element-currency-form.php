@@ -53,6 +53,6 @@ $doc->addScript(JURI::root() . "plugins/fabrik_element/currency/assets/js/emundu
         <?php endforeach; ?>
     </select>
 
-    <input id="currency_rowInputValue" name="<?php echo $displayData->attributes['name'].'[rowInputValueFront]'; ?>" hidden="hidden">
+    <input id="currency_rowInputValue" name="<?php echo $displayData->attributes['name'].'[rowInputValueFront]'; ?>" hidden="hidden" class="fabrikinput">
 
 </div>

@@ -33,7 +33,7 @@ define(['jquery', 'fab/element'],
             this.HTMLRowInputElement = this.element.getElementById('currency_rowInputValue');
             this.HTMLSelectElement = this.element.getElementById('currency_selectValue');
 
-            this.HTMLInputElement.value = null;
+            this.HTMLInputElement.removeAttribute('value');
             this.mask = null;
             this.initSelect();
             this.addMask();

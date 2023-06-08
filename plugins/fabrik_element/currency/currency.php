@@ -25,6 +25,7 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
     protected array $allCurrency;
     protected array $selectedCurrencies = [];
     protected int $idSelectedCurrency = 0;
+    protected int $compteur = 0;
 
 
 	/**
@@ -82,8 +83,6 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         $this->selectedCurrencies   = $this->getSelectedCurrencies();
         $valuesForSelect            = []; // formated value for the select to show
         $inputValue                 = ''; // back value for the inputValue in front
-        $formModel                  = $this->getFormModel();
-        $id                         = $this->getHTMLId($repeatCounter);
 
         foreach ($this->selectedCurrencies as $selectedCurrencyOne)
         {
@@ -111,10 +110,6 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         $bits['valuesForSelect'] = $valuesForSelect;
         $bits['iso3SelectedCurrency'] = $this->selectedCurrencies[$this->idSelectedCurrency]->iso3; // to set options selected
         $bits['inputValue'] = $inputValue;
-
-        $numberRow = $this->formatedNumberToRow($inputValue);
-        $formModel->tmplData[$id . '_raw'] = $numberRow;
-        $formModel->data[$id . '_raw']     = $numberRow;
 
 		$layout = $this->getLayout('form');
 		$layoutData = new stdClass;
@@ -192,13 +187,12 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 	 */
 	public function storeDatabaseFormat($val, $data)
 	{
-
         // for calc,
         // if $val is not array then we ask raw value
         // if $val is array, then we store data
         if (!is_array($val))
         {
-            return $data[$this->getFullNameRaw()];
+            return $this->calc_handler($val, $data);
         }
 
         if (strlen($val['rowInputValueFront']) === 0) // if not value then no value in DB
@@ -223,6 +217,26 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 
 		return $numberFormated . ' ' . $currencyFormated;
 	}
+
+    private function calc_handler($val, $data)
+    {
+        if (substr($val, -1) === ')') // value from DB
+        {
+            $this->selectedCurrencies = $this->getSelectedCurrencies();
+            $inputValue = $this->getNumbersInputValueBack($val);
+            $this->idSelectedCurrency = $this->getIdCurrencyFromIso3($this->getIso3FromFormatedInput($val));
+
+            $val = $this->formatedNumberToRaw($inputValue);
+        }
+        else
+        {
+            $name = $this->getFullName(true, false);
+
+            $val = $data[$name."_$this->compteur"];
+            $this->compteur++;
+        }
+        return $val;
+    }
 
     public function getDataCurrency()
     {
@@ -350,7 +364,7 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         return $formatedInputValueBack;
     }
 
-    private function formatedNumberToRow($formatedNumber)
+    private function formatedNumberToRaw($formatedNumber)
     {
         $decimal_separator = $this->selectedCurrencies[$this->idSelectedCurrency]->decimal_separator;
         $thousands_separator = $this->selectedCurrencies[$this->idSelectedCurrency]->thousand_separator;
