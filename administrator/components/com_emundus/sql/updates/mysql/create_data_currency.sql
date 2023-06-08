@@ -7,7 +7,6 @@ create table data_currency
     format    char(10) default '%i' not null,
     name      varchar(255)          not null,
     published tinyint  default 0    not null,
-    displayed tinyint  default 0    not null,
     constraint currency_code
         unique (iso3)
 )
