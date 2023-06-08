@@ -78,7 +78,7 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 	public function render($data, $repeatCounter = 0)
 	{
 
-        $this->allCurrency          = $this->getDataCurrency();
+        $this->allCurrency          = $this->getDataCurrencyPublished();
         $formatedInputValueBack     = $this->getValue($data, $repeatCounter);
         $this->selectedCurrencies   = $this->getSelectedCurrencies();
         $valuesForSelect            = []; // formated value for the select to show
@@ -202,7 +202,7 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 
         $iso3 = $val['selectedIso3Front'];
         $number = floatval($val['rowInputValueFront']);
-        $currencyObject = $this->getCurrencyObject($this->getDataCurrency(), $iso3);
+        $currencyObject = $this->getCurrencyObject($this->getDataCurrencyPublished(), $iso3);
 
         $decimal_separator = $this->selectedCurrencies[$this->idSelectedCurrency]->decimal_separator;
 
@@ -238,12 +238,13 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         return $val;
     }
 
-    public function getDataCurrency()
+    public function getDataCurrencyPublished()
     {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('name, iso3, symbol')
-            ->from($db->quoteName('data_currency'));
+            ->from($db->quoteName('data_currency'))
+            ->where('published = 1');
         $db->setQuery($query);
 
         $db->execute();
