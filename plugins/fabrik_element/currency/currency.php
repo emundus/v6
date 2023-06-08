@@ -366,9 +366,18 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 
     private function formatedNumberToRaw($formatedNumber)
     {
+        $number_of_decimals = $this->selectedCurrencies[$this->idSelectedCurrency]->decimal_numbers;
         $decimal_separator = $this->selectedCurrencies[$this->idSelectedCurrency]->decimal_separator;
         $thousands_separator = $this->selectedCurrencies[$this->idSelectedCurrency]->thousand_separator;
 
-        return str_replace([$decimal_separator, $thousands_separator], ['.', ''], $formatedNumber);
+        $decimalIndex = strrpos($formatedNumber, $decimal_separator);
+
+        $decimal = substr($formatedNumber, $decimalIndex, $number_of_decimals+1);
+        $int = substr($formatedNumber, 0, $decimalIndex);
+
+        $decimal = str_replace($decimal_separator, '.', $decimal);
+        $int = str_replace($thousands_separator, '', $int);
+
+        return $int . $decimal;
     }
 }
