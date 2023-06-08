@@ -25,7 +25,7 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
     protected array $allCurrency;
     protected array $selectedCurrencies = [];
     protected int $idSelectedCurrency = 0;
-    protected int $compteur = 0;
+    protected int $repeatCounter = 0;
 
 
 	/**
@@ -232,8 +232,8 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         {
             $name = $this->getFullName(true, false);
 
-            $val = $data[$name."_$this->compteur"];
-            $this->compteur++;
+            $val = $data[$name."_$this->repeatCounter"];
+            $this->repeatCounter++;
         }
         return $val;
     }
