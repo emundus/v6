@@ -6,6 +6,7 @@ require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'classes
 
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
 
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
@@ -60,7 +61,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
         $query->select('filemaker_label,emundus_form_id')
             ->from($db->quoteName($this->getParams()->get('forms_mapping_table_beetween_filemaker_emundus')))
-            ->where($db->quoteName('step')."=".$this->getParams()->get('mail_trigger_state'));
+            ->where($db->quoteName('step') . "=" . $this->getParams()->get('mail_trigger_state'));
         $db->setQuery($query);
 
 
@@ -141,7 +142,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
             ->leftJoin($this->getParams()->get('attribute_mapping_table_beetween_filemaker_emundus') . ' AS zfe ON zfe.file_maker_assoc_emundus_element = jfe.id')
             ->where('jfe.group_id IN (' . implode(',', $groups_id) . ')')
             ->andWhere('jfe.published = 1')
-            ->andWhere('zfe.step ='.$this->getParams()->get('mail_trigger_state'));
+            ->andWhere('zfe.step =' . $this->getParams()->get('mail_trigger_state'));
 
 
         $db->setQuery($query);
@@ -292,8 +293,8 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
             $query->clear()
                 ->insert($db->quoteName('#__emundus_campaign_candidature'))
-                ->columns($db->quoteName(['date_time', 'applicant_id', 'user_id', 'campaign_id', 'fnum', 'uuid', 'uuidConnect','recordId']))
-                ->values($db->quote($now) . ', ' . $user_id . ', ' . $user_id . ', ' . $campaign_id . ', ' . $db->quote($fnum) . ', ' . $db->quote($fieldData->uuid) . ', ' . $db->quote($fieldData->uuidConnect).', ' . $db->quote($singleFieldData->recordId));
+                ->columns($db->quoteName(['date_time', 'applicant_id', 'user_id', 'campaign_id', 'fnum', 'uuid', 'uuidConnect', 'recordId']))
+                ->values($db->quote($now) . ', ' . $user_id . ', ' . $user_id . ', ' . $campaign_id . ', ' . $db->quote($fnum) . ', ' . $db->quote($fieldData->uuid) . ', ' . $db->quote($fieldData->uuidConnect) . ', ' . $db->quote($singleFieldData->recordId));
             $db->setQuery($query);
 
 
@@ -757,6 +758,77 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
     }
 
 
+    public function preparePortalDataAndGenralLayoutBeforeSendToFileMaker($zweb_form_name,$mapped_columns,$fnum = "2023060909210200000020000244",$isPortalDataForm = true){
+        $file_maker_api = new FileMaker();
+        try {
+            $metaDatas = $file_maker_api->getMetaDatazWebFroms($zweb_form_name);
+
+        } catch (\Exception $e) {
+            JLog::add('[FILE_MAKER ] Failed to get Metada '.$zweb_form_name.'  ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
+            return $e->getMessage();
+        }
+
+
+
+        $zweb_forms_elements = $this->searchMappedElementsByFileMakerFormLabel($mapped_columns, $zweb_form_name);
+
+        $m_application = new EmundusModelApplication();
+
+        $temp_records_mapping = [];
+
+        foreach ($metaDatas->fieldMetaData as $data) {
+
+            foreach ($zweb_forms_elements as $row) {
+
+                foreach ($row->elements as $element_row) {
+
+                    if (!empty($element_row->file_maker_attribute_name)) {
+
+                        $value = $m_application->getValuesByElementAndFnum($fnum, $element_row->id, $row->form_id, '');
+
+                        if ($data->name === $element_row->file_maker_attribute_name) {
+                            if($isPortalDataForm){
+                                $temp_records_mapping[] = array("" . $data->name . "" => explode(",", $value));
+                            } else{
+                                $temp_records_mapping[] = array("" . $data->name . "" =>  $value);
+                            }
+
+                        }
+
+                    }
+                }
+
+
+            }
+        }
+
+        $array = $this->transformToAssociativeArray($temp_records_mapping);
+        if($isPortalDataForm == true){
+
+
+            $keys = array_keys($array);
+
+            $arraySize = count($array[$keys[0]]);
+
+            $finalArray = array();
+
+            for ($i = 0; $i < $arraySize; $i++) {
+                $tempArray = array();
+                foreach ($keys as $key) {
+                    $value = $array[$key][$i];
+                    $tempArray[$key] = $value;
+                }
+
+                $finalArray[] = $tempArray;
+            }
+            return $finalArray;
+        } else {
+            return $array;
+        }
+
+    }
+
+
     /**
      * Do the plugin action
      *
@@ -769,9 +841,34 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
     {
 
         $mapped_columns = $this->retrieveMappingColumnsData();
-        $offset = 1;
+
+
+        $portalsData = [];
+        $queryBody = [];
+
+        $fnum = "2023060909210200000020000244";
+
+        $portalsData[] = array("zWEB_FORMULAIRES_PARTICIPANTS" => $this->preparePortalDataAndGenralLayoutBeforeSendToFileMaker("zWEB_FORMULAIRES_PARTICIPANTS",$mapped_columns,$fnum));
+        $portalsData[] = array("zWEB_FORMULAIRES_RECETTES" => $this->preparePortalDataAndGenralLayoutBeforeSendToFileMaker("zWEB_FORMULAIRES_RECETTES",$mapped_columns,$fnum));
+        $portalsData[] = array("zWEB_FORMULAIRES_PLANNING" => $this->preparePortalDataAndGenralLayoutBeforeSendToFileMaker("zWEB_FORMULAIRES_PLANNING",$mapped_columns,$fnum));
+        $portalsData[] = array("zWEB_FORMULAIRES_DEPENSES" => $this->preparePortalDataAndGenralLayoutBeforeSendToFileMaker("zWEB_FORMULAIRES_DEPENSES",$mapped_columns,$fnum));
+        $portalsData[] = array("zWEB_FORMULAIRES_PARTENAIRES" => $this->preparePortalDataAndGenralLayoutBeforeSendToFileMaker("zWEB_FORMULAIRES_PARTENAIRES",$mapped_columns,$fnum));
+        $portalsData[] = array("zWEB_FORMULAIRES_AUDIENCE" => $this->preparePortalDataAndGenralLayoutBeforeSendToFileMaker("zWEB_FORMULAIRES_AUDIENCE",$mapped_columns,$fnum));
+        $portalsData[] = array("zWEB_FORMULAIRES_AIDES" => $this->preparePortalDataAndGenralLayoutBeforeSendToFileMaker("zWEB_FORMULAIRES_PARTENAIRES",$mapped_columns,$fnum));
+
+        $fieldData = $this->preparePortalDataAndGenralLayoutBeforeSendToFileMaker("zWEB_FORMULAIRES",$mapped_columns,$fnum,false);
+        $queryBody[]   = array("portalData" => $portalsData);
+        $queryBody[]   = array("fieldData" =>  $fieldData);
+        $finalQueryBody = $this->transformToAssociativeArray($queryBody);
+
+        // Afficher le tableau final
+        //print_r($finalArray);
+
+
+        /*$offset = 1;
         $limit = 20;
         $returnedCount = -1;
+
 
         while ($returnedCount != 0) {
 
@@ -787,7 +884,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
                 $this->createFiles($find_records_response->data, $mapped_columns);
             }
-        }
+        }*/
 
 
     }

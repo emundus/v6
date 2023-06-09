@@ -2098,7 +2098,7 @@ class EmundusModelApplication extends JModelList
                                                     JLog::add('component/com_emundus/models/application | Error at getting emundus_fileupload for applicant ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
                                                     $elt = '';
                                                 }
-                                            } 
+                                            }
 											elseif ($element->plugin == 'emundus_phonenumber') {
                                                 $elt = substr($element->content, 2, strlen($element->content));
                                             }
@@ -5029,7 +5029,7 @@ class EmundusModelApplication extends JModelList
         return $content;
     }
 
-	public function getValuesByElementAndFnum($fnum,$eid,$fid,$raw=1,$wheres = []){
+	public function getValuesByElementAndFnum($fnum,$eid,$fid,$raw=1,$wheres = [], $format = true){
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
@@ -5099,16 +5099,21 @@ class EmundusModelApplication extends JModelList
 			}
 
             $elt = [];
-			if(!is_array($values)){
-				$values = [$values];
-			}
-            if (!empty($values) || $element->plugin == 'yesno') {
-	            foreach ($values as $value) {
-		            $elt[] = $this->formatElementValue($element, $value, $table, $aid);
-	            }
-            }
 
-            $result = implode(',',$elt);
+            if ($format) {
+                if(!is_array($values)){
+                    $values = [$values];
+                }
+                if (!empty($values) || $element->plugin == 'yesno') {
+                    foreach ($values as $value) {
+                        $elt[] = $this->formatElementValue($element, $value, $table, $aid);
+                    }
+                }
+
+                $result = implode(',',$elt);
+            } else {
+                $result = $values;
+            }
         } catch (Exception $e) {
             JLog::add('Problem when get values of element ' . $eid . ' with fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
         }
