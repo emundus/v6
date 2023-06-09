@@ -140,7 +140,10 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
             ->from($db->quoteName('jos_fabrik_elements', 'jfe'))
             ->leftJoin($this->getParams()->get('attribute_mapping_table_beetween_filemaker_emundus') . ' AS zfe ON zfe.file_maker_assoc_emundus_element = jfe.id')
             ->where('jfe.group_id IN (' . implode(',', $groups_id) . ')')
-            ->andWhere('jfe.published = 1');
+            ->andWhere('jfe.published = 1')
+            ->andWhere('zfe.step ='.$this->getParams()->get('mail_trigger_state'));
+
+
         $db->setQuery($query);
 
         try {
@@ -277,7 +280,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $checkIfFileNotAlreadyExist = $this->checkIfFileNotAlreadyExist($fieldData->uuid);
-        if (empty($checkIfFileNotAlreadyExist) && $this->getParams()->get('admin_step') === "PRE") {
+        if (empty($checkIfFileNotAlreadyExist)) {
 
 
             $fnum = $h_files->createFnum($campaign_id, $user_id);
@@ -574,8 +577,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
                         $checkIfNoRowInParentTableForTheTargetFnum = $this->checkIfFnumNotAlreadyExist($fnum, $parent_table);
                         if (empty($checkIfNoRowInParentTableForTheTargetFnum)) {
-                            var_dump($repeat_table);
-                            var_dump($parent_table);
+
                             $parent_id = $this->insertIntoATable($parent_table, ["time_date", "fnum", "user"], [$db->quote($now), $fnum, $user_id]);
                             if (!empty($parent_id)) {
                                 $row_columns[] = "parent_id";
@@ -650,9 +652,6 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
     public function insertIntoATable($db_table_name, $elements_columns_name, $elements_columns_value, $fnum = 0, $user_id = 0)
     {
 
-        echo '<pre>';
-        var_dump($elements_columns_value);
-        echo '<pre>';
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->clear();
@@ -661,18 +660,13 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
             ->values(implode(",", $elements_columns_value));
 
         $db->setQuery($query);
-        echo '<pre>';
-        var_dump($query->__toString());
-        echo '</pre>';
+
         try {
-            //$inserted = $db->execute();
+
             $db->execute();
             return $db->insertid();
         } catch (Exception $e) {
-            var_dump('hop hop an error');
-            var_dump($query->__toString());
-            var_dump($e->getMessage());
-            die;
+
             JLog::add("[FILEMAKER CRON] Failed to insert row in to table $db_table_name for fnum $fnum - $user_id" . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
             return 0;
         }
