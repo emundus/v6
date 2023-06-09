@@ -14,48 +14,30 @@ defined('_JEXEC') or die();
  */
 
 $db = JFactory::getDBO();
+$query = $db->getQuery(true);
 $jinput	= JFactory::getApplication()->input->post;
 
 $fnum = $jinput->get('jos_emundus_final_grade___fnum');
 $status = $jinput->get('jos_emundus_final_grade___final_grade')[0];
 $motif = $jinput->get('jos_emundus_final_grade___motif_refus')[0];
 
-include_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-include_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-include_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+include_once (JPATH_BASE.'/components/com_emundus/models/emails.php');
+include_once (JPATH_BASE.'/components/com_emundus/models/files.php');
+include_once (JPATH_SITE.'/components/com_emundus/models/logs.php');
 
 $email_from_sys = JFactory::getApplication()->getCfg('mailfrom');
 
 if (!empty($status)) {
 
     if($status == 7){
-        switch ($motif) {
-            case '1':
-                $status = 21;
-                break;
-            case '2':
-                $status = 22;
-                break;
-            case '3':
-                $status = 23;
-                break;
-            case '4':
-                $status = 24;
-                break;
-            case '5':
-                $status = 25;
-                break;
-            case '6':
-                $status = 26;
-                break;
-            case '7':
-                $status = 27;
-                break;
-            case '8':
-                $status = 28;
-                break;
-            default:
-                $status = 7;
+        $query->select($db->quoteName('status'))
+            ->from($db->quoteName('data_motifs_refus'))
+            ->where($db->quoteName('id').' = '.$db->quote($motif));
+        $db->setQuery($query);
+        $status = $db->loadResult();
+
+        if (empty($status)) {
+            $status = 7;
         }
     }
 
@@ -85,8 +67,8 @@ if (!empty($status)) {
 
     $logsParams = array('updated' => [$logsStd]);
 
-    $query = $db->getQuery(true);
-    $query->update($db->quoteName('#__emundus_campaign_candidature'))
+    $query->clear()
+        ->update($db->quoteName('#__emundus_campaign_candidature'))
         ->set($db->quoteName('status').' = '.$status)
         ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
 
