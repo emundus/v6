@@ -227,8 +227,7 @@
 				</field>
 
 				<!-- PROGRESS CIRCLES -->
-				<field showon="layout!:_:tchooz"
-					   name="show_progress"
+				<field name="show_progress"
 					   type="radio"
 					   default="1"
 					   label="MOD_EMUNDUS_SHOW_PROGRESS"

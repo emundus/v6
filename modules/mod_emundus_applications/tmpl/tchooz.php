@@ -534,12 +534,14 @@ $current_tab = 0;
                                                 <hr/>
 
                                                 <div class="mod_emundus_applications___informations">
-                                                    <div>
-                                                        <label class="em-applicant-text-color em-applicant-default-font em-font-size-14"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_COMPLETED'); ?>
-                                                            :</label>
-                                                        <p class="em-applicant-default-font"><?php echo(($progress['forms'][$application->fnum] + $progress['attachments'][$application->fnum]) / 2) ?>
-                                                            %</p>
-                                                    </div>
+	                                                <?php if($show_progress == 1) : ?>
+	                                                    <div>
+	                                                        <label class="em-applicant-text-color em-applicant-default-font em-font-size-14"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_COMPLETED'); ?>
+	                                                            :</label>
+	                                                        <p class="em-applicant-default-font"><?php echo(($progress['forms'][$application->fnum] + $progress['attachments'][$application->fnum]) / 2) ?>
+	                                                            %</p>
+	                                                    </div>
+													<?php endif; ?>
 
 													<?php if (!empty($application->updated) || !empty($application->submitted_date)) : ?>
                                                         <div>
@@ -706,10 +708,12 @@ $current_tab = 0;
                                                         </div>
 													<?php endif; ?>
                                                 </td>
-                                                <td style="width: 23.75%;">
-                                                    <p class="em-applicant-default-font em-font-size-14"><?php echo(($progress['forms'][$application->fnum] + $progress['attachments'][$application->fnum]) / 2) ?>
-                                                        %</p>
-                                                </td>
+												<?php if($show_progress == 1) : ?>
+	                                                <td style="width: 23.75%;">
+	                                                    <p class="em-applicant-default-font em-font-size-14"><?php echo(($progress['forms'][$application->fnum] + $progress['attachments'][$application->fnum]) / 2) ?>
+	                                                        %</p>
+	                                                </td>
+												<?php endif; ?>
                                                 <td style="width: 23.75%;">
                                                     <div>
 														<?php
