@@ -803,12 +803,13 @@ function data_to_img($match) {
 function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null, $attachments = true) {
 	jimport('joomla.html.parameter');
     set_time_limit(0);
-    require_once (JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'date.php');
+    require_once (JPATH_SITE.'/components/com_emundus/helpers/date.php');
+    require_once (JPATH_SITE.'/components/com_emundus/helpers/menu.php');
 
-    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
-    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
-    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'form.php');
+    require_once(JPATH_SITE.'/components/com_emundus/models/application.php');
+    require_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
+    require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
+    require_once(JPATH_SITE.'/components/com_emundus/models/form.php');
 
 	$db = JFactory::getDBO();
 	$app = JFactory::getApplication();
@@ -824,6 +825,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
     $config = JFactory::getConfig();
     $offset = $config->get('offset');
+
+    $h_date = new EmundusHelperDate;
+    $h_menu = new EmundusHelperMenu;
 
     $m_profile = new EmundusModelProfile;
     $m_application = new EmundusModelApplication;
@@ -922,7 +926,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
 
             if ($options[0] != "0" && !$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
-                $date_submitted = (!empty($item->date_submitted) && strpos($item->date_submitted, '0000') === false) ? EmundusHelperDate::displayDate($item->date_submitted) : JText::_('NOT_SENT');
+                $date_submitted = (!empty($item->date_submitted) && strpos($item->date_submitted, '0000') === false) ? $h_date->displayDate($item->date_submitted) : JText::_('NOT_SENT');
 
                 // Create an date object
                 $date_printed = new Date();
@@ -939,11 +943,11 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	            if (in_array("afnum", $options)) {
 		            $htmldata .= '<p><b>' . JText::_('FNUM') . ' :</b> ' . $fnum . '</p>';
 	            }
-				$htmldata .= '</td></table><hr/></header>';
+                $htmldata .= '</td></tr></table><hr/></header>';
 
-                $htmldata .= '<table width="100%"><tr>';
+                $htmldata .= '<table width="100%">';
 
-                //$htmldata .= '<td><h3>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . '</h3></td></tr>';
+                //$htmldata .= '<tr><td><h3>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . '</h3></td></tr>';
 				if(!empty($item->avatar) && is_image_ext($item->avatar))
 				{
 					if (file_exists(EMUNDUS_PATH_ABS . @$item->user_id . '/tn_' . @$item->avatar))

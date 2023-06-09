@@ -2841,7 +2841,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
                 if (count($files_list) > 0) {
                     // all PDF in one file
-                    require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'fpdi.php');
+                    require_once(JPATH_LIBRARIES.'/emundus/fpdi.php');
                     $pdf = new ConcatPdf();
 
                     $pdf->setFiles($files_list);
@@ -2849,7 +2849,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
                     $pdf->Output($dossier . $application_pdf, 'F');
 
-                    $filename = $application_form_name . DS . $application_pdf;
+                    $filename = $application_form_name . '/' . $application_pdf;
 
                     if (!$zip->addFile($dossier . $application_pdf, $filename)) {
                         continue;
