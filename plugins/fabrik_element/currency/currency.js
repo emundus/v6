@@ -43,10 +43,12 @@ define(['jquery', 'fab/element'],
 
         initDivEvent: function()
         {
-            this.element.addEventListener('mouseenter', this.mouseenterDivHandler.bind(this));
+            /*this.element.addEventListener('mouseenter', this.mouseenterDivHandler.bind(this));
             this.element.addEventListener('mouseleave', this.mouseleaveDivHandler.bind(this));
             this.element.addEventListener('focusin', this.focusInDivHandler.bind(this));
             this.element.addEventListener('focusout', this.focusOutDivHandler.bind(this));
+
+             */
         },
 
         mouseenterDivHandler: function()
@@ -80,18 +82,48 @@ define(['jquery', 'fab/element'],
                 this.HTMLSelectElement.setAttribute('tabindex', -1)
                 this.HTMLSelectElement.style.pointerEvents = 'none';
                 this.HTMLSelectElement.style.backgroundImage = 'none';
+
+                this.changeElement(this.HTMLSelectElement.options[0]);
             }
-            this.HTMLSelectElement.addEventListener('change', this.handlerSelectChange.bind(this));
+            else
+            {
+                Fabrik.buildChosen(this.HTMLSelectElement, {
+                    disable_search_threshold: 5,
+                    allow_single_deselect: true,
+                    search_contains: true,
+                });
+
+                const element = document.querySelector('#' + this.element.id + ' .chzn-single span');
+                this.changeElement(element);
+
+                document.querySelector('#' + this.element.id + ' .chzn-container .chzn-drop').style.minWidth = document.getElementById(this.element.id).offsetWidth + 'px';
+
+                jQuery(this.HTMLSelectElement).on('change', () => { // sadly mandatory
+                    this.handlerSelectChange();
+                });
+            }
         },
 
-        handlerSelectChange: function(e)
+        handlerSelectChange: function()
         {
             const oldIdSelectedCurrency = this.idSelectedCurrency;
-            const newIdSelectedCurrency = this.idSelectedCurrency = e.target.selectedIndex;
+            const newIdSelectedCurrency = this.idSelectedCurrency = this.HTMLSelectElement.selectedIndex;
 
             const newInputValue = this.getNewInputValue(this.HTMLInputElement.value, oldIdSelectedCurrency, newIdSelectedCurrency);
             this.addMask();
             this.mask.value = newInputValue;
+
+            const element = document.querySelector('#'+this.element.id+' .chzn-single span');
+            this.changeElement(element);
+        },
+
+        changeElement: function(element)
+        {
+            const select = this.HTMLSelectElement;
+            const val = select.value;
+            const symbol = this.getSymbolFromIso3(val);
+
+            element.textContent = symbol + ' ('+val+')';
         },
 
         getNewInputValue: function(oldInput, oldIdSelectedCurrency, newIdSelectedCurrency)
@@ -103,6 +135,19 @@ define(['jquery', 'fab/element'],
             const newThousandSep = this.allSelectedCurrencies[newIdSelectedCurrency].thousand_separator;
 
             return oldInput.replace(oldDecimalSep, newDecimalSep).replace(oldThousandSep, newThousandSep);
+        },
+
+        getSymbolFromIso3: function(iso3)
+        {
+            let symbol;
+            for(const currency of this.options.allCurrency)
+            {
+                if (currency.iso3 === iso3)
+                {
+                    symbol = currency.symbol;
+                }
+            }
+            return symbol;
         },
 
         addMask: function ()

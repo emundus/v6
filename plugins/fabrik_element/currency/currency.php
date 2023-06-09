@@ -90,7 +90,8 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
             {
                 if ($allCurrencyOne->iso3 === $selectedCurrencyOne->iso3)
                 {
-                    $valuesForSelect[$allCurrencyOne->iso3] = $allCurrencyOne->symbol . ' (' . $allCurrencyOne->iso3 . ')';
+                    //$valuesForSelect[$allCurrencyOne->iso3] = $allCurrencyOne->name . ' ' . $allCurrencyOne->symbol . ' (' . $allCurrencyOne->iso3 . ')';
+                    $valuesForSelect[$allCurrencyOne->iso3] = $allCurrencyOne->name . ' (' . $allCurrencyOne->iso3 . ')';
                 }
             }
         }
@@ -109,6 +110,7 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 		$bits = $this->inputProperties($repeatCounter);
         $bits['valuesForSelect'] = $valuesForSelect;
         $bits['iso3SelectedCurrency'] = $this->selectedCurrencies[$this->idSelectedCurrency]->iso3; // to set options selected
+        $bits['allCurrency'] = $this->allCurrency;
         $bits['inputValue'] = $inputValue;
 
 		$layout = $this->getLayout('form');
