@@ -292,8 +292,8 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
             $query->clear()
                 ->insert($db->quoteName('#__emundus_campaign_candidature'))
-                ->columns($db->quoteName(['date_time', 'applicant_id', 'user_id', 'campaign_id', 'fnum', 'uuid', 'uuidConnect']))
-                ->values($db->quote($now) . ', ' . $user_id . ', ' . $user_id . ', ' . $campaign_id . ', ' . $db->quote($fnum) . ', ' . $db->quote($fieldData->uuid) . ', ' . $db->quote($fieldData->uuidConnect));
+                ->columns($db->quoteName(['date_time', 'applicant_id', 'user_id', 'campaign_id', 'fnum', 'uuid', 'uuidConnect','recordId']))
+                ->values($db->quote($now) . ', ' . $user_id . ', ' . $user_id . ', ' . $campaign_id . ', ' . $db->quote($fnum) . ', ' . $db->quote($fieldData->uuid) . ', ' . $db->quote($fieldData->uuidConnect).', ' . $db->quote($singleFieldData->recordId));
             $db->setQuery($query);
 
 
