@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -131,13 +131,10 @@ window.localPage.switcherDisplay = function (oldClass, newClass, delay, target) 
 	else {
 		window.Oby.removeClass(element, newClass);
 		window.Oby.addClass(element, oldClass);
-		window.localPage.setCookie('hikashop_switcher_cookie',oldClass,delay);
+		window.hikashop.setCookie('hikashop_switcher_cookie',oldClass,delay);
 	}
 	if(window.Oby && window.Oby.fireAjax) window.Oby.fireAjax('hkAfterProductListingSwitch', {element:element});
 };
-window.localPage.setCookie = function (name,value,delay) {
-	 document.cookie = name + "=" + (value || "")  +  "; expires=" + delay + "; path=/";
-}
 	</script>
 <?php
 	}
@@ -220,16 +217,21 @@ window.localPage.setCookie = function (name,value,delay) {
 ?> <div style="clear:both"></div>
 <?php
 
-	if($infinite_scroll && empty($this->tmpl_ajax) && $this->pageInfo->elements->page > 1) {
+	if($infinite_scroll && $this->pageInfo->elements->page > 1) {
 
 		global $Itemid;
 
 		$filters_params = '';
 		if(!empty($this->filters)){
 			$reseted = hikaInput::get()->getVar('reseted');
+			$app = JFactory::getApplication();
 			foreach($this->filters as $uniqueFitler){
 				$name = 'filter_'.$uniqueFitler->filter_namekey;
-				$value = hikaInput::get()->getVar($name);
+				$value = hikaInput::get()->getVar($name, null);
+				if(is_null($value) || (is_string($value) && !strlen($value))) {
+					$cid = hikaInput::get()->getInt("cid",'itemid_'.hikaInput::get()->getInt("Itemid",0));
+					$value = $app->getUserState('com_hikashop.'.$cid.'_filter_'.$uniqueFitler->filter_namekey, '');
+				}
 				if(is_array($value))
 					$value = implode('::', $value);
 				if($reseted)
@@ -237,7 +239,11 @@ window.localPage.setCookie = function (name,value,delay) {
 				$filters_params .= '&'.$name . '=' . $value;
 
 				$name .= '_values';
-				$value = hikaInput::get()->getVar($name);
+				$value = hikaInput::get()->getVar($name, null);
+				if(is_null($value) || (is_string($value) && !strlen($value))) {
+					$cid = hikaInput::get()->getInt("cid",'itemid_'.hikaInput::get()->getInt("Itemid",0));
+					$value = $app->getUserState('com_hikashop.'.$cid.'_filter_'.$uniqueFitler->filter_namekey.'_values', '');
+				}
 				if($reseted)
 					continue;
 				if(is_array($value))
@@ -251,9 +257,17 @@ window.localPage.setCookie = function (name,value,delay) {
 		$cid = '';
 		if($this->categoryFromURL)
 			$cid = '&cid='.(int)(is_array($this->pageInfo->filter->cid) ? reset($this->pageInfo->filter->cid) : $this->pageInfo->filter->cid);
-
+		if(!empty($this->tmpl_ajax)) {
 ?>
-		<div class="hikashop_infinite_scroll" id="<?php echo $mainDivName; ?>_infinite_scroll">
+<script type="text/javascript">
+window.localPage.infiniteScrollUrl = '<?php echo HIKASHOP_LIVE; ?>index.php?option=com_hikashop&ctrl=product&task=listing<?php echo $cid; ?>&limitstart=HIKAPAGE<?php echo $filters_params; ?>&Itemid=<?php echo (int)$Itemid; ?>&tmpl=<?php echo (HIKASHOP_J30 ? 'raw' : 'component'); ?>';
+</script>
+<?php
+		}
+	}
+	if($infinite_scroll && empty($this->tmpl_ajax) && $this->pageInfo->elements->page > 1) {
+?>
+		<div class="hikashop_infinite_scroll" id="<?php echo $mainDivName; ?>_infinite_scroll" data-url="<?php echo HIKASHOP_LIVE; ?>index.php?option=com_hikashop&ctrl=product&task=listing<?php echo $cid; ?>&limitstart=HIKAPAGE<?php echo $filters_params; ?>&Itemid=<?php echo (int)$Itemid; ?>&tmpl=<?php echo (HIKASHOP_J30 ? 'raw' : 'component'); ?>">
 			<a href="#" onclick="return window.localPage.infiniteScroll('<?php echo $mainDivName; ?>');">
 				<span><?php echo JText::_('HIKA_LOAD_MORE'); ?></span>
 			</a>
@@ -262,6 +276,7 @@ window.localPage.setCookie = function (name,value,delay) {
 if(!window.localPage) window.localPage = {};
 window.localPage.infiniteScrollEvents = {};
 window.localPage.infiniteScrollPage = 1;
+window.localPage.infiniteScrollUrl = '<?php echo HIKASHOP_LIVE; ?>index.php?option=com_hikashop&ctrl=product&task=listing<?php echo $cid; ?>&limitstart=HIKAPAGE<?php echo $filters_params; ?>&Itemid=<?php echo (int)$Itemid; ?>&tmpl=<?php echo (HIKASHOP_J30 ? 'raw' : 'component'); ?>';
 window.localPage.infiniteScroll = function(container_name) {
 	if(window.localPage.infiniteScrollPage <= 0)
 		return false;
@@ -274,11 +289,13 @@ window.localPage.infiniteScroll = function(container_name) {
 	if(container.loading)
 		return false;
 
+	var dataUrl = container.getAttribute('data-url');
+	if(dataUrl)
+		window.localPage.infiniteScrollUrl = dataUrl;
+
 	container.loading = true;
 	o.addClass(container, 'loading');
-
-	var url = '<?php echo HIKASHOP_LIVE; ?>index.php?option=com_hikashop&ctrl=product&task=listing<?php echo $cid; ?>&limitstart=HIKAPAGE<?php echo $filters_params; ?>&Itemid=<?php echo (int)$Itemid; ?>&tmpl=<?php echo (HIKASHOP_J30 ? 'raw' : 'component'); ?>';
-	url = url.replace(/HIKAPAGE/g, <?php echo (int)$this->pageInfo->limit->value; ?> * window.localPage.infiniteScrollPage);
+	var url = window.localPage.infiniteScrollUrl.replace(/HIKAPAGE/g, <?php echo (int)$this->pageInfo->limit->value; ?> * window.localPage.infiniteScrollPage);
 	o.xRequest(url, null, function(xhr) {
 		if(xhr.responseText.length == 0) {
 			window.localPage.infiniteScrollPage = -1;

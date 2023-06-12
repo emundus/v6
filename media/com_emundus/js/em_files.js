@@ -5271,7 +5271,7 @@ $(document).ready(function() {
         }
     });
 
-    $(document).on('keyup', 'input:text', function(e) {
+    $(document).on('keyup', '#em_filters input:text', function(e) {
         if ($(this).closest('.modal').length === 0 && $(this).closest('#em-message').length === 0 && e.keyCode == 13 ) {
             search();
         }
@@ -6370,6 +6370,7 @@ async function sendMailQueue(fnums) {
     const steps = [1, 2];
     let currentStep;
     let body = '';
+    let data = {};
 
     for (currentStep = 0; currentStep < 2;) {
         let title = '';
@@ -6393,6 +6394,7 @@ async function sendMailQueue(fnums) {
                     data: {
                         fnums: fnums,
                         body: body,
+                        data: data
                     },
                     success: function(result) {
                         $('#data').append(result);
@@ -6417,7 +6419,7 @@ async function sendMailQueue(fnums) {
                 body = $('#mail_body').val();
 
                 // Get all form elements.
-                var data = {
+                data = {
                     recipients      : $('#fnums').val(),
                     template        : $('#message_template :selected').val(),
                     mail_from_name  : $('#mail_from_name').text(),

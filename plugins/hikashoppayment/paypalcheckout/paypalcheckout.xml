@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="hikashoppayment">
-	<name>Hikashop Paypal Checkout Payment Plugin</name>
-	<creationDate>25 septembre 2022</creationDate>
-	<version>4.6.2</version>
+	<name>Hikashop Paypal Checkout Payment</name>
+	<creationDate>15 juillet 2022</creationDate>
+	<version>1.0.0</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
@@ -24,4 +24,7 @@
 			</fieldset>
 		</fields>
 	</config>
+	<updateservers>
+		<server type="collection">https://www.hikashop.com/update/paypalcheckout_update.xml</server>
+	</updateservers>
 </extension>

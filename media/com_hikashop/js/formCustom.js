@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.6.2
+ * @version    4.7.3
  * @author     hikashop.com
- * @copyright  (C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 (function() {
@@ -192,7 +192,7 @@ var formCustom = {
 					break;
 				}
 			}
-			if(!area && !options.skipEmpty) {
+			if(!area) {
 				// create a new area in the DOM
 				area = this.addBlock(options, areaData, mainArea);
 			}
@@ -208,10 +208,12 @@ var formCustom = {
 			var optionsList = area.querySelector(options.fieldsElements);
 
 			// reorder the fields in the area
+			var found = 0;
 			for(var j = 0; j < areaData.fields.length; j++) {
 				var field = areaData.fields[j];
 				els = mainArea.querySelectorAll(options.fieldsElements+' .'+options.labelPrefix+field);
 				if(els && els.length) {
+					found += els.length;
 					for(var k = 0; k < els.length; k++) {
 						if(els[k].parentNode.style.display == 'none') {
 							optionsList.appendChild(els[k].parentNode);
@@ -220,6 +222,9 @@ var formCustom = {
 						}
 					}
 				}
+			}
+			if(areaData.fields.length > 0 && found == 0 && options.skipEmpty) {
+				this.removeBlock(areaData.name, options.index);
 			}
 
 		}

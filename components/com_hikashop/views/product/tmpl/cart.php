@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -21,7 +21,7 @@ window.Oby.registerAjax(<?php echo $events; ?>, function(params) {
 	if(params && params.resp && params.resp.module == <?php echo (int)$module_id; ?>) return;
 	if(params && params.type && params.type != '<?php echo $this->cart_type; ?>') return;
 	o.addClass(el, "hikashop_checkout_loading");
-	window.hikashop.xRequest("<?php echo hikashop_completeLink('product&task=cart&module_id='.$module_id . '&module_type='.$this->cart_type, true, false, true); ?>", {update: el, mode:'POST', data:'return_url=<?php echo urlencode(base64_encode(hikashop_currentURL('return_url'))); ?>'}, function(xhr){
+	window.hikashop.xRequest("<?php echo hikashop_completeLink('product&task=cart&module_id='.$module_id . '&module_type='.$this->cart_type.$this->url_itemid, true, false, true); ?>", {update: el, mode:'POST', data:'return_url=<?php echo urlencode(base64_encode(hikashop_currentURL('return_url'))); ?>'}, function(xhr){
 		o.removeClass(el, "hikashop_checkout_loading");
 	});
 });
@@ -89,6 +89,16 @@ if($this->params->get('print_cart', 0)) {
 		'hikashop_print_popup', 760, 480, 'title="'.JText::_('HIKA_PRINT').'"', '', 'link'
 	);
 }
+$icon_html = "";
+$path = $this->params->get('icon');	
+if(!empty($path)) {
+	$icon_html = '';
+	if($path != '') {
+		$icon_path = trim($path);
+		$icon_html = '<img class="hikashop_cart_module_product_icon_title" src="'.$icon_path.'" alt="'.JText::_('HIKA_CARTNOTIFICATION_REDIRECT').'">';
+	}
+}
+
 $this->setLayout('listing_price');
 $this->params->set('show_quantity_field', 0);
 
@@ -179,7 +189,7 @@ if(!empty($small_cart)) {
 ?>
 <!-- MINI CART MAIN LINK -->
 	<a class="hikashop_small_cart_checkout_link" href="<?php echo $link; ?>"<?php echo $extra_data; ?>>
-		<span class="hikashop_small_cart_total_title"><?php echo $text; ?></span>
+		<span class="hikashop_small_cart_total_title"><?php echo $icon_html . $text; ?></span>
 	</a>
 <!-- EO MINI CART MAIN LINK -->
 <!-- MINI CART PRINT CART BUTTON -->
@@ -259,7 +269,7 @@ foreach($columns as $c) {
 		<table class="hikashop_cart" width="100%">
 		<thead>
 <!-- IMAGE HEADER -->
-			<tr>
+	<tr>
 <?php if(!empty($columns['image'])) { ?>
 				<th class="hikashop_cart_module_product_image_title hikashop_cart_title"><?php
 					echo JText::_('CART_PRODUCT_IMAGE');
@@ -296,7 +306,7 @@ foreach($columns as $c) {
 <!-- PRINT BUTTON -->
 <?php
 if($this->params->get('print_cart', 0)) {
-?>				<th class="hikashop_cart_module_product_image_title hikashop_cart_title">
+?>				<th class="hikashop_cart_module_product_print_title hikashop_cart_title">
 					<span class="hikashop_checkout_cart_print_link" style="width: 16px; display: inline-block;">
 <?php					echo $print_button;
 ?>					</span>
@@ -477,7 +487,7 @@ foreach($this->element->products as $k => $product) {
 			$attributes = '';
 			if($img->external)
 				$attributes = ' width="'.$img->req_width.'" height="'.$img->req_height.'"';
-			?><img class="hikashop_product_cart_image" title="<?php echo $this->escape(@$product->images[0]->file_description); ?>" alt="<?php echo $this->escape(@$product->images[0]->file_name); ?>" src="<?php echo $img->url; ?>" <?php echo $attributes; ?>/><?php
+			?><img class="hikashop_product_cart_image" title="<?php echo $this->escape((string)@$product->images[0]->file_description); ?>" alt="<?php echo $this->escape((string)@$product->images[0]->file_name); ?>" src="<?php echo $img->url; ?>" <?php echo $attributes; ?>/><?php
 		}
 				?></td>
 <?php
@@ -559,6 +569,7 @@ foreach($this->element->products as $k => $product) {
 			'quantity_fieldname' => 'item['.$product->cart_product_id.'][cart_product_quantity]',
 			'onchange_script' => ' window.hikashop.checkQuantity(this); if(this.value == '.(int)$product->cart_product_quantity.'){ return; } if(this.form.onsubmit && !this.form.onsubmit()) return; this.form.submit();',
 			'onincrement_script' => ' window.hikashop.updateQuantity(this,\'{id}\'); var input = document.getElementById(\'{id}\'); if(input.value == '.(int)$product->cart_product_quantity.'){ return false; } if(input.form.onsubmit && !input.form.onsubmit()) return false; input.form.submit(); return false;',
+			'refresh_task' => 'updatecart',
 		));
 				?></td>
 <?php

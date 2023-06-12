@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.6.2
+ * @version    4.7.3
  * @author     hikashop.com
- * @copyright  (C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 .hika_edit { background-color:#f9f9f9; padding:4px; }
@@ -71,12 +71,22 @@ div.hikashop_see_more_icon {
 .hikashop_cart table tfoot hr {
 	margin:0px;
 }
+.hikashop_cart_dropdown_container td.hikashop_cart_module_product_quantity_value.hikashop_cart_value {
+    max-width: 60px;
+}
+.hikashop_cart_dropdown_container input.form-control {
+    padding: 2px 10px;
+    max-width: 40px;
+}
 
 .hikashop_cart_module label{
 	display: inline-block;
 }
 div.hikashop_checkout_loading div.hikashop_checkout_loading_spinner.small_spinner.small_cart {
 	background: url(../images/spinner.gif) no-repeat center right;
+}
+.hikashop_cart_module th.hikashop_cart_module_product_icon_title.hikashop_cart_title + th {
+	display: none;
 }
 
 .hikashop_cpanel div.hikashop_cpanel_icon_div a {
@@ -259,6 +269,8 @@ table.hikashop_no_border td:hover {
 
 div.hikashop_search_block input {
 	margin-bottom:0px;
+	max-width: 190px;
+	display: unset;
 }
 
 .hikacart {
@@ -549,7 +561,7 @@ div.hikashop_product_quantity_div.hikashop_product_quantity_input_div_regrouped 
 	position: relative;
 }
 div.hikashop_product_quantity_change_div_leftright span:hover {
-    background-color: #f2f2f2;
+    background-color: #6e0c0c;
 }
 .hikashop_carousel_item .hikashop_product_quantity_change_div_leftright.hika_j4 span.add-on {
 	display: inline-block;
@@ -564,6 +576,14 @@ div.hikashop_product_quantity_change_div_leftright span:hover {
 }
 .hikashop_product_quantity_div input,
 input.hikashop_product_quantity_field {max-width: 30px;}
+
+.hikashop_product_quantity_div input.form-control,
+.form-control.hikashop_product_quantity_field {
+	max-width: 60px;
+	max-width: 50px;
+    padding: 3px 10px;
+
+}
 
 td.hikashop_cart_module_product_quantity_value.hikashop_cart_value .hikashop_product_quantity_change_div_leftright.hika_j4 span.add-on a.hikashop_product_quantity_field_change_plus {
 	left: 25px;
@@ -1086,6 +1106,10 @@ ul.hikashop_pagination {
 
 .hikashop_checkout_coupon_field {
 	margin: 3px;
+	max-width: 250px;
+}
+.form-control.hikashop_checkout_coupon_field {
+	margin: unset;
 }
 
 .hikashop_cart_product_name .hikashop_product_code_checkout {
@@ -1848,6 +1872,10 @@ div#hikashop_download_listing th.hikashop_order_date_title.title a {display: blo
 .hikashop_filter_module .hikashop_filter_main_div {
 	border-width: 0px;
 }
+.filter_values_container .hkform-control, .filter_values_container .hkform-select,
+.filter_values_container .form-control, .filter_values_container .form-select {
+    max-width: 90%;
+}
 
 .slider_input{
 	width: 60px;
@@ -1862,6 +1890,15 @@ div#hikashop_download_listing th.hikashop_order_date_title.title a {display: blo
 }
 #cart_link{
 	font-style:italic;
+}
+
+#hikashop_show_cart_form dd .hkform-control,
+#hikashop_show_cart_form dd .form-control, 
+#hikashop_show_cart_form dd .form-select {
+    max-width: 190px;
+}
+#hikashop_show_cart_form dt {
+	margin-right: 5px;
 }
 
 span.hk-label,
@@ -2045,8 +2082,10 @@ span.order-label-all {
 #hikashop_order_listing .hk-card-order .hk-card-header {
 	font-weight: bold;
 }
+
 #hikashop_order_listing select#filter_order_range {
 	float: right;
+	margin-bottom: 10px;
 }
 
 .hikashop_cart_current_value .fa.fa-star {

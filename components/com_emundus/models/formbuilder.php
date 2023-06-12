@@ -3763,11 +3763,19 @@ class EmundusModelFormbuilder extends JModelList {
                                 $inserted = $db->execute();
                             } catch (Exception $e) {
                                 $inserted = false;
-                                JLog::add('Failed to create new form model ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                                JLog::add('Failed to create new form model ' . $e->getMessage(), JLog::ERROR, 'com_emundus.formbuilder');
                             }
+                        } else {
+	                        JLog::add('Failed to copy groups in new form model  (new form : ' . $new_form_id . ', form model : ' . $form_id_to_copy . ')', JLog::WARNING, 'com_emundus.formbuilder');
                         }
+                    } else {
+	                    JLog::add('Failed to copy List for new form model (new form : ' . $new_form_id . ', list to copy : ' . $list_to_copy . ')', JLog::WARNING, 'com_emundus.formbuilder');
                     }
+                } else {
+	                JLog::add('Failed to get List from form model (form model : ' . $form_id_to_copy  . ')', JLog::WARNING, 'com_emundus.formbuilder');
                 }
+            } else {
+	            JLog::add('Failed to copy Form for new form model (new form : ' . $new_form_id . ', form model : ' . $form_id_to_copy . ')', JLog::WARNING, 'com_emundus.formbuilder');
             }
         }
 

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -408,7 +408,7 @@ if(!isset($this->fullCart->prices[0])) {
 				);
 				$img = $this->image->getThumbnail(@$row->images[0]->file_path, array('width' => $width, 'height' => $height), $image_options);
 				if($img->success) {
-					echo '<img class="hikashop_product_cart_image" title="'.$this->escape(@$row->images[0]->file_description).'" alt="'.$this->escape(@$row->images[0]->file_name).'" src="'.$img->url.'"/>';
+					echo '<img class="hikashop_product_cart_image" title="'.$this->escape((string)@$row->images[0]->file_description).'" alt="'.$this->escape((string)@$row->images[0]->file_name).'" src="'.$img->url.'"/>';
 				}
 			}
 ?>

@@ -256,12 +256,6 @@ class EmundusControllerMessages extends JControllerLegacy {
         $fnums = explode(',',$jinput->post->get('recipients', null, null));
         $nb_recipients = count($fnums);
 
-        if ($nb_recipients > 1) {
-            $html = '<h2>'.JText::sprintf('COM_EMUNDUS_EMAIL_ABOUT_TO_SEND', $nb_recipients).'</h2>';
-        } else {
-            $html = '';
-        }
-
         // If no mail sender info is provided, we use the system global config.
         $mail_from_name = $jinput->post->getString('mail_from_name', $mail_from_sys_name);
         $mail_from = $jinput->post->getString('mail_from', $mail_from_sys);
@@ -270,6 +264,23 @@ class EmundusControllerMessages extends JControllerLegacy {
         $template_id = $jinput->post->getInt('template', null);
         $mail_message = $jinput->post->get('message', null, 'RAW');
         $attachments = $jinput->post->get('attachments', null, null);
+
+	    // Check tags unpublished
+	    $unpublished_tags = $m_emails->checkUnpublishedTags($mail_from.$mail_from_name.$mail_subject.$mail_message);
+
+		if(!empty($unpublished_tags)) {
+			$html = '<div style="color: #c91212"><p style="color: #c91212">' .JText::_('COM_EMUNDUS_EMAIL_WARNING_UNPUBLISHED_TAGS').'</p><ul>';
+			foreach ($unpublished_tags as $unpublished_tag) {
+				$html .= '<li>'.$unpublished_tag.'</li>';
+			}
+			$html .= '</ul></div>';
+		}
+
+	    if ($nb_recipients > 1) {
+		    $html .= '<h2>'.JText::sprintf('COM_EMUNDUS_EMAIL_ABOUT_TO_SEND', $nb_recipients).'</h2>';
+	    } else {
+		    $html = '';
+	    }
 
 
         // Here we filter out any CC or BCC emails that have been entered that do not match the regex.
@@ -801,9 +812,6 @@ class EmundusControllerMessages extends JControllerLegacy {
                     $log['email_cc'] = implode(', ',$cc_final);
                 }
                 $m_emails->logEmail($log, $fnum->fnum);
-                // Log the email in the eMundus logging system.
-                $logsParams = array('created' => [$subject]);
-                EmundusModelLogs::log($user->id, $fnum->applicant_id, $fnum->fnum, 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
             }
 
             // Due to mailtrap now limiting emails sent to fast, we add a long sleep.
@@ -1760,8 +1768,6 @@ class EmundusControllerMessages extends JControllerLegacy {
 	            'email_id' => $template_email_id,
             ];
             $m_emails->logEmail($log, $fnum);
-            // Log the email in the eMundus logging system.
-            EmundusModelLogs::log($user->id, $fnum_info['applicant_id'], $fnum_info['fnum'], 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
         }
         // Due to mailtrap now limiting emails sent to fast, we add a long sleep.
         if ($config->get('smtphost') === 'smtp.mailtrap.io') {

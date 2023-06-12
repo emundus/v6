@@ -436,7 +436,7 @@ class Files
 		return $wheres;
 	}
 
-	public function buildQuery($select,$left_joins = [],$wheres = [],$access = '',$limit = 0,$offset = 0,$return = 'object'){
+	public function buildQuery($select,$left_joins = [],$wheres = [],$access = '',$limit = 0,$offset = 0,$return = 'object',$params = null){
 		$em_session = JFactory::getSession()->get('emundusUser');
 		$user = JFactory::getUser();
 
@@ -445,6 +445,10 @@ class Files
 		$query_users_associated = $db->getQuery(true);
 		$query_groups_associated = $db->getQuery(true);
 		$query_groups_program_associated = $db->getQuery(true);
+
+        if (isset($params->tags) && $params->tags !== '') {
+            $left_joins[] = $db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum');
+        }
 
 		try {
 			$groups_allowed = [];

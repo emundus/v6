@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -124,6 +124,16 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 			}
 		};
 
+		if($billing_address_missing || $shipping_address_missing) {
+			$addresses = $checkoutHelper->getAddresses();
+
+			if($billing_address_missing && empty($addresses['billing_fields'])) {
+				$billing_address_missing = false;
+			}
+			if($shipping_address_missing && empty($addresses['shipping_fields'])) {
+				$shipping_address_missing = false;
+			}
+		}
 
 		$app = JFactory::getApplication();
 		if($billing_address_missing) {
@@ -327,17 +337,34 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 		$checkoutHelper = hikashopCheckoutHelper::get();
 		$cart = $checkoutHelper->getCart();
 		$cartClass = hikashop_get('class.cart');
+		$addressClass = hikashop_get('class.address');
 
 		$app = JFactory::getApplication();
 		$old_messages = $app->getMessageQueue();
 
 		$ret_billing = true;
 		if(!empty($billing)) {
+			$addr = $addressClass->get($billing);
+			if(!$addressClass->isAddressValid($addr)) {
+				$checkoutHelper->addMessage('address.info_missing', array(
+					'msg' => JText::_('THE_BILLING_ADDRESS_YOU_SELECTED_CANNOT_BE_USED_AS_SOME_INFORMATION_IS_MISSING'),
+					'type' => 'error'
+				));
+				return false;
+			}
 			$ret_billing = $cartClass->updateAddress($cart->cart_id, 'billing', $billing);
 		}
 
 		$ret_shipping = true;
 		if(!empty($shipping)) {
+			$addr = $addressClass->get($shipping);
+			if(!$addressClass->isAddressValid($addr)) {
+				$checkoutHelper->addMessage('address.info_missing', array(
+					'msg' => JText::_('THE_SHIPPING_ADDRESS_YOU_SELECTED_CANNOT_BE_USED_AS_SOME_INFORMATION_IS_MISSING'),
+					'type' => 'error'
+				));
+				return false;
+			}
 			$ret_shipping = $cartClass->updateAddress($cart->cart_id, 'shipping', $shipping);
 		}
 
@@ -436,6 +463,15 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 
 			if(empty($addresses) || empty($addresses['data']))
 				$params['edit_address'] = true;
+
+			if($params['show_billing'] && empty($addresses['billing_fields'])) {
+				$params['show_billing'] = false;
+			}
+			if($params['show_shipping'] && empty($addresses['shipping_fields'])) {
+				$params['show_shipping'] = false;
+			}
+			if(!$params['show_billing'] && !$params['show_shipping'])
+				$params['display'] = false;
 
 			$checkout = hikaInput::get()->get('checkout', array(), 'array');
 			$address_id = 0;

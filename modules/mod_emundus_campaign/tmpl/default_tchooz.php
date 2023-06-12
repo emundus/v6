@@ -130,11 +130,11 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         <h3 class="em-h3"><?php echo JText::_('MOD_EM_CAMPAIGN_PINNED_CAMPAIGN') ?></h3>
         <div class="mod_emundus_campaign__pinned_campaign em-mt-32 em-mb-24">
             <?php if(strtotime($now) > strtotime($campaign_pinned->end_date)) :  ?>
-            <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'">
+            <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
 
                 <?php  else : ?>
 
-                <div class="mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'">
+                <div class="mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
                     <?php endif; ?>
 
                     <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
@@ -168,19 +168,19 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                 <?php endif; ?>
                             </div>
 
-                            <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                            <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
                                 <h4 class="em-h4 mod_emundus_campaign__campaign_title" title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h4>
                             </a>
                         <?php  elseif ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '0') :  ?>
                             <p class="em-programme-tag" title="<?php echo $campaign_pinned->programme ?>" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
                                 <?php  echo $campaign_pinned->programme; ?>
                             </p>
-                            <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                            <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
                                 <h4 class="em-h4 mod_emundus_campaign__campaign_title" title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h4>
                             </a>
                         <?php  elseif ($mod_em_campaign_list_show_programme == '0' && $mod_em_campaign_show_programme_logo == '1') :  ?>
                             <div class="mod_emundus_campaign__campagne_properties">
-                                <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                                <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
                                     <h4 class="em-h4 mod_emundus_campaign__campaign_title" title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h4>
                                 </a>
                                 <?php if (!empty($campaign_pinned->logo)) :?>
@@ -188,7 +188,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                 <?php endif; ?>
                             </div>
                         <?php  else :  ?>
-                            <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                            <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
                                 <h4 class="em-h4 mod_emundus_campaign__campaign_title" title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h4>
                             </a>
                         <?php endif; ?>
@@ -495,12 +495,12 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                     ?>
 
                 <?php if(strtotime($now) > strtotime($result->end_date)) :  ?>
-                    <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'">
+                    <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
 
                         <?php  else : ?>
 
 
-                        <div class="mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'">
+                        <div class="mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
                             <?php endif; ?>
 
                             <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
@@ -535,7 +535,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                         <?php endif; ?>
                                     </div>
 
-                                    <a href="<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                                    <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
                                         <h4 class="em-h4 mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></h4>
                                     </a>
                                 <?php  elseif ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '0') :  ?>
@@ -543,12 +543,12 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                         <?php  echo $result->programme; ?>
                                     </p>
 
-                                    <a href="<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                                    <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
                                         <h4 class="em-h4 mod_emundus_campaign__campaign_title" title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h4>
                                     </a>
                                 <?php  elseif ($mod_em_campaign_list_show_programme == '0' && $mod_em_campaign_show_programme_logo == '1') :  ?>
                                     <div class="mod_emundus_campaign__campagne_properties">
-                                        <a href="<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                                        <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
                                             <h4 class="em-h4 mod_emundus_campaign__campaign_title" title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h4>
                                         </a>
                                         <?php if (!empty($result->logo)) :?>
@@ -556,7 +556,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                         <?php endif; ?>
                                     </div>
                                 <?php  else :  ?>
-                                    <a href="<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                                    <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
                                         <h4 class="em-h4 mod_emundus_campaign__campaign_title" title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h4>
                                     </a>
                                 <?php endif; ?>

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -274,7 +274,7 @@ window.productMgr.closeVariantEditor = function() { <?php echo $this->editor->js
 				$onWhat = 'onchange';
 				if($oneExtraField->field_type == 'radio')
 					$onWhat = 'onclick';
-				$txt = $this->fieldsClass->display($oneExtraField, $this->product->$fieldName, 'data[variant]['.$fieldName.']', false, ' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'product\',0,\''.$this->fieldsClass->prefix.'\');"');
+				$txt = $this->fieldsClass->display($oneExtraField, @$this->product->$fieldName, 'data[variant]['.$fieldName.']', false, ' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'product\',0,\''.$this->fieldsClass->prefix.'\');"');
 				if($oneExtraField->field_type == 'hidden') {
 					$after[] = $txt;
 					continue;
@@ -345,14 +345,21 @@ window.productMgr.closeVariantEditor = function() { <?php echo $this->editor->js
 			echo $h;
 		}
 	}
+
+	$areas_order = $this->config->get('variant_areas_order');
+	if(empty($areas_order))
+		$areas_order = $this->config->get('product_areas_order');
+	$areas_fields = $this->config->get('variant_areas_fields');
+	if(empty($areas_fields))
+		$areas_fields = $this->config->get('product_areas_fields');
 ?>
 
 <div style="clear:both"></div>
 
 </div>
 <input type="hidden" name="data[variant][product_id]" value="<?php echo $this->product->product_id; ?>" />
-<input type="hidden" name="variant_areas_order"  id="variant_areas_order" value="<?php echo $this->escape($this->config->get('variant_areas_order', $this->config->get('product_areas_order'))); ?>"/>
-<input type="hidden" name="variant_areas_fields"  id="variant_areas_fields" value="<?php echo $this->escape($this->config->get('variant_areas_fields', $this->config->get('product_areas_fields'))); ?>"/>
+<input type="hidden" name="variant_areas_order"  id="variant_areas_order" value="<?php echo $this->escape($areas_order); ?>"/>
+<input type="hidden" name="variant_areas_fields"  id="variant_areas_fields" value="<?php echo $this->escape($areas_fields); ?>"/>
 <div style="clear:both"></div>
 <script type="text/javascript">
 if(JoomlaCalendar && JoomlaCalendar.init){
@@ -368,6 +375,9 @@ if(Joomla && Joomla.JoomlaTinyMCE && Joomla.JoomlaTinyMCE.setupEditors) {
 	var section = document.getElementById('hikashop_product_variant_edition');
 	Joomla.JoomlaTinyMCE.setupEditors(section);
 }
+<?php 
+if($this->config->get('form_custom', 1)) {
+?>
 window.hikashop.ready( function() {
 	var options = {
 		mainArea: '#hikashop_product_variant_edition .hk-container-fluid',
@@ -377,6 +387,7 @@ window.hikashop.ready( function() {
 	};
 	window.variantDragOptionsKey = window.formCustom.initDragAndDrop(options);
 });
+<?php } ?>
 </script>
 <?php
 $doc = JFactory::getDocument();
