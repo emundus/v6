@@ -1878,6 +1878,10 @@ structure:
 				}
             }
 
+			if (version_compare($cache_version, '1.36.4', '<=') || $firstrun){
+				EmundusHelperUpdate::addColumn('jos_emundus_uploads','size','INT',11);
+			}
+
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
 
