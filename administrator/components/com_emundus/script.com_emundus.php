@@ -1804,6 +1804,51 @@ structure:
 				EmundusHelperUpdate::updateYamlVariable('', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_offline/layout.yaml', '', $content_layout_offline);
 			}
 
+            if (version_compare($cache_version, '1.37.0', '<=') || $firstrun)
+            {
+                EmundusHelperUpdate::installExtension('plg_fabrik_element_currency', 'currency', '{"name":"plg_fabrik_element_currency","type":"plugin","creationDate":"Mai 2023","author":"eMundus - Thibaud Grignon","copyright":"Copyright (C) 2005-2021 Media A-Team, Inc. - All rights reserved.","authorEmail":"dev@emundus.io","authorUrl":"www.emundus.fr","version":"3.10","description":"PLG_ELEMENT_FIELD_DESCRIPTION","group":"","filename":"currency"}', 'plugin', 1, 'fabrik_element');
+
+                $columns      = [
+                    [
+                        'name'    => 'symbol',
+                        'type'    => 'varchar',
+                        'length'  => 255,
+                        'null'    => 0,
+                    ],
+                    [
+                        'name'    => 'iso3',
+                        'type'    => 'varchar',
+                        'length'  => 3,
+                        'null'    => 0,
+                    ],
+                    [
+                        'name'    => 'format',
+                        'type'    => 'char',
+                        'length'  => 10,
+                        'default' => '%i',
+                        'null'    => 0,
+                    ],
+                    [
+                        'name'    => 'name',
+                        'type'    => 'varchar',
+                        'length'  => 255,
+                        'null'    => 0,
+                    ],
+                    [
+                        'name'    => 'published',
+                        'type'    => 'tinyint',
+                        'length'  => 1,
+                        'default' => 1,
+                        'null'    => 0,
+                    ]
+                ];
+                $data_currency = EmundusHelperUpdate::createTable('data_currency', $columns);
+
+                if($data_currency['status']){
+                    EmundusHelperUpdate::executeSQlFile('insert_data_currency');
+                }
+            }
+
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
 
