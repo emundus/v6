@@ -9,7 +9,7 @@
 			</div>
 		</div>
 		<section v-if="!opened" class="recap em-mt-8">
-			<div v-if="filter.value.length > 0 && !filter.value.includes('all')" class="em-flex-column-start">
+			<div v-if="filter.value && filter.value.length > 0 && !filter.value.includes('all')" class="em-flex-column-start">
 				<span class="recap-operator label label-darkblue"> {{ selectedOperatorLabel }}</span>
 				<div class="recap-value em-flex-row em-flex-wrap em-mt-8">
 					<div v-for="(value, index) in filter.value" :key="value">
@@ -45,6 +45,7 @@
 			</div>
 			<hr/>
 			<input class="em-w-100 em-p-8 em-border-radius-8 em-border-neutral-400 em-box-shadow em-white-bg"
+			       :id="' + filter.uid + '-filter-search"
 			       type="text"
 			       :placeholder="translate('MOD_EMUNDUS_FILTERS_FILTER_SEARCH')"
 			       v-model="search"

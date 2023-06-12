@@ -863,7 +863,7 @@ class EmundusHelperFiles
         if (!empty($elements_id) && !empty(ltrim($elements_id))) {
 
             $db = JFactory::getDBO();
-            $query = 'SELECT element.id, element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.plugin as element_plugin, element.hidden as element_hidden, forme.id as form_id, forme.label as form_label, groupe.id as group_id, groupe.label as group_label, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.created_by_alias AS created_by_alias, joins.table_join
+            $query = 'SELECT element.id, element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.plugin as element_plugin, element.hidden as element_hidden, forme.id as form_id, forme.label as form_label, groupe.id as group_id, groupe.label as group_label, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.id as table_list_id, tab.created_by_alias AS created_by_alias, joins.table_join, joins.table_key, joins.table_join_key
                     FROM #__fabrik_elements element
                     INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
                     INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
@@ -872,7 +872,7 @@ class EmundusHelperFiles
                     LEFT JOIN #__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))
                     WHERE element.id IN ('.ltrim($elements_id, ',').')
                     ORDER BY find_in_set(element.id, "' . ltrim($elements_id, ',') . '") ';
-            try {
+			try {
                 $db->setQuery($query);
                 $res = $db->loadObjectList('id');
             } catch (Exception $e) {
@@ -3135,21 +3135,23 @@ class EmundusHelperFiles
      * @param array $tableAlias
      * @return array
      */
-    public function _buildWhere($tableAlias = array(), $caller = 'files', $caller_params = array()) {
+    public function _buildWhere($already_joined = array(), $caller = 'files', $caller_params = array()) {
 		$where = ['q' => '', 'join' => ''];
 
 		$session = JFactory::getSession();
 	    $session_filters = $session->get('em-applied-filters');
 		if (!empty($session_filters)) {
-			$already_joined = [
-				'jecc' => 'jos_emundus_campaign_candidature',
-				'ss' => 'jos_emundus_setup_status',
-				'esc' => 'jos_emundus_setup_campaigns',
-				'sp' => 'jos_emundus_setup_programmes',
-				'u' => 'jos_users',
-				'eu' => 'jos_emundus_users',
-				'eta' => 'jos_emundus_tag_assoc'
-			];
+			if (empty($already_joined)) {
+				$already_joined = [
+					'jecc' => 'jos_emundus_campaign_candidature',
+					'ss' => 'jos_emundus_setup_status',
+					'esc' => 'jos_emundus_setup_campaigns',
+					'sp' => 'jos_emundus_setup_programmes',
+					'u' => 'jos_users',
+					'eu' => 'jos_emundus_users',
+					'eta' => 'jos_emundus_tag_assoc'
+				];
+			}
 			$db = JFactory::getDbo();
 
 			foreach ($session_filters as $filter) {
@@ -3167,6 +3169,8 @@ class EmundusHelperFiles
 
 							if (!in_array($fabrik_element_data['db_table_name'], $already_joined)) {
 								foreach ($already_joined as $already_join_alias => $already_joined_table_name) {
+									$already_join_alias = !is_numeric($already_join_alias) ? $already_join_alias : $already_joined_table_name;
+
 									$query->clear()
 										->select('*')
 										->from('#__fabrik_joins')
@@ -3179,10 +3183,9 @@ class EmundusHelperFiles
 									$join_informations = $db->loadAssoc();
 
 									if (!empty($join_informations)) {
-										$new_table_alias = 'jejoin_' . sizeof($already_joined);
-										$already_joined[$new_table_alias] = $fabrik_element_data['db_table_name'];
+										$already_joined[] = $fabrik_element_data['db_table_name'];
 
-										$where['join'] .= ' LEFT JOIN ' . $db->quoteName($join_informations['join_from_table'], $new_table_alias) . ' ON ' . $db->quoteName($new_table_alias . '.' . $join_informations['table_key']) . ' = ' . $db->quoteName($already_join_alias . '.' . $join_informations['table_join_key']);
+										$where['join'] .= ' LEFT JOIN ' . $db->quoteName($join_informations['join_from_table']) . ' ON ' . $db->quoteName($join_informations['join_from_table'] . '.' . $join_informations['table_key']) . ' = ' . $db->quoteName($already_join_alias . '.' . $join_informations['table_join_key']);
 										$mapped_to_fnum = true;
 										break;
 									}
@@ -3199,46 +3202,42 @@ class EmundusHelperFiles
 								$join_informations = $this->getJoinInformations($filter_id, $fabrik_element_data['group_id'], $fabrik_element_data['list_id']);
 
 								if (!empty($join_informations)) {
+									$parent_table_alias = '';
 									$parent_table = $join_informations['join_from_table'];
 									if (!in_array($parent_table, $already_joined)) {
-										$parent_alias = 'jejoin_' . sizeof($already_joined);
-										$already_joined[$parent_alias] = $parent_table;
-
-										$where['join'] .= ' LEFT JOIN ' . $db->quoteName($parent_table, $parent_alias) . ' ON ' . $parent_alias . '.fnum = jecc.fnum ';
+										$already_joined[] = $parent_table;
+										$where['join'] .= ' LEFT JOIN ' . $db->quoteName($parent_table) . ' ON ' . $parent_table . '.fnum = jecc.fnum ';
 									} else {
-										$parent_alias = array_search($parent_table, $already_joined);
+										$parent_table_alias = array_search($parent_table, $already_joined);
 									}
+									$parent_table_alias = !empty($parent_table_alias) && !is_numeric($parent_table_alias) ? $parent_table_alias : $parent_table;
 
-									if (!empty($parent_alias)) {
-										$child_table = $join_informations['table_join'];
-										if (!in_array($child_table, $already_joined)) {
-											$child_alias = 'jejoin_' . sizeof($already_joined);
-											$already_joined[$child_alias] = $child_table;
-
-											$where['join'] .= ' LEFT JOIN ' . $db->quoteName($child_table, $child_alias) . ' ON ' . $child_alias . '.' . $join_informations['table_join_key'] . ' = ' . $parent_alias . '.' . $join_informations['table_key'];
-										} else {
-											$child_alias = array_search($child_table, $already_joined);
-										}
-
-										$where['q'] .= ' AND ' . $this->writeQueryWithOperator($child_alias . '.' . $fabrik_element_data['name'], $filter['value'], $filter['operator']);
+									$child_table_alias = '';
+									$child_table = $join_informations['table_join'];
+									if (!in_array($child_table, $already_joined)) {
+										$already_joined[] = $child_table;
+										$where['join'] .= ' LEFT JOIN ' . $db->quoteName($child_table) . ' ON ' . $child_table . '.' . $join_informations['table_join_key'] . ' = ' . $parent_table_alias . '.' . $join_informations['table_key'];
 									} else {
-										JLog::add('Could not handle repeat group for element ' . $filter_id . ' parent table not found', JLog::WARNING, 'com_emundus.error');
+										$child_table_alias = array_search($child_table, $already_joined);
 									}
+									$child_table_alias = !empty($child_table_alias) && !is_numeric($child_table_alias) ? $child_table_alias : $child_table;
+
+									$where['q'] .= ' AND ' . $this->writeQueryWithOperator($child_table_alias . '.' . $fabrik_element_data['name'], $filter['value'], $filter['operator']);
 								} else {
 									JLog::add('Could not handle repeat group for element ' . $filter_id . ' in ' . $caller . ' with params ' . json_encode($caller_params), JLog::WARNING, 'com_emundus.error');
 								}
 							}
 							else {
+								$db_table_name_alias = '';
 								if (!in_array($fabrik_element_data['db_table_name'], $already_joined)) {
-									$alias = 'jejoin_' . sizeof($already_joined);
-									$already_joined[$alias] = $fabrik_element_data['db_table_name'];
-
-									$where['join'] .= ' LEFT JOIN ' . $db->quoteName($fabrik_element_data['db_table_name'], $alias) . ' ON ' . $alias . '.fnum = jecc.fnum ';
+									$already_joined[] = $fabrik_element_data['db_table_name'];
+									$where['join'] .= ' LEFT JOIN ' . $db->quoteName($fabrik_element_data['db_table_name']) . ' ON ' . $fabrik_element_data['db_table_name'] . '.fnum = jecc.fnum ';
 								} else {
-									$alias = array_search($fabrik_element_data['db_table_name'], $already_joined);
+									$db_table_name_alias = array_search($fabrik_element_data['db_table_name'], $already_joined);
 								}
+								$db_table_name_alias = !empty($db_table_name_alias) && !is_numeric($db_table_name_alias) ? $db_table_name_alias : $fabrik_element_data['db_table_name'];
 
-								$where['q'] .= ' AND ' . $this->writeQueryWithOperator($alias . '.' . $fabrik_element_data['name'], $filter['value'], $filter['operator'], $filter['type']);
+								$where['q'] .= ' AND ' . $this->writeQueryWithOperator($db_table_name_alias . '.' . $fabrik_element_data['name'], $filter['value'], $filter['operator'], $filter['type']);
 							}
 						}
 					}
@@ -3277,7 +3276,7 @@ class EmundusHelperFiles
 			}
 		}
 
-	    return $where;
+		return $where;
     }
 
 	private function getFabrikElementData(int $element_id): array
@@ -3357,7 +3356,7 @@ class EmundusHelperFiles
 	private function writeQueryWithOperator($element, $values, $operator, $type = 'select') {
 		$query = '1=1';
 
-		if (!empty($element) && isset($values) && !empty($operator)) {
+		if (!empty($element) && !empty($values) && !empty($operator)) {
 			$db = JFactory::getDbo();
 
 			if ($type === 'date' || $type === 'time') {
@@ -3749,7 +3748,7 @@ class EmundusHelperFiles
 		return $fnums;
 	}
 
-	private function isTableLinkedToCampaignCandidature($table_name) {
+	public function isTableLinkedToCampaignCandidature($table_name) {
 		$linked = false;
 
 		if (!empty($table_name)) {
@@ -3758,7 +3757,7 @@ class EmundusHelperFiles
 			$query = $db->getQuery(true);
 
 			$query->select('column_name')
-				->from($db->quoteName('#__information_schema.columns'))
+				->from($db->quoteName('information_schema.columns'))
 				->where('table_name = ' . $db->quote($table_name))
 				->where('column_name = ' . $db->quote('fnum'));
 

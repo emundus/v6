@@ -143,6 +143,7 @@ class EmundusModelFiles extends JModelLegacy
             foreach ($this->_elements as $def_elmt) {
                 $group_params = json_decode($def_elmt->group_attribs);
 
+				$def_elmt->tab_name = $def_elmt->tab_name === 'jos_emundus_campaign_candidature' ? 'jecc' : $def_elmt->tab_name;
                 if ($def_elmt->element_plugin == 'date') {
                     if (@$group_params->repeat_group_button == 1) {
                         $this->_elements_default[] = '(
@@ -171,7 +172,7 @@ class EmundusModelFiles extends JModelLegacy
                                     where '.$attribs->join_db_name.'.'.$attribs->join_key_column.' IN
                                         ( select '.$def_elmt->table_join.'.' . $def_elmt->element_name.'
                                           from '.$def_elmt->table_join.'
-                                          where '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
+                                          where '.$def_elmt->table_join .'.' . $def_elmt->table_join_key .  '='.$def_elmt->tab_name.'.' . $def_elmt->table_key.'
                                         )
                                     '.$publish_query.'
                                   ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
@@ -537,9 +538,9 @@ class EmundusModelFiles extends JModelLegacy
      * @param array $tableAlias
      * @return array
      */
-    private function _buildWhere($tableAlias = array()) {
+    private function _buildWhere($already_joined_tables = array()) {
         $h_files = new EmundusHelperFiles();
-        return $h_files->_buildWhere($tableAlias, 'files', array(
+        return $h_files->_buildWhere($already_joined_tables, 'files', array(
             'fnum_assoc' => $this->fnum_assoc,
             'code' => $this->code
         ));
@@ -581,32 +582,56 @@ class EmundusModelFiles extends JModelLegacy
         $query = 'select jecc.fnum, ss.step, ss.value as status, ss.class as status_class, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, jecc.applicant_id, jecc.campaign_id ';
 
         // prevent double left join on query
-        $lastTab = [
-            '#__emundus_campaign_candidature', 'jecc',
-            '#__emundus_setup_status', 'jos_emundus_setup_status',
-            '#__emundus_setup_programmes', 'jos_emundus_setup_programmes',
-            '#__emundus_setup_campaigns', 'jos_emundus_setup_campaigns',
-            '#__users', 'jos_users',
-            '#__emundus_users', 'jos_emundus_users',
-            '#__emundus_tag_assoc', 'jos_emundus_tag_assoc',
-        ];
+		$already_joined_tables = [
+			'jecc' => 'jos_emundus_campaign_candidature',
+			'ss' => 'jos_emundus_setup_status',
+			'esc' => 'jos_emundus_setup_campaigns',
+			'sp' => 'jos_emundus_setup_programmes',
+			'u' => 'jos_users',
+			'eu' => 'jos_emundus_users',
+			'eta' => 'jos_emundus_tag_assoc'
+		];
 
         if (in_array('overall', $em_other_columns)) {
-            $lastTab[] = ['#__emundus_evaluations', 'jos_emundus_evaluations'];
+	        $already_joined_tables['ee'] = 'jos_emundus_evaluations';
         }
 
         if (in_array('unread_messages', $em_other_columns)) {
-            $lastTab[] = ['#__messages', 'jos_messages','#__emundus_chatroom', 'jos_emundus_chatroom'];
+	        $already_joined_tables['ec'] = 'jos_emundus_chatroom';
+	        $already_joined_tables['m'] = 'jos_messages';
         }
 
         if (!empty($this->_elements)) {
-            $leftJoin = '';
-            $lastTab = !isset($lastTab) ? array() : $lastTab;
+	        $h_files = new EmundusHelperFiles();
+	        $leftJoin = '';
 
             foreach ($this->_elements as $elt) {
-                if (!in_array($elt->tab_name, $lastTab)) {
-                    $leftJoin .= 'LEFT JOIN ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = jecc.fnum ';
-                    $lastTab[] = $elt->tab_name;
+                if (!in_array($elt->tab_name, $already_joined_tables)) {
+					if ($h_files->isTableLinkedToCampaignCandidature($elt->tab_name)) {
+						$leftJoin .= 'LEFT JOIN ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = jecc.fnum ';
+						$already_joined_tables[] = $elt->tab_name;
+					} else {
+						$query_find_join = $dbo->getQuery(true);
+						foreach ($already_joined_tables as $already_join_alias => $already_joined_table_name) {
+							$query_find_join->clear()
+								->select('*')
+								->from('#__fabrik_joins')
+								->where('table_join = ' . $dbo->quote($already_joined_table_name))
+								->andWhere('join_from_table = ' . $dbo->quote($elt->tab_name))
+								->andWhere('table_key = ' . $dbo->quote('id'))
+								->andWhere('list_id = ' . $dbo->quote($elt->table_list_id));
+
+							$dbo->setQuery($query_find_join);
+							$join_informations = $dbo->loadAssoc();
+
+							if (!empty($join_informations)) {
+								$already_joined_tables[] = $elt->tab_name;
+
+								$leftJoin .= ' LEFT JOIN ' . $dbo->quoteName($join_informations['join_from_table']) . ' ON ' . $dbo->quoteName($join_informations['join_from_table'] . '.' . $join_informations['table_key']) . ' = ' . $dbo->quoteName($already_join_alias . '.' . $join_informations['table_join_key']);
+								break;
+							}
+						}
+					}
                 }
             }
         }
@@ -632,7 +657,7 @@ class EmundusModelFiles extends JModelLegacy
             LEFT JOIN #__messages as m on m.page = ec.id AND m.state = 0 AND m.page IS NOT NULL ';
         }
 
-        $q = $this->_buildWhere($lastTab);
+	    $q = $this->_buildWhere($already_joined_tables);
         if (!empty($leftJoin)) {
             $query .= $leftJoin;
         }
