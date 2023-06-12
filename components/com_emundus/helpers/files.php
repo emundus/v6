@@ -3153,14 +3153,44 @@ class EmundusHelperFiles
 			$db = JFactory::getDbo();
 
 			foreach ($session_filters as $filter) {
-				$filter_id = str_replace('filter-', '', $filter['id']);
+				$filter_id = str_replace(['filter-', 'default-filter-'], '', $filter['id']);
 
 				if (is_numeric($filter_id)) {
 					$filter_id = (int)$filter_id;
 					$fabrik_element_data = $this->getFabrikElementData($filter_id);
-
 					if (!empty($fabrik_element_data['name']) && !empty($fabrik_element_data['db_table_name'])) {
 						$mapped_to_fnum = $this->isTableLinkedToCampaignCandidature($fabrik_element_data['db_table_name']);
+
+						// if element is not directly mapped to fnum, we try to find a join table
+						if (!$mapped_to_fnum) {
+							$query = $db->getQuery(true);
+
+							if (!in_array($fabrik_element_data['db_table_name'], $already_joined)) {
+								foreach ($already_joined as $already_join_alias => $already_joined_table_name) {
+									$query->clear()
+										->select('*')
+										->from('#__fabrik_joins')
+										->where('table_join = ' . $db->quote($already_joined_table_name))
+										->andWhere('join_from_table = ' . $db->quote($fabrik_element_data['db_table_name']))
+										->andWhere('table_key = ' . $db->quote('id'))
+										->andWhere('list_id = ' . $db->quote($fabrik_element_data['list_id']));
+
+									$db->setQuery($query);
+									$join_informations = $db->loadAssoc();
+
+									if (!empty($join_informations)) {
+										$new_table_alias = 'jejoin_' . sizeof($already_joined);
+										$already_joined[$new_table_alias] = $fabrik_element_data['db_table_name'];
+
+										$where['join'] .= ' LEFT JOIN ' . $db->quoteName($join_informations['join_from_table'], $new_table_alias) . ' ON ' . $db->quoteName($new_table_alias . '.' . $join_informations['table_key']) . ' = ' . $db->quoteName($already_join_alias . '.' . $join_informations['table_join_key']);
+										$mapped_to_fnum = true;
+										break;
+									}
+								}
+							} else {
+								$mapped_to_fnum = true;
+							}
+						}
 
 						if ($mapped_to_fnum) {
 							$group_params = json_decode($fabrik_element_data['group_params'], true);
@@ -3209,24 +3239,6 @@ class EmundusHelperFiles
 								}
 
 								$where['q'] .= ' AND ' . $this->writeQueryWithOperator($alias . '.' . $fabrik_element_data['name'], $filter['value'], $filter['operator'], $filter['type']);
-							}
-						} else {
-							$query = $db->getQuery(true);
-
-							foreach ($already_joined as $already_joined_table_name) {
-								$query->clear()
-									->select('*')
-									->from('#__fabrik_joins')
-									->where('table_join = ' . $db->quote($already_joined_table_name))
-									->andWhere('join_from_table = ' . $db->quote($fabrik_element_data['db_table_name']))
-									->andWhere('table_key = ' . $db->quote('id'));
-
-								$db->setQuery($query);
-								$join_informations = $db->loadAssoc();
-
-								if (!empty($join_informations)) {
-									// TODO add join and add query where clause
-								}
 							}
 						}
 					}
@@ -3279,11 +3291,12 @@ class EmundusHelperFiles
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
-			$query->select('jfe.name, jfe.plugin, jfg.id as group_id, jfg.params as group_params, jffg.form_id, jfl.id as list_id, jfl.db_table_name')
+			$query->select('jfe.name, jfe.plugin, jfg.id as group_id, jfg.params as group_params, jffg.form_id, jfl.id as list_id, jfl.db_table_name, jfj.table_join as fabrik_table_join')
 				->from('#__fabrik_elements AS jfe')
 				->leftJoin('#__fabrik_groups AS jfg ON jfg.id = jfe.group_id')
 				->leftJoin('#__fabrik_formgroup AS jffg ON jffg.group_id = jfg.id')
 				->leftJoin('#__fabrik_lists AS jfl ON jfl.form_id = jffg.form_id')
+				->leftJoin('#__fabrik_joins AS jfj ON jfj.list_id = jfl.id AND (jfj.element_id = ' . $element_id . ' OR jfj.group_id = jfg.id)')
 				->where('jfe.id = ' . $element_id);
 
 			try {
@@ -3291,6 +3304,10 @@ class EmundusHelperFiles
 				$data = $db->loadAssoc();
 			} catch(Exception $e) {
 				JLog::add('Failed to retreive fabrik element data in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+
+			if (!empty($data['fabrik_table_join'])) {
+				$data['db_table_name'] = $data['fabrik_table_join'];
 			}
 		}
 
