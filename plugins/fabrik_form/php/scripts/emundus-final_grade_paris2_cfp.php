@@ -14,61 +14,21 @@ defined('_JEXEC') or die();
  */
 
 $db = JFactory::getDBO();
-$query = $db->getQuery(true);
 $jinput	= JFactory::getApplication()->input->post;
 
 $fnum = $jinput->get('jos_emundus_final_grade___fnum');
 $status = $jinput->get('jos_emundus_final_grade___final_grade')[0];
-$motif = $jinput->get('jos_emundus_final_grade___motif_refus')[0];
 
 include_once (JPATH_BASE.'/components/com_emundus/models/emails.php');
 include_once (JPATH_BASE.'/components/com_emundus/models/files.php');
-include_once (JPATH_SITE.'/components/com_emundus/models/logs.php');
-
-$email_from_sys = JFactory::getApplication()->getCfg('mailfrom');
 
 if (!empty($status)) {
-
-    if($status == 7){
-        $query->select($db->quoteName('status'))
-            ->from($db->quoteName('data_motifs_refus'))
-            ->where($db->quoteName('id').' = '.$db->quote($motif));
-        $db->setQuery($query);
-        $status = $db->loadResult();
-
-        if (empty($status)) {
-            $status = 7;
-        }
-    }
 
     jimport('joomla.log.log');
     JLog::addLogger(['text_file' => 'com_emundus.finalGrade.php'], JLog::ALL, ['com_emundus']);
 
-    $m_files = new EmundusModelFiles();
-    $fnumsInfos = $m_files->getFnumInfos($fnum);
-
-    $code = array();
-    $code[] = $fnumsInfos['training'];
-
-    $mFile = new EmundusModelFiles();
-
-    $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
-
-    # get old status label
-    $fnumOldStatus = $mFile->getStatusByFnums([$fnum])[$fnum]['value'];        // status id //
-
-    # get new status label (write SQL query)
-    $fnumNewStatus = $mFile->getStatusByStep($status)[0]['value'];
-
-    # track the logs
-    $logsStd = new stdClass();
-    $logsStd->old = $fnumOldStatus;
-    $logsStd->new = $fnumNewStatus;
-
-    $logsParams = array('updated' => [$logsStd]);
-
-    $query->clear()
-        ->update($db->quoteName('#__emundus_campaign_candidature'))
+    $query = $db->getQuery(true);
+    $query->update($db->quoteName('#__emundus_campaign_candidature'))
         ->set($db->quoteName('status').' = '.$status)
         ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
 
@@ -77,8 +37,13 @@ if (!empty($status)) {
         $db->setQuery($query);
         $db->execute();
 
+        $m_files = new EmundusModelFiles();
+        $fnumsInfos = $m_files->getFnumInfos($fnum);
+
+        $code = array();
+        $code[] = $fnumsInfos['training'];
+
         $m_emails = new EmundusModelEmails;
-        $to_applicant = '0,1';
         $trigger_emails = $m_emails->getEmailTrigger($status, $code, '0,1');
 
         $toAttach = [];
@@ -99,7 +64,7 @@ if (!empty($status)) {
                         $mailer = JFactory::getMailer();
 
                         $post = array('FNUM' => $fnumsInfos['fnum'],'CAMPAIGN_LABEL' => $fnumsInfos['label'], 'CAMPAIGN_END' => $fnumsInfos['end_date']);
-                        $tags = $m_emails->setTags($fnumsInfos['applicant_id'], $post, $fnumsInfos['fnum'], '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
+                        $tags = $m_emails->setTags($fnumsInfos['applicant_id'], $post, $fnumsInfos['fnum']);
 
                         $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
                         $from_id    = 62;
@@ -156,7 +121,6 @@ if (!empty($status)) {
                 }
             }
         }
-        EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE',json_encode($logsParams,JSON_UNESCAPED_UNICODE));
 
     } catch(Exception $e) {
         JLog::add('Unable to set status in plugin/emundusFinalGrade at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');

@@ -1328,14 +1328,14 @@ class EmundusModelForm extends JModelList {
         $query = $db->getQuery(true);
         $languages = JLanguageHelper::getLanguages();
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
+        require_once (JPATH_SITE.'/components/com_emundus/models/falang.php');
 
         $falang = new EmundusModelFalang;
 
         $query->select(array(' DISTINCT a.*', 'b.mandatory'))
             ->from($db->quoteName('#__emundus_setup_attachments','a'))
-            ->join('LEFT', $db->quoteName('#__emundus_setup_attachment_profiles', 'b') . ' ON ' . $db->quoteName('b.attachment_id') . ' = ' . $db->quoteName('a.id'))
-            ->where($db->quoteName('a.published') . ' = ' . 1)
+            ->leftJoin($db->quoteName('#__emundus_setup_attachment_profiles', 'b') . ' ON ' . $db->quoteName('b.attachment_id') . ' = ' . $db->quoteName('a.id'))
+            ->where($db->quoteName('a.published') . ' = ' . $db->quote(1))
             ->order($db->quoteName('a.value'));
 
         $db->setQuery($query);

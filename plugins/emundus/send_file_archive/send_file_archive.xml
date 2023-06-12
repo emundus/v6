@@ -18,6 +18,30 @@
 				<field name="delete_email" type="field" default="delete_file" label="Email to send on delete" description="The ID or lbl of the email to be sent containing the archive on delete, leave blank to not send." />
 				<field name="event_status" type="field" label="Status values to trigger email" description="The steps of the status which trigger the status email, can be multiple steps separated by comma." />
 				<field name="status_email" type="field" label="Email to send on update to status" description="The ID or lbl of the email to be sent containing the archive when the file reaches the specified status, leave blank to not send mails." />
+				<field name="zip_attachments"
+					   type="list"
+					   default="1"
+					   label="ZIP contains attachments"
+					   description="Specify whether the ZIP file should contain the files attachments or not.">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field name="zip_evaluation"
+					   type="list"
+					   default="0"
+					   label="ZIP contains evaluations"
+					   description="Specify whether the ZIP file should contain the files evaluations or not.">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field name="zip_decision"
+					   type="list"
+					   default="0"
+					   label="ZIP contains decision"
+					   description="Specify whether the ZIP file should contain the files decision or not.">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
 			</fieldset>
 		</fields>
 	</config>
