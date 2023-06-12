@@ -19,7 +19,7 @@ $doc->addScript(JURI::root() . "plugins/fabrik_element/currency/assets/js/emundu
 
     #currency_selectValue
     {
-        width: max-content;
+        width: auto;
         font-size: 16px;
         padding: 0 12px 0 12px !important;
         height: 46px;

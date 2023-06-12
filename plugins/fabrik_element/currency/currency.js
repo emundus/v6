@@ -96,8 +96,6 @@ define(['jquery', 'fab/element'],
                 const element = document.querySelector('#' + this.element.id + ' .chzn-single span');
                 this.changeElement(element);
 
-                document.querySelector('#' + this.element.id + ' .chzn-container .chzn-drop').style.minWidth = document.getElementById(this.element.id).offsetWidth + 'px';
-
                 jQuery(this.HTMLSelectElement).on('change', () => { // sadly mandatory
                     this.handlerSelectChange();
                 });
