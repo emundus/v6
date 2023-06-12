@@ -270,6 +270,11 @@
 			<option value="1">JYES</option>
 		</field>
 
+		<field name="generate_letter_escape_ampersand" type="radio" default="0" label="COM_EMUNDUS_EXPORT_GENERATE_LETTER_ESCAPE_AMPERSAND" description="COM_EMUNDUS_EXPORT_GENERATE_LETTER_ESCAPE_AMPERSAND_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
 		<field name="generate_letter_whitespace_textarea" type="radio" default="0" label="COM_EMUNDUS_EXPORT_GENERATE_LETTER_WHITESPACE_TEXTAREA" description="COM_EMUNDUS_EXPORT_GENERATE_LETTER_WHITESPACE_TEXTAREA_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>

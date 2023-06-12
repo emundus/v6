@@ -406,3 +406,21 @@ deployer-manual-SN0J72VDeveAkule0zJhV5FqCt9gZJzn:
     - deployer
   variables:
     DEPLOY_OPTIONS: 'id=SN0J72VDeveAkule0zJhV5FqCt9gZJzn -vv'
+
+deployer-manual-aV3qFor36GbzHg7bavbmYuhOdjuEfSct:
+  environment:
+    name: production/manual
+    deployment_tier: production
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: 'id=aV3qFor36GbzHg7bavbmYuhOdjuEfSct -vv'
+
+deployer-manual-K8fHkefVxnoUr8q3Vcr715U6uAdFLNv5:
+  environment:
+    name: production/manual
+    deployment_tier: production
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: 'id=K8fHkefVxnoUr8q3Vcr715U6uAdFLNv5 -vv'
