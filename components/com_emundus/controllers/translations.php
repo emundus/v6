@@ -182,7 +182,7 @@ class EmundusControllerTranslations extends JControllerLegacy {
         foreach ($references_table as $reference_table) {
             if(!empty($reference_table['join_table']) && !empty($reference_table['join_column']) && !empty($reference_table['reference_column'])){
                 $reference_id = $this->model->getJoinReferenceId($reference_table['table'],$reference_table['reference_column'],$reference_table['join_table'],$reference_table['join_column'],$reference_id);
-            }
+			}
             $results = $this->model->getTranslations('override', '*', '', '', $reference_table['table'], $reference_id, $reference_table['fields']);
 
             foreach ($results as $result) {
