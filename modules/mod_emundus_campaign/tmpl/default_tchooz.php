@@ -52,12 +52,15 @@ if(sizeof($tmp_campaigns) > 0) {
         }
     } elseif ($group_by == 'month') {
         usort($tmp_campaigns, function ($a, $b) {
-            return strcmp($a->start_date, $b->start_date);
+            return (int)$a->{$order} - (int)$b->{$order};
         });
 
         foreach ($tmp_campaigns as $campaign) {
             $campaigns[$campaign->month][] = $campaign;
-            $campaigns[$campaign->month]['label'] = JText::_(strtoupper($campaign->month_name));
+            $month = explode('-', $campaign->month_name);
+            $month_name = JText::_(strtoupper($month[0]));
+            $month_year = $month[1];
+            $campaigns[$campaign->month]['label'] = $month_name.' - '.$month_year;
         }
     } else {
         $campaigns ['campaigns'] = $tmp_campaigns;
