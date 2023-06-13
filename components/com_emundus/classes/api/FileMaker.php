@@ -657,13 +657,6 @@ class FileMaker
 
 
                             if ($isPortalDataForm) {
-                                switch ($element_row->plugin) {
-                                    case 'databasejoin':
-                                        $temp_records_mapping[] = array("" . $data->name . "" => explode(",", $value));
-                                        break;
-                                    default:
-                                        $temp_records_mapping[] = array("" . $data->name . "" => explode(",", $value));
-                                }
                                 $temp_records_mapping[] = array("" . $data->name . "" => explode(",", $value));
                             } else {
 

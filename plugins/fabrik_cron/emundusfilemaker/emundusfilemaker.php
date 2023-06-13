@@ -839,29 +839,6 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
         $mapped_columns = $this->retrieveMappingColumnsData();
 
 
-        /*$portalsData = [];
-        $queryBody = [];
-
-        $fnum = "2023060914034700000020000111";
-
-        $portalsData[] = array("zWEB_FORMULAIRES_PARTICIPANTS" => $this->preparePortalDataAndGenralLayoutBeforeSendToFileMaker("zWEB_FORMULAIRES_PARTICIPANTS",$mapped_columns,$fnum));
-        $portalsData[] = array("zWEB_FORMULAIRES_RECETTES" => $this->preparePortalDataAndGenralLayoutBeforeSendToFileMaker("zWEB_FORMULAIRES_RECETTES",$mapped_columns,$fnum));
-        $portalsData[] = array("zWEB_FORMULAIRES_PLANNING" => $this->preparePortalDataAndGenralLayoutBeforeSendToFileMaker("zWEB_FORMULAIRES_PLANNING",$mapped_columns,$fnum));
-        $portalsData[] = array("zWEB_FORMULAIRES_DEPENSES" => $this->preparePortalDataAndGenralLayoutBeforeSendToFileMaker("zWEB_FORMULAIRES_DEPENSES",$mapped_columns,$fnum));
-        $portalsData[] = array("zWEB_FORMULAIRES_PARTENAIRES" => $this->preparePortalDataAndGenralLayoutBeforeSendToFileMaker("zWEB_FORMULAIRES_PARTENAIRES",$mapped_columns,$fnum));
-        $portalsData[] = array("zWEB_FORMULAIRES_AUDIENCE" => $this->preparePortalDataAndGenralLayoutBeforeSendToFileMaker("zWEB_FORMULAIRES_AUDIENCE",$mapped_columns,$fnum));
-        $portalsData[] = array("zWEB_FORMULAIRES_AIDES" => $this->preparePortalDataAndGenralLayoutBeforeSendToFileMaker("zWEB_FORMULAIRES_PARTENAIRES",$mapped_columns,$fnum));
-
-        $fieldData = $this->preparePortalDataAndGenralLayoutBeforeSendToFileMaker("zWEB_FORMULAIRES",$mapped_columns,$fnum,false);
-        $queryBody[]   = array("portalData" => $this->transformToAssociativeArray($portalsData));
-        $queryBody[]   = array("fieldData" =>  $fieldData);
-        $finalQueryBody = $this->transformToAssociativeArray($queryBody);
-
-        // Afficher le tableau final
-        //print_r(json_encode($this->transformToAssociativeArray($portalsData)));
-        print_r(json_encode($finalQueryBody));
-        die;*/
-
 
         $offset = 1;
         $limit = 20;
