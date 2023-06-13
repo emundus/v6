@@ -99,7 +99,6 @@ export default {
 				newFilter.default = false;
 				newFilter.operator = newFilter.type === 'select' ? 'IN' : '=';
 				newFilter.andorOperator = 'OR';
-				newFilter.value =  newFilter.type === 'select' ? ['all'] : '';
 
 				this.appliedFilters.push(newFilter);
 				this.openFilterOptions = false;

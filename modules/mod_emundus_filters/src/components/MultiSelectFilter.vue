@@ -45,7 +45,7 @@
 			</div>
 			<hr/>
 			<input class="em-w-100 em-p-8 em-border-radius-8 em-border-neutral-400 em-box-shadow em-white-bg"
-			       :id="' + filter.uid + '-filter-search"
+			       :id="filter.uid + '-filter-search'"
 			       type="text"
 			       :placeholder="translate('MOD_EMUNDUS_FILTERS_FILTER_SEARCH')"
 			       v-model="search"
@@ -100,7 +100,7 @@ export default {
 			if ( this.filter.value.includes('all')) {
 				 this.filter.value =  this.filter.value.filter((value) => { return value !== 'all' });
 
-				if (! this.filter.value.includes(newValue)) {
+				if (!this.filter.value.includes(newValue)) {
 					 this.filter.value.push(newValue);
 				}
 			}
@@ -111,7 +111,7 @@ export default {
 			} else {
 				let allValues = this.searchedValues.map((value) => { return value.value });
 				allValues.push('all');
-				 this.filter.value = allValues;
+				this.filter.value = allValues;
 			}
 		},
 	},

@@ -3356,6 +3356,10 @@ class EmundusHelperFiles
 	private function writeQueryWithOperator($element, $values, $operator, $type = 'select') {
 		$query = '1=1';
 
+		if (is_array($values) && in_array('all', $values) && sizeof($values) === 1) { // TODO: what if the value 'all' is a valid value ?
+			$values = [];
+		}
+
 		if (!empty($element) && !empty($values) && !empty($operator)) {
 			$db = JFactory::getDbo();
 
