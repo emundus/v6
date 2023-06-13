@@ -86,7 +86,7 @@ class EmundusModelFormbuilderTest extends TestCase
     public function testFormsTradUndefined()
     {
         $override_original_file_size = filesize(JPATH_SITE . '/language/overrides/fr-FR.override.ini');
-        $new_trad = "Mon élément modifié";
+        $new_trad = 'Mon élément modifié';
         $reference_id = 999999;
 
         $this->m_translations->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', $reference_id);
@@ -99,7 +99,8 @@ class EmundusModelFormbuilderTest extends TestCase
 
         $query->select('override')
             ->from('#__emundus_setup_languages')
-            ->where('reference_id = ' . $reference_id);
+            ->where('reference_id = ' . $reference_id)
+            ->andWhere('lang_code = ' . $db->quote('fr-FR'));
 
         $db->setQuery($query);
         $override = $db->loadResult();

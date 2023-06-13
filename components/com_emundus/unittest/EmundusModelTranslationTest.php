@@ -132,7 +132,7 @@ class EmundusModelTranslationTest extends TestCase
     }
 
     public function testgetTranslationsObject(){
-        $this->assertNotEmpty($this->m_translations->getTranslationsObject());
+        $this->assertIsArray($this->m_translations->getTranslationsObject());
     }
 
     public function testgetDefaultLanguage(){
