@@ -485,6 +485,7 @@ class EmundusModelTranslations extends JModelList
 			if (isset($forms))
 			{
 				$query->where($this->_db->quoteName('id') . ' IN (' . implode(',', $forms) . ')');
+				$query->order('field(id,'.implode(',', $forms).') ASC');
 			}
 			$this->_db->setQuery($query);
 			$values = $this->_db->loadObjectList();
@@ -573,7 +574,6 @@ class EmundusModelTranslations extends JModelList
 			{
 				$query->where($this->_db->quoteName('tag') . ' LIKE ' . $this->_db->quote($tag));
 			}
-			$query->where($this->_db->quoteName('original_text') . ' <> ' . $this->_db->quote(''));
 			$this->_db->setQuery($query);
 			$translations = $this->_db->loadObjectList();
 		}
