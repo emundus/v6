@@ -61,7 +61,7 @@ endforeach;
     <?php if ($showTitle == 1) : ?>
     <div class="page-header" style="margin-top:0px !important;">
         <div class="em-flex-row em-flex-space-between">
-            <h2><?php echo $this->table->label;?></h2>
+            <h2 class="em-fabrik-table-label"><?php echo $this->table->label;?></h2>
             <?php if(!in_array('list_only', $notes) && !in_array('grid_only', $notes)) : ?>
                 <div class="em-flex-row em-gap-8 fabrik-switch-view-buttons">
                     <span onclick="switchView('grid')" class="em-pointer material-icons-outlined fabrik-switch-view-icon" id="fabrik_switch_view_grid_icon">grid_view</span>
