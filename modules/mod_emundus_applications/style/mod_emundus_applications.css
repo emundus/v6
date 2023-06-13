@@ -324,6 +324,7 @@ margin-top: 16px;
     border-radius: 16px !important;
     padding: 32px;
     background: #fff;
+    height: -webkit-fill-available;
 }
 .mod_emundus_applications___date{
     display: flex;
