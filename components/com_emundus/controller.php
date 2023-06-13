@@ -1719,18 +1719,28 @@ class EmundusController extends JControllerLegacy {
     }
 
     function sendmail_expert() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            die(JError::raiseWarning( 500, JText::_( 'ACCESS_DENIED' ) ));
-        }
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-        $sid    = JRequest::getVar('sid', null, 'GET', 'INT',0);
-        $fnum   = JRequest::getVar('fnum', null, 'GET');
+        $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
-        $m_emails = $this->getModel('emails');
-        $email = $m_emails->sendmail('expert', $fnum);
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+			$jinput = JFactory::getApplication()->input;
+			$itemid = $jinput->getInt('Itemid', null);
+			$sid    = $jinput->getInt('sid', null);
+			$fnum   = $jinput->getString('fnum', null);
 
-        exit();
 
+			if (!empty($fnum)) {
+				$m_emails = new EmundusModelEmails();
+				$email = $m_emails->sendMail('expert', $fnum);
+
+				$response['status'] = true;
+				$response['msg'] = JText::_('SUCCESS');
+			} else {
+				$response['msg'] = JText::_('MISSING_PARAMS');
+			}
+		}
+
+        echo json_encode($response);
+		exit;
     }
 
     /*
