@@ -177,6 +177,12 @@ endif;
             header.classList.add('skeleton');
         }
 
+        let title = document.querySelector('.em-fabrik-table-label');
+        if (title) {
+            title.style.opacity = 0;
+            title.classList.add('skeleton');
+        }
+
         let switch_button_views = document.querySelector('.fabrik-switch-view-buttons');
         if (switch_button_views) {
             switch_button_views.style.opacity = 0;
