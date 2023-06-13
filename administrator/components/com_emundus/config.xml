@@ -265,10 +265,46 @@
 		<field name="application_form_order" type="text" size="6" label="COM_EMUNDUS_APPLICATION_FORM_ORDER" description="COM_EMUNDUS_APPLICATION_FORM_ORDER_DESC"/>
 		<field name="attachment_order" type="text" size="6" label="COM_EMUNDUS_CANDIDACY_FORM_ORDER" description="COM_EMUNDUS_CANDIDACY_FORM_ORDER_DESC"/>
 
+		<field
+				name="spacer1"
+				type="spacer"
+				hr="true"
+		/>
+
+		<field name="generate_params" label="COM_EMUNDUS_GENERATE_LETTERS_PARAMETERS" type="note" default="0" description=""></field>
+
 		<field name="export_replace_doc" type="radio" default="0" label="COM_EMUNDUS_EXPORT_REPLACE_DOC" description="COM_EMUNDUS_EXPORT_REPLACE_DOC_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+
+		<field name="generate_letter_pdf_margins" type="text" label="COM_EMUNDUS_EXPORT_GENERATE_LETTER_MARGINS" default="5,20,5"/>
+
+		<field name="generate_letter_logo_width" type="text" size="6" label="COM_EMUNDUS_EXPORT_GENERATE_LOGO_WIDTH" default="25"/>
+
+		<field name="generate_letter_display_header" type="radio" default="1" label="COM_EMUNDUS_EXPORT_GENERATE_DISPLAY_HEADER">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
+		<field name="generate_letter_display_footer" type="radio" default="1" label="COM_EMUNDUS_EXPORT_GENERATE_DISPLAY_FOOTER">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
+		<field showon="generate_letter_display_footer:1" name="generate_letter_display_pages_number" type="radio" default="1" label="COM_EMUNDUS_EXPORT_GENERATE_LETTER_DISPLAY_PAGES_NUMBER">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
+		<field name="generate_letter_use_default_font" type="radio" default="0" label="COM_EMUNDUS_EXPORT_GENERATE_USE_DEFAULT_FONT" description="COM_EMUNDUS_EXPORT_GENERATE_USE_DEFAULT_FONT_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
+		<field name="generate_letter_font_size" type="text" size="6" label="COM_EMUNDUS_EXPORT_GENERATE_LETTER_FONT_SIZE" default="10"/>
+
+		<field showon="generate_letter_use_default_font:0" name="generate_letter_font" type="text" label="COM_EMUNDUS_EXPORT_GENERATE_LETTER_FONT" default="helvetica"/>
 
 		<field name="generate_letter_escape_ampersand" type="radio" default="0" label="COM_EMUNDUS_EXPORT_GENERATE_LETTER_ESCAPE_AMPERSAND" description="COM_EMUNDUS_EXPORT_GENERATE_LETTER_ESCAPE_AMPERSAND_DESC">
 			<option value="0">JNO</option>

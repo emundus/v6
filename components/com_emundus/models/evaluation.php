@@ -1925,21 +1925,46 @@ class EmundusModelEvaluation extends JModelList {
                         if (isset($fnumInfo)) {
                             $tags = $_mEmail->setTags($fnumInfo[$fnum]['applicant_id'], $post, $fnum, '', $letter->title.$letter->body.$letter->footer);
 
+	                        $pdf_margins = $eMConfig->get('generate_letter_pdf_margins', '5,20,5');
+	                        $display_header = $eMConfig->get('generate_letter_display_header', 1);
+	                        $display_footer = $eMConfig->get('generate_letter_display_footer', 1);
+	                        $use_default_font = $eMConfig->get('generate_letter_use_default_font', 0);
+	                        $font = $eMConfig->get('generate_letter_font', 'helvetica');
+	                        $font_size = $eMConfig->get('generate_letter_font_size', 10);
+
                             require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'MYPDF.php');
                             $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
                             $pdf->SetCreator(PDF_CREATOR);
                             $pdf->SetAuthor($user->name);
                             $pdf->SetTitle($letter->title);
-                            $pdf->SetMargins(5, 20, 5);
-                            $pdf->footer = $letter->footer;
-                            preg_match('#src="(.*?)"#i', $letter->header, $tab);
-                            $pdf->logo = JPATH_SITE . DS . @$tab[1];
-                            preg_match('#src="(.*?)"#i', $letter->footer, $tab);
-                            $pdf->logo_footer = JPATH_SITE . DS . @$tab[1];
-                            $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
-                            $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-                            $pdf->setFontSubsetting(true);
-                            $pdf->SetFont('freeserif', '', 10);
+
+							$pdf_margins = explode(',', $pdf_margins);
+                            $pdf->SetMargins($pdf_margins[0], $pdf_margins[1], $pdf_margins[2]);
+
+							if($display_header == 1)
+							{
+								preg_match('#src="(.*?)"#i', $letter->header, $tab);
+								$pdf->logo = JPATH_SITE . DS . @$tab[1];
+							}
+
+	                        $pdf->footer = $letter->footer;
+							if($display_footer == 1)
+							{
+								preg_match('#src="(.*?)"#i', $letter->footer, $tab);
+								$pdf->logo_footer = JPATH_SITE . DS . @$tab[1];
+								$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+							} else {
+								$pdf->SetAutoPageBreak(false, 0);
+							}
+
+							if($use_default_font == 1)
+							{
+								$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+								$pdf->setFontSubsetting(true);
+								$pdf->SetFont('freeserif', '', $font_size);
+							} else {
+								$pdf->SetFont($font, '', $font_size);
+							}
 
                             $htmldata = $_mEmail->setTagsFabrik($letter->body, array($fnum));
                             $htmldata = preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $htmldata))));
