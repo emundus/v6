@@ -541,6 +541,7 @@ class EmundusModelApplication extends JModelList
 				$upload_id = $this->_db->insertid();
 			} catch (RuntimeException $e) {
 				JFactory::getApplication()->enqueueMessage($e->getMessage());
+				JLog::add('Error in model/application at query: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
 			}
 		}
 

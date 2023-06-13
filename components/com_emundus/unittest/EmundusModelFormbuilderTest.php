@@ -320,13 +320,22 @@ class EmundusModelFormbuilderTest extends TestCase
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		$query->insert('#__emundus_setup_attachment_profiles')
+		$query->select('id')
+			->from('#__emundus_setup_attachments')
+			->order('id DESC')
+			->setLimit(1);
+
+		$db->setQuery($query);
+		$attachment_id = $db->loadResult();
+
+		$query->clear()
+			->insert('#__emundus_setup_attachment_profiles')
 			->columns(['profile_id', 'campaign_id', 'attachment_id', 'displayed', 'mandatory', 'ordering', 'published', 'bank_needed', 'duplicate', 'sample_filepath', 'has_sample'])
-			->values('1, null, 1, 1, 1, 1, 1, null, 0, null, 0');
+			->values('1, null, ' . $attachment_id . ', 1, 1, 1, 1, null, 0, null, 0');
 		$db->setQuery($query);
 		$db->execute();
 
-		$document = $this->m_formbuilder->getDocumentSample(1, 1);
+		$document = $this->m_formbuilder->getDocumentSample($attachment_id, 1);
 		$this->assertNotEmpty($document, 'Le document de test est bien renvoyé');
 	}
 

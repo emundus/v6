@@ -235,7 +235,7 @@ class EmundusModelCampaignTest extends TestCase
     {
         $this->m_campaign->deleteWorkflows();
         $workflow_on_all = $this->m_campaign->createWorkflow(9, [0], 1, null, []);
-        $this->assertNotEmpty($workflow_on_all);
+		$this->assertNotEmpty($workflow_on_all, 'La création d\'un workflow devrait fonctionner');
 
         $this->assertFalse($this->m_campaign->canCreateWorkflow(9, [0], []), 'On ne devrait pas pouvoir créer un workflow sur le même statut.');
         $this->assertTrue($this->m_campaign->canCreateWorkflow(9, [1], []), 'On devrait pouvoir créer un workflow sur le même profile, mais un statut différent.');
