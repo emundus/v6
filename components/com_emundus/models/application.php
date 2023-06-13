@@ -5085,7 +5085,10 @@ class EmundusModelApplication extends JModelList
 					$query->where($where);
 				}
 				$db->setQuery($query);
+
+
 				$values = $db->loadColumn();
+
 			} else {
 				$query->clear()
 					->select($db->quoteName($element->name))
@@ -5104,6 +5107,7 @@ class EmundusModelApplication extends JModelList
                 if(!is_array($values)){
                     $values = [$values];
                 }
+
                 if (!empty($values) || $element->plugin == 'yesno') {
                     foreach ($values as $value) {
                         $elt[] = $this->formatElementValue($element, $value, $table, $aid);
@@ -5111,7 +5115,9 @@ class EmundusModelApplication extends JModelList
                 }
 
                 $result = implode(',',$elt);
+
             } else {
+
                 $result = $values;
             }
         } catch (Exception $e) {
@@ -5262,6 +5268,7 @@ class EmundusModelApplication extends JModelList
                     }
                     break;
                 case 'internalid':
+                    $elt = intval($value);
                     break;
 
                 case 'emundus_phonenumber':

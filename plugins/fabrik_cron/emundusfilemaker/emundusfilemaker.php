@@ -59,7 +59,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
         $query = $db->getQuery(true);
         $mapping_data = array();
 
-        $query->select('filemaker_label,emundus_form_id')
+        $query->select('filemaker_label,emundus_form_id,portal_data_group_id')
             ->from($db->quoteName($this->getParams()->get('forms_mapping_table_beetween_filemaker_emundus')))
             ->where($db->quoteName('step') . "=" . $this->getParams()->get('mail_trigger_state'));
         $db->setQuery($query);
@@ -92,6 +92,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                     $mapping_data_row->filemaker_form_label = $key;
 
                     $mapping_data_row->form_id = $sub_row["emundus_form_id"];
+                    $mapping_data_row->portal_data_emundus_group_id = $sub_row["portal_data_group_id"];
                     $mapping_data_row->groups_id = array();
                     $mapping_data_row->groups = array();
                     foreach ($result as $val) {
@@ -317,7 +318,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
             // here we update file status and portal data information
             $query->clear()
                 ->update($db->quoteName('#__emundus_campaign_candidature'))
-                ->set($db->quoteName(['uuidConnect']) . ' = ' . $db->quote(json_encode($db->quote($fieldData->uuidConnect))))
+                ->set($db->quoteName('uuidConnect') . ' = ' . $db->quote($fieldData->uuidConnect))
                 ->where($db->quoteName('uuid') . "LIKE" . $fieldData->uuid);
             $db->setQuery($query);
 
@@ -487,7 +488,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
 
                                         $query->clear();
-                                        $query->select('jfe.name,jfe.id,jfe.plugin,zfe.file_maker_attribute_name')
+                                        $query->select('jfe.name,jfe.group_id,jfe.id,jfe.plugin,zfe.file_maker_attribute_name')
                                             ->from($db->quoteName('jos_fabrik_elements', 'jfe'))
                                             ->leftJoin($this->getParams()->get('attribute_mapping_table_beetween_filemaker_emundus') . ' AS zfe ON zfe.file_maker_assoc_emundus_element = jfe.id')
                                             ->where('jfe.group_id =  ' . $group->id)
@@ -497,7 +498,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
                                         try {
                                             $val = $db->loadObject();
-                                            if (!empty($val)) {
+                                            if (!empty($val) && intval($val->group_id) == intval($row->portal_data_emundus_group_id)) {
                                                 switch ($val->plugin) {
                                                     case 'databasejoin':
                                                         $target_databejoin_element_value = $this->retrieveDataBaseJoinElementJointureInformations($val, $fieldData[$key . "::" . $row_key]);
@@ -513,7 +514,12 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                                                         break;
 
                                                     default :
-                                                        $arr_key_cal[] = array("" . $val->name . "" => $db->quote($fieldData[$key . "::" . $row_key]));
+                                                        if($row_key === "recordId"){
+                                                            $arr_key_cal[] = array("" . $val->name . "" => $db->quote($fieldData[$row_key]));
+                                                        } else {
+                                                            $arr_key_cal[] = array("" . $val->name . "" => $db->quote($fieldData[$key . "::" . $row_key]));
+                                                        }
+
                                                 }
 
 
