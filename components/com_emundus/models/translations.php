@@ -605,15 +605,14 @@ class EmundusModelTranslations extends JModelList
 		$inserted  = false;
 		$isCorrect = $this->checkTagIsCorrect($tag, $override, 'insert', $lang_code);
 
-		if ($isCorrect)
+		if ($isCorrect && empty($this->getTranslations($type, $lang_code, '', $location, $reference_table, $reference_id, $reference_field, $tag)))
 		{
 			$query = $this->_db->getQuery(true);
 			$user  = JFactory::getUser();
 
 			try
 			{
-				if (empty($location))
-				{
+				if (empty($location)) {
 					$location = $lang_code . '.override.ini';
 				}
 
@@ -657,12 +656,10 @@ class EmundusModelTranslations extends JModelList
 					JLog::add('Failed to insert translation into database with tag ' . $tag . ' and value ' . $override, JLog::ERROR, 'com_emundus.translations');
 				}
 			}
-				// @codeCoverageIgnoreStart
 			catch (Exception $e)
 			{
 				JLog::add('Problem when try to insert translation into file ' . $location . ' with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.translations');
 			}
-			// @codeCoverageIgnoreEnd
 		}
 
 		return $inserted;
