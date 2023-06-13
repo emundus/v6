@@ -390,13 +390,11 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                             $elements_columns_value[] = !empty($target_databejoin_element_value) ? $db->quote($target_databejoin_element_value) : 'NULL';
 
                             break;
-                        case 'date':
-                            $date_value = str_replace('/', '-', $fieldData[$val->name]);
-                            $elements_columns_value[] = !empty($date_value) ? $db->quote($date_value) : 'NULL';
-                            break;
-
                         case 'birthday':
-                            $date_value = str_replace('/', '-', $fieldData[$val->name]);
+                        case 'date':
+                            $dateString = str_replace('/', '-', $fieldData[$val->name]);
+                            $date = DateTime::createFromFormat('d-m-Y', $dateString);
+                            $date !== false ? $date_value = $date->format('Y-m-d') : $date_value = $dateString;
                             $elements_columns_value[] = !empty($date_value) ? $db->quote($date_value) : 'NULL';
                             break;
 
@@ -506,13 +504,11 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                                                         $arr_key_cal[] = array("" . $val->name . "" => $db->quote($target_databejoin_element_value));
 
                                                         break;
-                                                    case 'date':
-                                                        $date_value = str_replace('/', '-', $fieldData[$key . "::" . $row_key]);
-                                                        $arr_key_cal[] = array("" . $val->name . "" => $db->quote($date_value));
-                                                        break;
-
                                                     case 'birthday':
-                                                        $date_value = str_replace('/', '-', $fieldData[$key . "::" . $row_key]);
+                                                    case 'date':
+                                                        $dateString = str_replace('/', '-', $fieldData[$key . "::" . $row_key]);
+                                                        $date = DateTime::createFromFormat('d-m-Y', $dateString);
+                                                        $date !== false ? $date_value = $date->format('Y-m-d') : $date_value = $dateString;
                                                         $arr_key_cal[] = array("" . $val->name . "" => $db->quote($date_value));
                                                         break;
 
@@ -843,10 +839,10 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
         $mapped_columns = $this->retrieveMappingColumnsData();
 
 
-        $portalsData = [];
+        /*$portalsData = [];
         $queryBody = [];
 
-        $fnum = "2023060909210200000020000244";
+        $fnum = "2023060914034700000020000111";
 
         $portalsData[] = array("zWEB_FORMULAIRES_PARTICIPANTS" => $this->preparePortalDataAndGenralLayoutBeforeSendToFileMaker("zWEB_FORMULAIRES_PARTICIPANTS",$mapped_columns,$fnum));
         $portalsData[] = array("zWEB_FORMULAIRES_RECETTES" => $this->preparePortalDataAndGenralLayoutBeforeSendToFileMaker("zWEB_FORMULAIRES_RECETTES",$mapped_columns,$fnum));
@@ -857,15 +853,17 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
         $portalsData[] = array("zWEB_FORMULAIRES_AIDES" => $this->preparePortalDataAndGenralLayoutBeforeSendToFileMaker("zWEB_FORMULAIRES_PARTENAIRES",$mapped_columns,$fnum));
 
         $fieldData = $this->preparePortalDataAndGenralLayoutBeforeSendToFileMaker("zWEB_FORMULAIRES",$mapped_columns,$fnum,false);
-        $queryBody[]   = array("portalData" => $portalsData);
+        $queryBody[]   = array("portalData" => $this->transformToAssociativeArray($portalsData));
         $queryBody[]   = array("fieldData" =>  $fieldData);
         $finalQueryBody = $this->transformToAssociativeArray($queryBody);
 
         // Afficher le tableau final
-        //print_r($finalArray);
+        //print_r(json_encode($this->transformToAssociativeArray($portalsData)));
+        print_r(json_encode($finalQueryBody));
+        die;*/
 
 
-        /*$offset = 1;
+        $offset = 1;
         $limit = 20;
         $returnedCount = -1;
 
@@ -884,7 +882,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
                 $this->createFiles($find_records_response->data, $mapped_columns);
             }
-        }*/
+        }
 
 
     }

@@ -1,6 +1,8 @@
 <?php
 
+
 namespace classes\api;
+require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
 
 /**
  * @package     com_emundus
@@ -10,10 +12,11 @@ namespace classes\api;
  * @license    GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-use EmundusModelEmails;
+use EmundusModelApplication;
 use Exception;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Psr7\Stream;
+use GuzzleHttp\Psr7\MultipartStream;
 use JComponentHelper;
 use JFactory;
 use JLog;
@@ -222,17 +225,31 @@ class FileMaker
 
             $file = fopen($filePath, 'r');
 
-            $body = new Stream($file);
+
+            $boundary = '--------------------------' . microtime(true); // Generate a unique boundary
+
+            $stream = new MultipartStream([
+                [
+                    'name' => 'filename',
+                    'contents' => $fileName,
+
+                ],
+                [
+                    'name' => 'upload',
+                    'contents' => $file
+                ]
+            ], $boundary);
+
 
             $response = $this->client->post($url,
                 ['headers' => ['Authorization' => 'Bearer ' . $auth['bear_token'],
-                    'Content-Type' => 'multipart/form-data'],
-                    'upload' => $body,
-                    'filename' => $fileName
+                    'Content-Type' => 'multipart/form-data; boundary=' . $boundary,
+                ],
+                    "body" => $stream
                 ]);
 
-
             $response = json_decode($response->getBody());
+
 
             $this->maxAttempt = 0;
         } catch (\Exception $e) {
@@ -242,9 +259,11 @@ class FileMaker
                 $this->upload($url, $filePath, $fileName);
                 $this->setMaxAttempt();
             }
+
             JLog::add('[UPLOAD] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.file_maker');
             $response = $e->getMessage();
         }
+
         fclose($file);
 
         return $response;
@@ -254,11 +273,20 @@ class FileMaker
     private function patch($url, $query_body_in_json)
     {
         $response = '';
+        echo '<pre>';
+        print_r($query_body_in_json);
+        echo '</pre>';
 
         try {
+
             $response = $this->client->patch($url, ['body' => $query_body_in_json, 'headers' => $this->getHeaders()]);
+
             $this->maxAttempt = 0;
+
+
             $response = json_decode($response->getBody());
+
+
         } catch (\Exception $e) {
 
             if ($e->getCode() == 401 && $this->getMaxAttempt() < 3) {
@@ -268,6 +296,7 @@ class FileMaker
             }
 
             JLog::add('[PATCH] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.file_maker');
+
             $response = $e->getMessage();
         }
 
@@ -312,6 +341,7 @@ class FileMaker
 
         return $records;
     }
+
 
     private function loginApi(): void
     {
@@ -366,7 +396,6 @@ class FileMaker
                 $record_response = $this->post($url, json_encode($queryBody));
 
 
-
                 return $record_response->response;
 
 
@@ -413,9 +442,7 @@ class FileMaker
                 $url = "layouts/" . $zWebFormType;
 
                 $meta_data_response = $this->get($url);
-
                 return $meta_data_response->response;
-
 
             } else {
 
@@ -430,17 +457,306 @@ class FileMaker
 
     }
 
-    public function uploadFile($recordId, $filePath, $fileName)
+    public function executeFormValidationScriptOnFileMaker($uuidConnect){
+        $url = "layouts/zWEB_FORMULAIRES/script/zWebFormulaire_Validation?script.param=".$uuidConnect;
+
+        $result = $this->get($url);
+
+        return $result->response;
+    }
+
+    public function uploadAllAssocAttachementsAssocToFile($fnum, $applicant_id, $recordId)
+    {
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+
+        $query->select('esa.filemaker, eu.filename, eu.local_filename')
+            ->from($db->quoteName('#__emundus_uploads', 'eu'))
+            ->leftJoin('#__emundus_setup_attachments AS esa ON eu.attachment_id = esa.id')
+            ->where($db->quoteName('eu.fnum') . '=' . $db->quote($fnum))
+            ->andWhere($db->quoteName('esa.sync') . '= 1');
+        $db->setQuery($query);
+
+        try {
+            $files = $db->loadObjectList();
+            foreach ($files as $file) {
+                $file_path = 'images/emundus/files/' . $applicant_id . "/" . $file->filename;
+                try {
+
+                    $response = $this->uploadAttachment($recordId, $file_path, $file->filename, $file->filemaker);
+
+
+                } catch (Exception $e) {
+
+                    JLog::add("[FILEMAKER ] Filed to Upload Attachement to Filemaker " . $fnum . " " . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
+
+                }
+            }
+
+        } catch (Exception $e) {
+
+            JLog::add("[FILEMAKER ] Failed Retrieve File Inofrmation such as step and uuid before post to api" . $fnum . " " . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
+        }
+
+    }
+
+    public function uploadAttachment($recordId, $filePath, $fileName, $filemakername)
     {
         if (!empty($fileName) && !empty($filePath)) {
 
-            $url = "layouts/zWEB_FORMULAIRES/records/" . $recordId . "/containers/Participants_Fichier/1";
+            $url = "layouts/zWEB_FORMULAIRES/records/" . $recordId . "/containers/" . $filemakername . "/1";
+
             $upload_response = $this->upload($url, $filePath, $fileName);
 
             return $upload_response->response;
         } else {
             throw new Exception('Filename and Filed Path can\'t be empty');
         }
+    }
+
+    public function retrieveMappingColumnsData($step)
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $mapping_data = array();
+
+        $query->select('filemaker_label,emundus_form_id')
+            //->from($db->quoteName($this->getParams()->get('forms_mapping_table_beetween_filemaker_emundus')))
+            ->from($db->quoteName('data_filemaker_zforms_mapped_with_emundus_forms'))
+            ->where($db->quoteName('step') . "=" . $step);
+        $db->setQuery($query);
+
+
+        try {
+            $result = $db->loadAssocList();
+
+            $result_group_by_file_maker_attribute = $this->group_by("filemaker_label", $result);
+
+
+            foreach ($result_group_by_file_maker_attribute as $key => $value) {
+
+                foreach ($value as $sub_row) {
+
+                    $query->clear();
+                    $query->select('jfl.db_table_name,jfg.group_id,fgs.params,jfj.join_from_table,jfj.table_join,jfj.table_join_key,jfj.table_key')
+                        ->from($db->quoteName('jos_fabrik_lists', 'jfl'))
+                        ->leftJoin('jos_fabrik_formgroup AS jfg ON jfl.form_id = jfg.form_id')
+                        ->leftJoin('jos_fabrik_joins AS jfj ON jfl.id = jfj.list_id')
+                        ->leftJoin('jos_fabrik_groups AS fgs ON fgs.id = jfg.group_id')
+                        ->where('jfl.form_id = ' . $sub_row["emundus_form_id"]);
+                    $db->setQuery($query);
+
+
+                    $result = $db->loadObjectList();
+
+
+                    $mapping_data_row = new \stdClass();
+                    $mapping_data_row->filemaker_form_label = $key;
+
+                    $mapping_data_row->form_id = $sub_row["emundus_form_id"];
+                    $mapping_data_row->groups_id = array();
+                    $mapping_data_row->groups = array();
+                    foreach ($result as $val) {
+                        $group = new \stdClass();
+                        $group->id = intval($val->group_id);
+                        $group->params = $val->params;
+
+                        $mapping_data_row->db_table_name = $val->db_table_name;
+                        $mapping_data_row->groups_id[] = intval($val->group_id);
+                        $mapping_data_row->groups[] = $group;
+
+
+                        $mapping_data_row->join_from_table = $val->join_from_table;
+                        $mapping_data_row->table_join = $val->table_join;
+                        $mapping_data_row->table_join_key = $val->table_join_key;
+                        $mapping_data_row->table_key = $val->table_key;
+
+
+                    }
+
+                    $mapping_data_row->elements = $this->retrieveAssociatedElementsWithgroup($mapping_data_row->groups_id, $step);
+                    $mapping_data[] = $mapping_data_row;
+
+                }
+
+            }
+
+
+            return $mapping_data;
+
+
+        } catch (\Exception $e) {
+
+            JLog::add('[FABRIK CRON FILEMAKER retrieveMappingColumnsData] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
+            return [];
+        }
+
+    }
+
+
+    public function retrieveAssociatedElementsWithgroup($groups_id, $step)
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('jfe.*,zfe.file_maker_attribute_name')
+            ->from($db->quoteName('jos_fabrik_elements', 'jfe'))
+            //->leftJoin($this->getParams()->get('attribute_mapping_table_beetween_filemaker_emundus') . ' AS zfe ON zfe.file_maker_assoc_emundus_element = jfe.id')
+            ->leftJoin('zweb_formulaires_mapping_938_repeat AS zfe ON zfe.file_maker_assoc_emundus_element = jfe.id')
+            ->where('jfe.group_id IN (' . implode(',', $groups_id) . ')')
+            ->andWhere('jfe.published = 1')
+            ->andWhere('zfe.step =' . $step);
+
+
+        $db->setQuery($query);
+
+        try {
+            return $db->loadObjectList();
+
+        } catch (\Exception $e) {
+
+            JLog::add('[FILEMAKER retrieveAssociatedElementsWithgroup] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
+
+            return [];
+        }
+
+    }
+
+
+    public function preparePortalDataAndGenralLayoutBeforeSendToFileMaker($zweb_form_name, $mapped_columns, $fnum = "2023060909210200000020000244", $isPortalDataForm = true)
+    {
+        //$file_maker_api = new FileMaker();
+        try {
+            $metaDatas = $this->getMetaDatazWebFroms($zweb_form_name);
+
+        } catch (\Exception $e) {
+            JLog::add('[FILE_MAKER ] Failed to get Metada ' . $zweb_form_name . '  ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
+            return $e->getMessage();
+        }
+
+
+        $zweb_forms_elements = $this->searchMappedElementsByFileMakerFormLabel($mapped_columns, $zweb_form_name);
+
+        $m_application = new EmundusModelApplication();
+
+        $temp_records_mapping = [];
+
+        foreach ($metaDatas->fieldMetaData as $data) {
+
+            foreach ($zweb_forms_elements as $row) {
+
+                foreach ($row->elements as $element_row) {
+
+                    if (!empty($element_row->file_maker_attribute_name)) {
+
+                        if ($data->name === $element_row->file_maker_attribute_name) {
+
+                            $value = $m_application->getValuesByElementAndFnum($fnum, $element_row->id, $row->form_id, '');
+
+
+                            if ($isPortalDataForm) {
+                                switch ($element_row->plugin) {
+                                    case 'databasejoin':
+                                        $temp_records_mapping[] = array("" . $data->name . "" => explode(",", $value));
+                                        break;
+                                    default:
+                                        $temp_records_mapping[] = array("" . $data->name . "" => explode(",", $value));
+                                }
+                                $temp_records_mapping[] = array("" . $data->name . "" => explode(",", $value));
+                            } else {
+
+                                $temp_records_mapping[] = array("" . $data->name . "" => $value);
+                            }
+
+
+                        }
+
+                    }
+                }
+
+
+            }
+        }
+
+
+        $array = $this->transformToAssociativeArray($temp_records_mapping);
+
+
+        if ($isPortalDataForm == true) {
+
+
+            $keys = array_keys($array);
+
+            $arraySize = count($array[$keys[0]]);
+
+            $finalArray = array();
+
+            for ($i = 0; $i < $arraySize; $i++) {
+                $tempArray = array();
+                foreach ($keys as $key) {
+                    $value = $array[$key][$i];
+                    $tempArray[$key] = $value == NULL ? "" : $value;
+                }
+
+                $finalArray[] = $tempArray;
+            }
+            return $finalArray;
+        } else {
+
+            return $array;
+
+        }
+
+    }
+
+
+    public function searchMappedElementsByFileMakerFormLabel($mapped_columns, $label)
+    {
+
+        $values = [];
+        foreach ($mapped_columns as $row) {
+
+            if ($row->filemaker_form_label == $label) {
+
+
+                $values[] = $row;
+            }
+        }
+
+
+        return $values;
+    }
+
+    public function transformToAssociativeArray($array)
+    {
+        $associativeArray = array();
+
+        foreach ($array as $item) {
+            $key = key($item);
+            $value = reset($item);
+
+            $associativeArray[$key] = $value;
+        }
+
+        return $associativeArray;
+
+    }
+
+    public function group_by($key, $data)
+    {
+        $result = array();
+
+        foreach ($data as $val) {
+            if (array_key_exists($key, $val)) {
+                $result[$val[$key]][] = $val;
+            } else {
+                $result[""][] = $val;
+            }
+        }
+
+        return $result;
     }
 
 
