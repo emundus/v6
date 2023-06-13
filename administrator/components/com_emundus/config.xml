@@ -481,7 +481,8 @@
 		<field name="file_maker_api_title" type="note" label="COM_EMUNDUS_API_FILE_MAKER_TITLE"/>
 		<field name="file_maker_api_base_url" type="text" label="COM_EMUNDUS_API_FILE_MAKER_BASE_URL" description="COM_EMUNDUS_API_FILE_MAKER_BASE_URL_DESC" />
 		<field name="file_maker_api_basic_auth_token" type="text" label="COM_EMUNDUS_API_FILE_MAKER_BASIC_AUTH_TOKEN" description="COM_EMUNDUS_API_FILE_MAKER_BASIC_AUTH_TOKEN_DESC" />
-
+		<field name="file_maker_emundus_forms_mapping_table_name" type="text" label="COM_EMUNDUS_API_FILE_MAKER_EMUNDUS_FORMS_MAPPING_TABLE_NAME" description="COM_EMUNDUS_API_FILE_MAKER_EMUNDUS_FORMS_MAPPING_TABLE_NAME_DESC" />
+		<field name="file_maker_emundus_attribute_mapping_table_name" type="text" label="COM_EMUNDUS_API_FILE_MAKER_EMUNDUS_ATTRIBUTE_MAPPING_TABLE_NAME" description="COM_EMUNDUS_API_FILE_MAKER_EMUNDUS_ATTRIBUTE_MAPPING_TABLE_NAME_DESC" />
 		<field name="spacer8" type="spacer" hr="true"/>
 
 		<field name="external_storage_title" type="note" label="COM_EMUNDUS_EXTERNAL_STORAGE_TITLE"/>

@@ -521,10 +521,11 @@ class FileMaker
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $mapping_data = array();
+        $config = JComponentHelper::getParams('com_emundus');
 
         $query->select('filemaker_label,emundus_form_id')
-            //->from($db->quoteName($this->getParams()->get('forms_mapping_table_beetween_filemaker_emundus')))
-            ->from($db->quoteName('data_filemaker_zforms_mapped_with_emundus_forms'))
+            ->from($db->quoteName($config->get('file_maker_emundus_forms_mapping_table_name')))
+            //->from($db->quoteName('data_filemaker_zforms_mapped_with_emundus_forms'))
             ->where($db->quoteName('step') . "=" . $step);
         $db->setQuery($query);
 
@@ -600,11 +601,12 @@ class FileMaker
     {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
+        $config = JComponentHelper::getParams('com_emundus');
 
         $query->select('jfe.*,zfe.file_maker_attribute_name')
             ->from($db->quoteName('jos_fabrik_elements', 'jfe'))
-            //->leftJoin($this->getParams()->get('attribute_mapping_table_beetween_filemaker_emundus') . ' AS zfe ON zfe.file_maker_assoc_emundus_element = jfe.id')
-            ->leftJoin('zweb_formulaires_mapping_938_repeat AS zfe ON zfe.file_maker_assoc_emundus_element = jfe.id')
+            ->leftJoin($config->get('file_maker_emundus_attribute_mapping_table_name') . ' AS zfe ON zfe.file_maker_assoc_emundus_element = jfe.id')
+            //->leftJoin('zweb_formulaires_mapping_938_repeat AS zfe ON zfe.file_maker_assoc_emundus_element = jfe.id')
             ->where('jfe.group_id IN (' . implode(',', $groups_id) . ')')
             ->andWhere('jfe.published = 1')
             ->andWhere('zfe.step =' . $step);
