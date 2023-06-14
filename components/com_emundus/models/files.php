@@ -143,7 +143,29 @@ class EmundusModelFiles extends JModelLegacy
             foreach ($this->_elements as $def_elmt) {
                 $group_params = json_decode($def_elmt->group_attribs);
 
-				$def_elmt->tab_name = $def_elmt->tab_name === 'jos_emundus_campaign_candidature' ? 'jecc' : $def_elmt->tab_name;
+	            $already_joined_tables = [
+		            'jecc' => 'jos_emundus_campaign_candidature',
+		            'ss' => 'jos_emundus_setup_status',
+		            'esc' => 'jos_emundus_setup_campaigns',
+		            'sp' => 'jos_emundus_setup_programmes',
+		            'u' => 'jos_users',
+		            'eu' => 'jos_emundus_users',
+		            'eta' => 'jos_emundus_tag_assoc'
+	            ];
+				foreach ($already_joined_tables as $alias => $table) {
+					if ($def_elmt->tab_name === $table) {
+						$def_elmt->tab_name = $alias;
+					}
+
+					if ($def_elmt->table_join === $table) {
+						$def_elmt->table_join = $alias;
+					}
+
+					if ($def_elmt->join_from_table === $table) {
+						$def_elmt->join_from_table = $alias;
+					}
+				}
+
                 if ($def_elmt->element_plugin == 'date') {
                     if (@$group_params->repeat_group_button == 1) {
                         $this->_elements_default[] = '(
@@ -172,10 +194,14 @@ class EmundusModelFiles extends JModelLegacy
                                     where '.$attribs->join_db_name.'.'.$attribs->join_key_column.' IN
                                         ( select '.$def_elmt->table_join.'.' . $def_elmt->element_name.'
                                           from '.$def_elmt->table_join.'
-                                          where '.$def_elmt->table_join .'.' . $def_elmt->table_join_key .  '='.$def_elmt->tab_name.'.' . $def_elmt->table_key.'
+                                          where '.$def_elmt->table_join .'.' . $def_elmt->table_join_key .  '='.$def_elmt->join_from_table.'.' . $def_elmt->table_key.'
                                         )
                                     '.$publish_query.'
                                   ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
+
+
+						//TODO: here what if repeat AND checkbox ?
+
                     } else {
                         if ($attribs->database_join_display_type == "checkbox") {
 
@@ -668,6 +694,7 @@ class EmundusModelFiles extends JModelLegacy
 
         $query .=  $this->_buildContentOrderBy();
 
+		//echo $query;
 		try {
 	        $dbo->setQuery($query);
 	        $this->_applicants = $dbo->loadAssocList();
