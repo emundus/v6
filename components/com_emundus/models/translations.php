@@ -605,7 +605,7 @@ class EmundusModelTranslations extends JModelList
 		$inserted  = false;
 		$isCorrect = $this->checkTagIsCorrect($tag, $override, 'insert', $lang_code);
 
-		if ($isCorrect && empty($this->getTranslations($type, $lang_code, '', $location, $reference_table, $reference_id, $reference_field, $tag)))
+		if ($isCorrect && empty($this->getTranslations($type, $lang_code, '', $location, '', 0, '', $tag)))
 		{
 			$query = $this->_db->getQuery(true);
 			$user  = JFactory::getUser();
