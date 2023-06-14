@@ -26,6 +26,15 @@
         </select>
       </div>
 
+      <!-- SUBFORM -->
+      <div v-else-if="param.type === 'subform'">
+        <div v-for="element_sub_parameters in element.params[param.name]" :key="element.id + '-' + param.name">
+          <FormBuilderElementParams :key="element_sub_parameters.id" :element="{params:element_sub_parameters}" :databases="null" :params="param.subparams"/>
+          <button @click="addRow(param.name)" :key="element_sub_parameters.id">Add</button>
+          <button @click="deleteRow(element_sub_parameters.id)" :key="element_sub_parameters.id">Delete</button>
+        </div>
+      </div>
+
       <!-- INPUT (TEXT,NUMBER) -->
       <input v-else :type="param.type" v-model="element.params[param.name]" class="em-w-100" :placeholder="translate(param.placeholder)"/>
 
@@ -68,6 +77,9 @@ export default {
     loading: false,
   }),
   created() {
+    console.log(this.element);
+    console.log(this.params);
+    console.log("------------------------------------")
     this.params.forEach((param) => {
       if(param.type === 'databasejoin'){
         if(this.sysadmin){
@@ -134,7 +146,13 @@ export default {
           this.reloadOptionsCascade += 1;
         });
       }
-    }
+    },
+
+    addRow(name) {
+    },
+
+    deleteRow(index) {
+    },
   },
   computed: {
     sysadmin: function(){
