@@ -270,57 +270,59 @@ class EmundusFiltersFiles extends EmundusFilters
 			$config['more_filter_elements'] = json_decode($config['more_filter_elements'], true);
 
 			foreach($config['more_filter_elements']['fabrik_element_id'] as $key => $fabrik_element_id) {
-				// check in filters if element is already present
-				$found = false;
-				$new_default_filter = [];
-				foreach($this->filters as $filter) {
-					if($filter['id'] == $fabrik_element_id) {
-						$new_default_filter = $filter;
-						$new_default_filter['default'] = true;
-						if (empty($new_default_filter['value'])) {
-							$new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
-						}
-						$new_default_filter['andorOperator'] = 'OR';
-						$new_default_filter['operator'] = $filter['type'] === 'select' ? 'LIKE' : '=';
-
-						$found = true;
-						break;
-					}
-				}
-
-				if (!$found) {
-					$query->clear()
-						->select('jfe.id, jfe.plugin, jfe.label, jfe.params, jffg.form_id as element_form_id, jff.label as element_form_label')
-						->from('jos_fabrik_elements as jfe')
-						->join('inner', 'jos_fabrik_formgroup as jffg ON jfe.group_id = jffg.group_id')
-						->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
-						->where('jfe.id = ' . $fabrik_element_id)
-						->andWhere('jfe.published = 1');
-
-					$db->setQuery($query);
-					$element = $db->loadAssoc();
-
-					if (!empty($element)) {
-						$element['label'] = JText::_($element['label']);
-						$element['element_form_label'] = JText::_($element['element_form_label']);
-						$formatted_elements = $this->createFiltersFromFabrikElements([$element]);
-
-						if (!empty($formatted_elements)) {
-							$new_default_filter = $formatted_elements[0];
+				if (!empty($fabrik_element_id)) {
+					// check in filters if element is already present
+					$found = false;
+					$new_default_filter = [];
+					foreach($this->filters as $filter) {
+						if($filter['id'] == $fabrik_element_id) {
+							$new_default_filter = $filter;
 							$new_default_filter['default'] = true;
 							if (empty($new_default_filter['value'])) {
 								$new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
 							}
 							$new_default_filter['andorOperator'] = 'OR';
-							$new_default_filter['operator'] = $new_default_filter['type'] === 'select' ? 'LIKE' : '=';
+							$new_default_filter['operator'] = $filter['type'] === 'select' ? 'LIKE' : '=';
+
+							$found = true;
+							break;
 						}
 					}
-				}
 
-				if (!empty($new_default_filter)) {
-					$this->filters[] = $new_default_filter;
-					$new_default_filter['uid'] = 'default-filter-' . $new_default_filter['id'];
-					$this->applied_filters[] = $new_default_filter;
+					if (!$found) {
+						$query->clear()
+							->select('jfe.id, jfe.plugin, jfe.label, jfe.params, jffg.form_id as element_form_id, jff.label as element_form_label')
+							->from('jos_fabrik_elements as jfe')
+							->join('inner', 'jos_fabrik_formgroup as jffg ON jfe.group_id = jffg.group_id')
+							->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
+							->where('jfe.id = ' . $fabrik_element_id)
+							->andWhere('jfe.published = 1');
+
+						$db->setQuery($query);
+						$element = $db->loadAssoc();
+
+						if (!empty($element)) {
+							$element['label'] = JText::_($element['label']);
+							$element['element_form_label'] = JText::_($element['element_form_label']);
+							$formatted_elements = $this->createFiltersFromFabrikElements([$element]);
+
+							if (!empty($formatted_elements)) {
+								$new_default_filter = $formatted_elements[0];
+								$new_default_filter['default'] = true;
+								if (empty($new_default_filter['value'])) {
+									$new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
+								}
+								$new_default_filter['andorOperator'] = 'OR';
+								$new_default_filter['operator'] = $new_default_filter['type'] === 'select' ? 'LIKE' : '=';
+							}
+						}
+					}
+
+					if (!empty($new_default_filter)) {
+						$this->filters[] = $new_default_filter;
+						$new_default_filter['uid'] = 'default-filter-' . $new_default_filter['id'];
+						$this->applied_filters[] = $new_default_filter;
+					}
 				}
 			}
 		}
