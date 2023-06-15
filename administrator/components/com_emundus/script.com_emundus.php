@@ -1804,6 +1804,88 @@ structure:
 				EmundusHelperUpdate::updateYamlVariable('', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_offline/layout.yaml', '', $content_layout_offline);
 			}
 
+			if (version_compare($cache_version, '1.36.2', '<=') || $firstrun){
+				$tags_to_publish = [
+					'APPLICANT_ID','USER_ID','APPLICANT_NAME','CURRENT_DATE','ID','NAME','EMAIL','USERNAME','SITE_URL','USER_NAME','USER_EMAIL','CAMPAIGN_LABEL','CAMPAIGN_YEAR','CAMPAIGN_START','CAMPAIGN_END','FNUM','PHOTO'
+				];
+				foreach ($tags_to_publish as $key => $tag)
+				{
+					$tags_to_publish[$key] = $db->quote($tag);
+				}
+				$query->clear()
+					->update($db->quoteName('#__emundus_setup_tags'))
+					->set($db->quoteName('published') . ' = ' . $db->quote(1))
+					->where($db->quoteName('tag') . ' IN (' . implode(',',$tags_to_publish) . ')');
+				$db->setQuery($query);
+				$db->execute();
+			}
+
+            if (version_compare($cache_version, '1.36.3', '<=') || $firstrun){
+                $query->clear()
+                    ->select('DISTINCT '.$db->quoteName('form_id'))
+                    ->from($db->quoteName('#__fabrik_lists'))
+                    ->where($db->quoteName('db_table_name').' = '.$db->quote('jos_emundus_uploads'));
+                $db->setQuery($query);
+                $forms = $db->loadColumn();
+
+                if (!empty($forms)) {
+                    $query->clear()
+                        ->select('DISTINCT '.$db->quoteName('group_id'))
+                        ->from($db->quoteName('#__fabrik_formgroup'))
+                        ->where($db->quoteName('form_id').' IN ('.implode(',',$forms).')');
+                    $db->setQuery($query);
+                    $groups = $db->loadColumn();
+
+                    if (!empty($groups)) {
+                        $params = array(
+                            'bootstrap_class' => 'input-medium',
+                            'date_showtime' => 1,
+                            'date_which_time_picker' => 'wicked',
+                            'date_show_seconds' => 1,
+                            'date_24hour' => 1,
+                            'bootstrap_time_class' => 'input-medium',
+                            'placeholder' => '',
+                            'date_store_as_local' => 0,
+                            'date_table_format' => 'Y-m-d H:i:s',
+                            'date_form_format' => 'Y-m-d H:i:s',
+                            'date_defaulttotoday' => 1,
+                            'date_alwaystoday' => 0,
+                            'date_firstday' => 0,
+                            'date_allow_typing_in_field' => 0,
+                            'date_csv_offset_tz' => 0,
+                            'date_advanced' => 0,
+                            'date_allow_func' => '',
+                            'date_allow_php_func' => '',
+                            'date_observe' => ''
+                        );
+                        foreach($groups as $group_id) {
+                            $datas = array(
+                                'name' => 'timedate',
+                                'group_id' => $group_id,
+                                'plugin' => 'date',
+                                'label' => 'Date d\'envoi du document',
+                                'hidden' => 1
+                            );
+                            EmundusHelperUpdate::addFabrikElement($datas, $params);
+                        }
+                    }
+                }
+
+				EmundusHelperUpdate::updateExtensionParam('fbConf_alter_existing_db_cols','addonly', null, 'com_fabrik');
+
+				if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/24/page/assets.yaml')){
+					unlink(JPATH_ROOT . '/templates/g5_helium/custom/config/24/page/assets.yaml');
+				}
+            }
+
+			if (version_compare($cache_version, '1.36.4', '<=') || $firstrun){
+				EmundusHelperUpdate::addColumn('jos_emundus_uploads','size','INT',11);
+
+				$eMConfig = JComponentHelper::getParams('com_emundus');
+				EmundusHelperUpdate::updateEmundusParam('gotenberg_url', 'https://gotenberg.microservices.tchooz.app', 'http://localhost:3000');
+                EmundusHelperUpdate::updateEmundusParam('application_form_name_zip', $eMConfig->get('application_form_name','[NAME]_[FNUM]'));
+			}
+
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
 

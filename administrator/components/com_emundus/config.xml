@@ -282,6 +282,7 @@
 		/>
 		<field name="note22" type="note" class="alert alert-info" label="EMUNDUS_DOCUMENT_NAMES"/>
 		<field name="application_form_name" type="text" default="application_form_pdf" size="6" label="COM_EMUNDUS_CANDIDACY_FILE_NAME" description="COM_EMUNDUS_CANDIDACY_FILE_NAME_DESC"/>
+		<field name="application_form_name_zip" type="text" default="" size="6" label="COM_EMUNDUS_CANDIDACY_FILE_NAME_ZIP" description="COM_EMUNDUS_CANDIDACY_FILE_NAME_ZIP_DESC"/>
 		<field name="applicant_file_name" type="text" default="" size="6" label="COM_EMUNDUS_APPLICANT_FILE_NAME" description="COM_EMUNDUS_APPLICANT_FILE_NAME_DESC"/>
 		<field name="generated_doc_name" type="text" default="" label="COM_EMUNDUS_GENERATED_DOC_NAME" description="COM_EMUNDUS_GENERATED_DOC_NAME_DESC"/>
 		<field name="application_admission_name" type="text" default="" size="6" label="COM_EMUNDUS_CANDIDACY_ADMISSION_NAME" description="COM_EMUNDUS_CANDIDACY_ADMISSION_NAME_DESC"/>
