@@ -3858,7 +3858,6 @@ class EmundusModelFiles extends JModelLegacy
                                     }
                                 }
                             }
-
                             $cc = array_unique($cc);
 
                             // Add bcc defined in email template
@@ -3871,6 +3870,7 @@ class EmundusModelFiles extends JModelLegacy
                                     }
                                 }
                             }
+	                        $bcc = array_unique($bcc);
 
                             $mailer = JFactory::getMailer();
 
