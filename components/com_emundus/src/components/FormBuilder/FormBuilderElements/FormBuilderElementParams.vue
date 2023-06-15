@@ -26,6 +26,13 @@
         </select>
       </div>
 
+      <!-- SQL -->
+      <div v-else-if="param.type === 'sql'">
+        <select v-model="element.params[param.name]" :key="param.id + '-sqlSelect'" class="em-w-100">
+          <option v-for="option in param.options" :value="option.value">{{ option.label}}</option>
+        </select>
+      </div>
+
       <!-- SUBFORM -->
       <div v-else-if="param.type === 'subform'">
         <button @click="addRow(param.name)" :key="param.id + '-addButton' ">Add</button>
@@ -77,9 +84,6 @@ export default {
     loading: false,
   }),
   created() {
-    //console.log(this.element);
-    //console.log(this.params);
-    //console.log("------------------------------------")
     this.params.forEach((param) => {
       if(param.type === 'databasejoin'){
         if(this.sysadmin){
@@ -97,6 +101,13 @@ export default {
           if(this.element.params['join_db_name'] != ""){
             this.updateDatabasejoinParams();
           }
+        }
+      }
+      else if (param.type === 'sql')
+      {
+        if (param.query && param.key_field && param.value_field)
+        {
+          this.getSqlInputData(param, param.query, param.key_field, param.value_field);
         }
       }
     })
@@ -190,11 +201,33 @@ export default {
 
       allParams.forEach((param) =>
       {
-        new_object[param.name] = param.default ? param.default : '';
+        if (param.type === 'sql')
+        {
+          new_object[param.name] = param.default ? param.default : param.options[0].value;
+        }
+        else
+        {
+          new_object[param.name] = param.default ? param.default : '';
+        }
       });
 
       return new_object;
-    }
+    },
+
+    getSqlInputData(element, query, valueColumn, labelColumn)
+    {
+      formBuilderService.getDataFromSqlFieldQuery(query).then((response) =>
+      {
+        this.$set(element, 'options', []);
+        response.data.data.forEach((row, index) =>
+        {
+          let option = {};
+          option.value = row[valueColumn];
+          option.label = row[labelColumn];
+          this.$set(element.options, index, option);
+        });
+      });
+    },
   },
   computed: {
     sysadmin: function(){

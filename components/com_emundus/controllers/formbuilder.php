@@ -792,6 +792,28 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         exit;
     }
 
+    public function getDataFromSqlFieldQuery() {
+        $user = JFactory::getUser();
+
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $query = $jinput->getString('query');
+
+            if (!empty($query)) {
+                $sqlFieldData = $this->m_formbuilder->getDataFromSqlFieldQuery($query);
+                $tab = array('status' => 1, 'msg' => 'worked', 'data' => $sqlFieldData);
+            } else {
+                $tab = array('status' => 0, 'msg' => 'Missing query parameter');
+            }
+        }
+
+        echo json_encode((object)$tab);
+        exit;
+    }
+
     public function enablegrouprepeat() {
         $user = JFactory::getUser();
 

@@ -3063,6 +3063,20 @@ class EmundusModelFormbuilder extends JModelList {
         }
     }
 
+    function getDataFromSqlFieldQuery($query)
+    {
+        $db = $this->getDbo();
+        $db->setQuery($query);
+
+        try {
+            return $db->loadObjectList();
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus/models/formbuilder | Error at getting data from sql field query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+
     function enableRepeatGroup($gid){
         $saved = false;
         $db = $this->getDbo();

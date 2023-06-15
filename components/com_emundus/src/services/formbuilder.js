@@ -211,6 +211,25 @@ export default {
             };
         }
     },
+    async getDataFromSqlFieldQuery(query) {
+        try {
+            const response = client().get(
+                'index.php?option=com_emundus&controller=formbuilder&task=getDataFromSqlFieldQuery',
+                {
+                    params: {
+                        query: query
+                    }
+                }
+            );
+
+            return response;
+        } catch (e) {
+            return {
+                status: false,
+                message: e.message
+            };
+        }
+    },
     async updateParams(element)
     {
         const formData = new FormData();

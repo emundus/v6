@@ -460,6 +460,18 @@
 
       "subparams": [
         {
+          "name": "iso3",
+          "type": "sql",
+          "label":"PLG_ELEMENT_CURRENCY_CURRENCY",
+          "query": "SELECT *, CONCAT(name, ' (', symbol, ' ', iso3,')') as renderBack FROM data_currency WHERE published = 1",
+          "value_field": "renderBack",
+          "key_field": "iso3",
+          "placeholder": "",
+          "helptext": "",
+          "published": true,
+          "sysadmin_only": false
+        },
+        {
           "name": "minimal_value",
           "type": "number",
           "label": "COM_EMUNDUS_ONBOARD_MIN_RESOLUTION_PLACEHOLDER",
