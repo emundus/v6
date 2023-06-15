@@ -1825,7 +1825,7 @@ class EmundusModelEvaluation extends JModelList {
 
 	        $post = [
 		        'TRAINING_CODE' => $fnumInfo[$fnum]['campaign_code'],
-		        'TRAINING_PROGRAMME' => $fnumInfo[$fnum]['campaign_label'],
+		        'TRAINING_PROGRAMME' => $fnumInfo[$fnum]['training_programme'],
 		        'CAMPAIGN_LABEL' => $fnumInfo[$fnum]['campaign_label'],
 		        'CAMPAIGN_YEAR' => $fnumInfo[$fnum]['campaign_year'],
 		        'USER_NAME' => $fnumInfo[$fnum]['applicant_name'],
@@ -3281,6 +3281,29 @@ class EmundusModelEvaluation extends JModelList {
         } catch (Exception $e) {
             JLog::add('Problem to get row by fnum '.$fnum.' in table '.$table_name.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             return 0;
+        }
+    }
+    public function getEvaluationReasons($eid){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $tables = $db->setQuery('SHOW TABLES')->loadColumn();
+
+            if(in_array('jos_emundus_evaluations_repeat_reason',$tables)) {
+                $query->select('esr.reason')
+                    ->from($db->quoteName('#__emundus_evaluations', 'ee'))
+                    ->leftJoin($db->quoteName('#__emundus_evaluations_repeat_reason', 'eerr') . ' ON ' . $db->quoteName('ee.id') . ' = ' . $db->quoteName('eerr.parent_id'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_reasons', 'est') . ' ON ' . $db->quoteName('esr.id') . ' = ' . $db->quoteName('eerr.reason'))
+                    ->where($db->quoteName('ee.id') . ' = ' . $db->quote($eid));
+                $db->setQuery($query);
+                return $db->loadColumn();
+            } else {
+                return [];
+            }
+        } catch (Exception $e) {
+            JLog::add('Cannot get reasons for evaluation | '.$eid.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return [];
         }
     }
 }
