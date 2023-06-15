@@ -3346,7 +3346,7 @@ class EmundusHelperFiles
 			}
 		}
 
-		if (empty($data) && !empty($group_id)) {
+		if ((empty($data) || empty($data['join_from_table']))  && !empty($group_id)) {
 			$query->clear()
 				->select('*')
 				->from('#__fabrik_joins')
@@ -3531,15 +3531,13 @@ class EmundusHelperFiles
 				if ($fabrik_element_data['group_params']['repeat_group_button'] == 1) {
 					$join_table_repeat = $this->findJoinBetweenTables($fabrik_element_data['fabrik_table_join'], 'jos_emundus_campaign_candidature');
 
-					if (($fabrik_element_data['plugin'] === 'databasejoin' && in_array($fabrik_element_data['element_params']['database_join_display_type'], ['checkbox', 'multilist']))) {
+					if ($fabrik_element_data['plugin'] === 'databasejoin') {
 						$element_join = $this->getJoinInformations($fabrik_element_data['element_id']);
 
 						$subquery = ' SELECT DISTINCT jos_emundus_campaign_candidature.id FROM jos_emundus_campaign_candidature ';
 						$subquery .= ' LEFT JOIN ' . $fabrik_element_data['fabrik_table_join'] . ' ON jos_emundus_campaign_candidature.' . $join_table_repeat['table_key'] . ' = ' .  $fabrik_element_data['fabrik_table_join'] . '.' . $join_table_repeat['table_join_key'];
 						$subquery .= ' LEFT JOIN ' . $element_join['table_join'] . ' ON ' . $fabrik_element_data['fabrik_table_join'] . '.' . $element_join['table_key'] . ' = ' . $element_join['table_join'] . '.' . $element_join['table_join_key'];
 						$subquery .= ' WHERE ' . $element . ' IN (' . $values . ')';
-					} else {
-						//TODO:
 					}
 				} else {
 					//TODO:

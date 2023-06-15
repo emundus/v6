@@ -157,10 +157,6 @@ class EmundusModelFiles extends JModelLegacy
 						$def_elmt->tab_name = $alias;
 					}
 
-					if ($def_elmt->table_join === $table) {
-						$def_elmt->table_join = $alias;
-					}
-
 					if ($def_elmt->join_from_table === $table) {
 						$def_elmt->join_from_table = $alias;
 					}
@@ -697,6 +693,7 @@ class EmundusModelFiles extends JModelLegacy
 		//echo $query;
 		try {
 	        $dbo->setQuery($query);
+			var_dump($query);
 	        $this->_applicants = $dbo->loadAssocList();
 
             if ($limit > 0) {
