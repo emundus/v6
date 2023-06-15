@@ -28,10 +28,10 @@
 
       <!-- SUBFORM -->
       <div v-else-if="param.type === 'subform'">
-        <div v-for="element_sub_parameters in element.params[param.name]" :key="element.id + '-' + param.name">
-          <FormBuilderElementParams :key="element_sub_parameters.id" :element="{params:element_sub_parameters}" :databases="null" :params="param.subparams"/>
-          <button @click="addRow(param.name)" :key="element_sub_parameters.id">Add</button>
-          <button @click="deleteRow(element_sub_parameters.id)" :key="element_sub_parameters.id">Delete</button>
+        <button @click="addRow(param.name)" :key="param.id + '-addButton' ">Add</button>
+        <div v-for="(element_sub_parameters, element_sub_name) in element.params[param.name]" :key="element.id + '-' + param.name">
+          <FormBuilderElementParams :key="element_sub_name" :element="{params:element_sub_parameters}" :databases="null" :params="param.subparams"/>
+          <button @click="deleteRow(param.name, element_sub_name)" :key="element_sub_name+ '-deleteButton'">Delete</button>
         </div>
       </div>
 
@@ -77,9 +77,9 @@ export default {
     loading: false,
   }),
   created() {
-    console.log(this.element);
-    console.log(this.params);
-    console.log("------------------------------------")
+    //console.log(this.element);
+    //console.log(this.params);
+    //console.log("------------------------------------")
     this.params.forEach((param) => {
       if(param.type === 'databasejoin'){
         if(this.sysadmin){
@@ -148,11 +148,53 @@ export default {
       }
     },
 
-    addRow(name) {
+    addRow(paramName) {
+
+      const subformObject = this.getSubObject(paramName);
+
+      const new_object = this.prepareNewSubObject(subformObject.subparams);
+      const length = Object.keys(this.element.params[paramName]).length;
+      const element_name = paramName+length;
+
+      this.$set(this.element.params[paramName], element_name, new_object);
     },
 
-    deleteRow(index) {
+    deleteRow(paramName, element_sub_name) {
+
+      const subObject = this.getSubObject(paramName);
+
+      if (Object.keys(this.element.params[paramName]).length > subObject.min)
+      {
+        this.$delete(this.element.params[paramName], element_sub_name);
+      }
     },
+
+    getSubObject(name)
+    {
+      let subObject = {};
+
+      this.params.forEach((element) =>
+      {
+        if (element.name === name)
+        {
+          subObject = element;
+        }
+      })
+
+      return subObject;
+    },
+
+    prepareNewSubObject(allParams)
+    {
+      const new_object = {};
+
+      allParams.forEach((param) =>
+      {
+        new_object[param.name] = param.default ? param.default : '';
+      });
+
+      return new_object;
+    }
   },
   computed: {
     sysadmin: function(){

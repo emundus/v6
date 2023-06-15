@@ -452,6 +452,7 @@
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_OPTIONS",
       "name": "all_currencies_options",
       "type": "subform",
+      "min": 1,
       "helptext": "",
       "placeholder": "",
       "published": true,
