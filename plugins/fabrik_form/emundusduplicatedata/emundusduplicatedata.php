@@ -284,20 +284,22 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
                 $fnums_training = [];
                 foreach($user_fnums as $user_fnum) {
                     if ($user_fnum->fnum !== $fnum && $user_fnum->training === $program_code) {
-                        $fnums_training[] = $user_fnum->fnum;
+                        $query->clear()
+                            ->select('COUNT('.$db->quoteName('id').')')
+                            ->from($db->quoteName($db_table_name))
+                            ->where($db->quoteName('fnum').' LIKE '.$db->quote($user_fnum->fnum));
+                        $db->setQuery($query);
+                        $filled = $db->loadResult();
+
+                        if ($filled > 0) {
+                            $fnums_training[] = $user_fnum->fnum;
+                        }
                     }
                 }
 
                 $file_to_duplicate = max($fnums_training);
 
-                $query->clear()
-                    ->select('COUNT('.$db->quoteName('id').')')
-                    ->from($db->quoteName($db_table_name))
-                    ->where($db->quoteName('fnum').' LIKE '.$db->quote($file_to_duplicate));
-                $db->setQuery($query);
-                $duplicate_file_filled = $db->loadResult();
-
-                if ($duplicate_file_filled > 0) {
+                if ($file_to_duplicate) {
                     return $file_to_duplicate;
                 } else {
                     return '';
