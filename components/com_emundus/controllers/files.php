@@ -2827,7 +2827,9 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
                 }
 
-                if ($assessment) {
+
+
+	            if ($assessment) {
                     $files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
                 }
 
@@ -2836,24 +2838,60 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
 
                 if ($admission) {
-                    $admission_file= EmundusHelperExport::getAdmissionPDF($fnum, $options);
+	                $admission_file = EmundusHelperExport::getAdmissionPDF($fnum, $options);
                 }
 
                 if (count($files_list) > 0) {
-                    // all PDF in one file
-                    require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'fpdi.php');
-                    $pdf = new ConcatPdf();
+	                foreach ($files_list as $key => $file_list){
+		                if(empty($file_list)){
+			                unset($files_list[$key]);
+		                }
+	                }
 
-                    $pdf->setFiles($files_list);
-                    $pdf->concat();
+	                $gotenberg_merge_activation = $eMConfig->get('gotenberg_merge_activation', 0);
 
-                    $pdf->Output($dossier . $application_pdf, 'F');
+	                if(!$gotenberg_merge_activation) {
+		                require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
 
-                    $filename = $application_form_name . DS . $application_pdf;
+		                $pdf = new ConcatPdf();
+		                $pdf->setFiles($files_list);
+		                $pdf->concat();
 
-                    if (!$zip->addFile($dossier . $application_pdf, $filename)) {
-                        continue;
-                    }
+		                if (isset($tmpArray)) {
+			                foreach ($tmpArray as $fn) {
+				                unlink($fn);
+			                }
+		                }
+		                $pdf->Output($dossier . $application_pdf, 'F');
+	                } else {
+		                $gotenberg_url = $eMConfig->get('gotenberg_url', '');
+
+		                if (!empty($gotenberg_url)) {
+			                $got_files = [];
+			                foreach ($files_list as $item) {
+				                $got_files[] = Stream::path($item);
+			                }
+			                $request  = Gotenberg::pdfEngines($gotenberg_url)
+				                ->merge(...$got_files);
+			                $response = Gotenberg::send($request);
+			                $content = $response->getBody()->getContents();
+
+			                $filename = $dossier . $application_pdf;
+			                $fp       = fopen($filename, 'w');
+			                $pieces   = str_split($content, 1024 * 16);
+			                if ($fp)
+			                {
+				                foreach ($pieces as $piece) {
+					                fwrite($fp, $piece, strlen($piece));
+				                }
+			                }
+		                }
+	                }
+
+	                $filename = $application_form_name . DS . $application_pdf;
+	                if (!$zip->addFile($dossier . $application_pdf, $filename)) {
+		                continue;
+	                }
                 }
 
                 if (file_exists($admission_file)) {

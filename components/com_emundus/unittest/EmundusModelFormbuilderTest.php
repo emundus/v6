@@ -86,7 +86,7 @@ class EmundusModelFormbuilderTest extends TestCase
     public function testFormsTradUndefined()
     {
         $override_original_file_size = filesize(JPATH_SITE . '/language/overrides/fr-FR.override.ini');
-        $new_trad = "Mon élément modifié";
+        $new_trad = 'Mon élément modifié';
         $reference_id = 999999;
 
         $this->m_translations->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', $reference_id);
@@ -99,7 +99,8 @@ class EmundusModelFormbuilderTest extends TestCase
 
         $query->select('override')
             ->from('#__emundus_setup_languages')
-            ->where('reference_id = ' . $reference_id);
+            ->where('reference_id = ' . $reference_id)
+            ->andWhere('lang_code = ' . $db->quote('fr-FR'));
 
         $db->setQuery($query);
         $override = $db->loadResult();
@@ -320,13 +321,22 @@ class EmundusModelFormbuilderTest extends TestCase
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		$query->insert('#__emundus_setup_attachment_profiles')
+		$query->select('id')
+			->from('#__emundus_setup_attachments')
+			->order('id DESC')
+			->setLimit(1);
+
+		$db->setQuery($query);
+		$attachment_id = $db->loadResult();
+
+		$query->clear()
+			->insert('#__emundus_setup_attachment_profiles')
 			->columns(['profile_id', 'campaign_id', 'attachment_id', 'displayed', 'mandatory', 'ordering', 'published', 'bank_needed', 'duplicate', 'sample_filepath', 'has_sample'])
-			->values('1, null, 1, 1, 1, 1, 1, null, 0, null, 0');
+			->values('1, null, ' . $attachment_id . ', 1, 1, 1, 1, null, 0, null, 0');
 		$db->setQuery($query);
 		$db->execute();
 
-		$document = $this->m_formbuilder->getDocumentSample(1, 1);
+		$document = $this->m_formbuilder->getDocumentSample($attachment_id, 1);
 		$this->assertNotEmpty($document, 'Le document de test est bien renvoyé');
 	}
 

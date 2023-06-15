@@ -2511,6 +2511,7 @@ class EmundusModelUsers extends JModelList {
     }
 
     public function saveUser($user,$uid){
+	    $saved = false;
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -2537,11 +2538,17 @@ class EmundusModelUsers extends JModelList {
             }
             $query->where($db->quoteName('user_id') . ' = ' . $db->quote($uid));
             $db->setQuery($query);
-            return $db->execute();
+	        $saved = $db->execute();
+	        if ($saved) {
+		        JPluginHelper::importPlugin('emundus');
+				\Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterSaveUserProfile', ['user' => $uid, 'data' => $user, 'columns' => $columns]]);
+		    }
+
         } catch (Exception $e) {
             JLog::add(' com_emundus/models/users.php | Cannot update user '.$uid.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-            return false;
         }
+
+		return $saved;
     }
 
     public function getProfileAttachments($user_id,$fnum = null){

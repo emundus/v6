@@ -66,7 +66,7 @@ if($show_preliminary_documents && !empty($preliminary_documents)): ?>
             <div>
                 <?php foreach ($forms as $index => $form) : ?>
                     <?php
-                    $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE user = '.$user->id. ' AND fnum like '.$db->Quote($user->fnum);
+                    $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE fnum like '.$db->Quote($user->fnum);
                     $db->setQuery( $query );
                     $cpt = $db->loadResult();
                     $class = $cpt==0?'need_missing':'need_ok';
@@ -190,7 +190,7 @@ $details_view = array_search('view=details',$url);
 <div class="mod_emundus_checklist___buttons">
     <?php if ($show_send && $details_view === false && $is_confirm_url === false) :?>
         <a class="btn btn-success btn-xs em-w-100"
-            <?php if (((int)($attachments_progress) >= 100 && (int)($forms_progress) >= 100 && in_array($application->status, $status_for_send) && (!$is_dead_line_passed || ($is_dead_line_passed && $can_edit_after_deadline)))) :?>
+            <?php if ((int)($attachments_progress) >= 100 && (int)($forms_progress) >= 100 && ((in_array($application->status, $status_for_send) && (!$is_dead_line_passed || ($is_dead_line_passed && $can_edit_after_deadline))) || in_array($user->id, $exceptions))) :?>
                 href="<?php echo $confirm_form_url; ?>" style="opacity: 1"
             <?php else: ?>
                 style="opacity: 0.6; cursor: not-allowed"

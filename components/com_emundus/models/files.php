@@ -3849,6 +3849,29 @@ class EmundusModelFiles extends JModelLegacy
                                 }
                             }
 
+                            // Add cc defined in email template
+                            if (!empty($trigger['to']['cc'])) {
+                                $template_cc_emails = explode(',',$trigger['to']['cc']);
+                                foreach($template_cc_emails as $key => $cc_email) {
+                                    if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $cc_email) === 1) {
+                                        $cc[] = $cc_email;
+                                    }
+                                }
+                            }
+                            $cc = array_unique($cc);
+
+                            // Add bcc defined in email template
+                            $bcc = [];
+                            if (!empty($trigger['to']['bcc'])) {
+                                $template_bcc_emails = explode(',',$trigger['to']['bcc']);
+                                foreach($template_bcc_emails as $key => $bcc_email) {
+                                    if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $bcc_email) === 1) {
+                                        $bcc[] = $bcc_email;
+                                    }
+                                }
+                            }
+	                        $bcc = array_unique($bcc);
+
                             $mailer = JFactory::getMailer();
 
                             $post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['label'], 'CAMPAIGN_END' => JHTML::_('date', $file['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null));
@@ -3889,6 +3912,10 @@ class EmundusModelFiles extends JModelLegacy
 
                             if (!empty($cc)) {
                                 $mailer->addCc($cc);
+                            }
+
+                            if (!empty($bcc)) {
+                                $mailer->addBcc($bcc);
                             }
 
                             try {
