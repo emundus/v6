@@ -3296,7 +3296,7 @@ class EmundusHelperFiles
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
-			$query->select('jfe.name, jfe.plugin, jfe.params as element_params, jfg.id as group_id, jfg.params as group_params, jffg.form_id, jfl.id as list_id, jfl.db_table_name, jfj.table_join as fabrik_table_join')
+			$query->select('jfe.id as element_id, jfe.name, jfe.plugin, jfe.params as element_params, jfg.id as group_id, jfg.params as group_params, jffg.form_id, jfl.id as list_id, jfl.db_table_name, jfj.table_join as fabrik_table_join')
 				->from('#__fabrik_elements AS jfe')
 				->leftJoin('#__fabrik_groups AS jfg ON jfg.id = jfe.group_id')
 				->leftJoin('#__fabrik_formgroup AS jffg ON jffg.group_id = jfg.id')
@@ -3327,7 +3327,7 @@ class EmundusHelperFiles
 		return $data;
 	}
 
-	private function getJoinInformations($element_id, $group_id, $list_id): array
+	private function getJoinInformations($element_id, $group_id = 0, $list_id = 0): array
 	{
 		$data = [];
 
@@ -3371,25 +3371,35 @@ class EmundusHelperFiles
 		$join = [];
 
 		if (!empty($table_join) && !empty($join_from_table)) {
-			$db = JFactory::getDbo()
+			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
-			$query->select('#__fabrik_joins')
-				->from('')
-				->where('')
-				->andWhere('');
+			$query->select('table_key, table_join_key')
+				->from($db->quoteName('#__fabrik_joins'))
+				->where('table_join = ' . $db->quote($table_join))
+				->andWhere('join_from_table = ' . $db->quote($join_from_table));
 
-			/**
-			 * SELECT
-			COLUMN_NAME,
-			REFERENCED_TABLE_NAME,
-			REFERENCED_COLUMN_NAME
-			FROM
-			INFORMATION_SCHEMA.KEY_COLUMN_USAGE
-			WHERE
-			TABLE_NAME = 'tablename_a' AND
-			REFERENCED_TABLE_NAME = 'tablename_b';
-			 */
+			try {
+				$db->setQuery($query);
+				$join = $db->loadAssoc();
+			} catch(Exception $e) {
+				JLog::add('Failed to retreive join informations in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+
+			if (empty($join)) {
+				$query->clear()
+					->select('COLUMN_NAME as table_key, REFERENCED_COLUMN_NAME as table_join_key')
+					->from($db->quoteName('INFORMATION_SCHEMA.KEY_COLUMN_USAGE'))
+					->where('TABLE_NAME = ' . $db->quote($table_join))
+					->andWhere('REFERENCED_TABLE_NAME = ' . $db->quote($join_from_table));
+
+				try {
+					$db->setQuery($query);
+					$join = $db->loadAssoc();
+				} catch(Exception $e) {
+					JLog::add('Failed to retreive join informations in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				}
+			}
 		}
 
 		return $join;
@@ -3497,10 +3507,14 @@ class EmundusHelperFiles
 
 	private function notInQuery($element, $values, $fabrik_element_data) {
 		$query = '';
+		$simple_case = false;
 
 		$db = JFactory::getDbo();
-
-		$simple_case = false;
+		if (is_array($values)) {
+			$values = implode(',', $db->quote($values));
+		} else {
+			$values = $db->quote($values);
+		}
 
 		// if it is not given, we assume that we are not creating a filter from a fabrik element so it is a simple case
 		if (empty($fabrik_element_data)) {
@@ -3513,32 +3527,33 @@ class EmundusHelperFiles
 			 * qui va chercher les dossiers pour laquelle la ou les valeurs ne sont jamais présentes dans aucune des lignes rattachées
 			 */
 			if ($fabrik_element_data['group_params']['repeat_group_button'] == 1 || ($fabrik_element_data['plugin'] === 'databasejoin' && in_array($fabrik_element_data['element_params']['database_join_display_type'], ['checkbox', 'multilist']))) {
-				$subquery = 'SELECT DISTINCT jos_emundus_campaign_candidature.id FROM jos_emundus_campaign_candidature ';
-
+				$subquery = '';
 				if ($fabrik_element_data['group_params']['repeat_group_button'] == 1) {
-
+					$join_table_repeat = $this->findJoinBetweenTables($fabrik_element_data['fabrik_table_join'], 'jos_emundus_campaign_candidature');
 
 					if (($fabrik_element_data['plugin'] === 'databasejoin' && in_array($fabrik_element_data['element_params']['database_join_display_type'], ['checkbox', 'multilist']))) {
+						$element_join = $this->getJoinInformations($fabrik_element_data['element_id']);
 
+						$subquery = ' SELECT DISTINCT jos_emundus_campaign_candidature.id FROM jos_emundus_campaign_candidature ';
+						$subquery .= ' LEFT JOIN ' . $fabrik_element_data['fabrik_table_join'] . ' ON jos_emundus_campaign_candidature.' . $join_table_repeat['table_key'] . ' = ' .  $fabrik_element_data['fabrik_table_join'] . '.' . $join_table_repeat['table_join_key'];
+						$subquery .= ' LEFT JOIN ' . $element_join['table_join'] . ' ON ' . $fabrik_element_data['fabrik_table_join'] . '.' . $element_join['table_key'] . ' = ' . $element_join['table_join'] . '.' . $element_join['table_join_key'];
+						$subquery .= ' WHERE ' . $element . ' IN (' . $values . ')';
 					} else {
-
+						//TODO:
 					}
 				} else {
-
+					//TODO:
 				}
 
-				$query = ' jecc.id NOT IN (' . $subquery . ')';
+				if (!empty($subquery)) {
+					$query = ' jecc.id NOT IN (' . $subquery . ')';
+				}
 			} else {
 				$simple_case = true;
 			}
 		}
 
 		if ($simple_case) {
-			if (is_array($values)) {
-				$values = implode(',', $db->quote($values));
-			} else {
-				$values = $db->quote($values);
-			}
 			$query = '(' . $element .  ' NOT IN (' . $values . ')' . ' OR ' . $element . ' IS NULL) ';
 		}
 
