@@ -31,7 +31,7 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
 			endif;
 			?>
             <div class="filtertable table table-striped">
-                <div class="em-flex-row em-flex-space-between em-mb-24">
+                <div class="em-flex-row em-flex-space-between em-mb-24 em-filter-intro">
                     <h4><?php echo FText::_('COM_FABRIK_FILTER') ?></h4>
 	                <?php if ($d->showClearFilters) : ?>
                         <a class="<?php echo $clearFiltersClass; ?>" href="#">
