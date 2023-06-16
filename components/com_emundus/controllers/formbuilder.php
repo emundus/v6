@@ -792,7 +792,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         exit;
     }
 
-    public function getDataFromSqlFieldQuery() {
+    public function getDataForSqlField() {
         $user = JFactory::getUser();
 
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
@@ -800,13 +800,22 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $jinput = JFactory::getApplication()->input;
-            $query = $jinput->getString('query');
+            $plugin_name = $jinput->getString('plugin_name');
+            $field_name = $jinput->getString('field_name');
 
-            if (!empty($query)) {
-                $sqlFieldData = $this->m_formbuilder->getDataFromSqlFieldQuery($query);
-                $tab = array('status' => 1, 'msg' => 'worked', 'data' => $sqlFieldData);
+            $xmlFile = $this->m_formbuilder->getXMLFormsFieldsFromPlugin($plugin_name);
+
+            if ($xmlFile) {
+                $query = $this->m_formbuilder->getQueryFromField_Name($xmlFile, $field_name);
+
+                if (!empty($query)) {
+                    $sqlFieldData = $this->m_formbuilder->getDataFromQuery($query);
+                    $tab = array('status' => 1, 'msg' => 'worked', 'data' => $sqlFieldData);
+                } else {
+                    $tab = array('status' => 0, 'msg' => 'Missing query parameter');
+                }
             } else {
-                $tab = array('status' => 0, 'msg' => 'Missing query parameter');
+                $tab = array('status' => 0, 'msg' => 'Loading XML file error');
             }
         }
 

@@ -3063,7 +3063,7 @@ class EmundusModelFormbuilder extends JModelList {
         }
     }
 
-    function getDataFromSqlFieldQuery($query)
+    function getDataFromQuery($query)
     {
         $db = $this->getDbo();
         $db->setQuery($query);
@@ -3071,9 +3071,36 @@ class EmundusModelFormbuilder extends JModelList {
         try {
             return $db->loadObjectList();
         } catch(Exception $e) {
-            JLog::add('component/com_emundus/models/formbuilder | Error at getting data from sql field query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/formbuilder | Error at getting data from query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
+    }
+
+    function getXMLFormsFieldsFromPlugin($plugin_name)
+    {
+        $path = JPATH_ROOT . "/plugins/fabrik_element/". $plugin_name . "/forms/fields.xml";
+        $file = false;
+
+        if (file_exists($path))
+        {
+            $file = new DOMDocument();
+            $file->load($path);
+        }
+        return $file;
+    }
+
+    function getQueryFromField_Name($xmlFile, $field_name)
+    {
+        $query = null;
+
+        foreach($xmlFile->getElementsByTagName('field') as $field)
+        {
+            if ($field->getAttribute('name') === $field_name)
+            {
+                $query = $field->getAttribute('query');
+            }
+        }
+        return $query;
     }
 
 

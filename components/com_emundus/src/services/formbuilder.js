@@ -211,13 +211,14 @@ export default {
             };
         }
     },
-    async getDataFromSqlFieldQuery(query) {
+    async getDataForSqlField(plugin_name, field_name) {
         try {
             const response = client().get(
-                'index.php?option=com_emundus&controller=formbuilder&task=getDataFromSqlFieldQuery',
+                'index.php?option=com_emundus&controller=formbuilder&task=getDataForSqlField',
                 {
                     params: {
-                        query: query
+                        plugin_name: plugin_name,
+                        field_name: field_name,
                     }
                 }
             );

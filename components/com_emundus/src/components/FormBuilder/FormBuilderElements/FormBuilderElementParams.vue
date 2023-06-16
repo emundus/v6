@@ -28,15 +28,15 @@
 
       <!-- SQL -->
       <div v-else-if="param.type === 'sql'">
-        <select v-model="element.params[param.name]" :key="param.id + '-sqlSelect'" class="em-w-100">
-          <option v-for="option in param.options" :value="option.value">{{ option.label}}</option>
-        </select>
+          <select v-model="element.params[param.name]" :key="param.id + '-sqlSelect'" class="em-w-100">
+            <option v-for="option in param.options" :value="option.value">{{ option.label}}</option>
+          </select>
       </div>
 
       <!-- SUBFORM -->
       <div v-else-if="param.type === 'subform'">
         <button @click="addRow(param.name)" :key="param.id + '-addButton' ">Add</button>
-        <div v-for="(element_sub_parameters, element_sub_name) in element.params[param.name]" :key="element.id + '-' + param.name">
+        <div v-for="(element_sub_parameters, element_sub_name) in element.params[param.name]" :key="element.id + '-' + param.name" class="subform">
           <FormBuilderElementParams :key="element_sub_name" :element="{params:element_sub_parameters}" :databases="null" :params="param.subparams"/>
           <button @click="deleteRow(param.name, element_sub_name)" :key="element_sub_name+ '-deleteButton'">Delete</button>
         </div>
@@ -105,9 +105,9 @@ export default {
       }
       else if (param.type === 'sql')
       {
-        if (param.query && param.key_field && param.value_field)
+        if (param.key_field && param.value_field && param.plugin_name)
         {
-          this.getSqlInputData(param, param.query, param.key_field, param.value_field);
+          this.prepareSqlFieldData(param);
         }
       }
     })
@@ -214,18 +214,26 @@ export default {
       return new_object;
     },
 
-    getSqlInputData(element, query, valueColumn, labelColumn)
+    prepareSqlFieldData(params)
     {
-      formBuilderService.getDataFromSqlFieldQuery(query).then((response) =>
+      const valueColumn = params.key_field;
+      const labelColumn = params.value_field;
+      const plugin = params.plugin_name;
+      const field_name = params.name;
+
+      formBuilderService.getDataForSqlField(plugin, field_name).then((response) =>
       {
-        this.$set(element, 'options', []);
-        response.data.data.forEach((row, index) =>
+        if (response.data.data)
         {
-          let option = {};
-          option.value = row[valueColumn];
-          option.label = row[labelColumn];
-          this.$set(element.options, index, option);
-        });
+          this.$set(params, 'options', []);
+          response.data.data.forEach((row, index) =>
+          {
+            let option = {};
+            option.value = row[valueColumn];
+            option.label = row[labelColumn];
+            this.$set(params.options, index, option);
+          });
+        }
       });
     },
   },
@@ -237,6 +245,6 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="css">
 
 </style>
