@@ -3432,11 +3432,15 @@ class EmundusHelperFiles
 	}
 
 	/**
-	 * @param $referenced_table
-	 * @param $base_table
+	 * @param string $searched_table
+	 * @param string $base_table
+	 * @param int $i, the iteration number
+	 *
+	 * if the array is empty, it means that the tables are not linked
 	 * @return array
 	 */
-	private function findJoinsBetweenTablesRecursively($searched_table, $base_table, $i = 0) {
+	private function findJoinsBetweenTablesRecursively($searched_table, $base_table, $i = 0): array
+	{
 		$joins = [];
 
 		if (!empty($searched_table) && !empty($base_table) && $searched_table != $base_table) {
@@ -3497,7 +3501,6 @@ class EmundusHelperFiles
 				}
 			}
 		}
-
 
 		return $joins;
 	}
