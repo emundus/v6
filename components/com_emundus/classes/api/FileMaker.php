@@ -12,6 +12,8 @@ require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models'
  * @license    GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
  */
 
+use DateTime;
+use DateTimeZone;
 use EmundusModelApplication;
 use Exception;
 use GuzzleHttp\Client as GuzzleClient;
@@ -20,6 +22,7 @@ use GuzzleHttp\Psr7\MultipartStream;
 use JComponentHelper;
 use JFactory;
 use JLog;
+use stdClass;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -51,6 +54,7 @@ class FileMaker
      */
     private static $availaibleZwForms = array('zWEB_FORMULAIRES', 'zWEB_FORMULAIRES_RECETTES', 'zWEB_FORMULAIRES_PLANNING',
         'zWEB_FORMULAIRES_PARTICIPANTS', 'zWEB_FORMULAIRES_PARTENAIRES', 'zWEB_FORMULAIRES_DEPENSES', 'zWEB_FORMULAIRES_AUDIENCE', 'zWEB_FORMULAIRES_AIDES');
+
 
     private $maxAttempt = 0;
 
@@ -201,6 +205,7 @@ class FileMaker
 
             $response = json_decode($response->getBody());
             $this->maxAttempt = 0;
+
         } catch (\Exception $e) {
 
             if ($e->getCode() == 401 && $this->getMaxAttempt() < 3) {
@@ -210,7 +215,9 @@ class FileMaker
             }
 
             JLog::add('[POST] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.file_maker');
+
             $response = $e->getMessage();
+
         }
 
         return $response;
@@ -410,24 +417,52 @@ class FileMaker
 
     }
 
-    public function createRecord($queryBody, $file_maker_form = "zWEB_FORMULAIRES")
+    public function createRecord($queryBody, $file_maker_form = "zWEB_FORMULAIRES", $fnum, $uuid, $uuidConnect, $status)
     {
         $url = "layouts/" . $file_maker_form . "/records";
+
         $create_record_response = $this->post($url, json_encode($queryBody));
-        return $create_record_response->response;
+        $response = "";
+
+        if (!empty($create_record_response->response)) {
+            $response = $create_record_response->response;
+            $message = $response;
+            $action_status = 1;
+        } else {
+            $action_status = 0;
+            $message = $create_record_response;
+            $response = $message;
+        }
+
+        $this->logActionIntoEmundusFileMakerlog(1, $fnum, $uuid, $uuidConnect, $status, json_encode($queryBody), $action_status, $url, $message);
+        return $response;
     }
 
 
-    public function updateRecord($recordId, $queryBody, $filemakeform = "zWEB_FORMULAIRES")
+    public function updateRecord($recordId, $queryBody, $filemakeform = "zWEB_FORMULAIRES", $fnum, $uuid, $uuidConnect, $status)
     {
 
         if (!empty($recordId)) {
 
             $url = "layouts/" . $filemakeform . "/records/" . $recordId;
             $update_record_response = $this->patch($url, json_encode($queryBody));
+            $response = "";
 
 
-            return $update_record_response->response;
+            if (!empty($update_record_response->response)) {
+                $response = $update_record_response;
+                $message = $response;
+                $action_status = 1;
+            } else {
+                $action_status = 0;
+                $message = $update_record_response;
+                $response = $message;
+            }
+
+            $this->logActionIntoEmundusFileMakerlog(2, $fnum, $uuid, $uuidConnect, $status, json_encode($queryBody), $action_status, $url, $message);
+
+            return $response;
+
 
         } else {
 
@@ -458,15 +493,26 @@ class FileMaker
 
     }
 
-    public function executeFormValidationScriptOnFileMaker($uuidConnect)
+    public function executeFormValidationScriptOnFileMaker($uuidConnect, $fnum, $uuid, $status)
     {
         $url = "layouts/zWEB_FORMULAIRES/script/zWebFormulaire_Validation?script.param=" . $uuidConnect;
 
         $result = $this->get($url);
 
+        if (!empty($result->response)) {
+            $response = $result->response;
+            $message = $response;
+            $action_status = 1;
+        } else {
+            $action_status = 0;
+            $message = $result;
+            $response = $message;
+        }
+
+        $this->logActionIntoEmundusFileMakerlog(3, $fnum, $uuid, $uuidConnect, $status, NULL, $action_status, $url, $message);
 
 
-        return $result->response;
+        return $response;
     }
 
     public function uploadAllAssocAttachementsAssocToFile($fnum, $applicant_id, $recordId)
@@ -495,9 +541,10 @@ class FileMaker
                 } catch (Exception $e) {
 
                     JLog::add("[FILEMAKER ] Filed to Upload Attachement to Filemaker " . $fnum . " " . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
-
+                    return 0;
                 }
             }
+            return "OK";
 
         } catch (Exception $e) {
 
@@ -529,7 +576,6 @@ class FileMaker
 
         $query->select('filemaker_label,emundus_form_id,portal_data_group_id')
             ->from($db->quoteName($config->get('file_maker_emundus_forms_mapping_table_name')))
-            //->from($db->quoteName('data_filemaker_zforms_mapped_with_emundus_forms'))
             ->where($db->quoteName('step') . "=" . $step);
         $db->setQuery($query);
 
@@ -572,6 +618,8 @@ class FileMaker
                         $mapping_data_row->db_table_name = $val->db_table_name;
                         $mapping_data_row->groups_id[] = intval($val->group_id);
                         $mapping_data_row->groups[] = $group;
+
+
 
 
                         $mapping_data_row->join_from_table = $val->join_from_table;
@@ -632,7 +680,7 @@ class FileMaker
     }
 
 
-    public function preparePortalDataAndGenralLayoutBeforeSendToFileMaker($zweb_form_name, $mapped_columns, $fnum = "2023060909210200000020000244", $isPortalDataForm = true)
+    public function preparePortalDataAndGenralLayoutBeforeSendToFileMaker($zweb_form_name, $mapped_columns, $fnum , $isPortalDataForm = true)
     {
         //$file_maker_api = new FileMaker();
         try {
@@ -647,6 +695,7 @@ class FileMaker
         $zweb_forms_elements = $this->searchMappedElementsByFileMakerFormLabel($mapped_columns, $zweb_form_name);
 
 
+
         $m_application = new EmundusModelApplication();
 
         $temp_records_mapping = [];
@@ -659,14 +708,12 @@ class FileMaker
             $emundusIdMetaData->name = "id";
             $metaDatas->fieldMetaData[] = $recordIdMetaData;
             $metaDatas->fieldMetaData[] = $emundusIdMetaData;
+            $group_jointures_params = $this->retrieveJointureInformationOfRepeatGroup($zweb_forms_elements[0]->portal_data_emundus_group_id);
+
 
 
         }
 
-
-        //$filedsMetaData[] = $recordIdMetaData;
-
-        $count = 0;
 
         foreach ($metaDatas->fieldMetaData as $data) {
 
@@ -676,6 +723,7 @@ class FileMaker
                 $matching_elements = array_values(array_filter($row->elements, function ($object) use ($searchValue) {
                     return $object->file_maker_attribute_name === $searchValue;
                 }));
+
 
 
                 if (!empty($matching_elements)) {
@@ -691,20 +739,51 @@ class FileMaker
 
                                 if ($data->name === "recordId") {
 
-
                                     $temp_records_mapping[] = array("recordId_emundus_element_name" => $element_row->name);
                                 }
-                                $temp_records_mapping[] = array("" . $data->name === "id" || $data->name === "recordId" ? $data->name : $zweb_form_name . "::" . $data->name . "" => explode(",", $value));
+                                switch ($element_row->plugin) {
+                                    case "date":
+                                    case "birthday":
+                                        $values = explode(",", $value);
+                                        $reformatted = array_map(function ($date_value) {
+                                            $dateString = str_replace('.', '-', $date_value);
+                                            $date = DateTime::createFromFormat('d-m-Y', $dateString);
+                                            if ($date !== false) {
 
-                                $temp_records_mapping[] = array("db_table" => $row->table_join);
+                                                return $date->format('m-d-Y');
+
+                                            } else {
+                                                return $dateString;
+                                            }
+                                        }, $values);
+                                        $temp_records_mapping[] = array("" . $zweb_form_name . "::" . $data->name . "" => $reformatted);
+                                        break;
+                                    default:
+                                        $temp_records_mapping[] = array("" . $data->name === "id" || $data->name === "recordId" ? $data->name : $zweb_form_name . "::" . $data->name . "" => explode(",", $value));
+                                        break;
+
+                                }
+
+                                $temp_records_mapping[] = array("db_table" => $group_jointures_params->table_join);
 
                             }
                         } else {
-                            $temp_records_mapping[] = array("" . $data->name . "" => $value);
+
+                            switch ($element_row->plugin) {
+                                case "date":
+                                case "birthday":
+                                    $dateString = str_replace('.', '-', $value);
+                                    $date = DateTime::createFromFormat('d-m-Y', $dateString);
+                                    $reformatted_date = $date !== false ? $date->format('m-d-Y') : $dateString;
+                                    $temp_records_mapping[] = array("" . $zweb_form_name . "::" . $data->name . "" => $reformatted_date);
+                                    break;
+                                default:
+                                    $temp_records_mapping[] = array("" . $data->name . "" => $value);
+                                    break;
+                            }
+
                         }
 
-
-                        //}
 
                     }
                 }
@@ -712,7 +791,6 @@ class FileMaker
 
             }
         }
-
 
 
         $array = $this->transformToAssociativeArray($temp_records_mapping);
@@ -731,7 +809,7 @@ class FileMaker
             for ($i = 0; $i < $arraySize; $i++) {
                 $tempArray = array();
                 foreach ($keys as $key) {
-                    $value = $key === "db_table" || $key === "recordId_emundus_element_name" || $key === "id" ? $array[$key] : $array[$key][$i];
+                    $value = $key === "db_table" || $key === "recordId_emundus_element_name" ? $array[$key] : $array[$key][$i];
 
                     $tempArray[$key] = $value == NULL ? "" : $value;
                 }
@@ -767,7 +845,7 @@ class FileMaker
         return $array;
     }
 
-    public function checkIfTheIsPortalDataWhereTupleRecordsId_IsEmptyAndCreateTheRecord($array, $filemakerform, $uuidFormulaires)
+    public function checkIfTheIsPortalDataWhereTupleRecordsId_IsEmptyAndCreateTheRecord($array, $filemakerform, $uuidFormulaires, $fnum, $uuidConnect, $status)
     {
 
         $db = JFactory::getDbo();
@@ -782,10 +860,9 @@ class FileMaker
         foreach ($emptyIndexes as $index) {
             $record = $array[$index];
 
-
             $db_table = $record["db_table"];
             $emundus_recordId_element_name = !empty($record["recordId_emundus_element_name"]) ? $record["recordId_emundus_element_name"] : null;
-            $emundus_id = !empty($record["id"]) ? empty($record["id"]) : null;
+            $emundus_id = !empty($record["id"]) ? $record["id"] : null;
             unset($record["recordId"]);
             unset($record["db_table"]);
 
@@ -807,7 +884,7 @@ class FileMaker
             $queryBody = array("fieldData" => $record);
             //if (!empty($emundus_id)) {
 
-            $response = $this->createRecord($queryBody, $filemakerform);
+            $response = $this->createRecord($queryBody, $filemakerform, $fnum, $uuidFormulaires, $uuidConnect, $status);
 
             if (!empty($response->recordId)) {
                 ($array[$index])["recordId"] = $response->recordId;
@@ -822,6 +899,7 @@ class FileMaker
                     $db->execute();
 
                 } catch (\Exception $e) {
+
 
                     JLog::add('[FILE_MAKER ] Failed to update recordId on table  ' . $db_table . ' wehre id = ' . $emundus_id . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
                 }
@@ -889,6 +967,52 @@ class FileMaker
         }
 
         return $result;
+    }
+
+    public function logActionIntoEmundusFileMakerlog($action_type, $fnum, $uuid, $uuidConnect, $status, $params = "", $action_status, $endpoint_url, $response_message)
+    {
+
+        $db = JFactory::getDbo();
+        $config = JFactory::getConfig();
+        $timezone = new DateTimeZone($config->get('offset'));
+        $now = JFactory::getDate()->setTimezone($timezone);
+        $values = [$db->quote($now), $db->quote($action_type), $db->quote($fnum), $db->quote($uuid), $db->quote($uuidConnect), $db->quote($status), $db->quote($params), $db->quote($action_status), $db->quote($endpoint_url), $db->quote(json_encode($response_message))];
+
+
+        $query = $db->getQuery(true);
+        $query->clear();
+        $query->insert($db->quoteName('jos_emundus_filemaker_logs'))
+            ->columns(['date_time,action,fnum,filemaker_uuid,filemaker_uuidConnect,status,params,action_status,filemaker_endpoint_url,endpoint_called_result_messsage'])
+            ->values(implode(",", $values));
+
+        $db->setQuery($query);
+
+        try {
+
+            $db->execute();
+
+
+        } catch (Exception $e) {
+
+            JLog::add("[FILEMAKER] Failed to insert into emundus_filemaker_logs table " . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
+
+        }
+    }
+
+    public function retrieveJointureInformationOfRepeatGroup($group_id){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->clear();
+        $query->select('join_from_table,table_join,table_join_key,table_key')
+            ->from($db->quoteName('jos_fabrik_joins'))
+            ->where('group_id =  ' . $group_id);
+        $db->setQuery($query);
+        try {
+            return $db->loadObject();
+
+        } catch (Exception $e) {
+            JLog::add("[FILEMAKER] Failed to get table joins params for repeat group  $group_id " . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker');
+        }
     }
 
 

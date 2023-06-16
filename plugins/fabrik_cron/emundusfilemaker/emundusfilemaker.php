@@ -25,6 +25,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
     public static $offset = 1;
 
 
+
     /**
      * Check if the user can use the plugin
      *
@@ -177,7 +178,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
     public function createFiles($filesData, $mappedColumns = [])
     {
-
+        $filemaker = new FileMaker();
         foreach ($filesData as $file) {
 
 
@@ -188,7 +189,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
                 $user_id = $this->createUserIfNotExist($fieldData->InterlocuteurIF_Email, $fieldData->InterlocuteurIF);
 
-                $this->createSingleFile($file, $user_id, $mappedColumns);
+                $this->createSingleFile($file, $user_id, $mappedColumns,$filemaker);
 
 
             }
@@ -268,7 +269,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
     }
 
-    public function createSingleFile($singleFieldData, $user_id, $mapped_columns)
+    public function createSingleFile($singleFieldData, $user_id, $mapped_columns,$filemaker)
     {
         $fieldData = $singleFieldData->fieldData;
         $campaign_id = $this->getParams()->get('campaign_id');
@@ -305,6 +306,8 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                 $this->insertFileDataToEmundusTables($fnum, $singleFieldData, $mapped_columns, $user_id);
                 $m_files->updateState($fnum, $this->getParams()->get('mail_trigger_state', 0));
                 $m_message->sendEmail($fnum, $this->getParams()->get('mail_template', 83));
+                $filemaker->logActionIntoEmundusFileMakerlog(0,$fnum,$fieldData->uuid,$fieldData->uuidConnect,0,NULL,1,"layouts/zWEB_FORMULAIRES/_find","");
+
             } catch (Exception $e) {
                 $fnum = '';
                 $inserted = false;
@@ -319,7 +322,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
             $query->clear()
                 ->update($db->quoteName('#__emundus_campaign_candidature'))
                 ->set($db->quoteName('uuidConnect') . ' = ' . $db->quote($fieldData->uuidConnect))
-                ->where($db->quoteName('uuid') . "LIKE" . $fieldData->uuid);
+                ->where($db->quoteName('uuid') . "=" . $fieldData->uuid);
             $db->setQuery($query);
 
             try {
@@ -328,6 +331,8 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                 $this->insertFileDataToEmundusTables($checkIfFileNotAlreadyExist->fnum, $singleFieldData, $mapped_columns, $user_id);
                 $m_files->updateState($checkIfFileNotAlreadyExist->fnum, $this->getParams()->get('mail_trigger_state', 3));
                 $m_message->sendEmail($checkIfFileNotAlreadyExist->fnum, $this->getParams()->get('mail_template', 83));
+                $filemaker->logActionIntoEmundusFileMakerlog(0,$checkIfFileNotAlreadyExist->fnum,$fieldData->uuid,$fieldData->uuidConnect,3,NULL,1,"layouts/zWEB_FORMULAIRES/_find","");
+
 
             } catch (Exception $e) {
                 $fnum = '';
@@ -394,7 +399,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                         case 'birthday':
                         case 'date':
                             $dateString = str_replace('/', '-', $fieldData[$val->name]);
-                            $date = DateTime::createFromFormat('d-m-Y', $dateString);
+                            $date = DateTime::createFromFormat('m-d-Y', $dateString);
                             $date !== false ? $date_value = $date->format('Y-m-d') : $date_value = $dateString;
                             $elements_columns_value[] = !empty($date_value) ? $db->quote($date_value) : 'NULL';
                             break;
@@ -508,7 +513,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                                                     case 'birthday':
                                                     case 'date':
                                                         $dateString = str_replace('/', '-', $fieldData[$key . "::" . $row_key]);
-                                                        $date = DateTime::createFromFormat('d-m-Y', $dateString);
+                                                        $date = DateTime::createFromFormat('m-d-Y', $dateString);
                                                         $date !== false ? $date_value = $date->format('Y-m-d') : $date_value = $dateString;
                                                         $arr_key_cal[] = array("" . $val->name . "" => $db->quote($date_value));
                                                         break;
