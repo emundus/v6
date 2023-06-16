@@ -190,14 +190,10 @@ class EmundusModelFiles extends JModelLegacy
                                     where '.$attribs->join_db_name.'.'.$attribs->join_key_column.' IN
                                         ( select '.$def_elmt->table_join.'.' . $def_elmt->element_name.'
                                           from '.$def_elmt->table_join.'
-                                          where '.$def_elmt->table_join .'.' . $def_elmt->table_join_key .  '='.$def_elmt->join_from_table.'.' . $def_elmt->table_key.'
+                                          where '.$def_elmt->table_join .'.' . $def_elmt->table_join_key .  '='.$def_elmt->join_from_table.'.id' . '
                                         )
                                     '.$publish_query.'
                                   ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
-
-
-						//TODO: here what if repeat AND checkbox ?
-
                     } else {
                         if ($attribs->database_join_display_type == "checkbox") {
 
@@ -208,6 +204,14 @@ class EmundusModelFiles extends JModelLegacy
                                 WHERE '.$t.'.parent_id='.$def_elmt->tab_name.'.id
                                 '.$publish_query.'
                               ) AS `'.$t.'`';
+                        } else if( $attribs->database_join_display_type == 'multilist' ) {
+	                        $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
+	                        $query = '(
+                                select DISTINCT '.$column.'
+                                from '.$attribs->join_db_name.'
+                                where `'.$attribs->join_db_name.'`.`'.$attribs->join_key_column.'`=`' . $t . '`.`' . $def_elmt->element_name . '`
+                                '.$publish_query.'
+                            ) AS `'.$t.'`';
                         } else {
                             $query = '(
                                 select DISTINCT '.$column.'
@@ -215,7 +219,7 @@ class EmundusModelFiles extends JModelLegacy
                                 where `'.$attribs->join_db_name.'`.`'.$attribs->join_key_column.'`=`'.$def_elmt->tab_name . '`.`' . $def_elmt->element_name.'`
                                 '.$publish_query.'
                                 ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
-                        }
+						}
                     }
                     $this->_elements_default[] = $query;
                 } elseif ($def_elmt->element_plugin == 'cascadingdropdown') {

@@ -3172,23 +3172,43 @@ class EmundusHelperFiles
 									foreach ($already_joined as $already_join_alias => $already_joined_table_name) {
 										$already_join_alias = !is_numeric($already_join_alias) ? $already_join_alias : $already_joined_table_name;
 
-										$query->clear()
-											->select('*')
-											->from('#__fabrik_joins')
-											->where('table_join = ' . $db->quote($already_joined_table_name))
-											->andWhere('join_from_table = ' . $db->quote($fabrik_element_data['db_table_name']))
-											->andWhere('table_key = ' . $db->quote('id'))
-											->andWhere('list_id = ' . $db->quote($fabrik_element_data['list_id']));
+										if ($fabrik_element_data['plugin'] === 'databasejoin' && in_array($fabrik_element_data['element_params']['database_join_display_type'], ['checklist', 'multilist'])) {
+											$query->clear()
+												->select('*')
+												->from('#__fabrik_joins')
+												->where('table_join = ' . $db->quote($fabrik_element_data['db_table_name']))
+												->andWhere('join_from_table = ' . $db->quote($already_joined_table_name))
+												->andWhere('element_id = ' . $db->quote($fabrik_element_data['element_id']));
 
-										$db->setQuery($query);
-										$join_informations = $db->loadAssoc();
+											$db->setQuery($query);
+											$join_informations = $db->loadAssoc();
 
-										if (!empty($join_informations)) {
-											$already_joined[] = $fabrik_element_data['db_table_name'];
+											if (!empty($join_informations)) {
+												$join_informations['params'] = json_decode($join_informations['params'], true);
+												$already_joined[] = $fabrik_element_data['db_table_name'];
+												$where['join'] .= ' LEFT JOIN ' . $db->quoteName($join_informations['table_join']) . ' ON ' . $db->quoteName($join_informations['table_join'] . '.parent_id') . ' = ' . $db->quoteName($already_join_alias . '.id');
+												$mapped_to_fnum = true;
+												break;
+											}
+										} else {
+											$query->clear()
+												->select('*')
+												->from('#__fabrik_joins')
+												->where('table_join = ' . $db->quote($already_joined_table_name))
+												->andWhere('join_from_table = ' . $db->quote($fabrik_element_data['db_table_name']))
+												->andWhere('table_key = ' . $db->quote('id'))
+												->andWhere('list_id = ' . $db->quote($fabrik_element_data['list_id']));
 
-											$where['join'] .= ' LEFT JOIN ' . $db->quoteName($join_informations['join_from_table']) . ' ON ' . $db->quoteName($join_informations['join_from_table'] . '.' . $join_informations['table_key']) . ' = ' . $db->quoteName($already_join_alias . '.' . $join_informations['table_join_key']);
-											$mapped_to_fnum = true;
-											break;
+											$db->setQuery($query);
+											$join_informations = $db->loadAssoc();
+
+											if (!empty($join_informations)) {
+												$already_joined[] = $fabrik_element_data['db_table_name'];
+
+												$where['join'] .= ' LEFT JOIN ' . $db->quoteName($join_informations['join_from_table']) . ' ON ' . $db->quoteName($join_informations['join_from_table'] . '.id') . ' = ' . $db->quoteName($already_join_alias . '.' . $join_informations['table_join_key']);
+												$mapped_to_fnum = true;
+												break;
+											}
 										}
 									}
 								} else {
@@ -3222,7 +3242,13 @@ class EmundusHelperFiles
 											$child_table = $join_informations['table_join'];
 											if (!in_array($child_table, $already_joined)) {
 												$already_joined[] = $child_table;
-												$where['join'] .= ' LEFT JOIN ' . $db->quoteName($child_table) . ' ON ' . $child_table . '.' . $join_informations['table_join_key'] . ' = ' . $parent_table_alias . '.' . $join_informations['table_key'];
+
+												$join_informations['params'] = json_decode($join_informations['params'], true);
+												if (!empty($join_informations['params']) && $join_informations['params']['type'] == 'repeatElement') {
+													$where['join'] .= ' LEFT JOIN ' . $db->quoteName($child_table) . ' ON ' . $child_table . '.' . $join_informations['table_join_key'] . ' = ' . $parent_table_alias . '.id';
+												} else {
+													$where['join'] .= ' LEFT JOIN ' . $db->quoteName($child_table) . ' ON ' . $child_table . '.' . $join_informations['table_join_key'] . ' = ' . $parent_table_alias . '.' . $join_informations['table_key'];
+												}
 											} else {
 												$child_table_alias = array_search($child_table, $already_joined);
 											}
@@ -3405,6 +3431,77 @@ class EmundusHelperFiles
 		return $join;
 	}
 
+	/**
+	 * @param $referenced_table
+	 * @param $base_table
+	 * @return array
+	 */
+	private function findJoinsBetweenTablesRecursively($searched_table, $base_table, $i = 0) {
+		$joins = [];
+
+		if (!empty($searched_table) && !empty($base_table) && $searched_table != $base_table) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->clear()
+				->select('COLUMN_NAME as table_key, REFERENCED_COLUMN_NAME as table_join_key, TABLE_NAME as join_from_table, REFERENCED_TABLE_NAME as table_join')
+				->from($db->quoteName('INFORMATION_SCHEMA.KEY_COLUMN_USAGE'))
+				->where('TABLE_NAME = ' . $db->quote($searched_table))
+				->andWhere('REFERENCED_TABLE_NAME = ' . $db->quote($base_table));
+
+			try {
+				$db->setQuery($query);
+				$join = $db->loadAssoc();
+			} catch(Exception $e) {
+				JLog::add('Failed to retreive join informations in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+
+			if (empty($join)) {
+				// look into fabrik tables
+				$query->clear()
+					->select('DISTINCT table_key, table_join_key, join_from_table, table_join, params')
+					->from($db->quoteName('#__fabrik_joins'))
+					->where('table_join = ' . $db->quote($base_table))
+					->andWhere('table_join_key IN ("id", "parent_id")');
+
+				try {
+					$db->setQuery($query);
+					$leftJoin = $db->loadAssoc();
+				} catch(Exception $e) {
+					JLog::add('Failed to retreive join informations in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				}
+
+				$next_index = $i + 1;
+				$joins[] = $leftJoin;
+				$joins = array_merge($joins, $this->findJoinsBetweenTablesRecursively($searched_table, $leftJoin['join_from_table'], $next_index));
+			} else {
+				$joins[] = $join;
+			}
+		}
+
+		if ($i === 0) {
+			if (!empty($joins)) {
+				$joins = array_reverse($joins);
+
+				// if last join is not the searched table, then it's not a valid join, we weren't able to find a path between the two tables
+				// so we return an empty array
+				if ($joins[0]['join_from_table'] !== $searched_table) {
+					$joins = [];
+				} else {
+					$joins = array_map(function($join) {
+						if (!empty($join['params'])) {
+							$join['params'] = json_decode($join['params'], true);
+						}
+						return $join;
+					}, $joins);
+				}
+			}
+		}
+
+
+		return $joins;
+	}
+
 	private function writeQueryWithOperator($element, $values, $operator, $type = 'select', $fabrik_element_data = null) {
 		$query = '1=1';
 
@@ -3506,7 +3603,7 @@ class EmundusHelperFiles
 	}
 
 	private function notInQuery($element, $values, $fabrik_element_data) {
-		$query = '';
+		$query = '1=1';
 		$simple_case = false;
 
 		$db = JFactory::getDbo();
@@ -3527,20 +3624,31 @@ class EmundusHelperFiles
 			 * qui va chercher les dossiers pour laquelle la ou les valeurs ne sont jamais présentes dans aucune des lignes rattachées
 			 */
 			if ($fabrik_element_data['group_params']['repeat_group_button'] == 1 || ($fabrik_element_data['plugin'] === 'databasejoin' && in_array($fabrik_element_data['element_params']['database_join_display_type'], ['checkbox', 'multilist']))) {
+				$searched_table = 'jos_emundus_campaign_candidature';
+				$from_base_table = $fabrik_element_data['fabrik_table_join'];
 				$subquery = '';
+
 				if ($fabrik_element_data['group_params']['repeat_group_button'] == 1) {
-					$join_table_repeat = $this->findJoinBetweenTables($fabrik_element_data['fabrik_table_join'], 'jos_emundus_campaign_candidature');
+					$repeat_join_infos = $this->getJoinInformations($fabrik_element_data['element_id']);
+					$from_base_table = $repeat_join_infos['table_join'];
+				}
 
-					if ($fabrik_element_data['plugin'] === 'databasejoin') {
-						$element_join = $this->getJoinInformations($fabrik_element_data['element_id']);
+				$joins = $this->findJoinsBetweenTablesRecursively($searched_table, $from_base_table);
 
-						$subquery = ' SELECT DISTINCT jos_emundus_campaign_candidature.id FROM jos_emundus_campaign_candidature ';
-						$subquery .= ' LEFT JOIN ' . $fabrik_element_data['fabrik_table_join'] . ' ON jos_emundus_campaign_candidature.' . $join_table_repeat['table_key'] . ' = ' .  $fabrik_element_data['fabrik_table_join'] . '.' . $join_table_repeat['table_join_key'];
-						$subquery .= ' LEFT JOIN ' . $element_join['table_join'] . ' ON ' . $fabrik_element_data['fabrik_table_join'] . '.' . $element_join['table_key'] . ' = ' . $element_join['table_join'] . '.' . $element_join['table_join_key'];
-						$subquery .= ' WHERE ' . $element . ' IN (' . $values . ')';
+				// we've found an array of joins between the two tables
+				if (!empty($joins)) {
+					$subquery = ' SELECT DISTINCT jos_emundus_campaign_candidature.id FROM jos_emundus_campaign_candidature ';
+
+					foreach($joins as $join) {
+						if (!empty($join['params']) && $join['params']['type'] == 'repeatElement') {
+							// Nous sommes dans une jointure fabrik sur parent_table.id <-> child_table.parent_id et fabrik mets le nom de l'élément a la place de l'id
+							$subquery .= ' LEFT JOIN ' . $join['table_join'] . ' ON ' . $join['table_join'] . '.' . $join['table_join_key'] . ' = ' . $join['join_from_table'] . '.id';
+						} else {
+							$subquery .= ' LEFT JOIN ' . $join['table_join'] . ' ON ' . $join['table_join'] . '.' . $join['table_join_key'] . ' = ' . $join['join_from_table'] . '.' . $join['table_key'];
+						}
 					}
-				} else {
-					//TODO:
+
+					$subquery .= ' WHERE ' . $element . ' IN (' . $values . ')';
 				}
 
 				if (!empty($subquery)) {
