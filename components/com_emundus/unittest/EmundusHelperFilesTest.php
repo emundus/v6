@@ -64,4 +64,32 @@ class EmundusHelperFilesTest extends TestCase {
 		$this->assertNotFalse($coord_filters, 'Get export excel filter with correct user id returns not false');
 		$this->assertSame('array', gettype($coord_filters), 'Get export excel filter with correct user id returns an array even if empty');
 	}
+
+	public function testfindJoinsBetweenTablesRecursively() {
+		$joins = $this->h_files->findJoinsBetweenTablesRecursively('', '');
+		$this->assertEmpty($joins, 'Find joins between tables recursively with empty tables returns an empty array');
+
+		$joins = $this->h_files->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', '');
+		$this->assertEmpty($joins, 'Find joins between tables recursively with empty table 2 returns an empty array');
+
+		$joins = $this->h_files->findJoinsBetweenTablesRecursively('', 'jos_emundus_setup_campaigns');
+		$this->assertEmpty($joins, 'Find joins between tables recursively with empty table 1 returns an empty array');
+
+		$joins = $this->h_files->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', 'jos_emundus_campaign_candidature');
+		$this->assertEmpty($joins, 'Find joins between tables recursively with same tables returns an empty array');
+
+		$joins = $this->h_files->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', 'jos_emundus_setup_campaigns');
+		$this->assertNotEmpty($joins, 'Find joins between tables recursively with different tables returns not empty array');
+		$this->assertSame(1, sizeof($joins), 'Join between jos_emundus_campaign_candidature and jos_emundus_setup_campaigns returns 1 join');
+		$this->assertSame('jos_emundus_campaign_candidature.campaign_id = jos_emundus_setup_campaigns.id', $joins[0]['join_from_table'] . '.' . $joins[0]['table_key'] . ' = ' . $joins[0]['table_join'] . '.' . $joins[0]['table_join_key'], 'Join between jos_emundus_campaign_candidature and jos_emundus_setup_campaigns returns correct join');
+
+		$joins = $this->h_files->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', 'jos_emundus_users');
+		$this->assertNotEmpty($joins, 'Find joins between tables recursively with different tables returns not empty array');
+		$this->assertSame(1, sizeof($joins), 'Join between jos_emundus_campaign_candidature and jos_emundus_users returns 1 join');
+		$this->assertSame('jos_emundus_campaign_candidature.applicant_id = jos_emundus_users.user_id', $joins[0]['join_from_table'] . '.' . $joins[0]['table_key'] . ' = ' . $joins[0]['table_join'] . '.' . $joins[0]['table_join_key'], 'Join between jos_emundus_campaign_candidature and jos_emundus_users returns correct join');
+
+		$joins = $this->h_files->findJoinsBetweenTablesRecursively('jos_emundus_evaluations', 'jos_emundus_campaign_candidature');
+		$joins_reversed = $this->h_files->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', 'jos_emundus_evaluations');
+		$this->assertSame($joins, $joins_reversed, 'Join between jos_emundus_evaluations and jos_emundus_campaign_candidature returns same join as join between jos_emundus_campaign_candidature and jos_emundus_evaluations');
+	}
 }

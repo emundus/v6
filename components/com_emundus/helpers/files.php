@@ -3439,7 +3439,7 @@ class EmundusHelperFiles
 	 * if the array is empty, it means that the tables are not linked
 	 * @return array
 	 */
-	private function findJoinsBetweenTablesRecursively($searched_table, $base_table, $i = 0): array
+	public function findJoinsBetweenTablesRecursively($searched_table, $base_table, $i = 0): array
 	{
 		$joins = [];
 
@@ -3450,8 +3450,8 @@ class EmundusHelperFiles
 			$query->clear()
 				->select('COLUMN_NAME as table_key, REFERENCED_COLUMN_NAME as table_join_key, TABLE_NAME as join_from_table, REFERENCED_TABLE_NAME as table_join')
 				->from($db->quoteName('INFORMATION_SCHEMA.KEY_COLUMN_USAGE'))
-				->where('TABLE_NAME = ' . $db->quote($searched_table))
-				->andWhere('REFERENCED_TABLE_NAME = ' . $db->quote($base_table));
+				->where('TABLE_NAME IN (' . $db->quote($searched_table) . ', ' . $db->quote($base_table) . ')')
+				->andWhere('REFERENCED_TABLE_NAME IN (' . $db->quote($base_table) . ', ' . $db->quote($searched_table) . ')');
 
 			try {
 				$db->setQuery($query);
@@ -3489,7 +3489,7 @@ class EmundusHelperFiles
 
 				// if last join is not the searched table, then it's not a valid join, we weren't able to find a path between the two tables
 				// so we return an empty array
-				if ($joins[0]['join_from_table'] !== $searched_table) {
+				if ($joins[0]['join_from_table'] !== $searched_table && $joins[0]['table_join'] !== $searched_table) {
 					$joins = [];
 				} else {
 					$joins = array_map(function($join) {
