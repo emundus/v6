@@ -223,11 +223,11 @@ if($currentCampaign->apply_online == 0){
 
     window.onload = function() {
         document.getElementById('campaign_tab').classList.add('current-tab');
-        <?php if (in_array('faq', $modules_tabs)) : ?>
+        <?php if (is_array($modules_tabs) && in_array('faq', $modules_tabs)) : ?>
         document.getElementById('faq').style.display = 'none';
         <?php endif; ?>
 
-        <?php if (in_array('documents', $modules_tabs)) : ?>
+        <?php if (is_array($modules_tabs) && in_array('documents', $modules_tabs)) : ?>
         document.getElementById('documents').style.display = 'none';
         if(typeof document.getElementsByClassName('campaign-documents')[0] != 'undefined') {
             document.getElementsByClassName('campaign-documents')[0].parentElement.style.display = 'none';

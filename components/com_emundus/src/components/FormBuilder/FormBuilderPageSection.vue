@@ -227,9 +227,12 @@ export  default {
 	computed: {
 		publishedElements() {
 			return this.elements && this.elements.length > 0 ? this.elements.filter((element) => {
-				return element.publish === true;
+				return element.publish === true && (element.hidden === false || this.sysadmin);
 			}) : [];
-		}
+		},
+		sysadmin: function(){
+			return parseInt(this.$store.state.global.sysadminAccess);
+		},
 	}
 }
 </script>

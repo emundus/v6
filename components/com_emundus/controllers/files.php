@@ -448,16 +448,16 @@ class EmundusControllerFiles extends JControllerLegacy
                 );
 
                 JPluginHelper::importPlugin('emundus', 'custom_event_handler');
-                $dispatcher = JEventDispatcher::getInstance();
-                $dispatcher->trigger('onBeforeCommentAdd', [$comment_content]);
-                $dispatcher->trigger('callEventHandler', ['onBeforeCommentAdd', ['comment' => $comment_content]]);
+                
+                JFactory::getApplication()->triggerEvent('onBeforeCommentAdd', [$comment_content]);
+                JFactory::getApplication()->triggerEvent('callEventHandler', ['onBeforeCommentAdd', ['comment' => $comment_content]]);
 
                 $res = $m_application->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum, 'status_from' => -1, 'status_to' => -1,)));
                 if (empty($res)) {
                     $fnumErrorList[] = $fnum;
                 } else {
-                    $dispatcher->trigger('onAfterCommentAdd', [$comment_content]);
-                    $dispatcher->trigger('callEventHandler', ['onAfterCommentAdd', ['comment' => $comment_content]]);
+                    JFactory::getApplication()->triggerEvent('onAfterCommentAdd', [$comment_content]);
+                    JFactory::getApplication()->triggerEvent('callEventHandler', ['onAfterCommentAdd', ['comment' => $comment_content]]);
                 }
             } else {
                 $fnumErrorList[] = $fnum;
@@ -559,9 +559,9 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         JPluginHelper::importPlugin('emundus');
-        $dispatcher = JEventDispatcher::getInstance();
+        
 
-        $dispatcher->trigger('callEventHandler', ['onBeforeTagRemove', ['fnums' => $fnums, 'tags' => $tags]]);
+        JFactory::getApplication()->triggerEvent('callEventHandler', ['onBeforeTagRemove', ['fnums' => $fnums, 'tags' => $tags]]);
 
         foreach ($fnums as $fnum) {
             if ($fnum != 'em-check-all') {
@@ -578,7 +578,7 @@ class EmundusControllerFiles extends JControllerLegacy
             }
         }
 
-        $dispatcher->trigger('callEventHandler', ['onAfterTagRemove', ['fnums' => $fnums, 'tags' => $tags]]);
+        JFactory::getApplication()->triggerEvent('callEventHandler', ['onAfterTagRemove', ['fnums' => $fnums, 'tags' => $tags]]);
 
         unset($fnums);
         unset($tags);
@@ -3633,10 +3633,10 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
         JPluginHelper::importPlugin('emundus');
-        $dispatcher = JEventDispatcher::getInstance();
+        
 
-        $status = $dispatcher->trigger('onExportFiles', array($fnums, $type));
-        $dispatcher->trigger('callEventHandler', ['onExportFiles', ['fnums' => $fnums, 'type' => $type]]);
+        $status = JFactory::getApplication()->triggerEvent('onExportFiles', array($fnums, $type));
+        JFactory::getApplication()->triggerEvent('callEventHandler', ['onExportFiles', ['fnums' => $fnums, 'type' => $type]]);
 
         if (is_array($status) && !in_array(false, $status)) {
             $msg = JText::_('COM_EMUNDUS_EXPORTS_FILES_EXPORTED_TO_EXTERNAL');
@@ -3689,9 +3689,9 @@ class EmundusControllerFiles extends JControllerLegacy
         $letters = $_mEval->generateLetters($fnums,$templates,$canSee,$showMode,$mergeMode);
         ob_clean();
         if ($letters) {
-            $dispatcher = JEventDispatcher::getInstance();
-            $dispatcher->trigger('onAfterGenerateLetters', ['letters' => $letters]);
-            $dispatcher->trigger('callEventHandler', ['onAfterGenerateLetters', ['letters' => $letters]]);
+            
+            JFactory::getApplication()->triggerEvent('onAfterGenerateLetters', ['letters' => $letters]);
+            JFactory::getApplication()->triggerEvent('callEventHandler', ['onAfterGenerateLetters', ['letters' => $letters]]);
 
             echo json_encode((object)(array('status' => true, 'data' => $letters)));
         } else {

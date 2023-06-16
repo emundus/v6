@@ -515,7 +515,7 @@ class EmundusController extends JControllerLegacy {
 
         $dispatcher = JDispatcher::getInstance();
         JPluginHelper::importPlugin('emundus', 'sync_file');
-        $dispatcher->trigger('onDeleteFile', array(array('upload_id' => $upload_id)));
+        JFactory::getApplication()->triggerEvent('onDeleteFile', array(array('upload_id' => $upload_id)));
 
         if (isset($layout))
             $url = 'index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid;
@@ -676,9 +676,9 @@ class EmundusController extends JControllerLegacy {
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
         EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 1, 'r', 'COM_EMUNDUS_ACCESS_FILE_READ');
 
-        $dispatcher = JEventDispatcher::getInstance();
-	    $dispatcher->trigger('onBeforeApplicantEnterApplication', ['fnum' => $fnum, 'aid' => $applicant_id, 'redirect' => $redirect]);
-	    $dispatcher->trigger('callEventHandler', ['onBeforeApplicantEnterApplication', ['fnum' => $fnum, 'aid' => $applicant_id, 'redirect' => $redirect]]);
+        
+	    JFactory::getApplication()->triggerEvent('onBeforeApplicantEnterApplication', ['fnum' => $fnum, 'aid' => $applicant_id, 'redirect' => $redirect]);
+	    JFactory::getApplication()->triggerEvent('callEventHandler', ['onBeforeApplicantEnterApplication', ['fnum' => $fnum, 'aid' => $applicant_id, 'redirect' => $redirect]]);
 
         $app->redirect($redirect);
     }
@@ -1301,13 +1301,13 @@ class EmundusController extends JControllerLegacy {
 				}
 
                 // TODO: onAfterAttachmentUpload event appeared after onAfterUploadFile creation on this branch. move treatment to use onAfterAttachmentUpload
-                $dispatcher = JEventDispatcher::getInstance();
+                
                 JPluginHelper::importPlugin('emundus', 'sync_file');
-                $dispatcher->trigger('onAfterUploadFile', [['upload_id' => $id]]);
+                JFactory::getApplication()->triggerEvent('onAfterUploadFile', [['upload_id' => $id]]);
 
-                $dispatcher = JEventDispatcher::getInstance();
-                $dispatcher->trigger('onAfterAttachmentUpload', [$fnum, (int)$attachments, $paths]);
-                $dispatcher->trigger('callEventHandler', ['onAfterAttachmentUpload', ['fnum' => $fnum, 'attachment_id' => (int)$attachments, 'file' => $paths]]);
+                
+                JFactory::getApplication()->triggerEvent('onAfterAttachmentUpload', [$fnum, (int)$attachments, $paths]);
+                JFactory::getApplication()->triggerEvent('callEventHandler', ['onAfterAttachmentUpload', ['fnum' => $fnum, 'attachment_id' => (int)$attachments, 'file' => $paths]]);
 
                 if ($format == "raw") {
                     echo '{"id":"'.$id.'","status":true, "message":"'.JText::_('COM_EMUNDUS_ACTIONS_DELETE').'"}';

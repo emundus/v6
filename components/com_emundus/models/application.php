@@ -3971,7 +3971,7 @@ class EmundusModelApplication extends JModelList
 
                 JPluginHelper::importPlugin('emundus');
                 $dispatcher = JDispatcher::getInstance();
-                $dispatcher->trigger('callEventHandler', array(
+                JFactory::getApplication()->triggerEvent('callEventHandler', array(
                         'onAfterMoveApplication',
                         array(
                             'fnum_from' => $fnum_from,
@@ -4220,7 +4220,7 @@ class EmundusModelApplication extends JModelList
 
         JPluginHelper::importPlugin('emundus');
         $dispatcher = JDispatcher::getInstance();
-        $dispatcher->trigger('callEventHandler', array(
+        JFactory::getApplication()->triggerEvent('callEventHandler', array(
             'onAfterCopyApplication',
             array(
                 'fnum_from' => $fnum_from,

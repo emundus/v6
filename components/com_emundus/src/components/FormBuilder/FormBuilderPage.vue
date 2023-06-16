@@ -6,7 +6,7 @@
 			    ref="pageTitle"
 			    @focusout="updateTitle"
 			    @keyup.enter="updateTitleKeyup"
-			    @keydown="(event) => checkMaxMinlength(event, 50, 3)"
+			    @keydown="(event) => checkMaxMinlength(event, 50, 0)"
 			    contenteditable="true"
 			    :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
 			    v-html="translate(title)"></span>

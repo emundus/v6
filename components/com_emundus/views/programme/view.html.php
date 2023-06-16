@@ -22,15 +22,15 @@ class EmundusViewProgramme extends JViewLegacy
      */
     public function display($tpl = null)
     {
-
         // Get data from the model
         //$items = $this->get('Items');
         $model = $this->getModel();
-
+        
         $app = JFactory::getApplication();
         $jinput = $app->input;
-        $menu_params = $app->getMenu()->getActive()->params;
-
+        $menu 			= @JFactory::getApplication()->getMenu();
+        $current_menu  	= $menu->getActive();
+        $menu_params 	= $menu->getParams(@$current_menu->id);
 
         $this->com_emundus_programme_progdesc_class = '';
         $this->com_emundus_programme_campdesc_class = '';

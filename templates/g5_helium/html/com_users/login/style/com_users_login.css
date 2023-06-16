@@ -447,3 +447,14 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     margin-bottom: 32px;
 }
 
+.form-control-feedback{
+    display: none !important;
+}
+
+#login_form .password-group{
+    width: 100%;
+}
+.input-password-toggle{
+    display: none  !important;
+}
+
