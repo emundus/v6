@@ -50,7 +50,7 @@
 			       :placeholder="translate('MOD_EMUNDUS_FILTERS_FILTER_SEARCH')"
 			       v-model="search"
 			>
-			<div class="values-selection em-mt-8">
+			<div class="values-selection em-mt-8 em-mb-8">
 				<div class="em-flex-row">
 					<input :name="filter.uid + '-filter-value'" :id="filter.uid + '-filter-value-all'" type="checkbox" value="all" v-model="filter.value" @click="onClickAll">
 					<label :for="filter.uid + '-filter-value-all'" style="margin: 0">{{ translate('ALL') }}</label>
@@ -147,5 +147,8 @@ export default {
 </script>
 
 <style scoped>
-
+.values-selection {
+	max-height: 180px;
+	overflow-y: auto;
+}
 </style>

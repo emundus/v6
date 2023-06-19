@@ -21,7 +21,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 
 <div class="container-fluid">
 	<div class="row">
-		<div class="col-md-3 side-panel">
+		<div class="col-md-3 side-panel" style="height: calc(100vh - 72px);overflow-y: auto;">
 			<div class="panel panel-info em-containerFilter" id="em-files-filters">
 				<div class="panel-heading em-containerFilter-heading">
 					<div>
