@@ -40,6 +40,8 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
 	                <?php endif ?>
                 </div>
 
+                <div class="em-filter-body">
+
 	            <?php if (array_key_exists('all', $d->filters) || $d->filter_action != 'onchange') {
 		            ?>
                     <div class="em-mb-12">
@@ -91,6 +93,7 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
             <?php
             endif;
             ?>
+                </div>
             </div>
 			<?php
 			endif;
