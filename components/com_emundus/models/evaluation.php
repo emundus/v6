@@ -96,7 +96,7 @@ class EmundusModelEvaluation extends JModelList {
 
         if ($session->has('adv_cols')) {
             $adv = $session->get('adv_cols');
-            if (!empty($adv) && !is_null($adv)) {
+            if (!empty($adv)) {
                 $this->elements_id .= ','.implode(',', $adv);
             }
         }

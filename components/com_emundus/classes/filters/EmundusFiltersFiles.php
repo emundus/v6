@@ -269,9 +269,8 @@ class EmundusFiltersFiles extends EmundusFilters
 		if(!empty($config['more_filter_elements'])) {
 			$config['more_filter_elements'] = json_decode($config['more_filter_elements'], true);
 
-			foreach($config['more_filter_elements']['fabrik_element_id'] as $key => $fabrik_element_id) {
+			foreach($config['more_filter_elements']['fabrik_element_id'] as $fabrik_element_id) {
 				if (!empty($fabrik_element_id)) {
-					// check in filters if element is already present
 					$found = false;
 					$new_default_filter = [];
 					foreach($this->filters as $filter) {
@@ -282,7 +281,7 @@ class EmundusFiltersFiles extends EmundusFilters
 								$new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
 							}
 							$new_default_filter['andorOperator'] = 'OR';
-							$new_default_filter['operator'] = $filter['type'] === 'select' ? 'LIKE' : '=';
+							$new_default_filter['operator'] = $filter['type'] === 'select' ? 'IN' : '=';
 
 							$found = true;
 							break;
@@ -313,7 +312,7 @@ class EmundusFiltersFiles extends EmundusFilters
 									$new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
 								}
 								$new_default_filter['andorOperator'] = 'OR';
-								$new_default_filter['operator'] = $new_default_filter['type'] === 'select' ? 'LIKE' : '=';
+								$new_default_filter['operator'] = $new_default_filter['type'] === 'select' ? 'IN' : '=';
 							}
 						}
 					}
@@ -322,6 +321,16 @@ class EmundusFiltersFiles extends EmundusFilters
 						$this->filters[] = $new_default_filter;
 						$new_default_filter['uid'] = 'default-filter-' . $new_default_filter['id'];
 						$this->applied_filters[] = $new_default_filter;
+
+						// add filter to adv cols
+						$session = JFactory::getSession();
+						$files_displayed_columns = $session->get('adv_cols');
+						if (!empty($files_displayed_columns)) {
+							$files_displayed_columns[] = $new_default_filter['id'];
+						} else {
+							$files_displayed_columns = [$new_default_filter['id']];
+						}
+						$session->set('adv_cols', $files_displayed_columns);
 					}
 				}
 			}

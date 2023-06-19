@@ -631,19 +631,23 @@ class EmundusModelFiles extends JModelLegacy
 	        $h_files = new EmundusHelperFiles();
 	        $leftJoin = '';
 
-            foreach ($this->_elements as $elt) {
-                if (!in_array($elt->tab_name, $already_joined_tables)) {
-					if ($h_files->isTableLinkedToCampaignCandidature($elt->tab_name)) {
-						$leftJoin .= 'LEFT JOIN ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = jecc.fnum ';
-						$already_joined_tables[] = $elt->tab_name;
+	        foreach ($this->_elements as $elt) {
+				$table_to_join = !empty($elt->table_join) ? $elt->table_join : $elt->tab_name;
+				$already_join_alias = array_keys($already_joined_tables);
+
+                if (!(in_array($table_to_join, $already_joined_tables)) && !(in_array($table_to_join, $already_join_alias, true))) {
+	                if ($h_files->isTableLinkedToCampaignCandidature($table_to_join)) {
+						$leftJoin .= 'LEFT JOIN ' . $table_to_join .  ' ON '. $table_to_join .'.fnum = jecc.fnum ';
+						$already_joined_tables[] = $table_to_join;
 					} else {
+						$joined = false;
 						$query_find_join = $dbo->getQuery(true);
 						foreach ($already_joined_tables as $already_join_alias => $already_joined_table_name) {
 							$query_find_join->clear()
 								->select('*')
 								->from('#__fabrik_joins')
 								->where('table_join = ' . $dbo->quote($already_joined_table_name))
-								->andWhere('join_from_table = ' . $dbo->quote($elt->tab_name))
+								->andWhere('join_from_table = ' . $dbo->quote($table_to_join))
 								->andWhere('table_key = ' . $dbo->quote('id'))
 								->andWhere('list_id = ' . $dbo->quote($elt->table_list_id));
 
@@ -651,10 +655,36 @@ class EmundusModelFiles extends JModelLegacy
 							$join_informations = $dbo->loadAssoc();
 
 							if (!empty($join_informations)) {
-								$already_joined_tables[] = $elt->tab_name;
+								$already_joined_tables[] = $table_to_join;
 
 								$leftJoin .= ' LEFT JOIN ' . $dbo->quoteName($join_informations['join_from_table']) . ' ON ' . $dbo->quoteName($join_informations['join_from_table'] . '.' . $join_informations['table_key']) . ' = ' . $dbo->quoteName($already_join_alias . '.' . $join_informations['table_join_key']);
+								$joined = true;
 								break;
+							}
+						}
+
+						if (!$joined) {
+							$element_joins = $h_files->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', $table_to_join);
+
+							foreach($element_joins as $element_join) {
+								if (!in_array($element_join['table_join'], $already_joined_tables)) {
+									$join_from_table_alias = $element_join['join_from_table'];
+									if (in_array($element_join['join_from_table'], $already_joined_tables)) {
+										$found_alias = array_search($element_join['join_from_table'], $already_joined_tables);
+
+										if (!is_numeric($found_alias)) {
+											$join_from_table_alias = $found_alias;
+										}
+									}
+
+									if (!empty($element_join['params']) && $element_join['params']['type'] === 'repeatElement') {
+										$leftJoin .= ' LEFT JOIN ' . $dbo->quoteName($element_join['table_join']) . ' ON ' . $dbo->quoteName($element_join['table_join'] . '.parent_id') . ' = ' . $dbo->quoteName($join_from_table_alias. '.id');
+									} else {
+										$leftJoin .= ' LEFT JOIN ' . $dbo->quoteName($element_join['table_join']) . ' ON ' . $dbo->quoteName($element_join['table_join'] . '.' . $element_join['table_join_key']) . ' = ' . $dbo->quoteName($join_from_table_alias. '.' . $element_join['table_key']);
+									}
+
+									$already_joined_tables[] = $element_join['table_join'];
+								}
 							}
 						}
 					}
